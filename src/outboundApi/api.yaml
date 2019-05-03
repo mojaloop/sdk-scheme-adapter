@@ -1,0 +1,256 @@
+openapi: 3.0.1
+info:
+  title: Mojaloop SDK Outbound API
+  description: Mojaloop SDK Outbound API
+  license:
+    name: Open API for FSP Interoperability (FSPIOP)
+    url: http://www.majaloop.io
+  version: 1.0.0
+paths:
+  /transfers:
+    post:
+      summary: Sends money from one account to another
+      description: This method has two modes of operation. If the SDK configuration variable AUTO_ACCEPT_QUOTES is set to "true" then this operation will block while progressing a transfer through payee lookup, quote and transfer stages. If AUTO_ACCEPT_QUOTES is set to "false" this method will return after payee lookup and quote allowing the caller to examine the quote before proceeding to transfer stage via the PUT /transfers/{transferId} method.
+      requestBody:
+        description: Transfer request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/transferRequest'
+        required: true
+      responses:
+        200:
+          description: Transfer completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/transferResponse'
+        400:
+          description: Malformed or missing required body, headers or parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        500:
+          description: An error occured processing the transfer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+  /transfers/{transferId}:
+    put:
+      summary: Continues a transfer that has paused at the quote stage in order to accept or reject the quote
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/transferContinuation'
+      parameters:
+      - name: transferId
+        in: path
+        required: true
+        schema:
+          pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+          type: string
+      responses:
+        200:
+          description: Transfer completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/transferResponse'
+    get:
+      summary: Retrieves information for a specific transfer
+      parameters:
+      - name: transferId
+        in: path
+        required: true
+        schema:
+          pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+          type: string
+      responses:
+        200:
+          description: Transfer information successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/transferResponse'
+        500:
+          description: An error occured processing the transfer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+components:
+  schemas:
+  
+    payerType:
+      type: string
+      enum:
+      - CONSUMER
+      - AGENT
+      - BUSINESS
+      - DEVICE
+      
+    amountType:
+      type: string
+      enum:
+      - SEND
+      - RECEIVE
+      
+    transactionType:
+      type: string
+      enum:
+      - TRANSFER
+      
+    transferRequest:
+      type: object
+      required:
+        - homeTransactionId
+        - from
+        - to
+        - amountType
+        - currency
+        - amount
+        - transactionType
+      properties:
+        homeTransactionId:
+          type: string
+          description: Transaction ID from the DFSP backend, used to reconcile transactions between the switch and DFSP backend systems
+        from:
+          $ref: '#/components/schemas/transferParty'
+        to:
+          $ref: '#/components/schemas/transferParty'
+        amountType:
+          $ref: '#/components/schemas/amountType'
+        currency:
+          $ref: '#/components/schemas/currency'
+        amount:
+          $ref: '#/components/schemas/money'
+        transactionType:
+          $ref: '#/components/schemas/transactionType'
+        note:
+          maxLength: 128
+          type: string
+          
+    transferStatus:
+      type: string
+      enum:
+      - ERROR_OCCURED
+      - WAITING_FOR_QUOTE_ACCEPTANCE
+      - COMPLETED
+
+    idType:
+      type: string
+      enum:
+      - MSISDN
+      - ACCOUNT_NO
+      
+    money:
+      pattern: ^([0]|([1-9][0-9]{0,17}))([.][0-9]{0,3}[1-9])?$
+      type: string
+      
+    transferContinuation:
+      type: object
+      required:
+        - acceptQuote
+      properties:
+        acceptQuote:
+          type: boolean
+          description: true if the caller wishes to accept the quote and proceed with the transfer, otherwise false
+      
+    transferResponse:
+      type: object
+      required:
+        - homeTransactionId
+        - from
+        - to
+        - amountType
+        - currency
+        - amount
+        - transactionType
+      properties:
+        transferId:
+          $ref: '#/components/schemas/transferId'
+        homeTransactionId:
+          type: string
+          description: Transaction ID from the DFSP backend, used to reconcile transactions between the switch and DFSP backend systems
+        from:
+          $ref: '#/components/schemas/transferParty'
+        to:
+          $ref: '#/components/schemas/transferParty'
+        amountType:
+          $ref: '#/components/schemas/amountType'
+        currency:
+          $ref: '#/components/schemas/currency'
+        amount:
+          $ref: '#/components/schemas/money'
+        transactionType:
+          $ref: '#/components/schemas/transactionType'
+        note:
+          maxLength: 128
+          type: string
+        currentState:
+          $ref: '#/components/schemas/transferStatus'
+        lastError:
+          type: string
+          description: String giving details of any error that occured during processing the request
+          
+    currency:
+      maxLength: 3
+      minLength: 3
+      type: string
+      
+    transferId:
+      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+      type: string
+      description: A Mojaloop API transfer identifier (UUID)
+      
+    transferParty:
+      type: object
+      required:
+        - idType
+        - idValue
+      properties:
+        type:
+          $ref: '#/components/schemas/payerType'
+        idType:
+          $ref: '#/components/schemas/idType'
+        idValue:
+          $ref: '#/components/schemas/idValue'
+        displayName:
+          type: string
+          description: Display name of the sender if known
+        firstName:
+          type: string
+          description: Party first name
+        middleName:
+          type: string
+          description: Party moddle name
+        lastName:
+          type: string
+          description: Party last name
+        dateOfBirth:
+          type: string
+          pattern: ^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)$
+        merchantClassificationCode:
+          type: string
+          description: Up to 4 digits specifying the senders merchant classification, if known and applicable
+
+    idValue:
+      type: string
+      minLength: 1
+      maxLength: 128
+
+    errorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: string
+          description: Error code as string
+        message:
+          type: string
+          description: Error message text
+        transferState:
+          $ref: '#/components/schemas/transferResponse'
+
