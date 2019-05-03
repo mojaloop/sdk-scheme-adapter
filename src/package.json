@@ -1,0 +1,35 @@
+{
+  "name": "mojaloop-dfsp-sdk-server",
+  "version": "0.0.1",
+  "description": "An adapter for connecting to Mojaloop API enabled switches",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "Matt Kingston, James Bush, ModusBox Inc.",
+  "license": "Apache-2.0",
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  ],
+  "dependencies": {
+    "@internal/cache": "file:lib/cache",
+    "@internal/log": "file:lib/log",
+    "@internal/randomphrase": "file:lib/randomphrase",
+    "@internal/router": "file:lib/router",
+    "@internal/model": "file:lib/model",
+    "@internal/validate": "file:lib/validate",
+    "co-body": "^6.0.0",
+    "dotenv": "^6.2.0",
+    "koa": "^2.6.2",
+    "koa-body": "^4.0.6",
+    "node-fetch": "^2.3.0",
+    "uuid": "^3.3.2",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "ajv": "^6.7.0"
+  }
+}

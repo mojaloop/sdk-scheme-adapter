@@ -1,0 +1,25 @@
+{
+  "name": "@internal/validate",
+  "version": "0.0.1",
+  "description": "Mojaloop SDK request validation",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Matt Kingston, ModusBox Inc.",
+  "license": "Apache-2.0",
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  ],
+  "devDependencies": {
+    "eslint": "^5.12.0"
+  },
+  "dependencies": {
+    "ajv": "^6.7.0",
+    "json-schema-ref-parser": "^6.0.3",
+    "openapi-jsonschema-parameters": "^1.1.0"
+  }
+}

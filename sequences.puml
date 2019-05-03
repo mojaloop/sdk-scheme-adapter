@@ -1,0 +1,99 @@
+
+
+@tartuml
+title Mojaloop SDK Interactions
+autonumber
+
+participant "DFSP Backend" as backend
+participant "ESB/PortX" as esb
+
+box "SDK"
+    participant "SDK Inbound Service" as sib
+    participant "SDK Outbound Service" as sob
+end box
+  
+
+participant "Switch" as sw
+
+
+note over sib, sob: All outbound between SDK and Switch have\nJWS added automatically
+note over sib, sob: All inbound from switch have JWS validated
+
+note over sib, sob: Mapping between scheme transaction types and DFSP\ntransaction types
+note over sib, sob: JWS and TLS keys managed by SDK
+
+== send money ==
+
+    backend -> sob: POST /transfers
+    
+    sob -> sw: GET /parties
+    sw -> sob: PUT /parties
+    sob -> sw: POST /quotes
+    sw -> sob: PUT /quotes
+    sob -> sw: POST /transfers
+    sw -> sob: PUT /transfers
+    
+    sob -> backend: HTTP 200
+
+== query transfer ==
+
+    backend -> sob: GET /transfers/{ID}
+    sob -> sw: GET /transfers/{ID}
+    sw -> sob: PUT /transfers/{ID}
+    sob -> backend: transfer info
+
+== receive money ==
+
+    sw -> sib: GET /parties
+    sib -> esb: GET /parties
+    esb -> backend: lookup user account
+    backend -> esb: user details
+    esb -> sib: user details
+    sib -> sw: PUT /parties
+    
+    sw -> sib: POST /quotes
+    
+    alt SDK handles quote request autonomously
+    
+    sib -> sib: calculate quote
+    
+    else backend calculates quote
+    
+    sib -> esb: POST /quotes
+    esb -> backend: quote request
+    backend -> esb: quote response
+    esb -> sib: quote response
+    
+    end
+    
+    sib -> sib: create ILP packet\ncalculate condition
+    
+    sib -> sw: PUT /quotes
+    
+    sw -> sib: POST /transfers
+    sib -> sib: validate ILP
+    sib -> esb: POST /transfers
+    esb -> backend: accept money?
+    
+    alt accepting money
+    
+        backend -> esb: OK
+        esb -> sib: OK
+        sib -> sib: calculate ILP fulfilment
+        sib -> sw: PUT /transfers
+        
+        sw -> sib: OK notification
+        sib -> esb: OK notification
+        esb -> backend: money received OK
+    
+    else not accepting money
+    
+        backend -> esb: NOK
+        esb -> sib: NOK
+        sib -> sw: PUT /transfers/{ID}/error
+    
+    end
+
+
+@enduml
+
