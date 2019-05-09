@@ -13,8 +13,8 @@
 
 const util = require('util');
 const BackendRequests = require('@internal/requests').BackendRequests;
-const MojaloopRequests = require('mojaloop-sdk-standard-components').MojaloopRequests;
-const Ilp = require('mojaloop-sdk-standard-components').Ilp;
+const MojaloopRequests = require('@modusbox/mojaloop-sdk-standard-components').MojaloopRequests;
+const Ilp = require('@modusbox/mojaloop-sdk-standard-components').Ilp;
 const shared = require('@internal/shared');
 
 const ASYNC_TIMEOUT_MILLS = 30000;

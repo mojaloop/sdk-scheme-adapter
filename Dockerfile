@@ -10,5 +10,3 @@ CMD ["node", "/src/index.js"]
 
 COPY ./src/ /src/
 RUN npm install --production
-
-RUN mkdir /src/node_modules/mojaloop-sdk-standard-components
