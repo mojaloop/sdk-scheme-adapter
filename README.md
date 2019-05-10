@@ -11,3 +11,7 @@ This package exemplifies the use of the Mojaloop SDK Standard Components for TLS
 DFSP backends must implement the [DFSP Inbound API](docs/dfspInboundApi.yaml) in order for the scheme adapter to make incoming transfers i.e. to receive funds to a customer account.
 
 DFSP backends can call the [DFSP Outbound API](/src/outboundApi/api.yaml) in order to make outgoing transfers i.e. to send funds from a customer account.
+
+## Docker Image
+
+This package is available as a pre-built docker image on Docker Hub: [https://hub.docker.com/r/modusbox/mojaloop-sdk-example-scheme-adapter](https://hub.docker.com/r/modusbox/mojaloop-sdk-example-scheme-adapter)
