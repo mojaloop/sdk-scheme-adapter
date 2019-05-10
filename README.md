@@ -6,6 +6,8 @@ The demonstrated API between the scheme adapter and the DFSP backend is synchron
 
 This package exemplifies the use of the Mojaloop SDK Standard Components for TLS, JWS and ILP (available [here](http://www.github.com/modusbox/mojaloop-sdk-standard-components)).
 
+For information on the background and context of this project please see the presentation [here](docs/Mojaloop - Modusbox Onboarding functionality.pdf)
+
 ## DFSP Backend API
 
 DFSP backends must implement the [DFSP Inbound API](docs/dfspInboundApi.yaml) in order for the scheme adapter to make incoming transfers i.e. to receive funds to a customer account.
