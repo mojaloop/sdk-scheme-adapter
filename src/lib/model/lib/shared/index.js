@@ -184,7 +184,7 @@ const internalQuoteResponseToMojaloop = (internal) => {
 const mojaloopPrepareToInternalTransfer = (external, quote) => {
     const internal = {
         transferId: external.transferId,
-        quote: quote.request,
+        quote: quote.response,
         from: quote.internalRequest.from,
         to: quote.internalRequest.to,
         amountType: quote.request.amountType,
