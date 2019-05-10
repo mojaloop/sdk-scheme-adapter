@@ -1,10 +1,10 @@
 # Mojaloop SDK Example Scheme Adapter
 
-This package provides an example of a scheme adapter that interfaces between a Mojaloop API compliant switch and a DFSP backend platform that oes not natively implement the Mojaloop API.
+This package provides an example of a scheme adapter that interfaces between a Mojaloop API compliant switch and a DFSP backend platform that does not natively implement the Mojaloop API.
 
 The demonstrated API between the scheme adapter and the DFSP backend is synchronous HTTP while the interface between the scheme adapter and the switch is native Mojaloop API.
 
-This package exemplifies the use of the Mojaloop SDK Standard Components for TLS, JWS and ILP (available [here](www.github.com/modusbox/mojaloop-sdk-standard-components)).
+This package exemplifies the use of the Mojaloop SDK Standard Components for TLS, JWS and ILP (available [here](http://www.github.com/modusbox/mojaloop-sdk-standard-components)).
 
 ## DFSP Backend API
 
