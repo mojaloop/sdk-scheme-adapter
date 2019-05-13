@@ -138,4 +138,7 @@ class BackendRequests {
 
 
 
-module.exports = BackendRequests;
+module.exports = {
+    BackendRequests: BackendRequests,
+    HTTPResponseError: common.HTTPResponseError
+};
