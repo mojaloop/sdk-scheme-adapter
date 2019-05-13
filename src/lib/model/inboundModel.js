@@ -70,7 +70,8 @@ class InboundTransfersModel {
             }
 
             // make a callback to the source fsp with our dfspId indicating we own the party
-            return this.mojaloopRequests.putParticipants(idType, idValue, { fspId: this.dfspId }, sourceFspId);
+            return this.mojaloopRequests.putParticipants(idType, idValue, { fspId: this.dfspId },
+                sourceFspId);
         }
         catch(err) {
             this.logger.log(`Error in getParties: ${err.stack || util.inspect(err)}`);
@@ -194,13 +195,12 @@ class InboundTransfersModel {
             // send an error callback to the originator
             if(err instanceof HTTPResponseError) {
                 const e = err.getData().resp;
-
-                const mojaloopError = Errors.MojaloopApiErrorCodeFromCode(e.statusCode)
+                const mojaloopErrorCode = Errors.MojaloopApiErrorCodeFromCode(e.statusCode)
                     || Errors.MojaloopApiErrorCodes.INTERNAL_SERVER_ERROR;
+                const mojaloopError = new Errors.MojaloopFSPIOPError(err, null, sourceFspId, mojaloopErrorCode);
 
-                if(mojaloopError) {
-                    return await this.mojaloopRequests.putTransfersError(prepareRequest.transferId, mojaloopError, sourceFspId);
-                }
+                return await this.mojaloopRequests.putTransfersError(prepareRequest.transferId,
+                    mojaloopError.toApiErrorObject(), sourceFspId);
             }
             throw err;
         }
