@@ -13,8 +13,10 @@
 
 const util = require('util');
 const BackendRequests = require('@internal/requests').BackendRequests;
+const HTTPResponseError = require('@internal/requests').HTTPResponseError;
 const MojaloopRequests = require('@modusbox/mojaloop-sdk-standard-components').MojaloopRequests;
 const Ilp = require('@modusbox/mojaloop-sdk-standard-components').Ilp;
+const Errors = require('@modusbox/mojaloop-sdk-standard-components').Errors;
 const shared = require('@internal/shared');
 
 const ASYNC_TIMEOUT_MILLS = 30000;
@@ -189,10 +191,20 @@ class InboundTransfersModel {
         }
         catch(err) {
             this.logger.log(`Error in quoteRequest: ${err.stack || util.inspect(err)}`);
+            // send an error callback to the originator
+            if(err instanceof HTTPResponseError) {
+                const e = err.getData().resp;
+
+                const mojaloopError = Errors.MojaloopApiErrorCodeFromCode(e.statusCode)
+                    || Errors.MojaloopApiErrorCodes.INTERNAL_SERVER_ERROR;
+
+                if(mojaloopError) {
+                    return await this.mojaloopRequests.putTransfersError(prepareRequest.transferId, mojaloopError, sourceFspId);
+                }
+            }
             throw err;
         }
     }
-
 }
 
 

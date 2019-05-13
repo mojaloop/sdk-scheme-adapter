@@ -14,6 +14,4 @@
 const BackendRequests = require('./backendRequests.js');
 
 
-module.exports = {
-    BackendRequests: BackendRequests
-};
+module.exports = BackendRequests;
