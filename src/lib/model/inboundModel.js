@@ -128,7 +128,7 @@ class InboundTransfersModel {
             const mojaloopResponse = shared.internalQuoteResponseToMojaloop(response);
 
             // create our ILP packet and condition and tag them on to our internal quote response 
-            const { fulfilment, ilpPacket, condition } = this.ilp.getQuoteResponseIlp(mojaloopResponse);
+            const { fulfilment, ilpPacket, condition } = this.ilp.getQuoteResponseIlp(quoteRequest, mojaloopResponse);
 
             mojaloopResponse.ilpPacket = ilpPacket;
             mojaloopResponse.condition = condition; 
