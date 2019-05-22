@@ -12,6 +12,8 @@
 
 
 const fs = require('fs');
+const path = require('path');
+
 
 // A promise wrapper around fs.readFile
 // Redundant on node 10 and above, use require('fs').promises instead
@@ -55,7 +57,7 @@ let config = {
     validateInboundJws: true,
     jwsSign: true,
     jwsSigningKey: null,
-    jwsVerificationKeyStore: null,
+    jwsVerificationKeysDirectory: null,
     cacheConfig: {
         host: 'localhost',
         port: 6379
@@ -97,7 +99,15 @@ const setConfig = async cfg => {
     config.validateInboundJws = cfg.VALIDATE_INBOUND_JWS.toLowerCase() === 'false' ? false : true;
     config.jwsSign = cfg.JWS_SIGN.toLowerCase() === 'false' ? false : true;
     config.jwsSigningKey = await readFile(cfg.JWS_SIGNING_KEY_PATH);
-    config.jwsVerificationKeyStore = cfg.JWS_VERIFICATION_KEY_STORE;
+    config.jwsVerificationKeysDirectory = cfg.JWS_VERIFICATION_KEYS_DIRECTORY;
+
+    config.jwsVerificationKeys = {};
+
+    fs.readdirSync(cfg.JWS_VERIFICATION_KEYS_DIRECTORY)
+        .filter(f => f.endsWith('.pem'))
+        .map(f => {
+            config.jwsVerificationKeys[path.basename(f)] = fs.readFileSync(path.join(cfg.JWS_VERIFICATION_KEYS_DIRECTORY, f));
+        });
 
     config.cacheConfig.host = cfg.CACHE_HOST;
     config.cacheConfig.port = cfg.CACHE_PORT;

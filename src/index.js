@@ -77,7 +77,10 @@ const Jws = require('@modusbox/mojaloop-sdk-standard-components').Jws;
     const outboundTransports = await Promise.all([Transports.consoleDir()]);
     const outboundLogger = new Logger({ context: { app: 'mojaloop-sdk-outbound-api' }, space, transports:outboundTransports });
 
-    const jwsValidator = new Jws.validator({ logger: inboundLogger });
+    const jwsValidator = new Jws.validator({
+        logger: inboundLogger,
+        validationKeys: conf.jwsVerificationKeys
+    });
 
 
     // Log raw to console as a last resort
@@ -120,7 +123,9 @@ const Jws = require('@modusbox/mojaloop-sdk-standard-components').Jws;
     inboundApi.use(async (ctx, next) => {
         if(conf.validateInboundJws) {
             try {
-                jwsValidator.validate(ctx.request, inboundLogger);
+                if(ctx.request.method !== 'GET') {
+                    jwsValidator.validate(ctx.request, inboundLogger);
+                }
             }
             catch(err) {
                 inboundLogger.log(`Inbound request failed JWS validation: ${err.stack || util.inspect(err)}`);
