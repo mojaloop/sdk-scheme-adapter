@@ -38,6 +38,7 @@ const inboundApiSpec = yaml.load('./inboundApi/api.yaml');
 const outboundApiSpec = yaml.load('./outboundApi/api.yaml');
 
 const Jws = require('@modusbox/mojaloop-sdk-standard-components').Jws;
+const Errors = require('@modusbox/mojaloop-sdk-standard-components').Errors;
 
 
 (async function() {
@@ -130,11 +131,9 @@ const Jws = require('@modusbox/mojaloop-sdk-standard-components').Jws;
             catch(err) {
                 inboundLogger.log(`Inbound request failed JWS validation: ${err.stack || util.inspect(err)}`);
 
-                ctx.response.status = 403;
-                ctx.response.body = {
-                    message: err.message,
-                    statusCode: 403
-                };
+                ctx.response.status = 400;
+                ctx.response.body = new Errors.MojaloopFSPIOPError(err, err.message, null,
+                    Errors.MojaloopApiErrorCodes.INVALID_SIGNATURE).toApiErrorObject();
                 return;
             }
         }
