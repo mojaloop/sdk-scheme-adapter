@@ -90,7 +90,10 @@ class InboundTransfersModel {
 
             if(!response) {
                 // make an error callback to the source fsp
-                return `Party not found in backend. Making error callback to ${sourceFspId}`;
+                this.logger.log(`Party not found in backend. Making error callback to ${sourceFspId}`);
+                const err = new Errors.MojaloopFSPIOPError(null, null, sourceFspId, Errors.MojaloopApiErrorCodes.ID_NOT_FOUND);
+                return await this.mojaloopRequests.putPartiesError(idType, idValue,
+                    err.toApiErrorObject(), sourceFspId);
             }
 
             // project our internal party representation into a mojaloop partyies request body
