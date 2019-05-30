@@ -124,6 +124,11 @@ class InboundTransfersModel {
                 return `No quote response from backend. Making error callback to ${sourceFspId}`;
             }
 
+            if(!response.expiration) {
+                const expiration = new Date().getTime() + (this.expirySeconds * 1000);
+                response.expiration = new Date(expiration).toISOString();
+            }
+
             // project our internal quote reponse into mojaloop quote response form
             const mojaloopResponse = shared.internalQuoteResponseToMojaloop(response);
 
