@@ -190,10 +190,13 @@ const Errors = require('@modusbox/mojaloop-sdk-standard-components').Errors;
             await next();
         } catch (err) {
             ctx.state.logger.push({ err }).log('Request failed validation.');
+            // send a mojaloop spec error response
             ctx.response.status = 400;
             ctx.response.body = {
-                message: err.message,
-                statusCode: 400
+                errorInformation: {
+                    errorCode: '3100',
+                    errorDescription: `Validation Error: ${err.message}`
+                }
             };
         }
     });
