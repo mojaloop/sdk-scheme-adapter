@@ -97,11 +97,11 @@ const transformApiDoc = apiDoc => ({
             ...Object.entries(pathValue)
                 .filter(([method,]) => httpMethods.includes(method))
                 .map(([method, methodValue]) => {
-                    const validatorF = ajv.compile(createSchema(pathValue, methodValue));
+                    const schema = createSchema(pathValue, methodValue);
+                    const validatorF = ajv.compile(schema);
                     return {
                         [method]: {
                             validator: (ctx, path) => {
-                                // console.log(util.inspect(validatorF.schema, { depth: Infinity }));
                                 const result = validatorF({
                                     body: ctx.request.body,
                                     headers: ctx.request.headers,
@@ -138,7 +138,7 @@ class Validator {
                 // If we were using node 10, instead of having this awkward params object, we could
                 // replace the path parameters with named regex matches corresponding to the path
                 // names.
-                regex: new RegExp(`^${path.replace(pathParamMatch, '([^{}\/]+)')}$`),
+                regex: new RegExp(`^${path.replace(pathParamMatch, '([^{}/]+)')}$`),
                 params: (path.match(pathParamMatch) || []).map(s => s.replace(/(^{|}$)/g, ''))
             },
             methods: { ...pathSpec }
