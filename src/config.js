@@ -106,7 +106,7 @@ const setConfig = async cfg => {
     fs.readdirSync(cfg.JWS_VERIFICATION_KEYS_DIRECTORY)
         .filter(f => f.endsWith('.pem'))
         .map(f => {
-            config.jwsVerificationKeys[path.basename(f)] = fs.readFileSync(path.join(cfg.JWS_VERIFICATION_KEYS_DIRECTORY, f));
+            config.jwsVerificationKeys[path.basename(f, '.pem')] = fs.readFileSync(path.join(cfg.JWS_VERIFICATION_KEYS_DIRECTORY, f));
         });
 
     config.cacheConfig.host = cfg.CACHE_HOST;
