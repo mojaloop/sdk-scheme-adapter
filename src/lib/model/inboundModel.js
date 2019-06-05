@@ -74,8 +74,11 @@ class InboundTransfersModel {
                 sourceFspId);
         }
         catch(err) {
-            this.logger.log(`Error in getParties: ${err.stack || util.inspect(err)}`);
-            throw err;
+            this.logger.log(`Error in getParticipantsByTypeAndId: ${err.stack || util.inspect(err)}`);
+            const mojaloopError = await this._handleError(err);
+            this.logger.log(`Sending error response to ${sourceFspId}: ${util.inspect(mojaloopError)}`);
+            return await this.mojaloopRequests.putParticipantsError(idType, idValue,
+                mojaloopError, sourceFspId);
         }
     }
 
@@ -106,7 +109,10 @@ class InboundTransfersModel {
         }
         catch(err) {
             this.logger.log(`Error in getParties: ${err.stack || util.inspect(err)}`);
-            throw err;
+            const mojaloopError = await this._handleError(err);
+            this.logger.log(`Sending error response to ${sourceFspId}: ${util.inspect(mojaloopError)}`);
+            return await this.mojaloopRequests.putPartiesError(idType, idValue,
+                mojaloopError, sourceFspId);
         }
     }
 
@@ -155,7 +161,10 @@ class InboundTransfersModel {
         }
         catch(err) {
             this.logger.log(`Error in quoteRequest: ${err.stack || util.inspect(err)}`);
-            throw err;
+            const mojaloopError = await this._handleError(err);
+            this.logger.log(`Sending error response to ${sourceFspId}: ${util.inspect(mojaloopError)}`);
+            return await this.mojaloopRequests.putQuotesError(quoteRequest.quoteId,
+                mojaloopError, sourceFspId);
         }
     }
 
@@ -199,19 +208,24 @@ class InboundTransfersModel {
                 sourceFspId);
         }
         catch(err) {
-            this.logger.log(`Error in quoteRequest: ${err.stack || util.inspect(err)}`);
-            // send an error callback to the originator
-            if(err instanceof HTTPResponseError) {
-                const e = err.getData().resp;
-                const mojaloopErrorCode = Errors.MojaloopApiErrorCodeFromCode(e.statusCode)
-                    || Errors.MojaloopApiErrorCodes.INTERNAL_SERVER_ERROR;
-                const mojaloopError = new Errors.MojaloopFSPIOPError(err, null, sourceFspId, mojaloopErrorCode);
-
-                return await this.mojaloopRequests.putTransfersError(prepareRequest.transferId,
-                    mojaloopError.toApiErrorObject(), sourceFspId);
-            }
-            throw err;
+            this.logger.log(`Error in prepareTransfer: ${err.stack || util.inspect(err)}`);
+            const mojaloopError = await this._handleError(err);
+            this.logger.log(`Sending error response to ${sourceFspId}: ${util.inspect(mojaloopError)}`);
+            return await this.mojaloopRequests.putTransfersError(prepareRequest.transferId,
+                mojaloopError, sourceFspId);
         }
+    }
+
+    async _handleError(err, ) {
+        if(err instanceof HTTPResponseError) {
+            const e = err.getData().resp;
+            const mojaloopErrorCode = Errors.MojaloopApiErrorCodeFromCode(`${e.statusCode}`)
+                || Errors.MojaloopApiErrorCodes.INTERNAL_SERVER_ERROR;
+            return new Errors.MojaloopFSPIOPError(err, null, null, mojaloopErrorCode).toApiErrorObject();
+        }
+
+        // rethrow some other type of error
+        throw err;
     }
 }
 
