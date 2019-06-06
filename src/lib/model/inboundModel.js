@@ -216,11 +216,22 @@ class InboundTransfersModel {
         }
     }
 
-    async _handleError(err, ) {
+    async _handleError(err) {
         if(err instanceof HTTPResponseError) {
-            const e = err.getData().resp;
-            const mojaloopErrorCode = Errors.MojaloopApiErrorCodeFromCode(`${e.statusCode}`)
-                || Errors.MojaloopApiErrorCodes.INTERNAL_SERVER_ERROR;
+            const e = err.getData();
+            let mojaloopErrorCode = Errors.MojaloopApiErrorCodes.INTERNAL_SERVER_ERROR;
+
+            if(e.res && e.res.body) {
+                try {
+                    const bodyObj = JSON.parse(e.res.body);
+                    mojaloopErrorCode = Errors.MojaloopApiErrorCodeFromCode(`${bodyObj.statusCode}`);
+                }
+                catch(ex) {
+                    // do nothing
+                    this.logger.log(`Error parsing error message body as JSON: ${ex.stack || util.inspect(ex)}`);
+                }
+            }
+
             return new Errors.MojaloopFSPIOPError(err, null, null, mojaloopErrorCode).toApiErrorObject();
         }
 

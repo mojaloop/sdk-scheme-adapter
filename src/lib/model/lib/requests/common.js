@@ -50,17 +50,29 @@ const buildUrl = (...args) => {
 };
 
 
-const throwOrJson = async (res, msg = 'HTTP request returned error response') => {
+const throwOrJson = async (res) => {
     // TODO: will a 503 or 500 with content-length zero generate an error?
     // or a 404 for that matter?!
-    if (res.headers.get('content-length') === '0' || res.status === 204 || res.status === 404) {
+
+    if (res.headers['content-length'] === '0' || res.status === 204 || res.status === 404) {
+        // success but no content, return null
         return null;
     }
-    const resp = await res.json();
-    if (res.ok) {
+    if(res.statusCode < 200 || res.statusCode >= 300) {
+        // not a successful request
+        throw new HTTPResponseError({ msg: `Request returned non-success status code ${res.statusCode}`,
+            res
+        });
+    }
+
+    try {
+        // try parsing the body as JSON
+        const resp = JSON.parse(res.body);
         return resp;
     }
-    throw new HTTPResponseError({ msg, res, resp });
+    catch(err) {
+        throw new HTTPResponseError({ msg: `Error parsing response as JSON: ${err.stack || util.inspect(err)}`, res });
+    }
 };
 
 
