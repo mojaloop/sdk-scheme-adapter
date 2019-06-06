@@ -10,8 +10,11 @@
 
 'use strict';
 
-const fetch = require('node-fetch');
+const util = require('util');
+const request = require('request-promise-native');
+
 const http = require('http');
+
 const common = require('./common.js');
 const buildUrl = common.buildUrl;
 const throwOrJson = common.throwOrJson;
@@ -75,25 +78,27 @@ class BackendRequests {
         let headers = {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'Date': new Date().toUTCString(),
-            // yuck! node-fetch INSISTS on sending a user-agent header!? infuriating! would be
-            // better to not send this header to not leak info
-            'User-Agent': 'Mojaloop SDK'  
+            'Date': new Date().toUTCString()
         };
 
         return headers;
     }
 
-
     async _get(url) {
         const reqOpts = {
             method: 'GET',
+            uri: buildUrl(this.backendEndpoint, url),
             headers: this._buildHeaders(),
-            agent: this.agent
+            agent: this.agent,
+            resolveWithFullResponse: true,
+            simple: false
         };
 
+        // Note we do not JWS sign requests with no body i.e. GET requests
+
         try {
-            return await fetch(buildUrl(this.backendEndpoint, url), reqOpts).then(throwOrJson);
+            this.logger.log(`Executing HTTP GET: ${util.inspect(reqOpts)}`);
+            return await request(reqOpts).then(throwOrJson);
         }
         catch (e) {
             this.logger.log('Error attempting GET. URL:', url, 'Opts:', reqOpts, 'Error:', e);
@@ -105,12 +110,16 @@ class BackendRequests {
     async _put(url, body) {
         const reqOpts = {
             method: 'PUT',
+            uri: buildUrl(this.backendEndpoint, url),
             headers: this._buildHeaders(),
-            body: JSON.stringify(body)
+            body: JSON.stringify(body),
+            resolveWithFullResponse: true,
+            simple: false,
         };
 
         try {
-            return await fetch(buildUrl(this.backendEndpoint, url), reqOpts).then(throwOrJson);
+            this.logger.log(`Executing HTTP PUT: ${util.inspect(reqOpts)}`);
+            return await request(reqOpts).then(throwOrJson);
         }
         catch (e) {
             this.logger.log('Error attempting PUT. URL:', url, 'Opts:', reqOpts, 'Body:', body, 'Error:', e);
@@ -122,12 +131,16 @@ class BackendRequests {
     async _post(url, body) {
         const reqOpts = {
             method: 'POST',
+            uri: buildUrl(this.backendEndpoint, url),
             headers: this._buildHeaders(),
-            body: JSON.stringify(body)
+            body: JSON.stringify(body),
+            resolveWithFullResponse: true,
+            simple: false,
         };
 
         try {
-            return await fetch(buildUrl(this.backendEndpoint, url), reqOpts).then(throwOrJson);
+            this.logger.log(`Executing HTTP POST: ${util.inspect(reqOpts)}`);
+            return await request(reqOpts).then(throwOrJson);
         }
         catch (e) {
             this.logger.log('Error attempting POST. URL:', url, 'Opts:', reqOpts, 'Body:', body, 'Error:', e);
@@ -135,7 +148,6 @@ class BackendRequests {
         }
     }
 }
-
 
 
 module.exports = {
