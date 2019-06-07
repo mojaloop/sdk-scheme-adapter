@@ -114,7 +114,17 @@ const Errors = require('@modusbox/mojaloop-sdk-standard-components').Errors;
             'application/json'
         ]);
         if (validHeaders.has(ctx.request.headers['content-type'])) {
-            ctx.request.body = await coBody.json(ctx.req);
+            try {
+                ctx.request.body = await coBody.json(ctx.req);
+            }
+            catch(err) {
+                // error parsing body
+                inboundLogger.log(`Error parsing body: ${err.stack || util.inspect(err)}`);
+                ctx.response.status = 400;
+                ctx.response.body = new Errors.MojaloopFSPIOPError(err, err.message, null,
+                    Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX).toApiErrorObject();
+                return;
+            }
         }
         await next();
     });
