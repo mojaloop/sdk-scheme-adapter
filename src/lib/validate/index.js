@@ -171,8 +171,10 @@ class Validator {
         }
 
         const validationResult = path.methods[ctx.method.toLowerCase()].validator(ctx, path.params);
-        if (validationResult !== undefined) {
-            throw new Error(util.format('Request failed validation', validationResult));
+        if (validationResult !== undefined && validationResult.length > 0) {
+            const err =  new Error(util.format('Request failed validation', validationResult));
+            Object.assign(err, validationResult[0]);
+            throw err;
         }
         return path;
     }
