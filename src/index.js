@@ -205,7 +205,7 @@ const Errors = require('@modusbox/mojaloop-sdk-standard-components').Errors;
             ctx.response.body = {
                 errorInformation: {
                     errorCode: '3100',
-                    errorDescription: `Validation Error: ${err.message}`
+                    errorDescription: `${err.dataPath} ${err.message}`
                 }
             };
         }
