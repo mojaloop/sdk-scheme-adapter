@@ -162,6 +162,13 @@ class OutboundTransfersModel {
                 try {
                     let payee = JSON.parse(msg);
 
+                    if(payee.errorInformation) {
+                        // this is an error response to our GET /parties request
+                        const err = new Error(`Got an error response resolving party: ${util.inspect(payee)}`);
+                        this.stateMachine.error(err);
+                        return reject(err);
+                    }
+
                     if(!payee.party) {
                         return reject(new Error(`Resolved payee has no party object: ${util.inspect(payee)}`));
                     }
@@ -253,6 +260,13 @@ class OutboundTransfersModel {
             this.subscriber.on('message', (cn, msg) => {
                 try {
                     let message = JSON.parse(msg);
+
+                    if(message.type === 'quoteResponseError') {
+                        // this is an error response to our POST /quotes request
+                        const err = new Error(`Got an error response requesting quote: ${util.inspect(message)}`);
+                        this.stateMachine.error(err);
+                        return reject(err);
+                    }
 
                     if(message.type !== 'quoteResponse') {
                         // ignore any message on this subscription that is not a quote response
@@ -354,6 +368,13 @@ class OutboundTransfersModel {
             this.subscriber.on('message', async (cn, msg) => {
                 try {
                     let message = JSON.parse(msg);
+
+                    if(message.type === 'transferError') {
+                        // this is an error response to our POST /transfers request
+                        const err = new Error(`Got an error response preparing transfer: ${util.inspect(message)}`);
+                        this.stateMachine.error(err);
+                        return reject(err);
+                    }
 
                     if(message.type !== 'transferFulfil') {
                         // ignore any message on this subscription that is not a transferFulfil
