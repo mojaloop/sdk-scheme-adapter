@@ -218,6 +218,51 @@ const putTransfersById = async (ctx) => {
 };
 
 
+/**
+ * Handles a PUT /parties/{Type}/{ID}/error request. This is an error response to a GET /parties/{Type}/{ID} request
+ */
+const putPartiesByTypeAndIdError = async(ctx) => {
+    const idType = ctx.state.path.params.Type;
+    const idValue = ctx.state.path.params.ID;
+
+    // publish an event onto the cache for subscribers to action
+    // note that we publish the event the same way we publish a success PUT
+    // the subscriber will notice the body contains an errorInformation property
+    // and recognise it as an error response
+    await ctx.state.cache.publish(`${idType}_${idValue}`, ctx.request.body);
+
+    ctx.response.status = 200;
+};
+
+
+/**
+ * Handles a PUT /quotes/{ID}/error request. This is an error response to a POST /quotes request 
+ */
+const putQuotesByIdError = async(ctx) => {
+    // publish an event onto the cache for subscribers to action
+    await ctx.state.cache.publish(`${ctx.state.path.params.ID}`, {
+        type: 'quoteResponseError',
+        data: ctx.request.body
+    });
+
+    ctx.response.status = 200;
+};
+
+
+/**
+ * Handles a PUT /transfers/{ID}/error. This is an error response to a POST /transfers request 
+ */
+const putTransfersByIdError = async (ctx) => {
+    // publish an event onto the cache for subscribers to action
+    await ctx.state.cache.publish(`${ctx.state.path.params.ID}`, {
+        type: 'transferError',
+        data: ctx.request.body
+    });
+
+    ctx.response.status = 200;
+};
+
+
 const map = {
     '/participants/{Type}/{ID}': {
         put: putParticipantsByTypeAndId,
@@ -228,17 +273,26 @@ const map = {
         get: getPartiesByTypeAndId,
         put: putPartiesByTypeAndId
     },
+    '/parties/{Type}/{ID}/error': {
+        put: putPartiesByTypeAndIdError,
+    },
     '/quotes': {
         post: postQuotes
     },
     '/quotes/{ID}': {
         put: putQuoteById
     },
+    '/quotes/{ID}/error': {
+        put: putQuotesByIdError
+    },
     '/transfers': {
         post: postTransfers
     },
     '/transfers/{ID}': {
         put: putTransfersById
+    },
+    '/transfers/{ID}/error': {
+        put: putTransfersByIdError
     }
 };
 
