@@ -333,8 +333,11 @@ class OutboundTransfersModel {
         quote.transactionType = {
             scenario: this.data.transactionType,
             // TODO: support payee initiated txns? 
-            initiator: 'PAYER',
-            initiatorType: this.data.from.type
+            initiator: 'PAYER', 
+            // TODO: defaulting to CONSUMER initiator type should
+            // be replaced with a required element on the incoming
+            // API request
+            initiatorType: this.data.from.type || 'CONSUMER'
         };
 
         // geocode
