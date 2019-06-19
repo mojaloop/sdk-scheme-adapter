@@ -17,6 +17,8 @@ const paramsToJsonSchema = require('openapi-jsonschema-parameters').convertParam
 const jsrp = require('json-schema-ref-parser');
 const util = require('util');
 
+const { Errors } = require('@modusbox/mojaloop-sdk-standard-components');
+
 // Don't stop at the first error, we'll let the user know what all their errors are. Also, when we
 // validate, coerce types to those we're interested in where possible.
 const ajv = new require('ajv')({ allErrors: true, coerceTypes: true });
@@ -155,7 +157,8 @@ class Validator {
         let result = this.paths.find(p => path.match(p.matcher.regex) !== null);
 
         if (result === undefined) {
-            throw new Error(`Couldn't match path ${path}`);
+            throw new Errors.MojaloopFSPIOPError(null, `Couldn't match path ${path}`, null,
+                Errors.MojaloopApiErrorCodes.UNKNOWN_URI);
         }
         result.params = Object.assign({}, ...path.match(result.matcher.regex).slice(1).map((m, i) => ({ [result.matcher.params[i]]: m})));
 
@@ -163,17 +166,35 @@ class Validator {
         return result;
     }
 
+
     validateRequest(ctx, logger) {
         const path = this.validatePath(ctx.path, logger);
         if (!(ctx.method.toLowerCase() in path.methods)) {
-            throw new Error(`Method ${ctx.method} not supported for path ${ctx.path}`);
-            // TODO: 404
+            const err = new Error(`Method ${ctx.method} not supported for path ${ctx.path}`);
+            err.httpStatusCode = 405;
+            throw err;
         }
 
         const validationResult = path.methods[ctx.method.toLowerCase()].validator(ctx, path.params);
+
         if (validationResult !== undefined && validationResult.length > 0) {
-            const err =  new Error(util.format('Request failed validation', validationResult));
-            Object.assign(err, validationResult[0]);
+            logger.log(`Validation errors: ${util.inspect(validationResult)}`);
+
+            let err;
+            const firstError = validationResult[0];
+
+            if(firstError.keyword === 'required') {
+                // this is a missing required property; there is a specific mojaloop api spec error code for this
+                err = new Errors.MojaloopFSPIOPError(firstError, util.format('Request failed validation', 
+                    validationResult), null, Errors.MojaloopApiErrorCodes.MISSING_ELEMENT);
+
+                // overwrite the defaul error message with something more useful
+                err.apiErrorCode.message = `${firstError.dataPath} ${firstError.message}`;
+                throw err;
+            }
+
+            err =  new Error(util.format('Request failed validation', validationResult));
+            Object.assign(err, firstError);
             throw err;
         }
         return path;
