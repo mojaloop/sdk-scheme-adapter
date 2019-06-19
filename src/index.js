@@ -201,11 +201,19 @@ const Errors = require('@modusbox/mojaloop-sdk-standard-components').Errors;
         } catch (err) {
             ctx.state.logger.push({ err }).log('Request failed validation.');
             // send a mojaloop spec error response
-            ctx.response.status = 400;
+            ctx.response.status = err.httpStatusCode || 400;
+
+            if(err instanceof Errors.MojaloopFSPIOPError) {
+                // this is a specific mojaloop spec error
+                ctx.response.body = err.toApiErrorObject();
+                return;
+            }
+
+            //generic mojaloop spec validation error
             ctx.response.body = {
                 errorInformation: {
                     errorCode: '3100',
-                    errorDescription: `${err.dataPath} ${err.message}`
+                    errorDescription: `${err.dataPath ? err.dataPath + ' ' : ''}${err.message}`
                 }
             };
         }
