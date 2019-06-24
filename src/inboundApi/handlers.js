@@ -266,7 +266,16 @@ const putTransfersByIdError = async (ctx) => {
 };
 
 
+const healthCheck = async(ctx) => {
+    ctx.response.status = 200;
+    ctx.response.body = '';
+};
+
+
 const map = {
+    '/': {
+        get: healthCheck
+    },
     '/participants/{Type}/{ID}': {
         put: putParticipantsByTypeAndId,
         get: getParticipantsByTypeAndId
