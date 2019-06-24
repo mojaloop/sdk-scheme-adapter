@@ -84,8 +84,16 @@ const putTransfers = async (ctx) => {
 };
 
 
+const healthCheck = async (ctx) => {
+    ctx.response.status = 200;
+    ctx.response.body = '';
+};
+
 module.exports = {
     map: {
+        '/': {
+            get: healthCheck
+        },
         '/transfers': {
             post: postTransfers
         },
