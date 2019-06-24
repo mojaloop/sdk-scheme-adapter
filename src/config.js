@@ -33,6 +33,8 @@ async function readFile(...args) {
 // TODO: implement toString, toJSON toAnythingElse methods on config so that secrets can't be
 // printed
 let config = {
+    inboundPort: 4000,
+    outboundPort: 4001,
     schemeName: 'default',
     peerEndpoint: '172.17.0.2:3001',
     backendEndpoint: '172.17.0.2:3001',
@@ -66,6 +68,8 @@ let config = {
 
 
 const setConfig = async cfg => {
+    config.inboundPort = cfg.INBOUND_PORT;
+    config.outboundPort = cfg.OUTBOUND_PORT;
     config.tls.mutualTLS.enabled = cfg.MUTUAL_TLS_ENABLED.toLowerCase() === 'false' ? false : true;
     config.schemeName = cfg.SCHEME_NAME;
 
