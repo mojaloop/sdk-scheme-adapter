@@ -250,8 +250,8 @@ const Errors = require('@modusbox/mojaloop-sdk-standard-components').Errors;
     ]);
 
     // If config specifies TLS, start an HTTPS server; otherwise HTTP
-    const inboundPort = 3000;
-    const outboundPort = 3001;
+    const inboundPort = conf.inboundPort;
+    const outboundPort = conf.outboundPort;
 
     let inboundServer;
     let outboundServer;
