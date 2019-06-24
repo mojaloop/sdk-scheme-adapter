@@ -232,6 +232,7 @@ const putPartiesByTypeAndIdError = async(ctx) => {
     await ctx.state.cache.publish(`${idType}_${idValue}`, ctx.request.body);
 
     ctx.response.status = 200;
+    ctx.response.body = '';
 };
 
 
@@ -246,6 +247,7 @@ const putQuotesByIdError = async(ctx) => {
     });
 
     ctx.response.status = 200;
+    ctx.response.body = '';
 };
 
 
@@ -260,6 +262,7 @@ const putTransfersByIdError = async (ctx) => {
     });
 
     ctx.response.status = 200;
+    ctx.response.body = '';
 };
 
 
