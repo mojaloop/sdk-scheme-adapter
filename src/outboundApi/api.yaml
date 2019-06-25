@@ -10,6 +10,12 @@ info:
     url: http://www.apache.org/licenses/
   version: 1.0.0
 paths:
+  /:
+    get:
+      summary: Health check endpoint.
+      responses:
+        200:
+          description: Returns empty body if the service is running.
   /transfers:
     post:
       summary: Sends money from one account to another
