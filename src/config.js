@@ -95,8 +95,8 @@ const setConfig = async cfg => {
         //read outbound certs/keys
         [config.tls.outboundCreds.ca, config.tls.outboundCreds.cert, config.tls.outboundCreds.key] = await Promise.all([
             readFile(cfg.OUT_CA_CERT_PATH),
-            readFile(cfg.OUT_SERVER_CERT_PATH),
-            readFile(cfg.OUT_SERVER_KEY_PATH)
+            readFile(cfg.OUT_CLIENT_CERT_PATH),
+            readFile(cfg.OUT_CLIENT_KEY_PATH)
         ]);
     }
 
