@@ -18,7 +18,7 @@ const Model = require('@internal/model').inboundTransfersModel;
  * Handles a GET /participants/{idType}/{idValue} request 
  */
 const getParticipantsByTypeAndId = async (ctx) => {
-    // kick off an asyncronous operation to handle the request
+    // kick off an asynchronous operation to handle the request
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
