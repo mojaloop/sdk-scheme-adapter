@@ -35,7 +35,6 @@ async function readFile(...args) {
 let config = {
     inboundPort: 4000,
     outboundPort: 4001,
-    schemeName: 'default',
     peerEndpoint: '172.17.0.2:3001',
     backendEndpoint: '172.17.0.2:3001',
     dfspId: 'mojaloop-sdk',
@@ -71,7 +70,6 @@ const setConfig = async cfg => {
     config.inboundPort = cfg.INBOUND_LISTEN_PORT;
     config.outboundPort = cfg.OUTBOUND_LISTEN_PORT;
     config.tls.mutualTLS.enabled = cfg.MUTUAL_TLS_ENABLED.toLowerCase() === 'false' ? false : true;
-    config.schemeName = cfg.SCHEME_NAME;
 
     config.peerEndpoint = cfg.PEER_ENDPOINT;
     config.backendEndpoint = cfg.BACKEND_ENDPOINT;
