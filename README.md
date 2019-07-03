@@ -17,3 +17,20 @@ DFSP backends can call the [DFSP Outbound API](/src/outboundApi/api.yaml) in ord
 ## Docker Image
 
 This package is available as a pre-built docker image on Docker Hub: [https://hub.docker.com/r/modusbox/mojaloop-sdk-scheme-adapter](https://hub.docker.com/r/modusbox/mojaloop-sdk-scheme-adapter)
+
+## Running locally
+
+You need to create a .env file. You can create your own based on `local-dev.env` or `local.env', as in:
+
+`cp local-dev.env .env`
+
+The SDK needs a Redis instance. You can start one using docker:
+
+```bash
+docker run -p 6379:6379 --name mojabox-sdk-redis -d -v redis-data:/data redis:5.0.4-alpine redis-server --appendonly yes
+docker logs -f mojabox-sdk-redis
+```
+
+And then run the SDK locally with `node index.js`
+
+

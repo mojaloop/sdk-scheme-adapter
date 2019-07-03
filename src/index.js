@@ -11,6 +11,7 @@
 'use strict';
 
 
+require('dotenv').config()
 const Koa = require('koa');
 const koaBody = require('koa-body');
 const util = require('util');

@@ -217,7 +217,7 @@ class InboundTransfersModel {
     }
 
     async _handleError(err) {
-        if(err instanceof HTTPResponseError) {
+        if(err instanceof HTTPResponseError ) {
             const e = err.getData();
             let mojaloopErrorCode = Errors.MojaloopApiErrorCodes.INTERNAL_SERVER_ERROR;
 
@@ -236,7 +236,9 @@ class InboundTransfersModel {
         }
 
         // rethrow some other type of error
+        // Changed to return so we can return an answer to the original sender
         throw err;
+        // return err;
     }
 }
 
