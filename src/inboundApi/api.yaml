@@ -1332,6 +1332,8 @@ paths:
         - $ref: '#/components/parameters/FSPIOP-Signature'
         - $ref: '#/components/parameters/FSPIOP-URI'
         - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+        - $ref: '#/components/parameters/FSPIOP-DestinationCurrency'
+        - $ref: '#/components/parameters/FSPIOP-SourceCurrency'
       x-examples:
         application/json:
           quoteId: b51ec534-ee48-4575-b6a9-ead2955b8069
@@ -1390,7 +1392,7 @@ paths:
             extension:
               - key: errorDescription
                 value: This is a more detailed error description
-              - key: errorDescription
+              - key: errorDescription2
                 value: This is a more detailed error description
       responses:
         '202':
@@ -2610,6 +2612,24 @@ components:
         the API for signature verification, should contain the service HTTP
         method. Required if signature verification is used, for more information
         see API Signature document.
+      schema:
+        type: string
+    FSPIOP-DestinationCurrency:
+      name: FSPIOP-DestinationCurrency
+      in: header
+      required: false
+      description: >-
+        The FSPIOP-DestinationCurrency header field is a non-HTTP standard field used by
+        the API to represent the payee DFSP currency. Required if doing a FXP quote.
+      schema:
+        type: string
+    FSPIOP-SourceCurrency:
+      name: FSPIOP-SourceCurrency
+      in: header
+      required: false
+      description: >-
+        The FSPIOP-SourceCurrency header field is a non-HTTP standard field used by
+        the API to represent the payer DFSP currency. Required if doing a FXP quote.
       schema:
         type: string
     ID:
@@ -4423,4 +4443,3 @@ components:
           description: 'Optional extension, specific to deployment.'
       required:
         - transferState
-
