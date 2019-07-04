@@ -19,11 +19,11 @@
   "dependencies": {
     "@internal/cache": "file:lib/cache",
     "@internal/log": "file:lib/log",
+    "@internal/model": "file:lib/model",
     "@internal/randomphrase": "file:lib/randomphrase",
     "@internal/router": "file:lib/router",
-    "@internal/model": "file:lib/model",
     "@internal/validate": "file:lib/validate",
-    "@modusbox/mojaloop-sdk-standard-components": "file:../../mojaloop-sdk-standard-components/src",
+    "@modusintegration/mojaloop-sdk-standard-components": "github:modusintegration/mojaloop-sdk-standard-components",
     "co-body": "^6.0.0",
     "dotenv": "^6.2.0",
     "koa": "^2.6.2",
