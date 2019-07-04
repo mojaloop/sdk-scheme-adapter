@@ -13,11 +13,11 @@
 const util = require('util');
 const uuidv4 = require('uuid/v4');
 const StateMachine = require('javascript-state-machine');
-const MojaloopRequests = require('@modusbox/mojaloop-sdk-standard-components').MojaloopRequests;
-const Ilp = require('@modusbox/mojaloop-sdk-standard-components').Ilp;
+const MojaloopRequests = require('@modusintegration/mojaloop-sdk-standard-components').MojaloopRequests;
+const Ilp = require('@modusintegration/mojaloop-sdk-standard-components').Ilp;
 const shared = require('@internal/shared');
 
-const ASYNC_TIMEOUT_MILLS = 30000;
+const ASYNC_TIMEOUT_MILLS = 30000 * 1000; // FIXME debugging
 
 const transferStateEnum = {
     'WAITING_FOR_QUOTE_ACCEPTANCE': 'WAITING_FOR_QUOTE_ACCEPTANCE',
