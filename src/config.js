@@ -35,8 +35,8 @@ async function readFile(...args) {
 let config = {
     inboundPort: 4000,
     outboundPort: 4001,
-    peerEndpoint: '172.17.0.2:3001',
-    backendEndpoint: '172.17.0.2:3001',
+    peerEndpoint: 'peerEndpoint:3001',
+    backendEndpoint: 'backendEndpoint:3001',
     dfspId: 'mojaloop-sdk',
     ilpSecret: 'mojaloop-sdk',
     checkIlp: true,
