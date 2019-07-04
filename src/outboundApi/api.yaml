@@ -80,12 +80,12 @@ paths:
                 $ref: '#/components/schemas/transferResponse'
         500:
           $ref: '#/components/responses/500'
-  /quote:
+  /quotes:
     post:
-      description: TBD
+      description: The HTTP request POST /quotes is used to request the creation of a quote for the provided financial transaction in the server.
       summary: Quote
       tags:
-        - quote
+        - quotes
       requestBody:
         content:
           application/json:
@@ -822,7 +822,7 @@ components:
         - amountType
         - amount
         - transactionType
-      description: POST /quote object
+      description: POST /quotes object
       properties:
         quoteId:
           $ref: '#/components/schemas/CorrelationId'
