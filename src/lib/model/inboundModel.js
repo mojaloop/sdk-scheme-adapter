@@ -124,7 +124,7 @@ class InboundTransfersModel {
     async quoteRequest(quoteRequest, sourceFspId) {
         try {
             const internalForm = shared.mojaloopQuoteRequestToInternal(quoteRequest);
-            // FIXME Add new headers here
+
             // make a call to the backend to ask for a quote response
             const response = await this.backendRequests.postQuoteRequests(internalForm);
 

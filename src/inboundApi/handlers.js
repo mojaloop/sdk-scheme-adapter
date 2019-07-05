@@ -102,6 +102,9 @@ const postQuotes = async (ctx) => {
     // kick off an asyncronous operation to handle the request
     (async () => {
         try {
+            // FIXME handle forex quote here? need to send the new headers, and use the normal quote not the internal one
+            // MAYBE with a new Model
+
             // use the transfers model to execute asynchronous stages with the switch
             const model = new Model({
                 cache: ctx.state.cache,
@@ -110,7 +113,7 @@ const postQuotes = async (ctx) => {
             });
 
             const sourceFspId = ctx.request.headers['fspiop-source'];
-
+            
             // use the model to handle the request
             const response = await model.quoteRequest(ctx.request.body, sourceFspId);
 

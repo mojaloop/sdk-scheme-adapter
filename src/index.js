@@ -136,7 +136,40 @@ const Errors = require('@modusintegration/mojaloop-sdk-standard-components').Err
         if(conf.validateInboundJws) {
             try {
                 if(ctx.request.method !== 'GET') {
-                    jwsValidator.validate(ctx.request, inboundLogger);
+                    if ( ctx.request.headers['FSPIOP-SourceCurrency'.toLowerCase()] || ctx.request.headers['FSPIOP-DestinationCurrency'.toLowerCase()] ) {
+                        const newSourceRequest = { headers: {...ctx.request.headers}, body: {...ctx.request.body} };
+                        const newDestinationRequest = { headers: {...ctx.request.headers}, body: {...ctx.request.body} };
+                        newSourceRequest.headers['FSPIOP-Source'.toLowerCase()] = ctx.request.body.payer.partyIdInfo.fspId;
+                        newDestinationRequest.headers['FSPIOP-Destination'.toLowerCase()] = ctx.request.body.payee.partyIdInfo.fspId;
+
+                        let sourceOk = false;
+                        let destinationOk = false;
+
+                        try {
+                            jwsValidator.validate(newSourceRequest, inboundLogger);
+                            sourceOk = true;
+                        } catch (err) {
+                            // inboundLogger.log(`Inbound request with new FSPIOP-Source failed JWS validation: ${err.stack || util.inspect(err)}`);                            
+                        }
+                        try {
+                            jwsValidator.validate(newDestinationRequest, inboundLogger);
+                            destinationOk = true;
+                        } catch (err) {
+                            // inboundLogger.log(`Inbound request with new FSPIOP-Destination failed JWS validation: ${err.stack || util.inspect(err)}`);                            
+                        }
+                        if (sourceOk && destinationOk) {
+                            let errorMsg = `Inbound request failed JWS validation: Inbound request with new FSPIOP-Source ${newSourceRequest} and Inbound request with new FSPIOP-Destination ${newDestinationRequest} are both valid!`;
+                            inboundLogger.log(errorMsg);
+                            throw new Error(errorMsg);
+                        }
+                        if (!(sourceOk || destinationOk)) {
+                            let errorMsg = `Inbound request failed JWS validation: Inbound request with new FSPIOP-Source ${newSourceRequest} and Inbound request with new FSPIOP-Destination ${newDestinationRequest} are both invalid`;
+                            inboundLogger.log(errorMsg);
+                            throw new Error(errorMsg);
+                        }
+                    } else {
+                        jwsValidator.validate(ctx.request, inboundLogger);
+                    }
                 }
             }
             catch(err) {
