@@ -27,6 +27,7 @@ const ASYNC_TIMEOUT_MILLS = 30000;
  */
 class InboundTransfersModel {
     constructor(config) {
+        this.config = config;
         this.cache = config.cache;
         this.logger = config.logger;
         this.ASYNC_TIMEOUT_MILLS = config.asyncTimeoutMillis || ASYNC_TIMEOUT_MILLS;
@@ -168,6 +169,62 @@ class InboundTransfersModel {
         }
     }
 
+    async fxQuoteRequest(quoteRequestHeaders, quoteRequest) {
+        try {
+
+            // make a call to the backend to ask for a new quote
+
+            // ALT: sending only extra headers.
+            // const FSPIOP_SourceCurrencyHeader = 'FSPIOP-SourceCurrency'.toLowerCase();
+            // const FSPIOP_DestinationCurrencyHeader = 'FSPIOP-DestinationCurrency'.toLowerCase();
+
+            // const extraHeaders = {};
+            // extraHeaders[FSPIOP_DestinationCurrencyHeader] = quoteRequestHeaders[FSPIOP_DestinationCurrencyHeader];
+            // extraHeaders[FSPIOP_SourceCurrencyHeader] = quoteRequestHeaders[FSPIOP_SourceCurrencyHeader];
+
+            const response = await this.backendRequests.postQuotes(quoteRequest, quoteRequestHeaders);
+
+            if(!response) {
+                // make an error callback to the source fsp
+                return 'No fx quote response from backend. Making error callback';
+            }
+
+            const stage2Quote = response.body;
+
+            const FSPIOP_SourceHeader = 'FSPIOP-Source'.toLowerCase();
+            const FSPIOP_DestinationHeader = 'FSPIOP-Destination'.toLowerCase();
+
+            const sourceFspId = response.headers[FSPIOP_SourceHeader];
+            const destinationFspId = response.headers[FSPIOP_DestinationHeader];
+
+            // now store the new quote in our cache
+            await this.cache.set(`quote_${quoteRequest.transactionId}`, {
+                quoteRequestHeaders: quoteRequestHeaders,
+                quoteRequest: quoteRequest,
+                stage2Quote: stage2Quote
+            });
+
+            // forward the quote to the destination FSP
+            const fxpMojaloopRequests = new MojaloopRequests({
+                logger: this.logger,
+                peerEndpoint: this.config.peerEndpoint,
+                dfspId: sourceFspId,
+                tls: this.config.tls,
+                jwsSign: this.config.jwsSign,
+                jwsSigningKey: this.config.jwsSigningKey // FIXME we need to use ONE PRIVATE KEY PER FX DFSP
+            });
+    
+            return fxpMojaloopRequests.postQuotes(stage2Quote, destinationFspId);
+        }
+        catch(err) {
+            this.logger.log(`Error in quoteRequest: ${err.stack || util.inspect(err)}`);
+            const mojaloopError = await this._handleError(err);
+            this.logger.log(`Sending error response : ${util.inspect(mojaloopError)}`);
+            return await this.mojaloopRequests.putQuotesError(quoteRequest.quoteId,
+                mojaloopError, '?');
+        }
+    }
+            
 
     /**
      * Validates  an incoming transfer prepare request and makes a callback to the originator with

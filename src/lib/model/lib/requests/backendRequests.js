@@ -50,7 +50,7 @@ class BackendRequests {
 
 
     /**
-     * Executes a POST /quotes request for the specified quote request
+     * Executes a POST /quoterequests request for the specified quote request
      *
      * @returns {object} - JSON response body if one was received
      */
@@ -58,6 +58,30 @@ class BackendRequests {
         return this._post('quoterequests', quoteRequest);
     }
 
+    /**
+     * Executes a POST /quotes request for the specified quote request
+     *
+     * @returns {object} - JSON response body if one was received
+     */
+    async postQuotes(quoteRequest, headers) {
+
+        const newHeaders = {
+            accept: headers.accept,
+            'content-type': headers['content-type'],
+            date: headers.date,
+            'fspiop-source': headers['fspiop-source'],
+            'fspiop-destination': headers['fspiop-destination'],
+            'fspiop-signature': headers['fspiop-signature'],
+            'fspiop-http-method': headers['fspiop-http-method'],
+            'fspiop-uri': headers['fspiop-uri'],
+            'fspiop-sourcecurrency': headers['fspiop-sourcecurrency'],
+            'fspiop-destinationcurrency': headers['fspiop-destinationcurrency'],
+            authorization: headers.authorization
+        };
+
+        return this._post('quotes', quoteRequest, newHeaders, true);
+    }
+    
 
     /**
      * Executes a POST /transfers request for the specified transfer prepare
@@ -128,11 +152,11 @@ class BackendRequests {
     }
 
 
-    async _post(url, body) {
+    async _post(url, body, headers, returnHeaders) {
         const reqOpts = {
             method: 'POST',
             uri: buildUrl(this.backendEndpoint, url),
-            headers: this._buildHeaders(),
+            headers: headers ? headers : this._buildHeaders(),
             body: JSON.stringify(body),
             resolveWithFullResponse: true,
             simple: false,
@@ -140,7 +164,9 @@ class BackendRequests {
 
         try {
             this.logger.log(`Executing HTTP POST: ${util.inspect(reqOpts)}`);
-            return await request(reqOpts).then(throwOrJson);
+            const response = await request(reqOpts);
+            const responseBody = await throwOrJson(response);
+            return returnHeaders ? { headers: response.headers, body: responseBody } : responseBody;
         }
         catch (e) {
             this.logger.log('Error attempting POST. URL:', url, 'Opts:', reqOpts, 'Body:', body, 'Error:', e);

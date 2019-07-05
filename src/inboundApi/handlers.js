@@ -99,29 +99,23 @@ const postPartiesByTypeAndId = (ctx) => {
  * Handles a POST /quotes request
  */
 const postQuotes = async (ctx) => {
-    if (ctx.fxpQuote) {
-        // FIXME handle forex quote here? need to send the new headers, and use the normal quote not the internal one
-        // MAYBE with a new Model
-        // WIP
-        ctx.response.status = 501;
-        ctx.response.body = 'FXP quote handling not implemented';
-        return;
-    }
     // kick off an asyncronous operation to handle the request
     (async () => {
         try {
-            if (ctx.fxpQuote) {
-                // FIXME handle forex quote here? need to send the new headers, and use the normal quote not the internal one
-                // MAYBE with a new Model
-                throw new Error('FXP quote handling not implemented');
-            } else {
-                // use the transfers model to execute asynchronous stages with the switch
-                const model = new Model({
-                    cache: ctx.state.cache,
-                    logger: ctx.state.logger,
-                    ...ctx.state.conf
-                });
+            // use the transfers model to execute asynchronous stages with the switch
+            const model = new Model({
+                cache: ctx.state.cache,
+                logger: ctx.state.logger,
+                ...ctx.state.conf
+            });
 
+            if (ctx.fxpQuote) {
+                // use the model to handle the request
+                const response = await model.fxQuoteRequest(ctx.request.headers, ctx.request.body);
+                // log the result
+                ctx.state.logger.log(`Inbound transfers model handled FX POST /quotes request and returned: ${util.inspect(response)}`);
+
+            } else {
                 const sourceFspId = ctx.request.headers['fspiop-source'];
                 
                 // use the model to handle the request
