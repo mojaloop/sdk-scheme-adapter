@@ -136,37 +136,51 @@ const Errors = require('@modusintegration/mojaloop-sdk-standard-components').Err
         if(conf.validateInboundJws) {
             try {
                 if(ctx.request.method !== 'GET') {
-                    if ( ctx.request.headers['FSPIOP-SourceCurrency'.toLowerCase()] || ctx.request.headers['FSPIOP-DestinationCurrency'.toLowerCase()] ) {
-                        const newSourceRequest = { headers: {...ctx.request.headers}, body: {...ctx.request.body} };
-                        const newDestinationRequest = { headers: {...ctx.request.headers}, body: {...ctx.request.body} };
-                        newSourceRequest.headers['FSPIOP-Source'.toLowerCase()] = ctx.request.body.payer.partyIdInfo.fspId;
-                        newDestinationRequest.headers['FSPIOP-Destination'.toLowerCase()] = ctx.request.body.payee.partyIdInfo.fspId;
+                    const FSPIOP_SourceCurrencyHeader = 'FSPIOP-SourceCurrency'.toLowerCase();
+                    const FSPIOP_DestinationCurrencyHeader = 'FSPIOP-DestinationCurrency'.toLowerCase();
+                    const FSPIOP_SourceHeader = 'FSPIOP-Source'.toLowerCase();
+                    const FSPIOP_DestinationHeader = 'FSPIOP-Destination'.toLowerCase();
 
-                        let sourceOk = false;
-                        let destinationOk = false;
+                    if ( ctx.request.headers[FSPIOP_SourceCurrencyHeader] || ctx.request.headers[FSPIOP_DestinationCurrencyHeader] ) {
+                        const payerFspId = ctx && ctx.request && ctx.request.body.payer && ctx.request.body.payer.partyIdInfo && ctx.request.body.payer.partyIdInfo.fspId ? ctx.request.body.payer.partyIdInfo.fspId : null;
+                        if (!payerFspId) {
+                            const errorMessage = `Inbound FXP quote request failed JWS validation: payer party fspId not found in body ${ctx.request.body}`;
+                            inboundLogger.log(errorMessage);
 
-                        try {
-                            jwsValidator.validate(newSourceRequest, inboundLogger);
-                            sourceOk = true;
-                        } catch (err) {
-                            // inboundLogger.log(`Inbound request with new FSPIOP-Source failed JWS validation: ${err.stack || util.inspect(err)}`);                            
+                            ctx.response.status = 400;
+                            ctx.response.body = new Errors.MojaloopFSPIOPError({error: 'Invalid FXP quote request'}, errorMessage, null,
+                                Errors.MojaloopApiErrorCodes.PAYER_FSP_ID_NOT_FOUND).toApiErrorObject();
+                            return;
                         }
-                        try {
-                            jwsValidator.validate(newDestinationRequest, inboundLogger);
-                            destinationOk = true;
-                        } catch (err) {
-                            // inboundLogger.log(`Inbound request with new FSPIOP-Destination failed JWS validation: ${err.stack || util.inspect(err)}`);                            
+
+                        const payeeFspId = ctx && ctx.request && ctx.request.body.payee && ctx.request.body.payee.partyIdInfo && ctx.request.body.payee.partyIdInfo.fspId ? ctx.request.body.payee.partyIdInfo.fspId : null;
+                        if (!payeeFspId) {
+                            const errorMessage = `Inbound FXP quote request failed JWS validation: payee party fspId not found in body ${ctx.request.body}`;
+                            inboundLogger.log(errorMessage);
+
+                            ctx.response.status = 400;
+                            ctx.response.body = new Errors.MojaloopFSPIOPError({error: 'Invalid FXP quote request'}, errorMessage, null,
+                                Errors.MojaloopApiErrorCodes.PAYEE_FSP_ID_NOT_FOUND).toApiErrorObject();
+                            return;
                         }
-                        if (sourceOk && destinationOk) {
-                            let errorMsg = `Inbound request failed JWS validation: Inbound request with new FSPIOP-Source ${newSourceRequest} and Inbound request with new FSPIOP-Destination ${newDestinationRequest} are both valid!`;
-                            inboundLogger.log(errorMsg);
-                            throw new Error(errorMsg);
+
+                        const rebuiltRequest = { headers: {...ctx.request.headers}, body: {...ctx.request.body} };
+                        if (ctx.request.headers[FSPIOP_SourceHeader] == payerFspId && ctx.request.headers[FSPIOP_DestinationHeader] != payeeFspId) {
+                            rebuiltRequest.headers[FSPIOP_DestinationHeader] = payeeFspId;
+                        } else if (ctx.request.headers[FSPIOP_SourceHeader] != payerFspId && ctx.request.headers[FSPIOP_DestinationHeader] == payeeFspId) {
+                            rebuiltRequest.headers[FSPIOP_SourceHeader] = payerFspId;
+                        } else {
+                            const errorMessage = `Inbound FXP quote request failed JWS validation: expected either ${FSPIOP_SourceHeader} to be != payerFspId or ${FSPIOP_DestinationHeader} to be != payeeFspId ` +
+                            `but received: FSPIOP_SourceHeader = ${ctx.request.headers[FSPIOP_SourceHeader]}, payerFspId = ${payerFspId} and FSPIOP_DestinationHeader = ${ctx.request.headers[FSPIOP_DestinationHeader]}, payeeFspId = ${payeeFspId}`;
+                            inboundLogger.log(errorMessage);
+
+                            ctx.response.status = 400;
+                            ctx.response.body = new Errors.MojaloopFSPIOPError({error: 'Invalid FXP quote request'}, errorMessage, null,
+                                Errors.MojaloopApiErrorCodes.VALIDATION_ERROR).toApiErrorObject();
+                            return;
                         }
-                        if (!(sourceOk || destinationOk)) {
-                            let errorMsg = `Inbound request failed JWS validation: Inbound request with new FSPIOP-Source ${newSourceRequest} and Inbound request with new FSPIOP-Destination ${newDestinationRequest} are both invalid`;
-                            inboundLogger.log(errorMsg);
-                            throw new Error(errorMsg);
-                        }
+
+                        jwsValidator.validate(rebuiltRequest, inboundLogger);
                     } else {
                         jwsValidator.validate(ctx.request, inboundLogger);
                     }
