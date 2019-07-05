@@ -181,6 +181,7 @@ const Errors = require('@modusintegration/mojaloop-sdk-standard-components').Err
                         }
 
                         jwsValidator.validate(rebuiltRequest, inboundLogger);
+                        ctx.fxpQuote = true;
                     } else {
                         jwsValidator.validate(ctx.request, inboundLogger);
                     }
