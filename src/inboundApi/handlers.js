@@ -204,7 +204,10 @@ const putQuoteById = async (ctx) => {
     // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(`${ctx.state.path.params.ID}`, {
         type: 'quoteResponse',
-        data: ctx.request.body
+        data: {
+            body: ctx.request.body,
+            headers: ctx.request.headers
+        }
     });
 
     ctx.response.status = 200;
