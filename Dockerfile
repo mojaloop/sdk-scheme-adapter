@@ -6,9 +6,10 @@ EXPOSE 3000
 
 COPY ./secrets /
 
-WORKDIR /src/
+COPY ./src/ /src/
+
+COPY package.json .
+
+RUN npm install
 
 CMD ["node", "/src/index.js"]
-
-COPY ./src/ /src/
-RUN npm install --production

@@ -35,8 +35,8 @@ const Cache = require('@internal/cache');
 const inboundApi = new Koa();
 const outboundApi = new Koa();
 
-const inboundApiSpec = yaml.load('./inboundApi/api.yaml');
-const outboundApiSpec = yaml.load('./outboundApi/api.yaml');
+const inboundApiSpec = yaml.load('./src/inboundApi/api.yaml');
+const outboundApiSpec = yaml.load('./src/outboundApi/api.yaml');
 
 const Jws = require('@modusintegration/mojaloop-sdk-standard-components').Jws;
 const Errors = require('@modusintegration/mojaloop-sdk-standard-components').Errors;
@@ -46,7 +46,7 @@ const Errors = require('@modusintegration/mojaloop-sdk-standard-components').Err
     // Set up the config from the environment
     await setConfig(process.env);
     const conf = getConfig();
-
+    console.log('Current config:', conf);
     // Set up a logger for each running server
     const space = Number(process.env.LOG_INDENT);
 
