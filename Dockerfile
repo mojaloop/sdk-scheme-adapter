@@ -4,7 +4,7 @@ RUN apk add --no-cache git
 
 EXPOSE 3000
 
-COPY ./secrets /
+COPY ./secrets /secrets
 
 COPY ./src/ /src/
 
