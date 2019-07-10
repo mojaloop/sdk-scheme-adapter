@@ -83,11 +83,11 @@ class BackendRequests {
     }
     
     /**
-     * Executes a PUT /quotes request for the specified quote request
+     * Executes a POST /quotes/{id} request for the specified quote request
      *
      * @returns {object} - JSON response body if one was received
      */
-    async putQuotes(quoteRequest, headers) {
+    async postQuote(quoteId, quoteRequest, headers) {
 
         const newHeaders = {
             accept: headers.accept,
@@ -102,8 +102,8 @@ class BackendRequests {
             'fspiop-destinationcurrency': headers['fspiop-destinationcurrency'],
             authorization: headers.authorization
         };
-
-        return this._put('quotes', quoteRequest, newHeaders, true);
+        console.log('postQuote sending headers: ', headers, ' quoteRequest: ', quoteRequest);
+        return this._post(`quotes/${quoteId}`, quoteRequest, newHeaders, true);
     }
 
     /**

@@ -246,7 +246,7 @@ class InboundTransfersModel {
                 // forwar quoteResponse to backend; don't change any headers
                 let responseToOriginalQuote;
                 try {
-                    responseToOriginalQuote = await self.backendRequests.putQuotes(quoteResponse, quoteResponseHeaders);
+                    responseToOriginalQuote = await self.backendRequests.postQuote(quoteId, quoteResponse, quoteResponseHeaders);
                     if(!responseToOriginalQuote) {
                         throw new Error('Null response from fxp to fxpQuoteResponse');
                     }
