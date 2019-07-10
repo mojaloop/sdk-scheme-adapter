@@ -90,17 +90,17 @@ class BackendRequests {
     async postQuote(quoteId, quoteRequest, headers) {
 
         const newHeaders = {
-            accept: headers.accept,
-            'content-type': headers['content-type'],
+            accept: headers.accept || 'application/vnd.interoperability.quotes+json;version=1',
+            'content-type': 'application/json', // headers['content-type'] is application/vnd.interoperability.quotes+json;version=1.0, but the backend expects application/json
             date: headers.date,
             'fspiop-source': headers['fspiop-source'],
             'fspiop-destination': headers['fspiop-destination'],
             'fspiop-signature': headers['fspiop-signature'],
             'fspiop-http-method': headers['fspiop-http-method'],
             'fspiop-uri': headers['fspiop-uri'],
-            'fspiop-sourcecurrency': headers['fspiop-sourcecurrency'],
-            'fspiop-destinationcurrency': headers['fspiop-destinationcurrency'],
-            authorization: headers.authorization
+            'fspiop-sourcecurrency': headers['fspiop-sourcecurrency'], // Probably undefined, but "request" pulls it out if so
+            'fspiop-destinationcurrency': headers['fspiop-destinationcurrency'], // Probably undefined, but "request" pulls it out if so
+            authorization: headers.authorization //
         };
         console.log('postQuote sending headers: ', headers, ' quoteRequest: ', quoteRequest);
         return this._post(`quotes/${quoteId}`, quoteRequest, newHeaders, true);

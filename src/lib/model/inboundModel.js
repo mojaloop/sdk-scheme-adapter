@@ -250,6 +250,8 @@ class InboundTransfersModel {
                     if(!responseToOriginalQuote) {
                         throw new Error('Null response from fxp to fxpQuoteResponse');
                     }
+                    // validate responseToOriginalQuote.body
+                    //
                 } catch (error) {
                     this.logger.log(`Error from fxp to fxpQuoteResponse. Making error callback to ${originalQuoteSourceFspId}`);
                     const err = new Errors.MojaloopFSPIOPError(error, error.message, originalQuoteSourceFspId, Errors.MojaloopApiErrorCodes.PAYEE_ERROR);
