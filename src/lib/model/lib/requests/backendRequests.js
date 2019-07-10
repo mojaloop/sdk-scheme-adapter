@@ -82,6 +82,29 @@ class BackendRequests {
         return this._post('quotes', quoteRequest, newHeaders, true);
     }
     
+    /**
+     * Executes a POST /quotes/{id} request for the specified quote request
+     *
+     * @returns {object} - JSON response body if one was received
+     */
+    async postQuote(quoteId, quoteRequest, headers) {
+
+        const newHeaders = {
+            accept: headers.accept,
+            'content-type': headers['content-type'],
+            date: headers.date,
+            'fspiop-source': headers['fspiop-source'],
+            'fspiop-destination': headers['fspiop-destination'],
+            'fspiop-signature': headers['fspiop-signature'],
+            'fspiop-http-method': headers['fspiop-http-method'],
+            'fspiop-uri': headers['fspiop-uri'],
+            'fspiop-sourcecurrency': headers['fspiop-sourcecurrency'],
+            'fspiop-destinationcurrency': headers['fspiop-destinationcurrency'],
+            authorization: headers.authorization
+        };
+        console.log('postQuote sending headers: ', headers, ' quoteRequest: ', quoteRequest);
+        return this._post(`quotes/${quoteId}`, quoteRequest, newHeaders, true);
+    }
 
     /**
      * Executes a POST /transfers request for the specified transfer prepare
@@ -131,11 +154,11 @@ class BackendRequests {
     }
 
 
-    async _put(url, body) {
+    async _put(url, body, headers, returnHeaders) {
         const reqOpts = {
             method: 'PUT',
             uri: buildUrl(this.backendEndpoint, url),
-            headers: this._buildHeaders(),
+            headers: headers ? headers : this._buildHeaders(),
             body: JSON.stringify(body),
             resolveWithFullResponse: true,
             simple: false,
@@ -143,7 +166,9 @@ class BackendRequests {
 
         try {
             this.logger.log(`Executing HTTP PUT: ${util.inspect(reqOpts)}`);
-            return await request(reqOpts).then(throwOrJson);
+            const response = await request(reqOpts);
+            const responseBody = await throwOrJson(response);
+            return returnHeaders ? { headers: response.headers, body: responseBody } : responseBody;
         }
         catch (e) {
             this.logger.log('Error attempting PUT. URL:', url, 'Opts:', reqOpts, 'Body:', body, 'Error:', e);

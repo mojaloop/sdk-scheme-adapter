@@ -171,57 +171,134 @@ class InboundTransfersModel {
 
     async fxQuoteRequest(quoteRequestHeaders, quoteRequest) {
         try {
-
-            // make a call to the backend to ask for a new quote
-
-            // ALT: sending only extra headers.
-            // const FSPIOP_SourceCurrencyHeader = 'FSPIOP-SourceCurrency'.toLowerCase();
-            // const FSPIOP_DestinationCurrencyHeader = 'FSPIOP-DestinationCurrency'.toLowerCase();
-
-            // const extraHeaders = {};
-            // extraHeaders[FSPIOP_DestinationCurrencyHeader] = quoteRequestHeaders[FSPIOP_DestinationCurrencyHeader];
-            // extraHeaders[FSPIOP_SourceCurrencyHeader] = quoteRequestHeaders[FSPIOP_SourceCurrencyHeader];
-
-            const response = await this.backendRequests.postQuotes(quoteRequest, quoteRequestHeaders);
-
-            if(!response) {
-                // make an error callback to the source fsp
-                return 'No fx quote response from backend. Making error callback';
-            }
-
-            const stage2Quote = response.body;
-
             const FSPIOP_SourceHeader = 'FSPIOP-Source'.toLowerCase();
             const FSPIOP_DestinationHeader = 'FSPIOP-Destination'.toLowerCase();
 
-            const sourceFspId = response.headers[FSPIOP_SourceHeader];
-            const destinationFspId = response.headers[FSPIOP_DestinationHeader];
+            const originalQuoteId = quoteRequest.quoteId;
+            const originalQuoteSourceFspId = quoteRequestHeaders[FSPIOP_SourceHeader];
+            // const originalQuoteDestinationFspId = quoteRequestHeaders[FSPIOP_DestinationHeader];
 
-            // now store the new quote in our cache
-            await this.cache.set(`quote_${quoteRequest.transactionId}`, {
-                quoteRequestHeaders: quoteRequestHeaders,
-                quoteRequest: quoteRequest,
-                stage2Quote: stage2Quote
-            });
+            let response;
+            try {
+                response = await this.backendRequests.postQuotes(quoteRequest, quoteRequestHeaders);
+                if(!response) {
+                    throw new Error('null response to quote request from FXP backend');
+                }
+            } catch (error) {
+                // make an error callback to the source fsp
+                this.logger.log(`Error while expecting response from FXP backend. Making error callback to ${originalQuoteSourceFspId}`);
+                const err = new Errors.MojaloopFSPIOPError(error, error.message, originalQuoteSourceFspId, Errors.MojaloopApiErrorCodes.PAYEE_ERROR);
+                // FIXME wrap in a trycatch and log
+                return await this.mojaloopRequests.putQuotesError(originalQuoteId, err.toApiErrorObject(), originalQuoteSourceFspId);
+            }
+            // make a call to the backend to ask for a new quote
+
+
+            const stage2Quote = response.body;
+
+            const fxpQuoteSourceFspId = response.headers[FSPIOP_SourceHeader];
+            const fxpQuoteDestinationFspId = response.headers[FSPIOP_DestinationHeader];
+
+            // BEGIN set up listener to PUT /quotes/{transferId}
+
+            // listen for events on the transferId
+            const quoteId = stage2Quote.quoteId;
+
+            this.subscriber = await this.cache.getClient();
+            this.subscriber.subscribe(quoteId);
+
+            let self = this;
+            const fxpQuoteResponseHandler = async (cn, msg) => {
+                this.logger.log('quoteResponseHandler received cn and msg: ', cn, msg);
+                let message = JSON.parse(msg);
+
+                if(message.type === 'quoteResponseError') {
+                    // this is an error response to our POST /quotes request
+                    // make an error callback to the source fsp
+                    this.logger.log(`Error on response to fxpQuote. Making error callback to ${originalQuoteSourceFspId}`);
+                    const err = new Errors.MojaloopFSPIOPError(null, message.data, originalQuoteSourceFspId, Errors.MojaloopApiErrorCodes.PAYEE_ERROR);
+                    // FIXME wrap in a trycatch and log
+                    return await this.mojaloopRequests.putQuotesError(originalQuoteId, err.toApiErrorObject(), originalQuoteSourceFspId);
+                }
+
+                if(message.type !== 'quoteResponse') {
+                    // ignore any message on this subscription that is not a quote response
+                    this.logger.log(`Ignoring cache notification for transfer ${quoteId}. Type is not quoteResponse: ${util.inspect(message)}`);
+                    return;
+                }
+
+                const quoteResponse = message.data.body;
+                const quoteResponseHeaders = message.data.headers;
+
+                // cancel the timeout handler
+                // clearTimeout(timeout); // FIXME timeouts
+
+                this.logger.log(`Quote response received: ${util.inspect(quoteResponse)} with headers: ${util.inspect(quoteResponseHeaders)}`);
+
+                // stop listening for payee resolution messages
+                this.subscriber.unsubscribe(quoteId, () => {
+                    this.logger.log('Quote request subscriber unsubscribed');
+                });
+
+                // Now send the quote to the FXP
+                console.log('SENDING QUOTE RESPONSE TO BACKEND, receive response to original quote ( sync ) ');
+
+                // forwar quoteResponse to backend; don't change any headers
+                let responseToOriginalQuote;
+                try {
+                    responseToOriginalQuote = await self.backendRequests.postQuote(quoteId, quoteResponse, quoteResponseHeaders);
+                    if(!responseToOriginalQuote) {
+                        throw new Error('Null response from fxp to fxpQuoteResponse');
+                    }
+                } catch (error) {
+                    this.logger.log(`Error from fxp to fxpQuoteResponse. Making error callback to ${originalQuoteSourceFspId}`);
+                    const err = new Errors.MojaloopFSPIOPError(error, error.message, originalQuoteSourceFspId, Errors.MojaloopApiErrorCodes.PAYEE_ERROR);
+                    // FIXME wrap in a trycatch and log
+                    return await this.mojaloopRequests.putQuotesError(originalQuoteId, err.toApiErrorObject(), originalQuoteSourceFspId);
+                }
+
+                // fetch headers from response ( FSPIOP-*, content-type etc) and use them on the PUT below
+
+                const FSPIOP_SourceHeader = 'FSPIOP-Source'.toLowerCase();
+                const FSPIOP_DestinationHeader = 'FSPIOP-Destination'.toLowerCase();
+
+                const sourceFspId = responseToOriginalQuote.headers[FSPIOP_SourceHeader];
+                const destinationFspId = responseToOriginalQuote.headers[FSPIOP_DestinationHeader];
+
+                console.log('SENDING RESPONSE TO ORIGINAL QUOTE TO DFSP1 VIA PUT');
+                const fxpMojaloopRequests = new MojaloopRequests({
+                    logger: this.logger,
+                    peerEndpoint: this.config.peerEndpoint,
+                    dfspId: sourceFspId,
+                    tls: this.config.tls,
+                    jwsSign: this.config.jwsSign,
+                    jwsSigningKey: this.config.jwsSigningKey // FIXME we need to use ONE PRIVATE KEY PER FX DFSP
+                });
+        
+                // FIXME wrap in a trycatch
+                const putResponse = await fxpMojaloopRequests.putQuotes(responseToOriginalQuote.body, destinationFspId);
+                this.logger.log(`Response from original dfspid to PUT /quotes/{originalQuoteId}: ${util.inspect(putResponse)}`);
+            };
+            this.subscriber.on('message', fxpQuoteResponseHandler);
 
             // forward the quote to the destination FSP
             const fxpMojaloopRequests = new MojaloopRequests({
                 logger: this.logger,
                 peerEndpoint: this.config.peerEndpoint,
-                dfspId: sourceFspId,
+                dfspId: fxpQuoteSourceFspId,
                 tls: this.config.tls,
                 jwsSign: this.config.jwsSign,
                 jwsSigningKey: this.config.jwsSigningKey // FIXME we need to use ONE PRIVATE KEY PER FX DFSP
             });
     
-            return fxpMojaloopRequests.postQuotes(stage2Quote, destinationFspId);
+            return fxpMojaloopRequests.postQuotes(stage2Quote, fxpQuoteDestinationFspId);
         }
         catch(err) {
             this.logger.log(`Error in quoteRequest: ${err.stack || util.inspect(err)}`);
             const mojaloopError = await this._handleError(err);
             this.logger.log(`Sending error response : ${util.inspect(mojaloopError)}`);
-            return await this.mojaloopRequests.putQuotesError(quoteRequest.quoteId,
-                mojaloopError, '?');
+            // FIXME wrap in a trycatch and log
+            return await this.mojaloopRequests.putQuotesError(quoteRequest.quoteId, mojaloopError, '?');
         }
     }
             
