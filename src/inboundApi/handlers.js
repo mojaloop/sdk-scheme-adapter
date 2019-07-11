@@ -187,7 +187,6 @@ const putPartiesByTypeAndId = async (ctx) => {
     await ctx.state.cache.publish(`${idType}_${idValue}`, ctx.request.body);
 
     ctx.response.status = 200;
-    ctx.response.body = '';
 };
 
 
@@ -202,7 +201,6 @@ const putQuoteById = async (ctx) => {
     });
 
     ctx.response.status = 200;
-    ctx.response.body = '';
 };
 
 
@@ -217,7 +215,6 @@ const putTransfersById = async (ctx) => {
     });
 
     ctx.response.status = 200;
-    ctx.response.body = '';
 };
 
 
