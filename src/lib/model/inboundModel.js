@@ -227,8 +227,8 @@ class InboundTransfersModel {
                     return;
                 }
 
-                const quoteResponse = message.data.body;
-                const quoteResponseHeaders = message.data.headers;
+                const quoteResponse = message.data;
+                const quoteResponseHeaders = message.headers;
 
                 // cancel the timeout handler
                 // clearTimeout(timeout); // FIXME timeouts

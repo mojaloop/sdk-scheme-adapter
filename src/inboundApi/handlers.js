@@ -109,18 +109,14 @@ const postQuotes = async (ctx) => {
                 ...ctx.state.conf
             });
 
+            // use the model to handle the request
             if (ctx.fxpQuote) {
-                // use the model to handle the request
                 const response = await model.fxQuoteRequest(ctx.request.headers, ctx.request.body);
-                // log the result
                 ctx.state.logger.log(`Inbound transfers model handled FX POST /quotes request and returned: ${util.inspect(response)}`);
 
             } else {
                 const sourceFspId = ctx.request.headers['fspiop-source'];
-                
-                // use the model to handle the request
                 const response = await model.quoteRequest(ctx.request.body, sourceFspId);
-                // log the result
                 ctx.state.logger.log(`Inbound transfers model handled POST /quotes request and returned: ${util.inspect(response)}`);
             }
         }
@@ -204,10 +200,8 @@ const putQuoteById = async (ctx) => {
     // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(`${ctx.state.path.params.ID}`, {
         type: 'quoteResponse',
-        data: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        }
+        data: ctx.request.body,
+        headers: ctx.request.headers
     });
 
     ctx.response.status = 200;
