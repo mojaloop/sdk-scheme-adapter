@@ -200,6 +200,8 @@ const putPartiesByTypeAndId = async (ctx) => {
  */
 const putQuoteById = async (ctx) => {
     // publish an event onto the cache for subscribers to action
+    console.log('\x1b[47m\x1b[30m%s\x1b[0m', ` PUT /quotes/{ID} received with headers: ${JSON.stringify(ctx.request.headers, null, 2)} and body: ${JSON.stringify(ctx.request.body, null, 2)}`);
+
     await ctx.state.cache.publish(`${ctx.state.path.params.ID}`, {
         type: 'quoteResponse',
         data: ctx.request.body,
