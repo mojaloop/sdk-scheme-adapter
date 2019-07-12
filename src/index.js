@@ -246,7 +246,7 @@ const Errors = require('@modusbox/mojaloop-sdk-standard-components').Errors;
         // Override Koa's default behaviour of returning the status code as text in the body. If we
         // haven't defined the body, we want it empty.
         if (ctx.response.body === undefined) {
-            ctx.response.body = '';
+            ctx.response.body = null;
         }
     });
     outboundApi.use(router(outboundHandlers.map));
