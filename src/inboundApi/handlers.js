@@ -15,10 +15,10 @@ const Model = require('@internal/model').inboundTransfersModel;
 
 
 /**
- * Handles a GET /participants/{idType}/{idValue} request 
+ * Handles a GET /participants/{idType}/{idValue} request
  */
 const getParticipantsByTypeAndId = async (ctx) => {
-    // kick off an asyncronous operation to handle the request
+    // kick off an asynchronous operation to handle the request
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
@@ -86,7 +86,7 @@ const getPartiesByTypeAndId = async (ctx) => {
 
 
 /**
- * Handles a POST /parties/{idType}/{idValue} request 
+ * Handles a POST /parties/{idType}/{idValue} request
  */
 const postPartiesByTypeAndId = (ctx) => {
     // creation of parties not supported by SDK
@@ -205,7 +205,7 @@ const putQuoteById = async (ctx) => {
 
 
 /**
- * Handles a PUT /transfers/{ID}. This is a response to a POST /transfers request 
+ * Handles a PUT /transfers/{ID}. This is a response to a POST /transfers request
  */
 const putTransfersById = async (ctx) => {
     // publish an event onto the cache for subscribers to action
@@ -237,7 +237,7 @@ const putPartiesByTypeAndIdError = async(ctx) => {
 
 
 /**
- * Handles a PUT /quotes/{ID}/error request. This is an error response to a POST /quotes request 
+ * Handles a PUT /quotes/{ID}/error request. This is an error response to a POST /quotes request
  */
 const putQuotesByIdError = async(ctx) => {
     // publish an event onto the cache for subscribers to action
@@ -252,7 +252,7 @@ const putQuotesByIdError = async(ctx) => {
 
 
 /**
- * Handles a PUT /transfers/{ID}/error. This is an error response to a POST /transfers request 
+ * Handles a PUT /transfers/{ID}/error. This is an error response to a POST /transfers request
  */
 const putTransfersByIdError = async (ctx) => {
     // publish an event onto the cache for subscribers to action
