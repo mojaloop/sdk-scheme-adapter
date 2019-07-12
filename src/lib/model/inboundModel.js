@@ -182,7 +182,7 @@ class InboundTransfersModel {
             console.log('\x1b[47m\x1b[30m%s\x1b[0m', 'FXP QUOTE Sending request to backend');
             let response;
             try {
-                response = await this.backendRequests.postQuotes(quoteRequest, quoteRequestHeaders);
+                response = await this.backendRequests.postFxpQuotes(quoteRequest, quoteRequestHeaders);
                 if(!response) {
                     throw new Error('null response to quote request from FXP backend');
                 }
@@ -193,15 +193,16 @@ class InboundTransfersModel {
                 // FIXME wrap in a trycatch and log
                 return await this.mojaloopRequests.putQuotesError(originalQuoteId, err.toApiErrorObject(), originalQuoteSourceFspId);
             }
-            const stage2Quote = response.body;
-            console.log('\x1b[47m\x1b[30m%s\x1b[0m', `FXP QUOTE Got response from backend: ${JSON.stringify(stage2Quote, null, 2)}`);
+
+            const composedQuote = response.body;
+            console.log('\x1b[47m\x1b[30m%s\x1b[0m', `FXP QUOTE Got response from backend: ${JSON.stringify(composedQuote, null, 2)}`);
 
             // Now that we got a response, send the quote to the destination DFSP
-            const fxpQuoteSourceFspId = response.headers[FSPIOP_SourceHeader];
-            const fxpQuoteDestinationFspId = response.headers[FSPIOP_DestinationHeader];
+            const fxpQuoteSourceFspId = composedQuote.metadata.sourceFSP;
+            const fxpQuoteDestinationFspId = composedQuote.metadata.destinationFSP;
 
             // BEGIN set up listener to PUT /quotes/{transferId} for the second stage quote
-            await this.secondStageQuoteResponseListener(stage2Quote, originalQuoteSourceFspId, originalQuoteId);
+            await this.secondStageQuoteResponseListener(composedQuote.quote, originalQuoteSourceFspId, originalQuoteId);
 
             // forward the quote to the destination FSP
             console.log('\x1b[47m\x1b[30m%s\x1b[0m', `FXP QUOTE Sending second stage quote to destination DFSP: ${fxpQuoteDestinationFspId}`);
@@ -214,7 +215,7 @@ class InboundTransfersModel {
                 jwsSigningKey: this.config.jwsSigningKey // FIXME we need to use ONE PRIVATE KEY PER FX DFSP
             });
     
-            return fxpMojaloopRequests.postQuotes(stage2Quote, fxpQuoteDestinationFspId);
+            return fxpMojaloopRequests.postQuotes(composedQuote.quote, fxpQuoteDestinationFspId);
         }
         catch(err) {
             this.logger.log(`Error in quoteRequest: ${err.stack || util.inspect(err)}`);
@@ -262,7 +263,7 @@ class InboundTransfersModel {
             // forwar quoteResponse to backend; don't change any headers
             let responseToOriginalQuote;
             try {
-                responseToOriginalQuote = await self.backendRequests.postQuote(quoteId, quoteResponse, quoteResponseHeaders);
+                responseToOriginalQuote = await self.backendRequests.postFxpQuote(quoteId, quoteResponse, quoteResponseHeaders);
                 if (!responseToOriginalQuote) {
                     throw new Error('Null response from fxp to fxpQuoteResponse');
                 }
@@ -276,8 +277,8 @@ class InboundTransfersModel {
                 return await this.mojaloopRequests.putQuotesError(originalQuoteId, err.toApiErrorObject(), originalQuoteSourceFspId);
             }
             // fetch headers from response ( FSPIOP-*, content-type etc) and use them on the PUT below
-            const sourceFspId = responseToOriginalQuote.headers[FSPIOP_SourceHeader];
-            const destinationFspId = responseToOriginalQuote.headers[FSPIOP_DestinationHeader];
+            const sourceFspId = responseToOriginalQuote.body.metadata.sourceFSP;
+            const destinationFspId = responseToOriginalQuote.body.metadata.destinationFSP;
             console.log('\x1b[47m\x1b[30m%s\x1b[0m', `FXP QUOTE SENDING RESPONSE TO ORIGINAL QUOTE TO DFSP1 ${JSON.stringify(responseToOriginalQuote.body, null, 2)}`);
             const fxpMojaloopRequests = new MojaloopRequests({
                 logger: this.logger,
@@ -288,7 +289,7 @@ class InboundTransfersModel {
                 jwsSigningKey: this.config.jwsSigningKey // FIXME we need to use ONE PRIVATE KEY PER FX DFSP
             });
             // FIXME wrap in a trycatch
-            const putResponse = await fxpMojaloopRequests.putQuotes(responseToOriginalQuote.body, destinationFspId);
+            const putResponse = await fxpMojaloopRequests.putQuotes(responseToOriginalQuote.body.quoteResponse, destinationFspId);
             this.logger.log(`Response from original dfspid to PUT /quotes/{originalQuoteId}: ${util.inspect(putResponse)}`);
         };
         this.subscriber.on('message', fxpQuoteResponseHandler);
