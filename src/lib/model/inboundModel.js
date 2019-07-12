@@ -19,6 +19,9 @@ const Ilp = require('@modusintegration/mojaloop-sdk-standard-components').Ilp;
 const Errors = require('@modusintegration/mojaloop-sdk-standard-components').Errors;
 const shared = require('@internal/shared');
 
+const FSPIOP_SourceHeader = 'FSPIOP-Source'.toLowerCase();
+const FSPIOP_DestinationHeader = 'FSPIOP-Destination'.toLowerCase();
+
 const ASYNC_TIMEOUT_MILLS = 30000;
 
 
@@ -171,13 +174,12 @@ class InboundTransfersModel {
 
     async fxQuoteRequest(quoteRequestHeaders, quoteRequest) {
         try {
-            const FSPIOP_SourceHeader = 'FSPIOP-Source'.toLowerCase();
-            const FSPIOP_DestinationHeader = 'FSPIOP-Destination'.toLowerCase();
-
             const originalQuoteId = quoteRequest.quoteId;
             const originalQuoteSourceFspId = quoteRequestHeaders[FSPIOP_SourceHeader];
             // const originalQuoteDestinationFspId = quoteRequestHeaders[FSPIOP_DestinationHeader];
 
+            // make a call to the backend to ask for a new quote
+            console.log('\x1b[47m\x1b[30m%s\x1b[0m', 'FXP QUOTE Sending request to backend');
             let response;
             try {
                 response = await this.backendRequests.postQuotes(quoteRequest, quoteRequestHeaders);
@@ -191,99 +193,18 @@ class InboundTransfersModel {
                 // FIXME wrap in a trycatch and log
                 return await this.mojaloopRequests.putQuotesError(originalQuoteId, err.toApiErrorObject(), originalQuoteSourceFspId);
             }
-            // make a call to the backend to ask for a new quote
-
-
             const stage2Quote = response.body;
+            console.log('\x1b[47m\x1b[30m%s\x1b[0m', `FXP QUOTE Got response from backend: ${JSON.stringify(stage2Quote, null, 2)}`);
 
+            // Now that we got a response, send the quote to the destination DFSP
             const fxpQuoteSourceFspId = response.headers[FSPIOP_SourceHeader];
             const fxpQuoteDestinationFspId = response.headers[FSPIOP_DestinationHeader];
 
-            // BEGIN set up listener to PUT /quotes/{transferId}
-
-            // listen for events on the transferId
-            const quoteId = stage2Quote.quoteId;
-
-            this.subscriber = await this.cache.getClient();
-            this.subscriber.subscribe(quoteId);
-
-            let self = this;
-            const fxpQuoteResponseHandler = async (cn, msg) => {
-                this.logger.log('quoteResponseHandler received cn and msg: ', cn, msg);
-                let message = JSON.parse(msg);
-
-                if(message.type === 'quoteResponseError') {
-                    // this is an error response to our POST /quotes request
-                    // make an error callback to the source fsp
-                    this.logger.log(`Error on response to fxpQuote. Making error callback to ${originalQuoteSourceFspId}`);
-                    const err = new Errors.MojaloopFSPIOPError(null, message.data, originalQuoteSourceFspId, Errors.MojaloopApiErrorCodes.PAYEE_ERROR);
-                    // FIXME wrap in a trycatch and log
-                    return await this.mojaloopRequests.putQuotesError(originalQuoteId, err.toApiErrorObject(), originalQuoteSourceFspId);
-                }
-
-                if(message.type !== 'quoteResponse') {
-                    // ignore any message on this subscription that is not a quote response
-                    this.logger.log(`Ignoring cache notification for transfer ${quoteId}. Type is not quoteResponse: ${util.inspect(message)}`);
-                    return;
-                }
-
-                const quoteResponse = message.data;
-                const quoteResponseHeaders = message.headers;
-
-                // cancel the timeout handler
-                // clearTimeout(timeout); // FIXME timeouts
-
-                this.logger.log(`Quote response received: ${util.inspect(quoteResponse)} with headers: ${util.inspect(quoteResponseHeaders)}`);
-
-                // stop listening for payee resolution messages
-                this.subscriber.unsubscribe(quoteId, () => {
-                    this.logger.log('Quote request subscriber unsubscribed');
-                });
-
-                // Now send the quote to the FXP
-                console.log('SENDING QUOTE RESPONSE TO BACKEND, receive response to original quote ( sync ) ');
-
-                // forwar quoteResponse to backend; don't change any headers
-                let responseToOriginalQuote;
-                try {
-                    responseToOriginalQuote = await self.backendRequests.postQuote(quoteId, quoteResponse, quoteResponseHeaders);
-                    if(!responseToOriginalQuote) {
-                        throw new Error('Null response from fxp to fxpQuoteResponse');
-                    }
-                    // validate responseToOriginalQuote.body
-                    //
-                } catch (error) {
-                    this.logger.log(`Error from fxp to fxpQuoteResponse. Making error callback to ${originalQuoteSourceFspId}`);
-                    const err = new Errors.MojaloopFSPIOPError(error, error.message, originalQuoteSourceFspId, Errors.MojaloopApiErrorCodes.PAYEE_ERROR);
-                    // FIXME wrap in a trycatch and log
-                    return await this.mojaloopRequests.putQuotesError(originalQuoteId, err.toApiErrorObject(), originalQuoteSourceFspId);
-                }
-
-                // fetch headers from response ( FSPIOP-*, content-type etc) and use them on the PUT below
-
-                const FSPIOP_SourceHeader = 'FSPIOP-Source'.toLowerCase();
-                const FSPIOP_DestinationHeader = 'FSPIOP-Destination'.toLowerCase();
-
-                const sourceFspId = responseToOriginalQuote.headers[FSPIOP_SourceHeader];
-                const destinationFspId = responseToOriginalQuote.headers[FSPIOP_DestinationHeader];
-
-                console.log('SENDING RESPONSE TO ORIGINAL QUOTE TO DFSP1 VIA PUT');
-                const fxpMojaloopRequests = new MojaloopRequests({
-                    logger: this.logger,
-                    peerEndpoint: this.config.peerEndpoint,
-                    dfspId: sourceFspId,
-                    tls: this.config.tls,
-                    jwsSign: this.config.jwsSign,
-                    jwsSigningKey: this.config.jwsSigningKey // FIXME we need to use ONE PRIVATE KEY PER FX DFSP
-                });
-        
-                // FIXME wrap in a trycatch
-                const putResponse = await fxpMojaloopRequests.putQuotes(responseToOriginalQuote.body, destinationFspId);
-                this.logger.log(`Response from original dfspid to PUT /quotes/{originalQuoteId}: ${util.inspect(putResponse)}`);
-            };
-            this.subscriber.on('message', fxpQuoteResponseHandler);
+            // BEGIN set up listener to PUT /quotes/{transferId} for the second stage quote
+            await this.secondStageQuoteResponseListener(stage2Quote, originalQuoteSourceFspId, originalQuoteId);
 
             // forward the quote to the destination FSP
+            console.log('\x1b[47m\x1b[30m%s\x1b[0m', `FXP QUOTE Sending second stage quote to destination DFSP: ${fxpQuoteDestinationFspId}`);
             const fxpMojaloopRequests = new MojaloopRequests({
                 logger: this.logger,
                 peerEndpoint: this.config.peerEndpoint,
@@ -304,6 +225,74 @@ class InboundTransfersModel {
         }
     }
             
+
+    async secondStageQuoteResponseListener(stage2Quote, originalQuoteSourceFspId, originalQuoteId) {
+        const quoteId = stage2Quote.quoteId;
+        this.subscriber = await this.cache.getClient();
+        this.subscriber.subscribe(quoteId);
+        let self = this;
+        const fxpQuoteResponseHandler = async (cn, msg) => {
+            this.logger.log('quoteResponseHandler received cn and msg: ', cn, msg);
+            let message = JSON.parse(msg);
+            if (message.type === 'quoteResponseError') {
+                // this is an error response to our POST /quotes request
+                // make an error callback to the source fsp
+                this.logger.log(`Error on response to fxpQuote. Making error callback to ${originalQuoteSourceFspId}`);
+                const err = new Errors.MojaloopFSPIOPError(null, message.data, originalQuoteSourceFspId, Errors.MojaloopApiErrorCodes.PAYEE_ERROR);
+                // FIXME wrap in a trycatch and log
+                return await this.mojaloopRequests.putQuotesError(originalQuoteId, err.toApiErrorObject(), originalQuoteSourceFspId);
+            }
+            if (message.type !== 'quoteResponse') {
+                // ignore any message on this subscription that is not a quote response
+                this.logger.log(`Ignoring cache notification for transfer ${quoteId}. Type is not quoteResponse: ${util.inspect(message)}`);
+                return;
+            }
+            const quoteResponse = message.data;
+            const quoteResponseHeaders = message.headers;
+            // cancel the timeout handler
+            // clearTimeout(timeout); // FIXME timeouts
+            console.log('\x1b[47m\x1b[30m%s\x1b[0m',`FXP QUOTE Received response to second stage quote ${JSON.stringify(quoteResponse, null, 2)}`);
+            this.logger.log(`Quote response received: ${util.inspect(quoteResponse)} with headers: ${util.inspect(quoteResponseHeaders)}`);
+            // stop listening for payee resolution messages
+            this.subscriber.unsubscribe(quoteId, () => {
+                this.logger.log('Quote request subscriber unsubscribed');
+            });
+            // Now send the quote to the FXP
+            console.log('\x1b[47m\x1b[30m%s\x1b[0m', 'FXP QUOTE SENDING QUOTE RESPONSE TO BACKEND and asking for response to original quote');
+            // forwar quoteResponse to backend; don't change any headers
+            let responseToOriginalQuote;
+            try {
+                responseToOriginalQuote = await self.backendRequests.postQuote(quoteId, quoteResponse, quoteResponseHeaders);
+                if (!responseToOriginalQuote) {
+                    throw new Error('Null response from fxp to fxpQuoteResponse');
+                }
+                // validate responseToOriginalQuote.body
+                //
+            }
+            catch (error) {
+                this.logger.log(`Error from fxp to fxpQuoteResponse. Making error callback to ${originalQuoteSourceFspId}`);
+                const err = new Errors.MojaloopFSPIOPError(error, error.message, originalQuoteSourceFspId, Errors.MojaloopApiErrorCodes.PAYEE_ERROR);
+                // FIXME wrap in a trycatch and log
+                return await this.mojaloopRequests.putQuotesError(originalQuoteId, err.toApiErrorObject(), originalQuoteSourceFspId);
+            }
+            // fetch headers from response ( FSPIOP-*, content-type etc) and use them on the PUT below
+            const sourceFspId = responseToOriginalQuote.headers[FSPIOP_SourceHeader];
+            const destinationFspId = responseToOriginalQuote.headers[FSPIOP_DestinationHeader];
+            console.log('\x1b[47m\x1b[30m%s\x1b[0m', `FXP QUOTE SENDING RESPONSE TO ORIGINAL QUOTE TO DFSP1 ${JSON.stringify(responseToOriginalQuote.body, null, 2)}`);
+            const fxpMojaloopRequests = new MojaloopRequests({
+                logger: this.logger,
+                peerEndpoint: this.config.peerEndpoint,
+                dfspId: sourceFspId,
+                tls: this.config.tls,
+                jwsSign: this.config.jwsSign,
+                jwsSigningKey: this.config.jwsSigningKey // FIXME we need to use ONE PRIVATE KEY PER FX DFSP
+            });
+            // FIXME wrap in a trycatch
+            const putResponse = await fxpMojaloopRequests.putQuotes(responseToOriginalQuote.body, destinationFspId);
+            this.logger.log(`Response from original dfspid to PUT /quotes/{originalQuoteId}: ${util.inspect(putResponse)}`);
+        };
+        this.subscriber.on('message', fxpQuoteResponseHandler);
+    }
 
     /**
      * Validates  an incoming transfer prepare request and makes a callback to the originator with

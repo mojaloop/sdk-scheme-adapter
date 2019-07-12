@@ -41,6 +41,10 @@ const outboundApiSpec = yaml.load('./src/outboundApi/api.yaml');
 const Jws = require('@modusintegration/mojaloop-sdk-standard-components').Jws;
 const Errors = require('@modusintegration/mojaloop-sdk-standard-components').Errors;
 
+const FSPIOP_SourceCurrencyHeader = 'FSPIOP-SourceCurrency'.toLowerCase();
+const FSPIOP_DestinationCurrencyHeader = 'FSPIOP-DestinationCurrency'.toLowerCase();
+const FSPIOP_SourceHeader = 'FSPIOP-Source'.toLowerCase();
+const FSPIOP_DestinationHeader = 'FSPIOP-Destination'.toLowerCase();
 
 (async function() {
     // Set up the config from the environment
@@ -136,12 +140,9 @@ const Errors = require('@modusintegration/mojaloop-sdk-standard-components').Err
         if(conf.validateInboundJws) {
             try {
                 if(ctx.request.method !== 'GET') {
-                    const FSPIOP_SourceCurrencyHeader = 'FSPIOP-SourceCurrency'.toLowerCase();
-                    const FSPIOP_DestinationCurrencyHeader = 'FSPIOP-DestinationCurrency'.toLowerCase();
-                    const FSPIOP_SourceHeader = 'FSPIOP-Source'.toLowerCase();
-                    const FSPIOP_DestinationHeader = 'FSPIOP-Destination'.toLowerCase();
-
+                    // If the request has the currency headers, then it's a FX Quote and we need recreate and validate the original quote
                     if ( ctx.request.headers[FSPIOP_SourceCurrencyHeader] || ctx.request.headers[FSPIOP_DestinationCurrencyHeader] ) {
+                        console.log('\x1b[47m\x1b[30m%s\x1b[0m', 'FXP QUOTE received');
                         const payerFspId = ctx && ctx.request && ctx.request.body.payer && ctx.request.body.payer.partyIdInfo && ctx.request.body.payer.partyIdInfo.fspId ? ctx.request.body.payer.partyIdInfo.fspId : null;
                         if (!payerFspId) {
                             const errorMessage = `Inbound FXP quote request failed JWS validation: payer party fspId not found in body ${ctx.request.body}`;
@@ -163,7 +164,8 @@ const Errors = require('@modusintegration/mojaloop-sdk-standard-components').Err
                                 Errors.MojaloopApiErrorCodes.PAYEE_FSP_ID_NOT_FOUND).toApiErrorObject();
                             return;
                         }
-
+                        console.log('\x1b[47m\x1b[30m%s\x1b[0m', 'Rebuilding original quote');
+                        // Now rebuild the original request, replacing the "FXP DFSP" by its original value, taken from the body
                         const rebuiltRequest = { headers: {...ctx.request.headers}, body: {...ctx.request.body} };
                         if (ctx.request.headers[FSPIOP_SourceHeader] == payerFspId && ctx.request.headers[FSPIOP_DestinationHeader] != payeeFspId) {
                             rebuiltRequest.headers[FSPIOP_DestinationHeader] = payeeFspId;
@@ -180,8 +182,13 @@ const Errors = require('@modusintegration/mojaloop-sdk-standard-components').Err
                             return;
                         }
 
+                        // Validate the original request.
+                        console.log('\x1b[47m\x1b[30m%s\x1b[0m', 'Validating original quote');
                         jwsValidator.validate(rebuiltRequest, inboundLogger);
+
+                        // If we got here the request is valid, tag it as an fxpQuote to be processed downstream
                         ctx.fxpQuote = true;
+                        console.log('\x1b[47m\x1b[30m%s\x1b[0m', 'FXP QUOTE received OK');                        
                     } else {
                         jwsValidator.validate(ctx.request, inboundLogger);
                     }
@@ -291,6 +298,14 @@ const Errors = require('@modusintegration/mojaloop-sdk-standard-components').Err
 
     // Handle requests
     inboundApi.use(router(inboundHandlers.map));
+    inboundApi.use(async (ctx, next) => {
+        // Override Koa's default behaviour of returning the status code as text in the body. If we
+        // haven't defined the body, we want it empty.
+        if (ctx.response.body === undefined) {
+            ctx.response.body = '';
+        }
+        next(); // not sure        
+    });
     outboundApi.use(router(outboundHandlers.map));
 
     await Promise.all([
