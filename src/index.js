@@ -302,7 +302,7 @@ const FSPIOP_DestinationHeader = 'FSPIOP-Destination'.toLowerCase();
         // Override Koa's default behaviour of returning the status code as text in the body. If we
         // haven't defined the body, we want it empty.
         if (ctx.response.body === undefined) {
-            ctx.response.body = '';
+            ctx.response.body = null;
         }
         next(); // not sure        
     });

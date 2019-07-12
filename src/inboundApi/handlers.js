@@ -113,7 +113,7 @@ const postQuotes = async (ctx) => {
             if (ctx.fxpQuote) {
                 console.log('\x1b[46m\x1b[31m%s\x1b[0m', 'FXP QUOTE handler');
                 const response = await model.fxQuoteRequest(ctx.request.headers, ctx.request.body);
-                console.log('\x1b[46m\x1b[31m%s\x1b[0m', `FXP QUOTE handler response: ${JSON.stringify(response, null, 2)}`);
+                console.log('\x1b[46m\x1b[31m%s\x1b[0m', `FXP QUOTE handler response: ${response === null ? 'no content' : JSON.stringify(response, null, 2)}`);
                 ctx.state.logger.log(`Inbound transfers model handled FX POST /quotes request and returned: ${util.inspect(response)}`);
 
             } else {
