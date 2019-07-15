@@ -81,6 +81,57 @@ class BackendRequests {
 
         return this._post('quotes', quoteRequest, newHeaders, true);
     }
+
+    /**
+     * 
+     * @param {quote} quoteRequest 
+     * @param {http-headers} headers 
+     */
+    async postFxpQuotes(quoteRequest, headers) {
+        const newHeaders = {
+            accept: headers.accept,
+            'content-type': headers['content-type'],
+        };
+        const composedFXPQuote = {
+            quote: quoteRequest,
+            metadata:{
+                destinationFSP: headers['fspiop-destination'],
+                destinationCurrency: headers['fspiop-destinationcurrency'],
+                sourceFSP: headers['fspiop-source'],
+                sourceCurrency: headers['fspiop-sourcecurrency']
+            }
+        }        
+
+        return this._post('fxpquotes', composedFXPQuote, newHeaders, true);
+    }
+
+    /**
+     * Executes a POST /fxpquotes/{id} request for the specified quote request
+     * 
+     * @param {string} quoteId 
+     * @param {body} quoteRequest 
+     * @param {headers} headers 
+     *
+     * @returns {object} - JSON response body if one was received
+     */
+    async postFxpQuote(quoteId, quoteRequest, headers) {
+
+        const newHeaders = {
+            accept: headers.accept || 'application/vnd.interoperability.quotes+json;version=1',
+            'content-type': 'application/json', // headers['content-type'] is application/vnd.interoperability.quotes+json;version=1.0, but the backend expects application/json
+        };
+
+        const composedQuoteResponse = {
+            quoteResponse: quoteRequest,
+            metadata:{
+                destinationFSP: headers['fspiop-destination'],
+                sourceFSP: headers['fspiop-source'],
+            }
+        };
+        
+        console.log('postQuote sending headers: ', headers, ' quoteRequest: ', composedQuoteResponse);
+        return this._post(`fxpquotes/${quoteId}`, composedQuoteResponse, newHeaders, true);
+    }
     
     /**
      * Executes a POST /quotes/{id} request for the specified quote request
