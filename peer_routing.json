@@ -2,7 +2,7 @@
   "routes": [
     {
       "dfsp": "DFSP1",
-      "endpoint": "localhost:7000"
+      "endpoint": "localhost:5000"
     },
     {
       "dfsp": "DFSP2",
