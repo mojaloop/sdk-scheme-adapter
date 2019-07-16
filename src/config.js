@@ -118,14 +118,14 @@ const setConfig = async cfg => {
     config.cacheConfig.host = cfg.CACHE_HOST;
     config.cacheConfig.port = cfg.CACHE_PORT;
 
+    config.getDfspEndpoint = dfsp => {
+        if (config.peerRoutingConfig && config.peerRoutingConfig.routes) {
+            return config.peerRoutingConfig.routes.find( x => x.dfsp === dfsp);
+        }
+        return null;
+    };
     if (cfg.PEER_ROUTING_CONFIG) {
         config.peerRoutingConfig = JSON.parse(await readFile(cfg.PEER_ROUTING_CONFIG));
-        config.getDfspEndpoint = dfsp => {
-            if (config.peerRoutingConfig && config.peerRoutingConfig.routes) {
-                return config.peerRoutingConfig.routes.find( x => x.dfsp === dfsp);
-            }
-            return null;
-        };
     }
 };
 
