@@ -65,7 +65,11 @@ let config = {
     }
 };
 
-
+/**
+ * Creates a config from a set of parameters.
+ * 
+ * @param {process.env} cfg Usually sent as process.env
+ */
 const setConfig = async cfg => {
     config.inboundPort = cfg.INBOUND_LISTEN_PORT;
     config.outboundPort = cfg.OUTBOUND_LISTEN_PORT;
@@ -113,6 +117,16 @@ const setConfig = async cfg => {
 
     config.cacheConfig.host = cfg.CACHE_HOST;
     config.cacheConfig.port = cfg.CACHE_PORT;
+
+    if (cfg.PEER_ROUTING_CONFIG) {
+        config.peerRoutingConfig = JSON.parse(await readFile(cfg.PEER_ROUTING_CONFIG));
+        config.getDfspEndpoint = dfsp => {
+            if (config.peerRoutingConfig && config.peerRoutingConfig.routes) {
+                return config.peerRoutingConfig.routes.find( x => x.dfsp === dfsp);
+            }
+            return null;
+        };
+    }
 };
 
 

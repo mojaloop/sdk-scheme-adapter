@@ -206,9 +206,17 @@ class InboundTransfersModel {
 
             // forward the quote to the destination FSP
             console.log('\x1b[47m\x1b[30m%s\x1b[0m', `FXP QUOTE Sending second stage quote to destination DFSP: ${fxpQuoteDestinationFspId}`);
+
+            // MBXFXP-20
+            let peerEndpoint = this.config.peerEndpoint; // default
+            const configEndpoint = this.config.getDfspEndpoint(fxpQuoteDestinationFspId);
+            if (configEndpoint) {
+                peerEndpoint = configEndpoint.endpoint;
+            }
+
             const fxpMojaloopRequests = new MojaloopRequests({
                 logger: this.logger,
-                peerEndpoint: this.config.peerEndpoint,
+                peerEndpoint: peerEndpoint,
                 dfspId: fxpQuoteSourceFspId,
                 tls: this.config.tls,
                 jwsSign: this.config.jwsSign,
@@ -251,7 +259,7 @@ class InboundTransfersModel {
             const quoteResponse = message.data;
             const quoteResponseHeaders = message.headers;
             // cancel the timeout handler
-            // clearTimeout(timeout); // FIXME timeouts
+            // clearTimeout(timeout); // FIXME implement timeouts
             console.log('\x1b[47m\x1b[30m%s\x1b[0m',`FXP QUOTE Received response to second stage quote ${JSON.stringify(quoteResponse, null, 2)}`);
             this.logger.log(`Quote response received: ${util.inspect(quoteResponse)} with headers: ${util.inspect(quoteResponseHeaders)}`);
             // stop listening for payee resolution messages
@@ -307,12 +315,18 @@ class InboundTransfersModel {
             });
 
             // make a callback to the source fsp with the quote response
-            // return this.mojaloopRequests.putQuotes(mojaloopResponse, sourceFspId);
 
+            // MBXFXP-20
+            let peerEndpoint = this.config.peerEndpoint; // default
+            const configEndpoint = this.config.getDfspEndpoint(destinationFspId);
+            if (configEndpoint) {
+                peerEndpoint = configEndpoint.endpoint;
+            }
+            
 
             const fxpMojaloopRequests = new MojaloopRequests({
                 logger: this.logger,
-                peerEndpoint: this.config.peerEndpoint,
+                peerEndpoint: peerEndpoint,
                 dfspId: sourceFspId,
                 tls: this.config.tls,
                 jwsSign: this.config.jwsSign,
