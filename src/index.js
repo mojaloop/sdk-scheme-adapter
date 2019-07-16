@@ -303,6 +303,9 @@ const FSPIOP_DestinationHeader = 'FSPIOP-Destination'.toLowerCase();
         // haven't defined the body, we want it empty.
         if (ctx.response.body === undefined) {
             ctx.response.body = null;
+            if (!ctx.response.status) {
+                ctx.response.status = 204;                
+            }
         }
         next(); // not sure        
     });
