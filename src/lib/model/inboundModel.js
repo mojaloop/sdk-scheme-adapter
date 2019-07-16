@@ -236,9 +236,9 @@ class InboundTransfersModel {
             
 
     async secondStageQuoteResponseListener(stage2Quote, originalQuoteSourceFspId, originalQuoteId) {
-        const quoteId = stage2Quote.quoteId;
+        const stage2QuoteId = stage2Quote.quoteId;
         this.subscriber = await this.cache.getClient();
-        this.subscriber.subscribe(quoteId);
+        this.subscriber.subscribe(stage2QuoteId);
         let self = this;
         const fxpQuoteResponseHandler = async (cn, msg) => {
             this.logger.log('quoteResponseHandler received cn and msg: ', cn, msg);
@@ -253,7 +253,7 @@ class InboundTransfersModel {
             }
             if (message.type !== 'quoteResponse') {
                 // ignore any message on this subscription that is not a quote response
-                this.logger.log(`Ignoring cache notification for transfer ${quoteId}. Type is not quoteResponse: ${util.inspect(message)}`);
+                this.logger.log(`Ignoring cache notification for transfer ${stage2QuoteId}. Type is not quoteResponse: ${util.inspect(message)}`);
                 return;
             }
             const quoteResponse = message.data;
@@ -263,7 +263,7 @@ class InboundTransfersModel {
             console.log('\x1b[47m\x1b[30m%s\x1b[0m',`FXP QUOTE Received response to second stage quote ${JSON.stringify(quoteResponse, null, 2)}`);
             this.logger.log(`Quote response received: ${util.inspect(quoteResponse)} with headers: ${util.inspect(quoteResponseHeaders)}`);
             // stop listening for payee resolution messages
-            this.subscriber.unsubscribe(quoteId, () => {
+            this.subscriber.unsubscribe(stage2QuoteId, () => {
                 this.logger.log('Quote request subscriber unsubscribed');
             });
             // Now send the quote to the FXP
@@ -271,7 +271,7 @@ class InboundTransfersModel {
             // forwar quoteResponse to backend; don't change any headers
             let responseToOriginalQuote;
             try {
-                responseToOriginalQuote = await self.backendRequests.postFxpQuote(originalQuoteId, quoteResponse, quoteResponseHeaders);
+                responseToOriginalQuote = await self.backendRequests.postFxpQuote(stage2QuoteId, quoteResponse, quoteResponseHeaders);
                 if (!responseToOriginalQuote) {
                     throw new Error('Null response from fxp to fxpQuoteResponse');
                 }
@@ -323,7 +323,6 @@ class InboundTransfersModel {
                 peerEndpoint = configEndpoint.endpoint;
             }
             
-
             const fxpMojaloopRequests = new MojaloopRequests({
                 logger: this.logger,
                 peerEndpoint: peerEndpoint,
