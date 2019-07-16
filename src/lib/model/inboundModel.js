@@ -280,6 +280,36 @@ class InboundTransfersModel {
             const sourceFspId = responseToOriginalQuote.body.metadata.sourceFSP;
             const destinationFspId = responseToOriginalQuote.body.metadata.destinationFSP;
             console.log('\x1b[47m\x1b[30m%s\x1b[0m', `FXP QUOTE SENDING RESPONSE TO ORIGINAL QUOTE TO DFSP1 ${JSON.stringify(responseToOriginalQuote.body, null, 2)}`);
+
+            const mojaloopResponse = responseToOriginalQuote.body.quoteResponse;
+
+            // FIX Ilp packet and condition
+            // CODE taken from quoteRequest
+            if(!mojaloopResponse.expiration) {
+                const expiration = new Date().getTime() + (this.expirySeconds * 1000);
+                mojaloopResponse.expiration = new Date(expiration).toISOString();
+            }
+
+            // create our ILP packet and condition and tag them on to our internal quote response 
+            const { fulfilment, ilpPacket, condition } = this.ilp.getQuoteResponseIlp(stage2Quote, mojaloopResponse);
+
+            mojaloopResponse.ilpPacket = ilpPacket;
+            mojaloopResponse.condition = condition; 
+
+            // now store the fulfilment and the quote data against the quoteId in our cache
+            // FIXME are we going to use this for the transfer?
+            await this.cache.set(`quote_${stage2Quote.transactionId}`, {
+                request: stage2Quote,
+                // internalRequest: internalForm,  // FIXME I don't have it
+                // response: response, // FIXME it's the internal quote response, I don't have it
+                mojaloopResponse: mojaloopResponse,
+                fulfilment: fulfilment
+            });
+
+            // make a callback to the source fsp with the quote response
+            // return this.mojaloopRequests.putQuotes(mojaloopResponse, sourceFspId);
+
+
             const fxpMojaloopRequests = new MojaloopRequests({
                 logger: this.logger,
                 peerEndpoint: this.config.peerEndpoint,
@@ -289,7 +319,7 @@ class InboundTransfersModel {
                 jwsSigningKey: this.config.jwsSigningKey // FIXME we need to use ONE PRIVATE KEY PER FX DFSP
             });
             // FIXME wrap in a trycatch
-            const putResponse = await fxpMojaloopRequests.putQuotes(responseToOriginalQuote.body.quoteResponse, destinationFspId);
+            const putResponse = await fxpMojaloopRequests.putQuotes(mojaloopResponse, destinationFspId);
             this.logger.log(`Response from original dfspid to PUT /quotes/{originalQuoteId}: ${util.inspect(putResponse)}`);
         };
         this.subscriber.on('message', fxpQuoteResponseHandler);

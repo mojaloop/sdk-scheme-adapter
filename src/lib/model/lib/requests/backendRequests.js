@@ -100,7 +100,7 @@ class BackendRequests {
                 sourceFSP: headers['fspiop-source'],
                 sourceCurrency: headers['fspiop-sourcecurrency']
             }
-        }        
+        };
 
         return this._post('fxpquotes', composedFXPQuote, newHeaders, true);
     }
