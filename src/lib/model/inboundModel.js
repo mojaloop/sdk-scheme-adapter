@@ -260,6 +260,9 @@ class InboundTransfersModel {
             const quoteResponseHeaders = message.headers;
             // cancel the timeout handler
             // clearTimeout(timeout); // FIXME implement timeouts
+
+            // clean quoteId from response if there. The SDK returns it as part of a quote response but it's not part of it per the MOjaloop spec ( FIXME find proper reference )
+            delete quoteResponse['quoteId'];
             console.log('\x1b[47m\x1b[30m%s\x1b[0m',`FXP QUOTE Received response to second stage quote ${JSON.stringify(quoteResponse, null, 2)}`);
             this.logger.log(`Quote response received: ${util.inspect(quoteResponse)} with headers: ${util.inspect(quoteResponseHeaders)}`);
             // stop listening for payee resolution messages
@@ -308,6 +311,7 @@ class InboundTransfersModel {
             // FIXME are we going to use this for the transfer?
             await this.cache.set(`quote_${stage2Quote.transactionId}`, {
                 request: stage2Quote,
+                originalQuoteId: responseToOriginalQuote.body.metadata.quoteId,
                 // internalRequest: internalForm,  // FIXME I don't have it
                 // response: response, // FIXME it's the internal quote response, I don't have it
                 mojaloopResponse: mojaloopResponse,
@@ -323,6 +327,9 @@ class InboundTransfersModel {
                 peerEndpoint = configEndpoint.endpoint;
             }
             
+            // Mojaloop requests picks the quoteId from the body
+            mojaloopResponse.quoteId = responseToOriginalQuote.body.metadata.quoteId;
+
             const fxpMojaloopRequests = new MojaloopRequests({
                 logger: this.logger,
                 peerEndpoint: peerEndpoint,
