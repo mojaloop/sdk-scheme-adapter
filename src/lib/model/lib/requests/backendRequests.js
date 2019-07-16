@@ -106,7 +106,7 @@ class BackendRequests {
     }
 
     /**
-     * Executes a POST /fxpquotes/{id} request for the specified quote request
+     * Executes a POST /fxpquotes/{id}/responses request for the specified quote request
      * 
      * @param {string} quoteId 
      * @param {body} quoteRequest 
@@ -130,7 +130,7 @@ class BackendRequests {
         };
         
         console.log('postQuote sending headers: ', headers, ' quoteRequest: ', composedQuoteResponse);
-        return this._post(`fxpquotes/${quoteId}`, composedQuoteResponse, newHeaders, true);
+        return this._post(`fxpquotes/${quoteId}/responses`, composedQuoteResponse, newHeaders, true);
     }
     
     /**
