@@ -127,6 +127,8 @@ const setConfig = async cfg => {
     if (cfg.PEER_ROUTING_CONFIG) {
         config.peerRoutingConfig = JSON.parse(await readFile(cfg.PEER_ROUTING_CONFIG));
     }
+
+    config.forwardPutQuotesToBackend = cfg.FORWARD_PUT_QUOTES_TO_BACKEND;
 };
 
 
