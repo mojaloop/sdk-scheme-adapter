@@ -244,9 +244,12 @@ const Errors = require('@modusbox/mojaloop-sdk-standard-components').Errors;
     inboundApi.use(router(inboundHandlers.map));
     inboundApi.use(async (ctx, next) => {
         // Override Koa's default behaviour of returning the status code as text in the body. If we
-        // haven't defined the body, we want it empty.
+        // haven't defined the body, we want it empty. Note that if setting this to null, Koa appears
+        // to override the status code with a 204. This is correct behaviour in the sense that the
+        // status code correctly corresponds to the content (none) but unfortunately the Mojaloop API
+        // does not respect this convention and requires a 200.
         if (ctx.response.body === undefined) {
-            ctx.response.body = null;
+            ctx.response.body = '';
         }
     });
     outboundApi.use(router(outboundHandlers.map));
