@@ -151,9 +151,10 @@ const postTransfers = async (ctx) => {
             });
 
             const sourceFspId = ctx.request.headers['fspiop-source'];
+            const destinationFspId = ctx.request.headers['fspiop-destination'];
 
             // use the model to handle the request
-            const response = await model.prepareTransfer(ctx.request.body, sourceFspId);
+            const response = await model.prepareTransfer(ctx.request.body, sourceFspId, destinationFspId);
 
             // log the result
             ctx.state.logger.log(`Inbound transfers model handled POST /transfers request and returned: ${util.inspect(response)}`);

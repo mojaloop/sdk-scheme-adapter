@@ -185,8 +185,8 @@ const mojaloopPrepareToInternalTransfer = (external, quote) => {
     const internal = {
         transferId: external.transferId,
         quote: quote.response,
-        from: quote.internalRequest.from,
-        to: quote.internalRequest.to,
+        from: quote.internalRequest ? quote.internalRequest.from : mojaloopPartyToInternalParty(quote.request.payer),
+        to: quote.internalRequest ? quote.internalRequest.to : mojaloopPartyToInternalParty(quote.request.payee),
         amountType: quote.request.amountType,
         currency: quote.request.amount.currency,
         amount: quote.request.amount.amount,

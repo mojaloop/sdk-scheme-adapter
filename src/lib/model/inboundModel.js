@@ -202,7 +202,7 @@ class InboundTransfersModel {
             const fxpQuoteDestinationFspId = composedQuote.metadata.destinationFSP;
 
             // BEGIN set up listener to PUT /quotes/{transferId} for the second stage quote
-            await this.secondStageQuoteResponseListener(composedQuote.quote, originalQuoteSourceFspId, originalQuoteId);
+            await this.secondStageQuoteResponseListener(composedQuote.quote, originalQuoteSourceFspId, originalQuoteId, quoteRequest.transactionId);
 
             // forward the quote to the destination FSP
             console.log('\x1b[47m\x1b[30m%s\x1b[0m', `FXP QUOTE Sending second stage quote to destination DFSP: ${fxpQuoteDestinationFspId}`);
@@ -235,7 +235,7 @@ class InboundTransfersModel {
     }
             
 
-    async secondStageQuoteResponseListener(stage2Quote, originalQuoteSourceFspId, originalQuoteId) {
+    async secondStageQuoteResponseListener(stage2Quote, originalQuoteSourceFspId, originalQuoteId, transactionId) {
         const stage2QuoteId = stage2Quote.quoteId;
         this.subscriber = await this.cache.getClient();
         this.subscriber.subscribe(stage2QuoteId);
@@ -309,13 +309,14 @@ class InboundTransfersModel {
 
             // now store the fulfilment and the quote data against the quoteId in our cache
             // FIXME are we going to use this for the transfer?
-            await this.cache.set(`quote_${stage2Quote.transactionId}`, {
+            await this.cache.set(`quote_${transactionId}`, { // was
                 request: stage2Quote,
                 originalQuoteId: responseToOriginalQuote.body.metadata.quoteId,
                 // internalRequest: internalForm,  // FIXME I don't have it
                 // response: response, // FIXME it's the internal quote response, I don't have it
                 mojaloopResponse: mojaloopResponse,
-                fulfilment: fulfilment
+                fulfilment: fulfilment,
+                fxpQuote: true
             });
 
             // make a callback to the source fsp with the quote response
@@ -349,15 +350,22 @@ class InboundTransfersModel {
      * Validates  an incoming transfer prepare request and makes a callback to the originator with
      * the result
      */
-    async prepareTransfer(prepareRequest, sourceFspId) {
+    async prepareTransfer(prepareRequest, sourceFspId, destinationFspId) {
         try {
             // retrieve our quote data
             const quote = await this.cache.get(`quote_${prepareRequest.transferId}`);
 
+            if (!quote) {
+                throw new Error(`Can't process transfer: quote with id ${prepareRequest.transferId} not found`);
+            }
             // check incoming ILP matches our persisted values
             if(this.checkIlp && (prepareRequest.condition !== quote.mojaloopResponse.condition)) {
                 throw new Error(`ILP condition in transfer prepare for ${prepareRequest.transferId} does not match quote`);
             } 
+
+            if (quote.fxpQuote) {
+                return this.fxpTransfer(prepareRequest, sourceFspId, destinationFspId, quote);
+            }
 
             // project the incoming transfer prepare into an internal transfer request
             const internalForm = shared.mojaloopPrepareToInternalTransfer(prepareRequest, quote);
@@ -391,6 +399,60 @@ class InboundTransfersModel {
                 mojaloopError, sourceFspId);
         }
     }
+
+    async fxpTransfer(prepareRequest, sourceFspId, destinationFspId, quote) {
+        // get (second stage) fxpTransfer from FXP backend ( prepareRequest )
+        let composedFxpTransfer = await this.getFxpTransferFromBackend(prepareRequest, sourceFspId, destinationFspId, quote);
+
+        // FIXME check timeout is less that the one in prepareRequest
+
+        await this.createFxpTransferResponseListener(prepareRequest, sourceFspId, quote, composedFxpTransfer);
+
+        // forward it to destination fsp
+
+        await this.forwardFxpTransferToDestination(composedFxpTransfer);
+    }
+
+    async getFxpTransferFromBackend(prepareRequest, sourceFspId, destinationFspId, quote) {
+
+        let composedTransferRequestResponse;
+        try {
+            composedTransferRequestResponse = await this.backendRequests.postFxpTransfers(prepareRequest, sourceFspId, destinationFspId);
+            if(!composedTransferRequestResponse) {
+                throw new Error('null response to transfer request from FXP backend');
+            }
+        } catch (error) {
+            // make an error callback to the source fsp
+            this.logger.log(`Error while expecting response from FXP backend. Making error callback to ${sourceFspId}`);
+            const err = new Errors.MojaloopFSPIOPError(error, error.message, sourceFspId, Errors.MojaloopApiErrorCodes.PAYEE_ERROR);
+            // FIXME wrap in a trycatch and log
+            return await this.mojaloopRequests.putTransfersError(prepareRequest, err.toApiErrorObject(), sourceFspId);
+        }
+
+        let composedTransferRequest = composedTransferRequestResponse.body;
+        console.log('\x1b[47m\x1b[30m%s\x1b[0m', `FXP transfer Got response from backend: ${JSON.stringify(composedTransferRequest, null, 2)}`);
+        return composedTransferRequest;
+    }
+
+    async forwardFxpTransferToDestination() {
+
+    }
+
+    /**
+     * "at this stage you will be notified that the payment would have been fulfilled from the receiving DFSP"
+     */
+    async createFxpTransferResponseListener(prepareRequest, sourceFspId, quote, secondStageTransfer) {
+        // set handler as listener on cache (transferId).
+        // will receive 
+
+        // await ctx.state.cache.publish(`${ctx.state.path.params.ID}`, {
+        //     type: 'transferFulfil',
+        //     data: ctx.request.body
+        // });
+    
+    }
+
+
 
     async _handleError(err) {
         if(err instanceof HTTPResponseError ) {
