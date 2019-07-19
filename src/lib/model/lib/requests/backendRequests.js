@@ -102,7 +102,7 @@ class BackendRequests {
             }
         };
 
-        return this._post('fxpquotes', composedFXPQuote, newHeaders, true);
+        return this._post('fxpquotes', composedFXPQuote, newHeaders);
     }
 
     /**
@@ -114,7 +114,7 @@ class BackendRequests {
      *
      * @returns {object} - JSON response body if one was received
      */
-    async postFxpQuote(quoteId, quoteRequest, headers) {
+    async postFxpQuoteResponse(quoteId, quoteRequest, headers) {
 
         const newHeaders = {
             accept: headers.accept || 'application/vnd.interoperability.quotes+json;version=1',
@@ -130,7 +130,7 @@ class BackendRequests {
         };
         
         console.log('postQuote sending headers: ', headers, ' quoteRequest: ', composedQuoteResponse);
-        return this._post(`fxpquotes/${quoteId}/responses`, composedQuoteResponse, newHeaders, true);
+        return this._post(`fxpquotes/${quoteId}/responses`, composedQuoteResponse, newHeaders);
     }
     
     
@@ -140,35 +140,35 @@ class BackendRequests {
      */
     async postFxpTransfers(prepareRequest, sourceFspId, destinationFspId) {
         // MOCKING until backend ready
-        // const newHeaders = {
-        //     ...this._buildHeaders(),
-        //     'fspiop-source': sourceFspId,
-        //     'fspiop-destination': destinationFspId
-        // };
 
-        //return this._post('fxptransfers', prepareRequest, newHeaders, true);
+        let composedTransferRequest = {
+            metadata: {
+                sourceFSP: sourceFspId,
+                destinationFSP: destinationFspId    
+            },
+            transfer: prepareRequest
+        };
+
+
+        //return this._post('composedTransferRequest', prepareRequest);
         // mocking
         let mockedResponse = {
             headers: {
             },
             body: {
                 metadata: {
-                    headers: {
-                        'fspiop-source': 'DFSP XOF',
-                        'fspiop-destination': 'DFSP2'    
-                    }
+                    sourceFSP: 'DFSP XOF',
+                    destinationFSP: 'DFSP2'    
                 },
-                request: {
-                    'transferId': '85feac2f-39b2-491b-817e-4a03203d4f14',
+                transfer: {
+                    'transferId': '11111111-2222-3333-8888-555555555555',
                     'payerFsp': 'DFSP XOF',
                     'payeeFsp': 'DFSP2',
                     'amount': {
                         'amount': '100100',
                         'currency': 'XOF'
                     },
-                    'expiration': '2019-07-18T13:00:34.164Z',
-                    'ilpPacket': 'AYIC5AAAAAAAADqnGGcuREZTUDIubXNpc2RuLjEyMzQ1Njc4OYICv2V5SjBjbUZ1YzJGamRHbHZia2xrSWpvaVlUUXlNMkpoWWpZdFpXRXlPUzAwT1RRM0xXRTNZVEl0TURrMllqTmhabVV4T1RSaElpd2ljWFZ2ZEdWSlpDSTZJakZpWVRFMlpUUm1MVFk0TjJNdE5EWTNOeTA0WVRjMUxUWmhOVFU0WmpWall6WmlNQ0lzSW5CaGVXVmxJanA3SW5CaGNuUjVTV1JKYm1adklqcDdJbkJoY25SNVNXUlVlWEJsSWpvaVRWTkpVMFJPSWl3aWNHRnlkSGxKWkdWdWRHbG1hV1Z5SWpvaU1USXpORFUyTnpnNUlpd2labk53U1dRaU9pSkVSbE5RTWlKOWZTd2ljR0Y1WlhJaU9uc2ljR1Z5YzI5dVlXeEpibVp2SWpwN0ltTnZiWEJzWlhoT1lXMWxJanA3SW1acGNuTjBUbUZ0WlNJNklrMWhkSE1pTENKc1lYTjBUbUZ0WlNJNklraGhaMjFoYmlKOUxDSmtZWFJsVDJaQ2FYSjBhQ0k2SWpFNU9ETXRNVEF0TWpVaWZTd2ljR0Z5ZEhsSlpFbHVabThpT25zaWNHRnlkSGxKWkZSNWNHVWlPaUpOVTBsVFJFNGlMQ0p3WVhKMGVVbGtaVzUwYVdacFpYSWlPaUk1T0RjMk5UUXpNakVpTENKbWMzQkpaQ0k2SWtSR1UxQXhJbjE5TENKaGJXOTFiblFpT25zaVlXMXZkVzUwSWpveE5UQXVNVFVzSW1OMWNuSmxibU41SWpvaVJWVlNJbjBzSW5SeVlXNXpZV04wYVc5dVZIbHdaU0k2ZXlKelkyVnVZWEpwYnlJNklsUlNRVTVUUmtWU0lpd2lhVzVwZEdsaGRHOXlJam9pVUVGWlJWSWlMQ0pwYm1sMGFXRjBiM0pVZVhCbElqb2lRMDlPVTFWTlJWSWlmWDAA',
-                    'condition': 'os_Y2-H5-LjrsNGXHIqYXti65w-XDuC_Rzp17rYlcZs45'
+                    'expiration': '2019-07-18T13:00:30.164Z' // 4 seconds less
                 }
             }
         };
