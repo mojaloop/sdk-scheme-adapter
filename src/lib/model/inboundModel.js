@@ -176,6 +176,7 @@ class InboundTransfersModel {
         try {
             const originalQuoteId = originalQuoteRequest.quoteId;
             const originalQuoteSourceFspId = originalQuoteRequestHeaders[FSPIOP_SourceHeader];
+            const originalQuoteDestinationFspId = originalQuoteRequestHeaders[FSPIOP_DestinationHeader];
 
             // make a call to the backend to ask for a new quote
             console.log('\x1b[47m\x1b[30m%s\x1b[0m', 'FXP QUOTE Sending request to backend');
@@ -200,7 +201,7 @@ class InboundTransfersModel {
             const fxpQuoteDestinationFspId = composedFxpQuoteRequest.metadata.destinationFSP;
 
             // BEGIN set up listener to PUT /quotes/{transferId} for the second stage quote
-            await this.createFxpQuoteResponseListener(composedFxpQuoteRequest.quote, originalQuoteSourceFspId, originalQuoteRequest);
+            await this.createFxpQuoteResponseListener(composedFxpQuoteRequest.quote, originalQuoteSourceFspId, originalQuoteDestinationFspId, originalQuoteRequest, fxpQuoteSourceFspId, fxpQuoteDestinationFspId);
 
             // forward the quote to the destination FSP
             console.log('\x1b[47m\x1b[30m%s\x1b[0m', `FXP QUOTE Sending second stage quote to destination DFSP: ${fxpQuoteDestinationFspId}`);
@@ -233,7 +234,7 @@ class InboundTransfersModel {
     }
 
 
-    async createFxpQuoteResponseListener(fxpQuoteRequest, originalQuoteSourceFspId, originalQuoteRequest) {
+    async createFxpQuoteResponseListener(fxpQuoteRequest, originalQuoteSourceFspId, originalQuoteDestinationFspId, originalQuoteRequest, fxpQuoteSourceFspId, fxpQuoteDestinationFspId ) {
         const fxpQuoteRequestId = fxpQuoteRequest.quoteId;
         this.subscriber = await this.cache.getClient();
         this.subscriber.subscribe(fxpQuoteRequestId);
@@ -256,6 +257,7 @@ class InboundTransfersModel {
             }
             const fxpQuoteResponse = message.data;
             const fxpQuoteResponseHeaders = message.headers;
+
             // cancel the timeout handler
             // clearTimeout(timeout); // FIXME implement timeouts
 
@@ -308,13 +310,16 @@ class InboundTransfersModel {
             // now store the fulfilment and the quote data against the quoteId in our cache
             // as we are going to use this on the transfer processing
             await this.cache.set(`quote_${originalQuoteRequest.transactionId}`, {
-                // originalQuoteId: responseToOriginalQuote.body.metadata.quoteId,
-                originalQuoteRequest: originalQuoteRequest,
-                fxpQuoteRequest: fxpQuoteRequest,
-                fxpQuoteResponse: fxpQuoteResponse,
-                responseToOriginalQuote: responseToOriginalQuote,
+                originalQuoteSourceFspId,
+                originalQuoteDestinationFspId,
+                fxpQuoteSourceFspId,
+                fxpQuoteDestinationFspId,
+                originalQuoteRequest,
+                fxpQuoteRequest,
+                fxpQuoteResponse,
+                responseToOriginalQuote,
                 mojaloopResponse: responseToOriginalQuote,
-                fulfilment: fulfilment,
+                fulfilment,
                 fxpQuote: true
             });
 
@@ -495,9 +500,26 @@ class InboundTransfersModel {
             const fxpTransferResponse = message.data;
             const fxpTransferResponseHeaders = message.headers;
             
+            const destinationFspId = fxpTransferResponseHeaders[FSPIOP_SourceHeader];
+            const sourceFspId = fxpTransferResponseHeaders[FSPIOP_DestinationHeader];
+
+            // First let's see if we're getting a fulfilment with destination = DFSP(destination currency) or DFSP(source currency)
+            if (destinationFspId === quoteData.originalQuoteDestinationFspId && sourceFspId === quoteData.originalQuoteSourceFspId) {
+                // 22
+                console.log('fxpTransfer processing second leg from transfer fulfilment notification ( step 22 )');
+                // not yet implemented
+                return; 
+            } else if (destinationFspId === quoteData.fxpQuoteDestinationFspId && sourceFspId === quoteData.fxpQuoteSourceFspId) {
+                // 14B
+                console.log('fxpTransfer processing first leg from transfer fulfilment notification ( step 14B )');
+            } else {
+                console.error(`Coudln't find a match for sourceFspId: ${sourceFspId} destinationFspId: ${destinationFspId}`);
+            }
+
+            
             // We got a response to the fxpTransferRequest
             // fxpTransferResponseHeaders.'fspiop-source' = DFSP2
-            // fxpTransferResponseHeaders.'fspiop-destination'= 'DFSP XOF'
+            // fxpTransferResponseHeaders.'fspiop-destination'= 'DFSP-XOF'
             // body:
             // '{
             //     "completedTimestamp":"2019-07-19T20:06:12.287Z",

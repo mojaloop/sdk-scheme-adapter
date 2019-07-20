@@ -157,12 +157,12 @@ class BackendRequests {
             },
             body: {
                 metadata: {
-                    sourceFSP: 'DFSP XOF',
+                    sourceFSP: 'DFSP-XOF',
                     destinationFSP: 'DFSP2'    
                 },
                 transfer: {
                     'transferId': '11111111-2222-3333-8888-555555555555',
-                    'payerFsp': 'DFSP XOF',
+                    'payerFsp': 'DFSP-XOF',
                     'payeeFsp': 'DFSP2',
                     'amount': {
                         'amount': '100100',
