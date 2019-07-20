@@ -176,6 +176,42 @@ class BackendRequests {
     }
 
     /**
+     * 
+     * @param {fulfilment} fxpTransferResponse fxpTransferResponse
+     * @param {transferId} transferId transferId
+     * @param {String} sourceFSP
+     * @param {String} destinationFSP
+     */
+    async postFxpTransferResponse(transferId, fxpTransferResponse, sourceFspId, destinationFspId) {
+        // MOCKING until backend ready
+
+        let composedFxpTransferResponse = {
+            metadata: {
+                sourceFSP: sourceFspId,
+                destinationFSP: destinationFspId    
+            },
+            transferResponse: fxpTransferResponse
+        };
+
+
+        //return this._post(`fxptransfers/${transferId}/responses`, composedFxpTransferResponse);
+        // mocking
+        // no headers returned
+        let mockedResponse = {
+            metadata: {
+                sourceFSP: 'DFSP EUR',
+                destinationFSP: 'DFSP1'    
+            },
+            transferResponse: {
+                'completedTimestamp': '2019-07-19T20:06:12.287Z',
+                'transferState': 'COMMITTED',
+                'fulfilment': null // was 'AEHj7oqLNuVEL8W1xsxSpVFdncgqbiza_a-hNHS657o'
+            }
+        };
+        return mockedResponse;
+    }
+    
+    /**
      * Executes a POST /quotes/{id} request for the specified quote request
      *
      * @returns {object} - JSON response body if one was received
