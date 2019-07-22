@@ -201,9 +201,9 @@ const putPartiesByTypeAndId = async (ctx) => {
  * Handles a PUT /quotes/{ID}. This is a response to a POST /quotes request
  */
 const putQuoteById = async (ctx) => {
-    // publish an event onto the cache for subscribers to action
     console.log('\x1b[47m\x1b[30m%s\x1b[0m', ` PUT /quotes/{ID} received with headers: ${JSON.stringify(ctx.request.headers, null, 2)} and body: ${JSON.stringify(ctx.request.body, null, 2)}`);
 
+    // If forwarding (usually while the SDK is working as a passthrough or Hub emulator)
     if (ctx.state.conf.forwardPutQuotesToBackend) {
         let backendRequests = new BackendRequests({
             logger: ctx.state.logger,
@@ -211,11 +211,12 @@ const putQuoteById = async (ctx) => {
             dfspId: ctx.state.conf.dfspId
         });
         
-        let response = await backendRequests.postFxpQuote(ctx.state.path.params.ID, ctx.request.body.quoteResponse ? ctx.request.body.quoteResponse : ctx.request.body , 
+        let response = await backendRequests.postFxpQuoteResponse(ctx.state.path.params.ID, ctx.request.body.quoteResponse ? ctx.request.body.quoteResponse : ctx.request.body , 
             { ...ctx.request.headers, ...ctx.request.body.metadata });
         console.log('Sent PUT /quotes to backend and got back: ', response);
 
     } else {
+        // publish an event onto the cache for subscribers to action
         await ctx.state.cache.publish(`${ctx.state.path.params.ID}`, {
             type: 'quoteResponse',
             data: ctx.request.body,
@@ -232,12 +233,27 @@ const putQuoteById = async (ctx) => {
  * Handles a PUT /transfers/{ID}. This is a response to a POST /transfers request 
  */
 const putTransfersById = async (ctx) => {
-    // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`${ctx.state.path.params.ID}`, {
-        type: 'transferFulfil',
-        data: ctx.request.body,
-        headers: ctx.request.headers
-    });
+    // If forwarding (usually while the SDK is working as a passthrough or Hub emulator)
+    // FIXME implement forwardPutTransfersToBackend loading on config
+    if (ctx.state.conf.forwardPutTransfersToBackend) {
+        let backendRequests = new BackendRequests({
+            logger: ctx.state.logger,
+            backendEndpoint: ctx.state.conf.backendEndpoint,
+            dfspId: ctx.state.conf.dfspId
+        });
+        
+        // FIXME validate implementation
+        let response = await backendRequests.postFxpTransferResponse(ctx.state.path.params.ID, ctx.request.body, ctx.request.headers['fspiop-source'], ctx.request.headers['fspiop-destination']);
+        console.log('Sent PUT /transfers to backend and got back: ', response);
+
+    } else {
+        // publish an event onto the cache for subscribers to action
+        await ctx.state.cache.publish(`${ctx.state.path.params.ID}`, {
+            type: 'transferFulfil',
+            data: ctx.request.body,
+            headers: ctx.request.headers
+        });
+    }
 
     ctx.response.status = 200;
 };
