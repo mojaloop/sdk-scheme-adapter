@@ -138,17 +138,8 @@ class BackendRequests {
      * 
      * @param {prepareRequest} transfer prepare request
      */
-    async postFxpTransfers(prepareRequest, sourceFspId, destinationFspId) {
+    async postFxpTransfers(prepareRequest) {
         // MOCKING until backend ready
-
-        let composedTransferRequest = {
-            metadata: {
-                sourceFSP: sourceFspId,
-                destinationFSP: destinationFspId    
-            },
-            transfer: prepareRequest
-        };
-
 
         //return this._post('composedTransferRequest', prepareRequest);
         // mocking
@@ -182,19 +173,10 @@ class BackendRequests {
      * @param {String} sourceFSP
      * @param {String} destinationFSP
      */
-    async postFxpTransferResponse(transferId, fxpTransferResponse, sourceFspId, destinationFspId) {
+    async postFxpTransferResponse(transferId, fxpTransferResponse) {
         // MOCKING until backend ready
 
-        let composedFxpTransferResponse = {
-            metadata: {
-                sourceFSP: sourceFspId,
-                destinationFSP: destinationFspId    
-            },
-            transferResponse: fxpTransferResponse
-        };
-
-
-        //return this._post(`fxptransfers/${transferId}/responses`, composedFxpTransferResponse);
+        //return this._post(`fxptransfers/${transferId}/responses`, fxpTransferResponse);
         // mocking
         // no headers returned
         let mockedResponse = {

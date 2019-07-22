@@ -406,7 +406,7 @@ class InboundTransfersModel {
 
     async fxpTransfer(prepareRequest, prepareRequestSourceFspId, destinationFspId, quoteData) {
         // get (composed meaning metadata + transfer) fxpTransferRequest from FXP backend
-        let composedFxpTransferRequest = await this.getFxpTransferFromBackend(prepareRequest, prepareRequestSourceFspId, destinationFspId);
+        let composedFxpTransferRequest = await this.getFxpTransferFromBackend(prepareRequest, prepareRequestSourceFspId);
         let fxpTransferRequest = composedFxpTransferRequest.transfer;
 
         // FIXME check timeout is less that the one in prepareRequest
@@ -415,6 +415,7 @@ class InboundTransfersModel {
         // FIXME this could also be done by the FXP, since it has the same data. Which place is better?
         fxpTransferRequest.ilpPacket = quoteData.fxpQuoteResponse.ilpPacket;
         fxpTransferRequest.condition = quoteData.fxpQuoteResponse.condition;
+        // FIXME assert that the value we received from the backend is the same as:
         fxpTransferRequest.transferId = quoteData.fxpQuoteRequest.transactionId;
 
         // Set up a listener before forwarding the fxpTransferRequest
@@ -424,11 +425,16 @@ class InboundTransfersModel {
         await this.forwardFxpTransferToDestination(composedFxpTransferRequest);
     }
 
-    async getFxpTransferFromBackend(prepareRequest, prepareRequestSourceFspId, destinationFspId) {
+    /**
+     * Calls the backend with a prepareRequest ( from PayerFSP to MZ1 FSP ) and returns a new transfer request from MX2 FSP to Payee FSP
+     * @param {TransfersPostRequest } prepareRequest original transfer request
+     * @param {String} prepareRequestSourceFspId FIXME we're only passing this to send an error notification to the originator FSP. Should (re-)throw and exception and let the caller handle it
+     */
+    async getFxpTransferFromBackend(prepareRequest, prepareRequestSourceFspId) {
 
         let composedTransferRequestResponse;
         try {
-            composedTransferRequestResponse = await this.backendRequests.postFxpTransfers(prepareRequest, prepareRequestSourceFspId, destinationFspId);
+            composedTransferRequestResponse = await this.backendRequests.postFxpTransfers(prepareRequest);
             if(!composedTransferRequestResponse) {
                 throw new Error('null response to transfer request from FXP backend');
             }
@@ -561,10 +567,7 @@ class InboundTransfersModel {
 
         let composedTransferFulfilmentResponse;
         try {
-            const sourceFSP = fxpTransferResponseHeaders[FSPIOP_SourceHeader];
-            const destinationFSP = fxpTransferResponseHeaders[FSPIOP_DestinationHeader];
-
-            composedTransferFulfilmentResponse = await this.backendRequests.postFxpTransferResponse(transferId, fxpTransferResponse, sourceFSP, destinationFSP);
+            composedTransferFulfilmentResponse = await this.backendRequests.postFxpTransferResponse(transferId, fxpTransferResponse);
             if(!composedTransferFulfilmentResponse) {
                 throw new Error('null response to transfer request from FXP backend'); // FIXME should send a response back to the originatorFsp
             }
