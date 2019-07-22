@@ -139,31 +139,7 @@ class BackendRequests {
      * @param {prepareRequest} transfer prepare request
      */
     async postFxpTransfers(prepareRequest) {
-        // MOCKING until backend ready
-
-        //return this._post('composedTransferRequest', prepareRequest);
-        // mocking
-        let mockedResponse = {
-            headers: {
-            },
-            body: {
-                metadata: {
-                    sourceFSP: 'DFSP-XOF',
-                    destinationFSP: 'DFSP2'    
-                },
-                transfer: {
-                    'transferId': '11111111-2222-3333-8888-555555555555',
-                    'payerFsp': 'DFSP-XOF',
-                    'payeeFsp': 'DFSP2',
-                    'amount': {
-                        'amount': '100100',
-                        'currency': 'XOF'
-                    },
-                    'expiration': '2019-07-18T13:00:30.164Z' // 4 seconds less
-                }
-            }
-        };
-        return mockedResponse;
+        return this._post('fxptransfers', prepareRequest);
     }
 
     /**
@@ -174,10 +150,7 @@ class BackendRequests {
      * @param {String} destinationFSP
      */
     async postFxpTransferResponse(transferId, fxpTransferResponse) {
-        // MOCKING until backend ready
-        return null;
-
-        //return this._post(`fxptransfers/${transferId}/responses`, fxpTransferResponse);
+        return this._post(`fxptransfers/${transferId}/responses`, fxpTransferResponse);
     }
     
     /**

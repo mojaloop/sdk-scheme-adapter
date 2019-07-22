@@ -482,8 +482,7 @@ class InboundTransfersModel {
             return await this.mojaloopRequests.putTransfersError(prepareRequest.transferId, err.toApiErrorObject(), prepareRequestSourceFspId);
         }
 
-        let composedTransferRequest = composedTransferRequestResponse.body;
-        return composedTransferRequest;
+        return composedTransferRequestResponse;
     }
 
     /**
