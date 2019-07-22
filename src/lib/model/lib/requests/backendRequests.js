@@ -175,22 +175,9 @@ class BackendRequests {
      */
     async postFxpTransferResponse(transferId, fxpTransferResponse) {
         // MOCKING until backend ready
+        return null;
 
         //return this._post(`fxptransfers/${transferId}/responses`, fxpTransferResponse);
-        // mocking
-        // no headers returned
-        let mockedResponse = {
-            metadata: {
-                sourceFSP: 'DFSP EUR',
-                destinationFSP: 'DFSP1'    
-            },
-            transferResponse: {
-                'completedTimestamp': '2019-07-19T20:06:12.287Z',
-                'transferState': 'COMMITTED',
-                'fulfilment': null // was 'AEHj7oqLNuVEL8W1xsxSpVFdncgqbiza_a-hNHS657o'
-            }
-        };
-        return mockedResponse;
     }
     
     /**

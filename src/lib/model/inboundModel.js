@@ -27,6 +27,8 @@ const ASYNC_TIMEOUT_MILLS = 30000;
 
 /**
  *  Models the operations required for performing inbound transfers
+ * 
+ *  Also handles the FXP interactions ( quotes and transfers )
  */
 class InboundTransfersModel {
     constructor(config) {
@@ -172,6 +174,13 @@ class InboundTransfersModel {
         }
     }
 
+    /**
+     * Handles a FXP Quote, triggering the creation of the "second stage" quote and setting listeners for its resolution.
+     * See https://modusbox.atlassian.net/wiki/spaces/mbxFXP/pages/400949590/FXP+P2P+transfer
+     * 
+     * @param {Object} originalQuoteRequestHeaders Headers from the POST /quotes operation
+     * @param {QuotesPostRequest} originalQuoteRequest Quote request. See 6.5.2.2 on the Mojaloop API
+     */
     async fxQuoteRequest(originalQuoteRequestHeaders, originalQuoteRequest) {
         try {
             const originalQuoteId = originalQuoteRequest.quoteId;
@@ -179,11 +188,11 @@ class InboundTransfersModel {
             const originalQuoteDestinationFspId = originalQuoteRequestHeaders[FSPIOP_DestinationHeader];
 
             // make a call to the backend to ask for a new quote
-            console.log('\x1b[47m\x1b[30m%s\x1b[0m', 'FXP QUOTE Sending request to backend');
-            let composedFxpQuoteRequest;
+            this.logger.log('[Quotes 19] FXP QUOTE Sending request to backend');
+            let secondStageComposedQuote;
             try {
-                composedFxpQuoteRequest = await this.backendRequests.postFxpQuotes(originalQuoteRequest, originalQuoteRequestHeaders);
-                if(!composedFxpQuoteRequest) {
+                secondStageComposedQuote = await this.backendRequests.postFxpQuotes(originalQuoteRequest, originalQuoteRequestHeaders);
+                if(!secondStageComposedQuote) {
                     throw new Error('null response to quote request from FXP backend');
                 }
             } catch (error) {
@@ -194,35 +203,30 @@ class InboundTransfersModel {
                 return await this.mojaloopRequests.putQuotesError(originalQuoteId, err.toApiErrorObject(), originalQuoteSourceFspId);
             }
 
-            console.log('\x1b[47m\x1b[30m%s\x1b[0m', `FXP QUOTE Got response from backend: ${JSON.stringify(composedFxpQuoteRequest, null, 2)}`);
+            this.logger.log(`[Quotes 22] FXP QUOTE Got response from backend: ${JSON.stringify(secondStageComposedQuote, null, 2)}`);
 
             // Now that we got a response, send the quote to the destination DFSP
-            const fxpQuoteSourceFspId = composedFxpQuoteRequest.metadata.sourceFSP;
-            const fxpQuoteDestinationFspId = composedFxpQuoteRequest.metadata.destinationFSP;
+            const secondStageQuoteSourceFsp = secondStageComposedQuote.metadata.sourceFSP;
+            const secondStageQuoteDestinationFsp = secondStageComposedQuote.metadata.destinationFSP;
 
-            // BEGIN set up listener to PUT /quotes/{transferId} for the second stage quote
-            await this.createFxpQuoteResponseListener(composedFxpQuoteRequest.quote, originalQuoteSourceFspId, originalQuoteDestinationFspId, originalQuoteRequest, fxpQuoteSourceFspId, fxpQuoteDestinationFspId);
+            // set up listener to PUT /quotes/{transferId} for the second stage quote ( which is step 28B)
+            await this.createSecondStageQuoteResponseListener(secondStageComposedQuote.quote, originalQuoteSourceFspId, originalQuoteDestinationFspId, originalQuoteRequest, secondStageQuoteSourceFsp, secondStageQuoteDestinationFsp);
 
             // forward the quote to the destination FSP
-            console.log('\x1b[47m\x1b[30m%s\x1b[0m', `FXP QUOTE Sending second stage quote to destination DFSP: ${fxpQuoteDestinationFspId}`);
+            this.logger.log(`[Quotes 23] FXP QUOTE Sending second stage quote to destination DFSP: ${secondStageQuoteDestinationFsp}`);
 
-            // MBXFXP-20
-            let peerEndpoint = this.config.peerEndpoint; // default
-            const configEndpoint = this.config.getDfspEndpoint(fxpQuoteDestinationFspId);
-            if (configEndpoint) {
-                peerEndpoint = configEndpoint.endpoint;
-            }
+            let peerEndpoint = this.getEndpointForDFSP(secondStageQuoteDestinationFsp);
 
             const fxpMojaloopRequests = new MojaloopRequests({
                 logger: this.logger,
                 peerEndpoint: peerEndpoint,
-                dfspId: fxpQuoteSourceFspId,
+                dfspId: secondStageQuoteSourceFsp,
                 tls: this.config.tls,
                 jwsSign: this.config.jwsSign,
-                jwsSigningKey: this.config.jwsSigningKey // FIXME we need to use ONE PRIVATE KEY PER FX DFSP
+                jwsSigningKey: this.config.jwsSigningKey // FIXME MBXFXP-12 we need to use ONE PRIVATE KEY PER FX DFSP
             });
     
-            return fxpMojaloopRequests.postQuotes(composedFxpQuoteRequest.quote, fxpQuoteDestinationFspId);
+            return fxpMojaloopRequests.postQuotes(secondStageComposedQuote.quote, secondStageQuoteDestinationFsp);
         }
         catch(err) {
             this.logger.log(`Error in quoteRequest: ${err.stack || util.inspect(err)}`);
@@ -233,126 +237,147 @@ class InboundTransfersModel {
         }
     }
 
-
-    async createFxpQuoteResponseListener(fxpQuoteRequest, originalQuoteSourceFspId, originalQuoteDestinationFspId, originalQuoteRequest, fxpQuoteSourceFspId, fxpQuoteDestinationFspId ) {
-        const fxpQuoteRequestId = fxpQuoteRequest.quoteId;
+    /**
+     * Creates a listener for the /quotes callback on secondStageQuoteId
+     * 
+     * @param {QuotesPostRequest} secondStageQuote quote "B", created from MZ2 DFSP to the PayeeDFSP
+     * @param {String} originalQuoteSourceFspId 
+     * @param {String} originalQuoteDestinationFspId 
+     * @param {QuotesPostRequest} originalQuoteRequest quote "A". Received from hub, from PayerDFSP to MZ1 DFSP
+     * @param {String} secondStageQuoteSourceFsp 
+     * @param {String} secondStageQuoteDestinationFsp 
+     */
+    async createSecondStageQuoteResponseListener(secondStageQuote, originalQuoteSourceFspId, originalQuoteDestinationFspId, originalQuoteRequest, secondStageQuoteSourceFsp, secondStageQuoteDestinationFsp) {
+        const secondStageQuoteId = secondStageQuote.quoteId;
         this.subscriber = await this.cache.getClient();
-        this.subscriber.subscribe(fxpQuoteRequestId);
-        let self = this;
+        this.subscriber.subscribe(secondStageQuoteId);
         const fxpQuoteResponseHandler = async (cn, msg) => {
-            this.logger.log('quoteResponseHandler received cn and msg: ', cn, msg);
-            let message = JSON.parse(msg);
-            if (message.type === 'quoteResponseError') {
-                // this is an error response to our POST /quotes request
-                // make an error callback to the source fsp
-                this.logger.log(`Error on response to fxpQuote. Making error callback to ${originalQuoteSourceFspId}`);
-                const err = new Errors.MojaloopFSPIOPError(null, message.data, originalQuoteSourceFspId, Errors.MojaloopApiErrorCodes.PAYEE_ERROR);
-                // FIXME wrap in a trycatch and log
-                return await this.mojaloopRequests.putQuotesError(originalQuoteRequest.quoteId, err.toApiErrorObject(), originalQuoteSourceFspId);
-            }
-            if (message.type !== 'quoteResponse') {
-                // ignore any message on this subscription that is not a quote response
-                this.logger.log(`Ignoring cache notification for transfer ${fxpQuoteRequestId}. Type is not quoteResponse: ${util.inspect(message)}`);
-                return;
-            }
-            const fxpQuoteResponse = message.data;
-            const fxpQuoteResponseHeaders = message.headers;
-
-            // cancel the timeout handler
-            // clearTimeout(timeout); // FIXME implement timeouts
-
-            // clean quoteId from response if there. The SDK returns it as part of a quote response but it's not part of it per the MOjaloop spec ( FIXME find proper reference )
-            delete fxpQuoteResponse['quoteId'];
-            console.log('\x1b[47m\x1b[30m%s\x1b[0m',`FXP QUOTE Received response to fxp quote ${JSON.stringify(fxpQuoteResponse, null, 2)}`);
-            this.logger.log(`FxpQuote response received: ${util.inspect(fxpQuoteResponse)} with headers: ${util.inspect(fxpQuoteResponseHeaders)}`);
-            // stop listening for payee resolution messages
-            this.subscriber.unsubscribe(fxpQuoteRequestId, () => {
-                this.logger.log('FxpQuote request subscriber unsubscribed');
-            });
-            // Now send the quote to the FXP
-            console.log('\x1b[47m\x1b[30m%s\x1b[0m', 'FXP QUOTE SENDING QUOTE RESPONSE TO BACKEND and asking for response to original quote');
-            // forward fxpQuoteResponse to backend; don't change any headers
-            let composedResponseToOriginalQuote;
-            try {
-                composedResponseToOriginalQuote = await self.backendRequests.postFxpQuoteResponse(fxpQuoteRequestId, fxpQuoteResponse, fxpQuoteResponseHeaders);
-                if (!composedResponseToOriginalQuote) {
-                    throw new Error('Null response from fxp to fxpQuoteResponse');
-                }
-                // validate composedResponseToOriginalQuote
-                //
-            }
-            catch (error) {
-                this.logger.log(`Error from fxp to fxpQuoteResponse. Making error callback to ${originalQuoteSourceFspId}`);
-                const err = new Errors.MojaloopFSPIOPError(error, error.message, originalQuoteSourceFspId, Errors.MojaloopApiErrorCodes.PAYEE_ERROR);
-                // FIXME wrap in a trycatch and log
-                return await this.mojaloopRequests.putQuotesError(originalQuoteRequest.quoteId, err.toApiErrorObject(), originalQuoteSourceFspId);
-            }
-            // fetch headers from response ( FSPIOP-*, content-type etc) and use them on the PUT below
-            const sourceFspId = composedResponseToOriginalQuote.metadata.sourceFSP;
-            const destinationFspId = composedResponseToOriginalQuote.metadata.destinationFSP;
-            console.log('\x1b[47m\x1b[30m%s\x1b[0m', `FXP QUOTE SENDING RESPONSE TO ORIGINAL QUOTE TO DFSP1 ${JSON.stringify(composedResponseToOriginalQuote, null, 2)}`);
-
-            const responseToOriginalQuote = composedResponseToOriginalQuote.quoteResponse;
-
-            // Now we create the ilp packet and condition
-            // CODE taken from quoteRequest
-            if(!responseToOriginalQuote.expiration) {
-                const expiration = new Date().getTime() + (this.expirySeconds * 1000);
-                responseToOriginalQuote.expiration = new Date(expiration).toISOString();
-            }
-
-            // create our ILP packet and condition and tag them on to our internal quote response 
-            const { fulfilment, ilpPacket, condition } = this.ilp.getQuoteResponseIlp(fxpQuoteRequest, responseToOriginalQuote);
-
-            responseToOriginalQuote.ilpPacket = ilpPacket;
-            responseToOriginalQuote.condition = condition; 
-
-            // now store the fulfilment and the quote data against the quoteId in our cache
-            // as we are going to use this on the transfer processing
-            await this.cache.set(`quote_${originalQuoteRequest.transactionId}`, {
-                originalQuoteSourceFspId,
-                originalQuoteDestinationFspId,
-                fxpQuoteSourceFspId,
-                fxpQuoteDestinationFspId,
-                originalQuoteRequest,
-                fxpQuoteRequest,
-                fxpQuoteResponse,
-                responseToOriginalQuote,
-                mojaloopResponse: responseToOriginalQuote,
-                fulfilment,
-                fxpQuote: true
-            });
-
-            // make a callback to the source fsp with the quote response
-
-            // MBXFXP-20
-            let peerEndpoint = this.config.peerEndpoint; // default
-            const configEndpoint = this.config.getDfspEndpoint(destinationFspId);
-            if (configEndpoint) {
-                peerEndpoint = configEndpoint.endpoint;
-            }
-            
-            // Mojaloop requests picks the quoteId from the body
-            responseToOriginalQuote.quoteId = composedResponseToOriginalQuote.metadata.quoteId;
-
-            const fxpMojaloopRequests = new MojaloopRequests({
-                logger: this.logger,
-                peerEndpoint: peerEndpoint,
-                dfspId: sourceFspId,
-                tls: this.config.tls,
-                jwsSign: this.config.jwsSign,
-                jwsSigningKey: this.config.jwsSigningKey // FIXME we need to use ONE PRIVATE KEY PER FX DFSP
-            });
-            // FIXME wrap in a trycatch
-            const putResponse = await fxpMojaloopRequests.putQuotes(responseToOriginalQuote, destinationFspId);
-            this.logger.log(`Response from original dfspid to PUT /quotes/{originalQuoteId}: ${util.inspect(putResponse)}`);
+            return this.handleSecondStageQuoteResponse(cn, msg, secondStageQuote, originalQuoteSourceFspId, originalQuoteDestinationFspId, originalQuoteRequest, secondStageQuoteSourceFsp, secondStageQuoteDestinationFsp);
         };
         this.subscriber.on('message', fxpQuoteResponseHandler);
     }
 
     /**
+     * Handles the /quotes callback on the second stage quote
+     * 
+     * @param {Object} cn callback notification
+     * @param {Object} msg message
+     * @param {QuotesPostRequest} secondStageQuote quote "B", created from MZ2 DFSP to the PayeeDFSP
+     * @param {String} originalQuoteSourceFspId 
+     * @param {String} originalQuoteDestinationFspId 
+     * @param {QuotesPostRequest} originalQuoteRequest 
+     * @param {String} secondStageQuoteSourceFsp 
+     * @param {String} secondStageQuoteDestinationFsp 
+     */
+    async handleSecondStageQuoteResponse(cn, msg, secondStageQuote, originalQuoteSourceFspId, originalQuoteDestinationFspId, originalQuoteRequest, secondStageQuoteSourceFsp, secondStageQuoteDestinationFsp) {
+        const secondStageQuoteId = secondStageQuote.quoteId;
+        this.logger.log(`FXP QUOTE quoteResponseHandler received cn ${util.inspect(cn)} and msg: ${util.inspect(msg)}`);
+        let message = JSON.parse(msg);
+        if (message.type === 'quoteResponseError') {
+            // this is an error response to our POST /quotes request
+            // make an error callback to the source fsp
+            this.logger.log(`Error on response to fxpQuote. Making error callback to ${originalQuoteSourceFspId}`);
+            const err = new Errors.MojaloopFSPIOPError(null, message.data, originalQuoteSourceFspId, Errors.MojaloopApiErrorCodes.PAYEE_ERROR);
+            // FIXME wrap in a trycatch and log
+            return await this.mojaloopRequests.putQuotesError(originalQuoteRequest.quoteId, err.toApiErrorObject(), originalQuoteSourceFspId);
+        }
+        if (message.type !== 'quoteResponse') {
+            // ignore any message on this subscription that is not a quote response
+            this.logger.log(`Ignoring cache notification for transfer ${secondStageQuoteId}. Type is not quoteResponse: ${util.inspect(message)}`);
+            return;
+        }
+        const secondStageQuoteResponse = message.data;
+        const secondStageQuoteResponseHeaders = message.headers;
+
+        // cancel the timeout handler
+        // clearTimeout(timeout); // FIXME implement timeouts
+
+        // clean quoteId from response if there. The SDK returns it as part of a quote response but it's not part of it per the Mojaloop spec ( FIXME find proper reference )
+        delete secondStageQuoteResponse['quoteId'];
+        this.logger.log(`[Quotes 28B] Received response to second stage quote: ${util.inspect(secondStageQuoteResponse)} with headers: ${util.inspect(secondStageQuoteResponseHeaders)}`);
+        // stop listening for payee resolution messages
+        this.subscriber.unsubscribe(secondStageQuoteId, () => {
+            this.logger.log('FxpQuote request subscriber unsubscribed');
+        });
+        // Now send the quote to the FXP
+        this.logger.log('[Quotes 29] FXP QUOTE : SENDING QUOTE RESPONSE TO BACKEND and asking for response to original quote');
+        // forward secondStageQuoteResponse to backend; don't change any headers
+        let composedResponseToOriginalQuote;
+        try {
+            composedResponseToOriginalQuote = await this.backendRequests.postFxpQuoteResponse(secondStageQuoteId, secondStageQuoteResponse, secondStageQuoteResponseHeaders);
+            if (!composedResponseToOriginalQuote) {
+                throw new Error('Null response from fxp to secondStageQuoteResponse');
+            }
+            // validate composedResponseToOriginalQuote
+            //
+        }
+        catch (error) {
+            this.logger.log(`Error from fxp to secondStageQuoteResponse. Making error callback to ${originalQuoteSourceFspId}`);
+            const err = new Errors.MojaloopFSPIOPError(error, error.message, originalQuoteSourceFspId, Errors.MojaloopApiErrorCodes.PAYEE_ERROR);
+            // FIXME wrap in a trycatch and log
+            return await this.mojaloopRequests.putQuotesError(originalQuoteRequest.quoteId, err.toApiErrorObject(), originalQuoteSourceFspId);
+        }
+        const sourceFspId = composedResponseToOriginalQuote.metadata.sourceFSP;
+        const destinationFspId = composedResponseToOriginalQuote.metadata.destinationFSP;
+        this.logger.log(`[Quotes 30] FXP QUOTE : creating quote response IlpPacker, condition and fulfilment on ${util.inspect(composedResponseToOriginalQuote)}`);
+
+        const responseToOriginalQuote = composedResponseToOriginalQuote.quoteResponse;
+
+        // Now we create the ilp packet and condition
+        // CODE taken from quoteRequest
+        if(!responseToOriginalQuote.expiration) {
+            const expiration = new Date().getTime() + (this.expirySeconds * 1000); // FIXME Which timeout do we set here?
+            responseToOriginalQuote.expiration = new Date(expiration).toISOString();
+        }
+
+        // create our ILP packet and condition and tag them on to our internal quote response 
+        const { fulfilment, ilpPacket, condition } = this.ilp.getQuoteResponseIlp(secondStageQuote, responseToOriginalQuote);
+
+        responseToOriginalQuote.ilpPacket = ilpPacket;
+        responseToOriginalQuote.condition = condition; 
+
+        // now store the fulfilment and the quote data against the quoteId in our cache
+        // as we are going to use this on the transfer processing
+        await this.cache.set(`quote_${originalQuoteRequest.transactionId}`, {
+            originalQuoteSourceFspId,
+            originalQuoteDestinationFspId,
+            secondStageQuoteSourceFsp,
+            secondStageQuoteDestinationFsp,
+            originalQuoteRequest,
+            responseToOriginalQuote,
+            secondStageQuote,
+            secondStageQuoteResponse,
+            mojaloopResponse: responseToOriginalQuote,
+            fulfilment,
+            fxpQuote: true
+        });
+
+        this.logger.log(`[Quotes 31, 32] FXP QUOTE : SENDING RESPONSE TO ORIGINAL QUOTE TO DFSP1 ${util.inspect(composedResponseToOriginalQuote)}`);
+        // make a callback to the source fsp with the quote response
+
+        let peerEndpoint = this.getEndpointForDFSP(destinationFspId);
+        
+        // Mojaloop requests picks the quoteId from the body
+        responseToOriginalQuote.quoteId = composedResponseToOriginalQuote.metadata.quoteId;
+
+        const fxpMojaloopRequests = new MojaloopRequests({
+            logger: this.logger,
+            peerEndpoint: peerEndpoint,
+            dfspId: sourceFspId,
+            tls: this.config.tls,
+            jwsSign: this.config.jwsSign,
+            jwsSigningKey: this.config.jwsSigningKey // FIXME we need to use ONE PRIVATE KEY PER FX DFSP
+        });
+        // FIXME wrap in a trycatch
+        const putResponse = await fxpMojaloopRequests.putQuotes(responseToOriginalQuote, destinationFspId);
+        this.logger.log(`Response from original dfspid to PUT /quotes/{originalQuoteId}: ${util.inspect(putResponse)}`);
+    };
+
+    /**
      * Validates  an incoming transfer prepare request and makes a callback to the originator with
      * the result
+     * 
+     * If the quote is an "fxpQuote", handle it differently forwarding it to fxpTransfer 
      */
     async prepareTransfer(prepareRequest, sourceFspId, destinationFspId) {
         try {
@@ -404,25 +429,36 @@ class InboundTransfersModel {
         }
     }
 
+    /**
+     * Process a transfer belonging to a FXP quote
+     * 
+     * @param {TransfersPostRequest} prepareRequest transfer request related to originalQuoteRequest.transactionId
+     * @param {String} prepareRequestSourceFspId 
+     * @param {String} destinationFspId 
+     * @param {Object} quoteData put in the cache as the last step in handleSecondStageQuoteResponse
+     */
     async fxpTransfer(prepareRequest, prepareRequestSourceFspId, destinationFspId, quoteData) {
-        // get (composed meaning metadata + transfer) fxpTransferRequest from FXP backend
-        let composedFxpTransferRequest = await this.getFxpTransferFromBackend(prepareRequest, prepareRequestSourceFspId);
-        let fxpTransferRequest = composedFxpTransferRequest.transfer;
+        this.logger.log(`[Transfers 03 A] FXP : received transfer ${util.inspect(prepareRequest)} from ${util.inspect(prepareRequestSourceFspId)} to ${util.inspect(destinationFspId)}`);
+        this.logger.log('[Transfers 04 A] FXP : Forwarding to FXP');
+        let composedSecondStageTransfer = await this.getFxpTransferFromBackend(prepareRequest, prepareRequestSourceFspId);
+        let secondStageTransfer = composedSecondStageTransfer.transfer;
 
         // FIXME check timeout is less that the one in prepareRequest
         
-        // Set the fxpTransferRequest properties
+        // Set the secondStageTransfer properties
         // FIXME this could also be done by the FXP, since it has the same data. Which place is better?
-        fxpTransferRequest.ilpPacket = quoteData.fxpQuoteResponse.ilpPacket;
-        fxpTransferRequest.condition = quoteData.fxpQuoteResponse.condition;
+        secondStageTransfer.ilpPacket = quoteData.secondStageQuoteResponse.ilpPacket;
+        secondStageTransfer.condition = quoteData.secondStageQuoteResponse.condition;
         // FIXME assert that the value we received from the backend is the same as:
-        fxpTransferRequest.transferId = quoteData.fxpQuoteRequest.transactionId;
+        secondStageTransfer.transferId = quoteData.secondStageQuote.transactionId;
+        this.logger.log(`[Transfers 06] FXP : received second stage transfer from backend: ${util.inspect(secondStageTransfer)}`);
 
-        // Set up a listener before forwarding the fxpTransferRequest
-        await this.createFxpTransferResponseListener(prepareRequest, prepareRequestSourceFspId, quoteData, composedFxpTransferRequest);
+        // Set up a listener before forwarding the secondStageTransfer
+        await this.createFxpTransferResponseListener(prepareRequest, prepareRequestSourceFspId, quoteData, composedSecondStageTransfer);
 
         // forward it to destination fsp
-        await this.forwardFxpTransferToDestination(composedFxpTransferRequest);
+        this.logger.log('[Transfers 07 B] FXP : Sending transfer to Payee DFSP');
+        await this.forwardFxpTransferToDestination(composedSecondStageTransfer);
     }
 
     /**
@@ -447,44 +483,50 @@ class InboundTransfersModel {
         }
 
         let composedTransferRequest = composedTransferRequestResponse.body;
-        console.log('\x1b[47m\x1b[30m%s\x1b[0m', `FXP transfer Got response from backend: ${JSON.stringify(composedTransferRequest, null, 2)}`);
         return composedTransferRequest;
     }
 
+    /**
+     * Sends the second stage transfer to the Payee DFSP
+     * @param {ComposedTransferRequest} composedTransferRequest 
+     */
     async forwardFxpTransferToDestination(composedTransferRequest) {
 
         // Now that we got a response, send the quote to the destination DFSP
-        const fxpQuoteSourceFspId = composedTransferRequest.metadata.sourceFSP;
-        const fxpQuoteDestinationFspId = composedTransferRequest.metadata.destinationFSP;
+        const sourceFspId = composedTransferRequest.metadata.sourceFSP;
+        const destinationFspId = composedTransferRequest.metadata.destinationFSP;
 
-        let peerEndpoint = this.config.peerEndpoint; // default
-        const configEndpoint = this.config.getDfspEndpoint(fxpQuoteDestinationFspId);
-        if (configEndpoint) {
-            peerEndpoint = configEndpoint.endpoint;
-        }
+        let peerEndpoint = this.getEndpointForDFSP(destinationFspId);
 
         const fxpMojaloopRequests = new MojaloopRequests({
             logger: this.logger,
             peerEndpoint: peerEndpoint,
-            dfspId: fxpQuoteSourceFspId,
+            dfspId: sourceFspId,
             tls: this.config.tls,
             jwsSign: this.config.jwsSign,
             jwsSigningKey: this.config.jwsSigningKey // FIXME we need to use ONE PRIVATE KEY PER FX DFSP
         });
 
-        return fxpMojaloopRequests.postTransfers(composedTransferRequest.transfer, fxpQuoteDestinationFspId);
+        return fxpMojaloopRequests.postTransfers(composedTransferRequest.transfer, destinationFspId);
     }
 
-    /**
-     * "at this stage you will be notified that the payment would have been fulfilled from the receiving DFSP"
-     */
-    async createFxpTransferResponseListener(prepareRequest, prepareRequestSourceFspId, quoteData, composedFxpTransferRequest) {
-        // listen on composedFxpTransferRequest.transfer.transferId = quoteData.fxpQuoteRequest.transactionId;
-        this.subscriber = await this.cache.getClient();
-        this.subscriber.subscribe(composedFxpTransferRequest.transfer.transferId);
 
-        const fxpTransferResponseHandler = async (cn, msg) => {
-            this.logger.log('fxpTransferResponseHandler received cn and msg: ', cn, msg);
+    /**
+     * Creates a listener to handle the second stage transfer callback
+     * 
+     * @param {TransfersPostRequest} prepareRequest 
+     * @param {String} prepareRequestSourceFspId 
+     * @param {Object} quoteData 
+     * @param {ComposedTransferRequest} composedSecondStageTransfer second stage composed transfer
+     */
+    async createFxpTransferResponseListener(prepareRequest, prepareRequestSourceFspId, quoteData, composedSecondStageTransfer) {
+        let secondStageTransferId = composedSecondStageTransfer.transfer.transferId;
+        // listen on secondStageTransferId = quoteData.secondStageQuote.transactionId;
+        this.subscriber = await this.cache.getClient();
+        this.subscriber.subscribe(secondStageTransferId);
+
+        const secondStageTransferResponseHandler = async (cn, msg) => {
+            this.logger.log('secondStageTransferResponseHandler received cn and msg: ', cn, msg);
             let message = JSON.parse(msg);
             if (message.type === 'transferError') {
                 // this is an error response to our POST /transfers request
@@ -497,34 +539,33 @@ class InboundTransfersModel {
             }
             if (message.type !== 'transferFulfil') {
                 // ignore any message on this subscription that is not a quote response
-                this.logger.log(`Ignoring cache notification for transfer ${composedFxpTransferRequest.transfer.transferId}. Type is not quoteResponse: ${util.inspect(message)}`);
+                this.logger.log(`Ignoring cache notification for transfer ${secondStageTransferId}. Type is not quoteResponse: ${util.inspect(message)}`);
                 return;
             }
 
             // cancel the timeout handler
             // clearTimeout(timeout); // FIXME implement timeouts
 
-            this.subscriber.unsubscribe(composedFxpTransferRequest.transfer.transferId, () => {
+            this.subscriber.unsubscribe(secondStageTransferId, () => {
                 this.logger.log('fxpTransfer notification subscriber unsubscribed');
             });
 
-
-            const fxpTransferResponse = message.data;
-            const fxpTransferResponseHeaders = message.headers;
+            const secondStageTransfer = message.data;
+            const secondStageTransferHeaders = message.headers;
             
-            const sourceFspId = fxpTransferResponseHeaders[FSPIOP_SourceHeader];
-            const destinationFspId = fxpTransferResponseHeaders[FSPIOP_DestinationHeader];
+            const sourceFspId = secondStageTransferHeaders[FSPIOP_SourceHeader];
+            const destinationFspId = secondStageTransferHeaders[FSPIOP_DestinationHeader];
 
-            if (sourceFspId === quoteData.fxpQuoteDestinationFspId && destinationFspId === quoteData.fxpQuoteSourceFspId) {
+            if (sourceFspId === quoteData.secondStageQuoteDestinationFsp && destinationFspId === quoteData.secondStageQuoteSourceFsp) {
                 // 14B
-                console.log('processing commit notification of fxpTransfer ( step 14B )');
+                this.logger.log(`[Transfers 14B] FXP : received second stage transfer callback: ${util.inspect(secondStageTransfer)}`);
             } else {
                 console.error(`Coudln't find a match for sourceFspId: ${sourceFspId} destinationFspId: ${destinationFspId}`);
             }
 
-            // We got a response to the fxpTransferRequest
-            // fxpTransferResponseHeaders.'fspiop-source' = DFSP2
-            // fxpTransferResponseHeaders.'fspiop-destination'= 'DFSP-XOF'
+            // We got a response to the secondStageTransferRequest
+            // secondStageTransferHeaders.'fspiop-source' = DFSP2
+            // secondStageTransferHeaders.'fspiop-destination'= 'DFSP-XOF'
             // body:
             // '{
             //     "completedTimestamp":"2019-07-19T20:06:12.287Z",
@@ -532,45 +573,52 @@ class InboundTransfersModel {
             //     "fulfilment":"AEHj7oqLNuVEL8W1xsxSpVFdncgqbiza_a-hNHS657o"
             //  }',
  
-            // 15[B] Log fulfilment has been commited and forward to FXP
+            this.logger.log('[Transfers 15 B] FXP : forward onto FXP');
+
             // ( FXP on receiving will perform 16[B] Commit payee transfer)
-            let composedTransferFulfilmentResponse = await this.forwardFulfilmentToBackend(fxpTransferResponse, prepareRequestSourceFspId, composedFxpTransferRequest.transfer.transferId, fxpTransferResponseHeaders);
+            await this.forwardFulfilmentToBackend(secondStageTransfer, prepareRequestSourceFspId, secondStageTransferId);
 
             // FIXME check operation succeeded, forward error it it didn't
 
-            // 19[A] generate fulfilment for original transfer ( prepareTransfer )
+            this.logger.log(`[Transfers 19 A] FXP : generate fulfilment for the original transfer ${util.inspect(prepareRequest)}`);
+
             // Set the fulfilment to be the same we created when making the response to the originalQuote
-            // FIXME This could also be set by the FXP, since it also has this data. Which one is better? Data is "more persistent" in backend, here only in memory?
-            // In that case, completedTimestamp, transferState and extensionList are set by the FXP and here we only set the fulfilment
             let transferFulfilment = {
                 completedTimestamp: (new Date()).toISOString(),
                 transferState: 'COMMITTED',
                 fulfilment: quoteData.fulfilment
             };
+            this.logger.log(`[Transfers 20 A] FXP : respond with fulfilment: ${util.inspect(transferFulfilment)}`);
 
-            // Now that we got a response, send the fulfilment back to the originator DFSP
+            // Send the fulfilment back to the originator DFSP
             // Before doing that, we need to set up a listener for the commit notification on this original transfer "A"
             await this.createOriginalTransferResponseListener(prepareRequest, prepareRequestSourceFspId, quoteData);
 
-            // 20A Respond with fulfillment
-            // PUT /transfers/{originalId} to the hub
             let sendFulfimentToOriginatorFspResponse = await this.sendFulfimentToOriginatorFsp(prepareRequest.transferId, transferFulfilment,
                 quoteData.originalQuoteDestinationFspId, quoteData.originalQuoteSourceFspId);
-            console.log('sendFulfimentToOriginatorFsp response', sendFulfimentToOriginatorFspResponse);
+            this.logger.log(`[Transfers 20 A] FXP : 'sendFulfimentToOriginatorFsp response: ${util.inspect(sendFulfimentToOriginatorFspResponse)}`);
             // FIXME catch error and log. retry?
         };
-        this.subscriber.on('message', fxpTransferResponseHandler);
+        this.subscriber.on('message', secondStageTransferResponseHandler);
     }
 
-    // what does this return? it's just a commit notification.
-    async forwardFulfilmentToBackend(fxpTransferResponse, prepareRequestSourceFspId, transferId, fxpTransferResponseHeaders) {
-
-        let composedTransferFulfilmentResponse;
+    /**
+     * Sends the secondStageTransfer to the backend
+     * 
+     * @param {TransactionsIDPutResponse} secondStageTransfer Response to a transfer. See Mojaloop API 6.7.3.1
+     * @param {String} prepareRequestSourceFspId Only used to forward errors to. FIXME Will be refactored when the error handling is redone
+     * @param {UUID} transferId secondStageTransfer transferId
+     * 
+     * @returns null if no error
+     */
+    async forwardFulfilmentToBackend(secondStageTransfer, prepareRequestSourceFspId, transferId) {
         try {
-            composedTransferFulfilmentResponse = await this.backendRequests.postFxpTransferResponse(transferId, fxpTransferResponse);
-            if(!composedTransferFulfilmentResponse) {
-                throw new Error('null response to transfer request from FXP backend'); // FIXME should send a response back to the originatorFsp
+            let fulfilmentResponse = await this.backendRequests.postFxpTransferResponse(transferId, secondStageTransfer);
+            if(fulfilmentResponse != null) {
+                throw new Error('non null response to transfer request from FXP backend');
             }
+            this.logger.log('FXP transfer got OK response from backend');
+            return fulfilmentResponse;
         } catch (error) {
             // make an error callback to the source fsp
             this.logger.log(`Error while expecting response from FXP backend. Making error callback to ${prepareRequestSourceFspId}`);
@@ -578,10 +626,15 @@ class InboundTransfersModel {
             // FIXME wrap in a trycatch and log
             return await this.mojaloopRequests.putTransfersError(transferId, err.toApiErrorObject(), prepareRequestSourceFspId);
         }
-        console.log('\x1b[47m\x1b[30m%s\x1b[0m', `FXP transfer Got response from backend: ${JSON.stringify(composedTransferFulfilmentResponse, null, 2)}`);
-        return composedTransferFulfilmentResponse;
     }
 
+    /**
+     * Creates a listener to handle the original callback
+     * 
+     * @param {TransfersPostRequest} prepareRequest 
+     * @param {String} prepareRequestSourceFspId 
+     * @param {Object} quoteData 
+     */
     async createOriginalTransferResponseListener(prepareRequest, prepareRequestSourceFspId, quoteData) {
         // listen on prepareRequest.transferId = quoteData.originalQuoteRequest.transactionId;
         this.subscriber = await this.cache.getClient();
@@ -619,9 +672,9 @@ class InboundTransfersModel {
 
             if (sourceFspId === quoteData.originalQuoteDestinationFspId && destinationFspId === quoteData.originalQuoteSourceFspId) {
                 // 22
-                console.log('processing commit notification of originalTransfer ( step 22 )');
+                this.logger.log(`[Transfers 22] FXP : received original transfer callback: ${util.inspect(originalTransferResponse)}`);
             } else {
-                console.error(`Coudln't find a match for sourceFspId: ${sourceFspId} destinationFspId: ${destinationFspId}`); // FIXME unclear. Same on 14B
+                console.error(`Coudln't find a match for sourceFspId: ${sourceFspId} destinationFspId: ${destinationFspId}`); // FIXME  not clear. Same on 14B
             }
 
             // We got a response to the originalTransferRequest
@@ -633,15 +686,13 @@ class InboundTransfersModel {
             //     "transferState":"COMMITTED",
             //     "fulfilment":"AEHj7oqLNuVEL8W1xsxSpVFdncgqbiza_a-hNHS657o"
             //  }',
- 
-            // 23 Log fulfilment has been commited and forward to FXP
-            // ( FXP on receiving will perform 24[A] Commit payee transfer)
-            let composedTransferFulfilmentResponse = await this.forwardFulfilmentToBackend(originalTransferResponse, prepareRequestSourceFspId, prepareRequest.transferId, originalTransferResponseHeaders);
+            this.logger.log('[Transfers 23] FXP : Log fulfilment has been commited and forward to FXP');
 
-            // FIXME we're done. Check the response, and forward errors if any
-            let composedTransferFulfilment = composedTransferFulfilmentResponse.transferResponse;
+            await this.forwardFulfilmentToBackend(originalTransferResponse, prepareRequestSourceFspId, prepareRequest.transferId, originalTransferResponseHeaders);
 
-            console.log('We\'re done! forwardFulfilmentToBackend response', composedTransferFulfilment);
+            // we're done. Check the response, and forward errors if any
+            
+            this.logger.log('[Transfers ] FXP : DONE');
         };
         this.subscriber.on('message', originalTransferResponseHandler);
     }
@@ -654,11 +705,7 @@ class InboundTransfersModel {
      * @param {Object} transferFulfilment 
      */
     async sendFulfimentToOriginatorFsp(transferId, transferFulfilment, sourceFspId, destinationFspId) {
-        let peerEndpoint = this.config.peerEndpoint; // default
-        const configEndpoint = this.config.getDfspEndpoint(destinationFspId);
-        if (configEndpoint) {
-            peerEndpoint = configEndpoint.endpoint;
-        }
+        let peerEndpoint = this.getEndpointForDFSP(destinationFspId);
 
         const fxpMojaloopRequests = new MojaloopRequests({
             logger: this.logger,
@@ -695,6 +742,20 @@ class InboundTransfersModel {
         // Changed to return so we can return an answer to the original sender
         throw err;
         // return err;
+    }
+
+    /**
+     * Returns the dfsp endpoint
+     * 
+     * @param {String} dfsp DFSP id.
+     */
+    getEndpointForDFSP(dfsp) {
+        let peerEndpoint = this.config.peerEndpoint; // default
+        const configEndpoint = this.config.getDfspEndpoint(dfsp);
+        if (configEndpoint) {
+            peerEndpoint = configEndpoint.endpoint;
+        }
+        return peerEndpoint;
     }
 }
 
