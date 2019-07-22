@@ -16,7 +16,7 @@ const fs = require('fs');
 const sqlite = require('sqlite');
 
 const consoleDir = () => msg => {
-    console.dir(JSON.parse(msg), { depth: Infinity, colors: true });
+    console.dir(JSON.parse(msg), { depth: null, colors: true });
 };
 
 const stdout = () => msg => {

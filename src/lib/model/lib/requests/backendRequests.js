@@ -102,7 +102,7 @@ class BackendRequests {
             }
         };
 
-        return this._post('fxpquotes', composedFXPQuote, newHeaders, true);
+        return this._post('fxpquotes', composedFXPQuote, newHeaders);
     }
 
     /**
@@ -114,7 +114,7 @@ class BackendRequests {
      *
      * @returns {object} - JSON response body if one was received
      */
-    async postFxpQuote(quoteId, quoteRequest, headers) {
+    async postFxpQuoteResponse(quoteId, quoteRequest, headers) {
 
         const newHeaders = {
             accept: headers.accept || 'application/vnd.interoperability.quotes+json;version=1',
@@ -130,7 +130,27 @@ class BackendRequests {
         };
         
         console.log('postQuote sending headers: ', headers, ' quoteRequest: ', composedQuoteResponse);
-        return this._post(`fxpquotes/${quoteId}/responses`, composedQuoteResponse, newHeaders, true);
+        return this._post(`fxpquotes/${quoteId}/responses`, composedQuoteResponse, newHeaders);
+    }
+    
+    
+    /**
+     * 
+     * @param {prepareRequest} transfer prepare request
+     */
+    async postFxpTransfers(prepareRequest) {
+        return this._post('fxptransfers', prepareRequest);
+    }
+
+    /**
+     * 
+     * @param {fulfilment} fxpTransferResponse fxpTransferResponse
+     * @param {transferId} transferId transferId
+     * @param {String} sourceFSP
+     * @param {String} destinationFSP
+     */
+    async postFxpTransferResponse(transferId, fxpTransferResponse) {
+        return this._post(`fxptransfers/${transferId}/responses`, fxpTransferResponse);
     }
     
     /**
