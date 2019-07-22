@@ -484,6 +484,7 @@ class InboundTransfersModel {
                 // this is an error response to our POST /transfers request
                 // make an error callback to the source fsp
                 this.logger.log(`Error on response to fxpTransfer. Making error callback to ${prepareRequestSourceFspId}`);
+                // FIXME Maybe this should this go back as an error to DFSP2 since it handled this transfer *AND* also to the originator FSP?
                 const err = new Errors.MojaloopFSPIOPError(null, message.data, prepareRequestSourceFspId, Errors.MojaloopApiErrorCodes.PAYEE_ERROR);
                 // FIXME wrap in a trycatch and log
                 return await this.mojaloopRequests.putTransfersError(prepareRequest.transferId, err.toApiErrorObject(), prepareRequestSourceFspId);
@@ -497,26 +498,24 @@ class InboundTransfersModel {
             // cancel the timeout handler
             // clearTimeout(timeout); // FIXME implement timeouts
 
+            this.subscriber.unsubscribe(composedFxpTransferRequest.transfer.transferId, () => {
+                this.logger.log('fxpTransfer notification subscriber unsubscribed');
+            });
+
+
             const fxpTransferResponse = message.data;
             const fxpTransferResponseHeaders = message.headers;
             
-            const destinationFspId = fxpTransferResponseHeaders[FSPIOP_SourceHeader];
-            const sourceFspId = fxpTransferResponseHeaders[FSPIOP_DestinationHeader];
+            const sourceFspId = fxpTransferResponseHeaders[FSPIOP_SourceHeader];
+            const destinationFspId = fxpTransferResponseHeaders[FSPIOP_DestinationHeader];
 
-            // First let's see if we're getting a fulfilment with destination = DFSP(destination currency) or DFSP(source currency)
-            if (destinationFspId === quoteData.originalQuoteDestinationFspId && sourceFspId === quoteData.originalQuoteSourceFspId) {
-                // 22
-                console.log('fxpTransfer processing second leg from transfer fulfilment notification ( step 22 )');
-                // not yet implemented
-                return; 
-            } else if (destinationFspId === quoteData.fxpQuoteDestinationFspId && sourceFspId === quoteData.fxpQuoteSourceFspId) {
+            if (sourceFspId === quoteData.fxpQuoteDestinationFspId && destinationFspId === quoteData.fxpQuoteSourceFspId) {
                 // 14B
-                console.log('fxpTransfer processing first leg from transfer fulfilment notification ( step 14B )');
+                console.log('processing commit notification of fxpTransfer ( step 14B )');
             } else {
                 console.error(`Coudln't find a match for sourceFspId: ${sourceFspId} destinationFspId: ${destinationFspId}`);
             }
 
-            
             // We got a response to the fxpTransferRequest
             // fxpTransferResponseHeaders.'fspiop-source' = DFSP2
             // fxpTransferResponseHeaders.'fspiop-destination'= 'DFSP-XOF'
@@ -531,29 +530,33 @@ class InboundTransfersModel {
             // ( FXP on receiving will perform 16[B] Commit payee transfer)
             let composedTransferFulfilmentResponse = await this.forwardFulfilmentToBackend(fxpTransferResponse, prepareRequestSourceFspId, composedFxpTransferRequest.transfer.transferId, fxpTransferResponseHeaders);
 
-            // 19[A] generate fulfilment
+            // FIXME check operation succeeded, forward error it it didn't
+
+            // 19[A] generate fulfilment for original transfer ( prepareTransfer )
             // Set the fulfilment to be the same we created when making the response to the originalQuote
             // FIXME This could also be set by the FXP, since it also has this data. Which one is better? Data is "more persistent" in backend, here only in memory?
-            let composedTransferFulfilment = composedTransferFulfilmentResponse.transferResponse;
+            // In that case, completedTimestamp, transferState and extensionList are set by the FXP and here we only set the fulfilment
+            let transferFulfilment = {
+                completedTimestamp: (new Date()).toISOString(),
+                transferState: 'COMMITTED',
+                fulfilment: quoteData.fulfilment
+            };
 
-            composedTransferFulfilment.fulfilment = quoteData.fulfilment;
-            // completedTimestamp, transferState and extensionList are set by the FXP
+            // Now that we got a response, send the fulfilment back to the originator DFSP
+            // Before doing that, we need to set up a listener for the commit notification on this original transfer "A"
+            await this.createOriginalTransferResponseListener(prepareRequest, prepareRequestSourceFspId, quoteData);
 
             // 20A Respond with fulfillment
             // PUT /transfers/{originalId} to the hub
-            let originatorFspId = composedTransferFulfilmentResponse.metadata.destinationFSP;
-            if (originatorFspId !== prepareRequestSourceFspId) {
-                // assertion failed!
-                // FIXME send error to which one?
-                console.error(`Mismatch between composedTransferFulfilmentResponse.metadata.destinationFSP = ${composedTransferFulfilmentResponse.metadata.destinationFSP} and prepareRequestSourceFspId = ${prepareRequestSourceFspId}`);
-            }
-            let sendFulfimentToOriginatorFspResponse = await this.sendFulfimentToOriginatorFsp(prepareRequest.transferId, composedTransferFulfilmentResponse);
+            let sendFulfimentToOriginatorFspResponse = await this.sendFulfimentToOriginatorFsp(prepareRequest.transferId, transferFulfilment,
+                quoteData.originalQuoteDestinationFspId, quoteData.originalQuoteSourceFspId);
             console.log('sendFulfimentToOriginatorFsp response', sendFulfimentToOriginatorFspResponse);
             // FIXME catch error and log. retry?
         };
         this.subscriber.on('message', fxpTransferResponseHandler);
     }
 
+    // what does this return? it's just a commit notification.
     async forwardFulfilmentToBackend(fxpTransferResponse, prepareRequestSourceFspId, transferId, fxpTransferResponseHeaders) {
 
         let composedTransferFulfilmentResponse;
@@ -576,12 +579,78 @@ class InboundTransfersModel {
         return composedTransferFulfilmentResponse;
     }
 
-    async sendFulfimentToOriginatorFsp(transferId, composedTransferFulfilmentResponse) {
+    async createOriginalTransferResponseListener(prepareRequest, prepareRequestSourceFspId, quoteData) {
+        // listen on prepareRequest.transferId = quoteData.originalQuoteRequest.transactionId;
+        this.subscriber = await this.cache.getClient();
+        this.subscriber.subscribe(prepareRequest.transferId);
 
-        // Now that we got a response, send the fulfilment back to the originator DFSP
-        const sourceFspId = composedTransferFulfilmentResponse.metadata.sourceFSP;
-        const destinationFspId = composedTransferFulfilmentResponse.metadata.destinationFSP;
+        const originalTransferResponseHandler = async (cn, msg) => {
+            this.logger.log('originalTransferResponseHandler received cn and msg: ', cn, msg);
+            let message = JSON.parse(msg);
+            if (message.type === 'transferError') {
+                // this is an error response to our POST /transfers request
+                // make an error callback to the source fsp
+                this.logger.log(`Error on response to originalTransfer. Making error callback to ${prepareRequestSourceFspId}`);
+                const err = new Errors.MojaloopFSPIOPError(null, message.data, prepareRequestSourceFspId, Errors.MojaloopApiErrorCodes.PAYEE_ERROR);
+                // FIXME wrap in a trycatch and log
+                return await this.mojaloopRequests.putTransfersError(prepareRequest.transferId, err.toApiErrorObject(), prepareRequestSourceFspId);
+            }
+            if (message.type !== 'transferFulfil') {
+                // ignore any message on this subscription that is not a quote response
+                this.logger.log(`Ignoring cache notification for transfer ${prepareRequest.transferId}. Type is not quoteResponse: ${util.inspect(message)}`);
+                return;
+            }
 
+            // cancel the timeout handler
+            // clearTimeout(timeout); // FIXME implement timeouts
+
+            this.subscriber.unsubscribe(prepareRequest.transferId, () => {
+                this.logger.log('prepareRequest transfer notification subscriber unsubscribed');
+            });
+
+            const originalTransferResponse = message.data;
+            const originalTransferResponseHeaders = message.headers;
+            
+            const sourceFspId = originalTransferResponseHeaders[FSPIOP_SourceHeader];
+            const destinationFspId = originalTransferResponseHeaders[FSPIOP_DestinationHeader];
+
+            if (sourceFspId === quoteData.originalQuoteDestinationFspId && destinationFspId === quoteData.originalQuoteSourceFspId) {
+                // 22
+                console.log('processing commit notification of originalTransfer ( step 22 )');
+            } else {
+                console.error(`Coudln't find a match for sourceFspId: ${sourceFspId} destinationFspId: ${destinationFspId}`); // FIXME unclear. Same on 14B
+            }
+
+            // We got a response to the originalTransferRequest
+            // originalTransferResponseHeaders.'fspiop-source' = DFSP1
+            // originalTransferResponseHeaders.'fspiop-destination'= 'DFSP-EUR'
+            // body:
+            // '{
+            //     "completedTimestamp":"2019-07-19T20:06:12.287Z",
+            //     "transferState":"COMMITTED",
+            //     "fulfilment":"AEHj7oqLNuVEL8W1xsxSpVFdncgqbiza_a-hNHS657o"
+            //  }',
+ 
+            // 23 Log fulfilment has been commited and forward to FXP
+            // ( FXP on receiving will perform 24[A] Commit payee transfer)
+            let composedTransferFulfilmentResponse = await this.forwardFulfilmentToBackend(originalTransferResponse, prepareRequestSourceFspId, prepareRequest.transferId, originalTransferResponseHeaders);
+
+            // FIXME we're done. Check the response, and forward errors if any
+            let composedTransferFulfilment = composedTransferFulfilmentResponse.transferResponse;
+
+            console.log('We\'re done! forwardFulfilmentToBackend response', composedTransferFulfilment);
+        };
+        this.subscriber.on('message', originalTransferResponseHandler);
+    }
+
+    /**
+     * 20A Respond with fulfillment
+     * PUT /transfers/{originalId} to the hub
+     *
+     * @param {UUID} transferId 
+     * @param {Object} transferFulfilment 
+     */
+    async sendFulfimentToOriginatorFsp(transferId, transferFulfilment, sourceFspId, destinationFspId) {
         let peerEndpoint = this.config.peerEndpoint; // default
         const configEndpoint = this.config.getDfspEndpoint(destinationFspId);
         if (configEndpoint) {
@@ -597,7 +666,7 @@ class InboundTransfersModel {
             jwsSigningKey: this.config.jwsSigningKey // FIXME we need to use ONE PRIVATE KEY PER FX DFSP
         });
 
-        return fxpMojaloopRequests.putTransfers(transferId, composedTransferFulfilmentResponse.transferResponse, destinationFspId);
+        return fxpMojaloopRequests.putTransfers(transferId, transferFulfilment, destinationFspId);
     }
 
     async _handleError(err) {
