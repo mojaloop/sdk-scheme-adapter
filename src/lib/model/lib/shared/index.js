@@ -137,7 +137,6 @@ const mojaloopQuoteRequestToInternal = (external) => {
  */
 const internalQuoteResponseToMojaloop = (internal) => {
     const external = {
-        quoteId: internal.quoteId,
         transferAmount: {
             amount: internal.transferAmount,
             currency: internal.transferAmountCurrency
