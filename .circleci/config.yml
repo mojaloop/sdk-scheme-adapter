@@ -1,0 +1,13 @@
+version: "2.1"
+orbs:
+  docker: circleci/docker@0.5.10
+
+workflows:
+  build-and-publish-docker-image:
+    jobs:
+      - docker/publish:
+          lint-dockerfile: true
+          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+          registry: modusbox-mbx-docker.jfrog.io
+          docker-username: DOCKER_USER
+          docker-password: DOCKER_PASSWORD
