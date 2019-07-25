@@ -157,7 +157,7 @@ class InboundTransfersModel {
             });
 
             // make a callback to the source fsp with the quote response
-            return this.mojaloopRequests.putQuotes(mojaloopResponse, sourceFspId);
+            return this.mojaloopRequests.putQuotes(quoteRequest.quoteId,mojaloopResponse, sourceFspId);
         }
         catch(err) {
             this.logger.log(`Error in quoteRequest: ${err.stack || util.inspect(err)}`);
