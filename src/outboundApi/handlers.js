@@ -11,7 +11,6 @@
 'use strict';
 
 
-const util = require('util');
 const Model = require('@internal/model').outboundTransfersModel;
 
 
@@ -74,7 +73,7 @@ const putTransfers = async (ctx) => {
         ctx.response.body = response;
     }
     catch(err) {
-        ctx.state.logger.log(`Error handling putTransfers: ${err.stack || util.inspect(err)}`);
+        ctx.state.logger.push({ err }).log('Error handling putTransfers');
         ctx.response.status = 500;
         ctx.response.body = {
             message: err.message || 'Unspecified error',

@@ -130,7 +130,7 @@ class OutboundTransfersModel {
                 return this._executeTransfer();
 
             case 'error':
-                this.logger.log(`State machine in errored state: ${util.inspect(args)}`);
+                this.logger.push({ args }).log('State machine in errored state');
                 this.data.lastError = args[0] ? args[0].message || 'unknown error' : 'unspecified error';
                 break;
 
@@ -178,7 +178,7 @@ class OutboundTransfersModel {
                     // cancel the timeout handler
                     clearTimeout(timeout);
 
-                    this.logger.log(`Payee resolved as ${util.inspect(payee)}`);
+                    this.logger.push({ payee }).log('Payee resolved');
 
                     // stop listening for payee resolution messages
                     this.subscriber.unsubscribe(payeeKey, () => {
@@ -229,7 +229,7 @@ class OutboundTransfersModel {
             // a GET /parties request to the switch
             try {
                 const res = await this.requests.getParties(this.data.to.idType, this.data.to.idValue);
-                this.logger.log(`Party lookup sent to peer: ${util.inspect(res)}`);
+                this.logger.push({ peer: res }).log('Party lookup sent to peer');
             }
             catch(err) {
                 this.stateMachine.error(err);
@@ -270,7 +270,7 @@ class OutboundTransfersModel {
 
                     if(message.type !== 'quoteResponse') {
                         // ignore any message on this subscription that is not a quote response
-                        this.logger.log(`Ignoring cache notification for transfer ${transferKey}. Type is not quoteResponse: ${util.inspect(message)}`);
+                        this.logger.push({ message }).log(`Ignoring cache notification for transfer ${transferKey}. Type is not quoteResponse.`);
                         return;
                     }
 
@@ -279,7 +279,7 @@ class OutboundTransfersModel {
                     // cancel the timeout handler
                     clearTimeout(timeout);
 
-                    this.logger.log(`Quote response received: ${util.inspect(quote)}`);
+                    this.logger.push({ quote }).log('Quote response received');
 
                     // stop listening for payee resolution messages
                     this.subscriber.unsubscribe(transferKey, () => {
@@ -300,7 +300,7 @@ class OutboundTransfersModel {
             try {
                 const quote = this._buildQuoteRequest();
                 const res = await this.requests.postQuotes(quote, this.data.to.fspId);
-                this.logger.log(`Quote request sent to peer: ${util.inspect(res)}`);
+                this.logger.push({ res }).log('Quote request sent to peer');
             }
             catch(err) {
                 this.stateMachine.error(err);
@@ -381,7 +381,7 @@ class OutboundTransfersModel {
 
                     if(message.type !== 'transferFulfil') {
                         // ignore any message on this subscription that is not a transferFulfil
-                        this.logger.log(`Ignoring cache notification for transfer ${transferKey}. Type is not transferFulfil: ${util.inspect(message)}`);
+                        this.logger.push({ message }).log(`Ignoring cache notification for transfer ${transferKey}. Type is not transferFulfil.`);
                         return;
                     }
 
@@ -390,7 +390,7 @@ class OutboundTransfersModel {
                     // cancel the timeout handler
                     clearTimeout(timeout);
 
-                    this.logger.log(`Transfer fulfil received: ${util.inspect(fulfil)}`);
+                    this.logger.push({ fulfil }).log('Transfer fulfil received');
 
                     // stop listening for payee resolution messages
                     this.subscriber.unsubscribe(transferKey, () => {
@@ -415,7 +415,7 @@ class OutboundTransfersModel {
             try {
                 const prepare = this._buildTransferPrepare();
                 const res = await this.requests.postTransfers(prepare, this.data.to.fspId);
-                this.logger.log(`Transfer prepare sent to peer: ${util.inspect(res)}`);
+                this.logger.push({ res }).log('Transfer prepare sent to peer');
             }
             catch(err) {
                 this.stateMachine.error(err);
@@ -503,10 +503,10 @@ class OutboundTransfersModel {
         try {
             this.data.currentState = this.stateMachine.state;
             const res = await this.cache.set(`transferModel_${this.data.transferId}`, this.data);
-            this.logger.log(`Persisted transfer model in cache: ${util.inspect(res)}`);
+            this.logger.push({ res }).log('Persisted transfer model in cache');
         }
         catch(err) {
-            this.logger.log(`Error saving transfer model: ${err.stack || util.inspect(err)}`);
+            this.logger.push({ err }).log('Error saving transfer model');
             throw err;
         }
     }
@@ -521,10 +521,10 @@ class OutboundTransfersModel {
         try {
             const data = await this.cache.get(`transferModel_${transferId}`);
             await this.initialize(data);
-            this.logger.log(`Transfer model loaded from cached state: ${util.inspect(this.data)}`);
+            this.logger.push({ cache: this.data }).log('Transfer model loaded from cached state');
         }
         catch(err) {
-            this.logger.log(`Error loading transfer model: ${err.stack || util.inspect(err)}`);
+            this.logger.push({ err }).log('Error loading transfer model');
             throw err;
         }
     }
@@ -578,7 +578,7 @@ class OutboundTransfersModel {
             return this.getResponse();
         }
         catch(err) {
-            this.logger.log(`Error running transfer model: ${err.stack || util.inspect(err)}`);
+            this.logger.push({ err }).log('Error running transfer model');
             this.stateMachine.error(err);
             await this._unsubscribeAll();
             err.transferState = this.getResponse();

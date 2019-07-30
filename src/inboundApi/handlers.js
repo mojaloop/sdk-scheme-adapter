@@ -10,7 +10,6 @@
 
 'use strict';
 
-const util = require('util');
 const Model = require('@internal/model').inboundTransfersModel;
 
 
@@ -35,11 +34,11 @@ const getParticipantsByTypeAndId = async (ctx) => {
                 ctx.state.path.params.ID, sourceFspId);
 
             // log the result
-            ctx.state.logger.log(`Inbound transfers model handled GET /participants/{idType}/{idValue} request and returned: ${util.inspect(response)}`);
+            ctx.state.logger.push({ response }).log('Inbound transfers model handled GET /participants/{idType}/{idValue}');
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
-            ctx.state.logger.log(`Error handling GET /participants/{idType}/{idValue}: ${err.stack || util.inspect(err)}`);
+            ctx.state.logger.push({ err }).log('Error handling GET /participants/{idType}/{idValue}');
         }
     })();
 
@@ -70,11 +69,11 @@ const getPartiesByTypeAndId = async (ctx) => {
             const response = await model.getParties(ctx.state.path.params.Type, ctx.state.path.params.ID, sourceFspId);
 
             // log the result
-            ctx.state.logger.log(`Inbound transfers model handled GET /parties/{idType}/{idValue} request and returned: ${util.inspect(response)}`);
+            ctx.state.logger.push({ response }).log('Inbound transfers model handled GET /parties/{idType}/{idValue} request');
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
-            ctx.state.logger.log(`Error handling GET /parties/{idType}/{idValue}: ${err.stack || util.inspect(err)}`);
+            ctx.state.logger.push({ err }).log('Error handling GET /parties/{idType}/{idValue}');
         }
     })();
 
@@ -115,11 +114,11 @@ const postQuotes = async (ctx) => {
             const response = await model.quoteRequest(ctx.request.body, sourceFspId);
 
             // log the result
-            ctx.state.logger.log(`Inbound transfers model handled POST /quotes request and returned: ${util.inspect(response)}`);
+            ctx.state.logger.push({ response }).log('Inbound transfers model handled POST /quotes request');
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
-            ctx.state.logger.log(`Error handling POST /quotes: ${err.stack || util.inspect(err)}`);
+            ctx.state.logger.push({ err }).log('Error handling POST /quotes');
         }
     })();
 
@@ -150,11 +149,11 @@ const postTransfers = async (ctx) => {
             const response = await model.prepareTransfer(ctx.request.body, sourceFspId);
 
             // log the result
-            ctx.state.logger.log(`Inbound transfers model handled POST /transfers request and returned: ${util.inspect(response)}`);
+            ctx.state.logger.push({ response }).log('Inbound transfers model handled POST /transfers request');
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
-            ctx.state.logger.log(`Error handling POST /transfers: ${err.stack || util.inspect(err)}`);
+            ctx.state.logger.push({ err }).log('Error handling POST /transfers');
         }
     })();
 

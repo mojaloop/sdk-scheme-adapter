@@ -11,7 +11,6 @@
 'use strict';
 
 
-const util = require('util');
 const BackendRequests = require('@internal/requests').BackendRequests;
 const HTTPResponseError = require('@internal/requests').HTTPResponseError;
 const MojaloopRequests = require('@modusbox/mojaloop-sdk-standard-components').MojaloopRequests;
@@ -74,9 +73,9 @@ class InboundTransfersModel {
                 sourceFspId);
         }
         catch(err) {
-            this.logger.log(`Error in getParticipantsByTypeAndId: ${err.stack || util.inspect(err)}`);
+            this.logger.push({ err }).log('Error in getParticipantsByTypeAndId');
             const mojaloopError = await this._handleError(err);
-            this.logger.log(`Sending error response to ${sourceFspId}: ${util.inspect(mojaloopError)}`);
+            this.logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
             return await this.mojaloopRequests.putParticipantsError(idType, idValue,
                 mojaloopError, sourceFspId);
         }
@@ -108,9 +107,9 @@ class InboundTransfersModel {
             return this.mojaloopRequests.putParties(idType, idValue, mlParty, sourceFspId);
         }
         catch(err) {
-            this.logger.log(`Error in getParties: ${err.stack || util.inspect(err)}`);
+            this.logger.push({ err }).log('Error in getParties');
             const mojaloopError = await this._handleError(err);
-            this.logger.log(`Sending error response to ${sourceFspId}: ${util.inspect(mojaloopError)}`);
+            this.logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
             return await this.mojaloopRequests.putPartiesError(idType, idValue,
                 mojaloopError, sourceFspId);
         }
@@ -160,9 +159,9 @@ class InboundTransfersModel {
             return this.mojaloopRequests.putQuotes(quoteRequest.quoteId,mojaloopResponse, sourceFspId);
         }
         catch(err) {
-            this.logger.log(`Error in quoteRequest: ${err.stack || util.inspect(err)}`);
+            this.logger.push({ err }).log('Error in quoteRequest');
             const mojaloopError = await this._handleError(err);
-            this.logger.log(`Sending error response to ${sourceFspId}: ${util.inspect(mojaloopError)}`);
+            this.logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
             return await this.mojaloopRequests.putQuotesError(quoteRequest.quoteId,
                 mojaloopError, sourceFspId);
         }
@@ -208,9 +207,9 @@ class InboundTransfersModel {
                 sourceFspId);
         }
         catch(err) {
-            this.logger.log(`Error in prepareTransfer: ${err.stack || util.inspect(err)}`);
+            this.logger.push({ err }).log('Error in prepareTransfer');
             const mojaloopError = await this._handleError(err);
-            this.logger.log(`Sending error response to ${sourceFspId}: ${util.inspect(mojaloopError)}`);
+            this.logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
             return await this.mojaloopRequests.putTransfersError(prepareRequest.transferId,
                 mojaloopError, sourceFspId);
         }
@@ -228,7 +227,7 @@ class InboundTransfersModel {
                 }
                 catch(ex) {
                     // do nothing
-                    this.logger.log(`Error parsing error message body as JSON: ${ex.stack || util.inspect(ex)}`);
+                    this.logger.push({ ex }).log('Error parsing error message body as JSON');
                 }
             }
 

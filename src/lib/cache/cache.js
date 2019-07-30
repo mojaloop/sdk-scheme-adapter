@@ -11,7 +11,6 @@
 'use strict';
 
 const redis = require('redis');
-const util = require('util');
 
 
 /**
@@ -20,7 +19,7 @@ const util = require('util');
 class Cache {
     constructor(config) {
         this.config = config;
-       
+
         if(!config.host || !config.port || !config.logger) {
             throw new Error('Cache config requires host, port and logger properties');
         }
@@ -39,14 +38,14 @@ class Cache {
     /**
      * Returns a new redis client
      *
-     * @returns {object} - a connected REDIS client 
+     * @returns {object} - a connected REDIS client
      * */
     async getClient() {
         return new Promise((resolve, reject) => {
             let sub = redis.createClient(this.config);
 
             sub.on('error', (err) => {
-                this.logger.log(`Error from REDIS client getting subscriber: ${err.stack || util.inspect(err)}`);
+                this.logger.push({ err }).log('Error from REDIS client getting subscriber');
                 return reject(err);
             });
 
@@ -55,7 +54,7 @@ class Cache {
                 return resolve(sub);
             });
         });
-    }    
+    }
 
 
     async publish(channelName, value) {
@@ -66,11 +65,11 @@ class Cache {
 
             this.client.publish(channelName, value, (err, replies) => {
                 if(err) {
-                    this.logger.log(`Error publishing to channel ${channelName}: ${err.stack || util.inspect(err)}`);
+                    this.logger.push({ channelName, err }).log(`Error publishing to channel ${channelName}`);
                     return reject(err);
                 }
 
-                this.logger.log(`Published ${value} to channel ${channelName}`);
+                this.logger.push({ channelName, value }).log(`Published to channel ${channelName}`);
                 return resolve(replies);
             });
         });
@@ -92,11 +91,11 @@ class Cache {
 
             this.client.set(key, value, (err, replies) => {
                 if(err) {
-                    this.logger.log(`Error setting cache key: ${key} and value: ${value}: ${err.stack || util.inspect(err)}`);
+                    this.logger.push({ key, value, err }).log(`Error setting cache key: ${key}`);
                     return reject(err);
                 }
 
-                this.logger.log(`Set cache key: ${key} with value: ${value}: ${util.inspect(replies)}`);
+                this.logger.push({ key, value, replies }).log(`Set cache key: ${key}`);
                 return resolve(replies);
             });
         });
@@ -111,21 +110,21 @@ class Cache {
         return new Promise((resolve, reject) => {
             this.client.get(key, (err, value) => {
                 if(err) {
-                    this.logger.log(`Error getting cache key: ${key}: ${err.stack || util.inspect(err)}`);
+                    this.logger.push({ key, err }).log(`Error getting cache key: ${key}`);
                     return reject(err);
                 }
 
-                this.logger.log(`Get cache key: ${key} got: ${util.inspect(value)}`);
-                
+                this.logger.push({ key, value }).log(`Got cache key: ${key}`);
+
                 if(typeof(value) === 'string') {
                     try {
                         value = JSON.parse(value);
                     }
                     catch(err) {
-                        this.logger.log(`Error parsing JSON cache value: ${err.stack || util.inspect(err)}`);
+                        this.logger.push({ err }).log('Error parsing JSON cache value');
                         return reject(err);
                     }
-                }                    
+                }
 
                 return resolve(value);
             });
