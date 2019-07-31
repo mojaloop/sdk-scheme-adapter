@@ -119,7 +119,7 @@ const Errors = require('@modusbox/mojaloop-sdk-standard-components').Errors;
             }
             catch(err) {
                 // error parsing body
-                inboundLogger.log(`Error parsing body: ${err.stack || util.inspect(err)}`);
+                inboundLogger.push({ err }).log('Error parsing body');
                 ctx.response.status = 400;
                 ctx.response.body = new Errors.MojaloopFSPIOPError(err, err.message, null,
                     Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX).toApiErrorObject();
@@ -139,7 +139,7 @@ const Errors = require('@modusbox/mojaloop-sdk-standard-components').Errors;
                 }
             }
             catch(err) {
-                inboundLogger.log(`Inbound request failed JWS validation: ${err.stack || util.inspect(err)}`);
+                inboundLogger.push({ err }).log('Inbound request failed JWS validation');
 
                 ctx.response.status = 400;
                 ctx.response.body = new Errors.MojaloopFSPIOPError(err, err.message, null,
@@ -251,6 +251,7 @@ const Errors = require('@modusbox/mojaloop-sdk-standard-components').Errors;
         if (ctx.response.body === undefined) {
             ctx.response.body = '';
         }
+        return await next();
     });
     outboundApi.use(router(outboundHandlers.map));
 
