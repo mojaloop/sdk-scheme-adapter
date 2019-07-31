@@ -178,7 +178,7 @@ class Validator {
         const validationResult = path.methods[ctx.method.toLowerCase()].validator(ctx, path.params);
 
         if (validationResult !== undefined && validationResult.length > 0) {
-            logger.log(`Validation errors: ${util.inspect(validationResult)}`);
+            logger.push({ validationResult }).log('Validation result');
 
             let err;
             const firstError = validationResult[0];

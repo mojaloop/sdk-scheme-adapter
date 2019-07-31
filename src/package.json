@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "test": "ava"
+    "lint:fix": "eslint . --fix"
   },
   "author": "Matt Kingston, James Bush, ModusBox Inc.",
   "license": "Apache-2.0",
@@ -33,7 +32,6 @@
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
-    "ava": "^1.4.1",
     "eslint": "^5.3.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.17.1"
