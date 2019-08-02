@@ -2,32 +2,25 @@ version: "2.1"
 orbs:
   docker: circleci/docker@0.5.13
 
-jobs:
+workflows:
   build-and-publish-docker-image:
-    docker:
-      - image: bash:5
-    steps:
-      - checkout
-      - run:
-          name: set image tag 
-          command: |
-            if [ $CIRCLE_BRANCH == "master" ]; then
-              echo 'export IMAGE_TAG=$(echo $CIRCLE_TAG | tr -d v)' >> $BASH_ENV
-            else
-              echo 'export IMAGE_TAG=$CIRCLE_BRANCH' >> $BASH_ENV
-            fi
+    jobs:
       - docker/publish:
+          before_build:
+            - run:
+                name: set image tag 
+                command: |
+                  if [ $CIRCLE_BRANCH == "master" ]; then
+                    echo 'export IMAGE_TAG=$(echo $CIRCLE_TAG | tr -d v)' >> $BASH_ENV
+                  else
+                    echo 'export IMAGE_TAG=$CIRCLE_BRANCH' >> $BASH_ENV
+                  fi
           lint-dockerfile: true
           image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
           tag: $IMAGE_TAG
           registry: modusbox-mbx-docker.jfrog.io
           docker-username: DOCKER_USER
           docker-password: DOCKER_PASSWORD
-
-workflows:
-  build-and-publish-docker-image:
-    jobs:
-     - build-and-publish-docker-image:
           filters:
             tags:
               only: /.*/
