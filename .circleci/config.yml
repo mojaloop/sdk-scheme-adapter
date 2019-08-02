@@ -10,17 +10,16 @@ workflows:
             - run:
                 name: set image tag 
                 command: |
-                  if [ -v $CIRCLE_TAG] && [ -v $CIRCLE_BRANCH ]; then
+                  if [ -v CIRCLE_TAG] && [ -v CIRCLE_BRANCH ]; then
                     echo "tagging a feature branch is not permitted"
                     exit 1
                   fi
-                  if [[ -v $CIRCLE_TAG ]]; then
+                  if [[ -v CIRCLE_TAG ]]; then
                     echo 'export IMAGE_TAG=$(echo $CIRCLE_TAG | tr -d v)' >> $BASH_ENV
-                  elif [[ -v $CIRCLE_BRANCH ]]; then 
+                  elif [[ -v CIRCLE_BRANCH ]]; then 
                     echo 'export IMAGE_TAG=$CIRCLE_BRANCH' >> $BASH_ENV
                   else
                     echo "ABORTING. Neither git tag nor feature branch found"
-                    env
                     exit 1
                   fi
           lint-dockerfile: true
