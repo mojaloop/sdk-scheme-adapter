@@ -16,11 +16,26 @@ jobs:
             else
               echo 'export IMAGE_TAG=$CIRCLE_BRANCH' >> $BASH_ENV
             fi
+  show_image_tag:
+    docker:
+      - image: bash:5
+    steps:
+      - checkout
+      - run: echo IMAGE_TAG is $IMAGE_TAG
 
 workflows:
   build-and-publish-docker-image:
     jobs:
       - set_image_tag:
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore:
+                - master
+      - show_image_tag:
+          requires:
+            - set_image_tag
           filters:
             tags:
               only: /.*/
