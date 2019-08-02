@@ -36,3 +36,9 @@ workflows:
           docker-password: DOCKER_PASSWORD
           requires:
             - set_image_tag
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore:
+                - master
