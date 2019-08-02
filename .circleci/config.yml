@@ -10,7 +10,7 @@ workflows:
             - run:
                 name: set image tag 
                 command: |
-                  if [[ -v $CIRCLE_TAG]] && [[ -v $CIRCLE_BRANCH ]]; then
+                  if [ -v $CIRCLE_TAG] && [ -v $CIRCLE_BRANCH ]; then
                     echo "tagging a feature branch is not permitted"
                     exit 1
                   fi
