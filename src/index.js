@@ -46,6 +46,8 @@ const Errors = require('@modusbox/mojaloop-sdk-standard-components').Errors;
     await setConfig(process.env);
     const conf = getConfig();
 
+    console.log(`Config loaded: ${util.inspect(conf, { depth: 10 })}`);
+
     // Set up a logger for each running server
     const space = Number(process.env.LOG_INDENT);
 
