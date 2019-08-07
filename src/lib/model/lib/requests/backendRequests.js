@@ -19,9 +19,18 @@ const common = require('./common.js');
 const buildUrl = common.buildUrl;
 const throwOrJson = common.throwOrJson;
 
+const defaultFXPBackendHeaders = {
+    accept: 'application/json',
+    // Mojaloop uses specific types like
+    // application/vnd.interoperability.quotes+json;version=1.0 and application/vnd.interoperability.transfers+json;version=1.0
+    // but the backend expects application/json
+    'content-type': 'application/json',
+};
 
 /**
  * A class for making requests to DFSP backend API
+ * 
+ * / FIXME Move the specific FXP methods to another class, so this one can be pulled from the original sdk project
  */
 class BackendRequests {
     constructor(config) {
@@ -64,7 +73,7 @@ class BackendRequests {
      * @returns {object} - JSON response body if one was received
      */
     async postQuotes(quoteRequest, headers) {
-
+        // Used to send the "second stage" quotes to a DFSP ( this is not the "simplified" quoterequest )
         const newHeaders = {
             accept: headers.accept,
             'content-type': headers['content-type'],
@@ -88,10 +97,6 @@ class BackendRequests {
      * @param {http-headers} headers 
      */
     async postFxpQuotes(quoteRequest, headers) {
-        const newHeaders = {
-            accept: headers.accept,
-            'content-type': headers['content-type'],
-        };
         const composedFXPQuote = {
             quote: quoteRequest,
             metadata:{
@@ -102,7 +107,7 @@ class BackendRequests {
             }
         };
 
-        return this._post('fxpquotes', composedFXPQuote, newHeaders);
+        return this._post('fxpquotes', composedFXPQuote, defaultFXPBackendHeaders);
     }
 
     /**
@@ -116,11 +121,6 @@ class BackendRequests {
      */
     async postFxpQuoteResponse(quoteId, quoteRequest, headers) {
 
-        const newHeaders = {
-            accept: headers.accept || 'application/vnd.interoperability.quotes+json;version=1',
-            'content-type': 'application/json', // headers['content-type'] is application/vnd.interoperability.quotes+json;version=1.0, but the backend expects application/json
-        };
-
         const composedQuoteResponse = {
             quoteResponse: quoteRequest,
             metadata:{
@@ -130,7 +130,7 @@ class BackendRequests {
         };
         
         console.log('postQuote sending headers: ', headers, ' quoteRequest: ', composedQuoteResponse);
-        return this._post(`fxpquotes/${quoteId}/responses`, composedQuoteResponse, newHeaders);
+        return this._post(`fxpquotes/${quoteId}/responses`, composedQuoteResponse, defaultFXPBackendHeaders);
     }
     
     
@@ -159,9 +159,9 @@ class BackendRequests {
      * @returns {object} - JSON response body if one was received
      */
     async postQuote(quoteId, quoteRequest, headers) {
-
+        // FIXME This is not used
         const newHeaders = {
-            accept: headers.accept || 'application/vnd.interoperability.quotes+json;version=1',
+            accept: headers.accept || 'application/json',
             'content-type': 'application/json', // headers['content-type'] is application/vnd.interoperability.quotes+json;version=1.0, but the backend expects application/json
             date: headers.date,
             'fspiop-source': headers['fspiop-source'],
