@@ -10,8 +10,9 @@
 
 'use strict';
 
+const util = require('util');
 const Model = require('@internal/model').inboundTransfersModel;
-
+const { Errors } = require('@modusbox/mojaloop-sdk-standard-components');
 
 /**
  * Handles a GET /participants/{idType}/{idValue} request
@@ -56,6 +57,15 @@ const getPartiesByTypeAndId = async (ctx) => {
     // kick off an asyncronous operation to handle the request
     (async () => {
         try {
+            if(ctx.state.conf.enableTestFeatures) {
+                // we are in test mode so cache the request
+                const req = {
+                    headers: ctx.request.headers
+                };
+                const res = await ctx.state.cache.set(`request_${ctx.state.path.params.ID}`, req);
+                ctx.state.logger.log(`Cacheing request : ${util.inspect(res)}`);
+            }
+
             // use the transfers model to execute asynchronous stages with the switch
             const model = new Model({
                 cache: ctx.state.cache,
@@ -101,6 +111,16 @@ const postQuotes = async (ctx) => {
     // kick off an asyncronous operation to handle the request
     (async () => {
         try {
+            if(ctx.state.conf.enableTestFeatures) {
+                // we are in test mode so cache the request
+                const req = {
+                    headers: ctx.request.headers,
+                    data: ctx.request.body
+                };
+                const res = await ctx.state.cache.set(`request_${ctx.request.body.quoteId}`, req);
+                ctx.state.logger.log(`Cacheing request: ${util.inspect(res)}`);
+            }
+
             // use the transfers model to execute asynchronous stages with the switch
             const model = new Model({
                 cache: ctx.state.cache,
@@ -136,6 +156,16 @@ const postTransfers = async (ctx) => {
     // kick off an asyncronous operation to handle the request
     (async () => {
         try {
+            if(ctx.state.conf.enableTestFeatures) {
+                // we are in test mode so cache the request
+                const req = {
+                    headers: ctx.request.headers,
+                    data: ctx.request.body
+                };
+                const res = await ctx.state.cache.set(`request_${ctx.request.body.transferId}`, req);
+                ctx.state.logger.log(`Cacheing request: ${util.inspect(res)}`);
+            }
+
             // use the transfers model to execute asynchronous stages with the switch
             const model = new Model({
                 cache: ctx.state.cache,
@@ -179,6 +209,16 @@ const putParticipantsByTypeAndId = async (ctx) => {
  * request.
  */
 const putPartiesByTypeAndId = async (ctx) => {
+    if(ctx.state.conf.enableTestFeatures) {
+        // we are in test mode so cache the request
+        const req = {
+            headers: ctx.request.headers,
+            data: ctx.request.body
+        };
+        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        ctx.state.logger.log(`Cacheing request: ${util.inspect(res)}`);
+    }
+
     const idType = ctx.state.path.params.Type;
     const idValue = ctx.state.path.params.ID;
 
@@ -193,6 +233,16 @@ const putPartiesByTypeAndId = async (ctx) => {
  * Handles a PUT /quotes/{ID}. This is a response to a POST /quotes request
  */
 const putQuoteById = async (ctx) => {
+    if(ctx.state.conf.enableTestFeatures) {
+        // we are in test mode so cache the request
+        const req = {
+            headers: ctx.request.headers,
+            data: ctx.request.body
+        };
+        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        ctx.state.logger.log(`Cacheing callback: ${util.inspect(res)}`);
+    }
+
     // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(`${ctx.state.path.params.ID}`, {
         type: 'quoteResponse',
@@ -207,6 +257,16 @@ const putQuoteById = async (ctx) => {
  * Handles a PUT /transfers/{ID}. This is a response to a POST /transfers request
  */
 const putTransfersById = async (ctx) => {
+    if(ctx.state.conf.enableTestFeatures) {
+        // we are in test mode so cache the request
+        const req = {
+            headers: ctx.request.headers,
+            data: ctx.request.body
+        };
+        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        ctx.state.logger.log(`Cacheing callback: ${util.inspect(res)}`);
+    }
+
     // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(`${ctx.state.path.params.ID}`, {
         type: 'transferFulfil',
@@ -221,6 +281,16 @@ const putTransfersById = async (ctx) => {
  * Handles a PUT /parties/{Type}/{ID}/error request. This is an error response to a GET /parties/{Type}/{ID} request
  */
 const putPartiesByTypeAndIdError = async(ctx) => {
+    if(ctx.state.conf.enableTestFeatures) {
+        // we are in test mode so cache the request
+        const req = {
+            headers: ctx.request.headers,
+            data: ctx.request.body
+        };
+        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        ctx.state.logger.log(`Cacheing request: ${util.inspect(res)}`);
+    }
+
     const idType = ctx.state.path.params.Type;
     const idValue = ctx.state.path.params.ID;
 
@@ -239,6 +309,16 @@ const putPartiesByTypeAndIdError = async(ctx) => {
  * Handles a PUT /quotes/{ID}/error request. This is an error response to a POST /quotes request
  */
 const putQuotesByIdError = async(ctx) => {
+    if(ctx.state.conf.enableTestFeatures) {
+        // we are in test mode so cache the request
+        const req = {
+            headers: ctx.request.headers,
+            data: ctx.request.body
+        };
+        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        ctx.state.logger.log(`Cacheing callback: ${util.inspect(res)}`);
+    }
+
     // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(`${ctx.state.path.params.ID}`, {
         type: 'quoteResponseError',
@@ -254,6 +334,16 @@ const putQuotesByIdError = async(ctx) => {
  * Handles a PUT /transfers/{ID}/error. This is an error response to a POST /transfers request
  */
 const putTransfersByIdError = async (ctx) => {
+    if(ctx.state.conf.enableTestFeatures) {
+        // we are in test mode so cache the request
+        const req = {
+            headers: ctx.request.headers,
+            data: ctx.request.body
+        };
+        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        ctx.state.logger.log(`Cacheing callback: ${util.inspect(res)}`);
+    }
+
     // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(`${ctx.state.path.params.ID}`, {
         type: 'transferError',
@@ -271,6 +361,52 @@ const healthCheck = async(ctx) => {
 };
 
 
+/**
+ * Handles a GET /requests/{ID} request. This is a test support method that allows the caller
+ * to see the body of a previous incoming request.
+ */
+const getRequestById = async(ctx) => {
+    if(!ctx.state.conf.enableTestFeatures) {
+        // hide this endpoint if test features are disabled
+        throw new Errors.MojaloopFSPIOPError(null, 'Couldn\'t match path requests', null,
+            Errors.MojaloopApiErrorCodes.UNKNOWN_URI);
+    }
+
+    try {
+        const req = await ctx.state.cache.get(`request_${ctx.state.path.params.ID}`);
+        ctx.response.status = 200;
+        ctx.response.body = req;
+    }
+    catch(err) {
+        ctx.status = 500;
+        ctx.response.body = err;
+    }
+};
+
+
+/**
+ * Handles a GET /callbacks/{ID} request. This is a test support method that allows the caller
+ * to see the body of a previous incoming callback.
+ */
+const getCallbackById = async(ctx) => {
+    if(!ctx.state.conf.enableTestFeatures) {
+        // hide this endpoint if test features are disabled
+        throw new Errors.MojaloopFSPIOPError(null, 'Couldn\'t match path /callbacks', null,
+            Errors.MojaloopApiErrorCodes.UNKNOWN_URI);
+    }
+
+    try {
+        const req = await ctx.state.cache.get(`callback_${ctx.state.path.params.ID}`);
+        ctx.response.status = 200;
+        ctx.response.body = req;
+    }
+    catch(err) {
+        ctx.status = 500;
+        ctx.response.body = err;
+    }
+};
+
+
 const map = {
     '/': {
         get: healthCheck
@@ -285,7 +421,7 @@ const map = {
         put: putPartiesByTypeAndId
     },
     '/parties/{Type}/{ID}/error': {
-        put: putPartiesByTypeAndIdError,
+        put: putPartiesByTypeAndIdError
     },
     '/quotes': {
         post: postQuotes
@@ -304,6 +440,12 @@ const map = {
     },
     '/transfers/{ID}/error': {
         put: putTransfersByIdError
+    },
+    '/requests/{ID}': {
+        get: getRequestById
+    },
+    '/callbacks/{ID}': {
+        get: getCallbackById
     }
 };
 

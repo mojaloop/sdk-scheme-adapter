@@ -67,7 +67,8 @@ let config = {
     cacheConfig: {
         host: 'localhost',
         port: 6379
-    }
+    },
+    enableTestFeatures: false
 };
 
 
@@ -118,6 +119,8 @@ const setConfig = async cfg => {
 
     config.cacheConfig.host = cfg.CACHE_HOST;
     config.cacheConfig.port = cfg.CACHE_PORT;
+
+    config.enableTestFeatures = cfg.ENABLE_TEST_FEATURES.toLowerCase() === 'true' ? true : false;
 };
 
 
