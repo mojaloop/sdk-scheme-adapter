@@ -121,6 +121,8 @@ const setConfig = async cfg => {
     config.cacheConfig.port = cfg.CACHE_PORT;
 
     config.enableTestFeatures = cfg.ENABLE_TEST_FEATURES.toLowerCase() === 'true' ? true : false;
+
+    config.wso2BearerToken = cfg.WS02_BEARER_TOKEN;
 };
 
 
