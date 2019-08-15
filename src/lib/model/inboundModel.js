@@ -38,7 +38,8 @@ class InboundTransfersModel {
             dfspId: config.dfspId,
             tls: config.tls,
             jwsSign: config.jwsSign,
-            jwsSigningKey: config.jwsSigningKey
+            jwsSigningKey: config.jwsSigningKey,
+            wso2BearerToken: config.wso2BearerToken
         });
 
         this.backendRequests = new BackendRequests({
