@@ -65,8 +65,7 @@ class InboundTransfersModel {
             const response = await this.backendRequests.getParties(idType, idValue);
 
             if(!response) {
-                // make an error callback to the source fsp
-                return `Party not found in backend. Making error callback to ${sourceFspId}`;
+                return 'No response from backend';
             }
 
             // make a callback to the source fsp with our dfspId indicating we own the party
@@ -92,11 +91,7 @@ class InboundTransfersModel {
             const response = await this.backendRequests.getParties(idType, idValue);
 
             if(!response) {
-                // make an error callback to the source fsp
-                this.logger.log(`Party not found in backend. Making error callback to ${sourceFspId}`);
-                const err = new Errors.MojaloopFSPIOPError(null, null, sourceFspId, Errors.MojaloopApiErrorCodes.ID_NOT_FOUND);
-                return await this.mojaloopRequests.putPartiesError(idType, idValue,
-                    err.toApiErrorObject(), sourceFspId);
+                return 'No response from backend';
             }
 
             // project our internal party representation into a mojaloop partyies request body
@@ -130,7 +125,7 @@ class InboundTransfersModel {
 
             if(!response) {
                 // make an error callback to the source fsp
-                return `No quote response from backend. Making error callback to ${sourceFspId}`;
+                return 'No response from backend';
             }
 
             if(!response.expiration) {
@@ -178,6 +173,10 @@ class InboundTransfersModel {
             // retrieve our quote data
             const quote = await this.cache.get(`quote_${prepareRequest.transferId}`);
 
+            if(!quote) {
+                throw new Error(`Corresponding quote not found for transfer ${prepareRequest.transferId}`);
+            }
+
             // check incoming ILP matches our persisted values
             if(this.checkIlp && (prepareRequest.condition !== quote.mojaloopResponse.condition)) {
                 throw new Error(`ILP condition in transfer prepare for ${prepareRequest.transferId} does not match quote`);
@@ -191,7 +190,7 @@ class InboundTransfersModel {
 
             if(!response) {
                 // make an error callback to the source fsp
-                return `No transfer response from backend. Making error callback to ${sourceFspId}`;
+                return 'No response from backend';
             }
 
             this.logger.log(`Transfer accepted by backend returning homeTransactionId: ${response.homeTransactionId} for mojaloop transferId: ${prepareRequest.transferId}`);
@@ -217,10 +216,10 @@ class InboundTransfersModel {
     }
 
     async _handleError(err) {
+        let mojaloopErrorCode = Errors.MojaloopApiErrorCodes.INTERNAL_SERVER_ERROR;
+
         if(err instanceof HTTPResponseError) {
             const e = err.getData();
-            let mojaloopErrorCode = Errors.MojaloopApiErrorCodes.INTERNAL_SERVER_ERROR;
-
             if(e.res && e.res.body) {
                 try {
                     const bodyObj = JSON.parse(e.res.body);
@@ -232,11 +231,9 @@ class InboundTransfersModel {
                 }
             }
 
-            return new Errors.MojaloopFSPIOPError(err, null, null, mojaloopErrorCode).toApiErrorObject();
         }
 
-        // rethrow some other type of error
-        throw err;
+        return new Errors.MojaloopFSPIOPError(err, null, null, mojaloopErrorCode).toApiErrorObject();
     }
 }
 
