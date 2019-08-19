@@ -119,7 +119,7 @@ const mojaloopQuoteRequestToInternal = (external) => {
     }
 
     if(external.note) {
-        internal.node = external.note;
+        internal.note = external.note;
     }
 
     if(external.expiration) {
