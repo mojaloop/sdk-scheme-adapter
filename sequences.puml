@@ -1,6 +1,6 @@
 
 
-@tartuml
+@startuml
 title Mojaloop SDK Interactions
 autonumber
 
