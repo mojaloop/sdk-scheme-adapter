@@ -254,10 +254,13 @@ class OutboundTransfersModel {
                 return reject(err);
             }, ASYNC_TIMEOUT_MILLS);
 
-            // listen for events on the transferId
-            const transferKey = `${this.data.transferId}`;
+            // create a quote request
+            const quote = this._buildQuoteRequest();
 
-            this.subscriber.subscribe(transferKey);
+            // listen for events on the quoteId
+            const quoteKey = `${quote.quoteId}`;
+
+            this.subscriber.subscribe(quoteKey);
             this.subscriber.on('message', (cn, msg) => {
                 try {
                     let message = JSON.parse(msg);
@@ -271,23 +274,24 @@ class OutboundTransfersModel {
 
                     if(message.type !== 'quoteResponse') {
                         // ignore any message on this subscription that is not a quote response
-                        this.logger.push({ message }).log(`Ignoring cache notification for transfer ${transferKey}. Type is not quoteResponse.`);
+                        this.logger.push({ message }).log(`Ignoring cache notification for quote ${quoteKey}. Type is not quoteResponse.`);
                         return;
                     }
 
-                    const quote = message.data;
+                    const quoteResponse = message.data;
 
                     // cancel the timeout handler
                     clearTimeout(timeout);
 
-                    this.logger.push({ quote }).log('Quote response received');
+                    this.logger.push({ quoteResponse }).log('Quote response received');
 
                     // stop listening for payee resolution messages
-                    this.subscriber.unsubscribe(transferKey, () => {
+                    this.subscriber.unsubscribe(quoteKey, () => {
                         this.logger.log('Quote request subscriber unsubscribed');
                     });
 
-                    this.data.quoteResponse = quote;
+                    this.data.quoteId = quote.quoteId;
+                    this.data.quoteResponse = quoteResponse;
 
                     return resolve(quote);
                 }
@@ -299,7 +303,6 @@ class OutboundTransfersModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /quotes request to the switch
             try {
-                const quote = this._buildQuoteRequest();
                 const res = await this.requests.postQuotes(quote, this.data.to.fspId);
                 this.logger.push({ res }).log('Quote request sent to peer');
             }
@@ -318,7 +321,7 @@ class OutboundTransfersModel {
      */
     _buildQuoteRequest() {
         let quote = {
-            quoteId: this.data.transferId,
+            quoteId: uuidv4(),
             transactionId: this.data.transferId,
             amountType: this.data.amountType,
             amount: {
