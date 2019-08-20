@@ -2,10 +2,10 @@
   "name": "mojaloop-dfsp-sdk-scheme-adapter",
   "version": "0.0.1",
   "description": "An adapter for connecting to Mojaloop API enabled switches",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint": "eslint src/",
+    "lint:fix": "eslint src --fix"
   },
   "author": "Matt Kingston, James Bush, ModusBox Inc.",
   "license": "Apache-2.0",
@@ -16,12 +16,12 @@
     }
   ],
   "dependencies": {
-    "@internal/cache": "file:lib/cache",
-    "@internal/log": "file:lib/log",
-    "@internal/randomphrase": "file:lib/randomphrase",
-    "@internal/router": "file:lib/router",
-    "@internal/model": "file:lib/model",
-    "@internal/validate": "file:lib/validate",
+    "@internal/cache": "file:src/lib/cache",
+    "@internal/log": "file:src/lib/log",
+    "@internal/randomphrase": "file:src/lib/randomphrase",
+    "@internal/router": "file:src/lib/router",
+    "@internal/model": "file:src/lib/model",
+    "@internal/validate": "file:src/lib/validate",
     "@modusbox/mojaloop-sdk-standard-components": "^0.0.39",
     "co-body": "^6.0.0",
     "dotenv": "^6.2.0",
