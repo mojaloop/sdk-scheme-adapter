@@ -1,5 +1,5 @@
 {
-  "name": "mojaloop-dfsp-sdk-scheme-adapter",
+  "name": "@mojaloop/sdk-scheme-adapter",
   "version": "0.0.1",
   "description": "An adapter for connecting to Mojaloop API enabled switches",
   "main": "index.js",
@@ -22,7 +22,7 @@
     "@internal/router": "file:lib/router",
     "@internal/model": "file:lib/model",
     "@internal/validate": "file:lib/validate",
-    "@modusbox/mojaloop-sdk-standard-components": "^0.0.39",
+    "@mojaloop/sdk-standard-components": "^0.0.39",
     "co-body": "^6.0.0",
     "dotenv": "^6.2.0",
     "koa": "^2.6.2",
