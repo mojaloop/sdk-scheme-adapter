@@ -4,7 +4,7 @@ This package provides a scheme adapter that interfaces between a Mojaloop API co
 
 The API between the scheme adapter and the DFSP backend is synchronous HTTP while the interface between the scheme adapter and the switch is native Mojaloop API.
 
-This package exemplifies the use of the Mojaloop SDK Standard Components for TLS, JWS and ILP (available [here](http://www.github.com/modusbox/mojaloop-sdk-standard-components)).
+This package exemplifies the use of the Mojaloop SDK Standard Components for TLS, JWS and ILP (available [here](http://www.github.com/mojaloop/sdk-standard-components)).
 
 For information on the background and context of this project please see the presentation [here](docs/Mojaloop%20-%20Modusbox%20Onboarding%20functionality.pdf)
 
@@ -16,7 +16,7 @@ DFSP backends can call the [DFSP Outbound API](/src/outboundApi/api.yaml) in ord
 
 ## Docker Image
 
-This package is available as a pre-built docker image on Docker Hub: [https://hub.docker.com/r/modusbox/mojaloop-sdk-scheme-adapter](https://hub.docker.com/r/modusbox/mojaloop-sdk-scheme-adapter)
+This package is available as a pre-built docker image on Docker Hub: [https://hub.docker.com/r/mojaloop/sdk-scheme-adapter](https://hub.docker.com/r/mojaloop/sdk-scheme-adapter)
 
 ## Quick Start
 
@@ -32,19 +32,19 @@ _Note that these instructions are for Linux based systems. For Mac and/or Window
    Change directory into your workspace then to clone using HTTPS:
 
    ```bash
-   $ git clone https://github.com/modusbox/mojaloop-sdk-mock-dfsp-backend.git
+   $ git clone https://github.com/mojaloop/sdk-mock-dfsp-backend.git
    ```
 
    or to clone using SSH:
 
    ```bash
-   $ git clone git@github.com:modusbox/mojaloop-sdk-mock-dfsp-backend.git
+   $ git clone git@github.com:mojaloop/sdk-mock-dfsp-backend.git
    ```
 
    Now change directory into the cloned repository directory:
 
    ```bash
-   $ cd mojaloop-sdk-mock-dfsp-backend
+   $ cd sdk-mock-dfsp-backend
    ```
 
 1. Edit the scheme adapter configuration to point the scheme adapter at your Mojaloop API enabled switch or simulator:
