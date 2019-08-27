@@ -9,4 +9,4 @@ WORKDIR /src/
 CMD ["node", "/src/index.js"]
 
 COPY ./src/ /src/
-RUN npm ci --production
+RUN npm install --production
