@@ -7,37 +7,19 @@
  *  ORIGINAL AUTHOR:                                                      *
  *       James Bush - james.bush@modusbox.com                             *
  **************************************************************************/
-
 'use strict';
-
 
 const fs = require('fs');
 const path = require('path');
 
-
-// A promise wrapper around fs.readFile
-// Redundant on node 10 and above, use require('fs').promises instead
-async function readFile(...args) {
-    const p = new Promise((resolve, reject) => {
-        fs.readFile(...args, (err, data) => {
-            if (err) {
-                return reject(err);
-            }
-            resolve(data);
-        });
-    });
-    return p;
-}
-
-async function readFilesDelimitedList(delimiter, list) {
-    return Promise.all(list.split(delimiter).map(filename => readFile(filename)));
-}
-
-
+const FS_EVENT_TYPES = {
+    CHANGE: 'change',
+    RENAME: 'rename'
+};
 
 // TODO: implement toString, toJSON toAnythingElse methods on config so that secrets can't be
 // printed
-let config = {
+let DEFAULTS = {
     inboundPort: 4000,
     outboundPort: 4001,
     peerEndpoint: '172.17.0.2:3001',
@@ -48,7 +30,7 @@ let config = {
     expirySeconds: 60,
     autoAcceptQuotes: true,
     tls: {
-        mutualTLS: { enabled: false },
+        mutualTLS: {enabled: false},
         inboundCreds: {
             ca: null,
             cert: null,
@@ -71,6 +53,37 @@ let config = {
     enableTestFeatures: false
 };
 
+let config = {};
+let fsWatcher;
+
+// A promise wrapper around fs.readFile
+// Redundant on node 10 and above, use require('fs').promises instead
+async function readFile(...args) {
+    const p = new Promise((resolve, reject) => {
+        fs.readFile(...args, (err, data) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(data);
+        });
+    });
+    return p;
+}
+
+async function readFilesDelimitedList(delimiter, list) {
+    return Promise.all(list.split(delimiter).map(filename => readFile(filename)));
+}
+
+const init = () => {
+    // do not copy by reference, but perform a deep clone of the object to avoid modifying
+    // the DEFAULTS.
+    // Useful for avoiding issues in case this and the `setConfig` are called multiple times,
+    // like in unit tests.
+    config = JSON.parse(JSON.stringify(DEFAULTS));
+};
+
+// initialize the config object with the DEFAULTS before any action is performed.
+init();
 
 const setConfig = async cfg => {
     config.inboundPort = cfg.INBOUND_LISTEN_PORT;
@@ -111,11 +124,25 @@ const setConfig = async cfg => {
 
     config.jwsVerificationKeys = {};
 
+    // read files on startup.
     fs.readdirSync(cfg.JWS_VERIFICATION_KEYS_DIRECTORY)
         .filter(f => f.endsWith('.pem'))
         .map(f => {
             config.jwsVerificationKeys[path.basename(f, '.pem')] = fs.readFileSync(path.join(cfg.JWS_VERIFICATION_KEYS_DIRECTORY, f));
         });
+
+    // continuously monitor folder for changes in files.
+    fsWatcher = fs.watch(cfg.JWS_VERIFICATION_KEYS_DIRECTORY, (eventType, filename) => {
+        // On most platforms, 'rename' is emitted whenever a filename appears or disappears in the directory.
+        // From: https://nodejs.org/docs/latest/api/fs.html#fs_fs_watch_filename_options_listener
+        if (eventType === FS_EVENT_TYPES.RENAME) {
+            if (config.jwsVerificationKeys[path.basename(filename, '.pem')] == null) {
+                config.jwsVerificationKeys[path.basename(filename, '.pem')] = fs.readFileSync(path.join(cfg.JWS_VERIFICATION_KEYS_DIRECTORY, filename));
+            } else {
+                delete config.jwsVerificationKeys[path.basename(filename, '.pem')];
+            }
+        }
+    });
 
     config.cacheConfig.host = cfg.CACHE_HOST;
     config.cacheConfig.port = cfg.CACHE_PORT;
@@ -125,13 +152,21 @@ const setConfig = async cfg => {
     config.wso2BearerToken = cfg.WS02_BEARER_TOKEN;
 };
 
-
 const getConfig = () => {
     return config;
 };
 
+// useful for closing the open handler of the fs.watch, especially in unit tests.
+const destroy = () => {
+    if (fsWatcher && typeof (fsWatcher.close) === 'function') {
+        fsWatcher.close();
+    }
+    config = null;
+};
 
 module.exports = {
+    init,
     getConfig,
-    setConfig
+    setConfig,
+    destroy
 };
