@@ -101,7 +101,7 @@ jobs:
 #          command: npm install github:interledgerjs/five-bells-ledger-api-tests
       - run:
           name: Update NPM install
-          command: npm ci
+          command: npm install
       - run:
           name: Delete build dependencies
           command: apk del build-dependencies
