@@ -22,7 +22,6 @@
     "@internal/randomphrase": "file:lib/randomphrase",
     "@internal/router": "file:lib/router",
     "@internal/validate": "file:lib/validate",
-    "@modusbox/mojaloop-sdk-standard-components": "0.0.39",
     "@mojaloop/sdk-standard-components": "^0.0.39",
     "co-body": "^6.0.0",
     "dotenv": "^6.2.0",

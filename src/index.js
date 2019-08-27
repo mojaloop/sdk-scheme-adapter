@@ -37,8 +37,8 @@ const outboundApi = new Koa();
 const inboundApiSpec = yaml.load('./inboundApi/api.yaml');
 const outboundApiSpec = yaml.load('./outboundApi/api.yaml');
 
-const Jws = require('@modusbox/mojaloop-sdk-standard-components').Jws;
-const Errors = require('@modusbox/mojaloop-sdk-standard-components').Errors;
+const Jws = require('@mojaloop/sdk-standard-components').Jws;
+const Errors = require('@mojaloop/sdk-standard-components').Errors;
 
 
 (async function() {
