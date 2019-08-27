@@ -17,7 +17,7 @@ const paramsToJsonSchema = require('openapi-jsonschema-parameters').convertParam
 const jsrp = require('json-schema-ref-parser');
 const util = require('util');
 
-const { Errors } = require('@modusbox/mojaloop-sdk-standard-components');
+const { Errors } = require('@mojaloop/sdk-standard-components');
 
 // Don't stop at the first error, we'll let the user know what all their errors are. Also, when we
 // validate, coerce types to those we're interested in where possible.

@@ -13,9 +13,9 @@
 
 const BackendRequests = require('@internal/requests').BackendRequests;
 const HTTPResponseError = require('@internal/requests').HTTPResponseError;
-const MojaloopRequests = require('@modusbox/mojaloop-sdk-standard-components').MojaloopRequests;
-const Ilp = require('@modusbox/mojaloop-sdk-standard-components').Ilp;
-const Errors = require('@modusbox/mojaloop-sdk-standard-components').Errors;
+const MojaloopRequests = require('@mojaloop/sdk-standard-components').MojaloopRequests;
+const Ilp = require('@mojaloop/sdk-standard-components').Ilp;
+const Errors = require('@mojaloop/sdk-standard-components').Errors;
 const shared = require('@internal/shared');
 
 const ASYNC_TIMEOUT_MILLS = 30000;
