@@ -106,34 +106,34 @@ jobs:
           name: Delete build dependencies
           command: apk del build-dependencies
       - save_cache:
-          key: dependency-cache-{{ checksum "src/package.json" }}
+          key: dependency-cache-1-{{ checksum "src/package.json" }}
           paths:
             - node_modules
 
-#  test-unit:
-#    <<: *defaults_working_directory
-#    <<: *defaults_docker_node
-#    steps:
-#      - run:
-#          name: Install general dependencies
-#          command: *defaults_Dependencies
-#      - checkout
-#      - run:
-#          <<: *defaults_environment
-#      - restore_cache:
-#          keys:
-#          - dependency-cache-{{ checksum "package.json" }}
-#      - run:
-#          name: Create dir for test results
-#          command: mkdir -p ./test/results
-#      - run:
-#          name: Execute unit tests
-#          command: npm -s run test:xunit > ./test/results/tape.xml
-#      - store_artifacts:
-#          path: ./test/results
-#          prefix: test
-#      - store_test_results:
-#          path: ./test/results
+  test-unit:
+    <<: *defaults_working_directory
+    <<: *defaults_docker_node
+    steps:
+      - run:
+          name: Install general dependencies
+          command: *defaults_Dependencies
+      - checkout
+      - run:
+          <<: *defaults_environment
+      - restore_cache:
+          keys:
+          - dependency-cache-1-{{ checksum "package.json" }}
+      - run:
+          name: Create dir for test results
+          command: mkdir -p ./src/test/results
+      - run:
+          name: Execute unit tests
+          command: cd src && npm run test > ./test/results/results.txt
+      - store_artifacts:
+          path: ./test/results
+          prefix: test
+      - store_test_results:
+          path: ./test/results
 
 #  test-coverage:
 #    <<: *defaults_working_directory
@@ -467,17 +467,17 @@ workflows:
               ignore:
                 - /feature*/
                 - /bugfix*/
-#      - test-unit:
-#          context: org-global
-#          requires:
-#            - setup
-#          filters:
-#            tags:
-#              only: /.*/
-#            branches:
-#              ignore:
-#                - /feature*/
-#                - /bugfix*/
+      - test-unit:
+          context: org-global
+          requires:
+            - setup
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
 #      - test-coverage:
 #          context: org-global
 #          requires:
@@ -548,7 +548,7 @@ workflows:
           context: org-global
           requires:
             - setup
-#            - test-unit
+            - test-unit
 #            - test-coverage
 #            - test-integration
 #            - test-functional
@@ -575,7 +575,7 @@ workflows:
           context: org-global
           requires:
             - setup
-#            - test-unit
+            - test-unit
 #            - test-coverage
 #            - test-integration
 #            - test-functional
@@ -592,7 +592,7 @@ workflows:
           context: org-global
           requires:
             - setup
-#            - test-unit
+            - test-unit
 #            - test-coverage
 #            - test-integration
 #            - test-functional
