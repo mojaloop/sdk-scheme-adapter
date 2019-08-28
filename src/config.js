@@ -158,9 +158,8 @@ const getConfig = () => {
 
 // useful for closing the open handler of the fs.watch, especially in unit tests.
 const destroy = () => {
-    if (fsWatcher && typeof (fsWatcher.close) === 'function') {
-        fsWatcher.close();
-    }
+    fsWatcher && fsWatcher.close();
+
     config = null;
 };
 
