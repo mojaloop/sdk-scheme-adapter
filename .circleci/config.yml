@@ -101,14 +101,14 @@ jobs:
 #          command: npm install github:interledgerjs/five-bells-ledger-api-tests
       - run:
           name: Update NPM install
-          command: npm install
+          command: cd src && npm install
       - run:
           name: Delete build dependencies
           command: apk del build-dependencies
       - save_cache:
           key: dependency-cache-1-{{ checksum "src/package.json" }}
           paths:
-            - node_modules
+            - src/node_modules
 
   test-unit:
     <<: *defaults_working_directory
