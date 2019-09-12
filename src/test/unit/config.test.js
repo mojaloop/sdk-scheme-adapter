@@ -46,7 +46,10 @@ describe('config', () => {
                 host: 'localhost',
                 port: 6379
             },
-            enableTestFeatures: false
+            enableTestFeatures: false,
+            wso2Auth: {
+                refreshSeconds: 3600,
+            },
         };
     });
 
@@ -132,7 +135,7 @@ describe('config', () => {
                     expect(retrievedConfig.cacheConfig.host).toBe(process.env.CACHE_HOST);
                     expect(retrievedConfig.cacheConfig.port).toBe(process.env.CACHE_PORT);
                     expect(retrievedConfig.enableTestFeatures).toBe(process.env.ENABLE_TEST_FEATURES === 'true');
-                    expect(retrievedConfig.wso2BearerToken).toBe(process.env.WS02_BEARER_TOKEN);
+                    expect(retrievedConfig.wso2Auth.staticToken).toBe(process.env.WS02_BEARER_TOKEN);
                     expect(retrievedConfig.jwsVerificationKeysDirectory).toBe(process.env.JWS_VERIFICATION_KEYS_DIRECTORY);
                     expect(Buffer.isBuffer(retrievedConfig.jwsSigningKey)).toBe(true);
                     expect(typeof(retrievedConfig.jwsVerificationKeys)).toBe('object');
