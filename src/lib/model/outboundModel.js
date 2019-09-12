@@ -45,7 +45,7 @@ class OutboundTransfersModel {
             tls: config.tls,
             jwsSign: config.jwsSign,
             jwsSigningKey: config.jwsSigningKey,
-            wso2BearerToken: config.wso2BearerToken
+            wso2Auth: config.wso2Auth
         });
 
         this.ilp = new Ilp({

@@ -50,7 +50,10 @@ let DEFAULTS = {
         host: 'localhost',
         port: 6379
     },
-    enableTestFeatures: false
+    enableTestFeatures: false,
+    wso2Auth: {
+        refreshSeconds: 3600,
+    }
 };
 
 let config = {};
@@ -149,7 +152,11 @@ const setConfig = async cfg => {
 
     config.enableTestFeatures = cfg.ENABLE_TEST_FEATURES.toLowerCase() === 'true' ? true : false;
 
-    config.wso2BearerToken = cfg.WS02_BEARER_TOKEN;
+    config.wso2Auth.staticToken = cfg.WS02_BEARER_TOKEN;
+    config.wso2Auth.tokenEndpoint = cfg.OAUTH_TOKEN_ENDPOINT;
+    config.wso2Auth.clientKey = cfg.OAUTH_CLIENT_KEY;
+    config.wso2Auth.clientSecret = cfg.OAUTH_CLIENT_SECRET;
+    config.wso2Auth.refreshSeconds = cfg.OAUTH_REFRESH_SECONDS;
 };
 
 const getConfig = () => {
