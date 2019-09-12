@@ -46,7 +46,10 @@ describe('config', () => {
                 host: 'localhost',
                 port: 6379
             },
-            enableTestFeatures: false
+            enableTestFeatures: false,
+            wso2Auth: {
+                refreshSeconds: 3600,
+            },
         };
     });
 
