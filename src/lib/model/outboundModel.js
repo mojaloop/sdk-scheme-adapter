@@ -414,7 +414,7 @@ class OutboundTransfersModel {
 
                     this.data.fulfil = fulfil;
 
-                    if(this.checkIlp && !this.ilp.validateFulfil(fulfil, this.data.quoteResponse.condition)) {
+                    if(this.checkIlp && !this.ilp.validateFulfil(fulfil.fulfilment, this.data.quoteResponse.condition)) {
                         throw new Error('Invalid fulfilment received from peer DFSP.');
                     }
 
