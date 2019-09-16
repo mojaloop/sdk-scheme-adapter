@@ -46,6 +46,11 @@ class MockIlp {
         console.log('MockIlp constructed');
         this.config = config;
     }
+
+    validateFulfil(fulfil, condition) {
+       console.log(`Mock ILP not checking fulfil ${fulfil} against condition ${condition}`);
+        return true;
+    }
 }
 
 
