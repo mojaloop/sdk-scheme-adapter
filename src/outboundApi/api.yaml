@@ -318,12 +318,13 @@ components:
       
     transferContinuation:
       type: object
-      required:
-        - acceptQuote
       properties:
         acceptQuote:
           type: boolean
-          description: true if the caller wishes to accept the quote and proceed with the transfer, otherwise false.
+          description: true if the caller wishes to accept the quote and proceed to transfer stage, otherwise false.
+        acceptParty:
+          type: boolean
+          description: true if the caller wishts to accept the party and proceed to quote stage, otherwise false.
           
     transferId:
       pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
@@ -431,9 +432,10 @@ components:
       type: string
       enum:
       - ERROR_OCCURRED
+      - WAITING_FOR_PARTY_ACCEPTANCE
       - WAITING_FOR_QUOTE_ACCEPTANCE
       - COMPLETED
-          
+
   responses:
     '200':
       description: Transfer completed successfully
