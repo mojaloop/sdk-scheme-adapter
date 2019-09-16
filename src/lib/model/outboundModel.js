@@ -39,6 +39,7 @@ class OutboundTransfersModel {
         this.expirySeconds = config.expirySeconds;
         this.autoAcceptQuotes = config.autoAcceptQuotes;
         this.autoAcceptParty = config.autoAcceptParty;
+        this.checkIlp = config.checkIlp;
 
         this.requests = new MojaloopRequests({
             logger: this.logger,
