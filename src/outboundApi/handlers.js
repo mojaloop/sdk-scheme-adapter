@@ -63,6 +63,8 @@ const putTransfers = async (ctx) => {
             ...ctx.state.conf
         });
 
+        // TODO: check the incoming body to reject party or quote when requested to do so
+
         // load the transfer model from cache and start it running again
         await model.load(ctx.state.path.params.transferId);
 
