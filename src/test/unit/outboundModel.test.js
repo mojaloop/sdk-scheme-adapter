@@ -12,7 +12,7 @@
 
 
 // load default local environment vars
-require('dotenv').config({path: 'local.env'});
+//require('dotenv').config({path: 'local.env'});
 
 // we use a mock standard components lib to intercept and mock certain funcs
 jest.mock('@mojaloop/sdk-standard-components');
@@ -26,6 +26,41 @@ const { Logger, Transports } = require('@internal/log');
 const Model = require('@internal/model').outboundTransfersModel;
 
 let logTransports;
+
+
+// dummy environment config
+const config = {
+    INBOUND_LISTEN_PORT: '4000',
+    OUTBOUND_LISTEN_PORT: '4001',
+    MUTUAL_TLS_ENABLED: 'false',
+    VALIDATE_INBOUND_JWS: 'true',
+    JWS_SIGN: 'true',
+    JWS_SIGNING_KEY_PATH: '/jwsSigningKey.key',
+    JWS_VERIFICATION_KEYS_DIRECTORY: '/jwsVerificationKeys',
+    IN_CA_CERT_PATH: './secrets/cacert.pem',
+    IN_SERVER_CERT_PATH: './secrets/servercert.pem',
+    IN_SERVER_KEY_PATH: './secrets/serverkey.pem',
+    OUT_CA_CERT_PATH: './secrets/cacert.pem',
+    OUT_CLIENT_CERT_PATH: './secrets/servercert.pem',
+    OUT_CLIENT_KEY_PATH: './secrets/serverkey.pem',
+    LOG_INDENT: '0',
+    CACHE_HOST: '172.17.0.2',
+    CACHE_PORT: '6379',
+    PEER_ENDPOINT: '172.17.0.3:4000',
+    BACKEND_ENDPOINT: '172.17.0.5:4000',
+    DFSP_ID: 'mojaloop-sdk',
+    ILP_SECRET: 'Quaixohyaesahju3thivuiChai5cahng',
+    EXPIRY_SECONDS: '60',
+    AUTO_ACCEPT_QUOTES: 'false',
+    AUTO_ACCEPT_PARTY: 'false',
+    CHECK_ILP: 'true',
+    ENABLE_TEST_FEATURES: 'false',
+    WS02_BEARER_TOKEN: '7718fa9b-be13-3fe7-87f0-a12cf1628168',
+    OAUTH_TOKEN_ENDPOINT: '',
+    OAUTH_CLIENT_KEY: '',
+    OAUTH_CLIENT_SECRET: '',
+    OAUTH_REFRESH_SECONDS: '3600'
+};
 
 
 // a dummy transfer request
@@ -101,7 +136,7 @@ const quoteResponse = {
 const transferFulfil = {
     "type": "transferFulfil",
     "data": {
-        "fulfilment": "7mm1-reS3SAi8oIWXgBkLmgWc1MkZ_yLbFDX5XAdo5o",
+        "fulfilment": "87mm1-reS3SAi8oIWXgBkLmgWc1MkZ_yLbFDX5XAdo5o",
         "completedTimestamp": "2017-11-15T14:16:09.663+01:00",
         "transferState": "COMMITTED"
     }
@@ -111,8 +146,8 @@ const transferFulfil = {
 describe('outboundModel', () => {
     // the keys are under the "secrets" folder that is supposed to be moved by Dockerfile
     // so for the needs of the unit tests, we have to define the proper path manually.
-    process.env.JWS_SIGNING_KEY_PATH = path.join('..', 'secrets', process.env.JWS_SIGNING_KEY_PATH);
-    process.env.JWS_VERIFICATION_KEYS_DIRECTORY = path.join('..', 'secrets', process.env.JWS_VERIFICATION_KEYS_DIRECTORY);
+    config.JWS_SIGNING_KEY_PATH = path.join('..', 'secrets', config.JWS_SIGNING_KEY_PATH);
+    config.JWS_VERIFICATION_KEYS_DIRECTORY = path.join('..', 'secrets', config.JWS_VERIFICATION_KEYS_DIRECTORY);
 
     beforeAll(async () => {
         logTransports = await Promise.all([Transports.consoleDir()]);
@@ -125,7 +160,7 @@ describe('outboundModel', () => {
     test('initializes to starting state', async () => {
         init();
 
-        await setConfig(process.env);
+        await setConfig(config);
         const conf = getConfig();
 
         const model = new Model({
@@ -146,10 +181,10 @@ describe('outboundModel', () => {
 
     test('executes all three transfer stages without halting when AUTO_ACCEPT_PARTY and AUTO_ACCEPT_QUOTES are true', async () => {
         init();
-        process.env.AUTO_ACCEPT_PARTY = true;
-        process.env.AUTO_ACCEPT_QUOTES = true;
+        config.AUTO_ACCEPT_PARTY = 'true';
+        config.AUTO_ACCEPT_QUOTES = 'true';
 
-        await setConfig(process.env);
+        await setConfig(config);
         const conf = getConfig();
 
         const model = new Model({
@@ -197,9 +232,9 @@ describe('outboundModel', () => {
 
     test('resolves payee and halts when AUTO_ACCEPT_PARTY is false', async () => {
         init();
-        process.env.AUTO_ACCEPT_PARTY = false;
+        config.AUTO_ACCEPT_PARTY = 'false';
 
-        await setConfig(process.env);
+        await setConfig(config);
         const conf = getConfig();
 
         const model = new Model({
@@ -235,10 +270,10 @@ describe('outboundModel', () => {
 
     test('halts after resolving payee, resumes and then halts after receiving quote response when AUTO_ACCEPT_PARTY is false and AUTO_ACCEPT_QUOTES is false', async () => {
         init();
-        process.env.AUTO_ACCEPT_PARTY = false;
-        process.env.AUTO_ACCEPT_QUOTES = false;
+        config.AUTO_ACCEPT_PARTY = 'false';
+        config.AUTO_ACCEPT_QUOTES = 'false';
 
-        await setConfig(process.env);
+        await setConfig(config);
         const conf = getConfig();
 
         const cache = new MockCache();
@@ -308,10 +343,10 @@ describe('outboundModel', () => {
 
     test('halts and resumes after parties and quotes stages when AUTO_ACCEPT_PARTY is false and AUTO_ACCEPT_QUOTES is false', async () => {
         init();
-        process.env.AUTO_ACCEPT_PARTY = false;
-        process.env.AUTO_ACCEPT_QUOTES = false;
+        config.AUTO_ACCEPT_PARTY = 'false';
+        config.AUTO_ACCEPT_QUOTES = 'false';
 
-        await setConfig(process.env);
+        await setConfig(config);
         const conf = getConfig();
 
         const cache = new MockCache();
