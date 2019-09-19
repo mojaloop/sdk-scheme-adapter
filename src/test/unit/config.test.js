@@ -47,6 +47,9 @@ describe('config', () => {
                 port: 6379
             },
             enableTestFeatures: false,
+            oauthTestServer: {
+                enabled: false,
+            },
             wso2Auth: {
                 refreshSeconds: 3600,
             },
