@@ -23,7 +23,7 @@
     "@internal/randomphrase": "file:lib/randomphrase",
     "@internal/router": "file:lib/router",
     "@internal/validate": "file:lib/validate",
-    "@mojaloop/sdk-standard-components": "^7.5.2",
+    "@mojaloop/sdk-standard-components": "^7.5.1",
     "co-body": "^6.0.0",
     "dotenv": "^6.2.0",
     "koa": "^2.6.2",
