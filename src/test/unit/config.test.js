@@ -3,6 +3,7 @@ require('dotenv').config({path: 'local.env'});
 const fs  = require('fs').promises;
 const path = require('path');
 const config = require('../../config');
+const sleep = require('await-sleep');
 
 describe('config', () => {
     let defaultConfig;
@@ -149,14 +150,15 @@ describe('config', () => {
                     await config.setConfig(process.env);
 
                     let retrievedConfig = config.getConfig();
-
+                    
                     expect(Object.keys(retrievedConfig.jwsVerificationKeys).length).toBe(1);
                     expect(Object.keys(retrievedConfig.jwsVerificationKeys)[0]).toBe('mojaloop-sdk');
 
                     mockFilePath = path.join(retrievedConfig.jwsVerificationKeysDirectory,
                         'mock-jws.pem');
-
+                    
                     await fs.writeFile(mockFilePath, 'foo-key');
+                    await sleep(1000);
 
                     expect(Object.keys(retrievedConfig.jwsVerificationKeys).length).toBe(2);
                     expect(Object.keys(retrievedConfig.jwsVerificationKeys)[0]).toBe('mojaloop-sdk');
@@ -176,6 +178,7 @@ describe('config', () => {
                         'mock-jws.pem');
 
                     await fs.writeFile(mockFilePath, 'foo-key');
+                    await sleep(1000);
 
                     expect(Object.keys(retrievedConfig.jwsVerificationKeys).length).toBe(2);
                     expect(Object.keys(retrievedConfig.jwsVerificationKeys)[0]).toBe('mojaloop-sdk');
@@ -183,7 +186,8 @@ describe('config', () => {
 
                     await fs.unlink(mockFilePath);
                     mockFilePath = null;
-
+                    await sleep(1000);
+                    
                     expect(Object.keys(retrievedConfig.jwsVerificationKeys).length).toBe(1);
                     expect(Object.keys(retrievedConfig.jwsVerificationKeys)[0]).toBe('mojaloop-sdk');
                 });
