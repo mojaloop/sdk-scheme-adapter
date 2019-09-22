@@ -124,6 +124,9 @@ jobs:
           keys:
           - dependency-cache-4-{{ checksum "src/package.json" }}
       - run:
+          name: Update NPM install
+          command: cd src && npm install
+      - run:
           name: Create dir for test results
           command: cd src && mkdir -p ./test/results
       - run:
