@@ -106,7 +106,7 @@ jobs:
           name: Delete build dependencies
           command: apk del build-dependencies
       - save_cache:
-          key: dependency-cache-4-{{ checksum "src/package.json" }}
+          key: dependency-cache-5-{{ checksum "src/package.json" }}
           paths:
             - src/node_modules
 
@@ -122,10 +122,10 @@ jobs:
           <<: *defaults_environment
       - restore_cache:
           keys:
-          - dependency-cache-4-{{ checksum "src/package.json" }}
-      - run:
-          name: Update NPM install
-          command: cd src && npm install
+          - dependency-cache-5-{{ checksum "src/package.json" }}
+#      - run:
+#          name: Update NPM install
+#          command: cd src && npm install
       - run:
           name: Create dir for test results
           command: cd src && mkdir -p ./test/results
