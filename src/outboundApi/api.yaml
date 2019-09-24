@@ -281,6 +281,12 @@ components:
       enum:
       - MSISDN
       - ACCOUNT_ID
+      - EMAIL
+      - PERSONAL_ID
+      - BUSINESS
+      - DEVICE
+      - IBAN
+      - ALIAS
       description: Below are the allowed values for the enumeration.
       
         - MSISDN -  An MSISDN (Mobile Station International Subscriber Directory Number, that is, the phone number) is used as reference to a participant. The MSISDN identifier should be in international format according to the [ITU-T E.164 standard](https://www.itu.int/rec/T-REC-E.164/en). Optionally, the MSISDN may be prefixed by a single plus sign, indicating the international prefix.
@@ -318,12 +324,13 @@ components:
       
     transferContinuation:
       type: object
-      required:
-        - acceptQuote
       properties:
         acceptQuote:
           type: boolean
-          description: true if the caller wishes to accept the quote and proceed with the transfer, otherwise false.
+          description: true if the caller wishes to accept the quote and proceed to transfer stage, otherwise false.
+        acceptParty:
+          type: boolean
+          description: true if the caller wishts to accept the party and proceed to quote stage, otherwise false.
           
     transferId:
       pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
@@ -431,9 +438,10 @@ components:
       type: string
       enum:
       - ERROR_OCCURRED
+      - WAITING_FOR_PARTY_ACCEPTANCE
       - WAITING_FOR_QUOTE_ACCEPTANCE
       - COMPLETED
-          
+
   responses:
     '200':
       description: Transfer completed successfully
