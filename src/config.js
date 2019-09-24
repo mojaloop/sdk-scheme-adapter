@@ -29,6 +29,7 @@ let DEFAULTS = {
     checkIlp: true,
     expirySeconds: 60,
     autoAcceptQuotes: true,
+    autoAcceptParty: true,
     tls: {
         mutualTLS: {enabled: false},
         inboundCreds: {
@@ -103,7 +104,9 @@ const setConfig = async cfg => {
     config.ilpSecret = cfg.ILP_SECRET;
     config.checkIlp = cfg.CHECK_ILP.toLowerCase() === 'false' ? false : true;
     config.expirySeconds = Number(cfg.EXPIRY_SECONDS);
+
     config.autoAcceptQuotes = cfg.AUTO_ACCEPT_QUOTES.toLowerCase() === 'true' ? true : false;
+    config.autoAcceptParty = cfg.AUTO_ACCEPT_PARTY ? (cfg.AUTO_ACCEPT_PARTY.toLowerCase() === 'true' ? true : false) : true;
 
     // Getting secrets from files instead of environment variables reduces the likelihood of
     // accidental leakage.
