@@ -25,6 +25,7 @@ describe('config', () => {
             checkIlp: true,
             expirySeconds: 60,
             autoAcceptQuotes: true,
+            autoAcceptParty: true,
             tls: {
                 mutualTLS: { enabled: false },
                 inboundCreds: {

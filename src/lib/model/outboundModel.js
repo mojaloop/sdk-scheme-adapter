@@ -20,9 +20,10 @@ const shared = require('@internal/shared');
 const ASYNC_TIMEOUT_MILLS = 30000;
 
 const transferStateEnum = {
+    'WAITING_FOR_PARTY_ACEPTANCE': 'WAITING_FOR_PARTY_ACCEPTANCE',
     'WAITING_FOR_QUOTE_ACCEPTANCE': 'WAITING_FOR_QUOTE_ACCEPTANCE',
     'ERROR_OCCURED': 'ERROR_OCCURED',
-    'COMPLETED': 'COMPLETED'
+    'COMPLETED': 'COMPLETED',
 };
 
 
@@ -37,6 +38,8 @@ class OutboundTransfersModel {
         this.dfspId = config.dfspId;
         this.expirySeconds = config.expirySeconds;
         this.autoAcceptQuotes = config.autoAcceptQuotes;
+        this.autoAcceptParty = config.autoAcceptParty;
+        this.checkIlp = config.checkIlp;
 
         this.requests = new MojaloopRequests({
             logger: this.logger,
@@ -61,14 +64,14 @@ class OutboundTransfersModel {
         this.stateMachine = new StateMachine({
             init: initState,
             transitions: [
-                { name: 'resolvePayee', from: 'start', to: 'resolvePayee' },
-                { name: 'requestQuote', from: 'resolvePayee', to: 'requestQuote' },
-                { name: 'executeTransfer', from: 'requestQuote', to: 'executeTransfer' },
-                { name: 'succeeded', from: 'executeTransfer', to: 'succeeded' },
+                { name: 'resolvePayee', from: 'start', to: 'payeeResolved' },
+                { name: 'requestQuote', from: 'payeeResolved', to: 'quoteReceived' },
+                { name: 'executeTransfer', from: 'quoteReceived', to: 'succeeded' },
                 { name: 'error', from: '*', to: 'errored' },
             ],
             methods: {
-                onAfterTransition: this._handleTransition.bind(this),
+                onTransition: this._handleTransition.bind(this),
+                onAfterTransition: this._afterTransition.bind(this),
                 onPendingTransition: (transition, from, to) => {
                     // allow transitions to 'error' state while other transitions are in progress
                     if(transition !== 'error') {
@@ -79,6 +82,14 @@ class OutboundTransfersModel {
         });
 
         return this.stateMachine[initState];
+    }
+
+
+    /**
+     * Updates the internal state representation to reflect that of the state machine itself
+     */
+    _afterTransition() {
+        this.data.currentState = this.stateMachine.state;
     }
 
 
@@ -403,7 +414,7 @@ class OutboundTransfersModel {
 
                     this.data.fulfil = fulfil;
 
-                    if(this.checkIlp && !this.ilp.validateFulfil(fulfil, this.data.quoteResponse.condition)) {
+                    if(this.checkIlp && !this.ilp.validateFulfil(fulfil.fulfilment, this.data.quoteResponse.condition)) {
                         throw new Error('Invalid fulfilment received from peer DFSP.');
                     }
 
@@ -470,19 +481,20 @@ class OutboundTransfersModel {
      * @returns {object} - Response representing the result of the transfer process
      */
     getResponse() {
-        // make sure the current stateMachine state is up to date
-        this.data.currentState = this.stateMachine.state;
-
         // we want to project some of our internal state into a more useful
         // representation to return to the SDK API consumer
         let resp = { ...this.data };
 
         switch(this.data.currentState) {
-            case 'requestQuote':
+            case 'payeeResolved':
+                resp.currentState = transferStateEnum.WAITING_FOR_PARTY_ACEPTANCE;
+                break;
+
+            case 'quoteReceived':
                 resp.currentState = transferStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE;
                 break;
 
-            case 'executeTransfer':
+            case 'succeeded':
                 resp.currentState = transferStateEnum.COMPLETED;
                 break;
 
@@ -552,34 +564,53 @@ class OutboundTransfersModel {
      */
     async run() {
         try {
-            if(this.data.currentState === 'start') {
-                // we are at the start of the transfer process so proceed with reslving payee and requesting a quote
-                await this.stateMachine.resolvePayee();
-                this.logger.log(`Payee resolved for transfer ${this.data.transferId}`);
+            // run transitions based on incoming state
+            switch(this.data.currentState) {
+                case 'start':
+                    // next transition is to resolvePayee
+                    await this.stateMachine.resolvePayee();
+                    this.logger.log(`Payee resolved for transfer ${this.data.transferId}`);
+                    if(this.stateMachine.state === 'payeeResolved' && !this.autoAcceptParty) {
+                        //we break execution here and return the resolved party details to allow asynchronous accept or reject
+                        //of the resolved party
+                        await this._save();
+                        return this.getResponse();
+                    }
+                    break;
 
-                await this.stateMachine.requestQuote(); 
-                this.logger.log(`Quote received for transfer ${this.data.transferId}`);
+                case 'payeeResolved':
+                    // next transition is to requestQuote
+                    await this.stateMachine.requestQuote();
+                    this.logger.log(`Quote received for transfer ${this.data.transferId}`);
+                    if(this.stateMachine.state === 'quoteReceived' && !this.autoAcceptQuotes) {
+                        //we break execution here and return the quote response details to allow asynchronous accept or reject
+                        //of the quote
+                        await this._save();
+                        return this.getResponse();
+                    }
+                    break;
 
-                if(!this.autoAcceptQuotes) {
-                    // we are configured to require a quote confirmation so return now.
-                    // we may be resumed later with a quote confirmation.
-                    this.logger.log('Transfer model skipping execution of transfer and will wait for quote confirmation or rejection');
+                case 'quoteReceived':
+                    // next transition is executeTransfer
+                    await this.stateMachine.executeTransfer();
+                    this.logger.log(`Transfer ${this.data.transferId} has been completed`);
+                    break;
+
+                case 'succeeded':
+                    // all steps complete so return 
+                    this.logger.log('Transfer completed successfully');
                     await this._save();
                     return this.getResponse();
-                }
+
+                case 'error':
+                    // stopped in errored state
+                    this.logger.log('State machine in errored state');
+                    return this.getResponse();
             }
 
-            //if(this.data.currentState !== 'requestQuote') {
-            //    throw new Error(`Unable to continue with transfer ${this.data.transferId} model. Expected to be in requestQuote state but in ${this.data.currentState}`);
-            //}
-
-            await this.stateMachine.executeTransfer();
-            this.logger.log('Transfer fulfilled');
-
-            this.logger.log(`Transfer model state machine ended in state: ${this.stateMachine.state}`);
-
-            await this._unsubscribeAll();
-            return this.getResponse();
+            // now call ourslves recursively to deal with the next transition
+            this.logger.log(`Transfer model state machine transition completed in state: ${this.stateMachine.state}. Recusring to handle next transition.`);
+            return await this.run(); 
         }
         catch(err) {
             this.logger.push({ err }).log('Error running transfer model');
