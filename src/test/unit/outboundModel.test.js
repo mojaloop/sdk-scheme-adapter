@@ -55,6 +55,7 @@ const config = {
     AUTO_ACCEPT_PARTY: 'false',
     CHECK_ILP: 'true',
     ENABLE_TEST_FEATURES: 'false',
+    ENABLE_OAUTH_TOKEN_ENDPOINT: 'false',
     WS02_BEARER_TOKEN: '7718fa9b-be13-3fe7-87f0-a12cf1628168',
     OAUTH_TOKEN_ENDPOINT: '',
     OAUTH_CLIENT_KEY: '',

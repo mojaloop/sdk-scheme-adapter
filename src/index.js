@@ -24,6 +24,7 @@ const Validate = require('@internal/validate');
 
 const inboundHandlers = require('./inboundApi/handlers.js');
 const outboundHandlers = require('./outboundApi/handlers.js');
+const OAuthTestServer = require('./OAuthTestServer');
 
 const router = require('@internal/router');
 const { setConfig, getConfig } = require('./config.js');
@@ -268,6 +269,7 @@ const Errors = require('@mojaloop/sdk-standard-components').Errors;
 
     let inboundServer;
     let outboundServer;
+    let oauthTestServer;
 
     if (conf.tls.mutualTLS.enabled) {
         const inboundHttpsOpts = {
@@ -278,6 +280,16 @@ const Errors = require('@mojaloop/sdk-standard-components').Errors;
         inboundServer = https.createServer(inboundHttpsOpts, inboundApi.callback()).listen(inboundPort);
     } else {
         inboundServer = http.createServer(inboundApi.callback()).listen(inboundPort);
+    }
+
+    if (conf.oauthTestServer.enabled) {
+        oauthTestServer = OAuthTestServer({
+            clientKey: conf.oauthTestServer.clientKey,
+            clientSecret: conf.oauthTestServer.clientSecret,
+            port: 6000,
+        });
+    } else {
+        oauthTestServer = Promise.resolve();
     }
 
     inboundLogger.log(`Serving inbound API on port ${inboundPort}`);
@@ -303,7 +315,9 @@ const Errors = require('@mojaloop/sdk-standard-components').Errors;
                     return resolve();
                 });
             });
-        })()]);
+        })(),
+        oauthTestServer
+        ]);
 
         process.exit(0);
     });
