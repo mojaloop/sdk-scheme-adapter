@@ -52,6 +52,9 @@ let DEFAULTS = {
         port: 6379
     },
     enableTestFeatures: false,
+    oauthTestServer: {
+        enabled: false,
+    },
     wso2Auth: {
         refreshSeconds: 3600,
     }
@@ -154,6 +157,11 @@ const setConfig = async cfg => {
     config.cacheConfig.port = cfg.CACHE_PORT;
 
     config.enableTestFeatures = cfg.ENABLE_TEST_FEATURES.toLowerCase() === 'true' ? true : false;
+
+    // OAuth mock server configs
+    config.oauthTestServer.enabled = cfg.ENABLE_OAUTH_TOKEN_ENDPOINT.toLowerCase() === 'true';
+    config.oauthTestServer.clientKey = cfg.OAUTH_TOKEN_ENDPOINT_CLIENT_KEY;
+    config.oauthTestServer.clientSecret = cfg.OAUTH_TOKEN_ENDPOINT_CLIENT_SECRET;
 
     config.wso2Auth.staticToken = cfg.WS02_BEARER_TOKEN;
     config.wso2Auth.tokenEndpoint = cfg.OAUTH_TOKEN_ENDPOINT;
