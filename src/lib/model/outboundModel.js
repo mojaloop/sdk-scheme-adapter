@@ -289,12 +289,13 @@ class OutboundTransfersModel {
                         return;
                     }
 
-                    const quoteResponse = message.data;
+                    const quoteResponseBody = message.data;
+                    const quoteResponseHeaders = message.headers;
 
                     // cancel the timeout handler
                     clearTimeout(timeout);
 
-                    this.logger.push({ quoteResponse }).log('Quote response received');
+                    this.logger.push({ quoteResponseBody }).log('Quote response received');
 
                     // stop listening for payee resolution messages
                     this.subscriber.unsubscribe(quoteKey, () => {
@@ -302,7 +303,8 @@ class OutboundTransfersModel {
                     });
 
                     this.data.quoteId = quote.quoteId;
-                    this.data.quoteResponse = quoteResponse;
+                    this.data.quoteResponse = quoteResponseBody;
+                    this.data.quoteResponseSource = quoteResponseHeaders['fspiop-source'];
 
                     return resolve(quote);
                 }
@@ -429,7 +431,7 @@ class OutboundTransfersModel {
             // a POST /transfers request to the switch
             try {
                 const prepare = this._buildTransferPrepare();
-                const res = await this.requests.postTransfers(prepare, this.data.to.fspId);
+                const res = await this.requests.postTransfers(prepare, this.data.quoteResponseSource);
                 this.logger.push({ res }).log('Transfer prepare sent to peer');
             }
             catch(err) {
