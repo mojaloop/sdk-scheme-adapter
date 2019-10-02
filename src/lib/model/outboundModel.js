@@ -303,7 +303,7 @@ class OutboundTransfersModel {
 
                     this.data.quoteId = quote.quoteId;
                     this.data.quoteResponse = quoteResponse;
-                    this.data.quoteResponseSource = msg.headers['FSPIOP-Source'];
+                    this.data.quoteResponseSource = msg.headers['fspiop-source'];
 
                     return resolve(quote);
                 }
