@@ -303,6 +303,7 @@ class OutboundTransfersModel {
 
                     this.data.quoteId = quote.quoteId;
                     this.data.quoteResponse = quoteResponse;
+                    this.data.quoteResponseSource = msg.headers['FSPIOP-Source'];
 
                     return resolve(quote);
                 }
@@ -429,7 +430,7 @@ class OutboundTransfersModel {
             // a POST /transfers request to the switch
             try {
                 const prepare = this._buildTransferPrepare();
-                const res = await this.requests.postTransfers(prepare, this.data.to.fspId);
+                const res = await this.requests.postTransfers(prepare, this.data.quoteResponseSource);
                 this.logger.push({ res }).log('Transfer prepare sent to peer');
             }
             catch(err) {
