@@ -39,6 +39,7 @@ class OutboundTransfersModel {
         this.expirySeconds = config.expirySeconds;
         this.autoAcceptQuotes = config.autoAcceptQuotes;
         this.autoAcceptParty = config.autoAcceptParty;
+        this.useQuoteSourceFSPAsTransferPayeeFSP = config.useQuoteSourceFSPAsTransferPayeeFSP;
         this.checkIlp = config.checkIlp;
 
         this.requests = new MojaloopRequests({
@@ -467,6 +468,10 @@ class OutboundTransfersModel {
             condition: this.data.quoteResponse.condition,
             expiration: this._getExpirationTimestamp() 
         };
+
+        if(this.useQuoteSourceFSPAsTransferPayeeFSP) {
+            prepare.payeeFsp = this.data.quoteResponseSource;
+        }
 
         // add extensions list if provided
         if(this.data.transferRequestExtensions && this.data.transferRequestExtensions.length > 0) {
