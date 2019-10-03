@@ -18,10 +18,10 @@
 jest.mock('@mojaloop/sdk-standard-components');
 
 
-const { init, destroy, setConfig, getConfig } = require('../../config.js');
+const { init, destroy, setConfig, getConfig } = require('../../../../config.js');
 const util = require('util');
 const path = require('path');
-const MockCache = require('../../__mocks__/cache.js');
+const MockCache = require('../../../__mocks__/cache.js');
 const { Logger, Transports } = require('@internal/log');
 const Model = require('@internal/model').outboundTransfersModel;
 
