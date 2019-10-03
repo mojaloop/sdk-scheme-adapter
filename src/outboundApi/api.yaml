@@ -366,7 +366,26 @@ components:
         merchantClassificationCode:
           type: string
           description: Up to 4 digits specifying the sender's merchant classification, if known and applicable.
-      
+
+    extensionItem:
+      type: object
+      properties:
+        key:
+          type: string
+          minLength: 1
+          maxLength: 32
+        value:
+          type: string
+          minLength: 1
+          maxLength: 128
+
+    extensionList:
+      type: array
+      items:
+        $ref: '#/components/schemas/extensionItem'
+      minItems: 0
+      maxItems: 16
+
     transferRequest:
       type: object
       required:
@@ -396,7 +415,11 @@ components:
         note:
           maxLength: 128
           type: string
-          
+        quoteRequestExtensions:
+          $ref: '#/components/schemas/extensionList'
+        transferRequestExtensions:
+          $ref: '#/components/schemas/extensionList'
+
     transferResponse:
       type: object
       required:
