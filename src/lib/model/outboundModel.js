@@ -363,6 +363,13 @@ class OutboundTransfersModel {
             quote.note = this.data.note;
         }
 
+        // add extensionList if provided
+        if(this.data.quoteRequestExtensions && this.data.quoteRequestExtensions.length > 0) {
+            quote.extensionList = {
+                extension: this.data.quoteRequestExtensions
+            };
+        }
+
         return quote;
     }
 
@@ -460,6 +467,13 @@ class OutboundTransfersModel {
             condition: this.data.quoteResponse.condition,
             expiration: this._getExpirationTimestamp() 
         };
+
+        // add extensions list if provided
+        if(this.data.transferRequestExtensions && this.data.transferRequestExtensions.length > 0) {
+            prepare.extensionList = {
+                extension: this.data.transferRequestExtensions
+            };
+        }
 
         return prepare;
     }

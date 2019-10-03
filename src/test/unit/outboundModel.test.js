@@ -80,7 +80,15 @@ const transferRequest = {
     "amount": "100",
     "transactionType": "TRANSFER",
     "note": "test payment",
-    "homeTransactionId": "123ABC"
+    "homeTransactionId": "123ABC",
+    "quoteRequestExtensions": [
+        { "key": "qkey1", "value": "qvalue1" },
+        { "key": "qkey2", "value": "qvalue2" }
+    ],
+    "transferRequestExtensions": [
+        { "key": "tkey1", "value": "tvalue1" },
+        { "key": "tkey2", "value": "tvalue2" }
+    ]
 };
 
 
@@ -197,6 +205,7 @@ describe('outboundModel', () => {
             ...conf
         });
 
+        const postQuotesSpy = jest.spyOn(model.requests, 'postQuotes');
         const postTransfersSpy = jest.spyOn(model.requests, 'postTransfers');
 
         await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
@@ -209,15 +218,30 @@ describe('outboundModel', () => {
         });
 
         model.requests.on('postQuotes', () => {
+            // ensure that the `MojaloopRequests.postQuotes` method has been called with correct arguments
+            // including extension list
+            expect(postQuotesSpy).toHaveBeenCalledTimes(1);
+            expect(postQuotesSpy.mock.calls[0][0].extensionList).toBeTruthy();
+            expect(postQuotesSpy.mock.calls[0][0].extensionList.extension).toBeTruthy();
+            expect(postQuotesSpy.mock.calls[0][0].extensionList.extension.length).toBe(2);
+            expect(postQuotesSpy.mock.calls[0][0].extensionList.extension[0]).toEqual({ key: 'qkey1', value: 'qvalue1' });
+            expect(postQuotesSpy.mock.calls[0][0].extensionList.extension[1]).toEqual({ key: 'qkey2', value: 'qvalue2' });
+
             // simulate a callback with the quote response
             model.cache.emitMessage(JSON.stringify(quoteResponse));
         });
 
         model.requests.on('postTransfers', () => {
-            //ensure that the `MojaloopRequests.postTransfers` method has been called with the correct argument
+            //ensure that the `MojaloopRequests.postTransfers` method has been called with the correct arguments
             // set as the destination FSPID, picked up from the header's value `fspiop-source`
             expect(model.data.quoteResponseSource).toBe(quoteResponse.headers['fspiop-source']);
             expect(postTransfersSpy).toHaveBeenCalledTimes(1);
+
+            expect(postTransfersSpy.mock.calls[0][0].extensionList.extension).toBeTruthy();
+            expect(postTransfersSpy.mock.calls[0][0].extensionList.extension.length).toBe(2);
+            expect(postTransfersSpy.mock.calls[0][0].extensionList.extension[0]).toEqual({ key: 'tkey1', value: 'tvalue1' });
+            expect(postTransfersSpy.mock.calls[0][0].extensionList.extension[1]).toEqual({ key: 'tkey2', value: 'tvalue2' });
+
             expect(postTransfersSpy.mock.calls[0][1]).toBe(quoteResponse.headers['fspiop-source']);
             expect(model.data.to.fspId).toBe(payeeParty.party.partyIdInfo.fspId);
             expect(quoteResponse.headers['fspiop-source']).not.toBe(model.data.to.fspId);
@@ -453,5 +477,4 @@ describe('outboundModel', () => {
         destroy();
         console.log('config destroyed');
     });
-
 });
