@@ -477,4 +477,125 @@ describe('outboundModel', () => {
         destroy();
         console.log('config destroyed');
     });
+
+    test('uses payee party fspid for transfer prepare when config USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP is false', async () => {
+        init();
+        config.AUTO_ACCEPT_PARTY = 'true';
+        config.AUTO_ACCEPT_QUOTES = 'true';
+        config.USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP = 'false';
+
+        await setConfig(config);
+        const conf = getConfig();
+
+        const model = new Model({
+            cache: new MockCache(),
+            logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
+            ...conf
+        });
+
+        const postQuotesSpy = jest.spyOn(model.requests, 'postQuotes');
+        const postTransfersSpy = jest.spyOn(model.requests, 'postTransfers');
+
+        await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
+
+        expect(model.stateMachine.state).toBe('start');
+
+        model.requests.on('getParties', () => {
+            // simulate a callback with the resolved party
+            model.cache.emitMessage(JSON.stringify(payeeParty));
+        });
+
+        model.requests.on('postQuotes', () => {
+            // simulate a callback with the quote response
+            model.cache.emitMessage(JSON.stringify(quoteResponse));
+        });
+
+        model.requests.on('postTransfers', () => {
+            //ensure that the `MojaloopRequests.postTransfers` method has been called with the correct arguments
+            // set as the destination FSPID, picked up from the header's value `fspiop-source`
+            expect(model.data.quoteResponseSource).toBe(quoteResponse.headers['fspiop-source']);
+            expect(postTransfersSpy).toHaveBeenCalledTimes(1);
+            expect(postTransfersSpy.mock.calls[0][0].payeeFsp).toEqual(payeeParty.party.partyIdInfo.fspId);
+
+            // simulate a callback with the transfer fulfilment
+            model.cache.emitMessage(JSON.stringify(transferFulfil));
+        });
+
+        // start the model running
+        const resultPromise = model.run();
+
+        // wait for the model to reach a terminal state
+        const result = await resultPromise;
+
+        console.log(`Result after three stage transfer: ${util.inspect(result)}`);
+
+        // check we stopped at payeeResolved state
+        expect(result.currentState).toBe('COMPLETED');
+        expect(model.stateMachine.state).toBe('succeeded');
+
+        //we have to destroy the file system watcher or we will leave an async handle open
+        destroy();
+        console.log('config destroyed');
+    });
+
+    test('uses quote response source fspid for transfer prepare when config USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP is true', async () => {
+        init();
+        config.AUTO_ACCEPT_PARTY = 'true';
+        config.AUTO_ACCEPT_QUOTES = 'true';
+        config.USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP = 'true';
+
+        await setConfig(config);
+        const conf = getConfig();
+
+        const model = new Model({
+            cache: new MockCache(),
+            logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
+            ...conf
+        });
+
+        const postQuotesSpy = jest.spyOn(model.requests, 'postQuotes');
+        const postTransfersSpy = jest.spyOn(model.requests, 'postTransfers');
+
+        await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
+
+        expect(model.stateMachine.state).toBe('start');
+
+        model.requests.on('getParties', () => {
+            // simulate a callback with the resolved party
+            model.cache.emitMessage(JSON.stringify(payeeParty));
+        });
+
+        model.requests.on('postQuotes', () => {
+            // simulate a callback with the quote response
+            model.cache.emitMessage(JSON.stringify(quoteResponse));
+        });
+
+        model.requests.on('postTransfers', () => {
+            //ensure that the `MojaloopRequests.postTransfers` method has been called with the correct arguments
+            // set as the destination FSPID, picked up from the header's value `fspiop-source`
+            expect(model.data.quoteResponseSource).toBe(quoteResponse.headers['fspiop-source']);
+            expect(postTransfersSpy).toHaveBeenCalledTimes(1);
+            expect(postTransfersSpy.mock.calls[0][0].payeeFsp).toEqual(quoteResponse.headers['fspiop-source']);
+
+            // simulate a callback with the transfer fulfilment
+            model.cache.emitMessage(JSON.stringify(transferFulfil));
+        });
+
+        // start the model running
+        const resultPromise = model.run();
+
+        // wait for the model to reach a terminal state
+        const result = await resultPromise;
+
+        console.log(`Result after three stage transfer: ${util.inspect(result)}`);
+
+        // check we stopped at payeeResolved state
+        expect(result.currentState).toBe('COMPLETED');
+        expect(model.stateMachine.state).toBe('succeeded');
+
+        //we have to destroy the file system watcher or we will leave an async handle open
+        destroy();
+        console.log('config destroyed');
+    });
+
 });
