@@ -131,7 +131,7 @@ const quoteResponse = {
         "condition": "fH9pAYDQbmoZLPbvv3CSW2RfjU4jvM4ApG_fqGnR7Xs"
     },
     "headers": {
-        "fsiop-source": "foo"
+        "fspiop-source": "foo"
     }
 };
 
@@ -197,6 +197,8 @@ describe('outboundModel', () => {
             ...conf
         });
 
+        const postTransfersSpy = jest.spyOn(model.requests, 'postTransfers');
+
         await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
 
         expect(model.stateMachine.state).toBe('start');
@@ -212,12 +214,20 @@ describe('outboundModel', () => {
         });
 
         model.requests.on('postTransfers', () => {
-            // simulate a callback with the trnasfer fulfilment
+            //ensure that the `MojaloopRequests.postTransfers` method has been called with the correct argument
+            // set as the destination FSPID, picked up from the header's value `fspiop-source`
+            expect(model.data.quoteResponseSource).toBe(quoteResponse.headers['fspiop-source']);
+            expect(postTransfersSpy).toHaveBeenCalledTimes(1);
+            expect(postTransfersSpy.mock.calls[0][1]).toBe(quoteResponse.headers['fspiop-source']);
+            expect(model.data.to.fspId).toBe(payeeParty.party.partyIdInfo.fspId);
+            expect(quoteResponse.headers['fspiop-source']).not.toBe(model.data.to.fspId);
+
+            // simulate a callback with the transfer fulfilment
             model.cache.emitMessage(JSON.stringify(transferFulfil));
         });
 
         // start the model running
-        const resultPromise = model.run(); 
+        const resultPromise = model.run();
 
         // wait for the model to reach a terminal state
         const result = await resultPromise;
@@ -252,7 +262,7 @@ describe('outboundModel', () => {
         expect(model.stateMachine.state).toBe('start');
 
         // start the model running
-        const resultPromise = model.run(); 
+        const resultPromise = model.run();
 
         // now we started the model running we simulate a callback with the resolved party
         model.cache.emitMessage(JSON.stringify(payeeParty));
@@ -293,7 +303,7 @@ describe('outboundModel', () => {
         expect(model.stateMachine.state).toBe('start');
 
         // start the model running
-        let resultPromise = model.run(); 
+        let resultPromise = model.run();
 
         // now we started the model running we simulate a callback with the resolved party
         model.cache.emitMessage(JSON.stringify(payeeParty));
@@ -366,7 +376,7 @@ describe('outboundModel', () => {
         expect(model.stateMachine.state).toBe('start');
 
         // start the model running
-        let resultPromise = model.run(); 
+        let resultPromise = model.run();
 
         // now we started the model running we simulate a callback with the resolved party
         model.cache.emitMessage(JSON.stringify(payeeParty));
