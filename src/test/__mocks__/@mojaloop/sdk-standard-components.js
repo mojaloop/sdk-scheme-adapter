@@ -33,6 +33,12 @@ class MockMojaloopRequests extends EventEmitter {
         return Promise.resolve(null);
     }
 
+    putQuotes(...args) {
+        console.log(`MockMojaloopRequests.putQuotes called with args: ${util.inspect(args)}`);
+        setImmediate(() => { this.emit('putQuotes'); });
+        return Promise.resolve(null);
+    }
+
     postTransfers(...args) {
         console.log(`MockMojaloopRequests.postTransfers called with args: ${util.inspect(args, { depth: 20 })}`);
         setImmediate(() => { this.emit('postTransfers'); });
@@ -48,8 +54,18 @@ class MockIlp {
     }
 
     validateFulfil(fulfil, condition) {
-       console.log(`Mock ILP not checking fulfil ${fulfil} against condition ${condition}`);
+        console.log(`Mock ILP not checking fulfil ${fulfil} against condition ${condition}`);
         return true;
+    }
+
+    getQuoteResponseIlp(...args) {
+        console.log(`MockIlp.getQuoteResponseIlp called with args: ${util.inspect(args)}`);
+
+        return {
+            fulfilment: 'mockGeneratedFulfilment',
+            ilpPacket: 'mockBase64encodedIlpPacket',
+            condition: 'mockGeneratedCondition'
+        };
     }
 }
 
