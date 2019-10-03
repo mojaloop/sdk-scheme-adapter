@@ -26,6 +26,7 @@ describe('config', () => {
             expirySeconds: 60,
             autoAcceptQuotes: true,
             autoAcceptParty: true,
+            useQuoteSourceFSPAsTransferPayeeFSP: false,
             tls: {
                 mutualTLS: { enabled: false },
                 inboundCreds: {
