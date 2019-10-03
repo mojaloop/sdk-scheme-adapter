@@ -30,6 +30,7 @@ let DEFAULTS = {
     expirySeconds: 60,
     autoAcceptQuotes: true,
     autoAcceptParty: true,
+    useQuoteSourceFSPAsTransferPayeeFSP: false,
     tls: {
         mutualTLS: {enabled: false},
         inboundCreds: {
@@ -107,6 +108,8 @@ const setConfig = async cfg => {
 
     config.autoAcceptQuotes = cfg.AUTO_ACCEPT_QUOTES.toLowerCase() === 'true' ? true : false;
     config.autoAcceptParty = cfg.AUTO_ACCEPT_PARTY ? (cfg.AUTO_ACCEPT_PARTY.toLowerCase() === 'true' ? true : false) : true;
+
+    config.useQuoteSourceFSPAsTransferPayeeFSP = cfg.USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP ? (cfg.USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP.toLowerCase() === 'true' ? true : false) : false
 
     // Getting secrets from files instead of environment variables reduces the likelihood of
     // accidental leakage.
