@@ -31,6 +31,7 @@ class InboundTransfersModel {
         this.ASYNC_TIMEOUT_MILLS = config.asyncTimeoutMillis || ASYNC_TIMEOUT_MILLS;
         this.dfspId = config.dfspId;
         this.expirySeconds = config.expirySeconds;
+        this.rejectTransfersOnExpiredQuotes = config.rejectTransfersOnExpiredQuotes;
 
         this.mojaloopRequests = new MojaloopRequests({
             logger: this.logger,
@@ -136,11 +137,11 @@ class InboundTransfersModel {
             // project our internal quote reponse into mojaloop quote response form
             const mojaloopResponse = shared.internalQuoteResponseToMojaloop(response);
 
-            // create our ILP packet and condition and tag them on to our internal quote response 
+            // create our ILP packet and condition and tag them on to our internal quote response
             const { fulfilment, ilpPacket, condition } = this.ilp.getQuoteResponseIlp(quoteRequest, mojaloopResponse);
 
             mojaloopResponse.ilpPacket = ilpPacket;
-            mojaloopResponse.condition = condition; 
+            mojaloopResponse.condition = condition;
 
             // now store the fulfilment and the quote data against the quoteId in our cache
             await this.cache.set(`quote_${quoteRequest.transactionId}`, {
@@ -180,7 +181,13 @@ class InboundTransfersModel {
             // check incoming ILP matches our persisted values
             if(this.checkIlp && (prepareRequest.condition !== quote.mojaloopResponse.condition)) {
                 throw new Error(`ILP condition in transfer prepare for ${prepareRequest.transferId} does not match quote`);
-            } 
+            }
+
+            const quoteExpired = this.rejectTransfersOnExpiredQuotes && new Date().toISOString() > quote.mojaloopResponse.expiration;
+            if (quoteExpired) {
+                const error = Errors.MojaloopApiErrorObjectFromCode(Errors.MojaloopApiErrorCodes.QUOTE_EXPIRED);
+                return this.mojaloopRequests.putTransfersError(prepareRequest.transferId, error, sourceFspId);
+            }
 
             // project the incoming transfer prepare into an internal transfer request
             const internalForm = shared.mojaloopPrepareToInternalTransfer(prepareRequest, quote);

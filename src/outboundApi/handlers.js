@@ -40,7 +40,7 @@ const postTransfers = async (ctx) => {
         ctx.response.body = response;
     }
     catch(err) {
-        ctx.response.status = 500;
+        ctx.response.status = err.httpStatusCode || 500;
         ctx.response.body = {
             message: err.message || 'Unspecified error'
         };
