@@ -10,7 +10,6 @@
 'use strict';
 
 // we use a mock standard components lib to intercept and mock certain funcs
-jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('@internal/requests').BackendRequests;
 
 const { init, destroy, setConfig, getConfig } = require('../../../../config.js');
@@ -161,6 +160,7 @@ describe('inboundModel:', () => {
         let putQuotesSpy;
 
         beforeEach(() => {
+            jest.doMock('@mojaloop/sdk-standard-components');
             //model.ilp is already mocked globally, so let's just get its mock response back.
             expectedQuoteResponseILP = model.ilp.getQuoteResponseIlp();
 
@@ -172,6 +172,7 @@ describe('inboundModel:', () => {
         afterEach(() => {
             model.backendRequests.postQuoteRequests.mockClear();
             putQuotesSpy.mockClear();
+            jest.resetModules();
         });
 
         test('calls `mojaloopRequests.putQuotes` with the expected arguments.', async () => {
@@ -208,6 +209,9 @@ describe('inboundModel:', () => {
     });
 
     describe('transferPrepare:', () => {
+        beforeEach(() => {
+            jest.resetModules();
+        });
         test('fail on quote `expiration` deadline.', async () => {
             model.rejectTransfersOnExpiredQuotes = true;
             const TRANSFER_ID = 'fake-transfer-id';
@@ -220,12 +224,13 @@ describe('inboundModel:', () => {
                 transferId: TRANSFER_ID,
             };
 
-            model.mojaloopRequests.putTransfersError = jest.fn();
+            const mockFn = jest.fn();
+            model.mojaloopRequests.putTransfersError = mockFn;
 
             await model.prepareTransfer(args, mockArguments.fspId);
 
-            expect(model.mojaloopRequests.putTransfersError).toHaveBeenCalledTimes(1);
-            const call = model.mojaloopRequests.putTransfersError.mock.calls[0];
+            expect(mockFn).toHaveBeenCalledTimes(1);
+            const call = mockFn.mock.calls[0];
             expect(call[0]).toEqual(TRANSFER_ID);
             expect(call[1].errorInformation.errorCode).toEqual('3302');
         });
