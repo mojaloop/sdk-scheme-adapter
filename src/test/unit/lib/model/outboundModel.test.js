@@ -233,6 +233,9 @@ describe('outboundModel', () => {
 
     beforeAll(async () => {
         logTransports = await Promise.all([Transports.consoleDir()]);
+    });
+
+    beforeEach(async () => {
         init();
     });
 
