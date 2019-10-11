@@ -10,6 +10,7 @@
 'use strict';
 
 // we use a mock standard components lib to intercept and mock certain funcs
+jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('@internal/requests').BackendRequests;
 
 const { init, destroy, setConfig, getConfig } = require('../../../../config.js');
@@ -160,7 +161,6 @@ describe('inboundModel:', () => {
         let putQuotesSpy;
 
         beforeEach(() => {
-            jest.doMock('@mojaloop/sdk-standard-components');
             //model.ilp is already mocked globally, so let's just get its mock response back.
             expectedQuoteResponseILP = model.ilp.getQuoteResponseIlp();
 
@@ -172,7 +172,6 @@ describe('inboundModel:', () => {
         afterEach(() => {
             model.backendRequests.postQuoteRequests.mockClear();
             putQuotesSpy.mockClear();
-            jest.resetModules();
         });
 
         test('calls `mojaloopRequests.putQuotes` with the expected arguments.', async () => {
@@ -209,9 +208,6 @@ describe('inboundModel:', () => {
     });
 
     describe('transferPrepare:', () => {
-        beforeEach(() => {
-            jest.resetModules();
-        });
         test('fail on quote `expiration` deadline.', async () => {
             model.rejectTransfersOnExpiredQuotes = true;
             const TRANSFER_ID = 'fake-transfer-id';
