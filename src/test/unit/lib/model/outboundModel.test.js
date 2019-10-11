@@ -15,11 +15,7 @@
 //require('dotenv').config({path: 'local.env'});
 
 // we use a mock standard components lib to intercept and mock certain funcs
-jest.mock('@mojaloop/sdk-standard-components', () => ({
-    __esModule: true,
-    ...jest.requireActual('@mojaloop/sdk-standard-components'),
-    ...require('../../../mocks/@mojaloop/sdk-standard-components')
-}));
+jest.mock('@mojaloop/sdk-standard-components');
 
 
 const { init, destroy, setConfig, getConfig } = require('../../../../config.js');
