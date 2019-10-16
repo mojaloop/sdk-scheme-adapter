@@ -76,7 +76,7 @@ const putTransfers = async (ctx) => {
     }
     catch(err) {
         ctx.state.logger.push({ err }).log('Error handling putTransfers');
-        ctx.response.status = 500;
+        ctx.response.status = err.httpStatusCode || 500;
         ctx.response.body = {
             message: err.message || 'Unspecified error',
             transferState: err.transferState || {}
