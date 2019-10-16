@@ -183,10 +183,14 @@ class InboundTransfersModel {
                 throw new Error(`ILP condition in transfer prepare for ${prepareRequest.transferId} does not match quote`);
             }
 
-            const quoteExpired = this.rejectTransfersOnExpiredQuotes && new Date().toISOString() > quote.mojaloopResponse.expiration;
-            if (quoteExpired) {
-                const error = Errors.MojaloopApiErrorObjectFromCode(Errors.MojaloopApiErrorCodes.QUOTE_EXPIRED);
-                return this.mojaloopRequests.putTransfersError(prepareRequest.transferId, error, sourceFspId);
+            if (this.rejectTransfersOnExpiredQuotes) {
+                const now = new Date().toISOString();
+                const expiration = quote.mojaloopResponse.expiration;
+                if (now > expiration) {
+                    const error = Errors.MojaloopApiErrorObjectFromCode(Errors.MojaloopApiErrorCodes.QUOTE_EXPIRED);
+                    this.logger.error(`Error in prepareTransfer: quote expired for transfer ${prepareRequest.transferId}, system time=${now} > quote time=${expiration}`);
+                    return this.mojaloopRequests.putTransfersError(prepareRequest.transferId, error, sourceFspId);
+                }
             }
 
             // project the incoming transfer prepare into an internal transfer request

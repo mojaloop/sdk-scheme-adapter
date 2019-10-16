@@ -15,7 +15,7 @@ const uuidv4 = require('uuid/v4');
 const StateMachine = require('javascript-state-machine');
 const { Ilp, MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const shared = require('@internal/shared');
-const {BackendError} = require('./common');
+const { BackendError } = require('./common');
 
 const ASYNC_TIMEOUT_MILLS = 30000;
 
@@ -281,9 +281,13 @@ class OutboundTransfersModel {
                     let message = JSON.parse(msg);
 
                     if (message.type === 'quoteResponse') {
-                        const quoteRequestExpired = this.rejectExpiredQuoteResponses && new Date().toISOString() > quote.expiration;
-                        if (quoteRequestExpired) {
-                            error = new BackendError('Quote response missed expiry deadline', 504);
+                        if (this.rejectExpiredQuoteResponses) {
+                            const now = new Date().toISOString();
+                            if (now > quote.expiration) {
+                                const msg = 'Quote response missed expiry deadline';
+                                error = new BackendError(msg, 504);
+                                this.logger.error(`${msg}: system time=${now} > expiration time=${quote.expiration}`);
+                            }
                         }
                     } else if (message.type === 'quoteResponseError') {
                         error = new BackendError(`Got an error response requesting quote: ${util.inspect(message)}`, 500);
@@ -406,9 +410,13 @@ class OutboundTransfersModel {
                     let message = JSON.parse(msg);
 
                     if (message.type === 'transferFulfil') {
-                        const transferExpired = this.rejectExpiredTransferFulfils && new Date().toISOString() > prepare.expiration;
-                        if (transferExpired) {
-                            error = new BackendError('Transfer fulfil missed expiry deadline', 504);
+                        if (this.rejectExpiredTransferFulfils) {
+                            const now = new Date().toISOString();
+                            if (now > prepare.expiration) {
+                                const msg = 'Transfer fulfil missed expiry deadline';
+                                this.logger.error(`${msg}: system time=${now} > expiration=${prepare.expiration}`);
+                                error = new BackendError(msg, 504);
+                            }
                         }
                     } else if (message.type === 'transferError') {
                         error = new BackendError(`Got an error response preparing transfer: ${util.inspect(message)}`, 500);
