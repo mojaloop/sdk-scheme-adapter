@@ -166,6 +166,27 @@ class Logger {
         }
         await Promise.all(this.opts.transports.map(t => t(output, ts)));
     }
+
+    async error(...args) {
+        await this.log({
+            LOG_LEVEL: 'ERROR',
+            ...args,
+        });
+    }
+
+    async info(...args) {
+        await this.log({
+            LOG_LEVEL: 'INFO',
+            ...args,
+        });
+    }
+
+    async debug(...args) {
+        await this.log({
+            LOG_LEVEL: 'DEBUG',
+            ...args,
+        });
+    }
 }
 
 

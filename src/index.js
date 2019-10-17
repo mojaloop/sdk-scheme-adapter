@@ -286,7 +286,7 @@ const Errors = require('@mojaloop/sdk-standard-components').Errors;
         oauthTestServer = OAuthTestServer({
             clientKey: conf.oauthTestServer.clientKey,
             clientSecret: conf.oauthTestServer.clientSecret,
-            port: 6000,
+            port: conf.oauthTestServer.listenPort,
         });
     } else {
         oauthTestServer = Promise.resolve();

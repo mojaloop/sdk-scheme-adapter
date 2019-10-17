@@ -12,6 +12,7 @@
 
 const util = require('util');
 const EventEmitter = require('events');
+const { Errors } = jest.requireActual('@mojaloop/sdk-standard-components');
 
 
 class MockMojaloopRequests extends EventEmitter {
@@ -72,5 +73,6 @@ class MockIlp {
 
 module.exports = {
     MojaloopRequests: MockMojaloopRequests,
-    Ilp: MockIlp
+    Ilp: MockIlp,
+    Errors,
 };

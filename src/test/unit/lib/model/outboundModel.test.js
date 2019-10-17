@@ -60,7 +60,10 @@ const config = {
     OAUTH_TOKEN_ENDPOINT: '',
     OAUTH_CLIENT_KEY: '',
     OAUTH_CLIENT_SECRET: '',
-    OAUTH_REFRESH_SECONDS: '3600'
+    OAUTH_REFRESH_SECONDS: '3600',
+    REJECT_EXPIRED_QUOTE_RESPONSES: 'false',
+    REJECT_TRANSFERS_ON_EXPIRED_QUOTES: 'false',
+    REJECT_EXPIRED_TRANSFER_FULFILS: 'false',
 };
 
 
@@ -154,6 +157,73 @@ const transferFulfil = {
     }
 };
 
+/**
+ *
+ * @param {Object} opts
+ * @param {Number} opts.expirySeconds
+ * @param {Object} opts.delays
+ * @param {Number} delays.requestQuotes
+ * @param {Number} delays.prepareTransfer
+ * @param {Object} opts.rejects
+ * @param {boolean} rejects.quoteResponse
+ * @param {boolean} rejects.transferFulfils
+ */
+async function testTransferWithDelay({expirySeconds, delays, rejects}) {
+    config.AUTO_ACCEPT_PARTY = 'true';
+    config.AUTO_ACCEPT_QUOTES = 'true';
+
+    config.EXPIRY_SECONDS = expirySeconds.toString();
+    config.REJECT_EXPIRED_QUOTE_RESPONSES = rejects.quoteResponse ? 'true' : 'false';
+    config.REJECT_EXPIRED_TRANSFER_FULFILS = rejects.transferFulfils ? 'true' : 'false';
+
+    await setConfig(config);
+    const conf = getConfig();
+
+    const model = new Model({
+        cache: new MockCache(),
+        logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
+        ...conf
+    });
+
+    await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
+
+    expect(model.stateMachine.state).toBe('start');
+
+    model.requests.on('getParties', () => {
+        // simulate a callback with the resolved party
+        model.cache.emitMessage(JSON.stringify(payeeParty));
+    });
+
+    model.requests.on('postQuotes', () => {
+        // simulate a delayed callback with the quote response
+        setTimeout(() => {
+            model.cache.emitMessage(JSON.stringify(quoteResponse));
+        }, delays.requestQuotes ? delays.requestQuotes * 1000 : 0);
+    });
+
+    model.requests.on('postTransfers', () => {
+        // simulate a delayed callback with the transfer fulfilment
+        setTimeout(() => {
+            model.cache.emitMessage(JSON.stringify(transferFulfil));
+        }, delays.prepareTransfer ? delays.prepareTransfer * 1000 : 0);
+    });
+
+    let expectError;
+    if (rejects.quoteResponse && delays.requestQuotes && expirySeconds < delays.requestQuotes) {
+        expectError = 'Quote response missed expiry deadline';
+    }
+    if (rejects.transferFulfils && delays.prepareTransfer && expirySeconds < delays.prepareTransfer) {
+        expectError = 'Transfer fulfil missed expiry deadline';
+    }
+    if (expectError) {
+        await expect(model.run()).rejects.toThrowError(expectError);
+        expect(model.stateMachine.state).toBe('errored');
+    } else {
+        const result = await model.run();
+        await expect(result.currentState).toBe('COMPLETED');
+        expect(model.stateMachine.state).toBe('succeeded');
+    }
+}
 
 describe('outboundModel', () => {
     // the keys are under the "secrets" folder that is supposed to be moved by Dockerfile
@@ -165,13 +235,18 @@ describe('outboundModel', () => {
         logTransports = await Promise.all([Transports.consoleDir()]);
     });
 
+    beforeEach(async () => {
+        init();
+    });
+
     afterEach(async () => {
+        //we have to destroy the file system watcher or we will leave an async handle open
+        destroy();
+        console.log('config destroyed');
     });
 
 
     test('initializes to starting state', async () => {
-        init();
-
         await setConfig(config);
         const conf = getConfig();
 
@@ -184,15 +259,10 @@ describe('outboundModel', () => {
         await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
 
         expect(model.stateMachine.state).toBe('start');
-
-        //we have to destroy the file system watcher or we will leave an async handle open
-        destroy();
-        console.log('config destroyed');
     });
 
 
     test('executes all three transfer stages without halting when AUTO_ACCEPT_PARTY and AUTO_ACCEPT_QUOTES are true', async () => {
-        init();
         config.AUTO_ACCEPT_PARTY = 'true';
         config.AUTO_ACCEPT_QUOTES = 'true';
 
@@ -261,15 +331,10 @@ describe('outboundModel', () => {
         // check we stopped at payeeResolved state
         expect(result.currentState).toBe('COMPLETED');
         expect(model.stateMachine.state).toBe('succeeded');
-
-        //we have to destroy the file system watcher or we will leave an async handle open
-        destroy();
-        console.log('config destroyed');
     });
 
 
     test('resolves payee and halts when AUTO_ACCEPT_PARTY is false', async () => {
-        init();
         config.AUTO_ACCEPT_PARTY = 'false';
 
         await setConfig(config);
@@ -299,15 +364,10 @@ describe('outboundModel', () => {
         // check we stopped at payeeResolved state
         expect(result.currentState).toBe('WAITING_FOR_PARTY_ACCEPTANCE');
         expect(model.stateMachine.state).toBe('payeeResolved');
-
-        //we have to destroy the file system watcher or we will leave an async handle open
-        destroy();
-        console.log('config destroyed');
     });
 
 
     test('halts after resolving payee, resumes and then halts after receiving quote response when AUTO_ACCEPT_PARTY is false and AUTO_ACCEPT_QUOTES is false', async () => {
-        init();
         config.AUTO_ACCEPT_PARTY = 'false';
         config.AUTO_ACCEPT_QUOTES = 'false';
 
@@ -372,15 +432,10 @@ describe('outboundModel', () => {
         // check we stopped at payeeResolved state
         expect(result.currentState).toBe('WAITING_FOR_QUOTE_ACCEPTANCE');
         expect(model.stateMachine.state).toBe('quoteReceived');
-
-        //we have to destroy the file system watcher or we will leave an async handle open
-        destroy();
-        console.log('config destroyed');
     });
 
 
     test('halts and resumes after parties and quotes stages when AUTO_ACCEPT_PARTY is false and AUTO_ACCEPT_QUOTES is false', async () => {
-        init();
         config.AUTO_ACCEPT_PARTY = 'false';
         config.AUTO_ACCEPT_QUOTES = 'false';
 
@@ -472,14 +527,9 @@ describe('outboundModel', () => {
         // check we stopped at quoteReceived state
         expect(result.currentState).toBe('COMPLETED');
         expect(model.stateMachine.state).toBe('succeeded');
-
-        //we have to destroy the file system watcher or we will leave an async handle open
-        destroy();
-        console.log('config destroyed');
     });
 
     test('uses payee party fspid for transfer prepare when config USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP is false', async () => {
-        init();
         config.AUTO_ACCEPT_PARTY = 'true';
         config.AUTO_ACCEPT_QUOTES = 'true';
         config.USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP = 'false';
@@ -532,14 +582,9 @@ describe('outboundModel', () => {
         // check we stopped at payeeResolved state
         expect(result.currentState).toBe('COMPLETED');
         expect(model.stateMachine.state).toBe('succeeded');
-
-        //we have to destroy the file system watcher or we will leave an async handle open
-        destroy();
-        console.log('config destroyed');
     });
 
     test('uses quote response source fspid for transfer prepare when config USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP is true', async () => {
-        init();
         config.AUTO_ACCEPT_PARTY = 'true';
         config.AUTO_ACCEPT_QUOTES = 'true';
         config.USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP = 'true';
@@ -592,10 +637,67 @@ describe('outboundModel', () => {
         // check we stopped at payeeResolved state
         expect(result.currentState).toBe('COMPLETED');
         expect(model.stateMachine.state).toBe('succeeded');
-
-        //we have to destroy the file system watcher or we will leave an async handle open
-        destroy();
-        console.log('config destroyed');
     });
 
+    test('pass quote response `expiration` deadline', async () =>
+        testTransferWithDelay({
+            expirySeconds: 2,
+            delays: {
+                requestQuotes: 1,
+            },
+            rejects: {
+                quoteResponse: true,
+            }
+        })
+    );
+
+    test('pass transfer fulfills `expiration` deadline', async () =>
+        testTransferWithDelay({
+            expirySeconds: 2,
+            delays: {
+                prepareTransfer: 1,
+            },
+            rejects: {
+                transferFulfils: true,
+            }
+        })
+    );
+
+    test('pass all stages `expiration` deadlines', async () =>
+        testTransferWithDelay({
+            expirySeconds: 2,
+            delays: {
+                requestQuotes: 1,
+                prepareTransfer: 1,
+            },
+            rejects: {
+                quoteResponse: true,
+                transferFulfils: true,
+            }
+        })
+    );
+
+    test('fail on quote response `expiration` deadline', async () =>
+        testTransferWithDelay({
+            expirySeconds: 1,
+            delays: {
+                requestQuotes: 2,
+            },
+            rejects: {
+                quoteResponse: true,
+            }
+        })
+    );
+
+    test('fail on transfer fulfills `expiration` deadline', async () =>
+        testTransferWithDelay({
+            expirySeconds: 1,
+            delays: {
+                prepareTransfer: 2,
+            },
+            rejects: {
+                transferFulfils: true,
+            }
+        })
+    );
 });
