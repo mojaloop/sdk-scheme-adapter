@@ -131,7 +131,7 @@ const mojaloopQuoteRequestToInternal = (external) => {
 
 
 /**
- * Converts an internal quote response to mojaloop form 
+ * Converts an internal quote response to mojaloop form
  *
  * @returns {object}
  */

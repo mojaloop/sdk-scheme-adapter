@@ -22,11 +22,13 @@ class MockClient extends EventEmitter {
         console.log(`MockClient got subscription for key: ${key}`);
     }
 
-    unsubscribe(key, callback) {
-        console.log(`MockClient got unsubscribe for key: ${key}`);
+    unsubscribe(...args) {
+        if (args.length > 1) {
+            console.log(`MockClient got unsubscribe for key: ${args[0]}`);
+        }
 
-        if(callback) {
-            return callback();
+        if(args.length > 0 && typeof args[args.length - 1] === 'function') {
+            return args[args.length - 1]();
         }
     }
 
