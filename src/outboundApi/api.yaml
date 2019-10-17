@@ -65,6 +65,10 @@ paths:
       responses:
         200:
           $ref: '#/components/responses/200'
+        500:
+          $ref: '#/components/responses/500'
+        504:
+          $ref: '#/components/responses/504'
 
     get:
       summary: Retrieves information for a specific transfer
