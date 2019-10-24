@@ -19,6 +19,7 @@ const https = require('https');
 const http = require('http');
 const yaml = require('yamljs');
 
+
 const randomPhrase = require('@internal/randomphrase');
 const Validate = require('@internal/validate');
 
@@ -44,7 +45,10 @@ const Errors = require('@mojaloop/sdk-standard-components').Errors;
 
 (async function() {
     // Set up the config from the environment
+    const dotenv = require('dotenv');
+    dotenv.config();
     await setConfig(process.env);
+
     const conf = getConfig();
 
     console.log(`Config loaded: ${util.inspect(conf, { depth: 10 })}`);
