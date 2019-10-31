@@ -1,6 +1,6 @@
 FROM node:8.11.3-alpine
 
-RUN apk add --no-cache git
+RUN apk add --no-cache git python build-base
 
 EXPOSE 3000
 
