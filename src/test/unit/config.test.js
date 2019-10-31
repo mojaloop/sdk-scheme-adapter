@@ -53,10 +53,14 @@ describe('config', () => {
             enableTestFeatures: false,
             oauthTestServer: {
                 enabled: false,
+                listenPort: 6000,
             },
             wso2Auth: {
                 refreshSeconds: 3600,
             },
+            rejectExpiredQuoteResponses: false,
+            rejectExpiredTransferFulfils: false,
+            rejectTransfersOnExpiredQuotes: false,
         };
     });
 

@@ -57,10 +57,14 @@ let DEFAULTS = {
     enableTestFeatures: false,
     oauthTestServer: {
         enabled: false,
+        listenPort: 6000,
     },
     wso2Auth: {
         refreshSeconds: 3600,
-    }
+    },
+    rejectExpiredQuoteResponses: false,
+    rejectTransfersOnExpiredQuotes: false,
+    rejectExpiredTransferFulfils: false,
 };
 
 let config = {};
@@ -169,12 +173,17 @@ const setConfig = async cfg => {
     config.oauthTestServer.enabled = cfg.ENABLE_OAUTH_TOKEN_ENDPOINT.toLowerCase() === 'true';
     config.oauthTestServer.clientKey = cfg.OAUTH_TOKEN_ENDPOINT_CLIENT_KEY;
     config.oauthTestServer.clientSecret = cfg.OAUTH_TOKEN_ENDPOINT_CLIENT_SECRET;
+    config.oauthTestServer.listenPort = cfg.OAUTH_TOKEN_ENDPOINT_LISTEN_PORT;
 
     config.wso2Auth.staticToken = cfg.WS02_BEARER_TOKEN;
     config.wso2Auth.tokenEndpoint = cfg.OAUTH_TOKEN_ENDPOINT;
     config.wso2Auth.clientKey = cfg.OAUTH_CLIENT_KEY;
     config.wso2Auth.clientSecret = cfg.OAUTH_CLIENT_SECRET;
     config.wso2Auth.refreshSeconds = cfg.OAUTH_REFRESH_SECONDS;
+
+    config.rejectExpiredQuoteResponses = cfg.REJECT_EXPIRED_QUOTE_RESPONSES.toLowerCase() === 'true';
+    config.rejectTransfersOnExpiredQuotes = cfg.REJECT_TRANSFERS_ON_EXPIRED_QUOTES.toLowerCase() === 'true';
+    config.rejectExpiredTransferFulfils = cfg.REJECT_EXPIRED_TRANSFER_FULFILS.toLowerCase() === 'true';
 };
 
 const getConfig = () => {

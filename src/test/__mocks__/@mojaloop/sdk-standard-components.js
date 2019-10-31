@@ -12,6 +12,7 @@
 
 const util = require('util');
 const EventEmitter = require('events');
+const { Errors } = jest.requireActual('@mojaloop/sdk-standard-components');
 
 const actual = require.requireActual('@mojaloop/sdk-standard-components');
 const Errors = actual.Errors;

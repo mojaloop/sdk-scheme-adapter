@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
-  "version": "8.1.7",
+  "version": "8.1.8",
   "description": "An adapter for connecting to Mojaloop API enabled switches",
   "main": "index.js",
   "scripts": {
