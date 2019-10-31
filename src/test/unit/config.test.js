@@ -41,7 +41,9 @@ describe('config', () => {
                 }
             },
             validateInboundJws: true,
+            validateInboundPutPartiesJws: false,
             jwsSign: true,
+            jwsSignPutParties: false,
             jwsSigningKey: null,
             jwsVerificationKeysDirectory: null,
             cacheConfig: {

@@ -15,7 +15,7 @@ jest.mock('@internal/requests').BackendRequests;
 
 const { init, destroy, setConfig, getConfig } = require('../../../../config.js');
 const path = require('path');
-const MockCache = require('../../../__mocks__/cache.js');
+const MockCache = require('../../../__mocks__/@internal/cache.js');
 const { Logger, Transports } = require('@internal/log');
 const Model = require('@internal/model').inboundTransfersModel;
 
@@ -55,7 +55,8 @@ const config = {
     OAUTH_CLIENT_SECRET: '',
     OAUTH_REFRESH_SECONDS: '3600'
 };
-describe('inboundModel:', () => {
+
+describe('inboundModel', () => {
     let mockArguments;
     let model;
 
@@ -151,7 +152,7 @@ describe('inboundModel:', () => {
         destroy();
     });
 
-    describe('quoteRequest:', () => {
+    describe('quoteRequest', () => {
         let expectedQuoteResponseILP;
         let putQuotesSpy;
 
