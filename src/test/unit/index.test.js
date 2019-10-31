@@ -173,146 +173,85 @@ const requestTemplate = {
 const index = require('../../index.js');
 
 
+async function testInboundJwsValidation(validateInboundJws, validateInboundPutPartiesJws, expectedValidationCalls, request) {
+    const dummyConfig = JSON.parse(JSON.stringify(defaultConfig));
+
+    // set all jws validation ON
+    dummyConfig.validateInboundJws = validateInboundJws;
+    dummyConfig.validateInboundPutPartiesJws = validateInboundPutPartiesJws;
+    // start the server
+    const svr = new index.Server(dummyConfig);
+    await svr.start();
+
+    // execute the request
+    await svr.inboundApi.request(request);
+
+    const validateCalled = svr.jwsValidator.validateCalled;
+
+    // stop the server
+    await svr.stop();
+
+    // validate we got the expected result
+    console.log(`result: ${util.inspect(request.response)}`);
+
+    expect(validateCalled).toEqual(expectedValidationCalls);
+}
+
+
 describe('inbound API', () => {
 
     // beforeEach(() => {
     // });
 
     test('validates incoming JWS on PUT /parties when VALIDATE_INBOUND_JWS and VALIDATE_INBOUND_PUT_PARTIES_JWS is true', async () => {
-        const dummyConfig = JSON.parse(JSON.stringify(defaultConfig));
-
-        // set all jws validation ON
-        dummyConfig.validateInboundJws = true;
-        dummyConfig.validateInboundPutPartiesJws = true;
-        // start the server
-        const svr = new index.Server(dummyConfig);
-
-        await svr.start();
-
         let req = JSON.parse(JSON.stringify(requestTemplate));
         req.path = '/parties/MSISDN/123456789';
         req.method = 'PUT';
 
         // simulate a PUT /parties/{type}/{id} request
         let request = new DummyRequest(req);
-        await svr.inboundApi.request(request);
 
-        const validateCalled = svr.jwsValidator.validateCalled;
-
-        // stop the server
-        await svr.stop();
-
-        // validate we got the expected result
-        console.log(`result: ${util.inspect(request.response)}`);
-
-        expect(validateCalled).toEqual(1);
+        await testInboundJwsValidation(true, true, 1, request);
     });
 
 
     test('does not validate incoming JWS on PUT /parties when VALIDATE_INBOUND_JWS is true and VALIDATE_INBOUND_PUT_PARTIES_JWS is false', async () => {
-        const dummyConfig = JSON.parse(JSON.stringify(defaultConfig));
-
-        // set all jws validation ON
-        dummyConfig.validateInboundJws = true;
-        dummyConfig.validateInboundPutPartiesJws = false;
-        // start the server
-        const svr = new index.Server(dummyConfig);
-
-        await svr.start();
-
         let req = JSON.parse(JSON.stringify(requestTemplate));
         req.path = '/parties/MSISDN/123456789';
         req.method = 'PUT';
 
         // simulate a PUT /parties/{type}/{id} request
         let request = new DummyRequest(req);
-        await svr.inboundApi.request(request);
-
-        const validateCalled = svr.jwsValidator.validateCalled;
-
-        // stop the server
-        await svr.stop();
-
-        // validate we got the expected result
-        console.log(`result: ${util.inspect(request.response)}`);
-
-        expect(validateCalled).toEqual(0);
+        
+        await testInboundJwsValidation(true, false, 0, request);
     });
 
 
     test('does not validate incoming JWS on PUT /parties when VALIDATE_INBOUND_JWS is false and VALIDATE_INBOUND_PUT_PARTIES_JWS is false', async () => {
-        const dummyConfig = JSON.parse(JSON.stringify(defaultConfig));
-
-        // set all jws validation ON
-        dummyConfig.validateInboundJws = false;
-        dummyConfig.validateInboundPutPartiesJws = false;
-        // start the server
-        const svr = new index.Server(dummyConfig);
-
-        await svr.start();
-
         let req = JSON.parse(JSON.stringify(requestTemplate));
         req.path = '/parties/MSISDN/123456789';
         req.method = 'PUT';
 
         // simulate a PUT /parties/{type}/{id} request
         let request = new DummyRequest(req);
-        await svr.inboundApi.request(request);
 
-        const validateCalled = svr.jwsValidator.validateCalled;
-
-        // stop the server
-        await svr.stop();
-
-        // validate we got the expected result
-        console.log(`result: ${util.inspect(request.response)}`);
-
-        expect(validateCalled).toEqual(0);
+        await testInboundJwsValidation(false, false, 0, request);
     });
 
 
     test('does not validate incoming JWS on PUT /parties when VALIDATE_INBOUND_JWS is false and VALIDATE_INBOUND_PUT_PARTIES_JWS is true', async () => {
-        const dummyConfig = JSON.parse(JSON.stringify(defaultConfig));
-
-        // set all jws validation ON
-        dummyConfig.validateInboundJws = false;
-        dummyConfig.validateInboundPutPartiesJws = true;
-        // start the server
-        const svr = new index.Server(dummyConfig);
-
-        await svr.start();
-
         let req = JSON.parse(JSON.stringify(requestTemplate));
         req.path = '/parties/MSISDN/123456789';
         req.method = 'PUT';
 
         // simulate a PUT /parties/{type}/{id} request
         let request = new DummyRequest(req);
-        await svr.inboundApi.request(request);
 
-        const validateCalled = svr.jwsValidator.validateCalled;
-
-        // stop the server
-        await svr.stop();
-
-        // validate we got the expected result
-        console.log(`result: ${util.inspect(request.response)}`);
-
-        expect(validateCalled).toEqual(0);
+        await testInboundJwsValidation(false, true, 0, request);
     });
 
 
     test('validates incoming JWS on other routes when VALIDATE_INBOUND_JWS is true and VALIDATE_INBOUND_PUT_PARTIES_JWS is false', async () => {
-        const dummyConfig = JSON.parse(JSON.stringify(defaultConfig));
-
-        // set all jws validation ON
-        dummyConfig.validateInboundJws = true;
-        dummyConfig.validateInboundPutPartiesJws = false;
-        // start the server
-        const svr = new index.Server(dummyConfig);
-
-        await svr.start();
-
         let req = JSON.parse(JSON.stringify(requestTemplate));
         req.body = JSON.parse(JSON.stringify(postQuotesBody));
         req.path = '/quotes';
@@ -320,31 +259,12 @@ describe('inbound API', () => {
 
         // simulate a PUT /parties/{type}/{id} request
         let request = new DummyRequest(req);
-        await svr.inboundApi.request(request);
 
-        const validateCalled = svr.jwsValidator.validateCalled;
-
-        // stop the server
-        await svr.stop();
-
-        // validate we got the expected result
-        console.log(`result: ${util.inspect(request.response)}`);
-
-        expect(validateCalled).toEqual(1);
+        await testInboundJwsValidation(true, false, 1, request);
     }); 
 
 
     test('validates incoming JWS on other routes when VALIDATE_INBOUND_JWS is true and VALIDATE_INBOUND_PUT_PARTIES_JWS is true', async () => {
-        const dummyConfig = JSON.parse(JSON.stringify(defaultConfig));
-
-        // set all jws validation ON
-        dummyConfig.validateInboundJws = true;
-        dummyConfig.validateInboundPutPartiesJws = true;
-        // start the server
-        const svr = new index.Server(dummyConfig);
-
-        await svr.start();
-
         let req = JSON.parse(JSON.stringify(requestTemplate));
         req.body = JSON.parse(JSON.stringify(postQuotesBody));
         req.path = '/quotes';
@@ -352,17 +272,7 @@ describe('inbound API', () => {
 
         // simulate a PUT /parties/{type}/{id} request
         let request = new DummyRequest(req);
-        await svr.inboundApi.request(request);
 
-        const validateCalled = svr.jwsValidator.validateCalled;
-
-        // stop the server
-        await svr.stop();
-
-        // validate we got the expected result
-        console.log(`result: ${util.inspect(request.response)}`);
-
-        expect(validateCalled).toEqual(1);
+        await testInboundJwsValidation(true, true, 1, request);
     }); 
- 
 });
