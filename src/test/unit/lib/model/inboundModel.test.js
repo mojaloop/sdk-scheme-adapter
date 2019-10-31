@@ -53,12 +53,16 @@ const config = {
     OAUTH_TOKEN_ENDPOINT: '',
     OAUTH_CLIENT_KEY: '',
     OAUTH_CLIENT_SECRET: '',
-    OAUTH_REFRESH_SECONDS: '3600'
+    OAUTH_REFRESH_SECONDS: '3600',
+    REJECT_EXPIRED_QUOTE_RESPONSES: 'false',
+    REJECT_TRANSFERS_ON_EXPIRED_QUOTES: 'false',
+    REJECT_EXPIRED_TRANSFER_FULFILS: 'false',
 };
 
 describe('inboundModel', () => {
     let mockArguments;
     let model;
+    let cache;
 
     // the keys are under the secrets folder that is supposed to be moved by Dockerfile
     // so for the needs of the unit tests, we have to define the proper path manually.
@@ -75,8 +79,9 @@ describe('inboundModel', () => {
         await setConfig(config);
         const conf = getConfig();
 
+        cache = new MockCache();
         model = new Model({
-            cache: new MockCache(),
+            cache,
             logger: new Logger({
                 context: { app: 'inbound-model-unit-tests' },
                 space: 4,
@@ -198,6 +203,33 @@ describe('inboundModel', () => {
             expect(putQuotesSpy.mock.calls[0][2]).toBe(mockArguments.fspId);
 
             dateSpy.mockClear();
+        });
+
+
+    });
+
+    describe('transferPrepare:', () => {
+        test('fail on quote `expiration` deadline.', async () => {
+            model.rejectTransfersOnExpiredQuotes = true;
+            const TRANSFER_ID = 'fake-transfer-id';
+            cache.set(`quote_${TRANSFER_ID}`, {
+                mojaloopResponse: {
+                    expiration: new Date(new Date().getTime() - 1000).toISOString(),
+                }
+            });
+            const args = {
+                transferId: TRANSFER_ID,
+            };
+
+            const mockFn = jest.fn();
+            model.mojaloopRequests.putTransfersError = mockFn;
+
+            await model.prepareTransfer(args, mockArguments.fspId);
+
+            expect(mockFn).toHaveBeenCalledTimes(1);
+            const call = mockFn.mock.calls[0];
+            expect(call[0]).toEqual(TRANSFER_ID);
+            expect(call[1].errorInformation.errorCode).toEqual('3302');
         });
     });
 });

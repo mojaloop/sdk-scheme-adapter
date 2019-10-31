@@ -307,7 +307,7 @@ class Server {
             this.oauthTestServer = OAuthTestServer({
                 clientKey: conf.oauthTestServer.clientKey,
                 clientSecret: conf.oauthTestServer.clientSecret,
-                port: 6000,
+                port: conf.oauthTestServer.listenPort
             });
         } else {
             this.oauthTestServer = Promise.resolve();
