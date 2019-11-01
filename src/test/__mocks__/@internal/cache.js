@@ -10,6 +10,7 @@
 
 'use strict';
 
+const util = require('util');
 const EventEmitter = require('events');
 
 class MockClient extends EventEmitter {
@@ -66,6 +67,14 @@ class MockCache {
             this.client = new MockClient();
         }
         return Promise.resolve(this.client);
+    }
+
+    async publish(...args) {
+        console.log(`MockCache publish called with args: ${util.inspect(args)}`);
+    }
+
+    async connect(...args) {
+        console.log(`MockClient connect called with args: ${util.inspect(args)}`);
     }
 }
 

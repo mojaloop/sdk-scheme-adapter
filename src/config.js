@@ -45,7 +45,9 @@ let DEFAULTS = {
         }
     },
     validateInboundJws: true,
+    validateInboundPutPartiesJws: false,
     jwsSign: true,
+    jwsSignPutParties: false,
     jwsSigningKey: null,
     jwsVerificationKeysDirectory: null,
     cacheConfig: {
@@ -113,7 +115,7 @@ const setConfig = async cfg => {
     config.autoAcceptQuotes = cfg.AUTO_ACCEPT_QUOTES.toLowerCase() === 'true' ? true : false;
     config.autoAcceptParty = cfg.AUTO_ACCEPT_PARTY ? (cfg.AUTO_ACCEPT_PARTY.toLowerCase() === 'true' ? true : false) : true;
 
-    config.useQuoteSourceFSPAsTransferPayeeFSP = cfg.USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP ? (cfg.USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP.toLowerCase() === 'true' ? true : false) : false
+    config.useQuoteSourceFSPAsTransferPayeeFSP = cfg.USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP ? (cfg.USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP.toLowerCase() === 'true' ? true : false) : false;
 
     // Getting secrets from files instead of environment variables reduces the likelihood of
     // accidental leakage.
@@ -134,7 +136,9 @@ const setConfig = async cfg => {
     }
 
     config.validateInboundJws = cfg.VALIDATE_INBOUND_JWS.toLowerCase() === 'false' ? false : true;
+    config.validateInboundPutPartiesJws = cfg.VALIDATE_INBOUND_PUT_PARTIES_JWS ? (cfg.VALIDATE_INBOUND_PUT_PARTIES_JWS.toLowerCase() === 'true' ? true : false) : false;
     config.jwsSign = cfg.JWS_SIGN.toLowerCase() === 'false' ? false : true;
+    config.jwsSignPutParties = cfg.JWS_SIGN_PUT_PARTIES ? (cfg.JWS_SIGN_PUT_PARTIES.toLowerCase() === 'true' ? true : false) : false;
     config.jwsSigningKey = await readFile(cfg.JWS_SIGNING_KEY_PATH);
     config.jwsVerificationKeysDirectory = cfg.JWS_VERIFICATION_KEYS_DIRECTORY;
 

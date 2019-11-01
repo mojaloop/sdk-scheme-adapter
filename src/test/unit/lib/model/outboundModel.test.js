@@ -21,7 +21,7 @@ jest.mock('@mojaloop/sdk-standard-components');
 const { init, destroy, setConfig, getConfig } = require('../../../../config.js');
 const util = require('util');
 const path = require('path');
-const MockCache = require('../../../__mocks__/cache.js');
+const MockCache = require('../../../__mocks__/@internal/cache.js');
 const { Logger, Transports } = require('@internal/log');
 const Model = require('@internal/model').outboundTransfersModel;
 
@@ -69,44 +69,44 @@ const config = {
 
 // a dummy transfer request
 const transferRequest = {
-    "from": {
-        "displayName": "James Bush",
-        "idType": "MSISDN",
-        "idValue": "447710066017"
+    'from': {
+        'displayName': 'James Bush',
+        'idType': 'MSISDN',
+        'idValue': '447710066017'
     },
-    "to": {
-        "idType": "MSISDN",
-        "idValue": "123456789"
+    'to': {
+        'idType': 'MSISDN',
+        'idValue': '123456789'
     },
-    "amountType": "SEND",
-    "currency": "USD",
-    "amount": "100",
-    "transactionType": "TRANSFER",
-    "note": "test payment",
-    "homeTransactionId": "123ABC",
-    "quoteRequestExtensions": [
-        { "key": "qkey1", "value": "qvalue1" },
-        { "key": "qkey2", "value": "qvalue2" }
+    'amountType': 'SEND',
+    'currency': 'USD',
+    'amount': '100',
+    'transactionType': 'TRANSFER',
+    'note': 'test payment',
+    'homeTransactionId': '123ABC',
+    'quoteRequestExtensions': [
+        { 'key': 'qkey1', 'value': 'qvalue1' },
+        { 'key': 'qkey2', 'value': 'qvalue2' }
     ],
-    "transferRequestExtensions": [
-        { "key": "tkey1", "value": "tvalue1" },
-        { "key": "tkey2", "value": "tvalue2" }
+    'transferRequestExtensions': [
+        { 'key': 'tkey1', 'value': 'tvalue1' },
+        { 'key': 'tkey2', 'value': 'tvalue2' }
     ]
 };
 
 
 // a dummy payee party
 const payeeParty = {
-    "party": {
-        "partyIdInfo": {
-            "partyIdType": "MSISDN",
-            "partyIdentifier": "123456789",
-            "fspId": "MobileMoney"
+    'party': {
+        'partyIdInfo': {
+            'partyIdType': 'MSISDN',
+            'partyIdentifier': '123456789',
+            'fspId': 'MobileMoney'
         },
-        "personalInfo": {
-            "complexName": {
-                "firstName": "John",
-                "lastName": "Doe"
+        'personalInfo': {
+            'complexName': {
+                'firstName': 'John',
+                'lastName': 'Doe'
             }
         }
     }
@@ -115,45 +115,45 @@ const payeeParty = {
 
 // a dummy quote response
 const quoteResponse = {
-    "type": "quoteResponse",
-    "data": {
-        "transferAmount": {
-            "amount": "500",
-            "currency": "USD"
+    'type': 'quoteResponse',
+    'data': {
+        'transferAmount': {
+            'amount': '500',
+            'currency': 'USD'
         },
-        "payeeReceiveAmount": {
-            "amount": "490",
-            "currency": "USD"
+        'payeeReceiveAmount': {
+            'amount': '490',
+            'currency': 'USD'
         },
-        "payeeFspFee": {
-            "amount": "5",
-            "currency": "USD"
+        'payeeFspFee': {
+            'amount': '5',
+            'currency': 'USD'
         },
-        "payeeFspCommission": {
-            "amount": "5",
-            "currency": "USD"
+        'payeeFspCommission': {
+            'amount': '5',
+            'currency': 'USD'
         },
-        "geoCode": {
-            "latitude": "53.295971",
-            "longitude": "-0.038500"
+        'geoCode': {
+            'latitude': '53.295971',
+            'longitude': '-0.038500'
         },
-        "expiration": "2017-11-15T14:17:09.663+01:00",
-        "ilpPacket": "AQAAAAAAACasIWcuc2UubW9iaWxlbW9uZXkubXNpc2RuLjEyMzQ1Njc4OYIEIXsNCiAgICAidHJhbnNhY3Rpb25JZCI6ICI4NWZlYWMyZi0zOWIyLTQ5MWItODE3ZS00YTAzMjAzZDRmMTQiLA0KICAgICJxdW90ZUlkIjogIjdjMjNlODBjLWQwNzgtNDA3Ny04MjYzLTJjMDQ3ODc2ZmNmNiIsDQogICAgInBheWVlIjogew0KICAgICAgICAicGFydHlJZEluZm8iOiB7DQogICAgICAgICAgICAicGFydHlJZFR5cGUiOiAiTVNJU0ROIiwNCiAgICAgICAgICAgICJwYXJ0eUlkZW50aWZpZXIiOiAiMTIzNDU2Nzg5IiwNCiAgICAgICAgICAgICJmc3BJZCI6ICJNb2JpbGVNb25leSINCiAgICAgICAgfSwNCiAgICAgICAgInBlcnNvbmFsSW5mbyI6IHsNCiAgICAgICAgICAgICJjb21wbGV4TmFtZSI6IHsNCiAgICAgICAgICAgICAgICAiZmlyc3ROYW1lIjogIkhlbnJpayIsDQogICAgICAgICAgICAgICAgImxhc3ROYW1lIjogIkthcmxzc29uIg0KICAgICAgICAgICAgfQ0KICAgICAgICB9DQogICAgfSwNCiAgICAicGF5ZXIiOiB7DQogICAgICAgICJwZXJzb25hbEluZm8iOiB7DQogICAgICAgICAgICAiY29tcGxleE5hbWUiOiB7DQogICAgICAgICAgICAgICAgImZpcnN0TmFtZSI6ICJNYXRzIiwNCiAgICAgICAgICAgICAgICAibGFzdE5hbWUiOiAiSGFnbWFuIg0KICAgICAgICAgICAgfQ0KICAgICAgICB9LA0KICAgICAgICAicGFydHlJZEluZm8iOiB7DQogICAgICAgICAgICAicGFydHlJZFR5cGUiOiAiSUJBTiIsDQogICAgICAgICAgICAicGFydHlJZGVudGlmaWVyIjogIlNFNDU1MDAwMDAwMDA1ODM5ODI1NzQ2NiIsDQogICAgICAgICAgICAiZnNwSWQiOiAiQmFua05yT25lIg0KICAgICAgICB9DQogICAgfSwNCiAgICAiYW1vdW50Ijogew0KICAgICAgICAiYW1vdW50IjogIjEwMCIsDQogICAgICAgICJjdXJyZW5jeSI6ICJVU0QiDQogICAgfSwNCiAgICAidHJhbnNhY3Rpb25UeXBlIjogew0KICAgICAgICAic2NlbmFyaW8iOiAiVFJBTlNGRVIiLA0KICAgICAgICAiaW5pdGlhdG9yIjogIlBBWUVSIiwNCiAgICAgICAgImluaXRpYXRvclR5cGUiOiAiQ09OU1VNRVIiDQogICAgfSwNCiAgICAibm90ZSI6ICJGcm9tIE1hdHMiDQp9DQo\u003d\u003d",
-        "condition": "fH9pAYDQbmoZLPbvv3CSW2RfjU4jvM4ApG_fqGnR7Xs"
+        'expiration': '2017-11-15T14:17:09.663+01:00',
+        'ilpPacket': 'AQAAAAAAACasIWcuc2UubW9iaWxlbW9uZXkubXNpc2RuLjEyMzQ1Njc4OYIEIXsNCiAgICAidHJhbnNhY3Rpb25JZCI6ICI4NWZlYWMyZi0zOWIyLTQ5MWItODE3ZS00YTAzMjAzZDRmMTQiLA0KICAgICJxdW90ZUlkIjogIjdjMjNlODBjLWQwNzgtNDA3Ny04MjYzLTJjMDQ3ODc2ZmNmNiIsDQogICAgInBheWVlIjogew0KICAgICAgICAicGFydHlJZEluZm8iOiB7DQogICAgICAgICAgICAicGFydHlJZFR5cGUiOiAiTVNJU0ROIiwNCiAgICAgICAgICAgICJwYXJ0eUlkZW50aWZpZXIiOiAiMTIzNDU2Nzg5IiwNCiAgICAgICAgICAgICJmc3BJZCI6ICJNb2JpbGVNb25leSINCiAgICAgICAgfSwNCiAgICAgICAgInBlcnNvbmFsSW5mbyI6IHsNCiAgICAgICAgICAgICJjb21wbGV4TmFtZSI6IHsNCiAgICAgICAgICAgICAgICAiZmlyc3ROYW1lIjogIkhlbnJpayIsDQogICAgICAgICAgICAgICAgImxhc3ROYW1lIjogIkthcmxzc29uIg0KICAgICAgICAgICAgfQ0KICAgICAgICB9DQogICAgfSwNCiAgICAicGF5ZXIiOiB7DQogICAgICAgICJwZXJzb25hbEluZm8iOiB7DQogICAgICAgICAgICAiY29tcGxleE5hbWUiOiB7DQogICAgICAgICAgICAgICAgImZpcnN0TmFtZSI6ICJNYXRzIiwNCiAgICAgICAgICAgICAgICAibGFzdE5hbWUiOiAiSGFnbWFuIg0KICAgICAgICAgICAgfQ0KICAgICAgICB9LA0KICAgICAgICAicGFydHlJZEluZm8iOiB7DQogICAgICAgICAgICAicGFydHlJZFR5cGUiOiAiSUJBTiIsDQogICAgICAgICAgICAicGFydHlJZGVudGlmaWVyIjogIlNFNDU1MDAwMDAwMDA1ODM5ODI1NzQ2NiIsDQogICAgICAgICAgICAiZnNwSWQiOiAiQmFua05yT25lIg0KICAgICAgICB9DQogICAgfSwNCiAgICAiYW1vdW50Ijogew0KICAgICAgICAiYW1vdW50IjogIjEwMCIsDQogICAgICAgICJjdXJyZW5jeSI6ICJVU0QiDQogICAgfSwNCiAgICAidHJhbnNhY3Rpb25UeXBlIjogew0KICAgICAgICAic2NlbmFyaW8iOiAiVFJBTlNGRVIiLA0KICAgICAgICAiaW5pdGlhdG9yIjogIlBBWUVSIiwNCiAgICAgICAgImluaXRpYXRvclR5cGUiOiAiQ09OU1VNRVIiDQogICAgfSwNCiAgICAibm90ZSI6ICJGcm9tIE1hdHMiDQp9DQo\u003d\u003d',
+        'condition': 'fH9pAYDQbmoZLPbvv3CSW2RfjU4jvM4ApG_fqGnR7Xs'
     },
-    "headers": {
-        "fspiop-source": "foo"
+    'headers': {
+        'fspiop-source': 'foo'
     }
 };
 
 
 // a dummy transfer fulfilment
 const transferFulfil = {
-    "type": "transferFulfil",
-    "data": {
-        "fulfilment": "87mm1-reS3SAi8oIWXgBkLmgWc1MkZ_yLbFDX5XAdo5o",
-        "completedTimestamp": "2017-11-15T14:16:09.663+01:00",
-        "transferState": "COMMITTED"
+    'type': 'transferFulfil',
+    'data': {
+        'fulfilment': '87mm1-reS3SAi8oIWXgBkLmgWc1MkZ_yLbFDX5XAdo5o',
+        'completedTimestamp': '2017-11-15T14:16:09.663+01:00',
+        'transferState': 'COMMITTED'
     }
 };
 
@@ -543,7 +543,7 @@ describe('outboundModel', () => {
             ...conf
         });
 
-        const postQuotesSpy = jest.spyOn(model.requests, 'postQuotes');
+        jest.spyOn(model.requests, 'postQuotes');
         const postTransfersSpy = jest.spyOn(model.requests, 'postTransfers');
 
         await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
@@ -598,7 +598,7 @@ describe('outboundModel', () => {
             ...conf
         });
 
-        const postQuotesSpy = jest.spyOn(model.requests, 'postQuotes');
+        jest.spyOn(model.requests, 'postQuotes');
         const postTransfersSpy = jest.spyOn(model.requests, 'postTransfers');
 
         await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
