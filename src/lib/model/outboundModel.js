@@ -50,6 +50,7 @@ class OutboundTransfersModel {
             dfspId: config.dfspId,
             tls: config.tls,
             jwsSign: config.jwsSign,
+            jwsSignPutParties: config.jwsSignPutParties,
             jwsSigningKey: config.jwsSigningKey,
             wso2Auth: config.wso2Auth
         });
