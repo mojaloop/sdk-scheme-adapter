@@ -15,7 +15,7 @@ jest.mock('@internal/model').inboundTransfersModel;
 const handlers = require('../../../inboundApi/handlers');
 const Model = require('@internal/model').InboundTransfersModel;
 
-describe('handlers:', () => {
+describe('Inbound API handlers:', () => {
     let mockArguments;
 
     beforeEach(() => {
@@ -49,7 +49,7 @@ describe('handlers:', () => {
         };
     });
 
-    describe('POST /quotes:', () => {
+    describe('POST /quotes', () => {
         let mockContext;
 
         beforeEach(() => {

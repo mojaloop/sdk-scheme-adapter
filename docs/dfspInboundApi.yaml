@@ -290,6 +290,8 @@ components:
 
     errorResponse:
       type: object
+      required:
+        - statusCode
       properties:
         statusCode:
           type: string
