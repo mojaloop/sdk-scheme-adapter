@@ -576,4 +576,164 @@ describe('outboundModel', () => {
             }
         })
     );
+
+    test('Throws with mojaloop error in response body when party resolution error callback occurs', async () => {
+        config.AUTO_ACCEPT_PARTY = 'true';
+        config.AUTO_ACCEPT_QUOTES = 'true';
+
+        await setConfig(config);
+        const conf = getConfig();
+
+        const model = new Model({
+            cache: new MockCache(),
+            logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
+            ...conf
+        });
+
+        await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
+
+        expect(model.stateMachine.state).toBe('start');
+
+        const expectError = {
+            errorInformation: {
+                errorCode: '3204',
+                errorDescription: 'Party not found'
+            }
+        };
+
+        model.requests.on('getParties', () => {
+            // simulate a callback with a mojaloop error
+            model.cache.emitMessage(JSON.stringify(expectError));
+        });
+
+        const errMsg = 'Got an error response resolving party: { errorInformation: { errorCode: \'3204\', errorDescription: \'Party not found\' } }';
+
+        try {
+            await model.run();
+        }
+        catch(err) {
+            expect(err.message).toEqual(errMsg);
+            expect(err.transferState).toBeTruthy();
+            expect(err.transferState.lastError).toBeTruthy();
+            expect(err.transferState.lastError.mojaloopError).toEqual(expectError);
+            return;
+        }
+
+        throw new Error('Outbound model should have thrown');
+    });
+
+
+    test('Throws with mojaloop error in response body when quote request error callback occurs', async () => {
+        config.AUTO_ACCEPT_PARTY = 'true';
+        config.AUTO_ACCEPT_QUOTES = 'true';
+
+        await setConfig(config);
+        const conf = getConfig();
+
+        const model = new Model({
+            cache: new MockCache(),
+            logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
+            ...conf
+        });
+
+        await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
+
+        expect(model.stateMachine.state).toBe('start');
+
+        const expectError = {
+            type: 'quoteResponseError',
+            data: {
+                errorInformation: {
+                    errorCode: '3205',
+                    errorDescription: 'Quote ID not found'
+                }
+            }
+        };
+
+        model.requests.on('getParties', () => {
+            // simulate a callback with the resolved party
+            model.cache.emitMessage(JSON.stringify(payeeParty));
+        });
+
+        model.requests.on('postQuotes', () => {
+            // simulate an error callback
+            model.cache.emitMessage(JSON.stringify(expectError));
+        });
+
+        const errMsg = 'Got an error response requesting quote: { type: \'quoteResponseError\',\n  data:\n   { errorInformation:\n      { errorCode: \'3205\', errorDescription: \'Quote ID not found\' } } }';
+
+        try {
+            await model.run();
+        }
+        catch(err) {
+            expect(err.message).toEqual(errMsg);
+            expect(err.transferState).toBeTruthy();
+            expect(err.transferState.lastError).toBeTruthy();
+            expect(err.transferState.lastError.mojaloopError).toEqual(expectError.data);
+            return;
+        }
+
+        throw new Error('Outbound model should have thrown');
+    });
+
+
+    test('Throws with mojaloop error in response body when transfer request error callback occurs', async () => {
+        config.AUTO_ACCEPT_PARTY = 'true';
+        config.AUTO_ACCEPT_QUOTES = 'true';
+
+        await setConfig(config);
+        const conf = getConfig();
+
+        const model = new Model({
+            cache: new MockCache(),
+            logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
+            ...conf
+        });
+
+        await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
+
+        expect(model.stateMachine.state).toBe('start');
+
+        const expectError = {
+            type: 'transferError',
+            data: {
+                errorInformation: {
+                    errorCode: '4001',
+                    errorDescription: 'Payer FSP insufficient liquidity'
+                }
+            }
+        };
+
+        model.requests.on('getParties', () => {
+            // simulate a callback with the resolved party
+            model.cache.emitMessage(JSON.stringify(payeeParty));
+        });
+
+        model.requests.on('postQuotes', () => {
+            // simulate a callback with the quote response
+            model.cache.emitMessage(JSON.stringify(quoteResponse));
+        });
+
+        model.requests.on('postTransfers', () => {
+            // simulate an error callback with the transfer fulfilment
+            model.cache.emitMessage(JSON.stringify(expectError));
+        });
+
+
+        const errMsg = 'Got an error response preparing transfer: { type: \'transferError\',\n  data:\n   { errorInformation:\n      { errorCode: \'4001\',\n        errorDescription: \'Payer FSP insufficient liquidity\' } } }';
+
+        try {
+            await model.run();
+        }
+        catch(err) {
+            expect(err.message).toEqual(errMsg);
+            expect(err.transferState).toBeTruthy();
+            expect(err.transferState.lastError).toBeTruthy();
+            expect(err.transferState.lastError.mojaloopError).toEqual(expectError.data);
+            return;
+        }
+
+        throw new Error('Outbound model should have thrown');
+    });
+
 });
