@@ -13,7 +13,7 @@
 jest.mock('@internal/model').inboundTransfersModel;
 
 const handlers = require('../../../inboundApi/handlers');
-const Model = require('@internal/model').inboundTransfersModel;
+const Model = require('@internal/model').InboundTransfersModel;
 
 describe('handlers:', () => {
     let mockArguments;

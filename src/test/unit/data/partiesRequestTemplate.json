@@ -1,0 +1,15 @@
+{
+  "path": null,
+  "method": null,
+  "body": null,
+  "headers": {
+    "content-type": "application/vnd.interoperability.parties+json;version=1.0",
+    "fspiop-source": "other-dfsp",
+    "fspiop-destination": "mojaloop-sdk",
+    "fspiop-http-method": "PUT",
+    "fspiop-uri": "/parties/MSISDN/123456789",
+    "fspiop-signature": "{\"signature\":\"aTTa1TTCBJA1K1VoEFgpSicWYU0q1VYXV-bjkk7uoeNicog7QSp9_AbwtYm4u8NJ1HFM_3mekE8wioAs5YNugnTlJ1k-q4Ouvp5Jo3ZnozoPVtnLaqdhxRMUBOHfDp0X8eCHEo7lETjKcCcH4r5_KT_9Vwx5TMytoG_y9Be8PpviJFkOqOV5jCeIl7XzL_pZQoY0pRJdkXDzYpXDu-HTYKr8ckxWQzx4HO-viJQd2ByQkbqPfQom9IQaAX1t4yztCCpOQn1LY9j9sbfEX9RPXG3UbY6UyDsNjUKYP9BAhXwI9pFWlgv2i9FvEtay2QYdwbW7XEpIiGZ_vi5d6yc12w\",\"protectedHeader\":\"eyJhbGciOiJSUzI1NiIsIkZTUElPUC1VUkkiOiIvcGFydGllcy9NU0lTRE4vMTIzNDU2Nzg5IiwiRlNQSU9QLUhUVFAtTWV0aG9kIjoiUFVUIiwiRlNQSU9QLVNvdXJjZSI6InNpbSIsIkZTUElPUC1EZXN0aW5hdGlvbiI6ImRmc3AiLCJEYXRlIjoiVGh1LCAzMSBPY3QgMjAxOSAxMTo0MTo0MyBHTVQifQ\"}",
+    "date": null,
+    "accept": ""
+  }
+}

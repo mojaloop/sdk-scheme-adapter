@@ -11,7 +11,7 @@
 'use strict';
 
 
-const Model = require('@internal/model').outboundTransfersModel;
+const { AccountsModel, OutboundTransfersModel } = require('@internal/model');
 
 
 /**
@@ -25,7 +25,7 @@ const postTransfers = async (ctx) => {
         };
 
         // use the transfers model to execute asynchronous stages with the switch
-        const model = new Model({
+        const model = new OutboundTransfersModel({
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             ...ctx.state.conf
@@ -59,7 +59,7 @@ const putTransfers = async (ctx) => {
     try {
         // this requires a multi-stage sequence with the switch.
         // use the transfers model to execute asynchronous stages with the switch
-        const model = new Model({
+        const model = new OutboundTransfersModel({
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             ...ctx.state.conf
@@ -78,10 +78,45 @@ const putTransfers = async (ctx) => {
     }
     catch(err) {
         ctx.state.logger.push({ err }).log('Error handling putTransfers');
-        ctx.response.status = err.httpStatusCode || 500;
+        ctx.response.statusCode = err.httpStatusCode || 500;
         ctx.response.body = {
             message: err.message || 'Unspecified error',
             transferState: err.transferState || {}
+        };
+    }
+};
+
+
+/**
+ * Handler for outbound participants request initiation
+ */
+const postAccounts = async (ctx) => {
+    try {
+        const model = new AccountsModel({
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            ...ctx.state.conf
+        });
+
+        const state = {
+            accounts: ctx.request.body,
+        };
+
+        // initialize the accounts model and run it
+        await model.initialize(state);
+        const response = await model.run();
+
+        // return the result
+        ctx.response.status = 200;
+        ctx.response.body = response;
+    }
+    catch(err) {
+        ctx.state.logger.push({ err }).log('Error handling postAccounts');
+        ctx.response.status = err.httpStatusCode || 500;
+        ctx.response.body = {
+            statusCode: err.httpStatusCode || 500,
+            message: err.message || 'Unspecified error',
+            executionState: err.executionState || {},
         };
     }
 };
@@ -102,6 +137,9 @@ module.exports = {
         },
         '/transfers/{transferId}': {
             put: putTransfers
-        }
+        },
+        '/accounts': {
+            post: postAccounts
+        },
     }
 };
