@@ -1,8 +1,8 @@
 openapi: 3.0.1
 info:
   title: Mojaloop SDK Outbound Scheme Adapter API
-  description: API specification for the Mojaloop SDK Outbound Scheme Adapter API – to be implemented by the Digital Financial Service Provider's (DFSP) backend.
-
+  description: |
+    API specification for the Mojaloop SDK Outbound Scheme Adapter API – to be implemented by the Digital Financial Service Provider's (DFSP) backend.
 
     **Note on terminology:** The term "Switch" is equal to the term "Hub", and the term "FSP" is equal to the term "DFSP".
   license:
@@ -38,17 +38,11 @@ paths:
         required: true
       responses:
         200:
-          $ref: '#/components/responses/200'
-        400:
-          description: Malformed or missing required body, headers or parameters
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/errorResponse'
+          $ref: '#/components/responses/transferSuccess'
         500:
-          $ref: '#/components/responses/500'
+          $ref: '#/components/responses/transferServerError'
         504:
-          $ref: '#/components/responses/504'
+          $ref: '#/components/responses/transferTimeout'
 
   /transfers/{transferId}:
     put:
@@ -64,11 +58,11 @@ paths:
         - $ref: '#/components/parameters/transferId'
       responses:
         200:
-          $ref: '#/components/responses/200'
+          $ref: '#/components/responses/transferSuccess'
         500:
-          $ref: '#/components/responses/500'
+          $ref: '#/components/responses/transferServerError'
         504:
-          $ref: '#/components/responses/504'
+          $ref: '#/components/responses/transferTimeout'
 
     get:
       summary: Retrieves information for a specific transfer
@@ -85,7 +79,33 @@ paths:
               schema:
                 $ref: '#/components/schemas/transferResponse'
         500:
-          $ref: '#/components/responses/500'
+          $ref: '#/components/responses/transferServerError'
+
+  /accounts:
+    post:
+      summary:  Create accounts on the Account Lookup Service
+      description: The HTTP request `POST /accounts` is used to create account information on the Account Lookup Service (ALS) regarding the provided list of identities.
+
+
+        Caller DFSP is used as the account source FSP information
+      tags:
+        - Accounts
+      requestBody:
+        description: Identities list request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/accountsRequest'
+        required: true
+      responses:
+        200:
+          $ref: '#/components/responses/accountsCreationCompleted'
+        400:
+          $ref: '#/components/responses/accountsCreationError'
+        500:
+          $ref: '#/components/responses/accountsCreationError'
+        504:
+          $ref: '#/components/responses/accountsCreationTimeout'
 
 components:
   schemas:
@@ -279,8 +299,26 @@ components:
         message:
           type: string
           description: Error message text.
-        transferState:
-          $ref: '#/components/schemas/transferResponse'
+
+    errorTransferResponse:
+      allOf:
+        - $ref: '#/components/schemas/errorResponse'
+        - type: object
+          required:
+            - transferState
+          properties:
+            transferState:
+              $ref: '#/components/schemas/transferResponse'
+
+    errorAccountsResponse:
+      allOf:
+        - $ref: '#/components/schemas/errorResponse'
+        - type: object
+          required:
+            - executionState
+          properties:
+            executionState:
+              $ref: '#/components/schemas/accountsResponse'
 
     idType:
       type: string
@@ -471,25 +509,103 @@ components:
       - WAITING_FOR_QUOTE_ACCEPTANCE
       - COMPLETED
 
+    accountsCreationState:
+      type: string
+      enum:
+      - ERROR_OCCURRED
+      - COMPLETED
+
+    accountsRequest:
+      type: array
+      items:
+        type: object
+        required:
+        - idType
+        - idValue
+        - currency
+        properties:
+          idType:
+            $ref: '#/components/schemas/idType'
+          idValue:
+            $ref: '#/components/schemas/idValue'
+          currency:
+            $ref: '#/components/schemas/currency'
+
+    accountCreationStatus:
+      type: array
+      items:
+        type: object
+        required:
+        - idType
+        - idValue
+        properties:
+          idType:
+            $ref: '#/components/schemas/idType'
+          idValue:
+            $ref: '#/components/schemas/idValue'
+          error:
+            $ref: '#/components/schemas/errorResponse'
+
+    accountsResponse:
+      type: object
+      required:
+        - accounts
+      properties:
+        modelId:
+          $ref: '#/components/schemas/transferId'
+        accounts:
+          $ref: '#/components/schemas/accountsRequest'
+        response:
+          $ref: '#/components/schemas/accountCreationStatus'
+        currentState:
+          $ref: '#/components/schemas/accountsCreationState'
+        lastError:
+          type: string
+          description: String giving details of any error that occurred during processing the request.
   responses:
-    '200':
+    transferSuccess:
       description: Transfer completed successfully
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/transferResponse'
-    '500':
+    transferBadRequest:
+      description: Malformed or missing required body, headers or parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errorTransferResponse'
+    transferServerError:
       description: An error occurred processing the transfer
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/errorResponse'
-    '504':
+            $ref: '#/components/schemas/errorTransferResponse'
+    transferTimeout:
       description: Timeout occurred processing the transfer
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/errorResponse'
+            $ref: '#/components/schemas/errorTransferResponse'
+
+    accountsCreationCompleted:
+      description: Accounts creation completed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/accountsResponse'
+    accountsCreationError:
+      description: An error occurred creating accounts
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errorAccountsResponse'
+    accountsCreationTimeout:
+      description: Timeout occurred creating accounts
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errorAccountsResponse'
 
   parameters:
     transferId:
@@ -500,3 +616,6 @@ components:
         pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
         type: string
       description: Identifier of the transfer.
+
+
+

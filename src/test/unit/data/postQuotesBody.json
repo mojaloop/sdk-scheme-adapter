@@ -1,0 +1,48 @@
+{
+  "quoteId": "00000000-0000-1000-a000-000000000002",
+  "transactionId": "00000000-0000-1000-a000-000000000002",
+  "amountType": "SEND",
+  "amount": {
+    "currency": "XOF",
+    "amount": "100"
+  },
+  "expiration": "2019-06-04T04:02:10.378Z",
+  "payer": {
+    "partyIdInfo": {
+      "partyIdType": "MSISDN",
+      "partyIdentifier": "17855501914",
+      "fspId": "mojaloop-sdk"
+    },
+    "personalInfo": {
+      "complexName": {
+        "firstName": "Murthy",
+        "lastName": "Kakarlamudi"
+      },
+      "dateOfBirth": "2010-10-10"
+    },
+    "name": "Murthy Kakarlamudi",
+    "merchantClassificationCode": "123"
+  },
+  "payee": {
+    "partyIdInfo": {
+      "partyIdType": "MSISDN",
+      "partyIdentifier": "17039811907",
+      "fspId": "mojaloop-sdk"
+    },
+    "personalInfo": {
+      "complexName": {
+        "firstName": "Sridevi",
+        "lastName": "Miriyala"
+      },
+      "dateOfBirth": "2010-10-10"
+    },
+    "name": "Sridevi Miriyala",
+    "merchantClassificationCode": "456"
+  },
+  "transactionType": {
+    "scenario": "TRANSFER",
+    "initiator": "PAYER",
+    "initiatorType": "CONSUMER"
+  },
+  "note": "note"
+}

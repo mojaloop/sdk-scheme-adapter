@@ -1,0 +1,15 @@
+{
+  "party": {
+    "partyIdInfo": {
+      "partyIdType": "MSISDN",
+      "partyIdentifier": "123456789",
+      "fspId": "MobileMoney"
+    },
+    "personalInfo": {
+      "complexName": {
+        "firstName": "John",
+        "lastName": "Doe"
+      }
+    }
+  }
+}
