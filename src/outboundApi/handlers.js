@@ -11,7 +11,30 @@
 'use strict';
 
 
+const util = require('util');
 const Model = require('@internal/model').outboundTransfersModel;
+
+
+/**
+ * Common error handling logic
+ */
+const handleError = async (err, ctx) => {
+    ctx.state.logger.log(`Error handling postTransfers: ${util.inspect(err)}`);
+    ctx.response.status = err.httpStatusCode || 500;
+    ctx.response.body = {
+        message: err.message || 'Unspecified error',
+        transferState: err.transferState || {},
+        statusCode: err.httpStatusCode || 500
+    };
+    if(err.transferState
+        && err.transferState.lastError
+        && err.transferState.lastError.mojaloopError
+        && err.transferState.lastError.mojaloopError.errorInformation
+        && err.transferState.lastError.mojaloopError.errorInformation.errorCode) {
+
+        ctx.response.body.statusCode = err.transferState.lastError.mojaloopError.errorInformation.errorCode;
+    }
+};
 
 
 /**
@@ -40,12 +63,7 @@ const postTransfers = async (ctx) => {
         ctx.response.body = response;
     }
     catch(err) {
-        ctx.state.logger.push({ err }).log('Error handling postTransfers');
-        ctx.response.status = err.httpStatusCode || 500;
-        ctx.response.body = {
-            message: err.message || 'Unspecified error',
-            transferState: err.transferState || {},
-        };
+        return handleError(err, ctx);
     }
 };
 
@@ -77,12 +95,7 @@ const putTransfers = async (ctx) => {
         ctx.response.body = response;
     }
     catch(err) {
-        ctx.state.logger.push({ err }).log('Error handling putTransfers');
-        ctx.response.status = err.httpStatusCode || 500;
-        ctx.response.body = {
-            message: err.message || 'Unspecified error',
-            transferState: err.transferState || {}
-        };
+        return handleError(err, ctx);
     }
 };
 
