@@ -39,6 +39,13 @@ class MockClient extends EventEmitter {
             this.emit('message', 'channel', data);
         });
     }
+
+    quit(...args) {
+        console.log(`MockClient quit called with args: ${util.inspect(args)}`);
+        if(typeof(args[0]) === 'function') {
+            args[0]();
+        }
+    }
 }
 
 

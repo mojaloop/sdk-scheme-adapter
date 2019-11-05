@@ -128,30 +128,37 @@ class OutboundTransfersModel {
     async _handleTransition(lifecycle, ...args) {
         this.logger.log(`Transfer ${this.data.transferId} is transitioning from ${lifecycle.from} to ${lifecycle.to} in response to ${lifecycle.transition}`);
 
-        switch(lifecycle.transition) {
-            case 'init':
-                // init, just allow the fsm to start
-                return;
+        try {
+            switch(lifecycle.transition) {
+                case 'init':
+                    // init, just allow the fsm to start
+                    return;
 
-            case 'resolvePayee':
-                // resolve the payee
-                return this._resolvePayee();
+                case 'resolvePayee':
+                    // resolve the payee
+                    return this._resolvePayee();
 
-            case 'requestQuote':
-                // request a quote
-                return this._requestQuote();
+                case 'requestQuote':
+                    // request a quote
+                    return this._requestQuote();
 
-            case 'executeTransfer':
-                // prepare a transfer and wait for fulfillment
-                return this._executeTransfer();
+                case 'executeTransfer':
+                    // prepare a transfer and wait for fulfillment
+                    return this._executeTransfer();
 
-            case 'error':
-                this.logger.push({ args }).log('State machine in errored state');
-                this.data.lastError = args[0] ? args[0].message || 'unknown error' : 'unspecified error';
-                break;
+                case 'error':
+                    this.logger.push({ args }).log('State machine in errored state');
+                    // use a shallow copy version of the error to avoid circular refs
+                    this.data.lastError = args[0] ? args[0] || 'unknown error' : 'unspecified error';
+                    break;
 
-            default:
-                this.logger.log(`Unhandled state transition for transfer ${this.data.transferId}`);
+                default:
+                    this.logger.log(`Unhandled state transition for transfer ${this.data.transferId}`);
+            }
+        }
+        catch(err) {
+            await this.stateMachine.error(err);
+            throw err;
         }
     }
 
@@ -180,12 +187,18 @@ class OutboundTransfersModel {
 
                     if(payee.errorInformation) {
                         // this is an error response to our GET /parties request
-                        const err = new Error(`Got an error response resolving party: ${util.inspect(payee)}`);
-                        this.stateMachine.error(err);
+                        const err = new BackendError(`Got an error response resolving party: ${util.inspect(payee)}`, 500);
+                        err.mojaloopError = payee;
+
+                        // cancel the timeout handler
+                        clearTimeout(timeout);
                         return reject(err);
                     }
 
                     if(!payee.party) {
+                        // we should never get a non-error response without a party, but just in case...
+                        // cancel the timeout handler
+                        clearTimeout(timeout);
                         return reject(new Error(`Resolved payee has no party object: ${util.inspect(payee)}`));
                     }
 
@@ -292,6 +305,7 @@ class OutboundTransfersModel {
                         }
                     } else if (message.type === 'quoteResponseError') {
                         error = new BackendError(`Got an error response requesting quote: ${util.inspect(message)}`, 500);
+                        error.mojaloopError = message.data;
                     }
                     else {
                         this.logger.push({ message }).log(`Ignoring cache notification for quote ${quoteKey}. Uknokwn message type ${message.type}.`);
@@ -307,7 +321,6 @@ class OutboundTransfersModel {
                     });
 
                     if (error) {
-                        this.stateMachine.error(error);
                         return reject(error);
                     }
 
@@ -421,6 +434,7 @@ class OutboundTransfersModel {
                         }
                     } else if (message.type === 'transferError') {
                         error = new BackendError(`Got an error response preparing transfer: ${util.inspect(message)}`, 500);
+                        error.mojaloopError = message.data;
                     } else {
                         this.logger.push({ message }).log(`Ignoring cache notification for transfer ${transferKey}. Uknokwn message type ${message.type}.`);
                         return;
@@ -435,7 +449,6 @@ class OutboundTransfersModel {
                     });
 
                     if (error) {
-                        this.stateMachine.error(error);
                         return reject(error);
                     }
 
@@ -591,8 +604,10 @@ class OutboundTransfersModel {
     async _unsubscribeAll() {
         return new Promise((resolve) => {
             this.subscriber.unsubscribe(() => {
-                this.logger.log('Transfer model unsubscribed from all subscriptions');
-                return resolve();
+                this.subscriber.quit(() => {
+                    this.logger.log('Transfer model unsubscribed from all subscriptions');
+                    return resolve();
+                });
             });
         });
     }
@@ -641,7 +656,7 @@ class OutboundTransfersModel {
                     await this._save();
                     return this.getResponse();
 
-                case 'error':
+                case 'errored':
                     // stopped in errored state
                     this.logger.log('State machine in errored state');
                     return this.getResponse();
@@ -652,9 +667,9 @@ class OutboundTransfersModel {
             return await this.run();
         }
         catch(err) {
-            this.logger.push({ err }).log('Error running transfer model');
-            this.stateMachine.error(err);
+            this.logger.log(`Error running transfer model: ${util.inspect(err)}`);
             await this._unsubscribeAll();
+            await this.stateMachine.error(JSON.parse(JSON.stringify(err)));
             err.transferState = this.getResponse();
             throw err;
         }
