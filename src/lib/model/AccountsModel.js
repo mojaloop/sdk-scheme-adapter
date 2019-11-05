@@ -350,7 +350,7 @@ class AccountsModel {
                     await this._save();
                     return this.getResponse();
 
-                case 'error':
+                case 'errored':
                     // stopped in errored state
                     this.logger.log('State machine in errored state');
                     return this.getResponse();

@@ -578,10 +578,10 @@ describe('outboundModel', () => {
     );
 
     test('Throws with mojaloop error in response body when party resolution error callback occurs', async () => {
-        config.AUTO_ACCEPT_PARTY = 'true';
-        config.AUTO_ACCEPT_QUOTES = 'true';
+        defaultEnv.AUTO_ACCEPT_PARTY = 'true';
+        defaultEnv.AUTO_ACCEPT_QUOTES = 'true';
 
-        await setConfig(config);
+        await setConfig(defaultEnv);
         const conf = getConfig();
 
         const model = new Model({
@@ -624,10 +624,10 @@ describe('outboundModel', () => {
 
 
     test('Throws with mojaloop error in response body when quote request error callback occurs', async () => {
-        config.AUTO_ACCEPT_PARTY = 'true';
-        config.AUTO_ACCEPT_QUOTES = 'true';
+        defaultEnv.AUTO_ACCEPT_PARTY = 'true';
+        defaultEnv.AUTO_ACCEPT_QUOTES = 'true';
 
-        await setConfig(config);
+        await setConfig(defaultEnv);
         const conf = getConfig();
 
         const model = new Model({
@@ -678,10 +678,10 @@ describe('outboundModel', () => {
 
 
     test('Throws with mojaloop error in response body when transfer request error callback occurs', async () => {
-        config.AUTO_ACCEPT_PARTY = 'true';
-        config.AUTO_ACCEPT_QUOTES = 'true';
+        defaultEnv.AUTO_ACCEPT_PARTY = 'true';
+        defaultEnv.AUTO_ACCEPT_QUOTES = 'true';
 
-        await setConfig(config);
+        await setConfig(defaultEnv);
         const conf = getConfig();
 
         const model = new Model({
