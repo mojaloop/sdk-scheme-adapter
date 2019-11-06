@@ -67,6 +67,8 @@ paths:
       responses:
         200:
           $ref: '#/components/responses/transferSuccess'
+        400:
+          $ref: '#/components/responses/transferBadRequest'
         500:
           $ref: '#/components/responses/transferServerError'
         504:
@@ -777,17 +779,17 @@ components:
     accountsCreationState:
       type: string
       enum:
-        - ERROR_OCCURRED
-        - COMPLETED
+      - ERROR_OCCURRED
+      - COMPLETED
 
     accountsRequest:
       type: array
       items:
         type: object
         required:
-          - idType
-          - idValue
-          - currency
+        - idType
+        - idValue
+        - currency
         properties:
           idType:
             $ref: '#/components/schemas/idType'
@@ -801,8 +803,8 @@ components:
       items:
         type: object
         required:
-          - idType
-          - idValue
+        - idType
+        - idValue
         properties:
           idType:
             $ref: '#/components/schemas/idType'
@@ -817,7 +819,7 @@ components:
         - accounts
       properties:
         modelId:
-          $ref: '#/components/schemas/transferId'
+          $ref: '#/components/schemas/mojaloopIdentifier'
         accounts:
           $ref: '#/components/schemas/accountsRequest'
         response:
@@ -882,6 +884,3 @@ components:
         pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
         type: string
       description: Identifier of the transfer to continue as returned in the response to a `POST /transfers` request.
-
-
-
