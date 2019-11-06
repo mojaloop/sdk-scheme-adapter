@@ -1,7 +1,14 @@
 openapi: 3.0.1
 info:
   title: Mojaloop SDK Outbound Scheme Adapter API
-  description: API specification for the Mojaloop SDK Outbound Scheme Adapter API – to be implemented by the Digital Financial Service Provider's (DFSP) backend.
+  description: >
+    Specification for the Mojaloop SDK Scheme Adapter Outbound Transfers API
+
+
+    This API can be used by DFSP backends to simplify the process of sending funds to other parties within a Mojaloop scheme.
+
+
+    Please see other documentation on https://github.com/mojaloop/sdk-scheme-adapter for more information.
 
 
     **Note on terminology:** The term "Switch" is equal to the term "Hub", and the term "FSP" is equal to the term "DFSP".
@@ -12,21 +19,42 @@ info:
 paths:
   /:
     get:
-      summary: Health check endpoint.
+      summary: Health check endpoint
+      description: This endpoint allows a user of the SDK scheme adapter to check the outbound transfers service is listening.
+      tags:
+        - Health
       responses:
         200:
-          description: Returns empty body if the service is running.
+          description: Returns empty body if the scheme adapter outbound transfers service is running.
   /transfers:
     post:
       summary: Sends money from one account to another
-      description: The HTTP request `POST /transfers` is used to request the creation of a transfer for the transfer party.
+      description: >
+        The HTTP request `POST /transfers` is used to request the movement of funds from payer DFSP to payee DFSP.
+
+        The underlying Mojaloop API has three stages for money transfer:
+
+          1. Party lookup. This facilitates a check by the sending party that the destination party is correct before proceeding with a money movement.
+          2. Quotation. This facilitates the exchange of fee information and the construction of a cryptographic "contract" between payee and payer DFSPs before funds are transferred.
+          3. Transfer. The enactment of the previously agreed "contract"
+
+        This method has several modes of operation.
+
+        - If the configuration variables `AUTO_ACCEPT_PARTIES` is set to `"false"` this method will terminate when the payee party has been resolved and return the payee party details.
+          If the payee wishes to proceed with the transfer, then a subsequent `PUT /transfers/{transferId}` request (accepting the payee party) is required to continue the operation.
+          The scheme adapter will then proceed with quotation stage...
+
+        - If the configuration variable `AUTO_ACCEPT_QUOTES` is set to `"false"` this method will terminate and return the quotation when it has been received from the payee DFSP.
+          If the payee wished to proceed with the transfer, then a subsequent `PUT /transfers/{transferId}` request (accepting the quote) is required to continue the operation.
+          The scheme adapter will then proceed with the transfer state.
+
+        If the configuration variables `AUTO_ACCEPT_PARTIES` and `AUTO_ACCEPT_QUOTES` are both set to `"true"` this method will block until all three transfer stages are complete.
+        Upon completion it will return the entire set of transfer details received during the operation.
 
 
-        This method has two modes of operation.
+        Combinations of settings for `AUTO_ACCEPT...` configuration variables allow the scheme adapter user to decide which mode of operation best suits their use cases. i.e. the scheme
+        adapter can be configured to "break" the three stage transfer at these points in order to execute backend logic such as party verification, quoted fees assessments etc...
 
-        - If the SDK configuration variable `AUTO_ACCEPT_QUOTES` is set to `"true"`, then this operation will block while progressing a transfer through the payee lookup, quote, and transfer stages.
-
-        - If `AUTO_ACCEPT_QUOTES` is set to `"false"`, then this method will return after payee lookup and quote, allowing the caller to examine the quote before proceeding to the transfer stage via the `PUT /transfers/{transferId}` method.
       tags:
         - Transfers
       requestBody:
@@ -52,14 +80,24 @@ paths:
 
   /transfers/{transferId}:
     put:
-      summary: Continues a transfer that has paused at the quote stage in order to accept or reject the quote
+      summary: Continues a transfer that has paused at the quote stage in order to accept or reject payee party and/or quote
+      description: >
+        The HTTP request `PUT /transfers/{transferId}` is used to continue a transfer initiated via the `POST /transfers` method that has halted after party lookup and/or quotation stage.
+
+
+        The request body should contain either the "acceptParty" or "acceptQuote" property set to `true` as required to continue the transfer.
+
+
+        See the description of the `POST /transfers` HTTP method for more information on modes of transfer.
       tags:
         - Transfers
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/transferContinuation'
+              oneOf:
+                - $ref: '#/components/schemas/transferContinuationAcceptParty'
+                - $ref: '#/components/schemas/transferContinuationAcceptQuote'
       parameters:
         - $ref: '#/components/parameters/transferId'
       responses:
@@ -328,20 +366,30 @@ components:
       - TRANSFER
       description: Type of transaction.
 
-    transferContinuation:
+    transferContinuationAcceptParty:
       type: object
+      required:
+        - acceptParty
+      properties:
+        acceptParty:
+          type: boolean
+          enum:
+            - true
+
+    transferContinuationAcceptQuote:
+      type: object
+      required:
+        - acceptQuote
       properties:
         acceptQuote:
           type: boolean
-          description: true if the caller wishes to accept the quote and proceed to transfer stage, otherwise false.
-        acceptParty:
-          type: boolean
-          description: true if the caller wishts to accept the party and proceed to quote stage, otherwise false.
+          enum:
+            - true
 
-    transferId:
+    mojaloopIdentifier:
       pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
       type: string
-      description: A Mojaloop API transfer identifier (UUID).
+      description: A Mojaloop API identifier (UUID).
 
     transferParty:
       type: object
@@ -438,7 +486,7 @@ components:
         - transactionType
       properties:
         transferId:
-          $ref: '#/components/schemas/transferId'
+          $ref: '#/components/schemas/mojaloopIdentifier'
         homeTransactionId:
           type: string
           description: Transaction ID from the DFSP backend, used to reconcile transactions between the Switch and DFSP backend systems.
@@ -459,9 +507,177 @@ components:
           type: string
         currentState:
           $ref: '#/components/schemas/transferStatus'
-        lastError:
+        quoteId:
+          $ref: '#/components/schemas/mojaloopIdentifier'
+        quoteResponse:
+          $ref: '#/components/schemas/quote'
+        quoteResponseSource:
           type: string
-          description: String giving details of any error that occurred during processing the request.
+          description: >
+            FSPID of the entity that supplied the quote response. This may not be the same as the FSPID of the entity which
+            owns the end user account in the case of a FOREX transfer. i.e. it may be a FOREX gateway.
+        fulfil:
+          $ref: '#/components/schemas/transferFulfilment'
+        lastError:
+          description: >
+            Object representing the last error to occur during a transfer process. This may be a Mojaloop API error returned from another entity in the scheme
+            or an object representing other types of error e.g. exceptions that may occur inside the scheme adapter.
+          oneOf:
+            - $ref: '#/components/schemas/transferError'
+            - $ref: '#/components/schemas/generalError'
+
+    quote:
+      type: object
+      description: Mojaloop API response to a quote request
+      properties:
+        transferAmount:
+          $ref: '#/components/schemas/mojaloopMoney'
+          description: >
+            The amount of Money that the Payer FSP should transfer to the Payee
+            FSP.
+        payeeReceiveAmount:
+          $ref: '#/components/schemas/mojaloopMoney'
+          description: >
+            The amount of Money that the Payee should receive in the end-to-end
+            transaction. Optional as the Payee FSP might not want to disclose
+            any optional Payee fees.
+        payeeFspFee:
+          $ref: '#/components/schemas/mojaloopMoney'
+          description: Payee FSP’s part of the transaction fee.
+        payeeFspCommission:
+          $ref: '#/components/schemas/mojaloopMoney'
+          description: Transaction commission from the Payee FSP.
+        expiration:
+          $ref: '#/components/schemas/timestamp'
+          description: >
+            Date and time until when the quotation is valid and can be honored
+            when used in the subsequent transaction.
+        geoCode:
+          $ref: '#/components/schemas/geoCode'
+          description: Longitude and Latitude of the Payee. Can be used to detect fraud.
+        ilpPacket:
+          $ref: '#/components/schemas/ilpPacket'
+          description: The ILP Packet that must be attached to the transfer by the Payer.
+        condition:
+          $ref: '#/components/schemas/ilpCondition'
+          description: The condition that must be attached to the transfer by the Payer.
+        extensionList:
+          $ref: '#/components/schemas/extensionList'
+          description: 'Optional extension, specific to deployment.'
+      required:
+        - transferAmount
+        - expiration
+        - ilpPacket
+        - condition
+
+    transferFulfilment:
+      type: object
+      description: A Mojaloop API transfer fulfilment
+      properties:
+        fulfilment:
+          $ref: '#/components/schemas/ilpFulfilment'
+          description: >
+            Fulfilment of the condition specified with the transaction.
+            Mandatory if transfer has completed successfully.
+        completedTimestamp:
+          $ref: '#/components/schemas/timestamp'
+          description: Time and date when the transaction was completed.
+        transferState:
+          $ref: '#/components/schemas/mojaloopTransferState'
+          description: State of the transfer.
+        extensionList:
+          $ref: '#/components/schemas/extensionList'
+          description: 'Optional extension, specific to deployment.'
+      required:
+        - transferState
+
+    mojaloopTransferState:
+      type: string
+      enum:
+        - RECEIVED
+        - RESERVED
+        - COMMITTED
+        - ABORTED
+      description: >
+        Below are the allowed values for the enumeration - RECEIVED Next ledger
+        has received the transfer. - RESERVED Next ledger has reserved the
+        transfer. - COMMITTED Next ledger has successfully performed the
+        transfer. - ABORTED Next ledger has aborted the transfer due a rejection
+        or failure to perform the transfer.
+
+    mojaloopMoney:
+      title: Money
+      type: object
+      description: Data model for the Mojaloop API complex type Money.
+      properties:
+        currency:
+          $ref: '#/components/schemas/currency'
+          description: Currency of the amount.
+        amount:
+          $ref: '#/components/schemas/money'
+          description: Amount of Money.
+      required:
+        - currency
+        - amount
+
+    transferError:
+      type: object
+      description: This object represents a Mojaloop API error received at any time during the transfer process
+      properties:
+        httpStatusCode:
+          type: integer
+          description: The HTTP status code returned to the caller. This is the same as the actual HTTP status code returned with the response.
+        mojaloopError:
+          description: If a transfer process results in an error callback during the asynchronous Mojaloop API exchange, this property will contain the underlying Mojaloop API error object.
+          $ref: '#/components/schemas/mojaloopError'
+
+    generalError:
+      type: object
+      description: This object may represent a number of different error object types and so its properties may vary significantly.
+
+    mojaloopError:
+      type: object
+      properties:
+        errorInformation:
+          $ref: '#/components/schemas/errorInformation'
+
+    errorInformation:
+      title: ErrorInformation
+      type: object
+      description: A Mojaloop API error information construct.
+      properties:
+        errorCode:
+          $ref: '#/components/schemas/errorCode'
+          description: Specific error number.
+        errorDescription:
+          $ref: '#/components/schemas/errorDescription'
+          description: Error description string.
+        extensionList:
+          $ref: '#/components/schemas/extensionList'
+          description: 'Optional list of extensions, specific to deployment.'
+      required:
+        - errorCode
+        - errorDescription
+
+    errorCode:
+      title: ErrorCode
+      type: string
+      pattern: '^[1-9]\d{3}$'
+      description: >
+        The API data type errorCode is a JSON String of four characters,
+        consisting of digits only. Negative numbers are not allowed. A leading
+        zero is not allowed. Each error code in the API is a four-digit number,
+        for example, 1234, where the first number (1 in the example) represents
+        the high-level error category, the second number (2 in the example)
+        represents the low-level error category, and the last two numbers (34 in
+        the example) represents the specific error.
+
+    errorDescription:
+      title: ErrorDescription
+      type: string
+      minLength: 1
+      maxLength: 128
+      description: Error description string.
 
     transferStatus:
       type: string
@@ -470,6 +686,55 @@ components:
       - WAITING_FOR_PARTY_ACCEPTANCE
       - WAITING_FOR_QUOTE_ACCEPTANCE
       - COMPLETED
+
+    geoCode:
+      type: object
+      description: >
+        Data model for the Mojaloop API complex type GeoCode. Indicates a geographic location
+      properties:
+        latitude:
+          $ref: '#/components/schemas/latitude'
+          description: Latitude of the Party.
+        longitude:
+          $ref: '#/components/schemas/longitude'
+          description: Longitude of the Party.
+      required:
+        - latitude
+        - longitude
+
+    latitude:
+      type: string
+      pattern: >-
+        ^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$
+      description: >
+        The API data type Latitude is a JSON String in a lexical format that is
+        restricted by a regular expression for interoperability reasons.
+    longitude:
+      type: string
+      pattern: >-
+        ^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,6})?))$
+      description: >-
+        The API data type Longitude is a JSON String in a lexical format that is
+        restricted by a regular expression for interoperability reasons.
+
+    ilpCondition:
+      type: string
+      pattern: '^[A-Za-z0-9-_]{43}$'
+      maxLength: 48
+      description: Condition that must be attached to the transfer by the Payer.
+
+    ilpFulfilment:
+      type: string
+      pattern: '^[A-Za-z0-9-_]{43}$'
+      maxLength: 48
+      description: Fulfilment that must be attached to the transfer by the Payee.
+
+    ilpPacket:
+      type: string
+      pattern: '^[A-Za-z0-9-_]+[=]{0,2}$'
+      minLength: 1
+      maxLength: 32768
+      description: Information for recipient (transport layer information).
 
   responses:
     '200':
@@ -499,4 +764,4 @@ components:
       schema:
         pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
         type: string
-      description: Identifier of the transfer.
+      description: Identifier of the transfer to continue as returned in the response to a `POST /transfers` request.
