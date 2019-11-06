@@ -26,7 +26,6 @@ const Validate = require('@internal/validate');
 const inboundHandlers = require('./inboundApi/handlers.js');
 const outboundHandlers = require('./outboundApi/handlers.js');
 const OAuthTestServer = require('./OAuthTestServer');
-const AlsTestServer = require('./ALSTestServer');
 
 const router = require('@internal/router');
 const { setConfig, getConfig } = require('./config.js');
@@ -315,12 +314,6 @@ class Server {
             this.oauthTestServer = Promise.resolve();
         }
 
-        if (conf.alsTestServer.enabled) {
-            this.alsTestServer = AlsTestServer(conf);
-        } else {
-            this.alsTestServer = Promise.resolve();
-        }
-
         await new Promise((resolve) => {
             this.inboundServer.listen(inboundPort, () => {
                 inboundLogger.log(`Serving inbound API on port ${inboundPort}`);
@@ -352,7 +345,6 @@ class Server {
                 });
             }),
             this.oauthTestServer,
-            this.alsTestServer,
         ]);
     }
 }
