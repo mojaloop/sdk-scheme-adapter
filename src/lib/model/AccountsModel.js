@@ -115,11 +115,9 @@ class AccountsModel {
 
         switch(lifecycle.transition) {
             case 'init':
-                // init, just allow the fsm to start
                 return;
 
             case 'createAccounts':
-                // resolve the payee
                 return this._createAccounts();
 
             case 'error':
@@ -150,6 +148,7 @@ class AccountsModel {
 
                     if (message.type === 'accountsCreationErrorResponse') {
                         error = new BackendError(`Got an error response creating accounts: ${util.inspect(message)}`, 500);
+                        error.mojaloopError = message.data;
                     } else if (message.type !== 'accountsCreationSuccessfulResponse') {
                         this.logger.push({ message }).log(
                             `Ignoring cache notification for request ${requestKey}. ` +
@@ -364,9 +363,9 @@ class AccountsModel {
             return await this.run();
         }
         catch(err) {
-            this.logger.push({ err }).log('Error running account model');
-            this.stateMachine.error(err);
+            this.logger.log(`Error running account model: ${util.inspect(err)}`);
             await this._unsubscribeAll();
+            await this.stateMachine.error(JSON.parse(JSON.stringify(err)));
             err.executionState = this.getResponse();
             throw err;
         }
