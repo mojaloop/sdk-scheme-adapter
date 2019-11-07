@@ -17,7 +17,8 @@ const util = require('util');
 const coBody = require('co-body');
 const https = require('https');
 const http = require('http');
-const yaml = require('yamljs');
+const fs = require('fs');
+const yaml = require('js-yaml');
 
 const randomPhrase = require('@internal/randomphrase');
 const Validate = require('@internal/validate');
@@ -32,8 +33,8 @@ const { Logger, Transports } = require('@internal/log');
 
 const Cache = require('@internal/cache');
 
-const inboundApiSpec = yaml.load('./inboundApi/api.yaml');
-const outboundApiSpec = yaml.load('./outboundApi/api.yaml');
+const inboundApiSpec = yaml.load(fs.readFileSync('./inboundApi/api.yaml'));
+const outboundApiSpec = yaml.load(fs.readFileSync('./outboundApi/api.yaml'));
 
 const Jws = require('@mojaloop/sdk-standard-components').Jws;
 const Errors = require('@mojaloop/sdk-standard-components').Errors;
@@ -330,23 +331,21 @@ class Server {
 
 
     async stop() {
-        await Promise.all([(() => {
-            return new Promise(resolve => {
+        await Promise.all([
+            new Promise(resolve => {
                 this.inboundServer.close(() => {
                     console.log('inbound shut down complete');
                     return resolve();
                 });
-            });
-        })(), (() => {
-            return new Promise(resolve => {
+            }),
+            new Promise(resolve => {
                 this.outboundServer.close(() => {
                     console.log('outbound shut down compete');
                     return resolve();
                 });
-            });
-        })(), (() => {
-            return this.oauthTestServer;
-        })()]);
+            }),
+            this.oauthTestServer,
+        ]);
     }
 }
 

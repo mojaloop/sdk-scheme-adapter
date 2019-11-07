@@ -17,47 +17,10 @@ const { init, destroy, setConfig, getConfig } = require('../../../../config.js')
 const path = require('path');
 const MockCache = require('../../../__mocks__/@internal/cache.js');
 const { Logger, Transports } = require('@internal/log');
-const Model = require('@internal/model').inboundTransfersModel;
+const Model = require('@internal/model').InboundTransfersModel;
+const defaultEnv = require('./data/defaultEnv');
 
 let logTransports;
-
-// dummy environment config
-const config = {
-    INBOUND_LISTEN_PORT: '4000',
-    OUTBOUND_LISTEN_PORT: '4001',
-    MUTUAL_TLS_ENABLED: 'false',
-    VALIDATE_INBOUND_JWS: 'true',
-    JWS_SIGN: 'true',
-    JWS_SIGNING_KEY_PATH: '/jwsSigningKey.key',
-    JWS_VERIFICATION_KEYS_DIRECTORY: '/jwsVerificationKeys',
-    IN_CA_CERT_PATH: './secrets/cacert.pem',
-    IN_SERVER_CERT_PATH: './secrets/servercert.pem',
-    IN_SERVER_KEY_PATH: './secrets/serverkey.pem',
-    OUT_CA_CERT_PATH: './secrets/cacert.pem',
-    OUT_CLIENT_CERT_PATH: './secrets/servercert.pem',
-    OUT_CLIENT_KEY_PATH: './secrets/serverkey.pem',
-    LOG_INDENT: '0',
-    CACHE_HOST: '172.17.0.2',
-    CACHE_PORT: '6379',
-    PEER_ENDPOINT: '172.17.0.3:4000',
-    BACKEND_ENDPOINT: '172.17.0.5:4000',
-    DFSP_ID: 'mojaloop-sdk',
-    ILP_SECRET: 'Quaixohyaesahju3thivuiChai5cahng',
-    EXPIRY_SECONDS: '60',
-    AUTO_ACCEPT_QUOTES: 'false',
-    AUTO_ACCEPT_PARTY: 'false',
-    CHECK_ILP: 'true',
-    ENABLE_TEST_FEATURES: 'false',
-    ENABLE_OAUTH_TOKEN_ENDPOINT: 'false',
-    WS02_BEARER_TOKEN: '7718fa9b-be13-3fe7-87f0-a12cf1628168',
-    OAUTH_TOKEN_ENDPOINT: '',
-    OAUTH_CLIENT_KEY: '',
-    OAUTH_CLIENT_SECRET: '',
-    OAUTH_REFRESH_SECONDS: '3600',
-    REJECT_EXPIRED_QUOTE_RESPONSES: 'false',
-    REJECT_TRANSFERS_ON_EXPIRED_QUOTES: 'false',
-    REJECT_EXPIRED_TRANSFER_FULFILS: 'false',
-};
 
 describe('inboundModel', () => {
     let mockArguments;
@@ -66,8 +29,8 @@ describe('inboundModel', () => {
 
     // the keys are under the secrets folder that is supposed to be moved by Dockerfile
     // so for the needs of the unit tests, we have to define the proper path manually.
-    config.JWS_SIGNING_KEY_PATH = path.join('..', 'secrets', config.JWS_SIGNING_KEY_PATH);
-    config.JWS_VERIFICATION_KEYS_DIRECTORY = path.join('..', 'secrets', config.JWS_VERIFICATION_KEYS_DIRECTORY);
+    defaultEnv.JWS_SIGNING_KEY_PATH = path.join('..', 'secrets', defaultEnv.JWS_SIGNING_KEY_PATH);
+    defaultEnv.JWS_VERIFICATION_KEYS_DIRECTORY = path.join('..', 'secrets', defaultEnv.JWS_VERIFICATION_KEYS_DIRECTORY);
 
     beforeAll(async () => {
         logTransports = await Promise.all([Transports.consoleDir()]);
@@ -76,7 +39,7 @@ describe('inboundModel', () => {
     beforeEach(async () => {
         init();
 
-        await setConfig(config);
+        await setConfig(defaultEnv);
         const conf = getConfig();
 
         cache = new MockCache();
