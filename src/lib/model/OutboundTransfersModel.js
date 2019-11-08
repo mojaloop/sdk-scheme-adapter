@@ -148,7 +148,7 @@ class OutboundTransfersModel {
 
             case 'error':
                 this.logger.log(`State machine is erroring with error: ${util.inspect(args)}`);
-                this.data.lastError = args[0] ? args[0] : new Error('unspecified error');
+                this.data.lastError = args[0] || new Error('unspecified error');
                 break;
 
             default:
