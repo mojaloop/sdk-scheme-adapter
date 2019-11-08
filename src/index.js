@@ -291,9 +291,9 @@ class Server {
         const inboundPort = conf.inboundPort;
         const outboundPort = conf.outboundPort;
 
-        if (conf.tls.mutualTLS.enabled) {
+        if (conf.tls.inbound.mutualTLS.enabled) {
             const inboundHttpsOpts = {
-                ...conf.tls.inboundCreds,
+                ...conf.tls.inbound.creds,
                 requestCert: true,
                 rejectUnauthorized: true // no effect if requestCert is not true
             };
