@@ -384,12 +384,6 @@ class AccountsModel {
                 err.executionState = JSON.parse(JSON.stringify(this.getResponse()));
             }
             throw err;
-
-
-            await this._unsubscribeAll();
-            await this.stateMachine.error(JSON.parse(JSON.stringify(err)));
-            err.executionState = this.getResponse();
-            throw err;
         }
     }
 }
