@@ -29,17 +29,22 @@ describe('config', () => {
             autoAcceptParty: true,
             useQuoteSourceFSPAsTransferPayeeFSP: false,
             tls: {
-                mutualTLS: { enabled: false },
-                inboundCreds: {
-                    ca: null,
-                    cert: null,
-                    key: null
+                inbound: {
+                    mutualTLS: { enabled: false },
+                    creds: {
+                        ca: null,
+                        cert: null,
+                        key: null
+                    }
                 },
-                outboundCreds: {
-                    ca: null,
-                    cert: null,
-                    key: null
-                }
+                outbound: {
+                    mutualTLS: { enabled: false },
+                    creds: {
+                        ca: null,
+                        cert: null,
+                        key: null
+                    }
+                },
             },
             validateInboundJws: true,
             validateInboundPutPartiesJws: false,

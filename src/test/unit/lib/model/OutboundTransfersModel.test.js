@@ -612,7 +612,7 @@ describe('outboundModel', () => {
             await model.run();
         }
         catch(err) {
-            expect(err.message).toEqual(errMsg);
+            expect(err.message.replace(/[ \n]/g,'')).toEqual(errMsg.replace(/[ \n]/g,''));
             expect(err.transferState).toBeTruthy();
             expect(err.transferState.lastError).toBeTruthy();
             expect(err.transferState.lastError.mojaloopError).toEqual(expectError);
@@ -667,7 +667,7 @@ describe('outboundModel', () => {
             await model.run();
         }
         catch(err) {
-            expect(err.message).toEqual(errMsg);
+            expect(err.message.replace(/[ \n]/g,'')).toEqual(errMsg.replace(/[ \n]/g,''));
             expect(err.transferState).toBeTruthy();
             expect(err.transferState.lastError).toBeTruthy();
             expect(err.transferState.lastError.mojaloopError).toEqual(expectError.data);
@@ -728,7 +728,7 @@ describe('outboundModel', () => {
             await model.run();
         }
         catch(err) {
-            expect(err.message).toEqual(errMsg);
+            expect(err.message.replace(/[ \n]/g,'')).toEqual(errMsg.replace(/[ \n]/g,''));
             expect(err.transferState).toBeTruthy();
             expect(err.transferState.lastError).toBeTruthy();
             expect(err.transferState.lastError.mojaloopError).toEqual(expectError.data);
