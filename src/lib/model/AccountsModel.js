@@ -373,7 +373,7 @@ class AccountsModel {
             if(this.data.currentState !== 'errored') {
                 await this._unsubscribeAll();
 
-                // err should not have a transferState property here!
+                // err should not have a executionState property here!
                 if(err.executionState) {
                     this.logger.log(`State machine is broken: ${util.inspect(err)}`);
                 }
