@@ -74,6 +74,7 @@ class AccountsModel {
      * Updates the internal state representation to reflect that of the state machine itself
      */
     _afterTransition() {
+        this.logger.log(`State machine transitioned: ${this.data.currentState} -> ${this.stateMachine.state}`);
         this.data.currentState = this.stateMachine.state;
     }
 
@@ -121,8 +122,8 @@ class AccountsModel {
                 return this._createAccounts();
 
             case 'error':
-                this.logger.push({ args }).log('State machine in errored state');
-                this.data.lastError = args[0] ? args[0].message || 'unknown error' : 'unspecified error';
+                this.logger.log(`State machine is erroring with error: ${util.inspect(args)}`);
+                this.data.lastError = args[0] || new Error('unspecified error');
                 break;
 
             default:
@@ -147,7 +148,7 @@ class AccountsModel {
                     let message = JSON.parse(msg);
 
                     if (message.type === 'accountsCreationErrorResponse') {
-                        error = new BackendError(`Got an error response creating accounts: ${util.inspect(message)}`, 500);
+                        error = new BackendError(`Got an error response creating accounts: ${util.inspect(message.data)}`, 500);
                         error.mojaloopError = message.data;
                     } else if (message.type !== 'accountsCreationSuccessfulResponse') {
                         this.logger.push({ message }).log(
@@ -304,6 +305,9 @@ class AccountsModel {
     async load(modelId) {
         try {
             const data = await this.cache.get(`accountModel_${modelId}`);
+            if(!data) {
+                throw new Error(`No cached data found for account model with id: ${modelId}`);
+            }
             await this.initialize(data);
             this.logger.push({ cache: this.data }).log('Account model loaded from cached state');
         }
@@ -352,7 +356,7 @@ class AccountsModel {
                 case 'errored':
                     // stopped in errored state
                     this.logger.log('State machine in errored state');
-                    return this.getResponse();
+                    return;
             }
 
             // now call ourslves recursively to deal with the next transition
@@ -360,13 +364,25 @@ class AccountsModel {
                 `Account model state machine transition completed in state: ${this.stateMachine.state}. ` +
                 'Handling next transition.'
             );
-            return await this.run();
+            return this.run();
         }
         catch(err) {
             this.logger.log(`Error running account model: ${util.inspect(err)}`);
-            await this._unsubscribeAll();
-            await this.stateMachine.error(JSON.parse(JSON.stringify(err)));
-            err.executionState = this.getResponse();
+
+            // as this function is recursive, we dont want to error the state machine multiple times
+            if(this.data.currentState !== 'errored') {
+                await this._unsubscribeAll();
+
+                // err should not have a executionState property here!
+                if(err.executionState) {
+                    this.logger.log(`State machine is broken: ${util.inspect(err)}`);
+                }
+                // transition to errored state
+                await this.stateMachine.error(err);
+
+                // avoid circular ref between executionState.lastError and err
+                err.executionState = JSON.parse(JSON.stringify(this.getResponse()));
+            }
             throw err;
         }
     }
