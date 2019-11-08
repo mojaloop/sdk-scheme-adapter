@@ -93,6 +93,7 @@ class OutboundTransfersModel {
      * Updates the internal state representation to reflect that of the state machine itself
      */
     _afterTransition() {
+        this.logger.log(`State machine transitioned: ${this.data.currentState} -> ${this.stateMachine.state}`);
         this.data.currentState = this.stateMachine.state;
     }
 
@@ -128,37 +129,30 @@ class OutboundTransfersModel {
     async _handleTransition(lifecycle, ...args) {
         this.logger.log(`Transfer ${this.data.transferId} is transitioning from ${lifecycle.from} to ${lifecycle.to} in response to ${lifecycle.transition}`);
 
-        try {
-            switch(lifecycle.transition) {
-                case 'init':
-                    // init, just allow the fsm to start
-                    return;
+        switch(lifecycle.transition) {
+            case 'init':
+                // init, just allow the fsm to start
+                return;
 
-                case 'resolvePayee':
-                    // resolve the payee
-                    return this._resolvePayee();
+            case 'resolvePayee':
+                // resolve the payee
+                return this._resolvePayee();
 
-                case 'requestQuote':
-                    // request a quote
-                    return this._requestQuote();
+            case 'requestQuote':
+                // request a quote
+                return this._requestQuote();
 
-                case 'executeTransfer':
-                    // prepare a transfer and wait for fulfillment
-                    return this._executeTransfer();
+            case 'executeTransfer':
+                // prepare a transfer and wait for fulfillment
+                return this._executeTransfer();
 
-                case 'error':
-                    this.logger.push({ args }).log('State machine in errored state');
-                    // use a shallow copy version of the error to avoid circular refs
-                    this.data.lastError = args[0] ? args[0] || 'unknown error' : 'unspecified error';
-                    break;
+            case 'error':
+                this.logger.log(`State machine is erroring with error: ${util.inspect(args)}`);
+                this.data.lastError = args[0] ? args[0] : new Error('unspecified error');
+                break;
 
-                default:
-                    this.logger.log(`Unhandled state transition for transfer ${this.data.transferId}`);
-            }
-        }
-        catch(err) {
-            await this.stateMachine.error(err);
-            throw err;
+            default:
+                throw new Error(`Unhandled state transition for transfer ${this.data.transferId}: ${util.inspect(args)}`);
         }
     }
 
@@ -172,8 +166,7 @@ class OutboundTransfersModel {
         return new Promise(async (resolve, reject) => {
             // set up a timeout for the resolution
             const timeout = setTimeout(() => {
-                const err = new Error(`Timeout resolving payee for transfer ${this.data.transferId}`);
-                this.stateMachine.error(err);
+                const err = new BackendError(`Timeout resolving payee for transfer ${this.data.transferId}`, 504);
                 return reject(err);
             }, ASYNC_TIMEOUT_MILLS);
 
@@ -217,19 +210,16 @@ class OutboundTransfersModel {
                     // check we got the right payee and info we need
                     if(payee.partyIdInfo.partyIdType !== this.data.to.idType) {
                         const err = new Error(`Expecting resolved payee party IdType to be ${this.data.to.idType} but got ${payee.partyIdInfo.partyIdType}`);
-                        this.stateMachine.error(err);
                         return reject(err);
                     }
 
                     if(payee.partyIdInfo.partyIdentifier !== this.data.to.idValue) {
                         const err = new Error(`Expecting resolved payee party identifier to be ${this.data.to.idValue} but got ${payee.partyIdInfo.partyIdentifier}`);
-                        this.stateMachine.error(err);
                         return reject(err);
                     }
 
                     if(!payee.partyIdInfo.fspId) {
                         const err = new Error(`Expecting resolved payee party to have an FSPID: ${util.inspect(payee.partyIdInfo)}`);
-                        this.stateMachine.error(err);
                         return reject(err);
 
                     }
@@ -261,7 +251,6 @@ class OutboundTransfersModel {
                 this.logger.push({ peer: res }).log('Party lookup sent to peer');
             }
             catch(err) {
-                this.stateMachine.error(err);
                 return reject(err);
             }
         });
@@ -277,8 +266,7 @@ class OutboundTransfersModel {
         return new Promise(async (resolve, reject) => {
             // set up a timeout for the request
             const timeout = setTimeout(() => {
-                const err = new Error(`Timeout requesting quote for transfer ${this.data.transferId}`);
-                this.stateMachine.error(err);
+                const err = new BackendError(`Timeout requesting quote for transfer ${this.data.transferId}`, 504);
                 return reject(err);
             }, ASYNC_TIMEOUT_MILLS);
 
@@ -304,11 +292,11 @@ class OutboundTransfersModel {
                             }
                         }
                     } else if (message.type === 'quoteResponseError') {
-                        error = new BackendError(`Got an error response requesting quote: ${util.inspect(message)}`, 500);
+                        error = new BackendError(`Got an error response requesting quote: ${util.inspect(message.data)}`, 500);
                         error.mojaloopError = message.data;
                     }
                     else {
-                        this.logger.push({ message }).log(`Ignoring cache notification for quote ${quoteKey}. Uknokwn message type ${message.type}.`);
+                        this.logger.push({ message }).log(`Ignoring cache notification for quote ${quoteKey}. Unknown message type ${message.type}.`);
                         return;
                     }
 
@@ -345,7 +333,6 @@ class OutboundTransfersModel {
                 this.logger.push({ res }).log('Quote request sent to peer');
             }
             catch(err) {
-                this.stateMachine.error(err);
                 return reject(err);
             }
         });
@@ -408,8 +395,7 @@ class OutboundTransfersModel {
         return new Promise(async (resolve, reject) => {
             // set up a timeout for the request
             const timeout = setTimeout(() => {
-                const err = new Error(`Timeout waiting for fulfil for transfer ${this.data.transferId}`);
-                this.stateMachine.error(err);
+                const err = new BackendError(`Timeout waiting for fulfil for transfer ${this.data.transferId}`, 504);
                 return reject(err);
             }, ASYNC_TIMEOUT_MILLS);
 
@@ -433,7 +419,7 @@ class OutboundTransfersModel {
                             }
                         }
                     } else if (message.type === 'transferError') {
-                        error = new BackendError(`Got an error response preparing transfer: ${util.inspect(message)}`, 500);
+                        error = new BackendError(`Got an error response preparing transfer: ${util.inspect(message.data)}`, 500);
                         error.mojaloopError = message.data;
                     } else {
                         this.logger.push({ message }).log(`Ignoring cache notification for transfer ${transferKey}. Uknokwn message type ${message.type}.`);
@@ -474,7 +460,6 @@ class OutboundTransfersModel {
                 this.logger.push({ res }).log('Transfer prepare sent to peer');
             }
             catch(err) {
-                this.stateMachine.error(err);
                 return reject(err);
             }
         });
@@ -588,6 +573,9 @@ class OutboundTransfersModel {
     async load(transferId) {
         try {
             const data = await this.cache.get(`transferModel_${transferId}`);
+            if(!data) {
+                throw new Error(`No cached data found for transferId: ${transferId}`);
+            }
             await this.initialize(data);
             this.logger.push({ cache: this.data }).log('Transfer model loaded from cached state');
         }
@@ -659,18 +647,30 @@ class OutboundTransfersModel {
                 case 'errored':
                     // stopped in errored state
                     this.logger.log('State machine in errored state');
-                    return this.getResponse();
+                    return;
             }
 
             // now call ourslves recursively to deal with the next transition
             this.logger.log(`Transfer model state machine transition completed in state: ${this.stateMachine.state}. Recusring to handle next transition.`);
-            return await this.run();
+            return this.run();
         }
         catch(err) {
             this.logger.log(`Error running transfer model: ${util.inspect(err)}`);
-            await this._unsubscribeAll();
-            await this.stateMachine.error(JSON.parse(JSON.stringify(err)));
-            err.transferState = this.getResponse();
+
+            // as this function is recursive, we dont want to error the state machine multiple times
+            if(this.data.currentState !== 'errored') {
+                await this._unsubscribeAll();
+
+                // err should not have a transferState property here!
+                if(err.transferState) {
+                    this.logger.log(`State machine is broken: ${util.inspect(err)}`);
+                }
+                // transition to errored state
+                await this.stateMachine.error(err);
+
+                // avoid circular ref between transferState.lastError and err
+                err.transferState = JSON.parse(JSON.stringify(this.getResponse()));
+            }
             throw err;
         }
     }
