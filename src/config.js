@@ -28,6 +28,7 @@ let DEFAULTS = {
     ilpSecret: 'mojaloop-sdk',
     checkIlp: true,
     expirySeconds: 60,
+    requestProcessingTimeoutSeconds: 30,
     autoAcceptQuotes: true,
     autoAcceptParty: true,
     useQuoteSourceFSPAsTransferPayeeFSP: false,
@@ -188,6 +189,10 @@ const setConfig = async cfg => {
     config.rejectExpiredQuoteResponses = cfg.REJECT_EXPIRED_QUOTE_RESPONSES.toLowerCase() === 'true';
     config.rejectTransfersOnExpiredQuotes = cfg.REJECT_TRANSFERS_ON_EXPIRED_QUOTES.toLowerCase() === 'true';
     config.rejectExpiredTransferFulfils = cfg.REJECT_EXPIRED_TRANSFER_FULFILS.toLowerCase() === 'true';
+
+    config.requestProcessingTimeoutSeconds = cfg.REQUEST_PROCESSING_TIMEOUT_SECONDS;
+
+    config.alsEndpoint = cfg.ALS_ENDPOINT;
 };
 
 const getConfig = () => {

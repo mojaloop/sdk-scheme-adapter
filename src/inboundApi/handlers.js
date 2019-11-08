@@ -11,7 +11,7 @@
 'use strict';
 
 const util = require('util');
-const Model = require('@internal/model').inboundTransfersModel;
+const Model = require('@internal/model').InboundTransfersModel;
 const { Errors } = require('@mojaloop/sdk-standard-components');
 
 /**
@@ -190,6 +190,54 @@ const postTransfers = async (ctx) => {
     // Note that we will have passed request validation, JWS etc... by this point
     // so it is safe to return 202
     ctx.response.status = 202;
+    ctx.response.body = '';
+};
+
+/**
+ * Handles a PUT /participants/{ID}. This is a response to a POST /participants request
+ */
+const putParticipantsById = async (ctx) => {
+    if(ctx.state.conf.enableTestFeatures) {
+        // we are in test mode so cache the request
+        const req = {
+            headers: ctx.request.headers,
+            data: ctx.request.body
+        };
+        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
+    }
+
+    // publish an event onto the cache for subscribers to action
+    await ctx.state.cache.publish(`${ctx.state.path.params.ID}`, {
+        type: 'accountsCreationSuccessfulResponse',
+        data: ctx.request.body
+    });
+
+    ctx.response.status = 200;
+};
+
+
+/**
+ * Handles a PUT /participants/{ID}/error. This is an error response to a POST /participants request
+ */
+const putParticipantsByIdError = async (ctx) => {
+    if(ctx.state.conf.enableTestFeatures) {
+        // we are in test mode so cache the request
+        const req = {
+            headers: ctx.request.headers,
+            data: ctx.request.body
+        };
+        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
+    }
+
+    // publish an event onto the cache for subscribers to action
+    await ctx.state.cache.publish(`${ctx.state.path.params.ID}`, {
+        type: 'accountsCreationErrorResponse',
+        data: ctx.request.body
+    });
+
+    ctx.response.status = 200;
     ctx.response.body = '';
 };
 
@@ -412,9 +460,15 @@ const map = {
     '/': {
         get: healthCheck
     },
+    '/participants/{ID}': {
+        put: putParticipantsById
+    },
     '/participants/{Type}/{ID}': {
         put: putParticipantsByTypeAndId,
         get: getParticipantsByTypeAndId
+    },
+    '/participants/{ID}/error': {
+        put: putParticipantsByIdError
     },
     '/parties/{Type}/{ID}': {
         post: postPartiesByTypeAndId,

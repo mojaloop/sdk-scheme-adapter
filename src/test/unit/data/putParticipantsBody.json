@@ -1,0 +1,12 @@
+{
+  "partyList": [
+    {
+      "partyId": {
+        "partyIdType": "MSISDN",
+        "partyIdentifier": "123456789",
+        "fspId": "sim"
+      }
+    }
+  ],
+  "currency": "USD"
+}

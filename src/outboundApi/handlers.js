@@ -12,29 +12,35 @@
 
 
 const util = require('util');
-const Model = require('@internal/model').outboundTransfersModel;
+const { AccountsModel, OutboundTransfersModel } = require('@internal/model');
 
 
 /**
  * Common error handling logic
  */
-const handleError = async (err, ctx) => {
-    ctx.state.logger.log(`Error handling postTransfers: ${util.inspect(err)}`);
+const handleError = (method, err, ctx, stateField) => {
+    ctx.state.logger.log(`Error handling ${method}: ${util.inspect(err)}`);
     ctx.response.status = err.httpStatusCode || 500;
     ctx.response.body = {
         message: err.message || 'Unspecified error',
-        transferState: err.transferState || {},
+        [stateField]: err[stateField] || {},
         statusCode: err.httpStatusCode || 500
     };
-    if(err.transferState
-        && err.transferState.lastError
-        && err.transferState.lastError.mojaloopError
-        && err.transferState.lastError.mojaloopError.errorInformation
-        && err.transferState.lastError.mojaloopError.errorInformation.errorCode) {
+    if(err[stateField]
+        && err[stateField].lastError
+        && err[stateField].lastError.mojaloopError
+        && err[stateField].lastError.mojaloopError.errorInformation
+        && err[stateField].lastError.mojaloopError.errorInformation.errorCode) {
 
-        ctx.response.body.statusCode = err.transferState.lastError.mojaloopError.errorInformation.errorCode;
+        ctx.response.body.statusCode = err[stateField].lastError.mojaloopError.errorInformation.errorCode;
     }
 };
+
+const handleTransferError = (method, err, ctx) =>
+    handleError(method, err, ctx, 'transferState');
+
+const handleAccountsError = (method, err, ctx) =>
+    handleError(method, err, ctx, 'executionState');
 
 
 /**
@@ -48,7 +54,7 @@ const postTransfers = async (ctx) => {
         };
 
         // use the transfers model to execute asynchronous stages with the switch
-        const model = new Model({
+        const model = new OutboundTransfersModel({
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             ...ctx.state.conf
@@ -63,7 +69,7 @@ const postTransfers = async (ctx) => {
         ctx.response.body = response;
     }
     catch(err) {
-        return handleError(err, ctx);
+        return handleTransferError('postTransfers', err, ctx);
     }
 };
 
@@ -77,7 +83,7 @@ const putTransfers = async (ctx) => {
     try {
         // this requires a multi-stage sequence with the switch.
         // use the transfers model to execute asynchronous stages with the switch
-        const model = new Model({
+        const model = new OutboundTransfersModel({
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             ...ctx.state.conf
@@ -95,7 +101,36 @@ const putTransfers = async (ctx) => {
         ctx.response.body = response;
     }
     catch(err) {
-        return handleError(err, ctx);
+        return handleTransferError('putTransfers', err, ctx);
+    }
+};
+
+
+/**
+ * Handler for outbound participants request initiation
+ */
+const postAccounts = async (ctx) => {
+    try {
+        const model = new AccountsModel({
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            ...ctx.state.conf
+        });
+
+        const state = {
+            accounts: ctx.request.body,
+        };
+
+        // initialize the accounts model and run it
+        await model.initialize(state);
+        const response = await model.run();
+
+        // return the result
+        ctx.response.status = 200;
+        ctx.response.body = response;
+    }
+    catch(err) {
+        return handleAccountsError('postAccounts', err, ctx);
     }
 };
 
@@ -115,6 +150,9 @@ module.exports = {
         },
         '/transfers/{transferId}': {
             put: putTransfers
-        }
+        },
+        '/accounts': {
+            post: postAccounts
+        },
     }
 };

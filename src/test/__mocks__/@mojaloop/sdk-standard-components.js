@@ -22,6 +22,11 @@ class MockMojaloopRequests extends EventEmitter {
         this.config = config;
     }
 
+    postParticipants(request) {
+        setImmediate(() => { this.emit('postParticipants', request); });
+        return Promise.resolve(null);
+    }
+
     getParties(...args) {
         console.log(`MockMojaloopRequests.getParties called with args: ${util.inspect(args, { depth: 20 })}`);
         setImmediate(() => { this.emit('getParties'); });
