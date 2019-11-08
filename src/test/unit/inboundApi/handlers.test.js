@@ -5,8 +5,9 @@
  *  specified in the corresponding source code repository.                *
  *                                                                        *
  *  ORIGINAL AUTHOR:                                                      *
- *       Vassilis Barzokas - vassilis.barzokas@modusbox.com                             *
+ *       Vassilis Barzokas - vassilis.barzokas@modusbox.com               *
  **************************************************************************/
+
 'use strict';
 
 jest.mock('@internal/model').inboundTransfersModel;
@@ -14,7 +15,7 @@ jest.mock('@internal/model').inboundTransfersModel;
 const handlers = require('../../../inboundApi/handlers');
 const Model = require('@internal/model').inboundTransfersModel;
 
-describe('handlers:', () => {
+describe('Inbound API handlers:', () => {
     let mockArguments;
 
     beforeEach(() => {
@@ -48,7 +49,7 @@ describe('handlers:', () => {
         };
     });
 
-    describe('POST /quotes:', () => {
+    describe('POST /quotes', () => {
         let mockContext;
 
         beforeEach(() => {

@@ -40,6 +40,13 @@ class MockMojaloopRequests extends EventEmitter {
         return Promise.resolve(null);
     }
 
+    putQuotesError(...args) {
+        console.log(`MockMojaloopRequests.putQuotesError called with args: ${util.inspect(args)}`);
+        setImmediate(() => { this.emit('putQuotesError'); });
+        return Promise.resolve(null);
+    }
+
+
     postTransfers(...args) {
         console.log(`MockMojaloopRequests.postTransfers called with args: ${util.inspect(args, { depth: 20 })}`);
         setImmediate(() => { this.emit('postTransfers'); });
@@ -71,8 +78,35 @@ class MockIlp {
 }
 
 
+class MockJwsValidator {
+    constructor(config) {
+        this.validateCalled = 0;
+        this.config = config;
+        console.log(`MockJwsValidator constructed with config: ${util.inspect(config)}`);
+    }
+
+    validate(...args) {
+        this.validateCalled++;
+        console.log(`MockJwsValidator validate called with args: ${util.inspect(args)}`);
+        return true;
+    }
+
+}
+
+class MockJwsSigner {
+    constructor(config) {
+        this.config = config;
+        console.log(`MockJwsSigner constructed with config: ${util.inspect(config)}`);
+    }
+}
+
+
 module.exports = {
     MojaloopRequests: MockMojaloopRequests,
     Ilp: MockIlp,
-    Errors,
+    Jws: {
+        validator: MockJwsValidator,
+        signer: MockJwsSigner
+    },
+    Errors: Errors
 };
