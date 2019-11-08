@@ -1,12 +1,12 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
-  "version": "8.1.8",
+  "version": "8.4.1",
   "description": "An adapter for connecting to Mojaloop API enabled switches",
   "main": "index.js",
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test": "jest test/unit"
+    "test": "jest --env=node test/unit"
   },
   "author": "Matt Kingston, James Bush, ModusBox Inc.",
   "license": "Apache-2.0",
@@ -24,7 +24,7 @@
     "@internal/randomphrase": "file:lib/randomphrase",
     "@internal/router": "file:lib/router",
     "@internal/validate": "file:lib/validate",
-    "@mojaloop/sdk-standard-components": "file:../../sdk-standard-components/src",
+    "@mojaloop/sdk-standard-components": "^8.4.0",
     "co-body": "^6.0.0",
     "dotenv": "^6.2.0",
     "koa": "^2.6.2",

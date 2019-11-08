@@ -15,7 +15,7 @@ jest.mock('@internal/requests').BackendRequests;
 
 const { init, destroy, setConfig, getConfig } = require('../../../../config.js');
 const path = require('path');
-const MockCache = require('../../../__mocks__/cache.js');
+const MockCache = require('../../../__mocks__/@internal/cache.js');
 const { Logger, Transports } = require('@internal/log');
 const Model = require('@internal/model').inboundTransfersModel;
 
@@ -58,7 +58,8 @@ const config = {
     REJECT_TRANSFERS_ON_EXPIRED_QUOTES: 'false',
     REJECT_EXPIRED_TRANSFER_FULFILS: 'false',
 };
-describe('inboundModel:', () => {
+
+describe('inboundModel', () => {
     let mockArguments;
     let model;
     let cache;
@@ -156,7 +157,7 @@ describe('inboundModel:', () => {
         destroy();
     });
 
-    describe('quoteRequest:', () => {
+    describe('quoteRequest', () => {
         let expectedQuoteResponseILP;
         let putQuotesSpy;
 

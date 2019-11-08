@@ -10,6 +10,7 @@
 
 'use strict';
 
+const util = require('util');
 const EventEmitter = require('events');
 
 class MockClient extends EventEmitter {
@@ -37,6 +38,13 @@ class MockClient extends EventEmitter {
             console.log(`MockClient emitting event data: ${data}`);
             this.emit('message', 'channel', data);
         });
+    }
+
+    quit(...args) {
+        console.log(`MockClient quit called with args: ${util.inspect(args)}`);
+        if(typeof(args[0]) === 'function') {
+            args[0]();
+        }
     }
 }
 
@@ -66,6 +74,14 @@ class MockCache {
             this.client = new MockClient();
         }
         return Promise.resolve(this.client);
+    }
+
+    async publish(...args) {
+        console.log(`MockCache publish called with args: ${util.inspect(args)}`);
+    }
+
+    async connect(...args) {
+        console.log(`MockClient connect called with args: ${util.inspect(args)}`);
     }
 }
 
