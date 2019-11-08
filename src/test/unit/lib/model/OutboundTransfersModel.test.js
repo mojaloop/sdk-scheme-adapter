@@ -616,6 +616,7 @@ describe('outboundModel', () => {
             expect(err.transferState).toBeTruthy();
             expect(err.transferState.lastError).toBeTruthy();
             expect(err.transferState.lastError.mojaloopError).toEqual(expectError);
+            expect(err.transferState.lastError.transferState).toBe(undefined);
             return;
         }
 
@@ -660,7 +661,7 @@ describe('outboundModel', () => {
             model.cache.emitMessage(JSON.stringify(expectError));
         });
 
-        const errMsg = 'Got an error response requesting quote: { type: \'quoteResponseError\',\n  data:\n   { errorInformation:\n      { errorCode: \'3205\', errorDescription: \'Quote ID not found\' } } }';
+        const errMsg = 'Got an error response requesting quote: { errorInformation:\n   { errorCode: \'3205\', errorDescription: \'Quote ID not found\' } }';
 
         try {
             await model.run();
@@ -670,6 +671,7 @@ describe('outboundModel', () => {
             expect(err.transferState).toBeTruthy();
             expect(err.transferState.lastError).toBeTruthy();
             expect(err.transferState.lastError.mojaloopError).toEqual(expectError.data);
+            expect(err.transferState.lastError.transferState).toBe(undefined);
             return;
         }
 
@@ -720,7 +722,7 @@ describe('outboundModel', () => {
         });
 
 
-        const errMsg = 'Got an error response preparing transfer: { type: \'transferError\',\n  data:\n   { errorInformation:\n      { errorCode: \'4001\',\n        errorDescription: \'Payer FSP insufficient liquidity\' } } }';
+        const errMsg = 'Got an error response preparing transfer: { errorInformation:\n   { errorCode: \'4001\',\n     errorDescription: \'Payer FSP insufficient liquidity\' } }';
 
         try {
             await model.run();
@@ -730,6 +732,7 @@ describe('outboundModel', () => {
             expect(err.transferState).toBeTruthy();
             expect(err.transferState.lastError).toBeTruthy();
             expect(err.transferState.lastError.mojaloopError).toEqual(expectError.data);
+            expect(err.transferState.lastError.transferState).toBe(undefined);
             return;
         }
 
