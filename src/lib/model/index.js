@@ -11,13 +11,15 @@
 'use strict';
 
 
-const inboundTransfersModel = require('./inboundModel.js');
-const outboundTransfersModel = require('./outboundModel.js');
+const InboundTransfersModel = require('./InboundTransfersModel.js');
+const OutboundTransfersModel = require('./OutboundTransfersModel.js');
+const AccountsModel = require('./AccountsModel');
 const { BackendError } = require('./common');
 
 
 module.exports = {
-    inboundTransfersModel: inboundTransfersModel,
-    outboundTransfersModel: outboundTransfersModel,
+    InboundTransfersModel,
+    OutboundTransfersModel,
+    AccountsModel,
     BackendError,
 };

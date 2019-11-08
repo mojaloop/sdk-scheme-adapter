@@ -13,7 +13,7 @@
 jest.mock('@internal/model');
 
 const handlers = require('../../../outboundApi/handlers');
-const Model = require('@internal/model'); //.outboundTransfersModel;
+const { OutboundTransfersModel } = require('@internal/model');
 
 
 const transferRequest = {
@@ -69,9 +69,9 @@ const mockError = {
 
 
 /**
- * Mock the outbound transfer model to simulate throwing errors 
+ * Mock the outbound transfer model to simulate throwing errors
  */
-Model.outboundTransfersModel.mockImplementation(() => {
+OutboundTransfersModel.mockImplementation(() => {
     return {
         run: async () => {
             // throw the mockError object when the model is run

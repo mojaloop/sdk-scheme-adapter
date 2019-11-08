@@ -24,6 +24,7 @@ describe('config', () => {
             ilpSecret: 'mojaloop-sdk',
             checkIlp: true,
             expirySeconds: 60,
+            requestProcessingTimeoutSeconds: 30,
             autoAcceptQuotes: true,
             autoAcceptParty: true,
             useQuoteSourceFSPAsTransferPayeeFSP: false,
