@@ -101,7 +101,6 @@ const init = () => {
 init();
 
 const setConfig = async cfg => {
-    console.log(cfg)
     config.inboundPort = cfg.INBOUND_LISTEN_PORT;
     config.outboundPort = cfg.OUTBOUND_LISTEN_PORT;
     config.tls.mutualTLS.enabled = cfg.MUTUAL_TLS_ENABLED.toLowerCase() === 'false' ? false : true;
