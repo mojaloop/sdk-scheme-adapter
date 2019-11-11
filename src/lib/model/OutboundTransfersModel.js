@@ -47,6 +47,9 @@ class OutboundTransfersModel {
         this.requests = new MojaloopRequests({
             logger: this.logger,
             peerEndpoint: config.peerEndpoint,
+            alsEndpoint: config.alsEndpoint,
+            quotesEndpoint: config.quotesEndpoint,
+            transfersEndpoint: config.transfersEndpoint,
             dfspId: config.dfspId,
             tls: config.tls,
             jwsSign: config.jwsSign,

@@ -20,6 +20,7 @@ const http = require('http');
 const fs = require('fs');
 const yaml = require('js-yaml');
 
+
 const randomPhrase = require('@internal/randomphrase');
 const Validate = require('@internal/validate');
 
@@ -51,7 +52,6 @@ class Server {
         this.oauthTestServer = {};
         this.jwsValidator = {};
     }
-
 
     async start() {
         // Set up the config from the environment
