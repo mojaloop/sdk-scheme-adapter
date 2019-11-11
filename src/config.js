@@ -107,7 +107,7 @@ const setConfig = async cfg => {
     config.tls.mutualTLS.enabled = cfg.MUTUAL_TLS_ENABLED.toLowerCase() === 'false' ? false : true;
 
     config.peerEndpoint = cfg.PEER_ENDPOINT;
-    config.directoryEndpoint = cfg.DIRECTORY_ENDPOINT;
+    config.alsEndpoint = cfg.ALS_ENDPOINT;
     config.quotesEndpoint = cfg.QUOTES_ENDPOINT;
     config.transfersEndpoint = cfg.TRANSFERS_ENDPOINT;
     config.backendEndpoint = cfg.BACKEND_ENDPOINT;
