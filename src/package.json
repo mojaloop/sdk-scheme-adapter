@@ -1,7 +1,7 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
-  "version": "8.5.0",
-  "description": "An adapter for connecting to Mojaloop API enabled switches",
+  "version": "8.5.1",
+  "description": "An adapter for connecting to Mojaloop API enabled switches.",
   "main": "index.js",
   "scripts": {
     "lint": "eslint .",
@@ -20,10 +20,12 @@
     "@internal/cache": "file:lib/cache",
     "@internal/log": "file:lib/log",
     "@internal/model": "file:lib/model",
+    "@internal/requests": "file:lib/model/lib/requests",
+    "@internal/shared": "file:lib/model/lib/shared",
     "@internal/randomphrase": "file:lib/randomphrase",
     "@internal/router": "file:lib/router",
     "@internal/validate": "file:lib/validate",
-    "@mojaloop/sdk-standard-components": "^8.1.4",
+    "@mojaloop/sdk-standard-components": "^8.4.0",
     "co-body": "^6.0.0",
     "dotenv": "^6.2.0",
     "js-yaml": "^3.13.1",

@@ -114,5 +114,3 @@ _Note that these instructions are for Linux based systems. For Mac and/or Window
 1. Speak to your switch operator or use your simulator to test the inbound (receiving money) API.
 
 You can now examine the code of the Mock DFSP backend to understand how it implements the scheme-adapter simplified inbound API.
-
-
