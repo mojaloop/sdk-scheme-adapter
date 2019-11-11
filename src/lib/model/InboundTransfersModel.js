@@ -36,7 +36,7 @@ class InboundTransfersModel {
         this.mojaloopRequests = new MojaloopRequests({
             logger: this.logger,
             peerEndpoint: config.peerEndpoint,
-            directoryEndpoint: config.directoryEndpoint,
+            alsEndpoint: config.alsEndpoint,
             quotesEndpoint: config.quotesEndpoint,
             transfersEndpoint: config.transfersEndpoint,            
             dfspId: config.dfspId,
