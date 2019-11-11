@@ -21,6 +21,7 @@
     "@internal/log": "file:lib/log",
     "@internal/model": "file:lib/model",
     "@internal/requests": "file:lib/model/lib/requests",
+    "@internal/shared": "file:lib/model/lib/shared",   
     "@internal/randomphrase": "file:lib/randomphrase",
     "@internal/router": "file:lib/router",
     "@internal/validate": "file:lib/validate",
