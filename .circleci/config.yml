@@ -124,6 +124,9 @@ jobs:
           keys:
           - dependency-cache-2-{{ checksum "src/package.json" }}
       - run:
+          name: Execute unit tests
+          command: cd src && npm install
+      - run:
           name: Create dir for test results
           command: cd src && mkdir -p ./test/results
       - run:
@@ -282,11 +285,11 @@ jobs:
 #          command: mkdir -p ./audit/results
 #      - run:
 #          name: Check for new npm vulnerabilities
-#          command: npm run audit:check --silent -- --json > ./audit/results/auditResults.json 
+#          command: npm run audit:check --silent -- --json > ./audit/results/auditResults.json
 #      - store_artifacts:
 #          path: ./audit/results
 #          prefix: audit
-#          
+#
 #  audit-licenses:
 #    <<: *defaults_working_directory
 #    <<: *defaults_docker_node
