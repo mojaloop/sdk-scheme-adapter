@@ -1,7 +1,7 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
   "version": "8.5.1",
-  "description": "An adapter for connecting to Mojaloop API enabled switches.",
+  "description": "An adapter for connecting to Mojaloop API enabled switches Rajiv Test",
   "main": "index.js",
   "scripts": {
     "lint": "eslint .",
@@ -21,7 +21,7 @@
     "@internal/log": "file:lib/log",
     "@internal/model": "file:lib/model",
     "@internal/requests": "file:lib/model/lib/requests",
-    "@internal/shared": "file:lib/model/lib/shared",   
+    "@internal/shared": "file:lib/model/lib/shared",
     "@internal/randomphrase": "file:lib/randomphrase",
     "@internal/router": "file:lib/router",
     "@internal/validate": "file:lib/validate",
