@@ -19,6 +19,7 @@ class MockKoa {
     constructor(...args) {
         console.log(`MockKoa constructor called with args: ${util.inspect(args)}`);
         this.handlers = [];
+        MockKoa.__instance = this;
     }
 
 
@@ -28,14 +29,9 @@ class MockKoa {
     }
 
 
-    async request(ctx) {
+    request(ctx) {
         const handlerChainFunc = this.compose(this.handlers);
-
-        const resCtx = await handlerChainFunc(ctx, async (ctx) => {
-            return ctx;
-        });
-
-        return resCtx;
+        return handlerChainFunc(ctx, ctx => ctx);
     }
 
     // copy/paste from koa-compose (https://github.com/koajs/compose/blob/master/index.js)
@@ -58,7 +54,7 @@ class MockKoa {
             // last called middleware #
             let index = -1;
             return dispatch(0);
-            
+
             function dispatch (i) {
                 if (i <= index) {
                     return Promise.reject(new Error('next() called multiple times'));

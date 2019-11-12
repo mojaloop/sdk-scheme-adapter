@@ -44,7 +44,7 @@ class OutboundTransfersModel {
         this.useQuoteSourceFSPAsTransferPayeeFSP = config.useQuoteSourceFSPAsTransferPayeeFSP;
         this.checkIlp = config.checkIlp;
 
-        this.requests = new MojaloopRequests({
+        this._requests = new MojaloopRequests({
             logger: this.logger,
             peerEndpoint: config.peerEndpoint,
             dfspId: config.dfspId,
@@ -247,7 +247,7 @@ class OutboundTransfersModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a GET /parties request to the switch
             try {
-                const res = await this.requests.getParties(this.data.to.idType, this.data.to.idValue);
+                const res = await this._requests.getParties(this.data.to.idType, this.data.to.idValue);
                 this.logger.push({ peer: res }).log('Party lookup sent to peer');
             }
             catch(err) {
@@ -329,7 +329,7 @@ class OutboundTransfersModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /quotes request to the switch
             try {
-                const res = await this.requests.postQuotes(quote, this.data.to.fspId);
+                const res = await this._requests.postQuotes(quote, this.data.to.fspId);
                 this.logger.push({ res }).log('Quote request sent to peer');
             }
             catch(err) {
@@ -456,7 +456,7 @@ class OutboundTransfersModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /transfers request to the switch
             try {
-                const res = await this.requests.postTransfers(prepare, this.data.quoteResponseSource);
+                const res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource);
                 this.logger.push({ res }).log('Transfer prepare sent to peer');
             }
             catch(err) {

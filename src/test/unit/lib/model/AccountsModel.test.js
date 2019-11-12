@@ -20,9 +20,11 @@ jest.mock('@mojaloop/sdk-standard-components');
 
 const { init, destroy, setConfig, getConfig } = require('../../../../config.js');
 const path = require('path');
-const MockCache = require('../../../__mocks__/@internal/cache.js');
+const Cache = require('@internal/cache');
 const { Logger } = require('@internal/log');
 const Model = require('@internal/model').AccountsModel;
+const StateMachine = require('javascript-state-machine');
+const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const defaultEnv = require('./data/defaultEnv');
 const transferRequest = require('./data/transferRequest');
 
@@ -47,21 +49,9 @@ async function testCreateAccount(count, currencies) {
 
     await setConfig(defaultEnv);
     const conf = getConfig();
+    const cache = new Cache();
 
-    const model = new Model({
-        cache: new MockCache(),
-        logger: new Logger({ context: { app: 'accounts-model-unit-tests' }, space:4, transports:logTransports }),
-        ...conf
-    });
-
-    const postParticipantsSpy = jest.spyOn(model.requests, 'postParticipants');
-
-    const accounts = generateAccounts(count, currencies);
-    await model.initialize({ accounts });
-
-    expect(model.stateMachine.state).toBe('start');
-
-    model.requests.on('postParticipants', request => {
+    MojaloopRequests.__postParticipants = jest.fn(request => {
         // simulate a response from ALS
         const response = {
             type: 'accountsCreationSuccessfulResponse',
@@ -73,8 +63,22 @@ async function testCreateAccount(count, currencies) {
                 currency: request.currency,
             },
         };
-        model.cache.emitMessage(JSON.stringify(response));
+        cache.emitMessage(JSON.stringify(response));
+        return Promise.resolve();
     });
+
+    const model = new Model({
+        cache,
+        logger: new Logger({ context: { app: 'accounts-model-unit-tests' }, space:4, transports:logTransports }),
+        ...conf
+    });
+
+    const postParticipantsSpy = jest.spyOn(model.requests, 'postParticipants');
+
+    const accounts = generateAccounts(count, currencies);
+    await model.initialize({ accounts });
+
+    expect(StateMachine.__instance.state).toBe('start');
 
     // wait for the model to reach a terminal state
     const result = await model.run();
@@ -86,7 +90,7 @@ async function testCreateAccount(count, currencies) {
     expect(postParticipantsSpy).toHaveBeenCalledTimes(expectedRequestsCount);
 
     expect(result.currentState).toBe('COMPLETED');
-    expect(model.stateMachine.state).toBe('succeeded');
+    expect(StateMachine.__instance.state).toBe('succeeded');
 }
 
 describe('AccountsModel', () => {
@@ -114,14 +118,14 @@ describe('AccountsModel', () => {
         const conf = getConfig();
 
         const model = new Model({
-            cache: new MockCache(),
+            cache: new Cache(),
             logger: new Logger({ context: { app: 'accounts-model-unit-tests' }, space:4, transports:logTransports }),
             ...conf
         });
 
         await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
 
-        expect(model.stateMachine.state).toBe('start');
+        expect(StateMachine.__instance.state).toBe('start');
     });
 
     test('create 100 accounts', () =>
