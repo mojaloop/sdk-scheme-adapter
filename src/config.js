@@ -103,7 +103,7 @@ init();
 const setConfig = async cfg => {
     config.inboundPort = cfg.INBOUND_LISTEN_PORT;
     config.outboundPort = cfg.OUTBOUND_LISTEN_PORT;
-    config.tls.mutualTLS.enabled = cfg.MUTUAL_TLS_ENABLED.toLowerCase() === 'false' ? false : true;
+    config.tls.mutualTLS.enabled = (/true/i).test(cfg.MUTUAL_TLS_ENABLED);
 
     config.peerEndpoint = cfg.PEER_ENDPOINT;
     config.alsEndpoint = cfg.ALS_ENDPOINT;
@@ -113,13 +113,13 @@ const setConfig = async cfg => {
 
     config.dfspId = cfg.DFSP_ID;
     config.ilpSecret = cfg.ILP_SECRET;
-    config.checkIlp = cfg.CHECK_ILP.toLowerCase() === 'false' ? false : true;
+    config.checkIlp = (/true/i).test(cfg.CHECK_ILP);
     config.expirySeconds = Number(cfg.EXPIRY_SECONDS);
 
-    config.autoAcceptQuotes = cfg.AUTO_ACCEPT_QUOTES.toLowerCase() === 'true' ? true : false;
-    config.autoAcceptParty = cfg.AUTO_ACCEPT_PARTY ? (cfg.AUTO_ACCEPT_PARTY.toLowerCase() === 'true' ? true : false) : true;
+    config.autoAcceptQuotes = (/true/i).test(cfg.AUTO_ACCEPT_QUOTES);
+    config.autoAcceptParty = (/true/i).test(cfg.AUTO_ACCEPT_PARTY);
 
-    config.useQuoteSourceFSPAsTransferPayeeFSP = cfg.USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP ? (cfg.USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP.toLowerCase() === 'true' ? true : false) : false;
+    config.useQuoteSourceFSPAsTransferPayeeFSP = (/true/i).test(cfg.USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP);
 
     // Getting secrets from files instead of environment variables reduces the likelihood of
     // accidental leakage.
@@ -139,10 +139,10 @@ const setConfig = async cfg => {
         ]);
     }
 
-    config.validateInboundJws = cfg.VALIDATE_INBOUND_JWS.toLowerCase() === 'false' ? false : true;
-    config.validateInboundPutPartiesJws = cfg.VALIDATE_INBOUND_PUT_PARTIES_JWS ? (cfg.VALIDATE_INBOUND_PUT_PARTIES_JWS.toLowerCase() === 'true' ? true : false) : false;
-    config.jwsSign = cfg.JWS_SIGN.toLowerCase() === 'false' ? false : true;
-    config.jwsSignPutParties = cfg.JWS_SIGN_PUT_PARTIES ? (cfg.JWS_SIGN_PUT_PARTIES.toLowerCase() === 'true' ? true : false) : false;
+    config.validateInboundJws = (/true/i).test(cfg.VALIDATE_INBOUND_JWS);
+    config.validateInboundPutPartiesJws = (/true/i).test(cfg.VALIDATE_INBOUND_PUT_PARTIES_JWS);
+    config.jwsSign = (/true/i).test(cfg.JWS_SIGN);
+    config.jwsSignPutParties = (/true/i).test(cfg.JWS_SIGN_PUT_PARTIES);
     config.jwsSigningKey = await readFile(cfg.JWS_SIGNING_KEY_PATH);
     config.jwsVerificationKeysDirectory = cfg.JWS_VERIFICATION_KEYS_DIRECTORY;
 
@@ -171,10 +171,10 @@ const setConfig = async cfg => {
     config.cacheConfig.host = cfg.CACHE_HOST;
     config.cacheConfig.port = cfg.CACHE_PORT;
 
-    config.enableTestFeatures = cfg.ENABLE_TEST_FEATURES.toLowerCase() === 'true' ? true : false;
+    config.enableTestFeatures = (/true/i).test(cfg.ENABLE_TEST_FEATURES);
 
     // OAuth mock server configs
-    config.oauthTestServer.enabled = cfg.ENABLE_OAUTH_TOKEN_ENDPOINT.toLowerCase() === 'true';
+    config.oauthTestServer.enabled = (/true/i).test(cfg.ENABLE_OAUTH_TOKEN_ENDPOINT);
     config.oauthTestServer.clientKey = cfg.OAUTH_TOKEN_ENDPOINT_CLIENT_KEY;
     config.oauthTestServer.clientSecret = cfg.OAUTH_TOKEN_ENDPOINT_CLIENT_SECRET;
     config.oauthTestServer.listenPort = cfg.OAUTH_TOKEN_ENDPOINT_LISTEN_PORT;
@@ -185,9 +185,9 @@ const setConfig = async cfg => {
     config.wso2Auth.clientSecret = cfg.OAUTH_CLIENT_SECRET;
     config.wso2Auth.refreshSeconds = cfg.OAUTH_REFRESH_SECONDS;
 
-    config.rejectExpiredQuoteResponses = cfg.REJECT_EXPIRED_QUOTE_RESPONSES.toLowerCase() === 'true';
-    config.rejectTransfersOnExpiredQuotes = cfg.REJECT_TRANSFERS_ON_EXPIRED_QUOTES.toLowerCase() === 'true';
-    config.rejectExpiredTransferFulfils = cfg.REJECT_EXPIRED_TRANSFER_FULFILS.toLowerCase() === 'true';
+    config.rejectExpiredQuoteResponses = (/true/i).test(cfg.REJECT_EXPIRED_QUOTE_RESPONSES);
+    config.rejectTransfersOnExpiredQuotes = (/true/i).test(cfg.REJECT_TRANSFERS_ON_EXPIRED_QUOTES);
+    config.rejectExpiredTransferFulfils = (/true/i).test(cfg.REJECT_EXPIRED_TRANSFER_FULFILS);
 
     config.requestProcessingTimeoutSeconds = cfg.REQUEST_PROCESSING_TIMEOUT_SECONDS;
 
@@ -211,3 +211,4 @@ module.exports = {
     setConfig,
     destroy
 };
+
