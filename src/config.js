@@ -22,6 +22,7 @@ const FS_EVENT_TYPES = {
 let DEFAULTS = {
     inboundPort: 4000,
     outboundPort: 4001,
+    alsEndpoint: '127.0.0.1:6500',
     peerEndpoint: '172.17.0.2:3001',
     backendEndpoint: '172.17.0.2:3001',
     dfspId: 'mojaloop-sdk',
@@ -33,17 +34,22 @@ let DEFAULTS = {
     autoAcceptParty: true,
     useQuoteSourceFSPAsTransferPayeeFSP: false,
     tls: {
-        mutualTLS: {enabled: false},
-        inboundCreds: {
-            ca: null,
-            cert: null,
-            key: null
+        inbound: {
+            mutualTLS: { enabled: false },
+            creds: {
+                ca: null,
+                cert: null,
+                key: null
+            }
         },
-        outboundCreds: {
-            ca: null,
-            cert: null,
-            key: null
-        }
+        outbound: {
+            mutualTLS: { enabled: false },
+            creds: {
+                ca: null,
+                cert: null,
+                key: null
+            }
+        },
     },
     validateInboundJws: true,
     validateInboundPutPartiesJws: false,
@@ -66,6 +72,7 @@ let DEFAULTS = {
     rejectExpiredQuoteResponses: false,
     rejectTransfersOnExpiredQuotes: false,
     rejectExpiredTransferFulfils: false,
+    logIndent: 2,
 };
 
 let config = {};
@@ -103,7 +110,8 @@ init();
 const setConfig = async cfg => {
     config.inboundPort = cfg.INBOUND_LISTEN_PORT;
     config.outboundPort = cfg.OUTBOUND_LISTEN_PORT;
-    config.tls.mutualTLS.enabled = cfg.MUTUAL_TLS_ENABLED.toLowerCase() === 'false' ? false : true;
+    config.tls.inbound.mutualTLS.enabled = cfg.INBOUND_MUTUAL_TLS_ENABLED.toLowerCase() === 'true';
+    config.tls.outbound.mutualTLS.enabled = cfg.OUTBOUND_MUTUAL_TLS_ENABLED.toLowerCase() === 'true';
 
     config.peerEndpoint = cfg.PEER_ENDPOINT;
     config.alsEndpoint = cfg.ALS_ENDPOINT;
@@ -113,36 +121,38 @@ const setConfig = async cfg => {
 
     config.dfspId = cfg.DFSP_ID;
     config.ilpSecret = cfg.ILP_SECRET;
-    config.checkIlp = cfg.CHECK_ILP.toLowerCase() === 'false' ? false : true;
+    config.checkIlp = cfg.CHECK_ILP.toLowerCase() === 'true';
     config.expirySeconds = Number(cfg.EXPIRY_SECONDS);
 
-    config.autoAcceptQuotes = cfg.AUTO_ACCEPT_QUOTES.toLowerCase() === 'true' ? true : false;
-    config.autoAcceptParty = cfg.AUTO_ACCEPT_PARTY ? (cfg.AUTO_ACCEPT_PARTY.toLowerCase() === 'true' ? true : false) : true;
+    config.autoAcceptQuotes = cfg.AUTO_ACCEPT_QUOTES.toLowerCase() === 'true';
+    config.autoAcceptParty = cfg.AUTO_ACCEPT_PARTY ? (cfg.AUTO_ACCEPT_PARTY.toLowerCase() === 'true') : true;
 
     config.useQuoteSourceFSPAsTransferPayeeFSP = cfg.USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP ? (cfg.USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP.toLowerCase() === 'true' ? true : false) : false;
 
     // Getting secrets from files instead of environment variables reduces the likelihood of
     // accidental leakage.
-    if (config.tls.mutualTLS.enabled) {
+    if (config.tls.inbound.mutualTLS.enabled) {
         // read inbound certs/keys
-        [config.tls.inboundCreds.ca, config.tls.inboundCreds.cert, config.tls.inboundCreds.key] = await Promise.all([
+        [config.tls.inbound.creds.ca, config.tls.inbound.creds.cert, config.tls.inbound.creds.key] = await Promise.all([
             readFilesDelimitedList(',', cfg.IN_CA_CERT_PATH),
             readFile(cfg.IN_SERVER_CERT_PATH),
             readFile(cfg.IN_SERVER_KEY_PATH)
         ]);
+    }
 
+    if (config.tls.outbound.mutualTLS.enabled) {
         //read outbound certs/keys
-        [config.tls.outboundCreds.ca, config.tls.outboundCreds.cert, config.tls.outboundCreds.key] = await Promise.all([
+        [config.tls.outbound.creds.ca, config.tls.outbound.creds.cert, config.tls.outbound.creds.key] = await Promise.all([
             readFilesDelimitedList(',', cfg.OUT_CA_CERT_PATH),
             readFile(cfg.OUT_CLIENT_CERT_PATH),
             readFile(cfg.OUT_CLIENT_KEY_PATH)
         ]);
     }
 
-    config.validateInboundJws = cfg.VALIDATE_INBOUND_JWS.toLowerCase() === 'false' ? false : true;
-    config.validateInboundPutPartiesJws = cfg.VALIDATE_INBOUND_PUT_PARTIES_JWS ? (cfg.VALIDATE_INBOUND_PUT_PARTIES_JWS.toLowerCase() === 'true' ? true : false) : false;
-    config.jwsSign = cfg.JWS_SIGN.toLowerCase() === 'false' ? false : true;
-    config.jwsSignPutParties = cfg.JWS_SIGN_PUT_PARTIES ? (cfg.JWS_SIGN_PUT_PARTIES.toLowerCase() === 'true' ? true : false) : false;
+    config.validateInboundJws = cfg.VALIDATE_INBOUND_JWS.toLowerCase() === 'true';
+    config.validateInboundPutPartiesJws = cfg.VALIDATE_INBOUND_PUT_PARTIES_JWS ? (cfg.VALIDATE_INBOUND_PUT_PARTIES_JWS.toLowerCase() === 'true') : false;
+    config.jwsSign = cfg.JWS_SIGN.toLowerCase() === 'true';
+    config.jwsSignPutParties = cfg.JWS_SIGN_PUT_PARTIES ? (cfg.JWS_SIGN_PUT_PARTIES.toLowerCase() === 'true') : false;
     config.jwsSigningKey = await readFile(cfg.JWS_SIGNING_KEY_PATH);
     config.jwsVerificationKeysDirectory = cfg.JWS_VERIFICATION_KEYS_DIRECTORY;
 
@@ -171,7 +181,7 @@ const setConfig = async cfg => {
     config.cacheConfig.host = cfg.CACHE_HOST;
     config.cacheConfig.port = cfg.CACHE_PORT;
 
-    config.enableTestFeatures = cfg.ENABLE_TEST_FEATURES.toLowerCase() === 'true' ? true : false;
+    config.enableTestFeatures = cfg.ENABLE_TEST_FEATURES.toLowerCase() === 'true';
 
     // OAuth mock server configs
     config.oauthTestServer.enabled = cfg.ENABLE_OAUTH_TOKEN_ENDPOINT.toLowerCase() === 'true';
@@ -192,6 +202,8 @@ const setConfig = async cfg => {
     config.requestProcessingTimeoutSeconds = cfg.REQUEST_PROCESSING_TIMEOUT_SECONDS;
 
     config.alsEndpoint = cfg.ALS_ENDPOINT;
+
+    config.logIndent = cfg.LOG_INDENT ? Number(cfg.LOG_INDENT) : 2;
 };
 
 const getConfig = () => {

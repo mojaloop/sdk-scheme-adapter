@@ -3,9 +3,10 @@ require('dotenv').config({path: 'local.env'});
 const fs  = require('fs').promises;
 const path = require('path');
 const config = require('../../config');
+const defaultConfig = require('./data/defaultConfig');
 
 describe('config', () => {
-    let defaultConfig;
+    let defConfig;
 
     beforeAll(async () => {
         // the keys are under the "secrets" folder that is supposed to be moved by Dockerfile
@@ -15,54 +16,7 @@ describe('config', () => {
     });
 
     beforeEach(() => {
-        defaultConfig = {
-            inboundPort: 4000,
-            outboundPort: 4001,
-            peerEndpoint: '172.17.0.2:3001',
-            backendEndpoint: '172.17.0.2:3001',
-            dfspId: 'mojaloop-sdk',
-            ilpSecret: 'mojaloop-sdk',
-            checkIlp: true,
-            expirySeconds: 60,
-            requestProcessingTimeoutSeconds: 30,
-            autoAcceptQuotes: true,
-            autoAcceptParty: true,
-            useQuoteSourceFSPAsTransferPayeeFSP: false,
-            tls: {
-                mutualTLS: { enabled: false },
-                inboundCreds: {
-                    ca: null,
-                    cert: null,
-                    key: null
-                },
-                outboundCreds: {
-                    ca: null,
-                    cert: null,
-                    key: null
-                }
-            },
-            validateInboundJws: true,
-            validateInboundPutPartiesJws: false,
-            jwsSign: true,
-            jwsSignPutParties: false,
-            jwsSigningKey: null,
-            jwsVerificationKeysDirectory: null,
-            cacheConfig: {
-                host: 'localhost',
-                port: 6379
-            },
-            enableTestFeatures: false,
-            oauthTestServer: {
-                enabled: false,
-                listenPort: 6000,
-            },
-            wso2Auth: {
-                refreshSeconds: 3600,
-            },
-            rejectExpiredQuoteResponses: false,
-            rejectExpiredTransferFulfils: false,
-            rejectTransfersOnExpiredQuotes: false,
-        };
+        defConfig = JSON.parse(JSON.stringify(defaultConfig));
     });
 
     describe('Public functions:', () => {
@@ -75,7 +29,7 @@ describe('config', () => {
                 it('returns the configuration object.', () => {
                     const retrievedConfig = config.getConfig();
 
-                    expect(retrievedConfig).toEqual(defaultConfig);
+                    expect(retrievedConfig).toEqual(defConfig);
                 });
             });
         });
@@ -119,7 +73,7 @@ describe('config', () => {
                 beforeEach(() => {
                     let retrievedConfig = config.getConfig();
 
-                    expect(retrievedConfig).toEqual(defaultConfig);
+                    expect(retrievedConfig).toEqual(defConfig);
                 });
 
                 afterEach(async () => {
@@ -134,7 +88,7 @@ describe('config', () => {
 
                     let retrievedConfig = config.getConfig();
 
-                    expect(retrievedConfig).not.toEqual(defaultConfig);
+                    expect(retrievedConfig).not.toEqual(defConfig);
                     expect(retrievedConfig.inboundPort).toBe(process.env.INBOUND_LISTEN_PORT);
                     expect(retrievedConfig.outboundPort).toBe(process.env.OUTBOUND_LISTEN_PORT);
                     expect(retrievedConfig.peerEndpoint).toBe(process.env.PEER_ENDPOINT);

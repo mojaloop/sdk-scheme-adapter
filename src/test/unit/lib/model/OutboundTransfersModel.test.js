@@ -21,7 +21,7 @@ jest.mock('@mojaloop/sdk-standard-components');
 const { init, destroy, setConfig, getConfig } = require('../../../../config.js');
 const util = require('util');
 const path = require('path');
-const MockCache = require('../../../__mocks__/@internal/cache.js');
+const Cache = require('@internal/cache');
 const { Logger, Transports } = require('@internal/log');
 const Model = require('@internal/model').OutboundTransfersModel;
 const defaultEnv = require('./data/defaultEnv');
@@ -29,6 +29,9 @@ const transferRequest = require('./data/transferRequest');
 const payeeParty = require('./data/payeeParty');
 const quoteResponse = require('./data/quoteResponse');
 const transferFulfil = require('./data/transferFulfil');
+
+const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
+const StateMachine = require('javascript-state-machine');
 
 let logTransports;
 
@@ -55,34 +58,34 @@ async function testTransferWithDelay({expirySeconds, delays, rejects}) {
     await setConfig(defaultEnv);
     const conf = getConfig();
 
+    const cache = new Cache();
+
+    // simulate a callback with the resolved party
+    MojaloopRequests.__getParties = jest.fn(() => cache.emitMessage(JSON.stringify(payeeParty)));
+
+    // simulate a delayed callback with the quote response
+    MojaloopRequests.__postQuotes = jest.fn(() => {
+        setTimeout(() => {
+            cache.emitMessage(JSON.stringify(quoteResponse));
+        }, delays.requestQuotes ? delays.requestQuotes * 1000 : 0);
+    });
+
+    // simulate a delayed callback with the transfer fulfilment
+    MojaloopRequests.__postTransfers = jest.fn(() => {
+        setTimeout(() => {
+            cache.emitMessage(JSON.stringify(transferFulfil));
+        }, delays.prepareTransfer ? delays.prepareTransfer * 1000 : 0);
+    });
+
     const model = new Model({
-        cache: new MockCache(),
+        cache,
         logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
         ...conf
     });
 
     await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
 
-    expect(model.stateMachine.state).toBe('start');
-
-    model.requests.on('getParties', () => {
-        // simulate a callback with the resolved party
-        model.cache.emitMessage(JSON.stringify(payeeParty));
-    });
-
-    model.requests.on('postQuotes', () => {
-        // simulate a delayed callback with the quote response
-        setTimeout(() => {
-            model.cache.emitMessage(JSON.stringify(quoteResponse));
-        }, delays.requestQuotes ? delays.requestQuotes * 1000 : 0);
-    });
-
-    model.requests.on('postTransfers', () => {
-        // simulate a delayed callback with the transfer fulfilment
-        setTimeout(() => {
-            model.cache.emitMessage(JSON.stringify(transferFulfil));
-        }, delays.prepareTransfer ? delays.prepareTransfer * 1000 : 0);
-    });
+    expect(StateMachine.__instance.state).toBe('start');
 
     let expectError;
     if (rejects.quoteResponse && delays.requestQuotes && expirySeconds < delays.requestQuotes) {
@@ -93,11 +96,11 @@ async function testTransferWithDelay({expirySeconds, delays, rejects}) {
     }
     if (expectError) {
         await expect(model.run()).rejects.toThrowError(expectError);
-        expect(model.stateMachine.state).toBe('errored');
+        expect(StateMachine.__instance.state).toBe('errored');
     } else {
         const result = await model.run();
         await expect(result.currentState).toBe('COMPLETED');
-        expect(model.stateMachine.state).toBe('succeeded');
+        expect(StateMachine.__instance.state).toBe('succeeded');
     }
 }
 
@@ -113,6 +116,12 @@ describe('outboundModel', () => {
 
     beforeEach(async () => {
         init();
+        MojaloopRequests.__postParticipants = jest.fn(() => Promise.resolve());
+        MojaloopRequests.__getParties = jest.fn(() => Promise.resolve());
+        MojaloopRequests.__postQuotes = jest.fn(() => Promise.resolve());
+        MojaloopRequests.__putQuotes = jest.fn(() => Promise.resolve());
+        MojaloopRequests.__putQuotesError = jest.fn(() => Promise.resolve());
+        MojaloopRequests.__postTransfers = jest.fn(() => Promise.resolve());
     });
 
     afterEach(async () => {
@@ -121,20 +130,18 @@ describe('outboundModel', () => {
         console.log('config destroyed');
     });
 
-
     test('initializes to starting state', async () => {
         await setConfig(defaultEnv);
         const conf = getConfig();
 
         const model = new Model({
-            cache: new MockCache(),
+            cache: new Cache(),
             logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
             ...conf
         });
 
         await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
-
-        expect(model.stateMachine.state).toBe('start');
+        expect(StateMachine.__instance.state).toBe('start');
     });
 
 
@@ -144,69 +151,67 @@ describe('outboundModel', () => {
 
         await setConfig(defaultEnv);
         const conf = getConfig();
+        const cache = new Cache();
 
-        const model = new Model({
-            cache: new MockCache(),
-            logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
-            ...conf
+        MojaloopRequests.__getParties = jest.fn(() => {
+            cache.emitMessage(JSON.stringify(payeeParty));
+            return Promise.resolve();
         });
-
-        const postQuotesSpy = jest.spyOn(model.requests, 'postQuotes');
-        const postTransfersSpy = jest.spyOn(model.requests, 'postTransfers');
-
-        await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
-
-        expect(model.stateMachine.state).toBe('start');
-
-        model.requests.on('getParties', () => {
-            // simulate a callback with the resolved party
-            model.cache.emitMessage(JSON.stringify(payeeParty));
-        });
-
-        model.requests.on('postQuotes', () => {
+        MojaloopRequests.__postQuotes = jest.fn(() => {
             // ensure that the `MojaloopRequests.postQuotes` method has been called with correct arguments
             // including extension list
-            expect(postQuotesSpy).toHaveBeenCalledTimes(1);
-            expect(postQuotesSpy.mock.calls[0][0].extensionList).toBeTruthy();
-            expect(postQuotesSpy.mock.calls[0][0].extensionList.extension).toBeTruthy();
-            expect(postQuotesSpy.mock.calls[0][0].extensionList.extension.length).toBe(2);
-            expect(postQuotesSpy.mock.calls[0][0].extensionList.extension[0]).toEqual({ key: 'qkey1', value: 'qvalue1' });
-            expect(postQuotesSpy.mock.calls[0][0].extensionList.extension[1]).toEqual({ key: 'qkey2', value: 'qvalue2' });
+            expect(MojaloopRequests.__postQuotes).toHaveBeenCalledTimes(1);
+            const extensionList = MojaloopRequests.__postQuotes.mock.calls[0][0].extensionList;
+            expect(extensionList).toBeTruthy();
+            expect(extensionList.extension).toBeTruthy();
+            expect(extensionList.extension.length).toBe(2);
+            expect(extensionList.extension[0]).toEqual({ key: 'qkey1', value: 'qvalue1' });
+            expect(extensionList.extension[1]).toEqual({ key: 'qkey2', value: 'qvalue2' });
 
             // simulate a callback with the quote response
-            model.cache.emitMessage(JSON.stringify(quoteResponse));
+            cache.emitMessage(JSON.stringify(quoteResponse));
+            return Promise.resolve();
         });
 
-        model.requests.on('postTransfers', () => {
+        MojaloopRequests.__postTransfers = jest.fn(() => {
             //ensure that the `MojaloopRequests.postTransfers` method has been called with the correct arguments
             // set as the destination FSPID, picked up from the header's value `fspiop-source`
             expect(model.data.quoteResponseSource).toBe(quoteResponse.headers['fspiop-source']);
-            expect(postTransfersSpy).toHaveBeenCalledTimes(1);
+            expect(MojaloopRequests.__postTransfers).toHaveBeenCalledTimes(1);
 
-            expect(postTransfersSpy.mock.calls[0][0].extensionList.extension).toBeTruthy();
-            expect(postTransfersSpy.mock.calls[0][0].extensionList.extension.length).toBe(2);
-            expect(postTransfersSpy.mock.calls[0][0].extensionList.extension[0]).toEqual({ key: 'tkey1', value: 'tvalue1' });
-            expect(postTransfersSpy.mock.calls[0][0].extensionList.extension[1]).toEqual({ key: 'tkey2', value: 'tvalue2' });
+            const extensionList = MojaloopRequests.__postTransfers.mock.calls[0][0].extensionList;
+            expect(extensionList.extension).toBeTruthy();
+            expect(extensionList.extension.length).toBe(2);
+            expect(extensionList.extension[0]).toEqual({ key: 'tkey1', value: 'tvalue1' });
+            expect(extensionList.extension[1]).toEqual({ key: 'tkey2', value: 'tvalue2' });
 
-            expect(postTransfersSpy.mock.calls[0][1]).toBe(quoteResponse.headers['fspiop-source']);
+            expect(MojaloopRequests.__postTransfers.mock.calls[0][1]).toBe(quoteResponse.headers['fspiop-source']);
             expect(model.data.to.fspId).toBe(payeeParty.party.partyIdInfo.fspId);
             expect(quoteResponse.headers['fspiop-source']).not.toBe(model.data.to.fspId);
 
             // simulate a callback with the transfer fulfilment
-            model.cache.emitMessage(JSON.stringify(transferFulfil));
+            cache.emitMessage(JSON.stringify(transferFulfil));
+            return Promise.resolve();
         });
 
-        // start the model running
-        const resultPromise = model.run();
+        const model = new Model({
+            cache,
+            logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
+            ...conf
+        });
 
-        // wait for the model to reach a terminal state
-        const result = await resultPromise;
+        await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
+
+        expect(StateMachine.__instance.state).toBe('start');
+
+        // start the model running
+        const result = await model.run();
 
         console.log(`Result after three stage transfer: ${util.inspect(result)}`);
 
         // check we stopped at payeeResolved state
         expect(result.currentState).toBe('COMPLETED');
-        expect(model.stateMachine.state).toBe('succeeded');
+        expect(StateMachine.__instance.state).toBe('succeeded');
     });
 
 
@@ -215,22 +220,23 @@ describe('outboundModel', () => {
 
         await setConfig(defaultEnv);
         const conf = getConfig();
+        const cache = new Cache();
 
         const model = new Model({
-            cache: new MockCache(),
+            cache,
             logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
             ...conf
         });
 
         await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
 
-        expect(model.stateMachine.state).toBe('start');
+        expect(StateMachine.__instance.state).toBe('start');
 
         // start the model running
         const resultPromise = model.run();
 
         // now we started the model running we simulate a callback with the resolved party
-        model.cache.emitMessage(JSON.stringify(payeeParty));
+        cache.emitMessage(JSON.stringify(payeeParty));
 
         // wait for the model to reach a terminal state
         const result = await resultPromise;
@@ -239,7 +245,7 @@ describe('outboundModel', () => {
 
         // check we stopped at payeeResolved state
         expect(result.currentState).toBe('WAITING_FOR_PARTY_ACCEPTANCE');
-        expect(model.stateMachine.state).toBe('payeeResolved');
+        expect(StateMachine.__instance.state).toBe('payeeResolved');
     });
 
 
@@ -250,7 +256,7 @@ describe('outboundModel', () => {
         await setConfig(defaultEnv);
         const conf = getConfig();
 
-        const cache = new MockCache();
+        const cache = new Cache();
 
         let model = new Model({
             cache: cache,
@@ -260,13 +266,13 @@ describe('outboundModel', () => {
 
         await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
 
-        expect(model.stateMachine.state).toBe('start');
+        expect(StateMachine.__instance.state).toBe('start');
 
         // start the model running
         let resultPromise = model.run();
 
         // now we started the model running we simulate a callback with the resolved party
-        model.cache.emitMessage(JSON.stringify(payeeParty));
+        cache.emitMessage(JSON.stringify(payeeParty));
 
         // wait for the model to reach a terminal state
         let result = await resultPromise;
@@ -275,16 +281,16 @@ describe('outboundModel', () => {
 
         // check we stopped at payeeResolved state
         expect(result.currentState).toBe('WAITING_FOR_PARTY_ACCEPTANCE');
-        expect(model.stateMachine.state).toBe('payeeResolved');
+        expect(StateMachine.__instance.state).toBe('payeeResolved');
 
         const transferId = result.transferId;
 
         // check the model saved itself to the cache
-        expect(model.cache.data[`transferModel_${transferId}`]).toBeTruthy();
+        expect(cache.data[`transferModel_${transferId}`]).toBeTruthy();
 
         // load a new model from the saved state
         model = new Model({
-            cache: cache,
+            cache,
             logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
             ...conf
         });
@@ -292,13 +298,13 @@ describe('outboundModel', () => {
         await model.load(transferId);
 
         // check the model loaded to the correct state
-        expect(model.stateMachine.state).toBe('payeeResolved');
+        expect(StateMachine.__instance.state).toBe('payeeResolved');
 
         // now run the model again. this should trigger transition to quote request
         resultPromise = model.run();
 
         // now we started the model running we simulate a callback with the quote response
-        model.cache.emitMessage(JSON.stringify(quoteResponse));
+        cache.emitMessage(JSON.stringify(quoteResponse));
 
         // wait for the model to reach a terminal state
         result = await resultPromise;
@@ -307,7 +313,7 @@ describe('outboundModel', () => {
 
         // check we stopped at payeeResolved state
         expect(result.currentState).toBe('WAITING_FOR_QUOTE_ACCEPTANCE');
-        expect(model.stateMachine.state).toBe('quoteReceived');
+        expect(StateMachine.__instance.state).toBe('quoteReceived');
     });
 
 
@@ -318,23 +324,23 @@ describe('outboundModel', () => {
         await setConfig(defaultEnv);
         const conf = getConfig();
 
-        const cache = new MockCache();
+        const cache = new Cache();
 
         let model = new Model({
-            cache: cache,
+            cache,
             logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
             ...conf
         });
 
         await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
 
-        expect(model.stateMachine.state).toBe('start');
+        expect(StateMachine.__instance.state).toBe('start');
 
         // start the model running
         let resultPromise = model.run();
 
         // now we started the model running we simulate a callback with the resolved party
-        model.cache.emitMessage(JSON.stringify(payeeParty));
+        cache.emitMessage(JSON.stringify(payeeParty));
 
         // wait for the model to reach a terminal state
         let result = await resultPromise;
@@ -343,16 +349,16 @@ describe('outboundModel', () => {
 
         // check we stopped at payeeResolved state
         expect(result.currentState).toBe('WAITING_FOR_PARTY_ACCEPTANCE');
-        expect(model.stateMachine.state).toBe('payeeResolved');
+        expect(StateMachine.__instance.state).toBe('payeeResolved');
 
         const transferId = result.transferId;
 
         // check the model saved itself to the cache
-        expect(model.cache.data[`transferModel_${transferId}`]).toBeTruthy();
+        expect(cache.data[`transferModel_${transferId}`]).toBeTruthy();
 
         // load a new model from the saved state
         model = new Model({
-            cache: cache,
+            cache,
             logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
             ...conf
         });
@@ -360,13 +366,13 @@ describe('outboundModel', () => {
         await model.load(transferId);
 
         // check the model loaded to the correct state
-        expect(model.stateMachine.state).toBe('payeeResolved');
+        expect(StateMachine.__instance.state).toBe('payeeResolved');
 
         // now run the model again. this should trigger transition to quote request
         resultPromise = model.run();
 
         // now we started the model running we simulate a callback with the quote response
-        model.cache.emitMessage(JSON.stringify(quoteResponse));
+        cache.emitMessage(JSON.stringify(quoteResponse));
 
         // wait for the model to reach a terminal state
         result = await resultPromise;
@@ -375,11 +381,11 @@ describe('outboundModel', () => {
 
         // check we stopped at quoteReceived state
         expect(result.currentState).toBe('WAITING_FOR_QUOTE_ACCEPTANCE');
-        expect(model.stateMachine.state).toBe('quoteReceived');
+        expect(StateMachine.__instance.state).toBe('quoteReceived');
 
         // load a new model from the saved state
         model = new Model({
-            cache: cache,
+            cache,
             logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
             ...conf
         });
@@ -387,13 +393,13 @@ describe('outboundModel', () => {
         await model.load(transferId);
 
         // check the model loaded to the correct state
-        expect(model.stateMachine.state).toBe('quoteReceived');
+        expect(StateMachine.__instance.state).toBe('quoteReceived');
 
         // now run the model again. this should trigger transition to quote request
         resultPromise = model.run();
 
         // now we started the model running we simulate a callback with the transfer fulfilment
-        model.cache.emitMessage(JSON.stringify(transferFulfil));
+        cache.emitMessage(JSON.stringify(transferFulfil));
 
         // wait for the model to reach a terminal state
         result = await resultPromise;
@@ -402,7 +408,7 @@ describe('outboundModel', () => {
 
         // check we stopped at quoteReceived state
         expect(result.currentState).toBe('COMPLETED');
-        expect(model.stateMachine.state).toBe('succeeded');
+        expect(StateMachine.__instance.state).toBe('succeeded');
     });
 
     test('uses payee party fspid for transfer prepare when config USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP is false', async () => {
@@ -412,40 +418,42 @@ describe('outboundModel', () => {
 
         await setConfig(defaultEnv);
         const conf = getConfig();
+        const cache = new Cache();
+
+        MojaloopRequests.__getParties = jest.fn(() => {
+            // simulate a callback with the resolved party
+            cache.emitMessage(JSON.stringify(payeeParty));
+            return Promise.resolve();
+        });
+
+        MojaloopRequests.__postQuotes = jest.fn(() => {
+            // simulate a callback with the quote response
+            cache.emitMessage(JSON.stringify(quoteResponse));
+            return Promise.resolve();
+        });
+
+        MojaloopRequests.__postTransfers = jest.fn(() => {
+            //ensure that the `MojaloopRequests.postTransfers` method has been called with the correct arguments
+            // set as the destination FSPID, picked up from the header's value `fspiop-source`
+            expect(model.data.quoteResponseSource).toBe(quoteResponse.headers['fspiop-source']);
+            expect(MojaloopRequests.__postTransfers).toHaveBeenCalledTimes(1);
+            const payeeFsp = MojaloopRequests.__postTransfers.mock.calls[0][0].payeeFsp;
+            expect(payeeFsp).toEqual(payeeParty.party.partyIdInfo.fspId);
+
+            // simulate a callback with the transfer fulfilment
+            cache.emitMessage(JSON.stringify(transferFulfil));
+            return Promise.resolve();
+        });
 
         const model = new Model({
-            cache: new MockCache(),
+            cache,
             logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
             ...conf
         });
 
-        jest.spyOn(model.requests, 'postQuotes');
-        const postTransfersSpy = jest.spyOn(model.requests, 'postTransfers');
-
         await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
 
-        expect(model.stateMachine.state).toBe('start');
-
-        model.requests.on('getParties', () => {
-            // simulate a callback with the resolved party
-            model.cache.emitMessage(JSON.stringify(payeeParty));
-        });
-
-        model.requests.on('postQuotes', () => {
-            // simulate a callback with the quote response
-            model.cache.emitMessage(JSON.stringify(quoteResponse));
-        });
-
-        model.requests.on('postTransfers', () => {
-            //ensure that the `MojaloopRequests.postTransfers` method has been called with the correct arguments
-            // set as the destination FSPID, picked up from the header's value `fspiop-source`
-            expect(model.data.quoteResponseSource).toBe(quoteResponse.headers['fspiop-source']);
-            expect(postTransfersSpy).toHaveBeenCalledTimes(1);
-            expect(postTransfersSpy.mock.calls[0][0].payeeFsp).toEqual(payeeParty.party.partyIdInfo.fspId);
-
-            // simulate a callback with the transfer fulfilment
-            model.cache.emitMessage(JSON.stringify(transferFulfil));
-        });
+        expect(StateMachine.__instance.state).toBe('start');
 
         // start the model running
         const resultPromise = model.run();
@@ -457,7 +465,7 @@ describe('outboundModel', () => {
 
         // check we stopped at payeeResolved state
         expect(result.currentState).toBe('COMPLETED');
-        expect(model.stateMachine.state).toBe('succeeded');
+        expect(StateMachine.__instance.state).toBe('succeeded');
     });
 
     test('uses quote response source fspid for transfer prepare when config USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP is true', async () => {
@@ -467,40 +475,42 @@ describe('outboundModel', () => {
 
         await setConfig(defaultEnv);
         const conf = getConfig();
+        const cache = new Cache();
+
+        MojaloopRequests.__getParties = jest.fn(() => {
+            // simulate a callback with the resolved party
+            cache.emitMessage(JSON.stringify(payeeParty));
+            return Promise.resolve();
+        });
+
+        MojaloopRequests.__postQuotes = jest.fn(() => {
+            // simulate a callback with the quote response
+            cache.emitMessage(JSON.stringify(quoteResponse));
+            return Promise.resolve();
+        });
+
+        MojaloopRequests.__postTransfers = jest.fn(() => {
+            //ensure that the `MojaloopRequests.postTransfers` method has been called with the correct arguments
+            // set as the destination FSPID, picked up from the header's value `fspiop-source`
+            expect(model.data.quoteResponseSource).toBe(quoteResponse.headers['fspiop-source']);
+            expect(MojaloopRequests.__postTransfers).toHaveBeenCalledTimes(1);
+            const payeeFsp = MojaloopRequests.__postTransfers.mock.calls[0][0].payeeFsp;
+            expect(payeeFsp).toEqual(quoteResponse.headers['fspiop-source']);
+
+            // simulate a callback with the transfer fulfilment
+            model.cache.emitMessage(JSON.stringify(transferFulfil));
+            return Promise.resolve();
+        });
 
         const model = new Model({
-            cache: new MockCache(),
+            cache,
             logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
             ...conf
         });
 
-        jest.spyOn(model.requests, 'postQuotes');
-        const postTransfersSpy = jest.spyOn(model.requests, 'postTransfers');
-
         await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
 
-        expect(model.stateMachine.state).toBe('start');
-
-        model.requests.on('getParties', () => {
-            // simulate a callback with the resolved party
-            model.cache.emitMessage(JSON.stringify(payeeParty));
-        });
-
-        model.requests.on('postQuotes', () => {
-            // simulate a callback with the quote response
-            model.cache.emitMessage(JSON.stringify(quoteResponse));
-        });
-
-        model.requests.on('postTransfers', () => {
-            //ensure that the `MojaloopRequests.postTransfers` method has been called with the correct arguments
-            // set as the destination FSPID, picked up from the header's value `fspiop-source`
-            expect(model.data.quoteResponseSource).toBe(quoteResponse.headers['fspiop-source']);
-            expect(postTransfersSpy).toHaveBeenCalledTimes(1);
-            expect(postTransfersSpy.mock.calls[0][0].payeeFsp).toEqual(quoteResponse.headers['fspiop-source']);
-
-            // simulate a callback with the transfer fulfilment
-            model.cache.emitMessage(JSON.stringify(transferFulfil));
-        });
+        expect(StateMachine.__instance.state).toBe('start');
 
         // start the model running
         const resultPromise = model.run();
@@ -512,7 +522,7 @@ describe('outboundModel', () => {
 
         // check we stopped at payeeResolved state
         expect(result.currentState).toBe('COMPLETED');
-        expect(model.stateMachine.state).toBe('succeeded');
+        expect(StateMachine.__instance.state).toBe('succeeded');
     });
 
     test('pass quote response `expiration` deadline', () =>
@@ -583,16 +593,23 @@ describe('outboundModel', () => {
 
         await setConfig(defaultEnv);
         const conf = getConfig();
+        const cache = new Cache();
+
+        MojaloopRequests.__getParties = jest.fn(() => {
+            // simulate a callback with the resolved party
+            cache.emitMessage(JSON.stringify(expectError));
+            return Promise.resolve();
+        });
 
         const model = new Model({
-            cache: new MockCache(),
+            cache,
             logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
             ...conf
         });
 
         await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
 
-        expect(model.stateMachine.state).toBe('start');
+        expect(StateMachine.__instance.state).toBe('start');
 
         const expectError = {
             errorInformation: {
@@ -601,18 +618,13 @@ describe('outboundModel', () => {
             }
         };
 
-        model.requests.on('getParties', () => {
-            // simulate a callback with a mojaloop error
-            model.cache.emitMessage(JSON.stringify(expectError));
-        });
-
         const errMsg = 'Got an error response resolving party: { errorInformation: { errorCode: \'3204\', errorDescription: \'Party not found\' } }';
 
         try {
             await model.run();
         }
         catch(err) {
-            expect(err.message).toEqual(errMsg);
+            expect(err.message.replace(/[ \n]/g,'')).toEqual(errMsg.replace(/[ \n]/g,''));
             expect(err.transferState).toBeTruthy();
             expect(err.transferState.lastError).toBeTruthy();
             expect(err.transferState.lastError.mojaloopError).toEqual(expectError);
@@ -630,16 +642,29 @@ describe('outboundModel', () => {
 
         await setConfig(defaultEnv);
         const conf = getConfig();
+        const cache = new Cache();
+
+        MojaloopRequests.__getParties = jest.fn(() => {
+            // simulate a callback with the resolved party
+            cache.emitMessage(JSON.stringify(payeeParty));
+            return Promise.resolve();
+        });
+
+        MojaloopRequests.__postQuotes = jest.fn(() => {
+            // simulate a callback with the quote response
+            cache.emitMessage(JSON.stringify(expectError));
+            return Promise.resolve();
+        });
 
         const model = new Model({
-            cache: new MockCache(),
+            cache,
             logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
             ...conf
         });
 
         await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
 
-        expect(model.stateMachine.state).toBe('start');
+        expect(StateMachine.__instance.state).toBe('start');
 
         const expectError = {
             type: 'quoteResponseError',
@@ -651,23 +676,13 @@ describe('outboundModel', () => {
             }
         };
 
-        model.requests.on('getParties', () => {
-            // simulate a callback with the resolved party
-            model.cache.emitMessage(JSON.stringify(payeeParty));
-        });
-
-        model.requests.on('postQuotes', () => {
-            // simulate an error callback
-            model.cache.emitMessage(JSON.stringify(expectError));
-        });
-
         const errMsg = 'Got an error response requesting quote: { errorInformation:\n   { errorCode: \'3205\', errorDescription: \'Quote ID not found\' } }';
 
         try {
             await model.run();
         }
         catch(err) {
-            expect(err.message).toEqual(errMsg);
+            expect(err.message.replace(/[ \n]/g,'')).toEqual(errMsg.replace(/[ \n]/g,''));
             expect(err.transferState).toBeTruthy();
             expect(err.transferState.lastError).toBeTruthy();
             expect(err.transferState.lastError.mojaloopError).toEqual(expectError.data);
@@ -685,16 +700,35 @@ describe('outboundModel', () => {
 
         await setConfig(defaultEnv);
         const conf = getConfig();
+        const cache = new Cache();
+
+        MojaloopRequests.__getParties = jest.fn(() => {
+            // simulate a callback with the resolved party
+            cache.emitMessage(JSON.stringify(payeeParty));
+            return Promise.resolve();
+        });
+
+        MojaloopRequests.__postQuotes = jest.fn(() => {
+            // simulate a callback with the quote response
+            cache.emitMessage(JSON.stringify(quoteResponse));
+            return Promise.resolve();
+        });
+
+        MojaloopRequests.__postTransfers = jest.fn(() => {
+            // simulate an error callback with the transfer fulfilment
+            model.cache.emitMessage(JSON.stringify(expectError));
+            return Promise.resolve();
+        });
 
         const model = new Model({
-            cache: new MockCache(),
+            cache,
             logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
             ...conf
         });
 
         await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
 
-        expect(model.stateMachine.state).toBe('start');
+        expect(StateMachine.__instance.state).toBe('start');
 
         const expectError = {
             type: 'transferError',
@@ -706,29 +740,13 @@ describe('outboundModel', () => {
             }
         };
 
-        model.requests.on('getParties', () => {
-            // simulate a callback with the resolved party
-            model.cache.emitMessage(JSON.stringify(payeeParty));
-        });
-
-        model.requests.on('postQuotes', () => {
-            // simulate a callback with the quote response
-            model.cache.emitMessage(JSON.stringify(quoteResponse));
-        });
-
-        model.requests.on('postTransfers', () => {
-            // simulate an error callback with the transfer fulfilment
-            model.cache.emitMessage(JSON.stringify(expectError));
-        });
-
-
         const errMsg = 'Got an error response preparing transfer: { errorInformation:\n   { errorCode: \'4001\',\n     errorDescription: \'Payer FSP insufficient liquidity\' } }';
 
         try {
             await model.run();
         }
         catch(err) {
-            expect(err.message).toEqual(errMsg);
+            expect(err.message.replace(/[ \n]/g,'')).toEqual(errMsg.replace(/[ \n]/g,''));
             expect(err.transferState).toBeTruthy();
             expect(err.transferState.lastError).toBeTruthy();
             expect(err.transferState.lastError.mojaloopError).toEqual(expectError.data);
@@ -739,4 +757,40 @@ describe('outboundModel', () => {
         throw new Error('Outbound model should have thrown');
     });
 
+});
+
+describe('Outbound mTLS test', () => {
+    let defConfig;
+
+    beforeEach(async () => {
+        init();
+        await setConfig(defaultEnv);
+        defConfig = JSON.parse(JSON.stringify(getConfig()));
+        MojaloopRequests.__postParticipants = jest.fn(() => Promise.resolve());
+        MojaloopRequests.__getParties = jest.fn(() => Promise.resolve());
+        MojaloopRequests.__postQuotes = jest.fn(() => Promise.resolve());
+        MojaloopRequests.__putQuotes = jest.fn(() => Promise.resolve());
+        MojaloopRequests.__putQuotesError = jest.fn(() => Promise.resolve());
+        MojaloopRequests.__postTransfers = jest.fn(() => Promise.resolve());
+    });
+
+    async function testTlsServer(enableTls) {
+        defConfig.tls.outbound.mutualTLS.enabled = enableTls;
+
+        const cache = new Cache();
+        new Model({
+            cache,
+            logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
+            ...defConfig
+        });
+
+        const scheme = enableTls ? 'https' : 'http';
+        expect(MojaloopRequests.__instance.transportScheme).toBe(scheme);
+    }
+
+    test('Outbound server should use HTTPS if outbound mTLS enabled', () =>
+        testTlsServer(true));
+
+    test('Outbound server should use HTTP if outbound mTLS disabled', () =>
+        testTlsServer(false));
 });

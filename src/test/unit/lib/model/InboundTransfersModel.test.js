@@ -19,11 +19,13 @@ const MockCache = require('../../../__mocks__/@internal/cache.js');
 const { Logger, Transports } = require('@internal/log');
 const Model = require('@internal/model').InboundTransfersModel;
 const defaultEnv = require('./data/defaultEnv');
+const mockArguments = require('./data/mockArguments');
+const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 
 let logTransports;
 
 describe('inboundModel', () => {
-    let mockArguments;
+    let mockArgs;
     let model;
     let cache;
 
@@ -53,66 +55,8 @@ describe('inboundModel', () => {
             ...conf
         });
 
-        mockArguments = {
-            quoteRequest: {
-                quoteId: 'fake-quote-id',
-                transactionId: 'fake-transaction-id',
-                amountType: 'SEND',
-                amount: {
-                    currency: 'XOF',
-                    amount: 10
-                },
-                expiration: '2019-06-04T04:02:10.378Z',
-                payer: {
-                    partyIdInfo: {
-                        partyIdType: 'MSISDN',
-                        partyIdentifier: '17855501914',
-                        fspId: 'mojaloop-sdk'
-                    },
-                    personalInfo: {
-                        complexName: {
-                            firstName: 'Murthy',
-                            lastName: 'Kakarlamudi'
-                        },
-                        dateOfBirth: '2010-10-10'
-                    },
-                    name: 'Murthy Kakarlamudi',
-                    merchantClassificationCode: '123'
-                },
-                payee: {
-                    partyIdInfo: {
-                        partyIdType: 'MSISDN',
-                        partyIdentifier: '123456789',
-                        fspId: 'goldenpayeefsp'
-                    },
-                    personalInfo: {
-                        complexName: {
-                            firstName: 'Sridevi',
-                            lastName: 'Miriyala'
-                        },
-                        dateOfBirth: '2010-10-10'
-                    },
-                    name: 'Sridevi Miriyala',
-                    merchantClassificationCode: '456'
-                },
-                transactionType: {
-                    scenario: 'TRANSFER',
-                    initiator: 'PAYER',
-                    initiatorType: 'CONSUMER'
-                }
-            },
-            internalQuoteResponse: {
-                transferAmount: 500,
-                transferAmountCurrency: 'XOF',
-                payeeReceiveAmount: 490,
-                payeeFspFee: 10,
-                payeeFspCommission: 0,
-                condition: 'fH9pAYDQbmoZLPbvv3CSW2RfjU4jvM4ApG_fqGnR7Xs',
-                expiration: new Date(Date.now()),
-                isValid: 1
-            },
-            fspId: 'fake-fsp-id'
-        };
+        mockArgs = JSON.parse(JSON.stringify(mockArguments));
+        mockArgs.internalQuoteResponse.expiration = new Date(Date.now());
     });
 
     afterEach(() => {
@@ -122,30 +66,27 @@ describe('inboundModel', () => {
 
     describe('quoteRequest', () => {
         let expectedQuoteResponseILP;
-        let putQuotesSpy;
 
         beforeEach(() => {
             //model.ilp is already mocked globally, so let's just get its mock response back.
             expectedQuoteResponseILP = model.ilp.getQuoteResponseIlp();
 
-            model.backendRequests.postQuoteRequests = jest.fn().mockReturnValue(Promise.resolve(mockArguments.internalQuoteResponse));
-
-            putQuotesSpy = jest.spyOn(model.mojaloopRequests, 'putQuotes');
+            model.backendRequests.postQuoteRequests = jest.fn().mockReturnValue(Promise.resolve(mockArgs.internalQuoteResponse));
         });
 
         afterEach(() => {
             model.backendRequests.postQuoteRequests.mockClear();
-            putQuotesSpy.mockClear();
+            MojaloopRequests.__putQuotes.mockClear();
         });
 
         test('calls `mojaloopRequests.putQuotes` with the expected arguments.', async () => {
-            await model.quoteRequest(mockArguments.quoteRequest, mockArguments.fspId);
+            await model.quoteRequest(mockArgs.quoteRequest, mockArgs.fspId);
 
-            expect(putQuotesSpy).toHaveBeenCalledTimes(1);
-            expect(putQuotesSpy.mock.calls[0][1].expiration).toBe(mockArguments.internalQuoteResponse.expiration);
-            expect(putQuotesSpy.mock.calls[0][1].ilpPacket).toBe(expectedQuoteResponseILP.ilpPacket);
-            expect(putQuotesSpy.mock.calls[0][1].condition).toBe(expectedQuoteResponseILP.condition);
-            expect(putQuotesSpy.mock.calls[0][2]).toBe(mockArguments.fspId);
+            expect(MojaloopRequests.__putQuotes).toHaveBeenCalledTimes(1);
+            expect(MojaloopRequests.__putQuotes.mock.calls[0][1].expiration).toBe(mockArgs.internalQuoteResponse.expiration);
+            expect(MojaloopRequests.__putQuotes.mock.calls[0][1].ilpPacket).toBe(expectedQuoteResponseILP.ilpPacket);
+            expect(MojaloopRequests.__putQuotes.mock.calls[0][1].condition).toBe(expectedQuoteResponseILP.condition);
+            expect(MojaloopRequests.__putQuotes.mock.calls[0][2]).toBe(mockArgs.fspId);
         });
 
         test('adds a custom `expiration` property in case it is not defined.', async() => {
@@ -155,15 +96,15 @@ describe('inboundModel', () => {
             const dateSpy = jest.spyOn(Date.prototype, 'getTime').mockImplementation(() => currentTime);
             const expectedExpirationDate = new Date(currentTime + (model.expirySeconds * 1000)).toISOString();
 
-            delete mockArguments.internalQuoteResponse.expiration;
+            delete mockArgs.internalQuoteResponse.expiration;
 
-            await model.quoteRequest(mockArguments.quoteRequest, mockArguments.fspId);
+            await model.quoteRequest(mockArgs.quoteRequest, mockArgs.fspId);
 
-            expect(putQuotesSpy).toHaveBeenCalledTimes(1);
-            expect(putQuotesSpy.mock.calls[0][1].expiration).toBe(expectedExpirationDate);
-            expect(putQuotesSpy.mock.calls[0][1].ilpPacket).toBe(expectedQuoteResponseILP.ilpPacket);
-            expect(putQuotesSpy.mock.calls[0][1].condition).toBe(expectedQuoteResponseILP.condition);
-            expect(putQuotesSpy.mock.calls[0][2]).toBe(mockArguments.fspId);
+            expect(MojaloopRequests.__putQuotes).toHaveBeenCalledTimes(1);
+            expect(MojaloopRequests.__putQuotes.mock.calls[0][1].expiration).toBe(expectedExpirationDate);
+            expect(MojaloopRequests.__putQuotes.mock.calls[0][1].ilpPacket).toBe(expectedQuoteResponseILP.ilpPacket);
+            expect(MojaloopRequests.__putQuotes.mock.calls[0][1].condition).toBe(expectedQuoteResponseILP.condition);
+            expect(MojaloopRequests.__putQuotes.mock.calls[0][2]).toBe(mockArgs.fspId);
 
             dateSpy.mockClear();
         });
@@ -184,13 +125,10 @@ describe('inboundModel', () => {
                 transferId: TRANSFER_ID,
             };
 
-            const mockFn = jest.fn();
-            model.mojaloopRequests.putTransfersError = mockFn;
+            await model.prepareTransfer(args, mockArgs.fspId);
 
-            await model.prepareTransfer(args, mockArguments.fspId);
-
-            expect(mockFn).toHaveBeenCalledTimes(1);
-            const call = mockFn.mock.calls[0];
+            expect(MojaloopRequests.__putTransfersError).toHaveBeenCalledTimes(1);
+            const call = MojaloopRequests.__putTransfersError.mock.calls[0];
             expect(call[0]).toEqual(TRANSFER_ID);
             expect(call[1].errorInformation.errorCode).toEqual('3302');
         });

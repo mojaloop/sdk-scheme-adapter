@@ -10,63 +10,13 @@
 
 'use strict';
 
+const mockError = require('./data/mockError');
+const transferRequest = require('./data/transferRequest');
+
 jest.mock('@internal/model');
 
-const handlers = require('../../../outboundApi/handlers');
+const handlers = require('../../../OutboundServer/handlers');
 const { OutboundTransfersModel } = require('@internal/model');
-
-
-const transferRequest = {
-    from: {
-        displayName: 'James Bush',
-        idType: 'MSISDN',
-        idValue: '447710066017'
-    },
-    to: {
-        idType: 'MSISDN',
-        idValue: '1234567890'
-    },
-    amountType: 'SEND',
-    currency: 'USD',
-    amount: '100',
-    transactionType: 'TRANSFER',
-    note: 'test payment',
-    homeTransactionId: '123ABC'
-};
-
-const mockError = {
-    message: 'Mock error',
-    httpStatusCode: 500,
-    transferState:  {
-        'from': {
-            'displayName': 'James Bush',
-            'idType': 'MSISDN',
-            'idValue': '447710066017'
-        },
-        'to': {
-            'idType': 'MSISDN',
-            'idValue': '1234567890'
-        },
-        'amountType': 'SEND',
-        'currency': 'USD',
-        'amount': '100',
-        'transactionType': 'TRANSFER',
-        'note': 'test payment',
-        'homeTransactionId': '123ABC',
-        'transferId': '5a2ad5dc-4ab1-4a22-8c5b-62f75252a8d5',
-        'currentState': 'ERROR_OCCURED',
-        'lastError': {
-            'httpStatusCode': 500,
-            'mojaloopError': {
-                'errorInformation': {
-                    'errorCode': '3204',
-                    'errorDescription': 'Party not found'
-                }
-            }
-        }
-    }
-};
-
 
 /**
  * Mock the outbound transfer model to simulate throwing errors
