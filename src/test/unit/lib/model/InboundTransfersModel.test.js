@@ -56,6 +56,7 @@ describe('inboundModel', () => {
         });
 
         mockArgs = JSON.parse(JSON.stringify(mockArguments));
+        mockArgs.internalQuoteResponse.expiration = new Date(Date.now());
     });
 
     afterEach(() => {
