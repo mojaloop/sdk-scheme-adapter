@@ -1,5 +1,23 @@
 # Mojaloop SDK Scheme Adapter
 
+## Fork description
+
+This is a fork of [https://github.com/modusbox/mojaloop-sdk-scheme-adapter](https://github.com/modusbox/mojaloop-sdk-scheme-adapter) with the following additions:
+
+
+- A `package.json` file on the root of the repo. This allows the repo to be imported as a library using a github reference in a package.json file, as in `"@modusintegration/mojaloop-sdk-scheme-adapter": "github:modusintegration/mojaloop-sdk-scheme-adapter#for-fxp-adapter"`
+
+This is an interim approach until the upstream repo publishes the `lib` folder as components.
+
+The `package.json` file has the same dependencies as all the `package.json` files on the `lib` folder and its subdirectories have, to make it easier on customers to import the dependencies.
+
+It doesn't have any `file:` dependencies because `npm` can't handle a dependency from `github:` that itself has `file:` dependencies 
+
+Original readme follows:
+
+
+# Mojaloop SDK Scheme Adapter
+
 This package provides a scheme adapter that interfaces between a Mojaloop API compliant switch and a DFSP backend platform that does not natively implement the Mojaloop API.
 
 The API between the scheme adapter and the DFSP backend is synchronous HTTP while the interface between the scheme adapter and the switch is native Mojaloop API.
