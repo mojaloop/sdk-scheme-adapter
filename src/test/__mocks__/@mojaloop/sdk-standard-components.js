@@ -11,54 +11,29 @@
 'use strict';
 
 const util = require('util');
-const EventEmitter = require('events');
-const { Errors } = jest.requireActual('@mojaloop/sdk-standard-components');
+const { MojaloopRequests, Errors } = jest.requireActual('@mojaloop/sdk-standard-components');
 
 
-class MockMojaloopRequests extends EventEmitter {
-    constructor(config) {
-        super();
-        console.log('MockMojaloopRequests constructed');
-        this.config = config;
-    }
-
-    postParticipants(request) {
-        setImmediate(() => { this.emit('postParticipants', request); });
-        return Promise.resolve(null);
-    }
-
-    getParties(...args) {
-        console.log(`MockMojaloopRequests.getParties called with args: ${util.inspect(args, { depth: 20 })}`);
-        setImmediate(() => { this.emit('getParties'); });
-        return Promise.resolve(null);
-    }
-
-    postQuotes(...args) {
-        console.log(`MockMojaloopRequests.postQuotes called with args: ${util.inspect(args, { depth: 20 })}`);
-        setImmediate(() => { this.emit('postQuotes'); });
-        return Promise.resolve(null);
-    }
-
-    putQuotes(...args) {
-        console.log(`MockMojaloopRequests.putQuotes called with args: ${util.inspect(args)}`);
-        setImmediate(() => { this.emit('putQuotes'); });
-        return Promise.resolve(null);
-    }
-
-    putQuotesError(...args) {
-        console.log(`MockMojaloopRequests.putQuotesError called with args: ${util.inspect(args)}`);
-        setImmediate(() => { this.emit('putQuotesError'); });
-        return Promise.resolve(null);
-    }
-
-
-    postTransfers(...args) {
-        console.log(`MockMojaloopRequests.postTransfers called with args: ${util.inspect(args, { depth: 20 })}`);
-        setImmediate(() => { this.emit('postTransfers'); });
-        return Promise.resolve(null);
+class MockMojaloopRequests extends MojaloopRequests {
+    constructor(...args) {
+        super(...args);
+        MockMojaloopRequests.__instance = this;
+        this.postParticipants = MockMojaloopRequests.__postParticipants;
+        this.getParties = MockMojaloopRequests.__getParties;
+        this.postQuotes = MockMojaloopRequests.__postQuotes;
+        this.putQuotes = MockMojaloopRequests.__putQuotes;
+        this.putQuotesError = MockMojaloopRequests.__putQuotesError;
+        this.postTransfers = MockMojaloopRequests.__postTransfers;
+        this.putTransfersError = MockMojaloopRequests.__putTransfersError;
     }
 }
-
+MockMojaloopRequests.__postParticipants = jest.fn(() => Promise.resolve());
+MockMojaloopRequests.__getParties = jest.fn(() => Promise.resolve());
+MockMojaloopRequests.__postQuotes = jest.fn(() => Promise.resolve());
+MockMojaloopRequests.__putQuotes = jest.fn(() => Promise.resolve());
+MockMojaloopRequests.__putQuotesError = jest.fn(() => Promise.resolve());
+MockMojaloopRequests.__postTransfers = jest.fn(() => Promise.resolve());
+MockMojaloopRequests.__putTransfersError = jest.fn(() => Promise.resolve());
 
 class MockIlp {
     constructor(config) {
@@ -82,21 +57,11 @@ class MockIlp {
     }
 }
 
+const MockJwsValidator = jest.fn().mockImplementation(() => {
+    return {validate: MockJwsValidator.__validate};
+});
+MockJwsValidator.__validate = jest.fn(() => true);
 
-class MockJwsValidator {
-    constructor(config) {
-        this.validateCalled = 0;
-        this.config = config;
-        console.log(`MockJwsValidator constructed with config: ${util.inspect(config)}`);
-    }
-
-    validate(...args) {
-        this.validateCalled++;
-        console.log(`MockJwsValidator validate called with args: ${util.inspect(args)}`);
-        return true;
-    }
-
-}
 
 class MockJwsSigner {
     constructor(config) {

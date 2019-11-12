@@ -22,6 +22,7 @@ const FS_EVENT_TYPES = {
 let DEFAULTS = {
     inboundPort: 4000,
     outboundPort: 4001,
+    alsEndpoint: '127.0.0.1:6500',
     peerEndpoint: '172.17.0.2:3001',
     backendEndpoint: '172.17.0.2:3001',
     dfspId: 'mojaloop-sdk',
@@ -33,17 +34,22 @@ let DEFAULTS = {
     autoAcceptParty: true,
     useQuoteSourceFSPAsTransferPayeeFSP: false,
     tls: {
-        mutualTLS: {enabled: false},
-        inboundCreds: {
-            ca: null,
-            cert: null,
-            key: null
+        inbound: {
+            mutualTLS: { enabled: false },
+            creds: {
+                ca: null,
+                cert: null,
+                key: null
+            }
         },
-        outboundCreds: {
-            ca: null,
-            cert: null,
-            key: null
-        }
+        outbound: {
+            mutualTLS: { enabled: false },
+            creds: {
+                ca: null,
+                cert: null,
+                key: null
+            }
+        },
     },
     validateInboundJws: true,
     validateInboundPutPartiesJws: false,
@@ -66,6 +72,7 @@ let DEFAULTS = {
     rejectExpiredQuoteResponses: false,
     rejectTransfersOnExpiredQuotes: false,
     rejectExpiredTransferFulfils: false,
+    logIndent: 2,
 };
 
 let config = {};
@@ -103,7 +110,8 @@ init();
 const setConfig = async cfg => {
     config.inboundPort = cfg.INBOUND_LISTEN_PORT;
     config.outboundPort = cfg.OUTBOUND_LISTEN_PORT;
-    config.tls.mutualTLS.enabled = (/true/i).test(cfg.MUTUAL_TLS_ENABLED);
+    config.tls.inbound.mutualTLS.enabled = (/true/i).test(cfg.INBOUND_MUTUAL_TLS_ENABLED);
+    config.tls.outbound.mutualTLS.enabled = (/true/i).test(cfg.OUTBOUND_MUTUAL_TLS_ENABLED);
 
     config.peerEndpoint = cfg.PEER_ENDPOINT;
     config.alsEndpoint = cfg.ALS_ENDPOINT;
@@ -123,16 +131,18 @@ const setConfig = async cfg => {
 
     // Getting secrets from files instead of environment variables reduces the likelihood of
     // accidental leakage.
-    if (config.tls.mutualTLS.enabled) {
+    if (config.tls.inbound.mutualTLS.enabled) {
         // read inbound certs/keys
-        [config.tls.inboundCreds.ca, config.tls.inboundCreds.cert, config.tls.inboundCreds.key] = await Promise.all([
+        [config.tls.inbound.creds.ca, config.tls.inbound.creds.cert, config.tls.inbound.creds.key] = await Promise.all([
             readFilesDelimitedList(',', cfg.IN_CA_CERT_PATH),
             readFile(cfg.IN_SERVER_CERT_PATH),
             readFile(cfg.IN_SERVER_KEY_PATH)
         ]);
+    }
 
+    if (config.tls.outbound.mutualTLS.enabled) {
         //read outbound certs/keys
-        [config.tls.outboundCreds.ca, config.tls.outboundCreds.cert, config.tls.outboundCreds.key] = await Promise.all([
+        [config.tls.outbound.creds.ca, config.tls.outbound.creds.cert, config.tls.outbound.creds.key] = await Promise.all([
             readFilesDelimitedList(',', cfg.OUT_CA_CERT_PATH),
             readFile(cfg.OUT_CLIENT_CERT_PATH),
             readFile(cfg.OUT_CLIENT_KEY_PATH)
@@ -194,6 +204,8 @@ const setConfig = async cfg => {
     config.requestProcessingTimeoutSeconds = cfg.REQUEST_PROCESSING_TIMEOUT_SECONDS;
 
     config.alsEndpoint = cfg.ALS_ENDPOINT;
+
+    config.logIndent = cfg.LOG_INDENT ? Number(cfg.LOG_INDENT) : 2;
 };
 
 const getConfig = () => {
