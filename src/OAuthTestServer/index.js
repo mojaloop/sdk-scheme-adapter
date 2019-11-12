@@ -10,49 +10,79 @@
 
 'use strict';
 
-const koa = require('koa');
+const Koa = require('koa');
 const koaBody = require('koa-body');
 const OAuthServer = require('koa2-oauth-server');
 const { Logger, Transports } = require('@internal/log');
 const { InMemoryCache } = require('./model');
 
-const LOG_NAME = 'mojaloop-sdk-oauth-test-server';
+class OAuthTestServer {
+    /**
+     *
+     * @param {Object} conf
+     * @param {number} conf.port OAuth server listen port
+     * @param {string} conf.clientKey Customer Key
+     * @param {String} conf.clientSecret Customer Secret
+     * @param {String} conf.logIndent
+     * @returns {Promise}
+     */
+    constructor(conf) {
+        this.conf = conf;
+        this.api = null;
+        this.logger = null;
+    }
 
-/**
- *
- * @param {Object} opts
- * @param {number} opts.port OAuth server listen port
- * @param {string} opts.clientKey Customer Key
- * @param {String} opts.clientSecret Customer Secret
- * @returns {Promise}
- */
-module.exports = (opts) => {
-    const space = Number(process.env.LOG_INDENT);
-    const logger = new Logger({ context: { app: LOG_NAME }, space, transports: [Transports.consoleDir()] });
-
-    const app = new koa();
-
-    app.oauth = new OAuthServer({
-        model: new InMemoryCache(opts),
-        accessTokenLifetime: 60 * 60,
-        allowBearerTokensInQueryString: true,
-    });
-
-    app.use(koaBody());
-    app.use(app.oauth.token());
-
-    app.use(async (next) => {
-        this.body = 'Secret area';
-        await next();
-    });
-
-    app.listen(opts.port);
-    logger.log(`Serving OAuth2 Test Server on port ${opts.port}`);
-    return new Promise((resolve, reject) => {
-        app.on('error', err => {
-            logger.error(err);
-            reject(err);
+    async start() {
+        await new Promise((resolve) => {
+            this.api.listen(this.conf.port, () => {
+                this.logger.log(`Serving OAuth2 Test Server on port ${this.conf.port}`);
+                return resolve();
+            });
         });
-        app.on('close', () => resolve());
-    });
-};
+    }
+
+    async stop() {
+        if (this.api) {
+            await new Promise(resolve => {
+                this.api.close(() => {
+                    console.log('OAuth2 Test Server shut down complete');
+                    return resolve();
+                });
+            });
+        }
+    }
+
+    async setupApi() {
+        this.api = new Koa();
+        this.logger = await this._createLogger();
+
+        this.api.oauth = new OAuthServer({
+            model: new InMemoryCache(this.conf),
+            accessTokenLifetime: 60 * 60,
+            allowBearerTokensInQueryString: true,
+        });
+
+        this.api.use(koaBody());
+        this.api.use(this.api.oauth.token());
+
+        this.api.use(async (next) => {
+            this.body = 'Secret area';
+            await next();
+        });
+    }
+
+    async _createLogger() {
+        const transports = await Promise.all([Transports.consoleDir()]);
+        // Set up a logger for each running server
+        return new Logger({
+            context: {
+                app: 'mojaloop-sdk-oauth-test-server'
+            },
+            space: this.conf.logIndent,
+            transports,
+        });
+    }
+}
+
+
+module.exports = OAuthTestServer;

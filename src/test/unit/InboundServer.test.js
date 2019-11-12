@@ -19,13 +19,18 @@ const putParticipantsBody = require('./data/putParticipantsBody');
 const partiesRequestTemplate = require('./data/partiesRequestTemplate');
 const participantsRequestTemplate = require('./data/participantsRequestTemplate');
 
-// we use a mock koa (from our __mocks__ directory
+// we use a mock koa (from our __mocks__ directory)
 jest.mock('koa');
 jest.mock('@internal/cache');
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('@internal/requests');
 
-const index = require('../../index.js');
+const { Jws } = require('@mojaloop/sdk-standard-components');
+const Koa = require('koa');
+const http = require('http');
+const https = require('https');
+
+const InboundServer = require('../../InboundServer');
 
 class DummyRequest {
     constructor(opts) {
@@ -55,13 +60,15 @@ async function testInboundJwsValidation(validateInboundJws, validateInboundPutPa
     dummyConfig.validateInboundJws = validateInboundJws;
     dummyConfig.validateInboundPutPartiesJws = validateInboundPutPartiesJws;
     // start the server
-    const svr = new index.Server(dummyConfig);
+    const svr = new InboundServer(dummyConfig);
+    await svr.setupApi();
     await svr.start();
 
-    // execute the request
-    await svr.inboundApi.request(request);
 
-    const validateCalled = svr.jwsValidator.validateCalled;
+    // execute the request
+    await Koa.__instance.request(request);
+
+    /// const validateCalled = svr.jwsValidator.validateCalled;
 
     // stop the server
     await svr.stop();
@@ -69,7 +76,7 @@ async function testInboundJwsValidation(validateInboundJws, validateInboundPutPa
     // validate we got the expected result
     console.log(`result: ${util.inspect(request.response)}`);
 
-    expect(validateCalled).toEqual(expectedValidationCalls);
+    expect(Jws.validator.__validate.mock.calls.length).toEqual(expectedValidationCalls);
 }
 
 const generatePartiesRequest = (method, path, body) => {
@@ -90,6 +97,10 @@ const generateParticipantsRequest = () => {
 
 describe('inbound API', () => {
     describe('PUT /parties', () => {
+        beforeEach(() => {
+            Jws.validator.__validate.mockClear();
+        });
+
         function testPartiesJwsValidation(validateInboundJws, validateInboundPutPartiesJws, expectedValidationCalls) {
             const req = generatePartiesRequest('PUT', '/parties/MSISDN/123456789', putPartiesBody);
             const request = new DummyRequest(req);
@@ -110,6 +121,9 @@ describe('inbound API', () => {
     });
 
     describe('PUT /quotes', () => {
+        beforeEach(() => {
+            Jws.validator.__validate.mockClear();
+        });
         function testQuotesJwsValidation(validateInboundJws, validateInboundPutPartiesJws, expectedValidationCalls) {
             const req = generatePartiesRequest('POST', '/quotes', postQuotesBody);
             const request = new DummyRequest(req);
@@ -124,6 +138,10 @@ describe('inbound API', () => {
     });
 
     describe('PUT /participants', () => {
+        beforeEach(() => {
+            Jws.validator.__validate.mockClear();
+        });
+
         function testParticipantsJwsValidation(validateInboundJws, validateInboundPutPartiesJws, expectedValidationCalls) {
             const req = generateParticipantsRequest();
             const request = new DummyRequest(req);
@@ -136,4 +154,45 @@ describe('inbound API', () => {
         test('does not validate incoming JWS when VALIDATE_INBOUND_JWS is false ', () =>
             testParticipantsJwsValidation(false, false, 0));
     });
+});
+
+describe('Inbound Server mTLS test', () => {
+    let defConfig;
+    let httpServerSpy;
+    let httpsServerSpy;
+
+    beforeAll(() => {
+        httpServerSpy = jest.spyOn(http, 'createServer');
+        httpsServerSpy = jest.spyOn(https, 'createServer');
+    });
+
+    beforeEach(() => {
+        defConfig = JSON.parse(JSON.stringify(defaultConfig));
+        httpServerSpy.mockClear();
+        httpsServerSpy.mockClear();
+    });
+
+    afterAll(() => {
+        httpServerSpy.mockRestore();
+        httpsServerSpy.mockRestore();
+    });
+
+    async function testTlsServer(enableTls) {
+        defConfig.tls.inbound.mutualTLS.enabled = enableTls;
+        const server = new InboundServer(defConfig);
+        await server.setupApi();
+        if (enableTls) {
+            expect(httpsServerSpy).toHaveBeenCalled();
+            expect(httpServerSpy).not.toHaveBeenCalled();
+        } else {
+            expect(httpsServerSpy).not.toHaveBeenCalled();
+            expect(httpServerSpy).toHaveBeenCalled();
+        }
+    }
+
+    test('Inbound server should use HTTPS if inbound mTLS enabled', () =>
+        testTlsServer(true));
+
+    test('Inbound server should use HTTP if inbound mTLS disabled', () =>
+        testTlsServer(false));
 });
