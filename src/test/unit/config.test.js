@@ -155,34 +155,4 @@ describe('config', () => {
             });
         });
     });
-
-    /*
-    describe('mTLS config:', () => {
-        it('updates configuration object when a new JWS verification key '
-            + 'is removed to the target monitored folder.', async () => {
-            await config.setConfig(process.env);
-
-            let retrievedConfig = config.getConfig();
-
-            expect(Object.keys(retrievedConfig.jwsVerificationKeys).length).toBe(1);
-            expect(Object.keys(retrievedConfig.jwsVerificationKeys)[0]).toBe('mojaloop-sdk');
-
-            mockFilePath = path.join(retrievedConfig.jwsVerificationKeysDirectory,
-                'mock-jws.pem');
-
-            await fs.writeFile(mockFilePath, 'foo-key');
-
-            expect(Object.keys(retrievedConfig.jwsVerificationKeys).length).toBe(2);
-            expect(Object.keys(retrievedConfig.jwsVerificationKeys)[0]).toBe('mojaloop-sdk');
-            expect(Object.keys(retrievedConfig.jwsVerificationKeys)[1]).toBe('mock-jws');
-
-            await fs.unlink(mockFilePath);
-            mockFilePath = null;
-
-            expect(Object.keys(retrievedConfig.jwsVerificationKeys).length).toBe(1);
-            expect(Object.keys(retrievedConfig.jwsVerificationKeys)[0]).toBe('mojaloop-sdk');
-        });
-    });
-
-     */
 });

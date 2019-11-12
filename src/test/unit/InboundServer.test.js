@@ -64,11 +64,8 @@ async function testInboundJwsValidation(validateInboundJws, validateInboundPutPa
     await svr.setupApi();
     await svr.start();
 
-
     // execute the request
     await Koa.__instance.request(request);
-
-    /// const validateCalled = svr.jwsValidator.validateCalled;
 
     // stop the server
     await svr.stop();

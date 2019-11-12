@@ -4,7 +4,10 @@ const coBody = require('co-body');
 const randomPhrase = require('@internal/randomphrase');
 const { Jws, Errors } = require('@mojaloop/sdk-standard-components');
 
-// Log raw to console as a last resort
+/**
+ * Log raw to console as a last resort
+ * @return {Function}
+ */
 const createErrorHandler = () => async (ctx, next) => {
     try {
         await next();
@@ -14,15 +17,23 @@ const createErrorHandler = () => async (ctx, next) => {
     }
 };
 
-// tag each incoming request with a unique identifier
+
+/**
+ * tag each incoming request with a unique identifier
+ * @return {Function}
+ */
 const createRequestIdGenerator = () => async (ctx, next) => {
     ctx.request.id = randomPhrase();
     await next();
 };
 
 
-// Deal with mojaloop API content type headers...
-// treat as JSON
+/**
+ * Deal with mojaloop API content type headers, treat as JSON
+ * @param logger
+ * @return {Function}
+ */
+//
 const createHeaderValidator = (logger) => async (ctx, next) => {
     const validHeaders = new Set([
         'application/vnd.interoperability.parties+json;version=1.0',
@@ -46,6 +57,7 @@ const createHeaderValidator = (logger) => async (ctx, next) => {
     }
     await next();
 };
+
 
 /**
  *
@@ -94,7 +106,12 @@ const createJwsValidator = (logger, keys, exclusions) => {
 };
 
 
-// Add a log context for each request, log the receipt and handling thereof
+/**
+ * Add a log context for each request, log the receipt and handling thereof
+ * @param logger
+ * @param sharedState
+ * @return {Function}
+ */
 const createLogger = (logger, sharedState) => async (ctx, next) => {
     ctx.state = {
         ...ctx.state,
@@ -114,7 +131,12 @@ const createLogger = (logger, sharedState) => async (ctx, next) => {
     await ctx.state.logger.log('Request processed');
 };
 
-// Add validation for each inbound request
+
+/**
+ * Add validation for each inbound request
+ * @param validator
+ * @return {Function}
+ */
 const createRequestValidator = (validator) => async (ctx, next) => {
     ctx.state.logger.log('Validating request');
     try {
@@ -132,7 +154,7 @@ const createRequestValidator = (validator) => async (ctx, next) => {
             return;
         }
 
-        //generic mojaloop spec validation error
+        // generic mojaloop spec validation error
         ctx.response.body = {
             errorInformation: {
                 errorCode: '3100',
@@ -142,18 +164,22 @@ const createRequestValidator = (validator) => async (ctx, next) => {
     }
 };
 
-// this.api.use(router(handlers.map));
+
+/**
+ * Override Koa's default behaviour of returning the status code as text in the body. If we
+ * haven't defined the body, we want it empty. Note that if setting this to null, Koa appears
+ * to override the status code with a 204. This is correct behaviour in the sense that the
+ * status code correctly corresponds to the content (none) but unfortunately the Mojaloop API
+ * does not respect this convention and requires a 200.
+ * @return {Function}
+ */
 const createResponseBodyHandler = () => async (ctx, next) => {
-    // Override Koa's default behaviour of returning the status code as text in the body. If we
-    // haven't defined the body, we want it empty. Note that if setting this to null, Koa appears
-    // to override the status code with a 204. This is correct behaviour in the sense that the
-    // status code correctly corresponds to the content (none) but unfortunately the Mojaloop API
-    // does not respect this convention and requires a 200.
     if (ctx.response.body === undefined) {
         ctx.response.body = '';
     }
     return await next();
 };
+
 
 module.exports = {
     createErrorHandler,

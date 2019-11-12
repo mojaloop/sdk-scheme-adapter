@@ -1,6 +1,9 @@
 const randomPhrase = require('@internal/randomphrase');
 
-// Log raw to console as a last resort
+/**
+ * Log raw to console as a last resort
+ * @return {Function}
+ */
 const createErrorHandler = () => async (ctx, next) => {
     try {
         await next();
@@ -10,7 +13,13 @@ const createErrorHandler = () => async (ctx, next) => {
     }
 };
 
-// Add a log context for each request, log the receipt and handling thereof
+
+/**
+ * Add a log context for each request, log the receipt and handling thereof
+ * @param logger
+ * @param sharedState
+ * @return {Function}
+ */
 const createLogger = (logger, sharedState) => async (ctx, next) => {
     ctx.state = {
         ...ctx.state,
@@ -30,7 +39,12 @@ const createLogger = (logger, sharedState) => async (ctx, next) => {
     await ctx.state.logger.log('Request processed');
 };
 
-// Add validation for each inbound request
+
+/**
+ * Add validation for each inbound request
+ * @param validator
+ * @return {Function}
+ */
 const createRequestValidator = (validator) => async (ctx, next) => {
     ctx.state.logger.log('Validating request');
     try {
