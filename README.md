@@ -1,3 +1,7 @@
+[![Git Commit](https://img.shields.io/github/last-commit/mojaloop/sdk-scheme-adapter.svg?style=flat)](https://github.com/mojaloop/sdk-scheme-adapter/commits/master)
+[![Git Releases](https://img.shields.io/github/release/mojaloop/sdk-scheme-adapter.svg?style=flat)](https://github.com/mojaloop/sdk-scheme-adapter/releases)
+[![CircleCI](https://circleci.com/gh/mojaloop/sdk-scheme-adapter.svg?style=svg)](https://circleci.com/gh/mojaloop/sdk-scheme-adapter)
+
 # Mojaloop SDK Scheme Adapter
 
 This package provides a scheme adapter that interfaces between a Mojaloop API compliant switch and a DFSP backend platform that does not natively implement the Mojaloop API.
@@ -50,8 +54,7 @@ _Note that these instructions are for Linux based systems. For Mac and/or Window
 1. Edit the scheme adapter configuration to point the scheme adapter at your Mojaloop API enabled switch or simulator:
 
    Use your favourite text editor to edit the file `src/scheme-adapter.env`.
-   Change the value of the `PEER_ENDPOINT` variable to the DNS name or IP address and port number of your Mojaloop API enabled switch or simulator.i
-   Save the file.
+   Change the value of the `PEER_ENDPOINT` variable to the DNS name or IP address and port number of your Mojaloop API enabled switch or simulator. Save the file.
 
 1. Use docker-compose to download and run the pre-built scheme-adapter, shared cache and mock DFSP backend containers locally:
 
