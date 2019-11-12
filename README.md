@@ -1,3 +1,7 @@
+[![Git Commit](https://img.shields.io/github/last-commit/mojaloop/sdk-scheme-adapter.svg?style=flat)](https://github.com/mojaloop/sdk-scheme-adapter/commits/master)
+[![Git Releases](https://img.shields.io/github/release/mojaloop/sdk-scheme-adapter.svg?style=flat)](https://github.com/mojaloop/sdk-scheme-adapter/releases)
+[![CircleCI](https://circleci.com/gh/mojaloop/sdk-scheme-adapter.svg?style=svg)](https://circleci.com/gh/mojaloop/sdk-scheme-adapter)
+
 # Mojaloop SDK Scheme Adapter
 
 This package provides a scheme adapter that interfaces between a Mojaloop API compliant switch and a DFSP backend platform that does not natively implement the Mojaloop API.
