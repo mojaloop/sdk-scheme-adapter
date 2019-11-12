@@ -5,7 +5,7 @@
  *  specified in the corresponding source code repository.                *
  *                                                                        *
  *  ORIGINAL AUTHOR:                                                      *
- *       Vassilis Barzokas - vassilis.barzokas@modusbox.com                             *
+ *       Vassilis Barzokas - vassilis.barzokas@modusbox.com               *
  **************************************************************************/
 'use strict';
 
