@@ -149,24 +149,26 @@ const setConfig = async cfg => {
     config.jwsVerificationKeys = {};
 
     // read files on startup.
-    fs.readdirSync(cfg.JWS_VERIFICATION_KEYS_DIRECTORY)
-        .filter(f => f.endsWith('.pem'))
-        .map(f => {
-            config.jwsVerificationKeys[path.basename(f, '.pem')] = fs.readFileSync(path.join(cfg.JWS_VERIFICATION_KEYS_DIRECTORY, f));
-        });
+    if (cfg.JWS_VERIFICATION_KEYS_DIRECTORY) {
+        fs.readdirSync(cfg.JWS_VERIFICATION_KEYS_DIRECTORY)
+            .filter(f => f.endsWith('.pem'))
+            .map(f => {
+                config.jwsVerificationKeys[path.basename(f, '.pem')] = fs.readFileSync(path.join(cfg.JWS_VERIFICATION_KEYS_DIRECTORY, f));
+            });
 
-    // continuously monitor folder for changes in files.
-    fsWatcher = fs.watch(cfg.JWS_VERIFICATION_KEYS_DIRECTORY, (eventType, filename) => {
+        // continuously monitor folder for changes in files.
+        fsWatcher = fs.watch(cfg.JWS_VERIFICATION_KEYS_DIRECTORY, (eventType, filename) => {
         // On most platforms, 'rename' is emitted whenever a filename appears or disappears in the directory.
         // From: https://nodejs.org/docs/latest/api/fs.html#fs_fs_watch_filename_options_listener
-        if (eventType === FS_EVENT_TYPES.RENAME) {
-            if (config.jwsVerificationKeys[path.basename(filename, '.pem')] == null) {
-                config.jwsVerificationKeys[path.basename(filename, '.pem')] = fs.readFileSync(path.join(cfg.JWS_VERIFICATION_KEYS_DIRECTORY, filename));
-            } else {
-                delete config.jwsVerificationKeys[path.basename(filename, '.pem')];
+            if (eventType === FS_EVENT_TYPES.RENAME) {
+                if (config.jwsVerificationKeys[path.basename(filename, '.pem')] == null) {
+                    config.jwsVerificationKeys[path.basename(filename, '.pem')] = fs.readFileSync(path.join(cfg.JWS_VERIFICATION_KEYS_DIRECTORY, filename));
+                } else {
+                    delete config.jwsVerificationKeys[path.basename(filename, '.pem')];
+                }
             }
-        }
-    });
+        });
+    }
 
     config.cacheConfig.host = cfg.CACHE_HOST;
     config.cacheConfig.port = cfg.CACHE_PORT;
