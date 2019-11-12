@@ -143,7 +143,7 @@ const setConfig = async cfg => {
     config.validateInboundPutPartiesJws = (/true/i).test(cfg.VALIDATE_INBOUND_PUT_PARTIES_JWS);
     config.jwsSign = (/true/i).test(cfg.JWS_SIGN);
     config.jwsSignPutParties = (/true/i).test(cfg.JWS_SIGN_PUT_PARTIES);
-    config.jwsSigningKey = await readFile(cfg.JWS_SIGNING_KEY_PATH);
+    config.jwsSigningKey = cfg.JWS_SIGNING_KEY_PATH ? await readFile(cfg.JWS_SIGNING_KEY_PATH) : null;
     config.jwsVerificationKeysDirectory = cfg.JWS_VERIFICATION_KEYS_DIRECTORY;
 
     config.jwsVerificationKeys = {};
