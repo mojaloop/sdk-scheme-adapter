@@ -1,7 +1,8 @@
 {
   "INBOUND_LISTEN_PORT": "4000",
   "OUTBOUND_LISTEN_PORT": "4001",
-  "MUTUAL_TLS_ENABLED": "false",
+  "INBOUND_MUTUAL_TLS_ENABLED": "false",
+  "OUTBOUND_MUTUAL_TLS_ENABLED": "false",
   "VALIDATE_INBOUND_JWS": "true",
   "JWS_SIGN": "true",
   "JWS_SIGNING_KEY_PATH": "/jwsSigningKey.key",

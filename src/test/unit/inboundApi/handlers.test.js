@@ -10,9 +10,9 @@
 
 'use strict';
 
-jest.mock('@internal/model').inboundTransfersModel;
+jest.mock('@internal/model');
 
-const handlers = require('../../../inboundApi/handlers');
+const handlers = require('../../../InboundServer/handlers');
 const Model = require('@internal/model').InboundTransfersModel;
 const mockArguments = require('./data/mockArguments');
 
