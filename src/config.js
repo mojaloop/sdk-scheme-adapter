@@ -114,6 +114,9 @@ const setConfig = async cfg => {
     config.tls.outbound.mutualTLS.enabled = cfg.OUTBOUND_MUTUAL_TLS_ENABLED.toLowerCase() === 'true';
 
     config.peerEndpoint = cfg.PEER_ENDPOINT;
+    config.alsEndpoint = cfg.ALS_ENDPOINT;
+    config.quotesEndpoint = cfg.QUOTES_ENDPOINT;
+    config.transfersEndpoint = cfg.TRANSFERS_ENDPOINT;
     config.backendEndpoint = cfg.BACKEND_ENDPOINT;
 
     config.dfspId = cfg.DFSP_ID;
