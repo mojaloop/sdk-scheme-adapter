@@ -54,6 +54,26 @@ const util = require('util');
 const contextSym = Symbol('Logger context symbol');
 
 
+/**
+ * Returns a function that removes circular references and some custom
+ * interpretations of certain types of objects
+ *
+ * @returns {function}
+ */
+const getReplacer = () => {
+    const seen = new WeakSet();
+    return (key, value) => {
+        if (typeof value === "object" && value !== null) {
+            if (seen.has(value)) {
+                return '[Circular Reference]';
+            }
+            seen.add(value);
+        }
+
+        return replaceOutput(key, value);
+    };
+};
+
 const replaceOutput = (key, value) => {
     if (value instanceof Error) {
         return Object.getOwnPropertyNames(value).reduce((acc, key) => ({ ...acc, [key]: value[key] }), {});
@@ -160,9 +180,9 @@ class Logger {
         const ts = new Date();
         let output;
         if (this.opts.printTimestamp) {
-            output = JSON.stringify({ ...this[contextSym], msg, timestamp: this.opts.timestampFmt(ts) }, replaceOutput, this.opts.space);
+            output = JSON.stringify({ ...this[contextSym], msg, timestamp: this.opts.timestampFmt(ts) }, getReplacer(), this.opts.space);
         } else {
-            output = JSON.stringify({ ...this[contextSym], msg }, replaceOutput, this.opts.space);
+            output = JSON.stringify({ ...this[contextSym], msg }, getReplacer(), this.opts.space);
         }
         await Promise.all(this.opts.transports.map(t => t(output, ts)));
     }
