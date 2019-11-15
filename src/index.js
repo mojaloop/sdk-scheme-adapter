@@ -16,6 +16,20 @@ const InboundServer = require('./InboundServer');
 const OutboundServer = require('./OutboundServer');
 const OAuthTestServer = require('./OAuthTestServer');
 
+// import things we want to expose e.g. for unit tests and users who dont want to use the entire
+// scheme adapter as a service
+const InboundServerMiddleware = require('./InboundServer/middlewares.js');
+const OutboundServerMiddleware = require('./OutboundServer/middlewares.js');
+const Router = require('@internal/router');
+const Validate = require('@internal/validate');
+const RandomPhrase = require('@internal/randomphrase');
+const Log = require('@internal/log');
+const Cache = require('@internal/cache');
+
+
+/**
+ * Class that creates and manages http servers that expose the scheme adapter APIs.
+ */
 class Server {
     constructor(conf) {
         this.conf = conf;
@@ -70,7 +84,8 @@ class Server {
 
 if(require.main === module) {
     (async () => {
-        // we were started direct, not required as in unit test scenario
+        // this module is main i.e. we were started as a server;
+        // not used in unit test or "require" scenarios
         await setConfig(process.env);
         const conf = getConfig();
 
@@ -92,7 +107,15 @@ if(require.main === module) {
 }
 
 
-// export things we want to unit test
+// export things we want to expose e.g. for unit tests and users who dont want to use the entire
+// scheme adapter as a service
 module.exports = {
-    Server: Server
+    Server: Server,
+    InboundServerMiddleware: InboundServerMiddleware,
+    OutboundServerMiddleware: OutboundServerMiddleware,
+    Router: Router,
+    Validate: Validate,
+    RandomPhrase: RandomPhrase,
+    Log: Log,
+    Cache: Cache
 };
