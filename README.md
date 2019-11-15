@@ -24,6 +24,18 @@ DFSP backends can call the [DFSP Outbound API](/src/outboundApi/api.yaml) in ord
 
 This package is available as a pre-built docker image on Docker Hub: [https://hub.docker.com/r/mojaloop/sdk-scheme-adapter](https://hub.docker.com/r/mojaloop/sdk-scheme-adapter)
 
+## NPM Package
+
+Users who do not wish to use all the functionality of the scheme adapter as-is are able to import this package as a dependency into their own projects. The scheme adapter package is [published on npm](https://www.npmjs.com/package/@mojaloop/sdk-scheme-adapter) and exposes the following components for external use:
+
+- Inbound Server Middleware
+- Outbound Server Middleware
+- Request Router
+- Request Validation Framework
+- Unique Request Identifier Framework (RandomPhrase)
+- Logger
+- Distributed Cache Abstraction (uses REDIS as a backing service)
+
 ## Quick Start
 
 The steps shown below illustrate setting up the Mojaloop SDK Scheme Adapter locally with a mock DFSP backend.
