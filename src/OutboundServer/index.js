@@ -15,10 +15,11 @@ const koaBody = require('koa-body');
 const yaml = require('js-yaml');
 const fs = require('fs');
 const path = require('path');
+const Metrics = require('@mojaloop/central-services-metrics');
 
 const { Logger, Transports } = require('@internal/log');
 const Cache = require('@internal/cache');
-
+const globalMiddleWare = require('@internal/middleware');
 const Validate = require('@internal/validate');
 const router = require('@internal/router');
 const handlers = require('./handlers');
@@ -43,7 +44,7 @@ class OutboundServer {
         const apiSpecs = yaml.load(fs.readFileSync(specPath));
         const validator = new Validate();
         await validator.initialise(apiSpecs);
-
+        this.api.use(globalMiddleWare.createSpan());
         this.api.use(middlewares.createErrorHandler());
 
         // outbound always expects application/json
@@ -54,7 +55,7 @@ class OutboundServer {
 
         this.api.use(middlewares.createRequestValidator(validator));
         this.api.use(router(handlers.map));
-
+        this.api.use(globalMiddleWare.finishSpan());
         this.server = this._createServer();
     }
 
@@ -110,6 +111,12 @@ class OutboundServer {
 
     _createServer() {
         return http.createServer(this.api.callback());
+    }
+
+    initializeInstrumentation() {
+        if (!this.conf.metrics.disabled) {
+            Metrics.setup(this.conf.metrics.config);
+        }
     }
 }
 

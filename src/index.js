@@ -44,11 +44,13 @@ class Server {
     async _startInboundServer() {
         await this.inboundServer.setupApi();
         await this.inboundServer.start();
+        this.inboundServer.initializeInstrumentation();
     }
 
     async _startOutboundServer() {
         await this.outboundServer.setupApi();
         await this.outboundServer.start();
+        this.outboundServer.initializeInstrumentation();
     }
 
     async _startOAuthTestServer() {

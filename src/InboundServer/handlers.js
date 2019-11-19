@@ -13,6 +13,7 @@
 const util = require('util');
 const Model = require('@internal/model').InboundTransfersModel;
 const { Errors } = require('@mojaloop/sdk-standard-components');
+const Metrics = require('@mojaloop/central-services-metrics');
 
 /**
  * Handles a GET /participants/{idType}/{idValue} request
@@ -63,7 +64,7 @@ const getPartiesByTypeAndId = async (ctx) => {
                     headers: ctx.request.headers
                 };
                 const res = await ctx.state.cache.set(`request_${ctx.state.path.params.ID}`, req);
-                ctx.state.logger.log(`Cacheing request : ${util.inspect(res)}`);
+                ctx.state.logger.log(`Caching request : ${util.inspect(res)}`);
             }
 
             // use the transfers model to execute asynchronous stages with the switch
@@ -118,7 +119,7 @@ const postQuotes = async (ctx) => {
                     data: ctx.request.body
                 };
                 const res = await ctx.state.cache.set(`request_${ctx.request.body.quoteId}`, req);
-                ctx.state.logger.log(`Cacheing request: ${util.inspect(res)}`);
+                ctx.state.logger.log(`Caching request: ${util.inspect(res)}`);
             }
 
             // use the transfers model to execute asynchronous stages with the switch
@@ -153,6 +154,11 @@ const postQuotes = async (ctx) => {
  * Handles a POST /transfers request
  */
 const postTransfers = async (ctx) => {
+    const histTimerEnd = Metrics.getHistogram(
+        'post_transfers',
+        'Used to request the creation of a transfer for the next ledger, and a financial transaction for the Payee',
+        ['success', 'fspId']
+    ).startTimer();
     // kick off an asyncronous operation to handle the request
     (async () => {
         try {
@@ -163,7 +169,7 @@ const postTransfers = async (ctx) => {
                     data: ctx.request.body
                 };
                 const res = await ctx.state.cache.set(`request_${ctx.request.body.transferId}`, req);
-                ctx.state.logger.log(`Cacheing request: ${util.inspect(res)}`);
+                ctx.state.logger.log(`Caching request: ${util.inspect(res)}`);
             }
 
             // use the transfers model to execute asynchronous stages with the switch
@@ -183,6 +189,7 @@ const postTransfers = async (ctx) => {
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
+            histTimerEnd({ success: false });
             ctx.state.logger.push({ err }).log('Error handling POST /transfers');
         }
     })();
@@ -191,12 +198,18 @@ const postTransfers = async (ctx) => {
     // so it is safe to return 202
     ctx.response.status = 202;
     ctx.response.body = '';
+    histTimerEnd({ success: true });
 };
 
 /**
  * Handles a PUT /participants/{ID}. This is a response to a POST /participants request
  */
 const putParticipantsById = async (ctx) => {
+    const histTimerEnd = Metrics.getHistogram(
+        'update',
+        'Used to inform the client of the result of the creation of the provided list of identities.',
+        ['success', 'fspId']
+    ).startTimer();
     if(ctx.state.conf.enableTestFeatures) {
         // we are in test mode so cache the request
         const req = {
@@ -214,6 +227,7 @@ const putParticipantsById = async (ctx) => {
     });
 
     ctx.response.status = 200;
+    histTimerEnd({ success: true });
 };
 
 
@@ -264,7 +278,7 @@ const putPartiesByTypeAndId = async (ctx) => {
             data: ctx.request.body
         };
         const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
-        ctx.state.logger.log(`Cacheing request: ${util.inspect(res)}`);
+        ctx.state.logger.log(`Caching request: ${util.inspect(res)}`);
     }
 
     const idType = ctx.state.path.params.Type;
@@ -288,7 +302,7 @@ const putQuoteById = async (ctx) => {
             data: ctx.request.body
         };
         const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
-        ctx.state.logger.log(`Cacheing callback: ${util.inspect(res)}`);
+        ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
     }
 
     // publish an event onto the cache for subscribers to action
@@ -313,7 +327,7 @@ const putTransfersById = async (ctx) => {
             data: ctx.request.body
         };
         const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
-        ctx.state.logger.log(`Cacheing callback: ${util.inspect(res)}`);
+        ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
     }
 
     // publish an event onto the cache for subscribers to action
@@ -337,7 +351,7 @@ const putPartiesByTypeAndIdError = async(ctx) => {
             data: ctx.request.body
         };
         const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
-        ctx.state.logger.log(`Cacheing request: ${util.inspect(res)}`);
+        ctx.state.logger.log(`Caching request: ${util.inspect(res)}`);
     }
 
     const idType = ctx.state.path.params.Type;
@@ -365,7 +379,7 @@ const putQuotesByIdError = async(ctx) => {
             data: ctx.request.body
         };
         const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
-        ctx.state.logger.log(`Cacheing callback: ${util.inspect(res)}`);
+        ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
     }
 
     // publish an event onto the cache for subscribers to action
@@ -390,7 +404,7 @@ const putTransfersByIdError = async (ctx) => {
             data: ctx.request.body
         };
         const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
-        ctx.state.logger.log(`Cacheing callback: ${util.inspect(res)}`);
+        ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
     }
 
     // publish an event onto the cache for subscribers to action
@@ -455,6 +469,10 @@ const getCallbackById = async(ctx) => {
     }
 };
 
+const metrics = async (ctx) => {
+    ctx.response.status = 200;
+    ctx.response.body = Metrics.getMetricsForPrometheus();
+};
 
 const map = {
     '/': {
@@ -501,6 +519,9 @@ const map = {
     },
     '/callbacks/{ID}': {
         get: getCallbackById
+    },
+    '/metrics': {
+        get: metrics
     }
 };
 

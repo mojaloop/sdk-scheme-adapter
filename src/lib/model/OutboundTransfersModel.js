@@ -16,6 +16,10 @@ const StateMachine = require('javascript-state-machine');
 const { Ilp, MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const shared = require('@internal/shared');
 const { BackendError } = require('./common');
+const { getTransferSpanTags } = require('@mojaloop/central-services-shared').Util.EventFramework;
+const Enum = require('@mojaloop/central-services-shared').Enum;
+const Metrics = require('@mojaloop/central-services-metrics');
+const EventSdk = require('@mojaloop/event-sdk');
 
 const ASYNC_TIMEOUT_MILLS = 30000;
 
@@ -166,10 +170,16 @@ class OutboundTransfersModel {
      * then waits for a notification from the cache that the payee has been resolved.
      */
     async _resolvePayee() {
+        const histTimerEnd = Metrics.getHistogram(
+            'resolve_payee',
+            'Get participants details to complete a quote and get a completed transfer synchronously',
+            ['success', 'fspId']
+        ).startTimer();
         return new Promise(async (resolve, reject) => {
             // set up a timeout for the resolution
             const timeout = setTimeout(() => {
                 const err = new BackendError(`Timeout resolving payee for transfer ${this.data.transferId}`, 504);
+                histTimerEnd({ success: false });
                 return reject(err);
             }, ASYNC_TIMEOUT_MILLS);
 
@@ -188,6 +198,7 @@ class OutboundTransfersModel {
 
                         // cancel the timeout handler
                         clearTimeout(timeout);
+                        histTimerEnd({ success: false });
                         return reject(err);
                     }
 
@@ -195,6 +206,7 @@ class OutboundTransfersModel {
                         // we should never get a non-error response without a party, but just in case...
                         // cancel the timeout handler
                         clearTimeout(timeout);
+                        histTimerEnd({ success: false });
                         return reject(new Error(`Resolved payee has no party object: ${util.inspect(payee)}`));
                     }
 
@@ -213,16 +225,19 @@ class OutboundTransfersModel {
                     // check we got the right payee and info we need
                     if(payee.partyIdInfo.partyIdType !== this.data.to.idType) {
                         const err = new Error(`Expecting resolved payee party IdType to be ${this.data.to.idType} but got ${payee.partyIdInfo.partyIdType}`);
+                        histTimerEnd({ success: false });
                         return reject(err);
                     }
 
                     if(payee.partyIdInfo.partyIdentifier !== this.data.to.idValue) {
                         const err = new Error(`Expecting resolved payee party identifier to be ${this.data.to.idValue} but got ${payee.partyIdInfo.partyIdentifier}`);
+                        histTimerEnd({ success: false });
                         return reject(err);
                     }
 
                     if(!payee.partyIdInfo.fspId) {
                         const err = new Error(`Expecting resolved payee party to have an FSPID: ${util.inspect(payee.partyIdInfo)}`);
+                        histTimerEnd({ success: false });
                         return reject(err);
 
                     }
@@ -239,10 +254,11 @@ class OutboundTransfersModel {
                         }
                         this.data.to.dateOfBirth = payee.personalInfo.dateOfBirth;
                     }
-
+                    histTimerEnd({ success: true });
                     return resolve();
                 }
                 catch(err) {
+                    histTimerEnd({ success: false });
                     return reject(err);
                 }
             });
@@ -250,10 +266,12 @@ class OutboundTransfersModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a GET /parties request to the switch
             try {
-                const res = await this._requests.getParties(this.data.to.idType, this.data.to.idValue);
+                const res = await this._requests.getParties(this.data.to.idType, this.data.to.idValue, this.data.span);
                 this.logger.push({ peer: res }).log('Party lookup sent to peer');
+                histTimerEnd({ success: true });
             }
             catch(err) {
+                histTimerEnd({ success: false });
                 return reject(err);
             }
         });
@@ -266,10 +284,16 @@ class OutboundTransfersModel {
      * then waits for a notification from the cache that the quote response has been received
      */
     async _requestQuote() {
+        const histTimerEnd = Metrics.getHistogram(
+            'resolve_quote',
+            'Execute a quote built from the payee information',
+            ['success', 'fspId']
+        ).startTimer();
         return new Promise(async (resolve, reject) => {
             // set up a timeout for the request
             const timeout = setTimeout(() => {
                 const err = new BackendError(`Timeout requesting quote for transfer ${this.data.transferId}`, 504);
+                histTimerEnd({ success: false });
                 return reject(err);
             }, ASYNC_TIMEOUT_MILLS);
 
@@ -300,6 +324,7 @@ class OutboundTransfersModel {
                     }
                     else {
                         this.logger.push({ message }).log(`Ignoring cache notification for quote ${quoteKey}. Unknown message type ${message.type}.`);
+                        histTimerEnd({ success: false });
                         return;
                     }
 
@@ -312,6 +337,7 @@ class OutboundTransfersModel {
                     });
 
                     if (error) {
+                        histTimerEnd({ success: false });
                         return reject(error);
                     }
 
@@ -321,10 +347,11 @@ class OutboundTransfersModel {
                     this.data.quoteId = quote.quoteId;
                     this.data.quoteResponse = quoteResponseBody;
                     this.data.quoteResponseSource = quoteResponseHeaders['fspiop-source'];
-
+                    histTimerEnd({ success: true });
                     return resolve(quote);
                 }
                 catch(err) {
+                    histTimerEnd({ success: false });
                     return reject(err);
                 }
             });
@@ -332,10 +359,12 @@ class OutboundTransfersModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /quotes request to the switch
             try {
-                const res = await this._requests.postQuotes(quote, this.data.to.fspId);
+                const res = await this._requests.postQuotes(quote, this.data.to.fspId, this.data.span);
                 this.logger.push({ res }).log('Quote request sent to peer');
+                histTimerEnd({ success: true });
             }
             catch(err) {
+                histTimerEnd({ success: false });
                 return reject(err);
             }
         });
@@ -395,10 +424,16 @@ class OutboundTransfersModel {
      * then waits for a notification from the cache that the transfer has been fulfilled
      */
     async _executeTransfer() {
+        const histTimerEnd = Metrics.getHistogram(
+            'execute_transfers',
+            'Execute a transfer built from the quote and payee information',
+            ['success', 'fspId']
+        ).startTimer();
         return new Promise(async (resolve, reject) => {
             // set up a timeout for the request
             const timeout = setTimeout(() => {
                 const err = new BackendError(`Timeout waiting for fulfil for transfer ${this.data.transferId}`, 504);
+                histTimerEnd({ success: false });
                 return reject(err);
             }, ASYNC_TIMEOUT_MILLS);
 
@@ -425,7 +460,8 @@ class OutboundTransfersModel {
                         error = new BackendError(`Got an error response preparing transfer: ${util.inspect(message.data)}`, 500);
                         error.mojaloopError = message.data;
                     } else {
-                        this.logger.push({ message }).log(`Ignoring cache notification for transfer ${transferKey}. Uknokwn message type ${message.type}.`);
+                        this.logger.push({ message }).log(`Ignoring cache notification for transfer ${transferKey}. Unknown message type ${message.type}.`);
+                        histTimerEnd({ success: false });
                         return;
                     }
 
@@ -438,6 +474,7 @@ class OutboundTransfersModel {
                     });
 
                     if (error) {
+                        histTimerEnd({ success: false });
                         return reject(error);
                     }
 
@@ -446,12 +483,14 @@ class OutboundTransfersModel {
                     this.data.fulfil = fulfil;
 
                     if(this.checkIlp && !this.ilp.validateFulfil(fulfil.fulfilment, this.data.quoteResponse.condition)) {
+                        histTimerEnd({ success: false });
                         throw new Error('Invalid fulfilment received from peer DFSP.');
                     }
-
+                    histTimerEnd({ success: true });
                     return resolve(fulfil);
                 }
                 catch(err) {
+                    histTimerEnd({ success: false });
                     return reject(err);
                 }
             });
@@ -459,10 +498,13 @@ class OutboundTransfersModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /transfers request to the switch
             try {
-                const res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource);
+                this.data.span.setTags(getTransferSpanTags({payload: this.data, headers: this.data.headers}, Enum.Events.Event.Type.TRANSFER, Enum.Events.Event.Action.PREPARE));
+                const res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource, this.data.span);
                 this.logger.push({ res }).log('Transfer prepare sent to peer');
+                histTimerEnd({ success: true });
             }
             catch(err) {
+                histTimerEnd({ success: false });
                 return reject(err);
             }
         });
@@ -590,7 +632,7 @@ class OutboundTransfersModel {
 
 
     /**
-     * Unsubscribes the models subscriber from all subscriptions
+     * Unsubscribe the models subscriber from all subscriptions
      */
     async _unsubscribeAll() {
         return new Promise((resolve) => {
