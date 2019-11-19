@@ -149,7 +149,6 @@ jobs:
           command: cd src && (npm run test > ./test/results/results.txt)
       - store_artifacts:
           path: ./test/results
-          prefix: test
       - store_test_results:
           path: ./test/results
 
@@ -174,7 +173,6 @@ jobs:
           command: cd src && (npm run lint > ./lintresults/results.txt)
       - store_artifacts:
           path: ./lintresults
-          prefix: results
 
 
 
