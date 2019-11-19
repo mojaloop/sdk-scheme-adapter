@@ -10,7 +10,7 @@
 
 'use strict';
 
-const Enum = require('../../../enums');
+const Enum = require('@mojaloop/central-services-shared').Enum;
 const EventSdk = require('@mojaloop/event-sdk');
 
 /**

@@ -2585,6 +2585,21 @@ paths:
             application/json:
               schema:
                 type: object
+
+  '/metrics':
+    get:
+      description: Prometheus metrics endpoint
+      summary: metrics
+      tags:
+        - test
+      operationId: metrics
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                type: object
 components:
   parameters:
     Accept:

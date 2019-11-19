@@ -206,18 +206,18 @@ const setConfig = async cfg => {
     config.logIndent = cfg.LOG_INDENT ? Number(cfg.LOG_INDENT) : 2;
 
     config.metrics = {
-        disabled: cfg.METRICS_DISABLED,
+        disabled: cfg.METRICS_DISABLED.toLowerCase() === 'true',
         labels: {
             fspId: cfg.METRICS_LABELS_FSP_ID
         },
         config: {
-            timeout: cfg.METRICS_CONFIG_TIMEOUT,
+            timeout: Number(cfg.METRICS_CONFIG_TIMEOUT),
             prefix: cfg.METRICS_CONFIG_PREFIX,
             defaultLabels: {
                 serviceName: cfg.METRICS_CONFIG_LABELS_SERVICE_NAME
             }
         }
-    }
+    };
 };
 
 const getConfig = () => {
