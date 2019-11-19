@@ -1,3 +1,9 @@
+[![Git Commit](https://img.shields.io/github/last-commit/mojaloop/sdk-scheme-adapter.svg?style=flat)](https://github.com/mojaloop/sdk-scheme-adapter/commits/master)
+[![Git Releases](https://img.shields.io/github/release/mojaloop/sdk-scheme-adapter.svg?style=flat)](https://github.com/mojaloop/sdk-scheme-adapter/releases)
+[![Npm Version](https://img.shields.io/npm/v/@mojaloop/sdk-scheme-adapter.svg?style=flat)](https://www.npmjs.com/package/@mojaloop/sdk-scheme-adapter)
+[![NPM Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/npm/@mojaloop/sdk-scheme-adapter.svg?style=flat)](https://www.npmjs.com/package/@mojaloop/sdk-scheme-adapter)
+[![CircleCI](https://circleci.com/gh/mojaloop/sdk-scheme-adapter.svg?style=svg)](https://circleci.com/gh/mojaloop/sdk-scheme-adapter)
+
 # Mojaloop SDK Scheme Adapter
 
 This package provides a scheme adapter that interfaces between a Mojaloop API compliant switch and a DFSP backend platform that does not natively implement the Mojaloop API.
@@ -17,6 +23,18 @@ DFSP backends can call the [DFSP Outbound API](/src/outboundApi/api.yaml) in ord
 ## Docker Image
 
 This package is available as a pre-built docker image on Docker Hub: [https://hub.docker.com/r/mojaloop/sdk-scheme-adapter](https://hub.docker.com/r/mojaloop/sdk-scheme-adapter)
+
+## NPM Package
+
+Users who do not wish to use all the functionality of the scheme adapter as-is are able to import this package as a dependency into their own projects. The scheme adapter package is [published on npm](https://www.npmjs.com/package/@mojaloop/sdk-scheme-adapter) and exposes the following components for external use:
+
+- Inbound Server Middleware
+- Outbound Server Middleware
+- Request Router
+- Request Validation Framework
+- Unique Request Identifier Framework (RandomPhrase)
+- Logger
+- Distributed Cache Abstraction (uses REDIS as a backing service)
 
 ## Quick Start
 
@@ -50,8 +68,7 @@ _Note that these instructions are for Linux based systems. For Mac and/or Window
 1. Edit the scheme adapter configuration to point the scheme adapter at your Mojaloop API enabled switch or simulator:
 
    Use your favourite text editor to edit the file `src/scheme-adapter.env`.
-   Change the value of the `PEER_ENDPOINT` variable to the DNS name or IP address and port number of your Mojaloop API enabled switch or simulator.i
-   Save the file.
+   Change the value of the `PEER_ENDPOINT` variable to the DNS name or IP address and port number of your Mojaloop API enabled switch or simulator. Save the file.
 
 1. Use docker-compose to download and run the pre-built scheme-adapter, shared cache and mock DFSP backend containers locally:
 
@@ -114,5 +131,3 @@ _Note that these instructions are for Linux based systems. For Mac and/or Window
 1. Speak to your switch operator or use your simulator to test the inbound (receiving money) API.
 
 You can now examine the code of the Mock DFSP backend to understand how it implements the scheme-adapter simplified inbound API.
-
-

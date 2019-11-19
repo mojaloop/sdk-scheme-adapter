@@ -5,21 +5,17 @@
  *  specified in the corresponding source code repository.                *
  *                                                                        *
  *  ORIGINAL AUTHOR:                                                      *
- *       James Bush - james.bush@modusbox.com                             *
+ *       Yevhen Kyriukha - yevhen.kyriukha@modusbox.com                   *
  **************************************************************************/
 
-'use strict';
+const StateMachine = require.requireActual('javascript-state-machine');
 
 
-const InboundTransfersModel = require('./InboundTransfersModel.js');
-const OutboundTransfersModel = require('./OutboundTransfersModel.js');
-const AccountsModel = require('./AccountsModel');
-const { BackendError } = require('./common');
+class MockStateMachine extends StateMachine {
+    constructor(...args) {
+        super(...args);
+        MockStateMachine.__instance = this;
+    }
+}
 
-
-module.exports = {
-    InboundTransfersModel,
-    OutboundTransfersModel,
-    AccountsModel,
-    BackendError,
-};
+module.exports = MockStateMachine;
