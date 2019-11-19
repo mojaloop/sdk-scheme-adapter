@@ -204,6 +204,7 @@ class AccountsModel {
         return response.partyList.map(party => ({
             idType: party.partyId.partyIdType,
             idValue: party.partyId.partyIdentifier,
+            idSubValue: party.partyId.partySubIdOrType,
             ...!response.currency && {
                 error: {
                     statusCode: Errors.MojaloopApiErrorCodes.CLIENT_ERROR.code,
@@ -243,6 +244,7 @@ class AccountsModel {
             request.partyList.push({
                 partyIdType: account.idType,
                 partyIdentifier: account.idValue,
+                partySubIdOrType: account.idSubValue,
                 fspId: this.dfspId,
             });
         }
