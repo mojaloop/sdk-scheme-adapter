@@ -257,6 +257,11 @@ const putParticipantsById = async (ctx) => {
  * Handles a PUT /participants/{ID}/error. This is an error response to a POST /participants request
  */
 const putParticipantsByIdError = async (ctx) => {
+    const histTimerEnd = Metrics.getHistogram(
+        'inbound_put_participants_type_id_error',
+        'If the server is unable to find, create or delete the associated FSP of the provided identity, or another processing error occurred.',
+        ['success', 'fspId']
+    ).startTimer();
     if(ctx.state.conf.enableTestFeatures) {
         // we are in test mode so cache the request
         const req = {
@@ -275,6 +280,7 @@ const putParticipantsByIdError = async (ctx) => {
 
     ctx.response.status = 200;
     ctx.response.body = '';
+    histTimerEnd({ success: true });
 };
 
 
@@ -384,6 +390,11 @@ const putTransfersById = async (ctx) => {
  * Handles a PUT /parties/{Type}/{ID}/error request. This is an error response to a GET /parties/{Type}/{ID} request
  */
 const putPartiesByTypeAndIdError = async(ctx) => {
+    const histTimerEnd = Metrics.getHistogram(
+        'inbound_put_parties_type_id_error',
+        'If the server is unable to find Party information of the provided identity, or another processing error occurred.',
+        ['success', 'fspId']
+    ).startTimer();
     if(ctx.state.conf.enableTestFeatures) {
         // we are in test mode so cache the request
         const req = {
@@ -405,6 +416,7 @@ const putPartiesByTypeAndIdError = async(ctx) => {
 
     ctx.response.status = 200;
     ctx.response.body = '';
+    histTimerEnd({ success: true });
 };
 
 
@@ -412,6 +424,11 @@ const putPartiesByTypeAndIdError = async(ctx) => {
  * Handles a PUT /quotes/{ID}/error request. This is an error response to a POST /quotes request
  */
 const putQuotesByIdError = async(ctx) => {
+    const histTimerEnd = Metrics.getHistogram(
+        'inbound_put_quotes_id_error',
+        'If the server is unable to find or create a quote, or some other processing error occurs.',
+        ['success', 'fspId']
+    ).startTimer();
     if(ctx.state.conf.enableTestFeatures) {
         // we are in test mode so cache the request
         const req = {
@@ -430,6 +447,7 @@ const putQuotesByIdError = async(ctx) => {
 
     ctx.response.status = 200;
     ctx.response.body = '';
+    histTimerEnd({ success: true });
 };
 
 
@@ -437,6 +455,11 @@ const putQuotesByIdError = async(ctx) => {
  * Handles a PUT /transfers/{ID}/error. This is an error response to a POST /transfers request
  */
 const putTransfersByIdError = async (ctx) => {
+    const histTimerEnd = Metrics.getHistogram(
+        'inbound_put_transfers_id_error',
+        'If the server is unable to find or create a transfer, or another processing error occurs.',
+        ['success', 'fspId']
+    ).startTimer();
     if(ctx.state.conf.enableTestFeatures) {
         // we are in test mode so cache the request
         const req = {
@@ -455,6 +478,7 @@ const putTransfersByIdError = async (ctx) => {
 
     ctx.response.status = 200;
     ctx.response.body = '';
+    histTimerEnd({ success: true });
 };
 
 
