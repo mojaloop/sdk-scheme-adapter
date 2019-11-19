@@ -146,7 +146,7 @@ jobs:
           command: cd src && mkdir -p ./test/results
       - run:
           name: Execute unit tests
-          command: cd src && npm run test > ./test/results/results.txt
+          command: cd src && (npm run test > ./test/results/results.txt)
       - store_artifacts:
           path: ./test/results
           prefix: test
@@ -170,13 +170,12 @@ jobs:
           name: Create dir for lint results
           command: cd src && mkdir -p ./lintresults
       - run:
-          name: Execute unit tests
-          command: cd src && npm run lint > ./lintresults/results.txt
+          name: Execute linting
+          command: cd src && (npm run lint > ./lintresults/results.txt)
       - store_artifacts:
           path: ./lintresults
-          prefix: lint
-      - store_test_results:
-          path: ./lintresults
+          prefix: results
+
 
 
 #  test-coverage:
