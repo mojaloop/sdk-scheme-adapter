@@ -44,7 +44,7 @@ class OutboundServer {
         const apiSpecs = yaml.load(fs.readFileSync(specPath));
         const validator = new Validate();
         await validator.initialise(apiSpecs);
-        this.api.use(globalMiddleWare.createSpan());
+        this.api.use(globalMiddleWare.createSpan(handlers.map));
         this.api.use(middlewares.createErrorHandler());
 
         // outbound always expects application/json

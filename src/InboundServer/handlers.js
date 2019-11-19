@@ -540,52 +540,106 @@ const metrics = async (ctx) => {
 
 const map = {
     '/': {
-        get: healthCheck
+        get: {
+            handler: healthCheck,
+            id: 'inbound_health_check'
+        }
     },
     '/participants/{ID}': {
-        put: putParticipantsById
+        put: {
+            handler: putParticipantsById,
+            id: 'inbound_put_participants_id'
+        }
     },
     '/participants/{Type}/{ID}': {
-        put: putParticipantsByTypeAndId,
-        get: getParticipantsByTypeAndId
+        put: {
+            handler: putParticipantsByTypeAndId,
+            id: 'inbound_put_participants_type_id'
+        },
+        get: {
+            handler: getParticipantsByTypeAndId,
+            id: 'inbound_get_participants_type_id'
+        }
     },
     '/participants/{ID}/error': {
-        put: putParticipantsByIdError
+        put: {
+            handler: putParticipantsByIdError,
+            id: 'inbound_put_participants_type_id_error'
+        }
     },
     '/parties/{Type}/{ID}': {
-        post: postPartiesByTypeAndId,
-        get: getPartiesByTypeAndId,
-        put: putPartiesByTypeAndId
+        post: {
+            handler: postPartiesByTypeAndId,
+            id: 'inbound_post_parties_type_id'
+        },
+        get: {
+            handler: getPartiesByTypeAndId,
+            id: 'inbound_get_parties_type_id'
+        },
+        put: {
+            handler: putPartiesByTypeAndId,
+            id: 'inbound_put_parties_type_id'
+        }
     },
     '/parties/{Type}/{ID}/error': {
-        put: putPartiesByTypeAndIdError
+        put: {
+            handler: putPartiesByTypeAndIdError,
+            id: 'inbound_put_parties_type_id_error'
+        }
     },
     '/quotes': {
-        post: postQuotes
+        post: {
+            handler: postQuotes,
+            id: 'inbound_post_quotes'
+        }
     },
     '/quotes/{ID}': {
-        put: putQuoteById
+        put: {
+            handler: putQuoteById,
+            id: 'inbound_put_quotes_id'
+        }
     },
     '/quotes/{ID}/error': {
-        put: putQuotesByIdError
+        put: {
+            handler: putQuotesByIdError,
+            id: 'inbound_put_quotes_id_error'
+        }
     },
     '/transfers': {
-        post: postTransfers
+        post: {
+            handler: postTransfers,
+            id: 'inbound_post_transfers'
+        }
     },
     '/transfers/{ID}': {
-        put: putTransfersById
+        put: {
+            handler: putTransfersById,
+            id: 'inbound_put_transfers_id'
+        }
     },
     '/transfers/{ID}/error': {
-        put: putTransfersByIdError
+        put: {
+            handler: putTransfersByIdError,
+            id: 'inbound_put_transfers_id_error'
+        }
     },
     '/requests/{ID}': {
-        get: getRequestById
+        get: {
+            handler: getRequestById,
+            id: 'inbound_get_requests_id'
+        }
     },
     '/callbacks/{ID}': {
-        get: getCallbackById
+        get: {
+            handler: getCallbackById,
+            id: 'inbound_get_callbacks_id'
+        }
     },
     '/metrics': {
-        get: metrics
+        get: {
+            handler: metrics,
+            id: 'inbound_get_metrics'
+        }
     }
 };
 

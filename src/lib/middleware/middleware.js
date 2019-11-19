@@ -10,17 +10,18 @@
 
 'use strict';
 
-const Enum = require('@mojaloop/central-services-shared').Enum;
 const EventSdk = require('@mojaloop/event-sdk');
 
 /**
  * Creates a span and adds it to the request headers
  * @return {Function}
  */
-const createSpan = () => async (ctx, next) => {
-    if (ctx.request && ctx.request.route && ctx.request.route.settings && ctx.request.route.settings.tags && ctx.request.route.settings.tags.includes(Enum.Tags.RouteTags.SAMPLED)) {
+const createSpan = handlerMap => async (ctx, next) => {
+    const handlers = handlerMap[ctx.request.url];
+    const id = handlers ? handlers[ctx.request.method.toLowerCase()].id : undefined;
+    if (ctx.request && id) {
         const context = EventSdk.Tracer.extractContextFromHttpRequest(ctx.request);
-        const spanName = ctx.request.route.settings.id;
+        const spanName = id;
         let span;
         if (context) {
             span = EventSdk.Tracer.createChildSpanFromContext(spanName, context);

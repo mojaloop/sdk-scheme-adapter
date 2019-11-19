@@ -45,7 +45,7 @@ class InboundServer {
         const apiSpecs = yaml.load(fs.readFileSync(specPath));
         const validator = new Validate();
         await validator.initialise(apiSpecs);
-        this._api.use(globalMiddleWare.createSpan());
+        this._api.use(globalMiddleWare.createSpan(handlers.map));
         this._api.use(middlewares.createErrorHandler());
         this._api.use(middlewares.createRequestIdGenerator());
         this._api.use(middlewares.createHeaderValidator(this._logger));

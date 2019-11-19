@@ -173,19 +173,34 @@ const metrics = async (ctx) => {
 module.exports = {
     map: {
         '/': {
-            get: healthCheck
+            get: {
+                handler: healthCheck,
+                id: 'outbound_health_check'
+            }
         },
         '/transfers': {
-            post: postTransfers
+            post: {
+                handler: postTransfers,
+                id: 'outbound_post_transfers'
+            }
         },
         '/transfers/{transferId}': {
-            put: putTransfers
+            put: {
+                handler: putTransfers,
+                id: 'outbound_put_transfers'
+            }
         },
         '/accounts': {
-            post: postAccounts
+            post: {
+                handler: postAccounts,
+                id: 'outbound_post_accounts'
+            }
         },
         '/metrics': {
-            get: metrics
+            get: {
+                handler: metrics,
+                id: 'outbound_get_metrics'
+            }
         }
     }
 };
