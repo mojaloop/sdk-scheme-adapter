@@ -37,6 +37,7 @@ function generateAccounts(count, currencies) {
             accounts.push({
                 idType: 'MSISDN',
                 idValue: String(i * (currencyIndex + 1)).padStart(9, '0'),
+                idSubValue: `Sub_${String(i * (currencyIndex + 1))}`.padStart(5, '0'),
                 currency: currencies[currencyIndex],
             });
         }
