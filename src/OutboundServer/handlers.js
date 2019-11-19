@@ -49,7 +49,7 @@ const handleAccountsError = (method, err, ctx) =>
  */
 const postTransfers = async (ctx) => {
     const histTimerEnd = Metrics.getHistogram(
-        'post_transfers',
+        'outbound_post_transfers',
         'Get participants details to complete a quote and get a completed transfer synchronously',
         ['success', 'fspId']
     ).startTimer();
@@ -92,7 +92,7 @@ const postTransfers = async (ctx) => {
  */
 const putTransfers = async (ctx) => {
     const histTimerEnd = Metrics.getHistogram(
-        'put_transfers',
+        'outbound_put_transfers',
         'Handler for resuming outbound transfers in scenarios where two-step transfers are enabled',
         ['success', 'fspId']
     ).startTimer();
@@ -129,7 +129,7 @@ const putTransfers = async (ctx) => {
  */
 const postAccounts = async (ctx) => {
     const histTimerEnd = Metrics.getHistogram(
-        'post_accounts',
+        'outbound_post_accounts',
         'Handler for outbound participants request initiation',
         ['success', 'fspId']
     ).startTimer();

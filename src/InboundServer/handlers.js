@@ -19,6 +19,11 @@ const Metrics = require('@mojaloop/central-services-metrics');
  * Handles a GET /participants/{idType}/{idValue} request
  */
 const getParticipantsByTypeAndId = async (ctx) => {
+    const histTimerEnd = Metrics.getHistogram(
+        'inbound_get_participants_type_id',
+        'Used to find out in which FSP the requested Party, defined by, and optionally, is located',
+        ['success', 'fspId']
+    ).startTimer();
     // kick off an asynchronous operation to handle the request
     (async () => {
         try {
@@ -40,6 +45,7 @@ const getParticipantsByTypeAndId = async (ctx) => {
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
+            histTimerEnd({ success: false });
             ctx.state.logger.push({ err }).log('Error handling GET /participants/{idType}/{idValue}');
         }
     })();
@@ -48,6 +54,7 @@ const getParticipantsByTypeAndId = async (ctx) => {
     // so it is safe to return 202
     ctx.response.status = 202;
     ctx.response.body = '';
+    histTimerEnd({ success: true });
 };
 
 
@@ -56,6 +63,11 @@ const getParticipantsByTypeAndId = async (ctx) => {
  */
 const getPartiesByTypeAndId = async (ctx) => {
     // kick off an asyncronous operation to handle the request
+    const histTimerEnd = Metrics.getHistogram(
+        'inbound_get_parties_type_id',
+        'Used to lookup information regarding the requested Party',
+        ['success', 'fspId']
+    ).startTimer();
     (async () => {
         try {
             if(ctx.state.conf.enableTestFeatures) {
@@ -84,6 +96,7 @@ const getPartiesByTypeAndId = async (ctx) => {
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
+            histTimerEnd({ success: false });
             ctx.state.logger.push({ err }).log('Error handling GET /parties/{idType}/{idValue}');
         }
     })();
@@ -92,6 +105,7 @@ const getPartiesByTypeAndId = async (ctx) => {
     // so it is safe to return 202
     ctx.response.status = 202;
     ctx.response.body = '';
+    histTimerEnd({ success: true });
 };
 
 
@@ -109,6 +123,11 @@ const postPartiesByTypeAndId = (ctx) => {
  * Handles a POST /quotes request
  */
 const postQuotes = async (ctx) => {
+    const histTimerEnd = Metrics.getHistogram(
+        'inbound_post_quotes',
+        'Used to request the creation of a quote for the provided financial transaction in the server.',
+        ['success', 'fspId']
+    ).startTimer();
     // kick off an asyncronous operation to handle the request
     (async () => {
         try {
@@ -139,6 +158,7 @@ const postQuotes = async (ctx) => {
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
+            histTimerEnd({ success: false });
             ctx.state.logger.push({ err }).log('Error handling POST /quotes');
         }
     })();
@@ -147,6 +167,7 @@ const postQuotes = async (ctx) => {
     // so it is safe to return 202
     ctx.response.status = 202;
     ctx.response.body = '';
+    histTimerEnd({ success: true });
 };
 
 
@@ -155,7 +176,7 @@ const postQuotes = async (ctx) => {
  */
 const postTransfers = async (ctx) => {
     const histTimerEnd = Metrics.getHistogram(
-        'post_transfers',
+        'inbound_post_transfers',
         'Used to request the creation of a transfer for the next ledger, and a financial transaction for the Payee',
         ['success', 'fspId']
     ).startTimer();
@@ -186,6 +207,7 @@ const postTransfers = async (ctx) => {
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled POST /transfers request');
+            histTimerEnd({ success: true });
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
@@ -206,7 +228,7 @@ const postTransfers = async (ctx) => {
  */
 const putParticipantsById = async (ctx) => {
     const histTimerEnd = Metrics.getHistogram(
-        'update',
+        'inbound_put_participants_id',
         'Used to inform the client of the result of the creation of the provided list of identities.',
         ['success', 'fspId']
     ).startTimer();
@@ -271,6 +293,11 @@ const putParticipantsByTypeAndId = async (ctx) => {
  * request.
  */
 const putPartiesByTypeAndId = async (ctx) => {
+    const histTimerEnd = Metrics.getHistogram(
+        'inbound_put_parties_type_id',
+        'Used to inform the client of a successful result of the Party information lookup.',
+        ['success', 'fspId']
+    ).startTimer();
     if(ctx.state.conf.enableTestFeatures) {
         // we are in test mode so cache the request
         const req = {
@@ -288,6 +315,7 @@ const putPartiesByTypeAndId = async (ctx) => {
     await ctx.state.cache.publish(`${idType}_${idValue}`, ctx.request.body);
 
     ctx.response.status = 200;
+    histTimerEnd({ success: true });
 };
 
 
@@ -295,6 +323,11 @@ const putPartiesByTypeAndId = async (ctx) => {
  * Handles a PUT /quotes/{ID}. This is a response to a POST /quotes request
  */
 const putQuoteById = async (ctx) => {
+    const histTimerEnd = Metrics.getHistogram(
+        'inbound_put_quotes_id',
+        'Used to inform the client of a requested or created quote.',
+        ['success', 'fspId']
+    ).startTimer();
     if(ctx.state.conf.enableTestFeatures) {
         // we are in test mode so cache the request
         const req = {
@@ -313,6 +346,7 @@ const putQuoteById = async (ctx) => {
     });
 
     ctx.response.status = 200;
+    histTimerEnd({ success: true });
 };
 
 
@@ -320,6 +354,11 @@ const putQuoteById = async (ctx) => {
  * Handles a PUT /transfers/{ID}. This is a response to a POST /transfers request
  */
 const putTransfersById = async (ctx) => {
+    const histTimerEnd = Metrics.getHistogram(
+        'inbound_put_transfers_id',
+        'Used to inform the client of a requested or created transfer.',
+        ['success', 'fspId']
+    ).startTimer();
     if(ctx.state.conf.enableTestFeatures) {
         // we are in test mode so cache the request
         const req = {
@@ -337,6 +376,7 @@ const putTransfersById = async (ctx) => {
     });
 
     ctx.response.status = 200;
+    histTimerEnd({ success: true });
 };
 
 
