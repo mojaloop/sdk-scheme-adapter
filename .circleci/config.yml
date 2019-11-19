@@ -143,14 +143,14 @@ jobs:
           - dependency-cache-3-{{ checksum "src/package.json" }}
       - run:
           name: Create dir for test results
-          command: cd src && mkdir -p ./test/results
+          command: cd src && mkdir -p /test/results
       - run:
           name: Execute unit tests
-          command: cd src && (npm run test > ./test/results/results.txt)
+          command: cd src && (npm run test > /test/results/results.txt)
       - store_artifacts:
-          path: ./test/results
+          path: /test/results
       - store_test_results:
-          path: ./test/results
+          path: /test/results
 
   lint:
     <<: *defaults_working_directory
@@ -167,12 +167,12 @@ jobs:
           - dependency-cache-3-{{ checksum "src/package.json" }}
       - run:
           name: Create dir for lint results
-          command: cd src && mkdir -p ./lintresults
+          command: cd src && mkdir -p /lintresults
       - run:
           name: Execute linting
-          command: cd src && (npm run lint > ./lintresults/results.txt)
+          command: cd src && (npm run lint > /lintresults/results.txt)
       - store_artifacts:
-          path: ./lintresults
+          path: /lintresults
 
 
 
