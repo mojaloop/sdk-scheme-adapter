@@ -153,6 +153,32 @@ jobs:
       - store_test_results:
           path: ./test/results
 
+  lint:
+    <<: *defaults_working_directory
+    <<: *defaults_docker_node
+    steps:
+      - run:
+          name: Install general dependencies
+          command: *defaults_Dependencies
+      - checkout
+      - run:
+          <<: *defaults_environment
+      - restore_cache:
+          keys:
+          - dependency-cache-3-{{ checksum "src/package.json" }}
+      - run:
+          name: Create dir for lint results
+          command: cd src && mkdir -p ./lintresults
+      - run:
+          name: Execute unit tests
+          command: cd src && npm run lint > ./lintresults/results.txt
+      - store_artifacts:
+          path: ./lintresults
+          prefix: lint
+      - store_test_results:
+          path: ./lintresults
+
+
 #  test-coverage:
 #    <<: *defaults_working_directory
 #    <<: *defaults_docker_node
@@ -500,6 +526,18 @@ workflows:
               ignore:
                 - /feature*/
                 - /bugfix*/
+      - lint:
+          context: org-global
+          requires:
+            - setup
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
+
 #      - test-coverage:
 #          context: org-global
 #          requires:
@@ -571,6 +609,7 @@ workflows:
           requires:
             - setup
             - test-unit
+            - lint
 #            - test-coverage
 #            - test-integration
 #            - test-functional
@@ -598,6 +637,7 @@ workflows:
           requires:
             - setup
             - test-unit
+            - lint
 #            - test-coverage
 #            - test-integration
 #            - test-functional
@@ -615,6 +655,7 @@ workflows:
           requires:
             - setup
             - test-unit
+            - lint
 #            - test-coverage
 #            - test-integration
 #            - test-functional
