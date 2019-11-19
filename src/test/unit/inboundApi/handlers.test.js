@@ -5,56 +5,31 @@
  *  specified in the corresponding source code repository.                *
  *                                                                        *
  *  ORIGINAL AUTHOR:                                                      *
- *       Vassilis Barzokas - vassilis.barzokas@modusbox.com                             *
+ *       Vassilis Barzokas - vassilis.barzokas@modusbox.com               *
  **************************************************************************/
+
 'use strict';
 
-jest.mock('@internal/model').inboundTransfersModel;
+jest.mock('@internal/model');
 
-const handlers = require('../../../inboundApi/handlers');
-const Model = require('@internal/model').inboundTransfersModel;
+const handlers = require('../../../InboundServer/handlers');
+const Model = require('@internal/model').InboundTransfersModel;
+const mockArguments = require('./data/mockArguments');
 
-describe('handlers:', () => {
-    let mockArguments;
+describe('Inbound API handlers:', () => {
+    let mockArgs;
 
     beforeEach(() => {
-        mockArguments = {
-            quoteRequest: {
-                quoteId: 'fake-quote-id',
-                transactionId: 'fake-transaction-id',
-                amountType: 'SEND',
-                amount: {
-                    currency: 'XOF',
-                    amount: 10
-                },
-                expiration: '2019-06-04T04:02:10.378Z',
-                payer: {
-                    partyIdInfo: {
-                        partyIdType: 'MSISDN',
-                        partyIdentifier: '17855501914',
-                        fspId: 'mojaloop-sdk'
-                    },
-                    personalInfo: {
-                        complexName: {
-                            firstName: 'Murthy',
-                            lastName: 'Kakarlamudi'
-                        },
-                        dateOfBirth: '2010-10-10'
-                    },
-                    name: 'Murthy Kakarlamudi',
-                    merchantClassificationCode: '123'
-                },
-            }
-        };
+        mockArgs = JSON.parse(JSON.stringify(mockArguments));
     });
 
-    describe('POST /quotes:', () => {
+    describe('POST /quotes', () => {
         let mockContext;
 
         beforeEach(() => {
             mockContext = {
                 request: {
-                    body: mockArguments.quoteRequest,
+                    body: mockArgs.quoteRequest,
                     headers: {
                         'fspiop-source': 'foo'
                     }

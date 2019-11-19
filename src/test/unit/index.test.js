@@ -10,16 +10,18 @@
 
 'use strict';
 
-
-const InboundTransfersModel = require('./InboundTransfersModel.js');
-const OutboundTransfersModel = require('./OutboundTransfersModel.js');
-const AccountsModel = require('./AccountsModel');
-const { BackendError } = require('./common');
+const index = require('../../index.js');
 
 
-module.exports = {
-    InboundTransfersModel,
-    OutboundTransfersModel,
-    AccountsModel,
-    BackendError,
-};
+describe('index.js', () => {
+    test('Exports expected modules', () => {
+        expect(typeof(index.Server)).toBe('function');
+        expect(typeof(index.InboundServerMiddleware)).toBe('object');
+        expect(typeof(index.OutboundServerMiddleware)).toBe('object');
+        expect(typeof(index.Router)).toBe('function');
+        expect(typeof(index.Validate)).toBe('function');
+        expect(typeof(index.RandomPhrase)).toBe('function');
+        expect(typeof(index.Log)).toBe('object');
+        expect(typeof(index.Cache)).toBe('function');
+    });
+});

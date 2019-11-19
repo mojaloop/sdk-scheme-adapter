@@ -37,6 +37,24 @@ defaults_license_scanner: &defaults_license_scanner
     git clone https://github.com/mojaloop/license-scanner /tmp/license-scanner
     cd /tmp/license-scanner && make build default-files set-up
 
+defaults_npm_auth: &defaults_npm_auth
+  name: Update NPM registry auth token
+  command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > src/.npmrc
+
+defaults_npm_publish_version: &defaults_npm_publish
+  name: Update version to prerelease
+  command: |
+    source $BASH_ENV
+    echo "Publishing tag $CIRCLE_TAG"
+    cd src && npm publish --tag $CIRCLE_TAG --access public
+
+defaults_npm_publish_release: &defaults_npm_publish_release
+  name: Publish NPM $RELEASE_TAG artifact
+  command: |
+    source $BASH_ENV
+    echo "Publishing tag $RELEASE_TAG"
+    cd src && npm publish --tag $RELEASE_TAG --access public
+
 defaults_Environment: &defaults_environment
   name: Set default environment
   command: |
@@ -106,7 +124,7 @@ jobs:
           name: Delete build dependencies
           command: apk del build-dependencies
       - save_cache:
-          key: dependency-cache-2-{{ checksum "src/package.json" }}
+          key: dependency-cache-3-{{ checksum "src/package.json" }}
           paths:
             - src/node_modules
 
@@ -122,7 +140,7 @@ jobs:
           <<: *defaults_environment
       - restore_cache:
           keys:
-          - dependency-cache-2-{{ checksum "src/package.json" }}
+          - dependency-cache-3-{{ checksum "src/package.json" }}
       - run:
           name: Create dir for test results
           command: cd src && mkdir -p ./test/results
@@ -282,11 +300,11 @@ jobs:
 #          command: mkdir -p ./audit/results
 #      - run:
 #          name: Check for new npm vulnerabilities
-#          command: npm run audit:check --silent -- --json > ./audit/results/auditResults.json 
+#          command: npm run audit:check --silent -- --json > ./audit/results/auditResults.json
 #      - store_artifacts:
 #          path: ./audit/results
 #          prefix: audit
-#          
+#
 #  audit-licenses:
 #    <<: *defaults_working_directory
 #    <<: *defaults_docker_node
@@ -379,6 +397,10 @@ jobs:
           <<: *defaults_build_docker_publish
       - run:
           <<: *defaults_build_docker_publish_release
+      - run:
+          <<: *defaults_npm_auth
+      - run:
+          <<: *defaults_npm_publish_release
       - run:
           <<: *defaults_slack_announcement
 

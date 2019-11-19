@@ -1,0 +1,19 @@
+{
+  "party": {
+    "partyIdInfo": {
+      "partyIdType": "MSISDN",
+      "partyIdentifier": "123456789",
+      "fspId": "sim"
+    },
+    "personalInfo": {
+      "complexName": {
+        "firstName": "John",
+        "middleName": "Someone",
+        "lastName": "Doe"
+      },
+      "dateOfBirth": "1980-01-01"
+    },
+    "name": "John Doe",
+    "merchantClassificationCode": "1234"
+  }
+}

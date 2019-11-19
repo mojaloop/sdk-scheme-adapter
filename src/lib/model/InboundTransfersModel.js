@@ -33,9 +33,12 @@ class InboundTransfersModel {
         this.expirySeconds = config.expirySeconds;
         this.rejectTransfersOnExpiredQuotes = config.rejectTransfersOnExpiredQuotes;
 
-        this.mojaloopRequests = new MojaloopRequests({
+        this._mojaloopRequests = new MojaloopRequests({
             logger: this.logger,
             peerEndpoint: config.peerEndpoint,
+            alsEndpoint: config.alsEndpoint,
+            quotesEndpoint: config.quotesEndpoint,
+            transfersEndpoint: config.transfersEndpoint,            
             dfspId: config.dfspId,
             tls: config.tls,
             jwsSign: config.jwsSign,
@@ -70,14 +73,14 @@ class InboundTransfersModel {
             }
 
             // make a callback to the source fsp with our dfspId indicating we own the party
-            return this.mojaloopRequests.putParticipants(idType, idValue, { fspId: this.dfspId },
+            return this._mojaloopRequests.putParticipants(idType, idValue, { fspId: this.dfspId },
                 sourceFspId);
         }
         catch(err) {
             this.logger.push({ err }).log('Error in getParticipantsByTypeAndId');
             const mojaloopError = await this._handleError(err);
             this.logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
-            return await this.mojaloopRequests.putParticipantsError(idType, idValue,
+            return await this._mojaloopRequests.putParticipantsError(idType, idValue,
                 mojaloopError, sourceFspId);
         }
     }
@@ -101,13 +104,13 @@ class InboundTransfersModel {
             };
 
             // make a callback to the source fsp with the party info
-            return this.mojaloopRequests.putParties(idType, idValue, mlParty, sourceFspId);
+            return this._mojaloopRequests.putParties(idType, idValue, mlParty, sourceFspId);
         }
         catch(err) {
             this.logger.push({ err }).log('Error in getParties');
             const mojaloopError = await this._handleError(err);
             this.logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
-            return await this.mojaloopRequests.putPartiesError(idType, idValue,
+            return await this._mojaloopRequests.putPartiesError(idType, idValue,
                 mojaloopError, sourceFspId);
         }
     }
@@ -153,13 +156,13 @@ class InboundTransfersModel {
             });
 
             // make a callback to the source fsp with the quote response
-            return this.mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId);
+            return this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId);
         }
         catch(err) {
             this.logger.push({ err }).log('Error in quoteRequest');
             const mojaloopError = await this._handleError(err);
             this.logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
-            return await this.mojaloopRequests.putQuotesError(quoteRequest.quoteId,
+            return await this._mojaloopRequests.putQuotesError(quoteRequest.quoteId,
                 mojaloopError, sourceFspId);
         }
     }
@@ -189,7 +192,7 @@ class InboundTransfersModel {
                 if (now > expiration) {
                     const error = Errors.MojaloopApiErrorObjectFromCode(Errors.MojaloopApiErrorCodes.QUOTE_EXPIRED);
                     this.logger.error(`Error in prepareTransfer: quote expired for transfer ${prepareRequest.transferId}, system time=${now} > quote time=${expiration}`);
-                    return this.mojaloopRequests.putTransfersError(prepareRequest.transferId, error, sourceFspId);
+                    return this._mojaloopRequests.putTransfersError(prepareRequest.transferId, error, sourceFspId);
                 }
             }
 
@@ -214,14 +217,14 @@ class InboundTransfersModel {
             };
 
             // make a callback to the source fsp with the transfer fulfilment
-            return this.mojaloopRequests.putTransfers(prepareRequest.transferId, mojaloopResponse,
+            return this._mojaloopRequests.putTransfers(prepareRequest.transferId, mojaloopResponse,
                 sourceFspId);
         }
         catch(err) {
             this.logger.push({ err }).log('Error in prepareTransfer');
             const mojaloopError = await this._handleError(err);
             this.logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
-            return await this.mojaloopRequests.putTransfersError(prepareRequest.transferId,
+            return await this._mojaloopRequests.putTransfersError(prepareRequest.transferId,
                 mojaloopError, sourceFspId);
         }
     }
