@@ -795,6 +795,8 @@ components:
             $ref: '#/components/schemas/idType'
           idValue:
             $ref: '#/components/schemas/idValue'
+          idSubValue:
+            $ref: '#/components/schemas/idValue'
           currency:
             $ref: '#/components/schemas/currency'
 
@@ -809,6 +811,8 @@ components:
           idType:
             $ref: '#/components/schemas/idType'
           idValue:
+            $ref: '#/components/schemas/idValue'
+          idSubValue:
             $ref: '#/components/schemas/idValue'
           error:
             $ref: '#/components/schemas/errorResponse'
