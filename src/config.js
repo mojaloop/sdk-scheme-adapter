@@ -204,6 +204,9 @@ const setConfig = async cfg => {
     config.alsEndpoint = cfg.ALS_ENDPOINT;
 
     config.logIndent = cfg.LOG_INDENT ? Number(cfg.LOG_INDENT) : 2;
+
+    config.testAllowTransferWithoutQuote =  cfg.TEST_ALLOW_TRANSFER_WITHOUT_QUOTE;
+    config.testAllowTransferWithoutQuoteFulfilment =  cfg.TEST_ALLOW_TRANSFER_WITHOUT_QUOTE_FULFILMENT;
 };
 
 const getConfig = () => {
