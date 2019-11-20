@@ -11,7 +11,7 @@
 'use strict';
 
 const util = require('util');
-const DummyRequest = require('./dummyRequest.js');
+const DummyRequest = require('./DummyRequest');
 
 const defaultConfig = require('./data/defaultConfig');
 const putPartiesBody = require('./data/putPartiesBody');

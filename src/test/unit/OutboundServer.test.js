@@ -12,7 +12,7 @@
 
 const util = require('util');
 const defaultConfig = require('./data/defaultConfig');
-const DummyRequest = require('./dummyRequest.js');
+const DummyRequest = require('./DummyRequest');
 
 const postTransfersBody = require('./data/postTransfersBadBody');
 
