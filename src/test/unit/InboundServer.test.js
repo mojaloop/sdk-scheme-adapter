@@ -11,7 +11,8 @@
 'use strict';
 
 const util = require('util');
-const Readable = require('stream').Readable;
+const DummyRequest = require('./dummyRequest.js');
+
 const defaultConfig = require('./data/defaultConfig');
 const putPartiesBody = require('./data/putPartiesBody');
 const postQuotesBody = require('./data/postQuotesBody');
@@ -32,26 +33,7 @@ const https = require('https');
 
 const InboundServer = require('../../InboundServer');
 
-class DummyRequest {
-    constructor(opts) {
-        this.path = opts.path;
-        this.method = opts.method;
-        this.res = {};
-        this.request = {
-            headers: opts.headers,
-            path: opts.path,
-            method: opts.method
-        };
-        this.response = {};
-        this.state = {};
 
-        this.req = new Readable();
-        this.req.headers = opts.headers;
-        this.req._read = () => {};
-        this.req.push(JSON.stringify(opts.body));
-        this.req.push(null);
-    }
-}
 
 async function testInboundJwsValidation(validateInboundJws, validateInboundPutPartiesJws, expectedValidationCalls, request) {
     const dummyConfig = JSON.parse(JSON.stringify(defaultConfig));
