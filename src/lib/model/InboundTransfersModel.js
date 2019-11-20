@@ -196,27 +196,30 @@ class InboundTransfersModel {
                             quoteId: prepareRequest.transferId
                         },
                         internalRequest: {
-                            from: { "displayName": "displayName",
-                                    "idType": "MSISDN",
-                                    "idValue": "1234567890" },
-                            to: { "idType": "MSISDN",
-                                    "idValue": "9876543210",
-                                    "fspId": prepareRequest.payeeFsp },                   
+                            from: {
+                                displayName: 'displayName',
+                                idType: 'MSISDN',
+                                idValue: '1234567890'
+                            },
+                            to: {
+                                idType: 'MSISDN',
+                                idValue: '9876543210',
+                                fspId: prepareRequest.payeeFsp },                   
                         },
                         request: {
-                            amountType: "SEND",
+                            amountType: 'SEND',
                             amount: prepareRequest.amount,
                             transactionType: {
-                                scenario: "TRANSFER"
+                                scenario: 'TRANSFER'
                             },
-                            note: ""
+                            note: ''
                         },
                         mojaloopResponse: {
                             condition: prepareRequest.condition,
                             expiration: fakeExpiration
                         },
                         fulfilment: this.testAllowTransferWithoutQuoteFulfilment
-                    }
+                    };
                 }                
             }
 
