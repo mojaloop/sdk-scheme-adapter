@@ -63,7 +63,7 @@ const contextSym = Symbol('Logger context symbol');
 const getReplacer = () => {
     const seen = new WeakSet();
     return (key, value) => {
-        if (typeof value === "object" && value !== null) {
+        if (typeof value === 'object' && value !== null) {
             if (seen.has(value)) {
                 return '[Circular Reference]';
             }
