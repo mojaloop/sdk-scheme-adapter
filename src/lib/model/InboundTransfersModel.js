@@ -181,13 +181,13 @@ class InboundTransfersModel {
             
             if(!quote) {
                 // Check whether to allow transfers without a previous quote.
-                // If testAllowTransferWithoutQuote flag has been set, this will populate a fake quote and send to backend.
+                // If testAllowTransferWithoutQuote flag has been set, this will populate a test quote and send to backend.
                 if(!this.testAllowTransferWithoutQuote) {
                     throw new Error(`Corresponding quote not found for transfer ${prepareRequest.transferId}`);
                 }
                 else {
                     const tmpExpiration = new Date().getTime() + (60 * 1000);
-                    const fakeExpiration = new Date(tmpExpiration).toISOString();
+                    const testExpiration = new Date(tmpExpiration).toISOString();
                     quote = {
                         response: {
                             transferAmount: prepareRequest.amount.amount,
@@ -216,7 +216,7 @@ class InboundTransfersModel {
                         },
                         mojaloopResponse: {
                             condition: prepareRequest.condition,
-                            expiration: fakeExpiration
+                            expiration: testExpiration
                         },
                         fulfilment: this.testAllowTransferWithoutQuoteFulfilment
                     };
