@@ -38,6 +38,8 @@ class OutboundTransfersModel {
     constructor(config) {
         this.cache = config.cache;
         this.logger = config.logger;
+        this.span = config.span;
+        this.headers = config.headers;
         this.ASYNC_TIMEOUT_MILLS = config.asyncTimeoutMillis || ASYNC_TIMEOUT_MILLS;
         this.dfspId = config.dfspId;
         this.expirySeconds = config.expirySeconds;
@@ -498,8 +500,8 @@ class OutboundTransfersModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /transfers request to the switch
             try {
-                this.data.span.setTags(getTransferSpanTags({payload: this.data, headers: this.data.headers}, Enum.Events.Event.Type.TRANSFER, Enum.Events.Event.Action.PREPARE));
-                const res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource, this.data.span);
+                this.span.setTags(getTransferSpanTags({payload: this.data, headers: this.data.headers}, Enum.Events.Event.Type.TRANSFER, Enum.Events.Event.Action.PREPARE));
+                const res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource, this.span);
                 this.logger.push({ res }).log('Transfer prepare sent to peer');
                 histTimerEnd({ success: true });
             }

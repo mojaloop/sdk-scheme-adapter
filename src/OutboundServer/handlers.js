@@ -57,15 +57,15 @@ const postTransfers = async (ctx) => {
     try {
         // this requires a multi-stage sequence with the switch.
         let transferRequest = {
-            ...ctx.request.body,
-            span,
-            headers: ctx.request.headers
+            ...ctx.request.body
         };
 
         // use the transfers model to execute asynchronous stages with the switch
         const model = new OutboundTransfersModel({
             cache: ctx.state.cache,
             logger: ctx.state.logger,
+            span,
+            headers: ctx.request.headers,
             ...ctx.state.conf
         });
 
