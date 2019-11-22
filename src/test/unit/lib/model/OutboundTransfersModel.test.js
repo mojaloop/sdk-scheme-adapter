@@ -161,7 +161,6 @@ describe('outboundModel', () => {
         MojaloopRequests.__postQuotes = jest.fn(() => {
             // ensure that the `MojaloopRequests.postQuotes` method has been called with correct arguments
             // including extension list
-            expect(MojaloopRequests.__postQuotes).toHaveBeenCalledTimes(1);
             const extensionList = MojaloopRequests.__postQuotes.mock.calls[0][0].extensionList;
             expect(extensionList).toBeTruthy();
             expect(extensionList.extension).toBeTruthy();
@@ -178,7 +177,6 @@ describe('outboundModel', () => {
             //ensure that the `MojaloopRequests.postTransfers` method has been called with the correct arguments
             // set as the destination FSPID, picked up from the header's value `fspiop-source`
             expect(model.data.quoteResponseSource).toBe(quoteResponse.headers['fspiop-source']);
-            expect(MojaloopRequests.__postTransfers).toHaveBeenCalledTimes(1);
 
             const extensionList = MojaloopRequests.__postTransfers.mock.calls[0][0].extensionList;
             expect(extensionList.extension).toBeTruthy();
@@ -210,6 +208,10 @@ describe('outboundModel', () => {
 
         console.log(`Result after three stage transfer: ${util.inspect(result)}`);
 
+        expect(MojaloopRequests.__getParties).toHaveBeenCalledTimes(1);
+        expect(MojaloopRequests.__postQuotes).toHaveBeenCalledTimes(1);
+        expect(MojaloopRequests.__postTransfers).toHaveBeenCalledTimes(1);
+
         // check we stopped at payeeResolved state
         expect(result.currentState).toBe('COMPLETED');
         expect(StateMachine.__instance.state).toBe('succeeded');
@@ -237,7 +239,6 @@ describe('outboundModel', () => {
         MojaloopRequests.__postQuotes = jest.fn(() => {
             // ensure that the `MojaloopRequests.postQuotes` method has been called with correct arguments
             // including extension list
-            expect(MojaloopRequests.__postQuotes).toHaveBeenCalledTimes(1);
             const extensionList = MojaloopRequests.__postQuotes.mock.calls[0][0].extensionList;
             expect(extensionList).toBeTruthy();
             expect(extensionList.extension).toBeTruthy();
@@ -266,7 +267,6 @@ describe('outboundModel', () => {
             //ensure that the `MojaloopRequests.postTransfers` method has been called with the correct arguments
             // set as the destination FSPID, picked up from the header's value `fspiop-source`
             expect(model.data.quoteResponseSource).toBe(quoteResponse.headers['fspiop-source']);
-            expect(MojaloopRequests.__postTransfers).toHaveBeenCalledTimes(1);
 
             const postTransfersBody = MojaloopRequests.__postTransfers.mock.calls[0][0];
 
@@ -301,6 +301,10 @@ describe('outboundModel', () => {
         const result = await model.run();
 
         console.log(`Result after three stage transfer: ${util.inspect(result)}`);
+
+        expect(MojaloopRequests.__getParties).toHaveBeenCalledTimes(1);
+        expect(MojaloopRequests.__postQuotes).toHaveBeenCalledTimes(1);
+        expect(MojaloopRequests.__postTransfers).toHaveBeenCalledTimes(1);
 
         // check we stopped at payeeResolved state
         expect(result.currentState).toBe('COMPLETED');
