@@ -159,10 +159,10 @@ describe('outboundModel', () => {
             return Promise.resolve();
         });
 
-        MojaloopRequests.__postQuotes = jest.fn(() => {
+        MojaloopRequests.__postQuotes = jest.fn((postQuotesBody) => {
             // ensure that the `MojaloopRequests.postQuotes` method has been called with correct arguments
             // including extension list
-            const extensionList = MojaloopRequests.__postQuotes.mock.calls[0][0].extensionList;
+            const extensionList = postQuotesBody.extensionList;
             expect(extensionList).toBeTruthy();
             expect(extensionList.extension).toBeTruthy();
             expect(extensionList.extension.length).toBe(2);
@@ -174,18 +174,18 @@ describe('outboundModel', () => {
             return Promise.resolve();
         });
 
-        MojaloopRequests.__postTransfers = jest.fn(() => {
+        MojaloopRequests.__postTransfers = jest.fn((postTransfersBody, destFspId) => {
             //ensure that the `MojaloopRequests.postTransfers` method has been called with the correct arguments
             // set as the destination FSPID, picked up from the header's value `fspiop-source`
             expect(model.data.quoteResponseSource).toBe(quoteResponse.headers['fspiop-source']);
 
-            const extensionList = MojaloopRequests.__postTransfers.mock.calls[0][0].extensionList;
+            const extensionList = postTransfersBody.extensionList;
             expect(extensionList.extension).toBeTruthy();
             expect(extensionList.extension.length).toBe(2);
             expect(extensionList.extension[0]).toEqual({ key: 'tkey1', value: 'tvalue1' });
             expect(extensionList.extension[1]).toEqual({ key: 'tkey2', value: 'tvalue2' });
 
-            expect(MojaloopRequests.__postTransfers.mock.calls[0][1]).toBe(quoteResponse.headers['fspiop-source']);
+            expect(destFspId).toBe(quoteResponse.headers['fspiop-source']);
             expect(model.data.to.fspId).toBe(payeeParty.party.partyIdInfo.fspId);
             expect(quoteResponse.headers['fspiop-source']).not.toBe(model.data.to.fspId);
 
@@ -244,10 +244,10 @@ describe('outboundModel', () => {
             currency: transferRequest.currency
         });
 
-        MojaloopRequests.__postQuotes = jest.fn(() => {
+        MojaloopRequests.__postQuotes = jest.fn((postQuotesBody) => {
             // ensure that the `MojaloopRequests.postQuotes` method has been called with correct arguments
             // including extension list
-            const extensionList = MojaloopRequests.__postQuotes.mock.calls[0][0].extensionList;
+            const extensionList = postQuotesBody.extensionList;
             expect(extensionList).toBeTruthy();
             expect(extensionList.extension).toBeTruthy();
             expect(extensionList.extension.length).toBe(2);
@@ -259,12 +259,10 @@ describe('outboundModel', () => {
             return Promise.resolve();
         });
 
-        MojaloopRequests.__postTransfers = jest.fn(() => {
+        MojaloopRequests.__postTransfers = jest.fn((postTransfersBody, destFspId) => {
             //ensure that the `MojaloopRequests.postTransfers` method has been called with the correct arguments
             // set as the destination FSPID, picked up from the header's value `fspiop-source`
             expect(model.data.quoteResponseSource).toBe(quoteResponse.headers['fspiop-source']);
-
-            const postTransfersBody = MojaloopRequests.__postTransfers.mock.calls[0][0];
 
             const extensionList = postTransfersBody.extensionList;
             expect(extensionList.extension).toBeTruthy();
@@ -272,7 +270,7 @@ describe('outboundModel', () => {
             expect(extensionList.extension[0]).toEqual({ key: 'tkey1', value: 'tvalue1' });
             expect(extensionList.extension[1]).toEqual({ key: 'tkey2', value: 'tvalue2' });
 
-            expect(MojaloopRequests.__postTransfers.mock.calls[0][1]).toBe(quoteResponse.headers['fspiop-source']);
+            expect(destFspId).toBe(quoteResponse.headers['fspiop-source']);
             expect(model.data.to.fspId).toBe(payeeParty.party.partyIdInfo.fspId);
             expect(quoteResponse.headers['fspiop-source']).not.toBe(model.data.to.fspId);
 
