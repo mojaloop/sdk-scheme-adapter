@@ -196,7 +196,7 @@ class InboundTransfersModel {
             else {
                 fulfilment = this.ilp.caluclateFulfil(prepareRequest.ilpPacket);
                 condition = this.ilp.calculateConditionFromFulfil(fulfilment);
-                console.log({ ilpPacket: prepareRequest.ilpPacket, fulfilment, condition})
+                console.log({ ilpPacket: prepareRequest.ilpPacket, fulfilment, condition});
             }
 
             // check incoming ILP matches our persisted values
