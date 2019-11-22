@@ -175,31 +175,36 @@ module.exports = {
         '/': {
             get: {
                 handler: healthCheck,
-                id: 'outbound_health_check'
+                id: 'outbound_health_check',
+                enableSpan: false
             }
         },
         '/transfers': {
             post: {
                 handler: postTransfers,
-                id: 'outbound_post_transfers'
+                id: 'outbound_post_transfers',
+                enableSpan: true
             }
         },
         '/transfers/{transferId}': {
             put: {
                 handler: putTransfers,
-                id: 'outbound_put_transfers'
+                id: 'outbound_put_transfers',
+                enableSpan: true
             }
         },
         '/accounts': {
             post: {
                 handler: postAccounts,
-                id: 'outbound_post_accounts'
+                id: 'outbound_post_accounts',
+                enableSpan: true
             }
         },
         '/metrics': {
             get: {
                 handler: metrics,
-                id: 'outbound_get_metrics'
+                id: 'outbound_get_metrics',
+                enableSpan: false
             }
         }
     }

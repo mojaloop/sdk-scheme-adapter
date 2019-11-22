@@ -93,6 +93,7 @@ const getPartiesByTypeAndId = async (ctx) => {
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled GET /parties/{idType}/{idValue} request');
+            histTimerEnd({ success: true });
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
@@ -542,103 +543,121 @@ const map = {
     '/': {
         get: {
             handler: healthCheck,
-            id: 'inbound_health_check'
+            id: 'inbound_health_check',
+            enableSpan: false
         }
     },
     '/participants/{ID}': {
         put: {
             handler: putParticipantsById,
-            id: 'inbound_put_participants_id'
+            id: 'inbound_put_participants_id',
+            enableSpan: true
         }
     },
     '/participants/{Type}/{ID}': {
         put: {
             handler: putParticipantsByTypeAndId,
-            id: 'inbound_put_participants_type_id'
+            id: 'inbound_put_participants_type_id',
+            enableSpan: true
         },
         get: {
             handler: getParticipantsByTypeAndId,
-            id: 'inbound_get_participants_type_id'
+            id: 'inbound_get_participants_type_id',
+            enableSpan: true
         }
     },
     '/participants/{ID}/error': {
         put: {
             handler: putParticipantsByIdError,
-            id: 'inbound_put_participants_type_id_error'
+            id: 'inbound_put_participants_type_id_error',
+            enableSpan: true
         }
     },
     '/parties/{Type}/{ID}': {
         post: {
             handler: postPartiesByTypeAndId,
-            id: 'inbound_post_parties_type_id'
+            id: 'inbound_post_parties_type_id',
+            enableSpan: true
         },
         get: {
             handler: getPartiesByTypeAndId,
-            id: 'inbound_get_parties_type_id'
+            id: 'inbound_get_parties_type_id',
+            enableSpan: true
         },
         put: {
             handler: putPartiesByTypeAndId,
-            id: 'inbound_put_parties_type_id'
+            id: 'inbound_put_parties_type_id',
+            enableSpan: true
         }
     },
     '/parties/{Type}/{ID}/error': {
         put: {
             handler: putPartiesByTypeAndIdError,
-            id: 'inbound_put_parties_type_id_error'
+            id: 'inbound_put_parties_type_id_error',
+            enableSpan: true
         }
     },
     '/quotes': {
         post: {
             handler: postQuotes,
-            id: 'inbound_post_quotes'
+            id: 'inbound_post_quotes',
+            enableSpan: true
         }
     },
     '/quotes/{ID}': {
         put: {
             handler: putQuoteById,
-            id: 'inbound_put_quotes_id'
+            id: 'inbound_put_quotes_id',
+            enableSpan: true
         }
     },
     '/quotes/{ID}/error': {
         put: {
             handler: putQuotesByIdError,
-            id: 'inbound_put_quotes_id_error'
+            id: 'inbound_put_quotes_id_error',
+            enableSpan: true
         }
     },
     '/transfers': {
         post: {
             handler: postTransfers,
-            id: 'inbound_post_transfers'
+            id: 'inbound_post_transfers',
+            enableSpan: true
         }
     },
     '/transfers/{ID}': {
         put: {
             handler: putTransfersById,
-            id: 'inbound_put_transfers_id'
+            id: 'inbound_put_transfers_id',
+            enableSpan: true
         }
     },
     '/transfers/{ID}/error': {
         put: {
             handler: putTransfersByIdError,
-            id: 'inbound_put_transfers_id_error'
+            id: 'inbound_put_transfers_id_error',
+            enableSpan: true
         }
     },
     '/requests/{ID}': {
         get: {
             handler: getRequestById,
-            id: 'inbound_get_requests_id'
+            id: 'inbound_get_requests_id',
+            enableSpan: true
         }
     },
     '/callbacks/{ID}': {
         get: {
             handler: getCallbackById,
-            id: 'inbound_get_callbacks_id'
+            id: 'inbound_get_callbacks_id',
+            enableSpan: true
         }
     },
     '/metrics': {
         get: {
             handler: metrics,
-            id: 'inbound_get_metrics'
+            id: 'inbound_get_metrics',
+            enableSpan: false
         }
     }
 };
