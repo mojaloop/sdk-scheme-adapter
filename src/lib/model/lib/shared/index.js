@@ -181,17 +181,26 @@ const internalQuoteResponseToMojaloop = (internal) => {
  * @returns {object}
  */
 const mojaloopPrepareToInternalTransfer = (external, quote) => {
-    const internal = {
-        transferId: external.transferId,
-        quote: quote.response,
-        from: quote.internalRequest.from,
-        to: quote.internalRequest.to,
-        amountType: quote.request.amountType,
-        currency: quote.request.amount.currency,
-        amount: quote.request.amount.amount,
-        transactionType: quote.request.transactionType.scenario,
-        note: quote.request.note
-    };
+    let internal = null;
+    if(quote) {
+        internal = {
+            transferId: external.transferId,
+            quote: quote.response,
+            from: quote.internalRequest.from,
+            to: quote.internalRequest.to,
+            amountType: quote.request.amountType,
+            currency: quote.request.amount.currency,
+            amount: quote.request.amount.amount,
+            transactionType: quote.request.transactionType.scenario,
+            note: quote.request.note
+        };
+    } else {
+        internal = {
+            transferId: external.transferId,
+            currency: external.amount.currency,
+            amount: external.amount.amount,
+        };
+    }
 
     return internal;
 };
