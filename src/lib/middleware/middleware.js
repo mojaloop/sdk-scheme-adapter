@@ -21,7 +21,7 @@ const createSpan = handlerMap => async (ctx, next) => {
     const id = handlers ? handlers[ctx.request.method.toLowerCase()].id : undefined;
     if (ctx.request && id) {
         const context = EventSdk.Tracer.extractContextFromHttpRequest(ctx.request);
-        const spanName = id;
+        const spanName = 'sdk_'+id;
         let span;
         if (context) {
             span = EventSdk.Tracer.createChildSpanFromContext(spanName, context);
