@@ -16,10 +16,9 @@ const StateMachine = require('javascript-state-machine');
 const { Ilp, MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const shared = require('@internal/shared');
 const { BackendError } = require('./common');
-const { getTransferSpanTags } = require('@mojaloop/central-services-shared').Util.EventFramework;
+const { getSpanTags } = require('@mojaloop/central-services-shared').Util.EventFramework;
 const Enum = require('@mojaloop/central-services-shared').Enum;
 const Metrics = require('@mojaloop/central-services-metrics');
-const EventSdk = require('@mojaloop/event-sdk');
 
 const ASYNC_TIMEOUT_MILLS = 30000;
 
@@ -173,7 +172,7 @@ class OutboundTransfersModel {
      */
     async _resolvePayee() {
         const histTimerEnd = Metrics.getHistogram(
-            'resolve_payee',
+            'outbound_resolve_payee',
             'Get participants details to complete a quote and get a completed transfer synchronously',
             ['success', 'fspId']
         ).startTimer();
@@ -268,7 +267,8 @@ class OutboundTransfersModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a GET /parties request to the switch
             try {
-                const res = await this._requests.getParties(this.data.to.idType, this.data.to.idValue, this.data.span);
+                this.span.setTags(getSpanTags(Enum.Events.Event.Type.PARTY, Enum.Events.Event.Action.RESOLVE, payeeKey, this.dfspId));
+                const res = await this._requests.getParties(this.data.to.idType, this.data.to.idValue, this.span);
                 this.logger.push({ peer: res }).log('Party lookup sent to peer');
                 histTimerEnd({ success: true });
             }
@@ -287,7 +287,7 @@ class OutboundTransfersModel {
      */
     async _requestQuote() {
         const histTimerEnd = Metrics.getHistogram(
-            'resolve_quote',
+            'outbound_request_quote',
             'Execute a quote built from the payee information',
             ['success', 'fspId']
         ).startTimer();
@@ -361,7 +361,8 @@ class OutboundTransfersModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /quotes request to the switch
             try {
-                const res = await this._requests.postQuotes(quote, this.data.to.fspId, this.data.span);
+                this.span.setTags(getSpanTags(Enum.Events.Event.Type.QUOTE, Enum.Events.Event.Action.REQUEST, quote.quoteId, this.dfspId, this.data.to.fspId));
+                const res = await this._requests.postQuotes(quote, this.data.to.fspId, this.span);
                 this.logger.push({ res }).log('Quote request sent to peer');
                 histTimerEnd({ success: true });
             }
@@ -427,7 +428,7 @@ class OutboundTransfersModel {
      */
     async _executeTransfer() {
         const histTimerEnd = Metrics.getHistogram(
-            'execute_transfers',
+            'outbound_execute_transfers',
             'Execute a transfer built from the quote and payee information',
             ['success', 'fspId']
         ).startTimer();
@@ -500,7 +501,7 @@ class OutboundTransfersModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /transfers request to the switch
             try {
-                this.span.setTags(getTransferSpanTags({payload: this.data, headers: this.data.headers}, Enum.Events.Event.Type.TRANSFER, Enum.Events.Event.Action.PREPARE));
+                this.span.setTags(getSpanTags(Enum.Events.Event.Type.TRANSFER, Enum.Events.Event.Action.INITIATE, prepare.transferId, this.dfspId, this.data.quoteResponseSource));
                 const res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource, this.span);
                 this.logger.push({ res }).log('Transfer prepare sent to peer');
                 histTimerEnd({ success: true });

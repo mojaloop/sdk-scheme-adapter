@@ -16,6 +16,7 @@ const HTTPResponseError = require('@internal/requests').HTTPResponseError;
 const MojaloopRequests = require('@mojaloop/sdk-standard-components').MojaloopRequests;
 const Ilp = require('@mojaloop/sdk-standard-components').Ilp;
 const Errors = require('@mojaloop/sdk-standard-components').Errors;
+const Metrics = require('@mojaloop/central-services-metrics');
 const shared = require('@internal/shared');
 
 const ASYNC_TIMEOUT_MILLS = 30000;
@@ -38,7 +39,7 @@ class InboundTransfersModel {
             peerEndpoint: config.peerEndpoint,
             alsEndpoint: config.alsEndpoint,
             quotesEndpoint: config.quotesEndpoint,
-            transfersEndpoint: config.transfersEndpoint,            
+            transfersEndpoint: config.transfersEndpoint,
             dfspId: config.dfspId,
             tls: config.tls,
             jwsSign: config.jwsSign,
@@ -64,24 +65,34 @@ class InboundTransfersModel {
      * Queries the backend API for the specified party and makes a callback to the originator with our dfspId if found
      */
     async getParticipantsByTypeAndId(idType, idValue, sourceFspId) {
+        const histTimerEnd = Metrics.getHistogram(
+            'inbound_get_participants_type_id',
+            'Queries the backend API for the specified party and makes a callback to the originator with our dfspId if found',
+            ['success', 'fspId']
+        ).startTimer();
         try {
             // make a call to the backend to resolve the party lookup
             const response = await this.backendRequests.getParties(idType, idValue);
 
             if(!response) {
+                histTimerEnd({ success: false });
                 return 'No response from backend';
             }
 
             // make a callback to the source fsp with our dfspId indicating we own the party
-            return this._mojaloopRequests.putParticipants(idType, idValue, { fspId: this.dfspId },
+            const res = this._mojaloopRequests.putParticipants(idType, idValue, { fspId: this.dfspId },
                 sourceFspId);
+            histTimerEnd({ success: true });
+            return res;
         }
         catch(err) {
             this.logger.push({ err }).log('Error in getParticipantsByTypeAndId');
             const mojaloopError = await this._handleError(err);
             this.logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
-            return await this._mojaloopRequests.putParticipantsError(idType, idValue,
+            const response = await this._mojaloopRequests.putParticipantsError(idType, idValue,
                 mojaloopError, sourceFspId);
+            histTimerEnd({ success: false });
+            return response;
         }
     }
 
@@ -90,11 +101,17 @@ class InboundTransfersModel {
      * Queries the backend API for the specified party and makes a callback to the originator with the result
      */
     async getParties(idType, idValue, sourceFspId) {
+        const histTimerEnd = Metrics.getHistogram(
+            'inbound_get_parties',
+            'Queries the backend API for the specified party and makes a callback to the originator with the result',
+            ['success', 'fspId']
+        ).startTimer();
         try {
             // make a call to the backend to resolve the party lookup
             const response = await this.backendRequests.getParties(idType, idValue);
 
             if(!response) {
+                histTimerEnd({ success: false });
                 return 'No response from backend';
             }
 
@@ -104,14 +121,18 @@ class InboundTransfersModel {
             };
 
             // make a callback to the source fsp with the party info
-            return this._mojaloopRequests.putParties(idType, idValue, mlParty, sourceFspId);
+            const res = this._mojaloopRequests.putParties(idType, idValue, mlParty, sourceFspId);
+            histTimerEnd({ success: true });
+            return res;
         }
         catch(err) {
             this.logger.push({ err }).log('Error in getParties');
             const mojaloopError = await this._handleError(err);
             this.logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
-            return await this._mojaloopRequests.putPartiesError(idType, idValue,
+            const response =  await this._mojaloopRequests.putPartiesError(idType, idValue,
                 mojaloopError, sourceFspId);
+            histTimerEnd({ success: false });
+            return response;
         }
     }
 
@@ -121,6 +142,11 @@ class InboundTransfersModel {
      * the result
      */
     async quoteRequest(quoteRequest, sourceFspId) {
+        const histTimerEnd = Metrics.getHistogram(
+            'inbound_quote_request',
+            'Asks the backend for a response to an incoming quote request and makes a callback to the originator with the result',
+            ['success', 'fspId']
+        ).startTimer();
         try {
             const internalForm = shared.mojaloopQuoteRequestToInternal(quoteRequest);
 
@@ -129,6 +155,7 @@ class InboundTransfersModel {
 
             if(!response) {
                 // make an error callback to the source fsp
+                histTimerEnd({ success: false });
                 return 'No response from backend';
             }
 
@@ -156,14 +183,18 @@ class InboundTransfersModel {
             });
 
             // make a callback to the source fsp with the quote response
-            return this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId);
+            const res =  this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId);
+            histTimerEnd({ success: true });
+            return res;
         }
         catch(err) {
             this.logger.push({ err }).log('Error in quoteRequest');
             const mojaloopError = await this._handleError(err);
             this.logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
-            return await this._mojaloopRequests.putQuotesError(quoteRequest.quoteId,
+            const response = await this._mojaloopRequests.putQuotesError(quoteRequest.quoteId,
                 mojaloopError, sourceFspId);
+            histTimerEnd({ success: false });
+            return response;
         }
     }
 
@@ -173,16 +204,23 @@ class InboundTransfersModel {
      * the result
      */
     async prepareTransfer(prepareRequest, sourceFspId) {
+        const histTimerEnd = Metrics.getHistogram(
+            'inbound_prepare_transfers',
+            'Validates  an incoming transfer prepare request and makes a callback to the originator with the result',
+            ['success', 'fspId']
+        ).startTimer();
         try {
             // retrieve our quote data
             const quote = await this.cache.get(`quote_${prepareRequest.transferId}`);
 
             if(!quote) {
+                histTimerEnd({ success: false });
                 throw new Error(`Corresponding quote not found for transfer ${prepareRequest.transferId}`);
             }
 
             // check incoming ILP matches our persisted values
             if(this.checkIlp && (prepareRequest.condition !== quote.mojaloopResponse.condition)) {
+                histTimerEnd({ success: false });
                 throw new Error(`ILP condition in transfer prepare for ${prepareRequest.transferId} does not match quote`);
             }
 
@@ -192,6 +230,7 @@ class InboundTransfersModel {
                 if (now > expiration) {
                     const error = Errors.MojaloopApiErrorObjectFromCode(Errors.MojaloopApiErrorCodes.QUOTE_EXPIRED);
                     this.logger.error(`Error in prepareTransfer: quote expired for transfer ${prepareRequest.transferId}, system time=${now} > quote time=${expiration}`);
+                    histTimerEnd({ success: false });
                     return this._mojaloopRequests.putTransfersError(prepareRequest.transferId, error, sourceFspId);
                 }
             }
@@ -204,6 +243,7 @@ class InboundTransfersModel {
 
             if(!response) {
                 // make an error callback to the source fsp
+                histTimerEnd({ success: false });
                 return 'No response from backend';
             }
 
@@ -217,15 +257,19 @@ class InboundTransfersModel {
             };
 
             // make a callback to the source fsp with the transfer fulfilment
-            return this._mojaloopRequests.putTransfers(prepareRequest.transferId, mojaloopResponse,
+            const res = this._mojaloopRequests.putTransfers(prepareRequest.transferId, mojaloopResponse,
                 sourceFspId);
+            histTimerEnd({ success: true });
+            return res;
         }
         catch(err) {
             this.logger.push({ err }).log('Error in prepareTransfer');
             const mojaloopError = await this._handleError(err);
             this.logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
-            return await this._mojaloopRequests.putTransfersError(prepareRequest.transferId,
+            const response = await this._mojaloopRequests.putTransfersError(prepareRequest.transferId,
                 mojaloopError, sourceFspId);
+            histTimerEnd({ success: false });
+            return response;
         }
     }
 
