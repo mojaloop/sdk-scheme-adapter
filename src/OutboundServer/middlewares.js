@@ -8,7 +8,10 @@
  *       James Bush - james.bush@modusbox.com                             *
  **************************************************************************/
 
+
+const util = require('util');
 const randomPhrase = require('@internal/randomphrase');
+
 
 /**
  * Log raw to console as a last resort
@@ -65,7 +68,7 @@ const createRequestValidator = (validator) => async (ctx, next) => {
         ctx.state.logger.push({ err }).log('Request failed validation.');
         ctx.response.status = 400;
         ctx.response.body = {
-            message: err.message,
+            message: `${err.dataPath ? err.dataPath + ' ' : ''}${err.message}`,
             statusCode: 400
         };
     }

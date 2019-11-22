@@ -1,0 +1,17 @@
+{
+  "from": {
+    "displayName": "James Bush",
+    "idType": "MSISDN",
+    "idValue": "987654321"
+  },
+  "to": {
+    "idType": "",
+    "idValue": "123456789"
+  },
+  "amountType": "SEND",
+  "currency": "USD",
+  "amount": "100",
+  "transactionType": "TRANSFER",
+  "note": "test payment",
+  "homeTransactionId": "123ABC"
+}
