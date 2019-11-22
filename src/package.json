@@ -27,7 +27,7 @@
     "@internal/shared": "file:lib/model/lib/shared",
     "@internal/validate": "file:lib/validate",
     "@mojaloop/central-services-metrics": "^8.3.0",
-    "@mojaloop/central-services-shared": "^8.4.3",
+    "@mojaloop/central-services-shared": "file:../../rajiv/central-services-shared",
     "@mojaloop/event-sdk": "^8.3.0",
     "@mojaloop/sdk-standard-components": "file:../../sdk-standard-components/src",
     "co-body": "^6.0.0",
