@@ -27,14 +27,14 @@ const Model = require('@internal/model').OutboundTransfersModel;
 const defaultEnv = require('./data/defaultEnv');
 const transferRequest = require('./data/transferRequest');
 const payeeParty = require('./data/payeeParty');
-const quoteResponse = require('./data/quoteResponse');
+const quoteResponseTemplate = require('./data/quoteResponse');
 const transferFulfil = require('./data/transferFulfil');
 
 const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const StateMachine = require('javascript-state-machine');
 
 let logTransports;
-
+let quoteResponse;
 
 /**
  *
@@ -112,6 +112,7 @@ describe('outboundModel', () => {
 
     beforeAll(async () => {
         logTransports = await Promise.all([Transports.consoleDir()]);
+        quoteResponse = JSON.parse(JSON.stringify(quoteResponseTemplate));
     });
 
     beforeEach(async () => {
@@ -231,10 +232,17 @@ describe('outboundModel', () => {
             return Promise.resolve();
         });
 
-        const dummyTransferAmount = {
+        // change the the transfer amount and currency in the quote response
+        // so it is different to the initial request
+        quoteResponse.data.transferAmount = {
             currency: 'XYZ',
             amount: '9876543210'
         };
+
+        expect(quoteResponse.data.transferAmount).not.toEqual({
+            amount: transferRequest.amount,
+            currency: transferRequest.currency
+        });
 
         MojaloopRequests.__postQuotes = jest.fn(() => {
             // ensure that the `MojaloopRequests.postQuotes` method has been called with correct arguments
@@ -247,19 +255,7 @@ describe('outboundModel', () => {
             expect(extensionList.extension[1]).toEqual({ key: 'qkey2', value: 'qvalue2' });
 
             // simulate a callback with the quote response
-            // note that we will change the currency and amount of the quote response to ensure
-            // the transfer prepare uses those rather than the originally requested currency.
-
-            // first make sure nobody has changed the quote response data
-            expect(quoteResponse.data.transferAmount).toEqual({
-                amount: '500',
-                currency: 'USD'
-            });
-
-            // now change the the transfer amount and currency
-            const qr = JSON.parse(JSON.stringify(quoteResponse));
-            qr.data.transferAmount = dummyTransferAmount;
-            cache.emitMessage(JSON.stringify(qr));
+            cache.emitMessage(JSON.stringify(quoteResponse));
             return Promise.resolve();
         });
 
@@ -280,7 +276,7 @@ describe('outboundModel', () => {
             expect(model.data.to.fspId).toBe(payeeParty.party.partyIdInfo.fspId);
             expect(quoteResponse.headers['fspiop-source']).not.toBe(model.data.to.fspId);
 
-            expect(postTransfersBody.amount).toEqual(dummyTransferAmount);
+            expect(postTransfersBody.amount).toEqual(quoteResponse.data.transferAmount);
 
             // simulate a callback with the transfer fulfilment
             cache.emitMessage(JSON.stringify(transferFulfil));
