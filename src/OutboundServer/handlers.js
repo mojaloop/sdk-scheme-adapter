@@ -65,7 +65,6 @@ const postTransfers = async (ctx) => {
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             span,
-            headers: ctx.request.headers,
             ...ctx.state.conf
         });
 

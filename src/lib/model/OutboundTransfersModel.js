@@ -38,7 +38,6 @@ class OutboundTransfersModel {
         this.cache = config.cache;
         this.logger = config.logger;
         this.span = config.span;
-        this.headers = config.headers;
         this.ASYNC_TIMEOUT_MILLS = config.asyncTimeoutMillis || ASYNC_TIMEOUT_MILLS;
         this.dfspId = config.dfspId;
         this.expirySeconds = config.expirySeconds;

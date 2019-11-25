@@ -73,6 +73,19 @@ let DEFAULTS = {
     rejectTransfersOnExpiredQuotes: false,
     rejectExpiredTransferFulfils: false,
     logIndent: 2,
+    metrics: {
+        disabled: true,
+        labels: {
+            fspId: '*'
+        },
+        config: {
+            timeout: 5000,
+            prefix: 'moja_sdk_',
+            defaultLabels: {
+                serviceName: 'mojaloop_sdk'
+            }
+        }
+    }
 };
 
 let config = {};

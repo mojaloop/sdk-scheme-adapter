@@ -60,6 +60,21 @@ async function testTransferWithDelay({expirySeconds, delays, rejects}) {
 
     const cache = new Cache();
 
+    const span = {
+        setTags: jest.fn(() => {
+            return true;
+        }),
+        finish: jest.fn(() => {
+            return true;
+        }),
+        error: jest.fn(() => {
+            return true;
+        }),
+        getChild: jest.fn(() => {
+            return span;
+        })
+    };
+
     // simulate a callback with the resolved party
     MojaloopRequests.__getParties = jest.fn(() => cache.emitMessage(JSON.stringify(payeeParty)));
 
@@ -80,6 +95,7 @@ async function testTransferWithDelay({expirySeconds, delays, rejects}) {
     const model = new Model({
         cache,
         logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
+        span,
         ...conf
     });
 
@@ -110,6 +126,21 @@ describe('outboundModel', () => {
     defaultEnv.JWS_SIGNING_KEY_PATH = path.join('..', 'secrets', defaultEnv.JWS_SIGNING_KEY_PATH);
     defaultEnv.JWS_VERIFICATION_KEYS_DIRECTORY = path.join('..', 'secrets', defaultEnv.JWS_VERIFICATION_KEYS_DIRECTORY);
 
+    const span = {
+        setTags: jest.fn(() => {
+            return true;
+        }),
+        finish: jest.fn(() => {
+            return true;
+        }),
+        error: jest.fn(() => {
+            return true;
+        }),
+        getChild: jest.fn(() => {
+            return span;
+        })
+    };
+
     beforeAll(async () => {
         logTransports = await Promise.all([Transports.consoleDir()]);
         quoteResponse = JSON.parse(JSON.stringify(quoteResponseTemplate));
@@ -138,6 +169,7 @@ describe('outboundModel', () => {
         const model = new Model({
             cache: new Cache(),
             logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
+            span,
             ...conf
         });
 
@@ -197,6 +229,7 @@ describe('outboundModel', () => {
         const model = new Model({
             cache,
             logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
+            span,
             ...conf
         });
 
@@ -284,6 +317,7 @@ describe('outboundModel', () => {
         const model = new Model({
             cache,
             logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
+            span,
             ...conf
         });
 
@@ -316,6 +350,7 @@ describe('outboundModel', () => {
         const model = new Model({
             cache,
             logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
+            span,
             ...conf
         });
 
@@ -352,6 +387,7 @@ describe('outboundModel', () => {
         let model = new Model({
             cache: cache,
             logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
+            span,
             ...conf
         });
 
@@ -383,6 +419,7 @@ describe('outboundModel', () => {
         model = new Model({
             cache,
             logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
+            span,
             ...conf
         });
 
@@ -420,6 +457,7 @@ describe('outboundModel', () => {
         let model = new Model({
             cache,
             logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
+            span,
             ...conf
         });
 
@@ -451,6 +489,7 @@ describe('outboundModel', () => {
         model = new Model({
             cache,
             logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
+            span,
             ...conf
         });
 
@@ -478,6 +517,7 @@ describe('outboundModel', () => {
         model = new Model({
             cache,
             logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
+            span,
             ...conf
         });
 
@@ -539,6 +579,7 @@ describe('outboundModel', () => {
         const model = new Model({
             cache,
             logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
+            span,
             ...conf
         });
 
@@ -596,6 +637,7 @@ describe('outboundModel', () => {
         const model = new Model({
             cache,
             logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
+            span,
             ...conf
         });
 
@@ -695,6 +737,7 @@ describe('outboundModel', () => {
         const model = new Model({
             cache,
             logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
+            span,
             ...conf
         });
 
@@ -750,6 +793,7 @@ describe('outboundModel', () => {
         const model = new Model({
             cache,
             logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
+            span,
             ...conf
         });
 
@@ -814,6 +858,7 @@ describe('outboundModel', () => {
         const model = new Model({
             cache,
             logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
+            span,
             ...conf
         });
 
@@ -852,6 +897,20 @@ describe('outboundModel', () => {
 
 describe('Outbound mTLS test', () => {
     let defConfig;
+    const span = {
+        setTags: jest.fn(() => {
+            return true;
+        }),
+        finish: jest.fn(() => {
+            return true;
+        }),
+        error: jest.fn(() => {
+            return true;
+        }),
+        getChild: jest.fn(() => {
+            return span;
+        })
+    };
 
     beforeEach(async () => {
         init();
@@ -878,6 +937,7 @@ describe('Outbound mTLS test', () => {
         new Model({
             cache,
             logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
+            span,
             ...defConfig
         });
 
