@@ -214,12 +214,12 @@ class InboundTransfersModel {
         try {
             // retrieve our quote data
             let quote = await this.cache.get(`quote_${prepareRequest.transferId}`);
-            
+
             if(!quote) {
                 // Check whether to allow transfers without a previous quote.
                 // If testAllowTransferWithoutQuote flag has been set, this will populate a test quote and send to backend.
                 if(!this.testAllowTransferWithoutQuote) {
- 		    histTimerEnd({ success: false });
+                    histTimerEnd({ success: false });
                     throw new Error(`Corresponding quote not found for transfer ${prepareRequest.transferId}`);
                 }
                 else {
@@ -241,7 +241,7 @@ class InboundTransfersModel {
                             to: {
                                 idType: 'MSISDN',
                                 idValue: '9876543210',
-                                fspId: prepareRequest.payeeFsp },                   
+                                fspId: prepareRequest.payeeFsp },
                         },
                         request: {
                             amountType: 'SEND',
@@ -257,7 +257,7 @@ class InboundTransfersModel {
                         },
                         fulfilment: this.testAllowTransferWithoutQuoteFulfilment
                     };
-                }                
+                }
             }
 
             // check incoming ILP matches our persisted values
