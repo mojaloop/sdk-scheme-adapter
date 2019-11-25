@@ -33,6 +33,8 @@ class InboundTransfersModel {
         this.dfspId = config.dfspId;
         this.expirySeconds = config.expirySeconds;
         this.rejectTransfersOnExpiredQuotes = config.rejectTransfersOnExpiredQuotes;
+        this.testAllowTransferWithoutQuote = config.testAllowTransferWithoutQuote;
+        this.testAllowTransferWithoutQuoteFulfilment = config.testAllowTransferWithoutQuoteFulfilment;
 
         this._mojaloopRequests = new MojaloopRequests({
             logger: this.logger,
@@ -211,11 +213,51 @@ class InboundTransfersModel {
         ).startTimer();
         try {
             // retrieve our quote data
-            const quote = await this.cache.get(`quote_${prepareRequest.transferId}`);
-
+            let quote = await this.cache.get(`quote_${prepareRequest.transferId}`);
+            
             if(!quote) {
-                histTimerEnd({ success: false });
-                throw new Error(`Corresponding quote not found for transfer ${prepareRequest.transferId}`);
+                // Check whether to allow transfers without a previous quote.
+                // If testAllowTransferWithoutQuote flag has been set, this will populate a test quote and send to backend.
+                if(!this.testAllowTransferWithoutQuote) {
+ 		    histTimerEnd({ success: false });
+                    throw new Error(`Corresponding quote not found for transfer ${prepareRequest.transferId}`);
+                }
+                else {
+                    const tmpExpiration = new Date().getTime() + (60 * 1000);
+                    const testExpiration = new Date(tmpExpiration).toISOString();
+                    quote = {
+                        response: {
+                            transferAmount: prepareRequest.amount.amount,
+                            transferAmountCurrency: prepareRequest.amount.currency,
+                            transactionId: prepareRequest.transferId,
+                            quoteId: prepareRequest.transferId
+                        },
+                        internalRequest: {
+                            from: {
+                                displayName: 'displayName',
+                                idType: 'MSISDN',
+                                idValue: '1234567890'
+                            },
+                            to: {
+                                idType: 'MSISDN',
+                                idValue: '9876543210',
+                                fspId: prepareRequest.payeeFsp },                   
+                        },
+                        request: {
+                            amountType: 'SEND',
+                            amount: prepareRequest.amount,
+                            transactionType: {
+                                scenario: 'TRANSFER'
+                            },
+                            note: ''
+                        },
+                        mojaloopResponse: {
+                            condition: prepareRequest.condition,
+                            expiration: testExpiration
+                        },
+                        fulfilment: this.testAllowTransferWithoutQuoteFulfilment
+                    };
+                }                
             }
 
             // check incoming ILP matches our persisted values

@@ -218,6 +218,10 @@ const setConfig = async cfg => {
             }
         }
     };
+
+    config.testAllowTransferWithoutQuote =  cfg.TEST_ALLOW_TRANSFER_WITHOUT_QUOTE;
+    config.testAllowTransferWithoutQuoteFulfilment =  cfg.TEST_ALLOW_TRANSFER_WITHOUT_QUOTE_FULFILMENT;
+
 };
 
 const getConfig = () => {
