@@ -218,7 +218,7 @@ class InboundTransfersModel {
             if(!quote) {
                 // Check whether to allow transfers without a previous quote.
                 if(!this.allowTransferWithoutQuote) {
-			histTimerEnd({ success: false });
+                    histTimerEnd({ success: false });
                     throw new Error(`ILP condition in transfer prepare for ${prepareRequest.transferId} does not match quote`);
                 }
             }
