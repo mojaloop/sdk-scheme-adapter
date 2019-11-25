@@ -20,7 +20,7 @@ const { getSpanTags } = require('@mojaloop/central-services-shared').Util.EventF
 const Enum = require('@mojaloop/central-services-shared').Enum;
 const Metrics = require('@mojaloop/central-services-metrics');
 
-const ASYNC_TIMEOUT_MILLS = 300000;
+const ASYNC_TIMEOUT_MILLS = 30000;
 
 const transferStateEnum = {
     'WAITING_FOR_PARTY_ACEPTANCE': 'WAITING_FOR_PARTY_ACCEPTANCE',
