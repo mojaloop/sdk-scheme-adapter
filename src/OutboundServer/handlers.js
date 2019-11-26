@@ -175,35 +175,35 @@ module.exports = {
             get: {
                 handler: healthCheck,
                 id: 'outbound_health_check',
-                enableSpan: false
+                enableTracing: false
             }
         },
         '/transfers': {
             post: {
                 handler: postTransfers,
                 id: 'outbound_post_transfers',
-                enableSpan: true
+                enableTracing: true
             }
         },
         '/transfers/{transferId}': {
             put: {
                 handler: putTransfers,
                 id: 'outbound_put_transfers',
-                enableSpan: true
+                enableTracing: true
             }
         },
         '/accounts': {
             post: {
                 handler: postAccounts,
                 id: 'outbound_post_accounts',
-                enableSpan: true
+                enableTracing: true
             }
         },
         '/metrics': {
             get: {
                 handler: metrics,
                 id: 'outbound_get_metrics',
-                enableSpan: false
+                enableTracing: false
             }
         }
     }
