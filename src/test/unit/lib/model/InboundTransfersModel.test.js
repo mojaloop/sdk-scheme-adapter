@@ -150,6 +150,12 @@ describe('inboundModel', () => {
             const TRANSFER_ID = 'without_quote-transfer-id';
             const args = {
                 transferId: TRANSFER_ID,
+                amount: {
+                    currency: 'USD',
+                    amount: 20.13
+                },
+                ilpPacket: 'mockBase64encodedIlpPacket',
+                condition: 'mockGeneratedCondition'
             };
 
             await model.prepareTransfer(args, mockArgs.fspId);
