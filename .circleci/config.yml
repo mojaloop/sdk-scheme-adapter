@@ -401,7 +401,7 @@ jobs:
       - run:
           name: setup environment vars for PERF release
           command: |
-            echo 'export RELEASE_TAG=$RELEASE_TAG_SNAPSHOT' >> $BASH_ENV
+            echo 'export RELEASE_TAG=$RELEASE_TAG_PERFORMANCE' >> $BASH_ENV
       - run:
           <<: *defaults_build_docker_login
       - run:
