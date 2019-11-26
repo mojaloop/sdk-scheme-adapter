@@ -41,6 +41,16 @@ class MockIlp {
         this.config = config;
     }
 
+    caluclateFulfil(ilpPacket) {
+        console.log(`Mock ILP not calculating fulfil from ilp packet ${ilpPacket}`);
+        return 'mockGeneratedFulfilment';
+    }
+
+    calculateConditionFromFulfil(fulfil) {
+        console.log(`Mock ILP not calculating condition from fulfil ${fulfil}`);
+        return 'mockGeneratedCondition';
+    }
+
     validateFulfil(fulfil, condition) {
         console.log(`Mock ILP not checking fulfil ${fulfil} against condition ${condition}`);
         return true;
