@@ -391,26 +391,6 @@ jobs:
       - run:
           <<: *defaults_slack_announcement
 
-  build-perf:
-    machine: true
-    # <<: *default_env
-    steps:
-      - checkout
-      - run:
-          <<: *defaults_environment
-      - run:
-          name: setup environment vars for PERF release
-          command: |
-            echo 'export RELEASE_TAG=$RELEASE_TAG_PROD' >> $BASH_ENV
-      - run:
-          <<: *defaults_build_docker_login
-      - run:
-          <<: *defaults_build_docker_build
-      - run:
-          <<: *defaults_build_docker_publish
-      - run:
-          <<: *defaults_slack_announcement
-
   build:
     machine: true
     # <<: *default_env
@@ -684,25 +664,7 @@ workflows:
               only: /v[0-9]+(\.[0-9]+)*\-hotfix(\.[0-9]+)/
             branches:
               ignore:
-                - /.*/
-      - build-perf:
-          context: org-global
-          requires:
-            - setup
-            - test-unit
-            - lint
-#            - test-coverage
-#            - test-integration
-#            - test-functional
-#            - test-spec
-#            - vulnerability-check
-#            - audit-licenses
-          filters:
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*\-perf(\.[0-9]+)/
-            branches:
-              ignore:
-                - /.*/                
+                - /.*/          
 #      - deploy:
 #          context: org-global
 #          requires:
