@@ -16,7 +16,7 @@ const EventSdk = require('@mojaloop/event-sdk');
  * Creates a span and adds it to the request headers
  * @return {Function}
  */
-const createSpan = handlerMap => async (ctx, next) => {
+const createTrace = handlerMap => async (ctx, next) => {
     const handlers = handlerMap[ctx.request.url];
     const id = handlers ? handlers[ctx.request.method.toLowerCase()].id : undefined;
     const enableSpan = handlers ? handlers[ctx.request.method.toLowerCase()].enableSpan : false;
@@ -38,7 +38,7 @@ const createSpan = handlerMap => async (ctx, next) => {
  * Closes span in the request header
  * @return {Function}
  */
-const finishSpan = () => async (ctx) => {
+const finishTrace = () => async (ctx) => {
     const span = ctx.request.span;
     const response = ctx.request.response;
     if (span) {
@@ -58,6 +58,6 @@ const finishSpan = () => async (ctx) => {
 };
 
 module.exports = {
-    createSpan,
-    finishSpan
+    createTrace,
+    finishTrace
 };

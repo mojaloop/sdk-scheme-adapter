@@ -2743,21 +2743,21 @@ components:
       in: header
       required: false
       description: >-
-        The traceparent header field is a non-HTTP standard field used by the API
-        for passing along the parent traceId for children traces to use to create child
-        spans.
+        Dash delimited string of tracing information: \-\-\-\.
+        Refer to the following publication for more information: https://w3c.github.io/trace-context/
       schema:
         type: string
+        pattern: '^([0-9a-f]{2})-([0-9a-f]{32})-([0-9a-f]{16})-([0-9a-f]{2})$'
     tracestate:
       name: tracestate
       in: header
       required: false
       description: >-
-        The tracestate header field is a non-HTTP standard field used by the API
-        for passing along the current state of the parent traceId being passed in
-        the traceparent header
+        Comma delimited vendor specific format captured as follows: \=\.
+        Refer to the following publication for more information: https://w3c.github.io/trace-context/
       schema:
         type: string
+        pattern: '([^\n=,]+=[^\n=,]+,)*([^\n=,]+=[^\n=,]+)'
     ID:
       name: ID
       in: path

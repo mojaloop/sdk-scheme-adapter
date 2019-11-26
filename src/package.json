@@ -19,7 +19,7 @@
   "dependencies": {
     "@internal/cache": "file:lib/cache",
     "@internal/log": "file:lib/log",
-    "@internal/middleware": "file:lib/middleware",
+    "@internal/tracing": "file:lib/tracing",
     "@internal/model": "file:lib/model",
     "@internal/randomphrase": "file:lib/randomphrase",
     "@internal/requests": "file:lib/model/lib/requests",

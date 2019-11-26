@@ -82,7 +82,7 @@ let DEFAULTS = {
             timeout: 5000,
             prefix: 'moja_sdk_',
             defaultLabels: {
-                serviceName: 'mojaloop_sdk'
+                serviceName: 'sdk-schema-adapter'
             }
         }
     }

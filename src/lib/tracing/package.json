@@ -1,8 +1,8 @@
 {
-  "name": "@internal/middleware",
+  "name": "@internal/tracing",
   "version": "0.0.1",
-  "description": "Shared middlewares for Koa servers",
-  "main": "middleware.js",
+  "description": "Tracing middleware for Koa servers",
+  "main": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
