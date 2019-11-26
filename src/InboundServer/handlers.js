@@ -13,11 +13,17 @@
 const util = require('util');
 const Model = require('@internal/model').InboundTransfersModel;
 const { Errors } = require('@mojaloop/sdk-standard-components');
+const Metrics = require('@mojaloop/central-services-metrics');
 
 /**
  * Handles a GET /participants/{idType}/{idValue} request
  */
 const getParticipantsByTypeAndId = async (ctx) => {
+    const histTimerEnd = Metrics.getHistogram(
+        'inbound_get_participants_type_id',
+        'Used to find out in which FSP the requested Party, defined by, and optionally, is located',
+        ['success', 'fspId']
+    ).startTimer();
     // kick off an asynchronous operation to handle the request
     (async () => {
         try {
@@ -39,6 +45,7 @@ const getParticipantsByTypeAndId = async (ctx) => {
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
+            histTimerEnd({ success: false });
             ctx.state.logger.push({ err }).log('Error handling GET /participants/{idType}/{idValue}');
         }
     })();
@@ -47,6 +54,7 @@ const getParticipantsByTypeAndId = async (ctx) => {
     // so it is safe to return 202
     ctx.response.status = 202;
     ctx.response.body = '';
+    histTimerEnd({ success: true });
 };
 
 
@@ -55,6 +63,11 @@ const getParticipantsByTypeAndId = async (ctx) => {
  */
 const getPartiesByTypeAndId = async (ctx) => {
     // kick off an asyncronous operation to handle the request
+    const histTimerEnd = Metrics.getHistogram(
+        'inbound_get_parties_type_id',
+        'Used to lookup information regarding the requested Party',
+        ['success', 'fspId']
+    ).startTimer();
     (async () => {
         try {
             if(ctx.state.conf.enableTestFeatures) {
@@ -63,7 +76,7 @@ const getPartiesByTypeAndId = async (ctx) => {
                     headers: ctx.request.headers
                 };
                 const res = await ctx.state.cache.set(`request_${ctx.state.path.params.ID}`, req);
-                ctx.state.logger.log(`Cacheing request : ${util.inspect(res)}`);
+                ctx.state.logger.log(`Caching request : ${util.inspect(res)}`);
             }
 
             // use the transfers model to execute asynchronous stages with the switch
@@ -80,9 +93,11 @@ const getPartiesByTypeAndId = async (ctx) => {
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled GET /parties/{idType}/{idValue} request');
+            histTimerEnd({ success: true });
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
+            histTimerEnd({ success: false });
             ctx.state.logger.push({ err }).log('Error handling GET /parties/{idType}/{idValue}');
         }
     })();
@@ -91,6 +106,7 @@ const getPartiesByTypeAndId = async (ctx) => {
     // so it is safe to return 202
     ctx.response.status = 202;
     ctx.response.body = '';
+    histTimerEnd({ success: true });
 };
 
 
@@ -108,6 +124,11 @@ const postPartiesByTypeAndId = (ctx) => {
  * Handles a POST /quotes request
  */
 const postQuotes = async (ctx) => {
+    const histTimerEnd = Metrics.getHistogram(
+        'inbound_post_quotes',
+        'Used to request the creation of a quote for the provided financial transaction in the server.',
+        ['success', 'fspId']
+    ).startTimer();
     // kick off an asyncronous operation to handle the request
     (async () => {
         try {
@@ -118,7 +139,7 @@ const postQuotes = async (ctx) => {
                     data: ctx.request.body
                 };
                 const res = await ctx.state.cache.set(`request_${ctx.request.body.quoteId}`, req);
-                ctx.state.logger.log(`Cacheing request: ${util.inspect(res)}`);
+                ctx.state.logger.log(`Caching request: ${util.inspect(res)}`);
             }
 
             // use the transfers model to execute asynchronous stages with the switch
@@ -138,6 +159,7 @@ const postQuotes = async (ctx) => {
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
+            histTimerEnd({ success: false });
             ctx.state.logger.push({ err }).log('Error handling POST /quotes');
         }
     })();
@@ -146,6 +168,7 @@ const postQuotes = async (ctx) => {
     // so it is safe to return 202
     ctx.response.status = 202;
     ctx.response.body = '';
+    histTimerEnd({ success: true });
 };
 
 
@@ -153,6 +176,11 @@ const postQuotes = async (ctx) => {
  * Handles a POST /transfers request
  */
 const postTransfers = async (ctx) => {
+    const histTimerEnd = Metrics.getHistogram(
+        'inbound_post_transfers',
+        'Used to request the creation of a transfer for the next ledger, and a financial transaction for the Payee',
+        ['success', 'fspId']
+    ).startTimer();
     // kick off an asyncronous operation to handle the request
     (async () => {
         try {
@@ -163,7 +191,7 @@ const postTransfers = async (ctx) => {
                     data: ctx.request.body
                 };
                 const res = await ctx.state.cache.set(`request_${ctx.request.body.transferId}`, req);
-                ctx.state.logger.log(`Cacheing request: ${util.inspect(res)}`);
+                ctx.state.logger.log(`Caching request: ${util.inspect(res)}`);
             }
 
             // use the transfers model to execute asynchronous stages with the switch
@@ -180,9 +208,11 @@ const postTransfers = async (ctx) => {
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled POST /transfers request');
+            histTimerEnd({ success: true });
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
+            histTimerEnd({ success: false });
             ctx.state.logger.push({ err }).log('Error handling POST /transfers');
         }
     })();
@@ -191,12 +221,18 @@ const postTransfers = async (ctx) => {
     // so it is safe to return 202
     ctx.response.status = 202;
     ctx.response.body = '';
+    histTimerEnd({ success: true });
 };
 
 /**
  * Handles a PUT /participants/{ID}. This is a response to a POST /participants request
  */
 const putParticipantsById = async (ctx) => {
+    const histTimerEnd = Metrics.getHistogram(
+        'inbound_put_participants_id',
+        'Used to inform the client of the result of the creation of the provided list of identities.',
+        ['success', 'fspId']
+    ).startTimer();
     if(ctx.state.conf.enableTestFeatures) {
         // we are in test mode so cache the request
         const req = {
@@ -214,6 +250,7 @@ const putParticipantsById = async (ctx) => {
     });
 
     ctx.response.status = 200;
+    histTimerEnd({ success: true });
 };
 
 
@@ -221,6 +258,11 @@ const putParticipantsById = async (ctx) => {
  * Handles a PUT /participants/{ID}/error. This is an error response to a POST /participants request
  */
 const putParticipantsByIdError = async (ctx) => {
+    const histTimerEnd = Metrics.getHistogram(
+        'inbound_put_participants_type_id_error',
+        'If the server is unable to find, create or delete the associated FSP of the provided identity, or another processing error occurred.',
+        ['success', 'fspId']
+    ).startTimer();
     if(ctx.state.conf.enableTestFeatures) {
         // we are in test mode so cache the request
         const req = {
@@ -239,6 +281,7 @@ const putParticipantsByIdError = async (ctx) => {
 
     ctx.response.status = 200;
     ctx.response.body = '';
+    histTimerEnd({ success: true });
 };
 
 
@@ -257,6 +300,11 @@ const putParticipantsByTypeAndId = async (ctx) => {
  * request.
  */
 const putPartiesByTypeAndId = async (ctx) => {
+    const histTimerEnd = Metrics.getHistogram(
+        'inbound_put_parties_type_id',
+        'Used to inform the client of a successful result of the Party information lookup.',
+        ['success', 'fspId']
+    ).startTimer();
     if(ctx.state.conf.enableTestFeatures) {
         // we are in test mode so cache the request
         const req = {
@@ -264,7 +312,7 @@ const putPartiesByTypeAndId = async (ctx) => {
             data: ctx.request.body
         };
         const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
-        ctx.state.logger.log(`Cacheing request: ${util.inspect(res)}`);
+        ctx.state.logger.log(`Caching request: ${util.inspect(res)}`);
     }
 
     const idType = ctx.state.path.params.Type;
@@ -274,6 +322,7 @@ const putPartiesByTypeAndId = async (ctx) => {
     await ctx.state.cache.publish(`${idType}_${idValue}`, ctx.request.body);
 
     ctx.response.status = 200;
+    histTimerEnd({ success: true });
 };
 
 
@@ -281,6 +330,11 @@ const putPartiesByTypeAndId = async (ctx) => {
  * Handles a PUT /quotes/{ID}. This is a response to a POST /quotes request
  */
 const putQuoteById = async (ctx) => {
+    const histTimerEnd = Metrics.getHistogram(
+        'inbound_put_quotes_id',
+        'Used to inform the client of a requested or created quote.',
+        ['success', 'fspId']
+    ).startTimer();
     if(ctx.state.conf.enableTestFeatures) {
         // we are in test mode so cache the request
         const req = {
@@ -288,7 +342,7 @@ const putQuoteById = async (ctx) => {
             data: ctx.request.body
         };
         const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
-        ctx.state.logger.log(`Cacheing callback: ${util.inspect(res)}`);
+        ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
     }
 
     // publish an event onto the cache for subscribers to action
@@ -299,6 +353,7 @@ const putQuoteById = async (ctx) => {
     });
 
     ctx.response.status = 200;
+    histTimerEnd({ success: true });
 };
 
 
@@ -306,6 +361,11 @@ const putQuoteById = async (ctx) => {
  * Handles a PUT /transfers/{ID}. This is a response to a POST /transfers request
  */
 const putTransfersById = async (ctx) => {
+    const histTimerEnd = Metrics.getHistogram(
+        'inbound_put_transfers_id',
+        'Used to inform the client of a requested or created transfer.',
+        ['success', 'fspId']
+    ).startTimer();
     if(ctx.state.conf.enableTestFeatures) {
         // we are in test mode so cache the request
         const req = {
@@ -313,7 +373,7 @@ const putTransfersById = async (ctx) => {
             data: ctx.request.body
         };
         const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
-        ctx.state.logger.log(`Cacheing callback: ${util.inspect(res)}`);
+        ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
     }
 
     // publish an event onto the cache for subscribers to action
@@ -323,6 +383,7 @@ const putTransfersById = async (ctx) => {
     });
 
     ctx.response.status = 200;
+    histTimerEnd({ success: true });
 };
 
 
@@ -330,6 +391,11 @@ const putTransfersById = async (ctx) => {
  * Handles a PUT /parties/{Type}/{ID}/error request. This is an error response to a GET /parties/{Type}/{ID} request
  */
 const putPartiesByTypeAndIdError = async(ctx) => {
+    const histTimerEnd = Metrics.getHistogram(
+        'inbound_put_parties_type_id_error',
+        'If the server is unable to find Party information of the provided identity, or another processing error occurred.',
+        ['success', 'fspId']
+    ).startTimer();
     if(ctx.state.conf.enableTestFeatures) {
         // we are in test mode so cache the request
         const req = {
@@ -337,7 +403,7 @@ const putPartiesByTypeAndIdError = async(ctx) => {
             data: ctx.request.body
         };
         const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
-        ctx.state.logger.log(`Cacheing request: ${util.inspect(res)}`);
+        ctx.state.logger.log(`Caching request: ${util.inspect(res)}`);
     }
 
     const idType = ctx.state.path.params.Type;
@@ -351,6 +417,7 @@ const putPartiesByTypeAndIdError = async(ctx) => {
 
     ctx.response.status = 200;
     ctx.response.body = '';
+    histTimerEnd({ success: true });
 };
 
 
@@ -358,6 +425,11 @@ const putPartiesByTypeAndIdError = async(ctx) => {
  * Handles a PUT /quotes/{ID}/error request. This is an error response to a POST /quotes request
  */
 const putQuotesByIdError = async(ctx) => {
+    const histTimerEnd = Metrics.getHistogram(
+        'inbound_put_quotes_id_error',
+        'If the server is unable to find or create a quote, or some other processing error occurs.',
+        ['success', 'fspId']
+    ).startTimer();
     if(ctx.state.conf.enableTestFeatures) {
         // we are in test mode so cache the request
         const req = {
@@ -365,7 +437,7 @@ const putQuotesByIdError = async(ctx) => {
             data: ctx.request.body
         };
         const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
-        ctx.state.logger.log(`Cacheing callback: ${util.inspect(res)}`);
+        ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
     }
 
     // publish an event onto the cache for subscribers to action
@@ -376,6 +448,7 @@ const putQuotesByIdError = async(ctx) => {
 
     ctx.response.status = 200;
     ctx.response.body = '';
+    histTimerEnd({ success: true });
 };
 
 
@@ -383,6 +456,11 @@ const putQuotesByIdError = async(ctx) => {
  * Handles a PUT /transfers/{ID}/error. This is an error response to a POST /transfers request
  */
 const putTransfersByIdError = async (ctx) => {
+    const histTimerEnd = Metrics.getHistogram(
+        'inbound_put_transfers_id_error',
+        'If the server is unable to find or create a transfer, or another processing error occurs.',
+        ['success', 'fspId']
+    ).startTimer();
     if(ctx.state.conf.enableTestFeatures) {
         // we are in test mode so cache the request
         const req = {
@@ -390,7 +468,7 @@ const putTransfersByIdError = async (ctx) => {
             data: ctx.request.body
         };
         const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
-        ctx.state.logger.log(`Cacheing callback: ${util.inspect(res)}`);
+        ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
     }
 
     // publish an event onto the cache for subscribers to action
@@ -401,6 +479,7 @@ const putTransfersByIdError = async (ctx) => {
 
     ctx.response.status = 200;
     ctx.response.body = '';
+    histTimerEnd({ success: true });
 };
 
 
@@ -455,52 +534,131 @@ const getCallbackById = async(ctx) => {
     }
 };
 
+const metrics = async (ctx) => {
+    ctx.response.status = 200;
+    ctx.response.body = Metrics.getMetricsForPrometheus();
+};
 
 const map = {
     '/': {
-        get: healthCheck
+        get: {
+            handler: healthCheck,
+            id: 'inbound_health_check',
+            enableTracing: false
+        }
     },
     '/participants/{ID}': {
-        put: putParticipantsById
+        put: {
+            handler: putParticipantsById,
+            id: 'inbound_put_participants_id',
+            enableTracing: true
+        }
     },
     '/participants/{Type}/{ID}': {
-        put: putParticipantsByTypeAndId,
-        get: getParticipantsByTypeAndId
+        put: {
+            handler: putParticipantsByTypeAndId,
+            id: 'inbound_put_participants_type_id',
+            enableTracing: true
+        },
+        get: {
+            handler: getParticipantsByTypeAndId,
+            id: 'inbound_get_participants_type_id',
+            enableTracing: true
+        }
     },
     '/participants/{ID}/error': {
-        put: putParticipantsByIdError
+        put: {
+            handler: putParticipantsByIdError,
+            id: 'inbound_put_participants_type_id_error',
+            enableTracing: true
+        }
     },
     '/parties/{Type}/{ID}': {
-        post: postPartiesByTypeAndId,
-        get: getPartiesByTypeAndId,
-        put: putPartiesByTypeAndId
+        post: {
+            handler: postPartiesByTypeAndId,
+            id: 'inbound_post_parties_type_id',
+            enableTracing: true
+        },
+        get: {
+            handler: getPartiesByTypeAndId,
+            id: 'inbound_get_parties_type_id',
+            enableTracing: true
+        },
+        put: {
+            handler: putPartiesByTypeAndId,
+            id: 'inbound_put_parties_type_id',
+            enableTracing: true
+        }
     },
     '/parties/{Type}/{ID}/error': {
-        put: putPartiesByTypeAndIdError
+        put: {
+            handler: putPartiesByTypeAndIdError,
+            id: 'inbound_put_parties_type_id_error',
+            enableTracing: true
+        }
     },
     '/quotes': {
-        post: postQuotes
+        post: {
+            handler: postQuotes,
+            id: 'inbound_post_quotes',
+            enableTracing: true
+        }
     },
     '/quotes/{ID}': {
-        put: putQuoteById
+        put: {
+            handler: putQuoteById,
+            id: 'inbound_put_quotes_id',
+            enableTracing: true
+        }
     },
     '/quotes/{ID}/error': {
-        put: putQuotesByIdError
+        put: {
+            handler: putQuotesByIdError,
+            id: 'inbound_put_quotes_id_error',
+            enableTracing: true
+        }
     },
     '/transfers': {
-        post: postTransfers
+        post: {
+            handler: postTransfers,
+            id: 'inbound_post_transfers',
+            enableTracing: true
+        }
     },
     '/transfers/{ID}': {
-        put: putTransfersById
+        put: {
+            handler: putTransfersById,
+            id: 'inbound_put_transfers_id',
+            enableTracing: true
+        }
     },
     '/transfers/{ID}/error': {
-        put: putTransfersByIdError
+        put: {
+            handler: putTransfersByIdError,
+            id: 'inbound_put_transfers_id_error',
+            enableTracing: true
+        }
     },
     '/requests/{ID}': {
-        get: getRequestById
+        get: {
+            handler: getRequestById,
+            id: 'inbound_get_requests_id',
+            enableTracing: true
+        }
     },
     '/callbacks/{ID}': {
-        get: getCallbackById
+        get: {
+            handler: getCallbackById,
+            id: 'inbound_get_callbacks_id',
+            enableTracing: true
+        }
+    },
+    '/metrics': {
+        get: {
+            handler: metrics,
+            id: 'inbound_get_metrics',
+            enableTracing: false
+        }
     }
 };
 

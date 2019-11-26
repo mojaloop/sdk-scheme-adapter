@@ -56,7 +56,7 @@ describe('Outbound API handlers:', () => {
                 }
             };
 
-            await handlers.map['/transfers'].post(mockContext);
+            await handlers.map['/transfers'].post.handler(mockContext);
 
             // check response is correct
             expect(mockContext.response.status).toEqual(500);
@@ -91,7 +91,7 @@ describe('Outbound API handlers:', () => {
                 }
             };
 
-            await handlers.map['/transfers/{transferId}'].put(mockContext);
+            await handlers.map['/transfers/{transferId}'].put.handler(mockContext);
 
             // check response is correct
             expect(mockContext.response.status).toEqual(500);

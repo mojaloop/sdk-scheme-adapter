@@ -15,8 +15,10 @@ const http = require('http');
 const yaml = require('js-yaml');
 const fs = require('fs');
 const path = require('path');
+const Metrics = require('@mojaloop/central-services-metrics');
 
 const { Logger, Transports } = require('@internal/log');
+const globalMiddleWare = require('@internal/tracing');
 const Cache = require('@internal/cache');
 
 const Validate = require('@internal/validate');
@@ -43,7 +45,7 @@ class InboundServer {
         const apiSpecs = yaml.load(fs.readFileSync(specPath));
         const validator = new Validate();
         await validator.initialise(apiSpecs);
-
+        this._api.use(globalMiddleWare.createTrace(handlers.map));
         this._api.use(middlewares.createErrorHandler());
         this._api.use(middlewares.createRequestIdGenerator());
         this._api.use(middlewares.createHeaderValidator(this._logger));
@@ -62,6 +64,7 @@ class InboundServer {
         this._api.use(middlewares.createRequestValidator(validator));
         this._api.use(router(handlers.map));
         this._api.use(middlewares.createResponseBodyHandler());
+        this._api.use(globalMiddleWare.finishTrace());
 
         this._server = this._createServer();
     }
@@ -130,6 +133,12 @@ class InboundServer {
             server = http.createServer(this._api.callback());
         }
         return server;
+    }
+
+    initializeInstrumentation() {
+        if (!this._conf.metrics.disabled) {
+            Metrics.setup(this._conf.metrics.config);
+        }
     }
 }
 

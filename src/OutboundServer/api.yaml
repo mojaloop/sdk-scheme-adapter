@@ -147,6 +147,21 @@ paths:
         504:
           $ref: '#/components/responses/accountsCreationTimeout'
 
+  '/metrics':
+    get:
+      description: Prometheus metrics endpoint
+      summary: metrics
+      tags:
+        - test
+      operationId: metrics
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                type: object
+
 components:
   schemas:
 

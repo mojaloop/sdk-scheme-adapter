@@ -10,10 +10,9 @@
 
 'use strict';
 
-
 module.exports = handlerMap => async (ctx, next) => {
     const handlers = handlerMap[ctx.state.path.pattern];
-    const handler = handlers ? handlers[ctx.method.toLowerCase()] : undefined;
+    const handler = handlers ? handlers[ctx.method.toLowerCase()].handler : undefined;
     if (!handlers || !handler) {
         ctx.state.logger.log('No handler found');
         ctx.response.status = 404;

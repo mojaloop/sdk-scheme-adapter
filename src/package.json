@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
-  "version": "8.5.6-perf.2",
+  "version": "8.5.6-perf.3",
   "description": "An adapter for connecting to Mojaloop API enabled switches.",
   "main": "index.js",
   "scripts": {
@@ -19,13 +19,17 @@
   "dependencies": {
     "@internal/cache": "file:lib/cache",
     "@internal/log": "file:lib/log",
+    "@internal/tracing": "file:lib/tracing",
     "@internal/model": "file:lib/model",
-    "@internal/requests": "file:lib/model/lib/requests",
-    "@internal/shared": "file:lib/model/lib/shared",
     "@internal/randomphrase": "file:lib/randomphrase",
+    "@internal/requests": "file:lib/model/lib/requests",
     "@internal/router": "file:lib/router",
+    "@internal/shared": "file:lib/model/lib/shared",
     "@internal/validate": "file:lib/validate",
-    "@mojaloop/sdk-standard-components": "^8.4.2",
+    "@mojaloop/central-services-metrics": "^8.3.0",
+    "@mojaloop/central-services-shared": "^8.5.0",
+    "@mojaloop/event-sdk": "^8.3.0",
+    "@mojaloop/sdk-standard-components": "^8.5.0-perf.2",
     "co-body": "^6.0.0",
     "dotenv": "^6.2.0",
     "js-yaml": "^3.13.1",

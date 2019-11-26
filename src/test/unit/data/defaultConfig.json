@@ -51,5 +51,18 @@
   "rejectExpiredQuoteResponses": false,
   "rejectExpiredTransferFulfils": false,
   "rejectTransfersOnExpiredQuotes": false,
-  "logIndent": 2
+  "logIndent": 2,
+  "metrics": {
+    "disabled": true,
+    "labels": {
+      "fspId": "*"
+    },
+    "config": {
+      "timeout": 5000,
+      "prefix": "moja_sdk_",
+      "defaultLabels": {
+        "serviceName": "sdk-schema-adapter"
+      }
+    }
+  }
 }

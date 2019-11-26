@@ -43,7 +43,7 @@ describe('Inbound API handlers:', () => {
         test('calls `model.quoteRequest` with the expected arguments.', async () => {
             const quoteRequestSpy = jest.spyOn(Model.prototype, 'quoteRequest');
 
-            await handlers.map['/quotes'].post(mockContext);
+            await handlers.map['/quotes'].post.handler(mockContext);
 
             expect(quoteRequestSpy).toHaveBeenCalledTimes(1);
             expect(quoteRequestSpy.mock.calls[0][0]).toBe(mockContext.request.body);

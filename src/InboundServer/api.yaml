@@ -32,6 +32,8 @@ paths:
         - $ref: '#/components/parameters/FSPIOP-Signature'
         - $ref: '#/components/parameters/FSPIOP-URI'
         - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       x-examples:
         application/json:
           errorInformation:
@@ -85,6 +87,8 @@ paths:
         - $ref: '#/components/parameters/FSPIOP-Signature'
         - $ref: '#/components/parameters/FSPIOP-URI'
         - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       x-examples:
         application/json:
           partyList:
@@ -144,6 +148,8 @@ paths:
         - $ref: '#/components/parameters/FSPIOP-Signature'
         - $ref: '#/components/parameters/FSPIOP-URI'
         - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       x-examples:
         application/json:
           errorInformation:
@@ -201,6 +207,8 @@ paths:
         - $ref: '#/components/parameters/FSPIOP-Signature'
         - $ref: '#/components/parameters/FSPIOP-URI'
         - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       x-examples:
         application/json:
           errorInformation:
@@ -263,6 +271,8 @@ paths:
       operationId: ParticipantsSubIdByTypeAndID
       parameters:
         - $ref: '#/components/parameters/Accept'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       responses:
         '202':
           $ref: '#/components/responses/Response202'
@@ -295,6 +305,8 @@ paths:
       operationId: ParticipantsSubIdByTypeAndID3
       parameters:
         - $ref: '#/components/parameters/Content-Length'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       x-examples:
         application/json:
           fspId: '1234'
@@ -333,6 +345,8 @@ paths:
       parameters:
         - $ref: '#/components/parameters/Accept'
         - $ref: '#/components/parameters/Content-Length'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       x-examples:
         application/json:
           fspId: '1234'
@@ -375,6 +389,8 @@ paths:
       operationId: ParticipantsSubIdByTypeAndID2
       parameters:
         - $ref: '#/components/parameters/Accept'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       responses:
         '202':
           $ref: '#/components/responses/Response202'
@@ -423,6 +439,8 @@ paths:
       operationId: ParticipantsByTypeAndID
       parameters:
         - $ref: '#/components/parameters/Accept'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       responses:
         '202':
           $ref: '#/components/responses/Response202'
@@ -455,6 +473,8 @@ paths:
       operationId: ParticipantsByTypeAndID3
       parameters:
         - $ref: '#/components/parameters/Content-Length'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       x-examples:
         application/json:
           fspId: '1234'
@@ -493,6 +513,8 @@ paths:
       parameters:
         - $ref: '#/components/parameters/Accept'
         - $ref: '#/components/parameters/Content-Length'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       x-examples:
         application/json:
           fspId: '1234'
@@ -535,6 +557,8 @@ paths:
       operationId: ParticipantsByTypeAndID2
       parameters:
         - $ref: '#/components/parameters/Accept'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       responses:
         '202':
           $ref: '#/components/responses/Response202'
@@ -578,6 +602,8 @@ paths:
         - $ref: '#/components/parameters/FSPIOP-Signature'
         - $ref: '#/components/parameters/FSPIOP-URI'
         - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       x-examples:
         application/json:
           requestId: b51ec534-ee48-4575-b6a9-ead2955b8069
@@ -632,7 +658,7 @@ paths:
     get:
       description: >-
         The HTTP request GET /parties// (or GET /parties///) is used to lookup
-        information regarding the requested Party, defined by ,  and optionally 
+        information regarding the requested Party, defined by ,  and optionally
         (for example, GET /parties/MSISDN/123456789, or GET
         /parties/BUSINESS/shoecompany/employee1).
       summary: PartiesByTypeAndID
@@ -641,6 +667,8 @@ paths:
       operationId: PartiesByTypeAndID
       parameters:
         - $ref: '#/components/parameters/Accept'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       responses:
         '202':
           $ref: '#/components/responses/Response202'
@@ -670,6 +698,8 @@ paths:
       operationId: PartiesByTypeAndID2
       parameters:
         - $ref: '#/components/parameters/Content-Length'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       x-examples:
         application/json:
           party:
@@ -730,6 +760,8 @@ paths:
         - $ref: '#/components/parameters/FSPIOP-Signature'
         - $ref: '#/components/parameters/FSPIOP-URI'
         - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       x-examples:
         application/json:
           errorInformation:
@@ -779,7 +811,7 @@ paths:
     get:
       description: >-
         The HTTP request GET /parties// (or GET /parties///) is used to lookup
-        information regarding the requested Party, defined by ,  and optionally 
+        information regarding the requested Party, defined by ,  and optionally
         (for example, GET /parties/MSISDN/123456789, or GET
         /parties/BUSINESS/shoecompany/employee1).
       summary: PartiesSubIdByTypeAndID
@@ -788,6 +820,8 @@ paths:
       operationId: PartiesSubIdByTypeAndID
       parameters:
         - $ref: '#/components/parameters/Accept'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       responses:
         '202':
           $ref: '#/components/responses/Response202'
@@ -817,6 +851,8 @@ paths:
       operationId: PartiesSubIdByTypeAndIDPut
       parameters:
         - $ref: '#/components/parameters/Content-Length'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       x-examples:
         application/json:
           party:
@@ -878,6 +914,8 @@ paths:
         - $ref: '#/components/parameters/FSPIOP-Signature'
         - $ref: '#/components/parameters/FSPIOP-URI'
         - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       x-examples:
         application/json:
           errorInformation:
@@ -934,6 +972,8 @@ paths:
         - $ref: '#/components/parameters/FSPIOP-Signature'
         - $ref: '#/components/parameters/FSPIOP-URI'
         - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       x-examples:
         application/json:
           errorInformation:
@@ -978,6 +1018,8 @@ paths:
       - $ref: '#/components/parameters/FSPIOP-Signature'
       - $ref: '#/components/parameters/FSPIOP-URI'
       - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+      - $ref: '#/components/parameters/traceparent'
+      - $ref: '#/components/parameters/tracestate'
     get:
       description: >-
         The HTTP request GET /transactionRequests/ is used to get information
@@ -1079,6 +1121,8 @@ paths:
         - $ref: '#/components/parameters/FSPIOP-Signature'
         - $ref: '#/components/parameters/FSPIOP-URI'
         - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       x-examples:
         application/json:
           transactionRequestId: b51ec534-ee48-4575-b6a9-ead2955b8069
@@ -1173,6 +1217,8 @@ paths:
         - $ref: '#/components/parameters/FSPIOP-Signature'
         - $ref: '#/components/parameters/FSPIOP-URI'
         - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       x-examples:
         application/json:
           errorInformation:
@@ -1217,6 +1263,8 @@ paths:
       - $ref: '#/components/parameters/FSPIOP-Signature'
       - $ref: '#/components/parameters/FSPIOP-URI'
       - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+      - $ref: '#/components/parameters/traceparent'
+      - $ref: '#/components/parameters/tracestate'
     get:
       description: >-
         The HTTP request GET /quotes/ is used to get information regarding an
@@ -1332,6 +1380,8 @@ paths:
         - $ref: '#/components/parameters/FSPIOP-Signature'
         - $ref: '#/components/parameters/FSPIOP-URI'
         - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       x-examples:
         application/json:
           quoteId: b51ec534-ee48-4575-b6a9-ead2955b8069
@@ -1594,6 +1644,8 @@ paths:
       operationId: TransfersByIDGet
       parameters:
         - $ref: '#/components/parameters/Accept'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       responses:
         '202':
           $ref: '#/components/responses/Response202'
@@ -1625,6 +1677,8 @@ paths:
       operationId: TransfersByIDPut
       parameters:
         - $ref: '#/components/parameters/Content-Length'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       x-examples:
         application/json:
           fulfilment: WLctttbu2HvTsa1XWvUoGRcQozHsqeu9Ahl2JW9Bsu8
@@ -1685,6 +1739,8 @@ paths:
         - $ref: '#/components/parameters/FSPIOP-Signature'
         - $ref: '#/components/parameters/FSPIOP-URI'
         - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       x-examples:
         application/json:
           errorInformation:
@@ -1739,6 +1795,8 @@ paths:
         - $ref: '#/components/parameters/FSPIOP-Signature'
         - $ref: '#/components/parameters/FSPIOP-URI'
         - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       x-examples:
         application/json:
           transferId: b51ec534-ee48-4575-b6a9-ead2955b8069
@@ -1807,6 +1865,8 @@ paths:
       operationId: TransactionsByID
       parameters:
         - $ref: '#/components/parameters/Accept'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       responses:
         '202':
           $ref: '#/components/responses/Response202'
@@ -1837,6 +1897,8 @@ paths:
       operationId: TransactionsByID1
       parameters:
         - $ref: '#/components/parameters/Content-Length'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       x-examples:
         application/json:
           completedTimestamp": '2016-05-24T08:38:08.699-04:00'
@@ -1896,6 +1958,8 @@ paths:
         - $ref: '#/components/parameters/FSPIOP-Signature'
         - $ref: '#/components/parameters/FSPIOP-URI'
         - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       x-examples:
         application/json:
           errorInformation:
@@ -1952,6 +2016,8 @@ paths:
         - $ref: '#/components/parameters/FSPIOP-Signature'
         - $ref: '#/components/parameters/FSPIOP-URI'
         - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       x-examples:
         application/json:
           errorInformation:
@@ -2008,6 +2074,8 @@ paths:
       operationId: BulkQuotesByID
       parameters:
         - $ref: '#/components/parameters/Accept'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       responses:
         '202':
           $ref: '#/components/responses/Response202'
@@ -2039,6 +2107,8 @@ paths:
       operationId: BulkQuotesByID1
       parameters:
         - $ref: '#/components/parameters/Content-Length'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       x-examples:
         application/json:
           individualQuoteResults:
@@ -2137,6 +2207,8 @@ paths:
         - $ref: '#/components/parameters/FSPIOP-Signature'
         - $ref: '#/components/parameters/FSPIOP-URI'
         - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       x-examples:
         application/json:
           bulkQuoteId: b51ec534-ee48-4575-b6a9-ead2955b8069
@@ -2253,6 +2325,8 @@ paths:
       operationId: BulkTransferByID
       parameters:
         - $ref: '#/components/parameters/Accept'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       responses:
         '202':
           $ref: '#/components/responses/Response202'
@@ -2284,6 +2358,8 @@ paths:
       operationId: BulkTransfersByIDPut
       parameters:
         - $ref: '#/components/parameters/Content-Length'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       x-examples:
         application/json:
           completedTimestamp": '2016-05-24T08:38:08.699-04:00'
@@ -2375,6 +2451,8 @@ paths:
         - $ref: '#/components/parameters/FSPIOP-Signature'
         - $ref: '#/components/parameters/FSPIOP-URI'
         - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       x-examples:
         application/json:
           bulkTransferId: b51ec534-ee48-4575-b6a9-ead2955b8069
@@ -2446,7 +2524,7 @@ paths:
         If the server is unable to find or create a bulk transfer, or another
         processing error occurs, the error callback PUT /bulkTransfers//error is
         used. The  in the URI should contain the bulkTransferId that was used
-        for the creation of the bulk transfer (POST /bulkTransfers), or the 
+        for the creation of the bulk transfer (POST /bulkTransfers), or the
         that was used in the GET /bulkTransfers/.
       summary: BulkTransfersErrorByID
       tags:
@@ -2464,6 +2542,8 @@ paths:
         - $ref: '#/components/parameters/FSPIOP-Signature'
         - $ref: '#/components/parameters/FSPIOP-URI'
         - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+        - $ref: '#/components/parameters/traceparent'
+        - $ref: '#/components/parameters/tracestate'
       x-examples:
         application/json:
           errorInformation:
@@ -2522,6 +2602,21 @@ paths:
       operationId: getCallbackById
       parameters:
         - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                type: object
+
+  '/metrics':
+    get:
+      description: Prometheus metrics endpoint
+      summary: metrics
+      tags:
+        - test
+      operationId: metrics
       responses:
         '200':
           description: Response
@@ -2643,6 +2738,26 @@ components:
         see API Signature document.
       schema:
         type: string
+    traceparent:
+      name: traceparent
+      in: header
+      required: false
+      description: >-
+        Dash delimited string of tracing information: \-\-\-\.
+        Refer to the following publication for more information: https://w3c.github.io/trace-context/
+      schema:
+        type: string
+        pattern: '^([0-9a-f]{2})-([0-9a-f]{32})-([0-9a-f]{16})-([0-9a-f]{2})$'
+    tracestate:
+      name: tracestate
+      in: header
+      required: false
+      description: >-
+        Comma delimited vendor specific format captured as follows: \=\.
+        Refer to the following publication for more information: https://w3c.github.io/trace-context/
+      schema:
+        type: string
+        pattern: '([^\n=,]+=[^\n=,]+,)*([^\n=,]+=[^\n=,]+)'
     ID:
       name: ID
       in: path
@@ -3168,7 +3283,7 @@ components:
         restricted by a regular expression for interoperability reasons. The
         format is according to ISO 8601, expressed in a combined date, time and
         time zone format. A more readable version of the format is
-        yyyy-MM-ddTHH:mm:ss.SSS[-HH:MM]. Examples - 
+        yyyy-MM-ddTHH:mm:ss.SSS[-HH:MM]. Examples -
         "2016-05-24T08:38:08.699-04:00", "2016-05-24T08:38:08.699Z" (where Z
         indicates Zulu time zone, same as UTC).
     ErrorCode:

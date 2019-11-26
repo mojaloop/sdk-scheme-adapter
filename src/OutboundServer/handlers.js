@@ -13,6 +13,7 @@
 
 const util = require('util');
 const { AccountsModel, OutboundTransfersModel } = require('@internal/model');
+const Metrics = require('@mojaloop/central-services-metrics');
 
 
 /**
@@ -47,6 +48,12 @@ const handleAccountsError = (method, err, ctx) =>
  * Handler for outbound transfer request initiation
  */
 const postTransfers = async (ctx) => {
+    const histTimerEnd = Metrics.getHistogram(
+        'outbound_post_transfers',
+        'Get participants details to complete a quote and get a completed transfer synchronously',
+        ['success', 'fspId']
+    ).startTimer();
+    const span = ctx.request.span;
     try {
         // this requires a multi-stage sequence with the switch.
         let transferRequest = {
@@ -57,6 +64,7 @@ const postTransfers = async (ctx) => {
         const model = new OutboundTransfersModel({
             cache: ctx.state.cache,
             logger: ctx.state.logger,
+            span,
             ...ctx.state.conf
         });
 
@@ -66,9 +74,11 @@ const postTransfers = async (ctx) => {
 
         // return the result
         ctx.response.status = 200;
+        histTimerEnd({ success: true });
         ctx.response.body = response;
     }
     catch(err) {
+        histTimerEnd({ success: false });
         return handleTransferError('postTransfers', err, ctx);
     }
 };
@@ -80,6 +90,11 @@ const postTransfers = async (ctx) => {
  * by disabling the autoAcceptQuote SDK option
  */
 const putTransfers = async (ctx) => {
+    const histTimerEnd = Metrics.getHistogram(
+        'outbound_put_transfers',
+        'Handler for resuming outbound transfers in scenarios where two-step transfers are enabled',
+        ['success', 'fspId']
+    ).startTimer();
     try {
         // this requires a multi-stage sequence with the switch.
         // use the transfers model to execute asynchronous stages with the switch
@@ -98,9 +113,11 @@ const putTransfers = async (ctx) => {
 
         // return the result
         ctx.response.status = 200;
+        histTimerEnd({ success: true });
         ctx.response.body = response;
     }
     catch(err) {
+        histTimerEnd({ success: false });
         return handleTransferError('putTransfers', err, ctx);
     }
 };
@@ -110,6 +127,11 @@ const putTransfers = async (ctx) => {
  * Handler for outbound participants request initiation
  */
 const postAccounts = async (ctx) => {
+    const histTimerEnd = Metrics.getHistogram(
+        'outbound_post_accounts',
+        'Handler for outbound participants request initiation',
+        ['success', 'fspId']
+    ).startTimer();
     try {
         const model = new AccountsModel({
             cache: ctx.state.cache,
@@ -127,9 +149,11 @@ const postAccounts = async (ctx) => {
 
         // return the result
         ctx.response.status = 200;
+        histTimerEnd({ success: true });
         ctx.response.body = response;
     }
     catch(err) {
+        histTimerEnd({ success: false });
         return handleAccountsError('postAccounts', err, ctx);
     }
 };
@@ -140,19 +164,47 @@ const healthCheck = async (ctx) => {
     ctx.response.body = '';
 };
 
+const metrics = async (ctx) => {
+    ctx.response.status = 200;
+    ctx.response.body = Metrics.getMetricsForPrometheus();
+};
+
 module.exports = {
     map: {
         '/': {
-            get: healthCheck
+            get: {
+                handler: healthCheck,
+                id: 'outbound_health_check',
+                enableTracing: false
+            }
         },
         '/transfers': {
-            post: postTransfers
+            post: {
+                handler: postTransfers,
+                id: 'outbound_post_transfers',
+                enableTracing: true
+            }
         },
         '/transfers/{transferId}': {
-            put: putTransfers
+            put: {
+                handler: putTransfers,
+                id: 'outbound_put_transfers',
+                enableTracing: true
+            }
         },
         '/accounts': {
-            post: postAccounts
+            post: {
+                handler: postAccounts,
+                id: 'outbound_post_accounts',
+                enableTracing: true
+            }
         },
+        '/metrics': {
+            get: {
+                handler: metrics,
+                id: 'outbound_get_metrics',
+                enableTracing: false
+            }
+        }
     }
 };

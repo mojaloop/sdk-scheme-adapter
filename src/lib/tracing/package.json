@@ -1,0 +1,21 @@
+{
+  "name": "@internal/tracing",
+  "version": "0.0.2",
+  "description": "Tracing middleware for Koa servers",
+  "main": "tracing.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Rajiv Mothilal, ModusBox Inc.",
+  "license": "Apache-2.0",
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  ],
+  "dependencies": {
+    "@mojaloop/event-sdk": "^8.3.0",
+    "@mojaloop/central-services-shared": "^8.5.0"
+  }
+}
