@@ -27,14 +27,14 @@ const Model = require('@internal/model').OutboundTransfersModel;
 const defaultEnv = require('./data/defaultEnv');
 const transferRequest = require('./data/transferRequest');
 const payeeParty = require('./data/payeeParty');
-const quoteResponse = require('./data/quoteResponse');
+const quoteResponseTemplate = require('./data/quoteResponse');
 const transferFulfil = require('./data/transferFulfil');
 
 const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const StateMachine = require('javascript-state-machine');
 
 let logTransports;
-
+let quoteResponse;
 
 /**
  *
@@ -112,6 +112,7 @@ describe('outboundModel', () => {
 
     beforeAll(async () => {
         logTransports = await Promise.all([Transports.consoleDir()]);
+        quoteResponse = JSON.parse(JSON.stringify(quoteResponseTemplate));
     });
 
     beforeEach(async () => {
@@ -157,11 +158,11 @@ describe('outboundModel', () => {
             cache.emitMessage(JSON.stringify(payeeParty));
             return Promise.resolve();
         });
-        MojaloopRequests.__postQuotes = jest.fn(() => {
+
+        MojaloopRequests.__postQuotes = jest.fn((postQuotesBody) => {
             // ensure that the `MojaloopRequests.postQuotes` method has been called with correct arguments
             // including extension list
-            expect(MojaloopRequests.__postQuotes).toHaveBeenCalledTimes(1);
-            const extensionList = MojaloopRequests.__postQuotes.mock.calls[0][0].extensionList;
+            const extensionList = postQuotesBody.extensionList;
             expect(extensionList).toBeTruthy();
             expect(extensionList.extension).toBeTruthy();
             expect(extensionList.extension.length).toBe(2);
@@ -173,19 +174,18 @@ describe('outboundModel', () => {
             return Promise.resolve();
         });
 
-        MojaloopRequests.__postTransfers = jest.fn(() => {
+        MojaloopRequests.__postTransfers = jest.fn((postTransfersBody, destFspId) => {
             //ensure that the `MojaloopRequests.postTransfers` method has been called with the correct arguments
             // set as the destination FSPID, picked up from the header's value `fspiop-source`
             expect(model.data.quoteResponseSource).toBe(quoteResponse.headers['fspiop-source']);
-            expect(MojaloopRequests.__postTransfers).toHaveBeenCalledTimes(1);
 
-            const extensionList = MojaloopRequests.__postTransfers.mock.calls[0][0].extensionList;
+            const extensionList = postTransfersBody.extensionList;
             expect(extensionList.extension).toBeTruthy();
             expect(extensionList.extension.length).toBe(2);
             expect(extensionList.extension[0]).toEqual({ key: 'tkey1', value: 'tvalue1' });
             expect(extensionList.extension[1]).toEqual({ key: 'tkey2', value: 'tvalue2' });
 
-            expect(MojaloopRequests.__postTransfers.mock.calls[0][1]).toBe(quoteResponse.headers['fspiop-source']);
+            expect(destFspId).toBe(quoteResponse.headers['fspiop-source']);
             expect(model.data.to.fspId).toBe(payeeParty.party.partyIdInfo.fspId);
             expect(quoteResponse.headers['fspiop-source']).not.toBe(model.data.to.fspId);
 
@@ -208,6 +208,97 @@ describe('outboundModel', () => {
         const result = await model.run();
 
         console.log(`Result after three stage transfer: ${util.inspect(result)}`);
+
+        expect(MojaloopRequests.__getParties).toHaveBeenCalledTimes(1);
+        expect(MojaloopRequests.__postQuotes).toHaveBeenCalledTimes(1);
+        expect(MojaloopRequests.__postTransfers).toHaveBeenCalledTimes(1);
+
+        // check we stopped at payeeResolved state
+        expect(result.currentState).toBe('COMPLETED');
+        expect(StateMachine.__instance.state).toBe('succeeded');
+    });
+
+
+    test('uses quote response transfer amount for transfer prepare', async () => {
+        defaultEnv.AUTO_ACCEPT_PARTY = 'true';
+        defaultEnv.AUTO_ACCEPT_QUOTES = 'true';
+
+        await setConfig(defaultEnv);
+        const conf = getConfig();
+        const cache = new Cache();
+
+        MojaloopRequests.__getParties = jest.fn(() => {
+            cache.emitMessage(JSON.stringify(payeeParty));
+            return Promise.resolve();
+        });
+
+        // change the the transfer amount and currency in the quote response
+        // so it is different to the initial request
+        quoteResponse.data.transferAmount = {
+            currency: 'XYZ',
+            amount: '9876543210'
+        };
+
+        expect(quoteResponse.data.transferAmount).not.toEqual({
+            amount: transferRequest.amount,
+            currency: transferRequest.currency
+        });
+
+        MojaloopRequests.__postQuotes = jest.fn((postQuotesBody) => {
+            // ensure that the `MojaloopRequests.postQuotes` method has been called with correct arguments
+            // including extension list
+            const extensionList = postQuotesBody.extensionList;
+            expect(extensionList).toBeTruthy();
+            expect(extensionList.extension).toBeTruthy();
+            expect(extensionList.extension.length).toBe(2);
+            expect(extensionList.extension[0]).toEqual({ key: 'qkey1', value: 'qvalue1' });
+            expect(extensionList.extension[1]).toEqual({ key: 'qkey2', value: 'qvalue2' });
+
+            // simulate a callback with the quote response
+            cache.emitMessage(JSON.stringify(quoteResponse));
+            return Promise.resolve();
+        });
+
+        MojaloopRequests.__postTransfers = jest.fn((postTransfersBody, destFspId) => {
+            //ensure that the `MojaloopRequests.postTransfers` method has been called with the correct arguments
+            // set as the destination FSPID, picked up from the header's value `fspiop-source`
+            expect(model.data.quoteResponseSource).toBe(quoteResponse.headers['fspiop-source']);
+
+            const extensionList = postTransfersBody.extensionList;
+            expect(extensionList.extension).toBeTruthy();
+            expect(extensionList.extension.length).toBe(2);
+            expect(extensionList.extension[0]).toEqual({ key: 'tkey1', value: 'tvalue1' });
+            expect(extensionList.extension[1]).toEqual({ key: 'tkey2', value: 'tvalue2' });
+
+            expect(destFspId).toBe(quoteResponse.headers['fspiop-source']);
+            expect(model.data.to.fspId).toBe(payeeParty.party.partyIdInfo.fspId);
+            expect(quoteResponse.headers['fspiop-source']).not.toBe(model.data.to.fspId);
+
+            expect(postTransfersBody.amount).toEqual(quoteResponse.data.transferAmount);
+
+            // simulate a callback with the transfer fulfilment
+            cache.emitMessage(JSON.stringify(transferFulfil));
+            return Promise.resolve();
+        });
+
+        const model = new Model({
+            cache,
+            logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
+            ...conf
+        });
+
+        await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
+
+        expect(StateMachine.__instance.state).toBe('start');
+
+        // start the model running
+        const result = await model.run();
+
+        console.log(`Result after three stage transfer: ${util.inspect(result)}`);
+
+        expect(MojaloopRequests.__getParties).toHaveBeenCalledTimes(1);
+        expect(MojaloopRequests.__postQuotes).toHaveBeenCalledTimes(1);
+        expect(MojaloopRequests.__postTransfers).toHaveBeenCalledTimes(1);
 
         // check we stopped at payeeResolved state
         expect(result.currentState).toBe('COMPLETED');
@@ -772,6 +863,12 @@ describe('Outbound mTLS test', () => {
         MojaloopRequests.__putQuotes = jest.fn(() => Promise.resolve());
         MojaloopRequests.__putQuotesError = jest.fn(() => Promise.resolve());
         MojaloopRequests.__postTransfers = jest.fn(() => Promise.resolve());
+    });
+
+    afterEach(async () => {
+        //we have to destroy the file system watcher or we will leave an async handle open
+        destroy();
+        console.log('config destroyed');
     });
 
     async function testTlsServer(enableTls) {

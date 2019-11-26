@@ -480,8 +480,12 @@ class OutboundTransfersModel {
             payeeFsp: this.data.to.fspId,
             payerFsp: this.dfspId,
             amount: {
-                currency: this.data.currency,
-                amount: this.data.amount
+                // We use the transfer currency and amount specified in the quote response
+                // rather than the original request. In Forex cases we may have requested
+                // a RECEIVE amount in a currency we cannot send. FXP should always give us
+                // a quote response with transferAmount in the correct currency.
+                currency: this.data.quoteResponse.transferAmount.currency,
+                amount: this.data.quoteResponse.transferAmount.amount
             },
             ilpPacket: this.data.quoteResponse.ilpPacket,
             condition: this.data.quoteResponse.condition,
