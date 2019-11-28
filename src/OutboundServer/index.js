@@ -44,7 +44,6 @@ class OutboundServer {
         const apiSpecs = yaml.load(fs.readFileSync(specPath));
         const validator = new Validate();
         await validator.initialise(apiSpecs);
-        this.api.use(globalMiddleWare.createTrace(handlers.map));
         this.api.use(middlewares.createErrorHandler());
 
         // outbound always expects application/json
@@ -52,8 +51,8 @@ class OutboundServer {
 
         const sharedState = { cache, conf: this.conf };
         this.api.use(middlewares.createLogger(this.logger, sharedState));
-
         this.api.use(middlewares.createRequestValidator(validator));
+        this.api.use(globalMiddleWare.createTrace(handlers.map));
         this.api.use(router(handlers.map));
         this.api.use(globalMiddleWare.finishTrace());
         this.server = this._createServer();
