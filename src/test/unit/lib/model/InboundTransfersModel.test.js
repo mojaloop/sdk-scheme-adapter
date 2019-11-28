@@ -28,6 +28,20 @@ describe('inboundModel', () => {
     let mockArgs;
     let model;
     let cache;
+    const span = {
+        setTags: jest.fn(() => {
+            return true;
+        }),
+        finish: jest.fn(() => {
+            return true;
+        }),
+        error: jest.fn(() => {
+            return true;
+        }),
+        getChild: jest.fn(() => {
+            return span;
+        })
+    };
 
     // the keys are under the secrets folder that is supposed to be moved by Dockerfile
     // so for the needs of the unit tests, we have to define the proper path manually.
@@ -52,6 +66,7 @@ describe('inboundModel', () => {
                 space: 4,
                 transports: logTransports
             }),
+            span,
             ...conf
         });
 
@@ -66,7 +81,20 @@ describe('inboundModel', () => {
 
     describe('quoteRequest', () => {
         let expectedQuoteResponseILP;
-
+        const span = {
+            setTags: jest.fn(() => {
+                return true;
+            }),
+            finish: jest.fn(() => {
+                return true;
+            }),
+            error: jest.fn(() => {
+                return true;
+            }),
+            getChild: jest.fn(() => {
+                return span;
+            })
+        };
         beforeEach(() => {
             //model.ilp is already mocked globally, so let's just get its mock response back.
             expectedQuoteResponseILP = model.ilp.getQuoteResponseIlp();
