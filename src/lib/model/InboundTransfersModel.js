@@ -302,8 +302,8 @@ class InboundTransfersModel {
             const response = await this.backendRequests.postTransfers(internalForm, postTransferRequest);
             if(!response) {
                 // make an error callback to the source fsp
-                await postTransferRequest.error(err);
-                await postTransferRequest.finish(err);
+                await postTransferRequest.error('No response from backend');
+                await postTransferRequest.finish('No response from backend');
                 histTimerEnd({ success: false });
                 return 'No response from backend';
             }
