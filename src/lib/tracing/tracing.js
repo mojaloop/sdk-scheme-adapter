@@ -17,7 +17,7 @@ const EventSdk = require('@mojaloop/event-sdk');
  * @return {Function}
  */
 const createTrace = handlerMap => async (ctx, next) => {
-    const handlers = handlerMap[ctx.request.url];
+    const handlers = handlerMap[ctx.state.path.pattern];
     const id = handlers ? handlers[ctx.request.method.toLowerCase()].id : undefined;
     const enableTracing = handlers ? handlers[ctx.request.method.toLowerCase()].enableTracing : false;
     if (ctx.request && id && enableTracing === true) {

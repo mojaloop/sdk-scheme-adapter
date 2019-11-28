@@ -17,6 +17,8 @@ const MojaloopRequests = require('@mojaloop/sdk-standard-components').MojaloopRe
 const Ilp = require('@mojaloop/sdk-standard-components').Ilp;
 const Errors = require('@mojaloop/sdk-standard-components').Errors;
 const Metrics = require('@mojaloop/central-services-metrics');
+const { getSpanTags } = require('@mojaloop/central-services-shared').Util.EventFramework;
+const Enum = require('@mojaloop/central-services-shared').Enum;
 const shared = require('@internal/shared');
 
 const ASYNC_TIMEOUT_MILLS = 30000;
@@ -28,6 +30,7 @@ const ASYNC_TIMEOUT_MILLS = 30000;
 class InboundTransfersModel {
     constructor(config) {
         this.cache = config.cache;
+        this.span = config.span;
         this.logger = config.logger;
         this.ASYNC_TIMEOUT_MILLS = config.asyncTimeoutMillis || ASYNC_TIMEOUT_MILLS;
         this.dfspId = config.dfspId;
@@ -71,19 +74,30 @@ class InboundTransfersModel {
             'Queries the backend API for the specified party and makes a callback to the originator with our dfspId if found',
             ['success', 'fspId']
         ).startTimer();
+        const payeeKey = `${idType}_${idValue}_${sourceFspId}`;
+        const participantsTypeIdSpan = this.span.getChild('sdk_inbound_get_participants_type_id');
+        participantsTypeIdSpan.setTags(getSpanTags(Enum.Events.Event.Type.PARTY, Enum.Events.Event.Action.GET, payeeKey, this.dfspId, 'parties'));
         try {
             // make a call to the backend to resolve the party lookup
-            const response = await this.backendRequests.getParties(idType, idValue);
-
+            const getPartiesSpan = participantsTypeIdSpan.getChild('sdk_inbound_get_parties_request');
+            getPartiesSpan.setTags(getSpanTags(Enum.Events.Event.Type.PARTY, Enum.Events.Event.Action.GET, payeeKey, this.dfspId, 'parties'));
+            const response = await this.backendRequests.getParties(idType, idValue, getPartiesSpan);
             if(!response) {
                 histTimerEnd({ success: false });
+                await getPartiesSpan.error('No response from backend');
+                await getPartiesSpan.finish('No response from backend');
                 return 'No response from backend';
             }
+            await getPartiesSpan.finish();
 
             // make a callback to the source fsp with our dfspId indicating we own the party
+            const putParticipantsSpan = participantsTypeIdSpan.getChild('sdk_inbound_put_participants_request');
+            putParticipantsSpan.setTags(getSpanTags(Enum.Events.Event.Type.PARTICIPANT, Enum.Events.Event.Action.PUT, payeeKey, this.dfspId, 'participant'));
             const res = this._mojaloopRequests.putParticipants(idType, idValue, { fspId: this.dfspId },
-                sourceFspId);
+                sourceFspId, putParticipantsSpan);
             histTimerEnd({ success: true });
+            await putParticipantsSpan.finish();
+            await participantsTypeIdSpan.finish();
             return res;
         }
         catch(err) {
@@ -91,7 +105,9 @@ class InboundTransfersModel {
             const mojaloopError = await this._handleError(err);
             this.logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
             const response = await this._mojaloopRequests.putParticipantsError(idType, idValue,
-                mojaloopError, sourceFspId);
+                mojaloopError, sourceFspId, participantsTypeIdSpan);
+            await participantsTypeIdSpan.error(err);
+            await participantsTypeIdSpan.finish(err);
             histTimerEnd({ success: false });
             return response;
         }
@@ -107,22 +123,32 @@ class InboundTransfersModel {
             'Queries the backend API for the specified party and makes a callback to the originator with the result',
             ['success', 'fspId']
         ).startTimer();
+        const payeeKey = `${idType}_${idValue}_${sourceFspId}`;
+        const partiesTypeIdSpan = this.span.getChild('sdk_inbound_get_parties_type_id');
+        partiesTypeIdSpan.setTags(getSpanTags(Enum.Events.Event.Type.PARTY, Enum.Events.Event.Action.GET, payeeKey, this.dfspId, 'parties'));
         try {
             // make a call to the backend to resolve the party lookup
-            const response = await this.backendRequests.getParties(idType, idValue);
-
+            const getPartiesSpan = partiesTypeIdSpan.getChild('sdk_inbound_get_parties_request');
+            getPartiesSpan.setTags(getSpanTags(Enum.Events.Event.Type.PARTY, Enum.Events.Event.Action.GET, payeeKey, this.dfspId, 'parties'));
+            const response = await this.backendRequests.getParties(idType, idValue, getPartiesSpan);
             if(!response) {
                 histTimerEnd({ success: false });
+                await getPartiesSpan.error('No response from backend');
+                await getPartiesSpan.finish('No response from backend');
                 return 'No response from backend';
             }
-
+            await getPartiesSpan.finish();
             // project our internal party representation into a mojaloop partyies request body
             const mlParty = {
                 party: shared.internalPartyToMojaloopParty(response, this.dfspId)
             };
 
             // make a callback to the source fsp with the party info
-            const res = this._mojaloopRequests.putParties(idType, idValue, mlParty, sourceFspId);
+            const putPartiesSpan = partiesTypeIdSpan.getChild('sdk_inbound_put_parties_request');
+            putPartiesSpan.setTags(getSpanTags(Enum.Events.Event.Type.PARTY, Enum.Events.Event.Action.PUT, payeeKey, this.dfspId, 'parties'));
+            const res = this._mojaloopRequests.putParties(idType, idValue, mlParty, sourceFspId, putPartiesSpan);
+            await putPartiesSpan.finish();
+            await partiesTypeIdSpan.finish();
             histTimerEnd({ success: true });
             return res;
         }
@@ -148,17 +174,23 @@ class InboundTransfersModel {
             'Asks the backend for a response to an incoming quote request and makes a callback to the originator with the result',
             ['success', 'fspId']
         ).startTimer();
+        const quoteRequestSpan = this.span.getChild('sdk_inbound_quote_request');
+        quoteRequestSpan.setTags(getSpanTags(Enum.Events.Event.Type.QUOTE, Enum.Events.Event.Action.POST, quoteRequest.quoteId, this.dfspId, 'quote'));
         try {
             const internalForm = shared.mojaloopQuoteRequestToInternal(quoteRequest);
 
             // make a call to the backend to ask for a quote response
-            const response = await this.backendRequests.postQuoteRequests(internalForm);
-
+            const postQuoteSpan = quoteRequestSpan.getChild('sdk_inbound_post_quote');
+            postQuoteSpan.setTags(getSpanTags(Enum.Events.Event.Type.QUOTE, Enum.Events.Event.Action.POST, quoteRequest.quoteId, this.dfspId, 'quote'));
+            const response = await this.backendRequests.postQuoteRequests(internalForm, postQuoteSpan);
             if(!response) {
                 // make an error callback to the source fsp
                 histTimerEnd({ success: false });
+                await postQuoteSpan.error('No response from backend');
+                await postQuoteSpan.finish('No response from backend');
                 return 'No response from backend';
             }
+            await postQuoteSpan.finish();
 
             if(!response.expiration) {
                 const expiration = new Date().getTime() + (this.expirySeconds * 1000);
@@ -184,8 +216,12 @@ class InboundTransfersModel {
             });
 
             // make a callback to the source fsp with the quote response
-            const res =  this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId);
+            const putQuoteSpan = quoteRequestSpan.getChild('sdk_inbound_put_quote');
+            putQuoteSpan.setTags(getSpanTags(Enum.Events.Event.Type.QUOTE, Enum.Events.Event.Action.PUT, quoteRequest.quoteId, this.dfspId, 'quote'));
+            const res =  this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId, putQuoteSpan);
+            await putQuoteSpan.finish();
             histTimerEnd({ success: true });
+            await quoteRequestSpan.finish();
             return res;
         }
         catch(err) {
@@ -194,6 +230,8 @@ class InboundTransfersModel {
             this.logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
             const response = await this._mojaloopRequests.putQuotesError(quoteRequest.quoteId,
                 mojaloopError, sourceFspId);
+            await quoteRequestSpan.error(err);
+            await quoteRequestSpan.finish(err);
             histTimerEnd({ success: false });
             return response;
         }
@@ -210,6 +248,8 @@ class InboundTransfersModel {
             'Validates  an incoming transfer prepare request and makes a callback to the originator with the result',
             ['success', 'fspId']
         ).startTimer();
+        const prepareTransferRequestSpan = this.span.getChild('sdk_inbound_prepare_transfer_request');
+        prepareTransferRequestSpan.setTags(getSpanTags(Enum.Events.Event.Type.TRANSFER, Enum.Events.Event.Action.POST, prepareRequest.transferId, this.dfspId, 'transfer'));
         try {
 
             // retrieve our quote data
@@ -257,13 +297,17 @@ class InboundTransfersModel {
             const internalForm = shared.mojaloopPrepareToInternalTransfer(prepareRequest, quote);
 
             // make a call to the backend to inform it of the incoming transfer
-            const response = await this.backendRequests.postTransfers(internalForm);
-
+            const postTransferRequest = prepareTransferRequestSpan.getChild('sdk_inbound_post_transfers');
+            postTransferRequest.setTags(getSpanTags(Enum.Events.Event.Type.TRANSFER, Enum.Events.Event.Action.POST, internalForm.transferId, this.dfspId, 'transfer'));
+            const response = await this.backendRequests.postTransfers(internalForm, postTransferRequest);
             if(!response) {
                 // make an error callback to the source fsp
+                await postTransferRequest.error('No response from backend');
+                await postTransferRequest.finish('No response from backend');
                 histTimerEnd({ success: false });
                 return 'No response from backend';
             }
+            await postTransferRequest.finish();
 
             this.logger.log(`Transfer accepted by backend returning homeTransactionId: ${response.homeTransactionId} for mojaloop transferId: ${prepareRequest.transferId}`);
 
@@ -275,9 +319,13 @@ class InboundTransfersModel {
             };
 
             // make a callback to the source fsp with the transfer fulfilment
+            const putTransferRequest = prepareTransferRequestSpan.getChild('sdk_inbound_put_transfers');
+            putTransferRequest.setTags(getSpanTags(Enum.Events.Event.Type.TRANSFER, Enum.Events.Event.Action.PUT, internalForm.transferId, this.dfspId, 'transfer'));
             const res = this._mojaloopRequests.putTransfers(prepareRequest.transferId, mojaloopResponse,
-                sourceFspId);
+                sourceFspId, putTransferRequest);
             histTimerEnd({ success: true });
+            await putTransferRequest.finish();
+            await prepareTransferRequestSpan.finish();
             return res;
         }
         catch(err) {
@@ -287,6 +335,8 @@ class InboundTransfersModel {
             const response = await this._mojaloopRequests.putTransfersError(prepareRequest.transferId,
                 mojaloopError, sourceFspId);
             histTimerEnd({ success: false });
+            await prepareTransferRequestSpan.error(err);
+            await prepareTransferRequestSpan.finish(err);
             return response;
         }
     }

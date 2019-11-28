@@ -45,7 +45,6 @@ class InboundServer {
         const apiSpecs = yaml.load(fs.readFileSync(specPath));
         const validator = new Validate();
         await validator.initialise(apiSpecs);
-        this._api.use(globalMiddleWare.createTrace(handlers.map));
         this._api.use(middlewares.createErrorHandler());
         this._api.use(middlewares.createRequestIdGenerator());
         this._api.use(middlewares.createHeaderValidator(this._logger));
@@ -60,8 +59,8 @@ class InboundServer {
 
         const sharedState = { cache, conf: this._conf };
         this._api.use(middlewares.createLogger(this._logger, sharedState));
-
         this._api.use(middlewares.createRequestValidator(validator));
+        this._api.use(globalMiddleWare.createTrace(handlers.map));
         this._api.use(router(handlers.map));
         this._api.use(middlewares.createResponseBodyHandler());
         this._api.use(globalMiddleWare.finishTrace());

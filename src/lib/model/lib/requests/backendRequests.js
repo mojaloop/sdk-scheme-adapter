@@ -39,12 +39,12 @@ class BackendRequests {
 
 
     /**
-     * Executes a GET /parties request for the specified identifier type and identifier 
+     * Executes a GET /parties request for the specified identifier type and identifier
      *
      * @returns {object} - JSON response body if one was received
      */
-    async getParties(idType, idValue) {
-        return this._get(`parties/${idType}/${idValue}`, 'parties');
+    async getParties(idType, idValue, span) {
+        return this._get(`parties/${idType}/${idValue}`, span);
     }
 
 
@@ -53,8 +53,8 @@ class BackendRequests {
      *
      * @returns {object} - JSON response body if one was received
      */
-    async postQuoteRequests(quoteRequest) {
-        return this._post('quoterequests', quoteRequest);
+    async postQuoteRequests(quoteRequest, span) {
+        return this._post('quoterequests', quoteRequest, span);
     }
 
 
@@ -63,8 +63,8 @@ class BackendRequests {
      *
      * @returns {object} - JSON response body if one was received
      */
-    async postTransfers(prepare) {
-        return this._post('transfers', prepare);
+    async postTransfers(prepare, span) {
+        return this._post('transfers', prepare, span);
     }
 
 
@@ -73,21 +73,25 @@ class BackendRequests {
      *
      * @returns {object} - headers object for use in requests to mojaloop api endpoints
      */
-    _buildHeaders () {
+    async _buildHeaders (span = undefined) {
         let headers = {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'Date': new Date().toUTCString()
         };
-
-        return headers;
+        if(span) {
+            let request = await span.injectContextToHttpRequest({headers});
+            return request.headers;
+        } else {
+            return headers;
+        }
     }
 
-    async _get(url) {
+    async _get(url, span) {
         const reqOpts = {
             method: 'GET',
             uri: buildUrl(this.backendEndpoint, url),
-            headers: this._buildHeaders(),
+            headers: await this._buildHeaders(span),
             agent: this.agent,
             resolveWithFullResponse: true,
             simple: false
@@ -106,11 +110,11 @@ class BackendRequests {
     }
 
 
-    async _put(url, body) {
+    async _put(url, body, span) {
         const reqOpts = {
             method: 'PUT',
             uri: buildUrl(this.backendEndpoint, url),
-            headers: this._buildHeaders(),
+            headers: await this._buildHeaders(span),
             body: JSON.stringify(body),
             resolveWithFullResponse: true,
             simple: false,
@@ -127,11 +131,11 @@ class BackendRequests {
     }
 
 
-    async _post(url, body) {
+    async _post(url, body, span) {
         const reqOpts = {
             method: 'POST',
             uri: buildUrl(this.backendEndpoint, url),
-            headers: this._buildHeaders(),
+            headers: await this._buildHeaders(span),
             body: JSON.stringify(body),
             resolveWithFullResponse: true,
             simple: false,

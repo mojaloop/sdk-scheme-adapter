@@ -24,6 +24,7 @@ const getParticipantsByTypeAndId = async (ctx) => {
         'Used to find out in which FSP the requested Party, defined by, and optionally, is located',
         ['success', 'fspId']
     ).startTimer();
+    const span = ctx.request.span;
     // kick off an asynchronous operation to handle the request
     (async () => {
         try {
@@ -31,6 +32,7 @@ const getParticipantsByTypeAndId = async (ctx) => {
             const model = new Model({
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
+                span,
                 ...ctx.state.conf
             });
 
@@ -68,6 +70,7 @@ const getPartiesByTypeAndId = async (ctx) => {
         'Used to lookup information regarding the requested Party',
         ['success', 'fspId']
     ).startTimer();
+    const span = ctx.request.span;
     (async () => {
         try {
             if(ctx.state.conf.enableTestFeatures) {
@@ -83,6 +86,7 @@ const getPartiesByTypeAndId = async (ctx) => {
             const model = new Model({
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
+                span,
                 ...ctx.state.conf
             });
 
@@ -130,6 +134,7 @@ const postQuotes = async (ctx) => {
         ['success', 'fspId']
     ).startTimer();
     // kick off an asyncronous operation to handle the request
+    const span = ctx.request.span;
     (async () => {
         try {
             if(ctx.state.conf.enableTestFeatures) {
@@ -146,6 +151,7 @@ const postQuotes = async (ctx) => {
             const model = new Model({
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
+                span,
                 ...ctx.state.conf
             });
 
@@ -182,6 +188,7 @@ const postTransfers = async (ctx) => {
         ['success', 'fspId']
     ).startTimer();
     // kick off an asyncronous operation to handle the request
+    const span = ctx.request.span;
     (async () => {
         try {
             if(ctx.state.conf.enableTestFeatures) {
@@ -198,6 +205,7 @@ const postTransfers = async (ctx) => {
             const model = new Model({
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
+                span,
                 ...ctx.state.conf
             });
 
