@@ -182,7 +182,7 @@ class InboundTransfersModel {
             if(!quote) {
                 // Check whether to allow transfers without a previous quote.
                 if(!this.allowTransferWithoutQuote) {
-                    throw new Error(`ILP condition in transfer prepare for ${prepareRequest.transferId} does not match quote`);
+                    throw new Error(`Corresponding quote not found for transfer ${prepareRequest.transferId}`);
                 }
             }
 
@@ -196,7 +196,6 @@ class InboundTransfersModel {
             else {
                 fulfilment = this.ilp.caluclateFulfil(prepareRequest.ilpPacket);
                 condition = this.ilp.calculateConditionFromFulfil(fulfilment);
-                console.log({ ilpPacket: prepareRequest.ilpPacket, fulfilment, condition});
             }
 
             // check incoming ILP matches our persisted values
