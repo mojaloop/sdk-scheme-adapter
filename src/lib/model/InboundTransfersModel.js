@@ -32,6 +32,7 @@ class InboundTransfersModel {
         this.dfspId = config.dfspId;
         this.expirySeconds = config.expirySeconds;
         this.rejectTransfersOnExpiredQuotes = config.rejectTransfersOnExpiredQuotes;
+        this.allowTransferWithoutQuote = config.allowTransferWithoutQuote;
 
         this._mojaloopRequests = new MojaloopRequests({
             logger: this.logger,
@@ -174,19 +175,37 @@ class InboundTransfersModel {
      */
     async prepareTransfer(prepareRequest, sourceFspId) {
         try {
+
             // retrieve our quote data
             const quote = await this.cache.get(`quote_${prepareRequest.transferId}`);
 
             if(!quote) {
-                throw new Error(`Corresponding quote not found for transfer ${prepareRequest.transferId}`);
+                // Check whether to allow transfers without a previous quote.
+                if(!this.allowTransferWithoutQuote) {
+                    throw new Error(`ILP condition in transfer prepare for ${prepareRequest.transferId} does not match quote`);
+                }
+            }
+
+            // Calculate or retrieve fullfilment and condition
+            let fulfilment = null;
+            let condition = null;
+            if(quote) {
+                fulfilment = quote.fulfilment;
+                condition = quote.mojaloopResponse.condition;
+            }
+            else {
+                fulfilment = this.ilp.caluclateFulfil(prepareRequest.ilpPacket);
+                condition = this.ilp.calculateConditionFromFulfil(fulfilment);
+                console.log({ ilpPacket: prepareRequest.ilpPacket, fulfilment, condition});
             }
 
             // check incoming ILP matches our persisted values
-            if(this.checkIlp && (prepareRequest.condition !== quote.mojaloopResponse.condition)) {
+            if(this.checkIlp && (prepareRequest.condition !== condition)) {
                 throw new Error(`ILP condition in transfer prepare for ${prepareRequest.transferId} does not match quote`);
             }
 
-            if (this.rejectTransfersOnExpiredQuotes) {
+
+            if (quote && this.rejectTransfersOnExpiredQuotes) {
                 const now = new Date().toISOString();
                 const expiration = quote.mojaloopResponse.expiration;
                 if (now > expiration) {
@@ -213,7 +232,7 @@ class InboundTransfersModel {
             const mojaloopResponse = {
                 completedTimestamp: new Date(),
                 transferState: 'COMMITTED',
-                fulfilment: quote.fulfilment
+                fulfilment: fulfilment
             };
 
             // make a callback to the source fsp with the transfer fulfilment
