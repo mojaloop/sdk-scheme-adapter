@@ -533,7 +533,9 @@ class OutboundTransfersModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /transfers request to the switch
             try {
-                const res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource, executeTransferSpan);
+                // const res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource, executeTransferSpan);
+                // Temporary fix to not send a trace header to the mojaloop switch. This is necessary until the Mojaloop switch can handle "Vendor" specific trace headers
+                const res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource, undefined);
                 this.logger.push({ res }).log('Transfer prepare sent to peer');
                 histTimerEnd({ success: true });
             }
