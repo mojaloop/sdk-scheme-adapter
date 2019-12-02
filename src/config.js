@@ -202,7 +202,7 @@ const setConfig = async cfg => {
     config.oauthTestServer.clientSecret = cfg.OAUTH_TOKEN_ENDPOINT_CLIENT_SECRET;
     config.oauthTestServer.listenPort = cfg.OAUTH_TOKEN_ENDPOINT_LISTEN_PORT;
 
-    config.wso2Auth.staticToken = cfg.WS02_BEARER_TOKEN;
+    config.wso2Auth.staticToken = cfg.WSO2_BEARER_TOKEN;
     config.wso2Auth.tokenEndpoint = cfg.OAUTH_TOKEN_ENDPOINT;
     config.wso2Auth.clientKey = cfg.OAUTH_CLIENT_KEY;
     config.wso2Auth.clientSecret = cfg.OAUTH_CLIENT_SECRET;

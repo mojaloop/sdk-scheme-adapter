@@ -317,6 +317,9 @@ class OutboundTransfersModel {
             }, ASYNC_TIMEOUT_MILLS);
 
             // create a quote request
+            const quote = this._buildQuoteRequest();
+            this.data.quoteId = quote.quoteId;
+
             // listen for events on the quoteId
             const quoteKey = `${quote.quoteId}`;
 
@@ -365,7 +368,7 @@ class OutboundTransfersModel {
                     const quoteResponseBody = message.data;
                     const quoteResponseHeaders = message.headers;
                     this.logger.push({ quoteResponseBody }).log('Quote response received');
-                    this.data.quoteId = quote.quoteId;
+
                     this.data.quoteResponse = quoteResponseBody;
                     this.data.quoteResponseSource = quoteResponseHeaders['fspiop-source'];
                     histTimerEnd({ success: true });

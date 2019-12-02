@@ -5,7 +5,7 @@
  *  specified in the corresponding source code repository.                *
  *                                                                        *
  *  ORIGINAL AUTHOR:                                                      *
- *       James Bush - james.bush@modusbox.com                             *
+ *       Matt Kingston - matt.kingston@modusbox.com                       *
  **************************************************************************/
 
 'use strict';
