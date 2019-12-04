@@ -19,7 +19,7 @@ const Metrics = require('@mojaloop/central-services-metrics');
 
 const { Logger, Transports } = require('@internal/log');
 const Cache = require('@internal/cache');
-const globalMiddleWare = require('@internal/tracing');
+const Tracing = require('@internal/tracing');
 const Validate = require('@internal/validate');
 const router = require('@internal/router');
 const handlers = require('./handlers');
@@ -52,9 +52,9 @@ class OutboundServer {
         const sharedState = { cache, conf: this.conf };
         this.api.use(middlewares.createLogger(this.logger, sharedState));
         this.api.use(middlewares.createRequestValidator(validator));
-        this.api.use(globalMiddleWare.createTrace(handlers.map));
+        this.api.use(Tracing.createTrace(handlers.map));
         this.api.use(router(handlers.map));
-        this.api.use(globalMiddleWare.finishTrace());
+        this.api.use(Tracing.finishTrace());
         this.server = this._createServer();
     }
 

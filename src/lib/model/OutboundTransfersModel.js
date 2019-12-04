@@ -306,8 +306,6 @@ class OutboundTransfersModel {
             ['success', 'fspId']
         ).startTimer();
         const requestQuoteSpan = this.span.getChild('sdk_outbound_request_quote');
-        const quote = this._buildQuoteRequest();
-        requestQuoteSpan.setTags(getSpanTags(Enum.Events.Event.Type.QUOTE, Enum.Events.Event.Action.REQUEST, quote.quoteId, this.dfspId, this.data.to.fspId));
         return new Promise(async (resolve, reject) => {
             // set up a timeout for the request
             const timeout = setTimeout(() => {
@@ -318,6 +316,7 @@ class OutboundTransfersModel {
 
             // create a quote request
             const quote = this._buildQuoteRequest();
+            requestQuoteSpan.setTags(getSpanTags(Enum.Events.Event.Type.QUOTE, Enum.Events.Event.Action.REQUEST, quote.quoteId, this.dfspId, this.data.to.fspId));
             this.data.quoteId = quote.quoteId;
 
             // listen for events on the quoteId

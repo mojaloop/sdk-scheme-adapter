@@ -298,14 +298,23 @@ class InboundTransfersModel {
             // make a call to the backend to inform it of the incoming transfer
             const postTransferRequest = prepareTransferRequestSpan.getChild('sdk_inbound_post_transfers');
             postTransferRequest.setTags(getSpanTags(Enum.Events.Event.Type.TRANSFER, Enum.Events.Event.Action.POST, internalForm.transferId, this.dfspId, 'transfer'));
-            const response = await this.backendRequests.postTransfers(internalForm, postTransferRequest);
-            if(!response) {
+            let response;
+            try{ 
+                response = await this.backendRequests.postTransfers(internalForm, postTransferRequest);
+                if(!response) {
+                    // make an error callback to the source fsp
+                    await postTransferRequest.error('No response from backend');
+                    await postTransferRequest.finish('No response from backend');
+                    histTimerEnd({ success: false });
+                    return 'No response from backend';
+                }
+            } catch( err ) {
                 // make an error callback to the source fsp
-                await postTransferRequest.error('No response from backend');
-                await postTransferRequest.finish('No response from backend');
-                histTimerEnd({ success: false });
-                return 'No response from backend';
+                await postTransferRequest.error(err);
+                await postTransferRequest.finish(err);
+                throw err;
             }
+
             await postTransferRequest.finish();
 
             this.logger.log(`Transfer accepted by backend returning homeTransactionId: ${response.homeTransactionId} for mojaloop transferId: ${prepareRequest.transferId}`);
@@ -320,8 +329,17 @@ class InboundTransfersModel {
             // make a callback to the source fsp with the transfer fulfilment
             const putTransferRequest = prepareTransferRequestSpan.getChild('sdk_inbound_put_transfers');
             putTransferRequest.setTags(getSpanTags(Enum.Events.Event.Type.TRANSFER, Enum.Events.Event.Action.PUT, internalForm.transferId, this.dfspId, 'transfer'));
-            const res = this._mojaloopRequests.putTransfers(prepareRequest.transferId, mojaloopResponse,
-                sourceFspId, putTransferRequest);
+            let res;
+            try {
+                res = this._mojaloopRequests.putTransfers(prepareRequest.transferId, mojaloopResponse,
+                    sourceFspId, putTransferRequest);
+            } catch (err) {
+                histTimerEnd({ success: false });
+                await putTransferRequest.error(err);
+                await putTransferRequest.finish(err);
+                throw err;
+            }
+            
             histTimerEnd({ success: true });
             await putTransferRequest.finish();
             await prepareTransferRequestSpan.finish();
