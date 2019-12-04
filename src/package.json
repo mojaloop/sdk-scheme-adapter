@@ -32,7 +32,7 @@
     "@internal/validate": "file:lib/validate",
     "@mojaloop/central-services-metrics": "^8.3.0",
     "@mojaloop/central-services-shared": "^8.6.2",
-    "@mojaloop/event-sdk": "^8.3.0",
+    "@mojaloop/event-sdk": "^8.6.0",
     "@mojaloop/sdk-standard-components": "^8.5.0-perf.2",
     "co-body": "^6.0.0",
     "dotenv": "^6.2.0",
