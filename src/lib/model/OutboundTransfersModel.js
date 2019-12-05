@@ -526,7 +526,7 @@ class OutboundTransfersModel {
      *
      * @returns {object} - Response representing the result of the transfer process
      */
-    getResponse() {
+    getFinalResponse() {
         // we want to project some of our internal state into a more useful
         // representation to return to the SDK API consumer
         let resp = { ...this.data };
@@ -553,6 +553,10 @@ class OutboundTransfersModel {
                 resp.currentState = transferStateEnum.ERROR_OCCURED;
                 break;
         }
+        
+        // It's final response, so trigger cleanup.
+        // NOTE: No "await" here, as we trigger the cleanup, but we don't wait for it to complete.
+        this._unsubscribeAll(); 
 
         return resp;
     }
@@ -610,7 +614,7 @@ class OutboundTransfersModel {
                         //we break execution here and return the resolved party details to allow asynchronous accept or reject
                         //of the resolved party
                         await this._save();
-                        return this.getResponse();
+                        return this.getFinalResponse();
                     }
                     break;
 
@@ -622,7 +626,7 @@ class OutboundTransfersModel {
                         //we break execution here and return the quote response details to allow asynchronous accept or reject
                         //of the quote
                         await this._save();
-                        return this.getResponse();
+                        return this.getFinalResponse();
                     }
                     break;
 
@@ -636,7 +640,7 @@ class OutboundTransfersModel {
                     // all steps complete so return
                     this.logger.log('Transfer completed successfully');
                     await this._save();
-                    return this.getResponse();
+                    return this.getFinalResponse();
 
                 case 'errored':
                     // stopped in errored state
@@ -661,7 +665,7 @@ class OutboundTransfersModel {
                 await this.stateMachine.error(err);
 
                 // avoid circular ref between transferState.lastError and err
-                err.transferState = JSON.parse(JSON.stringify(this.getResponse()));
+                err.transferState = JSON.parse(JSON.stringify(this.getFinalResponse()));
             }
             throw err;
         }
