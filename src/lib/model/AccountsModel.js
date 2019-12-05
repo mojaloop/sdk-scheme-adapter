@@ -102,9 +102,6 @@ class AccountsModel {
         }
 
         this._initStateMachine(this.data.currentState);
-
-        // set up a cache pub/sub subscriber
-        this.subscriber = await this.cache.getClient();
     }
 
 
@@ -131,18 +128,12 @@ class AccountsModel {
         }
     }
 
+
     async _executeCreateAccountsRequest(request) {
         return new Promise(async (resolve, reject) => {
-            // set up a timeout for the request
-            const timeout = setTimeout(() => {
-                const err = new Error(`Timeout waiting for account creation request ${request.requestId}`);
-                return reject(err);
-            }, this.requestProcessingTimeoutSeconds * 1000);
+            const requestKey = `ac_${request.requestId}`;
 
-            const requestKey = `${request.requestId}`;
-
-            this.subscriber.subscribe(requestKey);
-            this.subscriber.on('message', async (cn, msg) => {
+            const subId = this.cache.subscribe(requestKey, async (cn, msg, subId) => {
                 try {
                     let error;
                     let message = JSON.parse(msg);
@@ -162,28 +153,36 @@ class AccountsModel {
                     clearTimeout(timeout);
 
                     // stop listening for account creation response messages
-                    this.subscriber.unsubscribe(requestKey, () => {
+                    this.cache.unsubscribe(requestKey, subId).then(() => {
                         this.logger.log('Account creation subscriber unsubscribed');
+
+                        if (error) {
+                            return reject(error);
+                        }
+
+                        const response = message.data;
+                        this.logger.push({ response }).log('Account creation response received');
+                        return resolve(response);
                     });
-
-                    if (error) {
-                        return reject(error);
-                    }
-
-                    const response = message.data;
-                    this.logger.push({ response }).log('Account creation response received');
-                    return resolve(response);
                 }
                 catch(err) {
                     return reject(err);
                 }
             });
 
+            // set up a timeout for the request
+            const timeout = setTimeout(() => {
+                const err = new Error(`Timeout waiting for response to account creation request ${request.requestId}`);
+                this.cache.unsubscribe(requestKey, subId).then(() => {
+                    reject(err);
+                });
+            }, this.requestProcessingTimeoutSeconds * 1000);
+
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /participants request to the switch
             try {
                 const res = await this.requests.postParticipants(request);
-                this.logger.push({ res }).log('Account creation request sent to ALS');
+                this.logger.push({ res }).log('Account creation request sent to peer');
             }
             catch(err) {
                 return reject(err);

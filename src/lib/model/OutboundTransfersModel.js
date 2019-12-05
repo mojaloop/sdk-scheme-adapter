@@ -120,9 +120,6 @@ class OutboundTransfersModel {
         }
 
         this._initStateMachine(this.data.currentState);
-
-        // set up a cache pub/sub subscriber
-        this.subscriber = await this.cache.getClient();
     }
 
 
@@ -167,17 +164,11 @@ class OutboundTransfersModel {
      */
     async _resolvePayee() {
         return new Promise(async (resolve, reject) => {
-            // set up a timeout for the resolution
-            const timeout = setTimeout(() => {
-                const err = new BackendError(`Timeout resolving payee for transfer ${this.data.transferId}`, 504);
-                return reject(err);
-            }, ASYNC_TIMEOUT_MILLS);
-
             // listen for resolution events on the payee idType and idValue
             const payeeKey = `${this.data.to.idType}_${this.data.to.idValue}`;
 
-            this.subscriber.subscribe(payeeKey);
-            this.subscriber.on('message', (cn, msg) => {
+            // hook up a subscriber to handle response messages
+            const subId = await this.cache.subscribe(payeeKey, (cn, msg, subId) => {
                 try {
                     let payee = JSON.parse(msg);
 
@@ -206,46 +197,51 @@ class OutboundTransfersModel {
                     this.logger.push({ payee }).log('Payee resolved');
 
                     // stop listening for payee resolution messages
-                    this.subscriber.unsubscribe(payeeKey, () => {
-                        this.logger.log('Payee resolution subscriber unsubscribed');
-                    });
-
-                    // check we got the right payee and info we need
-                    if(payee.partyIdInfo.partyIdType !== this.data.to.idType) {
-                        const err = new Error(`Expecting resolved payee party IdType to be ${this.data.to.idType} but got ${payee.partyIdInfo.partyIdType}`);
-                        return reject(err);
-                    }
-
-                    if(payee.partyIdInfo.partyIdentifier !== this.data.to.idValue) {
-                        const err = new Error(`Expecting resolved payee party identifier to be ${this.data.to.idValue} but got ${payee.partyIdInfo.partyIdentifier}`);
-                        return reject(err);
-                    }
-
-                    if(!payee.partyIdInfo.fspId) {
-                        const err = new Error(`Expecting resolved payee party to have an FSPID: ${util.inspect(payee.partyIdInfo)}`);
-                        return reject(err);
-
-                    }
-
-                    // now we got the payee, add the details to our data so we can use it
-                    // in the quote request
-                    this.data.to.fspId = payee.partyIdInfo.fspId;
-
-                    if(payee.personalInfo) {
-                        if(payee.personalInfo.complexName) {
-                            this.data.to.firstName = payee.personalInfo.complexName.firstName || this.data.to.firstName;
-                            this.data.to.middleName = payee.personalInfo.complexName.middleName || this.data.to.middleName;
-                            this.data.to.lastName = payee.personalInfo.complexName.lastName || this.data.to.lastName;
+                    this.cache.unsubscribe(payeeKey, subId).then(() => {
+                        // check we got the right payee and info we need
+                        if(payee.partyIdInfo.partyIdType !== this.data.to.idType) {
+                            const err = new Error(`Expecting resolved payee party IdType to be ${this.data.to.idType} but got ${payee.partyIdInfo.partyIdType}`);
+                            return reject(err);
                         }
-                        this.data.to.dateOfBirth = payee.personalInfo.dateOfBirth;
-                    }
 
-                    return resolve();
+                        if(payee.partyIdInfo.partyIdentifier !== this.data.to.idValue) {
+                            const err = new Error(`Expecting resolved payee party identifier to be ${this.data.to.idValue} but got ${payee.partyIdInfo.partyIdentifier}`);
+                            return reject(err);
+                        }
+
+                        if(!payee.partyIdInfo.fspId) {
+                            const err = new Error(`Expecting resolved payee party to have an FSPID: ${util.inspect(payee.partyIdInfo)}`);
+                            return reject(err);
+                        }
+
+                        // now we got the payee, add the details to our data so we can use it
+                        // in the quote request
+                        this.data.to.fspId = payee.partyIdInfo.fspId;
+
+                        if(payee.personalInfo) {
+                            if(payee.personalInfo.complexName) {
+                                this.data.to.firstName = payee.personalInfo.complexName.firstName || this.data.to.firstName;
+                                this.data.to.middleName = payee.personalInfo.complexName.middleName || this.data.to.middleName;
+                                this.data.to.lastName = payee.personalInfo.complexName.lastName || this.data.to.lastName;
+                            }
+                            this.data.to.dateOfBirth = payee.personalInfo.dateOfBirth;
+                        }
+
+                        return resolve(payee);
+                    });
                 }
                 catch(err) {
                     return reject(err);
                 }
             });
+
+            // set up a timeout for the resolution
+            const timeout = setTimeout(() => {
+                const err = new BackendError(`Timeout resolving payee for transfer ${this.data.transferId}`, 504);
+                this.cache.unsubscribe(payeeKey, subId).then(() => {
+                    reject(err);
+                });
+            }, ASYNC_TIMEOUT_MILLS);
 
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a GET /parties request to the switch
@@ -267,21 +263,15 @@ class OutboundTransfersModel {
      */
     async _requestQuote() {
         return new Promise(async (resolve, reject) => {
-            // set up a timeout for the request
-            const timeout = setTimeout(() => {
-                const err = new BackendError(`Timeout requesting quote for transfer ${this.data.transferId}`, 504);
-                return reject(err);
-            }, ASYNC_TIMEOUT_MILLS);
-
             // create a quote request
             const quote = this._buildQuoteRequest();
             this.data.quoteId = quote.quoteId;
 
             // listen for events on the quoteId
-            const quoteKey = `${quote.quoteId}`;
+            const quoteKey = `qt_${quote.quoteId}`;
 
-            this.subscriber.subscribe(quoteKey);
-            this.subscriber.on('message', (cn, msg) => {
+            // hook up a subscriber to handle response messages
+            const subId = await this.cache.subscribe(quoteKey, (cn, msg, subId) => {
                 try {
                     let error;
                     let message = JSON.parse(msg);
@@ -308,27 +298,35 @@ class OutboundTransfersModel {
                     clearTimeout(timeout);
 
                     // stop listening for payee resolution messages
-                    this.subscriber.unsubscribe(quoteKey, () => {
+                    this.cache.unsubscribe(quoteKey, subId).then(() => {
                         this.logger.log('Quote request subscriber unsubscribed');
+
+                        if (error) {
+                            return reject(error);
+                        }
+
+                        const quoteResponseBody = message.data;
+                        const quoteResponseHeaders = message.headers;
+                        this.logger.push({ quoteResponseBody }).log('Quote response received');
+
+                        this.data.quoteResponse = quoteResponseBody;
+                        this.data.quoteResponseSource = quoteResponseHeaders['fspiop-source'];
+
+                        return resolve(quote);
                     });
-
-                    if (error) {
-                        return reject(error);
-                    }
-
-                    const quoteResponseBody = message.data;
-                    const quoteResponseHeaders = message.headers;
-                    this.logger.push({ quoteResponseBody }).log('Quote response received');
-
-                    this.data.quoteResponse = quoteResponseBody;
-                    this.data.quoteResponseSource = quoteResponseHeaders['fspiop-source'];
-
-                    return resolve(quote);
                 }
                 catch(err) {
                     return reject(err);
                 }
             });
+
+            // set up a timeout for the request
+            const timeout = setTimeout(() => {
+                const err = new BackendError(`Timeout requesting quote for transfer ${this.data.transferId}`, 504);
+                this.cache.unsubscribe(quoteKey, subId).then(() => {
+                    reject(err);
+                });
+            }, ASYNC_TIMEOUT_MILLS);
 
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /quotes request to the switch
@@ -397,18 +395,13 @@ class OutboundTransfersModel {
      */
     async _executeTransfer() {
         return new Promise(async (resolve, reject) => {
-            // set up a timeout for the request
-            const timeout = setTimeout(() => {
-                const err = new BackendError(`Timeout waiting for fulfil for transfer ${this.data.transferId}`, 504);
-                return reject(err);
-            }, ASYNC_TIMEOUT_MILLS);
-
+            // create a transfer prepare request
             const prepare = this._buildTransferPrepare();
-            // listen for events on the transferId
-            const transferKey = `${this.data.transferId}`;
 
-            this.subscriber.subscribe(transferKey);
-            this.subscriber.on('message', async (cn, msg) => {
+            // listen for events on the transferId
+            const transferKey = `tf_${this.data.transferId}`;
+
+            const subId = this.cache.subscribe(transferKey, async (cn, msg, subId) => {
                 try {
                     let error;
                     let message = JSON.parse(msg);
@@ -434,28 +427,36 @@ class OutboundTransfersModel {
                     clearTimeout(timeout);
 
                     // stop listening for payee resolution messages
-                    this.subscriber.unsubscribe(transferKey, () => {
+                    this.cache.unsubscribe(transferKey, subId).then(() => {
                         this.logger.log('Transfer fulfil subscriber unsubscribed');
+
+                        if (error) {
+                            return reject(error);
+                        }
+
+                        const fulfil = message.data;
+                        this.logger.push({ fulfil }).log('Transfer fulfil received');
+                        this.data.fulfil = fulfil;
+
+                        if(this.checkIlp && !this.ilp.validateFulfil(fulfil.fulfilment, this.data.quoteResponse.condition)) {
+                            throw new Error('Invalid fulfilment received from peer DFSP.');
+                        }
+
+                        return resolve(fulfil);
                     });
-
-                    if (error) {
-                        return reject(error);
-                    }
-
-                    const fulfil = message.data;
-                    this.logger.push({ fulfil }).log('Transfer fulfil received');
-                    this.data.fulfil = fulfil;
-
-                    if(this.checkIlp && !this.ilp.validateFulfil(fulfil.fulfilment, this.data.quoteResponse.condition)) {
-                        throw new Error('Invalid fulfilment received from peer DFSP.');
-                    }
-
-                    return resolve(fulfil);
                 }
                 catch(err) {
                     return reject(err);
                 }
             });
+
+            // set up a timeout for the request
+            const timeout = setTimeout(() => {
+                const err = new BackendError(`Timeout waiting for fulfil for transfer ${this.data.transferId}`, 504);
+                this.cache.unsubscribe(transferKey, subId).then(() => {
+                    reject(err);
+                });
+            }, ASYNC_TIMEOUT_MILLS);
 
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /transfers request to the switch
@@ -595,21 +596,6 @@ class OutboundTransfersModel {
 
 
     /**
-     * Unsubscribes the models subscriber from all subscriptions
-     */
-    async _unsubscribeAll() {
-        return new Promise((resolve) => {
-            this.subscriber.unsubscribe(() => {
-                this.subscriber.quit(() => {
-                    this.logger.log('Transfer model unsubscribed from all subscriptions');
-                    return resolve();
-                });
-            });
-        });
-    }
-
-
-    /**
      * Returns a promise that resolves when the state machine has reached a terminal state
      */
     async run() {
@@ -667,8 +653,6 @@ class OutboundTransfersModel {
 
             // as this function is recursive, we dont want to error the state machine multiple times
             if(this.data.currentState !== 'errored') {
-                await this._unsubscribeAll();
-
                 // err should not have a transferState property here!
                 if(err.transferState) {
                     this.logger.log(`State machine is broken: ${util.inspect(err)}`);
