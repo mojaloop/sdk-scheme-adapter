@@ -16,7 +16,8 @@
 
 // we use a mock standard components lib to intercept and mock certain funcs
 jest.mock('@mojaloop/sdk-standard-components');
-
+jest.mock('redis');
+const redis = require('redis');
 
 const { init, destroy, setConfig, getConfig } = require('../../../../config.js');
 const path = require('path');
@@ -29,6 +30,8 @@ const defaultEnv = require('./data/defaultEnv');
 const transferRequest = require('./data/transferRequest');
 
 let logTransports;
+let dummyCacheConfig;
+
 
 function generateAccounts(count, currencies) {
     const accounts = [];
@@ -45,12 +48,14 @@ function generateAccounts(count, currencies) {
     return accounts;
 }
 
+
 async function testCreateAccount(count, currencies) {
     const MAX_ITEMS_PER_REQUEST = 10000; // As per API Spec 6.2.2.2 (partyList field)
 
     await setConfig(defaultEnv);
     const conf = getConfig();
-    const cache = new Cache();
+    const cache = new Cache(dummyCacheConfig);
+    await cache.connect();
 
     MojaloopRequests.__postParticipants = jest.fn(request => {
         // simulate a response from ALS
@@ -64,7 +69,7 @@ async function testCreateAccount(count, currencies) {
                 currency: request.currency,
             },
         };
-        cache.emitMessage(JSON.stringify(response));
+        cache.subscriptionClient.emitMessage('message', `ac_${request.requestId}`, JSON.stringify(response));
         return Promise.resolve();
     });
 
@@ -94,6 +99,7 @@ async function testCreateAccount(count, currencies) {
     expect(StateMachine.__instance.state).toBe('succeeded');
 }
 
+
 describe('AccountsModel', () => {
     // the keys are under the "secrets" folder that is supposed to be moved by Dockerfile
     // so for the needs of the unit tests, we have to define the proper path manually.
@@ -102,6 +108,11 @@ describe('AccountsModel', () => {
 
     beforeAll(async () => {
         logTransports = await Promise.all([() => {}]);
+        dummyCacheConfig = {
+            host: 'dummycachehost',
+            port: 1234,
+            logger: new Logger({ context: { app: 'outbound-model-unit-tests-cache' }, space: 4, transports: logTransports })
+        };
     });
 
     beforeEach(async () => {
@@ -118,8 +129,11 @@ describe('AccountsModel', () => {
         await setConfig(defaultEnv);
         const conf = getConfig();
 
+        const cache = new Cache(dummyCacheConfig);
+        await cache.connect();
+
         const model = new Model({
-            cache: new Cache(),
+            cache: cache,
             logger: new Logger({ context: { app: 'accounts-model-unit-tests' }, space:4, transports:logTransports }),
             ...conf
         });

@@ -15,12 +15,20 @@ jest.mock('@internal/model');
 const handlers = require('../../../InboundServer/handlers');
 const Model = require('@internal/model').InboundTransfersModel;
 const mockArguments = require('./data/mockArguments');
+const { Logger, Transports } = require('@internal/log');
+
+let logTransports;
 
 describe('Inbound API handlers:', () => {
     let mockArgs;
 
+    beforeAll(async () => {
+        logTransports = await Promise.all([Transports.consoleDir()]);
+    });
+
     beforeEach(() => {
         mockArgs = JSON.parse(JSON.stringify(mockArguments));
+
     });
 
     describe('POST /quotes', () => {
@@ -36,14 +44,21 @@ describe('Inbound API handlers:', () => {
                 },
                 response: {},
                 state: {
-                    conf: {}
+                    conf: {},
+                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports })
                 }
             };
         });
+
         test('calls `model.quoteRequest` with the expected arguments.', async () => {
             const quoteRequestSpy = jest.spyOn(Model.prototype, 'quoteRequest');
 
-            await handlers.map['/quotes'].post(mockContext);
+            try {
+                await handlers.map['/quotes'].post(mockContext);
+            }
+            catch(e) {
+                expect(e).toBe(undefined);
+            }
 
             expect(quoteRequestSpy).toHaveBeenCalledTimes(1);
             expect(quoteRequestSpy.mock.calls[0][0]).toBe(mockContext.request.body);
