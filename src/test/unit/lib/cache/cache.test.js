@@ -12,7 +12,6 @@
 
 
 jest.mock('redis');
-const Redis = require('redis');
 
 const Cache = require('@internal/cache');
 jest.unmock('@internal/cache');
@@ -35,7 +34,7 @@ const createCache = async() => {
     const cache = new Cache(defaultConfig);
     await cache.connect();
     return cache;
-}
+};
 
 
 describe('Cache', () => {
@@ -65,7 +64,7 @@ describe('Cache', () => {
 
         // create a promise that only gets resoled if the subscription gets the
         // correct message
-        const cb1Promise = new Promise((resolve, reject) => {
+        const cb1Promise = new Promise((resolve) => {
             const mockCb1 = jest.fn((cn, msg, subId) => {
                 expect(cn).toBe(chan1);
                 console.log(`callback on subId: ${subId}`);
@@ -89,7 +88,7 @@ describe('Cache', () => {
 
         // create a second promise that only gets resoled if the second subscription gets the
         // correct message
-        const cb2Promise = new Promise((resolve, reject) => {
+        const cb2Promise = new Promise((resolve) => {
             const mockCb2 = jest.fn((cn, msg, subId) => {
                 expect(cn).toBe(chan2);
                 console.log(`callback on subId: ${subId}`);
@@ -124,7 +123,7 @@ describe('Cache', () => {
         // create a promise that only gets resoled if the subscription gets the
         // correct message
         const cb1Promise = new Promise((resolve, reject) => {
-            const mockCb1 = jest.fn((cn, msg) => {
+            const mockCb1 = jest.fn((cn, msg) => {  // eslint-disable-line no-unused-vars
                 //reject the outer promise if this func gets called!
                 reject();
             });

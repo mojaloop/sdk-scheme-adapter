@@ -17,7 +17,6 @@
 // we use a mock standard components lib to intercept and mock certain funcs
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('redis');
-const redis = require('redis');
 
 const { init, destroy, setConfig, getConfig } = require('../../../../config.js');
 const util = require('util');
