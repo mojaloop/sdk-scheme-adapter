@@ -185,6 +185,11 @@ class AccountsModel {
                 this.logger.push({ res }).log('Account creation request sent to peer');
             }
             catch(err) {
+                // cancel the timout and unsubscribe before rejecting the promise
+                clearTimeout(timeout);
+                this.cache.unsubscribe(requestKey, subId).catch(e => {
+                    this.logger.log(`Error unsubscribing ${requestKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                });
                 return reject(err);
             }
         });
