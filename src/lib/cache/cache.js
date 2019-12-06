@@ -74,9 +74,8 @@ class Cache {
                     this.logger.log(`Error subscribing to channel ${channel}: ${err.stack || util.inspect(err)}`);
                     return reject(err);
                 }
-                else {
-                    this.logger.log(`Subscribed to cache pub/sub channel ${channel}`);
-                }
+
+                this.logger.log(`Subscribed to cache pub/sub channel ${channel}`);
 
                 if(!this.callbacks[channel]) {
                     // if this is the first subscriber for this channel we init the hashmap
