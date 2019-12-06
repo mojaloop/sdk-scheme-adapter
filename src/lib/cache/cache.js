@@ -119,7 +119,7 @@ class Cache {
             // we should not be asked to unsubscribe from a subscription we do not have. Raise this as a promise
             // rejection so it can be spotted. It may indiate a logic bug somewhere else
             this.logger.log(`Cache not subscribed to channel ${channel} for callbackId ${callbackId}`);
-            return reject();
+            return reject(new Error(`Channel ${channel} does not have a callback with id ${callbackId} subscribed`));
         });
     }
 

@@ -250,6 +250,11 @@ class OutboundTransfersModel {
                 this.logger.push({ peer: res }).log('Party lookup sent to peer');
             }
             catch(err) {
+                // cancel the timout and unsubscribe before rejecting the promise
+                clearTimeout(timeout);
+                this.cache.unsubscribe(payeeKey, subId).catch(e => {
+                    this.logger.log(`Error unsubscribing ${payeeKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                });
                 return reject(err);
             }
         });
@@ -299,8 +304,6 @@ class OutboundTransfersModel {
 
                     // stop listening for payee resolution messages
                     this.cache.unsubscribe(quoteKey, subId).then(() => {
-                        this.logger.log('Quote request subscriber unsubscribed');
-
                         if (error) {
                             return reject(error);
                         }
@@ -335,6 +338,11 @@ class OutboundTransfersModel {
                 this.logger.push({ res }).log('Quote request sent to peer');
             }
             catch(err) {
+                // cancel the timout and unsubscribe before rejecting the promise
+                clearTimeout(timeout);
+                this.cache.unsubscribe(quoteKey, subId).catch(e => {
+                    this.logger.log(`Error unsubscribing ${quoteKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                });
                 return reject(err);
             }
         });
@@ -426,10 +434,8 @@ class OutboundTransfersModel {
                     // cancel the timeout handler
                     clearTimeout(timeout);
 
-                    // stop listening for payee resolution messages
+                    // stop listening for transfer fulfil messages
                     this.cache.unsubscribe(transferKey, subId).then(() => {
-                        this.logger.log('Transfer fulfil subscriber unsubscribed');
-
                         if (error) {
                             return reject(error);
                         }
@@ -465,6 +471,11 @@ class OutboundTransfersModel {
                 this.logger.push({ res }).log('Transfer prepare sent to peer');
             }
             catch(err) {
+                // cancel the timout and unsubscribe before rejecting the promise
+                clearTimeout(timeout);
+                this.cache.unsubscribe(transferKey, subId).catch(e => {
+                    this.logger.log(`Error unsubscribing ${transferKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                });
                 return reject(err);
             }
         });
@@ -526,7 +537,7 @@ class OutboundTransfersModel {
      *
      * @returns {object} - Response representing the result of the transfer process
      */
-    getFinalResponse() {
+    getResponse() {
         // we want to project some of our internal state into a more useful
         // representation to return to the SDK API consumer
         let resp = { ...this.data };
@@ -553,10 +564,6 @@ class OutboundTransfersModel {
                 resp.currentState = transferStateEnum.ERROR_OCCURED;
                 break;
         }
-        
-        // It's final response, so trigger cleanup.
-        // NOTE: No "await" here, as we trigger the cleanup, but we don't wait for it to complete.
-        this._unsubscribeAll(); 
 
         return resp;
     }
@@ -614,7 +621,7 @@ class OutboundTransfersModel {
                         //we break execution here and return the resolved party details to allow asynchronous accept or reject
                         //of the resolved party
                         await this._save();
-                        return this.getFinalResponse();
+                        return this.getResponse();
                     }
                     break;
 
@@ -626,7 +633,7 @@ class OutboundTransfersModel {
                         //we break execution here and return the quote response details to allow asynchronous accept or reject
                         //of the quote
                         await this._save();
-                        return this.getFinalResponse();
+                        return this.getResponse();
                     }
                     break;
 
@@ -640,7 +647,7 @@ class OutboundTransfersModel {
                     // all steps complete so return
                     this.logger.log('Transfer completed successfully');
                     await this._save();
-                    return this.getFinalResponse();
+                    return this.getResponse();
 
                 case 'errored':
                     // stopped in errored state
@@ -665,7 +672,7 @@ class OutboundTransfersModel {
                 await this.stateMachine.error(err);
 
                 // avoid circular ref between transferState.lastError and err
-                err.transferState = JSON.parse(JSON.stringify(this.getFinalResponse()));
+                err.transferState = JSON.parse(JSON.stringify(this.getResponse()));
             }
             throw err;
         }
