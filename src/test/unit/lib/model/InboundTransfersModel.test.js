@@ -13,7 +13,6 @@
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('@internal/requests').BackendRequests;
 jest.mock('redis');
-const redis = require('redis');
 
 const { init, destroy, setConfig, getConfig } = require('../../../../config.js');
 const path = require('path');
