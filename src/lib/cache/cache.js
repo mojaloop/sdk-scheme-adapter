@@ -166,7 +166,7 @@ class Cache {
      * Publishes the specified message to the specified channel
      *
      * @param channelName {string} - channel name to publish to
-     * @param value - any type that will be converted to a string (JSON if object) and published as the message
+     * @param value - any type that will be converted to a JSON string (unless it is already a string) and published as the message
      * @returns {Promise} - Promise that will resolve with redis replies or reject with an error
      */
     async publish(channelName, value) {
