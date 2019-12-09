@@ -102,9 +102,6 @@ class AccountsModel {
         }
 
         this._initStateMachine(this.data.currentState);
-
-        // set up a cache pub/sub subscriber
-        this.subscriber = await this.cache.getClient();
     }
 
 
@@ -131,18 +128,12 @@ class AccountsModel {
         }
     }
 
+
     async _executeCreateAccountsRequest(request) {
         return new Promise(async (resolve, reject) => {
-            // set up a timeout for the request
-            const timeout = setTimeout(() => {
-                const err = new Error(`Timeout waiting for account creation request ${request.requestId}`);
-                return reject(err);
-            }, this.requestProcessingTimeoutSeconds * 1000);
+            const requestKey = `ac_${request.requestId}`;
 
-            const requestKey = `${request.requestId}`;
-
-            this.subscriber.subscribe(requestKey);
-            this.subscriber.on('message', async (cn, msg) => {
+            const subId = this.cache.subscribe(requestKey, async (cn, msg, subId) => {
                 try {
                     let error;
                     let message = JSON.parse(msg);
@@ -161,9 +152,11 @@ class AccountsModel {
                     // cancel the timeout handler
                     clearTimeout(timeout);
 
-                    // stop listening for account creation response messages
-                    this.subscriber.unsubscribe(requestKey, () => {
-                        this.logger.log('Account creation subscriber unsubscribed');
+                    // stop listening for account creation response messages.
+                    // no need to await for the unsubscribe to complete.
+                    // we dont really care if the unsubscribe fails but we should log it regardless
+                    this.cache.unsubscribe(requestKey, subId).catch(e => {
+                        this.logger.log(`Error unsubscribing (in callback) ${requestKey} ${subId}: ${e.stack || util.inspect(e)}`);
                     });
 
                     if (error) {
@@ -179,13 +172,33 @@ class AccountsModel {
                 }
             });
 
+            // set up a timeout for the request
+            const timeout = setTimeout(() => {
+                const err = new Error(`Timeout waiting for response to account creation request ${request.requestId}`);
+
+                // we dont really care if the unsubscribe fails but we should log it regardless
+                this.cache.unsubscribe(requestKey, subId).catch(e => {
+                    this.logger.log(`Error unsubscribing (in timeout handler) ${requestKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                });
+
+                return reject(err);
+            }, this.requestProcessingTimeoutSeconds * 1000);
+
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /participants request to the switch
             try {
                 const res = await this.requests.postParticipants(request);
-                this.logger.push({ res }).log('Account creation request sent to ALS');
+                this.logger.push({ res }).log('Account creation request sent to peer');
             }
             catch(err) {
+                // cancel the timout and unsubscribe before rejecting the promise
+                clearTimeout(timeout);
+
+                // we dont really care if the unsubscribe fails but we should log it regardless
+                this.cache.unsubscribe(requestKey, subId).catch(e => {
+                    this.logger.log(`Error unsubscribing (in error handler) ${requestKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                });
+
                 return reject(err);
             }
         });

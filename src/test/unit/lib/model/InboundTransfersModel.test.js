@@ -12,15 +12,16 @@
 // we use a mock standard components lib to intercept and mock certain funcs
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('@internal/requests').BackendRequests;
+jest.mock('redis');
 
 const { init, destroy, setConfig, getConfig } = require('../../../../config.js');
 const path = require('path');
-const MockCache = require('../../../__mocks__/@internal/cache.js');
 const { Logger, Transports } = require('@internal/log');
 const Model = require('@internal/model').InboundTransfersModel;
 const defaultEnv = require('./data/defaultEnv');
 const mockArguments = require('./data/mockArguments');
 const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
+const Cache = require('@internal/cache');
 
 let logTransports;
 
@@ -28,6 +29,7 @@ describe('inboundModel', () => {
     let mockArgs;
     let model;
     let cache;
+    let dummyCacheConfig;
 
     // the keys are under the secrets folder that is supposed to be moved by Dockerfile
     // so for the needs of the unit tests, we have to define the proper path manually.
@@ -37,6 +39,12 @@ describe('inboundModel', () => {
 
     beforeAll(async () => {
         logTransports = await Promise.all([Transports.consoleDir()]);
+        dummyCacheConfig = {
+            host: 'dummycachehost',
+            port: 1234,
+            logger: new Logger({ context: { app: 'outbound-model-unit-tests-cache' }, space: 4, transports: logTransports })
+        };
+
     });
 
     beforeEach(async () => {
@@ -45,7 +53,9 @@ describe('inboundModel', () => {
         await setConfig(defaultEnv);
         const conf = getConfig();
 
-        cache = new MockCache();
+        cache = new Cache(dummyCacheConfig);
+        await cache.connect();
+
         model = new Model({
             cache,
             logger: new Logger({
@@ -165,6 +175,7 @@ describe('inboundModel', () => {
             expect(call[0]).toEqual(TRANSFER_ID);
             expect(call[1].errorInformation.errorCode).toEqual('2001');
         });
+
         test('pass on transfer without quote.', async () => {
             model.allowTransferWithoutQuote = true;
             const TRANSFER_ID = 'without_quote-transfer-id';
