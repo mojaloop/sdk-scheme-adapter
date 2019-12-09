@@ -144,6 +144,8 @@ jobs:
       - run:
           name: Execute unit tests
           command: cd src && npm run test
+          environment:
+            JEST_JUNIT_OUTPUT: "/src/junit.xml"
       - store_test_results:
           path: /src/junit.xml
 
