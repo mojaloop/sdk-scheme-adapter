@@ -142,9 +142,6 @@ jobs:
           keys:
           - dependency-cache-3-{{ checksum "src/package.json" }}
       - run:
-          name: Create dir for test results
-          command: cd src && mkdir -p /test/results
-      - run:
           name: Execute unit tests
           command: cd src && npm run test
       - store_test_results:
