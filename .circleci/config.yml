@@ -146,6 +146,8 @@ jobs:
           command: cd src && npm run test
       - store_test_results:
           path: /home/circleci/project/src/junit.xml
+      - store_artifacts:
+          path: /home/circleci/project/src/junit.xml
 
   lint:
     <<: *defaults_working_directory
