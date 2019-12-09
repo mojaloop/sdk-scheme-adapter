@@ -144,10 +144,8 @@ jobs:
       - run:
           name: Execute unit tests
           command: cd src && npm run test
-          environment:
-            JEST_JUNIT_OUTPUT: "/src/junit.xml"
       - store_test_results:
-          path: /src/junit.xml
+          path: /home/circleci/project/src/junit.xml
 
   lint:
     <<: *defaults_working_directory
