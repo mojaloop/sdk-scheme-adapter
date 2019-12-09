@@ -797,7 +797,7 @@ describe('outboundModel', () => {
         const cache = new Cache(dummyCacheConfig);
         await cache.connect();
 
-        const expectError = {
+        let expectError = {
             type: 'quoteResponseError',
             data: {
                 errorInformation: {
@@ -831,16 +831,6 @@ describe('outboundModel', () => {
 
         expect(StateMachine.__instance.state).toBe('start');
 
-        const expectError = {
-            type: 'quoteResponseError',
-            data: {
-                errorInformation: {
-                    errorCode: '3205',
-                    errorDescription: 'Quote ID not found'
-                }
-            }
-        };
-
         const errMsg = 'Got an error response requesting quote: { errorInformation:\n   { errorCode: \'3205\', errorDescription: \'Quote ID not found\' } }';
 
         try {
@@ -868,7 +858,7 @@ describe('outboundModel', () => {
         const cache = new Cache(dummyCacheConfig);
         await cache.connect();
 
-        const expectError = {
+        let expectError = {
             type: 'transferError',
             data: {
                 errorInformation: {
@@ -906,16 +896,6 @@ describe('outboundModel', () => {
         await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
 
         expect(StateMachine.__instance.state).toBe('start');
-
-        const expectError = {
-            type: 'transferError',
-            data: {
-                errorInformation: {
-                    errorCode: '4001',
-                    errorDescription: 'Payer FSP insufficient liquidity'
-                }
-            }
-        };
 
         const errMsg = 'Got an error response preparing transfer: { errorInformation:\n   { errorCode: \'4001\',\n     errorDescription: \'Payer FSP insufficient liquidity\' } }';
 
