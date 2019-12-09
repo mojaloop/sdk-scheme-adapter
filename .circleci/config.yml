@@ -131,6 +131,7 @@ jobs:
   test-unit:
     <<: *defaults_working_directory
     <<: *defaults_docker_node
+    working_directory: /src
     steps:
       - run:
           name: Install general dependencies
@@ -143,9 +144,9 @@ jobs:
           - dependency-cache-3-{{ checksum "src/package.json" }}
       - run:
           name: Execute unit tests
-          command: cd src && npm run test
+          command: npm run test
       - store_test_results:
-          path: /junit.xml
+          path: junit.xml
 
   lint:
     <<: *defaults_working_directory
