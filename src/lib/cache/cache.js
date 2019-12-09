@@ -147,7 +147,7 @@ class Cache {
      * */
     async _getClient() {
         return new Promise((resolve, reject) => {
-            let client = redis.createClient(this.config);
+            const client = redis.createClient(this.config);
 
             client.on('error', (err) => {
                 this.logger.push({ err }).log('Error from REDIS client getting subscriber');
