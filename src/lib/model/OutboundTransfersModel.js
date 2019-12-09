@@ -225,38 +225,38 @@ class OutboundTransfersModel {
                             return reject(err);
                         }
 
-                    if(payee.partyIdInfo.partyIdentifier !== this.data.to.idValue) {
-                        const err = new Error(`Expecting resolved payee party identifier to be ${this.data.to.idValue} but got ${payee.partyIdInfo.partyIdentifier}`);
-                        histTimerEnd({ success: false });
-                        resolvePayeeSpan.error(err.message);
-                        resolvePayeeSpan.finish(err.message);
-                        return reject(err);
-                    }
+                        if(payee.partyIdInfo.partyIdentifier !== this.data.to.idValue) {
+                            const err = new Error(`Expecting resolved payee party identifier to be ${this.data.to.idValue} but got ${payee.partyIdInfo.partyIdentifier}`);
+                            histTimerEnd({ success: false });
+                            resolvePayeeSpan.error(err.message);
+                            resolvePayeeSpan.finish(err.message);
+                            return reject(err);
+                        }
 
-                    if(!payee.partyIdInfo.fspId) {
-                        const err = new Error(`Expecting resolved payee party to have an FSPID: ${util.inspect(payee.partyIdInfo)}`);
-                        histTimerEnd({ success: false });
-                        resolvePayeeSpan.error(err.message);
-                        resolvePayeeSpan.finish(err.message);
-                        return reject(err);
+                        if(!payee.partyIdInfo.fspId) {
+                            const err = new Error(`Expecting resolved payee party to have an FSPID: ${util.inspect(payee.partyIdInfo)}`);
+                            histTimerEnd({ success: false });
+                            resolvePayeeSpan.error(err.message);
+                            resolvePayeeSpan.finish(err.message);
+                            return reject(err);
 
-                    }
+                        }
 
                         // now we got the payee, add the details to our data so we can use it
                         // in the quote request
                         this.data.to.fspId = payee.partyIdInfo.fspId;
 
-                    if(payee.personalInfo) {
-                        if(payee.personalInfo.complexName) {
-                            this.data.to.firstName = payee.personalInfo.complexName.firstName || this.data.to.firstName;
-                            this.data.to.middleName = payee.personalInfo.complexName.middleName || this.data.to.middleName;
-                            this.data.to.lastName = payee.personalInfo.complexName.lastName || this.data.to.lastName;
+                        if(payee.personalInfo) {
+                            if(payee.personalInfo.complexName) {
+                                this.data.to.firstName = payee.personalInfo.complexName.firstName || this.data.to.firstName;
+                                this.data.to.middleName = payee.personalInfo.complexName.middleName || this.data.to.middleName;
+                                this.data.to.lastName = payee.personalInfo.complexName.lastName || this.data.to.lastName;
+                            }
+                            this.data.to.dateOfBirth = payee.personalInfo.dateOfBirth;
                         }
-                        this.data.to.dateOfBirth = payee.personalInfo.dateOfBirth;
-                    }
-                    histTimerEnd({ success: true });
-                    resolvePayeeSpan.finish();
-                    return resolve(payee);
+                        histTimerEnd({ success: true });
+                        resolvePayeeSpan.finish();
+                        return resolve(payee);
                     });
                 }
                 catch(err) {
@@ -351,9 +351,9 @@ class OutboundTransfersModel {
                     // stop listening for payee resolution messages
                     this.cache.unsubscribe(quoteKey, subId).then(() => {
                         if (error) {
-                        histTimerEnd({ success: false });
-                        requestQuoteSpan.error(error);
-                        requestQuoteSpan.finish(error);
+                            histTimerEnd({ success: false });
+                            requestQuoteSpan.error(error);
+                            requestQuoteSpan.finish(error);
                             return reject(error);
                         }
 
@@ -361,11 +361,11 @@ class OutboundTransfersModel {
                         const quoteResponseHeaders = message.headers;
                         this.logger.push({ quoteResponseBody }).log('Quote response received');
 
-                    this.data.quoteResponse = quoteResponseBody;
-                    this.data.quoteResponseSource = quoteResponseHeaders['fspiop-source'];
-                    histTimerEnd({ success: true });
-                    requestQuoteSpan.finish();
-                    return resolve(quote);
+                        this.data.quoteResponse = quoteResponseBody;
+                        this.data.quoteResponseSource = quoteResponseHeaders['fspiop-source'];
+                        histTimerEnd({ success: true });
+                        requestQuoteSpan.finish();
+                        return resolve(quote);
                     });
                 }
                 catch(err) {
@@ -390,8 +390,7 @@ class OutboundTransfersModel {
                 const res = await this._requests.postQuotes(quote, this.data.to.fspId, requestQuoteSpan);
                 this.logger.push({ res }).log('Quote request sent to peer');
                 histTimerEnd({ success: true });
-            }
-            catch(err) {
+            } catch(err) {
                 // cancel the timout and unsubscribe before rejecting the promise
                 clearTimeout(timeout);
                 this.cache.unsubscribe(quoteKey, subId).catch(e => {
@@ -505,9 +504,9 @@ class OutboundTransfersModel {
                     // stop listening for transfer fulfil messages
                     this.cache.unsubscribe(transferKey, subId).then(() => {
                         if (error) {
-                        histTimerEnd({ success: false });
-                        await executeTransferSpan.error(error);
-                        await executeTransferSpan.finish(error);
+                            histTimerEnd({ success: false });
+                            executeTransferSpan.error(error);
+                            executeTransferSpan.finish(error);
                             return reject(error);
                         }
 
@@ -515,13 +514,13 @@ class OutboundTransfersModel {
                         this.logger.push({ fulfil }).log('Transfer fulfil received');
                         this.data.fulfil = fulfil;
 
-                    if(this.checkIlp && !this.ilp.validateFulfil(fulfil.fulfilment, this.data.quoteResponse.condition)) {
-                        histTimerEnd({ success: false });
-                        throw new Error('Invalid fulfilment received from peer DFSP.');
-                    }
-                    histTimerEnd({ success: true });
-                    await executeTransferSpan.finish();
-                    return resolve(fulfil);
+                        if(this.checkIlp && !this.ilp.validateFulfil(fulfil.fulfilment, this.data.quoteResponse.condition)) {
+                            histTimerEnd({ success: false });
+                            throw new Error('Invalid fulfilment received from peer DFSP.');
+                        }
+                        histTimerEnd({ success: true });
+                        executeTransferSpan.finish();
+                        return resolve(fulfil);
                     });
                 }
                 catch(err) {
