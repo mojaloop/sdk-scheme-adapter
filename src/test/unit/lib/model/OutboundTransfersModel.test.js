@@ -176,7 +176,7 @@ describe('outboundModel', () => {
         await cache.connect();
 
         MojaloopRequests.__getParties = jest.fn(() => {
-            emitPartyCacheMessage(cache, payeeParty)
+            emitPartyCacheMessage(cache, payeeParty);
             return Promise.resolve();
         });
 
@@ -250,7 +250,7 @@ describe('outboundModel', () => {
         await cache.connect();
 
         MojaloopRequests.__getParties = jest.fn(() => {
-            emitPartyCacheMessage(cache, payeeParty)
+            emitPartyCacheMessage(cache, payeeParty);
             return Promise.resolve();
         });
 
@@ -350,7 +350,7 @@ describe('outboundModel', () => {
         const resultPromise = model.run();
 
         // now we started the model running we simulate a callback with the resolved party
-        emitPartyCacheMessage(cache, payeeParty)
+        emitPartyCacheMessage(cache, payeeParty);
 
         // wait for the model to reach a terminal state
         const result = await resultPromise;
@@ -387,7 +387,7 @@ describe('outboundModel', () => {
         let resultPromise = model.run();
 
         // now we started the model running we simulate a callback with the resolved party
-        emitPartyCacheMessage(cache, payeeParty)
+        emitPartyCacheMessage(cache, payeeParty);
 
         // wait for the model to reach a terminal state
         let result = await resultPromise;
@@ -456,7 +456,7 @@ describe('outboundModel', () => {
         let resultPromise = model.run();
 
         // now we started the model running we simulate a callback with the resolved party
-        emitPartyCacheMessage(cache, payeeParty)
+        emitPartyCacheMessage(cache, payeeParty);
 
         // wait for the model to reach a terminal state
         let result = await resultPromise;
@@ -539,7 +539,7 @@ describe('outboundModel', () => {
 
         MojaloopRequests.__getParties = jest.fn(() => {
             // simulate a callback with the resolved party
-            emitPartyCacheMessage(cache, payeeParty)
+            emitPartyCacheMessage(cache, payeeParty);
             return Promise.resolve();
         });
 
@@ -597,7 +597,7 @@ describe('outboundModel', () => {
 
         MojaloopRequests.__getParties = jest.fn(() => {
             // simulate a callback with the resolved party
-            emitPartyCacheMessage(cache, payeeParty)
+            emitPartyCacheMessage(cache, payeeParty);
             return Promise.resolve();
         });
 
@@ -777,7 +777,7 @@ describe('outboundModel', () => {
 
         MojaloopRequests.__getParties = jest.fn(() => {
             // simulate a callback with the resolved party
-            emitPartyCacheMessage(cache, payeeParty)
+            emitPartyCacheMessage(cache, payeeParty);
             return Promise.resolve();
         });
 
@@ -836,7 +836,7 @@ describe('outboundModel', () => {
 
         MojaloopRequests.__getParties = jest.fn(() => {
             // simulate a callback with the resolved party
-            emitPartyCacheMessage(cache, payeeParty)
+            emitPartyCacheMessage(cache, payeeParty);
             return Promise.resolve();
         });
 
