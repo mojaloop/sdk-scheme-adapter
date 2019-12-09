@@ -344,7 +344,7 @@ class OutboundTransfersModel {
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this.cache.unsubscribe(quoteKey, subId).catch(e => {
-                    this.logger.log(`Error unsubscribing (in timeout handler) ${requestKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    this.logger.log(`Error unsubscribing (in timeout handler) ${quoteKey} ${subId}: ${e.stack || util.inspect(e)}`);
                 });
 
                 return reject(err);
