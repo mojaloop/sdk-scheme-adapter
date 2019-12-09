@@ -197,38 +197,42 @@ class OutboundTransfersModel {
                     this.logger.push({ payee }).log('Payee resolved');
 
                     // stop listening for payee resolution messages
-                    this.cache.unsubscribe(payeeKey, subId).then(() => {
-                        // check we got the right payee and info we need
-                        if(payee.partyIdInfo.partyIdType !== this.data.to.idType) {
-                            const err = new Error(`Expecting resolved payee party IdType to be ${this.data.to.idType} but got ${payee.partyIdInfo.partyIdType}`);
-                            return reject(err);
-                        }
-
-                        if(payee.partyIdInfo.partyIdentifier !== this.data.to.idValue) {
-                            const err = new Error(`Expecting resolved payee party identifier to be ${this.data.to.idValue} but got ${payee.partyIdInfo.partyIdentifier}`);
-                            return reject(err);
-                        }
-
-                        if(!payee.partyIdInfo.fspId) {
-                            const err = new Error(`Expecting resolved payee party to have an FSPID: ${util.inspect(payee.partyIdInfo)}`);
-                            return reject(err);
-                        }
-
-                        // now we got the payee, add the details to our data so we can use it
-                        // in the quote request
-                        this.data.to.fspId = payee.partyIdInfo.fspId;
-
-                        if(payee.personalInfo) {
-                            if(payee.personalInfo.complexName) {
-                                this.data.to.firstName = payee.personalInfo.complexName.firstName || this.data.to.firstName;
-                                this.data.to.middleName = payee.personalInfo.complexName.middleName || this.data.to.middleName;
-                                this.data.to.lastName = payee.personalInfo.complexName.lastName || this.data.to.lastName;
-                            }
-                            this.data.to.dateOfBirth = payee.personalInfo.dateOfBirth;
-                        }
-
-                        return resolve(payee);
+                    // no need to await for the unsubscribe to complete.
+                    // we dont really care if the unsubscribe fails but we should log it regardless
+                    this.cache.unsubscribe(payeeKey, subId).catch(e => {
+                        this.logger.log(`Error unsubscribing (in callback) ${payeeKey} ${subId}: ${e.stack || util.inspect(e)}`);
                     });
+
+                    // check we got the right payee and info we need
+                    if(payee.partyIdInfo.partyIdType !== this.data.to.idType) {
+                        const err = new Error(`Expecting resolved payee party IdType to be ${this.data.to.idType} but got ${payee.partyIdInfo.partyIdType}`);
+                        return reject(err);
+                    }
+
+                    if(payee.partyIdInfo.partyIdentifier !== this.data.to.idValue) {
+                        const err = new Error(`Expecting resolved payee party identifier to be ${this.data.to.idValue} but got ${payee.partyIdInfo.partyIdentifier}`);
+                        return reject(err);
+                    }
+
+                    if(!payee.partyIdInfo.fspId) {
+                        const err = new Error(`Expecting resolved payee party to have an FSPID: ${util.inspect(payee.partyIdInfo)}`);
+                        return reject(err);
+                    }
+
+                    // now we got the payee, add the details to our data so we can use it
+                    // in the quote request
+                    this.data.to.fspId = payee.partyIdInfo.fspId;
+
+                    if(payee.personalInfo) {
+                        if(payee.personalInfo.complexName) {
+                            this.data.to.firstName = payee.personalInfo.complexName.firstName || this.data.to.firstName;
+                            this.data.to.middleName = payee.personalInfo.complexName.middleName || this.data.to.middleName;
+                            this.data.to.lastName = payee.personalInfo.complexName.lastName || this.data.to.lastName;
+                        }
+                        this.data.to.dateOfBirth = payee.personalInfo.dateOfBirth;
+                    }
+
+                    return resolve(payee);
                 }
                 catch(err) {
                     return reject(err);
@@ -238,9 +242,13 @@ class OutboundTransfersModel {
             // set up a timeout for the resolution
             const timeout = setTimeout(() => {
                 const err = new BackendError(`Timeout resolving payee for transfer ${this.data.transferId}`, 504);
-                this.cache.unsubscribe(payeeKey, subId).then(() => {
-                    reject(err);
+
+                // we dont really care if the unsubscribe fails but we should log it regardless
+                this.cache.unsubscribe(payeeKey, subId).catch(e => {
+                    this.logger.log(`Error unsubscribing (in timeout handler) ${payeeKey} ${subId}: ${e.stack || util.inspect(e)}`);
                 });
+
+                return reject(err);
             }, ASYNC_TIMEOUT_MILLS);
 
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
@@ -252,9 +260,12 @@ class OutboundTransfersModel {
             catch(err) {
                 // cancel the timout and unsubscribe before rejecting the promise
                 clearTimeout(timeout);
+
+                // we dont really care if the unsubscribe fails but we should log it regardless
                 this.cache.unsubscribe(payeeKey, subId).catch(e => {
                     this.logger.log(`Error unsubscribing ${payeeKey} ${subId}: ${e.stack || util.inspect(e)}`);
                 });
+
                 return reject(err);
             }
         });
@@ -303,20 +314,24 @@ class OutboundTransfersModel {
                     clearTimeout(timeout);
 
                     // stop listening for payee resolution messages
-                    this.cache.unsubscribe(quoteKey, subId).then(() => {
-                        if (error) {
-                            return reject(error);
-                        }
-
-                        const quoteResponseBody = message.data;
-                        const quoteResponseHeaders = message.headers;
-                        this.logger.push({ quoteResponseBody }).log('Quote response received');
-
-                        this.data.quoteResponse = quoteResponseBody;
-                        this.data.quoteResponseSource = quoteResponseHeaders['fspiop-source'];
-
-                        return resolve(quote);
+                    // no need to await for the unsubscribe to complete.
+                    // we dont really care if the unsubscribe fails but we should log it regardless
+                    this.cache.unsubscribe(quoteKey, subId).catch(e => {
+                        this.logger.log(`Error unsubscribing (in callback) ${quoteKey} ${subId}: ${e.stack || util.inspect(e)}`);
                     });
+
+                    if (error) {
+                        return reject(error);
+                    }
+
+                    const quoteResponseBody = message.data;
+                    const quoteResponseHeaders = message.headers;
+                    this.logger.push({ quoteResponseBody }).log('Quote response received');
+
+                    this.data.quoteResponse = quoteResponseBody;
+                    this.data.quoteResponseSource = quoteResponseHeaders['fspiop-source'];
+
+                    return resolve(quote);
                 }
                 catch(err) {
                     return reject(err);
@@ -326,9 +341,13 @@ class OutboundTransfersModel {
             // set up a timeout for the request
             const timeout = setTimeout(() => {
                 const err = new BackendError(`Timeout requesting quote for transfer ${this.data.transferId}`, 504);
-                this.cache.unsubscribe(quoteKey, subId).then(() => {
-                    reject(err);
+
+                // we dont really care if the unsubscribe fails but we should log it regardless
+                this.cache.unsubscribe(quoteKey, subId).catch(e => {
+                    this.logger.log(`Error unsubscribing (in timeout handler) ${requestKey} ${subId}: ${e.stack || util.inspect(e)}`);
                 });
+
+                return reject(err);
             }, ASYNC_TIMEOUT_MILLS);
 
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
@@ -340,9 +359,12 @@ class OutboundTransfersModel {
             catch(err) {
                 // cancel the timout and unsubscribe before rejecting the promise
                 clearTimeout(timeout);
+
+                // we dont really care if the unsubscribe fails but we should log it regardless
                 this.cache.unsubscribe(quoteKey, subId).catch(e => {
-                    this.logger.log(`Error unsubscribing ${quoteKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    this.logger.log(`Error unsubscribing (in error handler) ${quoteKey} ${subId}: ${e.stack || util.inspect(e)}`);
                 });
+
                 return reject(err);
             }
         });
@@ -435,21 +457,23 @@ class OutboundTransfersModel {
                     clearTimeout(timeout);
 
                     // stop listening for transfer fulfil messages
-                    this.cache.unsubscribe(transferKey, subId).then(() => {
-                        if (error) {
-                            return reject(error);
-                        }
-
-                        const fulfil = message.data;
-                        this.logger.push({ fulfil }).log('Transfer fulfil received');
-                        this.data.fulfil = fulfil;
-
-                        if(this.checkIlp && !this.ilp.validateFulfil(fulfil.fulfilment, this.data.quoteResponse.condition)) {
-                            throw new Error('Invalid fulfilment received from peer DFSP.');
-                        }
-
-                        return resolve(fulfil);
+                    this.cache.unsubscribe(transferKey, subId).catch(e => {
+                        this.logger.log(`Error unsubscribing (in callback) ${transferKey} ${subId}: ${e.stack || util.inspect(e)}`);
                     });
+
+                    if (error) {
+                        return reject(error);
+                    }
+
+                    const fulfil = message.data;
+                    this.logger.push({ fulfil }).log('Transfer fulfil received');
+                    this.data.fulfil = fulfil;
+
+                    if(this.checkIlp && !this.ilp.validateFulfil(fulfil.fulfilment, this.data.quoteResponse.condition)) {
+                        throw new Error('Invalid fulfilment received from peer DFSP.');
+                    }
+
+                    return resolve(fulfil);
                 }
                 catch(err) {
                     return reject(err);
@@ -459,9 +483,13 @@ class OutboundTransfersModel {
             // set up a timeout for the request
             const timeout = setTimeout(() => {
                 const err = new BackendError(`Timeout waiting for fulfil for transfer ${this.data.transferId}`, 504);
-                this.cache.unsubscribe(transferKey, subId).then(() => {
-                    reject(err);
+
+                // we dont really care if the unsubscribe fails but we should log it regardless
+                this.cache.unsubscribe(transferKey, subId).catch(e => {
+                    this.logger.log(`Error unsubscribing (in timeout handler) ${transferKey} ${subId}: ${e.stack || util.inspect(e)}`);
                 });
+
+                return reject(err);
             }, ASYNC_TIMEOUT_MILLS);
 
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
@@ -473,9 +501,12 @@ class OutboundTransfersModel {
             catch(err) {
                 // cancel the timout and unsubscribe before rejecting the promise
                 clearTimeout(timeout);
+
+                // we dont really care if the unsubscribe fails but we should log it regardless
                 this.cache.unsubscribe(transferKey, subId).catch(e => {
-                    this.logger.log(`Error unsubscribing ${transferKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    this.logger.log(`Error unsubscribing (in error handler) ${transferKey} ${subId}: ${e.stack || util.inspect(e)}`);
                 });
+
                 return reject(err);
             }
         });

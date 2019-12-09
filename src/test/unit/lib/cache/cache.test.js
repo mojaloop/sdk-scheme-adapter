@@ -24,7 +24,7 @@ const defaultConfig = {
 };
 
 
-const dummyPubMessage = {
+const dummyPubMessageTemplate = {
     data: 12345,
     test: '98765'
 };
@@ -37,7 +37,14 @@ const createCache = async() => {
 };
 
 
+let dummyPubMessage;
+
+
 describe('Cache', () => {
+
+    beforeEach(() => {
+        dummyPubMessage = JSON.parse(JSON.stringify(dummyPubMessageTemplate));
+    });
 
     test('Makes connections to redis server for cache operations', async () => {
         const cache = await createCache();
@@ -53,7 +60,8 @@ describe('Cache', () => {
 
     test('Makes subscriber callbacks on the correct channels when messages arrive', async () => {
         const cache = await createCache();
-        const msg1 = JSON.parse(JSON.stringify(dummyPubMessage));
+
+        const msg1 = dummyPubMessage;
 
         // make the messages different
         const msg2 = JSON.parse(JSON.stringify(dummyPubMessage));
@@ -116,7 +124,7 @@ describe('Cache', () => {
 
     test('Unsubscribed callbacks do not get called when messages arrive', async () => {
         const cache = await createCache();
-        const msg1 = JSON.parse(JSON.stringify(dummyPubMessage));
+        const msg1 = dummyPubMessage;
 
         const chan = 'dummychannel1';
 

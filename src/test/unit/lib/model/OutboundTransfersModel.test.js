@@ -38,6 +38,16 @@ let quoteResponse;
 let dummyCacheConfig;
 
 
+// util function to simulate a party resolution subscription message on a cache client
+const emitPartyCacheMessage = (cache, party) => cache.subscriptionClient.emitMessage('message', `${party.party.partyIdInfo.partyIdType}_${party.party.partyIdInfo.partyIdentifier}`, JSON.stringify(party));
+
+// util function to simulate a quote response subscription message on a cache client
+const emitQuoteResponseCacheMessage = (cache, quoteId, quoteResponse) => cache.subscriptionClient.emitMessage('message', `qt_${quoteId}`, JSON.stringify(quoteResponse));
+
+// util function to simulate a transfer fulfilment subscription message on a cache client
+const emitTransferFulfilCacheMessage = (cache, transferId, fulfil) => cache.subscriptionClient.emitMessage('message', `tf_${transferId}`, JSON.stringify(fulfil));
+
+
 /**
  *
  * @param {Object} opts
@@ -63,19 +73,19 @@ async function testTransferWithDelay({expirySeconds, delays, rejects}) {
     await cache.connect();
 
     // simulate a callback with the resolved party
-    MojaloopRequests.__getParties = jest.fn(() => cache.subscriptionClient.emitMessage('message', `${payeeParty.party.partyIdInfo.partyIdType}_${payeeParty.party.partyIdInfo.partyIdentifier}`, JSON.stringify(payeeParty)));
+    MojaloopRequests.__getParties = jest.fn(() => emitPartyCacheMessage(cache, payeeParty));
 
     // simulate a delayed callback with the quote response
     MojaloopRequests.__postQuotes = jest.fn((postQuotesBody) => {
         setTimeout(() => {
-            cache.subscriptionClient.emitMessage('message', `qt_${postQuotesBody.quoteId}`, JSON.stringify(quoteResponse));
+            emitQuoteResponseCacheMessage(cache, postQuotesBody.quoteId, quoteResponse);
         }, delays.requestQuotes ? delays.requestQuotes * 1000 : 0);
     });
 
     // simulate a delayed callback with the transfer fulfilment
     MojaloopRequests.__postTransfers = jest.fn((postTransfersBody) => {
         setTimeout(() => {
-            cache.subscriptionClient.emitMessage('message', `tf_${postTransfersBody.transferId}`, JSON.stringify(transferFulfil));
+            emitTransferFulfilCacheMessage(cache, postTransfersBody.transferId, transferFulfil);
         }, delays.prepareTransfer ? delays.prepareTransfer * 1000 : 0);
     });
 
@@ -166,7 +176,7 @@ describe('outboundModel', () => {
         await cache.connect();
 
         MojaloopRequests.__getParties = jest.fn(() => {
-            cache.subscriptionClient.emitMessage('message', `${payeeParty.party.partyIdInfo.partyIdType}_${payeeParty.party.partyIdInfo.partyIdentifier}`, JSON.stringify(payeeParty));
+            emitPartyCacheMessage(cache, payeeParty)
             return Promise.resolve();
         });
 
@@ -181,7 +191,7 @@ describe('outboundModel', () => {
             expect(extensionList.extension[1]).toEqual({ key: 'qkey2', value: 'qvalue2' });
 
             // simulate a callback with the quote response
-            cache.subscriptionClient.emitMessage('message', `qt_${postQuotesBody.quoteId}`, JSON.stringify(quoteResponse));
+            emitQuoteResponseCacheMessage(cache, postQuotesBody.quoteId, quoteResponse);
             return Promise.resolve();
         });
 
@@ -201,7 +211,7 @@ describe('outboundModel', () => {
             expect(quoteResponse.headers['fspiop-source']).not.toBe(model.data.to.fspId);
 
             // simulate a callback with the transfer fulfilment
-            cache.subscriptionClient.emitMessage('message', `tf_${postTransfersBody.transferId}`, JSON.stringify(transferFulfil));
+            emitTransferFulfilCacheMessage(cache, postTransfersBody.transferId, transferFulfil);
             return Promise.resolve();
         });
 
@@ -240,7 +250,7 @@ describe('outboundModel', () => {
         await cache.connect();
 
         MojaloopRequests.__getParties = jest.fn(() => {
-            cache.subscriptionClient.emitMessage('message', `${payeeParty.party.partyIdInfo.partyIdType}_${payeeParty.party.partyIdInfo.partyIdentifier}`, JSON.stringify(payeeParty));
+            emitPartyCacheMessage(cache, payeeParty)
             return Promise.resolve();
         });
 
@@ -267,7 +277,7 @@ describe('outboundModel', () => {
             expect(extensionList.extension[1]).toEqual({ key: 'qkey2', value: 'qvalue2' });
 
             // simulate a callback with the quote response
-            cache.subscriptionClient.emitMessage('message', `qt_${postQuotesBody.quoteId}`, JSON.stringify(quoteResponse));
+            emitQuoteResponseCacheMessage(cache, postQuotesBody.quoteId, quoteResponse);
             return Promise.resolve();
         });
 
@@ -289,7 +299,7 @@ describe('outboundModel', () => {
             expect(postTransfersBody.amount).toEqual(quoteResponse.data.transferAmount);
 
             // simulate a callback with the transfer fulfilment
-            cache.subscriptionClient.emitMessage('message', `tf_${postTransfersBody.transferId}`, JSON.stringify(transferFulfil));
+            emitTransferFulfilCacheMessage(cache, postTransfersBody.transferId, transferFulfil);
             return Promise.resolve();
         });
 
@@ -340,7 +350,7 @@ describe('outboundModel', () => {
         const resultPromise = model.run();
 
         // now we started the model running we simulate a callback with the resolved party
-        cache.subscriptionClient.emitMessage('message', `${payeeParty.party.partyIdInfo.partyIdType}_${payeeParty.party.partyIdInfo.partyIdentifier}`, JSON.stringify(payeeParty));
+        emitPartyCacheMessage(cache, payeeParty)
 
         // wait for the model to reach a terminal state
         const result = await resultPromise;
@@ -377,7 +387,7 @@ describe('outboundModel', () => {
         let resultPromise = model.run();
 
         // now we started the model running we simulate a callback with the resolved party
-        cache.subscriptionClient.emitMessage('message', `${payeeParty.party.partyIdInfo.partyIdType}_${payeeParty.party.partyIdInfo.partyIdentifier}`, JSON.stringify(payeeParty));
+        emitPartyCacheMessage(cache, payeeParty)
 
         // wait for the model to reach a terminal state
         let result = await resultPromise;
@@ -446,7 +456,7 @@ describe('outboundModel', () => {
         let resultPromise = model.run();
 
         // now we started the model running we simulate a callback with the resolved party
-        cache.subscriptionClient.emitMessage('message', `${payeeParty.party.partyIdInfo.partyIdType}_${payeeParty.party.partyIdInfo.partyIdentifier}`, JSON.stringify(payeeParty));
+        emitPartyCacheMessage(cache, payeeParty)
 
         // wait for the model to reach a terminal state
         let result = await resultPromise;
@@ -529,13 +539,13 @@ describe('outboundModel', () => {
 
         MojaloopRequests.__getParties = jest.fn(() => {
             // simulate a callback with the resolved party
-            cache.subscriptionClient.emitMessage('message', `${payeeParty.party.partyIdInfo.partyIdType}_${payeeParty.party.partyIdInfo.partyIdentifier}`, JSON.stringify(payeeParty));
+            emitPartyCacheMessage(cache, payeeParty)
             return Promise.resolve();
         });
 
         MojaloopRequests.__postQuotes = jest.fn((postQuotesBody) => {
             // simulate a callback with the quote response
-            cache.subscriptionClient.emitMessage('message', `qt_${postQuotesBody.quoteId}`, JSON.stringify(quoteResponse));
+            emitQuoteResponseCacheMessage(cache, postQuotesBody.quoteId, quoteResponse);
             return Promise.resolve();
         });
 
@@ -548,7 +558,7 @@ describe('outboundModel', () => {
             expect(payeeFsp).toEqual(payeeParty.party.partyIdInfo.fspId);
 
             // simulate a callback with the transfer fulfilment
-            cache.subscriptionClient.emitMessage('message', `tf_${postTransfersBody.transferId}`, JSON.stringify(transferFulfil));
+            emitTransferFulfilCacheMessage(cache, postTransfersBody.transferId, transferFulfil);
             return Promise.resolve();
         });
 
@@ -587,13 +597,13 @@ describe('outboundModel', () => {
 
         MojaloopRequests.__getParties = jest.fn(() => {
             // simulate a callback with the resolved party
-            cache.subscriptionClient.emitMessage('message', `${payeeParty.party.partyIdInfo.partyIdType}_${payeeParty.party.partyIdInfo.partyIdentifier}`, JSON.stringify(payeeParty));
+            emitPartyCacheMessage(cache, payeeParty)
             return Promise.resolve();
         });
 
         MojaloopRequests.__postQuotes = jest.fn((postQuotesBody) => {
             // simulate a callback with the quote response
-            cache.subscriptionClient.emitMessage('message', `qt_${postQuotesBody.quoteId}`, JSON.stringify(quoteResponse));
+            emitQuoteResponseCacheMessage(cache, postQuotesBody.quoteId, quoteResponse);
             return Promise.resolve();
         });
 
@@ -606,7 +616,7 @@ describe('outboundModel', () => {
             expect(payeeFsp).toEqual(quoteResponse.headers['fspiop-source']);
 
             // simulate a callback with the transfer fulfilment
-            model.cache.subscriptionClient.emitMessage('message', `tf_${postTransfersBody.transferId}`, JSON.stringify(transferFulfil));
+            emitTransferFulfilCacheMessage(cache, postTransfersBody.transferId, transferFulfil);
             return Promise.resolve();
         });
 
@@ -767,7 +777,7 @@ describe('outboundModel', () => {
 
         MojaloopRequests.__getParties = jest.fn(() => {
             // simulate a callback with the resolved party
-            cache.subscriptionClient.emitMessage('message', `${payeeParty.party.partyIdInfo.partyIdType}_${payeeParty.party.partyIdInfo.partyIdentifier}`, JSON.stringify(payeeParty));
+            emitPartyCacheMessage(cache, payeeParty)
             return Promise.resolve();
         });
 
@@ -826,13 +836,13 @@ describe('outboundModel', () => {
 
         MojaloopRequests.__getParties = jest.fn(() => {
             // simulate a callback with the resolved party
-            cache.subscriptionClient.emitMessage('message', `${payeeParty.party.partyIdInfo.partyIdType}_${payeeParty.party.partyIdInfo.partyIdentifier}`, JSON.stringify(payeeParty));
+            emitPartyCacheMessage(cache, payeeParty)
             return Promise.resolve();
         });
 
         MojaloopRequests.__postQuotes = jest.fn((postQuotesBody) => {
             // simulate a callback with the quote response
-            cache.subscriptionClient.emitMessage('message', `qt_${postQuotesBody.quoteId}`, JSON.stringify(quoteResponse));
+            emitQuoteResponseCacheMessage(cache, postQuotesBody.quoteId, quoteResponse);
             return Promise.resolve();
         });
 
