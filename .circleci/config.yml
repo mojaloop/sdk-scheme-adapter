@@ -145,7 +145,7 @@ jobs:
           name: Execute unit tests
           command: cd src && npm run test
       - store_test_results:
-          path: /src/junit.xml
+          path: /junit.xml
 
   lint:
     <<: *defaults_working_directory
