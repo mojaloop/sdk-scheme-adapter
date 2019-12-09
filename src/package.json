@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test": "jest --env=node test/unit"
+    "test": "jest --ci --reporters=default --reporters=jest-junit --env=node test/unit"
   },
   "author": "Matt Kingston, James Bush, ModusBox Inc.",
   "license": "Apache-2.0",
@@ -20,10 +20,10 @@
     "@internal/cache": "file:lib/cache",
     "@internal/log": "file:lib/log",
     "@internal/model": "file:lib/model",
-    "@internal/requests": "file:lib/model/lib/requests",
-    "@internal/shared": "file:lib/model/lib/shared",
     "@internal/randomphrase": "file:lib/randomphrase",
+    "@internal/requests": "file:lib/model/lib/requests",
     "@internal/router": "file:lib/router",
+    "@internal/shared": "file:lib/model/lib/shared",
     "@internal/validate": "file:lib/validate",
     "@mojaloop/sdk-standard-components": "^8.4.2",
     "co-body": "^6.0.0",
@@ -39,6 +39,7 @@
     "eslint": "^5.3.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.17.1",
-    "jest": "^24.8.0"
+    "jest": "^24.8.0",
+    "jest-junit": "^10.0.0"
   }
 }
