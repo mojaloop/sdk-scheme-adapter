@@ -1,12 +1,14 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
-  "version": "8.6.0-perf.4",
+  "version": "8.6.0-perf.6",
   "description": "An adapter for connecting to Mojaloop API enabled switches.",
   "main": "index.js",
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test": "jest --env=node test/unit"
+    "test": "jest --env=node test/unit",
+    "dep:check": "npx ncu -e 2",
+    "dep:update": "npx ncu -u"
   },
   "author": "Matt Kingston, James Bush, ModusBox Inc.",
   "license": "Apache-2.0",
@@ -31,22 +33,23 @@
     "@internal/tracing": "file:lib/tracing",
     "@internal/validate": "file:lib/validate",
     "@mojaloop/central-services-metrics": "^8.3.0",
-    "@mojaloop/central-services-shared": "^8.6.2",
-    "@mojaloop/event-sdk": "^8.6.1",
+    "@mojaloop/central-services-shared": "^8.7.0",
+    "@mojaloop/event-sdk": "^8.6.2",
     "@mojaloop/sdk-standard-components": "8.5.0-perf.2",
     "co-body": "^6.0.0",
-    "dotenv": "^6.2.0",
+    "dotenv": "^8.2.0",
     "js-yaml": "^3.13.1",
-    "koa": "^2.6.2",
-    "koa-body": "^4.0.6",
+    "koa": "^2.11.0",
+    "koa-body": "^4.1.1",
     "koa2-oauth-server": "^1.0.0",
-    "node-fetch": "^2.3.0",
-    "uuid": "^3.3.2"
+    "node-fetch": "^2.6.0",
+    "uuid": "^3.3.3"
   },
   "devDependencies": {
-    "eslint": "^5.3.0",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-plugin-import": "^2.17.1",
-    "jest": "^24.8.0"
+    "eslint": "^6.7.2",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.19.1",
+    "npm-check-updates": "^3.2.2",
+    "jest": "^24.9.0"
   }
 }
