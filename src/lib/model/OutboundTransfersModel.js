@@ -431,7 +431,7 @@ class OutboundTransfersModel {
             // listen for events on the transferId
             const transferKey = `tf_${this.data.transferId}`;
 
-            const subId = this.cache.subscribe(transferKey, async (cn, msg, subId) => {
+            const subId = await this.cache.subscribe(transferKey, async (cn, msg, subId) => {
                 try {
                     let error;
                     let message = JSON.parse(msg);
