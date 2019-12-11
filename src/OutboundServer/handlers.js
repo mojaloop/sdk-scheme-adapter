@@ -95,12 +95,14 @@ const putTransfers = async (ctx) => {
         'Handler for resuming outbound transfers in scenarios where two-step transfers are enabled',
         ['success', 'fspId']
     ).startTimer();
+    const span = ctx.request.span;
     try {
         // this requires a multi-stage sequence with the switch.
         // use the transfers model to execute asynchronous stages with the switch
         const model = new OutboundTransfersModel({
             cache: ctx.state.cache,
             logger: ctx.state.logger,
+            span,
             ...ctx.state.conf
         });
 

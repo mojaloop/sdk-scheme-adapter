@@ -12,15 +12,16 @@
 // we use a mock standard components lib to intercept and mock certain funcs
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('@internal/requests').BackendRequests;
+jest.mock('redis');
 
 const { init, destroy, setConfig, getConfig } = require('../../../../config.js');
 const path = require('path');
-const MockCache = require('../../../__mocks__/@internal/cache.js');
 const { Logger, Transports } = require('@internal/log');
 const Model = require('@internal/model').InboundTransfersModel;
 const defaultEnv = require('./data/defaultEnv');
 const mockArguments = require('./data/mockArguments');
 const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
+const Cache = require('@internal/cache');
 
 let logTransports;
 
@@ -28,6 +29,7 @@ describe('inboundModel', () => {
     let mockArgs;
     let model;
     let cache;
+    let dummyCacheConfig;
     const span = {
         setTags: jest.fn(() => {
             return true;
@@ -47,9 +49,16 @@ describe('inboundModel', () => {
     // so for the needs of the unit tests, we have to define the proper path manually.
     defaultEnv.JWS_SIGNING_KEY_PATH = path.join('..', 'secrets', defaultEnv.JWS_SIGNING_KEY_PATH);
     defaultEnv.JWS_VERIFICATION_KEYS_DIRECTORY = path.join('..', 'secrets', defaultEnv.JWS_VERIFICATION_KEYS_DIRECTORY);
+    defaultEnv.ILP_SECRET = 'mockILPSecret';
 
     beforeAll(async () => {
         logTransports = await Promise.all([Transports.consoleDir()]);
+        dummyCacheConfig = {
+            host: 'dummycachehost',
+            port: 1234,
+            logger: new Logger({ context: { app: 'outbound-model-unit-tests-cache' }, space: 4, transports: logTransports })
+        };
+
     });
 
     beforeEach(async () => {
@@ -58,7 +67,9 @@ describe('inboundModel', () => {
         await setConfig(defaultEnv);
         const conf = getConfig();
 
-        cache = new MockCache();
+        cache = new Cache(dummyCacheConfig);
+        await cache.connect();
+
         model = new Model({
             cache,
             logger: new Logger({
@@ -141,6 +152,17 @@ describe('inboundModel', () => {
     });
 
     describe('transferPrepare:', () => {
+        beforeEach(() => {
+            model.backendRequests.postTransfers = jest.fn().mockReturnValue(Promise.resolve({}));
+            model._mojaloopRequests.putTransfers = jest.fn().mockReturnValue(Promise.resolve({}));
+        });
+
+        afterEach(() => {
+            MojaloopRequests.__putTransfersError.mockClear();
+            model.backendRequests.postTransfers.mockClear();
+            model._mojaloopRequests.putTransfers.mockClear();
+        });
+
         test('fail on quote `expiration` deadline.', async () => {
             model.rejectTransfersOnExpiredQuotes = true;
             const TRANSFER_ID = 'fake-transfer-id';
@@ -159,6 +181,47 @@ describe('inboundModel', () => {
             const call = MojaloopRequests.__putTransfersError.mock.calls[0];
             expect(call[0]).toEqual(TRANSFER_ID);
             expect(call[1].errorInformation.errorCode).toEqual('3302');
+        });
+
+        test('fail on transfer without quote.', async () => {
+            model.allowTransferWithoutQuote = false;
+            const TRANSFER_ID = 'without_quote-transfer-id';
+            const args = {
+                transferId: TRANSFER_ID,
+                amount: {
+                    currency: 'USD',
+                    amount: 20.13
+                },
+                ilpPacket: 'mockBase64encodedIlpPacket',
+                condition: 'mockGeneratedCondition'
+            };
+
+            await model.prepareTransfer(args, mockArgs.fspId);
+
+            expect(MojaloopRequests.__putTransfersError).toHaveBeenCalledTimes(1);
+            const call = MojaloopRequests.__putTransfersError.mock.calls[0];
+            expect(call[0]).toEqual(TRANSFER_ID);
+            expect(call[1].errorInformation.errorCode).toEqual('2001');
+        });
+
+        test('pass on transfer without quote.', async () => {
+            model.allowTransferWithoutQuote = true;
+            const TRANSFER_ID = 'without_quote-transfer-id';
+            const args = {
+                transferId: TRANSFER_ID,
+                amount: {
+                    currency: 'USD',
+                    amount: 20.13
+                },
+                ilpPacket: 'mockBase64encodedIlpPacket',
+                condition: 'mockGeneratedCondition'
+            };
+
+            await model.prepareTransfer(args, mockArgs.fspId);
+
+            expect(MojaloopRequests.__putTransfersError).toHaveBeenCalledTimes(0);
+            expect(model.backendRequests.postTransfers).toHaveBeenCalledTimes(1);
+            expect(model._mojaloopRequests.putTransfers).toHaveBeenCalledTimes(1);
         });
     });
 });

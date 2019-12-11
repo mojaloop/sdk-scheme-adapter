@@ -1,2 +1,6 @@
 .idea
 node_modules/
+**/build/**.*
+**/.vscode/**.*
+.swp
+.env*
