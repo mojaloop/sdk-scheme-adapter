@@ -53,12 +53,7 @@ describe('Inbound API handlers:', () => {
         test('calls `model.quoteRequest` with the expected arguments.', async () => {
             const quoteRequestSpy = jest.spyOn(Model.prototype, 'quoteRequest');
 
-            try {
-                await handlers.map['/quotes'].post.handler(mockContext);
-            }
-            catch(e) {
-                expect(e).toBe(undefined);
-            }
+            await expect(handlers.map['/quotes'].post.handler(mockContext)).resolves.toBe(undefined);
 
             expect(quoteRequestSpy).toHaveBeenCalledTimes(1);
             expect(quoteRequestSpy.mock.calls[0][0]).toBe(mockContext.request.body);

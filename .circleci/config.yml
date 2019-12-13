@@ -146,11 +146,9 @@ jobs:
           command: cd src && mkdir -p /test/results
       - run:
           name: Execute unit tests
-          command: cd src && (npm run test > /test/results/results.txt)
-      - store_artifacts:
-          path: /test/results
+          command: cd src && npm run test
       - store_test_results:
-          path: /test/results
+          path: /src/junit.xml
 
   lint:
     <<: *defaults_working_directory
