@@ -133,7 +133,7 @@ class AccountsModel {
         return new Promise(async (resolve, reject) => {
             const requestKey = `ac_${request.requestId}`;
 
-            const subId = this.cache.subscribe(requestKey, async (cn, msg, subId) => {
+            const subId = await this.cache.subscribe(requestKey, async (cn, msg, subId) => {
                 try {
                     let error;
                     let message = JSON.parse(msg);
