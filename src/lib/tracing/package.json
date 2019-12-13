@@ -16,6 +16,6 @@
   ],
   "dependencies": {
     "@mojaloop/event-sdk": "^8.6.2",
-    "@mojaloop/central-services-shared": "^8.7.0"
+    "@mojaloop/central-services-shared": "^8.7.1"
   }
 }
