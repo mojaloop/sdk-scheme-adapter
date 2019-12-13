@@ -539,8 +539,8 @@ class OutboundTransfersModel {
                     this.data.fulfil = fulfil;
 
                     if(this.checkIlp && !this.ilp.validateFulfil(fulfil.fulfilment, this.data.quoteResponse.condition)) {
-                            histTimerEnd({ success: false });
-                            throw new Error('Invalid fulfilment received from peer DFSP.');
+                        histTimerEnd({ success: false });
+                        throw new Error('Invalid fulfilment received from peer DFSP.');
                     }
 
                     histTimerEnd({ success: true });
