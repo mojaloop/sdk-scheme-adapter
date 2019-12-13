@@ -124,7 +124,7 @@ jobs:
           name: Delete build dependencies
           command: apk del build-dependencies
       - save_cache:
-          key: dependency-cache-3-{{ checksum "src/package.json" }}
+          key: dependency-cache-4-{{ checksum "src/package.json" }}
           paths:
             - src/node_modules
 
@@ -140,15 +140,14 @@ jobs:
           <<: *defaults_environment
       - restore_cache:
           keys:
-          - dependency-cache-3-{{ checksum "src/package.json" }}
-      - run:
-          name: Create dir for test results
-          command: cd src && mkdir -p /test/results
+          - dependency-cache-4-{{ checksum "src/package.json" }}
       - run:
           name: Execute unit tests
           command: cd src && npm run test
       - store_test_results:
-          path: /src/junit.xml
+          path: /home/circleci/project/src/junit.xml
+      - store_artifacts:
+          path: /home/circleci/project/src/junit.xml
 
   lint:
     <<: *defaults_working_directory
@@ -162,7 +161,7 @@ jobs:
           <<: *defaults_environment
       - restore_cache:
           keys:
-          - dependency-cache-3-{{ checksum "src/package.json" }}
+          - dependency-cache-4-{{ checksum "src/package.json" }}
       - run:
           name: Create dir for lint results
           command: cd src && mkdir -p /lintresults
