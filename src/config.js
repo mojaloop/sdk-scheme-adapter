@@ -206,7 +206,7 @@ const setConfig = async cfg => {
     config.wso2Auth.tokenEndpoint = cfg.OAUTH_TOKEN_ENDPOINT;
     config.wso2Auth.clientKey = cfg.OAUTH_CLIENT_KEY;
     config.wso2Auth.clientSecret = cfg.OAUTH_CLIENT_SECRET;
-    config.wso2Auth.refreshSeconds = cfg.OAUTH_REFRESH_SECONDS;
+    config.wso2Auth.refreshSeconds = parseInt(cfg.OAUTH_REFRESH_SECONDS);
 
     config.rejectExpiredQuoteResponses = cfg.REJECT_EXPIRED_QUOTE_RESPONSES.toLowerCase() === 'true';
     config.rejectTransfersOnExpiredQuotes = cfg.REJECT_TRANSFERS_ON_EXPIRED_QUOTES.toLowerCase() === 'true';

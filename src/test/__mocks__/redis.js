@@ -85,5 +85,5 @@ const createClient = (...args) => {
 
 
 module.exports = {
-    createClient: createClient
+    createClient
 };
