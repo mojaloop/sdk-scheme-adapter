@@ -57,6 +57,7 @@ const postTransfers = async (ctx) => {
         const model = new OutboundTransfersModel({
             cache: ctx.state.cache,
             logger: ctx.state.logger,
+            wso2Auth: ctx.state.wso2Auth,
             ...ctx.state.conf
         });
 
@@ -86,6 +87,7 @@ const putTransfers = async (ctx) => {
         const model = new OutboundTransfersModel({
             cache: ctx.state.cache,
             logger: ctx.state.logger,
+            wso2Auth: ctx.state.wso2Auth,
             ...ctx.state.conf
         });
 

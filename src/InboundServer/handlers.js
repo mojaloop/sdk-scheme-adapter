@@ -25,6 +25,7 @@ const getParticipantsByTypeAndId = async (ctx) => {
             const model = new Model({
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
+                wso2Auth: ctx.state.wso2Auth,
                 ...ctx.state.conf
             });
 
@@ -70,6 +71,7 @@ const getPartiesByTypeAndId = async (ctx) => {
             const model = new Model({
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
+                wso2Auth: ctx.state.wso2Auth,
                 ...ctx.state.conf
             });
 
@@ -125,6 +127,7 @@ const postQuotes = async (ctx) => {
             const model = new Model({
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
+                wso2Auth: ctx.state.wso2Auth,
                 ...ctx.state.conf
             });
 
@@ -170,6 +173,7 @@ const postTransfers = async (ctx) => {
             const model = new Model({
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
+                wso2Auth: ctx.state.wso2Auth,
                 ...ctx.state.conf
             });
 
