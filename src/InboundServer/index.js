@@ -63,7 +63,7 @@ class InboundServer {
             this._api.use(middlewares.createJwsValidator(this._logger, this._conf.jwsVerificationKeys, jwsExclusions));
         }
 
-        const sharedState = { cache, wso2Auth: this.wso2Auth, conf: this.conf };
+        const sharedState = { cache, wso2Auth: this.wso2Auth, conf: this._conf };
         this._api.use(middlewares.createLogger(this._logger, sharedState));
 
         this._api.use(middlewares.createRequestValidator(validator));
