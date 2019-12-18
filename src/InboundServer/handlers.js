@@ -23,10 +23,10 @@ const getParticipantsByTypeAndId = async (ctx) => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
             const model = new Model({
+                ...ctx.state.conf,
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
                 wso2Auth: ctx.state.wso2Auth,
-                ...ctx.state.conf
             });
 
             const sourceFspId = ctx.request.headers['fspiop-source'];
@@ -69,10 +69,10 @@ const getPartiesByTypeAndId = async (ctx) => {
 
             // use the transfers model to execute asynchronous stages with the switch
             const model = new Model({
+                ...ctx.state.conf,
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
                 wso2Auth: ctx.state.wso2Auth,
-                ...ctx.state.conf
             });
 
             const sourceFspId = ctx.request.headers['fspiop-source'];
@@ -125,10 +125,10 @@ const postQuotes = async (ctx) => {
 
             // use the transfers model to execute asynchronous stages with the switch
             const model = new Model({
+                ...ctx.state.conf,
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
                 wso2Auth: ctx.state.wso2Auth,
-                ...ctx.state.conf
             });
 
             const sourceFspId = ctx.request.headers['fspiop-source'];
@@ -171,10 +171,10 @@ const postTransfers = async (ctx) => {
 
             // use the transfers model to execute asynchronous stages with the switch
             const model = new Model({
+                ...ctx.state.conf,
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
                 wso2Auth: ctx.state.wso2Auth,
-                ...ctx.state.conf
             });
 
             const sourceFspId = ctx.request.headers['fspiop-source'];
