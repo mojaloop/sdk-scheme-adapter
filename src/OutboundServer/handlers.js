@@ -117,6 +117,7 @@ const postAccounts = async (ctx) => {
             ...ctx.state.conf,
             cache: ctx.state.cache,
             logger: ctx.state.logger,
+            wso2Auth: ctx.state.wso2Auth,
         });
 
         const state = {
