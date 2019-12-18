@@ -11,7 +11,7 @@
 'use strict';
 
 const util = require('util');
-const { MojaloopRequests, Errors } = jest.requireActual('@mojaloop/sdk-standard-components');
+const { MojaloopRequests, Errors, WSO2Auth } = jest.requireActual('@mojaloop/sdk-standard-components');
 
 
 class MockMojaloopRequests extends MojaloopRequests {
@@ -88,5 +88,6 @@ module.exports = {
         validator: MockJwsValidator,
         signer: MockJwsSigner
     },
-    Errors: Errors
+    Errors,
+    WSO2Auth,
 };
