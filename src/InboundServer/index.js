@@ -16,6 +16,7 @@ const yaml = require('js-yaml');
 const fs = require('fs');
 const path = require('path');
 
+const { WSO2Auth } = require('@mojaloop/sdk-standard-components');
 const { Logger, Transports } = require('@internal/log');
 const Cache = require('@internal/cache');
 
@@ -44,6 +45,12 @@ class InboundServer {
         const validator = new Validate();
         await validator.initialise(apiSpecs);
 
+        this.wso2Auth = new WSO2Auth({
+            ...this._conf.wso2Auth,
+            logger: this._logger,
+            tlsCreds: this._conf.tls.inbound.mutualTLS.enabled && this._conf.tls.inbound.creds,
+        });
+
         this._api.use(middlewares.createErrorHandler());
         this._api.use(middlewares.createRequestIdGenerator());
         this._api.use(middlewares.createHeaderValidator(this._logger));
@@ -56,7 +63,7 @@ class InboundServer {
             this._api.use(middlewares.createJwsValidator(this._logger, this._conf.jwsVerificationKeys, jwsExclusions));
         }
 
-        const sharedState = { cache, conf: this._conf };
+        const sharedState = { cache, wso2Auth: this.wso2Auth, conf: this._conf };
         this._api.use(middlewares.createLogger(this._logger, sharedState));
 
         this._api.use(middlewares.createRequestValidator(validator));
@@ -83,6 +90,9 @@ class InboundServer {
                     return resolve();
                 });
             });
+        }
+        if (this.wso2Auth) {
+            this.wso2Auth.stop();
         }
     }
 

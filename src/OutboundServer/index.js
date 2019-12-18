@@ -16,6 +16,7 @@ const yaml = require('js-yaml');
 const fs = require('fs');
 const path = require('path');
 
+const { WSO2Auth } = require('@mojaloop/sdk-standard-components');
 const { Logger, Transports } = require('@internal/log');
 const Cache = require('@internal/cache');
 
@@ -44,12 +45,18 @@ class OutboundServer {
         const validator = new Validate();
         await validator.initialise(apiSpecs);
 
+        this.wso2Auth = new WSO2Auth({
+            ...this.conf.wso2Auth,
+            logger: this.logger,
+            tlsCreds: this.conf.tls.outbound.mutualTLS.enabled && this.conf.tls.outbound.creds,
+        });
+
         this.api.use(middlewares.createErrorHandler());
 
         // outbound always expects application/json
         this.api.use(koaBody());
 
-        const sharedState = { cache, conf: this.conf };
+        const sharedState = { cache, wso2Auth: this.wso2Auth, conf: this.conf };
         this.api.use(middlewares.createLogger(this.logger, sharedState));
 
         this.api.use(middlewares.createRequestValidator(validator));
@@ -75,6 +82,9 @@ class OutboundServer {
                     return resolve();
                 });
             });
+        }
+        if (this.wso2Auth) {
+            this.wso2Auth.stop();
         }
     }
 
