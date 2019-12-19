@@ -194,7 +194,7 @@ class Cache {
      * Sets a value in the cache
      *
      * @param key {string} - cache key
-     * @param value {stirng} - cache value
+     * @param value {string} - cache value
      */
     async set(key, value) {
         return new Promise((resolve, reject) => {
@@ -203,15 +203,22 @@ class Cache {
                 value = JSON.stringify(value);
             }
 
-            this.client.set(key, value, (err, replies) => {
-                if(err) {
+            const callback = (err, replies) => {
+                if (err) {
                     this.logger.push({ key, value, err }).log(`Error setting cache key: ${key}`);
                     return reject(err);
                 }
 
                 this.logger.push({ key, value, replies }).log(`Set cache key: ${key}`);
                 return resolve(replies);
-            });
+            }
+
+            // Expire? https://github.com/NodeRedis/node_redis#redis-commands
+            if (this.config.cacheConfig.shouldExpire) {
+                this.client.set(key, value, 'EX', this.config.cacheConfig.expirySeconds, callback);
+                return;
+            }
+            this.client.set(key, value, callback);
         });
     }
 

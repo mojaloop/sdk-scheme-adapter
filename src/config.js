@@ -59,7 +59,9 @@ let DEFAULTS = {
     jwsVerificationKeysDirectory: null,
     cacheConfig: {
         host: 'localhost',
-        port: 6379
+        port: 6379,
+        shouldExpire: false,
+        expirySeconds: null,
     },
     enableTestFeatures: false,
     oauthTestServer: {
@@ -180,6 +182,8 @@ const setConfig = async cfg => {
 
     config.cacheConfig.host = cfg.CACHE_HOST;
     config.cacheConfig.port = cfg.CACHE_PORT;
+    config.cacheConfig.shouldExpire = cfg.CACHE_SHOULD_EXPIRE && cfg.CACHE_SHOULD_EXPIRE.toLowerCase() === 'true';
+    config.cacheConfig.expirySeconds = cfg.CACHE_EXPIRY_SECONDS ? Number(cfg.CACHE_EXPIRY_SECONDS) : 3600;
 
     config.enableTestFeatures = cfg.ENABLE_TEST_FEATURES.toLowerCase() === 'true';
 
