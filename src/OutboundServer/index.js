@@ -66,6 +66,7 @@ class OutboundServer {
     }
 
     async start() {
+        await this.wso2Auth.start();
         await new Promise((resolve) => {
             this.server.listen(this.conf.outboundPort, () => {
                 this.logger.log(`Serving outbound API on port ${this.conf.outboundPort}`);
