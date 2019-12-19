@@ -1,4 +1,4 @@
-FROM node:12.14.0-alpine
+FROM node:12.14.0-alpine as builder
 
 RUN apk add --no-cache git python build-base
 
@@ -8,7 +8,16 @@ COPY ./secrets /
 
 WORKDIR /src/
 
-CMD ["node", "/src/index.js"]
-
 COPY ./src/ /src/
-RUN npm install --production
+RUN npm install
+RUN npm rebuild
+
+FROM node:12.14.0-alpine 
+
+WORKDIR /src/
+
+COPY --from=builder /src/ .
+COPY ./secrets /
+RUN npm prune --production
+
+CMD ["node", "/src/index.js"]
