@@ -11,44 +11,25 @@
 'use strict';
 
 const util = require('util');
+const { BackendRequests } = jest.requireActual('@internal/requests');
 
 const respErrSym = Symbol('ResponseErrorDataSym');
-
 
 /**
  * A class for making requests to DFSP backend API
  */
-class MockBackendRequests {
+class MockBackendRequests extends BackendRequests {
     constructor(...args) {
-        console.log(`MockBackendRequests constructed with args: ${util.inspect(args)}`);
+        super(...args);
+        MockBackendRequests.__instance = this;
+        this.getParties = MockBackendRequests.__getParties;
+        this.postQuoteRequests = MockBackendRequests.__postQuoteRequests;
+        this.postTransfers = MockBackendRequests.__postTransfers;
     }
-
-
-    async getParties(...args) {
-        console.log(`MockBackendRequests getParties called with args: ${util.inspect(args)}`);
-        return Promise.resolve({
-            body: {}
-        });
-    }
-
-
-    async postQuoteRequests(...args) {
-        console.log(`MockBackendRequests postQuoteRequests called with args: ${util.inspect(args)}`);
-        return Promise.resolve({
-            body: {}
-        });
-    }
-
-
-    async postTransfers(...args) {
-        console.log(`MockBackendRequests postTransfers called with args: ${util.inspect(args)}`);
-        return Promise.resolve({
-            body: {}
-        });
-    }
-
-
 }
+MockBackendRequests.__getParties = jest.fn(() => Promise.resolve({body: {}}));
+MockBackendRequests.__postQuoteRequests = jest.fn(() => Promise.resolve({body: {}}));
+MockBackendRequests.__postTransfers = jest.fn(() => Promise.resolve({body: {}}));
 
 
 class HTTPResponseError extends Error {

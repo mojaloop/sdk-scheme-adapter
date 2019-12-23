@@ -1,0 +1,20 @@
+{
+  "accounts": [
+    {
+      "idType": "MSISDN",
+      "idValue": "123456789",
+      "currency": "USD"
+    }
+  ],
+  "currentState": "COMPLETED",
+  "response": [
+    {
+      "idType": "MSISDN",
+      "idValue": "123456789",
+      "error": {
+        "statusCode": "3204",
+        "message": "Party not found"
+      }
+    }
+  ]
+}

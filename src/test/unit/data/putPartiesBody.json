@@ -2,7 +2,7 @@
   "party": {
     "partyIdInfo": {
       "partyIdType": "MSISDN",
-      "partyIdentifier": "123456789",
+      "partyIdentifier": "987654321",
       "fspId": "sim"
     },
     "personalInfo": {

@@ -10,80 +10,51 @@
 
 'use strict';
 
-const util = require('util');
-const DummyRequest = require('./DummyRequest');
+const supertest = require('supertest');
 
 const defaultConfig = require('./data/defaultConfig');
 const putPartiesBody = require('./data/putPartiesBody');
 const postQuotesBody = require('./data/postQuotesBody');
 const putParticipantsBody = require('./data/putParticipantsBody');
-const partiesRequestTemplate = require('./data/partiesRequestTemplate');
-const participantsRequestTemplate = require('./data/participantsRequestTemplate');
+const commonHttpHeaders = require('./data/commonHttpHeaders');
 
-// we use a mock koa (from our __mocks__ directory)
-jest.mock('koa');
 jest.mock('@internal/cache');
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('@internal/requests');
 
 const { Jws } = require('@mojaloop/sdk-standard-components');
-const Koa = require('koa');
+const path = require('path');
+const fs = require('fs');
+const os = require('os');
 const http = require('http');
 const https = require('https');
 
 const InboundServer = require('../../InboundServer');
 
-
-
-async function testInboundJwsValidation(validateInboundJws, validateInboundPutPartiesJws, expectedValidationCalls, request) {
-    const dummyConfig = JSON.parse(JSON.stringify(defaultConfig));
-
-    // set all jws validation ON
-    dummyConfig.validateInboundJws = validateInboundJws;
-    dummyConfig.validateInboundPutPartiesJws = validateInboundPutPartiesJws;
-    // start the server
-    const svr = new InboundServer(dummyConfig);
-    await svr.setupApi();
-    await svr.start();
-
-    // execute the request
-    await Koa.__instance.request(request);
-
-    // stop the server
-    await svr.stop();
-
-    // validate we got the expected result
-    console.log(`result: ${util.inspect(request.response)}`);
-
-    expect(Jws.validator.__validate.mock.calls.length).toEqual(expectedValidationCalls);
-}
-
-const generatePartiesRequest = (method, path, body) => {
-    const req = JSON.parse(JSON.stringify(partiesRequestTemplate));
-    req.method = method;
-    req.path = path;
-    req.body = body;
-    req.headers.date = new Date().toISOString();
-    return req;
-};
-
-const generateParticipantsRequest = () => {
-    const req = JSON.parse(JSON.stringify(participantsRequestTemplate));
-    req.body = putParticipantsBody;
-    req.headers.date = new Date().toISOString();
-    return req;
-};
-
-describe('inbound API', () => {
+describe('Inbound Server', () => {
     describe('PUT /parties', () => {
+        let serverConfig;
+
         beforeEach(() => {
             Jws.validator.__validate.mockClear();
+            serverConfig = JSON.parse(JSON.stringify(defaultConfig));
         });
 
-        function testPartiesJwsValidation(validateInboundJws, validateInboundPutPartiesJws, expectedValidationCalls) {
-            const req = generatePartiesRequest('PUT', '/parties/MSISDN/123456789', putPartiesBody);
-            const request = new DummyRequest(req);
-            return testInboundJwsValidation(validateInboundJws, validateInboundPutPartiesJws, expectedValidationCalls, request);
+        async function testPartiesJwsValidation(validateInboundJws, validateInboundPutPartiesJws, expectedValidationCalls) {
+            serverConfig.validateInboundJws = validateInboundJws;
+            serverConfig.validateInboundPutPartiesJws = validateInboundPutPartiesJws;
+            const svr = new InboundServer(serverConfig);
+            const req = supertest(await svr.setupApi());
+            await svr.start();
+            await req
+                .put('/parties/MSISDN/123456789')
+                .send(putPartiesBody)
+                .set(commonHttpHeaders)
+                .set('fspiop-http-method', 'PUT')
+                .set('fspiop-uri', '/parties/MSISDN/123456789')
+                .set('date', new Date().toISOString());
+            await svr.stop();
+            expect(Jws.validator.__validate).toHaveBeenCalledTimes(expectedValidationCalls);
         }
 
         test('validates incoming JWS when VALIDATE_INBOUND_JWS and VALIDATE_INBOUND_PUT_PARTIES_JWS is true', () =>
@@ -100,13 +71,26 @@ describe('inbound API', () => {
     });
 
     describe('PUT /quotes', () => {
+        let serverConfig;
         beforeEach(() => {
             Jws.validator.__validate.mockClear();
+            serverConfig = JSON.parse(JSON.stringify(defaultConfig));
         });
-        function testQuotesJwsValidation(validateInboundJws, validateInboundPutPartiesJws, expectedValidationCalls) {
-            const req = generatePartiesRequest('POST', '/quotes', postQuotesBody);
-            const request = new DummyRequest(req);
-            return testInboundJwsValidation(validateInboundJws, validateInboundPutPartiesJws, expectedValidationCalls, request);
+        async function testQuotesJwsValidation(validateInboundJws, validateInboundPutPartiesJws, expectedValidationCalls) {
+            serverConfig.validateInboundJws = validateInboundJws;
+            serverConfig.validateInboundPutPartiesJws = validateInboundPutPartiesJws;
+            const svr = new InboundServer(serverConfig);
+            const req = supertest(await svr.setupApi());
+            await svr.start();
+            await req
+                .post('/quotes')
+                .send(postQuotesBody)
+                .set(commonHttpHeaders)
+                .set('fspiop-http-method', 'POST')
+                .set('fspiop-uri', '/quotes')
+                .set('date', new Date().toISOString());
+            await svr.stop();
+            expect(Jws.validator.__validate).toHaveBeenCalledTimes(expectedValidationCalls);
         }
 
         test('validates incoming JWS on other routes when VALIDATE_INBOUND_JWS is true and VALIDATE_INBOUND_PUT_PARTIES_JWS is false', () =>
@@ -117,14 +101,27 @@ describe('inbound API', () => {
     });
 
     describe('PUT /participants', () => {
+        let serverConfig;
         beforeEach(() => {
             Jws.validator.__validate.mockClear();
+            serverConfig = JSON.parse(JSON.stringify(defaultConfig));
         });
 
-        function testParticipantsJwsValidation(validateInboundJws, validateInboundPutPartiesJws, expectedValidationCalls) {
-            const req = generateParticipantsRequest();
-            const request = new DummyRequest(req);
-            return testInboundJwsValidation(validateInboundJws, validateInboundPutPartiesJws, expectedValidationCalls, request);
+        async function testParticipantsJwsValidation(validateInboundJws, validateInboundPutPartiesJws, expectedValidationCalls) {
+            serverConfig.validateInboundJws = validateInboundJws;
+            serverConfig.validateInboundPutPartiesJws = validateInboundPutPartiesJws;
+            const svr = new InboundServer(serverConfig);
+            const req = supertest(await svr.setupApi());
+            await svr.start();
+            await req
+                .put('/participants/00000000-0000-1000-a000-000000000002')
+                .send(putParticipantsBody)
+                .set(commonHttpHeaders)
+                .set('fspiop-http-method', 'PUT')
+                .set('fspiop-uri', '/participants/00000000-0000-1000-a000-000000000002')
+                .set('date', new Date().toISOString());
+            await svr.stop();
+            expect(Jws.validator.__validate).toHaveBeenCalledTimes(expectedValidationCalls);
         }
 
         test('validates incoming JWS when VALIDATE_INBOUND_JWS is true', () =>
@@ -133,45 +130,107 @@ describe('inbound API', () => {
         test('does not validate incoming JWS when VALIDATE_INBOUND_JWS is false ', () =>
             testParticipantsJwsValidation(false, false, 0));
     });
-});
 
-describe('Inbound Server mTLS test', () => {
-    let defConfig;
-    let httpServerSpy;
-    let httpsServerSpy;
+    describe('mTLS test', () => {
+        let defConfig;
+        let httpServerSpy;
+        let httpsServerSpy;
 
-    beforeAll(() => {
-        httpServerSpy = jest.spyOn(http, 'createServer');
-        httpsServerSpy = jest.spyOn(https, 'createServer');
-    });
+        beforeAll(() => {
+            httpServerSpy = jest.spyOn(http, 'createServer');
+            httpsServerSpy = jest.spyOn(https, 'createServer');
+        });
 
-    beforeEach(() => {
-        defConfig = JSON.parse(JSON.stringify(defaultConfig));
-        httpServerSpy.mockClear();
-        httpsServerSpy.mockClear();
-    });
+        beforeEach(() => {
+            defConfig = JSON.parse(JSON.stringify(defaultConfig));
+            httpServerSpy.mockClear();
+            httpsServerSpy.mockClear();
+        });
 
-    afterAll(() => {
-        httpServerSpy.mockRestore();
-        httpsServerSpy.mockRestore();
-    });
+        afterAll(() => {
+            httpServerSpy.mockRestore();
+            httpsServerSpy.mockRestore();
+        });
 
-    async function testTlsServer(enableTls) {
-        defConfig.tls.inbound.mutualTLS.enabled = enableTls;
-        const server = new InboundServer(defConfig);
-        await server.setupApi();
-        if (enableTls) {
-            expect(httpsServerSpy).toHaveBeenCalled();
-            expect(httpServerSpy).not.toHaveBeenCalled();
-        } else {
-            expect(httpsServerSpy).not.toHaveBeenCalled();
-            expect(httpServerSpy).toHaveBeenCalled();
+        async function testTlsServer(enableTls) {
+            defConfig.tls.inbound.mutualTLS.enabled = enableTls;
+            const server = new InboundServer(defConfig);
+            await server.setupApi();
+            if (enableTls) {
+                expect(httpsServerSpy).toHaveBeenCalled();
+                expect(httpServerSpy).not.toHaveBeenCalled();
+            } else {
+                expect(httpsServerSpy).not.toHaveBeenCalled();
+                expect(httpServerSpy).toHaveBeenCalled();
+            }
         }
-    }
 
-    test('Inbound server should use HTTPS if inbound mTLS enabled', () =>
-        testTlsServer(true));
+        test('Inbound server should use HTTPS if inbound mTLS enabled', () =>
+            testTlsServer(true));
 
-    test('Inbound server should use HTTP if inbound mTLS disabled', () =>
-        testTlsServer(false));
+        test('Inbound server should use HTTP if inbound mTLS disabled', () =>
+            testTlsServer(false));
+    });
+
+
+    describe('JWS verification keys', () => {
+        let svr;
+        let keysDir;
+
+        beforeEach(async () => {
+            const serverConfig = JSON.parse(JSON.stringify(defaultConfig));
+            serverConfig.validateInboundJws = true;
+            keysDir = fs.mkdtempSync(path.join(os.tmpdir(), 'jest-'));
+            const mockFilePath = path.join(keysDir, 'mojaloop-sdk.pem');
+            fs.writeFileSync(mockFilePath, 'foo-key');
+            serverConfig.jwsVerificationKeysDirectory = keysDir;
+            svr = new InboundServer(serverConfig);
+            await svr.setupApi();
+            await svr.start();
+        });
+
+        afterEach(async () => {
+            await svr.stop();
+            fs.rmdirSync(keysDir, { recursive: true });
+        });
+
+        it('updates server configuration when a new JWS verification key '
+            + 'is added to the target monitored folder.', async () => {
+            let keys;
+
+            keys = Object.keys(Jws.validator.__validationKeys);
+            expect(keys).toEqual(['mojaloop-sdk']);
+
+            const mockFilePath = path.join(keysDir, 'mock-jws.pem');
+            fs.writeFileSync(mockFilePath, 'foo-key');
+
+            await new Promise(resolve => setTimeout(() => resolve(), 1000));
+
+            keys = Object.keys(Jws.validator.__validationKeys);
+            expect(keys).toEqual(['mojaloop-sdk', 'mock-jws']);
+        });
+
+        it('updates server configuration when a new JWS verification key '
+            + 'is removed to the target monitored folder.', async () => {
+            let keys;
+
+            keys = Object.keys(Jws.validator.__validationKeys);
+            expect(keys).toEqual(['mojaloop-sdk']);
+
+            const mockFilePath = path.join(keysDir, 'mock-jws.pem');
+            fs.writeFileSync(mockFilePath, 'foo-key');
+
+            await new Promise(resolve => setTimeout(() => resolve(), 1000));
+
+            keys = Object.keys(Jws.validator.__validationKeys);
+            expect(keys).toEqual(['mojaloop-sdk', 'mock-jws']);
+
+            fs.unlinkSync(mockFilePath);
+
+            await new Promise(resolve => setTimeout(() => resolve(), 1000));
+
+            keys = Object.keys(Jws.validator.__validationKeys);
+            expect(keys).toEqual(['mojaloop-sdk']);
+        });
+    });
 });

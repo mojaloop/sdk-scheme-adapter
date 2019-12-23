@@ -1,0 +1,15 @@
+{
+  "executionState": {
+    "accounts": [
+      {
+        "idType": "MSISDN",
+        "idValue": "123456789",
+        "currency": "USD"
+      }
+    ],
+    "currentState": "ERROR_OCCURRED",
+    "response": [],
+    "lastError": { "httpStatusCode": 504 }
+  },
+  "statusCode": "504"
+}

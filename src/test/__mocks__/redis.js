@@ -10,80 +10,40 @@
 
 'use strict';
 
-const util = require('util');
-const EventEmitter = require('events');
+const redisMock = require('redis-mock');
 
-
-class MockRedisClient extends EventEmitter {
+// redis-mock currently ignores callback argument, the following class fix this
+class RedisClient extends redisMock.RedisClient {
     constructor() {
         super();
-        console.log('MockRedisClient constructed');
-
-        this.data = {};
     }
 
-    subscribe(key, callback) {
-        console.log(`MockRedisClient got subscription for key: ${key}`);
-        if(typeof(callback) === 'function') {
-            return callback();
+    _executeCallback(...args) {
+        if (typeof args[args.length - 1] === 'function') {
+            const callback = args[args.length - 1];
+            const argList = Array.prototype.slice.call(args, 0, args.length - 1);
+            callback(null, argList);
         }
     }
 
-    unsubscribe(...args) {
-        if (args.length > 1) {
-            console.log(`MockRedisClient got unsubscribe for key: ${args[0]}`);
-        }
-
-        if(args.length > 0 && typeof args[args.length - 1] === 'function') {
-            return args[args.length - 1]();
-        }
+    subscribe(...args) {
+        super.subscribe(...args);
+        this._executeCallback(...args);
     }
 
-    emitMessage(type, ...args) {
-        process.nextTick(() => {
-            console.log(`MockRedisClient emitting event: ${type} ${util.inspect(args)}`);
-            this.emit(type, ...args);
-        });
+    publish(...args) {
+        super.publish(...args);
+        this._executeCallback(...args);
     }
 
-    set(key, value, callback) {
-        console.log(`MockRedisClient set called with key: ${key}  value: ${value}`);
-        this.data[key] = value;
-        return callback(null, 'OK');
-    }
-
-    get(key, callback) {
-        console.log(`MockRedisClient get called with key: ${key}`);
-        return callback(null, this.data[key]);
-    }
-
-    /**
-     * Override EventEmitter on function so we can intercept some special cases
-     */
-    on(type, callback) {
-        super.on(type, callback);
-
-        if(type === 'ready') {
-            // we got a redis ready handler hooked up, trigger it next tick
-            process.nextTick(this.emit('ready'));
-        }
-    }
-
-    quit(...args) {
-        console.log(`MockRedisClient quit called with args: ${util.inspect(args)}`);
-        if(typeof(args[0]) === 'function') {
-            args[0]();
-        }
+    set(...args) {
+        super.set(...args);
+        this._executeCallback(...args);
     }
 }
 
 
-const createClient = (...args) => {
-    console.log(`Mock redis createClient called with args ${util.inspect(args)}`);
-    return new MockRedisClient();
-};
-
 
 module.exports = {
-    createClient
+    createClient: () => new RedisClient(),
 };

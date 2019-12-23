@@ -11,18 +11,16 @@
 'use strict';
 
 const util = require('util');
-const uuidv4 = require('uuid/v4');
+const { uuid } = require('uuidv4');
 const StateMachine = require('javascript-state-machine');
 const { Ilp, MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const shared = require('@internal/shared');
 const { BackendError } = require('./common');
 
-const ASYNC_TIMEOUT_MILLS = 30000;
-
 const transferStateEnum = {
     'WAITING_FOR_PARTY_ACEPTANCE': 'WAITING_FOR_PARTY_ACCEPTANCE',
     'WAITING_FOR_QUOTE_ACCEPTANCE': 'WAITING_FOR_QUOTE_ACCEPTANCE',
-    'ERROR_OCCURED': 'ERROR_OCCURED',
+    'ERROR_OCCURRED': 'ERROR_OCCURRED',
     'COMPLETED': 'COMPLETED',
 };
 
@@ -32,20 +30,20 @@ const transferStateEnum = {
  */
 class OutboundTransfersModel {
     constructor(config) {
-        this.cache = config.cache;
-        this.logger = config.logger;
-        this.ASYNC_TIMEOUT_MILLS = config.asyncTimeoutMillis || ASYNC_TIMEOUT_MILLS;
-        this.dfspId = config.dfspId;
-        this.expirySeconds = config.expirySeconds;
-        this.rejectExpiredQuoteResponses = config.rejectExpiredQuoteResponses;
-        this.rejectExpiredTransferFulfils = config.rejectExpiredTransferFulfils;
-        this.autoAcceptQuotes = config.autoAcceptQuotes;
-        this.autoAcceptParty = config.autoAcceptParty;
-        this.useQuoteSourceFSPAsTransferPayeeFSP = config.useQuoteSourceFSPAsTransferPayeeFSP;
-        this.checkIlp = config.checkIlp;
+        this._cache = config.cache;
+        this._logger = config.logger;
+        this._requestProcessingTimeoutSeconds = config.requestProcessingTimeoutSeconds;
+        this._dfspId = config.dfspId;
+        this._expirySeconds = config.expirySeconds;
+        this._rejectExpiredQuoteResponses = config.rejectExpiredQuoteResponses;
+        this._rejectExpiredTransferFulfils = config.rejectExpiredTransferFulfils;
+        this._autoAcceptQuotes = config.autoAcceptQuotes;
+        this._autoAcceptParty = config.autoAcceptParty;
+        this._useQuoteSourceFSPAsTransferPayeeFSP = config.useQuoteSourceFSPAsTransferPayeeFSP;
+        this._checkIlp = config.checkIlp;
 
         this._requests = new MojaloopRequests({
-            logger: this.logger,
+            logger: this._logger,
             peerEndpoint: config.peerEndpoint,
             alsEndpoint: config.alsEndpoint,
             quotesEndpoint: config.quotesEndpoint,
@@ -58,7 +56,7 @@ class OutboundTransfersModel {
             wso2Auth: config.wso2Auth
         });
 
-        this.ilp = new Ilp({
+        this._ilp = new Ilp({
             secret: config.ilpSecret
         });
     }
@@ -96,7 +94,7 @@ class OutboundTransfersModel {
      * Updates the internal state representation to reflect that of the state machine itself
      */
     _afterTransition() {
-        this.logger.log(`State machine transitioned: ${this.data.currentState} -> ${this.stateMachine.state}`);
+        this._logger.log(`State machine transitioned: ${this.data.currentState} -> ${this.stateMachine.state}`);
         this.data.currentState = this.stateMachine.state;
     }
 
@@ -111,7 +109,7 @@ class OutboundTransfersModel {
 
         // add a transferId if one is not present e.g. on first submission
         if(!this.data.hasOwnProperty('transferId')) {
-            this.data.transferId = uuidv4();
+            this.data.transferId = uuid();
         }
 
         // initialize the transfer state machine to its starting state
@@ -127,7 +125,7 @@ class OutboundTransfersModel {
      * Handles state machine transitions
      */
     async _handleTransition(lifecycle, ...args) {
-        this.logger.log(`Transfer ${this.data.transferId} is transitioning from ${lifecycle.from} to ${lifecycle.to} in response to ${lifecycle.transition}`);
+        this._logger.log(`Transfer ${this.data.transferId} is transitioning from ${lifecycle.from} to ${lifecycle.to} in response to ${lifecycle.transition}`);
 
         switch(lifecycle.transition) {
             case 'init':
@@ -147,7 +145,7 @@ class OutboundTransfersModel {
                 return this._executeTransfer();
 
             case 'error':
-                this.logger.log(`State machine is erroring with error: ${util.inspect(args)}`);
+                this._logger.log(`State machine is erroring with error: ${util.inspect(args)}`);
                 this.data.lastError = args[0] || new Error('unspecified error');
                 break;
 
@@ -168,7 +166,7 @@ class OutboundTransfersModel {
             const payeeKey = `${this.data.to.idType}_${this.data.to.idValue}`;
 
             // hook up a subscriber to handle response messages
-            const subId = await this.cache.subscribe(payeeKey, (cn, msg, subId) => {
+            const subId = await this._cache.subscribe(payeeKey, (cn, msg, subId) => {
                 try {
                     let payee = JSON.parse(msg);
 
@@ -194,13 +192,13 @@ class OutboundTransfersModel {
                     // cancel the timeout handler
                     clearTimeout(timeout);
 
-                    this.logger.push({ payee }).log('Payee resolved');
+                    this._logger.push({ payee }).log('Payee resolved');
 
                     // stop listening for payee resolution messages
                     // no need to await for the unsubscribe to complete.
                     // we dont really care if the unsubscribe fails but we should log it regardless
-                    this.cache.unsubscribe(payeeKey, subId).catch(e => {
-                        this.logger.log(`Error unsubscribing (in callback) ${payeeKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    this._cache.unsubscribe(payeeKey, subId).catch(e => {
+                        this._logger.log(`Error unsubscribing (in callback) ${payeeKey} ${subId}: ${e.stack || util.inspect(e)}`);
                     });
 
                     // check we got the right payee and info we need
@@ -244,26 +242,26 @@ class OutboundTransfersModel {
                 const err = new BackendError(`Timeout resolving payee for transfer ${this.data.transferId}`, 504);
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
-                this.cache.unsubscribe(payeeKey, subId).catch(e => {
-                    this.logger.log(`Error unsubscribing (in timeout handler) ${payeeKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                this._cache.unsubscribe(payeeKey, subId).catch(e => {
+                    this._logger.log(`Error unsubscribing (in timeout handler) ${payeeKey} ${subId}: ${e.stack || util.inspect(e)}`);
                 });
 
                 return reject(err);
-            }, ASYNC_TIMEOUT_MILLS);
+            }, this._requestProcessingTimeoutSeconds * 1000);
 
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a GET /parties request to the switch
             try {
                 const res = await this._requests.getParties(this.data.to.idType, this.data.to.idValue);
-                this.logger.push({ peer: res }).log('Party lookup sent to peer');
+                this._logger.push({ peer: res }).log('Party lookup sent to peer');
             }
             catch(err) {
                 // cancel the timout and unsubscribe before rejecting the promise
                 clearTimeout(timeout);
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
-                this.cache.unsubscribe(payeeKey, subId).catch(e => {
-                    this.logger.log(`Error unsubscribing ${payeeKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                this._cache.unsubscribe(payeeKey, subId).catch(e => {
+                    this._logger.log(`Error unsubscribing ${payeeKey} ${subId}: ${e.stack || util.inspect(e)}`);
                 });
 
                 return reject(err);
@@ -287,18 +285,18 @@ class OutboundTransfersModel {
             const quoteKey = `qt_${quote.quoteId}`;
 
             // hook up a subscriber to handle response messages
-            const subId = await this.cache.subscribe(quoteKey, (cn, msg, subId) => {
+            const subId = await this._cache.subscribe(quoteKey, (cn, msg, subId) => {
                 try {
                     let error;
                     let message = JSON.parse(msg);
 
                     if (message.type === 'quoteResponse') {
-                        if (this.rejectExpiredQuoteResponses) {
+                        if (this._rejectExpiredQuoteResponses) {
                             const now = new Date().toISOString();
                             if (now > quote.expiration) {
                                 const msg = 'Quote response missed expiry deadline';
                                 error = new BackendError(msg, 504);
-                                this.logger.error(`${msg}: system time=${now} > expiration time=${quote.expiration}`);
+                                this._logger.error(`${msg}: system time=${now} > expiration time=${quote.expiration}`);
                             }
                         }
                     } else if (message.type === 'quoteResponseError') {
@@ -306,7 +304,7 @@ class OutboundTransfersModel {
                         error.mojaloopError = message.data;
                     }
                     else {
-                        this.logger.push({ message }).log(`Ignoring cache notification for quote ${quoteKey}. Unknown message type ${message.type}.`);
+                        this._logger.push({ message }).log(`Ignoring cache notification for quote ${quoteKey}. Unknown message type ${message.type}.`);
                         return;
                     }
 
@@ -316,8 +314,8 @@ class OutboundTransfersModel {
                     // stop listening for payee resolution messages
                     // no need to await for the unsubscribe to complete.
                     // we dont really care if the unsubscribe fails but we should log it regardless
-                    this.cache.unsubscribe(quoteKey, subId).catch(e => {
-                        this.logger.log(`Error unsubscribing (in callback) ${quoteKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    this._cache.unsubscribe(quoteKey, subId).catch(e => {
+                        this._logger.log(`Error unsubscribing (in callback) ${quoteKey} ${subId}: ${e.stack || util.inspect(e)}`);
                     });
 
                     if (error) {
@@ -326,7 +324,7 @@ class OutboundTransfersModel {
 
                     const quoteResponseBody = message.data;
                     const quoteResponseHeaders = message.headers;
-                    this.logger.push({ quoteResponseBody }).log('Quote response received');
+                    this._logger.push({ quoteResponseBody }).log('Quote response received');
 
                     this.data.quoteResponse = quoteResponseBody;
                     this.data.quoteResponseSource = quoteResponseHeaders['fspiop-source'];
@@ -343,26 +341,26 @@ class OutboundTransfersModel {
                 const err = new BackendError(`Timeout requesting quote for transfer ${this.data.transferId}`, 504);
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
-                this.cache.unsubscribe(quoteKey, subId).catch(e => {
-                    this.logger.log(`Error unsubscribing (in timeout handler) ${quoteKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                this._cache.unsubscribe(quoteKey, subId).catch(e => {
+                    this._logger.log(`Error unsubscribing (in timeout handler) ${quoteKey} ${subId}: ${e.stack || util.inspect(e)}`);
                 });
 
                 return reject(err);
-            }, ASYNC_TIMEOUT_MILLS);
+            }, this._requestProcessingTimeoutSeconds * 1000);
 
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /quotes request to the switch
             try {
                 const res = await this._requests.postQuotes(quote, this.data.to.fspId);
-                this.logger.push({ res }).log('Quote request sent to peer');
+                this._logger.push({ res }).log('Quote request sent to peer');
             }
             catch(err) {
                 // cancel the timout and unsubscribe before rejecting the promise
                 clearTimeout(timeout);
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
-                this.cache.unsubscribe(quoteKey, subId).catch(e => {
-                    this.logger.log(`Error unsubscribing (in error handler) ${quoteKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                this._cache.unsubscribe(quoteKey, subId).catch(e => {
+                    this._logger.log(`Error unsubscribing (in error handler) ${quoteKey} ${subId}: ${e.stack || util.inspect(e)}`);
                 });
 
                 return reject(err);
@@ -378,7 +376,7 @@ class OutboundTransfersModel {
      */
     _buildQuoteRequest() {
         let quote = {
-            quoteId: uuidv4(),
+            quoteId: uuid(),
             transactionId: this.data.transferId,
             amountType: this.data.amountType,
             amount: {
@@ -388,7 +386,7 @@ class OutboundTransfersModel {
             expiration: this._getExpirationTimestamp()
         };
 
-        quote.payer = shared.internalPartyToMojaloopParty(this.data.from, this.dfspId);
+        quote.payer = shared.internalPartyToMojaloopParty(this.data.from, this._dfspId);
         quote.payee = shared.internalPartyToMojaloopParty(this.data.to, this.data.to.fspId);
 
         quote.transactionType = {
@@ -431,17 +429,17 @@ class OutboundTransfersModel {
             // listen for events on the transferId
             const transferKey = `tf_${this.data.transferId}`;
 
-            const subId = await this.cache.subscribe(transferKey, async (cn, msg, subId) => {
+            const subId = await this._cache.subscribe(transferKey, async (cn, msg, subId) => {
                 try {
                     let error;
                     let message = JSON.parse(msg);
 
                     if (message.type === 'transferFulfil') {
-                        if (this.rejectExpiredTransferFulfils) {
+                        if (this._rejectExpiredTransferFulfils) {
                             const now = new Date().toISOString();
                             if (now > prepare.expiration) {
                                 const msg = 'Transfer fulfil missed expiry deadline';
-                                this.logger.error(`${msg}: system time=${now} > expiration=${prepare.expiration}`);
+                                this._logger.error(`${msg}: system time=${now} > expiration=${prepare.expiration}`);
                                 error = new BackendError(msg, 504);
                             }
                         }
@@ -449,7 +447,7 @@ class OutboundTransfersModel {
                         error = new BackendError(`Got an error response preparing transfer: ${util.inspect(message.data)}`, 500);
                         error.mojaloopError = message.data;
                     } else {
-                        this.logger.push({ message }).log(`Ignoring cache notification for transfer ${transferKey}. Uknokwn message type ${message.type}.`);
+                        this._logger.push({ message }).log(`Ignoring cache notification for transfer ${transferKey}. Uknokwn message type ${message.type}.`);
                         return;
                     }
 
@@ -457,8 +455,8 @@ class OutboundTransfersModel {
                     clearTimeout(timeout);
 
                     // stop listening for transfer fulfil messages
-                    this.cache.unsubscribe(transferKey, subId).catch(e => {
-                        this.logger.log(`Error unsubscribing (in callback) ${transferKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    this._cache.unsubscribe(transferKey, subId).catch(e => {
+                        this._logger.log(`Error unsubscribing (in callback) ${transferKey} ${subId}: ${e.stack || util.inspect(e)}`);
                     });
 
                     if (error) {
@@ -466,10 +464,10 @@ class OutboundTransfersModel {
                     }
 
                     const fulfil = message.data;
-                    this.logger.push({ fulfil }).log('Transfer fulfil received');
+                    this._logger.push({ fulfil }).log('Transfer fulfil received');
                     this.data.fulfil = fulfil;
 
-                    if(this.checkIlp && !this.ilp.validateFulfil(fulfil.fulfilment, this.data.quoteResponse.condition)) {
+                    if(this._checkIlp && !this._ilp.validateFulfil(fulfil.fulfilment, this.data.quoteResponse.condition)) {
                         throw new Error('Invalid fulfilment received from peer DFSP.');
                     }
 
@@ -485,26 +483,26 @@ class OutboundTransfersModel {
                 const err = new BackendError(`Timeout waiting for fulfil for transfer ${this.data.transferId}`, 504);
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
-                this.cache.unsubscribe(transferKey, subId).catch(e => {
-                    this.logger.log(`Error unsubscribing (in timeout handler) ${transferKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                this._cache.unsubscribe(transferKey, subId).catch(e => {
+                    this._logger.log(`Error unsubscribing (in timeout handler) ${transferKey} ${subId}: ${e.stack || util.inspect(e)}`);
                 });
 
                 return reject(err);
-            }, ASYNC_TIMEOUT_MILLS);
+            }, this._requestProcessingTimeoutSeconds * 1000);
 
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /transfers request to the switch
             try {
                 const res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource);
-                this.logger.push({ res }).log('Transfer prepare sent to peer');
+                this._logger.push({ res }).log('Transfer prepare sent to peer');
             }
             catch(err) {
                 // cancel the timout and unsubscribe before rejecting the promise
                 clearTimeout(timeout);
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
-                this.cache.unsubscribe(transferKey, subId).catch(e => {
-                    this.logger.log(`Error unsubscribing (in error handler) ${transferKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                this._cache.unsubscribe(transferKey, subId).catch(e => {
+                    this._logger.log(`Error unsubscribing (in error handler) ${transferKey} ${subId}: ${e.stack || util.inspect(e)}`);
                 });
 
                 return reject(err);
@@ -522,7 +520,7 @@ class OutboundTransfersModel {
         let prepare = {
             transferId: this.data.transferId,
             payeeFsp: this.data.to.fspId,
-            payerFsp: this.dfspId,
+            payerFsp: this._dfspId,
             amount: {
                 // We use the transfer currency and amount specified in the quote response
                 // rather than the original request. In Forex cases we may have requested
@@ -536,7 +534,7 @@ class OutboundTransfersModel {
             expiration: this._getExpirationTimestamp()
         };
 
-        if(this.useQuoteSourceFSPAsTransferPayeeFSP) {
+        if(this._useQuoteSourceFSPAsTransferPayeeFSP) {
             prepare.payeeFsp = this.data.quoteResponseSource;
         }
 
@@ -559,7 +557,7 @@ class OutboundTransfersModel {
      */
     _getExpirationTimestamp() {
         let now = new Date();
-        return new Date(now.getTime() + (this.expirySeconds * 1000)).toISOString();
+        return new Date(now.getTime() + (this._expirySeconds * 1000)).toISOString();
     }
 
 
@@ -587,12 +585,12 @@ class OutboundTransfersModel {
                 break;
 
             case 'errored':
-                resp.currentState = transferStateEnum.ERROR_OCCURED;
+                resp.currentState = transferStateEnum.ERROR_OCCURRED;
                 break;
 
             default:
-                this.logger.log(`Transfer model response being returned from an unexpected state: ${this.data.currentState}. Returning ERROR_OCCURED state`);
-                resp.currentState = transferStateEnum.ERROR_OCCURED;
+                this._logger.log(`Transfer model response being returned from an unexpected state: ${this.data.currentState}. Returning ERROR_OCCURRED state`);
+                resp.currentState = transferStateEnum.ERROR_OCCURRED;
                 break;
         }
 
@@ -606,11 +604,11 @@ class OutboundTransfersModel {
     async _save() {
         try {
             this.data.currentState = this.stateMachine.state;
-            const res = await this.cache.set(`transferModel_${this.data.transferId}`, this.data);
-            this.logger.push({ res }).log('Persisted transfer model in cache');
+            const res = await this._cache.set(`transferModel_${this.data.transferId}`, this.data);
+            this._logger.push({ res }).log('Persisted transfer model in cache');
         }
         catch(err) {
-            this.logger.push({ err }).log('Error saving transfer model');
+            this._logger.push({ err }).log('Error saving transfer model');
             throw err;
         }
     }
@@ -623,15 +621,15 @@ class OutboundTransfersModel {
      */
     async load(transferId) {
         try {
-            const data = await this.cache.get(`transferModel_${transferId}`);
+            const data = await this._cache.get(`transferModel_${transferId}`);
             if(!data) {
                 throw new Error(`No cached data found for transferId: ${transferId}`);
             }
             await this.initialize(data);
-            this.logger.push({ cache: this.data }).log('Transfer model loaded from cached state');
+            this._logger.push({ cache: this.data }).log('Transfer model loaded from cached state');
         }
         catch(err) {
-            this.logger.push({ err }).log('Error loading transfer model');
+            this._logger.push({ err }).log('Error loading transfer model');
             throw err;
         }
     }
@@ -647,8 +645,8 @@ class OutboundTransfersModel {
                 case 'start':
                     // next transition is to resolvePayee
                     await this.stateMachine.resolvePayee();
-                    this.logger.log(`Payee resolved for transfer ${this.data.transferId}`);
-                    if(this.stateMachine.state === 'payeeResolved' && !this.autoAcceptParty) {
+                    this._logger.log(`Payee resolved for transfer ${this.data.transferId}`);
+                    if(this.stateMachine.state === 'payeeResolved' && !this._autoAcceptParty) {
                         //we break execution here and return the resolved party details to allow asynchronous accept or reject
                         //of the resolved party
                         await this._save();
@@ -659,8 +657,8 @@ class OutboundTransfersModel {
                 case 'payeeResolved':
                     // next transition is to requestQuote
                     await this.stateMachine.requestQuote();
-                    this.logger.log(`Quote received for transfer ${this.data.transferId}`);
-                    if(this.stateMachine.state === 'quoteReceived' && !this.autoAcceptQuotes) {
+                    this._logger.log(`Quote received for transfer ${this.data.transferId}`);
+                    if(this.stateMachine.state === 'quoteReceived' && !this._autoAcceptQuotes) {
                         //we break execution here and return the quote response details to allow asynchronous accept or reject
                         //of the quote
                         await this._save();
@@ -671,33 +669,33 @@ class OutboundTransfersModel {
                 case 'quoteReceived':
                     // next transition is executeTransfer
                     await this.stateMachine.executeTransfer();
-                    this.logger.log(`Transfer ${this.data.transferId} has been completed`);
+                    this._logger.log(`Transfer ${this.data.transferId} has been completed`);
                     break;
 
                 case 'succeeded':
                     // all steps complete so return
-                    this.logger.log('Transfer completed successfully');
+                    this._logger.log('Transfer completed successfully');
                     await this._save();
                     return this.getResponse();
 
                 case 'errored':
                     // stopped in errored state
-                    this.logger.log('State machine in errored state');
+                    this._logger.log('State machine in errored state');
                     return;
             }
 
             // now call ourslves recursively to deal with the next transition
-            this.logger.log(`Transfer model state machine transition completed in state: ${this.stateMachine.state}. Recusring to handle next transition.`);
+            this._logger.log(`Transfer model state machine transition completed in state: ${this.stateMachine.state}. Recusring to handle next transition.`);
             return this.run();
         }
         catch(err) {
-            this.logger.log(`Error running transfer model: ${util.inspect(err)}`);
+            this._logger.log(`Error running transfer model: ${util.inspect(err)}`);
 
             // as this function is recursive, we dont want to error the state machine multiple times
             if(this.data.currentState !== 'errored') {
                 // err should not have a transferState property here!
                 if(err.transferState) {
-                    this.logger.log(`State machine is broken: ${util.inspect(err)}`);
+                    this._logger.log(`State machine is broken: ${util.inspect(err)}`);
                 }
                 // transition to errored state
                 await this.stateMachine.error(err);

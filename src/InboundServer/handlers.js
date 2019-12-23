@@ -23,9 +23,10 @@ const getParticipantsByTypeAndId = async (ctx) => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
             const model = new Model({
+                ...ctx.state.conf,
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
-                ...ctx.state.conf
+                wso2Auth: ctx.state.wso2Auth,
             });
 
             const sourceFspId = ctx.request.headers['fspiop-source'];
@@ -68,9 +69,10 @@ const getPartiesByTypeAndId = async (ctx) => {
 
             // use the transfers model to execute asynchronous stages with the switch
             const model = new Model({
+                ...ctx.state.conf,
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
-                ...ctx.state.conf
+                wso2Auth: ctx.state.wso2Auth,
             });
 
             const sourceFspId = ctx.request.headers['fspiop-source'];
@@ -123,9 +125,10 @@ const postQuotes = async (ctx) => {
 
             // use the transfers model to execute asynchronous stages with the switch
             const model = new Model({
+                ...ctx.state.conf,
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
-                ...ctx.state.conf
+                wso2Auth: ctx.state.wso2Auth,
             });
 
             const sourceFspId = ctx.request.headers['fspiop-source'];
@@ -168,9 +171,10 @@ const postTransfers = async (ctx) => {
 
             // use the transfers model to execute asynchronous stages with the switch
             const model = new Model({
+                ...ctx.state.conf,
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
-                ...ctx.state.conf
+                wso2Auth: ctx.state.wso2Auth,
             });
 
             const sourceFspId = ctx.request.headers['fspiop-source'];
@@ -272,7 +276,6 @@ const putPartiesByTypeAndId = async (ctx) => {
 
     // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(`${idType}_${idValue}`, ctx.request.body);
-
     ctx.response.status = 200;
 };
 

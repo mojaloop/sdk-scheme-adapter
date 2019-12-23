@@ -24,7 +24,7 @@ const handleError = (method, err, ctx, stateField) => {
     ctx.response.body = {
         message: err.message || 'Unspecified error',
         [stateField]: err[stateField] || {},
-        statusCode: err.httpStatusCode || 500
+        statusCode: (err.httpStatusCode || 500).toString()
     };
     if(err[stateField]
         && err[stateField].lastError
@@ -55,9 +55,10 @@ const postTransfers = async (ctx) => {
 
         // use the transfers model to execute asynchronous stages with the switch
         const model = new OutboundTransfersModel({
+            ...ctx.state.conf,
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            ...ctx.state.conf
+            wso2Auth: ctx.state.wso2Auth,
         });
 
         // initialize the transfer model and start it running
@@ -84,9 +85,10 @@ const putTransfers = async (ctx) => {
         // this requires a multi-stage sequence with the switch.
         // use the transfers model to execute asynchronous stages with the switch
         const model = new OutboundTransfersModel({
+            ...ctx.state.conf,
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            ...ctx.state.conf
+            wso2Auth: ctx.state.wso2Auth,
         });
 
         // TODO: check the incoming body to reject party or quote when requested to do so
@@ -112,9 +114,10 @@ const putTransfers = async (ctx) => {
 const postAccounts = async (ctx) => {
     try {
         const model = new AccountsModel({
+            ...ctx.state.conf,
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            ...ctx.state.conf
+            wso2Auth: ctx.state.wso2Auth,
         });
 
         const state = {

@@ -11,7 +11,7 @@
 'use strict';
 
 const util = require('util');
-const { MojaloopRequests, Errors } = jest.requireActual('@mojaloop/sdk-standard-components');
+const { MojaloopRequests, Errors, WSO2Auth, Jws } = jest.requireActual('@mojaloop/sdk-standard-components');
 
 
 class MockMojaloopRequests extends MojaloopRequests {
@@ -24,6 +24,7 @@ class MockMojaloopRequests extends MojaloopRequests {
         this.putQuotes = MockMojaloopRequests.__putQuotes;
         this.putQuotesError = MockMojaloopRequests.__putQuotesError;
         this.postTransfers = MockMojaloopRequests.__postTransfers;
+        this.putTransfers = MockMojaloopRequests.__putTransfers;
         this.putTransfersError = MockMojaloopRequests.__putTransfersError;
     }
 }
@@ -33,6 +34,7 @@ MockMojaloopRequests.__postQuotes = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putQuotes = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putQuotesError = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__postTransfers = jest.fn(() => Promise.resolve());
+MockMojaloopRequests.__putTransfers = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putTransfersError = jest.fn(() => Promise.resolve());
 
 class MockIlp {
@@ -59,17 +61,23 @@ class MockIlp {
     getQuoteResponseIlp(...args) {
         console.log(`MockIlp.getQuoteResponseIlp called with args: ${util.inspect(args)}`);
 
-        return {
-            fulfilment: 'mockGeneratedFulfilment',
-            ilpPacket: 'mockBase64encodedIlpPacket',
-            condition: 'mockGeneratedCondition'
-        };
+        return MockIlp.__response;
     }
 }
+MockIlp.__response = {
+    fulfilment: 'mockGeneratedFulfilment',
+    ilpPacket: 'mockBase64encodedIlpPacket',
+    condition: 'mockGeneratedCondition'
+};
 
-const MockJwsValidator = jest.fn().mockImplementation(() => {
-    return {validate: MockJwsValidator.__validate};
-});
+
+class MockJwsValidator extends Jws.validator {
+    constructor(config) {
+        super(config);
+        MockJwsValidator.__validationKeys = config.validationKeys;
+        this.validate = MockJwsValidator.__validate;
+    }
+}
 MockJwsValidator.__validate = jest.fn(() => true);
 
 
@@ -88,5 +96,6 @@ module.exports = {
         validator: MockJwsValidator,
         signer: MockJwsSigner
     },
-    Errors: Errors
+    Errors,
+    WSO2Auth,
 };
