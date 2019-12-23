@@ -48,7 +48,7 @@ class InboundServer {
         this._wso2Auth = new WSO2Auth({
             ...this._conf.wso2Auth,
             logger: this._logger,
-            tlsCreds: this._conf.tls.inbound.mutualTLS.enabled && this._conf.tls.inbound.creds,
+            tlsCreds: this._conf.tls.outbound.mutualTLS.enabled && this._conf.tls.outbound.creds,
         });
 
         this._api.use(middlewares.createErrorHandler());
