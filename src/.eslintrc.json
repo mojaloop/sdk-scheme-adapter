@@ -26,6 +26,7 @@
       2,
       "always"
     ],
-    "no-console": "off"
+    "no-console": "off",
+    "no-prototype-builtins": "off"
   }
 }

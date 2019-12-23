@@ -130,6 +130,7 @@ class AccountsModel {
 
 
     async _executeCreateAccountsRequest(request) {
+        // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
             const requestKey = `ac_${request.requestId}`;
 

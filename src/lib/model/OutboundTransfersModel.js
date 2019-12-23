@@ -161,6 +161,7 @@ class OutboundTransfersModel {
      * then waits for a notification from the cache that the payee has been resolved.
      */
     async _resolvePayee() {
+        // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
             // listen for resolution events on the payee idType and idValue
             const payeeKey = `${this.data.to.idType}_${this.data.to.idValue}`;
@@ -276,6 +277,7 @@ class OutboundTransfersModel {
      * then waits for a notification from the cache that the quote response has been received
      */
     async _requestQuote() {
+        // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
             // create a quote request
             const quote = this._buildQuoteRequest();
@@ -422,6 +424,7 @@ class OutboundTransfersModel {
      * then waits for a notification from the cache that the transfer has been fulfilled
      */
     async _executeTransfer() {
+        // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
             // create a transfer prepare request
             const prepare = this._buildTransferPrepare();
