@@ -211,7 +211,7 @@ describe('Inbound Server', () => {
         });
 
         it('updates server configuration when a new JWS verification key '
-            + 'is removed to the target monitored folder.', async () => {
+            + 'is removed from the target monitored folder.', async () => {
             let keys;
 
             keys = Object.keys(Jws.validator.__validationKeys);
@@ -231,6 +231,28 @@ describe('Inbound Server', () => {
 
             keys = Object.keys(Jws.validator.__validationKeys);
             expect(keys).toEqual(['mojaloop-sdk']);
+        });
+
+        it('updates server configuration when a new JWS verification key '
+            + 'is changed in the target monitored folder.', async () => {
+            let keys;
+
+            keys = Object.keys(Jws.validator.__validationKeys);
+            expect(keys).toEqual(['mojaloop-sdk']);
+
+            const mockFilePath = path.join(keysDir, 'mock-jws.pem');
+            fs.writeFileSync(mockFilePath, 'foo-key');
+
+            await new Promise(resolve => setTimeout(() => resolve(), 1000));
+
+            keys = Object.keys(Jws.validator.__validationKeys);
+            expect(keys).toEqual(['mojaloop-sdk', 'mock-jws']);
+
+            fs.writeFileSync(mockFilePath, 'foo-key-updated');
+
+            await new Promise(resolve => setTimeout(() => resolve(), 1000));
+
+            expect(Jws.validator.__validationKeys['mock-jws'].toString()).toEqual('foo-key-updated');
         });
     });
 });

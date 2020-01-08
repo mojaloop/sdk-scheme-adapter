@@ -163,16 +163,22 @@ class InboundServer {
             CHANGE: 'change',
             RENAME: 'rename'
         };
-        const watchHandler = (eventType, filename) => {
+        const watchHandler = async (eventType, filename) => {
             // On most platforms, 'rename' is emitted whenever a filename appears or disappears in the directory.
             // From: https://nodejs.org/docs/latest/api/fs.html#fs_fs_watch_filename_options_listener
+            if (path.extname(filename) !== '.pem') {
+                return;
+            }
+            const keyName = path.basename(filename, '.pem');
+            const keyPath = path.join(this._conf.jwsVerificationKeysDirectory, filename);
             if (eventType === FS_EVENT_TYPES.RENAME) {
-                const keyName = path.basename(filename, '.pem');
                 if (this._jwsVerificationKeys[keyName] == null) {
-                    this._jwsVerificationKeys[keyName] = path.join(this._conf.jwsVerificationKeysDirectory, filename);
+                    this._jwsVerificationKeys[keyName] = await fs.promises.readFile(keyPath);
                 } else {
                     delete this._jwsVerificationKeys[keyName];
                 }
+            } else if (eventType === FS_EVENT_TYPES.CHANGE) {
+                this._jwsVerificationKeys[keyName] = await fs.promises.readFile(keyPath);
             }
         };
         if (this._conf.jwsVerificationKeysDirectory) {
