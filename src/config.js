@@ -10,12 +10,12 @@
 'use strict';
 
 const fs = require('fs');
-require('dotenv').config({ path: 'local.env' });
+require('dotenv');
 const { from } = require('env-var');
 
 function getFileContent(path) {
     if (!fs.existsSync(path)) {
-        throw new Error(`File "${path}" doesn't exist`);
+        throw new Error('File doesn\'t exist');
     }
     return fs.readFileSync(path);
 }
