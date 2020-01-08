@@ -53,7 +53,7 @@ class Cache {
      */
     async connect() {
         if (this._connected) {
-            return;
+            throw new Error('already connected');
         }
         this._connected = true;
         this._client = await this._getClient();
