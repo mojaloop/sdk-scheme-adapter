@@ -1,0 +1,24 @@
+{
+  "transferState": {
+    "from": {
+      "displayName": "John Doe",
+      "idType": "MSISDN",
+      "idValue": "123456789"
+    },
+    "to": {
+      "idType": "MSISDN",
+      "idValue": "987654321"
+    },
+    "amountType": "SEND",
+    "currency": "USD",
+    "amount": "100",
+    "transactionType": "TRANSFER",
+    "note": "test payment",
+    "homeTransactionId": "123ABC",
+    "currentState": "ERROR_OCCURRED",
+    "lastError": {
+      "httpStatusCode": 504
+    }
+  },
+  "statusCode": "504"
+}

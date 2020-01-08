@@ -10,6 +10,15 @@
 
 'use strict';
 
+jest.mock('dotenv', () => ({
+    config: jest.fn()
+}));
+
+process.env.PEER_ENDPOINT = '172.17.0.3:4000';
+process.env.BACKEND_ENDPOINT = '172.17.0.5:4000';
+process.env.CACHE_HOST = '172.17.0.2';
+process.env.CACHE_PORT = '6379';
+
 const index = require('../../index.js');
 
 

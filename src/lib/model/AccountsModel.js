@@ -11,13 +11,13 @@
 'use strict';
 
 const util = require('util');
-const uuidv4 = require('uuid/v4');
+const { uuid } = require('uuidv4');
 const StateMachine = require('javascript-state-machine');
 const { MojaloopRequests, Errors } = require('@mojaloop/sdk-standard-components');
 const { BackendError } = require('./common');
 
 const stateEnum = {
-    'ERROR_OCCURED': 'ERROR_OCCURED',
+    'ERROR_OCCURRED': 'ERROR_OCCURRED',
     'COMPLETED': 'COMPLETED',
 };
 
@@ -27,13 +27,13 @@ const stateEnum = {
  */
 class AccountsModel {
     constructor(config) {
-        this.cache = config.cache;
-        this.logger = config.logger;
-        this.requestProcessingTimeoutSeconds = config.requestProcessingTimeoutSeconds;
-        this.dfspId = config.dfspId;
+        this._cache = config.cache;
+        this._logger = config.logger;
+        this._requestProcessingTimeoutSeconds = config.requestProcessingTimeoutSeconds;
+        this._dfspId = config.dfspId;
 
-        this.requests = new MojaloopRequests({
-            logger: this.logger,
+        this._requests = new MojaloopRequests({
+            logger: this._logger,
             peerEndpoint: config.alsEndpoint,
             dfspId: config.dfspId,
             tls: config.tls,
@@ -48,7 +48,7 @@ class AccountsModel {
      * Initializes the internal state machine object
      */
     _initStateMachine (initState) {
-        this.stateMachine = new StateMachine({
+        this._stateMachine = new StateMachine({
             init: initState,
             transitions: [
                 { name: 'createAccounts', from: 'start', to: 'succeeded' },
@@ -60,13 +60,13 @@ class AccountsModel {
                 onPendingTransition: (transition, from, to) => {
                     // allow transitions to 'error' state while other transitions are in progress
                     if(transition !== 'error') {
-                        throw new Error(`Transition requested while another transition is in progress: ${transition} from: ${from} to: ${to}`);
+                        throw new BackendError(`Transition requested while another transition is in progress: ${transition} from: ${from} to: ${to}`, 500);
                     }
                 }
             }
         });
 
-        return this.stateMachine[initState];
+        return this._stateMachine[initState];
     }
 
 
@@ -74,8 +74,8 @@ class AccountsModel {
      * Updates the internal state representation to reflect that of the state machine itself
      */
     _afterTransition() {
-        this.logger.log(`State machine transitioned: ${this.data.currentState} -> ${this.stateMachine.state}`);
-        this.data.currentState = this.stateMachine.state;
+        this._logger.log(`State machine transitioned: ${this._data.currentState} -> ${this._stateMachine.state}`);
+        this._data.currentState = this._stateMachine.state;
     }
 
 
@@ -85,23 +85,23 @@ class AccountsModel {
      * @param data {object} - The outbound API POST /accounts request body
      */
     async initialize(data) {
-        this.data = data;
+        this._data = data;
 
         // add a modelId if one is not present e.g. on first submission
-        if(!this.data.hasOwnProperty('modelId')) {
-            this.data.modelId = uuidv4();
+        if(!this._data.hasOwnProperty('modelId')) {
+            this._data.modelId = uuid();
         }
 
         // initialize the transfer state machine to its starting state
-        if(!this.data.hasOwnProperty('currentState')) {
-            this.data.currentState = 'start';
+        if(!this._data.hasOwnProperty('currentState')) {
+            this._data.currentState = 'start';
         }
 
-        if(!this.data.hasOwnProperty('response')) {
-            this.data.response = [];
+        if(!this._data.hasOwnProperty('response')) {
+            this._data.response = [];
         }
 
-        this._initStateMachine(this.data.currentState);
+        this._initStateMachine(this._data.currentState);
     }
 
 
@@ -109,7 +109,7 @@ class AccountsModel {
      * Handles state machine transitions
      */
     async _handleTransition(lifecycle, ...args) {
-        this.logger.log(`Request ${this.data.requestId} is transitioning from ${lifecycle.from} to ${lifecycle.to} in response to ${lifecycle.transition}`);
+        this._logger.log(`Request ${this._data.requestId} is transitioning from ${lifecycle.from} to ${lifecycle.to} in response to ${lifecycle.transition}`);
 
         switch(lifecycle.transition) {
             case 'init':
@@ -119,21 +119,22 @@ class AccountsModel {
                 return this._createAccounts();
 
             case 'error':
-                this.logger.log(`State machine is erroring with error: ${util.inspect(args)}`);
-                this.data.lastError = args[0] || new Error('unspecified error');
+                this._logger.log(`State machine is erroring with error: ${util.inspect(args)}`);
+                this._data.lastError = args[0] || new BackendError('unspecified error', 500);
                 break;
 
             default:
-                this.logger.log(`Unhandled state transition for request ${this.data.requestId}`);
+                this._logger.log(`Unhandled state transition for request ${this._data.requestId}`);
         }
     }
 
 
     async _executeCreateAccountsRequest(request) {
+        // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
             const requestKey = `ac_${request.requestId}`;
 
-            const subId = await this.cache.subscribe(requestKey, async (cn, msg, subId) => {
+            const subId = await this._cache.subscribe(requestKey, async (cn, msg, subId) => {
                 try {
                     let error;
                     let message = JSON.parse(msg);
@@ -142,7 +143,7 @@ class AccountsModel {
                         error = new BackendError(`Got an error response creating accounts: ${util.inspect(message.data)}`, 500);
                         error.mojaloopError = message.data;
                     } else if (message.type !== 'accountsCreationSuccessfulResponse') {
-                        this.logger.push({ message }).log(
+                        this._logger.push({ message }).log(
                             `Ignoring cache notification for request ${requestKey}. ` +
                             `Unknown message type ${message.type}.`
                         );
@@ -155,8 +156,8 @@ class AccountsModel {
                     // stop listening for account creation response messages.
                     // no need to await for the unsubscribe to complete.
                     // we dont really care if the unsubscribe fails but we should log it regardless
-                    this.cache.unsubscribe(requestKey, subId).catch(e => {
-                        this.logger.log(`Error unsubscribing (in callback) ${requestKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    this._cache.unsubscribe(requestKey, subId).catch(e => {
+                        this._logger.log(`Error unsubscribing (in callback) ${requestKey} ${subId}: ${e.stack || util.inspect(e)}`);
                     });
 
                     if (error) {
@@ -164,7 +165,7 @@ class AccountsModel {
                     }
 
                     const response = message.data;
-                    this.logger.push({ response }).log('Account creation response received');
+                    this._logger.push({ response }).log('Account creation response received');
                     return resolve(response);
                 }
                 catch(err) {
@@ -174,29 +175,29 @@ class AccountsModel {
 
             // set up a timeout for the request
             const timeout = setTimeout(() => {
-                const err = new Error(`Timeout waiting for response to account creation request ${request.requestId}`);
+                const err = new BackendError(`Timeout waiting for response to account creation request ${request.requestId}`, 504);
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
-                this.cache.unsubscribe(requestKey, subId).catch(e => {
-                    this.logger.log(`Error unsubscribing (in timeout handler) ${requestKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                this._cache.unsubscribe(requestKey, subId).catch(e => {
+                    this._logger.log(`Error unsubscribing (in timeout handler) ${requestKey} ${subId}: ${e.stack || util.inspect(e)}`);
                 });
 
                 return reject(err);
-            }, this.requestProcessingTimeoutSeconds * 1000);
+            }, this._requestProcessingTimeoutSeconds * 1000);
 
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /participants request to the switch
             try {
-                const res = await this.requests.postParticipants(request);
-                this.logger.push({ res }).log('Account creation request sent to peer');
+                const res = await this._requests.postParticipants(request);
+                this._logger.push({ res }).log('Account creation request sent to peer');
             }
             catch(err) {
                 // cancel the timout and unsubscribe before rejecting the promise
                 clearTimeout(timeout);
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
-                this.cache.unsubscribe(requestKey, subId).catch(e => {
-                    this.logger.log(`Error unsubscribing (in error handler) ${requestKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                this._cache.unsubscribe(requestKey, subId).catch(e => {
+                    this._logger.log(`Error unsubscribing (in error handler) ${requestKey} ${subId}: ${e.stack || util.inspect(e)}`);
                 });
 
                 return reject(err);
@@ -209,7 +210,7 @@ class AccountsModel {
         const requests = this._buildRequests();
         for await (let request of requests) {
             const response = await this._executeCreateAccountsRequest(request);
-            this.data.response.push(...this._buildClientResponse(response));
+            this._data.response.push(...this._buildClientResponse(response));
         }
     }
 
@@ -243,12 +244,12 @@ class AccountsModel {
         const MAX_ITEMS_PER_REQUEST = 10000; // As per API Spec 6.2.2.2 (partyList field)
 
         const requests = [];
-        for (let account of this.data.accounts) {
+        for (let account of this._data.accounts) {
             let request = requests.find(req =>
                 req.currency === account.currency && (req.partyList.length < MAX_ITEMS_PER_REQUEST));
             if (!request) {
                 request = {
-                    requestId: uuidv4(),
+                    requestId: uuid(),
                     partyList: [],
                     currency: account.currency,
                 };
@@ -258,7 +259,7 @@ class AccountsModel {
                 partyIdType: account.idType,
                 partyIdentifier: account.idValue,
                 partySubIdOrType: account.idSubValue,
-                fspId: this.dfspId,
+                fspId: this._dfspId,
             });
         }
         return requests;
@@ -272,23 +273,23 @@ class AccountsModel {
     getResponse() {
         // we want to project some of our internal state into a more useful
         // representation to return to the SDK API consumer
-        const resp = { ...this.data };
+        const resp = { ...this._data };
 
-        switch(this.data.currentState) {
+        switch(this._data.currentState) {
             case 'succeeded':
                 resp.currentState = stateEnum.COMPLETED;
                 break;
 
             case 'errored':
-                resp.currentState = stateEnum.ERROR_OCCURED;
+                resp.currentState = stateEnum.ERROR_OCCURRED;
                 break;
 
             default:
-                this.logger.log(
-                    `Account model response being returned from an unexpected state: ${this.data.currentState}. ` +
-                    'Returning ERROR_OCCURED state'
+                this._logger.log(
+                    `Account model response being returned from an unexpected state: ${this._data.currentState}. ` +
+                    'Returning ERROR_OCCURRED state'
                 );
-                resp.currentState = stateEnum.ERROR_OCCURED;
+                resp.currentState = stateEnum.ERROR_OCCURRED;
                 break;
         }
 
@@ -301,12 +302,12 @@ class AccountsModel {
      */
     async _save() {
         try {
-            this.data.currentState = this.stateMachine.state;
-            const res = await this.cache.set(`accountModel_${this.data.modelId}`, this.data);
-            this.logger.push({ res }).log('Persisted account model in cache');
+            this._data.currentState = this._stateMachine.state;
+            const res = await this._cache.set(`accountModel_${this._data.modelId}`, this._data);
+            this._logger.push({ res }).log('Persisted account model in cache');
         }
         catch(err) {
-            this.logger.push({ err }).log('Error saving account model');
+            this._logger.push({ err }).log('Error saving account model');
             throw err;
         }
     }
@@ -319,30 +320,17 @@ class AccountsModel {
      */
     async load(modelId) {
         try {
-            const data = await this.cache.get(`accountModel_${modelId}`);
+            const data = await this._cache.get(`accountModel_${modelId}`);
             if(!data) {
-                throw new Error(`No cached data found for account model with id: ${modelId}`);
+                throw new BackendError(`No cached data found for account model with id: ${modelId}`, 500);
             }
             await this.initialize(data);
-            this.logger.push({ cache: this.data }).log('Account model loaded from cached state');
+            this._logger.push({ cache: this._data }).log('Account model loaded from cached state');
         }
         catch(err) {
-            this.logger.push({ err }).log('Error loading account model');
+            this._logger.push({ err }).log('Error loading account model');
             throw err;
         }
-    }
-
-
-    /**
-     * Unsubscribes the models subscriber from all subscriptions
-     */
-    async _unsubscribeAll() {
-        return new Promise((resolve) => {
-            this.subscriber.unsubscribe(() => {
-                this.logger.log('Account model unsubscribed from all subscriptions');
-                return resolve();
-            });
-        });
     }
 
 
@@ -352,48 +340,49 @@ class AccountsModel {
     async run() {
         try {
             // run transitions based on incoming state
-            switch(this.data.currentState) {
+            switch(this._data.currentState) {
                 case 'start': {
-                    await this.stateMachine.createAccounts();
-                    const accounts = this.data.response;
-                    const failCount = accounts.reduce((total, account) => account.errorInformation ? total + 1 : total);
-                    const successCount = this.data.response.length - failCount;
-                    this.logger.log(`Accounts created: ${successCount} succeeded, ${failCount} failed`);
+                    await this._stateMachine.createAccounts();
+                    const accounts = this._data.response;
+                    const failCount = accounts.filter((account) => account.error).length;
+                    const successCount = this._data.response.length - failCount;
+                    this._logger.log(`Accounts created: ${successCount} succeeded, ${failCount} failed`);
+                    // if (failCount > 0) {
+                    //     throw new BackendError(`Failed to create ${failCount} account(s)`, 500);
+                    // }
                     break;
                 }
 
                 case 'succeeded':
                     // all steps complete so return
-                    this.logger.log('Accounts creation completed');
+                    this._logger.log('Accounts creation completed');
                     await this._save();
                     return this.getResponse();
 
                 case 'errored':
                     // stopped in errored state
-                    this.logger.log('State machine in errored state');
+                    this._logger.log('State machine in errored state');
                     return;
             }
 
             // now call ourslves recursively to deal with the next transition
-            this.logger.log(
-                `Account model state machine transition completed in state: ${this.stateMachine.state}. ` +
+            this._logger.log(
+                `Account model state machine transition completed in state: ${this._stateMachine.state}. ` +
                 'Handling next transition.'
             );
             return this.run();
         }
         catch(err) {
-            this.logger.log(`Error running account model: ${util.inspect(err)}`);
+            this._logger.log(`Error running account model: ${util.inspect(err)}`);
 
             // as this function is recursive, we dont want to error the state machine multiple times
-            if(this.data.currentState !== 'errored') {
-                await this._unsubscribeAll();
-
+            if(this._data.currentState !== 'errored') {
                 // err should not have a executionState property here!
                 if(err.executionState) {
-                    this.logger.log(`State machine is broken: ${util.inspect(err)}`);
+                    this._logger.log(`State machine is broken: ${util.inspect(err)}`);
                 }
                 // transition to errored state
-                await this.stateMachine.error(err);
+                await this._stateMachine.error(err);
 
                 // avoid circular ref between executionState.lastError and err
                 err.executionState = JSON.parse(JSON.stringify(this.getResponse()));

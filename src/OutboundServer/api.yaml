@@ -562,9 +562,7 @@ components:
           description: >
             Object representing the last error to occur during a transfer process. This may be a Mojaloop API error returned from another entity in the scheme
             or an object representing other types of error e.g. exceptions that may occur inside the scheme adapter.
-          oneOf:
-            - $ref: '#/components/schemas/transferError'
-            - $ref: '#/components/schemas/generalError'
+          $ref: '#/components/schemas/transferError'
 
     quote:
       type: object
@@ -831,8 +829,7 @@ components:
         currentState:
           $ref: '#/components/schemas/accountsCreationState'
         lastError:
-          type: string
-          description: String giving details of any error that occurred during processing the request.
+          $ref: '#/components/schemas/transferError'
 
   responses:
     transferSuccess:

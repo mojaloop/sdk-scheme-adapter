@@ -11,83 +11,63 @@
 
 // we use a mock standard components lib to intercept and mock certain funcs
 jest.mock('@mojaloop/sdk-standard-components');
-jest.mock('@internal/requests').BackendRequests;
 jest.mock('redis');
 
-const { init, destroy, setConfig, getConfig } = require('../../../../config.js');
-const path = require('path');
+const defaultConfig = require('./data/defaultConfig');
 const { Logger, Transports } = require('@internal/log');
 const Model = require('@internal/model').InboundTransfersModel;
-const defaultEnv = require('./data/defaultEnv');
 const mockArguments = require('./data/mockArguments');
-const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
+const { MojaloopRequests, Ilp } = require('@mojaloop/sdk-standard-components');
+const { BackendRequests } = require('@internal/requests');
 const Cache = require('@internal/cache');
 
-let logTransports;
-
 describe('inboundModel', () => {
+    let config;
     let mockArgs;
-    let model;
-    let cache;
-    let dummyCacheConfig;
-
-    // the keys are under the secrets folder that is supposed to be moved by Dockerfile
-    // so for the needs of the unit tests, we have to define the proper path manually.
-    defaultEnv.JWS_SIGNING_KEY_PATH = path.join('..', 'secrets', defaultEnv.JWS_SIGNING_KEY_PATH);
-    defaultEnv.JWS_VERIFICATION_KEYS_DIRECTORY = path.join('..', 'secrets', defaultEnv.JWS_VERIFICATION_KEYS_DIRECTORY);
-    defaultEnv.ILP_SECRET = 'mockILPSecret';
+    let logger;
 
     beforeAll(async () => {
-        logTransports = await Promise.all([Transports.consoleDir()]);
-        dummyCacheConfig = {
-            host: 'dummycachehost',
-            port: 1234,
-            logger: new Logger({ context: { app: 'outbound-model-unit-tests-cache' }, space: 4, transports: logTransports })
-        };
-
+        const logTransports = await Promise.all([Transports.consoleDir()]);
+        logger = new Logger({
+            context: { app: 'inbound-model-unit-tests' },
+            space: 4,
+            transports: logTransports,
+        });
     });
 
     beforeEach(async () => {
-        init();
-
-        await setConfig(defaultEnv);
-        const conf = getConfig();
-
-        cache = new Cache(dummyCacheConfig);
-        await cache.connect();
-
-        model = new Model({
-            cache,
-            logger: new Logger({
-                context: { app: 'inbound-model-unit-tests' },
-                space: 4,
-                transports: logTransports
-            }),
-            ...conf
-        });
+        config = JSON.parse(JSON.stringify(defaultConfig));
 
         mockArgs = JSON.parse(JSON.stringify(mockArguments));
         mockArgs.internalQuoteResponse.expiration = new Date(Date.now());
     });
 
-    afterEach(() => {
-        //we have to destroy the file system watcher or we will leave an async handle open
-        destroy();
-    });
-
     describe('quoteRequest', () => {
         let expectedQuoteResponseILP;
+        let model;
+        let cache;
 
-        beforeEach(() => {
-            //model.ilp is already mocked globally, so let's just get its mock response back.
-            expectedQuoteResponseILP = model.ilp.getQuoteResponseIlp();
+        beforeEach(async () => {
+            expectedQuoteResponseILP = Ilp.__response;
+            BackendRequests.__postQuoteRequests = jest.fn().mockReturnValue(Promise.resolve(mockArgs.internalQuoteResponse));
 
-            model.backendRequests.postQuoteRequests = jest.fn().mockReturnValue(Promise.resolve(mockArgs.internalQuoteResponse));
+            cache = new Cache({
+                host: 'dummycachehost',
+                port: 1234,
+                logger,
+            });
+            await cache.connect();
+
+            model = new Model({
+                ...config,
+                cache,
+                logger,
+            });
         });
 
-        afterEach(() => {
-            model.backendRequests.postQuoteRequests.mockClear();
+        afterEach(async () => {
             MojaloopRequests.__putQuotes.mockClear();
+            await cache.disconnect();
         });
 
         test('calls `mojaloopRequests.putQuotes` with the expected arguments.', async () => {
@@ -105,7 +85,7 @@ describe('inboundModel', () => {
             // Make sure to clear it at the end of the test case.
             const currentTime = new Date().getTime();
             const dateSpy = jest.spyOn(Date.prototype, 'getTime').mockImplementation(() => currentTime);
-            const expectedExpirationDate = new Date(currentTime + (model.expirySeconds * 1000)).toISOString();
+            const expectedExpirationDate = new Date(currentTime + (config.expirySeconds * 1000)).toISOString();
 
             delete mockArgs.internalQuoteResponse.expiration;
 
@@ -124,20 +104,33 @@ describe('inboundModel', () => {
     });
 
     describe('transferPrepare:', () => {
-        beforeEach(() => {
-            model.backendRequests.postTransfers = jest.fn().mockReturnValue(Promise.resolve({}));
-            model._mojaloopRequests.putTransfers = jest.fn().mockReturnValue(Promise.resolve({}));
+        let cache;
+
+        beforeEach(async () => {
+            BackendRequests.__postTransfers = jest.fn().mockReturnValue(Promise.resolve({}));
+            MojaloopRequests.__putTransfers = jest.fn().mockReturnValue(Promise.resolve({}));
+
+            cache = new Cache({
+                host: 'dummycachehost',
+                port: 1234,
+                logger,
+            });
+            await cache.connect();
         });
 
-        afterEach(() => {
+        afterEach(async () => {
             MojaloopRequests.__putTransfersError.mockClear();
-            model.backendRequests.postTransfers.mockClear();
-            model._mojaloopRequests.putTransfers.mockClear();
+            await cache.disconnect();
         });
 
         test('fail on quote `expiration` deadline.', async () => {
-            model.rejectTransfersOnExpiredQuotes = true;
             const TRANSFER_ID = 'fake-transfer-id';
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+                rejectTransfersOnExpiredQuotes: true,
+            });
             cache.set(`quote_${TRANSFER_ID}`, {
                 mojaloopResponse: {
                     expiration: new Date(new Date().getTime() - 1000).toISOString(),
@@ -156,7 +149,6 @@ describe('inboundModel', () => {
         });
 
         test('fail on transfer without quote.', async () => {
-            model.allowTransferWithoutQuote = false;
             const TRANSFER_ID = 'without_quote-transfer-id';
             const args = {
                 transferId: TRANSFER_ID,
@@ -167,6 +159,13 @@ describe('inboundModel', () => {
                 ilpPacket: 'mockBase64encodedIlpPacket',
                 condition: 'mockGeneratedCondition'
             };
+
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+                allowTransferWithoutQuote: false,
+            });
 
             await model.prepareTransfer(args, mockArgs.fspId);
 
@@ -177,7 +176,6 @@ describe('inboundModel', () => {
         });
 
         test('pass on transfer without quote.', async () => {
-            model.allowTransferWithoutQuote = true;
             const TRANSFER_ID = 'without_quote-transfer-id';
             const args = {
                 transferId: TRANSFER_ID,
@@ -189,11 +187,18 @@ describe('inboundModel', () => {
                 condition: 'mockGeneratedCondition'
             };
 
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+                allowTransferWithoutQuote: true,
+            });
+
             await model.prepareTransfer(args, mockArgs.fspId);
 
             expect(MojaloopRequests.__putTransfersError).toHaveBeenCalledTimes(0);
-            expect(model.backendRequests.postTransfers).toHaveBeenCalledTimes(1);
-            expect(model._mojaloopRequests.putTransfers).toHaveBeenCalledTimes(1);
+            expect(BackendRequests.__postTransfers).toHaveBeenCalledTimes(1);
+            expect(MojaloopRequests.__putTransfers).toHaveBeenCalledTimes(1);
         });
     });
 });
