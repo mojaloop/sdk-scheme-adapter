@@ -10,8 +10,7 @@
 
 'use strict';
 
-const { setConfig, getConfig } = require('./config.js');
-
+const config = require('./config');
 const InboundServer = require('./InboundServer');
 const OutboundServer = require('./OutboundServer');
 const OAuthTestServer = require('./OAuthTestServer');
@@ -86,10 +85,7 @@ if(require.main === module) {
     (async () => {
         // this module is main i.e. we were started as a server;
         // not used in unit test or "require" scenarios
-        await setConfig(process.env);
-        const conf = getConfig();
-
-        const svr = new Server(conf);
+        const svr = new Server(config);
 
         // handle SIGTERM to exit gracefully
         process.on('SIGTERM', async () => {
