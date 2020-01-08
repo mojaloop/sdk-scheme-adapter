@@ -276,7 +276,6 @@ const putPartiesByTypeAndId = async (ctx) => {
 
     // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(`${idType}_${idValue}`, ctx.request.body);
-
     ctx.response.status = 200;
 };
 

@@ -24,7 +24,7 @@ const handleError = (method, err, ctx, stateField) => {
     ctx.response.body = {
         message: err.message || 'Unspecified error',
         [stateField]: err[stateField] || {},
-        statusCode: err.httpStatusCode || 500
+        statusCode: (err.httpStatusCode || 500).toString()
     };
     if(err[stateField]
         && err[stateField].lastError

@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
-  "version": "8.6.8",
+  "version": "8.8.0",
   "description": "An adapter for connecting to Mojaloop API enabled switches.",
   "main": "index.js",
   "scripts": {
@@ -27,19 +27,23 @@
     "@internal/validate": "file:lib/validate",
     "@mojaloop/sdk-standard-components": "^8.6.7",
     "co-body": "^6.0.0",
-    "dotenv": "^6.2.0",
+    "dotenv": "^8.2.0",
+    "env-var": "^5.2.0",
     "js-yaml": "^3.13.1",
-    "koa": "^2.6.2",
-    "koa-body": "^4.0.6",
+    "koa": "^2.11.0",
+    "koa-body": "^4.1.1",
     "koa2-oauth-server": "^1.0.0",
-    "node-fetch": "^2.3.0",
-    "uuid": "^3.3.2"
+    "node-fetch": "^2.6.0",
+    "uuidv4": "^6.0.0"
   },
   "devDependencies": {
-    "eslint": "^5.3.0",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-plugin-import": "^2.17.1",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.19.1",
     "jest": "^24.9.0",
-    "jest-junit": "^10.0.0"
+    "jest-junit": "^10.0.0",
+    "openapi-response-validator": "^4.0.0",
+    "redis-mock": "^0.47.0",
+    "supertest": "^4.0.2"
   }
 }

@@ -632,7 +632,7 @@ paths:
     get:
       description: >-
         The HTTP request GET /parties// (or GET /parties///) is used to lookup
-        information regarding the requested Party, defined by ,  and optionally 
+        information regarding the requested Party, defined by ,  and optionally
         (for example, GET /parties/MSISDN/123456789, or GET
         /parties/BUSINESS/shoecompany/employee1).
       summary: PartiesByTypeAndID
@@ -779,7 +779,7 @@ paths:
     get:
       description: >-
         The HTTP request GET /parties// (or GET /parties///) is used to lookup
-        information regarding the requested Party, defined by ,  and optionally 
+        information regarding the requested Party, defined by ,  and optionally
         (for example, GET /parties/MSISDN/123456789, or GET
         /parties/BUSINESS/shoecompany/employee1).
       summary: PartiesSubIdByTypeAndID
@@ -2446,7 +2446,7 @@ paths:
         If the server is unable to find or create a bulk transfer, or another
         processing error occurs, the error callback PUT /bulkTransfers//error is
         used. The  in the URI should contain the bulkTransferId that was used
-        for the creation of the bulk transfer (POST /bulkTransfers), or the 
+        for the creation of the bulk transfer (POST /bulkTransfers), or the
         that was used in the GET /bulkTransfers/.
       summary: BulkTransfersErrorByID
       tags:
@@ -3168,7 +3168,7 @@ components:
         restricted by a regular expression for interoperability reasons. The
         format is according to ISO 8601, expressed in a combined date, time and
         time zone format. A more readable version of the format is
-        yyyy-MM-ddTHH:mm:ss.SSS[-HH:MM]. Examples - 
+        yyyy-MM-ddTHH:mm:ss.SSS[-HH:MM]. Examples -
         "2016-05-24T08:38:08.699-04:00", "2016-05-24T08:38:08.699Z" (where Z
         indicates Zulu time zone, same as UTC).
     ErrorCode:

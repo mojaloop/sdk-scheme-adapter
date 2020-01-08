@@ -19,28 +19,28 @@ const redis = require('redis');
  */
 class Cache {
     constructor(config) {
-        this.config = config;
+        this._config = config;
 
         if(!config.host || !config.port || !config.logger) {
             throw new Error('Cache config requires host, port and logger properties');
         }
 
-        this.logger = this.config.logger;
+        this._logger = config.logger;
 
         // a redis connection to handle get, set and publish operations
-        this.client = null;
+        this._client = null;
 
         // a redis connection to handle subscribe operations and published message routing
         // Note that REDIS docs suggest a client that is in SUBSCRIBE mode
         // should not have any other commands executed against it.
         // see: https://redis.io/topics/pubsub
-        this.subscriptionClient = null;
+        this._subscriptionClient = null;
 
         // a 'hashmap like' callback map
-        this.callbacks = {};
+        this._callbacks = {};
 
         // tag each callback with an Id so we can gracefully unsubscribe and not leak resources
-        this.callbackId = 0;
+        this._callbackId = 0;
     }
 
 
@@ -52,11 +52,26 @@ class Cache {
      * See: https://redis.io/topics/pubsub
      */
     async connect() {
-        this.client = await this._getClient();
-        this.subscriptionClient = await this._getClient();
+        if (this._connected) {
+            throw new Error('already connected');
+        }
+        this._connected = true;
+        this._client = await this._getClient();
+        this._subscriptionClient = await this._getClient();
 
         // hook up our sub message handler
-        this.subscriptionClient.on('message', this._onMessage.bind(this));
+        this._subscriptionClient.on('message', this._onMessage.bind(this));
+    }
+
+    async disconnect() {
+        if (!this._connected) {
+            return;
+        }
+        await Promise.all([
+            new Promise(resolve => this._client.quit(resolve)),
+            new Promise(resolve => this._subscriptionClient.quit(resolve))
+        ]);
+        this._connected = false;
     }
 
 
@@ -69,24 +84,24 @@ class Cache {
      */
     async subscribe(channel, callback) {
         return new Promise((resolve, reject) => {
-            this.subscriptionClient.subscribe(channel, (err) => {
+            this._subscriptionClient.subscribe(channel, (err) => {
                 if(err) {
-                    this.logger.log(`Error subscribing to channel ${channel}: ${err.stack || util.inspect(err)}`);
+                    this._logger.log(`Error subscribing to channel ${channel}: ${err.stack || util.inspect(err)}`);
                     return reject(err);
                 }
 
-                this.logger.log(`Subscribed to cache pub/sub channel ${channel}`);
+                this._logger.log(`Subscribed to cache pub/sub channel ${channel}`);
 
-                if(!this.callbacks[channel]) {
+                if(!this._callbacks[channel]) {
                     // if this is the first subscriber for this channel we init the hashmap
-                    this.callbacks[channel] = {};
+                    this._callbacks[channel] = {};
                 }
 
                 // get an id for this callback
-                const id = this.callbackId++;
+                const id = this._callbackId++;
 
                 // store the callback against the channel/id
-                this.callbacks[channel][id] = callback;
+                this._callbacks[channel][id] = callback;
 
                 // return the id we gave the callback
                 return resolve(id);
@@ -103,13 +118,13 @@ class Cache {
      */
     async unsubscribe(channel, callbackId) {
         return new Promise((resolve, reject) => {
-            if(this.callbacks[channel] && this.callbacks[channel][callbackId]) {
-                delete this.callbacks[channel][callbackId];
-                this.logger.log(`Cache unsubscribed callbackId ${callbackId} from channel ${channel}`);
+            if(this._callbacks[channel] && this._callbacks[channel][callbackId]) {
+                delete this._callbacks[channel][callbackId];
+                this._logger.log(`Cache unsubscribed callbackId ${callbackId} from channel ${channel}`);
 
-                if(Object.keys(this.callbacks[channel]).length < 1) {
+                if(Object.keys(this._callbacks[channel]).length < 1) {
                     //no more callbacks for this channel
-                    delete this.callbacks[channel];
+                    delete this._callbacks[channel];
                 }
 
                 return resolve();
@@ -117,7 +132,7 @@ class Cache {
 
             // we should not be asked to unsubscribe from a subscription we do not have. Raise this as a promise
             // rejection so it can be spotted. It may indiate a logic bug somewhere else
-            this.logger.log(`Cache not subscribed to channel ${channel} for callbackId ${callbackId}`);
+            this._logger.log(`Cache not subscribed to channel ${channel} for callbackId ${callbackId}`);
             return reject(new Error(`Channel ${channel} does not have a callback with id ${callbackId} subscribed`));
         });
     }
@@ -127,14 +142,14 @@ class Cache {
      * Handler for published messages
      */
     async _onMessage(channel, msg) {
-        if(this.callbacks[channel]) {
+        if(this._callbacks[channel]) {
             // we have some callbacks to make
-            Object.keys(this.callbacks[channel]).forEach(k => {
-                this.logger.log(`Cache message received on channel ${channel}. Making callback with id ${k}`);
+            Object.keys(this._callbacks[channel]).forEach(k => {
+                this._logger.log(`Cache message received on channel ${channel}. Making callback with id ${k}`);
 
                 // call the callback with the channel name, message and callbackId...
                 // ...(which is useful for unsubscribe)
-                this.callbacks[channel][k](channel, msg, k);
+                this._callbacks[channel][k](channel, msg, k);
             });
         }
     }
@@ -147,15 +162,15 @@ class Cache {
      * */
     async _getClient() {
         return new Promise((resolve, reject) => {
-            const client = redis.createClient(this.config);
+            const client = redis.createClient(this._config);
 
             client.on('error', (err) => {
-                this.logger.push({ err }).log('Error from REDIS client getting subscriber');
+                this._logger.push({ err }).log('Error from REDIS client getting subscriber');
                 return reject(err);
             });
 
             client.on('ready', () => {
-                this.logger.log(`Connected to REDIS at: ${this.config.host}:${this.config.port}`);
+                this._logger.log(`Connected to REDIS at: ${this._config.host}:${this._config.port}`);
                 return resolve(client);
             });
         });
@@ -177,13 +192,13 @@ class Cache {
             }
 
             // note that we publish on the non-SUBSCRIBE connection
-            this.client.publish(channelName, value, (err, replies) => {
+            this._client.publish(channelName, value, (err, replies) => {
                 if(err) {
-                    this.logger.push({ channelName, err }).log(`Error publishing to channel ${channelName}`);
+                    this._logger.push({ channelName, err }).log(`Error publishing to channel ${channelName}`);
                     return reject(err);
                 }
 
-                this.logger.push({ channelName, value }).log(`Published to channel ${channelName}`);
+                this._logger.push({ channelName, value }).log(`Published to channel ${channelName}`);
                 return resolve(replies);
             });
         });
@@ -203,13 +218,13 @@ class Cache {
                 value = JSON.stringify(value);
             }
 
-            this.client.set(key, value, (err, replies) => {
+            this._client.set(key, value, (err, replies) => {
                 if(err) {
-                    this.logger.push({ key, value, err }).log(`Error setting cache key: ${key}`);
+                    this._logger.push({ key, value, err }).log(`Error setting cache key: ${key}`);
                     return reject(err);
                 }
 
-                this.logger.push({ key, value, replies }).log(`Set cache key: ${key}`);
+                this._logger.push({ key, value, replies }).log(`Set cache key: ${key}`);
                 return resolve(replies);
             });
         });
@@ -222,20 +237,20 @@ class Cache {
      */
     async get(key) {
         return new Promise((resolve, reject) => {
-            this.client.get(key, (err, value) => {
+            this._client.get(key, (err, value) => {
                 if(err) {
-                    this.logger.push({ key, err }).log(`Error getting cache key: ${key}`);
+                    this._logger.push({ key, err }).log(`Error getting cache key: ${key}`);
                     return reject(err);
                 }
 
-                this.logger.push({ key, value }).log(`Got cache key: ${key}`);
+                this._logger.push({ key, value }).log(`Got cache key: ${key}`);
 
                 if(typeof(value) === 'string') {
                     try {
                         value = JSON.parse(value);
                     }
                     catch(err) {
-                        this.logger.push({ err }).log('Error parsing JSON cache value');
+                        this._logger.push({ err }).log('Error parsing JSON cache value');
                         return reject(err);
                     }
                 }
