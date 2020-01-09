@@ -5,8 +5,9 @@
     "idValue": "123456789"
   },
   "to": {
-    "idType": "MSISDN",
+    "idType": "PERSONAL_ID",
     "idValue": "987654321",
+    "idSubValue": "PASSPORT",
     "fspId": "sim",
     "firstName": "John",
     "middleName": "Someone",

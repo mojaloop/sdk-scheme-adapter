@@ -28,8 +28,13 @@ const payeeParty = require('./data/payeeParty');
 const quoteResponseTemplate = require('./data/quoteResponse');
 const transferFulfil = require('./data/transferFulfil');
 
+const genPartyId = (party) => {
+    const { partyIdType, partyIdentifier, partySubIdOrType } = party.party.partyIdInfo;
+    return `${partyIdType}_${partyIdentifier}` + (partySubIdOrType ? `_${partySubIdOrType}` : '');
+};
+
 // util function to simulate a party resolution subscription message on a cache client
-const emitPartyCacheMessage = (cache, party) => cache.publish(`${party.party.partyIdInfo.partyIdType}_${party.party.partyIdInfo.partyIdentifier}`, JSON.stringify(party));
+const emitPartyCacheMessage = (cache, party) => cache.publish(genPartyId(party), JSON.stringify(party));
 
 // util function to simulate a quote response subscription message on a cache client
 const emitQuoteResponseCacheMessage = (cache, quoteId, quoteResponse) => cache.publish(`qt_${quoteId}`, JSON.stringify(quoteResponse));
@@ -643,7 +648,7 @@ describe('outboundModel', () => {
 
         MojaloopRequests.__getParties = jest.fn(() => {
             // simulate a callback with the resolved party
-            cache.publish(`${payeeParty.party.partyIdInfo.partyIdType}_${payeeParty.party.partyIdInfo.partyIdentifier}`, JSON.stringify(expectError));
+            cache.publish(genPartyId(payeeParty), JSON.stringify(expectError));
             return Promise.resolve();
         });
 

@@ -164,7 +164,8 @@ class OutboundTransfersModel {
         // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
             // listen for resolution events on the payee idType and idValue
-            const payeeKey = `${this.data.to.idType}_${this.data.to.idValue}`;
+            const payeeKey = `${this.data.to.idType}_${this.data.to.idValue}`
+              + (this.data.to.idSubValue ? `_${this.data.to.idSubValue}` : '');
 
             // hook up a subscriber to handle response messages
             const subId = await this._cache.subscribe(payeeKey, (cn, msg, subId) => {
@@ -213,6 +214,11 @@ class OutboundTransfersModel {
                         return reject(err);
                     }
 
+                    if(payee.partyIdInfo.partySubIdOrType !== this.data.to.idSubValue) {
+                        const err = new Error(`Expecting resolved payee party subTypeId to be ${this.data.to.idSubValue} but got ${payee.partyIdInfo.partySubIdOrType}`);
+                        return reject(err);
+                    }
+
                     if(!payee.partyIdInfo.fspId) {
                         const err = new Error(`Expecting resolved payee party to have an FSPID: ${util.inspect(payee.partyIdInfo)}`);
                         return reject(err);
@@ -253,7 +259,8 @@ class OutboundTransfersModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a GET /parties request to the switch
             try {
-                const res = await this._requests.getParties(this.data.to.idType, this.data.to.idValue);
+                const res = await this._requests.getParties(this.data.to.idType, this.data.to.idValue,
+                    this.data.to.idSubValue);
                 this._logger.push({ peer: res }).log('Party lookup sent to peer');
             }
             catch(err) {
