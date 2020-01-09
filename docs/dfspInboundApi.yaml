@@ -429,11 +429,9 @@ components:
       description: Identifier of the party.
 
     idSubValue:
-      oneOf:
-        - $ref: '#/components/schemas/personalIdType'
-        - type: string
-          minLength: 1
-          maxLength: 128
+      type: string
+      minLength: 1
+      maxLength: 128
       description: Either a sub-identifier of a `{idValue}`, or a sub-type of the `{idType}`, normally a `{personalIdType}`
 
     initiator:
@@ -739,9 +737,7 @@ components:
       in: path
       required: true
       schema:
-        oneOf:
-          - $ref: '#/components/schemas/personalIdType'
-          - type: string
-            minLength: 1
-            maxLength: 128
+        type: string
+        minLength: 1
+        maxLength: 128
       description: Either a sub-identifier of a `{idValue}`, or a sub-type of the `{idType}`, normally a `{personalIdType}`
