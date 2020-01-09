@@ -1,8 +1,9 @@
 {
   "party": {
     "partyIdInfo": {
-      "partyIdType": "MSISDN",
+      "partyIdType": "PERSONAL_ID",
       "partyIdentifier": "123456789",
+      "partySubIdOrType": "PASSPORT",
       "fspId": "MobileMoney"
     },
     "personalInfo": {

@@ -14,9 +14,7 @@ const request = require('request-promise-native');
 
 const http = require('http');
 
-const common = require('./common.js');
-const buildUrl = common.buildUrl;
-const throwOrJson = common.throwOrJson;
+const { buildUrl, throwOrJson, HTTPResponseError } = require('./common');
 
 
 /**
@@ -39,12 +37,14 @@ class BackendRequests {
 
 
     /**
-     * Executes a GET /parties request for the specified identifier type and identifier 
+     * Executes a GET /parties request for the specified identifier type and identifier
      *
      * @returns {object} - JSON response body if one was received
      */
-    async getParties(idType, idValue) {
-        return this._get(`parties/${idType}/${idValue}`, 'parties');
+    async getParties(idType, idValue, idSubValue) {
+        const url = `parties/${idType}/${idValue}`
+          + (idSubValue ? `/${idSubValue}` : '');
+        return this._get(url, 'parties');
     }
 
 
@@ -150,6 +150,6 @@ class BackendRequests {
 
 
 module.exports = {
-    BackendRequests: BackendRequests,
-    HTTPResponseError: common.HTTPResponseError
+    BackendRequests,
+    HTTPResponseError,
 };

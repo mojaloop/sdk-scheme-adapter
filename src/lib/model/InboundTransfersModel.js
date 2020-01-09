@@ -61,24 +61,24 @@ class InboundTransfersModel {
     /**
      * Queries the backend API for the specified party and makes a callback to the originator with our dfspId if found
      */
-    async getParticipantsByTypeAndId(idType, idValue, sourceFspId) {
+    async getParticipants(idType, idValue, idSubValue, sourceFspId) {
         try {
             // make a call to the backend to resolve the party lookup
-            const response = await this._backendRequests.getParties(idType, idValue);
+            const response = await this._backendRequests.getParties(idType, idValue, idSubValue);
 
             if(!response) {
                 return 'No response from backend';
             }
 
             // make a callback to the source fsp with our dfspId indicating we own the party
-            return this._mojaloopRequests.putParticipants(idType, idValue, { fspId: this._dfspId },
+            return this._mojaloopRequests.putParticipants(idType, idValue, idSubValue, { fspId: this._dfspId },
                 sourceFspId);
         }
         catch(err) {
-            this._logger.push({ err }).log('Error in getParticipantsByTypeAndId');
+            this._logger.push({ err }).log('Error in getParticipants');
             const mojaloopError = await this._handleError(err);
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
-            return await this._mojaloopRequests.putParticipantsError(idType, idValue,
+            return this._mojaloopRequests.putParticipantsError(idType, idValue, idSubValue,
                 mojaloopError, sourceFspId);
         }
     }
@@ -87,10 +87,10 @@ class InboundTransfersModel {
     /**
      * Queries the backend API for the specified party and makes a callback to the originator with the result
      */
-    async getParties(idType, idValue, sourceFspId) {
+    async getParties(idType, idValue, idSubValue, sourceFspId) {
         try {
             // make a call to the backend to resolve the party lookup
-            const response = await this._backendRequests.getParties(idType, idValue);
+            const response = await this._backendRequests.getParties(idType, idValue, idSubValue);
 
             if(!response) {
                 return 'No response from backend';
@@ -102,13 +102,13 @@ class InboundTransfersModel {
             };
 
             // make a callback to the source fsp with the party info
-            return this._mojaloopRequests.putParties(idType, idValue, mlParty, sourceFspId);
+            return this._mojaloopRequests.putParties(idType, idValue, idSubValue, mlParty, sourceFspId);
         }
         catch(err) {
             this._logger.push({ err }).log('Error in getParties');
             const mojaloopError = await this._handleError(err);
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
-            return await this._mojaloopRequests.putPartiesError(idType, idValue,
+            return this._mojaloopRequests.putPartiesError(idType, idValue, idSubValue,
                 mojaloopError, sourceFspId);
         }
     }

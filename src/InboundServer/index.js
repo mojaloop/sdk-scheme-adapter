@@ -68,7 +68,7 @@ class InboundServer {
         this._api.use(middlewares.createLogger(this._logger, sharedState));
 
         this._api.use(middlewares.createRequestValidator(validator));
-        this._api.use(router(handlers.map));
+        this._api.use(router(handlers));
         this._api.use(middlewares.createResponseBodyHandler());
 
         this._server = this._createServer();
