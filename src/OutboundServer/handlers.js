@@ -144,18 +144,16 @@ const healthCheck = async (ctx) => {
 };
 
 module.exports = {
-    map: {
-        '/': {
-            get: healthCheck
-        },
-        '/transfers': {
-            post: postTransfers
-        },
-        '/transfers/{transferId}': {
-            put: putTransfers
-        },
-        '/accounts': {
-            post: postAccounts
-        },
-    }
+    '/': {
+        get: healthCheck
+    },
+    '/transfers': {
+        post: postTransfers
+    },
+    '/transfers/{transferId}': {
+        put: putTransfers
+    },
+    '/accounts': {
+        post: postAccounts
+    },
 };

@@ -32,8 +32,8 @@ const getParticipantsByTypeAndId = async (ctx) => {
             const sourceFspId = ctx.request.headers['fspiop-source'];
 
             // use the model to handle the request
-            const response = await model.getParticipantsByTypeAndId(ctx.state.path.params.Type,
-                ctx.state.path.params.ID, sourceFspId);
+            const response = await model.getParticipants(ctx.state.path.params.Type,
+                ctx.state.path.params.ID, ctx.state.path.params.SubId, sourceFspId);
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled GET /participants/{idType}/{idValue}');
@@ -78,7 +78,8 @@ const getPartiesByTypeAndId = async (ctx) => {
             const sourceFspId = ctx.request.headers['fspiop-source'];
 
             // use the model to handle the request
-            const response = await model.getParties(ctx.state.path.params.Type, ctx.state.path.params.ID, sourceFspId);
+            const response = await model.getParties(ctx.state.path.params.Type, ctx.state.path.params.ID,
+                ctx.state.path.params.SubId, sourceFspId);
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled GET /parties/{idType}/{idValue} request');
@@ -273,9 +274,11 @@ const putPartiesByTypeAndId = async (ctx) => {
 
     const idType = ctx.state.path.params.Type;
     const idValue = ctx.state.path.params.ID;
+    const idSubValue = ctx.state.path.params.SubId;
 
     // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`${idType}_${idValue}`, ctx.request.body);
+    const cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
+    await ctx.state.cache.publish(cacheId, ctx.request.body);
     ctx.response.status = 200;
 };
 
@@ -345,12 +348,14 @@ const putPartiesByTypeAndIdError = async(ctx) => {
 
     const idType = ctx.state.path.params.Type;
     const idValue = ctx.state.path.params.ID;
+    const idSubValue = ctx.state.path.params.SubId;
 
     // publish an event onto the cache for subscribers to action
     // note that we publish the event the same way we publish a success PUT
     // the subscriber will notice the body contains an errorInformation property
     // and recognise it as an error response
-    await ctx.state.cache.publish(`${idType}_${idValue}`, ctx.request.body);
+    const cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
+    await ctx.state.cache.publish(cacheId, ctx.request.body);
 
     ctx.response.status = 200;
     ctx.response.body = '';
@@ -459,7 +464,7 @@ const getCallbackById = async(ctx) => {
 };
 
 
-const map = {
+module.exports = {
     '/': {
         get: healthCheck
     },
@@ -467,6 +472,10 @@ const map = {
         put: putParticipantsById
     },
     '/participants/{Type}/{ID}': {
+        put: putParticipantsByTypeAndId,
+        get: getParticipantsByTypeAndId
+    },
+    '/participants/{Type}/{SubId}/{ID}': {
         put: putParticipantsByTypeAndId,
         get: getParticipantsByTypeAndId
     },
@@ -478,7 +487,15 @@ const map = {
         get: getPartiesByTypeAndId,
         put: putPartiesByTypeAndId
     },
+    '/parties/{Type}/{ID}/{SubId}': {
+        post: postPartiesByTypeAndId,
+        get: getPartiesByTypeAndId,
+        put: putPartiesByTypeAndId
+    },
     '/parties/{Type}/{ID}/error': {
+        put: putPartiesByTypeAndIdError
+    },
+    '/parties/{Type}/{ID}/{SubId}/error': {
         put: putPartiesByTypeAndIdError
     },
     '/quotes': {
@@ -505,9 +522,4 @@ const map = {
     '/callbacks/{ID}': {
         get: getCallbackById
     }
-};
-
-
-module.exports = {
-    map
 };

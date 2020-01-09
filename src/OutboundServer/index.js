@@ -59,7 +59,7 @@ class OutboundServer {
         this._api.use(middlewares.createLogger(this._logger, sharedState));
 
         this._api.use(middlewares.createRequestValidator(validator));
-        this._api.use(router(handlers.map));
+        this._api.use(router(handlers));
 
         this._server = this._createServer();
         return this._server;

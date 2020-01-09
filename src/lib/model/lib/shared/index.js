@@ -21,6 +21,7 @@ const internalPartyToMojaloopParty = (internal, fspId) => {
         partyIdInfo: {
             partyIdType: internal.idType,
             partyIdentifier: internal.idValue,
+            partySubIdOrType: internal.idSubValue,
             fspId: fspId
         }
     };
@@ -61,6 +62,7 @@ const mojaloopPartyToInternalParty = (external) => {
     if(external.partyIdInfo) {
         internal.idType = external.partyIdInfo.partyIdType;
         internal.idValue = external.partyIdInfo.partyIdentifier;
+        internal.idSubValue = external.partyIdInfo.partySubIdOrType;
 
         // Note: we dont map fspid to internal transferParty object
     }
