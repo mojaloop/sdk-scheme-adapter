@@ -145,7 +145,7 @@ jobs:
           name: Execute unit tests
           command: cd src && npm run test
       - store_test_results:
-          path: /home/circleci/project/src/junit.xml
+          path: /home/circleci/project/src/
       - store_artifacts:
           path: /home/circleci/project/src/junit.xml
 
