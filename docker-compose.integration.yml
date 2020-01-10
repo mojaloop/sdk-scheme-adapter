@@ -1,4 +1,7 @@
 version: '3'
+volumes:
+  node_modules:
+
 services:
   redis:
     image: "redis:5.0.4-alpine"
@@ -10,7 +13,9 @@ services:
       context: .
     env_file: ./src/test/config/integration.env
     volumes: 
-      - ./src/test:/src/test
+      # - ./src/test:/src/test
+      - ./src:/src
+      - node_modules:/src/node_modules
     depends_on:
       - redis 
     command:
