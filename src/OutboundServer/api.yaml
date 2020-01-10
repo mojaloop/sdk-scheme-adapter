@@ -407,31 +407,31 @@ components:
         - OTHER_ID
       description: Below are the allowed values for the enumeration.
 
-        - PASSPORT - Apassport number isused in reference to a party.
+        - PASSPORT - A passport number is used in reference to a party.
 
-        - NATIONAL_REGISTRATION - Anational registration number isused in reference to a party.
+        - NATIONAL_REGISTRATION - A national registration number is used in reference to a party.
 
-        - DRIVING_LICENSE - Adriving license isused in reference to a party.
+        - DRIVING_LICENSE - A driving license is used in reference to a party.
 
-        - ALIEN_REGISTRATION - An alien registration number isused in reference to a party.
+        - ALIEN_REGISTRATION - An alien registration number is used in reference to a party.
 
-        - NATIONAL_ID_CARD - Anational ID card number isused in reference to a party.
+        - NATIONAL_ID_CARD - A national ID card number is used in reference to a party.
 
-        - EMPLOYER_ID - Atax identification number isused in reference to a party.
+        - EMPLOYER_ID - A tax identification number is used in reference to a party.
 
-        - TAX_ID_NUMBER - Atax identification number isused in reference to a party.
+        - TAX_ID_NUMBER - A tax identification number is used in reference to a party.
 
-        - SENIOR_CITIZENS_CARD - Asenior citizens card number isused in reference to a party.
+        - SENIOR_CITIZENS_CARD - A senior citizens card number is used in reference to a party.
 
-        - MARRIAGE_CERTIFICATE - Amarriage certificate number isused in reference to a party.
+        - MARRIAGE_CERTIFICATE - A marriage certificate number is used in reference to a party.
 
-        - HEALTH_CARD - Ahealth card number isused in reference to a party.
+        - HEALTH_CARD - A health card number is used in reference to a party.
 
-        - VOTERS_ID - Avoter’s identification number isused in reference to a party.
+        - VOTERS_ID - A voter’s identification number is used in reference to a party.
 
-        - UNITED_NATIONS - An UN (United Nations) number isused in reference to a party.
+        - UNITED_NATIONS - An UN (United Nations) number is used in reference to a party.
 
-        - OTHER_ID - Any other type of identification type number isused in reference to a party.
+        - OTHER_ID - Any other type of identification type number is used in reference to a party.
 
 
     money:
