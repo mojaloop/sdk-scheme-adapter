@@ -131,3 +131,27 @@ _Note that these instructions are for Linux based systems. For Mac and/or Window
 1. Speak to your switch operator or use your simulator to test the inbound (receiving money) API.
 
 You can now examine the code of the Mock DFSP backend to understand how it implements the scheme-adapter simplified inbound API.
+
+
+## Testing
+
+### Unit Tests
+
+Unit tests can be found in the `./src/test/unit` directory, and follow the same directory structure of the main project.
+
+Run the unit tests with the following (from `./src` dir):
+
+```bash
+npm run test
+```
+
+### Integration Tests
+
+```bash
+docker-compose -f docker-compose.yml -f docker-compose.integration.yml up -d
+# TODO: wait for containers to be up and healthy. TODO: health check
+docker exec -it scheme-adapter-int sh -c 'npm run test:int'
+
+# copy results out
+docker cp scheme-adapter-int:/src/junit.xml .
+```

@@ -1,0 +1,22 @@
+version: '3'
+services:
+  redis:
+    image: "redis:5.0.4-alpine"
+
+  # non-server running container to launch tests from
+  scheme-adapter-int:
+    container_name: scheme-adapter-int
+    build:
+      context: .
+    env_file: ./src/test/config/integration.env
+    volumes: 
+      - ./src/test:/src/test
+    depends_on:
+      - redis 
+    command:
+      - 'tail -f /dev/null'
+    entrypoint: 
+      - sh 
+      - -c
+    
+      

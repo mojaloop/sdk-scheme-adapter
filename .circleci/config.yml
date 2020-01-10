@@ -149,6 +149,28 @@ jobs:
       - store_artifacts:
           path: /home/circleci/project/src/junit.xml
 
+  test-integration:
+    machine: true
+    <<: *defaults_working_directory
+    steps:
+      - checkout
+      - run:
+          name: Start docker-compose
+          command: docker-compose -f docker-compose.yml -f docker-compose.integration.yml up -d
+
+      # TODO: wait for docker containers to be up!
+      - run:
+          name: Execute integration tests
+          command: docker exec -it scheme-adapter-int sh -c 'npm run test:int'
+      - run:
+          name: Copy results from docker
+          command: docker cp scheme-adapter-int:/src/junit.xml .
+      - store_test_results:
+          path: /home/circleci/project/junit.xml
+      - store_artifacts:
+          path: /home/circleci/project/junit.xml
+
+
   lint:
     <<: *defaults_working_directory
     <<: *defaults_docker_node

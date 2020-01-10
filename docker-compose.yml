@@ -1,0 +1,16 @@
+version: '3'
+services:
+  redis:
+    image: "redis:5.0.4-alpine"
+
+  scheme-adapter:
+    build:
+      context: .
+    env_file: ./src/test/config/integration.env
+    ports:
+      - "4000:4000"
+      - "4001:4001"
+    depends_on:
+      - redis 
+    
+      
