@@ -24,7 +24,7 @@ const handleError = (method, err, ctx, stateField) => {
     ctx.response.body = {
         message: err.message || 'Unspecified error',
         [stateField]: err[stateField] || {},
-        statusCode: err.httpStatusCode || 500
+        statusCode: (err.httpStatusCode || 500).toString()
     };
     if(err[stateField]
         && err[stateField].lastError
@@ -144,18 +144,16 @@ const healthCheck = async (ctx) => {
 };
 
 module.exports = {
-    map: {
-        '/': {
-            get: healthCheck
-        },
-        '/transfers': {
-            post: postTransfers
-        },
-        '/transfers/{transferId}': {
-            put: putTransfers
-        },
-        '/accounts': {
-            post: postAccounts
-        },
-    }
+    '/': {
+        get: healthCheck
+    },
+    '/transfers': {
+        post: postTransfers
+    },
+    '/transfers/{transferId}': {
+        put: putTransfers
+    },
+    '/accounts': {
+        post: postAccounts
+    },
 };

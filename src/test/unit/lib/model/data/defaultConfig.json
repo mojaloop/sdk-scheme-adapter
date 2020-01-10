@@ -6,7 +6,7 @@
   "alsEndpoint": "127.0.0.1:6500",
   "dfspId": "mojaloop-sdk",
   "ilpSecret": "mojaloop-sdk",
-  "checkIlp": false,
+  "checkIlp": true,
   "expirySeconds": 60,
   "requestProcessingTimeoutSeconds": 30,
   "autoAcceptQuotes": true,
@@ -30,9 +30,9 @@
       }
     }
   },
-  "validateInboundJws": false,
+  "validateInboundJws": true,
   "validateInboundPutPartiesJws": false,
-  "jwsSign": false,
+  "jwsSign": true,
   "jwsSignPutParties": false,
   "jwsSigningKey": "/jwsSigningKey.key",
   "jwsVerificationKeysDirectory": null,
@@ -41,8 +41,6 @@
     "port": 6379
   },
   "enableTestFeatures": false,
-  "testingDisableWSO2AuthStart": true,
-  "testingDisableServerStart": true,
   "oauthTestServer": {
     "enabled": false,
     "listenPort": 6000

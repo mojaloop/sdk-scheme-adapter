@@ -383,6 +383,57 @@ components:
       maxLength: 128
       description: Identifier of the party.
 
+    idSubValue:
+      type: string
+      minLength: 1
+      maxLength: 128
+      description: Either a sub-identifier of a `{idValue}`, or a sub-type of the `{idType}`, normally a `{personalIdType}`
+
+    personalIdType:
+      type: string
+      enum:
+        - PASSPORT
+        - NATIONAL_REGISTRATION
+        - DRIVING_LICENSE
+        - ALIEN_REGISTRATION
+        - NATIONAL_ID_CARD
+        - EMPLOYER_ID
+        - TAX_ID_NUMBER
+        - SENIOR_CITIZENS_CARD
+        - MARRIAGE_CERTIFICATE
+        - HEALTH_CARD
+        - VOTERS_ID
+        - UNITED_NATIONS
+        - OTHER_ID
+      description: Below are the allowed values for the enumeration.
+
+        - PASSPORT - Apassport number isused in reference to a party.
+
+        - NATIONAL_REGISTRATION - Anational registration number isused in reference to a party.
+
+        - DRIVING_LICENSE - Adriving license isused in reference to a party.
+
+        - ALIEN_REGISTRATION - An alien registration number isused in reference to a party.
+
+        - NATIONAL_ID_CARD - Anational ID card number isused in reference to a party.
+
+        - EMPLOYER_ID - Atax identification number isused in reference to a party.
+
+        - TAX_ID_NUMBER - Atax identification number isused in reference to a party.
+
+        - SENIOR_CITIZENS_CARD - Asenior citizens card number isused in reference to a party.
+
+        - MARRIAGE_CERTIFICATE - Amarriage certificate number isused in reference to a party.
+
+        - HEALTH_CARD - Ahealth card number isused in reference to a party.
+
+        - VOTERS_ID - Avoter’s identification number isused in reference to a party.
+
+        - UNITED_NATIONS - An UN (United Nations) number isused in reference to a party.
+
+        - OTHER_ID - Any other type of identification type number isused in reference to a party.
+
+
     money:
       pattern: ^([0]|([1-9][0-9]{0,17}))([.][0-9]{0,3}[1-9])?$
       type: string
@@ -443,6 +494,8 @@ components:
           $ref: '#/components/schemas/idType'
         idValue:
           $ref: '#/components/schemas/idValue'
+        idSubValue:
+          $ref: '#/components/schemas/idSubValue'
         displayName:
           type: string
           description: Display name of the sender, if known.
@@ -562,9 +615,7 @@ components:
           description: >
             Object representing the last error to occur during a transfer process. This may be a Mojaloop API error returned from another entity in the scheme
             or an object representing other types of error e.g. exceptions that may occur inside the scheme adapter.
-          oneOf:
-            - $ref: '#/components/schemas/transferError'
-            - $ref: '#/components/schemas/generalError'
+          $ref: '#/components/schemas/transferError'
 
     quote:
       type: object
@@ -796,7 +847,7 @@ components:
           idValue:
             $ref: '#/components/schemas/idValue'
           idSubValue:
-            $ref: '#/components/schemas/idValue'
+            $ref: '#/components/schemas/idSubValue'
           currency:
             $ref: '#/components/schemas/currency'
 
@@ -813,7 +864,7 @@ components:
           idValue:
             $ref: '#/components/schemas/idValue'
           idSubValue:
-            $ref: '#/components/schemas/idValue'
+            $ref: '#/components/schemas/idSubValue'
           error:
             $ref: '#/components/schemas/errorResponse'
 
@@ -831,8 +882,7 @@ components:
         currentState:
           $ref: '#/components/schemas/accountsCreationState'
         lastError:
-          type: string
-          description: String giving details of any error that occurred during processing the request.
+          $ref: '#/components/schemas/transferError'
 
   responses:
     transferSuccess:

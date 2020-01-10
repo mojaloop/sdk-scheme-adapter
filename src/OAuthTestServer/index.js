@@ -24,48 +24,40 @@ class OAuthTestServer {
      * @param {string} conf.clientKey Customer Key
      * @param {String} conf.clientSecret Customer Secret
      * @param {String} conf.logIndent
-     * @returns {Promise}
      */
     constructor(conf) {
-        this.conf = conf;
-        this.api = null;
-        this.logger = null;
+        this._conf = conf;
+        this._api = null;
+        this._logger = null;
     }
 
     async start() {
-        await new Promise((resolve) => {
-            this.api.listen(this.conf.port, () => {
-                this.logger.log(`Serving OAuth2 Test Server on port ${this.conf.port}`);
-                return resolve();
-            });
-        });
+        await new Promise((resolve) => this._api.listen(this._conf.port, resolve));
+        this._logger.log(`Serving OAuth2 Test Server on port ${this._conf.port}`);
     }
 
     async stop() {
-        if (this.api) {
-            await new Promise(resolve => {
-                this.api.close(() => {
-                    console.log('OAuth2 Test Server shut down complete');
-                    return resolve();
-                });
-            });
+        if (this._api) {
+            return;
         }
+        await new Promise(resolve => this._api.close(resolve));
+        console.log('OAuth2 Test Server shut down complete');
     }
 
     async setupApi() {
-        this.api = new Koa();
-        this.logger = await this._createLogger();
+        this._api = new Koa();
+        this._logger = await this._createLogger();
 
-        this.api.oauth = new OAuthServer({
-            model: new InMemoryCache(this.conf),
+        this._api.oauth = new OAuthServer({
+            model: new InMemoryCache(this._conf),
             accessTokenLifetime: 60 * 60,
             allowBearerTokensInQueryString: true,
         });
 
-        this.api.use(koaBody());
-        this.api.use(this.api.oauth.token());
+        this._api.use(koaBody());
+        this._api.use(this._api.oauth.token());
 
-        this.api.use(async (next) => {
+        this._api.use(async (next) => {
             this.body = 'Secret area';
             await next();
         });
@@ -78,7 +70,7 @@ class OAuthTestServer {
             context: {
                 app: 'mojaloop-sdk-oauth-test-server'
             },
-            space: this.conf.logIndent,
+            space: this._conf.logIndent,
             transports,
         });
     }

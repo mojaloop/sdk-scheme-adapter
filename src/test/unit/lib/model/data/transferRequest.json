@@ -5,8 +5,9 @@
     "idValue": "447710066017"
   },
   "to": {
-    "idType": "MSISDN",
-    "idValue": "123456789"
+    "idType": "PERSONAL_ID",
+    "idValue": "123456789",
+    "idSubValue": "PASSPORT"
   },
   "amountType": "SEND",
   "currency": "USD",

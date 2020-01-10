@@ -1,0 +1,23 @@
+{
+  "executionState": {
+    "accounts": [
+      {
+        "idType": "MSISDN",
+        "idValue": "123456789",
+        "currency": "USD"
+      }
+    ],
+    "currentState": "ERROR_OCCURRED",
+    "response": [],
+    "lastError": {
+      "httpStatusCode": 500,
+      "mojaloopError": {
+        "errorInformation": {
+          "errorCode": "3204",
+          "errorDescription": "Party not found"
+        }
+      }
+    }
+  },
+  "statusCode": "3204"
+}

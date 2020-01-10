@@ -10,155 +10,135 @@
 
 'use strict';
 
-
-// load default local environment vars
-//require('dotenv').config({path: 'local.env'});
-
 // we use a mock standard components lib to intercept and mock certain funcs
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('redis');
 
-const { init, destroy, setConfig, getConfig } = require('../../../../config.js');
 const util = require('util');
-const path = require('path');
 const Cache = require('@internal/cache');
-const { Logger, Transports } = require('@internal/log');
 const Model = require('@internal/model').OutboundTransfersModel;
-const defaultEnv = require('./data/defaultEnv');
+const { Logger, Transports } = require('@internal/log');
+
+const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
+const StateMachine = require('javascript-state-machine');
+
+const defaultConfig = require('./data/defaultConfig');
 const transferRequest = require('./data/transferRequest');
 const payeeParty = require('./data/payeeParty');
 const quoteResponseTemplate = require('./data/quoteResponse');
 const transferFulfil = require('./data/transferFulfil');
 
-const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
-const StateMachine = require('javascript-state-machine');
-
-let logTransports;
-let quoteResponse;
-let dummyCacheConfig;
-
+const genPartyId = (party) => {
+    const { partyIdType, partyIdentifier, partySubIdOrType } = party.party.partyIdInfo;
+    return `${partyIdType}_${partyIdentifier}` + (partySubIdOrType ? `_${partySubIdOrType}` : '');
+};
 
 // util function to simulate a party resolution subscription message on a cache client
-const emitPartyCacheMessage = (cache, party) => cache.subscriptionClient.emitMessage('message', `${party.party.partyIdInfo.partyIdType}_${party.party.partyIdInfo.partyIdentifier}`, JSON.stringify(party));
+const emitPartyCacheMessage = (cache, party) => cache.publish(genPartyId(party), JSON.stringify(party));
 
 // util function to simulate a quote response subscription message on a cache client
-const emitQuoteResponseCacheMessage = (cache, quoteId, quoteResponse) => cache.subscriptionClient.emitMessage('message', `qt_${quoteId}`, JSON.stringify(quoteResponse));
+const emitQuoteResponseCacheMessage = (cache, quoteId, quoteResponse) => cache.publish(`qt_${quoteId}`, JSON.stringify(quoteResponse));
 
 // util function to simulate a transfer fulfilment subscription message on a cache client
-const emitTransferFulfilCacheMessage = (cache, transferId, fulfil) => cache.subscriptionClient.emitMessage('message', `tf_${transferId}`, JSON.stringify(fulfil));
-
-
-/**
- *
- * @param {Object} opts
- * @param {Number} opts.expirySeconds
- * @param {Object} opts.delays
- * @param {Number} delays.requestQuotes
- * @param {Number} delays.prepareTransfer
- * @param {Object} opts.rejects
- * @param {boolean} rejects.quoteResponse
- * @param {boolean} rejects.transferFulfils
- */
-async function testTransferWithDelay({expirySeconds, delays, rejects}) {
-    defaultEnv.AUTO_ACCEPT_PARTY = 'true';
-    defaultEnv.AUTO_ACCEPT_QUOTES = 'true';
-
-    defaultEnv.EXPIRY_SECONDS = expirySeconds.toString();
-    defaultEnv.REJECT_EXPIRED_QUOTE_RESPONSES = rejects.quoteResponse ? 'true' : 'false';
-    defaultEnv.REJECT_EXPIRED_TRANSFER_FULFILS = rejects.transferFulfils ? 'true' : 'false';
-
-    await setConfig(defaultEnv);
-    const conf = getConfig();
-    const cache = new Cache(dummyCacheConfig);
-    await cache.connect();
-
-    // simulate a callback with the resolved party
-    MojaloopRequests.__getParties = jest.fn(() => emitPartyCacheMessage(cache, payeeParty));
-
-    // simulate a delayed callback with the quote response
-    MojaloopRequests.__postQuotes = jest.fn((postQuotesBody) => {
-        setTimeout(() => {
-            emitQuoteResponseCacheMessage(cache, postQuotesBody.quoteId, quoteResponse);
-        }, delays.requestQuotes ? delays.requestQuotes * 1000 : 0);
-    });
-
-    // simulate a delayed callback with the transfer fulfilment
-    MojaloopRequests.__postTransfers = jest.fn((postTransfersBody) => {
-        setTimeout(() => {
-            emitTransferFulfilCacheMessage(cache, postTransfersBody.transferId, transferFulfil);
-        }, delays.prepareTransfer ? delays.prepareTransfer * 1000 : 0);
-    });
-
-    const model = new Model({
-        cache,
-        logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
-        ...conf
-    });
-
-    await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
-
-    expect(StateMachine.__instance.state).toBe('start');
-
-    let expectError;
-    if (rejects.quoteResponse && delays.requestQuotes && expirySeconds < delays.requestQuotes) {
-        expectError = 'Quote response missed expiry deadline';
-    }
-    if (rejects.transferFulfils && delays.prepareTransfer && expirySeconds < delays.prepareTransfer) {
-        expectError = 'Transfer fulfil missed expiry deadline';
-    }
-    if (expectError) {
-        await expect(model.run()).rejects.toThrowError(expectError);
-        expect(StateMachine.__instance.state).toBe('errored');
-    } else {
-        const result = await model.run();
-        await expect(result.currentState).toBe('COMPLETED');
-        expect(StateMachine.__instance.state).toBe('succeeded');
-    }
-}
+const emitTransferFulfilCacheMessage = (cache, transferId, fulfil) => cache.publish(`tf_${transferId}`, JSON.stringify(fulfil));
 
 describe('outboundModel', () => {
-    // the keys are under the "secrets" folder that is supposed to be moved by Dockerfile
-    // so for the needs of the unit tests, we have to define the proper path manually.
-    defaultEnv.JWS_SIGNING_KEY_PATH = path.join('..', 'secrets', defaultEnv.JWS_SIGNING_KEY_PATH);
-    defaultEnv.JWS_VERIFICATION_KEYS_DIRECTORY = path.join('..', 'secrets', defaultEnv.JWS_VERIFICATION_KEYS_DIRECTORY);
+    let quoteResponse;
+    let config;
+    let logger;
+    let cache;
+
+    /**
+     *
+     * @param {Object} opts
+     * @param {Number} opts.expirySeconds
+     * @param {Object} opts.delays
+     * @param {Number} delays.requestQuotes
+     * @param {Number} delays.prepareTransfer
+     * @param {Object} opts.rejects
+     * @param {boolean} rejects.quoteResponse
+     * @param {boolean} rejects.transferFulfils
+     */
+    async function testTransferWithDelay({expirySeconds, delays, rejects}) {
+        const config = JSON.parse(JSON.stringify(defaultConfig));
+        config.autoAcceptParty = true;
+        config.autoAcceptQuotes = true;
+        config.expirySeconds = expirySeconds;
+        config.rejectExpiredQuoteResponses = rejects.quoteResponse;
+        config.rejectExpiredTransferFulfils = rejects.transferFulfils;
+
+        // simulate a callback with the resolved party
+        MojaloopRequests.__getParties = jest.fn(() => emitPartyCacheMessage(cache, payeeParty));
+
+        // simulate a delayed callback with the quote response
+        MojaloopRequests.__postQuotes = jest.fn((postQuotesBody) => {
+            setTimeout(() => {
+                emitQuoteResponseCacheMessage(cache, postQuotesBody.quoteId, quoteResponse);
+            }, delays.requestQuotes ? delays.requestQuotes * 1000 : 0);
+        });
+
+        // simulate a delayed callback with the transfer fulfilment
+        MojaloopRequests.__postTransfers = jest.fn((postTransfersBody) => {
+            setTimeout(() => {
+                emitTransferFulfilCacheMessage(cache, postTransfersBody.transferId, transferFulfil);
+            }, delays.prepareTransfer ? delays.prepareTransfer * 1000 : 0);
+        });
+
+        const model = new Model({
+            ...config,
+            cache,
+            logger,
+        });
+
+        await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
+
+        let expectError;
+        if (rejects.quoteResponse && delays.requestQuotes && expirySeconds < delays.requestQuotes) {
+            expectError = 'Quote response missed expiry deadline';
+        }
+        if (rejects.transferFulfils && delays.prepareTransfer && expirySeconds < delays.prepareTransfer) {
+            expectError = 'Transfer fulfil missed expiry deadline';
+        }
+        if (expectError) {
+            await expect(model.run()).rejects.toThrowError(expectError);
+        } else {
+            const result = await model.run();
+            await expect(result.currentState).toBe('COMPLETED');
+        }
+    }
 
     beforeAll(async () => {
-        logTransports = await Promise.all([Transports.consoleDir()]);
+        const logTransports = await Promise.all([Transports.consoleDir()]);
+        logger = new Logger({ context: { app: 'outbound-model-unit-tests-cache' }, space: 4, transports: logTransports });
         quoteResponse = JSON.parse(JSON.stringify(quoteResponseTemplate));
-        dummyCacheConfig = {
-            host: 'dummycachehost',
-            port: 1234,
-            logger: new Logger({ context: { app: 'outbound-model-unit-tests-cache' }, space: 4, transports: logTransports })
-        };
     });
 
     beforeEach(async () => {
-        init();
+        config = JSON.parse(JSON.stringify(defaultConfig));
         MojaloopRequests.__postParticipants = jest.fn(() => Promise.resolve());
         MojaloopRequests.__getParties = jest.fn(() => Promise.resolve());
         MojaloopRequests.__postQuotes = jest.fn(() => Promise.resolve());
         MojaloopRequests.__putQuotes = jest.fn(() => Promise.resolve());
         MojaloopRequests.__putQuotesError = jest.fn(() => Promise.resolve());
         MojaloopRequests.__postTransfers = jest.fn(() => Promise.resolve());
+
+        cache = new Cache({
+            host: 'dummycachehost',
+            port: 1234,
+            logger,
+        });
+        await cache.connect();
     });
 
     afterEach(async () => {
-        //we have to destroy the file system watcher or we will leave an async handle open
-        destroy();
-        console.log('config destroyed');
+        await cache.disconnect();
     });
 
     test('initializes to starting state', async () => {
-        await setConfig(defaultEnv);
-        const conf = getConfig();
-
-        const cache = new Cache(dummyCacheConfig);
-        await cache.connect();
-
         const model = new Model({
-            cache: cache,
-            logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
-            ...conf
+            cache,
+            logger,
+            ...config,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
@@ -167,13 +147,8 @@ describe('outboundModel', () => {
 
 
     test('executes all three transfer stages without halting when AUTO_ACCEPT_PARTY and AUTO_ACCEPT_QUOTES are true', async () => {
-        defaultEnv.AUTO_ACCEPT_PARTY = 'true';
-        defaultEnv.AUTO_ACCEPT_QUOTES = 'true';
-
-        await setConfig(defaultEnv);
-        const conf = getConfig();
-        const cache = new Cache(dummyCacheConfig);
-        await cache.connect();
+        config.autoAcceptParty = true;
+        config.autoAcceptQuotes = true;
 
         MojaloopRequests.__getParties = jest.fn(() => {
             emitPartyCacheMessage(cache, payeeParty);
@@ -217,8 +192,8 @@ describe('outboundModel', () => {
 
         const model = new Model({
             cache,
-            logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
-            ...conf
+            logger,
+            ...config,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
@@ -241,13 +216,8 @@ describe('outboundModel', () => {
 
 
     test('uses quote response transfer amount for transfer prepare', async () => {
-        defaultEnv.AUTO_ACCEPT_PARTY = 'true';
-        defaultEnv.AUTO_ACCEPT_QUOTES = 'true';
-
-        await setConfig(defaultEnv);
-        const conf = getConfig();
-        const cache = new Cache(dummyCacheConfig);
-        await cache.connect();
+        config.autoAcceptParty = true;
+        config.autoAcceptQuotes = true;
 
         MojaloopRequests.__getParties = jest.fn(() => {
             emitPartyCacheMessage(cache, payeeParty);
@@ -305,8 +275,8 @@ describe('outboundModel', () => {
 
         const model = new Model({
             cache,
-            logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
-            ...conf
+            logger,
+            ...config,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
@@ -329,17 +299,12 @@ describe('outboundModel', () => {
 
 
     test('resolves payee and halts when AUTO_ACCEPT_PARTY is false', async () => {
-        defaultEnv.AUTO_ACCEPT_PARTY = 'false';
-
-        await setConfig(defaultEnv);
-        const conf = getConfig();
-        const cache = new Cache(dummyCacheConfig);
-        await cache.connect();
+        config.autoAcceptParty = false;
 
         const model = new Model({
             cache,
-            logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
-            ...conf
+            logger,
+            ...config,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
@@ -364,19 +329,13 @@ describe('outboundModel', () => {
 
 
     test('halts after resolving payee, resumes and then halts after receiving quote response when AUTO_ACCEPT_PARTY is false and AUTO_ACCEPT_QUOTES is false', async () => {
-        defaultEnv.AUTO_ACCEPT_PARTY = 'false';
-        defaultEnv.AUTO_ACCEPT_QUOTES = 'false';
-
-        await setConfig(defaultEnv);
-        const conf = getConfig();
-
-        const cache = new Cache(dummyCacheConfig);
-        await cache.connect();
+        config.autoAcceptParty = false;
+        config.autoAcceptQuotes = false;
 
         let model = new Model({
-            cache: cache,
-            logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
-            ...conf
+            cache,
+            logger,
+            ...config,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
@@ -400,14 +359,11 @@ describe('outboundModel', () => {
 
         const transferId = result.transferId;
 
-        // check the model saved itself to the cache
-        expect(cache.client.data[`transferModel_${transferId}`]).toBeTruthy();
-
         // load a new model from the saved state
         model = new Model({
             cache,
-            logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space: 4, transports: logTransports }),
-            ...conf
+            logger,
+            ...config,
         });
 
         await model.load(transferId);
@@ -419,7 +375,7 @@ describe('outboundModel', () => {
         resultPromise = model.run();
 
         // now we started the model running we simulate a callback with the quote response
-        cache.subscriptionClient.emitMessage('message', `qt_${model.data.quoteId}`, JSON.stringify(quoteResponse));
+        cache.publish(`qt_${model.data.quoteId}`, JSON.stringify(quoteResponse));
 
         // wait for the model to reach a terminal state
         result = await resultPromise;
@@ -433,19 +389,13 @@ describe('outboundModel', () => {
 
 
     test('halts and resumes after parties and quotes stages when AUTO_ACCEPT_PARTY is false and AUTO_ACCEPT_QUOTES is false', async () => {
-        defaultEnv.AUTO_ACCEPT_PARTY = 'false';
-        defaultEnv.AUTO_ACCEPT_QUOTES = 'false';
-
-        await setConfig(defaultEnv);
-        const conf = getConfig();
-
-        const cache = new Cache(dummyCacheConfig);
-        await cache.connect();
+        config.autoAcceptParty = false;
+        config.autoAcceptQuotes = false;
 
         let model = new Model({
             cache,
-            logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
-            ...conf
+            logger,
+            ...config,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
@@ -469,14 +419,11 @@ describe('outboundModel', () => {
 
         const transferId = result.transferId;
 
-        // check the model saved itself to the cache
-        expect(cache.client.data[`transferModel_${transferId}`]).toBeTruthy();
-
         // load a new model from the saved state
         model = new Model({
             cache,
-            logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
-            ...conf
+            logger,
+            ...config,
         });
 
         await model.load(transferId);
@@ -488,7 +435,7 @@ describe('outboundModel', () => {
         resultPromise = model.run();
 
         // now we started the model running we simulate a callback with the quote response
-        cache.subscriptionClient.emitMessage('message', `qt_${model.data.quoteId}`, JSON.stringify(quoteResponse));
+        cache.publish(`qt_${model.data.quoteId}`, JSON.stringify(quoteResponse));
 
         // wait for the model to reach a terminal state
         result = await resultPromise;
@@ -502,8 +449,8 @@ describe('outboundModel', () => {
         // load a new model from the saved state
         model = new Model({
             cache,
-            logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
-            ...conf
+            logger,
+            ...config,
         });
 
         await model.load(transferId);
@@ -515,7 +462,7 @@ describe('outboundModel', () => {
         resultPromise = model.run();
 
         // now we started the model running we simulate a callback with the transfer fulfilment
-        cache.subscriptionClient.emitMessage('message', `tf_${model.data.transferId}`, JSON.stringify(transferFulfil));
+        cache.publish(`tf_${model.data.transferId}`, JSON.stringify(transferFulfil));
 
         // wait for the model to reach a terminal state
         result = await resultPromise;
@@ -528,14 +475,9 @@ describe('outboundModel', () => {
     });
 
     test('uses payee party fspid for transfer prepare when config USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP is false', async () => {
-        defaultEnv.AUTO_ACCEPT_PARTY = 'true';
-        defaultEnv.AUTO_ACCEPT_QUOTES = 'true';
-        defaultEnv.USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP = 'false';
-
-        await setConfig(defaultEnv);
-        const conf = getConfig();
-        const cache = new Cache(dummyCacheConfig);
-        await cache.connect();
+        config.autoAcceptParty = true;
+        config.autoAcceptQuotes = true;
+        config.useQuoteSourceFSPAsTransferPayeeFSP = false;
 
         MojaloopRequests.__getParties = jest.fn(() => {
             // simulate a callback with the resolved party
@@ -564,8 +506,8 @@ describe('outboundModel', () => {
 
         const model = new Model({
             cache,
-            logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
-            ...conf
+            logger,
+            ...config,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
@@ -586,14 +528,9 @@ describe('outboundModel', () => {
     });
 
     test('uses quote response source fspid for transfer prepare when config USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP is true', async () => {
-        defaultEnv.AUTO_ACCEPT_PARTY = 'true';
-        defaultEnv.AUTO_ACCEPT_QUOTES = 'true';
-        defaultEnv.USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP = 'true';
-
-        await setConfig(defaultEnv);
-        const conf = getConfig();
-        const cache = new Cache(dummyCacheConfig);
-        await cache.connect();
+        config.autoAcceptParty = true;
+        config.autoAcceptQuotes = true;
+        config.useQuoteSourceFSPAsTransferPayeeFSP = true;
 
         MojaloopRequests.__getParties = jest.fn(() => {
             // simulate a callback with the resolved party
@@ -622,8 +559,8 @@ describe('outboundModel', () => {
 
         const model = new Model({
             cache,
-            logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
-            ...conf
+            logger,
+            ...config,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
@@ -706,24 +643,19 @@ describe('outboundModel', () => {
     );
 
     test('Throws with mojaloop error in response body when party resolution error callback occurs', async () => {
-        defaultEnv.AUTO_ACCEPT_PARTY = 'true';
-        defaultEnv.AUTO_ACCEPT_QUOTES = 'true';
-
-        await setConfig(defaultEnv);
-        const conf = getConfig();
-        const cache = new Cache(dummyCacheConfig);
-        await cache.connect();
+        config.autoAcceptParty = true;
+        config.autoAcceptQuotes = true;
 
         MojaloopRequests.__getParties = jest.fn(() => {
             // simulate a callback with the resolved party
-            cache.subscriptionClient.emitMessage('message', `${payeeParty.party.partyIdInfo.partyIdType}_${payeeParty.party.partyIdInfo.partyIdentifier}`, JSON.stringify(expectError));
+            cache.publish(genPartyId(payeeParty), JSON.stringify(expectError));
             return Promise.resolve();
         });
 
         const model = new Model({
             cache,
-            logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
-            ...conf
+            logger,
+            ...config,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
@@ -756,13 +688,8 @@ describe('outboundModel', () => {
 
 
     test('Throws with mojaloop error in response body when quote request error callback occurs', async () => {
-        defaultEnv.AUTO_ACCEPT_PARTY = 'true';
-        defaultEnv.AUTO_ACCEPT_QUOTES = 'true';
-
-        await setConfig(defaultEnv);
-        const conf = getConfig();
-        const cache = new Cache(dummyCacheConfig);
-        await cache.connect();
+        config.autoAcceptParty = true;
+        config.autoAcceptQuotes = true;
 
         const expectError = {
             type: 'quoteResponseError',
@@ -783,14 +710,14 @@ describe('outboundModel', () => {
 
         MojaloopRequests.__postQuotes = jest.fn((postQuotesBody) => {
             // simulate a callback with the quote response
-            cache.subscriptionClient.emitMessage('message', `qt_${postQuotesBody.quoteId}`, JSON.stringify(expectError));
+            cache.publish(`qt_${postQuotesBody.quoteId}`, JSON.stringify(expectError));
             return Promise.resolve();
         });
 
         const model = new Model({
             cache,
-            logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space: 4, transports: logTransports }),
-            ...conf
+            logger,
+            ...config,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
@@ -816,13 +743,8 @@ describe('outboundModel', () => {
 
 
     test('Throws with mojaloop error in response body when transfer request error callback occurs', async () => {
-        defaultEnv.AUTO_ACCEPT_PARTY = 'true';
-        defaultEnv.AUTO_ACCEPT_QUOTES = 'true';
-
-        await setConfig(defaultEnv);
-        const conf = getConfig();
-        const cache = new Cache(dummyCacheConfig);
-        await cache.connect();
+        config.autoAcceptParty = true;
+        config.autoAcceptQuotes = true;
 
         const expectError = {
             type: 'transferError',
@@ -848,14 +770,14 @@ describe('outboundModel', () => {
 
         MojaloopRequests.__postTransfers = jest.fn((postTransfersBody) => {
             // simulate an error callback with the transfer fulfilment
-            cache.subscriptionClient.emitMessage('message', `tf_${postTransfersBody.transferId}`, JSON.stringify(expectError));
+            cache.publish(`tf_${postTransfersBody.transferId}`, JSON.stringify(expectError));
             return Promise.resolve();
         });
 
         const model = new Model({
             cache,
-            logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space: 4, transports: logTransports }),
-            ...conf
+            logger,
+            ...config,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
@@ -879,39 +801,14 @@ describe('outboundModel', () => {
         throw new Error('Outbound model should have thrown');
     });
 
-});
-
-describe('Outbound mTLS test', () => {
-    let defConfig;
-
-    beforeEach(async () => {
-        init();
-        await setConfig(defaultEnv);
-        defConfig = JSON.parse(JSON.stringify(getConfig()));
-        MojaloopRequests.__postParticipants = jest.fn(() => Promise.resolve());
-        MojaloopRequests.__getParties = jest.fn(() => Promise.resolve());
-        MojaloopRequests.__postQuotes = jest.fn(() => Promise.resolve());
-        MojaloopRequests.__putQuotes = jest.fn(() => Promise.resolve());
-        MojaloopRequests.__putQuotesError = jest.fn(() => Promise.resolve());
-        MojaloopRequests.__postTransfers = jest.fn(() => Promise.resolve());
-    });
-
-    afterEach(async () => {
-        //we have to destroy the file system watcher or we will leave an async handle open
-        destroy();
-        console.log('config destroyed');
-    });
 
     async function testTlsServer(enableTls) {
-        defConfig.tls.outbound.mutualTLS.enabled = enableTls;
-
-        const cache = new Cache(dummyCacheConfig);
-        await cache.connect();
+        config.tls.outbound.mutualTLS.enabled = enableTls;
 
         new Model({
             cache,
-            logger: new Logger({ context: { app: 'outbound-model-unit-tests' }, space:4, transports:logTransports }),
-            ...defConfig
+            logger,
+            ...config
         });
 
         const scheme = enableTls ? 'https' : 'http';

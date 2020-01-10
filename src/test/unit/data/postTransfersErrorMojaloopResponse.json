@@ -1,15 +1,14 @@
 {
-  "message": "Mock error",
-  "httpStatusCode": 500,
-  "transferState":  {
+  "transferState": {
     "from": {
-      "displayName": "James Bush",
+      "displayName": "John Doe",
       "idType": "MSISDN",
-      "idValue": "447710066017"
+      "idValue": "123456789"
     },
     "to": {
-      "idType": "MSISDN",
-      "idValue": "1234567890"
+      "idType": "PERSONAL_ID",
+      "idValue": "987654321",
+      "idSubValue": "PASSPORT"
     },
     "amountType": "SEND",
     "currency": "USD",
@@ -17,7 +16,6 @@
     "transactionType": "TRANSFER",
     "note": "test payment",
     "homeTransactionId": "123ABC",
-    "transferId": "5a2ad5dc-4ab1-4a22-8c5b-62f75252a8d5",
     "currentState": "ERROR_OCCURRED",
     "lastError": {
       "httpStatusCode": 500,
@@ -28,5 +26,6 @@
         }
       }
     }
-  }
+  },
+  "statusCode": "3204"
 }

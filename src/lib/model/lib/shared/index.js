@@ -17,15 +17,16 @@
  * @returns {object} - the constructed party object
  */
 const internalPartyToMojaloopParty = (internal, fspId) => {
-    let party = {
+    const party = {
         partyIdInfo: {
             partyIdType: internal.idType,
             partyIdentifier: internal.idValue,
+            partySubIdOrType: internal.idSubValue,
             fspId: fspId
         }
     };
 
-    let hasComplexName = (internal.firstName || internal.middleName || internal.lastName) ? true : false;
+    const hasComplexName = !!(internal.firstName || internal.middleName || internal.lastName);
 
     if(hasComplexName || internal.dateOfBirth) {
         party.personalInfo = {};
@@ -61,6 +62,7 @@ const mojaloopPartyToInternalParty = (external) => {
     if(external.partyIdInfo) {
         internal.idType = external.partyIdInfo.partyIdType;
         internal.idValue = external.partyIdInfo.partyIdentifier;
+        internal.idSubValue = external.partyIdInfo.partySubIdOrType;
 
         // Note: we dont map fspid to internal transferParty object
     }
@@ -207,9 +209,9 @@ const mojaloopPrepareToInternalTransfer = (external, quote) => {
 
 
 module.exports = {
-    internalPartyToMojaloopParty: internalPartyToMojaloopParty,
-    mojaloopPartyToInternalParty: mojaloopPartyToInternalParty,
-    mojaloopQuoteRequestToInternal: mojaloopQuoteRequestToInternal,
-    internalQuoteResponseToMojaloop: internalQuoteResponseToMojaloop,
-    mojaloopPrepareToInternalTransfer: mojaloopPrepareToInternalTransfer
+    internalPartyToMojaloopParty,
+    mojaloopPartyToInternalParty,
+    mojaloopQuoteRequestToInternal,
+    internalQuoteResponseToMojaloop,
+    mojaloopPrepareToInternalTransfer,
 };

@@ -1,0 +1,18 @@
+{
+  "from": {
+    "displayName": "John Doe",
+    "idType": "MSISDN",
+    "idValue": "123456789"
+  },
+  "to": {
+    "idType": "PERSONAL_ID",
+    "idValue": "987654321",
+    "idSubValue": "PASSPORT"
+  },
+  "amountType": "SEND",
+  "currency": "USD",
+  "amount": "100",
+  "transactionType": "TRANSFER",
+  "note": "test payment",
+  "homeTransactionId": "123ABC"
+}

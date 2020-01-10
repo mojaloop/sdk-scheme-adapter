@@ -11,7 +11,7 @@
 'use strict';
 
 
-module.exports = handlerMap => async (ctx, next) => {
+module.exports = (handlerMap) => async (ctx, next) => {
     const handlers = handlerMap[ctx.state.path.pattern];
     const handler = handlers ? handlers[ctx.method.toLowerCase()] : undefined;
     if (!handlers || !handler) {

@@ -10,51 +10,37 @@
 
 'use strict';
 
-
 jest.mock('redis');
 
 const Cache = require('@internal/cache');
-jest.unmock('@internal/cache');
-
-
-const defaultConfig = {
-    host: 'dummyhost',
-    port: 1234,
-    logger: console
-};
-
-
-const dummyPubMessageTemplate = {
-    data: 12345,
-    test: '98765'
-};
-
+const { Logger } = require('@internal/log');
 
 const createCache = async() => {
-    const cache = new Cache(defaultConfig);
+    const logTransports = [() => {}];
+    const logger = new Logger({ context: { app: 'model-unit-tests-cache' }, space: 4, transports: logTransports });
+    const cache = new Cache({
+        host: 'dummyhost',
+        port: 1234,
+        logger,
+    });
     await cache.connect();
     return cache;
 };
 
-
-let dummyPubMessage;
-
-
 describe('Cache', () => {
+    let dummyPubMessage;
 
     beforeEach(() => {
-        dummyPubMessage = JSON.parse(JSON.stringify(dummyPubMessageTemplate));
+        dummyPubMessage = JSON.parse(JSON.stringify({
+            data: 12345,
+            test: '98765'
+        }));
     });
 
     test('Makes connections to redis server for cache operations', async () => {
         const cache = await createCache();
         expect(cache).not.toBeFalsy();
-
-        // the cache should have opened a general connection
-        expect(cache.client).not.toBeFalsy();
-
-        // the cache should have opened a subscription connection
-        expect(cache.subscriptionClient).not.toBeFalsy();
+        await cache.disconnect();
     });
 
 
@@ -77,8 +63,9 @@ describe('Cache', () => {
                 expect(cn).toBe(chan1);
                 console.log(`callback on subId: ${subId}`);
 
+                const value = JSON.parse(msg);
                 // check we got the expected message
-                expect(msg).toBe(msg1);
+                expect(value).toEqual(msg1);
 
                 //resolve the promise
                 resolve();
@@ -90,7 +77,7 @@ describe('Cache', () => {
                 expect(cbId1).toBe(0);
 
                 // now we have subscribed, inject a message.
-                cache.subscriptionClient.emitMessage('message', chan1, msg1);
+                cache.publish(chan1, msg1);
             });
         });
 
@@ -102,7 +89,8 @@ describe('Cache', () => {
                 console.log(`callback on subId: ${subId}`);
 
                 // check we got the expected message
-                expect(msg).toBe(msg2);
+                const value = JSON.parse(msg);
+                expect(value).toEqual(msg2);
 
                 //resolve the promise
                 resolve();
@@ -114,11 +102,13 @@ describe('Cache', () => {
                 expect(cbId2).toBe(1);
 
                 // now we have subscribed, inject a message.
-                cache.subscriptionClient.emitMessage('message', chan2, msg2);
+                cache.publish(chan2, msg2);
             });
         });
 
-        return Promise.all([cb1Promise, cb2Promise]);
+        await Promise.all([cb1Promise, cb2Promise]);
+
+        await cache.disconnect();
     });
 
 
@@ -130,7 +120,7 @@ describe('Cache', () => {
 
         // create a promise that only gets resoled if the subscription gets the
         // correct message
-        const cb1Promise = new Promise((resolve, reject) => {
+        await new Promise((resolve, reject) => {
             const mockCb1 = jest.fn((cn, msg) => {  // eslint-disable-line no-unused-vars
                 //reject the outer promise if this func gets called!
                 reject();
@@ -144,18 +134,16 @@ describe('Cache', () => {
                 // now we have subscribed we unsubscribe
                 return cache.unsubscribe(chan, cbId1).then(() => {
                     // now we have unsubscribed, inject a message
-                    cache.subscriptionClient.emitMessage('message', 'dummychannel1', msg1);
+                    cache.publish(chan, msg1);
 
                     // wait 3 seconds and if the callback has not been called we assume a pass
                     setTimeout(() => {
                         expect(mockCb1.mock.calls.length).toBe(0);
-                        expect(cache.callbacks[chan]).toBe(undefined);
                         return resolve();
                     }, 3000);
-                });                
+                });
             });
         });
-
-        return cb1Promise;
+        await cache.disconnect();
     });
 });
