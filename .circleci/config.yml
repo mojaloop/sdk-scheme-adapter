@@ -170,7 +170,6 @@ jobs:
       - store_artifacts:
           path: /home/circleci/project/junit.xml
 
-
   lint:
     <<: *defaults_working_directory
     <<: *defaults_docker_node
@@ -587,17 +586,17 @@ workflows:
 #              ignore:
 #                - /feature*/
 #                - /bugfix*/
-#      - test-integration:
-#          context: org-global
-#          requires:
-#            - setup
-#          filters:
-#            tags:
-#              only: /.*/
-#            branches:
-#              ignore:
-#                - /feature*/
-#                - /bugfix*/
+     - test-integration:
+         context: org-global
+         requires:
+           - setup
+         filters:
+           tags:
+             only: /.*/
+           branches:
+             ignore:
+               - /feature*/
+               - /bugfix*/
 #      - test-functional:
 #          context: org-global
 #          requires:
@@ -626,8 +625,8 @@ workflows:
             - setup
             - test-unit
             - lint
+            - test-integration
 #            - test-coverage
-#            - test-integration
 #            - test-functional
 #            - test-spec
 #            - vulnerability-check
@@ -654,8 +653,8 @@ workflows:
             - setup
             - test-unit
             - lint
+            - test-integration
 #            - test-coverage
-#            - test-integration
 #            - test-functional
 #            - test-spec
 #            - vulnerability-check
@@ -672,8 +671,8 @@ workflows:
             - setup
             - test-unit
             - lint
+            - test-integration
 #            - test-coverage
-#            - test-integration
 #            - test-functional
 #            - test-spec
 #            - vulnerability-check
