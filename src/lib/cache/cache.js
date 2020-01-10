@@ -228,8 +228,8 @@ class Cache {
                 return resolve(replies);
             };
 
-            if (this.config.shouldExpire) {
-                this._client.set(key, value, 'EX', this.config.expirySeconds, callback);
+            if (this._config.shouldExpire) {
+                this._client.set(key, value, 'EX', this._config.expirySeconds, callback);
                 return;
             }
             this._client.set(key, value, callback);
