@@ -149,7 +149,6 @@ npm run test
 
 ```bash
 docker-compose -f docker-compose.yml -f docker-compose.integration.yml up -d
-# TODO: wait for containers to be up and healthy. TODO: health check
 docker exec -it scheme-adapter-int sh -c 'npm run test:int'
 
 # copy results out

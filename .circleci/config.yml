@@ -163,7 +163,6 @@ jobs:
       - run:
           name: Start docker-compose
           command: docker-compose -f docker-compose.yml -f docker-compose.integration.yml up -d
-      # TODO: wait for docker containers to be up!
       - run:
           name: Execute integration tests
           command: docker exec -it scheme-adapter-int sh -c 'npm run test:int'
