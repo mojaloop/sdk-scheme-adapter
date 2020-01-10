@@ -3,14 +3,8 @@ info:
   title: Mojaloop SDK Outbound Scheme Adapter API
   description: >
     Specification for the Mojaloop SDK Scheme Adapter Outbound Transfers API
-
-
     This API can be used by DFSP backends to simplify the process of sending funds to other parties within a Mojaloop scheme.
-
-
     Please see other documentation on https://github.com/mojaloop/sdk-scheme-adapter for more information.
-
-
     **Note on terminology:** The term "Switch" is equal to the term "Hub", and the term "FSP" is equal to the term "DFSP".
   license:
     name: Apache License Version 2.0, January 2004
@@ -31,30 +25,21 @@ paths:
       summary: Sends money from one account to another
       description: >
         The HTTP request `POST /transfers` is used to request the movement of funds from payer DFSP to payee DFSP.
-
         The underlying Mojaloop API has three stages for money transfer:
-
           1. Party lookup. This facilitates a check by the sending party that the destination party is correct before proceeding with a money movement.
           2. Quotation. This facilitates the exchange of fee information and the construction of a cryptographic "contract" between payee and payer DFSPs before funds are transferred.
           3. Transfer. The enactment of the previously agreed "contract"
-
         This method has several modes of operation.
-
         - If the configuration variables `AUTO_ACCEPT_PARTIES` is set to `"false"` this method will terminate when the payee party has been resolved and return the payee party details.
           If the payee wishes to proceed with the transfer, then a subsequent `PUT /transfers/{transferId}` request (accepting the payee party) is required to continue the operation.
           The scheme adapter will then proceed with quotation stage...
-
         - If the configuration variable `AUTO_ACCEPT_QUOTES` is set to `"false"` this method will terminate and return the quotation when it has been received from the payee DFSP.
           If the payee wished to proceed with the transfer, then a subsequent `PUT /transfers/{transferId}` request (accepting the quote) is required to continue the operation.
           The scheme adapter will then proceed with the transfer state.
-
         If the configuration variables `AUTO_ACCEPT_PARTIES` and `AUTO_ACCEPT_QUOTES` are both set to `"true"` this method will block until all three transfer stages are complete.
         Upon completion it will return the entire set of transfer details received during the operation.
-
-
         Combinations of settings for `AUTO_ACCEPT...` configuration variables allow the scheme adapter user to decide which mode of operation best suits their use cases. i.e. the scheme
         adapter can be configured to "break" the three stage transfer at these points in order to execute backend logic such as party verification, quoted fees assessments etc...
-
       tags:
         - Transfers
       requestBody:
@@ -79,11 +64,7 @@ paths:
       summary: Continues a transfer that has paused at the quote stage in order to accept or reject payee party and/or quote
       description: >
         The HTTP request `PUT /transfers/{transferId}` is used to continue a transfer initiated via the `POST /transfers` method that has halted after party lookup and/or quotation stage.
-
-
         The request body should contain either the "acceptParty" or "acceptQuote" property set to `true` as required to continue the transfer.
-
-
         See the description of the `POST /transfers` HTTP method for more information on modes of transfer.
       tags:
         - Transfers
@@ -407,31 +388,31 @@ components:
         - OTHER_ID
       description: Below are the allowed values for the enumeration.
 
-        - PASSPORT - Apassport number isused in reference to a party.
+        - PASSPORT - A passport number is used in reference to a party.
 
-        - NATIONAL_REGISTRATION - Anational registration number isused in reference to a party.
+        - NATIONAL_REGISTRATION - A national registration number is used in reference to a party.
 
-        - DRIVING_LICENSE - Adriving license isused in reference to a party.
+        - DRIVING_LICENSE - A driving license is used in reference to a party.
 
-        - ALIEN_REGISTRATION - An alien registration number isused in reference to a party.
+        - ALIEN_REGISTRATION - An alien registration number is used in reference to a party.
 
-        - NATIONAL_ID_CARD - Anational ID card number isused in reference to a party.
+        - NATIONAL_ID_CARD - A national ID card number is used in reference to a party.
 
-        - EMPLOYER_ID - Atax identification number isused in reference to a party.
+        - EMPLOYER_ID - A tax identification number is used in reference to a party.
 
-        - TAX_ID_NUMBER - Atax identification number isused in reference to a party.
+        - TAX_ID_NUMBER - A tax identification number is used in reference to a party.
 
-        - SENIOR_CITIZENS_CARD - Asenior citizens card number isused in reference to a party.
+        - SENIOR_CITIZENS_CARD - A senior citizens card number is used in reference to a party.
 
-        - MARRIAGE_CERTIFICATE - Amarriage certificate number isused in reference to a party.
+        - MARRIAGE_CERTIFICATE - A marriage certificate number is used in reference to a party.
 
-        - HEALTH_CARD - Ahealth card number isused in reference to a party.
+        - HEALTH_CARD - A health card number is used in reference to a party.
 
-        - VOTERS_ID - Avoter’s identification number isused in reference to a party.
+        - VOTERS_ID - A voter’s identification number is used in reference to a party.
 
-        - UNITED_NATIONS - An UN (United Nations) number isused in reference to a party.
+        - UNITED_NATIONS - A UN (United Nations) number is used in reference to a party.
 
-        - OTHER_ID - Any other type of identification type number isused in reference to a party.
+        - OTHER_ID - Any other type of identification type number is used in reference to a party.
 
 
     money:
@@ -695,7 +676,6 @@ components:
         transfer. - COMMITTED Next ledger has successfully performed the
         transfer. - ABORTED Next ledger has aborted the transfer due a rejection
         or failure to perform the transfer.
-
     mojaloopMoney:
       title: Money
       type: object
@@ -762,7 +742,6 @@ components:
         the high-level error category, the second number (2 in the example)
         represents the low-level error category, and the last two numbers (34 in
         the example) represents the specific error.
-
     errorDescription:
       title: ErrorDescription
       type: string
@@ -807,7 +786,6 @@ components:
       description: >-
         The API data type Longitude is a JSON String in a lexical format that is
         restricted by a regular expression for interoperability reasons.
-
     ilpCondition:
       type: string
       pattern: '^[A-Za-z0-9-_]{43}$'
