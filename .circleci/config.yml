@@ -171,7 +171,7 @@ jobs:
           name: Copy results from docker
           command: docker cp scheme-adapter-int:/src/junit.xml .
       - store_test_results:
-          path: /home/circleci/project/junit.xml
+          path: /home/circleci/project/
       - store_artifacts:
           path: /home/circleci/project/junit.xml
 
