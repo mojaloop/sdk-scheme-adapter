@@ -586,17 +586,17 @@ workflows:
 #              ignore:
 #                - /feature*/
 #                - /bugfix*/
-     - test-integration:
-         context: org-global
-         requires:
-           - setup
-         filters:
-           tags:
-             only: /.*/
-           branches:
-             ignore:
-               - /feature*/
-               - /bugfix*/
+      - test-integration:
+          context: org-global
+          requires:
+            - setup
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
 #      - test-functional:
 #          context: org-global
 #          requires:
