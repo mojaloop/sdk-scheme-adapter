@@ -211,11 +211,10 @@ class Cache {
 
                 this.logger.push({ key, value, replies }).log(`Set cache key: ${key}`);
                 return resolve(replies);
-            }
+            };
 
-            // Expire? https://github.com/NodeRedis/node_redis#redis-commands
-            if (this.config.cacheConfig.shouldExpire) {
-                this.client.set(key, value, 'EX', this.config.cacheConfig.expirySeconds, callback);
+            if (this.config.shouldExpire) {
+                this.client.set(key, value, 'EX', this.config.expirySeconds, callback);
                 return;
             }
             this.client.set(key, value, callback);
