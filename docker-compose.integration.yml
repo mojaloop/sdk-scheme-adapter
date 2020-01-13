@@ -24,5 +24,3 @@ services:
     entrypoint: 
       - sh 
       - -c
-    
-      
