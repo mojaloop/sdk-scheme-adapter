@@ -207,6 +207,28 @@ const mojaloopPrepareToInternalTransfer = (external, quote) => {
     return internal;
 };
 
+/**
+ * Converts a mojaloop transactionRequest data to internal form
+ *
+ * @returns {object}
+ */
+const mojaloopTransactionRequestToInternalFormat = (external) => {
+    let internal = null;
+    internal = {
+        transactionRequestId: external.transactionRequestId,
+        to: mojaloopPartyToInternalParty(external.payee),
+        from: mojaloopPartyToInternalParty(external.payer),
+        amountType: external.amountType,
+        amount: external.amount.amount,
+        currency: external.amount.currency,
+        transactionType: external.transactionType.scenario,
+        initiator: external.transactionType.initiator,
+        initiatorType: external.transactionType.initiatorType
+    };
+
+    return internal;
+};
+
 
 module.exports = {
     internalPartyToMojaloopParty,
@@ -214,4 +236,5 @@ module.exports = {
     mojaloopQuoteRequestToInternal,
     internalQuoteResponseToMojaloop,
     mojaloopPrepareToInternalTransfer,
+    mojaloopTransactionRequestToInternalFormat
 };
