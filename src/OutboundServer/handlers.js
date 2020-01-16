@@ -12,7 +12,7 @@
 
 
 const util = require('util');
-const { AccountsModel, OutboundTransfersModel } = require('@internal/model');
+const { AccountsModel, OutboundTransfersModel,  } = require('@internal/model');
 
 
 /**
@@ -137,6 +137,33 @@ const postAccounts = async (ctx) => {
     }
 };
 
+const postRequestToPay = async (ctx) => {
+    try {
+        // this requires a multi-stage sequence with the switch.
+        let requestToPayInboundRequest = {
+            ...ctx.request.body
+        };
+
+        // use the transfers model to execute asynchronous stages with the switch
+        const model = new OutboundRequestToPayModel({
+            ...ctx.state.conf,
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            wso2Auth: ctx.state.wso2Auth,
+        });
+
+        // initialize the transfer model and start it running
+        await model.initialize(requestToPayInboundRequest);
+        const response = await model.run();
+
+        // return the result
+        ctx.response.status = 200;
+        ctx.response.body = response;
+
+    } catch(err) {
+        return handleRequestToPayError('requestToPayInboundRequest', err, ctx);
+    }
+}
 
 const healthCheck = async (ctx) => {
     ctx.response.status = 200;
@@ -156,4 +183,7 @@ module.exports = {
     '/accounts': {
         post: postAccounts
     },
+    '/requestToPay': {
+        post: postRequestToPay
+    }
 };

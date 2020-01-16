@@ -67,6 +67,15 @@ class BackendRequests {
         return this._post('transfers', prepare);
     }
 
+    /**
+     * Executes a POST /transactionRequests request for the specified transaction request
+     *
+     * @returns {object} - JSON response body if one was received
+     */
+    async postTransactionRequest(transactionRequest) {
+        return this._post('transactionRequest', transactionRequest);
+    }
+
 
     /**
      * Utility function for building outgoing request headers as required by the mojaloop api spec
