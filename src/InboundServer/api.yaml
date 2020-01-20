@@ -3738,18 +3738,12 @@ components:
         - value
     ExtensionList:
       title: ExtensionList
-      type: object
+      type: array
       description: Data model for the complex type ExtensionList
-      properties:
-        extension:
-          type: array
-          items:
-            $ref: '#/components/schemas/Extension'
-          minItems: 1
-          maxItems: 16
-          description: Number of Extension elements
-      required:
-        - extension
+      items:
+        $ref: '#/components/schemas/Extension'
+      minItems: 1
+      maxItems: 16
     GeoCode:
       title: GeoCode
       type: object

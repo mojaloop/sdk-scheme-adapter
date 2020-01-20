@@ -1,48 +1,50 @@
 {
-  "quoteId": "00000000-0000-1000-a000-000000000002",
-  "transactionId": "00000000-0000-1000-a000-000000000002",
-  "amountType": "SEND",
   "amount": {
-    "currency": "XOF",
-    "amount": "100"
+    "amount": "100",
+    "currency": "USD"
   },
-  "expiration": "2019-06-04T04:02:10.378Z",
-  "payer": {
-    "partyIdInfo": {
-      "partyIdType": "MSISDN",
-      "partyIdentifier": "17855501914",
-      "fspId": "mojaloop-sdk"
+  "amountType": "SEND",
+  "expiration": "2020-01-20T11:31:49.325Z",
+  "extensionList": [
+    {
+      "key": "qreqkey1",
+      "value": "qreqvalue1"
     },
-    "personalInfo": {
-      "complexName": {
-        "firstName": "Murthy",
-        "lastName": "Kakarlamudi"
-      },
-      "dateOfBirth": "2010-10-10"
-    },
-    "name": "Murthy Kakarlamudi",
-    "merchantClassificationCode": "123"
-  },
+    {
+      "key": "qreqkey2",
+      "value": "qreqvalue2"
+    }
+  ],
+  "note": "test payment",
   "payee": {
     "partyIdInfo": {
-      "partyIdType": "MSISDN",
-      "partyIdentifier": "17039811907",
-      "fspId": "mojaloop-sdk"
+      "fspId": "sim",
+      "partyIdType": "PERSONAL_ID",
+      "partyIdentifier": "987654321",
+      "partySubIdOrType": "PASSPORT"
     },
     "personalInfo": {
       "complexName": {
-        "firstName": "Sridevi",
-        "lastName": "Miriyala"
+        "firstName": "John",
+        "lastName": "Doe",
+        "middleName": "Someone"
       },
-      "dateOfBirth": "2010-10-10"
-    },
-    "name": "Sridevi Miriyala",
-    "merchantClassificationCode": "456"
+      "dateOfBirth": "1980-01-01"
+    }
   },
+  "payer": {
+    "name": "John Doe",
+    "partyIdInfo": {
+      "fspId": "mojaloop-sdk",
+      "partyIdType": "MSISDN",
+      "partyIdentifier": "123456789"
+    }
+  },
+  "quoteId": "00000000-0000-1000-8000-000000000002",
+  "transactionId": "00000000-0000-1000-8000-000000000001",
   "transactionType": {
-    "scenario": "TRANSFER",
     "initiator": "PAYER",
-    "initiatorType": "CONSUMER"
-  },
-  "note": "note"
+    "initiatorType": "CONSUMER",
+    "scenario": "TRANSFER"
+  }
 }
