@@ -1,0 +1,26 @@
+{
+  "from": {
+    "displayName": "John Doe",
+    "idType": "MSISDN",
+    "idValue": "123456789"
+  },
+  "to": {
+    "idType": "PERSONAL_ID",
+    "idValue": "987654321",
+    "idSubValue": "PASSPORT"
+  },
+  "amountType": "SEND",
+  "currency": "USD",
+  "amount": "100",
+  "transactionType": "TRANSFER",
+  "note": "test payment",
+  "homeTransactionId": "123ABC",
+  "quoteRequestExtensions": [
+    { "key": "qreqkey1", "value": "qreqvalue1" },
+    { "key": "qreqkey2", "value": "qreqvalue2" }
+  ],
+  "transferRequestExtensions": [
+    { "key": "treqkey1", "value": "treqvalue1" },
+    { "key": "treqkey2", "value": "treqvalue2" }
+  ]
+}

@@ -158,12 +158,11 @@ describe('outboundModel', () => {
         MojaloopRequests.__postQuotes = jest.fn((postQuotesBody) => {
             // ensure that the `MojaloopRequests.postQuotes` method has been called with correct arguments
             // including extension list
-            const extensionList = postQuotesBody.extensionList;
+            const { extensionList } = postQuotesBody;
             expect(extensionList).toBeTruthy();
-            expect(extensionList.extension).toBeTruthy();
-            expect(extensionList.extension.length).toBe(2);
-            expect(extensionList.extension[0]).toEqual({ key: 'qkey1', value: 'qvalue1' });
-            expect(extensionList.extension[1]).toEqual({ key: 'qkey2', value: 'qvalue2' });
+            expect(extensionList.length).toBe(2);
+            expect(extensionList[0]).toEqual({ key: 'qkey1', value: 'qvalue1' });
+            expect(extensionList[1]).toEqual({ key: 'qkey2', value: 'qvalue2' });
 
             // simulate a callback with the quote response
             emitQuoteResponseCacheMessage(cache, postQuotesBody.quoteId, quoteResponse);
@@ -175,11 +174,11 @@ describe('outboundModel', () => {
             // set as the destination FSPID, picked up from the header's value `fspiop-source`
             expect(model.data.quoteResponseSource).toBe(quoteResponse.headers['fspiop-source']);
 
-            const extensionList = postTransfersBody.extensionList;
-            expect(extensionList.extension).toBeTruthy();
-            expect(extensionList.extension.length).toBe(2);
-            expect(extensionList.extension[0]).toEqual({ key: 'tkey1', value: 'tvalue1' });
-            expect(extensionList.extension[1]).toEqual({ key: 'tkey2', value: 'tvalue2' });
+            const { extensionList}  = postTransfersBody;
+            expect(extensionList).toBeTruthy();
+            expect(extensionList.length).toBe(2);
+            expect(extensionList[0]).toEqual({ key: 'tkey1', value: 'tvalue1' });
+            expect(extensionList[1]).toEqual({ key: 'tkey2', value: 'tvalue2' });
 
             expect(destFspId).toBe(quoteResponse.headers['fspiop-source']);
             expect(model.data.to.fspId).toBe(payeeParty.party.partyIdInfo.fspId);
@@ -239,12 +238,11 @@ describe('outboundModel', () => {
         MojaloopRequests.__postQuotes = jest.fn((postQuotesBody) => {
             // ensure that the `MojaloopRequests.postQuotes` method has been called with correct arguments
             // including extension list
-            const extensionList = postQuotesBody.extensionList;
+            const { extensionList } = postQuotesBody;
             expect(extensionList).toBeTruthy();
-            expect(extensionList.extension).toBeTruthy();
-            expect(extensionList.extension.length).toBe(2);
-            expect(extensionList.extension[0]).toEqual({ key: 'qkey1', value: 'qvalue1' });
-            expect(extensionList.extension[1]).toEqual({ key: 'qkey2', value: 'qvalue2' });
+            expect(extensionList.length).toBe(2);
+            expect(extensionList[0]).toEqual({ key: 'qkey1', value: 'qvalue1' });
+            expect(extensionList[1]).toEqual({ key: 'qkey2', value: 'qvalue2' });
 
             // simulate a callback with the quote response
             emitQuoteResponseCacheMessage(cache, postQuotesBody.quoteId, quoteResponse);
@@ -256,11 +254,11 @@ describe('outboundModel', () => {
             // set as the destination FSPID, picked up from the header's value `fspiop-source`
             expect(model.data.quoteResponseSource).toBe(quoteResponse.headers['fspiop-source']);
 
-            const extensionList = postTransfersBody.extensionList;
-            expect(extensionList.extension).toBeTruthy();
-            expect(extensionList.extension.length).toBe(2);
-            expect(extensionList.extension[0]).toEqual({ key: 'tkey1', value: 'tvalue1' });
-            expect(extensionList.extension[1]).toEqual({ key: 'tkey2', value: 'tvalue2' });
+            const { extensionList } = postTransfersBody;
+            expect(extensionList).toBeTruthy();
+            expect(extensionList.length).toBe(2);
+            expect(extensionList[0]).toEqual({ key: 'tkey1', value: 'tvalue1' });
+            expect(extensionList[1]).toEqual({ key: 'tkey2', value: 'tvalue2' });
 
             expect(destFspId).toBe(quoteResponse.headers['fspiop-source']);
             expect(model.data.to.fspId).toBe(payeeParty.party.partyIdInfo.fspId);
