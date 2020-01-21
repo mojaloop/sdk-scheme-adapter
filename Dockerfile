@@ -10,7 +10,6 @@ WORKDIR /src/
 
 COPY ./src/ /src/
 RUN npm install
-RUN npm rebuild
 
 FROM node:12.14.0-alpine 
 
