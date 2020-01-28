@@ -12,7 +12,7 @@
 
 
 const util = require('util');
-const { AccountsModel, OutboundTransfersModel,  } = require('@internal/model');
+const { AccountsModel, OutboundTransfersModel, OutboundRequestToPayModel } = require('@internal/model');
 
 
 /**
@@ -41,6 +41,9 @@ const handleTransferError = (method, err, ctx) =>
 
 const handleAccountsError = (method, err, ctx) =>
     handleError(method, err, ctx, 'executionState');
+
+const handleRequestToPayError = (method, err, ctx) =>
+    handleError(method, err, ctx, 'requestToPayState');
 
 
 /**
@@ -163,7 +166,7 @@ const postRequestToPay = async (ctx) => {
     } catch(err) {
         return handleRequestToPayError('requestToPayInboundRequest', err, ctx);
     }
-}
+};
 
 const healthCheck = async (ctx) => {
     ctx.response.status = 200;
