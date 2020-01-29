@@ -1,0 +1,26 @@
+{
+  "from": {
+    "displayName": "James Bush",
+    "idType": "MSISDN",
+    "idValue": "447710066017"
+  },
+  "to": {
+    "idType": "PERSONAL_ID",
+    "idValue": "123456789",
+    "idSubValue": "PASSPORT"
+  },
+  "amountType": "SEND",
+  "currency": "USD",
+  "amount": "100",
+  "transactionType": "TRANSFER",
+  "note": "test payment",
+  "homeTransactionId": "123ABC",
+  "quoteRequestExtensions": [
+    { "key": "qkey1", "value": "qvalue1" },
+    { "key": "qkey2", "value": "qvalue2" }
+  ],
+  "transferRequestExtensions": [
+    { "key": "tkey1", "value": "tvalue1" },
+    { "key": "tkey2", "value": "tvalue2" }
+  ]
+}
