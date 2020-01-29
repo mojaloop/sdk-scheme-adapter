@@ -17,6 +17,13 @@ const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const shared = require('@internal/shared');
 const { BackendError } = require('./common');
 
+const transferStateEnum = {
+    'WAITING_FOR_PARTY_ACCEPTANCE': 'WAITING_FOR_PARTY_ACCEPTANCE',
+    'WAITING_FOR_QUOTE_ACCEPTANCE': 'WAITING_FOR_QUOTE_ACCEPTANCE',
+    'ERROR_OCCURRED': 'ERROR_OCCURRED',
+    'COMPLETED': 'COMPLETED',
+};
+
 class OutboundRequestToPayModel {
 
     constructor(config) {
@@ -47,6 +54,11 @@ class OutboundRequestToPayModel {
      */
     async initialize(data) {
         this.data = data;
+
+        // add a transferId if one is not present e.g. on first submission
+        if(!this.data.hasOwnProperty('transactionRequestId')) {
+            this.data.transactionRequestId = uuid();
+        }
 
         // initialize the transfer state machine to its starting state
         if(!this.data.hasOwnProperty('currentState')) {
@@ -86,7 +98,7 @@ class OutboundRequestToPayModel {
      * Handles state machine transitions
      */
     async _handleTransition(lifecycle, ...args) {
-        this._logger.log(`Request To Pay ${this.data.transferId} is transitioning from ${lifecycle.from} to ${lifecycle.to} in response to ${lifecycle.transition}`);
+        this._logger.log(`Request To Pay ${this.data.transactionRequestId} is transitioning from ${lifecycle.from} to ${lifecycle.to} in response to ${lifecycle.transition}`);
 
         switch(lifecycle.transition) {
             case 'init':
@@ -109,6 +121,14 @@ class OutboundRequestToPayModel {
             default:
                 throw new Error(`Unhandled state transition for transfer ${this.data.transferId}: ${util.inspect(args)}`);
         }
+    }
+
+    /**
+     * Updates the internal state representation to reflect that of the state machine itself
+     */
+    _afterTransition() {
+        this._logger.log(`State machine transitioned: ${this.data.currentState} -> ${this.stateMachine.state}`);
+        this.data.currentState = this.stateMachine.state;
     }
 
     /**
@@ -247,13 +267,13 @@ class OutboundRequestToPayModel {
                     let error;
                     let message = JSON.parse(msg);
 
-                    if (message.type === 'transactionRequestFail') {
-                        error = new BackendError(`Got an error response processing transaction request: ${util.inspect(message.data)}`, 500);
-                        error.mojaloopError = message.data;
-                    } else {
-                        this._logger.push({ message }).log(`Ignoring cache notification for transfer ${transactionRequestKey}. Uknokwn message type ${message.type}.`);
-                        return;
-                    }
+                    // if (message.type === 'transactionRequestFail') {
+                    //     error = new BackendError(`Got an error response processing transaction request: ${util.inspect(message.data)}`, 500);
+                    //     error.mojaloopError = message.data;
+                    // } else {
+                    //     this._logger.push({ message }).log(`Ignoring cache notification for transfer ${transactionRequestKey}. Uknokwn message type ${message.type}.`);
+                    //     return;
+                    // }
 
                     // cancel the timeout handler
                     clearTimeout(timeout);
@@ -267,15 +287,12 @@ class OutboundRequestToPayModel {
                         return reject(error);
                     }
 
-                    const fulfil = message.data;
-                    this._logger.push({ fulfil }).log('Transfer fulfil received');
-                    this.data.fulfil = fulfil;
+                    const transactionRequestResponse = message.data;
+                    this._logger.push({ transactionRequestResponse }).log('Transaction Request Response received');
+                    this.data.transactionRequestResponse = transactionRequestResponse;
 
-                    if(this._checkIlp && !this._ilp.validateFulfil(fulfil.fulfilment, this.data.quoteResponse.condition)) {
-                        throw new Error('Invalid fulfilment received from peer DFSP.');
-                    }
-
-                    return resolve(fulfil);
+                    
+                    return resolve(transactionRequestResponse);
                 }
                 catch(err) {
                     return reject(err);
@@ -297,7 +314,7 @@ class OutboundRequestToPayModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /transfers request to the switch
             try {
-                const res = await this._requests.postTransactionRequest(transactionRequest, this.data.to.fspId);
+                const res = await this._requests.postTransactionRequests(transactionRequest, this.data.to.fspId);
                 this._logger.push({ res }).log('Transfer prepare sent to peer');
             }
             catch(err) {
@@ -390,7 +407,7 @@ class OutboundRequestToPayModel {
 
                 case 'succeeded':
                     // all steps complete so return
-                    this._logger.log('Transfer completed successfully');
+                    this._logger.log('Transaction Request completed successfully');
                     await this._save();
                     return this.getResponse();
 
@@ -421,6 +438,38 @@ class OutboundRequestToPayModel {
             }
             throw err;
         }
+    }
+
+    /**
+     * Returns an object representing the final state of the transfer suitable for the outbound API
+     *
+     * @returns {object} - Response representing the result of the transfer process
+     */
+    getResponse() {
+        // we want to project some of our internal state into a more useful
+        // representation to return to the SDK API consumer
+        let resp = { ...this.data };
+
+        switch(this.data.currentState) {
+            case 'payeeResolved':
+                resp.currentState = transferStateEnum.WAITING_FOR_PARTY_ACEPTANCE;
+                break;
+
+            case 'succeeded':
+                resp.currentState = transferStateEnum.COMPLETED;
+                break;
+
+            case 'errored':
+                resp.currentState = transferStateEnum.ERROR_OCCURRED;
+                break;
+
+            default:
+                this._logger.log(`Transfer model response being returned from an unexpected state: ${this.data.currentState}. Returning ERROR_OCCURRED state`);
+                resp.currentState = transferStateEnum.ERROR_OCCURRED;
+                break;
+        }
+
+        return resp;
     }
 
     /**
