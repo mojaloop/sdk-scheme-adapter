@@ -176,6 +176,31 @@ const internalQuoteResponseToMojaloop = (internal) => {
     return external;
 };
 
+/**
+ * Converts an internal quote response to mojaloop form
+ *
+ * @returns {object}
+ */
+const internalTransactionRequestResponseToMojaloop = (internal) => {
+    const external = {
+        transactionId: internal.transactionId,
+        transactionRequestState: internal.transactionRequestState
+    };
+
+    if(internal.payeeReceiveAmount) {
+        external.payeeReceiveAmount = {
+            amount: internal.payeeReceiveAmount,
+            currency: internal.payeeReceiveAmountCurrency
+        };
+    }
+
+    if(internal.extensionList) {
+        external.extensionList = internal.extensionList;
+    }
+
+    return external;
+};
+
 
 /**
  * Converts a mojaloop transfer prepare request to internal form
@@ -212,7 +237,7 @@ const mojaloopPrepareToInternalTransfer = (external, quote) => {
  *
  * @returns {object}
  */
-const mojaloopTransactionRequestToInternalFormat = (external) => {
+const mojaloopTransactionRequestToInternal = (external) => {
     let internal = null;
     internal = {
         transactionRequestId: external.transactionRequestId,
@@ -232,9 +257,10 @@ const mojaloopTransactionRequestToInternalFormat = (external) => {
 
 module.exports = {
     internalPartyToMojaloopParty,
+    internalQuoteResponseToMojaloop,
+    internalTransactionRequestResponseToMojaloop,
     mojaloopPartyToInternalParty,
     mojaloopQuoteRequestToInternal,
-    internalQuoteResponseToMojaloop,
     mojaloopPrepareToInternalTransfer,
-    mojaloopTransactionRequestToInternalFormat
+    mojaloopTransactionRequestToInternal
 };

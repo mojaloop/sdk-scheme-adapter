@@ -165,6 +165,37 @@ class InboundTransfersModel {
         }
     }
 
+    /**
+     * Asks the backend for a response to an incoming transactoin request and makes a callback to the originator with
+     * the result
+     */
+    async transactionRequest(transactionRequest, sourceFspId) {
+        try {
+            const internalForm = shared.mojaloopTransactionRequestToInternal(transactionRequest);
+
+            // make a call to the backend to ask for a quote response
+            const response = await this._backendRequests.postTransactionRequests(internalForm);
+
+            if(!response) {
+                // make an error callback to the source fsp
+                return 'No response from backend';
+            }
+
+            // project our internal quote reponse into mojaloop quote response form
+            const mojaloopResponse = shared.internalTransactionRequestResponseToMojaloop(response);
+
+            // make a callback to the source fsp with the quote response
+            return this._mojaloopRequests.putTransactionRequests(transactionRequest.transactionRequestId, mojaloopResponse, sourceFspId);
+        }
+        catch(err) {
+            this._logger.push({ err }).log('Error in transactionRequest');
+            const mojaloopError = await this._handleError(err);
+            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            return await this._mojaloopRequests.putTransactionRequestsError(transactionRequest.transactionRequestId,
+                mojaloopError, sourceFspId);
+        }
+    }
+
 
     /**
      * Validates  an incoming transfer prepare request and makes a callback to the originator with
