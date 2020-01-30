@@ -72,7 +72,7 @@ class BackendRequests {
      *
      * @returns {object} - JSON response body if one was received
      */
-    async postTransactionRequest(transactionRequest) {
+    async postTransactionRequests(transactionRequest) {
         return this._post('transactionRequest', transactionRequest);
     }
 
