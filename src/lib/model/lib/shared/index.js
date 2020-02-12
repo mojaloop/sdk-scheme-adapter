@@ -91,6 +91,20 @@ const mojaloopPartyToInternalParty = (external) => {
     return internal;
 };
 
+/**
+ * Converts a Mojaloop API spec partyIdInfo to an internal API spec party
+ *
+ * @returns {object} - the internal API spec party
+ */
+const mojaloopPartyIdInfoToInternalPartyIdInfo = (external) => {
+    const internal = {};
+
+    internal.idType = external.partyIdType;
+    internal.idValue = external.partyIdentifier;
+    internal.idSubValue = external.partySubIdOrType;
+
+    return internal;
+};
 
 /**
  * Projects a Mojaloop API spec quote request to internal form
@@ -242,8 +256,7 @@ const mojaloopTransactionRequestToInternal = (external) => {
     internal = {
         transactionRequestId: external.transactionRequestId,
         to: mojaloopPartyToInternalParty(external.payee),
-        from: mojaloopPartyToInternalParty(external.payer),
-        amountType: external.amountType,
+        from: mojaloopPartyIdInfoToInternalPartyIdInfo(external.payer),
         amount: external.amount.amount,
         currency: external.amount.currency,
         transactionType: external.transactionType.scenario,
@@ -260,6 +273,7 @@ module.exports = {
     internalQuoteResponseToMojaloop,
     internalTransactionRequestResponseToMojaloop,
     mojaloopPartyToInternalParty,
+    mojaloopPartyIdInfoToInternalPartyIdInfo,
     mojaloopQuoteRequestToInternal,
     mojaloopPrepareToInternalTransfer,
     mojaloopTransactionRequestToInternal

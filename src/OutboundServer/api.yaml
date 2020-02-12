@@ -144,12 +144,12 @@ paths:
       responses:
         200:
           $ref: '#/components/responses/requestToPayInboundSuccess'
-        400:
-          $ref: '#/components/responses/requestToPayInboundBadRequest'
-        500:
-          $ref: '#/components/responses/requestToPayInboundServerError'
-        504:
-          $ref: '#/components/responses/requestToPayInboundTimeout'
+        # 400:
+        #   $ref: '#/components/responses/requestToPayInboundBadRequest'
+        # 500:
+        #   $ref: '#/components/responses/requestToPayInboundServerError'
+        # 504:
+        #   $ref: '#/components/responses/requestToPayInboundTimeout'
 
   /accounts:
     post:
@@ -424,7 +424,7 @@ components:
       enum:
       - PAYER
       - PAYEE
-      description: Who is initiating the transaction: Payer or Payee.
+      description: Who is initiating the transaction, Payer or Payee.
 
     initiatorType:
       type: string
@@ -622,6 +622,67 @@ components:
           $ref: '#/components/schemas/extensionList'
         transferRequestExtensions:
           $ref: '#/components/schemas/extensionList'
+
+    requestToPayInboundRequest:
+      type: object
+      required:
+        - transactionRequestId
+        - from
+        - to
+        - amountType
+        - currency
+        - amount
+        - transactionType
+      properties:
+        transactionRequestId:
+          type: string
+          description: Transaction ID from the DFSP backend, used to reconcile transactions between the Switch and DFSP backend systems.
+        from:
+          $ref: '#/components/schemas/transferParty'
+        to:
+          $ref: '#/components/schemas/transferParty'
+        amountType:
+          $ref: '#/components/schemas/amountType'
+        currency:
+          $ref: '#/components/schemas/currency'
+        amount:
+          $ref: '#/components/schemas/money'
+        transactionType:
+          $ref: '#/components/schemas/transactionType'
+
+    requestToPayResponse:
+      type: object
+      required:
+        - transactionRequestId
+        - from
+        - to
+        - amountType
+        - currency
+        - amount
+        - transactionType
+      properties:
+        transactionRequestId:
+          type: string
+          description: Common ID between the FSPs for the transaction request object, decided by the Payee FSP. The ID should be reused for resends of the same transaction request. A new ID should be generated for each new transaction request.
+        from:
+          $ref: '#/components/schemas/transferParty'
+        to:
+          $ref: '#/components/schemas/transferParty'
+        amountType:
+          $ref: '#/components/schemas/amountType'
+        currency:
+          $ref: '#/components/schemas/currency'
+        amount:
+          $ref: '#/components/schemas/money'
+        scenario:
+          $ref: '#/components/schemas/scenario'
+        initiator:
+          $ref: '#/components/schemas/initiator'
+        initiatorType:
+          $ref: '#/components/schemas/initiatorType'
+        authenticationType:
+          type: string
+          description: OTP or QR Code, otherwise empty        
 
     transferResponse:
       type: object
@@ -985,39 +1046,14 @@ components:
           schema:
             $ref: '#/components/schemas/errorAccountsResponse'
     
-    requestTpPayInboundRequest:
-      type: object
-      required:
-        - transactionRequestId
-        - from
-        - to
-        - amountType
-        - currency
-        - amount
-        - transactionType
-      properties:
-        transactionRequestId:
-          type: string
-          description: Common ID between the FSPs for the transaction request object, decided by the Payee FSP. The ID should be reused for resends of the same transaction request. A new ID should be generated for each new transaction request.
-        from:
-          $ref: '#/components/schemas/transferParty'
-        to:
-          $ref: '#/components/schemas/transferParty'
-        amountType:
-          $ref: '#/components/schemas/amountType'
-        currency:
-          $ref: '#/components/schemas/currency'
-        amount:
-          $ref: '#/components/schemas/money'
-        scenario:
-          $ref: '#/components/schemas/scenario'
-        initiator:
-          $ref: '#/components/schemas/initiator'
-        initiatorType:
-          $ref: '#/components/schemas/initiatorType'
-        authenticationType:
-          type: string
-          description: OTP or QR Code, otherwise empty
+    requestToPayInboundSuccess:
+      description: Request to Pay completed successfully
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/requestToPayResponse'
+
+    
 
   parameters:
     transferId:
