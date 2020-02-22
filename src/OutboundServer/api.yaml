@@ -632,7 +632,9 @@ components:
         - amountType
         - currency
         - amount
-        - transactionType
+        - scenario
+        - initiator
+        - initiatorType
       properties:
         transactionRequestId:
           type: string
@@ -647,8 +649,12 @@ components:
           $ref: '#/components/schemas/currency'
         amount:
           $ref: '#/components/schemas/money'
-        transactionType:
-          $ref: '#/components/schemas/transactionType'
+        scenario:
+          $ref: '#/components/schemas/scenario'
+        initiator:
+          $ref: '#/components/schemas/initiator'
+        initiatorType:
+          $ref: '#/components/schemas/initiatorType'
 
     requestToPayResponse:
       type: object
