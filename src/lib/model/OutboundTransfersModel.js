@@ -416,7 +416,9 @@ class OutboundTransfersModel {
 
         // add extensionList if provided
         if(this.data.quoteRequestExtensions && this.data.quoteRequestExtensions.length > 0) {
-            quote.extensionList = this.data.quoteRequestExtensions;
+            quote.extensionList = {
+                extension: this.data.quoteRequestExtensions
+            };
         }
 
         return quote;
@@ -547,8 +549,11 @@ class OutboundTransfersModel {
         }
 
         // add extensions list if provided
-        if(this.data.transferRequestExtensions && this.data.transferRequestExtensions.length > 0) {
-            prepare.extensionList = this.data.transferRequestExtensions;
+        const { transferRequestExtensions } = this.data;
+        if(transferRequestExtensions && transferRequestExtensions.length > 0) {
+            prepare.extensionList = {
+                extension: transferRequestExtensions,
+            };
         }
 
         return prepare;

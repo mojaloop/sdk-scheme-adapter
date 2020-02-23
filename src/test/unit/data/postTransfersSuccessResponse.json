@@ -10,16 +10,18 @@
   },
   "fulfil": {
     "completedTimestamp": "2017-11-15T14:16:09.663+01:00",
-    "extensionList": [
-      {
-        "key": "treskey1",
-        "value": "tresvalue1"
-      },
-      {
-        "key": "treskey2",
-        "value": "tresvalue2"
-      }
-    ],
+    "extensionList": {
+      "extension": [
+        {
+          "key": "treskey1",
+          "value": "tresvalue1"
+        },
+        {
+          "key": "treskey2",
+          "value": "tresvalue2"
+        }
+      ]
+    },
     "fulfilment": "87mm1reS3SAi8oIWXgBkLmgWc1MkZ_yLbFDX5XAdo5o",
     "transferState": "COMMITTED"
   },
@@ -39,16 +41,18 @@
   "quoteResponse": {
     "condition": "fH9pAYDQbmoZLPbvv3CSW2RfjU4jvM4ApG_fqGnR7Xs",
     "expiration": "2017-11-15T14:17:09.663+01:00",
-    "extensionList": [
-      {
-        "key": "qreskey1",
-        "value": "qresvalue1"
-      },
-      {
-        "key": "qreskey2",
-        "value": "qresvalue2"
-      }
-    ],
+    "extensionList": {
+      "extension": [
+        {
+          "key": "qreskey1",
+          "value": "qresvalue1"
+        },
+        {
+          "key": "qreskey2",
+          "value": "qresvalue2"
+        }
+      ]
+    },
     "geoCode": {
       "latitude": "53.295971",
       "longitude": "-0.038500"
