@@ -5,16 +5,18 @@
   },
   "amountType": "SEND",
   "expiration": "2020-01-20T11:31:49.325Z",
-  "extensionList": [
-    {
-      "key": "qreqkey1",
-      "value": "qreqvalue1"
-    },
-    {
-      "key": "qreqkey2",
-      "value": "qreqvalue2"
-    }
-  ],
+  "extensionList": {
+    "extension": [
+      {
+        "key": "qreqkey1",
+        "value": "qreqvalue1"
+      },
+      {
+        "key": "qreqkey2",
+        "value": "qreqvalue2"
+      }
+    ]
+  },
   "note": "test payment",
   "payee": {
     "partyIdInfo": {

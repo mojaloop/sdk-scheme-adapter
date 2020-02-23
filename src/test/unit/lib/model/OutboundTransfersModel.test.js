@@ -158,7 +158,7 @@ describe('outboundModel', () => {
         MojaloopRequests.__postQuotes = jest.fn((postQuotesBody) => {
             // ensure that the `MojaloopRequests.postQuotes` method has been called with correct arguments
             // including extension list
-            const { extensionList } = postQuotesBody;
+            const extensionList = postQuotesBody.extensionList.extension;
             expect(extensionList).toBeTruthy();
             expect(extensionList.length).toBe(2);
             expect(extensionList[0]).toEqual({ key: 'qkey1', value: 'qvalue1' });
@@ -174,7 +174,7 @@ describe('outboundModel', () => {
             // set as the destination FSPID, picked up from the header's value `fspiop-source`
             expect(model.data.quoteResponseSource).toBe(quoteResponse.headers['fspiop-source']);
 
-            const { extensionList}  = postTransfersBody;
+            const extensionList = postTransfersBody.extensionList.extension;
             expect(extensionList).toBeTruthy();
             expect(extensionList.length).toBe(2);
             expect(extensionList[0]).toEqual({ key: 'tkey1', value: 'tvalue1' });
@@ -238,7 +238,7 @@ describe('outboundModel', () => {
         MojaloopRequests.__postQuotes = jest.fn((postQuotesBody) => {
             // ensure that the `MojaloopRequests.postQuotes` method has been called with correct arguments
             // including extension list
-            const { extensionList } = postQuotesBody;
+            const extensionList = postQuotesBody.extensionList.extension;
             expect(extensionList).toBeTruthy();
             expect(extensionList.length).toBe(2);
             expect(extensionList[0]).toEqual({ key: 'qkey1', value: 'qvalue1' });
@@ -254,7 +254,7 @@ describe('outboundModel', () => {
             // set as the destination FSPID, picked up from the header's value `fspiop-source`
             expect(model.data.quoteResponseSource).toBe(quoteResponse.headers['fspiop-source']);
 
-            const { extensionList } = postTransfersBody;
+            const extensionList = postTransfersBody.extensionList.extension;
             expect(extensionList).toBeTruthy();
             expect(extensionList.length).toBe(2);
             expect(extensionList[0]).toEqual({ key: 'tkey1', value: 'tvalue1' });

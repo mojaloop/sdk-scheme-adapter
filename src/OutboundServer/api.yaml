@@ -533,6 +533,20 @@ components:
       minItems: 0
       maxItems: 16
 
+    extensionListComplex:
+      type: object
+      description: Data model for the complex type ExtensionList
+      properties:
+        extension:
+          type: array
+          items:
+            $ref: '#/components/schemas/extensionItem'
+          minItems: 1
+          maxItems: 16
+          description: Number of Extension elements
+      required:
+        - extension
+
     transferRequest:
       type: object
       required:
@@ -653,7 +667,7 @@ components:
           $ref: '#/components/schemas/ilpCondition'
           description: The condition that must be attached to the transfer by the Payer.
         extensionList:
-          $ref: '#/components/schemas/extensionList'
+          $ref: '#/components/schemas/extensionListComplex'
           description: 'Optional extension, specific to deployment.'
       required:
         - transferAmount
@@ -677,7 +691,7 @@ components:
           $ref: '#/components/schemas/mojaloopTransferState'
           description: State of the transfer.
         extensionList:
-          $ref: '#/components/schemas/extensionList'
+          $ref: '#/components/schemas/extensionListComplex'
           description: 'Optional extension, specific to deployment.'
       required:
         - transferState
@@ -744,7 +758,7 @@ components:
           $ref: '#/components/schemas/errorDescription'
           description: Error description string.
         extensionList:
-          $ref: '#/components/schemas/extensionList'
+          $ref: '#/components/schemas/extensionListComplex'
           description: 'Optional list of extensions, specific to deployment.'
       required:
         - errorCode
