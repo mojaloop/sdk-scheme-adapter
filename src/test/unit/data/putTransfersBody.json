@@ -1,5 +1,17 @@
 {
   "fulfilment": "87mm1reS3SAi8oIWXgBkLmgWc1MkZ_yLbFDX5XAdo5o",
   "completedTimestamp": "2017-11-15T14:16:09.663+01:00",
-  "transferState": "COMMITTED"
+  "transferState": "COMMITTED",
+  "extensionList": {
+    "extension": [
+      {
+        "key": "treskey1",
+        "value": "tresvalue1"
+      },
+      {
+        "key": "treskey2",
+        "value": "tresvalue2"
+      }
+    ]
+  }
 }
