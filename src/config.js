@@ -10,7 +10,7 @@
 'use strict';
 
 const fs = require('fs');
-require('dotenv');
+require('dotenv').config();
 const { from } = require('env-var');
 
 function getFileContent(path) {
