@@ -1,55 +1,101 @@
 {
+  "amount": "100",
+  "amountType": "SEND",
+  "currency": "USD",
+  "currentState": "COMPLETED",
   "from": {
     "displayName": "John Doe",
     "idType": "MSISDN",
     "idValue": "123456789"
   },
-  "to": {
-    "idType": "PERSONAL_ID",
-    "idValue": "987654321",
-    "idSubValue": "PASSPORT",
-    "fspId": "sim",
-    "firstName": "John",
-    "middleName": "Someone",
-    "lastName": "Doe",
-    "dateOfBirth": "1980-01-01"
-  },
-  "amountType": "SEND",
-  "currency": "USD",
-  "amount": "100",
-  "transactionType": "TRANSFER",
-  "note": "test payment",
-  "homeTransactionId": "123ABC",
-  "currentState": "COMPLETED",
-  "quoteResponse": {
-    "transferAmount": {
-      "amount": "500",
-      "currency": "USD"
+  "fulfil": {
+    "completedTimestamp": "2017-11-15T14:16:09.663+01:00",
+    "extensionList": {
+      "extension": [
+        {
+          "key": "treskey1",
+          "value": "tresvalue1"
+        },
+        {
+          "key": "treskey2",
+          "value": "tresvalue2"
+        }
+      ]
     },
-    "payeeReceiveAmount": {
-      "amount": "490",
+    "fulfilment": "87mm1reS3SAi8oIWXgBkLmgWc1MkZ_yLbFDX5XAdo5o",
+    "transferState": "COMMITTED"
+  },
+  "homeTransactionId": "123ABC",
+  "note": "test payment",
+  "quoteId": "00000000-0000-1000-8000-000000000002",
+  "quoteRequestExtensions": [
+    {
+      "key": "qreqkey1",
+      "value": "qreqvalue1"
+    },
+    {
+      "key": "qreqkey2",
+      "value": "qreqvalue2"
+    }
+  ],
+  "quoteResponse": {
+    "condition": "fH9pAYDQbmoZLPbvv3CSW2RfjU4jvM4ApG_fqGnR7Xs",
+    "expiration": "2017-11-15T14:17:09.663+01:00",
+    "extensionList": {
+      "extension": [
+        {
+          "key": "qreskey1",
+          "value": "qresvalue1"
+        },
+        {
+          "key": "qreskey2",
+          "value": "qresvalue2"
+        }
+      ]
+    },
+    "geoCode": {
+      "latitude": "53.295971",
+      "longitude": "-0.038500"
+    },
+    "ilpPacket": "AQAAAAAAACasIWcuc2UubW9iaWxlbW9uZXkubXNpc2RuLjEyMzQ1Njc4OYIEIXsNCiAgICAidHJhbnNhY3Rpb25JZCI6ICI4NWZlYWMyZi0zOWIyLTQ5MWItODE3ZS00YTAzMjAzZDRmMTQiLA0KICAgICJxdW90ZUlkIjogIjdjMjNlODBjLWQwNzgtNDA3Ny04MjYzLTJjMDQ3ODc2ZmNmNiIsDQogICAgInBheWVlIjogew0KICAgICAgICAicGFydHlJZEluZm8iOiB7DQogICAgICAgICAgICAicGFydHlJZFR5cGUiOiAiTVNJU0ROIiwNCiAgICAgICAgICAgICJwYXJ0eUlkZW50aWZpZXIiOiAiMTIzNDU2Nzg5IiwNCiAgICAgICAgICAgICJmc3BJZCI6ICJNb2JpbGVNb25leSINCiAgICAgICAgfSwNCiAgICAgICAgInBlcnNvbmFsSW5mbyI6IHsNCiAgICAgICAgICAgICJjb21wbGV4TmFtZSI6IHsNCiAgICAgICAgICAgICAgICAiZmlyc3ROYW1lIjogIkhlbnJpayIsDQogICAgICAgICAgICAgICAgImxhc3ROYW1lIjogIkthcmxzc29uIg0KICAgICAgICAgICAgfQ0KICAgICAgICB9DQogICAgfSwNCiAgICAicGF5ZXIiOiB7DQogICAgICAgICJwZXJzb25hbEluZm8iOiB7DQogICAgICAgICAgICAiY29tcGxleE5hbWUiOiB7DQogICAgICAgICAgICAgICAgImZpcnN0TmFtZSI6ICJNYXRzIiwNCiAgICAgICAgICAgICAgICAibGFzdE5hbWUiOiAiSGFnbWFuIg0KICAgICAgICAgICAgfQ0KICAgICAgICB9LA0KICAgICAgICAicGFydHlJZEluZm8iOiB7DQogICAgICAgICAgICAicGFydHlJZFR5cGUiOiAiSUJBTiIsDQogICAgICAgICAgICAicGFydHlJZGVudGlmaWVyIjogIlNFNDU1MDAwMDAwMDA1ODM5ODI1NzQ2NiIsDQogICAgICAgICAgICAiZnNwSWQiOiAiQmFua05yT25lIg0KICAgICAgICB9DQogICAgfSwNCiAgICAiYW1vdW50Ijogew0KICAgICAgICAiYW1vdW50IjogIjEwMCIsDQogICAgICAgICJjdXJyZW5jeSI6ICJVU0QiDQogICAgfSwNCiAgICAidHJhbnNhY3Rpb25UeXBlIjogew0KICAgICAgICAic2NlbmFyaW8iOiAiVFJBTlNGRVIiLA0KICAgICAgICAiaW5pdGlhdG9yIjogIlBBWUVSIiwNCiAgICAgICAgImluaXRpYXRvclR5cGUiOiAiQ09OU1VNRVIiDQogICAgfSwNCiAgICAibm90ZSI6ICJGcm9tIE1hdHMiDQp9DQo==",
+    "payeeFspCommission": {
+      "amount": "5",
       "currency": "USD"
     },
     "payeeFspFee": {
       "amount": "5",
       "currency": "USD"
     },
-    "payeeFspCommission": {
-      "amount": "5",
+    "payeeReceiveAmount": {
+      "amount": "490",
       "currency": "USD"
     },
-    "geoCode": {
-      "latitude": "53.295971",
-      "longitude": "-0.038500"
-    },
-    "expiration": "2017-11-15T14:17:09.663+01:00",
-    "ilpPacket": "AQAAAAAAACasIWcuc2UubW9iaWxlbW9uZXkubXNpc2RuLjEyMzQ1Njc4OYIEIXsNCiAgICAidHJhbnNhY3Rpb25JZCI6ICI4NWZlYWMyZi0zOWIyLTQ5MWItODE3ZS00YTAzMjAzZDRmMTQiLA0KICAgICJxdW90ZUlkIjogIjdjMjNlODBjLWQwNzgtNDA3Ny04MjYzLTJjMDQ3ODc2ZmNmNiIsDQogICAgInBheWVlIjogew0KICAgICAgICAicGFydHlJZEluZm8iOiB7DQogICAgICAgICAgICAicGFydHlJZFR5cGUiOiAiTVNJU0ROIiwNCiAgICAgICAgICAgICJwYXJ0eUlkZW50aWZpZXIiOiAiMTIzNDU2Nzg5IiwNCiAgICAgICAgICAgICJmc3BJZCI6ICJNb2JpbGVNb25leSINCiAgICAgICAgfSwNCiAgICAgICAgInBlcnNvbmFsSW5mbyI6IHsNCiAgICAgICAgICAgICJjb21wbGV4TmFtZSI6IHsNCiAgICAgICAgICAgICAgICAiZmlyc3ROYW1lIjogIkhlbnJpayIsDQogICAgICAgICAgICAgICAgImxhc3ROYW1lIjogIkthcmxzc29uIg0KICAgICAgICAgICAgfQ0KICAgICAgICB9DQogICAgfSwNCiAgICAicGF5ZXIiOiB7DQogICAgICAgICJwZXJzb25hbEluZm8iOiB7DQogICAgICAgICAgICAiY29tcGxleE5hbWUiOiB7DQogICAgICAgICAgICAgICAgImZpcnN0TmFtZSI6ICJNYXRzIiwNCiAgICAgICAgICAgICAgICAibGFzdE5hbWUiOiAiSGFnbWFuIg0KICAgICAgICAgICAgfQ0KICAgICAgICB9LA0KICAgICAgICAicGFydHlJZEluZm8iOiB7DQogICAgICAgICAgICAicGFydHlJZFR5cGUiOiAiSUJBTiIsDQogICAgICAgICAgICAicGFydHlJZGVudGlmaWVyIjogIlNFNDU1MDAwMDAwMDA1ODM5ODI1NzQ2NiIsDQogICAgICAgICAgICAiZnNwSWQiOiAiQmFua05yT25lIg0KICAgICAgICB9DQogICAgfSwNCiAgICAiYW1vdW50Ijogew0KICAgICAgICAiYW1vdW50IjogIjEwMCIsDQogICAgICAgICJjdXJyZW5jeSI6ICJVU0QiDQogICAgfSwNCiAgICAidHJhbnNhY3Rpb25UeXBlIjogew0KICAgICAgICAic2NlbmFyaW8iOiAiVFJBTlNGRVIiLA0KICAgICAgICAiaW5pdGlhdG9yIjogIlBBWUVSIiwNCiAgICAgICAgImluaXRpYXRvclR5cGUiOiAiQ09OU1VNRVIiDQogICAgfSwNCiAgICAibm90ZSI6ICJGcm9tIE1hdHMiDQp9DQo==",
-    "condition": "fH9pAYDQbmoZLPbvv3CSW2RfjU4jvM4ApG_fqGnR7Xs"
+    "transferAmount": {
+      "amount": "500",
+      "currency": "USD"
+    }
   },
   "quoteResponseSource": "mojaloop-sdk",
-  "fulfil": {
-    "fulfilment": "87mm1reS3SAi8oIWXgBkLmgWc1MkZ_yLbFDX5XAdo5o",
-    "completedTimestamp": "2017-11-15T14:16:09.663+01:00",
-    "transferState": "COMMITTED"
-  }
+  "to": {
+    "dateOfBirth": "1980-01-01",
+    "firstName": "John",
+    "fspId": "sim",
+    "idSubValue": "PASSPORT",
+    "idType": "PERSONAL_ID",
+    "idValue": "987654321",
+    "lastName": "Doe",
+    "middleName": "Someone"
+  },
+  "transactionType": "TRANSFER",
+  "transferId": "00000000-0000-1000-8000-000000000001",
+  "transferRequestExtensions": [
+    {
+      "key": "treqkey1",
+      "value": "treqvalue1"
+    },
+    {
+      "key": "treqkey2",
+      "value": "treqvalue2"
+    }
+  ]
 }
