@@ -16,6 +16,7 @@ jest.mock('redis');
 
 const path = require('path');
 const fs = require('fs');
+const uuidv4 = require('uuidv4');
 const yaml = require('js-yaml');
 const Validate = require('@internal/validate');
 const { Logger } = require('@internal/log');
@@ -34,11 +35,13 @@ const postAccountsErrorTimeoutResponse = require('./data/postAccountsErrorTimeou
 const postAccountsErrorMojaloopResponse = require('./data/postAccountsErrorMojaloopResponse');
 
 // Transfers
+const postQuotesBody = require('./data/postQuotesBody');
+const postTransfersBody = require('./data/postTransfersBody');
 const putPartiesBody = require('./data/putPartiesBody');
 const putQuotesBody = require('./data/putQuotesBody');
 const putTransfersBody = require('./data/putTransfersBody');
 const postTransfersBadBody = require('./data/postTransfersBadBody');
-const postTransfersBody = require('./data/postTransfersBody');
+const postTransfersSimpleBody = require('./data/postTransfersSimpleBody');
 const postTransfersSuccessResponse = require('./data/postTransfersSuccessResponse');
 const postTransfersErrorTimeoutResponse = require('./data/postTransfersErrorTimeoutResponse');
 const postTransfersErrorMojaloopResponse = require('./data/postTransfersErrorMojaloopResponse');
@@ -87,6 +90,18 @@ describe('Outbound API', () => {
     });
 
     describe('POST /accounts', () => {
+        beforeEach(() => {
+            uuidv4.__reset();
+        });
+
+        /**
+         *
+         * @param putBodyFn {function}
+         * @param responseCode {number}
+         * @param responseBody {object}
+         *
+         * @return {Promise<any>}
+         */
         const testPostAccounts = async (putBodyFn, responseCode, responseBody) => {
             let pendingRequest = Promise.resolve();
             const handleRequest = async (req) => {
@@ -116,7 +131,7 @@ describe('Outbound API', () => {
                 .send(postAccountsBody)
                 .then((res) => {
                     const {body} = res;
-                    expect(body).toMatchObject(responseBody);
+                    expect(body).toEqual(responseBody);
                     const responseValidator = new OpenAPIResponseValidator(apiSpecs.paths['/accounts'].post);
                     const err = responseValidator.validateResponse(responseCode, body);
                     if (err) {
@@ -192,18 +207,27 @@ describe('Outbound API', () => {
             await inboundRequestValidator.initialise(apiSpecs);
         });
 
+        beforeEach(() => {
+            uuidv4.__reset();
+        });
+
         /**
          *
-         * @param putBodyFn {Object}
+         * @param bodyFn {Object}
          * @param responseCode {number}
-         * @param putBodyFn.parties {function}
-         * @param putBodyFn.quotes {function}
-         * @param putBodyFn.transfers {function}
-         * @param responseBody {Object}
+         * @param bodyFn.parties {object}
+         * @param bodyFn.parties.put {function}
+         * @param bodyFn.quotes {object}
+         * @param bodyFn.quotes.put {function}
+         * @param bodyFn.quotes.post {function}
+         * @param bodyFn.transfers {object}
+         * @param bodyFn.transfers.put {function}
+         * @param bodyFn.transfers.post {function}
+         * @param responseBody {object}
 
          * @return {Promise<any>}
          */
-        const testPostTransfers = async (putBodyFn, responseCode, responseBody) => {
+        const testPostTransfers = async (bodyFn, responseCode, responseBody) => {
             let pendingRequest = Promise.resolve();
             let currentRequest = Promise.resolve();
             const handleRequest = async (req) => {
@@ -216,15 +240,17 @@ describe('Outbound API', () => {
                 inboundRequestValidator.validateRequest({ method, path: urlPath, request: { headers, body } }, logger);
                 if (urlPath.startsWith('/parties/')) {
                     expect(method).toBe('GET');
-                    putBody = await Promise.resolve(putBodyFn.parties());
+                    putBody = await Promise.resolve(bodyFn.parties.put());
                     putUrl = urlPath;
                 } else if (urlPath === '/quotes') {
                     expect(method).toBe('POST');
-                    putBody = await Promise.resolve(putBodyFn.quotes(body));
+                    expect(body).toEqual(bodyFn.quotes.post(body));
+                    putBody = await Promise.resolve(bodyFn.quotes.put(body));
                     putUrl = `/quotes/${body.quoteId}`;
                 } else if (urlPath === '/transfers') {
                     expect(method).toBe('POST');
-                    putBody = await Promise.resolve(putBodyFn.transfers(body));
+                    expect(body).toEqual(bodyFn.transfers.post(body));
+                    putBody = await Promise.resolve(bodyFn.transfers.put(body));
                     putUrl = `/transfers/${body.transferId}`;
                 } else {
                     throw new Error(`Unexpected url ${urlPath}`);
@@ -250,10 +276,10 @@ describe('Outbound API', () => {
 
             await reqOutbound
                 .post('/transfers')
-                .send(postTransfersBody)
+                .send(postTransfersSimpleBody)
                 .then((res) => {
                     const {body} = res;
-                    expect(body).toMatchObject(responseBody);
+                    expect(body).toEqual(responseBody);
                     const responseValidator = new OpenAPIResponseValidator(apiSpecs.paths['/transfers'].post);
                     const err = responseValidator.validateResponse(responseCode, body);
                     if (err) {
@@ -277,33 +303,61 @@ describe('Outbound API', () => {
         });
 
         test('should return success response', () => {
-            const putBodyFn = {
-                parties: () => putPartiesBody,
-                quotes: () => putQuotesBody,
-                transfers: () => putTransfersBody,
+            const bodyFn = {
+                parties: {
+                    put: () => putPartiesBody,
+                },
+                quotes: {
+                    post: (body) => ({
+                        ...postQuotesBody,
+                        expiration: body.expiration,
+                    }),
+                    put: () => putQuotesBody,
+                },
+                transfers: {
+                    post: (body) => ({
+                        ...postTransfersBody,
+                        expiration: body.expiration,
+                    }),
+                    put: () => putTransfersBody,
+                },
             };
-            return testPostTransfers(putBodyFn, 200, postTransfersSuccessResponse);
+            return testPostTransfers(bodyFn, 200, postTransfersSuccessResponse);
         });
 
         test('should return timeout error response on party resolution', () => {
             const putBodyFn = {
-                parties: () => new Promise(resolve => setTimeout(() => resolve(putPartiesBody), 3000)),
-                quotes: () => putQuotesBody,
-                transfers: () => putTransfersBody,
+                parties: {
+                    put: () => new Promise(
+                        resolve => setTimeout(() => resolve(putPartiesBody),
+                            3000)),
+                },
+                quotes: {
+                    put: () => putQuotesBody,
+                },
+                transfers: {
+                    put: () => putTransfersBody,
+                }
             };
             return testPostTransfers(putBodyFn, 504, postTransfersErrorTimeoutResponse);
         });
 
         test('should return mojaloop error response on party resolution', () => {
             const putBodyFn = {
-                parties: () => ({
-                    errorInformation: {
-                        errorCode: '3204',
-                        errorDescription: 'Party not found',
-                    },
-                }),
-                quotes: () => putQuotesBody,
-                transfers: () => putTransfersBody,
+                parties: {
+                    put: () => ({
+                        errorInformation: {
+                            errorCode: '3204',
+                            errorDescription: 'Party not found',
+                        },
+                    }),
+                },
+                quotes: {
+                    put: () => putQuotesBody
+                },
+                transfers: {
+                    put: () => putTransfersBody
+                },
             };
             return testPostTransfers(putBodyFn, 500, postTransfersErrorMojaloopResponse);
         });

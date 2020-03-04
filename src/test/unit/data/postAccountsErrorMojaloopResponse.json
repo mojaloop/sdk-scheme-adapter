@@ -2,13 +2,12 @@
   "executionState": {
     "accounts": [
       {
+        "currency": "USD",
         "idType": "MSISDN",
-        "idValue": "123456789",
-        "currency": "USD"
+        "idValue": "123456789"
       }
     ],
     "currentState": "ERROR_OCCURRED",
-    "response": [],
     "lastError": {
       "httpStatusCode": 500,
       "mojaloopError": {
@@ -17,7 +16,10 @@
           "errorDescription": "Party not found"
         }
       }
-    }
+    },
+    "modelId": "00000000-0000-1000-8000-000000000001",
+    "response": []
   },
+  "message": "Got an error response creating accounts: {\n  errorInformation: { errorCode: '3204', errorDescription: 'Party not found' }\n}",
   "statusCode": "3204"
 }

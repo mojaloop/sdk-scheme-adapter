@@ -549,9 +549,10 @@ class OutboundTransfersModel {
         }
 
         // add extensions list if provided
-        if(this.data.transferRequestExtensions && this.data.transferRequestExtensions.length > 0) {
+        const { transferRequestExtensions } = this.data;
+        if(transferRequestExtensions && transferRequestExtensions.length > 0) {
             prepare.extensionList = {
-                extension: this.data.transferRequestExtensions
+                extension: transferRequestExtensions,
             };
         }
 
