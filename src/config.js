@@ -10,7 +10,7 @@
 'use strict';
 
 const fs = require('fs');
-require('dotenv');
+require('dotenv').config();
 const { from } = require('env-var');
 
 function getFileContent(path) {
@@ -26,12 +26,12 @@ const env = from(process.env, {
 });
 
 module.exports = {
-    inboundPort: env.get('INBOUND_LISTEN_PORT', '4000').asPortNumber(),
-    outboundPort: env.get('OUTBOUND_LISTEN_PORT', '4001').asPortNumber(),
+    inboundPort: env.get('INBOUND_LISTEN_PORT').default('4000').asPortNumber(),
+    outboundPort: env.get('OUTBOUND_LISTEN_PORT').default('4001').asPortNumber(),
     tls: {
         inbound: {
             mutualTLS: {
-                enabled: env.get('INBOUND_MUTUAL_TLS_ENABLED', 'false').asBool(),
+                enabled: env.get('INBOUND_MUTUAL_TLS_ENABLED').default('false').asBool(),
             },
             creds: {
                 ca: env.get('IN_CA_CERT_PATH').asFileListContent(),
@@ -41,7 +41,7 @@ module.exports = {
         },
         outbound: {
             mutualTLS: {
-                enabled: env.get('OUTBOUND_MUTUAL_TLS_ENABLED', 'false').asBool(),
+                enabled: env.get('OUTBOUND_MUTUAL_TLS_ENABLED').default('false').asBool(),
             },
             creds: {
                 ca: env.get('OUT_CA_CERT_PATH').asFileListContent(),
@@ -56,32 +56,32 @@ module.exports = {
     transfersEndpoint: env.get('TRANSFERS_ENDPOINT').asString(),
     backendEndpoint: env.get('BACKEND_ENDPOINT').required().asString(),
 
-    dfspId: env.get('DFSP_ID', 'mojaloop-sdk').asString(),
-    ilpSecret: env.get('ILP_SECRET', 'mojaloop-sdk').asString(),
-    checkIlp: env.get('CHECK_ILP', 'true').asBool(),
-    expirySeconds: env.get('EXPIRY_SECONDS', '60').asIntPositive(),
+    dfspId: env.get('DFSP_ID').default('mojaloop').asString(),
+    ilpSecret: env.get('ILP_SECRET').default('mojaloop-sdk').asString(),
+    checkIlp: env.get('CHECK_ILP').default('true').asBool(),
+    expirySeconds: env.get('EXPIRY_SECONDS').default('60').asIntPositive(),
 
-    autoAcceptQuotes: env.get('AUTO_ACCEPT_QUOTES', 'true').asBool(),
-    autoAcceptParty: env.get('AUTO_ACCEPT_PARTY', 'true').asBool(),
+    autoAcceptQuotes: env.get('AUTO_ACCEPT_QUOTES').default('true').asBool(),
+    autoAcceptParty: env.get('AUTO_ACCEPT_PARTY').default('true').asBool(),
 
-    useQuoteSourceFSPAsTransferPayeeFSP: env.get('USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP', 'false').asBool(),
+    useQuoteSourceFSPAsTransferPayeeFSP: env.get('USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP').default('false').asBool(),
 
     // Getting secrets from files instead of environment variables reduces the likelihood of
     // accidental leakage.
 
-    validateInboundJws: env.get('VALIDATE_INBOUND_JWS', 'true').asBool(),
-    validateInboundPutPartiesJws: env.get('VALIDATE_INBOUND_PUT_PARTIES_JWS', 'false').asBool(),
-    jwsSign: env.get('JWS_SIGN', 'true').asBool(),
-    jwsSignPutParties: env.get('JWS_SIGN_PUT_PARTIES', 'false').asBool(),
+    validateInboundJws: env.get('VALIDATE_INBOUND_JWS').default('true').asBool(),
+    validateInboundPutPartiesJws: env.get('VALIDATE_INBOUND_PUT_PARTIES_JWS').default('false').asBool(),
+    jwsSign: env.get('JWS_SIGN').default('true').asBool(),
+    jwsSignPutParties: env.get('JWS_SIGN_PUT_PARTIES').default('false').asBool(),
     jwsSigningKey: env.get('JWS_SIGNING_KEY_PATH').asFileContent(),
     jwsVerificationKeysDirectory: env.get('JWS_VERIFICATION_KEYS_DIRECTORY').asString(),
     cacheConfig: {
         host: env.get('CACHE_HOST').required().asString(),
         port: env.get('CACHE_PORT').required().asPortNumber(),
     },
-    enableTestFeatures: env.get('ENABLE_TEST_FEATURES', 'false').asBool(),
+    enableTestFeatures: env.get('ENABLE_TEST_FEATURES').default('false').asBool(),
     oauthTestServer: {
-        enabled: env.get('ENABLE_OAUTH_TOKEN_ENDPOINT', 'false').asBool(),
+        enabled: env.get('ENABLE_OAUTH_TOKEN_ENDPOINT').default('false').asBool(),
         clientKey: env.get('OAUTH_TOKEN_ENDPOINT_CLIENT_KEY').asString(),
         clientSecret: env.get('OAUTH_TOKEN_ENDPOINT_CLIENT_SECRET').asString(),
         listenPort: env.get('OAUTH_TOKEN_ENDPOINT_LISTEN_PORT').asPortNumber(),
@@ -91,15 +91,15 @@ module.exports = {
         tokenEndpoint: env.get('OAUTH_TOKEN_ENDPOINT').asString(),
         clientKey: env.get('OAUTH_CLIENT_KEY').asString(),
         clientSecret: env.get('OAUTH_CLIENT_SECRET').asString(),
-        refreshSeconds: env.get('OAUTH_REFRESH_SECONDS', '60').asIntPositive(),
+        refreshSeconds: env.get('OAUTH_REFRESH_SECONDS').default('60').asIntPositive(),
     },
-    rejectExpiredQuoteResponses: env.get('REJECT_EXPIRED_QUOTE_RESPONSES', 'false').asBool(),
-    rejectTransfersOnExpiredQuotes: env.get('REJECT_TRANSFERS_ON_EXPIRED_QUOTES', 'false').asBool(),
-    rejectExpiredTransferFulfils: env.get('REJECT_EXPIRED_TRANSFER_FULFILS', 'false').asBool(),
+    rejectExpiredQuoteResponses: env.get('REJECT_EXPIRED_QUOTE_RESPONSES').default('false').asBool(),
+    rejectTransfersOnExpiredQuotes: env.get('REJECT_TRANSFERS_ON_EXPIRED_QUOTES').default('false').asBool(),
+    rejectExpiredTransferFulfils: env.get('REJECT_EXPIRED_TRANSFER_FULFILS').default('false').asBool(),
 
-    requestProcessingTimeoutSeconds: env.get('REQUEST_PROCESSING_TIMEOUT_SECONDS', '30').asIntPositive(),
+    requestProcessingTimeoutSeconds: env.get('REQUEST_PROCESSING_TIMEOUT_SECONDS').default('30').asIntPositive(),
 
-    logIndent: env.get('LOG_INDENT', '2').asIntPositive(),
+    logIndent: env.get('LOG_INDENT').default('2').asIntPositive(),
 
-    allowTransferWithoutQuote: env.get('allowTransferWithoutQuote', 'false').asBool(),
+    allowTransferWithoutQuote: env.get('allowTransferWithoutQuote').default('false').asBool(),
 };
