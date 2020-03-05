@@ -130,17 +130,6 @@ describe('outboundModel', () => {
         expect(StateMachine.__instance.state).toBe('succeeded');
     });
 
-    async function testTlsServer(enableTls) {
-        config.tls.outbound.mutualTLS.enabled = enableTls;
-
-        new Model({
-            cache,
-            logger,
-            ...config
-        });
-
-        const scheme = enableTls ? 'https' : 'http';
-        expect(MojaloopRequests.__instance.transportScheme).toBe(scheme);
-    }
+    
     
 });
