@@ -14,7 +14,6 @@ const util = require('util');
 const { uuid } = require('uuidv4');
 const StateMachine = require('javascript-state-machine');
 const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
-const shared = require('@internal/shared');
 const { BackendError } = require('./common');
 
 const transferStateEnum = {
