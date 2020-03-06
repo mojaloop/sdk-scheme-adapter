@@ -6,7 +6,7 @@ defaults_working_directory: &defaults_working_directory
 
 defaults_docker_node: &defaults_docker_node
   docker:
-    - image: node:lts
+    - image: node:lts-alpine
 
 defaults_docker_helm_kube: &defaults_docker_helm_kube
   docker:
