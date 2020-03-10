@@ -11,11 +11,15 @@
 'use strict';
 
 
-const BackendRequests = require('@internal/requests').BackendRequests;
-const HTTPResponseError = require('@internal/requests').HTTPResponseError;
-const MojaloopRequests = require('@mojaloop/sdk-standard-components').MojaloopRequests;
-const Ilp = require('@mojaloop/sdk-standard-components').Ilp;
-const Errors = require('@mojaloop/sdk-standard-components').Errors;
+const {
+    BackendRequests,
+    HTTPResponseError,
+} = require('@internal/requests');
+const {
+    MojaloopRequests,
+    Ilp,
+    Errors,
+} = require('@mojaloop/sdk-standard-components');
 const shared = require('@internal/shared');
 
 
@@ -113,6 +117,38 @@ class InboundTransfersModel {
         }
     }
 
+    /**
+     * Queries details of a transfer
+     */
+    async getTransfer(transferId, sourceFspId) {
+        try {
+            const transfer = await this._cache.get(`tf_${transferId}`);
+
+            if(!transfer) {
+                this._logger.error(`Error in getTransfer: transferId ${transferId} not found`);
+                const error = Errors.MojaloopApiErrorObjectFromCode(Errors.MojaloopApiErrorCodes.TRANSFER_ID_NOT_FOUND);
+                return this._mojaloopRequests.putTransfersError(transferId, error, sourceFspId);
+            }
+
+            const { mojaloopResponse } = transfer;
+
+            if (mojaloopResponse.errorInformation) {
+                return this._mojaloopRequests.putTransfersError(transferId, mojaloopResponse, sourceFspId);
+            }
+
+            // make a callback to the source fsp with the transfer fulfilment
+            return this._mojaloopRequests.putTransfers(transferId, mojaloopResponse,
+                sourceFspId);
+        }
+        catch(err) {
+            this._logger.push({ err }).log('Error in getTransfers');
+            const mojaloopError = await this._handleError(err);
+            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            return this._mojaloopRequests.putTransfersError(transferId,
+                mojaloopError, sourceFspId);
+        }
+    }
+
 
     /**
      * Asks the backend for a response to an incoming quote request and makes a callback to the originator with
@@ -172,6 +208,12 @@ class InboundTransfersModel {
      */
     async prepareTransfer(prepareRequest, sourceFspId) {
         try {
+            await this._cache.set(`tf_${prepareRequest.transferId}`, {
+                request: prepareRequest,
+                mojaloopResponse: {
+                    transferState: 'RECEIVED',
+                },
+            });
 
             // retrieve our quote data
             const quote = await this._cache.get(`quote_${prepareRequest.transferId}`);
@@ -183,7 +225,7 @@ class InboundTransfersModel {
                 }
             }
 
-            // Calculate or retrieve fullfilment and condition
+            // Calculate or retrieve fulfilment and condition
             let fulfilment = null;
             let condition = null;
             if(quote) {
@@ -207,12 +249,25 @@ class InboundTransfersModel {
                 if (now > expiration) {
                     const error = Errors.MojaloopApiErrorObjectFromCode(Errors.MojaloopApiErrorCodes.QUOTE_EXPIRED);
                     this._logger.error(`Error in prepareTransfer: quote expired for transfer ${prepareRequest.transferId}, system time=${now} > quote time=${expiration}`);
+                    // now store the fulfilment and the quote data against the quoteId in our cache
+                    await this._cache.set(`tf_${prepareRequest.transferId}`, {
+                        request: prepareRequest,
+                        mojaloopResponse: error,
+                    });
                     return this._mojaloopRequests.putTransfersError(prepareRequest.transferId, error, sourceFspId);
                 }
             }
 
             // project the incoming transfer prepare into an internal transfer request
             const internalForm = shared.mojaloopPrepareToInternalTransfer(prepareRequest, quote);
+
+
+            await this._cache.set(`tf_${prepareRequest.transferId}`, {
+                request: prepareRequest,
+                mojaloopResponse: {
+                    transferState: 'RESERVED',
+                },
+            });
 
             // make a call to the backend to inform it of the incoming transfer
             const response = await this._backendRequests.postTransfers(internalForm);
@@ -228,8 +283,22 @@ class InboundTransfersModel {
             const mojaloopResponse = {
                 completedTimestamp: new Date(),
                 transferState: 'COMMITTED',
-                fulfilment: fulfilment
+                fulfilment: fulfilment,
+                ...response.extensionList && {
+                    extensionList: {
+                        extension: response.extensionList,
+                    },
+                },
             };
+
+            // now store the fulfilment and the quote data against the quoteId in our cache
+            await this._cache.set(`tf_${prepareRequest.transferId}`, {
+                request: prepareRequest,
+                internalRequest: internalForm,
+                response: response,
+                mojaloopResponse: mojaloopResponse,
+                fulfilment: fulfilment,
+            });
 
             // make a callback to the source fsp with the transfer fulfilment
             return this._mojaloopRequests.putTransfers(prepareRequest.transferId, mojaloopResponse,
@@ -239,6 +308,10 @@ class InboundTransfersModel {
             this._logger.push({ err }).log('Error in prepareTransfer');
             const mojaloopError = await this._handleError(err);
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            await this._cache.set(`tf_${prepareRequest.transferId}`, {
+                request: prepareRequest,
+                mojaloopResponse: mojaloopError,
+            });
             return await this._mojaloopRequests.putTransfersError(prepareRequest.transferId,
                 mojaloopError, sourceFspId);
         }

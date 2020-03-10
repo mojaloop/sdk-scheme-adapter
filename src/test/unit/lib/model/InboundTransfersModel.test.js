@@ -21,6 +21,8 @@ const { MojaloopRequests, Ilp } = require('@mojaloop/sdk-standard-components');
 const { BackendRequests } = require('@internal/requests');
 const Cache = require('@internal/cache');
 
+const transferFulfil = require('./data/transferFulfil');
+
 describe('inboundModel', () => {
     let config;
     let mockArgs;
@@ -107,6 +109,7 @@ describe('inboundModel', () => {
         let cache;
 
         beforeEach(async () => {
+            MojaloopRequests.__putTransfersError.mockClear();
             BackendRequests.__postTransfers = jest.fn().mockReturnValue(Promise.resolve({}));
             MojaloopRequests.__putTransfers = jest.fn().mockReturnValue(Promise.resolve({}));
 
@@ -119,7 +122,6 @@ describe('inboundModel', () => {
         });
 
         afterEach(async () => {
-            MojaloopRequests.__putTransfersError.mockClear();
             await cache.disconnect();
         });
 
@@ -146,6 +148,66 @@ describe('inboundModel', () => {
             const call = MojaloopRequests.__putTransfersError.mock.calls[0];
             expect(call[0]).toEqual(TRANSFER_ID);
             expect(call[1].errorInformation.errorCode).toEqual('3302');
+        });
+
+        test('getTransfer should return COMMITTED transfer', async () => {
+            const TRANSFER_ID = 'fake-transfer-id';
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+            });
+            cache.set(`tf_${TRANSFER_ID}`, {
+                mojaloopResponse: transferFulfil.data,
+            });
+
+            await model.getTransfer(TRANSFER_ID, mockArgs.fspId);
+
+            expect(MojaloopRequests.__putTransfers).toHaveBeenCalledTimes(1);
+            const call = MojaloopRequests.__putTransfers.mock.calls[0];
+            expect(call[0]).toEqual(TRANSFER_ID);
+            expect(call[1]).toEqual(transferFulfil.data);
+            expect(call[1].transferState).toEqual('COMMITTED');
+        });
+
+        test('getTransfer should return RECEIVED state', async () => {
+            const TRANSFER_ID = 'fake-transfer-id';
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+            });
+            cache.set(`tf_${TRANSFER_ID}`, {
+                mojaloopResponse: {
+                    transferState: 'RECEIVED',
+                },
+            });
+
+            await model.getTransfer(TRANSFER_ID, mockArgs.fspId);
+
+            expect(MojaloopRequests.__putTransfers).toHaveBeenCalledTimes(1);
+            const call = MojaloopRequests.__putTransfers.mock.calls[0];
+            expect(call[0]).toEqual(TRANSFER_ID);
+            expect(call[1].transferState).toEqual('RECEIVED');
+        });
+
+        test('getTransfer should return not found error', async () => {
+            const TRANSFER_ID = 'fake-transfer-id';
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+            });
+            cache.set(`tf_${TRANSFER_ID}`, {
+                mojaloopResponse: transferFulfil.data,
+            });
+
+            await model.getTransfer(`${TRANSFER_ID}-other`, mockArgs.fspId);
+
+            expect(MojaloopRequests.__putTransfersError).toHaveBeenCalledTimes(1);
+            const call = MojaloopRequests.__putTransfersError.mock.calls[0];
+            expect(call[0]).toEqual(`${TRANSFER_ID}-other`);
+            expect(call[1].errorInformation.errorCode).toEqual('3208');
         });
 
         test('fail on transfer without quote.', async () => {

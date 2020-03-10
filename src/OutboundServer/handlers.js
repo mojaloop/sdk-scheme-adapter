@@ -75,6 +75,39 @@ const postTransfers = async (ctx) => {
 };
 
 
+/**
+ * Handler for outbound transfer request
+ */
+const getTransfers = async (ctx) => {
+    try {
+        let transferRequest = {
+            ...ctx.request.body,
+            transferId: ctx.state.path.params.transferId,
+            currentState: 'getTransfer',
+        };
+
+        // use the transfers model to execute asynchronous stages with the switch
+        const model = new OutboundTransfersModel({
+            ...ctx.state.conf,
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            wso2Auth: ctx.state.wso2Auth,
+        });
+
+        // initialize the transfer model and start it running
+        await model.initialize(transferRequest);
+        const response = await model.run();
+
+        // return the result
+        ctx.response.status = 200;
+        ctx.response.body = response;
+    }
+    catch(err) {
+        return handleTransferError('getTransfers', err, ctx);
+    }
+};
+
+
 
 /**
  * Handler for resuming outbound transfers in scenarios where two-step transfers are enabled
@@ -151,6 +184,7 @@ module.exports = {
         post: postTransfers
     },
     '/transfers/{transferId}': {
+        get: getTransfers,
         put: putTransfers
     },
     '/accounts': {

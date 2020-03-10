@@ -44,7 +44,17 @@ class BackendRequests {
     async getParties(idType, idValue, idSubValue) {
         const url = `parties/${idType}/${idValue}`
           + (idSubValue ? `/${idSubValue}` : '');
-        return this._get(url, 'parties');
+        return this._get(url);
+    }
+
+    /**
+     * Executes a GET /transfers request for the specified transfer ID
+     *
+     * @returns {object} - JSON response body if one was received
+     */
+    async getTransfers(transferId) {
+        const url = `transfers/${transferId}`;
+        return this._get(url);
     }
 
 
