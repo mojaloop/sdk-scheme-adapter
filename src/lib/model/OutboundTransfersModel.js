@@ -72,6 +72,7 @@ class OutboundTransfersModel {
                 { name: 'resolvePayee', from: 'start', to: 'payeeResolved' },
                 { name: 'requestQuote', from: 'payeeResolved', to: 'quoteReceived' },
                 { name: 'executeTransfer', from: 'quoteReceived', to: 'succeeded' },
+                { name: 'getTransfer', to: 'succeeded' },
                 { name: 'error', from: '*', to: 'errored' },
             ],
             methods: {
@@ -139,6 +140,9 @@ class OutboundTransfersModel {
             case 'requestQuote':
                 // request a quote
                 return this._requestQuote();
+
+            case 'getTransfer':
+                return this._getTransfer();
 
             case 'executeTransfer':
                 // prepare a transfer and wait for fulfillment
@@ -520,6 +524,103 @@ class OutboundTransfersModel {
         });
     }
 
+    /**
+     * Get transfer details by sending GET /transfers request to the switch;
+     * then waits for a notification from the cache that the transfer has been resolved.
+     */
+    async _getTransfer() {
+        // eslint-disable-next-line no-async-promise-executor
+        return new Promise(async (resolve, reject) => {
+            const transferKey = `tf_${this.data.transferId}`;
+
+            // Get more details about transfer
+            let transferDetails = await this._cache.get(transferKey);
+            if (transferDetails) {
+                transferDetails = transferDetails.internalRequest;
+            }
+            if (!transferDetails) {
+                transferDetails = await this._cache.get(`transferModel_${this.data.transferId}`);
+            }
+
+            if (!transferDetails) {
+                const error = new BackendError(`Details for transferId ${this.data.transferId} not found in cache`, 500);
+                return reject(error);
+            }
+
+            this.data = {
+                ...transferDetails,
+                ...this.data,
+            };
+
+            // hook up a subscriber to handle response messages
+            const subId = await this._cache.subscribe(transferKey, (cn, msg, subId) => {
+                try {
+                    let error;
+                    let message = JSON.parse(msg);
+
+                    if (message.type === 'transferError') {
+                        error = new BackendError(`Got an error response retrieving transfer: ${util.inspect(message.data)}`, 500);
+                        error.mojaloopError = message.data;
+                    } else if (message.type !== 'transferFulfil') {
+                        this._logger.push({ message }).log(`Ignoring cache notification for transfer ${transferKey}. Uknokwn message type ${message.type}.`);
+                        return;
+                    }
+
+                    // cancel the timeout handler
+                    clearTimeout(timeout);
+
+                    // stop listening for transfer fulfil messages
+                    this._cache.unsubscribe(transferKey, subId).catch(e => {
+                        this._logger.log(`Error unsubscribing (in callback) ${transferKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    });
+
+                    if (error) {
+                        return reject(error);
+                    }
+
+                    const fulfil = message.data;
+                    this._logger.push({ fulfil }).log('Transfer fulfil received');
+                    this.data.fulfil = fulfil;
+
+                    return resolve(fulfil);
+                }
+                catch(err) {
+                    return reject(err);
+                }
+            });
+
+            // set up a timeout for the resolution
+            const timeout = setTimeout(() => {
+                const err = new BackendError(`Timeout getting transfer ${this.data.transferId}`, 504);
+
+                // we dont really care if the unsubscribe fails but we should log it regardless
+                this._cache.unsubscribe(transferKey, subId).catch(e => {
+                    this._logger.log(`Error unsubscribing (in timeout handler) ${transferKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                });
+
+                return reject(err);
+            }, this._requestProcessingTimeoutSeconds * 1000);
+
+            // now we have a timeout handler and a cache subscriber hooked up we can fire off
+            // a GET /parties request to the switch
+            try {
+                const res = await this._requests.getTransfers(this.data.transferId);
+                this._logger.push({ peer: res }).log('Transfer lookup sent to peer');
+            }
+            catch(err) {
+                // cancel the timout and unsubscribe before rejecting the promise
+                clearTimeout(timeout);
+
+                // we dont really care if the unsubscribe fails but we should log it regardless
+                this._cache.unsubscribe(transferKey, subId).catch(e => {
+                    this._logger.log(`Error unsubscribing ${transferKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                });
+
+                return reject(err);
+            }
+        });
+    }
+
 
     /**
      * Builds a transfer prepare payload from current state
@@ -681,6 +782,11 @@ class OutboundTransfersModel {
                     // next transition is executeTransfer
                     await this.stateMachine.executeTransfer();
                     this._logger.log(`Transfer ${this.data.transferId} has been completed`);
+                    break;
+
+                case 'getTransfer':
+                    await this.stateMachine.getTransfer();
+                    this._logger.log(`Get transfer ${this.data.transferId} has been completed`);
                     break;
 
                 case 'succeeded':

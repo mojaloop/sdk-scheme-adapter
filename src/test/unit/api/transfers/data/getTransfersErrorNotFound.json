@@ -1,0 +1,11 @@
+{
+  "message": "Details for transferId 00000000-0000-1000-8000-000000000001 not found in cache",
+  "statusCode": "500",
+  "transferState": {
+    "currentState": "ERROR_OCCURRED",
+    "lastError": {
+      "httpStatusCode": 500
+    },
+    "transferId": "00000000-0000-1000-8000-000000000001"
+  }
+}
