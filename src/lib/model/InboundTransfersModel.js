@@ -275,45 +275,6 @@ class InboundTransfersModel {
         }
     }
 
-    /**
-     * Validates  an incoming transfer prepare request and makes a callback to the originator with
-     * the result
-     */
-    async executeTransactionRequest(transactionRequest, sourceFspId) {
-        try {
-
-            // project the incoming transfer prepare into an internal transfer request
-            const internalForm = shared.mojaloopTransactionRequestToInternalFormat(transactionRequest);
-
-            // make a call to the backend to inform it of the incoming transfer
-            const response = await this._backendRequests.postTransactionRequest(internalForm);
-
-            if(!response) {
-                // make an error callback to the source fsp
-                return 'No response from backend';
-            }
-
-            this._logger.log(`Trsanction Request accepted by backend returning transaction Id: ${response.transactionRequestId} for mojaloop transactionRequestId: ${transactionRequest.transactionRequestId}`);
-
-            // create a  mojaloop transfer fulfil response
-            const mojaloopResponse = {
-                completedTimestamp: new Date(),
-                transactionState: 'RECEIVED'
-            };
-
-            // make a callback to the source fsp with the transfer fulfilment
-            return this._mojaloopRequests.putTransactionRequest(transactionRequest.transactionRequestId, mojaloopResponse,
-                sourceFspId);
-        }
-        catch(err) {
-            this._logger.push({ err }).log('Error in executeTransactionRequest');
-            const mojaloopError = await this._handleError(err);
-            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
-            return await this._mojaloopRequests.putTransactionRequestError(transactionRequest.transactionRequestId,
-                mojaloopError, sourceFspId);
-        }
-    }
-
     async _handleError(err) {
         let mojaloopErrorCode = Errors.MojaloopApiErrorCodes.INTERNAL_SERVER_ERROR;
 

@@ -367,7 +367,7 @@ const putTransactionRequestsById = async (ctx) => {
     }
 
     // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`tr_${ctx.state.path.params.ID}`, {
+    await ctx.state.cache.publish(`txnreq_${ctx.state.path.params.ID}`, {
         type: 'transactionRequestResponse',
         data: ctx.request.body,
         headers: ctx.request.headers

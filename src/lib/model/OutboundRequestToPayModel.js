@@ -259,7 +259,7 @@ class OutboundRequestToPayModel {
             const transactionRequest = this._buildTransactionRequest();
 
             // listen for events on the transactionRequestId
-            const transactionRequestKey = `tr_${this.data.transactionRequestId}`;
+            const transactionRequestKey = `txnreq_${this.data.transactionRequestId}`;
 
             const subId = await this._cache.subscribe(transactionRequestKey, async (cn, msg, subId) => {
                 try {
