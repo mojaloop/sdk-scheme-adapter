@@ -36,7 +36,7 @@ const genPartyId = (party) => {
 const emitPartyCacheMessage = (cache, party) => cache.publish(genPartyId(party), JSON.stringify(party));
 
 // util function to simulate a quote response subscription message on a cache client
-const emitTransactionRequestResponseCacheMessage = (cache, transactionRequestId, transactionRequestResponse) => cache.publish(`tr_${transactionRequestId}`, JSON.stringify(transactionRequestResponse));
+const emitTransactionRequestResponseCacheMessage = (cache, transactionRequestId, transactionRequestResponse) => cache.publish(`txnreq_${transactionRequestId}`, JSON.stringify(transactionRequestResponse));
 
 describe('outboundModel', () => {
     let transactionRequestResponse;
