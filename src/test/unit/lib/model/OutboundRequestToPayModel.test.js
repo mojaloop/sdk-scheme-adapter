@@ -130,6 +130,34 @@ describe('outboundModel', () => {
         expect(StateMachine.__instance.state).toBe('succeeded');
     });
 
+    test('resolves payee and halts when AUTO_ACCEPT_PARTY is false', async () => {
+        config.autoAcceptParty = false;
+
+        const model = new Model({
+            cache,
+            logger,
+            ...config,
+        });
+
+        await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
+
+        expect(StateMachine.__instance.state).toBe('start');
+
+        // start the model running
+        const resultPromise = model.run();
+
+        // now we started the model running we simulate a callback with the resolved party
+        emitPartyCacheMessage(cache, payeeParty);
+
+        // wait for the model to reach a terminal state
+        const result = await resultPromise;
+
+        console.log(`Result after resolve payee: ${util.inspect(result)}`);
+
+        // check we stopped at payeeResolved state
+        expect(result.currentState).toBe('WAITING_FOR_PARTY_ACCEPTANCE');
+        expect(StateMachine.__instance.state).toBe('payeeResolved');
+    });
     
     
 });
