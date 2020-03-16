@@ -122,19 +122,38 @@ class InboundTransfersModel {
      */
     async getTransfer(transferId, sourceFspId) {
         try {
-            const transfer = await this._cache.get(`tf_${transferId}`);
+            // make a call to the backend to get transfer details
+            const response = await this._backendRequests.getTransfers(transferId);
 
-            if(!transfer) {
-                this._logger.error(`Error in getTransfer: transferId ${transferId} not found`);
-                const error = Errors.MojaloopApiErrorObjectFromCode(Errors.MojaloopApiErrorCodes.TRANSFER_ID_NOT_FOUND);
-                return this._mojaloopRequests.putTransfersError(transferId, error, sourceFspId);
+            if(!response) {
+                return 'No response from backend';
             }
 
-            const { mojaloopResponse } = transfer;
+            const ilpPaymentData = {
+                transferId: transferId,
+                homeTransactionId: response.homeTransactionId,
+                from: shared.internalPartyToMojaloopParty(response.from),
+                to: shared.internalPartyToMojaloopParty(response.to),
+                amountType: response.amountType,
+                currency: response.currency,
+                amount: response.amount,
+                transactionType: response.transactionType,
+                note: response.note,
+            };
 
-            if (mojaloopResponse.errorInformation) {
-                return this._mojaloopRequests.putTransfersError(transferId, mojaloopResponse, sourceFspId);
-            }
+            const { fulfilment } = this._ilp.getResponseIlp(ilpPaymentData);
+
+            // create a  mojaloop transfer fulfil response
+            const mojaloopResponse = {
+                completedTimestamp: response.timestamp,
+                transferState: response.transferState,
+                fulfilment: fulfilment,
+                ...response.extensions && {
+                    extensionList: {
+                        extension: response.extensions,
+                    },
+                },
+            };
 
             // make a callback to the source fsp with the transfer fulfilment
             return this._mojaloopRequests.putTransfers(transferId, mojaloopResponse,
@@ -233,7 +252,7 @@ class InboundTransfersModel {
                 condition = quote.mojaloopResponse.condition;
             }
             else {
-                fulfilment = this._ilp.caluclateFulfil(prepareRequest.ilpPacket);
+                fulfilment = this._ilp.calculateFulfil(prepareRequest.ilpPacket);
                 condition = this._ilp.calculateConditionFromFulfil(fulfilment);
             }
 

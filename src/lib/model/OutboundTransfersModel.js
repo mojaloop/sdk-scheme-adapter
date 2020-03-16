@@ -533,25 +533,6 @@ class OutboundTransfersModel {
         return new Promise(async (resolve, reject) => {
             const transferKey = `tf_${this.data.transferId}`;
 
-            // Get more details about transfer
-            let transferDetails = await this._cache.get(transferKey);
-            if (transferDetails) {
-                transferDetails = transferDetails.internalRequest;
-            }
-            if (!transferDetails) {
-                transferDetails = await this._cache.get(`transferModel_${this.data.transferId}`);
-            }
-
-            if (!transferDetails) {
-                const error = new BackendError(`Details for transferId ${this.data.transferId} not found in cache`, 500);
-                return reject(error);
-            }
-
-            this.data = {
-                ...transferDetails,
-                ...this.data,
-            };
-
             // hook up a subscriber to handle response messages
             const subId = await this._cache.subscribe(transferKey, (cn, msg, subId) => {
                 try {
@@ -582,7 +563,7 @@ class OutboundTransfersModel {
                     this._logger.push({ fulfil }).log('Transfer fulfil received');
                     this.data.fulfil = fulfil;
 
-                    return resolve(fulfil);
+                    return resolve(this.data);
                 }
                 catch(err) {
                     return reject(err);

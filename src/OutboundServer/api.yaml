@@ -117,20 +117,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/transferResponse'
+                $ref: '#/components/schemas/transferStatusResponse'
         500:
           description: An error occurred processing the transfer
           content:
             application/json:
               schema:
-                oneOf:
-                  - $ref: '#/components/schemas/errorResponse'
-                  - type: object
-                    required:
-                      - transferState
-                    properties:
-                      transferState:
-                        $ref: '#/components/schemas/transferResponse'
+                $ref: '#/components/schemas/errorResponse'
 
   /accounts:
     post:
@@ -641,6 +634,20 @@ components:
             Object representing the last error to occur during a transfer process. This may be a Mojaloop API error returned from another entity in the scheme
             or an object representing other types of error e.g. exceptions that may occur inside the scheme adapter.
           $ref: '#/components/schemas/transferError'
+
+    transferStatusResponse:
+      type: object
+      required:
+        - transferId
+        - currentState
+        - fulfil
+      properties:
+        transferId:
+          $ref: '#/components/schemas/mojaloopIdentifier'
+        currentState:
+          $ref: '#/components/schemas/transferStatus'
+        fulfil:
+          $ref: '#/components/schemas/transferFulfilment'
 
     quote:
       type: object

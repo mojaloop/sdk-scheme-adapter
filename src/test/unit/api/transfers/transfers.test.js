@@ -184,7 +184,12 @@ describe('Outbound Transfers API', () => {
         });
 
         test('should return transfer not found error', () => {
-            const putBodyFn = () => putTransfersBody;
+            const putBodyFn = () => ({
+                errorInformation: {
+                    errorCode: '3208',
+                    errorDescription: 'Transaction not found',
+                },
+            });
             return testGetTransfers(putBodyFn, 500, getTransfersErrorNotFound);
         });
     });
