@@ -21,7 +21,6 @@ const { MojaloopRequests, Ilp } = require('@mojaloop/sdk-standard-components');
 const { BackendRequests, HTTPResponseError } = require('@internal/requests');
 const Cache = require('@internal/cache');
 
-const transferFulfil = require('./data/transferFulfil');
 const getTransfersBackendResponse = require('./data/getTransfersBackendResponse');
 const getTransfersMojaloopResponse = require('./data/getTransfersMojaloopResponse');
 
