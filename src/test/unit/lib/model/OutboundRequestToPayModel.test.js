@@ -139,7 +139,7 @@ describe('outboundModel', () => {
             ...config,
         });
 
-        await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
+        await model.initialize(JSON.parse(JSON.stringify(requestToPayRequest)));
 
         expect(StateMachine.__instance.state).toBe('start');
 
