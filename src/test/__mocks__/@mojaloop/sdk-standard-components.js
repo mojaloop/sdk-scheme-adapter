@@ -45,7 +45,7 @@ class MockIlp {
         this.config = config;
     }
 
-    caluclateFulfil(ilpPacket) {
+    calculateFulfil(ilpPacket) {
         console.log(`Mock ILP not calculating fulfil from ilp packet ${ilpPacket}`);
         return 'mockGeneratedFulfilment';
     }
@@ -60,10 +60,16 @@ class MockIlp {
         return true;
     }
 
+    getResponseIlp(...args) {
+        console.log(`MockIlp.getResponseIlp called with args: ${util.inspect(args)}`);
+
+        return MockIlp.__response;
+    }
+
     getQuoteResponseIlp(...args) {
         console.log(`MockIlp.getQuoteResponseIlp called with args: ${util.inspect(args)}`);
 
-        return MockIlp.__response;
+        return this.getResponseIlp(...args);
     }
 }
 MockIlp.__response = {

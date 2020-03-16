@@ -310,10 +310,6 @@ describe('outboundModel', () => {
 
         const TRANSFER_ID = 'tx-id000011';
 
-        await cache.set(`tf_${TRANSFER_ID}`, {
-            internalRequest: {},
-        });
-
         await model.initialize(JSON.parse(JSON.stringify({
             ...transferRequest,
             currentState: 'getTransfer',
