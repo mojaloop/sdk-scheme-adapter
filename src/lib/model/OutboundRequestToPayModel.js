@@ -451,7 +451,7 @@ class OutboundRequestToPayModel {
 
         switch(this.data.currentState) {
             case 'payeeResolved':
-                resp.currentState = transferStateEnum.WAITING_FOR_PARTY_ACEPTANCE;
+                resp.currentState = transferStateEnum.WAITING_FOR_PARTY_ACCEPTANCE;
                 break;
 
             case 'succeeded':
