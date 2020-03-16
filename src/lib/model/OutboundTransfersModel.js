@@ -525,8 +525,7 @@ class OutboundTransfersModel {
     }
 
     /**
-     * Get transfer details by sending GET /transfers request to the switch;
-     * then waits for a notification from the cache that the transfer has been resolved.
+     * Get transfer details by sending GET /transfers request to the switch
      */
     async _getTransfer() {
         // eslint-disable-next-line no-async-promise-executor
@@ -583,7 +582,7 @@ class OutboundTransfersModel {
             }, this._requestProcessingTimeoutSeconds * 1000);
 
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
-            // a GET /parties request to the switch
+            // a GET /transfers request to the switch
             try {
                 const res = await this._requests.getTransfers(this.data.transferId);
                 this._logger.push({ peer: res }).log('Transfer lookup sent to peer');
