@@ -133,6 +133,11 @@ describe('outboundModel', () => {
     test('resolves payee and halts when AUTO_ACCEPT_PARTY is false', async () => {
         config.autoAcceptParty = false;
 
+        MojaloopRequests.__getParties = jest.fn(() => {
+            emitPartyCacheMessage(cache, payeeParty);
+            return Promise.resolve();
+        });
+        
         const model = new Model({
             cache,
             logger,
