@@ -109,7 +109,7 @@ class OutboundRequestToPayModel {
                 return this._resolvePayee();
 
             case 'executeTransactionRequest':
-                // request a quote
+                // call request to pay
                 return this._executeTransactionRequest();
 
             case 'error':
@@ -288,7 +288,7 @@ class OutboundRequestToPayModel {
 
                     const transactionRequestResponse = message.data;
                     this._logger.push({ transactionRequestResponse }).log('Transaction Request Response received');
-                    this.data.transactionRequestResponse = transactionRequestResponse;
+                    this.data.requestToPayState = transactionRequestResponse.transactionRequestState;
 
                     
                     return resolve(transactionRequestResponse);
