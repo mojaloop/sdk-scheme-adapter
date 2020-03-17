@@ -126,7 +126,7 @@ describe('outboundModel', () => {
         
         // check we stopped at payeeResolved state
         expect(result.currentState).toBe('COMPLETED');
-        expect(result.transactionRequestResponse.transactionRequestState).toBe('RECEIVED');
+        expect(result.requestToPayState).toBe('RECEIVED');
         expect(StateMachine.__instance.state).toBe('succeeded');
     });
 
