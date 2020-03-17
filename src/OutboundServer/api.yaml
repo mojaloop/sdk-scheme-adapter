@@ -680,6 +680,7 @@ components:
         - currency
         - amount
         - transactionType
+        - requestToPayState
       properties:
         transactionRequestId:
           type: string
@@ -702,7 +703,9 @@ components:
           $ref: '#/components/schemas/initiatorType'
         authenticationType:
           type: string
-          description: OTP or QR Code, otherwise empty        
+          description: OTP or QR Code, otherwise empty   
+        requestToPayState:
+          $ref: '#/components/schemas/mojaloopTransactionRequestState'     
 
     transferResponse:
       type: object
@@ -832,6 +835,20 @@ components:
         transfer. - COMMITTED Next ledger has successfully performed the
         transfer. - ABORTED Next ledger has aborted the transfer due a rejection
         or failure to perform the transfer.
+
+    mojaloopTransactionRequestState:
+      title: TransactionRequestStateEnum
+      type: string
+      enum:
+        - RECEIVED
+        - PENDING
+        - ACCEPTED
+        - REJECTED
+      description: >-
+        Below are the allowed values for the enumeration - RECEIVED Payer FSP
+        has received the transaction from the Payee FSP. - PENDING Payer FSP has
+        sent the transaction request to the Payer. - ACCEPTED Payer has approved
+        the transaction. - REJECTED Payer has rejected the transaction.
 
     mojaloopMoney:
       title: Money
