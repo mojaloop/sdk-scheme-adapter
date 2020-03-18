@@ -139,18 +139,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/requestToPayInboundRequest'
+              $ref: '#/components/schemas/requestToPayRequest'
         required: true
       responses:
         200:
-          $ref: '#/components/responses/requestToPayInboundSuccess'
+          $ref: '#/components/responses/requestToPaySuccess'
         # 400:
-        #   $ref: '#/components/responses/requestToPayInboundBadRequest'
+        #   $ref: '#/components/responses/requestToPayBadRequest'
         # 500:
-        #   $ref: '#/components/responses/requestToPayInboundServerError'
+        #   $ref: '#/components/responses/requestToPayServerError'
         # 504:
-        #   $ref: '#/components/responses/requestToPayInboundTimeout'
+        #   $ref: '#/components/responses/requestToPayTimeout'
 
+        
   /accounts:
     post:
       summary:  Create accounts on the Account Lookup Service
@@ -637,10 +638,10 @@ components:
         transferRequestExtensions:
           $ref: '#/components/schemas/extensionList'
 
-    requestToPayInboundRequest:
+    requestToPayRequest:
       type: object
       required:
-        - transactionRequestId
+        - homeTransactionId
         - from
         - to
         - amountType
@@ -650,7 +651,7 @@ components:
         - initiator
         - initiatorType
       properties:
-        transactionRequestId:
+        homeTransactionId:
           type: string
           description: Transaction ID from the DFSP backend, used to reconcile transactions between the Switch and DFSP backend systems.
         from:
@@ -683,8 +684,7 @@ components:
         - requestToPayState
       properties:
         transactionRequestId:
-          type: string
-          description: Common ID between the FSPs for the transaction request object, decided by the Payee FSP. The ID should be reused for resends of the same transaction request. A new ID should be generated for each new transaction request.
+          $ref: '#/components/schemas/mojaloopIdentifier'
         from:
           $ref: '#/components/schemas/transferParty'
         to:
@@ -1083,7 +1083,7 @@ components:
           schema:
             $ref: '#/components/schemas/errorAccountsResponse'
     
-    requestToPayInboundSuccess:
+    requestToPaySuccess:
       description: Request to Pay completed successfully
       content:
         application/json:
