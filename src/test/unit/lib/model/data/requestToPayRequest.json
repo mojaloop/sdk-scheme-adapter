@@ -1,0 +1,20 @@
+{
+  "homeTransactionId": "{{$guid}}",
+  "from": {
+      "idType": "BUSINESS",
+      "idValue": "Starbucks",
+      "displayName": "Starbucks Coffee"
+  },
+  "to": {
+    "idType": "PERSONAL_ID",
+    "idValue": "123456789",
+    "idSubValue": "PASSPORT"
+  },
+  "amountType": "SEND",
+  "currency": "USD",
+  "amount": "10",
+  "scenario":"PAYMENT",
+  "initiator":"PAYEE",
+  "initiatorType":"BUSINESS",
+  "note": "test payment"
+}

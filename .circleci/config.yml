@@ -6,7 +6,7 @@ defaults_working_directory: &defaults_working_directory
 
 defaults_docker_node: &defaults_docker_node
   docker:
-    - image: node:12.14.0-alpine
+    - image: node:lts-alpine
 
 defaults_docker_helm_kube: &defaults_docker_helm_kube
   docker:
@@ -124,7 +124,7 @@ jobs:
           name: Delete build dependencies
           command: apk del build-dependencies
       - save_cache:
-          key: dependency-cache-4-{{ checksum "src/package.json" }}
+          key: dependency-cache-5-{{ checksum "src/package.json" }}
           paths:
             - src/node_modules
 
@@ -140,7 +140,7 @@ jobs:
           <<: *defaults_environment
       - restore_cache:
           keys:
-          - dependency-cache-4-{{ checksum "src/package.json" }}
+          - dependency-cache-5-{{ checksum "src/package.json" }}
       - run:
           name: Execute unit tests
           command: cd src && npm run test
@@ -186,7 +186,7 @@ jobs:
           <<: *defaults_environment
       - restore_cache:
           keys:
-          - dependency-cache-4-{{ checksum "src/package.json" }}
+          - dependency-cache-5-{{ checksum "src/package.json" }}
       - run:
           name: Create dir for lint results
           command: cd src && mkdir -p /lintresults
