@@ -20,9 +20,11 @@ class MockMojaloopRequests extends MojaloopRequests {
         MockMojaloopRequests.__instance = this;
         this.postParticipants = MockMojaloopRequests.__postParticipants;
         this.getParties = MockMojaloopRequests.__getParties;
+        this.postTransactionRequests = MockMojaloopRequests.__postTransactionRequests;
         this.postQuotes = MockMojaloopRequests.__postQuotes;
         this.putQuotes = MockMojaloopRequests.__putQuotes;
         this.putQuotesError = MockMojaloopRequests.__putQuotesError;
+        this.putTransactionRequests = MockMojaloopRequests.__putTransactionRequests;
         this.postTransfers = MockMojaloopRequests.__postTransfers;
         this.putTransfers = MockMojaloopRequests.__putTransfers;
         this.putTransfersError = MockMojaloopRequests.__putTransfersError;
@@ -30,9 +32,11 @@ class MockMojaloopRequests extends MojaloopRequests {
 }
 MockMojaloopRequests.__postParticipants = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__getParties = jest.fn(() => Promise.resolve());
+MockMojaloopRequests.__postTransactionRequests = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__postQuotes = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putQuotes = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putQuotesError = jest.fn(() => Promise.resolve());
+MockMojaloopRequests.__putTransactionRequests = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__postTransfers = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putTransfers = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putTransfersError = jest.fn(() => Promise.resolve());
