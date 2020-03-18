@@ -1,13 +1,14 @@
 {
-  "homeTransactionId": "bb810ad9-ec24-47a2-beee-ec4df6868388",
+  "homeTransactionId": "{{$guid}}",
   "from": {
       "idType": "BUSINESS",
       "idValue": "Starbucks",
       "displayName": "Starbucks Coffee"
   },
   "to": {
-      "idType": "MSISDN",
-      "idValue": "17039811907"
+    "idType": "PERSONAL_ID",
+    "idValue": "123456789",
+    "idSubValue": "PASSPORT"
   },
   "amountType": "SEND",
   "currency": "USD",
