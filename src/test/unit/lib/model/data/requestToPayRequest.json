@@ -1,26 +1,19 @@
 {
+  "homeTransactionId": "bb810ad9-ec24-47a2-beee-ec4df6868388",
   "from": {
-    "displayName": "James Bush",
-    "idType": "MSISDN",
-    "idValue": "447710066017"
+      "idType": "BUSINESS",
+      "idValue": "Starbucks",
+      "displayName": "Starbucks Coffee"
   },
   "to": {
-    "idType": "PERSONAL_ID",
-    "idValue": "123456789",
-    "idSubValue": "PASSPORT"
+      "idType": "MSISDN",
+      "idValue": "17039811907"
   },
   "amountType": "SEND",
   "currency": "USD",
-  "amount": "100",
-  "transactionType": "TRANSFER",
-  "note": "test payment",
-  "homeTransactionId": "123ABC",
-  "quoteRequestExtensions": [
-    { "key": "qkey1", "value": "qvalue1" },
-    { "key": "qkey2", "value": "qvalue2" }
-  ],
-  "transferRequestExtensions": [
-    { "key": "tkey1", "value": "tvalue1" },
-    { "key": "tkey2", "value": "tvalue2" }
-  ]
+  "amount": "10",
+  "scenario":"PAYMENT",
+  "initiator":"PAYEE",
+  "initiatorType":"BUSINESS",
+  "note": "test payment"
 }
