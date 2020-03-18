@@ -380,6 +380,26 @@ class OutboundRequestToPayModel {
     }
 
     /**
+     * Loads a transfer model from cache for resumption of the transfer process
+     *
+     * @param transferId {string} - UUID transferId of the model to load from cache
+     */
+    async load(transactionRequestId) {
+        try {
+            const data = await this._cache.get(`txnReqModel_${transactionRequestId}`);
+            if(!data) {
+                throw new Error(`No cached data found for transactionRequestId: ${transactionRequestId}`);
+            }
+            await this.initialize(data);
+            this._logger.push({ cache: this.data }).log('TransactionRequest model loaded from cached state');
+        }
+        catch(err) {
+            this._logger.push({ err }).log('Error loading transfer model');
+            throw err;
+        }
+    }
+
+    /**
      * Returns a promise that resolves when the state machine has reached a terminal state
      */
     async run() {
@@ -463,7 +483,7 @@ class OutboundRequestToPayModel {
                 break;
 
             default:
-                this._logger.log(`Transfer model response being returned from an unexpected state: ${this.data.currentState}. Returning ERROR_OCCURRED state`);
+                this._logger.log(`Transaction Request model response being returned from an unexpected state: ${this.data.currentState}. Returning ERROR_OCCURRED state`);
                 resp.currentState = transferStateEnum.ERROR_OCCURRED;
                 break;
         }
@@ -477,7 +497,7 @@ class OutboundRequestToPayModel {
     async _save() {
         try {
             this.data.currentState = this.stateMachine.state;
-            const res = await this._cache.set(`transactionRequest${this.data.transactionRequestId}`, this.data);
+            const res = await this._cache.set(`txnReqModel_${this.data.transactionRequestId}`, this.data);
             this._logger.push({ res }).log('Persisted transaction request model in cache');
         }
         catch(err) {
