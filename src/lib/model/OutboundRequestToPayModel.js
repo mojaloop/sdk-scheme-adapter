@@ -47,14 +47,14 @@ class OutboundRequestToPayModel {
     }
 
     /**
-     * Initializes the transfer model
+     * Initializes the request to pay model
      *
-     * @param data {object} - The inbound API POST /transfers request body
+     * @param data {object} - The inbound API POST /requestToPay request body
      */
     async initialize(data) {
         this.data = data;
 
-        // add a transferId if one is not present e.g. on first submission
+        // add a transactionRequestId if one is not present e.g. on first submission
         if(!this.data.hasOwnProperty('transactionRequestId')) {
             this.data.transactionRequestId = uuid();
         }
