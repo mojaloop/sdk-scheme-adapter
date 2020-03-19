@@ -99,6 +99,7 @@ const createJwsValidator = (logger, keys, exclusions) => {
             // there are potential security issues if message origin is used to
             // determine permission sets i.e. what is "readable"
             if(ctx.request.method !== 'GET') {
+                logger.push({ request: ctx.request, body: ctx.request.body }).log('Validating JWS');
                 jwsValidator.validate(ctx.request, logger);
             }
 

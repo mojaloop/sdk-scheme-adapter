@@ -28,7 +28,11 @@ class BackendRequests {
         // FSPID of THIS DFSP
         this.dfspId = config.dfspId;
 
-        this.agent = http.globalAgent;
+        // make sure we keep alive connections to the backend
+        this.agent = new http.Agent({
+            keepAlive: true
+        });
+
         this.transportScheme = 'http';
 
         // Switch or peer DFSP endpoint
@@ -120,6 +124,7 @@ class BackendRequests {
             method: 'PUT',
             uri: buildUrl(this.backendEndpoint, url),
             headers: this._buildHeaders(),
+            agent: this.agent,
             body: JSON.stringify(body),
             resolveWithFullResponse: true,
             simple: false,
@@ -141,6 +146,7 @@ class BackendRequests {
             method: 'POST',
             uri: buildUrl(this.backendEndpoint, url),
             headers: this._buildHeaders(),
+            agent: this.agent,
             body: JSON.stringify(body),
             resolveWithFullResponse: true,
             simple: false,
