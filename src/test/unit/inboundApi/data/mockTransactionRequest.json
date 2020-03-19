@@ -1,0 +1,42 @@
+{
+  "transactionRequest": {
+    "transactionRequestId": "fake-transactionrequest-id",
+    "amount": {
+      "currency": "XOF",
+      "amount": 10
+    },
+    "expiration": "2019-06-04T04:02:10.378Z",
+    "payer": {
+      "partyIdInfo": {
+        "partyIdType": "MSISDN",
+        "partyIdentifier": "17855501914",
+        "fspId": "mojaloop-sdk"
+      },
+      "personalInfo": {
+        "complexName": {
+          "firstName": "Murthy",
+          "lastName": "Kakarlamudi"
+        },
+        "dateOfBirth": "2010-10-10"
+      },
+      "name": "Murthy Kakarlamudi",
+      "merchantClassificationCode": "123"
+    },
+    "payee": {
+      "partyIdInfo": {
+        "partyIdType": "MSISDN",
+        "partyIdentifier": "17855501914",
+        "fspId": "mojaloop-sdk"
+      },
+      "personalInfo": {
+        "complexName": {
+          "firstName": "Bob",
+          "lastName": "Dylan"
+        },
+        "dateOfBirth": "2010-10-10"
+      },
+      "name": "Murthy Kakarlamudi",
+      "merchantClassificationCode": "123"
+    }
+  }
+}

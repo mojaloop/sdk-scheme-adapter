@@ -91,6 +91,20 @@ const mojaloopPartyToInternalParty = (external) => {
     return internal;
 };
 
+/**
+ * Converts a Mojaloop API spec partyIdInfo to an internal API spec party
+ *
+ * @returns {object} - the internal API spec party
+ */
+const mojaloopPartyIdInfoToInternalPartyIdInfo = (external) => {
+    const internal = {};
+
+    internal.idType = external.partyIdType;
+    internal.idValue = external.partyIdentifier;
+    internal.idSubValue = external.partySubIdOrType;
+
+    return internal;
+};
 
 /**
  * Projects a Mojaloop API spec quote request to internal form
@@ -176,6 +190,31 @@ const internalQuoteResponseToMojaloop = (internal) => {
     return external;
 };
 
+/**
+ * Converts an internal quote response to mojaloop form
+ *
+ * @returns {object}
+ */
+const internalTransactionRequestResponseToMojaloop = (internal) => {
+    const external = {
+        transactionId: internal.transactionId,
+        transactionRequestState: internal.transactionRequestState
+    };
+
+    if(internal.payeeReceiveAmount) {
+        external.payeeReceiveAmount = {
+            amount: internal.payeeReceiveAmount,
+            currency: internal.payeeReceiveAmountCurrency
+        };
+    }
+
+    if(internal.extensionList) {
+        external.extensionList = internal.extensionList;
+    }
+
+    return external;
+};
+
 
 /**
  * Converts a mojaloop transfer prepare request to internal form
@@ -207,11 +246,35 @@ const mojaloopPrepareToInternalTransfer = (external, quote) => {
     return internal;
 };
 
+/**
+ * Converts a mojaloop transactionRequest data to internal form
+ *
+ * @returns {object}
+ */
+const mojaloopTransactionRequestToInternal = (external) => {
+    let internal = null;
+    internal = {
+        transactionRequestId: external.transactionRequestId,
+        to: mojaloopPartyToInternalParty(external.payee),
+        from: mojaloopPartyIdInfoToInternalPartyIdInfo(external.payer),
+        amount: external.amount.amount,
+        currency: external.amount.currency,
+        transactionType: external.transactionType.scenario,
+        initiator: external.transactionType.initiator,
+        initiatorType: external.transactionType.initiatorType
+    };
+
+    return internal;
+};
+
 
 module.exports = {
     internalPartyToMojaloopParty,
-    mojaloopPartyToInternalParty,
-    mojaloopQuoteRequestToInternal,
     internalQuoteResponseToMojaloop,
+    internalTransactionRequestResponseToMojaloop,
+    mojaloopPartyToInternalParty,
+    mojaloopPartyIdInfoToInternalPartyIdInfo,
+    mojaloopQuoteRequestToInternal,
     mojaloopPrepareToInternalTransfer,
+    mojaloopTransactionRequestToInternal
 };

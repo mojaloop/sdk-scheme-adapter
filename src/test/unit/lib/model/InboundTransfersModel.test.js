@@ -17,6 +17,7 @@ const defaultConfig = require('./data/defaultConfig');
 const { Logger, Transports } = require('@internal/log');
 const Model = require('@internal/model').InboundTransfersModel;
 const mockArguments = require('./data/mockArguments');
+const mockTxnReqquestsArguments = require('./data/mockTxnRequestsArguments');
 const { MojaloopRequests, Ilp } = require('@mojaloop/sdk-standard-components');
 const { BackendRequests } = require('@internal/requests');
 const Cache = require('@internal/cache');
@@ -24,6 +25,7 @@ const Cache = require('@internal/cache');
 describe('inboundModel', () => {
     let config;
     let mockArgs;
+    let mockTxnReqArgs;
     let logger;
 
     beforeAll(async () => {
@@ -40,6 +42,7 @@ describe('inboundModel', () => {
 
         mockArgs = JSON.parse(JSON.stringify(mockArguments));
         mockArgs.internalQuoteResponse.expiration = new Date(Date.now());
+        mockTxnReqArgs = JSON.parse(JSON.stringify(mockTxnReqquestsArguments));
     });
 
     describe('quoteRequest', () => {
@@ -101,6 +104,43 @@ describe('inboundModel', () => {
         });
 
 
+    });
+
+    describe('transactionRequest', () => {
+        let model;
+        let cache;
+
+        beforeEach(async () => {
+            BackendRequests.__postTransactionRequests = jest.fn().mockReturnValue(Promise.resolve(mockTxnReqArgs.internalTransactionRequestResponse));
+
+            cache = new Cache({
+                host: 'dummycachehost',
+                port: 1234,
+                logger,
+            });
+            await cache.connect();
+
+            model = new Model({
+                ...config,
+                cache,
+                logger,
+            });
+        });
+
+        afterEach(async () => {
+            MojaloopRequests.__putTransactionRequests.mockClear();
+            await cache.disconnect();
+        });
+
+        test('calls `mojaloopRequests.putTransactionRequests` with the expected arguments.', async () => {
+            await model.transactionRequest(mockTxnReqArgs.transactionRequest, mockTxnReqArgs.fspId);
+
+            expect(MojaloopRequests.__putTransactionRequests).toHaveBeenCalledTimes(1);
+            expect(MojaloopRequests.__putTransactionRequests.mock.calls[0][1].transactionRequestState).toBe(mockTxnReqArgs.internalTransactionRequestResponse.transactionRequestState);
+            
+        });
+
+        
     });
 
     describe('transferPrepare:', () => {

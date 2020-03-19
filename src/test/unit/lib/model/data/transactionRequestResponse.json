@@ -1,0 +1,18 @@
+{
+  "type": "transactionRequestResponse",
+  "data": {
+    "transactionId": "5a2ad5dc-4ab1-4a22-8c5b-62f75252a8d5",
+    "transactionRequestState": "RECEIVED",
+    "extensionList": {
+      "extension": [
+        {
+          "key": "key1",
+          "value": "value1"
+        }
+      ]
+    }
+  },
+  "headers": {
+    "fspiop-source": "foo"
+  }
+}
