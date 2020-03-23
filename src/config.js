@@ -102,4 +102,10 @@ module.exports = {
     logIndent: env.get('LOG_INDENT').default('2').asIntPositive(),
 
     allowTransferWithoutQuote: env.get('allowTransferWithoutQuote').default('false').asBool(),
+
+    // for outbound transfers, allows an extensionList item in an error respone to be used instead
+    // of the primary error code when setting the statusCode property on the synchronous response
+    // to the DFSP backend. This is useful if an intermediary such as FXP returns underlying error
+    // codes in error extensionLists.
+    outboundErrorStatusCodeExtensionKey: env.get('OUTBOUND_ERROR_STATUSCODE_EXTENSION_KEY').asString(),
 };
