@@ -18,7 +18,7 @@ const requestToPayPayload = require('./data/requestToPay');
 jest.mock('@internal/model');
 
 const handlers = require('../../../OutboundServer/handlers');
-const { OutboundTransfersModel,OutboundRequestToPayModel } = require('@internal/model');
+const { OutboundTransfersModel, OutboundRequestToPayModel } = require('@internal/model');
 
 /**
  * Mock the outbound transfer model to simulate throwing errors
@@ -84,7 +84,38 @@ describe('Outbound API handlers:', () => {
             expect(mockContext.response.status).toEqual(500);
             expect(mockContext.response.body).toBeTruthy();
             expect(mockContext.response.body.message).toEqual('Mock error');
-            expect(mockContext.response.body.statusCode).toEqual('3204');
+            expect(mockContext.response.body.statusCode)
+                .toEqual(mockError.transferState.lastError.mojaloopError.errorInformation.errorCode);
+            expect(mockContext.response.body.transferState).toEqual(mockError.transferState);
+        });
+
+        test('uses correct extension list error code for response body statusCode when configured to do so', async () => {
+            const mockContext = {
+                request: {
+                    body: transferRequest,
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {
+                        outboundErrorStatusCodeExtensionKey: 'extErrorKey'  // <- tell the handler to use this extensionList item as source of statusCode
+                    },
+                    logger: console
+                }
+            };
+
+            await handlers['/transfers'].post(mockContext);
+
+            // check response is correct
+            expect(mockContext.response.status).toEqual(500);
+            expect(mockContext.response.body).toBeTruthy();
+            expect(mockContext.response.body.message).toEqual('Mock error');
+
+            // in this case, where we have set outboundErrorExtensionKey config we expect the error body statusCode
+            // property to come from the extensionList item with the corresponding key 'extErrorKey'
+            expect(mockContext.response.body.statusCode).toEqual('9999');
             expect(mockContext.response.body.transferState).toEqual(mockError.transferState);
         });
     });
