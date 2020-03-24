@@ -46,8 +46,8 @@ const handleError = (method, err, ctx, stateField) => {
             // search the extensionList array for a key that matches what we have been configured to look for...
             // the first one will do - spec is a bit loose on duplicate keys...
             const extensionItem = errorInformation.extensionList.find(e => {
-                    return e.key === ctx.state.conf.outboundErrorStatusCodeExtensionKey;
-                });
+                return e.key === ctx.state.conf.outboundErrorStatusCodeExtensionKey;
+            });
 
             if(extensionItem) {
                 ctx.response.body.statusCode = extensionItem.value;
