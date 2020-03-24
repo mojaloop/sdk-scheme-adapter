@@ -35,18 +35,17 @@ const handleError = (method, err, ctx, stateField) => {
         // by default we set the statusCode property of the error body to be that of any model state lastError
         // property containing a mojaloop API error structure. This means the caller does not have to inspect
         // the structure of the response object in depth to ascertain an underlying mojaloop API error code.
-        ctx.response.body.statusCode = err[stateField].lastError.mojaloopError.errorInformation.errorCode;
+        const errorInformation = err[stateField].lastError.mojaloopError.errorInformation;
+        ctx.response.body.statusCode = errorInformation.errorCode;
 
         // if we have been configured to use an error extensionList item as status code, look for it and use
         // it if it is present...
         if(ctx.state.conf.outboundErrorStatusCodeExtensionKey
-            && err[stateField].lastError.mojaloopError.errorInformation.extensionList
-            && Array.isArray(err[stateField].lastError.mojaloopError.errorInformation.extensionList)) {
+            && Array.isArray(errorInformation.extensionList)) {
 
             // search the extensionList array for a key that matches what we have been configured to look for...
             // the first one will do - spec is a bit loose on duplicate keys...
-            const extensionItem = err[stateField].lastError.mojaloopError.errorInformation
-                .extensionList.find(e => {
+            const extensionItem = errorInformation.extensionList.find(e => {
                     return e.key === ctx.state.conf.outboundErrorStatusCodeExtensionKey;
                 });
 
