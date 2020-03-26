@@ -8,9 +8,9 @@ const postAccountsBody = require('./data/postAccountsBody');
  * @param reqInbound
  * @param reqOutbound
  * @param apiSpecsOutbound
- * @returns Function(putBodyFn:string, responseCode:string, responseBody:string) => Promise
+ * @returns Function(putBodyFn:function, responseCode:number, responseBody:object) => Promise
  */
-function createPostAccountsTester({reqInbound, reqOutbound, apiSpecsOutbound}) {
+function createPostAccountsTester({ reqInbound, reqOutbound, apiSpecsOutbound }) {
     /**
      *
      * @param putBodyFn {function}
