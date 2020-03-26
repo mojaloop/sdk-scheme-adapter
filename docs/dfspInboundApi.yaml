@@ -154,6 +154,23 @@ paths:
         500:
           $ref: '#/components/responses/500'
 
+    get:
+      summary: Retrieves information for a specific transfer
+      description: The HTTP request `GET /transfers/{transferId}` is used to get information regarding a transfer created or requested earlier. The `{transferId}` in the URI should contain the `transferId` that was used for the creation of the transfer.
+      tags:
+        - Transfers
+      parameters:
+        - $ref: '#/components/parameters/transferId'
+      responses:
+        200:
+          description: The transfer was accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/transferDetailsResponse'
+        500:
+          $ref: '#/components/responses/500'
+
 components:
   schemas:
 
