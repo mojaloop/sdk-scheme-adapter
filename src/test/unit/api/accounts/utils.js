@@ -8,9 +8,9 @@ const postAccountsBody = require('./data/postAccountsBody');
  * @param reqInbound
  * @param reqOutbound
  * @param apiSpecsOutbound
- * @return {function(...[*]=)}
+ * @returns Function(putBodyFn:string, responseCode:string, responseBody:string) => Promise
  */
-const createPostAccountsTester = ({reqInbound, reqOutbound, apiSpecsOutbound}) =>
+function createPostAccountsTester({reqInbound, reqOutbound, apiSpecsOutbound}) {
     /**
      *
      * @param putBodyFn {function}
@@ -19,7 +19,7 @@ const createPostAccountsTester = ({reqInbound, reqOutbound, apiSpecsOutbound}) =
      *
      * @return {Promise<any>}
      */
-    async (putBodyFn, responseCode, responseBody) => {
+    return async (putBodyFn, responseCode, responseBody) => {
         let pendingRequest = Promise.resolve();
         const handleRequest = async (req) => {
             const urlPath = new URL(req.uri).pathname;
@@ -59,6 +59,7 @@ const createPostAccountsTester = ({reqInbound, reqOutbound, apiSpecsOutbound}) =
         await pendingRequest;
         requestSpy.mockRestore();
     };
+}
 
 module.exports = {
     createPostAccountsTester,

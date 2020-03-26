@@ -4,7 +4,14 @@ const OpenAPIResponseValidator = require('openapi-response-validator').default;
 const { Logger } = require('@internal/log');
 const postTransfersSimpleBody = require('./data/postTransfersSimpleBody');
 
-const createGetTransfersTester = ({ reqInbound, reqOutbound, apiSpecsOutbound}) =>
+/**
+ *
+ * @param reqInbound
+ * @param reqOutbound
+ * @param apiSpecsOutbound
+ * @returns Function(putBodyFn:string, responseCode:string, responseBody:string) => Promise
+ */
+function createGetTransfersTester({ reqInbound, reqOutbound, apiSpecsOutbound}) {
     /**
      *
      * @param putBodyFn {function}
@@ -13,7 +20,7 @@ const createGetTransfersTester = ({ reqInbound, reqOutbound, apiSpecsOutbound}) 
 
      * @return {Promise<any>}
      */
-    async (putBodyFn, responseCode, responseBody) => {
+    return async (putBodyFn, responseCode, responseBody) => {
         const TRANSFER_ID = '00000000-0000-1000-8000-000000000001';
         let pendingRequest = Promise.resolve();
         const handleRequest = async (req) => {
@@ -26,34 +33,33 @@ const createGetTransfersTester = ({ reqInbound, reqOutbound, apiSpecsOutbound}) 
             if (putBody.errorInformation) {
                 putUrl += '/error';
             }
-            await reqInbound
-                .put(putUrl)
-                .send(putBody)
-                .set('Date', new Date().toISOString())
-                .set('fspiop-source', 'mojaloop-sdk')
-                .expect(200);
+            await reqInbound.put(putUrl).
+                send(putBody).
+                set('Date', new Date().toISOString()).
+                set('fspiop-source', 'mojaloop-sdk').
+                expect(200);
         };
         const requestSpy = request.mockImplementation((req) => {
             pendingRequest = handleRequest(req);
             return Promise.resolve({headers: {}, statusCode: 202});
         });
 
-        await reqOutbound
-            .get(`/transfers/${TRANSFER_ID}`)
-            .then((res) => {
-                const {body} = res;
-                expect(body).toEqual(responseBody);
-                const responseValidator = new OpenAPIResponseValidator(apiSpecsOutbound.paths['/transfers/{transferId}'].get);
-                const err = responseValidator.validateResponse(responseCode, body);
-                if (err) {
-                    console.log(body);
-                    throw err;
-                }
-            });
+        await reqOutbound.get(`/transfers/${TRANSFER_ID}`).then((res) => {
+            const {body} = res;
+            expect(body).toEqual(responseBody);
+            const responseValidator = new OpenAPIResponseValidator(
+                apiSpecsOutbound.paths['/transfers/{transferId}'].get);
+            const err = responseValidator.validateResponse(responseCode, body);
+            if (err) {
+                console.log(body);
+                throw err;
+            }
+        });
 
         await pendingRequest;
         requestSpy.mockRestore();
     };
+}
 
 const createPostTransfersTester = ({
     requestValidatorInbound, reqInbound, reqOutbound, apiSpecsOutbound }) => {
