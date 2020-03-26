@@ -140,10 +140,10 @@ describe('inboundModel', () => {
 
             expect(MojaloopRequests.__putTransactionRequests).toHaveBeenCalledTimes(1);
             expect(MojaloopRequests.__putTransactionRequests.mock.calls[0][1].transactionRequestState).toBe(mockTxnReqArgs.internalTransactionRequestResponse.transactionRequestState);
-            
+
         });
 
-        
+
     });
 
     describe('transferPrepare:', () => {
@@ -194,7 +194,9 @@ describe('inboundModel', () => {
         test('getTransfer should return COMMITTED transfer', async () => {
             const TRANSFER_ID = 'fake-transfer-id';
 
-            BackendRequests.__getTransfers = jest.fn().mockReturnValue(Promise.resolve(getTransfersBackendResponse));
+            const backendResponse = JSON.parse(JSON.stringify(getTransfersBackendResponse));
+            backendResponse.to.fspId = config.dfspId;
+            BackendRequests.__getTransfers = jest.fn().mockReturnValue(Promise.resolve(backendResponse));
 
             const model = new Model({
                 ...config,
@@ -208,6 +210,27 @@ describe('inboundModel', () => {
             const call = MojaloopRequests.__putTransfers.mock.calls[0];
             expect(call[0]).toEqual(TRANSFER_ID);
             expect(call[1]).toEqual(getTransfersMojaloopResponse);
+            expect(call[1].transferState).toEqual('COMMITTED');
+        });
+
+        test('getTransfer should not return fulfillment from payer', async () => {
+            const TRANSFER_ID = 'fake-transfer-id';
+
+            const backendResponse = JSON.parse(JSON.stringify(getTransfersBackendResponse));
+            backendResponse.to.fspId = 'payer-dfsp';
+            BackendRequests.__getTransfers = jest.fn().mockReturnValue(Promise.resolve(backendResponse));
+
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+            });
+
+            await model.getTransfer(TRANSFER_ID, mockArgs.fspId);
+
+            const call = MojaloopRequests.__putTransfers.mock.calls[0];
+            expect(call[0]).toEqual(TRANSFER_ID);
+            expect(call[1]).toEqual({...getTransfersMojaloopResponse, fulfilment: undefined});
             expect(call[1].transferState).toEqual('COMMITTED');
         });
 

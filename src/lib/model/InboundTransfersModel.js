@@ -132,8 +132,8 @@ class InboundTransfersModel {
             const ilpPaymentData = {
                 transferId: transferId,
                 homeTransactionId: response.homeTransactionId,
-                from: shared.internalPartyToMojaloopParty(response.from),
-                to: shared.internalPartyToMojaloopParty(response.to),
+                from: shared.internalPartyToMojaloopParty(response.from, response.from.fspId),
+                to: shared.internalPartyToMojaloopParty(response.to, response.to.fspId),
                 amountType: response.amountType,
                 currency: response.currency,
                 amount: response.amount,
@@ -141,13 +141,16 @@ class InboundTransfersModel {
                 note: response.note,
             };
 
-            const { fulfilment } = this._ilp.getResponseIlp(ilpPaymentData);
+            let fulfilment;
+            if (this._dfspId === response.to.fspId) {
+                fulfilment = this._ilp.getResponseIlp(ilpPaymentData).fulfilment;
+            }
 
             // create a  mojaloop transfer fulfil response
             const mojaloopResponse = {
                 completedTimestamp: response.timestamp,
                 transferState: response.transferState,
-                fulfilment: fulfilment,
+                fulfilment,
                 ...response.extensions && {
                     extensionList: {
                         extension: response.extensions,
