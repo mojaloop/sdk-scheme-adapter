@@ -1,7 +1,7 @@
 {
   "message": "Mock error",
   "httpStatusCode": 500,
-  "transferState":  {
+  "requestToPayState":  {
     "from": {
       "displayName": "James Bush",
       "idType": "MSISDN",
@@ -24,14 +24,7 @@
       "mojaloopError": {
         "errorInformation": {
           "errorCode": "3204",
-          "errorDescription": "Party not found",
-          "extensionList": [{
-            "key": "someKey",
-            "value": "someValue"
-          }, {
-            "key": "extErrorKey",
-            "value": "9999"
-          }]
+          "errorDescription": "Party not found"
         }
       }
     }

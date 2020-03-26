@@ -12,11 +12,11 @@
 
 
 const util = require('util');
-const { AccountsModel, OutboundTransfersModel } = require('@internal/model');
+const { AccountsModel, OutboundTransfersModel, OutboundRequestToPayModel } = require('@internal/model');
 
 
 /**
- * Common error handling logic
+ * Error handling logic shared by outbound API handlers
  */
 const handleError = (method, err, ctx, stateField) => {
     ctx.state.logger.log(`Error handling ${method}: ${util.inspect(err)}`);
@@ -32,7 +32,27 @@ const handleError = (method, err, ctx, stateField) => {
         && err[stateField].lastError.mojaloopError.errorInformation
         && err[stateField].lastError.mojaloopError.errorInformation.errorCode) {
 
-        ctx.response.body.statusCode = err[stateField].lastError.mojaloopError.errorInformation.errorCode;
+        // by default we set the statusCode property of the error body to be that of any model state lastError
+        // property containing a mojaloop API error structure. This means the caller does not have to inspect
+        // the structure of the response object in depth to ascertain an underlying mojaloop API error code.
+        const errorInformation = err[stateField].lastError.mojaloopError.errorInformation;
+        ctx.response.body.statusCode = errorInformation.errorCode;
+
+        // if we have been configured to use an error extensionList item as status code, look for it and use
+        // it if it is present...
+        if(ctx.state.conf.outboundErrorStatusCodeExtensionKey
+            && Array.isArray(errorInformation.extensionList)) {
+
+            // search the extensionList array for a key that matches what we have been configured to look for...
+            // the first one will do - spec is a bit loose on duplicate keys...
+            const extensionItem = errorInformation.extensionList.find(e => {
+                return e.key === ctx.state.conf.outboundErrorStatusCodeExtensionKey;
+            });
+
+            if(extensionItem) {
+                ctx.response.body.statusCode = extensionItem.value;
+            }
+        }
     }
 };
 
@@ -41,6 +61,9 @@ const handleTransferError = (method, err, ctx) =>
 
 const handleAccountsError = (method, err, ctx) =>
     handleError(method, err, ctx, 'executionState');
+
+const handleRequestToPayError = (method, err, ctx) =>
+    handleError(method, err, ctx, 'requestToPayState');
 
 
 /**
@@ -170,6 +193,33 @@ const postAccounts = async (ctx) => {
     }
 };
 
+const postRequestToPay = async (ctx) => {
+    try {
+        // this requires a multi-stage sequence with the switch.
+        let requestToPayInboundRequest = {
+            ...ctx.request.body
+        };
+
+        // use the transfers model to execute asynchronous stages with the switch
+        const model = new OutboundRequestToPayModel({
+            ...ctx.state.conf,
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            wso2Auth: ctx.state.wso2Auth,
+        });
+
+        // initialize the transfer model and start it running
+        await model.initialize(requestToPayInboundRequest);
+        const response = await model.run();
+
+        // return the result
+        ctx.response.status = 200;
+        ctx.response.body = response;
+
+    } catch(err) {
+        return handleRequestToPayError('requestToPayInboundRequest', err, ctx);
+    }
+};
 
 const healthCheck = async (ctx) => {
     ctx.response.status = 200;
@@ -190,4 +240,7 @@ module.exports = {
     '/accounts': {
         post: postAccounts
     },
+    '/requestToPay': {
+        post: postRequestToPay
+    }
 };

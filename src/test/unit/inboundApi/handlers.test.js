@@ -15,12 +15,14 @@ jest.mock('@internal/model');
 const handlers = require('../../../InboundServer/handlers');
 const Model = require('@internal/model').InboundTransfersModel;
 const mockArguments = require('./data/mockArguments');
+const mockTransactionRequestData = require('./data/mockTransactionRequest');
 const { Logger, Transports } = require('@internal/log');
 
 let logTransports;
 
 describe('Inbound API handlers:', () => {
     let mockArgs;
+    let mockTransactionRequest;
 
     beforeAll(async () => {
         logTransports = await Promise.all([Transports.consoleDir()]);
@@ -28,12 +30,14 @@ describe('Inbound API handlers:', () => {
 
     beforeEach(() => {
         mockArgs = JSON.parse(JSON.stringify(mockArguments));
+        mockTransactionRequest = JSON.parse(JSON.stringify(mockTransactionRequestData));
 
     });
 
     describe('POST /quotes', () => {
+        
         let mockContext;
-
+        
         beforeEach(() => {
             mockContext = {
                 request: {
@@ -48,6 +52,7 @@ describe('Inbound API handlers:', () => {
                     logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports })
                 }
             };
+            
         });
 
         test('calls `model.quoteRequest` with the expected arguments.', async () => {
@@ -58,6 +63,40 @@ describe('Inbound API handlers:', () => {
             expect(quoteRequestSpy).toHaveBeenCalledTimes(1);
             expect(quoteRequestSpy.mock.calls[0][0]).toBe(mockContext.request.body);
             expect(quoteRequestSpy.mock.calls[0][1]).toBe(mockContext.request.headers['fspiop-source']);
+        });
+
+        
+    });
+
+    describe('POST /transactionRequests', () => {
+        
+        let mockTransactionReqContext;
+
+        beforeEach(() => {
+            
+            mockTransactionReqContext = {
+                request: {
+                    body: mockTransactionRequest.transactionRequest,
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports })
+                }
+            };
+        });
+
+        test('calls `model.transactionRequest` with the expected arguments.', async () => {
+            const transactionRequestSpy = jest.spyOn(Model.prototype, 'transactionRequest');
+
+            await expect(handlers['/transactionRequests'].post(mockTransactionReqContext)).resolves.toBe(undefined);
+
+            expect(transactionRequestSpy).toHaveBeenCalledTimes(1);
+            expect(transactionRequestSpy.mock.calls[0][0]).toBe(mockTransactionReqContext.request.body);
+            expect(transactionRequestSpy.mock.calls[0][1]).toBe(mockTransactionReqContext.request.headers['fspiop-source']);
         });
     });
 });
