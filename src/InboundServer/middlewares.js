@@ -49,6 +49,7 @@ const createHeaderValidator = (logger) => async (ctx, next) => {
         'application/vnd.interoperability.parties+json;version=1.0',
         'application/vnd.interoperability.participants+json;version=1.0',
         'application/vnd.interoperability.quotes+json;version=1.0',
+        'application/vnd.interoperability.transactionRequests+json;version=1.0',
         'application/vnd.interoperability.transfers+json;version=1.0',
         'application/json'
     ]);
@@ -98,6 +99,7 @@ const createJwsValidator = (logger, keys, exclusions) => {
             // there are potential security issues if message origin is used to
             // determine permission sets i.e. what is "readable"
             if(ctx.request.method !== 'GET') {
+                logger.push({ request: ctx.request, body: ctx.request.body }).log('Validating JWS');
                 jwsValidator.validate(ctx.request, logger);
             }
 

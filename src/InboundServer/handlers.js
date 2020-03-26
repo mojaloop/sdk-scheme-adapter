@@ -246,6 +246,51 @@ const getTransfersById = async (ctx) => {
 };
 
 /**
+ * Handles a POST /transactionRequests request
+ */
+const postTransactionRequests = async (ctx) => {
+    // kick off an asyncronous operation to handle the request
+    (async () => {
+        try {
+            if(ctx.state.conf.enableTestFeatures) {
+                // we are in test mode so cache the request
+                const req = {
+                    headers: ctx.request.headers,
+                    data: ctx.request.body
+                };
+                const res = await ctx.state.cache.set(`request_${ctx.request.body.transactionRequestId}`, req);
+                ctx.state.logger.log(`Cacheing request: ${util.inspect(res)}`);
+            }
+
+            // use the transfers model to execute asynchronous stages with the switch
+            const model = new Model({
+                ...ctx.state.conf,
+                cache: ctx.state.cache,
+                logger: ctx.state.logger,
+                wso2Auth: ctx.state.wso2Auth,
+            });
+
+            const sourceFspId = ctx.request.headers['fspiop-source'];
+
+            // use the model to handle the request
+            const response = await model.transactionRequest(ctx.request.body, sourceFspId);
+
+            // log the result
+            ctx.state.logger.push({ response }).log('Inbound transfers model handled POST /transactionRequests request');
+        }
+        catch(err) {
+            // nothing we can do if an error gets thrown back to us here apart from log it and continue
+            ctx.state.logger.push({ err }).log('Error handling POST /transactionRequests');
+        }
+    })();
+
+    // Note that we will have passed request validation, JWS etc... by this point
+    // so it is safe to return 202
+    ctx.response.status = 202;
+    ctx.response.body = '';
+};
+
+/**
  * Handles a PUT /participants/{ID}. This is a response to a POST /participants request
  */
 const putParticipantsById = async (ctx) => {
@@ -354,6 +399,29 @@ const putQuoteById = async (ctx) => {
     ctx.response.status = 200;
 };
 
+/**
+ * Handles a PUT /quotes/{ID}. This is a response to a POST /quotes request
+ */
+const putTransactionRequestsById = async (ctx) => {
+    if(ctx.state.conf.enableTestFeatures) {
+        // we are in test mode so cache the request
+        const req = {
+            headers: ctx.request.headers,
+            data: ctx.request.body
+        };
+        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        ctx.state.logger.log(`Cacheing callback: ${util.inspect(res)}`);
+    }
+
+    // publish an event onto the cache for subscribers to action
+    await ctx.state.cache.publish(`txnreq_${ctx.state.path.params.ID}`, {
+        type: 'transactionRequestResponse',
+        data: ctx.request.body,
+        headers: ctx.request.headers
+    });
+
+    ctx.response.status = 200;
+};
 
 /**
  * Handles a PUT /transfers/{ID}. This is a response to a POST|GET /transfers request
@@ -563,6 +631,12 @@ module.exports = {
     },
     '/transfers/{ID}/error': {
         put: putTransfersByIdError
+    },
+    '/transactionRequests': {
+        post: postTransactionRequests
+    },
+    '/transactionRequests/{ID}': {
+        put: putTransactionRequestsById
     },
     '/requests/{ID}': {
         get: getRequestById

@@ -125,6 +125,37 @@ paths:
               schema:
                 $ref: '#/components/schemas/errorResponse'
 
+  /requestToPay:
+    post:
+      summary: Receiver requesting funds from Sender
+      description: >
+        The HTTP request `POST /requestToPay` is used to support Pull Funds pattern where in a receiver can request for funds from the Sender.
+
+        The underlying API has two stages:
+
+          1. Party lookup. This facilitates a check by the sending party that the destination party is correct before proceeding with a money movement.
+          2. Transaction Request. This request enables a Payee to request Payer to send electronic funds to the Payee. 
+          
+      tags:
+        - RequestToPay
+      requestBody:
+        description: RequestToPay request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/requestToPayRequest'
+        required: true
+      responses:
+        200:
+          $ref: '#/components/responses/requestToPaySuccess'
+        # 400:
+        #   $ref: '#/components/responses/requestToPayBadRequest'
+        # 500:
+        #   $ref: '#/components/responses/requestToPayServerError'
+        # 504:
+        #   $ref: '#/components/responses/requestToPayTimeout'
+
+        
   /accounts:
     post:
       summary:  Create accounts on the Account Lookup Service
@@ -393,6 +424,32 @@ components:
       maxLength: 128
       description: Either a sub-identifier of a `{idValue}`, or a sub-type of the `{idType}`, normally a `{personalIdType}`
 
+    initiator:
+      type: string
+      enum:
+      - PAYER
+      - PAYEE
+      description: Who is initiating the transaction, Payer or Payee.
+
+    initiatorType:
+      type: string
+      enum:
+      - CONSUMER
+      - AGENT
+      - BUSINESS
+      - DEVICE
+      description: Consumer, agent, business, …
+
+    scenario:
+      type: string
+      enum:
+      - DEPOSIT
+      - WITHDRAWAL
+      - TRANSFER
+      - PAYMENT
+      - REFUND
+      description: Deposit, Withdrawl …
+
     personalIdType:
       type: string
       enum:
@@ -585,6 +642,75 @@ components:
         transferRequestExtensions:
           $ref: '#/components/schemas/extensionList'
 
+    requestToPayRequest:
+      type: object
+      required:
+        - homeTransactionId
+        - from
+        - to
+        - amountType
+        - currency
+        - amount
+        - scenario
+        - initiator
+        - initiatorType
+      properties:
+        homeTransactionId:
+          type: string
+          description: Transaction ID from the DFSP backend, used to reconcile transactions between the Switch and DFSP backend systems.
+        from:
+          $ref: '#/components/schemas/transferParty'
+        to:
+          $ref: '#/components/schemas/transferParty'
+        amountType:
+          $ref: '#/components/schemas/amountType'
+        currency:
+          $ref: '#/components/schemas/currency'
+        amount:
+          $ref: '#/components/schemas/money'
+        scenario:
+          $ref: '#/components/schemas/scenario'
+        initiator:
+          $ref: '#/components/schemas/initiator'
+        initiatorType:
+          $ref: '#/components/schemas/initiatorType'
+
+    requestToPayResponse:
+      type: object
+      required:
+        - transactionRequestId
+        - from
+        - to
+        - amountType
+        - currency
+        - amount
+        - transactionType
+        - requestToPayState
+      properties:
+        transactionRequestId:
+          $ref: '#/components/schemas/mojaloopIdentifier'
+        from:
+          $ref: '#/components/schemas/transferParty'
+        to:
+          $ref: '#/components/schemas/transferParty'
+        amountType:
+          $ref: '#/components/schemas/amountType'
+        currency:
+          $ref: '#/components/schemas/currency'
+        amount:
+          $ref: '#/components/schemas/money'
+        scenario:
+          $ref: '#/components/schemas/scenario'
+        initiator:
+          $ref: '#/components/schemas/initiator'
+        initiatorType:
+          $ref: '#/components/schemas/initiatorType'
+        authenticationType:
+          type: string
+          description: OTP or QR Code, otherwise empty   
+        requestToPayState:
+          $ref: '#/components/schemas/mojaloopTransactionRequestState'     
+
     transferResponse:
       type: object
       required:
@@ -727,6 +853,20 @@ components:
         - RESERVED Next ledger has reserved the transfer.
         - COMMITTED Next ledger has successfully performed the transfer.
         - ABORTED Next ledger has aborted the transfer due a rejection or failure to perform the transfer.
+
+    mojaloopTransactionRequestState:
+      title: TransactionRequestStateEnum
+      type: string
+      enum:
+        - RECEIVED
+        - PENDING
+        - ACCEPTED
+        - REJECTED
+      description: >-
+        Below are the allowed values for the enumeration - RECEIVED Payer FSP
+        has received the transaction from the Payee FSP. - PENDING Payer FSP has
+        sent the transaction request to the Payer. - ACCEPTED Payer has approved
+        the transaction. - REJECTED Payer has rejected the transaction.
 
     mojaloopMoney:
       title: Money
@@ -960,6 +1100,15 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/errorAccountsResponse'
+    
+    requestToPaySuccess:
+      description: Request to Pay completed successfully
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/requestToPayResponse'
+
+    
 
   parameters:
     transferId:

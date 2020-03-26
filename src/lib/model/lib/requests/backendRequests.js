@@ -28,7 +28,11 @@ class BackendRequests {
         // FSPID of THIS DFSP
         this.dfspId = config.dfspId;
 
-        this.agent = http.globalAgent;
+        // make sure we keep alive connections to the backend
+        this.agent = new http.Agent({
+            keepAlive: true
+        });
+
         this.transportScheme = 'http';
 
         // Switch or peer DFSP endpoint
@@ -77,6 +81,15 @@ class BackendRequests {
         return this._post('transfers', prepare);
     }
 
+    /**
+     * Executes a POST /transactionRequests request for the specified transaction request
+     *
+     * @returns {object} - JSON response body if one was received
+     */
+    async postTransactionRequests(transactionRequest) {
+        return this._post('transactionrequests', transactionRequest);
+    }
+
 
     /**
      * Utility function for building outgoing request headers as required by the mojaloop api spec
@@ -121,6 +134,7 @@ class BackendRequests {
             method: 'PUT',
             uri: buildUrl(this.backendEndpoint, url),
             headers: this._buildHeaders(),
+            agent: this.agent,
             body: JSON.stringify(body),
             resolveWithFullResponse: true,
             simple: false,
@@ -142,6 +156,7 @@ class BackendRequests {
             method: 'POST',
             uri: buildUrl(this.backendEndpoint, url),
             headers: this._buildHeaders(),
+            agent: this.agent,
             body: JSON.stringify(body),
             resolveWithFullResponse: true,
             simple: false,
