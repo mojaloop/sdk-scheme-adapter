@@ -9,9 +9,9 @@ const postTransfersSimpleBody = require('./data/postTransfersSimpleBody');
  * @param reqInbound
  * @param reqOutbound
  * @param apiSpecsOutbound
- * @returns Function(putBodyFn:string, responseCode:string, responseBody:string) => Promise
+ * @returns Function(putBodyFn:function, responseCode:number, responseBody:object) => Promise
  */
-function createGetTransfersTester({ reqInbound, reqOutbound, apiSpecsOutbound}) {
+function createGetTransfersTester({ reqInbound, reqOutbound, apiSpecsOutbound }) {
     /**
      *
      * @param putBodyFn {function}
@@ -61,8 +61,17 @@ function createGetTransfersTester({ reqInbound, reqOutbound, apiSpecsOutbound}) 
     };
 }
 
-const createPostTransfersTester = ({
-    requestValidatorInbound, reqInbound, reqOutbound, apiSpecsOutbound }) => {
+/**
+ *
+ * @param requestValidatorInbound
+ * @param reqInbound
+ * @param reqOutbound
+ * @param apiSpecsOutbound
+ * @returns Function(bodyFn:object, responseCode:number, responseBody:object) => Promise
+ */
+function createPostTransfersTester(
+    { requestValidatorInbound, reqInbound, reqOutbound, apiSpecsOutbound }) {
+
     const logTransports = [() => {}];
     const logger = new Logger({
         context: { app: 'outbound-model-unit-tests' },
@@ -151,7 +160,7 @@ const createPostTransfersTester = ({
         await pendingRequest;
         requestSpy.mockRestore();
     };
-};
+}
 
 module.exports = {
     createGetTransfersTester,
