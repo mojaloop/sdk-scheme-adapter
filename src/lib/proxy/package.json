@@ -1,0 +1,17 @@
+{
+  "name": "@internal/proxy",
+  "version": "0.0.1",
+  "description": "Basic Koa router mapping matched paths to handlers",
+  "main": "router.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Matt Kingston, ModusBox Inc.",
+  "license": "Apache-2.0",
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  ]
+}
