@@ -154,6 +154,23 @@ paths:
         500:
           $ref: '#/components/responses/500'
 
+    get:
+      summary: Retrieves information for a specific transfer
+      description: The HTTP request `GET /transfers/{transferId}` is used to get information regarding a transfer created or requested earlier. The `{transferId}` in the URI should contain the `transferId` that was used for the creation of the transfer.
+      tags:
+        - Transfers
+      parameters:
+        - $ref: '#/components/parameters/transferId'
+      responses:
+        200:
+          description: The transfer was accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/transferDetailsResponse'
+        500:
+          $ref: '#/components/responses/500'
+
 components:
   schemas:
 
@@ -642,6 +659,20 @@ components:
           type: string
           description: Up to 4 digits specifying the sender's merchant classification, if known and applicable.
 
+    transferState:
+      type: string
+      enum:
+        - RECEIVED
+        - RESERVED
+        - COMMITTED
+        - ABORTED
+      description: >
+        Below are the allowed values for the enumeration
+        - RECEIVED DFSP has received the transfer.
+        - RESERVED DFSP has reserved the transfer.
+        - COMMITTED DFSP has successfully performed the transfer.
+        - ABORTED DFSP has aborted the transfer due a rejection or failure to perform the transfer.
+
     transferRequest:
       type: object
       required:
@@ -682,6 +713,45 @@ components:
         homeTransactionId:
           type: string
           description: Transaction ID from the DFSP backend, used to reconcile transactions between the Switch and DFSP backend systems.
+
+    transferDetailsResponse:
+      type: object
+      required:
+        - homeTransactionId
+        - from
+        - to
+        - amountType
+        - currency
+        - amount
+        - transferState
+        - transactionType
+        - timestamp
+      properties:
+        homeTransactionId:
+          type: string
+          description: Transaction ID from the DFSP backend, used to reconcile transactions between the Switch and DFSP backend systems.
+        from:
+          $ref: '#/components/schemas/transferParty'
+        to:
+          $ref: '#/components/schemas/transferParty'
+        amountType:
+          $ref: '#/components/schemas/amountType'
+        currency:
+          $ref: '#/components/schemas/currency'
+        amount:
+          $ref: '#/components/schemas/money'
+        transferState:
+          $ref: '#/components/schemas/transferState'
+        timestamp:
+          $ref: '#/components/schemas/timestamp'
+        transactionType:
+          $ref: '#/components/schemas/transactionType'
+        note:
+          maxLength: 128
+          type: string
+        extensions:
+          $ref: '#/components/schemas/extensionList'
+
 
     transferStatus:
       type: string

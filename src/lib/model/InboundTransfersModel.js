@@ -11,11 +11,15 @@
 'use strict';
 
 
-const BackendRequests = require('@internal/requests').BackendRequests;
-const HTTPResponseError = require('@internal/requests').HTTPResponseError;
-const MojaloopRequests = require('@mojaloop/sdk-standard-components').MojaloopRequests;
-const Ilp = require('@mojaloop/sdk-standard-components').Ilp;
-const Errors = require('@mojaloop/sdk-standard-components').Errors;
+const {
+    BackendRequests,
+    HTTPResponseError,
+} = require('@internal/requests');
+const {
+    MojaloopRequests,
+    Ilp,
+    Errors,
+} = require('@mojaloop/sdk-standard-components');
 const shared = require('@internal/shared');
 
 
@@ -109,6 +113,60 @@ class InboundTransfersModel {
             const mojaloopError = await this._handleError(err);
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
             return this._mojaloopRequests.putPartiesError(idType, idValue, idSubValue,
+                mojaloopError, sourceFspId);
+        }
+    }
+
+    /**
+     * Queries details of a transfer
+     */
+    async getTransfer(transferId, sourceFspId) {
+        try {
+            // make a call to the backend to get transfer details
+            const response = await this._backendRequests.getTransfers(transferId);
+
+            if(!response) {
+                return 'No response from backend';
+            }
+
+            const ilpPaymentData = {
+                transferId: transferId,
+                homeTransactionId: response.homeTransactionId,
+                from: shared.internalPartyToMojaloopParty(response.from, response.from.fspId),
+                to: shared.internalPartyToMojaloopParty(response.to, response.to.fspId),
+                amountType: response.amountType,
+                currency: response.currency,
+                amount: response.amount,
+                transactionType: response.transactionType,
+                note: response.note,
+            };
+
+            let fulfilment;
+            if (this._dfspId === response.to.fspId) {
+                fulfilment = this._ilp.getResponseIlp(ilpPaymentData).fulfilment;
+            }
+
+            // create a  mojaloop transfer fulfil response
+            const mojaloopResponse = {
+                completedTimestamp: response.timestamp,
+                transferState: response.transferState,
+                fulfilment,
+                ...response.extensions && {
+                    extensionList: {
+                        extension: response.extensions,
+                    },
+                },
+            };
+
+            // make a callback to the source fsp with the transfer fulfilment
+            return this._mojaloopRequests.putTransfers(transferId, mojaloopResponse,
+                sourceFspId);
+        }
+        catch(err) {
+            this._logger.push({ err }).log('Error in getTransfers');
+            const mojaloopError = await this._handleError(err);
+            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            return this._mojaloopRequests.putTransfersError(transferId,
                 mojaloopError, sourceFspId);
         }
     }
@@ -214,7 +272,7 @@ class InboundTransfersModel {
                 }
             }
 
-            // Calculate or retrieve fullfilment and condition
+            // Calculate or retrieve fulfilment and condition
             let fulfilment = null;
             let condition = null;
             if(quote) {
@@ -222,7 +280,7 @@ class InboundTransfersModel {
                 condition = quote.mojaloopResponse.condition;
             }
             else {
-                fulfilment = this._ilp.caluclateFulfil(prepareRequest.ilpPacket);
+                fulfilment = this._ilp.calculateFulfil(prepareRequest.ilpPacket);
                 condition = this._ilp.calculateConditionFromFulfil(fulfilment);
             }
 
@@ -259,7 +317,12 @@ class InboundTransfersModel {
             const mojaloopResponse = {
                 completedTimestamp: new Date(),
                 transferState: 'COMMITTED',
-                fulfilment: fulfilment
+                fulfilment: fulfilment,
+                ...response.extensionList && {
+                    extensionList: {
+                        extension: response.extensionList,
+                    },
+                },
             };
 
             // make a callback to the source fsp with the transfer fulfilment
