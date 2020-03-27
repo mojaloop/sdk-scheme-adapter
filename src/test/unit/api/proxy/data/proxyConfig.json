@@ -1,0 +1,75 @@
+{
+	"version": 1,
+	"routes": [
+		{
+			"description": "Routing by URL path as string",
+			"match": [
+				{
+					"path": "/sdk-path-test-1"
+				}
+			],
+			"destination": {
+				"path": "/switch-path-test-1"
+			}
+		},
+		{
+			"description": "Routing by URL path as regexp",
+			"match": [
+				{
+					"path": {
+						"regexp": "^\\/sdk-.*2$"
+					}
+				}
+			],
+			"destination": {
+				"path": "/switch-path-test-2"
+			}
+		},
+		{
+			"description": "Routing by Query params",
+			"match": [
+				{
+					"query": [
+						{
+							"key": "test3key1",
+							"value": "val1"
+						},
+						{
+							"key": "test3key2",
+							"value": {
+								"regexp": "v.*2"
+							}
+						}
+					]
+				}
+			],
+			"destination": {
+				"path": "/switch-path-test-3"
+			}
+		},
+		{
+			"description": "Routing by Header params",
+			"match": [
+				{
+					"headers": [
+						{
+							"name": "hoST",
+							"value": {
+								"regexp": ".*example"
+							}
+						},
+						{
+							"name": "RefeReR",
+							"value": {
+								"regexp": ".*stats"
+							}
+						}
+					]
+				}
+			],
+			"destination": {
+				"path": "/switch-path-test-4"
+			}
+		}
+	]
+}

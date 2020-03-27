@@ -58,6 +58,10 @@ class OutboundServer {
         const sharedState = { cache: this._cache, wso2Auth: this._wso2Auth, conf: this._conf };
         this._api.use(middlewares.createLogger(this._logger, sharedState));
 
+        if (this._conf.proxyConfig) {
+            this._api.use(middlewares.createProxy(this._conf.proxyConfig, sharedState));
+        }
+
         this._api.use(middlewares.createRequestValidator(validator));
         this._api.use(router(handlers));
 

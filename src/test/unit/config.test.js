@@ -75,4 +75,11 @@ describe('config', () => {
         const content = config.tls.inbound.creds.ca.map(ca => ca.toString());
         expect(content).toStrictEqual(certContent);
     });
+
+    it('should parse proxy config yaml file as json object', () => {
+        process.env.PROXY_CONFIG_PATH = path.join(__dirname, './api/proxy/data/proxyConfig.yaml');
+        const config = require('../../config');
+        const proxyConfig = require('./api/proxy/data/proxyConfig');
+        expect(config.proxyConfig).toEqual(proxyConfig);
+    });
 });
