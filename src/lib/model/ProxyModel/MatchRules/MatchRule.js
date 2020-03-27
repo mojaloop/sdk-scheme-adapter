@@ -22,24 +22,6 @@ class MatchRule {
         throw new TypeError('Do not call abstract method match from child.');
     }
 
-    /**
-     *
-     * @param data {Object|string}
-     * @param data.regexp {string}
-     * @returns RegExp
-     * @throws Error
-     */
-    createExpression(data) {
-        let expression;
-        if (typeof data === 'string') {
-            expression = new RegExp(`^${data}$`, 'i');
-        } else if (typeof data === 'object' && typeof data.regexp === 'string') {
-            expression = new RegExp(data.regexp, 'i');
-        } else {
-            throw new Error('Invalid parameters specified');
-        }
-        return expression;
-    }
 }
 
 module.exports = MatchRule;
