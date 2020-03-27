@@ -25,12 +25,14 @@ class MockBackendRequests extends BackendRequests {
         this.getParties = MockBackendRequests.__getParties;
         this.postTransactionRequests = MockBackendRequests.__postTransactionRequests;
         this.postQuoteRequests = MockBackendRequests.__postQuoteRequests;
+        this.getTransfers = MockBackendRequests.__getTransfers;
         this.postTransfers = MockBackendRequests.__postTransfers;
     }
 }
 MockBackendRequests.__getParties = jest.fn(() => Promise.resolve({body: {}}));
 MockBackendRequests.__postTransactionRequests = jest.fn(() => Promise.resolve({body: {}}));
 MockBackendRequests.__postQuoteRequests = jest.fn(() => Promise.resolve({body: {}}));
+MockBackendRequests.__getTransfers = jest.fn(() => Promise.resolve({body: {}}));
 MockBackendRequests.__postTransfers = jest.fn(() => Promise.resolve({body: {}}));
 
 

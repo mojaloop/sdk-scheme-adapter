@@ -117,9 +117,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/transferResponse'
+                $ref: '#/components/schemas/transferStatusResponse'
         500:
-          $ref: '#/components/responses/transferServerError'
+          description: An error occurred processing the transfer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
 
   /requestToPay:
     post:
@@ -757,6 +761,20 @@ components:
             or an object representing other types of error e.g. exceptions that may occur inside the scheme adapter.
           $ref: '#/components/schemas/transferError'
 
+    transferStatusResponse:
+      type: object
+      required:
+        - transferId
+        - currentState
+        - fulfil
+      properties:
+        transferId:
+          $ref: '#/components/schemas/mojaloopIdentifier'
+        currentState:
+          $ref: '#/components/schemas/transferStatus'
+        fulfil:
+          $ref: '#/components/schemas/transferFulfilment'
+
     quote:
       type: object
       description: Mojaloop API response to a quote request
@@ -830,11 +848,11 @@ components:
         - COMMITTED
         - ABORTED
       description: >
-        Below are the allowed values for the enumeration - RECEIVED Next ledger
-        has received the transfer. - RESERVED Next ledger has reserved the
-        transfer. - COMMITTED Next ledger has successfully performed the
-        transfer. - ABORTED Next ledger has aborted the transfer due a rejection
-        or failure to perform the transfer.
+        Below are the allowed values for the enumeration
+        - RECEIVED Next ledger has received the transfer.
+        - RESERVED Next ledger has reserved the transfer.
+        - COMMITTED Next ledger has successfully performed the transfer.
+        - ABORTED Next ledger has aborted the transfer due a rejection or failure to perform the transfer.
 
     mojaloopTransactionRequestState:
       title: TransactionRequestStateEnum

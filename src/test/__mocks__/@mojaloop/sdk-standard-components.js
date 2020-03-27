@@ -24,6 +24,7 @@ class MockMojaloopRequests extends MojaloopRequests {
         this.postQuotes = MockMojaloopRequests.__postQuotes;
         this.putQuotes = MockMojaloopRequests.__putQuotes;
         this.putQuotesError = MockMojaloopRequests.__putQuotesError;
+        this.getTransfers = MockMojaloopRequests.__getTransfers;
         this.putTransactionRequests = MockMojaloopRequests.__putTransactionRequests;
         this.postTransfers = MockMojaloopRequests.__postTransfers;
         this.putTransfers = MockMojaloopRequests.__putTransfers;
@@ -36,6 +37,7 @@ MockMojaloopRequests.__postTransactionRequests = jest.fn(() => Promise.resolve()
 MockMojaloopRequests.__postQuotes = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putQuotes = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putQuotesError = jest.fn(() => Promise.resolve());
+MockMojaloopRequests.__getTransfers = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putTransactionRequests = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__postTransfers = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putTransfers = jest.fn(() => Promise.resolve());
@@ -47,7 +49,7 @@ class MockIlp {
         this.config = config;
     }
 
-    caluclateFulfil(ilpPacket) {
+    calculateFulfil(ilpPacket) {
         console.log(`Mock ILP not calculating fulfil from ilp packet ${ilpPacket}`);
         return 'mockGeneratedFulfilment';
     }
@@ -62,10 +64,16 @@ class MockIlp {
         return true;
     }
 
+    getResponseIlp(...args) {
+        console.log(`MockIlp.getResponseIlp called with args: ${util.inspect(args)}`);
+
+        return MockIlp.__response;
+    }
+
     getQuoteResponseIlp(...args) {
         console.log(`MockIlp.getQuoteResponseIlp called with args: ${util.inspect(args)}`);
 
-        return MockIlp.__response;
+        return this.getResponseIlp(...args);
     }
 }
 MockIlp.__response = {

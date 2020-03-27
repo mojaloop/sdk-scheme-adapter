@@ -64,6 +64,9 @@ module.exports = {
     autoAcceptQuotes: env.get('AUTO_ACCEPT_QUOTES').default('true').asBool(),
     autoAcceptParty: env.get('AUTO_ACCEPT_PARTY').default('true').asBool(),
 
+    /* TODO:  high-risk transactions can require additional clearing check */
+    // enableClearingCheck: env.get('ENABLE_CLEARING_CHECK').default('false').asBool(),
+
     useQuoteSourceFSPAsTransferPayeeFSP: env.get('USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP').default('false').asBool(),
 
     // Getting secrets from files instead of environment variables reduces the likelihood of

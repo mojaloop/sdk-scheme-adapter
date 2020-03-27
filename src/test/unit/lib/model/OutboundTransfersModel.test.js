@@ -296,6 +296,41 @@ describe('outboundModel', () => {
     });
 
 
+    test('test get transfer', async () => {
+        MojaloopRequests.__getTransfers = jest.fn((transferId) => {
+            emitTransferFulfilCacheMessage(cache, transferId, transferFulfil);
+            return Promise.resolve();
+        });
+
+        const model = new Model({
+            cache,
+            logger,
+            ...config,
+        });
+
+        const TRANSFER_ID = 'tx-id000011';
+
+        await model.initialize(JSON.parse(JSON.stringify({
+            ...transferRequest,
+            currentState: 'getTransfer',
+            transferId: TRANSFER_ID,
+        })));
+
+        expect(StateMachine.__instance.state).toBe('getTransfer');
+
+        // start the model running
+        const result = await model.run();
+
+        console.log(`Result after get transfer: ${util.inspect(result)}`);
+
+        expect(MojaloopRequests.__getTransfers).toHaveBeenCalledTimes(1);
+
+        // check we stopped at payeeResolved state
+        expect(result.currentState).toBe('COMPLETED');
+        expect(StateMachine.__instance.state).toBe('succeeded');
+    });
+
+
     test('resolves payee and halts when AUTO_ACCEPT_PARTY is false', async () => {
         config.autoAcceptParty = false;
 
