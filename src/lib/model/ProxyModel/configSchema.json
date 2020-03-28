@@ -10,20 +10,8 @@
     },
 
     "Expression": {
-      "oneOf": [
-        {
-          "type": "string",
-          "minLength": 1
-        },
-        {
-          "type": "object",
-          "properties": {
-            "regexp": {
-              "type": "string"
-            }
-          }
-        }
-      ]
+      "type": "string",
+      "minLength": 1
     },
 
     "MatchRule": {

@@ -16,7 +16,7 @@ class Route {
      * @param data {Object}
      */
     constructor(data) {
-        this._route = this._createRoutes(data);
+        this._route = this._createRoute(data);
     }
 
     /**
@@ -45,7 +45,7 @@ class Route {
      * @returns {{matchRules: [], destination: string}}
      * @private
      */
-    _createRoutes(route) {
+    _createRoute(route) {
         const matchRules = [];
         for (const matchData of route.match) {
             matchRules.push(this._createMatchRule(matchData));

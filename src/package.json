@@ -7,8 +7,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "jest --ci --reporters=default --reporters=jest-junit --env=node test/unit",
-    "test:int": "jest --ci --reporters=default --reporters=jest-junit --env=node test/integration --forceExit",
-    "docs:proxy": "npx jsonschema2md -f yaml -d lib/model/ProxyModel -o docs/PROXY.md"
+    "test:int": "jest --ci --reporters=default --reporters=jest-junit --env=node test/integration --forceExit"
   },
   "author": "Matt Kingston, James Bush, ModusBox Inc.",
   "license": "Apache-2.0",
@@ -40,7 +39,6 @@
     "uuidv4": "^6.0.6"
   },
   "devDependencies": {
-    "@adobe/jsonschema2md": "^4.1.0",
     "@types/jest": "^25.1.4",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.0.0",

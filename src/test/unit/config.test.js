@@ -77,9 +77,9 @@ describe('config', () => {
     });
 
     it('should parse proxy config yaml file as json object', () => {
-        process.env.PROXY_CONFIG_PATH = path.join(__dirname, './api/proxy/data/proxyConfig.yaml');
+        process.env.PROXY_CONFIG_PATH = path.join(__dirname, './data/testFile.yaml');
         const config = require('../../config');
-        const proxyConfig = require('./api/proxy/data/proxyConfig');
+        const proxyConfig = require('./data/testFile');
         expect(config.proxyConfig).toEqual(proxyConfig);
     });
 });

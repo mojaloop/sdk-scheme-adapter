@@ -1,5 +1,5 @@
 {
-  "CustomReqHeader1": "re11",
-  "CustomReq-Header2": "some-req-value",
-  "customReq-header3": "22"
+  "ReqHeader1": "re11",
+  "Req-Header2": "some-req-value",
+  "Req-header3": "22"
 }

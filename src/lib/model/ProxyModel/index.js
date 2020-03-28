@@ -70,7 +70,7 @@ class ProxyModel {
         const valid = validate(config);
         if (!valid) {
             const errors = util.inspect(validate.errors);
-            this._logger.push({ errors }).log('Proxy config is invalid');
+            this._logger.push({ errors }).error('Proxy config is invalid');
             throw new Error(`Proxy config is invalid: ${errors}`);
         }
     }
@@ -82,7 +82,12 @@ class ProxyModel {
      * @private
      */
     _createRoutes(config) {
-        return config.routes.map(routeConfig => new Route(routeConfig));
+        try {
+            return config.routes.map(routeConfig => new Route(routeConfig));
+        } catch (e) {
+            this._logger.push({ e }).error('Failed to create route');
+            throw e;
+        }
     }
 
     _getMatchingDestination(request) {
