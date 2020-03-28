@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "routes": [
+    {
+      "description": "Routing by URL path as string",
+      "match": [
+        {
+          "path": "/some/path"
+        }
+      ],
+      "destination": {
+        "path": "/switch-path-test-1"
+      }
+    },
+    {
+      "description": "Routing by URL path as regexp",
+      "match": [
+        {
+          "path": {
+            "regexp": "^\\/sdk-.*2$"
+          }
+        }
+      ],
+      "destination": {
+        "path": "/switch-path-test-2"
+      }
+    }
+  ]
+}

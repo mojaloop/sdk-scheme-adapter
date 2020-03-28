@@ -8,29 +8,24 @@
  *       Yevhen Kyriukha - yevhen.kyriukha@modusbox.com                   *
  **************************************************************************/
 
-/**
- * @typedef ComplexExpressionData
- * @type {object}
- * @property {string} regexp
- */
-
-/**
- * @typedef {(string|ComplexExpressionData)} ExpressionData
- */
-
 class Expression {
     /**
      *
-     * @param data {Object|string}
-     * @param data.regexp {string}
+     * @param data {string}
      */
     constructor(data) {
-        if (typeof data === 'string') {
-            this._rule = new RegExp(`^${data}$`, 'i');
-        } else if (typeof data === 'object' && typeof data.regexp === 'string') {
-            this._rule = new RegExp(data.regexp, 'i');
-        } else {
+        if (typeof data !== 'string') {
             throw new Error('Invalid constructor parameters');
+        }
+        const ruleStr = data.trim();
+        if (ruleStr.startsWith('~')) {
+            let re = ruleStr.substr(1).trim();
+            if (re === '*') {
+                re = '.*';
+            }
+            this._rule = new RegExp(re, 'i');
+        } else {
+            this._rule = ruleStr.toLowerCase();
         }
     }
 
@@ -42,7 +37,11 @@ class Expression {
         if (typeof data !== 'string') {
             throw new Error('data should be string');
         }
-        return this._rule.test(data);
+        if (typeof this._rule === 'string') {
+            return this._rule === data.toLowerCase();
+        } else {
+            return this._rule.test(data);
+        }
     }
 }
 

@@ -2,6 +2,7 @@ const request = require('request-promise-native');
 
 const requestBody = require('./data/requestBody');
 const requestHeaders = require('./data/requestHeaders');
+const requestQuery = require('./data/requestQuery');
 const responseBody = require('./data/responseBody');
 const responseHeaders = require('./data/responseHeaders');
 
@@ -25,7 +26,7 @@ function createProxyTester({ reqOutbound }) {
      *
      * @return {Promise<any>}
      */
-    return async (sdkUrlPath, switchUrlPath, method, query, expectedStatusCode) => {
+    return async ({sdkUrlPath, switchUrlPath, method, shouldForward, query, headers}) => {
         const requestSpy = request.mockImplementation((req) => {
             const urlPath = new URL(req.uri).pathname;
             const receivedParam = new URL(req.uri).search;
@@ -37,10 +38,16 @@ function createProxyTester({ reqOutbound }) {
                 const body = JSON.parse(req.body);
                 expect(body).toEqual(requestBody);
             }
-            const expectedHeaders = convertToLowerCaseKeys(requestHeaders);
+            const expectedHeaders = convertToLowerCaseKeys({
+                ...requestHeaders,
+                ...headers,
+            });
             const receivedHeaders = convertToLowerCaseKeys(req.headers);
             expect(receivedHeaders).toMatchObject(expectedHeaders);
-            expect(req.qs).toMatchObject(query);
+            expect(req.qs).toMatchObject({
+                ...requestQuery,
+                ...query,
+            });
             const response = {
                 headers: responseHeaders,
                 body: JSON.stringify(responseBody),
@@ -50,17 +57,29 @@ function createProxyTester({ reqOutbound }) {
         });
 
         const res = await reqOutbound[method.toLowerCase()](sdkUrlPath).
-            query(query).
+            query({
+                ...requestQuery,
+                ...query,
+            }).
             send(requestBody).
-            set(requestHeaders);
+            set({
+                ...requestHeaders,
+                ...headers,
+            });
 
-        if (expectedStatusCode === 200) {
+        if (shouldForward) {
             const expectedHeaders = convertToLowerCaseKeys(responseHeaders);
             const receivedHeaders = convertToLowerCaseKeys(res.headers);
             expect(res.body).toEqual(responseBody);
             expect(receivedHeaders).toMatchObject(expectedHeaders);
+            expect(res.statusCode).toBe(200);
+        } else {
+            expect(res.body).toEqual({
+                'message': `Couldn't match path ${sdkUrlPath}`,
+                'statusCode': 400,
+            });
+            expect(res.statusCode).toBe(400);
         }
-        expect(res.statusCode).toBe(expectedStatusCode);
 
         requestSpy.mockRestore();
     };
