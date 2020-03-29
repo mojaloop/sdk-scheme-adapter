@@ -155,6 +155,54 @@ paths:
         # 504:
         #   $ref: '#/components/responses/requestToPayTimeout'
 
+  /merchantTransfers:
+    post:
+      summary: Sends money from customer account to merchant account
+      description: >
+        The HTTP request `POST /merchantTransfers` is used to request the movement of funds from payer DFSP to payee DFSP.
+
+        The underlying Mojaloop API has three stages for money transfer:
+
+          1. Quotation. This facilitates the exchange of fee information and the construction of a cryptographic "contract" between payee and payer DFSPs before funds are transferred.
+          2. Authorization. This facilitates getting OTP from payee DFSP.
+          3. Transfer. The enactment of the previously agreed "contract"
+
+        This method has several modes of operation.
+
+        - If the configuration variable `AUTO_ACCEPT_QUOTES` is set to `"false"` this method will terminate and return the quotation when it has been received from the payee DFSP.
+          If the payee wished to proceed with the otp, then a subsequent `PUT /transfers/{transferId}` request (accepting the quote) is required to continue the operation.
+          The scheme adapter will then proceed with the transfer state.
+
+        - If the configuration variable `AUTO_ACCEPT_OTP` is set to `"false"` this method will terminate and return the otp when it has been received from the payee DFSP.
+          If the payer wished to proceed with the transfer, then a subsequent `PUT /transfers/{transferId}` request (accepting the quote) is required to continue the operation.
+          The scheme adapter will then proceed with the transfer state.
+
+        If the configuration variables `AUTO_ACCEPT_PARTIES` and `AUTO_ACCEPT_QUOTES` are both set to `"true"` this method will block until all three transfer stages are complete.
+        Upon completion it will return the entire set of transfer details received during the operation.
+
+
+        Combinations of settings for `AUTO_ACCEPT...` configuration variables allow the scheme adapter user to decide which mode of operation best suits their use cases. i.e. the scheme
+        adapter can be configured to "break" the three stage transfer at these points in order to execute backend logic such as party verification, quoted fees assessments etc...
+
+      tags:
+        - MerchantTransfers
+      requestBody:
+        description: Merchant Transfer request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/merchantTransferRequest'
+        required: true
+      responses:
+        200:
+          $ref: '#/components/responses/merchantTransferSuccess'
+        400:
+          $ref: '#/components/responses/merchantTransferBadRequest'
+        500:
+          $ref: '#/components/responses/transferServerError'
+        504:
+          $ref: '#/components/responses/transferTimeout'
+
         
   /accounts:
     post:
@@ -711,6 +759,91 @@ components:
         requestToPayState:
           $ref: '#/components/schemas/mojaloopTransactionRequestState'     
 
+    merchantTransferRequest:
+      type: object
+      required:
+        - requestToPayTransactionId
+        - from
+        - to
+        - amountType
+        - currency
+        - amount
+        - transactionType
+      properties:
+        requestToPayTransactionId:
+          type: string
+          description: Transaction ID from the DFSP backend, used to reconcile transactions between the Switch and DFSP backend systems.
+        from:
+          $ref: '#/components/schemas/transferParty'
+        to:
+          $ref: '#/components/schemas/transferParty'
+        amountType:
+          $ref: '#/components/schemas/amountType'
+        currency:
+          $ref: '#/components/schemas/currency'
+        amount:
+          $ref: '#/components/schemas/money'
+        transactionType:
+          $ref: '#/components/schemas/transactionType'
+        note:
+          maxLength: 128
+          type: string
+        quoteRequestExtensions:
+          $ref: '#/components/schemas/extensionList'
+        transferRequestExtensions:
+          $ref: '#/components/schemas/extensionList'
+
+    merchantTransferResponse:
+      type: object
+      required:
+        - requestToPayTransactionId
+        - from
+        - to
+        - amountType
+        - currency
+        - amount
+        - transactionType
+      properties:
+        transferId:
+          $ref: '#/components/schemas/mojaloopIdentifier'
+        requestToPayTransactionId:
+          type: string
+          description: Transaction ID from the DFSP backend, used to reconcile transactions between the Switch and DFSP backend systems.
+        from:
+          $ref: '#/components/schemas/transferParty'
+        to:
+          $ref: '#/components/schemas/transferParty'
+        amountType:
+          $ref: '#/components/schemas/amountType'
+        currency:
+          $ref: '#/components/schemas/currency'
+        amount:
+          $ref: '#/components/schemas/money'
+        transactionType:
+          $ref: '#/components/schemas/transactionType'
+        note:
+          maxLength: 128
+          type: string
+        currentState:
+          $ref: '#/components/schemas/transferStatus'
+        quoteId:
+          $ref: '#/components/schemas/mojaloopIdentifier'
+        quoteResponse:
+          $ref: '#/components/schemas/quote'
+        quoteResponseSource:
+          type: string
+          description: >
+            FSPID of the entity that supplied the quote response. This may not be the same as the FSPID of the entity which
+            owns the end user account in the case of a FOREX transfer. i.e. it may be a FOREX gateway.
+        fulfil:
+          $ref: '#/components/schemas/transferFulfilment'
+        lastError:
+          description: >
+            Object representing the last error to occur during a transfer process. This may be a Mojaloop API error returned from another entity in the scheme
+            or an object representing other types of error e.g. exceptions that may occur inside the scheme adapter.
+          $ref: '#/components/schemas/transferError'
+
+
     transferResponse:
       type: object
       required:
@@ -1099,14 +1232,25 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/errorAccountsResponse'
-    
+            $ref: '#/components/schemas/errorAccountsResponse'    
     requestToPaySuccess:
       description: Request to Pay completed successfully
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/requestToPayResponse'
+    merchantTransferSuccess:
+      description: Transfer completed successfully
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/merchantTransferResponse'
+    merchantTransferBadRequest:
+      description: Malformed or missing required body, headers or parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errorTransferResponse'
 
     
 
