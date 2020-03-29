@@ -15,6 +15,50 @@ const Model = require('@internal/model').InboundTransfersModel;
 const { Errors } = require('@mojaloop/sdk-standard-components');
 
 /**
+ * Handles a GET /parties/{idType}/{idValue} request
+ */
+const getAuthorizationsById = async (ctx) => {
+    // kick off an asyncronous operation to handle the request
+    (async () => {
+        try {
+            if(ctx.state.conf.enableTestFeatures) {
+                // we are in test mode so cache the request
+                const req = {
+                    headers: ctx.request.headers
+                };
+                const res = await ctx.state.cache.set(`request_${ctx.state.path.params.ID}`, req);
+                ctx.state.logger.log(`Cacheing request : ${util.inspect(res)}`);
+            }
+
+            // use the transfers model to execute asynchronous stages with the switch
+            const model = new Model({
+                ...ctx.state.conf,
+                cache: ctx.state.cache,
+                logger: ctx.state.logger,
+                wso2Auth: ctx.state.wso2Auth,
+            });
+
+            const sourceFspId = ctx.request.headers['fspiop-source'];
+
+            // use the model to handle the request
+            const response = await model.getAuthorizations( ctx.state.path.params.ID,sourceFspId);
+
+            // log the result
+            ctx.state.logger.push({ response }).log('Inbound transfers model handled GET /parties/{idType}/{idValue} request');
+        }
+        catch(err) {
+            // nothing we can do if an error gets thrown back to us here apart from log it and continue
+            ctx.state.logger.push({ err }).log('Error handling GET /parties/{idType}/{idValue}');
+        }
+    })();
+
+    // Note that we will have passed request validation, JWS etc... by this point
+    // so it is safe to return 202
+    ctx.response.status = 202;
+    ctx.response.body = '';
+};
+
+/**
  * Handles a GET /participants/{idType}/{idValue} request
  */
 const getParticipantsByTypeAndId = async (ctx) => {
@@ -288,6 +332,29 @@ const postTransactionRequests = async (ctx) => {
     // so it is safe to return 202
     ctx.response.status = 202;
     ctx.response.body = '';
+};
+
+/**
+ * Handles a PUT /parties/{idType}/{IdValue}. This is a response to a GET /parties
+ * request.
+ */
+const putAuthorizationsById = async (ctx) => {
+    if(ctx.state.conf.enableTestFeatures) {
+        // we are in test mode so cache the request
+        const req = {
+            headers: ctx.request.headers,
+            data: ctx.request.body
+        };
+        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        ctx.state.logger.log(`Cacheing request: ${util.inspect(res)}`);
+    }
+
+    const idValue = ctx.state.path.params.ID;
+    
+    // publish an event onto the cache for subscribers to action
+    const cacheId = `otp_${idValue}`;
+    await ctx.state.cache.publish(cacheId, ctx.request.body);
+    ctx.response.status = 200;
 };
 
 /**
@@ -582,6 +649,10 @@ const getCallbackById = async(ctx) => {
 module.exports = {
     '/': {
         get: healthCheck
+    },
+    '/authorizations/{ID}': {
+        get: getAuthorizationsById,
+        put: putAuthorizationsById
     },
     '/participants/{ID}': {
         put: putParticipantsById
