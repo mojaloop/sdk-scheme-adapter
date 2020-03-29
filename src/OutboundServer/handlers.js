@@ -12,7 +12,7 @@
 
 
 const util = require('util');
-const { AccountsModel, OutboundTransfersModel, OutboundRequestToPayModel } = require('@internal/model');
+const { AccountsModel, OutboundTransfersModel, OutboundMerchantTransfersModel, OutboundRequestToPayModel } = require('@internal/model');
 
 
 /**
@@ -97,6 +97,36 @@ const postTransfers = async (ctx) => {
     }
 };
 
+/**
+ * Handler for outbound transfer request initiation
+ */
+const postMerchantTransfers = async (ctx) => {
+    try {
+        // this requires a multi-stage sequence with the switch.
+        let merchantTransferRequest = {
+            ...ctx.request.body
+        };
+
+        // use the transfers model to execute asynchronous stages with the switch
+        const model = new OutboundMerchantTransfersModel({
+            ...ctx.state.conf,
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            wso2Auth: ctx.state.wso2Auth,
+        });
+
+        // initialize the transfer model and start it running
+        await model.initialize(merchantTransferRequest);
+        const response = await model.run();
+
+        // return the result
+        ctx.response.status = 200;
+        ctx.response.body = response;
+    }
+    catch(err) {
+        return handleTransferError('postMerchantTransfers', err, ctx);
+    }
+};
 
 /**
  * Handler for outbound transfer request
@@ -242,5 +272,8 @@ module.exports = {
     },
     '/requestToPay': {
         post: postRequestToPay
-    }
+    },
+    '/merchantTransfers': {
+        post: postMerchantTransfers
+    },
 };
