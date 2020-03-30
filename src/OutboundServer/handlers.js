@@ -65,6 +65,9 @@ const handleAccountsError = (method, err, ctx) =>
 const handleRequestToPayError = (method, err, ctx) =>
     handleError(method, err, ctx, 'requestToPayState');
 
+const handleMerchantTransferError = (method, err, ctx) =>
+    handleError(method, err, ctx, 'merchantTransferState');
+
 
 /**
  * Handler for outbound transfer request initiation
@@ -107,7 +110,7 @@ const postMerchantTransfers = async (ctx) => {
             ...ctx.request.body
         };
 
-        // use the transfers model to execute asynchronous stages with the switch
+        // use the merchant transfers model to execute asynchronous stages with the switch
         const model = new OutboundMerchantTransfersModel({
             ...ctx.state.conf,
             cache: ctx.state.cache,
@@ -118,13 +121,12 @@ const postMerchantTransfers = async (ctx) => {
         // initialize the transfer model and start it running
         await model.initialize(merchantTransferRequest);
         const response = await model.run();
-
         // return the result
         ctx.response.status = 200;
         ctx.response.body = response;
     }
     catch(err) {
-        return handleTransferError('postMerchantTransfers', err, ctx);
+        return handleMerchantTransferError('postMerchantTransfers', err, ctx);
     }
 };
 
