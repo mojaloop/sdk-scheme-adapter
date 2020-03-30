@@ -172,7 +172,7 @@ class OutboundTransfersModel {
                 try {
                     let payee = JSON.parse(msg);
 
-                    if(payee.errorInformation) {
+                    if (payee.errorInformation) {
                         // this is an error response to our GET /parties request
                         const err = new BackendError(`Got an error response resolving party: ${util.inspect(payee)}`, 500);
                         err.mojaloopError = payee;
@@ -182,7 +182,7 @@ class OutboundTransfersModel {
                         return reject(err);
                     }
 
-                    if(!payee.party) {
+                    if (!payee.party) {
                         // we should never get a non-error response without a party, but just in case...
                         // cancel the timeout handler
                         clearTimeout(timeout);
@@ -194,7 +194,7 @@ class OutboundTransfersModel {
                     // cancel the timeout handler
                     clearTimeout(timeout);
 
-                    this._logger.push({ payee }).log('Payee resolved');
+                    this._logger.push({payee}).log('Payee resolved');
 
                     // stop listening for payee resolution messages
                     // no need to await for the unsubscribe to complete.
@@ -204,22 +204,22 @@ class OutboundTransfersModel {
                     });
 
                     // check we got the right payee and info we need
-                    if(payee.partyIdInfo.partyIdType !== this.data.to.idType) {
+                    if (payee.partyIdInfo.partyIdType !== this.data.to.idType) {
                         const err = new Error(`Expecting resolved payee party IdType to be ${this.data.to.idType} but got ${payee.partyIdInfo.partyIdType}`);
                         return reject(err);
                     }
 
-                    if(payee.partyIdInfo.partyIdentifier !== this.data.to.idValue) {
+                    if (payee.partyIdInfo.partyIdentifier !== this.data.to.idValue) {
                         const err = new Error(`Expecting resolved payee party identifier to be ${this.data.to.idValue} but got ${payee.partyIdInfo.partyIdentifier}`);
                         return reject(err);
                     }
 
-                    if(payee.partyIdInfo.partySubIdOrType !== this.data.to.idSubValue) {
+                    if (payee.partyIdInfo.partySubIdOrType !== this.data.to.idSubValue) {
                         const err = new Error(`Expecting resolved payee party subTypeId to be ${this.data.to.idSubValue} but got ${payee.partyIdInfo.partySubIdOrType}`);
                         return reject(err);
                     }
 
-                    if(!payee.partyIdInfo.fspId) {
+                    if (!payee.partyIdInfo.fspId) {
                         const err = new Error(`Expecting resolved payee party to have an FSPID: ${util.inspect(payee.partyIdInfo)}`);
                         return reject(err);
                     }
@@ -227,7 +227,9 @@ class OutboundTransfersModel {
                     // now we got the payee, add the details to our data so we can use it
                     // in the quote request
                     this.data.to.fspId = payee.partyIdInfo.fspId;
-
+                    if (payee.partyIdInfo.extensionList) {
+                        this.data.to.extensionList  = payee.partyIdInfo.extensionList.extension;
+                    }
                     if(payee.personalInfo) {
                         if(payee.personalInfo.complexName) {
                             this.data.to.firstName = payee.personalInfo.complexName.firstName || this.data.to.firstName;

@@ -13,11 +13,17 @@ const fs = require('fs');
 require('dotenv').config();
 const { from } = require('env-var');
 
+console.log(process.env);
+
 function getFileContent(path) {
-    if (!fs.existsSync(path)) {
-        throw new Error('File doesn\'t exist');
+    try {
+        if (!fs.existsSync(path)) {
+            throw new Error('File doesn\'t exist');
+        }
+        return fs.readFileSync(path);
+    }catch (e) {
+        console.log(e);
     }
-    return fs.readFileSync(path);
 }
 
 const env = from(process.env, {
