@@ -1,0 +1,17 @@
+{
+  "requestToPayTransactionId": "c85e581e-fccf-4f55-8bea-96192ee2a32b",
+  "from": {
+    "displayName": "CustomerName",
+    "idType": "MSISDN",
+    "idValue": "17855501914"
+  },
+  "to": {
+    "idType": "BUSINESS",
+    "idValue": "Starbucks"
+  },
+  "amountType": "SEND",
+  "currency": "USD",
+  "amount": "100",
+  "transactionType": "TRANSFER",
+  "note": "test payment"
+}
