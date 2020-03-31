@@ -131,7 +131,7 @@ class OutboundMerchantTransfersModel {
                 case 'quoteReceived':
                     // next transition is requestOTP
                     await this.stateMachine.requestOTP();
-                    this._logger.log(`OTP received for transactionId: ${this.data.requestToPayTransactionId} and transferId: ${this.data.transferId}`);
+                    this._logger.log(`OTP received for transactionId: ${this.data.requestToPayTransactionId} and transferId: ${this.data.transferId} and data is ${this.data}`);
                     if(this.stateMachine.state === 'otpReceived' && !this._autoAcceptOTP) {
                         //we break execution here and return the otp response details to allow asynchronous accept or reject
                         //of the quote
@@ -455,7 +455,7 @@ class OutboundMerchantTransfersModel {
         // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
 
-            if( this.data.transactionInitiatorType && this.data.transactionInitiatorType === 'DEVICE') return resolve;
+            if( this.data.initiatorType && this.data.initiatorType === 'BUSINESS') return resolve();
             
             // listen for events on the quoteId
             const otpKey = `otp_${this.data.requestToPayTransactionId}`;
@@ -463,7 +463,6 @@ class OutboundMerchantTransfersModel {
             // hook up a subscriber to handle response messages
             const subId = await this._cache.subscribe(otpKey, (cn, msg, subId) => {
                 try {
-                    let error;
                     let otpResponse = JSON.parse(msg);
 
                     // cancel the timeout handler
@@ -476,17 +475,11 @@ class OutboundMerchantTransfersModel {
                         this._logger.log(`Error unsubscribing (in callback) ${otpKey} ${subId}: ${e.stack || util.inspect(e)}`);
                     });
 
-                    if (error) {
-                        return reject(error);
-                    }
-
                     const otpResponseBody = otpResponse.data;
-                    const otpResponseHeaders = otpResponse.headers;
                     this._logger.push({ otpResponseBody }).log('OTP response received');
 
                     this.data.otpResponse = otpResponseBody;
-                    this.data.otpResponseSource = otpResponseHeaders['fspiop-source'];
-
+                    
                     return resolve(otpResponse);
                 }
                 catch(err) {
@@ -509,7 +502,7 @@ class OutboundMerchantTransfersModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /authorizations request to the switch
             try {
-                const res = await this._requests.getAuthorizations(this.data.requestToPayTransactionId);
+                const res = await this._requests.getAuthorizations(this.data.requestToPayTransactionId,`amount=${this.data.amount}`,this.data.to.fspId);
                 this._logger.push({ res }).log('Authorizations request sent to peer');
             }
             catch(err) {
@@ -549,13 +542,9 @@ class OutboundMerchantTransfersModel {
         quote.payee = shared.internalPartyToMojaloopParty(this.data.to, this.data.to.fspId);
 
         quote.transactionType = {
-            scenario: this.data.transactionType,
-            // TODO: support payee initiated txns?
-            initiator: 'PAYER',
-            // TODO: defaulting to CONSUMER initiator type should
-            // be replaced with a required element on the incoming
-            // API request
-            initiatorType: this.data.from.type || 'CONSUMER'
+            scenario: this.data.scenario,
+            initiator: this.data.initiator,
+            initiatorType: this.data.initiatorType
         };
 
         // geocode

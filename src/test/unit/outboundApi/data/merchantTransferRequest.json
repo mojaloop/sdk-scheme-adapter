@@ -7,11 +7,14 @@
   },
   "to": {
     "idType": "BUSINESS",
-    "idValue": "Starbucks"
+    "idValue": "Starbucks",
+    "fspId": "payeefsp"
   },
   "amountType": "SEND",
   "currency": "USD",
   "amount": "100",
-  "transactionType": "TRANSFER",
+  "scenario":"PAYMENT",
+  "initiator":"PAYEE",
+  "initiatorType":"DEVICE",
   "note": "test payment"
 }

@@ -63,6 +63,7 @@ module.exports = {
 
     autoAcceptQuotes: env.get('AUTO_ACCEPT_QUOTES').default('true').asBool(),
     autoAcceptParty: env.get('AUTO_ACCEPT_PARTY').default('true').asBool(),
+    autoAcceptOTP: env.get('AUTO_ACCEPT_OTP').default('true').asBool(),
 
     /* TODO:  high-risk transactions can require additional clearing check */
     // enableClearingCheck: env.get('ENABLE_CLEARING_CHECK').default('false').asBool(),
