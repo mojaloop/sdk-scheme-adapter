@@ -196,6 +196,41 @@ const putTransfers = async (ctx) => {
     }
 };
 
+/**
+ * Handler for resuming outbound transfers in scenarios where two-step transfers are enabled
+ * by disabling the autoAcceptQuote SDK option
+ */
+const putMerchantTransfers = async (ctx) => {
+    try {
+        // this requires a multi-stage sequence with the switch.
+        // use the transfers model to execute asynchronous stages with the switch
+        const model = new OutboundMerchantTransfersModel({
+            ...ctx.state.conf,
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            wso2Auth: ctx.state.wso2Auth,
+        });
+
+        // TODO: check the incoming body to reject party or quote when requested to do so
+        const data = ctx.request.body;
+        // load the transfer model from cache and start it running again
+        await model.load(ctx.state.path.params.requestToPayTransactionId);
+        let response;
+        if(data.acceptOTP === true) {
+            response = await model.run();
+        } else {
+            response = await model.rejectRequestToPay();
+        }
+
+        // return the result
+        ctx.response.status = 200;
+        ctx.response.body = response;
+    }
+    catch(err) {
+        return handleTransferError('putmerchantTransfers', err, ctx);
+    }
+};
+
 
 /**
  * Handler for outbound participants request initiation
@@ -278,5 +313,8 @@ module.exports = {
     },
     '/merchantTransfers': {
         post: postMerchantTransfers
+    },
+    '/merchantTransfers/{requestToPayTransactionId}': {
+        put: putMerchantTransfers
     },
 };
