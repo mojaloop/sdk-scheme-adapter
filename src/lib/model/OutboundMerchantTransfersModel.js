@@ -131,7 +131,7 @@ class OutboundMerchantTransfersModel {
                 case 'quoteReceived':
                     // next transition is requestOTP
                     await this.stateMachine.requestOTP();
-                    this._logger.log(`OTP received for transactionId: ${this.data.requestToPayTransactionId} and transferId: ${this.data.transferId} and data is ${this.data}`);
+                    this._logger.log(`OTP received for transactionId: ${this.data.requestToPayTransactionId} and transferId: ${this.data.transferId}`);
                     if(this.stateMachine.state === 'otpReceived' && !this._autoAcceptOTP) {
                         //we break execution here and return the otp response details to allow asynchronous accept or reject
                         //of the quote
@@ -477,7 +477,7 @@ class OutboundMerchantTransfersModel {
 
                     const otpResponseBody = otpResponse.data;
                     this._logger.push({ otpResponseBody }).log('OTP response received');
-
+                    
                     this.data.otpResponse = otpResponseBody;
                     
                     return resolve(otpResponse);
