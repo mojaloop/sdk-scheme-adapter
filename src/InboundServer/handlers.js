@@ -353,7 +353,12 @@ const putAuthorizationsById = async (ctx) => {
     
     // publish an event onto the cache for subscribers to action
     const cacheId = `otp_${idValue}`;
-    await ctx.state.cache.publish(cacheId, ctx.request.body);
+    // publish an event onto the cache for subscribers to action
+    await ctx.state.cache.publish(cacheId, {
+        type: 'authorizationsResponse',
+        data: ctx.request.body,
+        headers: ctx.request.headers
+    });
     ctx.response.status = 200;
 };
 
