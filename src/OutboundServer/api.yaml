@@ -622,6 +622,9 @@ components:
         merchantClassificationCode:
           type: string
           description: Up to 4 digits specifying the sender's merchant classification, if known and applicable.
+        fspId:
+          type: string
+          description: FSP with which the party is associated to.
 
     extensionItem:
       type: object
@@ -768,7 +771,9 @@ components:
         - amountType
         - currency
         - amount
-        - transactionType
+        - scenario
+        - initiator
+        - initiatorType
       properties:
         requestToPayTransactionId:
           type: string
@@ -783,15 +788,15 @@ components:
           $ref: '#/components/schemas/currency'
         amount:
           $ref: '#/components/schemas/money'
-        transactionType:
-          $ref: '#/components/schemas/transactionType'
+        scenario:
+          $ref: '#/components/schemas/scenario'
+        initiator:
+          $ref: '#/components/schemas/initiator'
+        initiatorType:
+          $ref: '#/components/schemas/initiatorType'
         note:
           maxLength: 128
           type: string
-        quoteRequestExtensions:
-          $ref: '#/components/schemas/extensionList'
-        transferRequestExtensions:
-          $ref: '#/components/schemas/extensionList'
 
     merchantTransferResponse:
       type: object

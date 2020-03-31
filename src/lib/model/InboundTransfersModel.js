@@ -77,7 +77,7 @@ class InboundTransfersModel {
             const mlAuthorization = {
                 authenticationInfo : {
                     authentication: 'OTP',
-                    authenticationValue: response.value
+                    authenticationValue: `${response.otpValue}`
                 },
                 responseType: 'ENTERED'                  
             };
