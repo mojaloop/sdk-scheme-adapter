@@ -223,6 +223,21 @@ class OutboundMerchantTransfersModel {
         }
     }
 
+    /**
+     * This method is used to communicate back to the Payee that a rejection is being 
+     * sent because the OTP did not match.
+     */
+    async rejectRequestToPay() {
+        const authResponse = {
+            responseType: 'REJECTED'
+        };
+        await this._requests.putAuthorizations(this.data.requestToPayTransactionId,JSON.stringify(authResponse),this.data.to.fspId);
+        const response = {
+            status : `${this.data.requestToPayTransactionId} has been REJECTED`
+        }
+        return JSON.stringify(response);      
+    }
+
 
     /**
      * Resolves the payee.
@@ -831,7 +846,7 @@ class OutboundMerchantTransfersModel {
     async _save() {
         try {
             this.data.currentState = this.stateMachine.state;
-            const res = await this._cache.set(`merchantTransferModel_${this.data.transferId}`, this.data);
+            const res = await this._cache.set(`merchantTransferModel_${this.data.requestToPayTransactionId}`, this.data);
             this._logger.push({ res }).log('Persisted transfer model in cache');
         }
         catch(err) {
@@ -846,11 +861,11 @@ class OutboundMerchantTransfersModel {
      *
      * @param transferId {string} - UUID transferId of the model to load from cache
      */
-    async load(transferId) {
+    async load(requestToPayTransactionId) {
         try {
-            const data = await this._cache.get(`merchantTransferModel_${transferId}`);
+            const data = await this._cache.get(`merchantTransferModel_${requestToPayTransactionId}`);
             if(!data) {
-                throw new Error(`No cached data found for transferId: ${transferId}`);
+                throw new Error(`No cached data found for requestToPayTransactionId: ${requestToPayTransactionId}`);
             }
             await this.initialize(data);
             this._logger.push({ cache: this.data }).log('Merchant Transfer model loaded from cached state');
