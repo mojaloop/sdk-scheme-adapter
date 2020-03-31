@@ -129,20 +129,21 @@ class OutboundMerchantTransfersModel {
                     break;
 
                 case 'quoteReceived':
-                    // next transition is executeTransfer
+                    // next transition is requestOTP
                     await this.stateMachine.requestOTP();
-                    this._logger.log(`Transfer ${this.data.transferId} has been completed`);
+                    this._logger.log(`OTP received for transactionId: ${this.data.requestToPayTransactionId} and transferId: ${this.data.transferId}`);
+                    if(this.stateMachine.state === 'otpReceived' && !this._autoAcceptOTP) {
+                        //we break execution here and return the otp response details to allow asynchronous accept or reject
+                        //of the quote
+                        await this._save();
+                        return this.getResponse();
+                    }
                     break;
                 
                 case 'otpReceived':
                     // next transition is executeTransfer
                     await this.stateMachine.executeTransfer();
                     this._logger.log(`Transfer ${this.data.transferId} has been completed`);
-                    break;
-
-                case 'getTransfer':
-                    await this.stateMachine.getTransfer();
-                    this._logger.log(`Get transfer ${this.data.transferId} has been completed`);
                     break;
 
                 case 'succeeded':
@@ -158,7 +159,7 @@ class OutboundMerchantTransfersModel {
             }
 
             // now call ourslves recursively to deal with the next transition
-            this._logger.log(`Transfer model state machine transition completed in state: ${this.stateMachine.state}. Recusring to handle next transition.`);
+            this._logger.log(`Merchant Transfer model state machine transition completed in state: ${this.stateMachine.state}. Recusring to handle next transition.`);
             return this.run();
         }
         catch(err) {
@@ -207,9 +208,6 @@ class OutboundMerchantTransfersModel {
             case 'requestOTP':
                 // request an OTP
                 return this._requestOTP();
-
-            case 'getTransfer':
-                return this._getTransfer();
 
             case 'executeTransfer':
                 // prepare a transfer and wait for fulfillment
@@ -456,6 +454,8 @@ class OutboundMerchantTransfersModel {
     async _requestOTP() {
         // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
+
+            if( this.data.transactionInitiatorType && this.data.transactionInitiatorType === 'DEVICE') return resolve;
             
             // listen for events on the quoteId
             const otpKey = `otp_${this.data.requestToPayTransactionId}`;
@@ -465,15 +465,6 @@ class OutboundMerchantTransfersModel {
                 try {
                     let error;
                     let otpResponse = JSON.parse(msg);
-
-                    if (otpResponse.type === 'otpResponseError') {
-                        error = new BackendError(`Got an error response requesting quote: ${util.inspect(otpResponse.data)}`, 500);
-                        error.mojaloopError = otpResponse.data;
-                    }
-                    else {
-                        this._logger.push({ otpResponse }).log(`Ignoring cache notification for quote ${otpKey}. Unknown message type ${otpResponse.type}.`);
-                        return;
-                    }
 
                     // cancel the timeout handler
                     clearTimeout(timeout);
@@ -823,6 +814,10 @@ class OutboundMerchantTransfersModel {
                 resp.currentState = merchantTransferStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE;
                 break;
 
+            case 'otpReceived':
+                resp.currentState = merchantTransferStateEnum.WAITING_FOR_OTP_ACCEPTANCE;
+                break;
+
             case 'succeeded':
                 resp.currentState = merchantTransferStateEnum.COMPLETED;
                 break;
@@ -847,7 +842,7 @@ class OutboundMerchantTransfersModel {
     async _save() {
         try {
             this.data.currentState = this.stateMachine.state;
-            const res = await this._cache.set(`transferModel_${this.data.transferId}`, this.data);
+            const res = await this._cache.set(`merchantTransferModel_${this.data.transferId}`, this.data);
             this._logger.push({ res }).log('Persisted transfer model in cache');
         }
         catch(err) {
@@ -864,12 +859,12 @@ class OutboundMerchantTransfersModel {
      */
     async load(transferId) {
         try {
-            const data = await this._cache.get(`transferModel_${transferId}`);
+            const data = await this._cache.get(`merchantTransferModel_${transferId}`);
             if(!data) {
                 throw new Error(`No cached data found for transferId: ${transferId}`);
             }
             await this.initialize(data);
-            this._logger.push({ cache: this.data }).log('Transfer model loaded from cached state');
+            this._logger.push({ cache: this.data }).log('Merchant Transfer model loaded from cached state');
         }
         catch(err) {
             this._logger.push({ err }).log('Error loading transfer model');
