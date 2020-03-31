@@ -85,7 +85,7 @@ class InboundTransfersModel {
             return this._mojaloopRequests.putAuthorizations(transactionRequestId, mlAuthorization, sourceFspId);
         }
         catch(err) {
-            this._logger.push({ err }).log('Error in getParties');
+            this._logger.push({ err }).log('Error in getOTP');
             const mojaloopError = await this._handleError(err);
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
             return this._mojaloopRequests.putAuthorizationsError(transactionRequestId,
