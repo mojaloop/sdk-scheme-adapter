@@ -517,7 +517,7 @@ class OutboundMerchantTransfersModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /authorizations request to the switch
             try {
-                const res = await this._requests.getAuthorizations(this.data.requestToPayTransactionId,`amount=${this.data.amount}`,this.data.to.fspId);
+                const res = await this._requests.getAuthorizations(this.data.requestToPayTransactionId,`authenticationType=OTP&retriesLeft=1&amount=${this.data.amount}&currency=${this.data.currency}`,this.data.to.fspId);
                 this._logger.push({ res }).log('Authorizations request sent to peer');
             }
             catch(err) {
