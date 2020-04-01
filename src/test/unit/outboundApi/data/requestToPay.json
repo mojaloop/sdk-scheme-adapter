@@ -2,7 +2,11 @@
   "from": {
     "displayName": "Murthy Kakarlamudi",
     "idType": "MSISDN",
-    "idValue": "17855501914"
+    "idValue": "17855501914",
+    "extensionList": [
+      {"key": "accountType",
+        "value": "Wallet"}
+    ]
   },
   "to": {
     "idType": "MSISDN",

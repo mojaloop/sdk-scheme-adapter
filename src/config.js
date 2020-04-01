@@ -16,14 +16,10 @@ const { from } = require('env-var');
 console.log(process.env);
 
 function getFileContent(path) {
-    try {
-        if (!fs.existsSync(path)) {
-            throw new Error('File doesn\'t exist');
-        }
-        return fs.readFileSync(path);
-    }catch (e) {
-        console.log(e);
+    if (!fs.existsSync(path)) {
+        throw new Error('File doesn\'t exist');
     }
+    return fs.readFileSync(path);
 }
 
 const env = from(process.env, {
