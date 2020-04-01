@@ -131,12 +131,14 @@ class OutboundMerchantTransfersModel {
                 case 'quoteReceived':
                     // next transition is requestOTP
                     await this.stateMachine.requestOTP();
-                    this._logger.log(`OTP received for transactionId: ${this.data.requestToPayTransactionId} and transferId: ${this.data.transferId}`);
-                    if(this.stateMachine.state === 'otpReceived' && !this._autoAcceptOTP) {
-                        //we break execution here and return the otp response details to allow asynchronous accept or reject
-                        //of the quote
-                        await this._save();
-                        return this.getResponse();
+                    if(this.data.initiatorType !== 'BUSINESS') {
+                        this._logger.log(`OTP received for transactionId: ${this.data.requestToPayTransactionId} and transferId: ${this.data.transferId}`);
+                        if(this.stateMachine.state === 'otpReceived' && !this._autoAcceptOTP) {
+                            //we break execution here and return the otp response details to allow asynchronous accept or reject
+                            //of the quote
+                            await this._save();
+                            return this.getResponse();
+                        }
                     }
                     break;
                 
