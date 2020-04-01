@@ -1,159 +1,133 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="65" failures="1" time="12.934">
-  <testsuite name="config" errors="0" failures="0" skipped="0" timestamp="2020-03-30T09:52:38" time="1.016" tests="2">
-    <testcase classname="config return single cert content from IN_SERVER_CERT_PATH" name="config return single cert content from IN_SERVER_CERT_PATH" time="0.067">
+<testsuites name="jest tests" tests="53" failures="0" time="10.897">
+  <testsuite name="Logger" errors="0" failures="0" skipped="0" timestamp="2020-04-01T10:38:58" time="0.613" tests="2">
+    <testcase classname="Logger logs non-circular without throwing" name="Logger logs non-circular without throwing" time="0.007">
     </testcase>
-    <testcase classname="config return multiple cert content from IN_CA_CERT_PATH" name="config return multiple cert content from IN_CA_CERT_PATH" time="0.026">
-    </testcase>
-  </testsuite>
-  <testsuite name="Logger" errors="0" failures="0" skipped="0" timestamp="2020-03-30T09:52:38" time="1.1" tests="2">
-    <testcase classname="Logger logs non-circular without throwing" name="Logger logs non-circular without throwing" time="0.069">
-    </testcase>
-    <testcase classname="Logger logs circular without throwing" name="Logger logs circular without throwing" time="0.008">
+    <testcase classname="Logger logs circular without throwing" name="Logger logs circular without throwing" time="0.002">
     </testcase>
   </testsuite>
-  <testsuite name="Outbound API handlers:" errors="0" failures="0" skipped="0" timestamp="2020-03-30T09:52:38" time="1.777" tests="3">
-    <testcase classname="Outbound API handlers: POST /transfers returns correct error response body when model throws mojaloop error" name="Outbound API handlers: POST /transfers returns correct error response body when model throws mojaloop error" time="0.032">
+  <testsuite name="config" errors="0" failures="0" skipped="0" timestamp="2020-04-01T10:38:58" time="0.932" tests="2">
+    <testcase classname="config return single cert content from IN_SERVER_CERT_PATH" name="config return single cert content from IN_SERVER_CERT_PATH" time="0.152">
     </testcase>
-    <testcase classname="Outbound API handlers: PUT /transfers returns correct error response body when model throws mojaloop error" name="Outbound API handlers: PUT /transfers returns correct error response body when model throws mojaloop error" time="0.02">
-    </testcase>
-    <testcase classname="Outbound API handlers: POST /requestToPay returns correct error response body when model throws mojaloop error" name="Outbound API handlers: POST /requestToPay returns correct error response body when model throws mojaloop error" time="0.013">
+    <testcase classname="config return multiple cert content from IN_CA_CERT_PATH" name="config return multiple cert content from IN_CA_CERT_PATH" time="0.054">
     </testcase>
   </testsuite>
-  <testsuite name="outboundModel" errors="0" failures="0" skipped="0" timestamp="2020-03-30T09:52:38" time="2.05" tests="3">
-    <testcase classname="outboundModel initializes to starting state" name="outboundModel initializes to starting state" time="0.019">
+  <testsuite name="inboundModel" errors="0" failures="0" skipped="0" timestamp="2020-04-01T10:38:58" time="1.205" tests="6">
+    <testcase classname="inboundModel quoteRequest calls `mojaloopRequests.putQuotes` with the expected arguments." name="inboundModel quoteRequest calls `mojaloopRequests.putQuotes` with the expected arguments." time="0.04">
     </testcase>
-    <testcase classname="outboundModel executes all two stages without halting when AUTO_ACCEPT_PARTY is true" name="outboundModel executes all two stages without halting when AUTO_ACCEPT_PARTY is true" time="0.03">
-    </testcase>
-    <testcase classname="outboundModel resolves payee and halts when AUTO_ACCEPT_PARTY is false" name="outboundModel resolves payee and halts when AUTO_ACCEPT_PARTY is false" time="0.013">
-    </testcase>
-  </testsuite>
-  <testsuite name="inboundModel" errors="0" failures="0" skipped="0" timestamp="2020-03-30T09:52:38" time="2.093" tests="6">
-    <testcase classname="inboundModel quoteRequest calls `mojaloopRequests.putQuotes` with the expected arguments." name="inboundModel quoteRequest calls `mojaloopRequests.putQuotes` with the expected arguments." time="0.021">
-    </testcase>
-    <testcase classname="inboundModel quoteRequest adds a custom `expiration` property in case it is not defined." name="inboundModel quoteRequest adds a custom `expiration` property in case it is not defined." time="0.008">
+    <testcase classname="inboundModel quoteRequest adds a custom `expiration` property in case it is not defined." name="inboundModel quoteRequest adds a custom `expiration` property in case it is not defined." time="0.01">
     </testcase>
     <testcase classname="inboundModel transactionRequest calls `mojaloopRequests.putTransactionRequests` with the expected arguments." name="inboundModel transactionRequest calls `mojaloopRequests.putTransactionRequests` with the expected arguments." time="0.004">
     </testcase>
-    <testcase classname="inboundModel transferPrepare: fail on quote `expiration` deadline." name="inboundModel transferPrepare: fail on quote `expiration` deadline." time="0.006">
+    <testcase classname="inboundModel transferPrepare: fail on quote `expiration` deadline." name="inboundModel transferPrepare: fail on quote `expiration` deadline." time="0.014">
     </testcase>
-    <testcase classname="inboundModel transferPrepare: fail on transfer without quote." name="inboundModel transferPrepare: fail on transfer without quote." time="0.014">
+    <testcase classname="inboundModel transferPrepare: fail on transfer without quote." name="inboundModel transferPrepare: fail on transfer without quote." time="0.017">
     </testcase>
-    <testcase classname="inboundModel transferPrepare: pass on transfer without quote." name="inboundModel transferPrepare: pass on transfer without quote." time="0.007">
-    </testcase>
-  </testsuite>
-  <testsuite name="Inbound API handlers:" errors="0" failures="0" skipped="0" timestamp="2020-03-30T09:52:38" time="2.226" tests="2">
-    <testcase classname="Inbound API handlers: POST /quotes calls `model.quoteRequest` with the expected arguments." name="Inbound API handlers: POST /quotes calls `model.quoteRequest` with the expected arguments." time="0.031">
-    </testcase>
-    <testcase classname="Inbound API handlers: POST /transactionRequests calls `model.transactionRequest` with the expected arguments." name="Inbound API handlers: POST /transactionRequests calls `model.transactionRequest` with the expected arguments." time="0.004">
+    <testcase classname="inboundModel transferPrepare: pass on transfer without quote." name="inboundModel transferPrepare: pass on transfer without quote." time="0.006">
     </testcase>
   </testsuite>
-  <testsuite name="index.js" errors="0" failures="0" skipped="0" timestamp="2020-03-30T09:52:38" time="2.582" tests="1">
+  <testsuite name="Outbound API handlers:" errors="0" failures="0" skipped="0" timestamp="2020-04-01T10:38:58" time="1.191" tests="3">
+    <testcase classname="Outbound API handlers: POST /transfers returns correct error response body when model throws mojaloop error" name="Outbound API handlers: POST /transfers returns correct error response body when model throws mojaloop error" time="0.028">
+    </testcase>
+    <testcase classname="Outbound API handlers: PUT /transfers returns correct error response body when model throws mojaloop error" name="Outbound API handlers: PUT /transfers returns correct error response body when model throws mojaloop error" time="0.007">
+    </testcase>
+    <testcase classname="Outbound API handlers: POST /requestToPay returns correct error response body when model throws mojaloop error" name="Outbound API handlers: POST /requestToPay returns correct error response body when model throws mojaloop error" time="0.005">
+    </testcase>
+  </testsuite>
+  <testsuite name="Inbound API handlers:" errors="0" failures="0" skipped="0" timestamp="2020-04-01T10:38:58" time="1.422" tests="2">
+    <testcase classname="Inbound API handlers: POST /quotes calls `model.quoteRequest` with the expected arguments." name="Inbound API handlers: POST /quotes calls `model.quoteRequest` with the expected arguments." time="0.027">
+    </testcase>
+    <testcase classname="Inbound API handlers: POST /transactionRequests calls `model.transactionRequest` with the expected arguments." name="Inbound API handlers: POST /transactionRequests calls `model.transactionRequest` with the expected arguments." time="0.009">
+    </testcase>
+  </testsuite>
+  <testsuite name="outboundModel" errors="0" failures="0" skipped="0" timestamp="2020-04-01T10:38:58" time="1.589" tests="3">
+    <testcase classname="outboundModel initializes to starting state" name="outboundModel initializes to starting state" time="0.072">
+    </testcase>
+    <testcase classname="outboundModel executes all two stages without halting when AUTO_ACCEPT_PARTY is true" name="outboundModel executes all two stages without halting when AUTO_ACCEPT_PARTY is true" time="0.024">
+    </testcase>
+    <testcase classname="outboundModel resolves payee and halts when AUTO_ACCEPT_PARTY is false" name="outboundModel resolves payee and halts when AUTO_ACCEPT_PARTY is false" time="0.015">
+    </testcase>
+  </testsuite>
+  <testsuite name="AccountsModel" errors="0" failures="0" skipped="0" timestamp="2020-04-01T10:38:58" time="1.982" tests="3">
+    <testcase classname="AccountsModel initializes to starting state" name="AccountsModel initializes to starting state" time="0.008">
+    </testcase>
+    <testcase classname="AccountsModel create 100 accounts" name="AccountsModel create 100 accounts" time="0.012">
+    </testcase>
+    <testcase classname="AccountsModel create 20000 accounts" name="AccountsModel create 20000 accounts" time="0.736">
+    </testcase>
+  </testsuite>
+  <testsuite name="index.js" errors="0" failures="0" skipped="0" timestamp="2020-04-01T10:38:58" time="2.074" tests="1">
     <testcase classname="index.js Exports expected modules" name="index.js Exports expected modules" time="0.003">
     </testcase>
   </testsuite>
-  <testsuite name="AccountsModel" errors="0" failures="0" skipped="0" timestamp="2020-03-30T09:52:38" time="2.933" tests="3">
-    <testcase classname="AccountsModel initializes to starting state" name="AccountsModel initializes to starting state" time="0.006">
-    </testcase>
-    <testcase classname="AccountsModel create 100 accounts" name="AccountsModel create 100 accounts" time="0.011">
-    </testcase>
-    <testcase classname="AccountsModel create 20000 accounts" name="AccountsModel create 20000 accounts" time="0.906">
+  <testsuite name="Inbound Server" errors="0" failures="0" skipped="0" timestamp="2020-04-01T10:38:58" time="3.228" tests="1">
+    <testcase classname="Inbound Server JWS verification keys updates server configuration when a new JWS verification key is changed in the target monitored folder." name="Inbound Server JWS verification keys updates server configuration when a new JWS verification key is changed in the target monitored folder." time="1.379">
     </testcase>
   </testsuite>
-  <testsuite name="Cache" errors="0" failures="0" skipped="0" timestamp="2020-03-30T09:52:38" time="4.441" tests="3">
-    <testcase classname="Cache Makes connections to redis server for cache operations" name="Cache Makes connections to redis server for cache operations" time="0.019">
+  <testsuite name="Cache" errors="0" failures="0" skipped="0" timestamp="2020-04-01T10:38:58" time="3.658" tests="3">
+    <testcase classname="Cache Makes connections to redis server for cache operations" name="Cache Makes connections to redis server for cache operations" time="0.003">
     </testcase>
-    <testcase classname="Cache Makes subscriber callbacks on the correct channels when messages arrive" name="Cache Makes subscriber callbacks on the correct channels when messages arrive" time="0.044">
+    <testcase classname="Cache Makes subscriber callbacks on the correct channels when messages arrive" name="Cache Makes subscriber callbacks on the correct channels when messages arrive" time="0.014">
     </testcase>
     <testcase classname="Cache Unsubscribed callbacks do not get called when messages arrive" name="Cache Unsubscribed callbacks do not get called when messages arrive" time="3.006">
     </testcase>
   </testsuite>
-  <testsuite name="Inbound Server" errors="0" failures="1" skipped="0" timestamp="2020-03-30T09:52:38" time="10.041" tests="13">
-    <testcase classname="Inbound Server PUT /parties validates incoming JWS when VALIDATE_INBOUND_JWS and VALIDATE_INBOUND_PUT_PARTIES_JWS is true" name="Inbound Server PUT /parties validates incoming JWS when VALIDATE_INBOUND_JWS and VALIDATE_INBOUND_PUT_PARTIES_JWS is true" time="0.819">
+  <testsuite name="outboundModel" errors="0" failures="0" skipped="0" timestamp="2020-04-01T10:38:58" time="9.929" tests="18">
+    <testcase classname="outboundModel initializes to starting state" name="outboundModel initializes to starting state" time="0.026">
     </testcase>
-    <testcase classname="Inbound Server PUT /parties does not validate incoming JWS when VALIDATE_INBOUND_JWS is true and VALIDATE_INBOUND_PUT_PARTIES_JWS is false" name="Inbound Server PUT /parties does not validate incoming JWS when VALIDATE_INBOUND_JWS is true and VALIDATE_INBOUND_PUT_PARTIES_JWS is false" time="0.195">
+    <testcase classname="outboundModel executes all three transfer stages without halting when AUTO_ACCEPT_PARTY and AUTO_ACCEPT_QUOTES are true" name="outboundModel executes all three transfer stages without halting when AUTO_ACCEPT_PARTY and AUTO_ACCEPT_QUOTES are true" time="0.092">
     </testcase>
-    <testcase classname="Inbound Server PUT /parties does not validate incoming JWS when VALIDATE_INBOUND_JWS is false and VALIDATE_INBOUND_PUT_PARTIES_JWS is false" name="Inbound Server PUT /parties does not validate incoming JWS when VALIDATE_INBOUND_JWS is false and VALIDATE_INBOUND_PUT_PARTIES_JWS is false" time="0.164">
+    <testcase classname="outboundModel uses quote response transfer amount for transfer prepare" name="outboundModel uses quote response transfer amount for transfer prepare" time="0.139">
     </testcase>
-    <testcase classname="Inbound Server PUT /parties does not validate incoming JWS when VALIDATE_INBOUND_JWS is false and VALIDATE_INBOUND_PUT_PARTIES_JWS is true" name="Inbound Server PUT /parties does not validate incoming JWS when VALIDATE_INBOUND_JWS is false and VALIDATE_INBOUND_PUT_PARTIES_JWS is true" time="0.14">
+    <testcase classname="outboundModel resolves payee and halts when AUTO_ACCEPT_PARTY is false" name="outboundModel resolves payee and halts when AUTO_ACCEPT_PARTY is false" time="0.044">
     </testcase>
-    <testcase classname="Inbound Server PUT /quotes validates incoming JWS on other routes when VALIDATE_INBOUND_JWS is true and VALIDATE_INBOUND_PUT_PARTIES_JWS is false" name="Inbound Server PUT /quotes validates incoming JWS on other routes when VALIDATE_INBOUND_JWS is true and VALIDATE_INBOUND_PUT_PARTIES_JWS is false" time="0.144">
+    <testcase classname="outboundModel halts after resolving payee, resumes and then halts after receiving quote response when AUTO_ACCEPT_PARTY is false and AUTO_ACCEPT_QUOTES is false" name="outboundModel halts after resolving payee, resumes and then halts after receiving quote response when AUTO_ACCEPT_PARTY is false and AUTO_ACCEPT_QUOTES is false" time="0.029">
     </testcase>
-    <testcase classname="Inbound Server PUT /quotes validates incoming JWS on other routes when VALIDATE_INBOUND_JWS is true and VALIDATE_INBOUND_PUT_PARTIES_JWS is true" name="Inbound Server PUT /quotes validates incoming JWS on other routes when VALIDATE_INBOUND_JWS is true and VALIDATE_INBOUND_PUT_PARTIES_JWS is true" time="0.14">
+    <testcase classname="outboundModel halts and resumes after parties and quotes stages when AUTO_ACCEPT_PARTY is false and AUTO_ACCEPT_QUOTES is false" name="outboundModel halts and resumes after parties and quotes stages when AUTO_ACCEPT_PARTY is false and AUTO_ACCEPT_QUOTES is false" time="0.078">
     </testcase>
-    <testcase classname="Inbound Server PUT /participants validates incoming JWS when VALIDATE_INBOUND_JWS is true" name="Inbound Server PUT /participants validates incoming JWS when VALIDATE_INBOUND_JWS is true" time="0.131">
+    <testcase classname="outboundModel uses payee party fspid for transfer prepare when config USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP is false" name="outboundModel uses payee party fspid for transfer prepare when config USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP is false" time="0.028">
     </testcase>
-    <testcase classname="Inbound Server PUT /participants does not validate incoming JWS when VALIDATE_INBOUND_JWS is false " name="Inbound Server PUT /participants does not validate incoming JWS when VALIDATE_INBOUND_JWS is false " time="0.132">
+    <testcase classname="outboundModel uses quote response source fspid for transfer prepare when config USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP is true" name="outboundModel uses quote response source fspid for transfer prepare when config USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP is true" time="0.022">
     </testcase>
-    <testcase classname="Inbound Server mTLS test Inbound server should use HTTPS if inbound mTLS enabled" name="Inbound Server mTLS test Inbound server should use HTTPS if inbound mTLS enabled" time="0.124">
+    <testcase classname="outboundModel pass quote response `expiration` deadline" name="outboundModel pass quote response `expiration` deadline" time="1.03">
     </testcase>
-    <testcase classname="Inbound Server mTLS test Inbound server should use HTTP if inbound mTLS disabled" name="Inbound Server mTLS test Inbound server should use HTTP if inbound mTLS disabled" time="0.158">
+    <testcase classname="outboundModel pass transfer fulfills `expiration` deadline" name="outboundModel pass transfer fulfills `expiration` deadline" time="1.02">
     </testcase>
-    <testcase classname="Inbound Server JWS verification keys updates server configuration when a new JWS verification key is added to the target monitored folder." name="Inbound Server JWS verification keys updates server configuration when a new JWS verification key is added to the target monitored folder." time="1.231">
+    <testcase classname="outboundModel pass all stages `expiration` deadlines" name="outboundModel pass all stages `expiration` deadlines" time="2.027">
     </testcase>
-    <testcase classname="Inbound Server JWS verification keys updates server configuration when a new JWS verification key is removed from the target monitored folder." name="Inbound Server JWS verification keys updates server configuration when a new JWS verification key is removed from the target monitored folder." time="2.253">
+    <testcase classname="outboundModel fail on quote response `expiration` deadline" name="outboundModel fail on quote response `expiration` deadline" time="2.036">
     </testcase>
-    <testcase classname="Inbound Server JWS verification keys updates server configuration when a new JWS verification key is changed in the target monitored folder." name="Inbound Server JWS verification keys updates server configuration when a new JWS verification key is changed in the target monitored folder." time="2.23">
-      <failure>TypeError: Cannot read property &apos;toString&apos; of undefined
-    at Object.&lt;anonymous&gt; (/Users/darkwingduck/mojaloop/oss/sdk-scheme-adapter/src/test/unit/InboundServer.test.js:255:63)</failure>
+    <testcase classname="outboundModel fail on transfer fulfills `expiration` deadline" name="outboundModel fail on transfer fulfills `expiration` deadline" time="2.02">
     </testcase>
-  </testsuite>
-  <testsuite name="outboundModel" errors="0" failures="0" skipped="0" timestamp="2020-03-30T09:52:38" time="11.146" tests="18">
-    <testcase classname="outboundModel initializes to starting state" name="outboundModel initializes to starting state" time="0.027">
+    <testcase classname="outboundModel Throws with mojaloop error in response body when party resolution error callback occurs" name="outboundModel Throws with mojaloop error in response body when party resolution error callback occurs" time="0.008">
     </testcase>
-    <testcase classname="outboundModel executes all three transfer stages without halting when AUTO_ACCEPT_PARTY and AUTO_ACCEPT_QUOTES are true" name="outboundModel executes all three transfer stages without halting when AUTO_ACCEPT_PARTY and AUTO_ACCEPT_QUOTES are true" time="0.082">
+    <testcase classname="outboundModel Throws with mojaloop error in response body when quote request error callback occurs" name="outboundModel Throws with mojaloop error in response body when quote request error callback occurs" time="0.011">
     </testcase>
-    <testcase classname="outboundModel uses quote response transfer amount for transfer prepare" name="outboundModel uses quote response transfer amount for transfer prepare" time="0.068">
+    <testcase classname="outboundModel Throws with mojaloop error in response body when transfer request error callback occurs" name="outboundModel Throws with mojaloop error in response body when transfer request error callback occurs" time="0.015">
     </testcase>
-    <testcase classname="outboundModel resolves payee and halts when AUTO_ACCEPT_PARTY is false" name="outboundModel resolves payee and halts when AUTO_ACCEPT_PARTY is false" time="0.017">
+    <testcase classname="outboundModel Outbound server should use HTTPS if outbound mTLS enabled" name="outboundModel Outbound server should use HTTPS if outbound mTLS enabled" time="0.002">
     </testcase>
-    <testcase classname="outboundModel halts after resolving payee, resumes and then halts after receiving quote response when AUTO_ACCEPT_PARTY is false and AUTO_ACCEPT_QUOTES is false" name="outboundModel halts after resolving payee, resumes and then halts after receiving quote response when AUTO_ACCEPT_PARTY is false and AUTO_ACCEPT_QUOTES is false" time="0.03">
-    </testcase>
-    <testcase classname="outboundModel halts and resumes after parties and quotes stages when AUTO_ACCEPT_PARTY is false and AUTO_ACCEPT_QUOTES is false" name="outboundModel halts and resumes after parties and quotes stages when AUTO_ACCEPT_PARTY is false and AUTO_ACCEPT_QUOTES is false" time="0.093">
-    </testcase>
-    <testcase classname="outboundModel uses payee party fspid for transfer prepare when config USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP is false" name="outboundModel uses payee party fspid for transfer prepare when config USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP is false" time="0.054">
-    </testcase>
-    <testcase classname="outboundModel uses quote response source fspid for transfer prepare when config USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP is true" name="outboundModel uses quote response source fspid for transfer prepare when config USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP is true" time="0.038">
-    </testcase>
-    <testcase classname="outboundModel pass quote response `expiration` deadline" name="outboundModel pass quote response `expiration` deadline" time="1.026">
-    </testcase>
-    <testcase classname="outboundModel pass transfer fulfills `expiration` deadline" name="outboundModel pass transfer fulfills `expiration` deadline" time="1.032">
-    </testcase>
-    <testcase classname="outboundModel pass all stages `expiration` deadlines" name="outboundModel pass all stages `expiration` deadlines" time="2.048">
-    </testcase>
-    <testcase classname="outboundModel fail on quote response `expiration` deadline" name="outboundModel fail on quote response `expiration` deadline" time="2.066">
-    </testcase>
-    <testcase classname="outboundModel fail on transfer fulfills `expiration` deadline" name="outboundModel fail on transfer fulfills `expiration` deadline" time="2.041">
-    </testcase>
-    <testcase classname="outboundModel Throws with mojaloop error in response body when party resolution error callback occurs" name="outboundModel Throws with mojaloop error in response body when party resolution error callback occurs" time="0.022">
-    </testcase>
-    <testcase classname="outboundModel Throws with mojaloop error in response body when quote request error callback occurs" name="outboundModel Throws with mojaloop error in response body when quote request error callback occurs" time="0.019">
-    </testcase>
-    <testcase classname="outboundModel Throws with mojaloop error in response body when transfer request error callback occurs" name="outboundModel Throws with mojaloop error in response body when transfer request error callback occurs" time="0.035">
-    </testcase>
-    <testcase classname="outboundModel Outbound server should use HTTPS if outbound mTLS enabled" name="outboundModel Outbound server should use HTTPS if outbound mTLS enabled" time="0.004">
-    </testcase>
-    <testcase classname="outboundModel Outbound server should use HTTP if outbound mTLS disabled" name="outboundModel Outbound server should use HTTP if outbound mTLS disabled" time="0.008">
+    <testcase classname="outboundModel Outbound server should use HTTP if outbound mTLS disabled" name="outboundModel Outbound server should use HTTP if outbound mTLS disabled" time="0.002">
     </testcase>
   </testsuite>
-  <testsuite name="Outbound API" errors="0" failures="0" skipped="0" timestamp="2020-03-30T09:52:38" time="12.115" tests="9">
-    <testcase classname="Outbound API POST /accounts should return success response" name="Outbound API POST /accounts should return success response" time="0.521">
+  <testsuite name="Outbound API" errors="0" failures="0" skipped="0" timestamp="2020-04-01T10:38:58" time="10.201" tests="9">
+    <testcase classname="Outbound API POST /accounts should return success response" name="Outbound API POST /accounts should return success response" time="0.381">
     </testcase>
-    <testcase classname="Outbound API POST /accounts should return success response with error info on invalid currency (1)" name="Outbound API POST /accounts should return success response with error info on invalid currency (1)" time="0.246">
+    <testcase classname="Outbound API POST /accounts should return success response with error info on invalid currency (1)" name="Outbound API POST /accounts should return success response with error info on invalid currency (1)" time="0.212">
     </testcase>
-    <testcase classname="Outbound API POST /accounts should return success response with error info on errorInformation presence (2)" name="Outbound API POST /accounts should return success response with error info on errorInformation presence (2)" time="0.232">
+    <testcase classname="Outbound API POST /accounts should return success response with error info on errorInformation presence (2)" name="Outbound API POST /accounts should return success response with error info on errorInformation presence (2)" time="0.189">
     </testcase>
-    <testcase classname="Outbound API POST /accounts should return timeout error response" name="Outbound API POST /accounts should return timeout error response" time="3.191">
+    <testcase classname="Outbound API POST /accounts should return timeout error response" name="Outbound API POST /accounts should return timeout error response" time="3.17">
     </testcase>
-    <testcase classname="Outbound API POST /accounts should return mojaloop error response" name="Outbound API POST /accounts should return mojaloop error response" time="0.38">
+    <testcase classname="Outbound API POST /accounts should return mojaloop error response" name="Outbound API POST /accounts should return mojaloop error response" time="0.188">
     </testcase>
-    <testcase classname="Outbound API POST /transfers fails validation on invalid request and gives detailed error message indicating source of failure" name="Outbound API POST /transfers fails validation on invalid request and gives detailed error message indicating source of failure" time="0.326">
+    <testcase classname="Outbound API POST /transfers fails validation on invalid request and gives detailed error message indicating source of failure" name="Outbound API POST /transfers fails validation on invalid request and gives detailed error message indicating source of failure" time="0.166">
     </testcase>
-    <testcase classname="Outbound API POST /transfers should return success response" name="Outbound API POST /transfers should return success response" time="0.484">
+    <testcase classname="Outbound API POST /transfers should return success response" name="Outbound API POST /transfers should return success response" time="0.235">
     </testcase>
-    <testcase classname="Outbound API POST /transfers should return timeout error response on party resolution" name="Outbound API POST /transfers should return timeout error response on party resolution" time="3.37">
+    <testcase classname="Outbound API POST /transfers should return timeout error response on party resolution" name="Outbound API POST /transfers should return timeout error response on party resolution" time="3.168">
     </testcase>
-    <testcase classname="Outbound API POST /transfers should return mojaloop error response on party resolution" name="Outbound API POST /transfers should return mojaloop error response on party resolution" time="0.414">
+    <testcase classname="Outbound API POST /transfers should return mojaloop error response on party resolution" name="Outbound API POST /transfers should return mojaloop error response on party resolution" time="0.229">
     </testcase>
   </testsuite>
 </testsuites>
