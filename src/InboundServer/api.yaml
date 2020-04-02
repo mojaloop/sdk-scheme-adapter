@@ -13,7 +13,7 @@ paths:
     put:
       description: >-
         If there is an error during FSP information creation in the server, the
-        error callback PUT /participants//error is used. The  in the URI should
+        error callback PUT /participants//error is used. The in the URI should
         contain the requestId that was used for the creation of the participant
         information.
       summary: ParticipantsByIDAndError
