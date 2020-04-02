@@ -1,0 +1,118 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$comment": "Proxy Config Schema",
+  "definitions": {
+
+    "URLPath": {
+      "description": "URL Path",
+      "type": "string",
+      "pattern": "^\/.*$"
+    },
+
+    "Expression": {
+      "type": "string",
+      "minLength": 1
+    },
+
+    "MatchRule": {
+      "description": "Matching rule (with AND condition)",
+      "type": "object",
+      "properties": {
+        "path": {
+          "$ref": "#/definitions/Expression"
+        },
+        "query": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "$ref": "#/definitions/Expression"
+              },
+              "value": {
+                "$ref": "#/definitions/Expression"
+              }
+            },
+            "required": [
+              "key",
+              "value"
+            ]
+          }
+        },
+        "headers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "$ref": "#/definitions/Expression"
+              },
+              "value": {
+                "$ref": "#/definitions/Expression"
+              }
+            },
+            "required": [
+              "name",
+              "value"
+            ]
+          }
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "path"
+          ]
+        },
+        {
+          "required": [
+            "query"
+          ]
+        },
+        {
+          "required": [
+            "headers"
+          ]
+        }
+      ]
+    },
+
+    "Route": {
+      "description": "Routing rule",
+      "type": "object",
+      "properties": {
+        "match": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MatchRule"
+          }
+        },
+        "destination": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "$ref": "#/definitions/URLPath"
+            }
+          },
+          "required": ["path"]
+        }
+      },
+      "required": ["match", "destination"]
+    }
+  },
+
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "number",
+      "minimum": 1
+    },
+    "routes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Route"
+      }
+    }
+  },
+  "required": ["version", "routes"]
+}

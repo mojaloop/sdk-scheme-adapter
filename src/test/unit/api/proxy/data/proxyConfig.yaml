@@ -1,0 +1,82 @@
+version: 1.0
+routes:
+  - description: 'Routing by URL path as string'
+    match:
+      - path: /sdk-path-test-1
+    destination:
+      path: /switch-path-test-1
+
+  - description: 'Routing by URL path as regexp'
+    match:
+      - path: ~ ^\/sdk-.*2$
+    destination:
+      path: /switch-path-test-2
+
+  - description: 'Routing by Query params with regexp'
+    match:
+      - path: /sdk-path-test-3
+        query:
+          - key: queryString1One
+            value: Value1
+          - key: ~ query.*2Two
+            value: ~ val.*2
+    destination:
+      path: /switch-path-test-3
+
+  - description: 'Routing by Query params'
+    match:
+      - query:
+          - key: testParam3
+            value: testValue3
+    destination:
+      path: /switch-path-test-3-1
+
+  - description: 'Routing by Header params with regexp'
+    match:
+      - headers:
+          - name: customHeader2
+            value: ~ .*stomval.*
+          - name: ~ cus.*header3
+            value: ~ .*
+    destination:
+      path: /switch-path-test-4
+
+  - description: 'Routing by Header params should work'
+    match:
+      - path: /sdk-path-test-4
+        headers:
+          - name: customReq-Header2
+            value: ~ .*eq-va.*
+          - name: ~ .*header3
+            value: ~ .*
+    destination:
+      path: /switch-path-test-4
+
+  - description: 'Routing by Header values'
+    match:
+      - headers:
+          - name: ~ *
+            value: ~ .*st.*val.*
+          - name: ~ *
+            value: ~ .*st.*value5
+    destination:
+      path: '/switch-path-test-5'
+
+  - description: 'Routing by multiple match rules'
+    match:
+      - path: ~ /sdk-.*-8
+        headers:
+          - name: requiredName
+            value: yes
+      - headers:
+          - name: ~ .*hkey81
+            value: ~ *
+      - headers:
+          - name: ~ .*hkey82
+            value: ~ *
+      - query:
+          - key: ~ .*qkey81
+            value: ~ *
+
+    destination:
+      path: '/switch-path-test-8'
