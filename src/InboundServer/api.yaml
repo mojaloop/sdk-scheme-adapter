@@ -3521,11 +3521,11 @@ components:
         - COMMITTED
         - ABORTED
       description: >-
-        Below are the allowed values for the enumeration - RECEIVED Next ledger
-        has received the transfer. - RESERVED Next ledger has reserved the
-        transfer. - COMMITTED Next ledger has successfully performed the
-        transfer. - ABORTED Next ledger has aborted the transfer due a rejection
-        or failure to perform the transfer.
+        Below are the allowed values for the enumeration
+        - RECEIVED Next ledger has received the transfer.
+        - RESERVED Next ledger has reserved the transfer.
+        - COMMITTED Next ledger has successfully performed the transfer.
+        - ABORTED Next ledger has aborted the transfer due a rejection or failure to perform the transfer.
     UndefinedEnum:
       title: UndefinedEnum
       type: string

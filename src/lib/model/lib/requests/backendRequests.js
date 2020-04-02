@@ -28,7 +28,11 @@ class BackendRequests {
         // FSPID of THIS DFSP
         this.dfspId = config.dfspId;
 
-        this.agent = http.globalAgent;
+        // make sure we keep alive connections to the backend
+        this.agent = new http.Agent({
+            keepAlive: true
+        });
+
         this.transportScheme = 'http';
 
         // Switch or peer DFSP endpoint
@@ -44,7 +48,17 @@ class BackendRequests {
     async getParties(idType, idValue, idSubValue) {
         const url = `parties/${idType}/${idValue}`
           + (idSubValue ? `/${idSubValue}` : '');
-        return this._get(url, 'parties');
+        return this._get(url);
+    }
+
+    /**
+     * Executes a GET /transfers request for the specified transfer ID
+     *
+     * @returns {object} - JSON response body if one was received
+     */
+    async getTransfers(transferId) {
+        const url = `transfers/${transferId}`;
+        return this._get(url);
     }
 
 
@@ -120,6 +134,7 @@ class BackendRequests {
             method: 'PUT',
             uri: buildUrl(this.backendEndpoint, url),
             headers: this._buildHeaders(),
+            agent: this.agent,
             body: JSON.stringify(body),
             resolveWithFullResponse: true,
             simple: false,
@@ -141,6 +156,7 @@ class BackendRequests {
             method: 'POST',
             uri: buildUrl(this.backendEndpoint, url),
             headers: this._buildHeaders(),
+            agent: this.agent,
             body: JSON.stringify(body),
             resolveWithFullResponse: true,
             simple: false,

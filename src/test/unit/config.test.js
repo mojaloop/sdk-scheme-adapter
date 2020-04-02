@@ -12,6 +12,8 @@ const fs  = require('fs');
 const path = require('path');
 const os = require('os');
 
+const outErrorStatusKey = 'outErrorStatusKey';
+
 jest.mock('dotenv', () => ({
     config: jest.fn(),
 }));
@@ -34,6 +36,19 @@ describe('config', () => {
         fs.rmdirSync(certDir, { recursive: true });
         jest.resetModules();
     });
+
+    it('correctly parses OUTBOUND_ERROR_STATUSCODE_EXTENSION_KEY when set', () => {
+        process.env.OUTBOUND_ERROR_STATUSCODE_EXTENSION_KEY = outErrorStatusKey;
+        const config = require('../../config');
+        expect(config.outboundErrorStatusCodeExtensionKey).toEqual(outErrorStatusKey);
+    });
+
+    it('correctly parses OUTBOUND_ERROR_STATUSCODE_EXTENSION_KEY when NOT set', () => {
+        delete process.env.OUTBOUND_ERROR_STATUSCODE_EXTENSION_KEY;
+        const config = require('../../config');
+        expect(config.outboundErrorStatusCodeExtensionKey).toBeUndefined();
+    });
+
 
     it('return single cert content from IN_SERVER_CERT_PATH', () => {
         const cert = path.join(certDir, 'cert.pem');

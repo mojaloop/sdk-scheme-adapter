@@ -24,7 +24,16 @@
       "mojaloopError": {
         "errorInformation": {
           "errorCode": "3204",
-          "errorDescription": "Party not found"
+          "errorDescription": "Party not found",
+          "extensionList": {
+            "extension": [{
+              "key": "someKey",
+              "value": "someValue"
+            }, {
+              "key": "extErrorKey",
+              "value": "9999"
+            }]
+          }
         }
       }
     }

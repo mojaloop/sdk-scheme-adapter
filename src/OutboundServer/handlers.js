@@ -16,7 +16,7 @@ const { AccountsModel, OutboundTransfersModel, OutboundRequestToPayModel } = req
 
 
 /**
- * Common error handling logic
+ * Error handling logic shared by outbound API handlers
  */
 const handleError = (method, err, ctx, stateField) => {
     ctx.state.logger.log(`Error handling ${method}: ${util.inspect(err)}`);
@@ -32,7 +32,28 @@ const handleError = (method, err, ctx, stateField) => {
         && err[stateField].lastError.mojaloopError.errorInformation
         && err[stateField].lastError.mojaloopError.errorInformation.errorCode) {
 
-        ctx.response.body.statusCode = err[stateField].lastError.mojaloopError.errorInformation.errorCode;
+        // by default we set the statusCode property of the error body to be that of any model state lastError
+        // property containing a mojaloop API error structure. This means the caller does not have to inspect
+        // the structure of the response object in depth to ascertain an underlying mojaloop API error code.
+        const errorInformation = err[stateField].lastError.mojaloopError.errorInformation;
+        ctx.response.body.statusCode = errorInformation.errorCode;
+
+        // if we have been configured to use an error extensionList item as status code, look for it and use
+        // it if it is present...
+        if(ctx.state.conf.outboundErrorStatusCodeExtensionKey
+            && errorInformation.extensionList
+            && Array.isArray(errorInformation.extensionList.extension)) {
+
+            // search the extensionList array for a key that matches what we have been configured to look for...
+            // the first one will do - spec is a bit loose on duplicate keys...
+            const extensionItem = errorInformation.extensionList.extension.find(e => {
+                return e.key === ctx.state.conf.outboundErrorStatusCodeExtensionKey;
+            });
+
+            if(extensionItem) {
+                ctx.response.body.statusCode = extensionItem.value;
+            }
+        }
     }
 };
 
@@ -74,6 +95,39 @@ const postTransfers = async (ctx) => {
     }
     catch(err) {
         return handleTransferError('postTransfers', err, ctx);
+    }
+};
+
+
+/**
+ * Handler for outbound transfer request
+ */
+const getTransfers = async (ctx) => {
+    try {
+        let transferRequest = {
+            ...ctx.request.body,
+            transferId: ctx.state.path.params.transferId,
+            currentState: 'getTransfer',
+        };
+
+        // use the transfers model to execute asynchronous stages with the switch
+        const model = new OutboundTransfersModel({
+            ...ctx.state.conf,
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            wso2Auth: ctx.state.wso2Auth,
+        });
+
+        // initialize the transfer model and start it running
+        await model.initialize(transferRequest);
+        const response = await model.run();
+
+        // return the result
+        ctx.response.status = 200;
+        ctx.response.body = response;
+    }
+    catch(err) {
+        return handleTransferError('getTransfers', err, ctx);
     }
 };
 
@@ -181,6 +235,7 @@ module.exports = {
         post: postTransfers
     },
     '/transfers/{transferId}': {
+        get: getTransfers,
         put: putTransfers
     },
     '/accounts': {

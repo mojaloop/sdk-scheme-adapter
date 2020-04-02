@@ -1,0 +1,34 @@
+{
+  "homeTransactionId": "home-tx-001",
+  "amount": "100",
+  "currency": "USD",
+  "amountType": "SEND",
+  "extensions": [
+    {
+      "key": "treskey1",
+      "value": "tresvalue1"
+    },
+    {
+      "key": "treskey2",
+      "value": "tresvalue2"
+    }
+  ],
+  "note": "test payment",
+  "from": {
+    "displayName": "John Doe",
+    "idType": "MSISDN",
+    "idValue": "123456789"
+  },
+  "to": {
+    "idType": "PERSONAL_ID",
+    "idValue": "987654321",
+    "idSubValue": "PASSPORT"
+  },
+  "transactionType": {
+    "initiator": "PAYER",
+    "initiatorType": "CONSUMER",
+    "scenario": "TRANSFER"
+  },
+  "transferState": "COMMITTED",
+  "timestamp": "2019-11-15T14:16:09.663"
+}

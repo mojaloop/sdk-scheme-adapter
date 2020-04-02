@@ -66,6 +66,9 @@ module.exports = {
     autoAcceptQuotes: env.get('AUTO_ACCEPT_QUOTES').default('true').asBool(),
     autoAcceptParty: env.get('AUTO_ACCEPT_PARTY').default('true').asBool(),
 
+    /* TODO:  high-risk transactions can require additional clearing check */
+    // enableClearingCheck: env.get('ENABLE_CLEARING_CHECK').default('false').asBool(),
+
     useQuoteSourceFSPAsTransferPayeeFSP: env.get('USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP').default('false').asBool(),
 
     // Getting secrets from files instead of environment variables reduces the likelihood of
@@ -104,4 +107,10 @@ module.exports = {
     logIndent: env.get('LOG_INDENT').default('2').asIntPositive(),
 
     allowTransferWithoutQuote: env.get('allowTransferWithoutQuote').default('false').asBool(),
+
+    // for outbound transfers, allows an extensionList item in an error respone to be used instead
+    // of the primary error code when setting the statusCode property on the synchronous response
+    // to the DFSP backend. This is useful if an intermediary such as FXP returns underlying error
+    // codes in error extensionLists.
+    outboundErrorStatusCodeExtensionKey: env.get('OUTBOUND_ERROR_STATUSCODE_EXTENSION_KEY').asString(),
 };
