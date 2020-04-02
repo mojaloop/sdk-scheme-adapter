@@ -38,7 +38,9 @@ class OutboundMerchantTransfersModel {
         this._rejectExpiredQuoteResponses = config.rejectExpiredQuoteResponses;
         this._rejectExpiredTransferFulfils = config.rejectExpiredTransferFulfils;
         this._autoAcceptQuotes = config.autoAcceptQuotes;
-        this._autoAcceptOTP = config.autoAcceptOTP;
+        this._autoAcceptR2PBusinessQuotes = config.autoAcceptR2PBusinessQuotes;
+        this._autoAcceptR2PDeviceQuotes = config.autoAcceptR2PDeviceQuotes;
+        this._autoAcceptR2PDeviceOTP = config.autoAcceptR2PDeviceOTP;
         this._useQuoteSourceFSPAsTransferPayeeFSP = config.useQuoteSourceFSPAsTransferPayeeFSP;
         this._checkIlp = config.checkIlp;
 
@@ -120,7 +122,7 @@ class OutboundMerchantTransfersModel {
                     // next transition is to requestQuote
                     await this.stateMachine.requestQuote();
                     this._logger.log(`Quote received for transfer ${this.data.transferId}`);
-                    if(this.stateMachine.state === 'quoteReceived' && !this._autoAcceptQuotes) {
+                    if(this.stateMachine.state === 'quoteReceived' && this.data.initiatorType === 'BUSINESS' && !this._autoAcceptR2PBusinessQuotes) {
                         //we break execution here and return the quote response details to allow asynchronous accept or reject
                         //of the quote
                         await this._save();
@@ -133,7 +135,7 @@ class OutboundMerchantTransfersModel {
                     await this.stateMachine.requestOTP();
                     if(this.data.initiatorType !== 'BUSINESS') {
                         this._logger.log(`OTP received for transactionId: ${this.data.requestToPayTransactionId} and transferId: ${this.data.transferId}`);
-                        if(this.stateMachine.state === 'otpReceived' && !this._autoAcceptOTP) {
+                        if(this.stateMachine.state === 'otpReceived' && !this._autoAcceptR2PDeviceOTP) {
                             //we break execution here and return the otp response details to allow asynchronous accept or reject
                             //of the quote
                             await this._save();

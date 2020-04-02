@@ -614,6 +614,7 @@ components:
           type: boolean
           enum:
             - true
+            - false
     
     transferContinuationAcceptOTP:
       type: object

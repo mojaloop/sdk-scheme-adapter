@@ -216,7 +216,7 @@ const putMerchantTransfers = async (ctx) => {
         // load the transfer model from cache and start it running again
         await model.load(ctx.state.path.params.requestToPayTransactionId);
         let response;
-        if(data.acceptOTP === true) {
+        if(data.acceptQuote === true || data.acceptOTP === true) {
             response = await model.run();
         } else {
             response = await model.rejectRequestToPay();
