@@ -78,27 +78,23 @@ const createRequestValidator = (validator) => async (ctx, next) => {
 /**
  * Create proxy middleware for forwarding matching DFSP requests
  * (from provided routing rules) to corresponding switch endpoint
- * @param proxyConfig
+ * @param opts
  * @return {Function}
  */
-const createProxy = (proxyConfig) => async (ctx, next) => {
-    const proxy = new ProxyModel({
-        ...ctx.state.conf,
-        logger: ctx.state.logger,
-        wso2Auth: ctx.state.wso2Auth,
-        proxyConfig,
-    });
-
-    const response = await proxy.proxyRequest(ctx.request);
-    if (response === undefined) {
-        // Skip proxying request
-        next();
-    } else {
-        // return the result
-        ctx.response.status = response.statusCode;
-        ctx.response.body = JSON.parse(response.body);
-        ctx.set(response.headers);
-    }
+const createProxy = (opts) => {
+    const proxy = new ProxyModel(opts);
+    return async (ctx, next) => {
+        const response = await proxy.proxyRequest(ctx.request);
+        if (response === undefined) {
+            // Skip proxying request
+            next();
+        } else {
+            // return the result
+            ctx.response.status = response.statusCode;
+            ctx.response.body = JSON.parse(response.body);
+            ctx.set(response.headers);
+        }
+    };
 };
 
 module.exports = {

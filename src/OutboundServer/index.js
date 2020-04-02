@@ -59,7 +59,12 @@ class OutboundServer {
         this._api.use(middlewares.createLogger(this._logger, sharedState));
 
         if (this._conf.proxyConfig) {
-            this._api.use(middlewares.createProxy(this._conf.proxyConfig, sharedState));
+            this._api.use(middlewares.createProxy({
+                ...this._conf,
+                proxyConfig: this._conf.proxyConfig,
+                logger: this._logger,
+                wso2Auth: this._wso2Auth,
+            }));
         }
 
         this._api.use(middlewares.createRequestValidator(validator));
