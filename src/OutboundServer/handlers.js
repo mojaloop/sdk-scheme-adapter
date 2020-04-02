@@ -41,11 +41,12 @@ const handleError = (method, err, ctx, stateField) => {
         // if we have been configured to use an error extensionList item as status code, look for it and use
         // it if it is present...
         if(ctx.state.conf.outboundErrorStatusCodeExtensionKey
-            && Array.isArray(errorInformation.extensionList)) {
+            && errorInformation.extensionList
+            && Array.isArray(errorInformation.extensionList.extension)) {
 
             // search the extensionList array for a key that matches what we have been configured to look for...
             // the first one will do - spec is a bit loose on duplicate keys...
-            const extensionItem = errorInformation.extensionList.find(e => {
+            const extensionItem = errorInformation.extensionList.extension.find(e => {
                 return e.key === ctx.state.conf.outboundErrorStatusCodeExtensionKey;
             });
 
