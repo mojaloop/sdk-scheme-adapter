@@ -4047,6 +4047,9 @@ components:
         fspId:
           $ref: '#/components/schemas/FspId'
           description: FSP ID (if known)
+        extensionList:
+          $ref: '#/components/schemas/ExtensionList'
+          description: 'Optional extension, specific to deployment.'
       required:
         - partyIdType
         - partyIdentifier
@@ -4454,5 +4457,3 @@ components:
           description: 'Optional extension, specific to deployment.'
       required:
         - transferState
-
-

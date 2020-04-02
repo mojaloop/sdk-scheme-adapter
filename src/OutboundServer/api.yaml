@@ -570,7 +570,13 @@ components:
         merchantClassificationCode:
           type: string
           description: Up to 4 digits specifying the sender's merchant classification, if known and applicable.
-
+    transferPartyFrom:
+      allOf:
+        - $ref: '#/components/schemas/transferParty'
+        - type: object
+          properties:
+            extensionList:
+              $ref: '#/components/schemas/extensionList'
     extensionItem:
       type: object
       properties:
@@ -619,7 +625,7 @@ components:
           type: string
           description: Transaction ID from the DFSP backend, used to reconcile transactions between the Switch and DFSP backend systems.
         from:
-          $ref: '#/components/schemas/transferParty'
+          $ref: '#/components/schemas/transferPartyFrom'
         to:
           $ref: '#/components/schemas/transferParty'
         amountType:
