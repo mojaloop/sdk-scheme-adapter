@@ -13,8 +13,6 @@ const fs = require('fs');
 require('dotenv').config();
 const { from } = require('env-var');
 
-console.log(process.env);
-
 function getFileContent(path) {
     if (!fs.existsSync(path)) {
         throw new Error('File doesn\'t exist');

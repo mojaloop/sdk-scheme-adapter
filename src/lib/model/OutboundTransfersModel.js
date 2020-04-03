@@ -176,7 +176,7 @@ class OutboundTransfersModel {
                 try {
                     let payee = JSON.parse(msg);
 
-                    if (payee.errorInformation) {
+                    if(payee.errorInformation) {
                         // this is an error response to our GET /parties request
                         const err = new BackendError(`Got an error response resolving party: ${util.inspect(payee)}`, 500);
                         err.mojaloopError = payee;
@@ -186,7 +186,7 @@ class OutboundTransfersModel {
                         return reject(err);
                     }
 
-                    if (!payee.party) {
+                    if(!payee.party) {
                         // we should never get a non-error response without a party, but just in case...
                         // cancel the timeout handler
                         clearTimeout(timeout);
@@ -208,22 +208,22 @@ class OutboundTransfersModel {
                     });
 
                     // check we got the right payee and info we need
-                    if (payee.partyIdInfo.partyIdType !== this.data.to.idType) {
+                    if(payee.partyIdInfo.partyIdType !== this.data.to.idType) {
                         const err = new Error(`Expecting resolved payee party IdType to be ${this.data.to.idType} but got ${payee.partyIdInfo.partyIdType}`);
                         return reject(err);
                     }
 
-                    if (payee.partyIdInfo.partyIdentifier !== this.data.to.idValue) {
+                    if(payee.partyIdInfo.partyIdentifier !== this.data.to.idValue) {
                         const err = new Error(`Expecting resolved payee party identifier to be ${this.data.to.idValue} but got ${payee.partyIdInfo.partyIdentifier}`);
                         return reject(err);
                     }
 
-                    if (payee.partyIdInfo.partySubIdOrType !== this.data.to.idSubValue) {
+                    if(payee.partyIdInfo.partySubIdOrType !== this.data.to.idSubValue) {
                         const err = new Error(`Expecting resolved payee party subTypeId to be ${this.data.to.idSubValue} but got ${payee.partyIdInfo.partySubIdOrType}`);
                         return reject(err);
                     }
 
-                    if (!payee.partyIdInfo.fspId) {
+                    if(!payee.partyIdInfo.fspId) {
                         const err = new Error(`Expecting resolved payee party to have an FSPID: ${util.inspect(payee.partyIdInfo)}`);
                         return reject(err);
                     }
@@ -231,7 +231,7 @@ class OutboundTransfersModel {
                     // now we got the payee, add the details to our data so we can use it
                     // in the quote request
                     this.data.to.fspId = payee.partyIdInfo.fspId;
-                    if (payee.partyIdInfo.extensionList) {
+                    if(payee.partyIdInfo.extensionList) {
                         this.data.to.extensionList  = payee.partyIdInfo.extensionList.extension;
                     }
                     if(payee.personalInfo) {
@@ -305,16 +305,16 @@ class OutboundTransfersModel {
                     let error;
                     let message = JSON.parse(msg);
 
-                    if (message.type === 'quoteResponse') {
-                        if (this._rejectExpiredQuoteResponses) {
+                    if(message.type === 'quoteResponse') {
+                        if(this._rejectExpiredQuoteResponses) {
                             const now = new Date().toISOString();
-                            if (now > quote.expiration) {
+                            if(now > quote.expiration) {
                                 const msg = 'Quote response missed expiry deadline';
                                 error = new BackendError(msg, 504);
                                 this._logger.error(`${msg}: system time=${now} > expiration time=${quote.expiration}`);
                             }
                         }
-                    } else if (message.type === 'quoteResponseError') {
+                    } else if(message.type === 'quoteResponseError') {
                         error = new BackendError(`Got an error response requesting quote: ${util.inspect(message.data)}`, 500);
                         error.mojaloopError = message.data;
                     }
@@ -333,7 +333,7 @@ class OutboundTransfersModel {
                         this._logger.log(`Error unsubscribing (in callback) ${quoteKey} ${subId}: ${e.stack || util.inspect(e)}`);
                     });
 
-                    if (error) {
+                    if(error) {
                         return reject(error);
                     }
 
@@ -450,16 +450,16 @@ class OutboundTransfersModel {
                     let error;
                     let message = JSON.parse(msg);
 
-                    if (message.type === 'transferFulfil') {
-                        if (this._rejectExpiredTransferFulfils) {
+                    if(message.type === 'transferFulfil') {
+                        if(this._rejectExpiredTransferFulfils) {
                             const now = new Date().toISOString();
-                            if (now > prepare.expiration) {
+                            if(now > prepare.expiration) {
                                 const msg = 'Transfer fulfil missed expiry deadline';
                                 this._logger.error(`${msg}: system time=${now} > expiration=${prepare.expiration}`);
                                 error = new BackendError(msg, 504);
                             }
                         }
-                    } else if (message.type === 'transferError') {
+                    } else if(message.type === 'transferError') {
                         error = new BackendError(`Got an error response preparing transfer: ${util.inspect(message.data)}`, 500);
                         error.mojaloopError = message.data;
                     } else {
@@ -475,7 +475,7 @@ class OutboundTransfersModel {
                         this._logger.log(`Error unsubscribing (in callback) ${transferKey} ${subId}: ${e.stack || util.inspect(e)}`);
                     });
 
-                    if (error) {
+                    if(error) {
                         return reject(error);
                     }
 
@@ -540,10 +540,10 @@ class OutboundTransfersModel {
                     let error;
                     let message = JSON.parse(msg);
 
-                    if (message.type === 'transferError') {
+                    if(message.type === 'transferError') {
                         error = new BackendError(`Got an error response retrieving transfer: ${util.inspect(message.data)}`, 500);
                         error.mojaloopError = message.data;
-                    } else if (message.type !== 'transferFulfil') {
+                    } else if(message.type !== 'transferFulfil') {
                         this._logger.push({ message }).log(`Ignoring cache notification for transfer ${transferKey}. Uknokwn message type ${message.type}.`);
                         return;
                     }
@@ -556,7 +556,7 @@ class OutboundTransfersModel {
                         this._logger.log(`Error unsubscribing (in callback) ${transferKey} ${subId}: ${e.stack || util.inspect(e)}`);
                     });
 
-                    if (error) {
+                    if(error) {
                         return reject(error);
                     }
 
