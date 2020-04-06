@@ -25,6 +25,12 @@ const internalPartyToMojaloopParty = (internal, fspId) => {
             fspId: fspId
         }
     };
+    
+    if (internal.extensionList) {
+        party.partyIdInfo.extensionList = {
+            extension: internal.extensionList
+        };
+    }
 
     const hasComplexName = !!(internal.firstName || internal.middleName || internal.lastName);
 
@@ -63,8 +69,10 @@ const mojaloopPartyToInternalParty = (external) => {
         internal.idType = external.partyIdInfo.partyIdType;
         internal.idValue = external.partyIdInfo.partyIdentifier;
         internal.idSubValue = external.partyIdInfo.partySubIdOrType;
-
         // Note: we dont map fspid to internal transferParty object
+        if(external.partyIdInfo.extensionList){
+            internal.extensionList = external.partyIdInfo.extensionList.extension;
+        }
     }
 
     if(external.name) {
