@@ -198,7 +198,7 @@ class OutboundTransfersModel {
                     // cancel the timeout handler
                     clearTimeout(timeout);
 
-                    this._logger.push({payee}).log('Payee resolved');
+                    this._logger.push({ payee }).log('Payee resolved');
 
                     // stop listening for payee resolution messages
                     // no need to await for the unsubscribe to complete.
@@ -305,16 +305,16 @@ class OutboundTransfersModel {
                     let error;
                     let message = JSON.parse(msg);
 
-                    if(message.type === 'quoteResponse') {
-                        if(this._rejectExpiredQuoteResponses) {
+                    if (message.type === 'quoteResponse') {
+                        if (this._rejectExpiredQuoteResponses) {
                             const now = new Date().toISOString();
-                            if(now > quote.expiration) {
+                            if (now > quote.expiration) {
                                 const msg = 'Quote response missed expiry deadline';
                                 error = new BackendError(msg, 504);
                                 this._logger.error(`${msg}: system time=${now} > expiration time=${quote.expiration}`);
                             }
                         }
-                    } else if(message.type === 'quoteResponseError') {
+                    } else if (message.type === 'quoteResponseError') {
                         error = new BackendError(`Got an error response requesting quote: ${util.inspect(message.data)}`, 500);
                         error.mojaloopError = message.data;
                     }
@@ -333,7 +333,7 @@ class OutboundTransfersModel {
                         this._logger.log(`Error unsubscribing (in callback) ${quoteKey} ${subId}: ${e.stack || util.inspect(e)}`);
                     });
 
-                    if(error) {
+                    if (error) {
                         return reject(error);
                     }
 
@@ -416,12 +416,12 @@ class OutboundTransfersModel {
 
         // geocode
         // note
-        if(this.data.note) {
+        if (this.data.note) {
             quote.note = this.data.note;
         }
 
         // add extensionList if provided
-        if(this.data.quoteRequestExtensions && this.data.quoteRequestExtensions.length > 0) {
+        if (this.data.quoteRequestExtensions && this.data.quoteRequestExtensions.length > 0) {
             quote.extensionList = {
                 extension: this.data.quoteRequestExtensions
             };
@@ -450,16 +450,16 @@ class OutboundTransfersModel {
                     let error;
                     let message = JSON.parse(msg);
 
-                    if(message.type === 'transferFulfil') {
-                        if(this._rejectExpiredTransferFulfils) {
+                    if (message.type === 'transferFulfil') {
+                        if (this._rejectExpiredTransferFulfils) {
                             const now = new Date().toISOString();
-                            if(now > prepare.expiration) {
+                            if (now > prepare.expiration) {
                                 const msg = 'Transfer fulfil missed expiry deadline';
                                 this._logger.error(`${msg}: system time=${now} > expiration=${prepare.expiration}`);
                                 error = new BackendError(msg, 504);
                             }
                         }
-                    } else if(message.type === 'transferError') {
+                    } else if (message.type === 'transferError') {
                         error = new BackendError(`Got an error response preparing transfer: ${util.inspect(message.data)}`, 500);
                         error.mojaloopError = message.data;
                     } else {
@@ -475,7 +475,7 @@ class OutboundTransfersModel {
                         this._logger.log(`Error unsubscribing (in callback) ${transferKey} ${subId}: ${e.stack || util.inspect(e)}`);
                     });
 
-                    if(error) {
+                    if (error) {
                         return reject(error);
                     }
 
@@ -483,7 +483,7 @@ class OutboundTransfersModel {
                     this._logger.push({ fulfil }).log('Transfer fulfil received');
                     this.data.fulfil = fulfil;
 
-                    if(this._checkIlp && !this._ilp.validateFulfil(fulfil.fulfilment, this.data.quoteResponse.condition)) {
+                    if (this._checkIlp && !this._ilp.validateFulfil(fulfil.fulfilment, this.data.quoteResponse.condition)) {
                         throw new Error('Invalid fulfilment received from peer DFSP.');
                     }
 
@@ -540,10 +540,10 @@ class OutboundTransfersModel {
                     let error;
                     let message = JSON.parse(msg);
 
-                    if(message.type === 'transferError') {
+                    if (message.type === 'transferError') {
                         error = new BackendError(`Got an error response retrieving transfer: ${util.inspect(message.data)}`, 500);
                         error.mojaloopError = message.data;
-                    } else if(message.type !== 'transferFulfil') {
+                    } else if (message.type !== 'transferFulfil') {
                         this._logger.push({ message }).log(`Ignoring cache notification for transfer ${transferKey}. Uknokwn message type ${message.type}.`);
                         return;
                     }
@@ -556,7 +556,7 @@ class OutboundTransfersModel {
                         this._logger.log(`Error unsubscribing (in callback) ${transferKey} ${subId}: ${e.stack || util.inspect(e)}`);
                     });
 
-                    if(error) {
+                    if (error) {
                         return reject(error);
                     }
 
@@ -627,13 +627,13 @@ class OutboundTransfersModel {
             expiration: this._getExpirationTimestamp()
         };
 
-        if(this._useQuoteSourceFSPAsTransferPayeeFSP) {
+        if (this._useQuoteSourceFSPAsTransferPayeeFSP) {
             prepare.payeeFsp = this.data.quoteResponseSource;
         }
 
         // add extensions list if provided
         const { transferRequestExtensions } = this.data;
-        if(transferRequestExtensions && transferRequestExtensions.length > 0) {
+        if (transferRequestExtensions && transferRequestExtensions.length > 0) {
             prepare.extensionList = {
                 extension: transferRequestExtensions,
             };
@@ -716,7 +716,7 @@ class OutboundTransfersModel {
     async load(transferId) {
         try {
             const data = await this._cache.get(`transferModel_${transferId}`);
-            if(!data) {
+            if (!data) {
                 throw new Error(`No cached data found for transferId: ${transferId}`);
             }
             await this.initialize(data);
@@ -740,7 +740,7 @@ class OutboundTransfersModel {
                     // next transition is to resolvePayee
                     await this.stateMachine.resolvePayee();
                     this._logger.log(`Payee resolved for transfer ${this.data.transferId}`);
-                    if(this.stateMachine.state === 'payeeResolved' && !this._autoAcceptParty) {
+                    if (this.stateMachine.state === 'payeeResolved' && !this._autoAcceptParty) {
                         //we break execution here and return the resolved party details to allow asynchronous accept or reject
                         //of the resolved party
                         await this._save();
@@ -752,7 +752,7 @@ class OutboundTransfersModel {
                     // next transition is to requestQuote
                     await this.stateMachine.requestQuote();
                     this._logger.log(`Quote received for transfer ${this.data.transferId}`);
-                    if(this.stateMachine.state === 'quoteReceived' && !this._autoAcceptQuotes) {
+                    if (this.stateMachine.state === 'quoteReceived' && !this._autoAcceptQuotes) {
                         //we break execution here and return the quote response details to allow asynchronous accept or reject
                         //of the quote
                         await this._save();
@@ -791,9 +791,9 @@ class OutboundTransfersModel {
             this._logger.log(`Error running transfer model: ${util.inspect(err)}`);
 
             // as this function is recursive, we dont want to error the state machine multiple times
-            if(this.data.currentState !== 'errored') {
+            if (this.data.currentState !== 'errored') {
                 // err should not have a transferState property here!
-                if(err.transferState) {
+                if (err.transferState) {
                     this._logger.log(`State machine is broken: ${util.inspect(err)}`);
                 }
                 // transition to errored state

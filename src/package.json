@@ -35,7 +35,6 @@
     "koa-body": "^4.1.1",
     "koa2-oauth-server": "^1.0.0",
     "node-fetch": "^2.6.0",
-    "sqlite3": "^4.1.1",
     "uuidv4": "^6.0.6"
   },
   "devDependencies": {
