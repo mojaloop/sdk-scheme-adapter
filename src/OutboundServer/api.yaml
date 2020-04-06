@@ -574,7 +574,8 @@ components:
         merchantClassificationCode:
           type: string
           description: Up to 4 digits specifying the sender's merchant classification, if known and applicable.
-
+        extensionList:
+          $ref: '#/components/schemas/extensionList'
     extensionItem:
       type: object
       properties:

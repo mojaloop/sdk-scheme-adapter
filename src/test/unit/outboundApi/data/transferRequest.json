@@ -2,7 +2,11 @@
   "from": {
     "displayName": "James Bush",
     "idType": "MSISDN",
-    "idValue": "447710066017"
+    "idValue": "447710066017",
+    "extensionList": [
+      {"key": "accountType",
+        "value": "Wallet"}
+    ]
   },
   "to": {
     "idType": "MSISDN",
