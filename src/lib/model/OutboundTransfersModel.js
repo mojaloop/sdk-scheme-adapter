@@ -416,12 +416,12 @@ class OutboundTransfersModel {
 
         // geocode
         // note
-        if (this.data.note) {
+        if(this.data.note) {
             quote.note = this.data.note;
         }
 
         // add extensionList if provided
-        if (this.data.quoteRequestExtensions && this.data.quoteRequestExtensions.length > 0) {
+        if(this.data.quoteRequestExtensions && this.data.quoteRequestExtensions.length > 0) {
             quote.extensionList = {
                 extension: this.data.quoteRequestExtensions
             };
@@ -483,7 +483,7 @@ class OutboundTransfersModel {
                     this._logger.push({ fulfil }).log('Transfer fulfil received');
                     this.data.fulfil = fulfil;
 
-                    if (this._checkIlp && !this._ilp.validateFulfil(fulfil.fulfilment, this.data.quoteResponse.condition)) {
+                    if(this._checkIlp && !this._ilp.validateFulfil(fulfil.fulfilment, this.data.quoteResponse.condition)) {
                         throw new Error('Invalid fulfilment received from peer DFSP.');
                     }
 
@@ -627,13 +627,13 @@ class OutboundTransfersModel {
             expiration: this._getExpirationTimestamp()
         };
 
-        if (this._useQuoteSourceFSPAsTransferPayeeFSP) {
+        if(this._useQuoteSourceFSPAsTransferPayeeFSP) {
             prepare.payeeFsp = this.data.quoteResponseSource;
         }
 
         // add extensions list if provided
         const { transferRequestExtensions } = this.data;
-        if (transferRequestExtensions && transferRequestExtensions.length > 0) {
+        if(transferRequestExtensions && transferRequestExtensions.length > 0) {
             prepare.extensionList = {
                 extension: transferRequestExtensions,
             };
@@ -716,7 +716,7 @@ class OutboundTransfersModel {
     async load(transferId) {
         try {
             const data = await this._cache.get(`transferModel_${transferId}`);
-            if (!data) {
+            if(!data) {
                 throw new Error(`No cached data found for transferId: ${transferId}`);
             }
             await this.initialize(data);
@@ -740,7 +740,7 @@ class OutboundTransfersModel {
                     // next transition is to resolvePayee
                     await this.stateMachine.resolvePayee();
                     this._logger.log(`Payee resolved for transfer ${this.data.transferId}`);
-                    if (this.stateMachine.state === 'payeeResolved' && !this._autoAcceptParty) {
+                    if(this.stateMachine.state === 'payeeResolved' && !this._autoAcceptParty) {
                         //we break execution here and return the resolved party details to allow asynchronous accept or reject
                         //of the resolved party
                         await this._save();
@@ -752,7 +752,7 @@ class OutboundTransfersModel {
                     // next transition is to requestQuote
                     await this.stateMachine.requestQuote();
                     this._logger.log(`Quote received for transfer ${this.data.transferId}`);
-                    if (this.stateMachine.state === 'quoteReceived' && !this._autoAcceptQuotes) {
+                    if(this.stateMachine.state === 'quoteReceived' && !this._autoAcceptQuotes) {
                         //we break execution here and return the quote response details to allow asynchronous accept or reject
                         //of the quote
                         await this._save();
@@ -791,9 +791,9 @@ class OutboundTransfersModel {
             this._logger.log(`Error running transfer model: ${util.inspect(err)}`);
 
             // as this function is recursive, we dont want to error the state machine multiple times
-            if (this.data.currentState !== 'errored') {
+            if(this.data.currentState !== 'errored') {
                 // err should not have a transferState property here!
-                if (err.transferState) {
+                if(err.transferState) {
                     this._logger.log(`State machine is broken: ${util.inspect(err)}`);
                 }
                 // transition to errored state
