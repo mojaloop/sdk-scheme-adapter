@@ -667,6 +667,8 @@ components:
           type: string
           description: FSP with which the party is associated to.
 
+        extensionList:
+          $ref: '#/components/schemas/extensionList'
     extensionItem:
       type: object
       properties:

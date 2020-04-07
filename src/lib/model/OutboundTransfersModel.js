@@ -231,7 +231,9 @@ class OutboundTransfersModel {
                     // now we got the payee, add the details to our data so we can use it
                     // in the quote request
                     this.data.to.fspId = payee.partyIdInfo.fspId;
-
+                    if(payee.partyIdInfo.extensionList) {
+                        this.data.to.extensionList  = payee.partyIdInfo.extensionList.extension;
+                    }
                     if(payee.personalInfo) {
                         if(payee.personalInfo.complexName) {
                             this.data.to.firstName = payee.personalInfo.complexName.firstName || this.data.to.firstName;
