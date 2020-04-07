@@ -172,7 +172,7 @@ class InboundServer {
             const keyName = path.basename(filename, '.pem');
             const keyPath = path.join(this._conf.jwsVerificationKeysDirectory, filename);
             if (eventType === FS_EVENT_TYPES.RENAME) {
-                if (this._jwsVerificationKeys[keyName] == null) {
+                if (fs.existsSync(keyPath)) {
                     this._jwsVerificationKeys[keyName] = await fs.promises.readFile(keyPath);
                 } else {
                     delete this._jwsVerificationKeys[keyName];

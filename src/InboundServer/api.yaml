@@ -13,7 +13,7 @@ paths:
     put:
       description: >-
         If there is an error during FSP information creation in the server, the
-        error callback PUT /participants//error is used. The  in the URI should
+        error callback PUT /participants//error is used. The in the URI should
         contain the requestId that was used for the creation of the participant
         information.
       summary: ParticipantsByIDAndError
@@ -4047,6 +4047,9 @@ components:
         fspId:
           $ref: '#/components/schemas/FspId'
           description: FSP ID (if known)
+        extensionList:
+          $ref: '#/components/schemas/ExtensionList'
+          description: 'Optional extension, specific to deployment.'
       required:
         - partyIdType
         - partyIdentifier
@@ -4454,5 +4457,4 @@ components:
           description: 'Optional extension, specific to deployment.'
       required:
         - transferState
-
-
+  

@@ -372,6 +372,13 @@ components:
       maxLength: 32
       description: FSP identifier.
 
+    extensionList:
+      type: array
+      items:
+        $ref: '#/components/schemas/extensionItem'
+      minItems: 0
+      maxItems: 16
+
     geoCode:
       type: object
       description: Indicates the geographic location from where the transaction was initiated.
@@ -457,6 +464,18 @@ components:
         - PAYER
         - PAYEE
       description: Specifies if the initiator of the transfer is the Payer or Payee.
+
+    extensionItem:
+      type: object
+      properties:
+        key:
+          type: string
+          minLength: 1
+          maxLength: 32
+        value:
+          type: string
+          minLength: 1
+          maxLength: 128
 
     initiatorType:
       type: string
@@ -658,6 +677,8 @@ components:
         merchantClassificationCode:
           type: string
           description: Up to 4 digits specifying the sender's merchant classification, if known and applicable.
+        extensionList:
+          $ref: '#/components/schemas/extensionList'
 
     transferState:
       type: string
@@ -811,3 +832,4 @@ components:
         minLength: 1
         maxLength: 128
       description: Either a sub-identifier of a `{idValue}`, or a sub-type of the `{idType}`, normally a `{personalIdType}`
+

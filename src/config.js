@@ -12,6 +12,7 @@
 const fs = require('fs');
 require('dotenv').config();
 const { from } = require('env-var');
+const yaml = require('js-yaml');
 
 function getFileContent(path) {
     if (!fs.existsSync(path)) {
@@ -23,6 +24,7 @@ function getFileContent(path) {
 const env = from(process.env, {
     asFileContent: (path) => getFileContent(path),
     asFileListContent: (pathList) => pathList.split(',').map((path) => getFileContent(path)),
+    asYamlConfig: (path) => yaml.load(getFileContent(path)),
 });
 
 module.exports = {
@@ -114,4 +116,6 @@ module.exports = {
     // to the DFSP backend. This is useful if an intermediary such as FXP returns underlying error
     // codes in error extensionLists.
     outboundErrorStatusCodeExtensionKey: env.get('OUTBOUND_ERROR_STATUSCODE_EXTENSION_KEY').asString(),
+
+    proxyConfig: env.get('PROXY_CONFIG_PATH').asYamlConfig(),
 };
