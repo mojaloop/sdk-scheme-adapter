@@ -16,7 +16,7 @@ jest.mock('redis');
 
 const util = require('util');
 const Cache = require('@internal/cache');
-const Model = require('@internal/model').OutboundMerchantTransfersModel;
+const Model = require('@internal/model').OutboundRequestToPayTransferModel;
 const { Logger, Transports } = require('@internal/log');
 
 const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
