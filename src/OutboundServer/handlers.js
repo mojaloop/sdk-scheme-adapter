@@ -12,7 +12,7 @@
 
 
 const util = require('util');
-const { AccountsModel, OutboundTransfersModel, OutboundMerchantTransfersModel, OutboundRequestToPayModel } = require('@internal/model');
+const { AccountsModel, OutboundTransfersModel, OutboundRequestToPayTransferModel, OutboundRequestToPayModel } = require('@internal/model');
 
 
 /**
@@ -104,7 +104,7 @@ const postTransfers = async (ctx) => {
 /**
  * Handler for outbound transfer request initiation
  */
-const postMerchantTransfers = async (ctx) => {
+const postRequestToPayTransfer = async (ctx) => {
     try {
         // this requires a multi-stage sequence with the switch.
         let merchantTransferRequest = {
@@ -112,7 +112,7 @@ const postMerchantTransfers = async (ctx) => {
         };
 
         // use the merchant transfers model to execute asynchronous stages with the switch
-        const model = new OutboundMerchantTransfersModel({
+        const model = new OutboundRequestToPayTransferModel({
             ...ctx.state.conf,
             cache: ctx.state.cache,
             logger: ctx.state.logger,
@@ -200,11 +200,11 @@ const putTransfers = async (ctx) => {
  * Handler for resuming outbound transfers in scenarios where two-step transfers are enabled
  * by disabling the autoAcceptQuote SDK option
  */
-const putMerchantTransfers = async (ctx) => {
+const putRequestToPayTransfer = async (ctx) => {
     try {
         // this requires a multi-stage sequence with the switch.
         // use the transfers model to execute asynchronous stages with the switch
-        const model = new OutboundMerchantTransfersModel({
+        const model = new OutboundRequestToPayTransferModel({
             ...ctx.state.conf,
             cache: ctx.state.cache,
             logger: ctx.state.logger,
@@ -311,10 +311,10 @@ module.exports = {
     '/requestToPay': {
         post: postRequestToPay
     },
-    '/merchantTransfers': {
-        post: postMerchantTransfers
+    '/requestToPayTransfer': {
+        post: postRequestToPayTransfer
     },
-    '/merchantTransfers/{requestToPayTransactionId}': {
-        put: putMerchantTransfers
+    '/requestToPayTransfer/{requestToPayTransactionId}': {
+        put: putRequestToPayTransfer
     },
 };

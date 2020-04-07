@@ -155,11 +155,11 @@ paths:
         # 504:
         #   $ref: '#/components/responses/requestToPayTimeout'
 
-  /merchantTransfers:
+  /requestToPayTransfer:
     post:
       summary: Sends money from customer account to merchant account
       description: >
-        The HTTP request `POST /merchantTransfers` is used to request the movement of funds from payer DFSP to payee DFSP.
+        The HTTP request `POST /requestToPayTransfer` is used to request the movement of funds from payer DFSP to payee DFSP.
 
         The underlying Mojaloop API has three stages for money transfer:
 
@@ -185,25 +185,25 @@ paths:
         adapter can be configured to "break" the three stage transfer at these points in order to execute backend logic such as party verification, quoted fees assessments etc...
 
       tags:
-        - MerchantTransfers
+        - RequestToPayTransfer
       requestBody:
-        description: Merchant Transfer request body
+        description: Request To Pay Transfer request body
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/merchantTransferRequest'
+              $ref: '#/components/schemas/requestToPayTransferRequest'
         required: true
       responses:
         200:
-          $ref: '#/components/responses/merchantTransferSuccess'
+          $ref: '#/components/responses/requestToPayTransferSuccess'
         400:
-          $ref: '#/components/responses/merchantTransferBadRequest'
+          $ref: '#/components/responses/requestToPayTransferBadRequest'
         500:
           $ref: '#/components/responses/transferServerError'
         504:
           $ref: '#/components/responses/transferTimeout'
 
-  /merchantTransfers/{requestToPayTransactionId}:
+  /requestToPayTransfer/{requestToPayTransactionId}:
     put:
       summary: Continues a transfer that has paused at the otp stage in order to accept or reject quote
       description: >
@@ -215,7 +215,7 @@ paths:
 
         See the description of the `POST /merchantTransfers` HTTP method for more information on modes of transfer.
       tags:
-        - MerchantTransfers
+        - RequestToPayTransferID
       requestBody:
         content:
           application/json:
@@ -805,7 +805,7 @@ components:
         requestToPayState:
           $ref: '#/components/schemas/mojaloopTransactionRequestState'     
 
-    merchantTransferRequest:
+    requestToPayTransferRequest:
       type: object
       required:
         - requestToPayTransactionId
@@ -841,7 +841,7 @@ components:
           maxLength: 128
           type: string
 
-    merchantTransferResponse:
+    requestToPayTransferResponse:
       type: object
       required:
         - requestToPayTransactionId
@@ -1287,13 +1287,13 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/requestToPayResponse'
-    merchantTransferSuccess:
+    requestToPayTransferSuccess:
       description: Transfer completed successfully
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/merchantTransferResponse'
-    merchantTransferBadRequest:
+            $ref: '#/components/schemas/requestToPayTransferResponse'
+    requestToPayTransferBadRequest:
       description: Malformed or missing required body, headers or parameters
       content:
         application/json:

@@ -20,7 +20,7 @@ const merchantTransferRequest = require('./data/merchantTransferRequest');
 jest.mock('@internal/model');
 
 const handlers = require('../../../OutboundServer/handlers');
-const { OutboundTransfersModel, OutboundMerchantTransfersModel, OutboundRequestToPayModel } = require('@internal/model');
+const { OutboundTransfersModel, OutboundRequestToPayTransferModel, OutboundRequestToPayModel } = require('@internal/model');
 
 /**
  * Mock the outbound transfer model to simulate throwing errors
@@ -45,7 +45,7 @@ OutboundTransfersModel.mockImplementation(() => {
 /**
  * Mock the outbound transfer model to simulate throwing errors
  */
-OutboundMerchantTransfersModel.mockImplementation(() => {
+OutboundRequestToPayTransferModel.mockImplementation(() => {
     return {
         run: async () => {
             // throw the mockError object when the model is run
