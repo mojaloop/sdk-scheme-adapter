@@ -64,6 +64,9 @@ class OutboundRequestToPayModel {
             this.data.currentState = 'start';
         }
 
+        //Set fsp id in the from section of the request that gets sent back in the response
+        this.data.from.fspId = this._dfspId;
+
         this._initStateMachine(this.data.currentState);
     }
 
