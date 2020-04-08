@@ -1,7 +1,7 @@
 {
   "message": "Mock error",
   "httpStatusCode": 500,
-  "merchantTransferState":  {
+  "requestToPayTransferState":  {
     "from": {
       "displayName": "James Bush",
       "idType": "MSISDN",

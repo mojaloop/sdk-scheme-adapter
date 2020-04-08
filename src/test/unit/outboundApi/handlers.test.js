@@ -12,10 +12,10 @@
 
 const mockError = require('./data/mockError');
 const mockRequestToPayError = require('./data/mockRequestToPayError');
-const mockMerchantTransferError = require('./data/mockMerchantTransferError');
+const mockRequestToPayTransferError = require('./data/mockRequestToPayTransferError');
 const transferRequest = require('./data/transferRequest');
 const requestToPayPayload = require('./data/requestToPay');
-const merchantTransferRequest = require('./data/merchantTransferRequest');
+const requestToPayTransferRequest = require('./data/requestToPayTransferRequest');
 
 jest.mock('@internal/model');
 
@@ -49,7 +49,7 @@ OutboundRequestToPayTransferModel.mockImplementation(() => {
     return {
         run: async () => {
             // throw the mockError object when the model is run
-            throw mockMerchantTransferError;
+            throw mockRequestToPayTransferError;
         },
         initialize: async () => {
             // nothing needed here
@@ -142,11 +142,11 @@ describe('Outbound API handlers:', () => {
         });
     });
 
-    describe('POST /merchantTransfers', () => {
+    describe('POST /requestToPayTransfer', () => {
         test('returns correct error response body when model throws mojaloop error', async () => {
             const mockContext = {
                 request: {
-                    body: merchantTransferRequest,
+                    body: requestToPayTransferRequest,
                     headers: {
                         'fspiop-source': 'foo'
                     }
@@ -158,14 +158,14 @@ describe('Outbound API handlers:', () => {
                 }
             };
 
-            await handlers['/merchantTransfers'].post(mockContext);
+            await handlers['/requestToPayTransfer'].post(mockContext);
             // check response is correct
             expect(mockContext.response.status).toEqual(500);
             expect(mockContext.response.body).toBeTruthy();
             expect(mockContext.response.body.message).toEqual('Mock error');
             expect(mockContext.response.body.statusCode)
-                .toEqual(mockMerchantTransferError.merchantTransferState.lastError.mojaloopError.errorInformation.errorCode);
-            expect(mockContext.response.body.merchantTransferState).toEqual(mockMerchantTransferError.merchantTransferState);
+                .toEqual(mockRequestToPayTransferError.requestToPayTransferState.lastError.mojaloopError.errorInformation.errorCode);
+            expect(mockContext.response.body.requestToPayTransferState).toEqual(mockRequestToPayTransferError.requestToPayTransferState);
         });
     });
 

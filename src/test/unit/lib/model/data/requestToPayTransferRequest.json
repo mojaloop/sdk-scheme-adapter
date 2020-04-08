@@ -12,7 +12,9 @@
   "amountType": "SEND",
   "currency": "USD",
   "amount": "100",
-  "transactionType": "TRANSFER",
+  "scenario":"PAYMENT",
+  "initiator":"PAYEE",
+  "initiatorType":"DEVICE",
   "note": "test payment",
   "quoteRequestExtensions": [
     { "key": "qkey1", "value": "qvalue1" },
