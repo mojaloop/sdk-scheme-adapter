@@ -66,8 +66,8 @@ const handleAccountsError = (method, err, ctx) =>
 const handleRequestToPayError = (method, err, ctx) =>
     handleError(method, err, ctx, 'requestToPayState');
 
-const handleMerchantTransferError = (method, err, ctx) =>
-    handleError(method, err, ctx, 'merchantTransferState');
+const handleRequestToPayTransferError = (method, err, ctx) =>
+    handleError(method, err, ctx, 'requestToPayTransferState');
 
 
 /**
@@ -107,7 +107,7 @@ const postTransfers = async (ctx) => {
 const postRequestToPayTransfer = async (ctx) => {
     try {
         // this requires a multi-stage sequence with the switch.
-        let merchantTransferRequest = {
+        let requestToPayTransferRequest = {
             ...ctx.request.body
         };
 
@@ -120,14 +120,14 @@ const postRequestToPayTransfer = async (ctx) => {
         });
 
         // initialize the transfer model and start it running
-        await model.initialize(merchantTransferRequest);
+        await model.initialize(requestToPayTransferRequest);
         const response = await model.run();
         // return the result
         ctx.response.status = 200;
         ctx.response.body = response;
     }
     catch(err) {
-        return handleMerchantTransferError('postMerchantTransfers', err, ctx);
+        return handleRequestToPayTransferError('postRequestToPayTransfer', err, ctx);
     }
 };
 
@@ -227,7 +227,7 @@ const putRequestToPayTransfer = async (ctx) => {
         ctx.response.body = response;
     }
     catch(err) {
-        return handleTransferError('putmerchantTransfers', err, ctx);
+        return handleTransferError('putRequestToPayTransfer', err, ctx);
     }
 };
 
