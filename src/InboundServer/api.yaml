@@ -2496,39 +2496,6 @@ paths:
           $ref: '#/components/responses/ErrorResponse503'
       requestBody:
         $ref: '#/components/requestBodies/ErrorInformationObject'
-
-  '/requests/{ID}':
-    get:
-      description: Test support method. Allows the caller to see the body of a previous request
-      summary: getRequestsById
-      tags:
-        - test
-      operationId: getRequestsById
-      parameters:
-        - $ref: '#/components/parameters/ID'
-      responses:
-        '200':
-          description: Response
-          content:
-            application/json:
-              schema:
-                type: object
-  '/callbacks/{ID}':
-    get:
-      description: Test support method. Allows the caller to see the body of a previous callback
-      summary: getRequestsById
-      tags:
-        - test
-      operationId: getCallbackById
-      parameters:
-        - $ref: '#/components/parameters/ID'
-      responses:
-        '200':
-          description: Response
-          content:
-            application/json:
-              schema:
-                type: object
 components:
   parameters:
     Accept:
