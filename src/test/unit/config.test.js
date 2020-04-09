@@ -49,6 +49,17 @@ describe('config', () => {
         expect(config.outboundErrorStatusCodeExtensionKey).toBeUndefined();
     });
 
+    it('correctly parses VALIDATE_INBOUND_PUT_PARTIES_JWS when NOT set', () => {
+        delete process.env.VALIDATE_INBOUND_PUT_PARTIES_JWS;
+        const config = require('../../config');
+        expect(config.validateInboundPutPartiesJws).toBeFalsy();
+    });
+
+    it('correctly parses VALIDATE_INBOUND_PUT_PARTIES_JWS when set', () => {
+        process.env.VALIDATE_INBOUND_PUT_PARTIES_JWS = 'true';
+        const config = require('../../config');
+        expect(config.validateInboundPutPartiesJws).toBeTruthy();
+    });
 
     it('return single cert content from IN_SERVER_CERT_PATH', () => {
         const cert = path.join(certDir, 'cert.pem');
