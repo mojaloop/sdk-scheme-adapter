@@ -56,7 +56,7 @@ describe('config', () => {
     });
 
     it('correctly parses VALIDATE_INBOUND_PUT_PARTIES_JWS when set', () => {
-        process.env.VALIDATE_INBOUND_PUT_PARTIES_JWS = 'true'
+        process.env.VALIDATE_INBOUND_PUT_PARTIES_JWS = 'true';
         const config = require('../../config');
         expect(config.validateInboundPutPartiesJws).toBeTruthy();
     });
