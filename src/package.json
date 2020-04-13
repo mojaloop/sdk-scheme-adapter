@@ -26,7 +26,7 @@
     "@internal/router": "file:lib/router",
     "@internal/shared": "file:lib/model/lib/shared",
     "@internal/validate": "file:lib/validate",
-    "@mojaloop/sdk-standard-components": "^9.1.4",
+    "@mojaloop/sdk-standard-components": "^9.1.6",
     "ajv": "^6.12.0",
     "co-body": "^6.0.0",
     "dotenv": "^8.2.0",
