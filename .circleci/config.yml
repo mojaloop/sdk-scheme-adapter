@@ -79,7 +79,7 @@ defaults_build_docker_build: &defaults_build_docker_build
 
 defaults_build_docker_build_release: &defaults_build_docker_build_release
   name: Build Docker $RELEASE_TAG image
-  command: |
+  command: >
     echo "Building Docker image: $RELEASE_TAG"
 
     docker build
