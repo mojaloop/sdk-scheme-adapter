@@ -13,6 +13,14 @@
   "autoAcceptParty": true,
   "useQuoteSourceFSPAsTransferPayeeFSP": false,
   "tls": {
+    "test": {
+      "mutualTLS": { "enabled": false },
+      "creds": {
+        "ca": null,
+        "cert": null,
+        "key": null
+      }
+    },
     "inbound": {
       "mutualTLS": { "enabled": false },
       "creds": {
