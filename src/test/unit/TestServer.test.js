@@ -26,11 +26,6 @@ jest.mock('@internal/requests');
 const InboundServer = require('../../InboundServer');
 const TestServer = require('../../TestServer');
 
-// - testserver health check- remember, k8s will kill the pod if this fails
-// - testserver starts- I guess
-// - testserver asks the cache for the same key inboundserver stores on
-// - testserver callbacks _and_ requests
-
 describe('Test Server', () => {
     let testServer, inboundServer, inboundReq, testReq, serverConfig, inboundCache, testCache;
 
@@ -40,12 +35,6 @@ describe('Test Server', () => {
         serverConfig = {
             ...JSON.parse(JSON.stringify(defaultConfig)),
             enableTestFeatures: true,
-            logger: {
-                indent: 2,
-                transports: {
-                    stdout: true
-                }
-            }
         };
 
         testServer = new TestServer(serverConfig);
@@ -72,10 +61,6 @@ describe('Test Server', () => {
         const testArgs = { ...cache.mock.calls[0][0], logger: expect.anything() };
         expect(cache).toHaveBeenNthCalledWith(2, testArgs);
     });
-
-    // test('Inbound server and Test server construct cache with same parameters', async () => {
-    //     const 
-    // });
 
     test('Health check', async () => {
         const result = await testReq.get('/');
