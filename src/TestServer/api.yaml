@@ -9,7 +9,17 @@ info:
   license:
     name: Open API for FSP Interoperability (FSPIOP)
 paths:
-
+  '/':
+    get:
+      description: Health check
+      summary: healthCheck
+      tags:
+        - test
+      operationId: healthCheck
+      responses:
+        '204':
+          description: Response
+          content: null
   '/requests/{ID}':
     get:
       description: Test support method. Allows the caller to see the body of a previous request
