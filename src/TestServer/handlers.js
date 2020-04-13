@@ -10,8 +10,6 @@
 
 'use strict';
 
-const { Errors } = require('@mojaloop/sdk-standard-components');
-
 const healthCheck = async(ctx) => {
     ctx.response.status = 204;
     ctx.response.body = '';
