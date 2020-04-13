@@ -178,7 +178,7 @@ class OutboundTransfersModel {
 
                     if(payee.errorInformation) {
                         // this is an error response to our GET /parties request
-                        const err = new BackendError(`Got an error response resolving party: ${util.inspect(payee)}`, 500);
+                        const err = new BackendError(`Got an error response resolving party: ${util.inspect(payee, { depth: Infinity })}`, 500);
                         err.mojaloopError = payee;
 
                         // cancel the timeout handler
@@ -315,7 +315,7 @@ class OutboundTransfersModel {
                             }
                         }
                     } else if (message.type === 'quoteResponseError') {
-                        error = new BackendError(`Got an error response requesting quote: ${util.inspect(message.data)}`, 500);
+                        error = new BackendError(`Got an error response requesting quote: ${util.inspect(message.data, { depth: Infinity })}`, 500);
                         error.mojaloopError = message.data;
                     }
                     else {
@@ -460,7 +460,7 @@ class OutboundTransfersModel {
                             }
                         }
                     } else if (message.type === 'transferError') {
-                        error = new BackendError(`Got an error response preparing transfer: ${util.inspect(message.data)}`, 500);
+                        error = new BackendError(`Got an error response preparing transfer: ${util.inspect(message.data, { depth: Infinity })}`, 500);
                         error.mojaloopError = message.data;
                     } else {
                         this._logger.push({ message }).log(`Ignoring cache notification for transfer ${transferKey}. Uknokwn message type ${message.type}.`);
@@ -541,7 +541,7 @@ class OutboundTransfersModel {
                     let message = JSON.parse(msg);
 
                     if (message.type === 'transferError') {
-                        error = new BackendError(`Got an error response retrieving transfer: ${util.inspect(message.data)}`, 500);
+                        error = new BackendError(`Got an error response retrieving transfer: ${util.inspect(message.data, { depth: Infinity })}`, 500);
                         error.mojaloopError = message.data;
                     } else if (message.type !== 'transferFulfil') {
                         this._logger.push({ message }).log(`Ignoring cache notification for transfer ${transferKey}. Uknokwn message type ${message.type}.`);
