@@ -4,19 +4,43 @@ RUN apk add --no-cache git python build-base
 
 EXPOSE 3000
 
-COPY ./secrets /
-
 WORKDIR /src/
 
-COPY ./src/ /src/
+# This is super-ugly, but it means we don't have to re-run npm install every time any of the source
+# files change- only when any dependencies change- which is a superior developer experience when
+# relying on docker-compose.
+COPY ./src/package.json ./package.json
+COPY ./src/lib/cache/package.json ./lib/cache/package.json
+COPY ./src/lib/log/package.json ./lib/log/package.json
+COPY ./src/lib/model/lib/requests/package.json ./lib/model/lib/requests/package.json
+COPY ./src/lib/model/lib/shared/package.json ./lib/model/lib/shared/package.json
+COPY ./src/lib/model/package.json ./lib/model/package.json
+COPY ./src/lib/randomphrase/package.json ./lib/randomphrase/package.json
+COPY ./src/lib/router/package.json ./lib/router/package.json
+COPY ./src/lib/validate/package.json ./lib/validate/package.json
 RUN npm install
 
-FROM node:12.14.0-alpine 
+FROM node:12.14.0-alpine
 
-WORKDIR /src/
+ARG BUILD_DATE
+ARG VCS_URL
+ARG VCS_REF
+ARG VERSION
 
-COPY --from=builder /src/ .
-COPY ./secrets /
+# See http://label-schema.org/rc1/ for label schema info
+LABEL org.label-schema.schema-version="1.0"
+LABEL org.label-schema.name="finance-portal-ui"
+LABEL org.label-schema.build-date=$BUILD_DATE
+LABEL org.label-schema.vcs-url=$VCS_URL
+LABEL org.label-schema.vcs-ref=$VCS_REF
+LABEL org.label-schema.url="https://mojaloop.io/"
+LABEL org.label-schema.version=$VERSION
+
+WORKDIR /sim/
+
+COPY --from=builder /src/ /sim
 RUN npm prune --production
+COPY ./src ./src
+COPY ./secrets /
 
-CMD ["node", "/src/index.js"]
+CMD ["node", "src/index.js"]

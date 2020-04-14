@@ -12,7 +12,6 @@
 
 const util = require('util');
 const Model = require('@internal/model').InboundTransfersModel;
-const { Errors } = require('@mojaloop/sdk-standard-components');
 
 /**
  * Handles a GET /participants/{idType}/{idValue} request
@@ -533,52 +532,6 @@ const healthCheck = async(ctx) => {
 };
 
 
-/**
- * Handles a GET /requests/{ID} request. This is a test support method that allows the caller
- * to see the body of a previous incoming request.
- */
-const getRequestById = async(ctx) => {
-    if(!ctx.state.conf.enableTestFeatures) {
-        // hide this endpoint if test features are disabled
-        throw new Errors.MojaloopFSPIOPError(null, 'Couldn\'t match path requests', null,
-            Errors.MojaloopApiErrorCodes.UNKNOWN_URI);
-    }
-
-    try {
-        const req = await ctx.state.cache.get(`request_${ctx.state.path.params.ID}`);
-        ctx.response.status = 200;
-        ctx.response.body = req;
-    }
-    catch(err) {
-        ctx.status = 500;
-        ctx.response.body = err;
-    }
-};
-
-
-/**
- * Handles a GET /callbacks/{ID} request. This is a test support method that allows the caller
- * to see the body of a previous incoming callback.
- */
-const getCallbackById = async(ctx) => {
-    if(!ctx.state.conf.enableTestFeatures) {
-        // hide this endpoint if test features are disabled
-        throw new Errors.MojaloopFSPIOPError(null, 'Couldn\'t match path /callbacks', null,
-            Errors.MojaloopApiErrorCodes.UNKNOWN_URI);
-    }
-
-    try {
-        const req = await ctx.state.cache.get(`callback_${ctx.state.path.params.ID}`);
-        ctx.response.status = 200;
-        ctx.response.body = req;
-    }
-    catch(err) {
-        ctx.status = 500;
-        ctx.response.body = err;
-    }
-};
-
-
 module.exports = {
     '/': {
         get: healthCheck
@@ -637,11 +590,5 @@ module.exports = {
     },
     '/transactionRequests/{ID}': {
         put: putTransactionRequestsById
-    },
-    '/requests/{ID}': {
-        get: getRequestById
-    },
-    '/callbacks/{ID}': {
-        get: getCallbackById
     }
 };
