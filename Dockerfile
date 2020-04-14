@@ -18,8 +18,7 @@ COPY ./src/lib/model/package.json ./lib/model/package.json
 COPY ./src/lib/randomphrase/package.json ./lib/randomphrase/package.json
 COPY ./src/lib/router/package.json ./lib/router/package.json
 COPY ./src/lib/validate/package.json ./lib/validate/package.json
-RUN npm install --production
-RUN npm prune --production
+RUN npm install
 
 FROM node:12.14.0-alpine
 
@@ -40,6 +39,7 @@ LABEL org.label-schema.version=$VERSION
 WORKDIR /sim/
 
 COPY --from=builder /src/ /sim
+RUN npm prune --production
 COPY ./src ./src
 COPY ./secrets /
 
