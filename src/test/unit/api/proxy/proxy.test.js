@@ -23,6 +23,8 @@ const { createProxyTester } = require('./utils');
 
 const defaultConfig = require('../../data/defaultConfig');
 
+defaultConfig.peerEndpoint = `${defaultConfig.peerEndpoint}/abc/def`;
+
 describe('Proxy', () => {
     let serversInfo;
     let testProxy;

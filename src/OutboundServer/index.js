@@ -25,6 +25,8 @@ const router = require('@internal/router');
 const handlers = require('./handlers');
 const middlewares = require('./middlewares');
 
+const endpointRegex = /\/.*/g;
+
 class OutboundServer {
     constructor(conf) {
         this._conf = conf;
@@ -58,9 +60,13 @@ class OutboundServer {
         const sharedState = { cache: this._cache, wso2Auth: this._wso2Auth, conf: this._conf };
         this._api.use(middlewares.createLogger(this._logger, sharedState));
 
+        //Note that we strip off any path on peerEndpoint config after the origin.
+        //this is to allow proxy routed requests to hit any path on the peer origin
+        //irrespective of any base path on the PEER_ENDPOINT setting
         if (this._conf.proxyConfig) {
             this._api.use(middlewares.createProxy({
                 ...this._conf,
+                peerEndpoint: this._conf.peerEndpoint.replace(endpointRegex, ''),
                 proxyConfig: this._conf.proxyConfig,
                 logger: this._logger,
                 wso2Auth: this._wso2Auth,
