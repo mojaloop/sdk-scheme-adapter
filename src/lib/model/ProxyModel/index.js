@@ -31,6 +31,7 @@ class ProxyModel {
      */
     constructor(config) {
         this._logger = config.logger;
+
         this._requests = new MojaloopRequests({
             logger: this._logger,
             peerEndpoint: config.peerEndpoint,
