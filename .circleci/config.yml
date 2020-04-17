@@ -67,15 +67,27 @@ defaults_build_docker_login: &defaults_build_docker_login
 
 defaults_build_docker_build: &defaults_build_docker_build
   name: Build Docker $CIRCLE_TAG image
-  command: |
+  command: >
     echo "Building Docker image: $CIRCLE_TAG"
-    docker build -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG .
+
+    docker build
+    --build-arg=BUILD_DATE="$(date -u --iso-8601=seconds)"
+    --build-arg=VERSION="$CIRCLE_TAG"
+    --build-arg=VCS_URL="$CIRCLE_REPOSITORY_URL"
+    --build-arg=VCS_REF="$CIRCLE_SHA1"
+    -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG .
 
 defaults_build_docker_build_release: &defaults_build_docker_build_release
   name: Build Docker $RELEASE_TAG image
-  command: |
+  command: >
     echo "Building Docker image: $RELEASE_TAG"
-    docker build -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG .
+
+    docker build
+    --build-arg=BUILD_DATE="$(date -u --iso-8601=seconds)"
+    --build-arg=VERSION="$RELEASE_TAG"
+    --build-arg=VCS_URL="$CIRCLE_REPOSITORY_URL"
+    --build-arg=VCS_REF="$CIRCLE_SHA1"
+    -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG .
 
 defaults_build_docker_publish: &defaults_build_docker_publish
   name: Publish Docker image $CIRCLE_TAG & Latest tag to Docker Hub

@@ -14,6 +14,7 @@ const config = require('./config');
 const InboundServer = require('./InboundServer');
 const OutboundServer = require('./OutboundServer');
 const OAuthTestServer = require('./OAuthTestServer');
+const TestServer = require('./TestServer');
 
 // import things we want to expose e.g. for unit tests and users who dont want to use the entire
 // scheme adapter as a service
@@ -25,7 +26,6 @@ const RandomPhrase = require('@internal/randomphrase');
 const Log = require('@internal/log');
 const Cache = require('@internal/cache');
 
-
 /**
  * Class that creates and manages http servers that expose the scheme adapter APIs.
  */
@@ -35,6 +35,7 @@ class Server {
         this.inboundServer = null;
         this.outboundServer = null;
         this.oauthTestServer = null;
+        this.testServer = null;
     }
 
     async start() {
@@ -46,12 +47,19 @@ class Server {
             port: this.conf.oauthTestServer.listenPort,
             logIndent: this.conf.logIndent,
         });
+        this.testServer = new TestServer(this.conf);
 
         await Promise.all([
             this._startInboundServer(),
             this._startOutboundServer(),
             this._startOAuthTestServer(),
+            this._startTestServer(),
         ]);
+    }
+
+    async _startTestServer() {
+        await this.testServer.setupApi();
+        await this.testServer.start();
     }
 
     async _startInboundServer() {
@@ -76,6 +84,7 @@ class Server {
             this.inboundServer.stop(),
             this.outboundServer.stop(),
             this.oauthTestServer.stop(),
+            this.testServer.stop(),
         ]);
     }
 }
