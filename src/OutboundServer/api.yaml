@@ -157,7 +157,8 @@ paths:
 
   /requestToPayTransfer:
     post:
-      summary: Sends money from customer account to merchant account
+      summary: Used to trigger funds from customer fsp account to merchant fsp account.
+        This is a follow-up request to requestToPay.
       description: >
         The HTTP request `POST /requestToPayTransfer` is used to request the movement of funds from payer DFSP to payee DFSP.
 
