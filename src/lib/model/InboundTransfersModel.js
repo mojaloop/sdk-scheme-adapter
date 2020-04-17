@@ -61,6 +61,38 @@ class InboundTransfersModel {
         });
     }
 
+    /**
+     * Queries the backend API for the specified party and makes a callback to the originator with the result
+     */
+    async getAuthorizations(transactionRequestId, sourceFspId) {
+        try {
+            // make a call to the backend to resolve the party lookup
+            const response = await this._backendRequests.getOTP(transactionRequestId, sourceFspId);
+
+            if(!response) {
+                return 'No response from backend';
+            }
+
+            // project our internal otp representation into a mojaloop authorization response body
+            const mlAuthorization = {
+                authenticationInfo : {
+                    authentication: 'OTP',
+                    authenticationValue: `${response.otpValue}`
+                },
+                responseType: 'ENTERED'                  
+            };
+            // make a callback to the source fsp with the party info
+            return this._mojaloopRequests.putAuthorizations(transactionRequestId, mlAuthorization, sourceFspId);
+        }
+        catch(err) {
+            this._logger.push({ err }).log('Error in getOTP');
+            const mojaloopError = await this._handleError(err);
+            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            return this._mojaloopRequests.putAuthorizationsError(transactionRequestId,
+                mojaloopError, sourceFspId);
+        }
+    }
+
 
     /**
      * Queries the backend API for the specified party and makes a callback to the originator with our dfspId if found

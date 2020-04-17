@@ -51,6 +51,7 @@ const createHeaderValidator = (logger) => async (ctx, next) => {
         'application/vnd.interoperability.quotes+json;version=1.0',
         'application/vnd.interoperability.transactionRequests+json;version=1.0',
         'application/vnd.interoperability.transfers+json;version=1.0',
+        'application/vnd.interoperability.authorizations+json;version=1.0',
         'application/json'
     ]);
     if (validHeaders.has(ctx.request.headers['content-type'])) {

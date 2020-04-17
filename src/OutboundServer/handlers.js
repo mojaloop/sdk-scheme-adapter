@@ -12,7 +12,7 @@
 
 
 const util = require('util');
-const { AccountsModel, OutboundTransfersModel, OutboundRequestToPayModel } = require('@internal/model');
+const { AccountsModel, OutboundTransfersModel, OutboundRequestToPayTransferModel, OutboundRequestToPayModel } = require('@internal/model');
 
 
 /**
@@ -66,6 +66,9 @@ const handleAccountsError = (method, err, ctx) =>
 const handleRequestToPayError = (method, err, ctx) =>
     handleError(method, err, ctx, 'requestToPayState');
 
+const handleRequestToPayTransferError = (method, err, ctx) =>
+    handleError(method, err, ctx, 'requestToPayTransferState');
+
 
 /**
  * Handler for outbound transfer request initiation
@@ -98,6 +101,35 @@ const postTransfers = async (ctx) => {
     }
 };
 
+/**
+ * Handler for outbound transfer request initiation
+ */
+const postRequestToPayTransfer = async (ctx) => {
+    try {
+        // this requires a multi-stage sequence with the switch.
+        let requestToPayTransferRequest = {
+            ...ctx.request.body
+        };
+
+        // use the merchant transfers model to execute asynchronous stages with the switch
+        const model = new OutboundRequestToPayTransferModel({
+            ...ctx.state.conf,
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            wso2Auth: ctx.state.wso2Auth,
+        });
+
+        // initialize the transfer model and start it running
+        await model.initialize(requestToPayTransferRequest);
+        const response = await model.run();
+        // return the result
+        ctx.response.status = 200;
+        ctx.response.body = response;
+    }
+    catch(err) {
+        return handleRequestToPayTransferError('postRequestToPayTransfer', err, ctx);
+    }
+};
 
 /**
  * Handler for outbound transfer request
@@ -161,6 +193,41 @@ const putTransfers = async (ctx) => {
     }
     catch(err) {
         return handleTransferError('putTransfers', err, ctx);
+    }
+};
+
+/**
+ * Handler for resuming outbound transfers in scenarios where two-step transfers are enabled
+ * by disabling the autoAcceptQuote SDK option
+ */
+const putRequestToPayTransfer = async (ctx) => {
+    try {
+        // this requires a multi-stage sequence with the switch.
+        // use the transfers model to execute asynchronous stages with the switch
+        const model = new OutboundRequestToPayTransferModel({
+            ...ctx.state.conf,
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            wso2Auth: ctx.state.wso2Auth,
+        });
+
+        // TODO: check the incoming body to reject party or quote when requested to do so
+        const data = ctx.request.body;
+        // load the transfer model from cache and start it running again
+        await model.load(ctx.state.path.params.requestToPayTransactionId);
+        let response;
+        if(data.acceptQuote === true || data.acceptOTP === true) {
+            response = await model.run();
+        } else {
+            response = await model.rejectRequestToPay();
+        }
+
+        // return the result
+        ctx.response.status = 200;
+        ctx.response.body = response;
+    }
+    catch(err) {
+        return handleTransferError('putRequestToPayTransfer', err, ctx);
     }
 };
 
@@ -243,5 +310,11 @@ module.exports = {
     },
     '/requestToPay': {
         post: postRequestToPay
-    }
+    },
+    '/requestToPayTransfer': {
+        post: postRequestToPayTransfer
+    },
+    '/requestToPayTransfer/{requestToPayTransactionId}': {
+        put: putRequestToPayTransfer
+    },
 };
