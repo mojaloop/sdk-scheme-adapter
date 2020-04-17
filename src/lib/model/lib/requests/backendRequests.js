@@ -39,6 +39,16 @@ class BackendRequests {
         this.backendEndpoint = `${this.transportScheme}://${config.backendEndpoint}`;
     }
 
+    /**
+     * Executes a GET /otp request for the specified transaction request id
+     *
+     * @returns {object} - JSON response body if one was received
+     */
+    async getOTP(transactionRequestId) {
+        const url = `otp/${transactionRequestId}`;
+        return this._get(url);
+    }
+
 
     /**
      * Executes a GET /parties request for the specified identifier type and identifier

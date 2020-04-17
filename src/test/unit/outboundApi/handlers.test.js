@@ -12,13 +12,15 @@
 
 const mockError = require('./data/mockError');
 const mockRequestToPayError = require('./data/mockRequestToPayError');
+const mockRequestToPayTransferError = require('./data/mockRequestToPayTransferError');
 const transferRequest = require('./data/transferRequest');
 const requestToPayPayload = require('./data/requestToPay');
+const requestToPayTransferRequest = require('./data/requestToPayTransferRequest');
 
 jest.mock('@internal/model');
 
 const handlers = require('../../../OutboundServer/handlers');
-const { OutboundTransfersModel, OutboundRequestToPayModel } = require('@internal/model');
+const { OutboundTransfersModel, OutboundRequestToPayTransferModel, OutboundRequestToPayModel } = require('@internal/model');
 
 /**
  * Mock the outbound transfer model to simulate throwing errors
@@ -28,6 +30,26 @@ OutboundTransfersModel.mockImplementation(() => {
         run: async () => {
             // throw the mockError object when the model is run
             throw mockError;
+        },
+        initialize: async () => {
+            // nothing needed here
+            return;
+        },
+        load: async () => {
+            // nothing needed here
+            return;
+        }
+    };
+});
+
+/**
+ * Mock the outbound transfer model to simulate throwing errors
+ */
+OutboundRequestToPayTransferModel.mockImplementation(() => {
+    return {
+        run: async () => {
+            // throw the mockError object when the model is run
+            throw mockRequestToPayTransferError;
         },
         initialize: async () => {
             // nothing needed here
@@ -79,7 +101,7 @@ describe('Outbound API handlers:', () => {
             };
 
             await handlers['/transfers'].post(mockContext);
-
+            
             // check response is correct
             expect(mockContext.response.status).toEqual(500);
             expect(mockContext.response.body).toBeTruthy();
@@ -117,6 +139,33 @@ describe('Outbound API handlers:', () => {
             // property to come from the extensionList item with the corresponding key 'extErrorKey'
             expect(mockContext.response.body.statusCode).toEqual('9999');
             expect(mockContext.response.body.transferState).toEqual(mockError.transferState);
+        });
+    });
+
+    describe('POST /requestToPayTransfer', () => {
+        test('returns correct error response body when model throws mojaloop error', async () => {
+            const mockContext = {
+                request: {
+                    body: requestToPayTransferRequest,
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    logger: console
+                }
+            };
+
+            await handlers['/requestToPayTransfer'].post(mockContext);
+            // check response is correct
+            expect(mockContext.response.status).toEqual(500);
+            expect(mockContext.response.body).toBeTruthy();
+            expect(mockContext.response.body.message).toEqual('Mock error');
+            expect(mockContext.response.body.statusCode)
+                .toEqual(mockRequestToPayTransferError.requestToPayTransferState.lastError.mojaloopError.errorInformation.errorCode);
+            expect(mockContext.response.body.requestToPayTransferState).toEqual(mockRequestToPayTransferError.requestToPayTransferState);
         });
     });
 

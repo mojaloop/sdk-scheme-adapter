@@ -146,6 +146,42 @@ describe('inboundModel', () => {
 
     });
 
+    describe('authorizations', () => {
+        let model;
+        let cache;
+
+        beforeEach(async () => {
+            BackendRequests.__getOTP = jest.fn().mockReturnValue(Promise.resolve(mockArgs.internalGetOTPResponse));
+
+            cache = new Cache({
+                host: 'dummycachehost',
+                port: 1234,
+                logger,
+            });
+            await cache.connect();
+
+            model = new Model({
+                ...config,
+                cache,
+                logger,
+            });
+        });
+
+        afterEach(async () => {
+            MojaloopRequests.__putAuthorizations.mockClear();
+            await cache.disconnect();
+        });
+
+        test('calls `mojaloopRequests.putAuthorizations` with the expected arguments.', async () => {
+            await model.getAuthorizations('123456', mockTxnReqArgs.fspId);
+            
+            expect(MojaloopRequests.__putAuthorizations).toHaveBeenCalledTimes(1);
+            
+        });
+
+
+    });
+
     describe('transferPrepare:', () => {
         let cache;
 
