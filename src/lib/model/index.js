@@ -13,6 +13,7 @@
 
 const InboundTransfersModel = require('./InboundTransfersModel.js');
 const OutboundTransfersModel = require('./OutboundTransfersModel.js');
+const OutboundRequestToPayTransferModel = require('./OutboundRequestToPayTransferModel.js');
 const AccountsModel = require('./AccountsModel');
 const ProxyModel = require('./ProxyModel');
 const OutboundRequestToPayModel = require('./OutboundRequestToPayModel');
@@ -22,6 +23,7 @@ const { BackendError } = require('./common');
 module.exports = {
     InboundTransfersModel,
     OutboundTransfersModel,
+    OutboundRequestToPayTransferModel,
     AccountsModel,
     ProxyModel,
     BackendError,
