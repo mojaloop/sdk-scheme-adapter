@@ -31,11 +31,6 @@ class ProxyModel {
      */
     constructor(config) {
         this._logger = config.logger;
-
-        //Note that we strip off any path on peerEndpoint config after the origin.
-        //this is to allow proxy routed requests to hit any path on the peer origin
-        //irrespective of any base path on the PEER_ENDPOINT setting
-
         this._requests = new MojaloopRequests({
             logger: this._logger,
             peerEndpoint: config.peerEndpoint,
