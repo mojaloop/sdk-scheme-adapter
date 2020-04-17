@@ -41,7 +41,7 @@ const getAuthorizationsById = async (ctx) => {
             const sourceFspId = ctx.request.headers['fspiop-source'];
 
             // use the model to handle the request
-            const response = await model.getAuthorizations( ctx.state.path.params.ID,sourceFspId);
+            const response = await model.getAuthorizations(ctx.state.path.params.ID, sourceFspId);
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled GET /parties/{idType}/{idValue} request');
