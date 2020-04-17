@@ -25,6 +25,8 @@ const router = require('@internal/router');
 const handlers = require('./handlers');
 const middlewares = require('./middlewares');
 
+const endpointRegex = /\/.*/g;
+
 class OutboundServer {
     constructor(conf) {
         this._conf = conf;
@@ -61,6 +63,7 @@ class OutboundServer {
         if (this._conf.proxyConfig) {
             this._api.use(middlewares.createProxy({
                 ...this._conf,
+                peerEndpoint: this._conf.peerEndpoint.replace(endpointRegex, ''),
                 proxyConfig: this._conf.proxyConfig,
                 logger: this._logger,
                 wso2Auth: this._wso2Auth,

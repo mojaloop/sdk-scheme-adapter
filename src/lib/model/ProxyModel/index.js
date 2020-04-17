@@ -15,8 +15,6 @@ const configSchema = require('./configSchema');
 const util = require('util');
 const Route = require('./Route');
 
-const endpointRegex = /\/.*/g;
-
 /**
  * ProxyModel forwards request to corresponding endpoint based on provided route config
  */
@@ -40,7 +38,7 @@ class ProxyModel {
 
         this._requests = new MojaloopRequests({
             logger: this._logger,
-            peerEndpoint: config.peerEndpoint.replace(endpointRegex, ''),
+            peerEndpoint: config.peerEndpoint,
             dfspId: config.dfspId,
             tls: config.tls,
             jwsSign: config.jwsSign,
