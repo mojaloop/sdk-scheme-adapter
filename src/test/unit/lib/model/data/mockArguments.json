@@ -57,5 +57,8 @@
     "expiration": "2019-11-12T09:02:10.378Z",
     "isValid": 1
   },
+  "internalGetOTPResponse" : {
+    "value": "123456"
+  },
   "fspId": "fake-fsp-id"
 }

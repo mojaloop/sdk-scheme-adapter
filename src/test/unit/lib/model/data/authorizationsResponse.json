@@ -1,0 +1,13 @@
+{
+    "type": "otpResponse",
+    "data": {
+        "authenticationInfo": {
+            "authentication": "OTP",
+            "authenticationValue": "12334567"
+        },
+        "responseType": "ENTERED"
+    },
+    "headers": {
+      "fspiop-source": "foo"
+    }
+}

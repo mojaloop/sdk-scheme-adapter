@@ -99,4 +99,39 @@ describe('Inbound API handlers:', () => {
             expect(transactionRequestSpy.mock.calls[0][1]).toBe(mockTransactionReqContext.request.headers['fspiop-source']);
         });
     });
+
+    describe('GET /authorizations', () => {
+        
+        let mockAuthorizationContext;
+
+        beforeEach(() => {
+            
+            mockAuthorizationContext = {
+                request: {
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    path : {
+                        params : {
+                            'ID': '1234'
+                        }
+                    },
+                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports })
+                }
+            };
+        });
+
+        test('calls `model.authorizations` with the expected arguments.', async () => {
+            const authorizationsSpy = jest.spyOn(Model.prototype, 'getAuthorizations');
+
+            await expect(handlers['/authorizations/{ID}'].get(mockAuthorizationContext)).resolves.toBe(undefined);
+
+            expect(authorizationsSpy).toHaveBeenCalledTimes(1);
+            expect(authorizationsSpy.mock.calls[0][1]).toBe(mockAuthorizationContext.request.headers['fspiop-source']);
+        });
+    });
 });
