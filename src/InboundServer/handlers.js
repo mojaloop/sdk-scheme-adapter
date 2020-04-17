@@ -15,7 +15,7 @@ const Model = require('@internal/model').InboundTransfersModel;
 const { Errors } = require('@mojaloop/sdk-standard-components');
 
 /**
- * Handles a GET /parties/{idType}/{idValue} request
+ * Handles a GET /authorizations/{id} request
  */
 const getAuthorizationsById = async (ctx) => {
     // kick off an asyncronous operation to handle the request
@@ -335,7 +335,7 @@ const postTransactionRequests = async (ctx) => {
 };
 
 /**
- * Handles a PUT /parties/{idType}/{IdValue}. This is a response to a GET /parties
+ * Handles a PUT /authorizations/{id}. This is a response to a GET /authorizations/{ID}
  * request.
  */
 const putAuthorizationsById = async (ctx) => {
