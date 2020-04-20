@@ -29,16 +29,14 @@ ARG VERSION
 
 # See http://label-schema.org/rc1/ for label schema info
 LABEL org.label-schema.schema-version="1.0"
-LABEL org.label-schema.name="finance-portal-ui"
+LABEL org.label-schema.name="sdk-scheme-adapter"
 LABEL org.label-schema.build-date=$BUILD_DATE
 LABEL org.label-schema.vcs-url=$VCS_URL
 LABEL org.label-schema.vcs-ref=$VCS_REF
 LABEL org.label-schema.url="https://mojaloop.io/"
 LABEL org.label-schema.version=$VERSION
 
-WORKDIR /sim/
-
-COPY --from=builder /src/ /sim
+COPY --from=builder /src/ /src
 RUN npm prune --production
 COPY ./src ./src
 COPY ./secrets /
