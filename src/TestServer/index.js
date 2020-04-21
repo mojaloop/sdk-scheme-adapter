@@ -31,7 +31,6 @@ class TestServer {
         this._api = null;
         this._server = null;
         this._logger = null;
-        this._jwsVerificationKeys = {};
     }
 
     async setupApi() {
