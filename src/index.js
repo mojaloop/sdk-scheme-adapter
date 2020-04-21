@@ -58,8 +58,10 @@ class Server {
     }
 
     async _startTestServer() {
-        await this.testServer.setupApi();
-        await this.testServer.start();
+        if (this.conf.testServer.enabled) {
+            await this.testServer.setupApi();
+            await this.testServer.start();
+        }
     }
 
     async _startInboundServer() {
