@@ -58,7 +58,7 @@ class Server {
     }
 
     async _startTestServer() {
-        if (this.conf.testServer.enabled) {
+        if (this.conf.enableTestFeatures) {
             await this.testServer.setupApi();
             await this.testServer.start();
         }
