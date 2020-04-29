@@ -105,9 +105,6 @@ module.exports = {
         clientSecret: env.get('OAUTH_TOKEN_ENDPOINT_CLIENT_SECRET').asString(),
         listenPort: env.get('OAUTH_TOKEN_ENDPOINT_LISTEN_PORT').asPortNumber(),
     },
-    testServer: {
-        enabled: env.get('ENABLE_TEST_SERVER').default('false').asBool(),
-    },
     wso2Auth: {
         staticToken: env.get('WSO2_BEARER_TOKEN').asString(),
         tokenEndpoint: env.get('OAUTH_TOKEN_ENDPOINT').asString(),
