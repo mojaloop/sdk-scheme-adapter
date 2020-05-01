@@ -13,14 +13,14 @@ services:
       context: .
       target: builder
     env_file: ./src/test/config/integration.env
-    volumes: 
+    volumes:
       # - ./src/test:/src/test
       - ./src:/src
       - node_modules:/src/node_modules
     depends_on:
-      - redis 
+      - redis
     command:
       - 'tail -f /dev/null'
-    entrypoint: 
-      - sh 
+    entrypoint:
+      - sh
       - -c
