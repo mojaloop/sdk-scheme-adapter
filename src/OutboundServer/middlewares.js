@@ -87,7 +87,7 @@ const createProxy = (opts) => {
         const response = await proxy.proxyRequest(ctx.request);
         if (response === undefined) {
             // Skip proxying request
-            next();
+            await next();
         } else {
             // return the result
             ctx.response.status = response.statusCode;

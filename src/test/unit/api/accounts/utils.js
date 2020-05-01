@@ -46,6 +46,7 @@ function createPostAccountsTester({ reqInbound, reqOutbound, apiSpecsOutbound })
             send(postAccountsBody).
             then((res) => {
                 const {body} = res;
+                expect(res.statusCode).toEqual(responseCode);
                 expect(body).toEqual(responseBody);
                 const responseValidator = new OpenAPIResponseValidator(
                     apiSpecsOutbound.paths['/accounts'].post);

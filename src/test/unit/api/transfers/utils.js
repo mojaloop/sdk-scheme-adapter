@@ -46,6 +46,7 @@ function createGetTransfersTester({ reqInbound, reqOutbound, apiSpecsOutbound })
 
         await reqOutbound.get(`/transfers/${TRANSFER_ID}`).then((res) => {
             const {body} = res;
+            expect(res.statusCode).toEqual(responseCode);
             expect(body).toEqual(responseBody);
             const responseValidator = new OpenAPIResponseValidator(
                 apiSpecsOutbound.paths['/transfers/{transferId}'].get);
@@ -146,6 +147,7 @@ function createPostTransfersTester(
             send(postTransfersSimpleBody).
             then((res) => {
                 const {body} = res;
+                expect(res.statusCode).toEqual(responseCode);
                 expect(body).toEqual(responseBody);
                 const responseValidator = new OpenAPIResponseValidator(
                     apiSpecsOutbound.paths['/transfers'].post);
