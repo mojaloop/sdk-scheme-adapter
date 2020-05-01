@@ -1,12 +1,16 @@
 ### SDK Proxy Configuration
 
-SDK Proxy allows using the same SDK endpoint for talking to DFSP by Mojaloop API or by DFSP specific (non-standard) REST API.
+The SDK Proxy allows a DFSP to use the same outbound SDK endpoint for talking to a DFSP through the Mojaloop API and to a non-Mojaloop (custom) REST API exposed by the Mojaloop Hub. For example:
+* to issue a Mojaloop transfer request, a DFSP would call: `http://local.sdk-adapter.com:4001/transfers`
+* to issue a request to a custom API, a DFSP would call: `http://local.sdk-adapter.com:4001/customservice`
 
-To be able to connect to custom DFSP API, the API endpoint information should be defined in Proxy configuration YAML file. Also, the environment variable `PROXY_CONFIG_PATH` should be set accordingly to specify a config file location.
+To be able to connect to a custom API, the DFSP must:
 
-Note: Currently, SDK Proxy supports only outbound requests.
+1. Define API endpoint information in a Proxy configuration YAML file.
+2. Specify the location of the configuration file in the environment variable `PROXY_CONFIG_PATH`.
+3. Map the configuration file into the container at runtime.
 
-Configuration file looks like this:
+The configuration file is structured as follows:
 ```yaml
 version: 1.0
 routes:
@@ -39,42 +43,42 @@ routes:
 
 ```
 
-#### Description
+#### Elements of configuration file
 
-* `version` **(required)** - should be set to `1.0`
+* `version` **(required)** - Must be set to `1.0`.
 
-* `routes` **(required)** - should contain an array of Routes - endpoint mappings with corresponding rules:
+* `routes` **(required)** - Must contain an array of routes, that is, endpoint mappings with corresponding forwarding rules.
 
-##### Routes:
+##### Routes
 
-* `description` **(optional)** - user description of Route
+* `description` **(optional)** - User description of route.
 
-* `destination` **(required)** - DFSP path that SDK Proxy should forward requests to
+* `match` **(required)** - Must contain one or more forwarding rules that will be applied to incoming requests.
+A request will be forwarded to the `destination` if **ANY** of the rules match the request.
 
-* `match` **(required)** - should contain one or more forwarding rules that will be applied to incoming requests.
-The requests will be forwarded to `destination` if **ANY** of rules match.
+* `destination` **(required)** - The endpoint that the SDK Proxy should forward requests to.
 
-##### Forwarding rules:
+##### Forwarding rules
 
-All forwarding rules are optional, but there should be at least one defined in `match`.
+There must be at least one forwarding rule defined in `match`, additional rules are optional.
 
-Forwarding rule value can be defined in plain string or as a regular expression.
+A forwarding rule value can be defined as a plain string or a regular expression.
 
-To use a regular expression, the value should be prefixed with tide symbol (`~`) and separated with space, for example:
+When using a regular expression, the value must be prefixed with the tilde symbol (`~`) and a space, for example:
 ```
 ~ customVal.*
 
 ~ ^\/api\/common\/.*\/v1$
 ```
 
-The forwarding rule is accepted as soon as **ALL** of the items inside a forwarding rule will match the corresponding request parameters:
+A forwarding rule is applied by the SDK Proxy when **ALL** of the items inside the rule match the corresponding request parameters (such as an endpoint URL, or HTTP request headers, or query parameters). You can define rules about request parameters using the following elements in the configuration file:
 
-* `path` - used to match URL path
+* `path` - used to match a URL path
 
 * `headers` - array of `name`/`value` pairs used to match HTTP request headers:
     * `name` - HTTP header name
     * `value` - HTTP header value
 
-* `query` - array of `key`/`value` pairs used to match HTTP query params:
+* `query` - array of `key`/`value` pairs used to match HTTP query parameters:
     * `key` - HTTP query key
     * `value` - HTTP query value
