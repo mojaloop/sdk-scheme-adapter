@@ -64,6 +64,7 @@ class TestServer {
     }
 
     async start() {
+        await this._cache.connect();
         if (!this._conf.testingDisableWSO2AuthStart) {
             await this._wso2Auth.start();
         }
@@ -79,6 +80,7 @@ class TestServer {
         }
         await new Promise(resolve => this._server.close(resolve));
         this._wso2Auth.stop();
+        await this._cache.disconnect();
         console.log('api shut down complete');
     }
 
