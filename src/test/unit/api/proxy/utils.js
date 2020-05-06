@@ -1,4 +1,7 @@
 const request = require('request-promise-native');
+const util = require('util');
+const zlib = require('zlib');
+const deflate = util.promisify(zlib.deflate);
 
 const requestBody = require('./data/requestBody');
 const requestHeaders = require('./data/requestHeaders');
@@ -26,8 +29,8 @@ function createProxyTester({ reqOutbound }) {
      *
      * @return {Promise<any>}
      */
-    return async ({sdkUrlPath, switchUrlPath, method, shouldForward, query, headers}) => {
-        const requestSpy = request.mockImplementation((req) => {
+    return async ({sdkUrlPath, switchUrlPath, method, shouldForward, query, headers, gzipped}) => {
+        const requestSpy = request.mockImplementation(async (req) => {
             const urlPath = new URL(req.uri).pathname;
             const receivedParam = new URL(req.uri).search;
             const expectedParam = new URL(`http://example.com${sdkUrlPath}`).search;
@@ -48,12 +51,20 @@ function createProxyTester({ reqOutbound }) {
                 ...requestQuery,
                 ...query,
             });
-            const response = {
-                headers: responseHeaders,
-                body: JSON.stringify(responseBody),
+            let payload = JSON.stringify(responseBody);
+            if (gzipped) {
+                payload = await deflate(payload);
+            }
+            return {
+                headers: {
+                    ...responseHeaders,
+                    ...gzipped && {
+                        'content-encoding': 'gzip',
+                    },
+                },
+                body: payload,
                 statusCode: 200,
             };
-            return Promise.resolve(response);
         });
 
         const res = await reqOutbound[method.toLowerCase()](sdkUrlPath).
