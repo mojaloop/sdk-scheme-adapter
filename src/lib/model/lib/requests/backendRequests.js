@@ -10,10 +10,8 @@
 
 'use strict';
 
-const request = require('request-promise-native');
-
 const http = require('http');
-
+const { request } = require('@mojaloop/sdk-standard-components');
 const { buildUrl, throwOrJson, HTTPResponseError } = require('./common');
 
 
@@ -107,7 +105,7 @@ class BackendRequests {
      * @returns {object} - headers object for use in requests to mojaloop api endpoints
      */
     _buildHeaders () {
-        let headers = {
+        const headers = {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'Date': new Date().toUTCString()
@@ -116,21 +114,19 @@ class BackendRequests {
         return headers;
     }
 
-    async _get(url) {
+    _get(url) {
         const reqOpts = {
             method: 'GET',
             uri: buildUrl(this.backendEndpoint, url),
             headers: this._buildHeaders(),
             agent: this.agent,
-            resolveWithFullResponse: true,
-            simple: false
         };
 
         // Note we do not JWS sign requests with no body i.e. GET requests
 
         try {
             this.logger.push({ reqOpts }).log('Executing HTTP GET');
-            return await request(reqOpts).then(throwOrJson);
+            return request(reqOpts).then(throwOrJson);
         }
         catch (e) {
             this.logger.push({ e }).log('Error attempting HTTP GET');
@@ -139,20 +135,18 @@ class BackendRequests {
     }
 
 
-    async _put(url, body) {
+    _put(url, body) {
         const reqOpts = {
             method: 'PUT',
             uri: buildUrl(this.backendEndpoint, url),
             headers: this._buildHeaders(),
             agent: this.agent,
             body: JSON.stringify(body),
-            resolveWithFullResponse: true,
-            simple: false,
         };
 
         try {
             this.logger.push({ reqOpts }).log('Executing HTTP PUT');
-            return await request(reqOpts).then(throwOrJson);
+            return request(reqOpts).then(throwOrJson);
         }
         catch (e) {
             this.logger.push({ e }).log('Error attempting HTTP PUT');
@@ -161,20 +155,18 @@ class BackendRequests {
     }
 
 
-    async _post(url, body) {
+    _post(url, body) {
         const reqOpts = {
             method: 'POST',
             uri: buildUrl(this.backendEndpoint, url),
             headers: this._buildHeaders(),
             agent: this.agent,
             body: JSON.stringify(body),
-            resolveWithFullResponse: true,
-            simple: false,
         };
 
         try {
             this.logger.push({ reqOpts }).log('Executing HTTP POST');
-            return await request(reqOpts).then(throwOrJson);
+            return request(reqOpts).then(throwOrJson);
         }
         catch (e) {
             this.logger.push({ e }).log('Error attempting POST.');
