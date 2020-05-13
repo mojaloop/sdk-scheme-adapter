@@ -67,6 +67,7 @@ module.exports = {
     alsEndpoint: env.get('ALS_ENDPOINT_HOST').asString(),
     quotesEndpoint: env.get('QUOTES_ENDPOINT').asString(),
     transfersEndpoint: env.get('TRANSFERS_ENDPOINT').asString(),
+    bulkTransfersEndpoint: env.get('BULK_TRANSFERS_ENDPOINT').asString(),
     backendEndpoint: env.get('BACKEND_ENDPOINT').required().asString(),
 
     dfspId: env.get('DFSP_ID').default('mojaloop').asString(),

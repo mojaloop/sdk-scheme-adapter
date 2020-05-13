@@ -2243,8 +2243,8 @@ paths:
       - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
     get:
       description: >-
-        The HTTP request GET /bulkTransfers/ is used to get information
-        regarding an earlier created or requested bulk transfer. The  in the URI
+        The HTTP request GET /bulkTransfers/{ID} is used to get information
+        regarding an earlier created or requested bulk transfer. The ID in the URI
         should contain the bulkTransferId that was used for the creation of the
         bulk transfer.
       summary: BulkTransferByID
@@ -2274,10 +2274,10 @@ paths:
           $ref: '#/components/responses/ErrorResponse503'
     put:
       description: >-
-        The callback PUT /bulkTransfers/ is used to inform the client of a
-        requested or created bulk transfer. The  in the URI should contain the
+        The callback PUT /bulkTransfers/{ID} is used to inform the client of a
+        requested or created bulk transfer. The ID in the URI should contain the
         bulkTransferId that was used for the creation of the bulk transfer (POST
-        /bulkTransfers), or the  that was used in the GET /bulkTransfers/.
+        /bulkTransfers), or the  that was used in the GET /bulkTransfers/{ID}.
       summary: BulkTransfersByIDPut
       tags:
         - bulkTransfers
@@ -2496,6 +2496,7 @@ paths:
           $ref: '#/components/responses/ErrorResponse503'
       requestBody:
         $ref: '#/components/requestBodies/ErrorInformationObject'
+
 components:
   parameters:
     Accept:

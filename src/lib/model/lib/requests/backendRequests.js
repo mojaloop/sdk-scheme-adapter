@@ -100,6 +100,15 @@ class BackendRequests {
         return this._post('transactionrequests', transactionRequest);
     }
 
+    /**
+     * Executes a POST /bulkTransfers request for the specified bulk transfer prepare
+     *
+     * @returns {object} - JSON response body if one was received
+     */
+    async postBulkTransfers(prepare) {
+        return this._post('bulkTransfers', prepare);
+    }
+
 
     /**
      * Utility function for building outgoing request headers as required by the mojaloop api spec

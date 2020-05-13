@@ -597,6 +597,47 @@ const putTransfersByIdError = async (ctx) => {
     ctx.response.body = '';
 };
 
+/**
+ * Handles a POST /bulkTransfers request
+ */
+const postBulkTransfers = async (ctx) => {
+    (async () => {
+        try {
+            if(ctx.state.conf.enableTestFeatures) {
+                // we are in test mode so cache the request
+                const req = {
+                    headers: ctx.request.headers,
+                    data: ctx.request.body
+                };
+                const res = await ctx.state.cache.set(`request_${ctx.request.body.bulkTransferId}`, req);
+                ctx.state.logger.log(`Cacheing request: ${util.inspect(res)}`);
+            }
+
+            // use the transfers model to execute asynchronous stages with the switch
+            const model = new Model({
+                ...ctx.state.conf,
+                cache: ctx.state.cache,
+                logger: ctx.state.logger,
+                wso2Auth: ctx.state.wso2Auth,
+            });
+
+            const sourceFspId = ctx.request.headers['fspiop-source'];
+
+            // use the model to handle the request
+            const response = await model.prepareBulkTransfer(ctx.request.body, sourceFspId);
+
+            // log the result
+            ctx.state.logger.push({ response }).log('Inbound transfers model handled POST /bulkTransfers request');
+        }
+        catch(err) {
+            // nothing we can do if an error gets thrown back to us here apart from log it and continue
+            ctx.state.logger.push({ err }).log('Error handling POST /bulkTransfers');
+        }
+    })();
+
+    ctx.response.status = 202;
+    ctx.response.body = '';
+};
 
 const healthCheck = async(ctx) => {
     ctx.response.status = 200;
@@ -611,6 +652,9 @@ module.exports = {
     '/authorizations/{ID}': {
         get: getAuthorizationsById,
         put: putAuthorizationsById
+    },
+    '/bulkTransfers': {
+        post: postBulkTransfers
     },
     '/participants/{ID}': {
         put: putParticipantsById
