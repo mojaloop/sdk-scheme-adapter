@@ -13,8 +13,6 @@ const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const Ajv = require('ajv');
 const configSchema = require('./configSchema');
 const util = require('util');
-const zlib = require('zlib');
-const inflate = util.promisify(zlib.inflate);
 const Route = require('./Route');
 
 /**
@@ -49,36 +47,21 @@ class ProxyModel {
     }
 
     async _executePostRequest(request) {
-        const res = await this._requests.postCustom(request.url, request.body, request.headers, request.query);
+        const res = await this._requests.postCustom(request.url, request.body, request.headers, request.query, true);
         this._logger.push({ res }).log('POST request sent successfully');
-        return this._processResponse(res);
+        return res;
     }
 
     async _executePutRequest(request) {
-        const res = await this._requests.putCustom(request.url, request.body, request.headers, request.query);
+        const res = await this._requests.putCustom(request.url, request.body, request.headers, request.query, true);
         this._logger.push({ res }).log('PUT request sent successfully');
-        return this._processResponse(res);
+        return res;
     }
 
     async _executeGetRequest(request) {
-        const res = await this._requests.getCustom(request.url, request.headers, request.query);
+        const res = await this._requests.getCustom(request.url, request.headers, request.query, true);
         this._logger.push({ res }).log('GET request sent successfully');
-        return this._processResponse(res);
-    }
-
-    async _processResponse(response) {
-        if(response.headers['content-encoding'] === 'gzip') {
-            const payload = await inflate(response.body);
-            const headers = { ...response.headers };
-            delete headers['content-encoding'];
-            return {
-                ...response,
-                headers,
-                body: payload.toString(),
-            };
-        } else {
-            return response;
-        }
+        return res;
     }
 
     _validateConfig(config) {

@@ -91,7 +91,7 @@ const createProxy = (opts) => {
         } else {
             // return the result
             ctx.response.status = response.statusCode;
-            ctx.response.body = JSON.parse(response.body);
+            ctx.response.body = response.data;
             ctx.set(response.headers);
         }
     };

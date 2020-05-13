@@ -11,7 +11,6 @@
 'use strict';
 
 jest.unmock('@mojaloop/sdk-standard-components');
-jest.mock('request-promise-native');
 jest.mock('redis');
 
 const yaml = require('js-yaml');
@@ -54,7 +53,6 @@ describe('Proxy', () => {
             headers: {},
             switchUrlPath: '/switch-path-test-1',
             shouldForward: true,
-            gzipped: false,
         }));
 
     test('should return success PUT response', async () =>
@@ -65,7 +63,6 @@ describe('Proxy', () => {
             headers: {},
             switchUrlPath: '/switch-path-test-1',
             shouldForward: true,
-            gzipped: false,
         }));
 
     test('should return success GET response', async () =>
@@ -76,7 +73,6 @@ describe('Proxy', () => {
             headers: {},
             switchUrlPath: '/switch-path-test-1',
             shouldForward: true,
-            gzipped: false,
         }));
 
     test('should return error response', async () =>
@@ -87,7 +83,6 @@ describe('Proxy', () => {
             headers: {},
             switchUrlPath: '/switch-path-test-1',
             shouldForward: false,
-            gzipped: false,
         }));
 
     test('should forward by path regexp', async () =>
@@ -98,7 +93,6 @@ describe('Proxy', () => {
             headers: {},
             switchUrlPath: '/switch-path-test-2',
             shouldForward: true,
-            gzipped: false,
         }));
 
     test('should forward by query params', async () =>
@@ -109,7 +103,6 @@ describe('Proxy', () => {
             headers: {},
             switchUrlPath: '/switch-path-test-3-1',
             shouldForward: true,
-            gzipped: false,
         }));
 
     test('should not forward by query params', async () =>
@@ -120,7 +113,6 @@ describe('Proxy', () => {
             headers: {},
             switchUrlPath: '/switch-path-test-3-1',
             shouldForward: false,
-            gzipped: false,
         }));
 
     test('should forward by header params', async () =>
@@ -134,7 +126,6 @@ describe('Proxy', () => {
             },
             switchUrlPath: '/switch-path-test-4',
             shouldForward: true,
-            gzipped: false,
         }));
 
     test('should not forward by header params', async () =>
@@ -147,7 +138,6 @@ describe('Proxy', () => {
             },
             switchUrlPath: '/switch-path-test-4',
             shouldForward: false,
-            gzipped: false,
         }));
 
     test('should forward by header values', async () =>
@@ -161,7 +151,6 @@ describe('Proxy', () => {
             },
             switchUrlPath: '/switch-path-test-5',
             shouldForward: true,
-            gzipped: false,
         }));
 
     test('should forward using multi-match rule (path and headers)', async () =>
@@ -174,7 +163,6 @@ describe('Proxy', () => {
             },
             switchUrlPath: '/switch-path-test-8',
             shouldForward: true,
-            gzipped: false,
         }));
 
     test('should not forward using multi-match rule (wrong headers)', async () =>
@@ -187,7 +175,6 @@ describe('Proxy', () => {
             },
             switchUrlPath: '/switch-path-test-8',
             shouldForward: false,
-            gzipped: false,
         }));
 
     test('should forward using multi-match rule (query)', async () =>
@@ -200,7 +187,6 @@ describe('Proxy', () => {
             },
             switchUrlPath: '/switch-path-test-8',
             shouldForward: true,
-            gzipped: false,
         }));
 
     test('should forward using multi-match rule (headers)', async () =>
@@ -215,10 +201,9 @@ describe('Proxy', () => {
             },
             switchUrlPath: '/switch-path-test-8',
             shouldForward: true,
-            gzipped: false,
         }));
 
-    test('should handle gzip compressed response', async () =>
+    test('should handle binary response', async () =>
         testProxy({
             sdkUrlPath: '/sdk-path-test-8',
             method: 'POST',
@@ -230,6 +215,6 @@ describe('Proxy', () => {
             },
             switchUrlPath: '/switch-path-test-8',
             shouldForward: true,
-            gzipped: true,
+            binary: true,
         }));
 });
