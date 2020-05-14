@@ -11,7 +11,6 @@
 'use strict';
 
 jest.unmock('@mojaloop/sdk-standard-components');
-jest.mock('request-promise-native');
 jest.mock('redis');
 
 const yaml = require('js-yaml');
@@ -198,8 +197,24 @@ describe('Proxy', () => {
             headers: {
                 requiredName: 'no',
                 SomeHKEY82: 'some val',
+                'content-type': 'application/json',
             },
             switchUrlPath: '/switch-path-test-8',
             shouldForward: true,
+        }));
+
+    test('should handle binary response', async () =>
+        testProxy({
+            sdkUrlPath: '/sdk-path-test-8',
+            method: 'POST',
+            query: { customQkey81Unknown: 'some qval' },
+            headers: {
+                requiredName: 'no',
+                SomeHKEY82: 'some val',
+                'content-type': 'application/json',
+            },
+            switchUrlPath: '/switch-path-test-8',
+            shouldForward: true,
+            binary: true,
         }));
 });

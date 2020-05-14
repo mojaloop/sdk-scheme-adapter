@@ -8,7 +8,7 @@
  *       Yevhen Kyriukha - yevhen.kyriukha@modusbox.com                   *
  **************************************************************************/
 
-const StateMachine = require.requireActual('javascript-state-machine');
+const StateMachine = jest.requireActual('javascript-state-machine');
 
 
 class MockStateMachine extends StateMachine {
