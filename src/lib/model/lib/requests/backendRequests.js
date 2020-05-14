@@ -119,14 +119,13 @@ class BackendRequests {
             method: 'GET',
             uri: buildUrl(this.backendEndpoint, url),
             headers: this._buildHeaders(),
-            agent: this.agent,
         };
 
         // Note we do not JWS sign requests with no body i.e. GET requests
 
         try {
             this.logger.push({ reqOpts }).log('Executing HTTP GET');
-            return request(reqOpts).then(throwOrJson);
+            return request({...reqOpts, agent: this.agent}).then(throwOrJson);
         }
         catch (e) {
             this.logger.push({ e }).log('Error attempting HTTP GET');
@@ -140,13 +139,12 @@ class BackendRequests {
             method: 'PUT',
             uri: buildUrl(this.backendEndpoint, url),
             headers: this._buildHeaders(),
-            agent: this.agent,
             body: JSON.stringify(body),
         };
 
         try {
             this.logger.push({ reqOpts }).log('Executing HTTP PUT');
-            return request(reqOpts).then(throwOrJson);
+            return request({...reqOpts, agent: this.agent}).then(throwOrJson);
         }
         catch (e) {
             this.logger.push({ e }).log('Error attempting HTTP PUT');
@@ -160,13 +158,12 @@ class BackendRequests {
             method: 'POST',
             uri: buildUrl(this.backendEndpoint, url),
             headers: this._buildHeaders(),
-            agent: this.agent,
             body: JSON.stringify(body),
         };
 
         try {
             this.logger.push({ reqOpts }).log('Executing HTTP POST');
-            return request(reqOpts).then(throwOrJson);
+            return request({...reqOpts, agent: this.agent}).then(throwOrJson);
         }
         catch (e) {
             this.logger.push({ e }).log('Error attempting POST.');
