@@ -93,7 +93,6 @@ const getParticipantsByTypeAndId = async (ctx) => {
     ctx.response.body = '';
 };
 
-
 /**
  * Handles a GET /parties/{idType}/{idValue} request
  */
@@ -139,7 +138,6 @@ const getPartiesByTypeAndId = async (ctx) => {
     ctx.response.body = '';
 };
 
-
 /**
  * Handles a POST /parties/{idType}/{idValue} request
  */
@@ -148,7 +146,6 @@ const postPartiesByTypeAndId = (ctx) => {
     ctx.response.status = 501;
     ctx.response.body = '';
 };
-
 
 /**
  * Handles a POST /quotes request
@@ -194,7 +191,6 @@ const postQuotes = async (ctx) => {
     ctx.response.status = 202;
     ctx.response.body = '';
 };
-
 
 /**
  * Handles a POST /transfers request
@@ -384,7 +380,6 @@ const putParticipantsById = async (ctx) => {
     ctx.response.status = 200;
 };
 
-
 /**
  * Handles a PUT /participants/{ID}/error. This is an error response to a POST /participants request
  */
@@ -409,7 +404,6 @@ const putParticipantsByIdError = async (ctx) => {
     ctx.response.body = '';
 };
 
-
 /**
  * Handles a PUT /participants/{idType}/{idValue} request
  */
@@ -418,7 +412,6 @@ const putParticipantsByTypeAndId = async (ctx) => {
     ctx.response.status = 501;
     ctx.response.body = '';
 };
-
 
 /**
  * Handles a PUT /parties/{idType}/{IdValue}. This is a response to a GET /parties
@@ -444,7 +437,6 @@ const putPartiesByTypeAndId = async (ctx) => {
     await ctx.state.cache.publish(cacheId, ctx.request.body);
     ctx.response.status = 200;
 };
-
 
 /**
  * Handles a PUT /quotes/{ID}. This is a response to a POST /quotes request
@@ -517,7 +509,6 @@ const putTransfersById = async (ctx) => {
     ctx.response.status = 200;
 };
 
-
 /**
  * Handles a PUT /parties/{Type}/{ID}/error request. This is an error response to a GET /parties/{Type}/{ID} request
  */
@@ -547,7 +538,6 @@ const putPartiesByTypeAndIdError = async(ctx) => {
     ctx.response.body = '';
 };
 
-
 /**
  * Handles a PUT /quotes/{ID}/error request. This is an error response to a POST /quotes request
  */
@@ -572,7 +562,6 @@ const putQuotesByIdError = async(ctx) => {
     ctx.response.body = '';
 };
 
-
 /**
  * Handles a PUT /transfers/{ID}/error. This is an error response to a POST /transfers request
  */
@@ -590,6 +579,96 @@ const putTransfersByIdError = async (ctx) => {
     // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(`tf_${ctx.state.path.params.ID}`, {
         type: 'transferError',
+        data: ctx.request.body
+    });
+
+    ctx.response.status = 200;
+    ctx.response.body = '';
+};
+
+/**
+ * Handles a POST /bulkQuotes request
+ */
+const postBulkQuotes = async (ctx) => {
+    (async () => {
+        try {
+            if(ctx.state.conf.enableTestFeatures) {
+                // we are in test mode so cache the request
+                const req = {
+                    headers: ctx.request.headers,
+                    data: ctx.request.body
+                };
+                const res = await ctx.state.cache.set(`request_${ctx.request.body.bulkQuoteId}`, req);
+                ctx.state.logger.log(`Cacheing request: ${util.inspect(res)}`);
+            }
+
+            // use the transfers model to execute asynchronous stages with the switch
+            const model = new Model({
+                ...ctx.state.conf,
+                cache: ctx.state.cache,
+                logger: ctx.state.logger,
+                wso2Auth: ctx.state.wso2Auth,
+            });
+
+            const sourceFspId = ctx.request.headers['fspiop-source'];
+
+            // use the model to handle the request
+            const response = await model.bulkQuotesRequest(ctx.request.body, sourceFspId);
+
+            // log the result
+            ctx.state.logger.push({ response }).log('Inbound transfers model handled POST /bulkQuotes request');
+        }
+        catch(err) {
+            // nothing we can do if an error gets thrown back to us here apart from log it and continue
+            ctx.state.logger.push({ err }).log('Error handling POST /bulkQuotes');
+        }
+    })();
+
+    ctx.response.status = 202;
+    ctx.response.body = '';
+};
+
+/**
+ * Handles a PUT /bulkQuotes/{ID}. This is a response to a POST /bulkQuotes request
+ */
+const putBulkQuotesById = async (ctx) => {
+    if(ctx.state.conf.enableTestFeatures) {
+        // we are in test mode so cache the request
+        const req = {
+            headers: ctx.request.headers,
+            data: ctx.request.body
+        };
+        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        ctx.state.logger.log(`Cacheing callback: ${util.inspect(res)}`);
+    }
+
+    // publish an event onto the cache for subscribers to action
+    await ctx.state.cache.publish(`bulkQuote_${ctx.state.path.params.ID}`, {
+        type: 'bulkQuoteResponse',
+        data: ctx.request.body,
+        headers: ctx.request.headers
+    });
+
+    ctx.response.status = 200;
+};
+
+/**
+ * Handles a PUT /bulkQuotes/{ID}/error request. This is an error response to a POST /bulkQuotes request
+ */
+const putBulkQuotesByIdError = async(ctx) => {
+    if(ctx.state.conf.enableTestFeatures) {
+        // we are in test mode so cache the request
+        const req = {
+            headers: ctx.request.headers,
+            data: ctx.request.body
+        };
+        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        ctx.state.logger.log(`Cacheing callback: ${util.inspect(res)}`);
+    }
+
+    // publish an event onto the cache for subscribers to action
+    await ctx.state.cache.publish(`bulkQuote_${ctx.state.path.params.ID}`, {
+        type: 'bulkQuoteResponseError',
         data: ctx.request.body
     });
 
@@ -644,7 +723,6 @@ const healthCheck = async(ctx) => {
     ctx.response.body = '';
 };
 
-
 module.exports = {
     '/': {
         get: healthCheck
@@ -652,6 +730,15 @@ module.exports = {
     '/authorizations/{ID}': {
         get: getAuthorizationsById,
         put: putAuthorizationsById
+    },
+    '/bulkQuotes': {
+        post: postBulkQuotes
+    },
+    '/bulkQuotes/{ID}': {
+        put: putBulkQuotesById
+    },
+    '/bulkQuotes/{ID}/error': {
+        put: putBulkQuotesByIdError
     },
     '/bulkTransfers': {
         post: postBulkTransfers

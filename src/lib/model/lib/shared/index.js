@@ -275,6 +275,107 @@ const mojaloopTransactionRequestToInternal = (external) => {
     return internal;
 };
 
+/**
+ * Projects a Mojaloop API spec bulk quote request to internal form
+ *
+ * @returns {object} - the internal form bulk quote request
+ */
+const mojaloopBulkQuotesRequestToInternal = (external) => {
+    const internal = {
+        bulkQuoteId: external.bulkQuoteId,
+        from: mojaloopPartyToInternalParty(external.payer),
+    };
+
+    if(external.geoCode) {
+        internal.geoCode = external.geoCode;
+    }
+
+    if(external.expiration) {
+        internal.expiration = external.expiration;
+    }
+
+    if(external.extensionList) {
+        internal.extensionList = external.extensionList.extension;
+    }
+
+    const internalIndividualQuotes = external.individualQuotes.map(quote => {
+        const internalQuote = {
+            quoteId: quote.quoteId,
+            transactionId: quote.transactionId,
+            to: mojaloopPartyToInternalParty(quote.payee),
+            amountType: quote.amountType,
+            amount: quote.amount.amount,
+            currency: quote.amount.currency,
+            transactionType: quote.transactionType.scenario,
+            initiator: quote.transactionType.initiator,
+            initiatorType: quote.transactionType.initiatorType
+        };
+
+        if(quote.fees) {
+            internal.feesAmount = quote.fees.amount;
+            internal.feesCurrency = quote.fees.currency;
+        }
+    
+        if(quote.geoCode) {
+            internal.geoCode = quote.geoCode;
+        }
+    
+        if(quote.note) {
+            internal.note = quote.note;
+        }
+    
+        return internalQuote;
+    });
+
+    internal.individualQuotes = internalIndividualQuotes;
+
+    return internal;
+};
+
+// TODO: Adapt to bulk quotes
+/**
+ * Converts an internal bulk quotes response to mojaloop form
+ *
+ * @returns {object}
+ */
+const internalBulkQuotesResponseToMojaloop = (internal) => {
+    const external = {
+        transferAmount: {
+            amount: internal.transferAmount,
+            currency: internal.transferAmountCurrency
+        },
+        expiration: internal.expiration,
+        ilpPacket: internal.ilpPacket,
+        condition: internal.ilpCondition
+    };
+
+    if(internal.payeeReceiveAmount) {
+        external.payeeReceiveAmount = {
+            amount: internal.payeeReceiveAmount,
+            currency: internal.payeeReceiveAmountCurrency
+        };
+    }
+
+    if(internal.payeeFspFeeAmount) {
+        external.payeeFspFee = {
+            amount: internal.payeeFspFeeAmount,
+            currency: internal.payeeFspFeeAmountCurrency
+        };
+    }
+
+    if(internal.payeeFspCommissionAmount) {
+        external.payeeFspCommission = {
+            amount: internal.payeeFspCommissionAmount,
+            currency: internal.payeeFspCommissionAmountCurrency
+        };
+    }
+
+    if(internal.geoCode) {
+        external.geoCode = internal.geoCode;
+    }
+
+    return external;
+};
 
 module.exports = {
     internalPartyToMojaloopParty,
@@ -284,5 +385,7 @@ module.exports = {
     mojaloopPartyIdInfoToInternalPartyIdInfo,
     mojaloopQuoteRequestToInternal,
     mojaloopPrepareToInternalTransfer,
-    mojaloopTransactionRequestToInternal
+    mojaloopTransactionRequestToInternal,
+    mojaloopBulkQuotesRequestToInternal,
+    internalBulkQuotesResponseToMojaloop,
 };

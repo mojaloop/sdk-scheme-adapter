@@ -554,7 +554,7 @@ paths:
           $ref: '#/components/responses/ErrorResponse501'
         '503':
           $ref: '#/components/responses/ErrorResponse503'
-  /participants:
+  '/participants':
     post:
       description: >-
         The HTTP request POST /participants is used to create information in the
@@ -1057,7 +1057,7 @@ paths:
             schema:
               $ref: '#/components/schemas/TransactionRequestsIDPutResponse'
         required: true
-  /transactionRequests:
+  '/transactionRequests':
     post:
       description: >-
         The HTTP request POST /transactionRequests is used to request the
@@ -1311,7 +1311,7 @@ paths:
             schema:
               $ref: '#/components/schemas/QuotesIDPutResponse'
         required: true
-  /quotes:
+  '/quotes':
     post:
       description: >-
         The HTTP request POST /quotes is used to request the creation of a quote
@@ -1717,7 +1717,7 @@ paths:
           $ref: '#/components/responses/ErrorResponse503'
       requestBody:
         $ref: '#/components/requestBodies/ErrorInformationObject'
-  /transfers:
+  '/transfers':
     post:
       description: >-
         The HTTP request POST /transfers is used to request the creation of a
@@ -2116,7 +2116,7 @@ paths:
             schema:
               $ref: '#/components/schemas/BulkQuotesIDPutResponse'
         required: true
-  /bulkQuotes:
+  '/bulkQuotes':
     post:
       description: >-
         The HTTP request POST /bulkQuotes is used to request the creation of a
@@ -2354,7 +2354,7 @@ paths:
             schema:
               $ref: '#/components/schemas/BulkTransfersIDPutResponse'
         required: true
-  /bulkTransfers:
+  '/bulkTransfers':
     post:
       description: >-
         The HTTP request POST /bulkTransfers is used to request the creation of
@@ -4425,4 +4425,3 @@ components:
           description: 'Optional extension, specific to deployment.'
       required:
         - transferState
-  

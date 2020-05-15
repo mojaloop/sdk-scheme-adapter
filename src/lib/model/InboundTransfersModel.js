@@ -93,7 +93,6 @@ class InboundTransfersModel {
         }
     }
 
-
     /**
      * Queries the backend API for the specified party and makes a callback to the originator with our dfspId if found
      */
@@ -118,7 +117,6 @@ class InboundTransfersModel {
                 mojaloopError, sourceFspId);
         }
     }
-
 
     /**
      * Queries the backend API for the specified party and makes a callback to the originator with the result
@@ -286,7 +284,6 @@ class InboundTransfersModel {
         }
     }
 
-
     /**
      * Validates  an incoming transfer prepare request and makes a callback to the originator with
      * the result
@@ -366,6 +363,63 @@ class InboundTransfersModel {
             const mojaloopError = await this._handleError(err);
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
             return await this._mojaloopRequests.putTransfersError(prepareRequest.transferId,
+                mojaloopError, sourceFspId);
+        }
+    }
+
+    /**
+     * Asks the backend for a response to an incoming bulk quotes request and makes a callback to the originator with
+     * the results.
+     */
+    async bulkQuotesRequest(bulkQuoteRequest, sourceFspId) {
+        try {
+            const internalForm = shared.mojaloopBulkQuotesRequestToInternal(bulkQuoteRequest);
+
+            // make a call to the backend to ask for bulk quotes response
+            const response = await this._backendRequests.postBulkQuotesRequests(internalForm);
+
+            if (!response) {
+                // make an error callback to the source fsp
+                return 'No response from backend';
+            }
+
+            if (!response.expiration) {
+                const expiration = new Date().getTime() + (this._expirySeconds * 1000);
+                response.expiration = new Date(expiration).toISOString();
+            }
+
+            // TODO: Implement `internalBulkQuoteResponseToMojaloop`
+            // project our internal bulk quotes response into mojaloop bulk quotes response form
+            const mojaloopResponse = shared.internalBulkQuoteResponseToMojaloop(response);
+
+            // TODO: Implement `getBulkQuotesResponseIlp`
+            // create our ILP packet and condition and tag them on to our internal quote response
+            const { fulfilment, ilpPacket, condition } = this._ilp.getBulkQuotesResponseIlp(bulkQuoteRequest, mojaloopResponse);
+
+            // TODO: Adapt to handle multiple quotes reponses
+            mojaloopResponse.ilpPacket = ilpPacket;
+            mojaloopResponse.condition = condition;
+
+            // TODO: Adapt to handle multiple quotes responses/fulfillment
+            // now store the fulfilments and the quotes data against the bulkQuoteId in our cache
+            await this._cache.set(`bulkQuotes_${bulkQuoteRequest.bulkQuoteId}`, {
+                request: bulkQuoteRequest,
+                internalRequest: internalForm,
+                response: response,
+                mojaloopResponse: mojaloopResponse,
+                fulfilment: fulfilment
+            });
+
+            // TODO: Implement `mojaloopRequests.putBulkQuotes`
+            // make a callback to the source fsp with the quote response
+            return this._mojaloopRequests.putQuotes(bulkQuoteRequest.quoteId, mojaloopResponse, sourceFspId);
+        }
+        catch (err) {
+            this._logger.push({ err }).log('Error in bulkQuotesRequest');
+            const mojaloopError = await this._handleError(err);
+            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            // TODO: Implement `putBulkQuotesError
+            return await this._mojaloopRequests.putBulkQuotesError(bulkQuoteRequest.bulkQuoteId,
                 mojaloopError, sourceFspId);
         }
     }

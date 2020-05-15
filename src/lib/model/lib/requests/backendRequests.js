@@ -49,7 +49,6 @@ class BackendRequests {
         return this._get(url);
     }
 
-
     /**
      * Executes a GET /parties request for the specified identifier type and identifier
      *
@@ -71,7 +70,6 @@ class BackendRequests {
         return this._get(url);
     }
 
-
     /**
      * Executes a POST /quotes request for the specified quote request
      *
@@ -80,7 +78,6 @@ class BackendRequests {
     async postQuoteRequests(quoteRequest) {
         return this._post('quoterequests', quoteRequest);
     }
-
 
     /**
      * Executes a POST /transfers request for the specified transfer prepare
@@ -101,14 +98,22 @@ class BackendRequests {
     }
 
     /**
+     * Executes a POST /bulkQuotes request for the specified bulk quotes request
+     *
+     * @returns {object} - JSON response body if one was received
+     */
+    async postBulkQuotesRequests(bulkQuoteRequest) {
+        return this._post('bulkquotesrequests', bulkQuoteRequest);
+    }
+
+    /**
      * Executes a POST /bulkTransfers request for the specified bulk transfer prepare
      *
      * @returns {object} - JSON response body if one was received
      */
     async postBulkTransfers(prepare) {
-        return this._post('bulkTransfers', prepare);
+        return this._post('bulktransfers', prepare);
     }
-
 
     /**
      * Utility function for building outgoing request headers as required by the mojaloop api spec
@@ -147,7 +152,6 @@ class BackendRequests {
         }
     }
 
-
     async _put(url, body) {
         const reqOpts = {
             method: 'PUT',
@@ -168,7 +172,6 @@ class BackendRequests {
             throw e;
         }
     }
-
 
     async _post(url, body) {
         const reqOpts = {
