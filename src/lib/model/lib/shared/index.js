@@ -339,36 +339,43 @@ const mojaloopBulkQuotesRequestToInternal = (external) => {
  * @returns {object}
  */
 const internalBulkQuotesResponseToMojaloop = (internal) => {
+    const individualQuoteResults = internal.individualQuotes.map((quote) => {
+        const externalQuote = {
+            transferAmount: {
+                amount: quote.transferAmount,
+                currency: quote.transferAmountCurrency,
+            },
+            ilpPacket: quote.ilpPacket,
+            condition: quote.ilpCondition
+        };
+
+        if(quote.payeeReceiveAmount) {
+            externalQuote.payeeReceiveAmount = {
+                amount: quote.payeeReceiveAmount,
+                currency: quote.payeeReceiveAmountCurrency
+            };
+        }
+
+        if(quote.payeeFspFeeAmount) {
+            externalQuote.payeeFspFee = {
+                amount: quote.payeeFspFeeAmount,
+                currency: quote.payeeFspFeeAmountCurrency
+            };
+        }
+
+        if(quote.payeeFspCommissionAmount) {
+            externalQuote.payeeFspCommission = {
+                amount: quote.payeeFspCommissionAmount,
+                currency: quote.payeeFspCommissionAmountCurrency
+            };
+        }
+
+        return externalQuote;
+    });
     const external = {
-        transferAmount: {
-            amount: internal.transferAmount,
-            currency: internal.transferAmountCurrency
-        },
+        individualQuoteResults,
         expiration: internal.expiration,
-        ilpPacket: internal.ilpPacket,
-        condition: internal.ilpCondition
     };
-
-    if(internal.payeeReceiveAmount) {
-        external.payeeReceiveAmount = {
-            amount: internal.payeeReceiveAmount,
-            currency: internal.payeeReceiveAmountCurrency
-        };
-    }
-
-    if(internal.payeeFspFeeAmount) {
-        external.payeeFspFee = {
-            amount: internal.payeeFspFeeAmount,
-            currency: internal.payeeFspFeeAmountCurrency
-        };
-    }
-
-    if(internal.payeeFspCommissionAmount) {
-        external.payeeFspCommission = {
-            amount: internal.payeeFspCommissionAmount,
-            currency: internal.payeeFspCommissionAmountCurrency
-        };
-    }
 
     if(internal.geoCode) {
         external.geoCode = internal.geoCode;

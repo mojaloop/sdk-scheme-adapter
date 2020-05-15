@@ -102,8 +102,8 @@ class BackendRequests {
      *
      * @returns {object} - JSON response body if one was received
      */
-    async postBulkQuotesRequests(bulkQuoteRequest) {
-        return this._post('bulkquotesrequests', bulkQuoteRequest);
+    async postBulkQuotesRequests(bulkQuotesRequest) {
+        return this._post('bulkQuotes', bulkQuotesRequest);
     }
 
     /**

@@ -372,6 +372,8 @@ class InboundTransfersModel {
      * the results.
      */
     async bulkQuotesRequest(bulkQuoteRequest, sourceFspId) {
+        const { bulkQuoteId } = bulkQuoteRequest;
+        const fulfilments = [];
         try {
             const internalForm = shared.mojaloopBulkQuotesRequestToInternal(bulkQuoteRequest);
 
@@ -388,38 +390,50 @@ class InboundTransfersModel {
                 response.expiration = new Date(expiration).toISOString();
             }
 
-            // TODO: Implement `internalBulkQuoteResponseToMojaloop`
             // project our internal bulk quotes response into mojaloop bulk quotes response form
-            const mojaloopResponse = shared.internalBulkQuoteResponseToMojaloop(response);
+            const mojaloopResponse = shared.internalBulkQuotesResponseToMojaloop(response);
 
-            // TODO: Implement `getBulkQuotesResponseIlp`
             // create our ILP packet and condition and tag them on to our internal quote response
-            const { fulfilment, ilpPacket, condition } = this._ilp.getBulkQuotesResponseIlp(bulkQuoteRequest, mojaloopResponse);
-
-            // TODO: Adapt to handle multiple quotes reponses
-            mojaloopResponse.ilpPacket = ilpPacket;
-            mojaloopResponse.condition = condition;
-
-            // TODO: Adapt to handle multiple quotes responses/fulfillment
-            // now store the fulfilments and the quotes data against the bulkQuoteId in our cache
-            await this._cache.set(`bulkQuotes_${bulkQuoteRequest.bulkQuoteId}`, {
-                request: bulkQuoteRequest,
-                internalRequest: internalForm,
-                response: response,
-                mojaloopResponse: mojaloopResponse,
-                fulfilment: fulfilment
+            bulkQuoteRequest.individualQuotes.map((quote) => {
+                const quoteRequest = {
+                    transactionId: quote.transactionId,
+                    quoteId: quote.quoteId,
+                    payee: quote.payee,
+                    payer: bulkQuoteRequest.payer,
+                    transactionType: quote.transactionType,
+                };
+                const mojaloopQuoteResult = mojaloopResponse.individualQuoteResults.find(
+                    (quoteResult) => quoteResult.quoteId === quote.quoteId
+                );
+                const quoteResponse = {
+                    amount: mojaloopQuoteResult.transferAmount,
+                    note: mojaloopQuoteResult.note || '',
+                };
+                const { fulfilment, ilpPacket, condition } = this._ilp.getQuoteResponseIlp(
+                    quoteRequest, quoteResponse);
+                mojaloopQuoteResult.ilpPacket = ilpPacket;
+                mojaloopQuoteResult.condition = condition;
+                fulfilments.push({quoteId: quote.quoteId, fulfilment});
             });
 
-            // TODO: Implement `mojaloopRequests.putBulkQuotes`
+            // now store the fulfilments and the bulk quotes data against the bulkQuoteId in our cache
+            await this._cache.set(`bulkQuotes_${bulkQuoteId}`, {
+                request: bulkQuoteRequest,
+                internalRequest: internalForm,
+                mojaloopResponse: mojaloopResponse,
+                response,
+                fulfilments
+            });
+
             // make a callback to the source fsp with the quote response
-            return this._mojaloopRequests.putQuotes(bulkQuoteRequest.quoteId, mojaloopResponse, sourceFspId);
+            return this._mojaloopRequests.putBulkQuotes(bulkQuoteId, mojaloopResponse, sourceFspId);
         }
         catch (err) {
             this._logger.push({ err }).log('Error in bulkQuotesRequest');
             const mojaloopError = await this._handleError(err);
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
             // TODO: Implement `putBulkQuotesError
-            return await this._mojaloopRequests.putBulkQuotesError(bulkQuoteRequest.bulkQuoteId,
+            return await this._mojaloopRequests.putBulkQuotesError(bulkQuoteId,
                 mojaloopError, sourceFspId);
         }
     }
