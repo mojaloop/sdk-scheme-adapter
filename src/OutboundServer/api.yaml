@@ -1085,6 +1085,23 @@ components:
         fulfil:
           $ref: '#/components/schemas/transferFulfilment'
 
+    bulkTransferStatusResponse:
+      type: object
+      required:
+        - bulkTransferId
+        - currentState
+        - fulfilments
+      properties:
+        bulkTransferId:
+          $ref: '#/components/schemas/mojaloopIdentifier'
+        currentState:
+          $ref: '#/components/schemas/transferStatus'
+        fulfilments:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/individualTansferFulfilment'
+
     quote:
       type: object
       description: Mojaloop API response to a quote request
@@ -1150,6 +1167,19 @@ components:
       required:
         - transferState
 
+    individualTransferFulfilment:
+      type: object
+      description: A Mojaloop API transfer fulfilment for individual transfers in a bulk transfer
+      properties:
+        fulfilment:
+          $ref: '#/components/schemas/ilpFulfilment'
+          description: >
+            Fulfilment of the condition specified with the transaction.
+            Mandatory if transfer has completed successfully.
+        extensionList:
+          $ref: '#/components/schemas/extensionListComplex'
+          description: 'Optional extension, specific to deployment.'
+    
     mojaloopTransferState:
       type: string
       enum:
