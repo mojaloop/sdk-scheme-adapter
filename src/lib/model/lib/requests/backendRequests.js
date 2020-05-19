@@ -116,6 +116,16 @@ class BackendRequests {
     }
 
     /**
+     * Executes a GET /bulkTransfers/{ID} request for the specified bulk transfer ID
+     *
+     * @returns {object} - JSON response body if one was received
+     */
+    async getBulkTransfers(bulkTransferId) {
+        const url = `bulkTransfers/${bulkTransferId}`;
+        return this._get(url);
+    }
+
+    /**
      * Utility function for building outgoing request headers as required by the mojaloop api spec
      *
      * @returns {object} - headers object for use in requests to mojaloop api endpoints

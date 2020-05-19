@@ -10,6 +10,8 @@
 
 'use strict';
 
+const { Ilp } = require('@mojaloop/sdk-standard-components');
+
 
 /**
  * Build a quote party object from an outgoing transfer API party
@@ -25,7 +27,7 @@ const internalPartyToMojaloopParty = (internal, fspId) => {
             fspId: fspId
         }
     };
-    
+
     if (internal.extensionList) {
         party.partyIdInfo.extensionList = {
             extension: internal.extensionList
@@ -34,22 +36,22 @@ const internalPartyToMojaloopParty = (internal, fspId) => {
 
     const hasComplexName = !!(internal.firstName || internal.middleName || internal.lastName);
 
-    if(hasComplexName || internal.dateOfBirth) {
+    if (hasComplexName || internal.dateOfBirth) {
         party.personalInfo = {};
     }
 
-    if(hasComplexName) {
+    if (hasComplexName) {
         party.personalInfo.complexName = {};
     }
 
-    if(internal.displayName) { party.name = internal.displayName; }
-    if(internal.firstName) { party.personalInfo.complexName.firstName = internal.firstName; }
-    if(internal.middleName) { party.personalInfo.complexName.middleName = internal.middleName; }
-    if(internal.lastName) { party.personalInfo.complexName.lastName = internal.lastName; }
+    if (internal.displayName) { party.name = internal.displayName; }
+    if (internal.firstName) { party.personalInfo.complexName.firstName = internal.firstName; }
+    if (internal.middleName) { party.personalInfo.complexName.middleName = internal.middleName; }
+    if (internal.lastName) { party.personalInfo.complexName.lastName = internal.lastName; }
 
-    if(internal.dateOfBirth) { party.personalInfo.dateOfBirth = internal.dateOfBirth; }
+    if (internal.dateOfBirth) { party.personalInfo.dateOfBirth = internal.dateOfBirth; }
 
-    if(typeof(internal.merchantClassificationCode) !== 'undefined') {
+    if (typeof (internal.merchantClassificationCode) !== 'undefined') {
         party.merchantClassificationCode = internal.merchantClassificationCode;
     }
 
@@ -65,32 +67,32 @@ const internalPartyToMojaloopParty = (internal, fspId) => {
 const mojaloopPartyToInternalParty = (external) => {
     const internal = {};
 
-    if(external.partyIdInfo) {
+    if (external.partyIdInfo) {
         internal.idType = external.partyIdInfo.partyIdType;
         internal.idValue = external.partyIdInfo.partyIdentifier;
         internal.idSubValue = external.partyIdInfo.partySubIdOrType;
         // Note: we dont map fspid to internal transferParty object
-        if(external.partyIdInfo.extensionList){
+        if (external.partyIdInfo.extensionList) {
             internal.extensionList = external.partyIdInfo.extensionList.extension;
         }
     }
 
-    if(external.name) {
+    if (external.name) {
         internal.displayName = external.name;
     }
 
-    if(external.personalInfo) {
-        if(external.personalInfo.dateOfBirth) {
+    if (external.personalInfo) {
+        if (external.personalInfo.dateOfBirth) {
             internal.dateOfBirth = external.personalInfo.dateOfBirth;
         }
-        if(external.personalInfo.complexName) {
-            if(external.personalInfo.complexName.firstName) {
+        if (external.personalInfo.complexName) {
+            if (external.personalInfo.complexName.firstName) {
                 internal.firstName = external.personalInfo.complexName.firstName;
             }
-            if(external.personalInfo.complexName.middleName) {
+            if (external.personalInfo.complexName.middleName) {
                 internal.middleName = external.personalInfo.complexName.middleName;
             }
-            if(external.personalInfo.complexName.lastName) {
+            if (external.personalInfo.complexName.lastName) {
                 internal.lastName = external.personalInfo.complexName.lastName;
             }
         }
@@ -133,20 +135,20 @@ const mojaloopQuoteRequestToInternal = (external) => {
         initiatorType: external.transactionType.initiatorType
     };
 
-    if(external.fees) {
+    if (external.fees) {
         internal.feesAmount = external.fees.amount;
         internal.feesCurrency = external.fees.currency;
     }
 
-    if(external.geoCode) {
+    if (external.geoCode) {
         internal.geoCode = external.geoCode;
     }
 
-    if(external.note) {
+    if (external.note) {
         internal.note = external.note;
     }
 
-    if(external.expiration) {
+    if (external.expiration) {
         internal.expiration = external.expiration;
     }
 
@@ -170,28 +172,28 @@ const internalQuoteResponseToMojaloop = (internal) => {
         condition: internal.ilpCondition
     };
 
-    if(internal.payeeReceiveAmount) {
+    if (internal.payeeReceiveAmount) {
         external.payeeReceiveAmount = {
             amount: internal.payeeReceiveAmount,
             currency: internal.payeeReceiveAmountCurrency
         };
     }
 
-    if(internal.payeeFspFeeAmount) {
+    if (internal.payeeFspFeeAmount) {
         external.payeeFspFee = {
             amount: internal.payeeFspFeeAmount,
             currency: internal.payeeFspFeeAmountCurrency
         };
     }
 
-    if(internal.payeeFspCommissionAmount) {
+    if (internal.payeeFspCommissionAmount) {
         external.payeeFspCommission = {
             amount: internal.payeeFspCommissionAmount,
             currency: internal.payeeFspCommissionAmountCurrency
         };
     }
 
-    if(internal.geoCode) {
+    if (internal.geoCode) {
         external.geoCode = internal.geoCode;
     }
 
@@ -209,14 +211,14 @@ const internalTransactionRequestResponseToMojaloop = (internal) => {
         transactionRequestState: internal.transactionRequestState
     };
 
-    if(internal.payeeReceiveAmount) {
+    if (internal.payeeReceiveAmount) {
         external.payeeReceiveAmount = {
             amount: internal.payeeReceiveAmount,
             currency: internal.payeeReceiveAmountCurrency
         };
     }
 
-    if(internal.extensionList) {
+    if (internal.extensionList) {
         external.extensionList = internal.extensionList;
     }
 
@@ -231,7 +233,7 @@ const internalTransactionRequestResponseToMojaloop = (internal) => {
  */
 const mojaloopPrepareToInternalTransfer = (external, quote) => {
     let internal = null;
-    if(quote) {
+    if (quote) {
         internal = {
             transferId: external.transferId,
             quote: quote.response,
@@ -286,15 +288,15 @@ const mojaloopBulkQuotesRequestToInternal = (external) => {
         from: mojaloopPartyToInternalParty(external.payer),
     };
 
-    if(external.geoCode) {
+    if (external.geoCode) {
         internal.geoCode = external.geoCode;
     }
 
-    if(external.expiration) {
+    if (external.expiration) {
         internal.expiration = external.expiration;
     }
 
-    if(external.extensionList) {
+    if (external.extensionList) {
         internal.extensionList = external.extensionList.extension;
     }
 
@@ -311,19 +313,19 @@ const mojaloopBulkQuotesRequestToInternal = (external) => {
             initiatorType: quote.transactionType.initiatorType
         };
 
-        if(quote.fees) {
+        if (quote.fees) {
             internal.feesAmount = quote.fees.amount;
             internal.feesCurrency = quote.fees.currency;
         }
-    
-        if(quote.geoCode) {
+
+        if (quote.geoCode) {
             internal.geoCode = quote.geoCode;
         }
-    
-        if(quote.note) {
+
+        if (quote.note) {
             internal.note = quote.note;
         }
-    
+
         return internalQuote;
     });
 
@@ -332,7 +334,6 @@ const mojaloopBulkQuotesRequestToInternal = (external) => {
     return internal;
 };
 
-// TODO: Adapt to bulk quotes
 /**
  * Converts an internal bulk quotes response to mojaloop form
  *
@@ -349,21 +350,21 @@ const internalBulkQuotesResponseToMojaloop = (internal) => {
             condition: quote.ilpCondition
         };
 
-        if(quote.payeeReceiveAmount) {
+        if (quote.payeeReceiveAmount) {
             externalQuote.payeeReceiveAmount = {
                 amount: quote.payeeReceiveAmount,
                 currency: quote.payeeReceiveAmountCurrency
             };
         }
 
-        if(quote.payeeFspFeeAmount) {
+        if (quote.payeeFspFeeAmount) {
             externalQuote.payeeFspFee = {
                 amount: quote.payeeFspFeeAmount,
                 currency: quote.payeeFspFeeAmountCurrency
             };
         }
 
-        if(quote.payeeFspCommissionAmount) {
+        if (quote.payeeFspCommissionAmount) {
             externalQuote.payeeFspCommission = {
                 amount: quote.payeeFspCommissionAmount,
                 currency: quote.payeeFspCommissionAmountCurrency
@@ -377,11 +378,64 @@ const internalBulkQuotesResponseToMojaloop = (internal) => {
         expiration: internal.expiration,
     };
 
-    if(internal.geoCode) {
+    if (internal.geoCode) {
         external.geoCode = internal.geoCode;
     }
 
     return external;
+};
+
+/**
+ * Converts a mojaloop bulk transfer prepare request to internal form
+ *
+ * @returns {object}
+ */
+const mojaloopBulkPrepareToInternalBulkTransfer = (external, bulkQuotes, ilpSecret) => {
+    let internal = null;
+    if (bulkQuotes) {
+        // create a map of internal individual quotes payees indexed by quotedId, for faster lookup
+        const internalQuotesPayeesByQuoteId = {};
+        
+        for (const quote of bulkQuotes.internalRequest.individualQuotes) {
+            internalQuotesPayeesByQuoteId[quote.quoteId] = quote.to;
+        }
+        
+        // create a map of external individual transfers indexed by quotedId, for faster lookup
+        const externalTransferIdsByQuoteId = {};
+        const ilp = new Ilp({ secret: ilpSecret });
+        
+        for (const transfer of external.individualTransfers) {
+            const transactionObject = ilp.getTransactionObject(transfer.ilpPacket);
+            externalTransferIdsByQuoteId[transactionObject.quoteId] = transfer.transferId;
+        }
+        
+        internal = {
+            bulkTransferId: external.bulkTransferId,
+            bulkQuotes: bulkQuotes.response,
+            from: bulkQuotes.internalRequest.from,
+        };
+
+        internal.individualTransfers = bulkQuotes.request.individualQuotes.map((quote) => ({
+            transferId: externalTransferIdsByQuoteId[quote.quoteId],
+            to: internalQuotesPayeesByQuoteId[quote.quoteId],
+            amountType: quote.amountType,
+            currency: quote.amount.currency,
+            amount: quote.amount.amount,
+            transactionType: quote.transactionType.scenario,
+            note: quote.note
+        }));
+    } else {
+        internal = {
+            bulkTransferId: external.bulkTransferId,
+            individualTransfers: external.individualTransfers.map((transfer) => ({
+                transferId: transfer.transferId,
+                currency: transfer.amount.currency,
+                amount: transfer.amount.amount,
+            }))
+        };
+    }
+
+    return internal;
 };
 
 module.exports = {
@@ -395,4 +449,5 @@ module.exports = {
     mojaloopTransactionRequestToInternal,
     mojaloopBulkQuotesRequestToInternal,
     internalBulkQuotesResponseToMojaloop,
+    mojaloopBulkPrepareToInternalBulkTransfer,
 };

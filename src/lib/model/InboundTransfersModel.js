@@ -34,6 +34,7 @@ class InboundTransfersModel {
         this._expirySeconds = config.expirySeconds;
         this._rejectTransfersOnExpiredQuotes = config.rejectTransfersOnExpiredQuotes;
         this._allowTransferWithoutQuote = config.allowTransferWithoutQuote;
+        this._ilpSecret = config.ilpSecret;
 
         this._mojaloopRequests = new MojaloopRequests({
             logger: this._logger,
@@ -201,7 +202,6 @@ class InboundTransfersModel {
         }
     }
 
-
     /**
      * Asks the backend for a response to an incoming quote request and makes a callback to the originator with
      * the result
@@ -318,7 +318,6 @@ class InboundTransfersModel {
                 throw new Error(`ILP condition in transfer prepare for ${prepareRequest.transferId} does not match quote`);
             }
 
-
             if (quote && this._rejectTransfersOnExpiredQuotes) {
                 const now = new Date().toISOString();
                 const expiration = quote.mojaloopResponse.expiration;
@@ -371,9 +370,9 @@ class InboundTransfersModel {
      * Asks the backend for a response to an incoming bulk quotes request and makes a callback to the originator with
      * the results.
      */
-    async bulkQuotesRequest(bulkQuoteRequest, sourceFspId) {
+    async bulkQuoteRequest(bulkQuoteRequest, sourceFspId) {
         const { bulkQuoteId } = bulkQuoteRequest;
-        const fulfilments = [];
+        const fulfilments = {};
         try {
             const internalForm = shared.mojaloopBulkQuotesRequestToInternal(bulkQuoteRequest);
 
@@ -402,18 +401,22 @@ class InboundTransfersModel {
                     payer: bulkQuoteRequest.payer,
                     transactionType: quote.transactionType,
                 };
-                const mojaloopQuoteResult = mojaloopResponse.individualQuoteResults.find(
+                // TODO: Optimize with a HashMap
+                const mojaloopIndividualQuote = mojaloopResponse.individualQuoteResults.find(
                     (quoteResult) => quoteResult.quoteId === quote.quoteId
                 );
                 const quoteResponse = {
-                    amount: mojaloopQuoteResult.transferAmount,
-                    note: mojaloopQuoteResult.note || '',
+                    amount: mojaloopIndividualQuote.transferAmount,
+                    note: mojaloopIndividualQuote.note || '',
                 };
                 const { fulfilment, ilpPacket, condition } = this._ilp.getQuoteResponseIlp(
                     quoteRequest, quoteResponse);
-                mojaloopQuoteResult.ilpPacket = ilpPacket;
-                mojaloopQuoteResult.condition = condition;
-                fulfilments.push({quoteId: quote.quoteId, fulfilment});
+
+                // mutate individual quotes in `mojaloopResponse`
+                mojaloopIndividualQuote.ilpPacket = ilpPacket;
+                mojaloopIndividualQuote.condition = condition;
+
+                fulfilments[quote.quoteId] = fulfilment;
             });
 
             // now store the fulfilments and the bulk quotes data against the bulkQuoteId in our cache
@@ -432,63 +435,101 @@ class InboundTransfersModel {
             this._logger.push({ err }).log('Error in bulkQuotesRequest');
             const mojaloopError = await this._handleError(err);
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
-            // TODO: Implement `putBulkQuotesError
             return await this._mojaloopRequests.putBulkQuotesError(bulkQuoteId,
                 mojaloopError, sourceFspId);
         }
     }
 
     /**
-     * TODO: Adapt to bulk transfer scenario
-     * 
      * Validates  an incoming bulk transfer prepare request and makes a callback to the originator with
      * the result
      */
-    async prepareBulkTransfer(prepareRequest, sourceFspId) {
+    async prepareBulkTransfer(bulkPrepareRequest, sourceFspId) {
         try {
+            // retrieve bulk quote data
+            const bulkQuote = await this._cache.get(`bulkQuotes_${bulkPrepareRequest.bulkTransferId}`);
 
-            // retrieve our quote data
-            const quote = await this._cache.get(`quote_${prepareRequest.bulkTransferId}`);
-
-            if (!quote) {
+            if (!bulkQuote) {
                 // Check whether to allow transfers without a previous quote.
                 if (!this._allowTransferWithoutQuote) {
-                    throw new Error(`Corresponding quotes not found for bulk transfer ${prepareRequest.bulkTransferId}`);
+                    throw new Error(`Corresponding bulk quotes not found for bulk transfers ${bulkPrepareRequest.bulkTransferId}`);
                 }
             }
 
-            // Calculate or retrieve fulfilment and condition
-            let fulfilment = null;
-            let condition = null;
-            if (quote) {
-                fulfilment = quote.fulfilment;
-                condition = quote.mojaloopResponse.condition;
-            }
-            else {
-                fulfilment = this._ilp.calculateFulfil(prepareRequest.ilpPacket);
-                condition = this._ilp.calculateConditionFromFulfil(fulfilment);
+            // create an index of individual quote results indexed by transactionId for faster lookups
+            const quoteResultsByTrxId = {};
+
+            for (const quoteResult of bulkQuote.mojaloopResponse.individualQuoteResults) {
+                quoteResultsByTrxId[quoteResult.transactionId] = quoteResult;
             }
 
-            // check incoming ILP matches our persisted values
-            if (this._checkIlp && (prepareRequest.condition !== condition)) {
-                throw new Error(`ILP condition in transfer prepare for ${prepareRequest.transferId} does not match quote`);
+            // transfer fulfilments
+            const fulfilments = {};
+
+            // collect errors for individual transfers, indexed by transferId
+            let individualTransferErrors;
+
+            // validate individual transfer
+            for (const transfer of bulkPrepareRequest.individualTransfers) {
+                // decode ilpPacked for this transfer to get transaction object
+                const transactionObject = this._ilp.getTransactionObject(transfer.ilpPacket);
+
+                // we use the transactionId from the decoded ilpPacked in the transfer to match a corresponding quote
+                const quote = quoteResultsByTrxId[transactionObject.transactionId] || null;
+
+                // calculate or retrieve fulfilments and conditions
+                let fulfilment = null;
+                let condition = null;
+
+                if (quote) {
+                    fulfilment = bulkQuote.fulfilments[quote.quoteId];
+                    condition = quote.condition;
+                }
+                else {
+                    fulfilment = this._ilp.calculateFulfil(transfer.ilpPacket);
+                    condition = this._ilp.calculateConditionFromFulfil(fulfilment);
+                }
+
+                fulfilments[transfer.transferId] = fulfilment;
+
+                // check incoming ILP matches our persisted values
+                if (this._checkIlp && (transfer.condition !== condition)) {
+                    const transferError = this._handleError(new Error(`ILP condition in bulk transfers prepare for ${transfer.transferId} does not match quote`));
+                    individualTransferErrors[transfer.transferId] = { transferId: transfer.transferId, transferError };
+                }
             }
 
-
-            if (quote && this._rejectTransfersOnExpiredQuotes) {
+            if (this._rejectTransfersOnExpiredQuotes) {
                 const now = new Date().toISOString();
-                const expiration = quote.mojaloopResponse.expiration;
+                const expiration = bulkQuote.expiration;
                 if (now > expiration) {
+                    // TODO: Verify and align with actual schema for bulk transfers error endpoint
                     const error = Errors.MojaloopApiErrorObjectFromCode(Errors.MojaloopApiErrorCodes.QUOTE_EXPIRED);
-                    this._logger.error(`Error in prepareTransfer: quote expired for transfer ${prepareRequest.transferId}, system time=${now} > quote time=${expiration}`);
-                    return this._mojaloopRequests.putTransfersError(prepareRequest.transferId, error, sourceFspId);
+                    this._logger.error(`Error in prepareBulkTransfers: bulk quotes expired for bulk transfers ${bulkPrepareRequest.bulkTransferId}, system time=${now} > quote time=${expiration}`);
+                    return this._mojaloopRequests.putBulkTransfersError(bulkPrepareRequest.bulkTransferId, error, sourceFspId);
                 }
             }
 
-            // project the incoming transfer prepare into an internal transfer request
-            const internalForm = shared.mojaloopPrepareToInternalTransfer(prepareRequest, quote);
+            if (individualTransferErrors) {
+                // TODO: Verify and align with actual schema for bulk transfers error endpoint
+                const mojaloopErrorResponse = {
+                    bulkTransferState: 'REJECTED',
+                    individualTransferResults: individualTransferErrors.map((transferError) => ({
+                        transferId: transferError.transferId,
+                        errorInformation: transferError,
+                    }))
+                };
+                this._logger.push({ ...individualTransferErrors }).log('Error in prepareBulkTransfers');
+                this._logger.push({ ...individualTransferErrors }).log(`Sending error response to ${sourceFspId}`);
 
-            // make a call to the backend to inform it of the incoming transfer
+                return await this._mojaloopRequests.putBulkTransfersError(bulkPrepareRequest.transferId,
+                    mojaloopErrorResponse, sourceFspId);
+            }
+
+            // project the incoming bulk transfer prepare into an internal bulk transfer request
+            const internalForm = shared.mojaloopBulkPrepareToInternalBulkTransfer(bulkPrepareRequest, bulkQuote, this._ilpSecret);
+
+            // make a call to the backend to inform it of the incoming bulk transfer
             const response = await this._backendRequests.postBulkTransfers(internalForm);
 
             if (!response) {
@@ -496,29 +537,92 @@ class InboundTransfersModel {
                 return 'No response from backend';
             }
 
-            this._logger.log(`Transfer accepted by backend returning homeTransactionId: ${response.homeTransactionId} for mojaloop transferId: ${prepareRequest.transferId}`);
+            this._logger.log(`Bulk transfer accepted by backend returning homeTransactionId: ${response.homeTransactionId} for mojaloop bulk transferId: ${bulkPrepareRequest.bulkTransferId}`);
 
             // create a  mojaloop transfer fulfil response
             const mojaloopResponse = {
                 completedTimestamp: new Date(),
-                transferState: 'COMMITTED',
-                fulfilment: fulfilment,
-                ...response.extensionList && {
+                bulkTransferState: 'COMMITTED',
+                individualTransferResults: individualTransferErrors.map((transfer) => ({
+                    transferId: transfer.transferId,
+                    fulfilment: fulfilments[transfer.transferId],
+                    ...response.individualTransferResults[transfer.transferId].extensionList && {
+                        extensionList: {
+                            extension: response.individualTransferResults[transfer.transferId].extensionList,
+                        },
+                    }
+                }))
+            };
+
+            // make a callback to the source fsp with the transfer fulfilment
+            return this._mojaloopRequests.putBulkTransfers(bulkPrepareRequest.transferId, mojaloopResponse, sourceFspId);
+        }
+        catch (err) {
+            this._logger.push({ err }).log('Error in prepareBulkTransfers');
+            const mojaloopError = await this._handleError(err);
+            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            return await this._mojaloopRequests.putBulkTransfersError(bulkPrepareRequest.transferId,
+                mojaloopError, sourceFspId);
+        }
+    }
+
+    /**
+    * Queries details of a bulk transfer
+    */
+    async getBulkTransfer(bulkTransferId, sourceFspId) {
+        try {
+            // make a call to the backend to get bulk transfer details
+            const response = await this._backendRequests.getBulkTransfers(bulkTransferId);
+
+            if (!response) {
+                return 'No response from backend';
+            }
+
+            let individualTransferResults = [];
+            for (const transfer of response.internalRequest.individualTransfers) {
+                const ilpPaymentData = {
+                    transferId: transfer.transferId,
+                    to: shared.internalPartyToMojaloopParty(transfer.to, transfer.to.fspId),
+                    amountType: transfer.amountType,
+                    currency: transfer.currency,
+                    amount: transfer.amount,
+                    transactionType: transfer.transactionType,
+                    note: transfer.note,
+                };
+                let fulfilment;
+                if (this._dfspId === transfer.to.fspId) {
+                    fulfilment = this._ilp.getResponseIlp(ilpPaymentData).fulfilment;
+                }
+                const transferResult = { 
+                    transferId: transfer.transferId,
+                    fulfilment,
+                };
+                transfer.errorInformation && (transferResult.errorInformation = transfer.errorInformation);
+                transfer.extensionList && (transferResult.extensionList = transfer.extensionList);
+                individualTransferResults.push(transferResult);
+            }
+
+            // create a  mojaloop bulk transfer fulfil response
+            const mojaloopResponse = {
+                completedTimestamp: response.timestamp,
+                bulkTransferState: response.bulkTransferState,
+                individualTransferResults,
+                ...response.extensions && {
                     extensionList: {
-                        extension: response.extensionList,
+                        extension: response.extensions,
                     },
                 },
             };
 
-            // make a callback to the source fsp with the transfer fulfilment
-            return this._mojaloopRequests.putTransfers(prepareRequest.transferId, mojaloopResponse,
+            // make a callback to the source fsp with the bulk transfer fulfilments
+            return this._mojaloopRequests.putBulkTransfers(bulkTransferId, mojaloopResponse,
                 sourceFspId);
         }
         catch (err) {
-            this._logger.push({ err }).log('Error in prepareTransfer');
+            this._logger.push({ err }).log('Error in getBulkTransfers');
             const mojaloopError = await this._handleError(err);
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
-            return await this._mojaloopRequests.putTransfersError(prepareRequest.transferId,
+            return this._mojaloopRequests.putBulkTransfersError(bulkTransferId,
                 mojaloopError, sourceFspId);
         }
     }
