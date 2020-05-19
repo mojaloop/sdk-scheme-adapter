@@ -579,6 +579,7 @@ class InboundTransfersModel {
             }
 
             let individualTransferResults = [];
+            
             for (const transfer of response.internalRequest.individualTransfers) {
                 const ilpPaymentData = {
                     transferId: transfer.transferId,
@@ -593,10 +594,7 @@ class InboundTransfersModel {
                 if (this._dfspId === transfer.to.fspId) {
                     fulfilment = this._ilp.getResponseIlp(ilpPaymentData).fulfilment;
                 }
-                const transferResult = { 
-                    transferId: transfer.transferId,
-                    fulfilment,
-                };
+                const transferResult = { transferId: transfer.transferId,fulfilment };
                 transfer.errorInformation && (transferResult.errorInformation = transfer.errorInformation);
                 transfer.extensionList && (transferResult.extensionList = transfer.extensionList);
                 individualTransferResults.push(transferResult);

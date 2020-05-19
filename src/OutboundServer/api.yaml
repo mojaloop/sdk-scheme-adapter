@@ -26,6 +26,7 @@ paths:
       responses:
         200:
           description: Returns empty body if the scheme adapter outbound transfers service is running.
+  
   /transfers:
     post:
       summary: Sends money from one account to another
@@ -120,6 +121,104 @@ paths:
                 $ref: '#/components/schemas/transferStatusResponse'
         500:
           description: An error occurred processing the transfer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+
+  /bulkTransfers:
+    post:
+      summary: Sends money from one account to multiple accounts
+      description: >
+        The HTTP request `POST /bulkTransfers` is used to request the movement of funds from payer DFSP to payees' DFSP.
+
+        The underlying Mojaloop API has three stages for money transfer:
+
+          1. Parties lookup. This facilitates a check by the sending party that the destination parties are correct before proceeding with money movements.
+          2. Quotations. This facilitates the exchange of fee information and the construction of a cryptographic "contracts" between payees and payer DFSPs before funds are transferred.
+          3. Transfers. The enactment of the previously agreed "contracts"
+
+        This method has several modes of operation.
+
+        - If the configuration variables `AUTO_ACCEPT_PARTIES` is set to `"false"` this method will terminate when the payees parties have been resolved and return the payees parties details.
+          If the payees wishes to proceed with the transfers, then a subsequent `PUT /bulkTransfers/{bulkTransferId}` request (accepting the payees parties) is required to continue the operation.
+          The scheme adapter will then proceed with quotation stage...
+
+        - If the configuration variable `AUTO_ACCEPT_QUOTES` is set to `"false"` this method will terminate and return the quotations when they have been received from the payees' DFSP.
+          If the payees wish to proceed with the transfers, then a subsequent `PUT /bulkTransfers/{bulkTransferId}` request (accepting the quotes) is required to continue the operation.
+          The scheme adapter will then proceed with the transfer state.
+
+        If the configuration variables `AUTO_ACCEPT_PARTIES` and `AUTO_ACCEPT_QUOTES` are both set to `"true"` this method will block until all three transfer stages are complete.
+        Upon completion it will return the entire set of transfer details received during the operation.
+
+        Combinations of settings for `AUTO_ACCEPT...` configuration variables allow the scheme adapter user to decide which mode of operation best suits their use cases. i.e. the scheme
+        adapter can be configured to "break" the three stage transfer at these points in order to execute backend logic such as parties verification, quoted fees assessments etc...
+
+      tags:
+        - BulkTransfers
+      requestBody:
+        description: Bulk transfer request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bulkTransferRequest'
+        required: true
+      responses:
+        200:
+          $ref: '#/components/responses/bulkTransferSuccess'
+        400:
+          $ref: '#/components/responses/bulkTransferBadRequest'
+        500:
+          $ref: '#/components/responses/bulkTransferServerError'
+        504:
+          $ref: '#/components/responses/bulkTransferTimeout'
+
+  /bulkTransfers/{bulkTransferId}:
+    put:
+      summary: Continues a bulk transfer that has paused at the quote stage in order to accept or reject payees parties and/or quotes
+      description: >
+        The HTTP request `PUT /bulkTransfers/{bulkTransferId}` is used to continue a bulk transfer initiated via the `POST /bulkTransfers` method that has halted after parties lookup and/or quotation stage.
+
+
+        The request body should contain either the "acceptParty" or "acceptQuote" property set to `true` as required to continue the bulk transfer.
+
+
+        See the description of the `POST /bulkTransfers` HTTP method for more information on modes of transfer.
+      tags:
+        - BulkTransfers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/transferContinuationAcceptParty'
+                - $ref: '#/components/schemas/transferContinuationAcceptQuote'
+      parameters:
+        - $ref: '#/components/parameters/bulkTransferId'
+      responses:
+        200:
+          $ref: '#/components/responses/bulkTransferSuccess'
+        500:
+          $ref: '#/components/responses/bulkTransferServerError'
+        504:
+          $ref: '#/components/responses/bulkTransferTimeout'
+
+    get:
+      summary: Retrieves information for a specific bulk transfer
+      description: The HTTP request `GET /bulkTransfers/{bulkTransferId}` is used to get information regarding a bulk transfer created or requested earlier. The `{bulkTransferId}` in the URI should contain the `bulkTransferId` that was used for the creation of the bulk transfer.
+      tags:
+        - BulkTransfers
+      parameters:
+        - $ref: '#/components/parameters/bulkTransferId'
+      responses:
+        200:
+          description: Bulk transfer information successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bulkTransferStatusResponse'
+        500:
+          description: An error occurred processing the bulk transfer
           content:
             application/json:
               schema:
@@ -262,7 +361,6 @@ paths:
 
 components:
   schemas:
-
     amountType:
       type: string
       enum:
@@ -463,6 +561,16 @@ components:
             transferState:
               $ref: '#/components/schemas/transferResponse'
 
+    bulkTransferErrorResponse:
+      allOf:
+        - $ref: '#/components/schemas/errorResponse'
+        - type: object
+          required:
+            - bulkTansferState
+          properties:
+            bulkTransferState:
+              $ref: '#/components/schemas/bulkTransferResponse'
+
     errorAccountsResponse:
       allOf:
         - $ref: '#/components/schemas/errorResponse'
@@ -572,7 +680,6 @@ components:
 
         - OTHER_ID - Any other type of identification type number is used in reference to a party.
 
-
     money:
       pattern: ^([0]|([1-9][0-9]{0,17}))([.][0-9]{0,3}[1-9])?$
       type: string
@@ -670,6 +777,7 @@ components:
 
         extensionList:
           $ref: '#/components/schemas/extensionList'
+    
     extensionItem:
       type: object
       properties:
@@ -736,7 +844,7 @@ components:
           $ref: '#/components/schemas/extensionList'
         transferRequestExtensions:
           $ref: '#/components/schemas/extensionList'
-
+    
     requestToPayRequest:
       type: object
       required:
@@ -892,7 +1000,6 @@ components:
             or an object representing other types of error e.g. exceptions that may occur inside the scheme adapter.
           $ref: '#/components/schemas/transferError'
 
-
     transferResponse:
       type: object
       required:
@@ -942,6 +1049,27 @@ components:
             Object representing the last error to occur during a transfer process. This may be a Mojaloop API error returned from another entity in the scheme
             or an object representing other types of error e.g. exceptions that may occur inside the scheme adapter.
           $ref: '#/components/schemas/transferError'
+
+    bulkTransferResponse:
+      type: object
+      required:
+        - homeTransactionId
+        - from
+        - individualTransferResults
+      properties:
+        transferId:
+          $ref: '#/components/schemas/mojaloopIdentifier'
+        homeTransactionId:
+          type: string
+          description: Transaction ID from the DFSP backend, used to reconcile transactions between the Switch and DFSP backend systems.
+        from:
+          $ref: '#/components/schemas/transferParty'
+        individualTransferResults:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/individualTransferResult'
+          description: List of individualTransferResults in a bulk transfer response.
 
     transferStatusResponse:
       type: object
@@ -1154,6 +1282,7 @@ components:
       description: >
         The API data type Latitude is a JSON String in a lexical format that is
         restricted by a regular expression for interoperability reasons.
+    
     longitude:
       type: string
       pattern: >-
@@ -1238,6 +1367,92 @@ components:
         lastError:
           $ref: '#/components/schemas/transferError'
 
+    bulkTransferRequest:
+      type: object
+      required:
+        - homeTransactionId
+        - from
+        - individualTransfers
+      properties:
+        homeTransactionId:
+          type: string
+          description: Transaction ID from the DFSP backend, used to reconcile transactions between the Switch and DFSP backend systems.
+        from:
+          $ref: '#/components/schemas/transferParty'
+        individualTransfers:
+          description: List of individual transfers in a bulk transfer.
+          type: array
+          minItems: 1
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/individualTransfer'
+    
+    individualTransfer:
+      title: IndividualTransfer
+      type: object
+      description: Data model for the complex type 'individualTransfer'.
+      properties:
+        transferId:
+          $ref: '#/components/schemas/mojaloopIdentifier'
+        to:
+          $ref: '#/components/schemas/transferParty'
+        amountType:
+          $ref: '#/components/schemas/amountType'
+        currency:
+          $ref: '#/components/schemas/currency'
+        amount:
+          $ref: '#/components/schemas/money'
+        transactionType:
+          $ref: '#/components/schemas/transactionType'
+        note:
+          maxLength: 128
+          type: string
+        quoteRequestExtensions:
+          $ref: '#/components/schemas/extensionList'
+        transferRequestExtensions:
+          $ref: '#/components/schemas/extensionList'  
+      required:
+        - transferId
+        - to
+        - amountType
+        - currency
+        - transactionType
+    
+    individualTransferResult:
+      type: object
+      properties:
+        transferId: 
+          $ref: '#/components/schemas/mojaloopIdentifier'
+        to:
+          $ref: '#/components/schemas/transferParty'
+        amountType:
+          $ref: '#/components/schemas/amountType'
+        currency:
+          $ref: '#/components/schemas/currency'
+        amount:
+          $ref: '#/components/schemas/money'
+        transactionType:
+          $ref: '#/components/schemas/transactionType'
+        note:
+          maxLength: 128
+          type: string
+        quoteId:
+          $ref: '#/components/schemas/mojaloopIdentifier'
+        quoteResponse:
+          $ref: '#/components/schemas/quote'
+        quoteResponseSource:
+          type: string
+          description: >
+            FSPID of the entity that supplied the quote response. This may not be the same as the FSPID of the entity which
+            owns the end user account in the case of a FOREX transfer. i.e. it may be a FOREX gateway.
+        fulfil:
+          $ref: '#/components/schemas/transferFulfilment'
+        lastError:
+          description: >
+            Object representing the last error to occur during a transfer process. This may be a Mojaloop API error returned from another entity in the scheme
+            or an object representing other types of error e.g. exceptions that may occur inside the scheme adapter.
+          $ref: '#/components/schemas/transferError'
+
   responses:
     transferSuccess:
       description: Transfer completed successfully
@@ -1263,6 +1478,31 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/errorTransferResponse'
+
+    bulkTransferSuccess:
+      description: Bulk transfer completed successfully
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/bulkTransferResponse'
+    bulkTransferBadRequest:
+      description: Malformed or missing required body, headers or parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/bulkTransferErrorResponse'
+    bulkTransferServerError:
+      description: An error occurred processing the bulk transfer
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/bulkTransferErrorResponse'
+    bulkTransferTimeout:
+      description: Timeout occurred processing the bulk transfer
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/bulkTransferErrorResponse'
 
     accountsCreationCompleted:
       description: Accounts creation completed
@@ -1300,8 +1540,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/errorTransferResponse'
-
-    
 
   parameters:
     transferId:
