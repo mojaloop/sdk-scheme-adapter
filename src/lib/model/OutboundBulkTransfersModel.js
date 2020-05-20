@@ -24,7 +24,6 @@ const transferStateEnum = {
     'COMPLETED': 'COMPLETED',
 };
 
-
 /**
  *  Models the state machine and operations required for performing an outbound bulk transfer
  */
@@ -61,7 +60,6 @@ class OutboundBulkTransfersModel {
         });
     }
 
-
     /**
      * Initializes the internal state machine object
      */
@@ -90,7 +88,6 @@ class OutboundBulkTransfersModel {
         return this.stateMachine[initState];
     }
 
-
     /**
      * Updates the internal state representation to reflect that of the state machine itself
      */
@@ -98,7 +95,6 @@ class OutboundBulkTransfersModel {
         this._logger.log(`State machine transitioned: ${this.data.currentState} -> ${this.stateMachine.state}`);
         this.data.currentState = this.stateMachine.state;
     }
-
 
     /**
      * Initializes the bulk transfer model
@@ -120,7 +116,6 @@ class OutboundBulkTransfersModel {
 
         this._initStateMachine(this.data.currentState);
     }
-
 
     /**
      * Handles state machine transitions
@@ -157,7 +152,6 @@ class OutboundBulkTransfersModel {
                 throw new Error(`Unhandled state transition for bulk transfer ${this.data.bulkTransferId}: ${util.inspect(args)}`);
         }
     }
-
 
     /**
      * Resolves the payees.
@@ -296,7 +290,6 @@ class OutboundBulkTransfersModel {
         });
     }
 
-
     /**
      * Requests a quote
      * Starts the quote resolution process by sending a POST /quotes request to the switch;
@@ -396,7 +389,6 @@ class OutboundBulkTransfersModel {
         });
     }
 
-
     /**
      * Constructs a quote request payload based on current state
      *
@@ -442,7 +434,6 @@ class OutboundBulkTransfersModel {
 
         return quote;
     }
-
 
     /**
      * Executes a transfer
@@ -616,7 +607,6 @@ class OutboundBulkTransfersModel {
         });
     }
 
-
     /**
      * Builds a transfer prepare payload from current state
      *
@@ -655,7 +645,6 @@ class OutboundBulkTransfersModel {
         return prepare;
     }
 
-
     /**
      * Returns an ISO-8601 format timestamp n-seconds in the future for expiration of a transfers API object,
      * where n is equal to our config setting "expirySeconds"
@@ -666,7 +655,6 @@ class OutboundBulkTransfersModel {
         let now = new Date();
         return new Date(now.getTime() + (this._expirySeconds * 1000)).toISOString();
     }
-
 
     /**
      * Returns an object representing the final state of the transfer suitable for the outbound API
@@ -704,7 +692,6 @@ class OutboundBulkTransfersModel {
         return resp;
     }
 
-
     /**
      * Persists the model state to cache for reinstantiation at a later point
      */
@@ -719,7 +706,6 @@ class OutboundBulkTransfersModel {
             throw err;
         }
     }
-
 
     /**
      * Loads a transfer model from cache for resumption of the transfer process
@@ -740,7 +726,6 @@ class OutboundBulkTransfersModel {
             throw err;
         }
     }
-
 
     /**
      * Returns a promise that resolves when the state machine has reached a terminal state
