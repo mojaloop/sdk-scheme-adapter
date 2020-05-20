@@ -12,7 +12,7 @@
 
 
 const util = require('util');
-const { AccountsModel, OutboundTransfersModel, OutboundRequestToPayTransferModel, OutboundRequestToPayModel } = require('@internal/model');
+const { AccountsModel, OutboundTransfersModel, OutboundBulkTransfersModel, OutboundRequestToPayTransferModel, OutboundRequestToPayModel } = require('@internal/model');
 
 
 /**
@@ -26,7 +26,7 @@ const handleError = (method, err, ctx, stateField) => {
         [stateField]: err[stateField] || {},
         statusCode: (err.httpStatusCode || 500).toString()
     };
-    if(err[stateField]
+    if (err[stateField]
         && err[stateField].lastError
         && err[stateField].lastError.mojaloopError
         && err[stateField].lastError.mojaloopError.errorInformation
@@ -40,7 +40,7 @@ const handleError = (method, err, ctx, stateField) => {
 
         // if we have been configured to use an error extensionList item as status code, look for it and use
         // it if it is present...
-        if(ctx.state.conf.outboundErrorStatusCodeExtensionKey
+        if (ctx.state.conf.outboundErrorStatusCodeExtensionKey
             && errorInformation.extensionList
             && Array.isArray(errorInformation.extensionList.extension)) {
 
@@ -50,7 +50,7 @@ const handleError = (method, err, ctx, stateField) => {
                 return e.key === ctx.state.conf.outboundErrorStatusCodeExtensionKey;
             });
 
-            if(extensionItem) {
+            if (extensionItem) {
                 ctx.response.body.statusCode = extensionItem.value;
             }
         }
@@ -59,6 +59,9 @@ const handleError = (method, err, ctx, stateField) => {
 
 const handleTransferError = (method, err, ctx) =>
     handleError(method, err, ctx, 'transferState');
+
+const handleBulkTransferError = (method, err, ctx) =>
+    handleError(method, err, ctx, 'bulkTransferState');
 
 const handleAccountsError = (method, err, ctx) =>
     handleError(method, err, ctx, 'executionState');
@@ -96,38 +99,8 @@ const postTransfers = async (ctx) => {
         ctx.response.status = 200;
         ctx.response.body = response;
     }
-    catch(err) {
+    catch (err) {
         return handleTransferError('postTransfers', err, ctx);
-    }
-};
-
-/**
- * Handler for outbound transfer request initiation
- */
-const postRequestToPayTransfer = async (ctx) => {
-    try {
-        // this requires a multi-stage sequence with the switch.
-        let requestToPayTransferRequest = {
-            ...ctx.request.body
-        };
-
-        // use the merchant transfers model to execute asynchronous stages with the switch
-        const model = new OutboundRequestToPayTransferModel({
-            ...ctx.state.conf,
-            cache: ctx.state.cache,
-            logger: ctx.state.logger,
-            wso2Auth: ctx.state.wso2Auth,
-        });
-
-        // initialize the transfer model and start it running
-        await model.initialize(requestToPayTransferRequest);
-        const response = await model.run();
-        // return the result
-        ctx.response.status = 200;
-        ctx.response.body = response;
-    }
-    catch(err) {
-        return handleRequestToPayTransferError('postRequestToPayTransfer', err, ctx);
     }
 };
 
@@ -158,12 +131,10 @@ const getTransfers = async (ctx) => {
         ctx.response.status = 200;
         ctx.response.body = response;
     }
-    catch(err) {
+    catch (err) {
         return handleTransferError('getTransfers', err, ctx);
     }
 };
-
-
 
 /**
  * Handler for resuming outbound transfers in scenarios where two-step transfers are enabled
@@ -191,8 +162,132 @@ const putTransfers = async (ctx) => {
         ctx.response.status = 200;
         ctx.response.body = response;
     }
-    catch(err) {
+    catch (err) {
         return handleTransferError('putTransfers', err, ctx);
+    }
+};
+
+/**
+ * Handler for outbound bulk transfer request initiation
+ */
+const postBulkTransfers = async (ctx) => {
+    try {
+        // this requires a multi-stage sequence with the switch.
+        let bulkTransferRequest = {
+            ...ctx.request.body
+        };
+
+        // use the bulk transfers model to execute asynchronous stages with the switch
+        const model = new OutboundBulkTransfersModel({
+            ...ctx.state.conf,
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            wso2Auth: ctx.state.wso2Auth,
+        });
+
+        // initialize the bulk transfers model and start it running
+        await model.initialize(bulkTransferRequest);
+        const response = await model.run();
+
+        // return the result
+        ctx.response.status = 200;
+        ctx.response.body = response;
+    }
+    catch (err) {
+        return handleBulkTransferError('postBulkTransfers', err, ctx);
+    }
+};
+
+/**
+ * Handler for outbound bulk transfer request
+ */
+const getBulkTransfers = async (ctx) => {
+    try {
+        let bulkTransferRequest = {
+            ...ctx.request.body,
+            bulkTransferId: ctx.state.path.params.bulkTransferId,
+            currentState: 'getBulkTransfer',
+        };
+
+        // use the bulk transfers model to execute asynchronous stages with the switch
+        const model = new OutboundBulkTransfersModel({
+            ...ctx.state.conf,
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            wso2Auth: ctx.state.wso2Auth,
+        });
+
+        // initialize the bulk transfer models and start it running
+        await model.initialize(bulkTransferRequest);
+        const response = await model.run();
+
+        // return the result
+        ctx.response.status = 200;
+        ctx.response.body = response;
+    }
+    catch (err) {
+        return handleBulkTransferError('getBulkTransfers', err, ctx);
+    }
+};
+
+/** TODO:
+ * Handler for resuming outbound bulk transfers in scenarios where two-step transfers are enabled
+ * by disabling the autoAcceptQuote SDK option
+ */
+const putBulkTransfers = async (ctx) => {
+    try {
+        // this requires a multi-stage sequence with the switch.
+        // use the bulk transfers model to execute asynchronous stages with the switch
+        const model = new OutboundBulkTransfersModel({
+            ...ctx.state.conf,
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            wso2Auth: ctx.state.wso2Auth,
+        });
+
+        // TODO: check the incoming body to reject parties or quotes when requested to do so
+
+        // load the bulk transfer model from cache and start it running again
+        await model.load(ctx.state.path.params.bulkTransferId);
+
+        const response = await model.run();
+
+        // return the result
+        ctx.response.status = 200;
+        ctx.response.body = response;
+    }
+    catch (err) {
+        return handleBulkTransferError('putBulkTransfers', err, ctx);
+    }
+};
+
+/**
+ * Handler for outbound transfer request initiation
+ */
+const postRequestToPayTransfer = async (ctx) => {
+    try {
+        // this requires a multi-stage sequence with the switch.
+        let requestToPayTransferRequest = {
+            ...ctx.request.body
+        };
+
+        // use the merchant transfers model to execute asynchronous stages with the switch
+        const model = new OutboundRequestToPayTransferModel({
+            ...ctx.state.conf,
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            wso2Auth: ctx.state.wso2Auth,
+        });
+
+        // initialize the transfer model and start it running
+        await model.initialize(requestToPayTransferRequest);
+        const response = await model.run();
+        // return the result
+        ctx.response.status = 200;
+        ctx.response.body = response;
+    }
+    catch (err) {
+        return handleRequestToPayTransferError('postRequestToPayTransfer', err, ctx);
     }
 };
 
@@ -216,7 +311,7 @@ const putRequestToPayTransfer = async (ctx) => {
         // load the transfer model from cache and start it running again
         await model.load(ctx.state.path.params.requestToPayTransactionId);
         let response;
-        if(data.acceptQuote === true || data.acceptOTP === true) {
+        if (data.acceptQuote === true || data.acceptOTP === true) {
             response = await model.run();
         } else {
             response = await model.rejectRequestToPay();
@@ -226,11 +321,10 @@ const putRequestToPayTransfer = async (ctx) => {
         ctx.response.status = 200;
         ctx.response.body = response;
     }
-    catch(err) {
+    catch (err) {
         return handleTransferError('putRequestToPayTransfer', err, ctx);
     }
 };
-
 
 /**
  * Handler for outbound participants request initiation
@@ -256,7 +350,7 @@ const postAccounts = async (ctx) => {
         ctx.response.status = 200;
         ctx.response.body = response;
     }
-    catch(err) {
+    catch (err) {
         return handleAccountsError('postAccounts', err, ctx);
     }
 };
@@ -284,7 +378,7 @@ const postRequestToPay = async (ctx) => {
         ctx.response.status = 200;
         ctx.response.body = response;
 
-    } catch(err) {
+    } catch (err) {
         return handleRequestToPayError('requestToPayInboundRequest', err, ctx);
     }
 };
@@ -304,6 +398,13 @@ module.exports = {
     '/transfers/{transferId}': {
         get: getTransfers,
         put: putTransfers
+    },
+    '/bulkTransfers': {
+        post: postBulkTransfers
+    },
+    '/bulkTransfers/{bulkTransferId}': {
+        get: getBulkTransfers,
+        put: putBulkTransfers
     },
     '/accounts': {
         post: postAccounts
