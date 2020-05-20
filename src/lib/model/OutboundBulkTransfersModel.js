@@ -70,9 +70,9 @@ class OutboundBulkTransfersModel {
             init: initState,
             transitions: [
                 { name: 'resolvePayees', from: 'start', to: 'payeesResolved' },
-                { name: 'requestQuotes', from: 'payeesResolved', to: 'quotesReceived' },
-                { name: 'executeTransfer', from: 'quotesReceived', to: 'succeeded' },
-                { name: 'getTransfers', to: 'succeeded' },
+                { name: 'requestBulkQuote', from: 'payeesResolved', to: 'quotesReceived' },
+                { name: 'executeBulkTransfer', from: 'quotesReceived', to: 'succeeded' },
+                { name: 'getBulkTransfer', to: 'succeeded' },
                 { name: 'error', from: '*', to: 'errored' },
             ],
             methods: {
@@ -101,7 +101,7 @@ class OutboundBulkTransfersModel {
 
 
     /**
-     * Initializes the transfer model
+     * Initializes the bulk transfer model
      *
      * @param data {object} - The inbound API POST /bulkTransfers request body
      */
@@ -113,7 +113,7 @@ class OutboundBulkTransfersModel {
             this.data.bulkTransferId = uuid();
         }
 
-        // initialize the transfer state machine to its starting state
+        // initialize the bulk transfer state machine to its starting state
         if(!this.data.hasOwnProperty('currentState')) {
             this.data.currentState = 'start';
         }
@@ -126,7 +126,7 @@ class OutboundBulkTransfersModel {
      * Handles state machine transitions
      */
     async _handleTransition(lifecycle, ...args) {
-        this._logger.log(`Transfer ${this.data.bulkTransferId} is transitioning from ${lifecycle.from} to ${lifecycle.to} in response to ${lifecycle.transition}`);
+        this._logger.log(`Bulk transfer ${this.data.bulkTransferId} is transitioning from ${lifecycle.from} to ${lifecycle.to} in response to ${lifecycle.transition}`);
 
         switch(lifecycle.transition) {
             case 'init':
@@ -134,19 +134,19 @@ class OutboundBulkTransfersModel {
                 return;
 
             case 'resolvePayees':
-                // resolve the payee
+                // resolve the payees
                 return this._resolvePayees();
 
-            case 'requestQuotes':
-                // request a quote
-                return this._requestQuotes();
+            case 'requestBulkQuote':
+                // request a bulk quote
+                return this._requestBulkQuote();
 
-            case 'getTransfers':
-                return this._getTransfers();
+            case 'getBulkTransfer':
+                return this._getBulkTransfer();
 
-            case 'executeTransfer':
-                // prepare a transfer and wait for fulfillment
-                return this._executeTransfer();
+            case 'executeBulkTransfer':
+                // prepare a bulk transfer and wait for fulfillments
+                return this._executeBulkTransfer();
 
             case 'error':
                 this._logger.log(`State machine is erroring with error: ${util.inspect(args)}`);
@@ -154,22 +154,35 @@ class OutboundBulkTransfersModel {
                 break;
 
             default:
-                throw new Error(`Unhandled state transition for transfer ${this.data.bulkTransferId}: ${util.inspect(args)}`);
+                throw new Error(`Unhandled state transition for bulk transfer ${this.data.bulkTransferId}: ${util.inspect(args)}`);
         }
     }
 
 
     /**
-     * Resolves the payee.
-     * Starts the payee resolution process by sending a GET /parties request to the switch;
-     * then waits for a notification from the cache that the payee has been resolved.
+     * Resolves the payees.
+     * Starts the payees resolution process by sending a GET /parties request multiple times to the switch;
+     * then waits for notifications from the cache that the payees have been resolved.
      */
-    async _resolvePayees() {
+    _resolvePayees() {
+        const partiesLookupPromises = this.data.individualTransfers.map((transfer) => this._makePartyLookupPromiseForTransfer(transfer));
+        return Promise.all(partiesLookupPromises);
+    }
+    
+    /**
+     * Sets up a subcriber to the cache for a single party lookup,
+     * sends out the request for the party lookup,
+     * and handles timeout and errors. 
+     * 
+     * @returns {Promise} Party lookup promise
+     */
+    _makePartyLookupPromiseForTransfer(transfer) {
+        const party = transfer.to;
         // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
             // listen for resolution events on the payee idType and idValue
-            const payeeKey = `${this.data.to.idType}_${this.data.to.idValue}`
-              + (this.data.to.idSubValue ? `_${this.data.to.idSubValue}` : '');
+            const payeeKey = `${party.idType}_${party.idValue}`
+              + (party.idSubValue ? `_${party.idSubValue}` : '');
 
             // hook up a subscriber to handle response messages
             const subId = await this._cache.subscribe(payeeKey, (cn, msg, subId) => {
@@ -208,18 +221,18 @@ class OutboundBulkTransfersModel {
                     });
 
                     // check we got the right payee and info we need
-                    if(payee.partyIdInfo.partyIdType !== this.data.to.idType) {
-                        const err = new Error(`Expecting resolved payee party IdType to be ${this.data.to.idType} but got ${payee.partyIdInfo.partyIdType}`);
+                    if(payee.partyIdInfo.partyIdType !== party.idType) {
+                        const err = new Error(`Expecting resolved payee party IdType to be ${party.idType} but got ${payee.partyIdInfo.partyIdType}`);
                         return reject(err);
                     }
 
-                    if(payee.partyIdInfo.partyIdentifier !== this.data.to.idValue) {
-                        const err = new Error(`Expecting resolved payee party identifier to be ${this.data.to.idValue} but got ${payee.partyIdInfo.partyIdentifier}`);
+                    if(payee.partyIdInfo.partyIdentifier !== party.idValue) {
+                        const err = new Error(`Expecting resolved payee party identifier to be ${party.idValue} but got ${payee.partyIdInfo.partyIdentifier}`);
                         return reject(err);
                     }
 
-                    if(payee.partyIdInfo.partySubIdOrType !== this.data.to.idSubValue) {
-                        const err = new Error(`Expecting resolved payee party subTypeId to be ${this.data.to.idSubValue} but got ${payee.partyIdInfo.partySubIdOrType}`);
+                    if(payee.partyIdInfo.partySubIdOrType !== party.idSubValue) {
+                        const err = new Error(`Expecting resolved payee party subTypeId to be ${party.idSubValue} but got ${payee.partyIdInfo.partySubIdOrType}`);
                         return reject(err);
                     }
 
@@ -230,17 +243,17 @@ class OutboundBulkTransfersModel {
 
                     // now we got the payee, add the details to our data so we can use it
                     // in the quote request
-                    this.data.to.fspId = payee.partyIdInfo.fspId;
+                    party.fspId = payee.partyIdInfo.fspId;
                     if(payee.partyIdInfo.extensionList) {
-                        this.data.to.extensionList  = payee.partyIdInfo.extensionList.extension;
+                        party.extensionList  = payee.partyIdInfo.extensionList.extension;
                     }
                     if(payee.personalInfo) {
                         if(payee.personalInfo.complexName) {
-                            this.data.to.firstName = payee.personalInfo.complexName.firstName || this.data.to.firstName;
-                            this.data.to.middleName = payee.personalInfo.complexName.middleName || this.data.to.middleName;
-                            this.data.to.lastName = payee.personalInfo.complexName.lastName || this.data.to.lastName;
+                            party.firstName = payee.personalInfo.complexName.firstName || party.firstName;
+                            party.middleName = payee.personalInfo.complexName.middleName || party.middleName;
+                            party.lastName = payee.personalInfo.complexName.lastName || party.lastName;
                         }
-                        this.data.to.dateOfBirth = payee.personalInfo.dateOfBirth;
+                        party.dateOfBirth = payee.personalInfo.dateOfBirth;
                     }
 
                     return resolve(payee);
@@ -252,7 +265,7 @@ class OutboundBulkTransfersModel {
 
             // set up a timeout for the resolution
             const timeout = setTimeout(() => {
-                const err = new BackendError(`Timeout resolving payee for transfer ${this.data.bulkTransferId}`, 504);
+                const err = new BackendError(`Timeout resolving payee for transfer ${transfer.transferId}`, 504);
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this._cache.unsubscribe(payeeKey, subId).catch(e => {
@@ -265,8 +278,8 @@ class OutboundBulkTransfersModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a GET /parties request to the switch
             try {
-                const res = await this._requests.getParties(this.data.to.idType, this.data.to.idValue,
-                    this.data.to.idSubValue);
+                const res = await this._requests.getParties(party.idType, party.idValue,
+                    party.idSubValue);
                 this._logger.push({ peer: res }).log('Party lookup sent to peer');
             }
             catch(err) {
@@ -289,7 +302,7 @@ class OutboundBulkTransfersModel {
      * Starts the quote resolution process by sending a POST /quotes request to the switch;
      * then waits for a notification from the cache that the quote response has been received
      */
-    async _requestQuotes() {
+    async _requestBulkQuote() {
         // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
             // create a quote request
@@ -436,7 +449,7 @@ class OutboundBulkTransfersModel {
      * Starts the transfer process by sending a POST /transfers (prepare) request to the switch;
      * then waits for a notification from the cache that the transfer has been fulfilled
      */
-    async _executeTransfer() {
+    async _executeBulkTransfer() {
         // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
             // create a transfer prepare request
@@ -529,7 +542,7 @@ class OutboundBulkTransfersModel {
     /**
      * Get transfer details by sending GET /transfers request to the switch
      */
-    async _getTransfers() {
+    async _getBulkTransfer() {
         // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
             const transferKey = `tf_${this.data.bulkTransferId}`;
@@ -586,7 +599,7 @@ class OutboundBulkTransfersModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a GET /transfers request to the switch
             try {
-                const res = await this._requests.getTransferss(this.data.bulkTransferId);
+                const res = await this._requests.getBulkTransfers(this.data.bulkTransferId);
                 this._logger.push({ peer: res }).log('Transfer lookup sent to peer');
             }
             catch(err) {
@@ -749,8 +762,8 @@ class OutboundBulkTransfersModel {
                     break;
 
                 case 'payeesResolved':
-                    // next transition is to requestQuotes
-                    await this.stateMachine.requestQuotes();
+                    // next transition is to requestBulkQuote
+                    await this.stateMachine.requestBulkQuote();
                     this._logger.log(`Quote received for transfer ${this.data.bulkTransferId}`);
                     if(this.stateMachine.state === 'quotesReceived' && !this._autoAcceptQuotes) {
                         //we break execution here and return the quote response details to allow asynchronous accept or reject
@@ -761,13 +774,13 @@ class OutboundBulkTransfersModel {
                     break;
 
                 case 'quotesReceived':
-                    // next transition is executeTransfer
-                    await this.stateMachine.executeTransfer();
+                    // next transition is executeBulkTransfer
+                    await this.stateMachine.executeBulkTransfer();
                     this._logger.log(`Transfer ${this.data.bulkTransferId} has been completed`);
                     break;
 
-                case 'getTransfers':
-                    await this.stateMachine.getTransfers();
+                case 'getBulkTransfer':
+                    await this.stateMachine.getBulkTransfer();
                     this._logger.log(`Get transfer ${this.data.bulkTransferId} has been completed`);
                     break;
 
