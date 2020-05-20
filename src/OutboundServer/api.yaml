@@ -1100,7 +1100,7 @@ components:
           type: array
           maxItems: 1000
           items:
-            $ref: '#/components/schemas/individualTansferFulfilment'
+            $ref: '#/components/schemas/individualTransferFulfilment'
 
     quote:
       type: object
@@ -1580,6 +1580,14 @@ components:
         pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
         type: string
       description: Identifier of the transfer to continue as returned in the response to a `POST /transfers` request.
+    bulkTransferId:
+      name: bulkTransferId
+      in: path
+      required: true
+      schema:
+        pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+        type: string
+      description: Identifier of the bulk transfer to continue as returned in the response to a `POST /bulkTransfers` request.
     requestToPayTransactionId:
       name: requestToPayTransactionId
       in: path
