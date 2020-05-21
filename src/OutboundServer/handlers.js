@@ -211,11 +211,7 @@ const postBulkTransfers = async (ctx) => {
  */
 const getBulkTransfers = async (ctx) => {
     try {
-        let bulkTransferRequest = {
-            ...ctx.request.body,
-            bulkTransferId: ctx.state.path.params.bulkTransferId,
-            currentState: 'getBulkTransfer',
-        };
+        const bulkTransferId = ctx.state.path.params.bulkTransferId;
 
         // use the bulk transfers model to execute asynchronous stages with the switch
         const model = new OutboundBulkTransfersModel({
@@ -225,9 +221,7 @@ const getBulkTransfers = async (ctx) => {
             wso2Auth: ctx.state.wso2Auth,
         });
 
-        // initialize the bulk transfer models and start it running
-        await model.initialize(bulkTransferRequest);
-        const response = await model.run();
+        const response = await model.getBulkTransfer(bulkTransferId);
 
         // return the result
         ctx.response.status = 200;

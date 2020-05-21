@@ -41,6 +41,83 @@ class OutboundBulkTransfersModel {
         });
     }
 
+
+    /**
+     * Get bulk transfer details by sending GET /bulkTransfers/{ID} request to the switch
+     */
+    async getBulkTransfer(bulkTransferId) {
+        // eslint-disable-next-line no-async-promise-executor
+        return new Promise(async (resolve, reject) => {
+            const bulkTransferKey = `bulkTransfer_${bulkTransferId}`;
+
+            // hook up a subscriber to handle response messages
+            const subId = await this._cache.subscribe(bulkTransferKey, (cn, msg, subId) => {
+                try {
+                    let error;
+                    let message = JSON.parse(msg);
+
+                    if (message.type === 'bulkTransferError') {
+                        error = new BackendError(`Got an error response retrieving bulk transfer: ${util.inspect(message.data, { depth: Infinity })}`, 500);
+                        error.mojaloopError = message.data;
+                    } else if (message.type !== 'bulkTransferFulfil') {
+                        this._logger.push({ message }).log(`Ignoring cache notification for bulk transfer ${bulkTransferKey}. Uknokwn message type ${message.type}.`);
+                        return;
+                    }
+
+                    // cancel the timeout handler
+                    clearTimeout(timeout);
+
+                    // stop listening for bulk transfer fulfil messages
+                    this._cache.unsubscribe(bulkTransferKey, subId).catch(e => {
+                        this._logger.log(`Error unsubscribing (in callback) ${bulkTransferKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    });
+
+                    if (error) {
+                        return reject(error);
+                    }
+
+                    const fulfil = message.data;
+                    this._logger.push({ fulfil }).log('Bulk transfer fulfil received');
+
+                    return resolve(fulfil);
+                }
+                catch(err) {
+                    return reject(err);
+                }
+            });
+
+            // set up a timeout for the resolution
+            const timeout = setTimeout(() => {
+                const err = new BackendError(`Timeout getting bulk transfer ${bulkTransferId}`, 504);
+
+                // we dont really care if the unsubscribe fails but we should log it regardless
+                this._cache.unsubscribe(bulkTransferKey, subId).catch(e => {
+                    this._logger.log(`Error unsubscribing (in timeout handler) ${bulkTransferKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                });
+
+                return reject(err);
+            }, this._requestProcessingTimeoutSeconds * 1000);
+
+            // now we have a timeout handler and a cache subscriber hooked up we can fire off
+            // a GET /bulkTransfers/{ID} request to the switch
+            try {
+                const res = await this._requests.getBulkTransfers(bulkTransferId);
+                this._logger.push({ peer: res }).log('Bulk transfer lookup sent to peer');
+            }
+            catch(err) {
+                // cancel the timout and unsubscribe before rejecting the promise
+                clearTimeout(timeout);
+
+                // we dont really care if the unsubscribe fails but we should log it regardless
+                this._cache.unsubscribe(bulkTransferKey, subId).catch(e => {
+                    this._logger.log(`Error unsubscribing ${bulkTransferKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                });
+
+                return reject(err);
+            }
+        });
+    }
+
     /**
      * Returns a promise that resolves/rejects when the bulk transfer is returned/errored
      */
