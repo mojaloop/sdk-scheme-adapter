@@ -12,7 +12,14 @@
 
 
 const util = require('util');
-const { AccountsModel, OutboundTransfersModel, OutboundBulkTransfersModel, OutboundRequestToPayTransferModel, OutboundRequestToPayModel } = require('@internal/model');
+const {
+    AccountsModel,
+    OutboundTransfersModel,
+    OutboundBulkTransfersModel,
+    OutboundRequestToPayTransferModel,
+    OutboundRequestToPayModel,
+    OutboundBulkQuotesModel,
+} = require('@internal/model');
 
 
 /**
@@ -62,6 +69,9 @@ const handleTransferError = (method, err, ctx) =>
 
 const handleBulkTransferError = (method, err, ctx) =>
     handleError(method, err, ctx, 'bulkTransferState');
+
+const handleBulkQuoteError = (method, err, ctx) =>
+    handleError(method, err, ctx, 'bulkQuoteState');
 
 const handleAccountsError = (method, err, ctx) =>
     handleError(method, err, ctx, 'executionState');
@@ -168,7 +178,7 @@ const putTransfers = async (ctx) => {
 };
 
 /**
- * Handler for outbound bulk transfer request initiation
+ * Handler for outbound bulk transfer request
  */
 const postBulkTransfers = async (ctx) => {
     try {
@@ -230,34 +240,31 @@ const getBulkTransfers = async (ctx) => {
     }
 };
 
-/** TODO:
- * Handler for resuming outbound bulk transfers in scenarios where two-step transfers are enabled
- * by disabling the autoAcceptQuote SDK option
+/**
+ * Handler for outbound bulk quote request
  */
-const putBulkTransfers = async (ctx) => {
+const postBulkQuotes = async (ctx) => {
     try {
-        // this requires a multi-stage sequence with the switch.
-        // use the bulk transfers model to execute asynchronous stages with the switch
-        const model = new OutboundBulkTransfersModel({
+        let bulkQuoteRequest = {
+            ...ctx.request.body
+        };
+
+        // use the bulk quotes model to execute asynchronous request with the switch
+        const model = new OutboundBulkQuotesModel({
             ...ctx.state.conf,
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2Auth: ctx.state.wso2Auth,
         });
 
-        // TODO: check the incoming body to reject parties or quotes when requested to do so
-
-        // load the bulk transfer model from cache and start it running again
-        await model.load(ctx.state.path.params.bulkTransferId);
-
-        const response = await model.run();
+        const response = await model.postBulkQuote(bulkQuoteRequest);
 
         // return the result
         ctx.response.status = 200;
         ctx.response.body = response;
     }
     catch (err) {
-        return handleBulkTransferError('putBulkTransfers', err, ctx);
+        return handleBulkQuoteError('postBulkQuotes', err, ctx);
     }
 };
 
@@ -404,7 +411,9 @@ module.exports = {
     },
     '/bulkTransfers/{bulkTransferId}': {
         get: getBulkTransfers,
-        put: putBulkTransfers
+    },
+    '/bulkQuotes': {
+        post: postBulkQuotes,
     },
     '/accounts': {
         post: postAccounts
