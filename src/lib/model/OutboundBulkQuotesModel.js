@@ -48,7 +48,7 @@ class OutboundBulkQuotesModel {
     async postBulkQuote(bulkQuoteRequest) {
         this.bulkQuoteRequest = bulkQuoteRequest;
 
-        if(!bulkQuoteRequest.hasOwnProperty('bulkQuoteId')) {
+        if (!bulkQuoteRequest.hasOwnProperty('bulkQuoteId')) {
             bulkQuoteRequest.bulkQuoteId = uuid();
         }
 
@@ -56,17 +56,17 @@ class OutboundBulkQuotesModel {
     }
 
     /**
-     * Requests a quote
-     * Starts the quote resolution process by sending a POST /quotes request to the switch;
-     * then waits for a notification from the cache that the quote response has been received
+     * Requests a bulk quote
+     * Starts the bulk quoting process by sending a POST /bulkQuotes request to the switch;
+     * then waits for a notification from the cache that the bulk quote response has been received.
      */
     async _requestBulkQuote() {
         // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
-            // create a quote request
+            // create a bulk quote request
             const bulkQuote = this._buildBulkQuoteRequest();
 
-            // listen for events on the quoteId
+            // listen for events on the bulkQuoteId
             const bulkQuoteKey = `bulkQuote_${bulkQuote.bulkQuoteId}`;
 
             // hook up a subscriber to handle response messages
@@ -107,12 +107,12 @@ class OutboundBulkQuotesModel {
                         return reject(error);
                     }
 
-                    const bulkQquoteResponseBody = message.data;
-                    this._logger.push({ bulkQquoteResponseBody }).log('Bulk quote response received');
+                    const bulkQuoteResponseBody = message.data;
+                    this._logger.push({ bulkQuoteResponseBody }).log('Bulk quote response received');
 
-                    return resolve(bulkQuote);
+                    return resolve(bulkQuoteResponseBody);
                 }
-                catch(err) {
+                catch (err) {
                     return reject(err);
                 }
             });
@@ -135,7 +135,7 @@ class OutboundBulkQuotesModel {
                 const res = await this._requests.postBulkQuotes(bulkQuote, this.bulkQuoteRequest.to.fspId);
                 this._logger.push({ res }).log('Bulk quote request sent to peer');
             }
-            catch(err) {
+            catch (err) {
                 // cancel the timout and unsubscribe before rejecting the promise
                 clearTimeout(timeout);
 
@@ -162,8 +162,8 @@ class OutboundBulkQuotesModel {
 
         bulkQuoteRequest.expiration = this._getExpirationTimestamp();
         this.bulkQuoteRequest.geoCode && (bulkQuoteRequest.geoCode = this.bulkQuoteRequest.geoCode);
-        // add extensionList if provided
-        if(this.bulkQuoteRequest.quoteRequestExtensions && this.bulkQuoteRequest.quoteRequestExtensions.length > 0) {
+
+        if (this.bulkQuoteRequest.quoteRequestExtensions && this.bulkQuoteRequest.quoteRequestExtensions.length > 0) {
             bulkQuoteRequest.extensionList = {
                 extension: this.bulkQuoteRequest.quoteRequestExtensions
             };
@@ -179,7 +179,7 @@ class OutboundBulkQuotesModel {
                     currency: individualQuote.currency,
                     amount: individualQuote.amount
                 },
-                transactionType : {
+                transactionType: {
                     scenario: individualQuote.transactionType,
                     // TODO: support payee initiated txns?
                     initiator: 'PAYER',
@@ -190,12 +190,12 @@ class OutboundBulkQuotesModel {
                 }
             };
             individualQuote.note && (quote.note = individualQuote.note);
-            if(individualQuote.extensions && individualQuote.extensions.length > 0) {
+            if (individualQuote.extensions && individualQuote.extensions.length > 0) {
                 bulkQuoteRequest.extensionList = {
                     extension: individualQuote.extensions
                 };
             }
-    
+
             return quote;
         });
 

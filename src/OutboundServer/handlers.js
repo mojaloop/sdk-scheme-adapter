@@ -195,9 +195,7 @@ const postBulkTransfers = async (ctx) => {
             wso2Auth: ctx.state.wso2Auth,
         });
 
-        // initialize the bulk transfers model and start it running
-        await model.initialize(bulkTransferRequest);
-        const response = await model.run();
+        const response = await model.postBulkTransfer(bulkTransferRequest);
 
         // return the result
         ctx.response.status = 200;
