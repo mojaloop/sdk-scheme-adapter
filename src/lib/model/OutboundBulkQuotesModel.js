@@ -12,12 +12,9 @@
 
 const util = require('util');
 const { uuid } = require('uuidv4');
-const { Ilp, MojaloopRequests } = require('@mojaloop/sdk-standard-components');
+const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const shared = require('@internal/shared');
 const { BackendError } = require('./common');
-
-
-// TODO: Adapt to bulk quotes
 
 /**
  *  Models the state machine and operations required for performing an outbound bulk quote
@@ -28,13 +25,7 @@ class OutboundBulkQuotesModel {
         this._logger = config.logger;
         this._requestProcessingTimeoutSeconds = config.requestProcessingTimeoutSeconds;
         this._dfspId = config.dfspId;
-        this._expirySeconds = config.expirySeconds;
         this._rejectExpiredQuoteResponses = config.rejectExpiredQuoteResponses;
-        this._rejectExpiredQuoteFulfils = config.rejectExpiredQuoteFulfils;
-        this._autoAcceptQuotes = config.autoAcceptQuotes;
-        this._autoAcceptParty = config.autoAcceptParty;
-        this._useQuoteSourceFSPAsQuotePayeeFSP = config.useQuoteSourceFSPAsQuotePayeeFSP;
-        this._checkIlp = config.checkIlp;
 
         this._requests = new MojaloopRequests({
             logger: this._logger,
@@ -48,10 +39,6 @@ class OutboundBulkQuotesModel {
             jwsSignPutParties: config.jwsSignPutParties,
             jwsSigningKey: config.jwsSigningKey,
             wso2Auth: config.wso2Auth
-        });
-
-        this._ilp = new Ilp({
-            secret: config.ilpSecret
         });
     }
 
