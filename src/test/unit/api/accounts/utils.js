@@ -1,6 +1,7 @@
-const request = require('request-promise-native');
+const nock = require('nock');
 const OpenAPIResponseValidator = require('openapi-response-validator').default;
 
+const defaultConfig = require('../../data/defaultConfig');
 const postAccountsBody = require('./data/postAccountsBody');
 
 /**
@@ -21,44 +22,41 @@ function createPostAccountsTester({ reqInbound, reqOutbound, apiSpecsOutbound })
      */
     return async (putBodyFn, responseCode, responseBody) => {
         let pendingRequest = Promise.resolve();
-        const handleRequest = async (req) => {
-            const urlPath = new URL(req.uri).pathname;
-            const body = JSON.parse(req.body);
-            const method = req.method;
-            expect(method).toBe('POST');
-            expect(urlPath).toBe('/participants');
+        const endpoint = new URL(`http://${defaultConfig.alsEndpoint}`).host;
+        const switchEndpoint = `http://${endpoint}`;
+
+        const sendPutParticipants = async (requestBody) => {
+            const body = JSON.parse(requestBody);
             const putBody = await Promise.resolve(putBodyFn(body));
             let putUrl = `/participants/${body.requestId}`;
             if (putBody.errorInformation) {
                 putUrl += '/error';
             }
-            await reqInbound.put(putUrl).
-                send(putBody).
-                set('Date', new Date().toISOString()).
-                set('fspiop-source', 'mojaloop-sdk').
-                expect(200);
+
+            return reqInbound.put(putUrl)
+                .send(putBody)
+                .set('Date', new Date().toISOString())
+                .set('fspiop-source', 'mojaloop-sdk')
+                .expect(200);
         };
-        const requestSpy = request.mockImplementation((req) => {
-            pendingRequest = handleRequest(req);
-            return Promise.resolve({headers: {}, statusCode: 202});
-        });
-        await reqOutbound.post('/accounts').
-            send(postAccountsBody).
-            then((res) => {
-                const {body} = res;
-                expect(res.statusCode).toEqual(responseCode);
-                expect(body).toEqual(responseBody);
-                const responseValidator = new OpenAPIResponseValidator(
-                    apiSpecsOutbound.paths['/accounts'].post);
-                const err = responseValidator.validateResponse(responseCode,
-                    body);
-                if (err) {
-                    console.log(body);
-                    throw err;
-                }
+
+        await nock(switchEndpoint)
+            .post('/participants')
+            .reply(202, (_, requestBody) => {
+                pendingRequest = sendPutParticipants(requestBody).then();
             });
+
+        const res = await reqOutbound.post('/accounts').send(postAccountsBody);
+        const {body} = res;
+        expect(res.statusCode).toEqual(responseCode);
+        expect(body).toEqual(responseBody);
+        const responseValidator = new OpenAPIResponseValidator(apiSpecsOutbound.paths['/accounts'].post);
+        const err = responseValidator.validateResponse(responseCode, body);
+        if (err) {
+            console.log(body);
+            throw err;
+        }
         await pendingRequest;
-        requestSpy.mockRestore();
     };
 }
 

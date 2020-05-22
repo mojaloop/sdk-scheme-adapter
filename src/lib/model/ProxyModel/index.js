@@ -47,20 +47,20 @@ class ProxyModel {
     }
 
     async _executePostRequest(request) {
-        const res = await this._requests.postCustom(request.url, request.body, request.headers, request.query);
-        this._logger.push({ res }).log('POST request sent successfully');
+        const res = await this._requests.postCustom(request.url, request.body, request.headers, request.query, true);
+        await this._logger.push({statusCode: res.statusCode, headers: res.headers}).log('POST request sent successfully');
         return res;
     }
 
     async _executePutRequest(request) {
-        const res = await this._requests.putCustom(request.url, request.body, request.headers, request.query);
-        this._logger.push({ res }).log('PUT request sent successfully');
+        const res = await this._requests.putCustom(request.url, request.body, request.headers, request.query, true);
+        await this._logger.push({statusCode: res.statusCode, headers: res.headers}).log('PUT request sent successfully');
         return res;
     }
 
     async _executeGetRequest(request) {
-        const res = await this._requests.getCustom(request.url, request.headers, request.query);
-        this._logger.push({ res }).log('GET request sent successfully');
+        const res = await this._requests.getCustom(request.url, request.headers, request.query, true);
+        await this._logger.push({statusCode: res.statusCode, headers: res.headers}).log('GET request sent successfully');
         return res;
     }
 
