@@ -617,7 +617,7 @@ class InboundTransfersModel {
                 sourceFspId);
         }
         catch (err) {
-            this._logger.push({ err }).log('Error in getBulkTransfers');
+            this._logger.push({ err }).log('Error in getBulkTransfer');
             const mojaloopError = await this._handleError(err);
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
             return this._mojaloopRequests.putBulkTransfersError(bulkTransferId,

@@ -6,6 +6,8 @@
  *                                                                        *
  *  ORIGINAL AUTHOR:                                                      *
  *       James Bush - james.bush@modusbox.com                             *
+ *  CONTRIBUTORS:                                                         *
+ *       Steven Oderayi - steven.oderayi@modusbox.com                     *
  **************************************************************************/
 
 'use strict';
@@ -704,7 +706,7 @@ const getBulkTransfersById = async (ctx) => {
             const sourceFspId = ctx.request.headers['fspiop-source'];
 
             // use the model to handle the request
-            const response = await model.getBulkTransfers(ctx.state.path.params.ID,
+            const response = await model.getBulkTransfer(ctx.state.path.params.ID,
                 sourceFspId);
 
             // log the result

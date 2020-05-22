@@ -10,6 +10,9 @@
     "test:int": "jest --ci --reporters=default --reporters=jest-junit --env=node test/integration --forceExit"
   },
   "author": "Matt Kingston, James Bush, ModusBox Inc.",
+  "contributors": [
+    "Steven Oderayi <steven.oderayi@modusbox.com>"
+  ],
   "license": "Apache-2.0",
   "licenses": [
     {

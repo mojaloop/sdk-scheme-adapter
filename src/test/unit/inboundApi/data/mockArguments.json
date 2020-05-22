@@ -24,5 +24,84 @@
       "name": "Murthy Kakarlamudi",
       "merchantClassificationCode": "123"
     }
+  },
+  "bulkQuoteRequest": {
+    "bulkQuoteId": "fake-bulk-quote-id",
+    "payer": {
+      "partyIdInfo": {
+        "partyIdType": "MSISDN",
+        "partyIdentifier": "17855501914",
+        "fspId": "mojaloop-sdk"
+      },
+      "personalInfo": {
+        "complexName": {
+          "firstName": "Donald",
+          "lastName": "Trump"
+        },
+        "dateOfBirth": "2010-10-10"
+      },
+      "name": "Donald Trump",
+      "merchantClassificationCode": "123"
+    },
+    "individualQuotes": [
+      {
+        "quoteId": "fake-bulk-quote-id",
+        "transactionId": "fake-transaction-id",
+        "payee": {
+          "partyIdInfo": {
+            "partyIdType": "MSISDN",
+            "partyIdentifier": "17855508275",
+            "fspId": "mojaloop-sdk"
+          },
+          "personalInfo": {
+            "complexName": {
+              "firstName": "Justin",
+              "lastName": "Trudeau"
+            },
+            "dateOfBirth": "2010-10-10"
+          },
+          "name": "Justin Trudeau",
+          "merchantClassificationCode": "123"
+        },
+        "amountType": "SEND",
+        "amount": {
+          "currency": "XOF",
+          "amount": 10
+        },
+        "transactionType": {
+          "scenario": "TRANSFER",
+          "initiator": "PAYER",
+          "initiatorType": "CONSUMER"
+        }
+      }
+    ],
+    "expiration": "2019-06-04T04:02:10.378Z"
+  },
+  "bulkTransferRequest": {
+    "bulkTransferId": "fake-bulk-transfer-id",
+    "bulkQuoteId": "fake-bulk-quote-id",
+    "payerFsp": "fake-payer-fsp",
+    "payeeFsp": "fake-payee-fsp",
+    "expiration": "2019-06-04T04:02:10.378Z",
+    "individualTransfers": [
+      {
+        "transferId": "fake-bulk-transfer-id",
+        "transferAmount": {
+          "currency": "XOF",
+          "amount": 10
+        },
+        "ilpPacket": "AYIBgQAAAAAAAASwNGxldmVsb25lLmRmc3AxLm1lci45T2RTOF81MDdqUUZERmZlakgyOVc4bXFmNEpLMHlGTFGCAUBQU0svMS4wCk5vbmNlOiB1SXlweUYzY3pYSXBFdzVVc05TYWh3CkVuY3J5cHRpb246IG5vbmUKUGF5bWVudC1JZDogMTMyMzZhM2ItOGZhOC00MTYzLTg0NDctNGMzZWQzZGE5OGE3CgpDb250ZW50LUxlbmd0aDogMTM1CkNvbnRlbnQtVHlwZTogYXBwbGljYXRpb24vanNvbgpTZW5kZXItSWRlbnRpZmllcjogOTI4MDYzOTEKCiJ7XCJmZWVcIjowLFwidHJhbnNmZXJDb2RlXCI6XCJpbnZvaWNlXCIsXCJkZWJpdE5hbWVcIjpcImFsaWNlIGNvb3BlclwiLFwiY3JlZGl0TmFtZVwiOlwibWVyIGNoYW50XCIsXCJkZWJpdElkZW50aWZpZXJcIjpcIjkyODA2MzkxXCJ9IgA",
+        "condition": "f5sqb7tBTWPd5Y8BDFdMm9BJR_MNI4isf8p8n4D5pHA"
+      }
+    ]
+  },
+  "bulkTransferPutRequest": {
+    "completedTimestamp": "2019-06-04T04:02:10.378Z",
+    "individualTransferResults": [
+      {
+        "transferId": "fake-bulk-transfer-id",
+        "fulfilment": "WLctttbu2HvTsa1XWvUoGRcQozHsqeu9Ahl2JW9Bsu8"
+      }
+    ]
   }
 }

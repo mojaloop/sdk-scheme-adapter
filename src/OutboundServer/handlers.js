@@ -6,6 +6,8 @@
  *                                                                        *
  *  ORIGINAL AUTHOR:                                                      *
  *       James Bush - james.bush@modusbox.com                             *
+ *  CONTRIBUTORS:                                                         *
+ *       Steven Oderayi - steven.oderayi@modusbox.com                     *
  **************************************************************************/
 
 'use strict';
