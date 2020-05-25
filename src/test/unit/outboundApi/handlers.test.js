@@ -11,11 +11,13 @@
 'use strict';
 
 const mockError = require('./data/mockError');
+const mockBulkQuoteError = require('./data/mockBulkQuoteError');
+const mockBulkTransferError = require('./data/mockBulkTransferError');
 const mockRequestToPayError = require('./data/mockRequestToPayError');
 const mockRequestToPayTransferError = require('./data/mockRequestToPayTransferError');
 const transferRequest = require('./data/transferRequest');
-const bulkTransferRequest = require('./data/bulkTransferRequest.json');
-const bulkQuoteRequest = require('./data/bulkQuoteRequest.json');
+const bulkTransferRequest = require('./data/bulkTransferRequest');
+const bulkQuoteRequest = require('./data/bulkQuoteRequest');
 const requestToPayPayload = require('./data/requestToPay');
 const requestToPayTransferRequest = require('./data/requestToPayTransferRequest');
 
@@ -55,17 +57,11 @@ OutboundTransfersModel.mockImplementation(() => {
  */
 OutboundBulkTransfersModel.mockImplementation(() => {
     return {
-        run: async () => {
-            // throw the mockError object when the model is run
-            throw mockError;
+        getBulkTransfer: async () => {
+            throw mockBulkTransferError;
         },
-        initialize: async () => {
-            // nothing needed here
-            return;
-        },
-        load: async () => {
-            // nothing needed here
-            return;
+        postBulkTransfer: async () => {
+            throw mockBulkTransferError;
         }
     };
 });
@@ -75,17 +71,8 @@ OutboundBulkTransfersModel.mockImplementation(() => {
  */
 OutboundBulkQuotesModel.mockImplementation(() => {
     return {
-        run: async () => {
-            // throw the mockError object when the model is run
-            throw mockError;
-        },
-        initialize: async () => {
-            // nothing needed here
-            return;
-        },
-        load: async () => {
-            // nothing needed here
-            return;
+        postBulkQuote: async () => {
+            throw mockBulkQuoteError;
         }
     };
 });
@@ -227,7 +214,7 @@ describe('Outbound API handlers:', () => {
         test('returns correct error response body when model throws mojaloop error', async () => {
             const mockContext = {
                 request: {
-                    body: transferRequest,
+                    body: bulkTransferRequest,
                     headers: {
                         'fspiop-source': 'foo'
                     }
@@ -239,21 +226,21 @@ describe('Outbound API handlers:', () => {
                 }
             };
 
-            await handlers['/transfers'].post(mockContext);
+            await handlers['/bulkTransfers'].post(mockContext);
             
             // check response is correct
             expect(mockContext.response.status).toEqual(500);
             expect(mockContext.response.body).toBeTruthy();
             expect(mockContext.response.body.message).toEqual('Mock error');
             expect(mockContext.response.body.statusCode)
-                .toEqual(mockError.transferState.lastError.mojaloopError.errorInformation.errorCode);
-            expect(mockContext.response.body.transferState).toEqual(mockError.transferState);
+                .toEqual(mockBulkTransferError.bulkTransferState.lastError.mojaloopError.errorInformation.errorCode);
+            expect(mockContext.response.body.bulkTransferState).toEqual(mockBulkTransferError.bulkTransferState);
         });
 
         test('uses correct extension list error code for response body statusCode when configured to do so', async () => {
             const mockContext = {
                 request: {
-                    body: transferRequest,
+                    body: bulkTransferRequest,
                     headers: {
                         'fspiop-source': 'foo'
                     }
@@ -267,7 +254,7 @@ describe('Outbound API handlers:', () => {
                 }
             };
 
-            await handlers['/transfers'].post(mockContext);
+            await handlers['/bulkTransfers'].post(mockContext);
 
             // check response is correct
             expect(mockContext.response.status).toEqual(500);
@@ -277,7 +264,7 @@ describe('Outbound API handlers:', () => {
             // in this case, where we have set outboundErrorExtensionKey config we expect the error body statusCode
             // property to come from the extensionList item with the corresponding key 'extErrorKey'
             expect(mockContext.response.body.statusCode).toEqual('9999');
-            expect(mockContext.response.body.transferState).toEqual(mockError.transferState);
+            expect(mockContext.response.body.bulkTransferState).toEqual(mockBulkTransferError.bulkTransferState);
         });
     });
 
@@ -285,7 +272,7 @@ describe('Outbound API handlers:', () => {
         test('returns correct error response body when model throws mojaloop error', async () => {
             const mockContext = {
                 request: {
-                    body: transferRequest,
+                    body: bulkQuoteRequest,
                     headers: {
                         'fspiop-source': 'foo'
                     }
@@ -297,21 +284,21 @@ describe('Outbound API handlers:', () => {
                 }
             };
 
-            await handlers['/transfers'].post(mockContext);
+            await handlers['/bulkQuotes'].post(mockContext);
             
             // check response is correct
             expect(mockContext.response.status).toEqual(500);
             expect(mockContext.response.body).toBeTruthy();
             expect(mockContext.response.body.message).toEqual('Mock error');
             expect(mockContext.response.body.statusCode)
-                .toEqual(mockError.transferState.lastError.mojaloopError.errorInformation.errorCode);
-            expect(mockContext.response.body.transferState).toEqual(mockError.transferState);
+                .toEqual(mockBulkQuoteError.bulkQuoteState.lastError.mojaloopError.errorInformation.errorCode);
+            expect(mockContext.response.body.bulkQuoteState).toEqual(mockBulkQuoteError.bulkQuoteState);
         });
 
         test('uses correct extension list error code for response body statusCode when configured to do so', async () => {
             const mockContext = {
                 request: {
-                    body: transferRequest,
+                    body: bulkQuoteRequest,
                     headers: {
                         'fspiop-source': 'foo'
                     }
@@ -325,7 +312,7 @@ describe('Outbound API handlers:', () => {
                 }
             };
 
-            await handlers['/transfers'].post(mockContext);
+            await handlers['/bulkQuotes'].post(mockContext);
 
             // check response is correct
             expect(mockContext.response.status).toEqual(500);
@@ -335,7 +322,7 @@ describe('Outbound API handlers:', () => {
             // in this case, where we have set outboundErrorExtensionKey config we expect the error body statusCode
             // property to come from the extensionList item with the corresponding key 'extErrorKey'
             expect(mockContext.response.body.statusCode).toEqual('9999');
-            expect(mockContext.response.body.transferState).toEqual(mockError.transferState);
+            expect(mockContext.response.body.bulkQuoteState).toEqual(mockBulkQuoteError.bulkQuoteState);
         });
     });
 

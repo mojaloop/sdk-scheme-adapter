@@ -52,8 +52,5 @@
     "openapi-response-validator": "^4.0.0",
     "redis-mock": "^0.49.0",
     "supertest": "^4.0.2"
-  },
-  "jest": {
-    "testEnvironment": "node"
   }
 }
