@@ -173,56 +173,29 @@ paths:
         504:
           $ref: '#/components/responses/bulkTransferTimeout'
 
-  /bulkTransfers/{bulkTransferId}:
-    put:
-      summary: Continues a bulk transfer that has paused at the quote stage in order to accept or reject payees parties and/or quotes
+  /bulkQuotes:
+    post:
+      summary: Request bulk quotes for the provided financial transactions
       description: >
-        The HTTP request `PUT /bulkTransfers/{bulkTransferId}` is used to continue a bulk transfer initiated via the `POST /bulkTransfers` method that has halted after parties lookup and/or quotation stage.
-
-
-        The request body should contain either the "acceptParty" or "acceptQuote" property set to `true` as required to continue the bulk transfer.
-
-
-        See the description of the `POST /bulkTransfers` HTTP method for more information on modes of transfer.
+        The HTTP request `POST /bulkQuotes` is used to request a bulk quote to fascilitate funds transfer from payer DFSP to payees' DFSP.
       tags:
-        - BulkTransfers
+        - BulkQuotes
       requestBody:
+        description: Bulk quote request body
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: '#/components/schemas/transferContinuationAcceptParty'
-                - $ref: '#/components/schemas/transferContinuationAcceptQuote'
-      parameters:
-        - $ref: '#/components/parameters/bulkTransferId'
+              $ref: '#/components/schemas/bulkQuoteRequest'
+        required: true
       responses:
         200:
-          $ref: '#/components/responses/bulkTransferSuccess'
+          $ref: '#/components/responses/bulkQuoteSuccess'
+        400:
+          $ref: '#/components/responses/bulkQuoteBadRequest'
         500:
-          $ref: '#/components/responses/bulkTransferServerError'
+          $ref: '#/components/responses/bulkQuoteServerError'
         504:
-          $ref: '#/components/responses/bulkTransferTimeout'
-
-    get:
-      summary: Retrieves information for a specific bulk transfer
-      description: The HTTP request `GET /bulkTransfers/{bulkTransferId}` is used to get information regarding a bulk transfer created or requested earlier. The `{bulkTransferId}` in the URI should contain the `bulkTransferId` that was used for the creation of the bulk transfer.
-      tags:
-        - BulkTransfers
-      parameters:
-        - $ref: '#/components/parameters/bulkTransferId'
-      responses:
-        200:
-          description: Bulk transfer information successfully retrieved
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/bulkTransferStatusResponse'
-        500:
-          description: An error occurred processing the bulk transfer
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/errorResponse'
+          $ref: '#/components/responses/bulkQuoteTimeout'
 
   /requestToPay:
     post:
@@ -1053,15 +1026,11 @@ components:
     bulkTransferResponse:
       type: object
       required:
-        - homeTransactionId
         - from
         - individualTransferResults
       properties:
         transferId:
           $ref: '#/components/schemas/mojaloopIdentifier'
-        homeTransactionId:
-          type: string
-          description: Transaction ID from the DFSP backend, used to reconcile transactions between the Switch and DFSP backend systems.
         from:
           $ref: '#/components/schemas/transferParty'
         individualTransferResults:
@@ -1400,13 +1369,11 @@ components:
     bulkTransferRequest:
       type: object
       required:
-        - homeTransactionId
         - from
         - individualTransfers
       properties:
-        homeTransactionId:
-          type: string
-          description: Transaction ID from the DFSP backend, used to reconcile transactions between the Switch and DFSP backend systems.
+        bulkTransferId:
+          $ref: '#/components/schemas/mojaloopIdentifier'
         from:
           $ref: '#/components/schemas/transferParty'
         individualTransfers:
@@ -1483,6 +1450,122 @@ components:
             or an object representing other types of error e.g. exceptions that may occur inside the scheme adapter.
           $ref: '#/components/schemas/transferError'
 
+    bulkQuoteRequest:
+      type: object
+      required:
+        - from
+        - individualQuotes
+      properties:
+        bulkQuoteId:
+          $ref: '#/components/schemas/mojaloopIdentifier'
+        from:
+          $ref: '#/components/schemas/transferParty'
+        individualQuotes:
+          description: List of individual quotes in a bulk quote.
+          type: array
+          minItems: 1
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/individualQuote'
+    
+    individualQuote:
+      title: IndividualQuote
+      type: object
+      description: Data model for the complex type 'individualQuote'.
+      properties:
+        quoteId:
+          $ref: '#/components/schemas/mojaloopIdentifier'
+        homeTransactionId:
+          type: string
+          description: Transaction ID from the DFSP backend, used to reconcile transactions between the Switch and DFSP backend systems.
+        to:
+          $ref: '#/components/schemas/transferParty'
+        amountType:
+          $ref: '#/components/schemas/amountType'
+        currency:
+          $ref: '#/components/schemas/currency'
+        amount:
+          $ref: '#/components/schemas/money'
+        transactionType:
+          $ref: '#/components/schemas/transactionType'
+        note:
+          maxLength: 128
+          type: string
+        quoteRequestExtensions:
+          $ref: '#/components/schemas/extensionList'
+      required:
+        - quoteId
+        - to
+        - amountType
+        - currency
+        - transactionType
+    
+    bulkQuoteResponse:
+      type: object
+      required:
+        - from
+        - individualQuoteResults
+      properties:
+        quoteId:
+          $ref: '#/components/schemas/mojaloopIdentifier'
+        homeTransactionId:
+          type: string
+          description: Transaction ID from the DFSP backend, used to reconcile transactions between the Switch and DFSP backend systems.
+        from:
+          $ref: '#/components/schemas/transferParty'
+        individualQuoteResults:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/individualQuoteResult'
+          description: List of individualQuoteResults in a bulk transfer response.
+    
+    individualQuoteResult:
+      type: object
+      properties:
+        quoteId: 
+          $ref: '#/components/schemas/mojaloopIdentifier'
+        to:
+          $ref: '#/components/schemas/transferParty'
+        amountType:
+          $ref: '#/components/schemas/amountType'
+        currency:
+          $ref: '#/components/schemas/currency'
+        amount:
+          $ref: '#/components/schemas/money'
+        transactionType:
+          $ref: '#/components/schemas/transactionType'
+        note:
+          maxLength: 128
+          type: string
+        lastError:
+          description: >
+            Object representing the last error to occur during a quote process. This may be a Mojaloop API error returned from another entity in the scheme
+            or an object representing other types of error e.g. exceptions that may occur inside the scheme adapter.
+          $ref: '#/components/schemas/quoteError'
+      
+    quoteError:
+      type: object
+      description: This object represents a Mojaloop API error received at any time during the quote process
+      properties:
+        httpStatusCode:
+          type: integer
+          description: The HTTP status code returned to the caller. This is the same as the actual HTTP status code returned with the response.
+        mojaloopError:
+          description: If a quote process results in an error callback during the asynchronous Mojaloop API exchange, this property will contain the underlying Mojaloop API error object.
+          $ref: '#/components/schemas/mojaloopError'
+
+    bulkQuoteErrorResponse:
+      allOf:
+        - $ref: '#/components/schemas/errorResponse'
+        - type: object
+          required:
+            - bulkTansferState
+          properties:
+            bulkQuoteState:
+              $ref: '#/components/schemas/bulkQuoteResponse'
+
+
   responses:
     transferSuccess:
       description: Transfer completed successfully
@@ -1534,6 +1617,31 @@ components:
           schema:
             $ref: '#/components/schemas/bulkTransferErrorResponse'
 
+    bulkQuoteSuccess:
+      description: Bulk quote completed successfully
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/bulkQuoteResponse'
+    bulkQuoteBadRequest:
+      description: Malformed or missing required body, headers or parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/bulkQuoteErrorResponse'
+    bulkQuoteServerError:
+      description: An error occurred processing the bulk quote
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/bulkQuoteErrorResponse'
+    bulkQuoteTimeout:
+      description: Timeout occurred processing the bulk quote
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/bulkQuoteErrorResponse'
+
     accountsCreationCompleted:
       description: Accounts creation completed
       content:
@@ -1582,6 +1690,14 @@ components:
       description: Identifier of the transfer to continue as returned in the response to a `POST /transfers` request.
     bulkTransferId:
       name: bulkTransferId
+      in: path
+      required: true
+      schema:
+        pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+        type: string
+      description: Identifier of the bulk transfer to continue as returned in the response to a `POST /bulkTransfers` request.
+    bulkQuoteId:
+      name: bulkQuoteId
       in: path
       required: true
       schema:
