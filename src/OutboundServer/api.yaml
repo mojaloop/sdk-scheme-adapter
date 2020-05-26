@@ -131,29 +131,6 @@ paths:
       summary: Sends money from one account to multiple accounts
       description: >
         The HTTP request `POST /bulkTransfers` is used to request the movement of funds from payer DFSP to payees' DFSP.
-
-        The underlying Mojaloop API has three stages for money transfer:
-
-          1. Parties lookup. This facilitates a check by the sending party that the destination parties are correct before proceeding with money movements.
-          2. Quotations. This facilitates the exchange of fee information and the construction of a cryptographic "contracts" between payees and payer DFSPs before funds are transferred.
-          3. Transfers. The enactment of the previously agreed "contracts"
-
-        This method has several modes of operation.
-
-        - If the configuration variables `AUTO_ACCEPT_PARTIES` is set to `"false"` this method will terminate when the payees parties have been resolved and return the payees parties details.
-          If the payees wishes to proceed with the transfers, then a subsequent `PUT /bulkTransfers/{bulkTransferId}` request (accepting the payees parties) is required to continue the operation.
-          The scheme adapter will then proceed with quotation stage...
-
-        - If the configuration variable `AUTO_ACCEPT_QUOTES` is set to `"false"` this method will terminate and return the quotations when they have been received from the payees' DFSP.
-          If the payees wish to proceed with the transfers, then a subsequent `PUT /bulkTransfers/{bulkTransferId}` request (accepting the quotes) is required to continue the operation.
-          The scheme adapter will then proceed with the transfer state.
-
-        If the configuration variables `AUTO_ACCEPT_PARTIES` and `AUTO_ACCEPT_QUOTES` are both set to `"true"` this method will block until all three transfer stages are complete.
-        Upon completion it will return the entire set of transfer details received during the operation.
-
-        Combinations of settings for `AUTO_ACCEPT...` configuration variables allow the scheme adapter user to decide which mode of operation best suits their use cases. i.e. the scheme
-        adapter can be configured to "break" the three stage transfer at these points in order to execute backend logic such as parties verification, quoted fees assessments etc...
-
       tags:
         - BulkTransfers
       requestBody:

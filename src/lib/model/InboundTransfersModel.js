@@ -495,7 +495,7 @@ class InboundTransfersModel {
             const fulfilments = {};
 
             // collect errors for individual transfers, indexed by transferId
-            let individualTransferErrors;
+            let individualTransferErrors = {};
 
             // validate individual transfer
             for (const transfer of bulkPrepareRequest.individualTransfers) {
