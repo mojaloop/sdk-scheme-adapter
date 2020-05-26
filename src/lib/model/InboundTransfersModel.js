@@ -149,60 +149,6 @@ class InboundTransfersModel {
     }
 
     /**
-     * Queries details of a transfer
-     */
-    async getTransfer(transferId, sourceFspId) {
-        try {
-            // make a call to the backend to get transfer details
-            const response = await this._backendRequests.getTransfers(transferId);
-
-            if (!response) {
-                return 'No response from backend';
-            }
-
-            const ilpPaymentData = {
-                transferId: transferId,
-                homeTransactionId: response.homeTransactionId,
-                from: shared.internalPartyToMojaloopParty(response.from, response.from.fspId),
-                to: shared.internalPartyToMojaloopParty(response.to, response.to.fspId),
-                amountType: response.amountType,
-                currency: response.currency,
-                amount: response.amount,
-                transactionType: response.transactionType,
-                note: response.note,
-            };
-
-            let fulfilment;
-            if (this._dfspId === response.to.fspId) {
-                fulfilment = this._ilp.getResponseIlp(ilpPaymentData).fulfilment;
-            }
-
-            // create a  mojaloop transfer fulfil response
-            const mojaloopResponse = {
-                completedTimestamp: response.timestamp,
-                transferState: response.transferState,
-                fulfilment,
-                ...response.extensions && {
-                    extensionList: {
-                        extension: response.extensions,
-                    },
-                },
-            };
-
-            // make a callback to the source fsp with the transfer fulfilment
-            return this._mojaloopRequests.putTransfers(transferId, mojaloopResponse,
-                sourceFspId);
-        }
-        catch (err) {
-            this._logger.push({ err }).log('Error in getTransfers');
-            const mojaloopError = await this._handleError(err);
-            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
-            return this._mojaloopRequests.putTransfersError(transferId,
-                mojaloopError, sourceFspId);
-        }
-    }
-
-    /**
      * Asks the backend for a response to an incoming quote request and makes a callback to the originator with
      * the result
      */
@@ -367,6 +313,60 @@ class InboundTransfersModel {
     }
 
     /**
+    * Queries details of a transfer
+    */
+    async getTransfer(transferId, sourceFspId) {
+        try {
+            // make a call to the backend to get transfer details
+            const response = await this._backendRequests.getTransfers(transferId);
+
+            if (!response) {
+                return 'No response from backend';
+            }
+
+            const ilpPaymentData = {
+                transferId: transferId,
+                homeTransactionId: response.homeTransactionId,
+                from: shared.internalPartyToMojaloopParty(response.from, response.from.fspId),
+                to: shared.internalPartyToMojaloopParty(response.to, response.to.fspId),
+                amountType: response.amountType,
+                currency: response.currency,
+                amount: response.amount,
+                transactionType: response.transactionType,
+                note: response.note,
+            };
+
+            let fulfilment;
+            if (this._dfspId === response.to.fspId) {
+                fulfilment = this._ilp.getResponseIlp(ilpPaymentData).fulfilment;
+            }
+
+            // create a  mojaloop transfer fulfil response
+            const mojaloopResponse = {
+                completedTimestamp: response.timestamp,
+                transferState: response.transferState,
+                fulfilment,
+                ...response.extensions && {
+                    extensionList: {
+                        extension: response.extensions,
+                    },
+                },
+            };
+
+            // make a callback to the source fsp with the transfer fulfilment
+            return this._mojaloopRequests.putTransfers(transferId, mojaloopResponse,
+                sourceFspId);
+        }
+        catch (err) {
+            this._logger.push({ err }).log('Error in getTransfers');
+            const mojaloopError = await this._handleError(err);
+            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            return this._mojaloopRequests.putTransfersError(transferId,
+                mojaloopError, sourceFspId);
+        }
+    }
+
+    /**
      * Asks the backend for a response to an incoming bulk quotes request and makes a callback to the originator with
      * the results.
      */
@@ -377,7 +377,7 @@ class InboundTransfersModel {
             const internalForm = shared.mojaloopBulkQuotesRequestToInternal(bulkQuoteRequest);
 
             // make a call to the backend to ask for bulk quotes response
-            const response = await this._backendRequests.postBulkQuotesRequests(internalForm);
+            const response = await this._backendRequests.postBulkQuotes(internalForm);
 
             if (!response) {
                 // make an error callback to the source fsp
@@ -436,6 +436,34 @@ class InboundTransfersModel {
             const mojaloopError = await this._handleError(err);
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
             return await this._mojaloopRequests.putBulkQuotesError(bulkQuoteId,
+                mojaloopError, sourceFspId);
+        }
+    }
+
+    /**
+    * Queries details of a bulk quote
+    */
+    async getBulkQuote(bulkQuoteId, sourceFspId) {
+        try {
+            // make a call to the backend to get bulk quote details
+            const response = await this._backendRequests.getBulkQuotes(bulkQuoteId);
+
+            if (!response) {
+                return 'No response from backend';
+            }
+
+            // project our internal quote reponse into mojaloop bulk quote response form
+            const mojaloopResponse = shared.internalBulkQuotesResponseToMojaloop(response);
+
+            // make a callback to the source fsp with the bulk quote response
+            return this._mojaloopRequests.putBulkQuotes(bulkQuoteId, mojaloopResponse,
+                sourceFspId);
+        }
+        catch (err) {
+            this._logger.push({ err }).log('Error in getBulkQuote');
+            const mojaloopError = await this._handleError(err);
+            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            return this._mojaloopRequests.putBulkQuotesError(bulkQuoteId,
                 mojaloopError, sourceFspId);
         }
     }
@@ -579,7 +607,7 @@ class InboundTransfersModel {
             }
 
             let individualTransferResults = [];
-            
+
             for (const transfer of response.internalRequest.individualTransfers) {
                 const ilpPaymentData = {
                     transferId: transfer.transferId,
@@ -594,7 +622,7 @@ class InboundTransfersModel {
                 if (this._dfspId === transfer.to.fspId) {
                     fulfilment = this._ilp.getResponseIlp(ilpPaymentData).fulfilment;
                 }
-                const transferResult = { transferId: transfer.transferId,fulfilment };
+                const transferResult = { transferId: transfer.transferId, fulfilment };
                 transfer.errorInformation && (transferResult.errorInformation = transfer.errorInformation);
                 transfer.extensionList && (transferResult.extensionList = transfer.extensionList);
                 individualTransferResults.push(transferResult);

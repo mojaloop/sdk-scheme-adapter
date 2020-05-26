@@ -589,6 +589,53 @@ const putTransfersByIdError = async (ctx) => {
 };
 
 /**
+ * Handles a GET /bulkQuotes/{ID} request
+ */
+const getBulkQuotesById = async (ctx) => {
+    // kick off an asyncronous operation to handle the request
+    (async () => {
+        try {
+            if (ctx.state.conf.enableTestFeatures) {
+                // we are in test mode so cache the request
+                const req = {
+                    headers: ctx.request.headers
+                };
+                const res = await ctx.state.cache.set(
+                    `request_${ctx.state.path.params.ID}`, req);
+                ctx.state.logger.log(`Caching request : ${util.inspect(res)}`);
+            }
+
+            // use the transfers model to execute asynchronous stages with the switch
+            const model = new Model({
+                ...ctx.state.conf,
+                cache: ctx.state.cache,
+                logger: ctx.state.logger,
+                wso2Auth: ctx.state.wso2Auth,
+            });
+
+            const sourceFspId = ctx.request.headers['fspiop-source'];
+
+            // use the model to handle the request
+            const response = await model.getBulkQuote(ctx.state.path.params.ID,
+                sourceFspId);
+
+            // log the result
+            ctx.state.logger.push({response}).
+                log('Inbound transfers model handled GET /bulkQuotes/{ID} request');
+        }
+        catch(err) {
+            // nothing we can do if an error gets thrown back to us here apart from log it and continue
+            ctx.state.logger.push({ err }).log('Error handling GET /bulkQuotes/{ID}');
+        }
+    })();
+
+    // Note that we will have passed request validation, JWS etc... by this point
+    // so it is safe to return 202
+    ctx.response.status = 202;
+    ctx.response.body = '';
+};
+
+/**
  * Handles a POST /bulkQuotes request
  */
 const postBulkQuotes = async (ctx) => {
@@ -832,6 +879,7 @@ module.exports = {
         post: postBulkQuotes
     },
     '/bulkQuotes/{ID}': {
+        get: getBulkQuotesById,
         put: putBulkQuotesById
     },
     '/bulkQuotes/{ID}/error': {

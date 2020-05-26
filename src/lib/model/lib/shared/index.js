@@ -342,6 +342,7 @@ const mojaloopBulkQuotesRequestToInternal = (external) => {
 const internalBulkQuotesResponseToMojaloop = (internal) => {
     const individualQuoteResults = internal.individualQuotes.map((quote) => {
         const externalQuote = {
+            quoteId: quote.quoteId,
             transferAmount: {
                 amount: quote.transferAmount,
                 currency: quote.transferAmountCurrency,
@@ -380,6 +381,10 @@ const internalBulkQuotesResponseToMojaloop = (internal) => {
 
     if (internal.geoCode) {
         external.geoCode = internal.geoCode;
+    }
+
+    if (internal.extensionList) {
+        external.extensionList = internal.extensionList;
     }
 
     return external;

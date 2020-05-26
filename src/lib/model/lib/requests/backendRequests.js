@@ -100,8 +100,18 @@ class BackendRequests {
      *
      * @returns {object} - JSON response body if one was received
      */
-    async postBulkQuotesRequests(bulkQuotesRequest) {
+    async postBulkQuotes(bulkQuotesRequest) {
         return this._post('bulkQuotes', bulkQuotesRequest);
+    }
+
+    /**
+     * Executes a GET /bulkQuotes/{ID} request for the specified bulk quote ID
+     *
+     * @returns {object} - JSON response body if one was received
+     */
+    async getBulkQuotes(bulkQuoteId) {
+        const url = `bulkQuotes/${bulkQuoteId}`;
+        return this._get(url);
     }
 
     /**
