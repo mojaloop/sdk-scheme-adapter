@@ -1015,7 +1015,7 @@ components:
           maxItems: 1000
           items:
             $ref: '#/components/schemas/individualTransferResult'
-          description: List of individualTransferResults in a bulk transfer response.
+          description: List of individual transfer result in a bulk transfer response.
 
     transferStatusResponse:
       type: object
@@ -1030,23 +1030,6 @@ components:
           $ref: '#/components/schemas/transferStatus'
         fulfil:
           $ref: '#/components/schemas/transferFulfilment'
-
-    bulkTransferStatusResponse:
-      type: object
-      required:
-        - bulkTransferId
-        - currentState
-        - fulfilments
-      properties:
-        bulkTransferId:
-          $ref: '#/components/schemas/mojaloopIdentifier'
-        currentState:
-          $ref: '#/components/schemas/transferStatus'
-        fulfilments:
-          type: array
-          maxItems: 1000
-          items:
-            $ref: '#/components/schemas/individualTransferFulfilment'
 
     quote:
       type: object
