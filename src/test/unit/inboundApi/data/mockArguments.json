@@ -77,6 +77,16 @@
     ],
     "expiration": "2019-06-04T04:02:10.378Z"
   },
+  "bulkQuotePutRequest": {
+    "expiration": "2019-06-04T04:02:10.378Z",
+    "individualQuoteResults": [
+      {
+        "quoteId": "fake-bulk-transfer-id",
+        "ilpPacket": "WLctttbu2HvTsa1XWvUoGRcQozHsqeu9Ahl2JW9Bsu8",
+        "condition": "fake-condition"
+      }
+    ]
+  },
   "bulkTransferRequest": {
     "bulkTransferId": "fake-bulk-transfer-id",
     "bulkQuoteId": "fake-bulk-quote-id",
