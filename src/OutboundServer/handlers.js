@@ -148,6 +148,8 @@ const getTransfers = async (ctx) => {
     }
 };
 
+
+
 /**
  * Handler for resuming outbound transfers in scenarios where two-step transfers are enabled
  * by disabling the autoAcceptQuote SDK option
@@ -326,6 +328,7 @@ const putRequestToPayTransfer = async (ctx) => {
         return handleTransferError('putRequestToPayTransfer', err, ctx);
     }
 };
+
 
 /**
  * Handler for outbound participants request initiation

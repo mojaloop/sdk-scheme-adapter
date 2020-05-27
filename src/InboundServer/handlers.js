@@ -447,6 +447,7 @@ const putPartiesByTypeAndId = async (ctx) => {
     ctx.response.status = 200;
 };
 
+
 /**
  * Handles a PUT /quotes/{ID}. This is a response to a POST /quotes request
  */

@@ -34,7 +34,6 @@ class InboundTransfersModel {
         this._expirySeconds = config.expirySeconds;
         this._rejectTransfersOnExpiredQuotes = config.rejectTransfersOnExpiredQuotes;
         this._allowTransferWithoutQuote = config.allowTransferWithoutQuote;
-        this._ilpSecret = config.ilpSecret;
 
         this._mojaloopRequests = new MojaloopRequests({
             logger: this._logger,
@@ -94,6 +93,7 @@ class InboundTransfersModel {
         }
     }
 
+
     /**
      * Queries the backend API for the specified party and makes a callback to the originator with our dfspId if found
      */
@@ -118,6 +118,7 @@ class InboundTransfersModel {
                 mojaloopError, sourceFspId);
         }
     }
+
 
     /**
      * Queries the backend API for the specified party and makes a callback to the originator with the result
@@ -230,6 +231,7 @@ class InboundTransfersModel {
         }
     }
 
+
     /**
      * Validates  an incoming transfer prepare request and makes a callback to the originator with
      * the result
@@ -242,7 +244,7 @@ class InboundTransfersModel {
 
             if(!quote) {
                 // Check whether to allow transfers without a previous quote.
-                if (!this._allowTransferWithoutQuote) {
+                if(!this._allowTransferWithoutQuote) {
                     throw new Error(`Corresponding quote not found for transfer ${prepareRequest.transferId}`);
                 }
             }
@@ -263,6 +265,7 @@ class InboundTransfersModel {
             if(this._checkIlp && (prepareRequest.condition !== condition)) {
                 throw new Error(`ILP condition in transfer prepare for ${prepareRequest.transferId} does not match quote`);
             }
+
 
             if (quote && this._rejectTransfersOnExpiredQuotes) {
                 const now = new Date().toISOString();
@@ -556,7 +559,7 @@ class InboundTransfersModel {
             }
 
             // project the incoming bulk transfer prepare into an internal bulk transfer request
-            const internalForm = shared.mojaloopBulkPrepareToInternalBulkTransfer(bulkPrepareRequest, bulkQuote, this._ilpSecret);
+            const internalForm = shared.mojaloopBulkPrepareToInternalBulkTransfer(bulkPrepareRequest, bulkQuote, this._ilp);
 
             // make a call to the backend to inform it of the incoming bulk transfer
             const response = await this._backendRequests.postBulkTransfers(internalForm);

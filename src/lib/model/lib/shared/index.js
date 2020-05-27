@@ -27,6 +27,7 @@ const internalPartyToMojaloopParty = (internal, fspId) => {
             fspId: fspId
         }
     };
+
     if (internal.extensionList) {
         party.partyIdInfo.extensionList = {
             extension: internal.extensionList
@@ -50,7 +51,7 @@ const internalPartyToMojaloopParty = (internal, fspId) => {
 
     if(internal.dateOfBirth) { party.personalInfo.dateOfBirth = internal.dateOfBirth; }
 
-    if(typeof (internal.merchantClassificationCode) !== 'undefined') {
+    if(typeof(internal.merchantClassificationCode) !== 'undefined') {
         party.merchantClassificationCode = internal.merchantClassificationCode;
     }
 
@@ -71,7 +72,7 @@ const mojaloopPartyToInternalParty = (external) => {
         internal.idValue = external.partyIdInfo.partyIdentifier;
         internal.idSubValue = external.partyIdInfo.partySubIdOrType;
         // Note: we dont map fspid to internal transferParty object
-        if (external.partyIdInfo.extensionList) {
+        if(external.partyIdInfo.extensionList){
             internal.extensionList = external.partyIdInfo.extensionList.extension;
         }
     }
@@ -394,7 +395,7 @@ const internalBulkQuotesResponseToMojaloop = (internal) => {
  *
  * @returns {object}
  */
-const mojaloopBulkPrepareToInternalBulkTransfer = (external, bulkQuotes, ilpSecret) => {
+const mojaloopBulkPrepareToInternalBulkTransfer = (external, bulkQuotes, ilp) => {
     let internal = null;
     if (bulkQuotes) {
         // create a map of internal individual quotes payees indexed by quotedId, for faster lookup
@@ -406,7 +407,6 @@ const mojaloopBulkPrepareToInternalBulkTransfer = (external, bulkQuotes, ilpSecr
         
         // create a map of external individual transfers indexed by quotedId, for faster lookup
         const externalTransferIdsByQuoteId = {};
-        const ilp = new Ilp({ secret: ilpSecret });
         
         for (const transfer of external.individualTransfers) {
             const transactionObject = ilp.getTransactionObject(transfer.ilpPacket);
