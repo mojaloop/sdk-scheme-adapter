@@ -35,9 +35,7 @@ describe('Inbound API handlers:', () => {
     });
 
     describe('POST /quotes', () => {
-
         let mockContext;
-
         beforeEach(() => {
             mockContext = {
                 request: {
@@ -52,7 +50,6 @@ describe('Inbound API handlers:', () => {
                     logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports })
                 }
             };
-
         });
 
         test('calls `model.quoteRequest` with the expected arguments.', async () => {
@@ -382,6 +379,7 @@ describe('Inbound API handlers:', () => {
     });
 
     describe('POST /transactionRequests', () => {
+
         let mockTransactionReqContext;
 
         beforeEach(() => {
@@ -412,9 +410,11 @@ describe('Inbound API handlers:', () => {
     });
 
     describe('GET /authorizations', () => {
+
         let mockAuthorizationContext;
 
         beforeEach(() => {
+
             mockAuthorizationContext = {
                 request: {
                     headers: {

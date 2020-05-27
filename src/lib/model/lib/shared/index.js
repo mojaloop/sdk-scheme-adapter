@@ -10,8 +10,6 @@
 
 'use strict';
 
-const { Ilp } = require('@mojaloop/sdk-standard-components');
-
 
 /**
  * Build a quote party object from an outgoing transfer API party
@@ -27,7 +25,6 @@ const internalPartyToMojaloopParty = (internal, fspId) => {
             fspId: fspId
         }
     };
-
     if (internal.extensionList) {
         party.partyIdInfo.extensionList = {
             extension: internal.extensionList

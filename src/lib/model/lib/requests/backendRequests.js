@@ -171,7 +171,7 @@ class BackendRequests {
     }
 
 
-    async _put(url, body) {
+    _put(url, body) {
         const reqOpts = {
             method: 'PUT',
             uri: buildUrl(this.backendEndpoint, url),
@@ -189,8 +189,7 @@ class BackendRequests {
         }
     }
 
-    
-    async _post(url, body) {
+    _post(url, body) {
         const reqOpts = {
             method: 'POST',
             uri: buildUrl(this.backendEndpoint, url),

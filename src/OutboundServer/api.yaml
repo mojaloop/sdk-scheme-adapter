@@ -729,7 +729,6 @@ components:
 
         extensionList:
           $ref: '#/components/schemas/extensionList'
-    
     extensionItem:
       type: object
       properties:
@@ -796,7 +795,6 @@ components:
           $ref: '#/components/schemas/extensionList'
         transferRequestExtensions:
           $ref: '#/components/schemas/extensionList'
-
 
     requestToPayRequest:
       type: object
@@ -1244,8 +1242,7 @@ components:
         ^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$
       description: >
         The API data type Latitude is a JSON String in a lexical format that is
-        restricted by a regular expression for interoperability reasons.
-    
+        restricted by a regular expression for interoperability reasons.    
     longitude:
       type: string
       pattern: >-
@@ -1642,7 +1639,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/errorTransferResponse'
-
 
 
   parameters:
