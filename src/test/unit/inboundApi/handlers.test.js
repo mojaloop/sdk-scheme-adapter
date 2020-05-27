@@ -379,10 +379,10 @@ describe('Inbound API handlers:', () => {
     });
 
     describe('POST /transactionRequests', () => {
-
         let mockTransactionReqContext;
 
         beforeEach(() => {
+
             mockTransactionReqContext = {
                 request: {
                     body: mockTransactionRequest.transactionRequest,
@@ -410,11 +410,9 @@ describe('Inbound API handlers:', () => {
     });
 
     describe('GET /authorizations', () => {
-
         let mockAuthorizationContext;
 
         beforeEach(() => {
-
             mockAuthorizationContext = {
                 request: {
                     headers: {

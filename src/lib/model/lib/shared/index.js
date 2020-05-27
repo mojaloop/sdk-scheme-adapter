@@ -25,6 +25,7 @@ const internalPartyToMojaloopParty = (internal, fspId) => {
             fspId: fspId
         }
     };
+
     if (internal.extensionList) {
         party.partyIdInfo.extensionList = {
             extension: internal.extensionList

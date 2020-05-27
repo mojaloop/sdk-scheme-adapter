@@ -1,0 +1,42 @@
+{
+  "homeTransactionId": "home-tx-001",
+  "from": {
+    "displayName": "John Doe",
+    "idType": "MSISDN",
+    "idValue": "123456789"
+  },
+  "internalRequest": {
+    "individualTransfers": [
+      {
+        "transferId": "fake-transfer-id",
+        "to": {
+          "idType": "PERSONAL_ID",
+          "idValue": "987654321",
+          "idSubValue": "PASSPORT",
+          "fspId": "mojaloop-sdk"
+        },
+        "amount": "100",
+        "currency": "USD",
+        "amountType": "SEND",
+        "transactionType": {
+          "initiator": "PAYER",
+          "initiatorType": "CONSUMER",
+          "scenario": "TRANSFER"
+        }
+      }
+    ]
+  },
+  "bulkTransferState": "COMMITTED",
+  "timestamp": "2019-11-15T14:16:09.663",
+  "note": "test payment",
+  "extensions": [
+    {
+      "key": "treskey1",
+      "value": "tresvalue1"
+    },
+    {
+      "key": "treskey2",
+      "value": "tresvalue2"
+    }
+  ]
+}
