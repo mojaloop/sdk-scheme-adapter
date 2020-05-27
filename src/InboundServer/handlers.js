@@ -95,6 +95,7 @@ const getParticipantsByTypeAndId = async (ctx) => {
     ctx.response.body = '';
 };
 
+
 /**
  * Handles a GET /parties/{idType}/{idValue} request
  */
@@ -140,6 +141,7 @@ const getPartiesByTypeAndId = async (ctx) => {
     ctx.response.body = '';
 };
 
+
 /**
  * Handles a POST /parties/{idType}/{idValue} request
  */
@@ -148,6 +150,7 @@ const postPartiesByTypeAndId = (ctx) => {
     ctx.response.status = 501;
     ctx.response.body = '';
 };
+
 
 /**
  * Handles a POST /quotes request
@@ -193,6 +196,7 @@ const postQuotes = async (ctx) => {
     ctx.response.status = 202;
     ctx.response.body = '';
 };
+
 
 /**
  * Handles a POST /transfers request
@@ -382,6 +386,7 @@ const putParticipantsById = async (ctx) => {
     ctx.response.status = 200;
 };
 
+
 /**
  * Handles a PUT /participants/{ID}/error. This is an error response to a POST /participants request
  */
@@ -406,6 +411,7 @@ const putParticipantsByIdError = async (ctx) => {
     ctx.response.body = '';
 };
 
+
 /**
  * Handles a PUT /participants/{idType}/{idValue} request
  */
@@ -414,6 +420,7 @@ const putParticipantsByTypeAndId = async (ctx) => {
     ctx.response.status = 501;
     ctx.response.body = '';
 };
+
 
 /**
  * Handles a PUT /parties/{idType}/{IdValue}. This is a response to a GET /parties
@@ -511,6 +518,7 @@ const putTransfersById = async (ctx) => {
     ctx.response.status = 200;
 };
 
+
 /**
  * Handles a PUT /parties/{Type}/{ID}/error request. This is an error response to a GET /parties/{Type}/{ID} request
  */
@@ -540,6 +548,7 @@ const putPartiesByTypeAndIdError = async(ctx) => {
     ctx.response.body = '';
 };
 
+
 /**
  * Handles a PUT /quotes/{ID}/error request. This is an error response to a POST /quotes request
  */
@@ -563,6 +572,7 @@ const putQuotesByIdError = async(ctx) => {
     ctx.response.status = 200;
     ctx.response.body = '';
 };
+
 
 /**
  * Handles a PUT /transfers/{ID}/error. This is an error response to a POST /transfers request

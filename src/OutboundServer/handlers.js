@@ -35,7 +35,7 @@ const handleError = (method, err, ctx, stateField) => {
         [stateField]: err[stateField] || {},
         statusCode: (err.httpStatusCode || 500).toString()
     };
-    if (err[stateField]
+    if(err[stateField]
         && err[stateField].lastError
         && err[stateField].lastError.mojaloopError
         && err[stateField].lastError.mojaloopError.errorInformation
@@ -49,7 +49,7 @@ const handleError = (method, err, ctx, stateField) => {
 
         // if we have been configured to use an error extensionList item as status code, look for it and use
         // it if it is present...
-        if (ctx.state.conf.outboundErrorStatusCodeExtensionKey
+        if(ctx.state.conf.outboundErrorStatusCodeExtensionKey
             && errorInformation.extensionList
             && Array.isArray(errorInformation.extensionList.extension)) {
 
@@ -59,7 +59,7 @@ const handleError = (method, err, ctx, stateField) => {
                 return e.key === ctx.state.conf.outboundErrorStatusCodeExtensionKey;
             });
 
-            if (extensionItem) {
+            if(extensionItem) {
                 ctx.response.body.statusCode = extensionItem.value;
             }
         }
@@ -111,7 +111,7 @@ const postTransfers = async (ctx) => {
         ctx.response.status = 200;
         ctx.response.body = response;
     }
-    catch (err) {
+    catch(err) {
         return handleTransferError('postTransfers', err, ctx);
     }
 };
@@ -143,7 +143,7 @@ const getTransfers = async (ctx) => {
         ctx.response.status = 200;
         ctx.response.body = response;
     }
-    catch (err) {
+    catch(err) {
         return handleTransferError('getTransfers', err, ctx);
     }
 };
@@ -174,7 +174,7 @@ const putTransfers = async (ctx) => {
         ctx.response.status = 200;
         ctx.response.body = response;
     }
-    catch (err) {
+    catch(err) {
         return handleTransferError('putTransfers', err, ctx);
     }
 };
@@ -312,7 +312,7 @@ const putRequestToPayTransfer = async (ctx) => {
         // load the transfer model from cache and start it running again
         await model.load(ctx.state.path.params.requestToPayTransactionId);
         let response;
-        if (data.acceptQuote === true || data.acceptOTP === true) {
+        if(data.acceptQuote === true || data.acceptOTP === true) {
             response = await model.run();
         } else {
             response = await model.rejectRequestToPay();
@@ -322,7 +322,7 @@ const putRequestToPayTransfer = async (ctx) => {
         ctx.response.status = 200;
         ctx.response.body = response;
     }
-    catch (err) {
+    catch(err) {
         return handleTransferError('putRequestToPayTransfer', err, ctx);
     }
 };
@@ -351,7 +351,7 @@ const postAccounts = async (ctx) => {
         ctx.response.status = 200;
         ctx.response.body = response;
     }
-    catch (err) {
+    catch(err) {
         return handleAccountsError('postAccounts', err, ctx);
     }
 };
@@ -379,7 +379,7 @@ const postRequestToPay = async (ctx) => {
         ctx.response.status = 200;
         ctx.response.body = response;
 
-    } catch (err) {
+    } catch(err) {
         return handleRequestToPayError('requestToPayInboundRequest', err, ctx);
     }
 };

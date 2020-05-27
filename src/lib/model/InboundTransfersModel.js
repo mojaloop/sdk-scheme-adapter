@@ -70,22 +70,22 @@ class InboundTransfersModel {
             // make a call to the backend to resolve the party lookup
             const response = await this._backendRequests.getOTP(transactionRequestId, sourceFspId);
 
-            if (!response) {
+            if(!response) {
                 return 'No response from backend';
             }
 
             // project our internal otp representation into a mojaloop authorization response body
             const mlAuthorization = {
-                authenticationInfo: {
+                authenticationInfo : {
                     authentication: 'OTP',
                     authenticationValue: `${response.otpValue}`
                 },
-                responseType: 'ENTERED'
+                responseType: 'ENTERED'                  
             };
             // make a callback to the source fsp with the party info
             return this._mojaloopRequests.putAuthorizations(transactionRequestId, mlAuthorization, sourceFspId);
         }
-        catch (err) {
+        catch(err) {
             this._logger.push({ err }).log('Error in getOTP');
             const mojaloopError = await this._handleError(err);
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
@@ -102,7 +102,7 @@ class InboundTransfersModel {
             // make a call to the backend to resolve the party lookup
             const response = await this._backendRequests.getParties(idType, idValue, idSubValue);
 
-            if (!response) {
+            if(!response) {
                 return 'No response from backend';
             }
 
@@ -110,7 +110,7 @@ class InboundTransfersModel {
             return this._mojaloopRequests.putParticipants(idType, idValue, idSubValue, { fspId: this._dfspId },
                 sourceFspId);
         }
-        catch (err) {
+        catch(err) {
             this._logger.push({ err }).log('Error in getParticipants');
             const mojaloopError = await this._handleError(err);
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
@@ -127,7 +127,7 @@ class InboundTransfersModel {
             // make a call to the backend to resolve the party lookup
             const response = await this._backendRequests.getParties(idType, idValue, idSubValue);
 
-            if (!response) {
+            if(!response) {
                 return 'No response from backend';
             }
 
@@ -139,7 +139,7 @@ class InboundTransfersModel {
             // make a callback to the source fsp with the party info
             return this._mojaloopRequests.putParties(idType, idValue, idSubValue, mlParty, sourceFspId);
         }
-        catch (err) {
+        catch(err) {
             this._logger.push({ err }).log('Error in getParties');
             const mojaloopError = await this._handleError(err);
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
@@ -159,12 +159,12 @@ class InboundTransfersModel {
             // make a call to the backend to ask for a quote response
             const response = await this._backendRequests.postQuoteRequests(internalForm);
 
-            if (!response) {
+            if(!response) {
                 // make an error callback to the source fsp
                 return 'No response from backend';
             }
 
-            if (!response.expiration) {
+            if(!response.expiration) {
                 const expiration = new Date().getTime() + (this._expirySeconds * 1000);
                 response.expiration = new Date(expiration).toISOString();
             }
@@ -190,7 +190,7 @@ class InboundTransfersModel {
             // make a callback to the source fsp with the quote response
             return this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId);
         }
-        catch (err) {
+        catch(err) {
             this._logger.push({ err }).log('Error in quoteRequest');
             const mojaloopError = await this._handleError(err);
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
@@ -210,7 +210,7 @@ class InboundTransfersModel {
             // make a call to the backend to ask for a quote response
             const response = await this._backendRequests.postTransactionRequests(internalForm);
 
-            if (!response) {
+            if(!response) {
                 // make an error callback to the source fsp
                 return 'No response from backend';
             }
@@ -221,7 +221,7 @@ class InboundTransfersModel {
             // make a callback to the source fsp with the quote response
             return this._mojaloopRequests.putTransactionRequests(transactionRequest.transactionRequestId, mojaloopResponse, sourceFspId);
         }
-        catch (err) {
+        catch(err) {
             this._logger.push({ err }).log('Error in transactionRequest');
             const mojaloopError = await this._handleError(err);
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
@@ -240,7 +240,7 @@ class InboundTransfersModel {
             // retrieve our quote data
             const quote = await this._cache.get(`quote_${prepareRequest.transferId}`);
 
-            if (!quote) {
+            if(!quote) {
                 // Check whether to allow transfers without a previous quote.
                 if (!this._allowTransferWithoutQuote) {
                     throw new Error(`Corresponding quote not found for transfer ${prepareRequest.transferId}`);
@@ -250,7 +250,7 @@ class InboundTransfersModel {
             // Calculate or retrieve fulfilment and condition
             let fulfilment = null;
             let condition = null;
-            if (quote) {
+            if(quote) {
                 fulfilment = quote.fulfilment;
                 condition = quote.mojaloopResponse.condition;
             }
@@ -260,7 +260,7 @@ class InboundTransfersModel {
             }
 
             // check incoming ILP matches our persisted values
-            if (this._checkIlp && (prepareRequest.condition !== condition)) {
+            if(this._checkIlp && (prepareRequest.condition !== condition)) {
                 throw new Error(`ILP condition in transfer prepare for ${prepareRequest.transferId} does not match quote`);
             }
 
@@ -280,7 +280,7 @@ class InboundTransfersModel {
             // make a call to the backend to inform it of the incoming transfer
             const response = await this._backendRequests.postTransfers(internalForm);
 
-            if (!response) {
+            if(!response) {
                 // make an error callback to the source fsp
                 return 'No response from backend';
             }
@@ -303,7 +303,7 @@ class InboundTransfersModel {
             return this._mojaloopRequests.putTransfers(prepareRequest.transferId, mojaloopResponse,
                 sourceFspId);
         }
-        catch (err) {
+        catch(err) {
             this._logger.push({ err }).log('Error in prepareTransfer');
             const mojaloopError = await this._handleError(err);
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
@@ -494,8 +494,8 @@ class InboundTransfersModel {
             // transfer fulfilments
             const fulfilments = {};
 
-            // collect errors for individual transfers, indexed by transferId
-            let individualTransferErrors = {};
+            // collect errors for each transfer
+            let individualTransferErrors = [];
 
             // validate individual transfer
             for (const transfer of bulkPrepareRequest.individualTransfers) {
@@ -523,7 +523,7 @@ class InboundTransfersModel {
                 // check incoming ILP matches our persisted values
                 if (this._checkIlp && (transfer.condition !== condition)) {
                     const transferError = this._handleError(new Error(`ILP condition in bulk transfers prepare for ${transfer.transferId} does not match quote`));
-                    individualTransferErrors[transfer.transferId] = { transferId: transfer.transferId, transferError };
+                    individualTransferErrors.push({ transferId: transfer.transferId, transferError });
                 }
             }
 
@@ -542,8 +542,9 @@ class InboundTransfersModel {
                 // TODO: Verify and align with actual schema for bulk transfers error endpoint
                 const mojaloopErrorResponse = {
                     bulkTransferState: 'REJECTED',
-                    individualTransferResults: individualTransferErrors.map((transferError) => ({
-                        transferId: transferError.transferId,
+                    // eslint-disable-next-line no-unused-vars
+                    individualTransferResults: individualTransferErrors.map(({transferId, transferError}) => ({
+                        transferId,
                         errorInformation: transferError,
                     }))
                 };
@@ -571,15 +572,18 @@ class InboundTransfersModel {
             const mojaloopResponse = {
                 completedTimestamp: new Date(),
                 bulkTransferState: 'COMMITTED',
-                individualTransferResults: individualTransferErrors.map((transfer) => ({
-                    transferId: transfer.transferId,
-                    fulfilment: fulfilments[transfer.transferId],
-                    ...response.individualTransferResults[transfer.transferId].extensionList && {
-                        extensionList: {
-                            extension: response.individualTransferResults[transfer.transferId].extensionList,
-                        },
-                    }
-                }))
+                // eslint-disable-next-line no-unused-vars
+                individualTransferResults: response.individualTransferResults.map((transfer) => {
+                    return {
+                        transferId: transfer.transferId,
+                        fulfilment: fulfilments[transfer.transferId],
+                        ...response.individualTransferResults[transfer.transferId].extensionList && {
+                            extensionList: {
+                                extension: response.individualTransferResults[transfer.transferId].extensionList,
+                            },
+                        }
+                    };
+                })
             };
 
             // make a callback to the source fsp with the transfer fulfilment
@@ -656,14 +660,14 @@ class InboundTransfersModel {
     async _handleError(err) {
         let mojaloopErrorCode = Errors.MojaloopApiErrorCodes.INTERNAL_SERVER_ERROR;
 
-        if (err instanceof HTTPResponseError) {
+        if(err instanceof HTTPResponseError) {
             const e = err.getData();
-            if (e.res && e.res.body) {
+            if(e.res && e.res.body) {
                 try {
                     const bodyObj = JSON.parse(e.res.body);
                     mojaloopErrorCode = Errors.MojaloopApiErrorCodeFromCode(`${bodyObj.statusCode}`);
                 }
-                catch (ex) {
+                catch(ex) {
                     // do nothing
                     this._logger.push({ ex }).log('Error parsing error message body as JSON');
                 }

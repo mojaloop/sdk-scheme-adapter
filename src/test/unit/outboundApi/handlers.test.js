@@ -117,6 +117,7 @@ OutboundRequestToPayModel.mockImplementation(() => {
     };
 });
 
+
 describe('Outbound API handlers:', () => {
     describe('POST /transfers', () => {
         test('returns correct error response body when model throws mojaloop error', async () => {
@@ -379,4 +380,5 @@ describe('Outbound API handlers:', () => {
             expect(mockContext.response.body.requestToPayState).toEqual(mockRequestToPayError.requestToPayState);
         });
     });
+    
 });

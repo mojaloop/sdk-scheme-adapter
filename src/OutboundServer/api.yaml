@@ -311,6 +311,7 @@ paths:
 
 components:
   schemas:
+
     amountType:
       type: string
       enum:
@@ -630,6 +631,7 @@ components:
 
         - OTHER_ID - Any other type of identification type number is used in reference to a party.
 
+
     money:
       pattern: ^([0]|([1-9][0-9]{0,17}))([.][0-9]{0,3}[1-9])?$
       type: string
@@ -794,7 +796,8 @@ components:
           $ref: '#/components/schemas/extensionList'
         transferRequestExtensions:
           $ref: '#/components/schemas/extensionList'
-    
+
+
     requestToPayRequest:
       type: object
       required:
@@ -949,6 +952,7 @@ components:
             Object representing the last error to occur during a transfer process. This may be a Mojaloop API error returned from another entity in the scheme
             or an object representing other types of error e.g. exceptions that may occur inside the scheme adapter.
           $ref: '#/components/schemas/transferError'
+
 
     transferResponse:
       type: object
@@ -1638,6 +1642,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/errorTransferResponse'
+
+
 
   parameters:
     transferId:

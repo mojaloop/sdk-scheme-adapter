@@ -31,12 +31,11 @@ describe('Inbound API handlers:', () => {
     beforeEach(() => {
         mockArgs = JSON.parse(JSON.stringify(mockArguments));
         mockTransactionRequest = JSON.parse(JSON.stringify(mockTransactionRequestData));
+
     });
 
     describe('POST /quotes', () => {
-
         let mockContext;
-
         beforeEach(() => {
             mockContext = {
                 request: {
@@ -51,7 +50,6 @@ describe('Inbound API handlers:', () => {
                     logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports })
                 }
             };
-
         });
 
         test('calls `model.quoteRequest` with the expected arguments.', async () => {
@@ -63,7 +61,6 @@ describe('Inbound API handlers:', () => {
             expect(quoteRequestSpy.mock.calls[0][0]).toBe(mockContext.request.body);
             expect(quoteRequestSpy.mock.calls[0][1]).toBe(mockContext.request.headers['fspiop-source']);
         });
-
 
     });
 
@@ -382,11 +379,9 @@ describe('Inbound API handlers:', () => {
     });
 
     describe('POST /transactionRequests', () => {
-
         let mockTransactionReqContext;
 
         beforeEach(() => {
-
             mockTransactionReqContext = {
                 request: {
                     body: mockTransactionRequest.transactionRequest,
@@ -414,11 +409,9 @@ describe('Inbound API handlers:', () => {
     });
 
     describe('GET /authorizations', () => {
-
         let mockAuthorizationContext;
 
         beforeEach(() => {
-
             mockAuthorizationContext = {
                 request: {
                     headers: {
@@ -428,8 +421,8 @@ describe('Inbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    path: {
-                        params: {
+                    path : {
+                        params : {
                             'ID': '1234'
                         }
                     },

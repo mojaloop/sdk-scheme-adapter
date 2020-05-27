@@ -47,6 +47,7 @@ class BackendRequests {
         return this._get(url);
     }
 
+
     /**
      * Executes a GET /parties request for the specified identifier type and identifier
      *
@@ -68,6 +69,7 @@ class BackendRequests {
         return this._get(url);
     }
 
+
     /**
      * Executes a POST /quotes request for the specified quote request
      *
@@ -76,6 +78,7 @@ class BackendRequests {
     async postQuoteRequests(quoteRequest) {
         return this._post('quoterequests', quoteRequest);
     }
+
 
     /**
      * Executes a POST /transfers request for the specified transfer prepare
@@ -167,6 +170,7 @@ class BackendRequests {
         }
     }
 
+
     async _put(url, body) {
         const reqOpts = {
             method: 'PUT',
@@ -185,6 +189,7 @@ class BackendRequests {
         }
     }
 
+    
     async _post(url, body) {
         const reqOpts = {
             method: 'POST',
