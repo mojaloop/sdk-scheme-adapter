@@ -560,9 +560,9 @@ class OutboundTransfersModel {
                         return reject(error);
                     }
 
-                    const fulfil = message.data;
-                    this._logger.push({ fulfil }).log('Transfer fulfil received');
-                    this.data.fulfil = fulfil;
+                    const fulfils = message.data;
+                    this._logger.push({ fulfils }).log('Transfer fulfils received');
+                    this.data.fulfils = fulfils;
 
                     return resolve(this.data);
                 }
