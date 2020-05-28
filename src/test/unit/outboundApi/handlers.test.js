@@ -57,11 +57,14 @@ OutboundTransfersModel.mockImplementation(() => {
  */
 OutboundBulkTransfersModel.mockImplementation(() => {
     return {
-        getBulkTransfer: async () => {
+        run: async () => {
             throw mockBulkTransferError;
         },
-        postBulkTransfer: async () => {
-            throw mockBulkTransferError;
+        initialize: async () => {
+            return;
+        },
+        load: async () => {
+            return;
         }
     };
 });

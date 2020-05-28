@@ -148,8 +148,6 @@ const getTransfers = async (ctx) => {
     }
 };
 
-
-
 /**
  * Handler for resuming outbound transfers in scenarios where two-step transfers are enabled
  * by disabling the autoAcceptQuote SDK option
@@ -199,7 +197,8 @@ const postBulkTransfers = async (ctx) => {
             wso2Auth: ctx.state.wso2Auth,
         });
 
-        const response = await model.postBulkTransfer(bulkTransferRequest);
+        await model.initialize(bulkTransferRequest);
+        const response = await model.run();
 
         // return the result
         ctx.response.status = 200;
@@ -215,7 +214,11 @@ const postBulkTransfers = async (ctx) => {
  */
 const getBulkTransfers = async (ctx) => {
     try {
-        const bulkTransferId = ctx.state.path.params.bulkTransferId;
+        const bulkTransferRequest = {
+            ...ctx.request.body,
+            bulkTransferId: ctx.state.path.params.bulkTransferId,
+            currentState: 'getBulkTransfer',
+        };
 
         // use the bulk transfers model to execute asynchronous stages with the switch
         const model = new OutboundBulkTransfersModel({
@@ -225,7 +228,8 @@ const getBulkTransfers = async (ctx) => {
             wso2Auth: ctx.state.wso2Auth,
         });
 
-        const response = await model.getBulkTransfer(bulkTransferId);
+        await model.initialize(bulkTransferRequest);
+        const response = await model.getBulkTransfer();
 
         // return the result
         ctx.response.status = 200;
@@ -262,6 +266,37 @@ const postBulkQuotes = async (ctx) => {
     }
     catch (err) {
         return handleBulkQuoteError('postBulkQuotes', err, ctx);
+    }
+};
+
+/**
+ * Handler for outbound bulk quote request
+ */
+const getBulkQuoteById = async (ctx) => {
+    try {
+        const bulkQuoteRequest = {
+            ...ctx.request.body,
+            bulkQuoteId: ctx.state.path.params.bulkQuoteId,
+            currentState: 'getBulkQuote',
+        };
+
+        // use the bulk quotes model to execute asynchronous stages with the switch
+        const model = new OutboundBulkQuotesModel({
+            ...ctx.state.conf,
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            wso2Auth: ctx.state.wso2Auth,
+        });
+
+        await model.initialize(bulkQuoteRequest);
+        const response = await model.getBulkQuote();
+
+        // return the result
+        ctx.response.status = 200;
+        ctx.response.body = response;
+    }
+    catch (err) {
+        return handleBulkQuoteError('getBulkQuoteById', err, ctx);
     }
 };
 
@@ -412,6 +447,9 @@ module.exports = {
     },
     '/bulkQuotes': {
         post: postBulkQuotes,
+    },
+    '/bulkQuotes/{bulkQuoteId}': {
+        get: getBulkQuoteById,
     },
     '/accounts': {
         post: postAccounts

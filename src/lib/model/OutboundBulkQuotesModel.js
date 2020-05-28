@@ -55,6 +55,7 @@ class OutboundBulkQuotesModel {
             init: initState,
             transitions: [
                 { name: 'requestBulkQuote', from: 'start', to: 'succeeded' },
+                { name: 'getBulkQuote', to: 'succeeded' },
                 { name: 'error', from: '*', to: 'errored' },
             ],
             methods: {
@@ -113,6 +114,9 @@ class OutboundBulkQuotesModel {
 
             case 'requestBulkQuote':
                 return this._requestBulkQuote();
+            
+            case 'getBulkQuote':
+                return this._getBulkQuote();
 
             case 'error':
                 this._logger.log(`State machine is erroring with error: ${util.inspect(args)}`);
@@ -272,6 +276,82 @@ class OutboundBulkQuotesModel {
     }
 
     /**
+     * Get bulk quote details by sending GET /bulkQuotes/{ID} request to the switch
+     */
+    async getBulkQuote(bulkQuoteId) {
+        // eslint-disable-next-line no-async-promise-executor
+        return new Promise(async (resolve, reject) => {
+            const bulkQuoteKey = `bulkQuote_${bulkQuoteId}`;
+
+            // hook up a subscriber to handle response messages
+            const subId = await this._cache.subscribe(bulkQuoteKey, (cn, msg, subId) => {
+                try {
+                    let error;
+                    let message = JSON.parse(msg);
+
+                    if (message.type === 'bulkQuoteError') {
+                        error = new BackendError(`Got an error response retrieving bulk quote: ${util.inspect(message.data, { depth: Infinity })}`, 500);
+                        error.mojaloopError = message.data;
+                    } else if (message.type !== 'bulkQuote') {
+                        this._logger.push({ message }).log(`Ignoring cache notification for bulk quote ${bulkQuoteKey}. Uknokwn message type ${message.type}.`);
+                        return;
+                    }
+
+                    // cancel the timeout handler
+                    clearTimeout(timeout);
+
+                    // stop listening for bulk quote response messages
+                    this._cache.unsubscribe(bulkQuoteKey, subId).catch(e => {
+                        this._logger.log(`Error unsubscribing (in callback) ${bulkQuoteKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    });
+
+                    if (error) {
+                        return reject(error);
+                    }
+
+                    const bulkQuote = message.data;
+                    this._logger.push({ bulkQuote }).log('Bulk quote response received');
+
+                    return resolve(bulkQuote);
+                }
+                catch(err) {
+                    return reject(err);
+                }
+            });
+
+            // set up a timeout for the resolution
+            const timeout = setTimeout(() => {
+                const err = new BackendError(`Timeout getting bulk quote ${bulkQuoteId}`, 504);
+
+                // we dont really care if the unsubscribe fails but we should log it regardless
+                this._cache.unsubscribe(bulkQuoteKey, subId).catch(e => {
+                    this._logger.log(`Error unsubscribing (in timeout handler) ${bulkQuoteKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                });
+
+                return reject(err);
+            }, this._requestProcessingTimeoutSeconds * 1000);
+
+            // now we have a timeout handler and a cache subscriber hooked up we can fire off
+            // a GET /bulkQuotes/{ID} request to the switch
+            try {
+                const res = await this._requests.getBulkQuotes(bulkQuoteId);
+                this._logger.push({ peer: res }).log('Bulk quote lookup sent to peer');
+            }
+            catch(err) {
+                // cancel the timout and unsubscribe before rejecting the promise
+                clearTimeout(timeout);
+
+                // we dont really care if the unsubscribe fails but we should log it regardless
+                this._cache.unsubscribe(bulkQuoteKey, subId).catch(e => {
+                    this._logger.log(`Error unsubscribing ${bulkQuoteKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                });
+
+                return reject(err);
+            }
+        });
+    }
+
+    /**
      * Returns an ISO-8601 format timestamp n-seconds in the future for expiration of a bulk quote API object,
      * where n is equal to our config setting "expirySeconds"
      *
@@ -355,6 +435,11 @@ class OutboundBulkQuotesModel {
                 case 'start':
                     await this.stateMachine.requestBulkQuote();
                     this._logger.log(`Quotes resolved for bulk quote ${this.data.bulkQuoteId}`);
+                    break;
+                
+                case 'getBulkQuote':
+                    await this.stateMachine.getBulkQuote();
+                    this._logger.log(`Get bulk quote ${this.data.bulkQuoteId} has been completed`);
                     break;
 
                 case 'succeeded':

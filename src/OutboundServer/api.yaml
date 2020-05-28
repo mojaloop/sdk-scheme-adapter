@@ -1343,6 +1343,8 @@ components:
           maxItems: 1000
           items:
             $ref: '#/components/schemas/individualTransfer'
+        transferRequestextensions:
+            $ref: '#/components/schemas/extensionList' 
     
     individualTransfer:
       title: IndividualTransfer
@@ -1364,9 +1366,7 @@ components:
         note:
           maxLength: 128
           type: string
-        quoteRequestExtensions:
-          $ref: '#/components/schemas/extensionList'
-        transferRequestExtensions:
+        extensions:
           $ref: '#/components/schemas/extensionList'  
       required:
         - transferId
