@@ -300,10 +300,10 @@ class OutboundBulkTransfersModel {
                         return reject(error);
                     }
 
-                    const fulfil = message.data;
-                    this._logger.push({ fulfil }).log('Bulk transfer fulfil received');
+                    const fulfils = message.data;
+                    this._logger.push({ fulfils }).log('Bulk transfer fulfils received');
 
-                    return resolve(fulfil);
+                    return resolve(fulfils);
                 }
                 catch(err) {
                     return reject(err);
