@@ -1,5 +1,5 @@
 /**************************************************************************
- *  (C) Copyright ModusBox Inc. 2019 - All rights reserved.               *
+ *  (C) Copyright ModusBox Inc. 2020 - All rights reserved.               *
  *                                                                        *
  *  This file is made available under the terms of the license agreement  *
  *  specified in the corresponding source code repository.                *
@@ -12,12 +12,19 @@
 
 const util = require('util');
 const { uuid } = require('uuidv4');
+const StateMachine = require('javascript-state-machine');
 const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const shared = require('@internal/shared');
 const { BackendError } = require('./common');
 
+const stateEnum = {
+    'ERROR_OCCURRED': 'ERROR_OCCURRED',
+    'COMPLETED': 'COMPLETED',
+};
+
+
 /**
- *  Models the state machine and operations required for performing an outbound bulk quote
+ *  Models the state machine and operations required for performing an outbound bulk quote request
  */
 class OutboundBulkQuotesModel {
     constructor(config) {
@@ -25,40 +32,102 @@ class OutboundBulkQuotesModel {
         this._logger = config.logger;
         this._requestProcessingTimeoutSeconds = config.requestProcessingTimeoutSeconds;
         this._dfspId = config.dfspId;
+        this._expirySeconds = config.expirySeconds;
         this._rejectExpiredQuoteResponses = config.rejectExpiredQuoteResponses;
 
         this._requests = new MojaloopRequests({
             logger: this._logger,
             peerEndpoint: config.peerEndpoint,
-            alsEndpoint: config.alsEndpoint,
-            quotesEndpoint: config.quotesEndpoint,
-            transfersEndpoint: config.transfersEndpoint,
+            bulkQuotesEndpoint: config.bulkQuotesEndpoint,
             dfspId: config.dfspId,
             tls: config.tls,
             jwsSign: config.jwsSign,
-            jwsSignPutParties: config.jwsSignPutParties,
             jwsSigningKey: config.jwsSigningKey,
             wso2Auth: config.wso2Auth
         });
     }
 
     /**
-     * Returns a promise that resolves/rejects when the bulk quote is returned/errored
+     * Initializes the internal state machine object
      */
-    async postBulkQuote(bulkQuoteRequest) {
-        this.bulkQuoteRequest = bulkQuoteRequest;
+    _initStateMachine (initState) {
+        this.stateMachine = new StateMachine({
+            init: initState,
+            transitions: [
+                { name: 'requestBulkQuote', from: 'start', to: 'succeeded' },
+                { name: 'error', from: '*', to: 'errored' },
+            ],
+            methods: {
+                onTransition: this._handleTransition.bind(this),
+                onAfterTransition: this._afterTransition.bind(this),
+                onPendingTransition: (transition, from, to) => {
+                    // allow transitions to 'error' state while other transitions are in progress
+                    if(transition !== 'error') {
+                        throw new Error(`Transition requested while another transition is in progress: ${transition} from: ${from} to: ${to}`);
+                    }
+                }
+            }
+        });
 
-        if (!bulkQuoteRequest.hasOwnProperty('bulkQuoteId')) {
-            bulkQuoteRequest.bulkQuoteId = uuid();
+        return this.stateMachine[initState];
+    }
+
+    /**
+     * Updates the internal state representation to reflect that of the state machine itself
+     */
+    _afterTransition() {
+        this._logger.log(`State machine transitioned: ${this.data.currentState} -> ${this.stateMachine.state}`);
+        this.data.currentState = this.stateMachine.state;
+    }
+
+    /**
+     * Initializes the bulk quotes model
+     *
+     * @param data {object} - The inbound API POST /bulkQuotes request body
+     */
+    async initialize(data) {
+        this.data = data;
+
+        // add a bulkQuoteId if one is not present e.g. on first submission
+        if(!this.data.hasOwnProperty('bulkQuoteId')) {
+            this.data.bulkQuoteId = uuid();
         }
 
-        return this._requestBulkQuote();
+        // initialize the state machine to its starting state
+        if(!this.data.hasOwnProperty('currentState')) {
+            this.data.currentState = 'start';
+        }
+
+        this._initStateMachine(this.data.currentState);
+    }
+
+    /**
+     * Handles state machine transitions
+     */
+    async _handleTransition(lifecycle, ...args) {
+        this._logger.log(`Bulk quote ${this.data.bulkQuoteId} is transitioning from ${lifecycle.from} to ${lifecycle.to} in response to ${lifecycle.transition}`);
+
+        switch(lifecycle.transition) {
+            case 'init':
+                return;
+
+            case 'requestBulkQuote':
+                return this._requestBulkQuote();
+
+            case 'error':
+                this._logger.log(`State machine is erroring with error: ${util.inspect(args)}`);
+                this.data.lastError = args[0] || new Error('unspecified error');
+                break;
+
+            default:
+                throw new Error(`Unhandled state transition for bulk quote ${this.data.bulkQuoteId}: ${util.inspect(args)}`);
+        }
     }
 
     /**
      * Requests a bulk quote
-     * Starts the bulk quoting process by sending a POST /bulkQuotes request to the switch;
-     * then waits for a notification from the cache that the bulk quote response has been received.
+     * Starts the quotes resolution process by sending a POST /bulkQuotes request to the switch;
+     * then waits for a notification from the cache that the quotes response has been received.
      */
     async _requestBulkQuote() {
         // eslint-disable-next-line no-async-promise-executor
@@ -119,7 +188,7 @@ class OutboundBulkQuotesModel {
 
             // set up a timeout for the request
             const timeout = setTimeout(() => {
-                const err = new BackendError(`Timeout requesting bulk quote ${this.bulkQuoteRequest.bulkQuoteId}`, 504);
+                const err = new BackendError(`Timeout requesting bulk quote ${this.data.bulkQuoteId}`, 504);
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this._cache.unsubscribe(bulkQuoteKey, subId).catch(e => {
@@ -132,7 +201,7 @@ class OutboundBulkQuotesModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /bulkQuotes request to the switch
             try {
-                const res = await this._requests.postBulkQuotes(bulkQuote, this.bulkQuoteRequest.to.fspId);
+                const res = await this._requests.postBulkQuotes(bulkQuote, this.data.to.fspId);
                 this._logger.push({ res }).log('Bulk quote request sent to peer');
             }
             catch (err) {
@@ -150,25 +219,25 @@ class OutboundBulkQuotesModel {
     }
 
     /**
-     * Constructs a bulk quote request payload
+     * Constructs a bulk quote request payload based on current state
      *
      * @returns {object} - the bulk quote request object
      */
     _buildBulkQuoteRequest() {
         const bulkQuoteRequest = {
-            bulkQuoteId: this.bulkQuoteRequest.bulkQuoteId,
-            payer: shared.internalPartyToMojaloopParty(this.bulkQuoteRequest.from, this._dfspId),
+            bulkQuoteId: this.data.bulkQuoteId,
+            payer: shared.internalPartyToMojaloopParty(this.data.from, this._dfspId),
+            expiration: this._getExpirationTimestamp(),
         };
 
-        bulkQuoteRequest.expiration = this._getExpirationTimestamp();
-        this.bulkQuoteRequest.geoCode && (bulkQuoteRequest.geoCode = this.bulkQuoteRequest.geoCode);
+        this.data.geoCode && (bulkQuoteRequest.geoCode = this.data.geoCode);
 
-        if (this.bulkQuoteRequest.quoteRequestExtensions && this.bulkQuoteRequest.quoteRequestExtensions.length > 0) {
+        if (this.data.extensions && this.data.extensions.length > 0) {
             bulkQuoteRequest.extensionList = {
-                extension: this.bulkQuoteRequest.quoteRequestExtensions
+                extension: this.data.extensions
             };
         }
-        bulkQuoteRequest.individualQuotes = this.bulkQuoteRequest.individualQuotes.map((individualQuote) => {
+        bulkQuoteRequest.individualQuotes = this.data.individualQuotes.map((individualQuote) => {
             const quoteId = individualQuote.quoteId || uuid();
             const quote = {
                 quoteId: quoteId,
@@ -186,7 +255,7 @@ class OutboundBulkQuotesModel {
                     // TODO: defaulting to CONSUMER initiator type should
                     // be replaced with a required element on the incoming
                     // API request
-                    initiatorType: this.bulkQuoteRequest.from.type || 'CONSUMER'
+                    initiatorType: this.data.from.type || 'CONSUMER'
                 }
             };
             individualQuote.note && (quote.note = individualQuote.note);
@@ -200,6 +269,127 @@ class OutboundBulkQuotesModel {
         });
 
         return bulkQuoteRequest;
+    }
+
+    /**
+     * Returns an ISO-8601 format timestamp n-seconds in the future for expiration of a bulk quote API object,
+     * where n is equal to our config setting "expirySeconds"
+     *
+     * @returns {string} - ISO-8601 format future expiration timestamp
+     */
+    _getExpirationTimestamp() {
+        let now = new Date();
+        return new Date(now.getTime() + (this._expirySeconds * 1000)).toISOString();
+    }
+
+    /**
+     * Returns an object representing the final state of the bulk quote suitable for the outbound API
+     *
+     * @returns {object} - Response representing the result of the bulk quoting process
+     */
+    getResponse() {
+        // we want to project some of our internal state into a more useful
+        // representation to return to the SDK API consumer
+        let resp = { ...this.data };
+
+        switch(this.data.currentState) {
+            case 'succeeded':
+                resp.currentState = stateEnum.COMPLETED;
+                break;
+
+            case 'errored':
+                resp.currentState = stateEnum.ERROR_OCCURRED;
+                break;
+
+            default:
+                this._logger.log(`Bulk quote model response being returned from an unexpected state: ${this.data.currentState}. Returning ERROR_OCCURRED state`);
+                resp.currentState = stateEnum.ERROR_OCCURRED;
+                break;
+        }
+
+        return resp;
+    }
+
+    /**
+     * Persists the model state to cache for reinstantiation at a later point
+     */
+    async _save() {
+        try {
+            this.data.currentState = this.stateMachine.state;
+            const res = await this._cache.set(`bulkQuoteModel_${this.data.bulkQuoteId}`, this.data);
+            this._logger.push({ res }).log('Persisted bulk quote model in cache');
+        }
+        catch(err) {
+            this._logger.push({ err }).log('Error saving bulk quote model');
+            throw err;
+        }
+    }
+
+    /**
+     * Loads a bulk quote model from cache for resumption of the bulk quote process
+     *
+     * @param bulkQuoteId {string} - UUID bulkQuoteId of the model to load from cache
+     */
+    async load(bulkQuoteId) {
+        try {
+            const data = await this._cache.get(`bulkQuoteModel_${bulkQuoteId}`);
+            if(!data) {
+                throw new Error(`No cached data found for bulkQuoteId: ${bulkQuoteId}`);
+            }
+            await this.initialize(data);
+            this._logger.push({ cache: this.data }).log('Bulk quote model loaded from cached state');
+        }
+        catch(err) {
+            this._logger.push({ err }).log('Error loading bulk quote model');
+            throw err;
+        }
+    }
+
+    /**
+     * Returns a promise that resolves when the state machine has reached a terminal state
+     */
+    async run() {
+        try {
+            // run transitions based on incoming state
+            switch(this.data.currentState) {
+                case 'start':
+                    await this.stateMachine.requestBulkQuote();
+                    this._logger.log(`Quotes resolved for bulk quote ${this.data.bulkQuoteId}`);
+                    break;
+
+                case 'succeeded':
+                    // all steps complete so return
+                    this._logger.log('Bulk quoting completed successfully');
+                    await this._save();
+                    return this.getResponse();
+
+                case 'errored':
+                    // stopped in errored state
+                    this._logger.log('State machine in errored state');
+                    return;
+            }
+
+            // now call ourselves recursively to deal with the next transition
+            this._logger.log(`Bulk quote model state machine transition completed in state: ${this.stateMachine.state}. Recursing to handle next transition.`);
+            return this.run();
+        }
+        catch(err) {
+            this._logger.log(`Error running bulk quote model: ${util.inspect(err)}`);
+
+            // as this function is recursive, we dont want to error the state machine multiple times
+            if(this.data.currentState !== 'errored') {
+                // err should not have a bulkQuoteState property here!
+                if(err.bulkQuoteState) {
+                    this._logger.log(`State machine is broken: ${util.inspect(err)}`);
+                }
+                // transition to errored state
+                await this.stateMachine.error(err);
+
+                // avoid circular ref between bulkQuoteState.lastError and err
+                err.bulkQuoteState = JSON.parse(JSON.stringify(this.getResponse()));
+            }
+            throw err;
+        }
     }
 }
 

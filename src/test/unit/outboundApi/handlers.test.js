@@ -71,8 +71,14 @@ OutboundBulkTransfersModel.mockImplementation(() => {
  */
 OutboundBulkQuotesModel.mockImplementation(() => {
     return {
-        postBulkQuote: async () => {
+        run: async () => {
             throw mockBulkQuoteError;
+        },
+        initialize: async () => {
+            return;
+        },
+        load: async () => {
+            return;
         }
     };
 });

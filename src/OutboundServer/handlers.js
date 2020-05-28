@@ -253,7 +253,8 @@ const postBulkQuotes = async (ctx) => {
             wso2Auth: ctx.state.wso2Auth,
         });
 
-        const response = await model.postBulkQuote(bulkQuoteRequest);
+        await model.initialize(bulkQuoteRequest);
+        const response = await model.run();
 
         // return the result
         ctx.response.status = 200;
