@@ -65,13 +65,7 @@ const throwOrJson = async (res) => {
         });
     }
 
-    try {
-        // try parsing the body as JSON
-        return JSON.parse(res.data);
-    }
-    catch(err) {
-        throw new HTTPResponseError({ msg: `Error parsing response as JSON: ${err.stack || util.inspect(err)}`, res });
-    }
+    return res.data;
 };
 
 
