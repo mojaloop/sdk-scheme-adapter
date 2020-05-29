@@ -134,8 +134,8 @@ paths:
         The underlying API has two stages:
 
           1. Party lookup. This facilitates a check by the sending party that the destination party is correct before proceeding with a money movement.
-          2. Transaction Request. This request enables a Payee to request Payer to send electronic funds to the Payee. 
-          
+          2. Transaction Request. This request enables a Payee to request Payer to send electronic funds to the Payee.
+
       tags:
         - RequestToPay
       requestBody:
@@ -233,7 +233,7 @@ paths:
           $ref: '#/components/responses/transferServerError'
         504:
           $ref: '#/components/responses/transferTimeout'
-        
+
   /accounts:
     post:
       summary:  Create accounts on the Account Lookup Service
@@ -616,7 +616,7 @@ components:
           enum:
             - true
             - false
-    
+
     transferContinuationAcceptOTP:
       type: object
       required:
@@ -670,6 +670,8 @@ components:
 
         extensionList:
           $ref: '#/components/schemas/extensionList'
+        accounts:
+          $ref: '#/components/schemas/accountList'
     extensionItem:
       type: object
       properties:
@@ -702,6 +704,29 @@ components:
           description: Number of Extension elements
       required:
         - extension
+
+    accountList:
+      type: array
+      items:
+        $ref: '#/components/schemas/account'
+      minItems: 1
+      maxItems: 32
+
+    account:
+      type: object
+      properties:
+        address:
+          type: string
+          minLength: 1
+          maxLength: 1023
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+        description:
+          type: string
+          minLength: 1
+          maxLength: 128
 
     transferRequest:
       type: object
@@ -802,9 +827,9 @@ components:
           $ref: '#/components/schemas/initiatorType'
         authenticationType:
           type: string
-          description: OTP or QR Code, otherwise empty   
+          description: OTP or QR Code, otherwise empty
         requestToPayState:
-          $ref: '#/components/schemas/mojaloopTransactionRequestState'     
+          $ref: '#/components/schemas/mojaloopTransactionRequestState'
 
     requestToPayTransferRequest:
       type: object
@@ -1281,7 +1306,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/errorAccountsResponse'    
+            $ref: '#/components/schemas/errorAccountsResponse'
     requestToPaySuccess:
       description: Request to Pay completed successfully
       content:
@@ -1301,7 +1326,7 @@ components:
           schema:
             $ref: '#/components/schemas/errorTransferResponse'
 
-    
+
 
   parameters:
     transferId:

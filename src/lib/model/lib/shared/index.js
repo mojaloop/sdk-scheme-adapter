@@ -25,7 +25,7 @@ const internalPartyToMojaloopParty = (internal, fspId) => {
             fspId: fspId
         }
     };
-    
+
     if (internal.extensionList) {
         party.partyIdInfo.extensionList = {
             extension: internal.extensionList
@@ -52,6 +52,8 @@ const internalPartyToMojaloopParty = (internal, fspId) => {
     if(typeof(internal.merchantClassificationCode) !== 'undefined') {
         party.merchantClassificationCode = internal.merchantClassificationCode;
     }
+
+    if(internal.accounts) { party.accounts = internal.accounts; }
 
     return party;
 };
@@ -95,6 +97,8 @@ const mojaloopPartyToInternalParty = (external) => {
             }
         }
     }
+
+    if(external.accounts) { internal.accounts = external.accounts; }
 
     return internal;
 };
