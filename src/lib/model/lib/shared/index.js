@@ -53,7 +53,11 @@ const internalPartyToMojaloopParty = (internal, fspId) => {
         party.merchantClassificationCode = internal.merchantClassificationCode;
     }
 
-    if(internal.accounts) { party.accounts = internal.accounts; }
+    if (internal.accounts) {
+        party.accounts = {
+            account: internal.accounts
+        };
+    }
 
     return party;
 };
@@ -99,6 +103,9 @@ const mojaloopPartyToInternalParty = (external) => {
     }
 
     if(external.accounts) { internal.accounts = external.accounts; }
+    if(external.accounts){
+        internal.accounts = external.accounts.account;
+    }
 
     return internal;
 };
