@@ -102,7 +102,6 @@ const mojaloopPartyToInternalParty = (external) => {
         }
     }
 
-    if(external.accounts) { internal.accounts = external.accounts; }
     if(external.accounts){
         internal.accounts = external.accounts.account;
     }
