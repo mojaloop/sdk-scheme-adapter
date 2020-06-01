@@ -31,9 +31,11 @@ class MockMojaloopRequests extends MojaloopRequests {
         this.postTransfers = MockMojaloopRequests.__postTransfers;
         this.putTransfers = MockMojaloopRequests.__putTransfers;
         this.putTransfersError = MockMojaloopRequests.__putTransfersError;
+        this.getBulkQuotes = MockMojaloopRequests.__getBulkQuotes;
         this.postBulkQuotes = MockMojaloopRequests.__postBulkQuotes;
         this.putBulkQuotes = MockMojaloopRequests.__putBulkQuotes;
         this.putBulkQuotesError = MockMojaloopRequests.__putBulkQuotesError;
+        this.getBulkTransfers = MockMojaloopRequests.__getBulkTransfers;
         this.postBulkTransfers = MockMojaloopRequests.__postBulkTransfers;
         this.putBulkTransfers = MockMojaloopRequests.__putBulkTransfers;
         this.putBulkTransfersError = MockMojaloopRequests.__putBulkTransfersError;
@@ -56,6 +58,7 @@ MockMojaloopRequests.__postBulkQuotes = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putBulkQuotes = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putBulkQuotesError = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__getBulkTransfers = jest.fn(() => Promise.resolve());
+MockMojaloopRequests.__postBulkTransfers = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putBulkTransfers = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putBulkTransfersError = jest.fn(() => Promise.resolve());
 
