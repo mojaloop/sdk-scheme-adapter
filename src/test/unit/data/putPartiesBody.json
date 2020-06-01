@@ -1,5 +1,19 @@
 {
   "party": {
+    "accounts": {
+      "account": [
+        {
+          "”currency": "USD",
+          "”description": "savings",
+          "address": "moja.red.8f027046-b82a5456-4fa9-838b-70210fcf8136"
+        },
+        {
+          "currency": "USD",
+          "description": "checkings",
+          "address": "moja.red.8f027046-b8236345a-4fa9-838b-70210fcf8137"
+        }
+      ]
+    },
     "partyIdInfo": {
       "partyIdType": "PERSONAL_ID",
       "partyIdentifier": "987654321",
@@ -15,16 +29,6 @@
       "dateOfBirth": "1980-01-01"
     },
     "name": "John Doe",
-    "merchantClassificationCode": "1234",
-    "accounts": [
-      { "currency": "USD",
-        "description": "savings",
-        "address": "moja.blue.8f027046-b82a-4fa9-838b-70210fcf8136"
-      },
-      { "currency": "USD",
-        "description": "checkings",
-        "address": "moja.blue.8f027046-b82a-4fa9-838b-70210fcf8137"
-      }
-    ]
+    "merchantClassificationCode": "1234"
   }
 }
