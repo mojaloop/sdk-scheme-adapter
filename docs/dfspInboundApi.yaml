@@ -380,6 +380,13 @@ components:
       minItems: 0
       maxItems: 16
 
+    accountList:
+      type: array
+      items:
+        $ref: '#/components/schemas/account'
+      minItems: 1
+      maxItems: 32
+
     geoCode:
       type: object
       description: Indicates the geographic location from where the transaction was initiated.
@@ -474,6 +481,23 @@ components:
           minLength: 1
           maxLength: 32
         value:
+          type: string
+          minLength: 1
+          maxLength: 128
+
+
+    account:
+      type: object
+      properties:
+        address:
+          type: string
+          minLength: 1
+          maxLength: 1023
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+        description:
           type: string
           minLength: 1
           maxLength: 128
@@ -680,6 +704,8 @@ components:
           description: Up to 4 digits specifying the sender's merchant classification, if known and applicable.
         extensionList:
           $ref: '#/components/schemas/extensionList'
+        accounts:
+          $ref: '#/components/schemas/accountList'
 
     transferState:
       type: string
@@ -833,4 +859,3 @@ components:
         minLength: 1
         maxLength: 128
       description: Either a sub-identifier of a `{idValue}`, or a sub-type of the `{idType}`, normally a `{personalIdType}`
-
