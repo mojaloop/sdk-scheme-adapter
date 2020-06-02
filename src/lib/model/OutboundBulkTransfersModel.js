@@ -30,6 +30,7 @@ class OutboundBulkTransfersModel {
         this._logger = config.logger;
         this._requestProcessingTimeoutSeconds = config.requestProcessingTimeoutSeconds;
         this._dfspId = config.dfspId;
+        this._expirySeconds = config.expirySeconds;
         this._rejectExpiredTransferFulfils = config.rejectExpiredTransferFulfils;
 
         this._requests = new MojaloopRequests({
@@ -114,7 +115,7 @@ class OutboundBulkTransfersModel {
                 return this._executeBulkTransfer();
 
             case 'getBulkTransfer':
-                return this._getBulkTransfer();
+                return this._getBulkTransfer(this.data.bulkTransferId);
 
             case 'error':
                 this._logger.log(`State machine is erroring with error: ${util.inspect(args)}`);
@@ -150,13 +151,13 @@ class OutboundBulkTransfersModel {
                         if (this._rejectExpiredTransferFulfils) {
                             const now = new Date().toISOString();
                             if (now > bulkTransferPrepare.expiration) {
-                                const msg = 'Bulk transfer response missed expiry deadline';
+                                const msg = 'Bulk transfer fulfils missed expiry deadline';
                                 error = new BackendError(msg, 504);
                                 this._logger.error(`${msg}: system time=${now} > expiration time=${bulkTransferPrepare.expiration}`);
                             }
                         }
-                    } else if (message.type === 'bulkTransferFulfilError') {
-                        error = new BackendError(`Got an error response requesting bulk transfer: ${util.inspect(message.data, { depth: Infinity })}`, 500);
+                    } else if (message.type === 'bulkTransferError') {
+                        error = new BackendError(`Got an error response preparing bulk transfer: ${util.inspect(message.data, { depth: Infinity })}`, 500);
                         error.mojaloopError = message.data;
                     }
                     else {
@@ -179,7 +180,7 @@ class OutboundBulkTransfersModel {
                     }
 
                     const bulkTransferFulfil = message.data;
-                    this._logger.push({ bulkTransferFulfil }).log('Bulk transfer response received');
+                    this._logger.push({ bulkTransferFulfil }).log('Bulk transfer fulfils received');
 
                     return resolve(bulkTransferFulfil);
                 }
@@ -203,7 +204,7 @@ class OutboundBulkTransfersModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /bulkTransfers request to the switch
             try {
-                const res = await this._requests.postBulkTransfers(bulkTransferPrepare, this.data.from.fspId);
+                const res = await this._requests.postBulkTransfers(bulkTransferPrepare, this.data.payeeFsp.fspId);
                 this._logger.push({ res }).log('Bulk transfer request sent to peer');
             }
             catch (err) {
@@ -269,7 +270,7 @@ class OutboundBulkTransfersModel {
     /**
      * Get bulk transfer details by sending GET /bulkTransfers/{ID} request to the switch
      */
-    async getBulkTransfer(bulkTransferId) {
+    async _getBulkTransfer(bulkTransferId) {
         // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
             const bulkTransferKey = `bulkTransfer_${bulkTransferId}`;
@@ -455,15 +456,15 @@ class OutboundBulkTransfersModel {
 
             // as this function is recursive, we dont want to error the state machine multiple times
             if(this.data.currentState !== 'errored') {
-                // err should not have a transferState property here!
-                if(err.transferState) {
+                // err should not have a bulkTransferState property here!
+                if(err.bulkTransferState) {
                     this._logger.log(`State machine is broken: ${util.inspect(err)}`);
                 }
                 // transition to errored state
                 await this.stateMachine.error(err);
 
-                // avoid circular ref between transferState.lastError and err
-                err.transferState = JSON.parse(JSON.stringify(this.getResponse()));
+                // avoid circular ref between bulkTransferState.lastError and err
+                err.bulkTransferState = JSON.parse(JSON.stringify(this.getResponse()));
             }
             throw err;
         }

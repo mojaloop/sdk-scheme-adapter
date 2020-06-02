@@ -241,6 +241,7 @@ class OutboundBulkQuotesModel {
                 extension: this.data.extensions
             };
         }
+
         bulkQuoteRequest.individualQuotes = this.data.individualQuotes.map((individualQuote) => {
             const quoteId = individualQuote.quoteId || uuid();
             const quote = {
@@ -262,7 +263,9 @@ class OutboundBulkQuotesModel {
                     initiatorType: this.data.from.type || 'CONSUMER'
                 }
             };
+
             individualQuote.note && (quote.note = individualQuote.note);
+            
             if (individualQuote.extensions && individualQuote.extensions.length > 0) {
                 bulkQuoteRequest.extensionList = {
                     extension: individualQuote.extensions

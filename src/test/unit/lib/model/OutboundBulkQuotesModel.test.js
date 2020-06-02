@@ -26,7 +26,6 @@ const defaultConfig = require('./data/defaultConfig');
 const bulkQuoteRequest = require('./data/bulkQuoteRequest');
 const bulkQuoteResponseTemplate = require('./data/bulkQuoteResponse');
 
-
 // util function to simulate a quote response subscription message on a cache client
 const emitBulkQuoteResponseCacheMessage = (cache, bulkQuoteId, bulkQuoteResponse) => {
     cache.publish(`bulkQuote_${bulkQuoteId}`, JSON.stringify(bulkQuoteResponse));
@@ -68,9 +67,11 @@ describe('OutboundBulkQuotesModel', () => {
         await model.initialize(JSON.parse(JSON.stringify(bulkQuoteRequest)));
 
         let expectError;
+
         if (rejects.bulkQuoteResponse && delays.requestBulkQuotes && expirySeconds < delays.requestBulkQuotes) {
             expectError = 'Bulk quote response missed expiry deadline';
         }
+
         if (expectError) {
             await expect(model.run()).rejects.toThrowError(expectError);
         } else {
@@ -87,6 +88,7 @@ describe('OutboundBulkQuotesModel', () => {
 
     beforeEach(async () => {
         config = JSON.parse(JSON.stringify(defaultConfig));
+
         MojaloopRequests.__postBulkQuotes = jest.fn(() => Promise.resolve());
         MojaloopRequests.__putBulkQuotes = jest.fn(() => Promise.resolve());
         MojaloopRequests.__putBulkQuotesError = jest.fn(() => Promise.resolve());
@@ -147,7 +149,6 @@ describe('OutboundBulkQuotesModel', () => {
         expect(StateMachine.__instance.state).toBe('succeeded');
     });
 
-
     test('sends bulk quotes request with correct payload', async () => {
         MojaloopRequests.__postBulkQuotes = jest.fn((postBulkQuotesBody) => {
             // ensure that the `MojaloopRequests.postBulkQuotes` method has been called with correct arguments
@@ -185,9 +186,6 @@ describe('OutboundBulkQuotesModel', () => {
         expect(StateMachine.__instance.state).toBe('succeeded');
     });
 
-
-    
-
     test('pass quote response `expiration` deadline', () =>
         testBulkQuoteWithDelay({
             expirySeconds: 2,
@@ -222,7 +220,6 @@ describe('OutboundBulkQuotesModel', () => {
                 }
             }
         };
-
 
         MojaloopRequests.__postBulkQuotes = jest.fn((postBulkQuotesBody) => {
             // simulate a callback with the bulk quote response
