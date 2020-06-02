@@ -110,7 +110,7 @@ describe('outboundBulkTransferModel', () => {
 
 
     test('executes bulk transfer', async () => {
-        MojaloopRequests.__postBulkTransfers = jest.fn((postBulkTransfersBody, destFspId) => {
+        MojaloopRequests.__postBulkTransfers = jest.fn((postBulkTransfersBody) => {
             //ensure that the `MojaloopRequests.postBulkTransfers` method has been called with the correct arguments
             // set as the destination FSPID
             const extensionList = postBulkTransfersBody.extensionList.extension;
