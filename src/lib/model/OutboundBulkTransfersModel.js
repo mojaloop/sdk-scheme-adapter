@@ -235,9 +235,9 @@ class OutboundBulkTransfersModel {
         };
 
         // add extensionList if provided
-        if (this.data.transferRequestExtensions && this.data.transferRequestExtensions.length > 0) {
+        if (this.data.extensions && this.data.extensions.length > 0) {
             bulkTransferRequest.extensionList = {
-                extension: this.data.transferRequestExtensions
+                extension: this.data.extensions
             };
         }
 

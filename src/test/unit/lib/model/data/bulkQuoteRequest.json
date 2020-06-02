@@ -1,0 +1,27 @@
+{
+  "from": {
+    "displayName": "Steven Oderayi",
+    "idType": "MSISDN",
+    "idValue": "234567890"
+  },
+  "individualQuotes": [
+    {
+      "to": {
+        "fspId": "fake-fsp-id",
+        "idType": "PERSONAL_ID",
+        "idValue": "123456789",
+        "idSubValue": "PASSPORT"
+      },
+      "amountType": "SEND",
+      "currency": "USD",
+      "amount": "100",
+      "transactionType": "TRANSFER",
+      "note": "test payment"
+    }
+  ],
+  "homeTransactionId": "123ABC",
+  "extensions": [
+    { "key": "qkey1", "value": "qvalue1" },
+    { "key": "qkey2", "value": "qvalue2" }
+  ]
+}

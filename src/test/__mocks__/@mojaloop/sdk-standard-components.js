@@ -54,6 +54,7 @@ MockMojaloopRequests.__putTransactionRequests = jest.fn(() => Promise.resolve())
 MockMojaloopRequests.__postTransfers = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putTransfers = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putTransfersError = jest.fn(() => Promise.resolve());
+MockMojaloopRequests.__getBulkQuotes = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__postBulkQuotes = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putBulkQuotes = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putBulkQuotesError = jest.fn(() => Promise.resolve());

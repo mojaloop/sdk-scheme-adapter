@@ -1425,9 +1425,13 @@ components:
     bulkTransferRequest:
       type: object
       required:
+        - homeTransactionId
         - from
         - individualTransfers
       properties:
+        homeTransactionId:
+          type: string
+          description: Transaction ID from the DFSP backend, used to reconcile transactions between the Switch and DFSP backend systems.
         bulkTransferId:
           $ref: '#/components/schemas/mojaloopIdentifier'
         from:
@@ -1439,7 +1443,7 @@ components:
           maxItems: 1000
           items:
             $ref: '#/components/schemas/individualTransfer'
-        transferRequestextensions:
+        extensions:
             $ref: '#/components/schemas/extensionList' 
     
     individualTransfer:
@@ -1509,9 +1513,13 @@ components:
     bulkQuoteRequest:
       type: object
       required:
+        - homeTransactionId
         - from
         - individualQuotes
       properties:
+        homeTransactionId:
+          type: string
+          description: Transaction ID from the DFSP backend, used to reconcile transactions between the Switch and DFSP backend systems.
         bulkQuoteId:
           $ref: '#/components/schemas/mojaloopIdentifier'
         from:
@@ -1523,6 +1531,8 @@ components:
           maxItems: 1000
           items:
             $ref: '#/components/schemas/individualQuote'
+        extensions:
+          $ref: '#/components/schemas/extensionList'
     
     individualQuote:
       title: IndividualQuote
@@ -1531,9 +1541,6 @@ components:
       properties:
         quoteId:
           $ref: '#/components/schemas/mojaloopIdentifier'
-        homeTransactionId:
-          type: string
-          description: Transaction ID from the DFSP backend, used to reconcile transactions between the Switch and DFSP backend systems.
         to:
           $ref: '#/components/schemas/transferParty'
         amountType:
@@ -1547,7 +1554,7 @@ components:
         note:
           maxLength: 128
           type: string
-        quoteRequestExtensions:
+        extensions:
           $ref: '#/components/schemas/extensionList'
       required:
         - quoteId

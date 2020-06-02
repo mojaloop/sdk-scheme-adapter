@@ -116,7 +116,7 @@ class OutboundBulkQuotesModel {
                 return this._requestBulkQuote();
             
             case 'getBulkQuote':
-                return this._getBulkQuote();
+                return this._getBulkQuote(this.data.bulkQuoteId);
 
             case 'error':
                 this._logger.log(`State machine is erroring with error: ${util.inspect(args)}`);
@@ -205,7 +205,7 @@ class OutboundBulkQuotesModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /bulkQuotes request to the switch
             try {
-                const res = await this._requests.postBulkQuotes(bulkQuote, this.data.to.fspId);
+                const res = await this._requests.postBulkQuotes(bulkQuote, this.data.individualQuotes[0].to.fspId);
                 this._logger.push({ res }).log('Bulk quote request sent to peer');
             }
             catch (err) {
@@ -278,7 +278,7 @@ class OutboundBulkQuotesModel {
     /**
      * Get bulk quote details by sending GET /bulkQuotes/{ID} request to the switch
      */
-    async getBulkQuote(bulkQuoteId) {
+    async _getBulkQuote(bulkQuoteId) {
         // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
             const bulkQuoteKey = `bulkQuote_${bulkQuoteId}`;
@@ -292,7 +292,7 @@ class OutboundBulkQuotesModel {
                     if (message.type === 'bulkQuoteError') {
                         error = new BackendError(`Got an error response retrieving bulk quote: ${util.inspect(message.data, { depth: Infinity })}`, 500);
                         error.mojaloopError = message.data;
-                    } else if (message.type !== 'bulkQuote') {
+                    } else if (message.type !== 'bulkQuoteResponse') {
                         this._logger.push({ message }).log(`Ignoring cache notification for bulk quote ${bulkQuoteKey}. Uknokwn message type ${message.type}.`);
                         return;
                     }
