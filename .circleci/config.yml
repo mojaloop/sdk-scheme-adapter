@@ -136,7 +136,7 @@ jobs:
             if [ "${CIRCLE_BRANCH}" == "master" ];
             then
                 echo "Sending lcov.info to SonarQube..."
-                aws s3 cp coverage/lcov.info $AWS_S3_DIR_SONARQUBE/account-lookup-service/lcov.info
+                aws s3 cp coverage/lcov.info $AWS_S3_DIR_SONARQUBE/$CIRCLE_PROJECT_REPONAME/lcov.info
             else
                 echo "Not a release (env CIRCLE_BRANCH != 'master'), skipping sending lcov.info to SonarQube."
             fi
@@ -326,20 +326,20 @@ jobs:
           webhook: "$SLACK_WEBHOOK_ANNOUNCEMENT"
           success_message: '*"${CIRCLE_PROJECT_REPONAME}"* - Release \`"${CIRCLE_TAG}"\` \nhttps://github.com/mojaloop/"${CIRCLE_PROJECT_REPONAME}"/releases/tag/"${CIRCLE_TAG}"'
 
-  deploy:
-    executor: deploy-kube/helm-kube
-    steps:
-      - checkout
-      - deploy-kube/setup_and_run:
-          helm_set_values: |
-            --set .account-lookup-service.account-lookup-service.containers.api.image.repository=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME \
-            --set .account-lookup-service.account-lookup-service.containers.api.image.tag=$CIRCLE_TAG \
-            --set .account-lookup-service.account-lookup-service.containers.admin.image.repository=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME \
-            --set .account-lookup-service.account-lookup-service.containers.admin.image.tag=$CIRCLE_TAG
-      - slack/status:
-          fail_only: true
-          webhook: "$SLACK_WEBHOOK_ANNOUNCMENT_CI_CD"
-          failure_message: 'Deployment failed for: \`"${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_TAG}"\`'
+#  deploy:
+#    executor: deploy-kube/helm-kube
+#    steps:
+#      - checkout
+#      - deploy-kube/setup_and_run:
+#          helm_set_values: |
+#            --set .account-lookup-service.account-lookup-service.containers.api.image.repository=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME \
+#            --set .account-lookup-service.account-lookup-service.containers.api.image.tag=$CIRCLE_TAG \
+#            --set .account-lookup-service.account-lookup-service.containers.admin.image.repository=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME \
+#            --set .account-lookup-service.account-lookup-service.containers.admin.image.tag=$CIRCLE_TAG
+#      - slack/status:
+#          fail_only: true
+#          webhook: "$SLACK_WEBHOOK_ANNOUNCMENT_CI_CD"
+#          failure_message: 'Deployment failed for: \`"${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_TAG}"\`'
 
 ##
 # Workflows
@@ -460,13 +460,13 @@ workflows:
             branches:
               ignore:
                 - /.*/
-      - deploy:
-          context: org-global
-          requires:
-            - publish
-          filters:
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?/
-            branches:
-              ignore:
-                - /.*/
+#      - deploy:
+#          context: org-global
+#          requires:
+#            - publish
+#          filters:
+#            tags:
+#              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?/
+#            branches:
+#              ignore:
+#                - /.*/
