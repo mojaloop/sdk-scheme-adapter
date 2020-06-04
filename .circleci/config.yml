@@ -51,7 +51,7 @@ executors:
   default-docker:
     working_directory: /home/circleci/project
     docker: 
-      - image: node:12.14.0-alpine
+      - image: node:12.16.1-alpine
 
   default-machine:
     machine:
@@ -281,86 +281,6 @@ jobs:
           webhook: "$SLACK_WEBHOOK_ANNOUNCEMENT"
           success_message: '*"${CIRCLE_PROJECT_REPONAME}"* - Release \`"${CIRCLE_TAG}"\` \nhttps://github.com/mojaloop/"${CIRCLE_PROJECT_REPONAME}"/releases/tag/"${CIRCLE_TAG}"'
 
-  # build-snapshot:
-  #   machine: true
-  #   <<: *defaults_working_directory
-  #   steps:
-  #     - checkout
-  #     - run:
-  #         <<: *defaults_environment
-  #     - run:
-  #         name: setup environment vars for SNAPSHOT release
-  #         command: |
-  #           echo 'export RELEASE_TAG=$RELEASE_TAG_SNAPSHOT' >> $BASH_ENV
-  #     - run:
-  #         <<: *defaults_build_docker_login
-  #     - run:
-  #         <<: *defaults_build_docker_build
-  #     - run:
-  #         <<: *defaults_build_docker_build_release
-  #     - run:
-  #         <<: *defaults_build_docker_publish
-  #     - run:
-  #         <<: *defaults_build_docker_publish_release
-  #     - run:
-  #         <<: *defaults_slack_announcement
-
-  # build-hotfix:
-  #   machine: true
-  #   # <<: *default_env
-  #   steps:
-  #     - checkout
-  #     - run:
-  #         <<: *defaults_environment
-  #     - run:
-  #         name: setup environment vars for HOTFIX release
-  #         command: |
-  #           echo 'export RELEASE_TAG=$RELEASE_TAG_PROD' >> $BASH_ENV
-  #     - run:
-  #         <<: *defaults_build_docker_login
-  #     - run:
-  #         <<: *defaults_build_docker_build
-  #     - run:
-  #         <<: *defaults_build_docker_publish
-  #     - run:
-  #         <<: *defaults_slack_announcement
-
-#   build:
-#     machine: true
-#     # <<: *default_env
-#     steps:
-#       - checkout
-#       - run:
-#           <<: *defaults_environment
-#       - run:
-#           name: setup environment vars for LATEST release
-#           command: |
-#             echo 'export RELEASE_TAG=$RELEASE_TAG_PROD' >> $BASH_ENV
-#       - run:
-#           <<: *defaults_build_docker_login
-#       - run:
-#           <<: *defaults_build_docker_build
-# #      - run:
-# #          <<: *defaults_license_scanner
-# #      - run:
-# #          name: Run the license-scanner
-# #          command: cd /tmp/license-scanner && mode=docker dockerImage=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG make run
-# #      - store_artifacts:
-# #          path: /tmp/license-scanner/results
-# #          prefix: licenses
-#       - run:
-#           <<: *defaults_build_docker_build_release
-#       - run:
-#           <<: *defaults_build_docker_publish
-#       - run:
-#           <<: *defaults_build_docker_publish_release
-#       - run:
-#           <<: *defaults_npm_auth
-#       - run:
-#           <<: *defaults_npm_publish_release
-#       - run:
-#           <<: *defaults_slack_announcement
-
 workflows:
   version: 2
   build_and_test:
@@ -463,79 +383,3 @@ workflows:
             branches:
               ignore:
                 - /.*/
-
-#       - build-snapshot:
-#           context: org-global
-#           requires:
-#             - setup
-#             - test-unit
-#             - lint
-#             - test-integration
-# #            - test-coverage
-# #            - test-functional
-# #            - test-spec
-# #            - vulnerability-check
-# #            - audit-licenses
-#           filters:
-#             tags:
-#               only: /v[0-9]+(\.[0-9]+)*\-snapshot/
-#             branches:
-#               ignore:
-#                 - /.*/
-# #      - deploy-snapshot:
-# #          context: org-global
-# #          requires:
-# #            - build-snapshot
-# #          filters:
-# #            tags:
-# #              only: /v[0-9]+(\.[0-9]+)*\-snapshot/
-# #            branches:
-# #              ignore:
-# #                - /.*/
-#       - build:
-#           context: org-global
-#           requires:
-#             - setup
-#             - test-unit
-#             - lint
-#             - test-integration
-# #            - test-coverage
-# #            - test-functional
-# #            - test-spec
-# #            - vulnerability-check
-# #            - audit-licenses
-#           filters:
-#             tags:
-#               only: /v[0-9]+(\.[0-9]+)*/
-#             branches:
-#               ignore:
-#                 - /.*/
-#       - build-hotfix:
-#           context: org-global
-#           requires:
-#             - setup
-#             - test-unit
-#             - lint
-#             - test-integration
-# #            - test-coverage
-# #            - test-functional
-# #            - test-spec
-# #            - vulnerability-check
-# #            - audit-licenses
-#           filters:
-#             tags:
-#               only: /v[0-9]+(\.[0-9]+)*\-hotfix(\.[0-9]+)/
-#             branches:
-#               ignore:
-#                 - /.*/
-# #      - deploy:
-#          context: org-global
-#          requires:
-#            - build
-#          filters:
-#            tags:
-#              only: /v[0-9]+(\.[0-9]+)*/
-#            branches:
-#              ignore:
-#                - /.*/
-
