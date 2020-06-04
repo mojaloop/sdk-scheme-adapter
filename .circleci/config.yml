@@ -203,6 +203,10 @@ jobs:
       - setup_remote_docker
       - checkout
       - run:
+          name: Install docker dependencies for anchore
+          command: |
+            apk add --update python3 py3-pip docker python3-dev libffi-dev openssl-dev gcc libc-dev make jq npm
+      - run:
           name: Install AWS CLI dependencies
           command: *defaults_awsCliDependencies
       - attach_workspace:
