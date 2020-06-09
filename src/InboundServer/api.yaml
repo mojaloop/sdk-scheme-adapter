@@ -686,6 +686,13 @@ paths:
                 middleName: Pierre
                 lastName: Trudeau
               dateOfBirth: '1971-12-25'
+            accounts:
+            - currency: USD
+              description: savings
+              address: moja.red.8f027046-b82a-4fa9-838b-70210fcf8136
+            - currency: USD
+              description: checkings
+              address: moja.red.8f027046-b82a-4fa9-838b-70210fcf8137
       responses:
         '200':
           $ref: '#/components/responses/Response200'
@@ -4424,4 +4431,3 @@ components:
           description: 'Optional extension, specific to deployment.'
       required:
         - transferState
-  
