@@ -65,19 +65,12 @@ const throwOrJson = async (res) => {
         });
     }
 
-    try {
-        // try parsing the body as JSON
-        const resp = JSON.parse(res.body);
-        return resp;
-    }
-    catch(err) {
-        throw new HTTPResponseError({ msg: `Error parsing response as JSON: ${err.stack || util.inspect(err)}`, res });
-    }
+    return res.data;
 };
 
 
 module.exports = {
-    HTTPResponseError: HTTPResponseError,
-    buildUrl: buildUrl,
-    throwOrJson: throwOrJson
+    HTTPResponseError,
+    buildUrl,
+    throwOrJson,
 };

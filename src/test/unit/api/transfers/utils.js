@@ -1,7 +1,8 @@
-const request = require('request-promise-native');
+const nock = require('nock');
 const OpenAPIResponseValidator = require('openapi-response-validator').default;
 
 const { Logger } = require('@internal/log');
+const defaultConfig = require('../../data/defaultConfig');
 const postTransfersSimpleBody = require('./data/postTransfersSimpleBody');
 
 /**
@@ -22,43 +23,39 @@ function createGetTransfersTester({ reqInbound, reqOutbound, apiSpecsOutbound })
      */
     return async (putBodyFn, responseCode, responseBody) => {
         const TRANSFER_ID = '00000000-0000-1000-8000-000000000001';
-        let pendingRequest = Promise.resolve();
-        const handleRequest = async (req) => {
-            const urlPath = new URL(req.uri).pathname;
-            const method = req.method;
-            expect(method).toBe('GET');
-            expect(urlPath).toBe(`/transfers/${TRANSFER_ID}`);
+        const endpoint = new URL(`http://${defaultConfig.peerEndpoint}`).host;
+        const switchEndpoint = `http://${endpoint}`;
+
+        const sendPutTransfers = async () => {
             const putBody = await Promise.resolve(putBodyFn());
             let putUrl = `/transfers/${TRANSFER_ID}`;
             if (putBody.errorInformation) {
                 putUrl += '/error';
             }
-            await reqInbound.put(putUrl).
-                send(putBody).
-                set('Date', new Date().toISOString()).
-                set('fspiop-source', 'mojaloop-sdk').
-                expect(200);
+
+            return reqInbound.put(putUrl)
+                .send(putBody)
+                .set('Date', new Date().toISOString())
+                .set('fspiop-source', 'mojaloop-sdk')
+                .expect(200);
         };
-        const requestSpy = request.mockImplementation((req) => {
-            pendingRequest = handleRequest(req);
-            return Promise.resolve({headers: {}, statusCode: 202});
-        });
 
-        await reqOutbound.get(`/transfers/${TRANSFER_ID}`).then((res) => {
-            const {body} = res;
-            expect(res.statusCode).toEqual(responseCode);
-            expect(body).toEqual(responseBody);
-            const responseValidator = new OpenAPIResponseValidator(
-                apiSpecsOutbound.paths['/transfers/{transferId}'].get);
-            const err = responseValidator.validateResponse(responseCode, body);
-            if (err) {
-                console.log(body);
-                throw err;
-            }
-        });
+        await nock(switchEndpoint)
+            .get(`/transfers/${TRANSFER_ID}`)
+            .reply(202, () => {
+                sendPutTransfers().then();
+            });
 
-        await pendingRequest;
-        requestSpy.mockRestore();
+        const res = await reqOutbound.get(`/transfers/${TRANSFER_ID}`);
+        const {body} = res;
+        expect(res.statusCode).toEqual(responseCode);
+        expect(body).toEqual(responseBody);
+        const responseValidator = new OpenAPIResponseValidator(apiSpecsOutbound.paths['/transfers/{transferId}'].get);
+        const err = responseValidator.validateResponse(responseCode, body);
+        if (err) {
+            console.log(body);
+            throw err;
+        }
     };
 }
 
@@ -100,7 +97,7 @@ function createPostTransfersTester(
         let pendingRequest = Promise.resolve();
         let currentRequest = Promise.resolve();
         const handleRequest = async (req) => {
-            const urlPath = new URL(req.uri).pathname;
+            const urlPath = req.path;
             const body = req.body && JSON.parse(req.body);
             const headers = req.headers;
             const method = req.method;
@@ -109,16 +106,13 @@ function createPostTransfersTester(
             requestValidatorInbound.validateRequest(
                 {method, path: urlPath, request: {headers, body}}, logger);
             if (urlPath.startsWith('/parties/')) {
-                expect(method).toBe('GET');
                 putBody = await Promise.resolve(bodyFn.parties.put());
                 putUrl = urlPath;
             } else if (urlPath === '/quotes') {
-                expect(method).toBe('POST');
                 expect(body).toEqual(bodyFn.quotes.post(body));
                 putBody = await Promise.resolve(bodyFn.quotes.put(body));
                 putUrl = `/quotes/${body.quoteId}`;
             } else if (urlPath === '/transfers') {
-                expect(method).toBe('POST');
                 expect(body).toEqual(bodyFn.transfers.post(body));
                 putBody = await Promise.resolve(bodyFn.transfers.put(body));
                 putUrl = `/transfers/${body.transferId}`;
@@ -128,39 +122,51 @@ function createPostTransfersTester(
             if (putBody.errorInformation) {
                 putUrl += '/error';
             }
-            // supertest have issues handling simultaneous requests,
+            // supertest experiencing issues handling simultaneous requests,
             //  so just wait for the previous request to finish
             await currentRequest;
-            currentRequest = reqInbound.put(putUrl).
-                send(putBody).
-                set('Date', new Date().toISOString()).
-                set('fspiop-source', 'mojaloop-sdk').
-                expect(200);
-            await currentRequest;
+            currentRequest = reqInbound.put(putUrl)
+                .send(putBody)
+                .set('Date', new Date().toISOString())
+                .set('fspiop-source', 'mojaloop-sdk')
+                .expect(200);
+            return currentRequest;
         };
-        const requestSpy = request.mockImplementation((req) => {
-            pendingRequest = handleRequest(req);
-            return Promise.resolve({headers: {}, statusCode: 202});
-        });
 
-        await reqOutbound.post('/transfers').
-            send(postTransfersSimpleBody).
-            then((res) => {
-                const {body} = res;
-                expect(res.statusCode).toEqual(responseCode);
-                expect(body).toEqual(responseBody);
-                const responseValidator = new OpenAPIResponseValidator(
-                    apiSpecsOutbound.paths['/transfers'].post);
-                const err = responseValidator.validateResponse(responseCode,
-                    body);
-                if (err) {
-                    console.log(body);
-                    throw err;
-                }
-            });
+        function handleNockRequest(uri, body) {
+            pendingRequest = handleRequest({
+                method: this.method.toLowerCase(),
+                path: uri,
+                body,
+                headers: this.req.headers,
+            }).then();
+        }
 
+        const endpoint = new URL(`http://${defaultConfig.peerEndpoint}`).host;
+        const switchEndpoint = `http://${endpoint}`;
+
+        const nockMock = nock(switchEndpoint);
+        if (bodyFn.parties) {
+            nockMock.get(/^\/parties\//).reply(202, handleNockRequest);
+        }
+        if (bodyFn.quotes) {
+            nockMock.post('/quotes').reply(202, handleNockRequest);
+        }
+        if (bodyFn.transfers) {
+            nockMock.post('/transfers').reply(202, handleNockRequest);
+        }
+
+        const res = await reqOutbound.post('/transfers').send(postTransfersSimpleBody);
+        const {body} = res;
+        expect(res.statusCode).toEqual(responseCode);
+        expect(body).toEqual(responseBody);
+        const responseValidator = new OpenAPIResponseValidator(apiSpecsOutbound.paths['/transfers'].post);
+        const err = responseValidator.validateResponse(responseCode, body);
+        if (err) {
+            console.log(body);
+            throw err;
+        }
         await pendingRequest;
-        requestSpy.mockRestore();
     };
 }
 
