@@ -74,8 +74,8 @@ jobs:
           name: Access npm folder as root
           command: cd $(npm root -g)/npm
       - run:
-          name: Update NPM install
-          command: cd src && npm install
+          name: NPM installs dependencies in CI mode
+          command: cd src && npm ci
       - run:
           name: Delete build dependencies
           command: apk del build-dependencies
