@@ -1,15 +1,18 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
-  "version": "10.1.5",
+  "version": "10.1.6",
   "description": "An adapter for connecting to Mojaloop API enabled switches.",
   "main": "index.js",
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test": "jest --ci --reporters=default --reporters=jest-junit --env=node test/unit",
-    "test:int": "jest --ci --reporters=default --reporters=jest-junit --env=node test/integration --forceExit"
+    "test": "jest --ci test/unit",
+    "test:int": "jest --ci --collectCoverage=false test/integration --forceExit"
   },
   "author": "Matt Kingston, James Bush, ModusBox Inc.",
+  "contributors": [
+    "Paweł Marzec <pawel.marzec@modusbox.com>"
+  ],
   "license": "Apache-2.0",
   "licenses": [
     {
@@ -17,6 +20,16 @@
       "url": "http://www.apache.org/licenses/LICENSE-2.0"
     }
   ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "post-commit": "git update-index --again",
+      "pre-push": "npm run test"
+    }
+  },
+  "lint-staged": {
+    "*.{js,ts}": "eslint --cache --fix"
+  },
   "dependencies": {
     "@internal/cache": "file:lib/cache",
     "@internal/log": "file:lib/log",
@@ -43,8 +56,10 @@
     "eslint": "^7.0.0",
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-plugin-import": "^2.20.2",
+    "husky": "^4.2.5",
     "jest": "^26.0.1",
     "jest-junit": "^10.0.0",
+    "lint-staged": "^10.2.9",
     "nock": "^12.0.3",
     "openapi-response-validator": "^4.0.0",
     "redis-mock": "^0.49.0",
