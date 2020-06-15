@@ -26,6 +26,7 @@ paths:
       responses:
         200:
           description: Returns empty body if the scheme adapter outbound transfers service is running.
+  
   /transfers:
     post:
       summary: Sends money from one account to another
@@ -260,6 +261,33 @@ paths:
         504:
           $ref: '#/components/responses/accountsCreationTimeout'
 
+  /authorizations:
+    post:
+      tags:
+        - authorizations
+        - sampled
+      description: The HTTP request `POST /authorizations` is used to request the Payer to enter the applicable credentials in the PISP system.
+      summary: /authorizations
+      operationId: AuthorizationsPost
+      requestBody:
+        description: Perform authorization
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/authorizationsRequest'
+      responses:
+        200:
+          $ref: '#/components/responses/authorizationsResponse'
+        # TODO: define when ready to
+        # 400:
+        #   $ref: '#/components/responses/authorizationsPostBadRequest'
+        # 500:
+        #   $ref: '#/components/responses/authorizationsPostServerError'
+        # 504:
+        #   $ref: '#/components/responses/authorizationsPostTimeout'
+        
+  
 components:
   schemas:
 
@@ -452,7 +480,7 @@ components:
         message:
           type: string
           description: Error message text.
-
+          
     errorTransferResponse:
       allOf:
         - $ref: '#/components/schemas/errorResponse'
@@ -571,7 +599,6 @@ components:
         - UNITED_NATIONS - An UN (United Nations) number is used in reference to a party.
 
         - OTHER_ID - Any other type of identification type number is used in reference to a party.
-
 
     money:
       pattern: ^([0]|([1-9][0-9]{0,17}))([.][0-9]{0,3}[1-9])?$
@@ -917,7 +944,6 @@ components:
             or an object representing other types of error e.g. exceptions that may occur inside the scheme adapter.
           $ref: '#/components/schemas/transferError'
 
-
     transferResponse:
       type: object
       required:
@@ -1046,6 +1072,44 @@ components:
           description: 'Optional extension, specific to deployment.'
       required:
         - transferState
+    
+    mojaloopAuthenticationType:
+      title: AuthenticationType
+      type: string
+      enum:
+        - OTP
+        - QRCODE
+        - U2F
+      description: Below are the allowed values for the enumeration AuthenticationType.
+    
+    mojaloopAuthenticationSimpleValue:
+      type: string
+    
+    mojaloopAuthenticationComplexValue:
+      type: object
+      required:
+        - pinValue
+        - counter
+      properties:
+        pinValue:
+          type: string
+        counter:
+          $ref: '#/components/schemas/mojaloopInteger'
+
+    mojaloopAuthenticationInfo:
+      title: AuthenticationInfo
+      description: Data model for the complex type AuthenticationInfo
+      required:
+        - authentication
+        - authenticationValue
+      type: object
+      properties:
+        authentication:
+          $ref: '#/components/schemas/mojaloopAuthenticationType'
+        authenticationValue:
+          oneOf:
+            - $ref: '#/components/schemas/mojaloopAuthenticationSimpleValue'
+            - $ref: '#/components/schemas/mojaloopAuthenticationComplexValue'
 
     mojaloopTransferState:
       type: string
@@ -1075,6 +1139,27 @@ components:
         sent the transaction request to the Payer. - ACCEPTED Payer has approved
         the transaction. - REJECTED Payer has rejected the transaction.
 
+    mojaloopCorrelationId:
+      title: CorrelationId
+      description: >-
+        Identifier that correlates all messages of the same sequence. The API
+        data type UUID (Universally Unique Identifier) is a JSON String in
+        canonical format, conforming to RFC 4122, that is restricted by a
+        regular expression for interoperability reasons. An UUID is always 36
+        characters long, 32 hexadecimal symbols and 4 dashes (‘-‘).
+      pattern: >-
+        ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+      type: string
+
+    mojaloopInteger:
+      title: Integer
+      description: >-
+        The API data type Integer is a JSON String consisting of digits only.
+        Negative numbers and leading zeroes are not allowed. The data type is
+        always limited to a specific number of digits.
+      pattern: '^[1-9]\d*$'
+      type: string
+
     mojaloopMoney:
       title: Money
       type: object
@@ -1089,6 +1174,41 @@ components:
       required:
         - currency
         - amount
+    
+    mojaloopQuotesIDPutResponse:
+      title: QuotesIDPutResponse
+      description: 'PUT /quotes/{ID} object'
+      required:
+        - transferAmount
+        - expiration
+        - ilpPacket
+        - condition
+      type: object
+      additionalProperties: false
+      properties:
+        transferAmount:
+          $ref: '#/components/schemas/mojaloopMoney'
+        payeeReceiveAmount:
+          $ref: '#/components/schemas/mojaloopMoney'
+        payeeFspFee:
+          $ref: '#/components/schemas/mojaloopMoney'
+        payeeFspCommission:
+          $ref: '#/components/schemas/mojaloopMoney'
+        expiration:
+          description: >-
+            Date and time until when the quotation is valid and can be honored
+            when used in the subsequent transaction.
+          type: string
+        geoCode:
+          $ref: '#/components/schemas/geoCode'
+        ilpPacket:
+          description: The ILP Packet that must be attached to the transfer by the Payer.
+          type: string
+        condition:
+          description: The condition that must be attached to the transfer by the Payer.
+          type: string
+        extensionList:
+          $ref: '#/components/schemas/extensionList'
 
     transferError:
       type: object
@@ -1262,7 +1382,53 @@ components:
           $ref: '#/components/schemas/accountsCreationState'
         lastError:
           $ref: '#/components/schemas/transferError'
-
+    
+    authorizationsRequest:
+      title: authorizationsRequest
+      description: POST /authorizations Request object
+      type: object
+      properties:
+        authenticationType:
+          $ref: '#/components/schemas/mojaloopAuthenticationType'
+        retriesLeft:
+          $ref: '#/components/schemas/mojaloopInteger'
+        amount:
+          $ref: '#/components/schemas/mojaloopMoney'
+        transactionId:
+          $ref: '#/components/schemas/mojaloopCorrelationId'
+        transactionRequestId:
+          $ref: '#/components/schemas/mojaloopCorrelationId'
+        quote:
+          $ref: '#/components/schemas/mojaloopQuotesIDPutResponse'
+      required:
+        - authenticationType
+        - retriesLeft
+        - amount
+        - transactionId
+        - transactionRequestId
+        - quote
+      additionalProperties: false
+    
+    authorizationsResponse:
+      title: authorizationsResponse
+      description: |
+        response body of POST/authorizations 
+        derived from AuthorizationsIDPutResponse
+      type: object
+      required:
+        - responseType
+      additionalProperties: false
+      properties:
+        authenticationInfo:
+          $ref: '#/components/schemas/mojaloopAuthenticationInfo'
+        responseType:
+          description: >-
+            Enum containing response information; if the customer entered the
+            authentication value, rejected the transaction, or requested a
+            resend of the authentication value.
+            TODO: enum specification will be defined when all values will be known
+          type: string
+  
   responses:
     transferSuccess:
       description: Transfer completed successfully
@@ -1325,8 +1491,14 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/errorTransferResponse'
-
-
+    
+    authorizationsResponse:
+      description: authorization response
+      content: 
+        application/json:
+          schema: 
+            $ref: '#/components/schemas/authorizationsResponse'
+    
 
   parameters:
     transferId:
