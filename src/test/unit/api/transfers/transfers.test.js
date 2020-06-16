@@ -11,7 +11,6 @@
 'use strict';
 
 jest.unmock('@mojaloop/sdk-standard-components');
-jest.mock('request-promise-native');
 jest.mock('redis');
 
 const redis = require('redis');
@@ -47,7 +46,10 @@ describe('Outbound Transfers API', () => {
     });
 
     beforeEach(async () => {
-        serversInfo = await createTestServers(defaultConfig);
+        serversInfo = await createTestServers({
+            ...defaultConfig,
+            alsEndpoint: null,
+        });
         testPostTransfers = createPostTransfersTester({
             reqInbound: serversInfo.reqInbound,
             reqOutbound: serversInfo.reqOutbound,
@@ -117,12 +119,6 @@ describe('Outbound Transfers API', () => {
                         resolve => setTimeout(() => resolve(putPartiesBody),
                             3000)),
                 },
-                quotes: {
-                    put: () => putQuotesBody,
-                },
-                transfers: {
-                    put: () => putTransfersBody,
-                }
             };
             return testPostTransfers(putBodyFn, 504,
                 postTransfersErrorTimeoutResponse);
@@ -137,12 +133,6 @@ describe('Outbound Transfers API', () => {
                             errorDescription: 'Party not found',
                         },
                     }),
-                },
-                quotes: {
-                    put: () => putQuotesBody
-                },
-                transfers: {
-                    put: () => putTransfersBody
                 },
             };
             return testPostTransfers(putBodyFn, 500,

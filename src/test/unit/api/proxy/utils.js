@@ -1,10 +1,14 @@
-const request = require('request-promise-native');
+const nock = require('nock');
+const crypto = require('crypto');
 
+const defaultConfig = require('../../data/defaultConfig');
 const requestBody = require('./data/requestBody');
 const requestHeaders = require('./data/requestHeaders');
 const requestQuery = require('./data/requestQuery');
-const responseBody = require('./data/responseBody');
+const responseBodyJSON = require('./data/responseBody');
 const responseHeaders = require('./data/responseHeaders');
+
+const responseBodyBinary = crypto.randomBytes(10000);
 
 const convertToLowerCaseKeys = (obj) => Object.entries(obj).reduce(
     (acc, [k, v]) => ({...acc, [k.toLowerCase()]: v}),
@@ -26,43 +30,30 @@ function createProxyTester({ reqOutbound }) {
      *
      * @return {Promise<any>}
      */
-    return async ({sdkUrlPath, switchUrlPath, method, shouldForward, query, headers}) => {
-        const requestSpy = request.mockImplementation((req) => {
-            const urlPath = new URL(req.uri).pathname;
-            const receivedParam = new URL(req.uri).search;
-            const expectedParam = new URL(`http://example.com${sdkUrlPath}`).search;
-            expect(receivedParam).toBe(expectedParam);
-            expect(req.method).toBe(method);
-            expect(urlPath).toBe(switchUrlPath);
-            if (method !== 'GET') {
-                const body = JSON.parse(req.body);
-                expect(body).toEqual(requestBody);
-            }
-            const expectedHeaders = convertToLowerCaseKeys({
+    return async ({sdkUrlPath, switchUrlPath, method, shouldForward, query, headers, binary}) => {
+        const endpoint = new URL(`http://${defaultConfig.peerEndpoint}`).host;
+        const switchEndpoint = `http://${endpoint}`;
+        const responseBody = binary ? responseBodyBinary : responseBodyJSON;
+        nock(switchEndpoint, {
+            reqheaders: {
                 ...requestHeaders,
                 ...headers,
-            });
-            const receivedHeaders = convertToLowerCaseKeys(req.headers);
-            expect(receivedHeaders).toMatchObject(expectedHeaders);
-            expect(req.qs).toMatchObject({
+            },
+        })
+            .intercept(switchUrlPath, method.toUpperCase())
+            .query({
                 ...requestQuery,
                 ...query,
-            });
-            const response = {
-                headers: responseHeaders,
-                body: JSON.stringify(responseBody),
-                statusCode: 200,
-            };
-            return Promise.resolve(response);
-        });
+            })
+            .reply(200, responseBody, responseHeaders);
 
-        const res = await reqOutbound[method.toLowerCase()](sdkUrlPath).
-            query({
+        const res = await reqOutbound[method.toLowerCase()](sdkUrlPath)
+            .query({
                 ...requestQuery,
                 ...query,
-            }).
-            send(requestBody).
-            set({
+            })
+            .send(requestBody)
+            .set({
                 ...requestHeaders,
                 ...headers,
             });
@@ -80,8 +71,6 @@ function createProxyTester({ reqOutbound }) {
             });
             expect(res.statusCode).toBe(400);
         }
-
-        requestSpy.mockRestore();
     };
 }
 

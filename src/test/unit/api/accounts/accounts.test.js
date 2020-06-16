@@ -11,7 +11,6 @@
 'use strict';
 
 jest.unmock('@mojaloop/sdk-standard-components');
-jest.mock('request-promise-native');
 jest.mock('redis');
 
 const redis = require('redis');

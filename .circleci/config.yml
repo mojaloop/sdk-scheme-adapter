@@ -15,7 +15,7 @@ orbs:
 # defaults
 #
 # YAML defaults templates, in alphabetical order
-##
+##  
 defaults_Dependencies: &defaults_Dependencies |
   apk --no-cache add git
   apk --no-cache add ca-certificates
@@ -50,7 +50,7 @@ defaults_license_scanner: &defaults_license_scanner
 executors:
   default-docker:
     working_directory: /home/circleci/project
-    docker:
+    docker: 
       - image: node:12.16.1-alpine
 
   default-machine:
@@ -179,7 +179,7 @@ jobs:
           root: /tmp
           paths:
             - ./docker-image.tar
-
+      
   license-scan:
     executor: default-machine
     steps:
@@ -249,7 +249,7 @@ jobs:
   #         failure_message: 'Anchore Image Scan failed for: \`"${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_TAG}"\`'
   #     - store_artifacts:
   #         path: anchore-reports
-
+  
   publish:
     executor: default-machine
     steps:
