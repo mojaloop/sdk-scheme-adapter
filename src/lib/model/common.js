@@ -17,18 +17,9 @@ class BackendError extends Error {
     }
 
     toJSON() {
-        const ret = {
-            httpStatusCode: this.httpStatusCode
-        };
-
-        //copy across any other properties
-        for(let prop in this) {
-            if(this.hasOwnProperty(prop)) {
-                ret[prop] = this[prop];
-            }
-        }
-
-        return ret;
+        // return shallow clone of `this`, from `this` are only taken enumerable owned properties
+        return Object.assign({}, this);
+        
     }
 }
 
