@@ -9,10 +9,10 @@ participant "ESB/PortX" as esb
 
 box "SDK"
     participant "SDK Inbound Service" as sib
+    participant "Cache" as cache
     participant "SDK Outbound Service" as sob
 end box
   
-
 participant "Switch" as sw
 
 
@@ -128,6 +128,7 @@ note over sib, sob: JWS and TLS keys managed by SDK
     }
     end note
     backend -> sob: POST /authorizations
+    sob -> cache: notification_handler = cache.subscribe('authorization/id')
     rnote right of sob #Light
     **""POST /authorizations""**
     ""FSPIOP-Source: DFSP Backend""
@@ -177,7 +178,10 @@ note over sib, sob: JWS and TLS keys managed by SDK
         "responseType": "ENTERED"
     }
     end note
-    sw -> sob: PUT /authorizations/**123**
+    sw -> sib: PUT /authorizations/**123**
+    sib -> cache: cache.publish('authorization/{id}', put.body)
+    cache -> sob: notification('authorization/{id}', put.body)
+    sob -> sob: notification_handler('authorization/{id}', put.body)
     rnote left of sob #Light
     **""Response body of POST /authorizations""**
     {
@@ -199,7 +203,7 @@ note over sib, sob: JWS and TLS keys managed by SDK
     sib -> sw: PUT /authorizations/**123**
     else not accepting authorization
     backend -> sib: NOK: PUT /authorizations/**123**/error
-    sib -> sw: NOK: PUT /authorizations/**123**/error
+    sib -> sw: PUT /authorizations/**123**/error
     end 
 @enduml
 
