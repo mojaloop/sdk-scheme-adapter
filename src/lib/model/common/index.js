@@ -5,25 +5,14 @@
  *  specified in the corresponding source code repository.                *
  *                                                                        *
  *  ORIGINAL AUTHOR:                                                      *
- *       Yevhen Kyriukha - yevhen.kyriukha@modusbox.com                   *
+ *       Paweł Marzec - pawel.marzec@modusbox.com                         *
  **************************************************************************/
 
 'use strict';
-
-class BackendError extends Error {
-    constructor(msg, httpStatusCode) {
-        super(msg);
-        this.httpStatusCode = httpStatusCode;
-    }
-
-    toJSON() {
-        // return shallow clone of `this`, from `this` are only taken enumerable owned properties
-        return Object.assign({}, this);
-        
-    }
-}
-
+const BackendError = require('./BackendError');
+const PersistentStateMachine = require('./PersistentStateMachine');
 
 module.exports = {
     BackendError,
+    PersistentStateMachine
 };

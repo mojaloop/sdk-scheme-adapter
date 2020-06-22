@@ -12,7 +12,13 @@
 
 
 const util = require('util');
-const { AccountsModel, OutboundTransfersModel, OutboundRequestToPayTransferModel, OutboundRequestToPayModel } = require('@internal/model');
+const { 
+    AccountsModel,
+    OutboundTransfersModel,
+    OutboundRequestToPayTransferModel,
+    OutboundRequestToPayModel,
+    OutboundAuthorizationsModel
+} = require('@internal/model');
 
 
 /**
@@ -69,6 +75,8 @@ const handleRequestToPayError = (method, err, ctx) =>
 const handleRequestToPayTransferError = (method, err, ctx) =>
     handleError(method, err, ctx, 'requestToPayTransferState');
 
+const handleAuthorizationsError = (method, err, ctx) => 
+    handleError(method, err, ctx, 'authorizationsState');
 
 /**
  * Handler for outbound transfer request initiation
@@ -294,6 +302,35 @@ const healthCheck = async (ctx) => {
     ctx.response.body = '';
 };
 
+const postAuthorizations = async (ctx) => {
+    try {
+        // prepare request
+        const authorizationsRequest = {
+            ...ctx.request.body
+        };
+
+        // use the authorizations model to execute asynchronous stages with the switch
+        const model = new OutboundAuthorizationsModel({
+            ...ctx.state.conf,
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            wso2Auth: ctx.state.wso2Auth,
+        });
+
+        // initialize the authorizations model and start it running
+        await model.initialize(authorizationsRequest);
+        const response = await model.run();
+
+        // return the result
+        ctx.response.status = 200;
+        ctx.response.body = response;
+    
+    } catch(err) {
+        return handleAuthorizationsError('postAuthorizations', err, ctx);
+    }
+};
+
+
 module.exports = {
     '/': {
         get: healthCheck
@@ -317,4 +354,12 @@ module.exports = {
     '/requestToPayTransfer/{requestToPayTransactionId}': {
         put: putRequestToPayTransfer
     },
+    '/authorizations' : {
+        post: postAuthorizations
+    },
+    // TODO: QUESTION: implement putAuthorizationsById && putAuthorizationsByIdError 
+    // to handle the response from DFSP to inform PISP about DFSP acceptance
+    // '/authorizations/{transactionRequestId}': {
+    //     put: putAuthorizations
+    // }
 };
