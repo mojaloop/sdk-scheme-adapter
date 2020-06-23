@@ -1,0 +1,134 @@
+@startuml
+title Mojaloop PISP SDK Interactions
+autonumber
+
+participant "DFSP Backend" as backend
+
+box "SDK"
+    participant "SDK Inbound Service" as sib
+    participant "Cache" as cache
+    participant "SDK Outbound Service" as sob
+end box
+  
+participant "Switch" as sw
+
+
+note over sib, sob: All outbound between SDK and Switch have\nJWS added automatically
+note over sib, sob: All inbound from switch have JWS validated
+
+note over sib, sob: Mapping between scheme transaction types and DFSP\ntransaction types
+note over sib, sob: JWS and TLS keys managed by SDK
+
+
+== DFSP requests authorization ==
+    rnote right of backend #Light
+    **""POST /authorizations""**
+    ""FSPIOP-Source: DFSP Backend""
+    ""FSPIOP-Destination: PISP""
+    {      
+        "authenticationType": "U2F",
+        "retriesLeft": "1",
+        "amount": {
+            "amount": "100",
+            "currency": "USD"
+        },
+        "transactionId": "987",
+        **"transactionRequestId": "123"**,
+        "quote": {
+            "transferAmount": {
+                "amount": "100",
+                "currency": "USD"
+            },
+            "payeeReceiveAmount": {
+                "amount": "99",
+                "currency": "USD"
+            },
+            "payeeFspFee": {
+                "amount": "1",
+                "currency": "USD"
+            },
+            "expiration": "2020-06-15T12:00:00.000",
+            "ilpPacket": "...",
+            "condition": "...",
+        }
+    }
+    end note
+    backend -> sob: POST /authorizations
+    sob -> cache: notification_handler = cache.subscribe('authorization/id')
+    rnote right of sob #Light
+    **""POST /authorizations""**
+    ""FSPIOP-Source: DFSP Backend""
+    ""FSPIOP-Destination: PISP""
+    {      
+        "authenticationType": "U2F",
+        "retriesLeft": "1",
+        "amount": {
+            "amount": "100",
+            "currency": "USD"
+        },
+        "transactionId": "987",
+        **"transactionRequestId": "123"**,
+        "quote": {
+            "transferAmount": {
+                "amount": "100",
+                "currency": "USD"
+            },
+            "payeeReceiveAmount": {
+                "amount": "99",
+                "currency": "USD"
+            },
+            "payeeFspFee": {
+                "amount": "1",
+                "currency": "USD"
+            },
+            "expiration": "2020-06-15T12:00:00.000",
+            "ilpPacket": "...",
+            "condition": "...",
+        }
+    }
+    end note
+    sob -> sw: POST /authorizations
+    sw -> sw: request authorization\nfrom PISP's customer\nvia auth-service 
+    rnote left of sw #Light
+    **""PUT /authorizations/123""**
+    ""FSPIOP-Source: PISP""
+    ""FSPIOP-Destination: DFSP Backend""
+    {
+        "authenticationInfo": {
+            "authentication": "U2F",
+            "authenticationValue": {
+                "pinValue": "<base64 encoded binary - the signed condition>",
+                "counter": "1"
+            }
+        }
+        "responseType": "ENTERED"
+    }
+    end note
+    sw -> sib: PUT /authorizations/**123**
+    sib -> cache: cache.publish('authorization/{id}', put.body)
+    cache -> sob: notification('authorization/{id}', put.body)
+    sob -> sob: notification_handler('authorization/{id}', put.body)
+    rnote left of sob #Light
+    **""Response body of POST /authorizations""**
+    {
+        "transactionRequestId": "123",
+        "authenticationInfo": {
+            "authentication": "U2F",
+            "authenticationValue": {
+                "pinValue": "<base64 encoded binary - the signed condition>",
+                "counter": "1"
+            }
+        }
+        "responseType": "ENTERED"
+    }
+    end note
+    sob -> backend: OK authorization details
+    backend -> backend: verify authorization
+    alt PROPOSAL: accepting authorization
+    backend -> sob: OK: PUT /authorizations/**123**
+    sob -> sw: PUT /authorizations/**123**
+    else PROPOSAL: not accepting authorization
+    backend -> sob: NOK: PUT /authorizations/**123**/error
+    sob -> sw: PUT /authorizations/**123**/error
+    end 
+@enduml
