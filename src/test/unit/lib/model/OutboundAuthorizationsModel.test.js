@@ -163,7 +163,7 @@ describe('authorizationsModel', () => {
             ];
             const model = await Model.create(data, cacheKey, modelConfig);
 
-            invalidMessages.forEach(async (msg) => {
+            const testCases = invalidMessages.map(async (msg) => {
                 let theError = null;
                 try {
                     await model.onAuthorizationReceived(msg);
@@ -173,6 +173,8 @@ describe('authorizationsModel', () => {
                 }
                 expect(theError.message).toEqual('OutboundAuthorizationsModel.onAuthorizationReceived: invalid \'message\' parameter is required');
             });
+
+            await Promise.allSettled(testCases);
         });
 
         it('should properly setup context.data', async () => {
