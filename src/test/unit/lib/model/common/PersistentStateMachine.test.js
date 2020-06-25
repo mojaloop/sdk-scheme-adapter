@@ -26,7 +26,7 @@ describe('PersistentStateMachine', () => {
     function checkPSMLayout(psm, optData) {
         expect(psm).toBeTruthy();
         
-        expect(psm.state).toEqual(smSpec.init || 'none');
+        expect(psm.state).toEqual((optData && optData.currentState) || smSpec.init || 'none');
 
         expect(psm.context).toEqual({
             // allow passing optional data, elsewhere use default
@@ -49,8 +49,13 @@ describe('PersistentStateMachine', () => {
     }
 
     beforeAll(async () => {
-        const logTransports = await Promise.all([Transports.consoleDir()]);
-        logger = new Logger({ context: { app: 'persistent-state-machine-tests' }, space: 4, transports: logTransports });
+        // don't pollute test console.log
+        logger = {
+            push: jest.fn(() => ({
+                log: jest.fn()
+            })),
+            log: jest.fn()
+        };
     });
 
     beforeEach(async () => {
@@ -63,7 +68,6 @@ describe('PersistentStateMachine', () => {
             ], 
             methods: {
                 onGogo: async () => {
-                    console.error('onGogo');
                     return new Promise( (resolved) => {
                         setTimeout(() => {
                             console.error('onGogo: resolved');

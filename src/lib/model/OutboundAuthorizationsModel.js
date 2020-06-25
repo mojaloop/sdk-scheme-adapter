@@ -38,7 +38,7 @@ const specStateMachine = {
 /**
  * runs the workflow
  */
-async function run() {
+async function run(message) {
     const { data, logger } = this.context;
     try {
         // run transitions based on incoming state
@@ -46,12 +46,12 @@ async function run() {
             case 'start':
                 // the first transition is requestAuthorization
                 await this.requestAuthorization();
-                logger(`Authorization requested for ${data.transactionRequestId}`);
+                logger.log(`Authorization requested for ${data.transactionRequestId}`);
                 return this.getResponse();
 
             case 'waitingForAuthorization':
-                await this.authorizationReceived();
-                logger(`Authorization received for ${data.transactionRequestId}`);
+                await this.authorizationReceived(message);
+                logger.log(`Authorization received for ${data.transactionRequestId}`);
                 return this.getResponse();
 
             case 'succeeded':
@@ -90,11 +90,13 @@ async function run() {
 }
 
 
-const authorizationStateEnum = {
-    WAITING_FOR_AUTHORIZATION: 'WAITING_FOR_AUTHORIZATION',
-    ERROR_OCCURRED: 'ERROR_OCCURRED',
-    COMPLETED: 'COMPLETED'
+const mapCurrentState = {
+    start: 'WAITING_FOR_AUTHORIZATION_REQUEST',
+    waitingForAuthorization: 'WAITING_FOR_AUTHORIZATION_RESPONSE',
+    succeeded: 'COMPLETED',
+    errored: 'ERROR_OCCURRED'
 };
+
 
 /**
  * Returns an object representing the final state of the authorization suitable for the outbound API
@@ -103,33 +105,30 @@ const authorizationStateEnum = {
  */
 function getResponse() {
     const { data, logger } = this.context;
-
-    // we want to project some of our internal state into a more useful
-    // representation to return to the SDK API consumer
     let resp = { ...data };
+    
+    // project some of our internal state into a more useful
+    // representation to return to the SDK API consumer
+    resp.currentState = mapCurrentState[data.currentState];
 
-    switch(data.currentState) {
-        case 'waitingForAuthorization':
-            resp.currentState = authorizationStateEnum.WAITING_FOR_AUTHORIZATION;
-            break;
-
-        case 'succeeded':
-            resp.currentState = authorizationStateEnum.COMPLETED;
-            break;
-
-        case 'errored':
-            resp.currentState = authorizationStateEnum.ERROR_OCCURRED;
-            break;
-
-        default:
-            logger.log(`Authorization model response being returned from an unexpected state: ${this.data.currentState}. Returning ERROR_OCCURRED state`);
-            resp.currentState = authorizationStateEnum.ERROR_OCCURRED;
-            break;
+    // handle unexpected state
+    if(!resp.currentState) {
+        logger.log(`Authorization model response being returned from an unexpected state: ${data.currentState}. Returning ERROR_OCCURRED state`);
+        resp.currentState = mapCurrentState.errored;
     }
 
     return resp;
 }
 
+function notificationChannel(id) {
+    // mvp validation
+    if(!(id && id.toString().length > 0)) {
+        throw new Error('OutboundAuthorizationsModel.notificationChannel: \'id\' parameter is required');
+    }
+
+    // channel name
+    return `authorizations_${id}`;
+}
 
 /**
  * Requests Authorization
@@ -139,24 +138,27 @@ function getResponse() {
 async function onRequestAuthorization() {
     const { data, cache, logger } = this.context;
     const { requests, config } = this.handlersContext;
-    const authorizationId = `authorizations_${data.transactionRequestId}`;
+    const channel = notificationChannel(data.transactionRequestId);
     let subId;
-    
-    // promisify https://nodejs.org/api/util.html#util_util_promisify_original
-    const subscribe = util.promisify(cache.subscribe).bind(cache);
 
     try {
         // in InboundServer/handlers is implemented putAuthorizationsById handler where this event is fired
-        subId = await subscribe(authorizationId, async (channel, message) => {
+        subId = await cache.subscribe(channel, async (channel, message, sid) => {
+            try { 
+                await this.run(message);
+                // there is no need to block execution using await here
+            } finally {
+                cache.unsubscribe(sid);
+            }
 
-            // TODO: maybe it is better to call this.run instead???
-            await this.authorizationReceived(message);
-            cache.unsubscribe(subId);
         });
 
         // POST /authorization request to the switch
         const postRequest = buildPostAuthorizationsRequest(data, config);
-        const res = requests.postAuthorizations(postRequest);
+
+        // TODO: postAuthorizations is mocked method until this feature arrive in MojaloopRequests
+        const res = await requests.postAuthorizations(postRequest);
+        
         logger.push({ res }).log('Authorizations request sent to peer');
 
     } catch(error) {
@@ -174,13 +176,15 @@ async function onRequestAuthorization() {
  * 
  */
 async function onAuthorizationReceived(message) {
-    const { body } = message;
-    const { data } = this.context;
-    data.authorizationReceivedBody = body;
+    // mvp validation
+    if(!(message && typeof message === 'object' && message.body && typeof message.body === 'object' )) {
+        throw new Error('OutboundAuthorizationsModel.onAuthorizationReceived: invalid \'message\' parameter is required');
+    }
+    this.context.data = message.body;
 }
 
 
-function buildPostAuthorizationsRequest(data, config) {
+function buildPostAuthorizationsRequest(data/** , config */) {
     // TODO: the request object must be valid to schema defined in sdk-standard-components
     const request = {
         ...data
@@ -198,6 +202,7 @@ function buildPostAuthorizationsRequest(data, config) {
  * @returns {Object}                    - the altered specStateMachine
  */
 function injectHandlersContext(config, specStateMachine) {
+    // TODO: postAuthorizations is a mocked method until this feature arrive in MojaloopRequests
     return { 
         ...specStateMachine,
         data: {
@@ -228,6 +233,11 @@ function injectHandlersContext(config, specStateMachine) {
  * @param {Object} config   - the additional configuration for transition handlers
  */
 async function create(data, key, config) {
+
+    if(!data.hasOwnProperty('transactionRequestId')) {
+        data.transactionRequestId = uuid();
+    }
+
     const spec = injectHandlersContext(config, specStateMachine);
     return PSM.create(data, config.cache, key, config.logger, spec);
 }
@@ -239,11 +249,16 @@ async function create(data, key, config) {
  * @param {Object} config   - the additional configuration for transition handlers
  */
 async function loadFromCache(key, config) {
-    const spec = injectHandlersContext(config, specStateMachine);
-    return PSM.loadFromCache(config.cache, key, config.logger, spec, create);
+    const customCreate = async (data, cache, key /**, logger, stateMachineSpec **/) => create(data, key, config);
+    return PSM.loadFromCache(config.cache, key, config.logger, specStateMachine, customCreate);
 }
 
 module.exports = {
     create,
-    loadFromCache
+    loadFromCache,
+    notificationChannel,
+    
+    // exports for testing purposes
+    mapCurrentState,         
+    buildPostAuthorizationsRequest
 };

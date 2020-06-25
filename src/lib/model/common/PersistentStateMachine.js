@@ -38,7 +38,14 @@ function onPendingTransition(transition) {
 }
 
 async function create(data, cache, key, logger, stateMachineSpec ) {
-    
+    let initState = stateMachineSpec.init || 'init';
+
+    if(!data.hasOwnProperty('currentState')) {
+        data.currentState = initState;
+    } else {
+        initState = stateMachineSpec.init = data.currentState;
+    }
+
     stateMachineSpec.data = Object.assign(
         stateMachineSpec.data || {}, 
         {
@@ -58,7 +65,7 @@ async function create(data, cache, key, logger, stateMachineSpec ) {
     );
 
     const stateMachine = new StateMachine(stateMachineSpec);
-    await stateMachine[stateMachineSpec.init || 'init'];
+    await stateMachine[initState];
     return stateMachine;
 }
 
@@ -70,6 +77,8 @@ async function loadFromCache(cache, key, logger, stateMachineSpec, optCreate) {
             throw new Error(`No cached data found for: ${key}`);
         }
         logger.push({ cache: data }).log('data loaded from cache');
+
+        // use delegation to allow customization of 'create'
         const createPSM = optCreate || create;
         return createPSM(data, cache, key, logger, stateMachineSpec);
     }
