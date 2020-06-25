@@ -12,7 +12,7 @@
 
 const util = require('util');
 const Model = require('@internal/model').InboundTransfersModel;
-
+const AuthorizationsModel = require('@internal/model').OutboundAuthorizationsModel;
 /**
  * Handles a GET /authorizations/{id} request
  */
@@ -334,7 +334,7 @@ const postTransactionRequests = async (ctx) => {
 };
 
 /**
- * Handles a PUT /authorizations/{id}. This is a response to a GET /authorizations/{ID}
+ * Handles a PUT /authorizations/{id}. This is a response to a GET /authorizations/{ID} or POST /authorizations/{ID}
  * request.
  */
 const putAuthorizationsById = async (ctx) => {
@@ -345,15 +345,26 @@ const putAuthorizationsById = async (ctx) => {
             data: ctx.request.body
         };
         const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
-        ctx.state.logger.log(`Cacheing request: ${util.inspect(res)}`);
+        ctx.state.logger.log(`Caching request: ${util.inspect(res)}`);
     }
 
     const idValue = ctx.state.path.params.ID;
     
+ 
     // publish an event onto the cache for subscribers to action
     const cacheId = `otp_${idValue}`;
     // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(cacheId, {
+        type: 'authorizationsResponse',
+        data: ctx.request.body,
+        headers: ctx.request.headers
+    });
+ 
+    // TODO: QUESTION: should we inspect body to distinguish OTP case from U2F or blindly fire this notification?
+    // different handling of response correlated to PUT /authorization and U2F type 
+    const authorizationChannel = AuthorizationsModel.notificationChannel(idValue);
+    // // publish an event onto the cache for subscribers to action
+    await ctx.state.cache.publish(authorizationChannel, {
         type: 'authorizationsResponse',
         data: ctx.request.body,
         headers: ctx.request.headers
