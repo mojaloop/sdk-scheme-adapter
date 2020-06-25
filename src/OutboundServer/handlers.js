@@ -309,16 +309,18 @@ const postAuthorizations = async (ctx) => {
             ...ctx.request.body
         };
 
-        // use the authorizations model to execute asynchronous stages with the switch
-        const model = new OutboundAuthorizationsModel({
+        // prepare config
+        const modelConfig = {
             ...ctx.state.conf,
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2Auth: ctx.state.wso2Auth,
-        });
+        };
 
-        // initialize the authorizations model and start it running
-        await model.initialize(authorizationsRequest);
+        // use the authorizations model to execute asynchronous stages with the switch
+        const model = await OutboundAuthorizationsModel.create(authorizationsRequest, modelConfig);
+
+        // run model's workflow
         const response = await model.run();
 
         // return the result
@@ -356,10 +358,5 @@ module.exports = {
     },
     '/authorizations' : {
         post: postAuthorizations
-    },
-    // TODO: QUESTION: implement putAuthorizationsById && putAuthorizationsByIdError 
-    // to handle the response from DFSP to inform PISP about DFSP acceptance
-    // '/authorizations/{transactionRequestId}': {
-    //     put: putAuthorizations
-    // }
+    }
 };
