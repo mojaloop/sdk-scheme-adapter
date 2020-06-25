@@ -13,8 +13,6 @@
 const Cache = jest.createMockFromModule('@internal/cache');
 
 const PSM = require('@internal/model').PersistentStateMachine;
-const { Logger, Transports } = require('@internal/log');
-
 
 describe('PersistentStateMachine', () => {
     let logger;
