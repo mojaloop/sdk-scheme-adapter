@@ -3,6 +3,7 @@ title Mojaloop PISP SDK Interactions
 autonumber
 
 participant "DFSP Backend" as backend
+participant "PISP Backend" as pisp
 
 box "SDK"
     participant "SDK Inbound Service" as sib
@@ -13,13 +14,26 @@ end box
 participant "Switch" as sw
 
 
+
 note over sib, sob: All outbound between SDK and Switch have\nJWS added automatically
 note over sib, sob: All inbound from switch have JWS validated
 
 note over sib, sob: Mapping between scheme transaction types and DFSP\ntransaction types
 note over sib, sob: JWS and TLS keys managed by SDK
 
-
+== PISP receives autorization request ==
+    sw -> sib: POST /authorization
+    sib -> pisp: POST /signedCondition
+    pisp -> pisp: ask User for authorization
+    pisp -> sib: in respons body we have signed condition
+    sib -> sib: prepare response to be send via PUT /authorization/{id}
+    sib -> sw: PUT /authorization/{id}
+== PISP is notified about transaction status ==
+    sw -> sib: PUT /thridPartyRequests/{id}
+    sib -> cache: cache.publish('thridparty_requests_{id}', response.body)
+== PISP is notified about transaction error ==
+    sw -> sib: PUT /thridPartyRequests/{id}/error
+    sib -> cache: cache.publish('thridparty_requests_error_{id}', response.body)
 == DFSP requests authorization ==
     rnote right of backend #Light
     **""POST /authorizations""**
