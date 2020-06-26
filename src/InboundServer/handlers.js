@@ -6,6 +6,7 @@
  *                                                                        *
  *  ORIGINAL AUTHOR:                                                      *
  *       James Bush - james.bush@modusbox.com                             *
+ *       Paweł Marzec - pawel.marzec@modusbox.com                         *
  **************************************************************************/
 
 'use strict';

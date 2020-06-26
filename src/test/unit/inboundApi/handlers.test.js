@@ -6,6 +6,7 @@
  *                                                                        *
  *  ORIGINAL AUTHOR:                                                      *
  *       Vassilis Barzokas - vassilis.barzokas@modusbox.com               *
+ *       Paweł Marzec - pawel.marzec@modusbox.com                         *
  **************************************************************************/
 
 'use strict';
@@ -16,17 +17,12 @@ const handlers = require('../../../InboundServer/handlers');
 const Model = require('@internal/model').InboundTransfersModel;
 const mockArguments = require('./data/mockArguments');
 const mockTransactionRequestData = require('./data/mockTransactionRequest');
-const { Logger, Transports } = require('@internal/log');
+const mockLogger = require('../mockLogger');
 
-let logTransports;
 
 describe('Inbound API handlers:', () => {
     let mockArgs;
     let mockTransactionRequest;
-
-    beforeAll(async () => {
-        logTransports = await Promise.all([Transports.consoleDir()]);
-    });
 
     beforeEach(() => {
         mockArgs = JSON.parse(JSON.stringify(mockArguments));
@@ -49,7 +45,8 @@ describe('Inbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports })
+                    // example of elaborative logging with keepQuite = false
+                    logger: mockLogger( { app: 'inbound-handlers-unit-test' }, false )
                 }
             };
             
@@ -84,7 +81,7 @@ describe('Inbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports })
+                    logger: mockLogger( { app: 'inbound-handlers-unit-test' } )
                 }
             };
         });
@@ -120,7 +117,7 @@ describe('Inbound API handlers:', () => {
                             'ID': '1234'
                         }
                     },
-                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports })
+                    logger: mockLogger( { app: 'inbound-handlers-unit-test' } )
                 }
             };
         });
