@@ -17,7 +17,7 @@ function mockLogger(context, keepQuiet) {
             log: jest.fn()
         };
         return {
-            log,
+            ...log,
             push: jest.fn(() => log)
         };
     }
