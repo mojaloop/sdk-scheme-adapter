@@ -18,6 +18,7 @@ const Model = require('@internal/model').InboundTransfersModel;
 const mockArguments = require('./data/mockArguments');
 const mockTransactionRequestData = require('./data/mockTransactionRequest');
 const mockLogger = require('../mockLogger');
+const AuthorizationsModel = require('@internal/model').OutboundAuthorizationsModel;
 
 
 describe('Inbound API handlers:', () => {
@@ -131,4 +132,103 @@ describe('Inbound API handlers:', () => {
             expect(authorizationsSpy.mock.calls[0][1]).toBe(mockAuthorizationContext.request.headers['fspiop-source']);
         });
     });
+
+    describe('PISP PUT /authorizations', () => {
+        
+        let mockAuthorizationContext;
+        beforeEach(() => {
+            
+            mockAuthorizationContext = {
+                request: {
+                    headers: {
+                        'fspiop-source': 'foo'
+                    },
+                    body: {
+                        the: 'body'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {
+                        enablePISPMode: true
+                    },
+                    path : {
+                        params : {
+                            'ID': '1234'
+                        }
+                    },
+                    logger: mockLogger( { app: 'inbound-handlers-unit-test' } ),
+                    // there is no need to mock redis but only Cache
+                    cache: {
+                        publish: jest.fn(() => Promise.resolve())
+                    },
+                }
+            };
+        });
+
+        test('calls `model.authorizations` with the expected arguments.', async () => {
+            const notificationSpy = jest.spyOn(AuthorizationsModel, 'notificationChannel').mockImplementationOnce(() => 'notification-channel');
+
+            await expect(handlers['/authorizations/{ID}'].put(mockAuthorizationContext)).resolves.toBe(undefined);
+
+            expect(notificationSpy).toHaveBeenCalledTimes(1);
+            expect(notificationSpy).toHaveBeenCalledWith('1234');
+
+            const cache = mockAuthorizationContext.state.cache;
+            expect(cache.publish).toBeCalledTimes(1);
+            expect(cache.publish).toBeCalledWith('notification-channel', {
+                type: 'authorizationsResponse',
+                data: mockAuthorizationContext.request.body,
+                headers: mockAuthorizationContext.request.headers
+            });
+        });
+    });
+
+    describe('DFSP PUT /authorizations', () => {
+        
+        let mockAuthorizationContext;
+        beforeEach(() => {
+            
+            mockAuthorizationContext = {
+                request: {
+                    headers: {
+                        'fspiop-source': 'foo'
+                    },
+                    body: {
+                        the: 'body'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {
+                        enablePISPMode: false
+                    },
+                    path : {
+                        params : {
+                            'ID': '1234'
+                        }
+                    },
+                    logger: mockLogger( { app: 'inbound-handlers-unit-test' } ),
+                    // there is no need to mock redis but only Cache
+                    cache: {
+                        publish: jest.fn(() => Promise.resolve())
+                    },
+                }
+            };
+        });
+
+        test('calls `model.authorizations` with the expected arguments.', async () => {
+
+            await expect(handlers['/authorizations/{ID}'].put(mockAuthorizationContext)).resolves.toBe(undefined);
+
+            const cache = mockAuthorizationContext.state.cache;
+            expect(cache.publish).toBeCalledTimes(1);
+            expect(cache.publish).toBeCalledWith('otp_1234', {
+                type: 'authorizationsResponse',
+                data: mockAuthorizationContext.request.body,
+                headers: mockAuthorizationContext.request.headers
+            });
+        });
+    });
+
 });
