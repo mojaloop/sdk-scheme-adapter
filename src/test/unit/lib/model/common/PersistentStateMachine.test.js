@@ -13,13 +13,14 @@
 const Cache = jest.createMockFromModule('@internal/cache');
 
 const PSM = require('@internal/model').PersistentStateMachine;
-
+const mockLogger = require('../../../mockLogger');
 describe('PersistentStateMachine', () => {
-    let logger;
     let cache;
     let data;
     let smSpec;
     const key = 'cache-key';
+    
+    const logger = mockLogger({app: 'persistent-state-machine-test'});
 
     function checkPSMLayout(psm, optData) {
         expect(psm).toBeTruthy();
@@ -46,16 +47,6 @@ describe('PersistentStateMachine', () => {
         throw new Error('test failure enforced: this code should never be executed');
     }
 
-    beforeAll(async () => {
-        // don't pollute test console.log
-        logger = {
-            push: jest.fn(() => ({
-                log: jest.fn()
-            })),
-            log: jest.fn()
-        };
-    });
-
     beforeEach(async () => {
         smSpec = {
             // init: 'start',
@@ -67,10 +58,7 @@ describe('PersistentStateMachine', () => {
             methods: {
                 onGogo: async () => {
                     return new Promise( (resolved) => {
-                        setTimeout(() => {
-                            console.error('onGogo: resolved');
-                            resolved(true);
-                        }, 100);
+                        setTimeout((() => resolved(true)), 100);
                     } );
                 },
                 onError: () => {
@@ -116,13 +104,9 @@ describe('PersistentStateMachine', () => {
             const psm = await PSM.create(data, cache, key, logger, smSpec);
             checkPSMLayout(psm);
 
-            try {
-                psm.init();
-                await psm.gogo();
-                shouldNotBeExecuted();
-            } catch (error) {
-                expect(error.message).toEqual('Transition requested while another transition is in progress: gogo');
-            }
+            psm.init();
+            expect(() => psm.gogo()).toThrowError('Transition requested while another transition is in progress: gogo');
+            
         });
 
         it('should not throw error if `error` transition called when `gogo` is pending', (done) => {
@@ -136,17 +120,9 @@ describe('PersistentStateMachine', () => {
                         expect(psm.state).toEqual('end');
                         return Promise.resolve();
                     })
-                    .then(() => {
-                        return psm.error();
-
-                    })
-                    .then(() => {
-                        done();
-                    })
-                    .catch(error => {
-                        console.error('error', error);
-                        shouldNotBeExecuted();
-                    });
+                    .then(() => psm.error())
+                    .then(done)
+                    .catch(shouldNotBeExecuted);
             });
         }); 
     });
@@ -164,7 +140,6 @@ describe('PersistentStateMachine', () => {
             // check what has been stored in `context.data`
             expect(psm.context.data).toEqual(dataFromCache);
 
-            // expect(psm.state).toEqual('end');
         });
 
         it('should throw when received invalid data from `cache.get`', async () => {
@@ -179,12 +154,8 @@ describe('PersistentStateMachine', () => {
 
         it('should propagate error received from `cache.get`', async () => {
             cache.get = jest.fn( async () => { throw new Error('error from cache.get'); });
-            try {
-                await PSM.loadFromCache(cache, key, logger, smSpec);
-                shouldNotBeExecuted();
-            } catch (error) {
-                expect(error.message).toEqual('error from cache.get');
-            }
+            expect(() => PSM.loadFromCache(cache, key, logger, smSpec))
+                .rejects.toEqual(new Error('error from cache.get'));
         });
     });
 
@@ -224,14 +195,7 @@ describe('PersistentStateMachine', () => {
             checkPSMLayout(psm);
 
             // transition `init` should encounter exception when saving `context.data` 
-            try {
-                await psm.init();
-                shouldNotBeExecuted();
-            } catch (error) {
-                // check if got expected error
-                expect(error.message).toEqual('error from cache.set');
-            }
-            
+            expect(() => psm.init()).rejects.toEqual(new Error('error from cache.set'));
         });
     });
 
