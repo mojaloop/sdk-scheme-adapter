@@ -16,11 +16,12 @@ const mockRequestToPayTransferError = require('./data/mockRequestToPayTransferEr
 const transferRequest = require('./data/transferRequest');
 const requestToPayPayload = require('./data/requestToPay');
 const requestToPayTransferRequest = require('./data/requestToPayTransferRequest');
+const mockLogger = require('../mockLogger');
 
 jest.mock('@internal/model');
 
 const handlers = require('../../../OutboundServer/handlers');
-const { OutboundTransfersModel, OutboundRequestToPayTransferModel, OutboundRequestToPayModel } = require('@internal/model');
+const { OutboundTransfersModel, OutboundRequestToPayTransferModel, OutboundRequestToPayModel, OutboundAuthorizationsModel } = require('@internal/model');
 
 /**
  * Mock the outbound transfer model to simulate throwing errors
@@ -96,7 +97,7 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: console
+                    logger: mockLogger({ app: 'outbound-api-handlers-test'})
                 }
             };
 
@@ -124,7 +125,7 @@ describe('Outbound API handlers:', () => {
                     conf: {
                         outboundErrorStatusCodeExtensionKey: 'extErrorKey'  // <- tell the handler to use this extensionList item as source of statusCode
                     },
-                    logger: console
+                    logger: mockLogger({ app: 'outbound-api-handlers-test'})
                 }
             };
 
@@ -154,7 +155,7 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: console
+                    logger: mockLogger({ app: 'outbound-api-handlers-test'})
                 }
             };
 
@@ -184,7 +185,7 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: console,
+                    logger: mockLogger({ app: 'outbound-api-handlers-test'}),
                     path: {
                         params: {
                             transferId: '12345'
@@ -216,7 +217,7 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: console
+                    logger: mockLogger({ app: 'outbound-api-handlers-test'})
                 }
             };
 
@@ -231,4 +232,53 @@ describe('Outbound API handlers:', () => {
         });
     });
 
+    describe('POST /authorizations', () => {
+        test('happy flow', async() => {
+            
+            const mockContext = {
+                request: {
+                    body: {the: 'body'},
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    wso2Auth: 'mocked wso2Auth',
+                    logger: mockLogger({ app: 'outbound-api-handlers-test'}),
+                    cache: { the: 'mocked cache' }
+                },
+            };
+            
+            // mock state machine
+            const mockedPSM = {
+                run: jest.fn(async () => ({ the: 'run response' }))
+            };
+            
+            const createSpy = jest.spyOn(OutboundAuthorizationsModel, 'create')
+                .mockImplementationOnce(async () => mockedPSM);
+
+            // invoke handler
+            await handlers['/authorizations'].post(mockContext);
+
+            // PSM model creation
+            expect(createSpy).toBeCalledTimes(1);
+            const request = mockContext.request;
+            const state = mockContext.state;
+            expect(createSpy).toBeCalledWith(request.body, {
+                cache: state.cache,
+                logger: state.logger,
+                wso2Auth: state.wso2Auth
+            });
+
+            // run workflow
+            expect(mockedPSM.run).toBeCalledTimes(1);
+            expect(mockedPSM.run.mock.calls[0].length).toBe(0);
+
+            // response
+            expect(mockContext.response.status).toBe(200);
+            expect(mockContext.response.body).toEqual({ the: 'run response' });
+        });
+    });
 });
