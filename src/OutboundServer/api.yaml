@@ -1082,20 +1082,50 @@ components:
         - U2F
       description: Below are the allowed values for the enumeration AuthenticationType.
     
-    mojaloopAuthenticationSimpleValue:
-      type: string
+    mojaloopAuthenticationValue:
+      title: AuthenticationValue
+      oneOf:
+        - $ref: '#/components/schemas/mojaloopOtpValue'
+        - $ref: '#/components/schemas/mojaloopQRCODE'
+        - $ref: '#/components/schemas/mojaloopU2FPinValue'
+      description: Contains the authentication value. The format depends on the authentication type used in the AuthenticationInfo complex type.
     
-    mojaloopAuthenticationComplexValue:
+    mojaloopOtpValue:
+      title: OtpValue
+      type: string
+      pattern: '^\d{3,10}$'
+
+    mojaloopU2FPinValue:
+      title: U2FPinValue
       type: object
-      required:
-        - pinValue
-        - counter
+      description: U2F challenge-response, where payer FSP verifies if the response provided by end-user device matches the previously registered key.
       properties:
         pinValue:
-          type: string
+          $ref: '#/components/schemas/mojaloopU2FPIN'
+          description: U2F challenge-response.
         counter:
           $ref: '#/components/schemas/mojaloopInteger'
-
+          description: Sequential counter used for cloning detection. Present only for U2F authentication.
+      required:
+      - pinValue
+      - counter
+    
+    mojaloopU2FPIN:
+      title: U2FPIN
+      type: string
+      pattern: ^\S{1,64}$
+      minLength: 1
+      maxLength: 64
+      description: U2F challenge-response, where payer FSP verifies if the response provided by end-user device matches the previously registered key. 
+    
+    mojaloopQRCODE:
+      title: QRCODE
+      type: string
+      pattern: ^\S{1,64}$
+      minLength: 1
+      maxLength: 64
+      description: QR code used as One Time Password.
+    
     mojaloopAuthenticationInfo:
       title: AuthenticationInfo
       description: Data model for the complex type AuthenticationInfo
@@ -1107,10 +1137,8 @@ components:
         authentication:
           $ref: '#/components/schemas/mojaloopAuthenticationType'
         authenticationValue:
-          oneOf:
-            - $ref: '#/components/schemas/mojaloopAuthenticationSimpleValue'
-            - $ref: '#/components/schemas/mojaloopAuthenticationComplexValue'
-
+          $ref: '#/components/schemas/mojaloopAuthenticationValue'
+    
     mojaloopTransferState:
       type: string
       enum:
