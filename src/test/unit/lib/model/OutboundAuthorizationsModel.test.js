@@ -17,6 +17,7 @@ const { uuid } = require('uuidv4');
 const Model = require('@internal/model').OutboundAuthorizationsModel;
 const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const defaultConfig = require('./data/defaultConfig');
+const mockLogger = require('../../mockLogger');
 
 
 describe('authorizationsModel', () => {
@@ -46,17 +47,9 @@ describe('authorizationsModel', () => {
 
     beforeEach(async () => {
         modelConfig = {
-            // TODO: move this to __mocks__
-            // we don't want to pollute test console with logging it is useless
-            logger: {
-                push: jest.fn(() => ({
-                    log: jest.fn()
-                })),
-                log: jest.fn()
-            },
+            logger: mockLogger({app: 'OutboundAuthorizationsModel-test'}),
 
-            // TODO: move this to __mocks__
-            // there is no need to mock redis when we are using 
+            // there is no need to mock redis but only Cache
             cache: {
                 get: jest.fn(() => Promise.resolve(data)),
                 set: jest.fn(() => Promise.resolve),
@@ -164,14 +157,8 @@ describe('authorizationsModel', () => {
             const model = await Model.create(data, cacheKey, modelConfig);
 
             const testCases = invalidMessages.map(async (msg) => {
-                let theError = null;
-                try {
-                    await model.onAuthorizationReceived(msg);
-                    throw new Error('this point should not be reached');
-                } catch (error) {
-                    theError = error;
-                }
-                expect(theError.message).toEqual('OutboundAuthorizationsModel.onAuthorizationReceived: invalid \'message\' parameter is required');
+                expect(() => model.onAuthorizationReceived(msg))
+                    .rejects.ToEqual(new Error('OutboundAuthorizationsModel.onAuthorizationReceived: invalid \'message\' parameter is required'));
             });
 
             await Promise.allSettled(testCases);
@@ -360,7 +347,7 @@ describe('authorizationsModel', () => {
             });
             model.error = jest.fn();
             model.context.data.currentState = 'start';
-
+            
             let theError = null;
             try {
                 await model.run();
