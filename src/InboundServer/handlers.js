@@ -351,26 +351,16 @@ const putAuthorizationsById = async (ctx) => {
 
     const idValue = ctx.state.path.params.ID;
     
- 
-    if(ctx.state.conf.enablePISPMode) {
-        // different handling of response correlated to PUT /authorization and U2F type 
-        const authorizationChannel = AuthorizationsModel.notificationChannel(idValue);
-        // // publish an event onto the cache for subscribers to action
-        await ctx.state.cache.publish(authorizationChannel, {
-            type: 'authorizationsResponse',
-            data: ctx.request.body,
-            headers: ctx.request.headers
-        });
-    } else {
-        // publish an event onto the cache for subscribers to action
-        const cacheId = `otp_${idValue}`;
-        // publish an event onto the cache for subscribers to action
-        await ctx.state.cache.publish(cacheId, {
-            type: 'authorizationsResponse',
-            data: ctx.request.body,
-            headers: ctx.request.headers
-        });
-    }
+    const authorizationChannel = ctx.state.conf.enablePISPMode 
+        ? AuthorizationsModel.notificationChannel(idValue)
+        : `otp_${ctx.state.path.params.ID}`;
+
+    await ctx.state.cache.publish(authorizationChannel, {
+        type: 'authorizationsResponse',
+        data: ctx.request.body,
+        headers: ctx.request.headers
+    });
+
     ctx.response.status = 200;
 };
 
