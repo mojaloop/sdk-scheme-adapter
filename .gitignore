@@ -2,3 +2,4 @@
 node_modules/
 .swp
 src/junit.xml
+.DS_Store

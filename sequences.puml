@@ -9,10 +9,10 @@ participant "ESB/PortX" as esb
 
 box "SDK"
     participant "SDK Inbound Service" as sib
+    participant "Cache" as cache
     participant "SDK Outbound Service" as sob
 end box
   
-
 participant "Switch" as sw
 
 
@@ -93,7 +93,4 @@ note over sib, sob: JWS and TLS keys managed by SDK
         sib -> sw: PUT /transfers/{ID}/error
     
     end
-
-
-@enduml
 

@@ -6,6 +6,7 @@
  *                                                                        *
  *  ORIGINAL AUTHOR:                                                      *
  *       Vassilis Barzokas - vassilis.barzokas@modusbox.com               *
+ *       Paweł Marzec - pawel.marzec@modusbox.com                         *
  **************************************************************************/
 
 'use strict';
@@ -16,17 +17,13 @@ const handlers = require('../../../InboundServer/handlers');
 const Model = require('@internal/model').InboundTransfersModel;
 const mockArguments = require('./data/mockArguments');
 const mockTransactionRequestData = require('./data/mockTransactionRequest');
-const { Logger, Transports } = require('@internal/log');
+const mockLogger = require('../mockLogger');
+const AuthorizationsModel = require('@internal/model').OutboundAuthorizationsModel;
 
-let logTransports;
 
 describe('Inbound API handlers:', () => {
     let mockArgs;
     let mockTransactionRequest;
-
-    beforeAll(async () => {
-        logTransports = await Promise.all([Transports.consoleDir()]);
-    });
 
     beforeEach(() => {
         mockArgs = JSON.parse(JSON.stringify(mockArguments));
@@ -49,7 +46,8 @@ describe('Inbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports })
+                    // example of elaborative logging with keepQuite = false
+                    logger: mockLogger( { app: 'inbound-handlers-unit-test' }, false )
                 }
             };
             
@@ -84,7 +82,7 @@ describe('Inbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports })
+                    logger: mockLogger( { app: 'inbound-handlers-unit-test' } )
                 }
             };
         });
@@ -120,7 +118,7 @@ describe('Inbound API handlers:', () => {
                             'ID': '1234'
                         }
                     },
-                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports })
+                    logger: mockLogger( { app: 'inbound-handlers-unit-test' } )
                 }
             };
         });
@@ -134,4 +132,103 @@ describe('Inbound API handlers:', () => {
             expect(authorizationsSpy.mock.calls[0][1]).toBe(mockAuthorizationContext.request.headers['fspiop-source']);
         });
     });
+
+    describe('PISP PUT /authorizations', () => {
+        
+        let mockAuthorizationContext;
+        beforeEach(() => {
+            
+            mockAuthorizationContext = {
+                request: {
+                    headers: {
+                        'fspiop-source': 'foo'
+                    },
+                    body: {
+                        the: 'body'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {
+                        enablePISPMode: true
+                    },
+                    path : {
+                        params : {
+                            'ID': '1234'
+                        }
+                    },
+                    logger: mockLogger( { app: 'inbound-handlers-unit-test' } ),
+                    // there is no need to mock redis but only Cache
+                    cache: {
+                        publish: jest.fn(() => Promise.resolve())
+                    },
+                }
+            };
+        });
+
+        test('calls `model.authorizations` with the expected arguments.', async () => {
+            const notificationSpy = jest.spyOn(AuthorizationsModel, 'notificationChannel').mockImplementationOnce(() => 'notification-channel');
+
+            await expect(handlers['/authorizations/{ID}'].put(mockAuthorizationContext)).resolves.toBe(undefined);
+
+            expect(notificationSpy).toHaveBeenCalledTimes(1);
+            expect(notificationSpy).toHaveBeenCalledWith('1234');
+
+            const cache = mockAuthorizationContext.state.cache;
+            expect(cache.publish).toBeCalledTimes(1);
+            expect(cache.publish).toBeCalledWith('notification-channel', {
+                type: 'authorizationsResponse',
+                data: mockAuthorizationContext.request.body,
+                headers: mockAuthorizationContext.request.headers
+            });
+        });
+    });
+
+    describe('DFSP PUT /authorizations', () => {
+        
+        let mockAuthorizationContext;
+        beforeEach(() => {
+            
+            mockAuthorizationContext = {
+                request: {
+                    headers: {
+                        'fspiop-source': 'foo'
+                    },
+                    body: {
+                        the: 'body'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {
+                        enablePISPMode: false
+                    },
+                    path : {
+                        params : {
+                            'ID': '1234'
+                        }
+                    },
+                    logger: mockLogger( { app: 'inbound-handlers-unit-test' } ),
+                    // there is no need to mock redis but only Cache
+                    cache: {
+                        publish: jest.fn(() => Promise.resolve())
+                    },
+                }
+            };
+        });
+
+        test('calls `model.authorizations` with the expected arguments.', async () => {
+
+            await expect(handlers['/authorizations/{ID}'].put(mockAuthorizationContext)).resolves.toBe(undefined);
+
+            const cache = mockAuthorizationContext.state.cache;
+            expect(cache.publish).toBeCalledTimes(1);
+            expect(cache.publish).toBeCalledWith('otp_1234', {
+                type: 'authorizationsResponse',
+                data: mockAuthorizationContext.request.body,
+                headers: mockAuthorizationContext.request.headers
+            });
+        });
+    });
+
 });
