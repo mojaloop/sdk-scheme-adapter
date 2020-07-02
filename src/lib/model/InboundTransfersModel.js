@@ -69,13 +69,13 @@ class InboundTransfersModel {
             // make a call to the backend to resolve the party lookup
             const response = await this._backendRequests.getOTP(transactionRequestId, sourceFspId);
 
-            if (!response) {
+            if(!response) {
                 return 'No response from backend';
             }
 
             // project our internal otp representation into a mojaloop authorization response body
             const mlAuthorization = {
-                authenticationInfo: {
+                authenticationInfo : {
                     authentication: 'OTP',
                     authenticationValue: `${response.otpValue}`
                 },
@@ -84,7 +84,7 @@ class InboundTransfersModel {
             // make a callback to the source fsp with the party info
             return this._mojaloopRequests.putAuthorizations(transactionRequestId, mlAuthorization, sourceFspId);
         }
-        catch (err) {
+        catch(err) {
             this._logger.push({ err }).log('Error in getOTP');
             const mojaloopError = await this._handleError(err);
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
@@ -102,7 +102,7 @@ class InboundTransfersModel {
             // make a call to the backend to resolve the party lookup
             const response = await this._backendRequests.getParties(idType, idValue, idSubValue);
 
-            if (!response) {
+            if(!response) {
                 return 'No response from backend';
             }
 
@@ -110,7 +110,7 @@ class InboundTransfersModel {
             return this._mojaloopRequests.putParticipants(idType, idValue, idSubValue, { fspId: this._dfspId },
                 sourceFspId);
         }
-        catch (err) {
+        catch(err) {
             this._logger.push({ err }).log('Error in getParticipants');
             const mojaloopError = await this._handleError(err);
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
@@ -128,7 +128,7 @@ class InboundTransfersModel {
             // make a call to the backend to resolve the party lookup
             const response = await this._backendRequests.getParties(idType, idValue, idSubValue);
 
-            if (!response) {
+            if(!response) {
                 return 'No response from backend';
             }
 
@@ -140,7 +140,7 @@ class InboundTransfersModel {
             // make a callback to the source fsp with the party info
             return this._mojaloopRequests.putParties(idType, idValue, idSubValue, mlParty, sourceFspId);
         }
-        catch (err) {
+        catch(err) {
             this._logger.push({ err }).log('Error in getParties');
             const mojaloopError = await this._handleError(err);
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
@@ -244,7 +244,7 @@ class InboundTransfersModel {
 
             if(!quote) {
                 // Check whether to allow transfers without a previous quote.
-                if (!this._allowTransferWithoutQuote) {
+                if(!this._allowTransferWithoutQuote) {
                     throw new Error(`Corresponding quote not found for transfer ${prepareRequest.transferId}`);
                 }
             }
@@ -252,7 +252,7 @@ class InboundTransfersModel {
             // Calculate or retrieve fulfilment and condition
             let fulfilment = null;
             let condition = null;
-            if (quote) {
+            if(quote) {
                 fulfilment = quote.fulfilment;
                 condition = quote.mojaloopResponse.condition;
             }
