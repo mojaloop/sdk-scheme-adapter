@@ -478,7 +478,7 @@ class InboundTransfersModel {
     async prepareBulkTransfer(bulkPrepareRequest, sourceFspId) {
         try {
             // retrieve bulk quote data
-            const bulkQuote = await this._cache.get(`bulkQuotes_${bulkPrepareRequest.bulkTransferId}`);
+            const bulkQuote = await this._cache.get(`bulkQuotes_${bulkPrepareRequest.bulkQuoteId}`);
 
             if (!bulkQuote) {
                 // Check whether to allow transfers without a previous quote.
@@ -533,12 +533,12 @@ class InboundTransfersModel {
             }
 
             if (bulkQuote && this._rejectTransfersOnExpiredQuotes) {
-                const now = new Date().toISOString();
+                const now = new Date();
                 const expiration = bulkQuote.mojaloopResponse.expiration;
-                if (now > expiration) {
+                if (now > new Date(expiration)) {
                     // TODO: Verify and align with actual schema for bulk transfers error endpoint
                     const error = Errors.MojaloopApiErrorObjectFromCode(Errors.MojaloopApiErrorCodes.QUOTE_EXPIRED);
-                    this._logger.error(`Error in prepareBulkTransfers: bulk quotes expired for bulk transfers ${bulkPrepareRequest.bulkTransferId}, system time=${now} > quote time=${expiration}`);
+                    this._logger.error(`Error in prepareBulkTransfers: bulk quotes expired for bulk transfers ${bulkPrepareRequest.bulkTransferId}, system time=${now.toISOString()} > quote time=${expiration}`);
                     return this._mojaloopRequests.putBulkTransfersError(bulkPrepareRequest.bulkTransferId, error, sourceFspId);
                 }
             }
