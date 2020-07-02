@@ -435,13 +435,14 @@ describe('inboundModel', () => {
 
         test('fail on bulk quote `expiration` deadline.', async () => {
             const BULK_TRANSFER_ID = 'fake-bulk-transfer-id';
+            const BULK_QUOTE_ID = 'fake-bulk-quote-id';
             const model = new Model({
                 ...config,
                 cache,
                 logger,
                 rejectTransfersOnExpiredQuotes: true,
             });
-            cache.set(`bulkQuotes_${BULK_TRANSFER_ID}`, {
+            cache.set(`bulkQuotes_${BULK_QUOTE_ID}`, {
                 mojaloopResponse: {
                     expiration: new Date(new Date().getTime() - 1000).toISOString(),
                     individualQuoteResults: [],
@@ -449,6 +450,7 @@ describe('inboundModel', () => {
             });
             const args = {
                 bulkTransferId: BULK_TRANSFER_ID,
+                bulkQuoteId: BULK_QUOTE_ID,
                 individualTransfers: [],
             };
 
