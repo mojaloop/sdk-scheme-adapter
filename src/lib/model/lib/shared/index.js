@@ -312,7 +312,7 @@ const internalAuthorizationsResponseToMojaloop = (internal) => {
             }
         },
         responseType: 'ENTERED'
-    }
+    };
     return external;
 };
 
