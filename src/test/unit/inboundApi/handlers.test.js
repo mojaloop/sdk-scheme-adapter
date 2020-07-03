@@ -17,24 +17,28 @@ const handlers = require('../../../InboundServer/handlers');
 const Model = require('@internal/model').InboundTransfersModel;
 const mockArguments = require('./data/mockArguments');
 const mockTransactionRequestData = require('./data/mockTransactionRequest');
+const mockAuthorizationRequestData = require('./data/mockAuthorizationRequest');
 const mockLogger = require('../mockLogger');
 const AuthorizationsModel = require('@internal/model').OutboundAuthorizationsModel;
+const ThirdpartyTrxnModelIn = require('@internal/model').InboundThirdpartyTransactionModel;
+const ThirdpartyTrxnModelOut = require('@internal/model').OutboundThirdpartyTransactionModel;
 
 
 describe('Inbound API handlers:', () => {
     let mockArgs;
     let mockTransactionRequest;
+    let mockAuthorizationRequest;
 
     beforeEach(() => {
         mockArgs = JSON.parse(JSON.stringify(mockArguments));
         mockTransactionRequest = JSON.parse(JSON.stringify(mockTransactionRequestData));
-
+        mockAuthorizationRequest = JSON.parse(JSON.stringify(mockAuthorizationRequestData));
     });
 
     describe('POST /quotes', () => {
-        
+
         let mockContext;
-        
+
         beforeEach(() => {
             mockContext = {
                 request: {
@@ -47,10 +51,10 @@ describe('Inbound API handlers:', () => {
                 state: {
                     conf: {},
                     // example of elaborative logging with keepQuite = false
-                    logger: mockLogger( { app: 'inbound-handlers-unit-test' }, false )
+                    logger: mockLogger({ app: 'inbound-handlers-unit-test' }, false)
                 }
             };
-            
+
         });
 
         test('calls `model.quoteRequest` with the expected arguments.', async () => {
@@ -63,15 +67,15 @@ describe('Inbound API handlers:', () => {
             expect(quoteRequestSpy.mock.calls[0][1]).toBe(mockContext.request.headers['fspiop-source']);
         });
 
-        
+
     });
 
     describe('POST /transactionRequests', () => {
-        
+
         let mockTransactionReqContext;
 
         beforeEach(() => {
-            
+
             mockTransactionReqContext = {
                 request: {
                     body: mockTransactionRequest.transactionRequest,
@@ -82,7 +86,7 @@ describe('Inbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: mockLogger( { app: 'inbound-handlers-unit-test' } )
+                    logger: mockLogger({ app: 'inbound-handlers-unit-test' })
                 }
             };
         });
@@ -98,12 +102,44 @@ describe('Inbound API handlers:', () => {
         });
     });
 
-    describe('GET /authorizations', () => {
-        
+    describe('POST /authorizations', () => {
+
         let mockAuthorizationContext;
 
         beforeEach(() => {
-            
+
+            mockAuthorizationContext = {
+                request: {
+                    body: mockAuthorizationRequest.authorizationRequest,
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    logger: mockLogger({ app: 'inbound-handlers-unit-test' })
+                }
+            };
+        });
+
+        test('calls `ThirdpartyTrxnModelIn.postAuthorizations` with the expected arguments.', async () => {
+            const authorizationRequestSpy = jest.spyOn(ThirdpartyTrxnModelIn.prototype, 'postAuthorizations');
+
+            await expect(handlers['/authorizations'].post(mockAuthorizationContext)).resolves.toBe(undefined);
+
+            expect(authorizationRequestSpy).toHaveBeenCalledTimes(1);
+            expect(authorizationRequestSpy.mock.calls[0][0]).toBe(mockAuthorizationContext.request.body);
+            expect(authorizationRequestSpy.mock.calls[0][1]).toBe(mockAuthorizationContext.request.headers['fspiop-source']);
+        });
+    });
+
+    describe('GET /authorizations', () => {
+
+        let mockAuthorizationContext;
+
+        beforeEach(() => {
+
             mockAuthorizationContext = {
                 request: {
                     headers: {
@@ -113,12 +149,12 @@ describe('Inbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    path : {
-                        params : {
+                    path: {
+                        params: {
                             'ID': '1234'
                         }
                     },
-                    logger: mockLogger( { app: 'inbound-handlers-unit-test' } )
+                    logger: mockLogger({ app: 'inbound-handlers-unit-test' })
                 }
             };
         });
@@ -134,10 +170,10 @@ describe('Inbound API handlers:', () => {
     });
 
     describe('PISP PUT /authorizations', () => {
-        
+
         let mockAuthorizationContext;
         beforeEach(() => {
-            
+
             mockAuthorizationContext = {
                 request: {
                     headers: {
@@ -152,12 +188,12 @@ describe('Inbound API handlers:', () => {
                     conf: {
                         enablePISPMode: true
                     },
-                    path : {
-                        params : {
+                    path: {
+                        params: {
                             'ID': '1234'
                         }
                     },
-                    logger: mockLogger( { app: 'inbound-handlers-unit-test' } ),
+                    logger: mockLogger({ app: 'inbound-handlers-unit-test' }),
                     // there is no need to mock redis but only Cache
                     cache: {
                         publish: jest.fn(() => Promise.resolve())
@@ -185,10 +221,10 @@ describe('Inbound API handlers:', () => {
     });
 
     describe('DFSP PUT /authorizations', () => {
-        
+
         let mockAuthorizationContext;
         beforeEach(() => {
-            
+
             mockAuthorizationContext = {
                 request: {
                     headers: {
@@ -203,12 +239,12 @@ describe('Inbound API handlers:', () => {
                     conf: {
                         enablePISPMode: false
                     },
-                    path : {
-                        params : {
+                    path: {
+                        params: {
                             'ID': '1234'
                         }
                     },
-                    logger: mockLogger( { app: 'inbound-handlers-unit-test' } ),
+                    logger: mockLogger({ app: 'inbound-handlers-unit-test' }),
                     // there is no need to mock redis but only Cache
                     cache: {
                         publish: jest.fn(() => Promise.resolve())
@@ -227,6 +263,52 @@ describe('Inbound API handlers:', () => {
                 type: 'authorizationsResponse',
                 data: mockAuthorizationContext.request.body,
                 headers: mockAuthorizationContext.request.headers
+            });
+        });
+    });
+
+    describe('PUT /thirdPartyRequests/transactions', () => {
+        let mockThirdPartyReqContext;
+        beforeEach(() => {
+            mockThirdPartyReqContext = {
+                request: {
+                    headers: {
+                        'fspiop-source': 'foo'
+                    },
+                    body: {
+                        the: 'body'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    path: {
+                        params: {
+                            'ID': '1234'
+                        }
+                    },
+                    logger: mockLogger({ app: 'inbound-handlers-unit-test' }),
+                    cache: {
+                        publish: jest.fn(() => Promise.resolve())
+                    },
+                }
+            };
+        });
+
+        test('calls `model.thirdPartyRequests.transactions` with the expected arguments.', async () => {
+            const notificationSpy = jest.spyOn(ThirdpartyTrxnModelOut, 'notificationChannel').mockImplementationOnce(() => 'notification-channel');
+
+            await expect(handlers['/thirdPartyRequests/transactions/{ID}'].put(mockThirdPartyReqContext)).resolves.toBe(undefined);
+
+            expect(notificationSpy).toHaveBeenCalledTimes(1);
+            expect(notificationSpy).toHaveBeenCalledWith('1234');
+
+            const cache = mockThirdPartyReqContext.state.cache;
+            expect(cache.publish).toBeCalledTimes(1);
+            expect(cache.publish).toBeCalledWith('notification-channel', {
+                type: 'thirdPartyTransactionsReqResponse',
+                data: mockThirdPartyReqContext.request.body,
+                headers: mockThirdPartyReqContext.request.headers
             });
         });
     });
