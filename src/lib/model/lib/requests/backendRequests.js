@@ -98,6 +98,43 @@ class BackendRequests {
         return this._post('transactionrequests', transactionRequest);
     }
 
+    /**
+     * Executes a POST /bulkQuotes request for the specified bulk quotes request
+     *
+     * @returns {object} - JSON response body if one was received
+     */
+    async postBulkQuotes(bulkQuotesRequest) {
+        return this._post('bulkQuotes', bulkQuotesRequest);
+    }
+
+    /**
+     * Executes a GET /bulkQuotes/{ID} request for the specified bulk quote ID
+     *
+     * @returns {object} - JSON response body if one was received
+     */
+    async getBulkQuotes(bulkQuoteId) {
+        const url = `bulkQuotes/${bulkQuoteId}`;
+        return this._get(url);
+    }
+
+    /**
+     * Executes a POST /bulkTransfers request for the specified bulk transfer prepare
+     *
+     * @returns {object} - JSON response body if one was received
+     */
+    async postBulkTransfers(prepare) {
+        return this._post('bulktransfers', prepare);
+    }
+
+    /**
+     * Executes a GET /bulkTransfers/{ID} request for the specified bulk transfer ID
+     *
+     * @returns {object} - JSON response body if one was received
+     */
+    async getBulkTransfers(bulkTransferId) {
+        const url = `bulkTransfers/${bulkTransferId}`;
+        return this._get(url);
+    }
 
     /**
      * Utility function for building outgoing request headers as required by the mojaloop api spec
