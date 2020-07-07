@@ -7,6 +7,7 @@
  *  ORIGINAL AUTHOR:                                                      *
  *       James Bush - james.bush@modusbox.com                             *
  *       Paweł Marzec - pawel.marzec@modusbox.com                         *
+ *       Sridhar Voruganti - sridhar.voruganti@modusbox.com               *
  **************************************************************************/
 
 'use strict';
@@ -662,8 +663,7 @@ const putThirdPartyReqTransactionsById = async (ctx) => {
     }
 
     // publish an event onto the cache for subscribers to action
-    const thirdPartyTrxnChannel = ThirdpartyTrxnModelOut.notificationChannel(ctx.state.path.params.ID);
-    await ctx.state.cache.publish(thirdPartyTrxnChannel, {
+    await ThirdpartyTrxnModelOut.publishNotifications(ctx.state.cache, ctx.state.path.params.ID, {
         type: 'thirdPartyTransactionsReqResponse',
         data: ctx.request.body,
         headers: ctx.request.headers
@@ -688,8 +688,7 @@ const putThirdPartyReqTransactionsByIdError = async (ctx) => {
     }
 
     // publish an event onto the cache for subscribers to action
-    const thirdPartyTrxnChannel = ThirdpartyTrxnModelOut.notificationChannel(ctx.state.path.params.ID);
-    await ctx.state.cache.publish(thirdPartyTrxnChannel, {
+    await ThirdpartyTrxnModelOut.publishNotifications(ctx.state.cache, ctx.state.path.params.ID, {
         type: 'thirdPartyTransactionsReqErrorResponse',
         data: ctx.request.body,
         headers: ctx.request.headers
@@ -702,7 +701,6 @@ const healthCheck = async(ctx) => {
     ctx.response.status = 200;
     ctx.response.body = '';
 };
-
 
 module.exports = {
     '/': {

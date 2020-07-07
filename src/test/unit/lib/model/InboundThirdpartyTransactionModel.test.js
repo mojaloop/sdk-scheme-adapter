@@ -11,64 +11,46 @@
 
 // we use a mock standard components lib to intercept and mock certain funcs
 jest.mock('@mojaloop/sdk-standard-components');
-jest.mock('redis');
 
 const defaultConfig = require('./data/defaultConfig');
-const { Logger, Transports } = require('@internal/log');
 const ThirdpartyTrxnModelIn = require('@internal/model').InboundThirdpartyTransactionModel;
 const mockAuthorizationArguments = require('./data/mockAuthorizationArguments');
 const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const { BackendRequests } = require('@internal/requests');
-const Cache = require('@internal/cache');
+const mockLogger = require('../../mockLogger');
 
 describe('inboundThirdpartyTransactionModel', () => {
     let config;
     let mockAuthReqArgs;
     let logger;
 
-    beforeAll(async () => {
-        const logTransports = await Promise.all([Transports.consoleDir()]);
-        logger = new Logger({
-            context: { app: 'inboundThirdpartyTransactionModel-unit-tests' },
-            space: 4,
-            transports: logTransports,
-        });
-    });
-
     beforeEach(async () => {
         config = JSON.parse(JSON.stringify(defaultConfig));
         mockAuthReqArgs = JSON.parse(JSON.stringify(mockAuthorizationArguments));
+        logger = mockLogger({ app: 'InboundThirdpartyTransactionModel-test' });
     });
 
     describe('authorizations', () => {
         let model;
-        let cache;
 
         beforeEach(async () => {
             BackendRequests.__getSignedChallenge = jest.fn().mockReturnValue(Promise.resolve(mockAuthReqArgs.internalSignedChallengeResponse));
-            cache = new Cache({
-                host: 'dummycachehost',
-                port: 1234,
-                logger,
-            });
-            await cache.connect();
 
             model = new ThirdpartyTrxnModelIn({
                 ...config,
-                cache,
-                logger,
+                logger
             });
         });
 
         afterEach(async () => {
             MojaloopRequests.__putAuthorizations.mockClear();
-            await cache.disconnect();
         });
 
         test('calls `mojaloopRequests.putAuthorizations` with the expected arguments.', async () => {
             await model.postAuthorizations(mockAuthReqArgs.authorizationRequest, mockAuthReqArgs.fspId);
             expect(MojaloopRequests.__putAuthorizations).toHaveBeenCalledTimes(1);
-            expect(MojaloopRequests.__putAuthorizations.mock.calls[0][1]).toEqual(mockAuthReqArgs.authorizationsResponse);
+            expect(MojaloopRequests.__putAuthorizations).toHaveBeenCalledWith(mockAuthReqArgs.authorizationRequest.transactionRequestId, 
+                mockAuthReqArgs.authorizationsResponse, mockAuthReqArgs.fspId);
         });
     });
 

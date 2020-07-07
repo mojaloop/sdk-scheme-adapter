@@ -17,7 +17,6 @@ const {
 
 const {
     MojaloopRequests,
-    Ilp,
     Errors,
 } = require('@mojaloop/sdk-standard-components');
 
@@ -28,10 +27,8 @@ const shared = require('@internal/shared');
  */
 class InboundThirdpartyTransactionModel {
     constructor(config) {
-        this._cache = config.cache;
         this._logger = config.logger;
         this._dfspId = config.dfspId;
-        this._expirySeconds = config.expirySeconds;
 
         this._mojaloopRequests = new MojaloopRequests({
             logger: this._logger,
@@ -50,12 +47,6 @@ class InboundThirdpartyTransactionModel {
             logger: this._logger,
             backendEndpoint: config.backendEndpoint,
             dfspId: config.dfspId
-        });
-
-        this._checkIlp = config.checkIlp;
-
-        this._ilp = new Ilp({
-            secret: config.ilpSecret
         });
     }
 
@@ -97,7 +88,6 @@ class InboundThirdpartyTransactionModel {
                     mojaloopErrorCode = Errors.MojaloopApiErrorCodeFromCode(`${bodyObj.statusCode}`);
                 }
                 catch (ex) {
-                    // do nothing
                     this._logger.push({ ex }).log('Error parsing error message body as JSON');
                 }
             }

@@ -2584,7 +2584,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ThirdPartyTransactionRequest'
+              $ref: '#/components/schemas/ThirdPartyTransactionResponse'
       responses:
         200:
           $ref: '#/components/responses/Response200'
@@ -4649,57 +4649,18 @@ components:
           description: 'Optional extension, specific to deployment.'
       required:
         - transferState
-    ThirdPartyTransactionRequest:
-      title: ThirdPartyTransactionRequest
+    ThirdPartyTransactionResponse:
+      title: ThirdPartyTransactionResponse
       type: object
-      description: The object sent in the POST /thirdPartyRequests/transactions request.
+      description: The object sent in the PUT /thirdPartyRequests/transactions/{ID} request.
       properties:
-        transactionRequestId:
+        transactionId:
           $ref: '#/components/schemas/CorrelationId'
           description: >
-            Common ID between the FSPs for the transaction request object. 
-            The ID should be reused for resends of the same transaction request.
-            A new ID should be generated for each new transaction request.
-        sourceAccountId:
-          $ref: '#/components/schemas/AccountId'
-          description: DFSP specific account identifiers, e.g. `dfspa.alice.1234`
-        consentId:
-          allOf:
-            - $ref: '#/components/schemas/CorrelationId'
-          description: >
-            Common ID between the PISP and FSP for the Consent object
-            This tells DFSP and auth-service which constent allows the PISP to initiate transaction.
-        payee:
-          $ref: '#/components/schemas/Party'
-          description: Information about the Payee in the proposed financial transaction.
-        payer:
-          $ref: '#/components/schemas/Party'
-          description: Information about the Payer in the proposed financial transaction.
-        amountType:
-          $ref: '#/components/schemas/AmountType'
-          description: SEND for sendAmount, RECEIVE for receiveAmount.
-        amount:
-          $ref: '#/components/schemas/Money'
-          description: Requested amount to be transferred from the Payer to Payee.
-        transactionType:
-          $ref: '#/components/schemas/TransactionType'
-          description: Type of transaction.
-        expiration:
-          type: string
-          description: >
-            Date and time until when the transaction request is valid. 
-            It can be set to get a quick failure in case the peer FSP takes too long to respond.
-          example: '2016-05-24T08:38:08.699-04:00'
-      required:
-        - transactionRequestId
-        - sourceAccountId
-        - consentId
-        - payee
-        - payer
-        - amountType
-        - amount
-        - transactionType
-        - expiration        
+            Identifies a related transaction (if a transaction has been created)
+        transactionRequestState:
+          $ref: '#/components/schemas/TransactionRequestState'
+          description: State of the transaction request`     
     AccountId:
       type: string
       description: >

@@ -7,6 +7,7 @@
  *  ORIGINAL AUTHOR:                                                      *
  *       Vassilis Barzokas - vassilis.barzokas@modusbox.com               *
  *       Paweł Marzec - pawel.marzec@modusbox.com                         *
+ *       Sridhar Voruganti - sridhar.voruganti@modusbox.com               *
  **************************************************************************/
 
 'use strict';
@@ -17,7 +18,7 @@ const handlers = require('../../../InboundServer/handlers');
 const Model = require('@internal/model').InboundTransfersModel;
 const mockArguments = require('./data/mockArguments');
 const mockTransactionRequestData = require('./data/mockTransactionRequest');
-const mockAuthorizationRequestData = require('./data/mockAuthorizationRequest');
+const mockAuthorizationArguments = require('../lib/model/data/mockAuthorizationArguments.json');
 const mockLogger = require('../mockLogger');
 const AuthorizationsModel = require('@internal/model').OutboundAuthorizationsModel;
 const ThirdpartyTrxnModelIn = require('@internal/model').InboundThirdpartyTransactionModel;
@@ -27,12 +28,12 @@ const ThirdpartyTrxnModelOut = require('@internal/model').OutboundThirdpartyTran
 describe('Inbound API handlers:', () => {
     let mockArgs;
     let mockTransactionRequest;
-    let mockAuthorizationRequest;
+    let mockAuthReqArgs;
 
     beforeEach(() => {
         mockArgs = JSON.parse(JSON.stringify(mockArguments));
         mockTransactionRequest = JSON.parse(JSON.stringify(mockTransactionRequestData));
-        mockAuthorizationRequest = JSON.parse(JSON.stringify(mockAuthorizationRequestData));
+        mockAuthReqArgs = JSON.parse(JSON.stringify(mockAuthorizationArguments));
     });
 
     describe('POST /quotes', () => {
@@ -50,8 +51,7 @@ describe('Inbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    // example of elaborative logging with keepQuite = false
-                    logger: mockLogger({ app: 'inbound-handlers-unit-test' }, false)
+                    logger: mockLogger({ app: 'inbound-handlers-unit-test' })
                 }
             };
 
@@ -63,8 +63,7 @@ describe('Inbound API handlers:', () => {
             await expect(handlers['/quotes'].post(mockContext)).resolves.toBe(undefined);
 
             expect(quoteRequestSpy).toHaveBeenCalledTimes(1);
-            expect(quoteRequestSpy.mock.calls[0][0]).toBe(mockContext.request.body);
-            expect(quoteRequestSpy.mock.calls[0][1]).toBe(mockContext.request.headers['fspiop-source']);
+            expect(quoteRequestSpy).toHaveBeenCalledWith(mockContext.request.body, mockContext.request.headers['fspiop-source']);
         });
 
 
@@ -97,8 +96,8 @@ describe('Inbound API handlers:', () => {
             await expect(handlers['/transactionRequests'].post(mockTransactionReqContext)).resolves.toBe(undefined);
 
             expect(transactionRequestSpy).toHaveBeenCalledTimes(1);
-            expect(transactionRequestSpy.mock.calls[0][0]).toBe(mockTransactionReqContext.request.body);
-            expect(transactionRequestSpy.mock.calls[0][1]).toBe(mockTransactionReqContext.request.headers['fspiop-source']);
+            expect(transactionRequestSpy).toHaveBeenCalledWith(mockTransactionReqContext.request.body,
+                mockTransactionReqContext.request.headers['fspiop-source']);
         });
     });
 
@@ -110,7 +109,7 @@ describe('Inbound API handlers:', () => {
 
             mockAuthorizationContext = {
                 request: {
-                    body: mockAuthorizationRequest.authorizationRequest,
+                    body: mockAuthReqArgs.authorizationRequest,
                     headers: {
                         'fspiop-source': 'foo'
                     }
@@ -127,10 +126,9 @@ describe('Inbound API handlers:', () => {
             const authorizationRequestSpy = jest.spyOn(ThirdpartyTrxnModelIn.prototype, 'postAuthorizations');
 
             await expect(handlers['/authorizations'].post(mockAuthorizationContext)).resolves.toBe(undefined);
-
             expect(authorizationRequestSpy).toHaveBeenCalledTimes(1);
-            expect(authorizationRequestSpy.mock.calls[0][0]).toBe(mockAuthorizationContext.request.body);
-            expect(authorizationRequestSpy.mock.calls[0][1]).toBe(mockAuthorizationContext.request.headers['fspiop-source']);
+            expect(authorizationRequestSpy).toHaveBeenCalledWith(mockAuthorizationContext.request.body,
+                mockAuthorizationContext.request.headers['fspiop-source']);
         });
     });
 
@@ -165,7 +163,8 @@ describe('Inbound API handlers:', () => {
             await expect(handlers['/authorizations/{ID}'].get(mockAuthorizationContext)).resolves.toBe(undefined);
 
             expect(authorizationsSpy).toHaveBeenCalledTimes(1);
-            expect(authorizationsSpy.mock.calls[0][1]).toBe(mockAuthorizationContext.request.headers['fspiop-source']);
+            expect(authorizationsSpy).toHaveBeenCalledWith(mockAuthorizationContext.state.path.params.ID,
+                mockAuthorizationContext.request.headers['fspiop-source']);
         });
     });
 
@@ -296,20 +295,17 @@ describe('Inbound API handlers:', () => {
         });
 
         test('calls `model.thirdPartyRequests.transactions` with the expected arguments.', async () => {
-            const notificationSpy = jest.spyOn(ThirdpartyTrxnModelOut, 'notificationChannel').mockImplementationOnce(() => 'notification-channel');
+            const pubNotificatiosnSpy = jest.spyOn(ThirdpartyTrxnModelOut, 'publishNotifications');
 
             await expect(handlers['/thirdPartyRequests/transactions/{ID}'].put(mockThirdPartyReqContext)).resolves.toBe(undefined);
 
-            expect(notificationSpy).toHaveBeenCalledTimes(1);
-            expect(notificationSpy).toHaveBeenCalledWith('1234');
-
-            const cache = mockThirdPartyReqContext.state.cache;
-            expect(cache.publish).toBeCalledTimes(1);
-            expect(cache.publish).toBeCalledWith('notification-channel', {
-                type: 'thirdPartyTransactionsReqResponse',
-                data: mockThirdPartyReqContext.request.body,
-                headers: mockThirdPartyReqContext.request.headers
-            });
+            expect(pubNotificatiosnSpy).toHaveBeenCalledTimes(1);
+            expect(pubNotificatiosnSpy).toHaveBeenCalledWith(mockThirdPartyReqContext.state.cache,
+                mockThirdPartyReqContext.state.path.params.ID, {
+                    type: 'thirdPartyTransactionsReqResponse',
+                    data: mockThirdPartyReqContext.request.body,
+                    headers: mockThirdPartyReqContext.request.headers
+                });
         });
     });
 
