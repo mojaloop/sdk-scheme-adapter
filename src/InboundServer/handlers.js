@@ -656,7 +656,8 @@ module.exports = {
     },
     '/transfers/{ID}': {
         get: getTransfersById,
-        put: putTransfersById
+        put: putTransfersById,
+       // patch: addithere // todo
     },
     '/transfers/{ID}/error': {
         put: putTransfersByIdError
