@@ -1,0 +1,28 @@
+{
+  "homeTransactionId": "123ABC",
+  "from": {
+    "displayName": "James Bush",
+    "idType": "MSISDN",
+    "idValue": "447710066017",
+    "extensionList": [
+      {
+        "key": "accountType",
+        "value": "Wallet"
+      }
+    ]
+  },
+  "individualQuotes": [
+    {
+      "quoteId": "12346789",
+      "to": {
+        "idType": "MSISDN",
+        "idValue": "1234567890"
+      },
+      "amountType": "SEND",
+      "currency": "USD",
+      "amount": "100",
+      "transactionType": "TRANSFER",
+      "note": "test payment"
+    }
+  ]
+}

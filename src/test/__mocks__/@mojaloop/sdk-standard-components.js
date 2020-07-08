@@ -31,6 +31,14 @@ class MockMojaloopRequests extends MojaloopRequests {
         this.postTransfers = MockMojaloopRequests.__postTransfers;
         this.putTransfers = MockMojaloopRequests.__putTransfers;
         this.putTransfersError = MockMojaloopRequests.__putTransfersError;
+        this.getBulkQuotes = MockMojaloopRequests.__getBulkQuotes;
+        this.postBulkQuotes = MockMojaloopRequests.__postBulkQuotes;
+        this.putBulkQuotes = MockMojaloopRequests.__putBulkQuotes;
+        this.putBulkQuotesError = MockMojaloopRequests.__putBulkQuotesError;
+        this.getBulkTransfers = MockMojaloopRequests.__getBulkTransfers;
+        this.postBulkTransfers = MockMojaloopRequests.__postBulkTransfers;
+        this.putBulkTransfers = MockMojaloopRequests.__putBulkTransfers;
+        this.putBulkTransfersError = MockMojaloopRequests.__putBulkTransfersError;
     }
 }
 MockMojaloopRequests.__postParticipants = jest.fn(() => Promise.resolve());
@@ -46,6 +54,15 @@ MockMojaloopRequests.__putTransactionRequests = jest.fn(() => Promise.resolve())
 MockMojaloopRequests.__postTransfers = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putTransfers = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putTransfersError = jest.fn(() => Promise.resolve());
+MockMojaloopRequests.__getBulkQuotes = jest.fn(() => Promise.resolve());
+MockMojaloopRequests.__postBulkQuotes = jest.fn(() => Promise.resolve());
+MockMojaloopRequests.__putBulkQuotes = jest.fn(() => Promise.resolve());
+MockMojaloopRequests.__putBulkQuotesError = jest.fn(() => Promise.resolve());
+MockMojaloopRequests.__getBulkTransfers = jest.fn(() => Promise.resolve());
+MockMojaloopRequests.__postBulkTransfers = jest.fn(() => Promise.resolve());
+MockMojaloopRequests.__putBulkTransfers = jest.fn(() => Promise.resolve());
+MockMojaloopRequests.__putBulkTransfersError = jest.fn(() => Promise.resolve());
+
 
 class MockIlp {
     constructor(config) {
@@ -79,11 +96,22 @@ class MockIlp {
 
         return this.getResponseIlp(...args);
     }
+
+
+    getTransactionObject(...args) {
+        console.log(`MockIlp.getTrasnactionObject called with args: ${util.inspect(args)}`);
+
+        return MockIlp.__transactionObject;
+    }
 }
 MockIlp.__response = {
     fulfilment: 'mockGeneratedFulfilment',
     ilpPacket: 'mockBase64encodedIlpPacket',
     condition: 'mockGeneratedCondition'
+};
+
+MockIlp.__transactionObject = {
+    transactionId: 'mockTransactionId'
 };
 
 
