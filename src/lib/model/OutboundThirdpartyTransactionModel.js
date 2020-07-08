@@ -22,7 +22,7 @@ function notificationChannel(id) {
 
 async function publishNotifications(cache, id, value) {
     const channel = notificationChannel(id);
-    cache.publish(channel, value);
+    return cache.publish(channel, value);
 }
 
 module.exports = { notificationChannel, publishNotifications };

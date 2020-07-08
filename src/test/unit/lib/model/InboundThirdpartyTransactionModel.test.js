@@ -34,7 +34,8 @@ describe('inboundThirdpartyTransactionModel', () => {
         let model;
 
         beforeEach(async () => {
-            BackendRequests.__getSignedChallenge = jest.fn().mockReturnValue(Promise.resolve(mockAuthReqArgs.internalSignedChallengeResponse));
+            BackendRequests.__getSignedChallenge = jest.fn().mockReturnValue(
+                Promise.resolve(mockAuthReqArgs.internalSignedChallengeResponse));
 
             model = new ThirdpartyTrxnModelIn({
                 ...config,
@@ -49,7 +50,8 @@ describe('inboundThirdpartyTransactionModel', () => {
         test('calls `mojaloopRequests.putAuthorizations` with the expected arguments.', async () => {
             await model.postAuthorizations(mockAuthReqArgs.authorizationRequest, mockAuthReqArgs.fspId);
             expect(MojaloopRequests.__putAuthorizations).toHaveBeenCalledTimes(1);
-            expect(MojaloopRequests.__putAuthorizations).toHaveBeenCalledWith(mockAuthReqArgs.authorizationRequest.transactionRequestId, 
+            expect(MojaloopRequests.__putAuthorizations).toHaveBeenCalledWith(
+                mockAuthReqArgs.authorizationRequest.transactionRequestId,
                 mockAuthReqArgs.authorizationsResponse, mockAuthReqArgs.fspId);
         });
     });

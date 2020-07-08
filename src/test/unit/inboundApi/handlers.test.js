@@ -31,9 +31,9 @@ describe('Inbound API handlers:', () => {
     let mockAuthReqArgs;
 
     beforeEach(() => {
-        mockArgs = JSON.parse(JSON.stringify(mockArguments));
-        mockTransactionRequest = JSON.parse(JSON.stringify(mockTransactionRequestData));
-        mockAuthReqArgs = JSON.parse(JSON.stringify(mockAuthorizationArguments));
+        mockArgs = deepClone(mockArguments);
+        mockTransactionRequest = deepClone(mockTransactionRequestData);
+        mockAuthReqArgs = deepClone(mockAuthorizationArguments);
     });
 
     describe('POST /quotes', () => {
@@ -63,7 +63,9 @@ describe('Inbound API handlers:', () => {
             await expect(handlers['/quotes'].post(mockContext)).resolves.toBe(undefined);
 
             expect(quoteRequestSpy).toHaveBeenCalledTimes(1);
-            expect(quoteRequestSpy).toHaveBeenCalledWith(mockContext.request.body, mockContext.request.headers['fspiop-source']);
+            expect(quoteRequestSpy).toHaveBeenCalledWith(
+                mockContext.request.body,
+                mockContext.request.headers['fspiop-source']);
         });
 
 
@@ -96,7 +98,8 @@ describe('Inbound API handlers:', () => {
             await expect(handlers['/transactionRequests'].post(mockTransactionReqContext)).resolves.toBe(undefined);
 
             expect(transactionRequestSpy).toHaveBeenCalledTimes(1);
-            expect(transactionRequestSpy).toHaveBeenCalledWith(mockTransactionReqContext.request.body,
+            expect(transactionRequestSpy).toHaveBeenCalledWith(
+                mockTransactionReqContext.request.body,
                 mockTransactionReqContext.request.headers['fspiop-source']);
         });
     });
@@ -127,7 +130,8 @@ describe('Inbound API handlers:', () => {
 
             await expect(handlers['/authorizations'].post(mockAuthorizationContext)).resolves.toBe(undefined);
             expect(authorizationRequestSpy).toHaveBeenCalledTimes(1);
-            expect(authorizationRequestSpy).toHaveBeenCalledWith(mockAuthorizationContext.request.body,
+            expect(authorizationRequestSpy).toHaveBeenCalledWith(
+                mockAuthorizationContext.request.body,
                 mockAuthorizationContext.request.headers['fspiop-source']);
         });
     });
@@ -163,7 +167,8 @@ describe('Inbound API handlers:', () => {
             await expect(handlers['/authorizations/{ID}'].get(mockAuthorizationContext)).resolves.toBe(undefined);
 
             expect(authorizationsSpy).toHaveBeenCalledTimes(1);
-            expect(authorizationsSpy).toHaveBeenCalledWith(mockAuthorizationContext.state.path.params.ID,
+            expect(authorizationsSpy).toHaveBeenCalledWith(
+                mockAuthorizationContext.state.path.params.ID,
                 mockAuthorizationContext.request.headers['fspiop-source']);
         });
     });
@@ -310,3 +315,7 @@ describe('Inbound API handlers:', () => {
     });
 
 });
+
+function deepClone(obj) {
+    return JSON.parse(JSON.stringify(obj));
+}
