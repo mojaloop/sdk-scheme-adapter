@@ -2,3 +2,5 @@
 node_modules/
 .swp
 src/junit.xml
+.vscode
+secrets/*.pem
