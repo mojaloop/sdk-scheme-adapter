@@ -348,7 +348,7 @@ class InboundTransfersModel {
             // create a  mojaloop transfer fulfil response
             const mojaloopResponse = {
                 completedTimestamp: new Date(),
-                transferState: 'COMMITTED',
+                transferState: 'COMMITTED', // ENV var for committed or reserved
                 fulfilment: fulfilment,
                 ...response.extensionList && {
                     extensionList: {

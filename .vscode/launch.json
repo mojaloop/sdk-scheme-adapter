@@ -1,0 +1,73 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "Launch Program",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/src/index.js",
+      "outputCapture": "std",
+      "env": {
+        "INBOUND_LISTEN_PORT": "14000",
+        "OUTBOUND_LISTEN_PORT": "14001",
+        "TEST_LISTEN_PORT": "14002",
+        "INBOUND_MUTUAL_TLS_ENABLED": "false",
+        "OUTBOUND_MUTUAL_TLS_ENABLED": "false",
+        "TEST_MUTUAL_TLS_ENABLED": "false",
+        "VALIDATE_INBOUND_JWS": "false",
+        "VALIDATE_INBOUND_PUT_PARTIES_JWS": "false",
+        "JWS_SIGN": "false",
+        "JWS_SIGN_PUT_PARTIES": "false",
+        "JWS_SIGNING_KEY_PATH": "./secrets/jwsSigningKey.key",
+        "JWS_VERIFICATION_KEYS_DIRECTORY": "./secrets/jwsVerificationKeys",
+        "IN_CA_CERT_PATH": "./secrets/rootCA.crt",
+        "IN_SERVER_CERT_PATH": "./secrets/localhost.csr",
+        "IN_SERVER_KEY_PATH": "./secrets/localhost.key",
+        "OUT_CA_CERT_PATH": "./secrets/rootCA.crt",
+        "OUT_CLIENT_CERT_PATH": "./secrets/localhost.csr",
+        "OUT_CLIENT_KEY_PATH": "./secrets/localhost.key",
+        "TEST_CA_CERT_PATH": "./secrets/rootCA.crt",
+        "TEST_CLIENT_CERT_PATH": "./secrets/localhost.csr",
+        "TEST_CLIENT_KEY_PATH": "./secrets/localhost.key",
+        "LOG_INDENT": "0",
+        "CACHE_HOST": "localhost",
+        "CACHE_PORT": "6379",
+        "PEER_ENDPOINT": "localhost:24000",
+        "ALS_ENDPOINT": "account-lookup-service.local:4001",
+        "QUOTES_ENDPOINT": "quoting-service.local:3002",
+        "BULK_QUOTES_ENDPOINT": "quoting-service.local:3002",
+        "TRANSFERS_ENDPOINT": "ml-api-adapter.local:3000",
+        "BULK_TRANSFERS_ENDPOINT": "bulk-api-adapter.local:3003",
+        "BACKEND_ENDPOINT": "localhost:34000",
+        "DFSP_ID": "ms-payeefsp",
+        "ILP_SECRET": "Quaixohyaesahju3thivuiChai5cahng",
+        "EXPIRY_SECONDS": "60",
+        "AUTO_ACCEPT_QUOTES": "false",
+        "AUTO_ACCEPT_PARTY": "false",
+        "USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP": "false",
+        "CHECK_ILP": "false",
+        "ENABLE_TEST_FEATURES": "false",
+        "ENABLE_OAUTH_TOKEN_ENDPOINT": "false",
+        "OAUTH_TOKEN_ENDPOINT_CLIENT_KEY": "test-client-key",
+        "OAUTH_TOKEN_ENDPOINT_CLIENT_SECRET": "test-client-secret",
+        "OAUTH_TOKEN_ENDPOINT_LISTEN_PORT": "6000",
+        "WSO2_BEARER_TOKEN": "7718fa9b-be13-3fe7-87f0-a12cf1628168",
+        "OAUTH_TOKEN_ENDPOINT": "",
+        "OAUTH_CLIENT_KEY": "",
+        "OAUTH_CLIENT_SECRET": "",
+        "OAUTH_REFRESH_SECONDS": "3600",
+        "REJECT_EXPIRED_QUOTE_RESPONSES": "false",
+        "REJECT_TRANSFERS_ON_EXPIRED_QUOTES": "false",
+        "REJECT_EXPIRED_TRANSFER_FULFILS": "false",
+        "REQUEST_PROCESSING_TIMEOUT_SECONDS": "30",
+        "ALLOW_TRANSFER_WITHOUT_QUOTE": "false"
+      }
+    }
+  ]
+}
