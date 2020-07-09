@@ -3,8 +3,8 @@
     "accounts": {
       "account": [
         {
-          "”currency": "USD",
-          "”description": "savings",
+          "currency": "USD",
+          "description": "savings",
           "address": "moja.red.8f027046-b82a5456-4fa9-838b-70210fcf8136"
         },
         {

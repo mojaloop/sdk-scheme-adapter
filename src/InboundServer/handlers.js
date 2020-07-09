@@ -7,6 +7,7 @@
  *  ORIGINAL AUTHOR:                                                      *
  *       James Bush - james.bush@modusbox.com                             *
  *       Paweł Marzec - pawel.marzec@modusbox.com                         *
+ *       Sridhar Voruganti - sridhar.voruganti@modusbox.com               *
  **************************************************************************/
 
 'use strict';
@@ -14,6 +15,8 @@
 const util = require('util');
 const Model = require('@internal/model').InboundTransfersModel;
 const AuthorizationsModel = require('@internal/model').OutboundAuthorizationsModel;
+const ThirdpartyTrxnModelIn = require('@internal/model').InboundThirdpartyTransactionModel;
+const ThirdpartyTrxnModelOut = require('@internal/model').OutboundThirdpartyTransactionModel;
 /**
  * Handles a GET /authorizations/{id} request
  */
@@ -49,6 +52,50 @@ const getAuthorizationsById = async (ctx) => {
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
             ctx.state.logger.push({ err }).log('Error handling GET /parties/{idType}/{idValue}');
+        }
+    })();
+
+    // Note that we will have passed request validation, JWS etc... by this point
+    // so it is safe to return 202
+    ctx.response.status = 202;
+    ctx.response.body = '';
+};
+
+/**
+ * Handles POST /authorizations request
+ */
+const postAuthorizations = async (ctx) => {
+    // kick off an asyncronous operation to handle the request
+    (async () => {
+        try {
+            if (ctx.state.conf.enableTestFeatures) {
+                // we are in test mode so cache the request
+                const req = {
+                    headers: ctx.request.headers,
+                    data: ctx.request.body
+                };
+                const res = await ctx.state.cache.set(`request_${ctx.request.body.transactionRequestId}`, req);
+                ctx.state.logger.log(`Caching request : ${util.inspect(res)}`);
+            }
+            // use the transfers model to execute asynchronous stages with the switch
+            const thirdpartyTrxnModelIn = new ThirdpartyTrxnModelIn({
+                ...ctx.state.conf,
+                cache: ctx.state.cache,
+                logger: ctx.state.logger,
+                wso2Auth: ctx.state.wso2Auth,
+            });
+
+            const sourceFspId = ctx.request.headers['fspiop-source'];
+
+            // use the model to handle the request
+            const response = await thirdpartyTrxnModelIn.postAuthorizations(ctx.request.body, sourceFspId);
+
+            // log the result
+            ctx.state.logger.push({ response }).log('Inbound Third party transaction model handled POST /authorizations request');
+        }
+        catch (err) {
+            // nothing we can do if an error gets thrown back to us here apart from log it and continue
+            ctx.state.logger.push({ err }).log('Error handling POST /authorizations}');
         }
     })();
 
@@ -600,16 +647,67 @@ const putTransfersByIdError = async (ctx) => {
     ctx.response.body = '';
 };
 
+/**
+ * Handles PUT /thirdPartyRequests/transactions/{ID} request. 
+ * This is response to a POST /thirdPartyRequests/transactions request
+ */
+const putThirdPartyReqTransactionsById = async (ctx) => {
+    if (ctx.state.conf.enableTestFeatures) {
+        // we are in test mode so cache the request
+        const req = {
+            headers: ctx.request.headers,
+            data: ctx.request.body
+        };
+        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
+    }
+
+    // publish an event onto the cache for subscribers to action
+    await ThirdpartyTrxnModelOut.publishNotifications(ctx.state.cache, ctx.state.path.params.ID, {
+        type: 'thirdPartyTransactionsReqResponse',
+        data: ctx.request.body,
+        headers: ctx.request.headers
+    });
+
+    ctx.response.status = 200;
+};
+
+/**
+ * Handles PUT /thirdPartyRequests/transactions/{ID}/error. 
+ * This is error response to POST /thirdPartyRequests/transactions request
+ */
+const putThirdPartyReqTransactionsByIdError = async (ctx) => {
+    if (ctx.state.conf.enableTestFeatures) {
+        // we are in test mode so cache the request
+        const req = {
+            headers: ctx.request.headers,
+            data: ctx.request.body
+        };
+        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
+    }
+
+    // publish an event onto the cache for subscribers to action
+    await ThirdpartyTrxnModelOut.publishNotifications(ctx.state.cache, ctx.state.path.params.ID, {
+        type: 'thirdPartyTransactionsReqErrorResponse',
+        data: ctx.request.body,
+        headers: ctx.request.headers
+    });
+
+    ctx.response.status = 200;
+};
 
 const healthCheck = async(ctx) => {
     ctx.response.status = 200;
     ctx.response.body = '';
 };
 
-
 module.exports = {
     '/': {
         get: healthCheck
+    },
+    '/authorizations': {
+        post: postAuthorizations
     },
     '/authorizations/{ID}': {
         get: getAuthorizationsById,
@@ -669,5 +767,11 @@ module.exports = {
     },
     '/transactionRequests/{ID}': {
         put: putTransactionRequestsById
+    },
+    '/thirdPartyRequests/transactions/{ID}': {
+        put: putThirdPartyReqTransactionsById
+    },
+    '/thirdPartyRequests/transactions/{ID}/error': {
+        put: putThirdPartyReqTransactionsByIdError
     }
 };

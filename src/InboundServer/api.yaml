@@ -1424,6 +1424,54 @@ paths:
             schema:
               $ref: '#/components/schemas/QuotesPostRequest'
         required: true
+#Authorizations
+  /authorizations:
+    post:
+      description: >
+        The HTTP request `POST /authorizations` is used to request the Payer to enter the 
+        applicable credentials in the PISP system.
+      summary: Perform PISP authorization
+      tags:
+      - authorizations
+      operationId: AuthorizationsByIDPost
+      parameters:
+      #Headers
+      - $ref: '#/components/parameters/Content-Length'
+      - $ref: '#/components/parameters/Content-Type'
+      - $ref: '#/components/parameters/Date'
+      - $ref: '#/components/parameters/X-Forwarded-For'
+      - $ref: '#/components/parameters/FSPIOP-Source'
+      - $ref: '#/components/parameters/FSPIOP-Destination'
+      - $ref: '#/components/parameters/FSPIOP-Encryption'
+      - $ref: '#/components/parameters/FSPIOP-Signature'
+      - $ref: '#/components/parameters/FSPIOP-URI'
+      - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+      requestBody:
+        description: Perform authorization
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizationsPostRequest'
+      responses:
+        202:
+          $ref: '#/components/responses/Response202'
+        400:
+          $ref: '#/components/responses/ErrorResponse400'
+        401:
+          $ref: '#/components/responses/ErrorResponse401'
+        403:
+          $ref: '#/components/responses/ErrorResponse403'
+        404:
+          $ref: '#/components/responses/ErrorResponse404'
+        405:
+          $ref: '#/components/responses/ErrorResponse405'
+        406:
+          $ref: '#/components/responses/ErrorResponse406'
+        501:
+          $ref: '#/components/responses/ErrorResponse501'
+        503:
+          $ref: '#/components/responses/ErrorResponse503'  
   '/authorizations/{ID}':
     parameters:
       - $ref: '#/components/parameters/ID'
@@ -1495,8 +1543,10 @@ paths:
       x-examples:
         application/json:
           authenticationInfo:
-            authentication: OTP
-            authenticationValue: '1234'
+            authentication: U2F
+            authenticationValue: 
+              pinValue: '233133331'
+              counter: '1'
           responseType: ENTERED
       responses:
         '200':
@@ -2503,6 +2553,108 @@ paths:
           $ref: '#/components/responses/ErrorResponse503'
       requestBody:
         $ref: '#/components/requestBodies/ErrorInformationObject'
+  #thirdPartyRequests
+  /thirdPartyRequests/transactions/{ID}:
+    put:
+      description: >
+        The callback `PUT /thirdPartyRequests/transactions/{ID}` is used to inform the client of the result of a 
+        previously-requested transaction. The `{ID}` in the URI should contain the `transactionRequestId` that was used for 
+        the creation of the transaction request.
+      summary: Update third party transaction requests
+      tags:
+        - thirdPartyRequests
+      operationId: UpdateThirdPartyTransactionRequests
+      parameters:
+        #Path
+        - $ref: '#/components/parameters/ID'
+        #Headers
+        - $ref: '#/components/parameters/Content-Type'
+        - $ref: '#/components/parameters/Date'
+        - $ref: '#/components/parameters/X-Forwarded-For'
+        - $ref: '#/components/parameters/FSPIOP-Source'
+        - $ref: '#/components/parameters/FSPIOP-Destination'
+        - $ref: '#/components/parameters/FSPIOP-Encryption'
+        - $ref: '#/components/parameters/FSPIOP-Signature'
+        - $ref: '#/components/parameters/FSPIOP-URI'
+        - $ref: '#/components/parameters/FSPIOP-HTTP-Method'        
+        - $ref: '#/components/parameters/Content-Length'
+      requestBody:
+        description: Transaction request result returned.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ThirdPartyTransactionResponse'
+      responses:
+        200:
+          $ref: '#/components/responses/Response200'
+        400:
+          $ref: '#/components/responses/ErrorResponse400'
+        401:
+          $ref: '#/components/responses/ErrorResponse401'
+        403:
+          $ref: '#/components/responses/ErrorResponse403'
+        404:
+          $ref: '#/components/responses/ErrorResponse404'
+        405:
+          $ref: '#/components/responses/ErrorResponse405'
+        406:
+          $ref: '#/components/responses/ErrorResponse406'
+        501:
+          $ref: '#/components/responses/ErrorResponse501'
+        503:
+          $ref: '#/components/responses/ErrorResponse503'
+  /thirdPartyRequest/transactions/{ID}/error:
+    put:
+      description: >
+        If the server is unable to find the transaction request, or another processing error occurs, 
+        the error callback `PUT /thirdPartyRequest/transactions/{ID}/error` is used. 
+        The `{ID}` in the URI should contain the `transactionRequestId` that was used for the creation of the transaction request.
+      summary: Return transaction error
+      tags:
+        - thirdPartyRequests
+      operationId: UpdateThirdPartyTransactionRequestsError
+      parameters:
+        #Path
+        - $ref: '#/components/parameters/ID'
+        #Headers
+        - $ref: '#/components/parameters/Content-Length'
+        - $ref: '#/components/parameters/Content-Type'
+        - $ref: '#/components/parameters/Date'
+        - $ref: '#/components/parameters/X-Forwarded-For'
+        - $ref: '#/components/parameters/FSPIOP-Source'
+        - $ref: '#/components/parameters/FSPIOP-Destination'
+        - $ref: '#/components/parameters/FSPIOP-Encryption'
+        - $ref: '#/components/parameters/FSPIOP-Signature'
+        - $ref: '#/components/parameters/FSPIOP-URI'
+        - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+      requestBody:
+        description: Details of the error returned.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorInformationObject'
+      responses:
+        200:
+          $ref: '#/components/responses/Response200'
+        400:
+          $ref: '#/components/responses/ErrorResponse400'
+        401:
+          $ref: '#/components/responses/ErrorResponse401'
+        403:
+          $ref: '#/components/responses/ErrorResponse403'
+        404:
+          $ref: '#/components/responses/ErrorResponse404'
+        405:
+          $ref: '#/components/responses/ErrorResponse405'
+        406:
+          $ref: '#/components/responses/ErrorResponse406'
+        501:
+          $ref: '#/components/responses/ErrorResponse501'
+        503:
+          $ref: '#/components/responses/ErrorResponse503'
+
 components:
   parameters:
     Accept:
@@ -2896,6 +3048,15 @@ components:
       minLength: 1
       maxLength: 64
       description: U2F challenge-response, where payer FSP verifies if the response provided by end-user device matches the previously registered key. 
+    Counter:
+      title: Counter
+      $ref: '#/components/schemas/Integer'
+      description: Sequential counter used for cloning detection. Present only for U2F authentication.
+    RetriesLeft:
+      title: RetriesLeft
+      $ref: '#/components/schemas/Integer' 
+      description: RetriesLeft is the number of retries left before the financial transaction is rejected. It must be expressed in the form of the data type Integer. retriesLeft=1 means that this is the last retry before the financial transaction is rejected.
+    
     AuthorizationResponse:
       title: AuthorizationResponse
       type: string
@@ -3545,6 +3706,36 @@ components:
       required:
         - authentication
         - authenticationValue
+    AuthorizationsPostRequest:
+      title: AuthorizationsPostRequest
+      type: object
+      description: POST /authorizations Request object
+      properties:
+        authenticationType:
+          $ref: '#/components/schemas/AuthenticationType'
+          description: This value is a valid authentication type from the enumeration AuthenticationType(OTP or QR Code or U2F).
+        retriesLeft:
+          $ref: '#/components/schemas/RetriesLeft'
+          description: RetriesLeft is the number of retries left before the financial transaction is rejected. It must be expressed in the form of the data type Integer. retriesLeft=1 means that this is the last retry before the financial transaction is rejected.
+        amount:
+          $ref: '#/components/schemas/Money'
+          description: This is the transaction amount that will be withdrawn from the Payer’s account.
+        transactionId:
+          $ref: '#/components/schemas/CorrelationId'
+          description: Common ID (decided by the Payer FSP) between the FSPs for the future transaction object. The actual transaction will be created as part of a successful transfer process. 
+        transactionRequestId:
+          $ref: '#/components/schemas/CorrelationId'
+          description: The transactionRequestID, received from the POST /transactionRequests service earlier in the process. 
+        quote:
+          $ref: '#/components/schemas/QuotesIDPutResponse'
+          description: Quotes object
+      required:
+      - authenticationType
+      - retriesLeft
+      - amount
+      - transactionId
+      - transactionRequestId
+      - quote        
     AuthorizationsIDPutResponse:
       title: AuthorizationsIDPutResponse
       type: object
@@ -3996,6 +4187,9 @@ components:
       type: object
       description: Data model for the complex type Party.
       properties:
+        accounts:
+          $ref: '#/components/schemas/AccountList'
+          description: List of accounts associated with the party containing and DFSP routable address, currency identifier and description.
         partyIdInfo:
           $ref: '#/components/schemas/PartyIdInfo'
           description: 'Party Id type, id, sub ID or type, and FSP Id.'
@@ -4455,3 +4649,63 @@ components:
           description: 'Optional extension, specific to deployment.'
       required:
         - transferState
+    ThirdPartyTransactionResponse:
+      title: ThirdPartyTransactionResponse
+      type: object
+      description: The object sent in the PUT /thirdPartyRequests/transactions/{ID} request.
+      properties:
+        transactionId:
+          $ref: '#/components/schemas/CorrelationId'
+          description: >
+            Identifies a related transaction (if a transaction has been created)
+        transactionRequestState:
+          $ref: '#/components/schemas/TransactionRequestState'
+          description: State of the transaction request`     
+    AccountId:
+      type: string
+      description: >
+        A long-lived account identifier provided by the DFSP
+        this MUST NOT be Bank Account Number or anything that
+        may expose a User's private bank account information
+    AccountList:
+      title: AccountList
+      type: object
+      description: Data model for the complex type AccountList
+      properties:
+        account:
+          type: array
+          items:
+            $ref: '#/components/schemas/Account'
+          minItems: 1
+          maxItems: 32
+          description: Accounts associated with the Party
+      required:
+        - account
+    Account:
+      title: Account
+      type: object
+      description: Data model for the complex type Account
+      properties:
+        address:
+          $ref: '#/components/schemas/AccountAddress'
+          type: string
+          description: Unique routable address which is DFSP specific.
+        currency:
+          $ref: '#/components/schemas/Currency'
+          type: string
+          description: Currency of the amount.
+        description:
+          $ref: '#/components/schemas/Name'
+          type: string
+          description: The name of the account.
+      required:
+        - address
+        - currency
+        - description
+    AccountAddress:
+      title: AccountAddress
+      type: string
+      description: Unique routable address which is DFSP specific.
+      pattern: ^([0-9A-Za-z_~\-\.]+[0-9A-Za-z_~\-])$
+      minLength: 1
+      maxLength: 1023                 

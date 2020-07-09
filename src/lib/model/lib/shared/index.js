@@ -285,6 +285,36 @@ const mojaloopTransactionRequestToInternal = (external) => {
     return internal;
 };
 
+/**
+ * Converts a mojaloop authorizationsReq data to internal form
+ *
+ * @returns {object}
+ */
+const mojaloopAuthorizationsReqToInternal = (external) => {
+    let internal = external;
+    //TODO: conversion required ?
+    return internal;
+};
+
+/**
+ * Converts an internal authorizations response to mojaloop form
+ *
+ * @returns {object}
+ */
+const internalAuthorizationsResponseToMojaloop = (internal) => {
+    //TODO: conversion required or not ?
+    const external = {
+        authenticationInfo: {
+            authentication: 'U2F',
+            authenticationValue: {
+                pinValue: internal.pinValue,
+                counter: internal.counter
+            }
+        },
+        responseType: 'ENTERED'
+    };
+    return external;
+};
 
 module.exports = {
     internalPartyToMojaloopParty,
@@ -294,5 +324,7 @@ module.exports = {
     mojaloopPartyIdInfoToInternalPartyIdInfo,
     mojaloopQuoteRequestToInternal,
     mojaloopPrepareToInternalTransfer,
-    mojaloopTransactionRequestToInternal
+    mojaloopTransactionRequestToInternal,
+    mojaloopAuthorizationsReqToInternal,
+    internalAuthorizationsResponseToMojaloop
 };

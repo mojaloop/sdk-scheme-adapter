@@ -23,6 +23,7 @@ class MockBackendRequests extends BackendRequests {
         super(...args);
         MockBackendRequests.__instance = this;
         this.getOTP = MockBackendRequests.__getOTP;
+        this.getSignedChallenge = MockBackendRequests.__getSignedChallenge;
         this.getParties = MockBackendRequests.__getParties;
         this.postTransactionRequests = MockBackendRequests.__postTransactionRequests;
         this.postQuoteRequests = MockBackendRequests.__postQuoteRequests;
@@ -32,6 +33,7 @@ class MockBackendRequests extends BackendRequests {
 }
 MockBackendRequests.__getParties = jest.fn(() => Promise.resolve({body: {}}));
 MockBackendRequests.__getOTP = jest.fn(() => Promise.resolve({body: {}}));
+MockBackendRequests.__getSignedChallenge = jest.fn(() => Promise.resolve({body: {}}));
 MockBackendRequests.__postTransactionRequests = jest.fn(() => Promise.resolve({body: {}}));
 MockBackendRequests.__postQuoteRequests = jest.fn(() => Promise.resolve({body: {}}));
 MockBackendRequests.__getTransfers = jest.fn(() => Promise.resolve({body: {}}));

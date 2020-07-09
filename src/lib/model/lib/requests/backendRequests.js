@@ -38,6 +38,15 @@ class BackendRequests {
     }
 
     /**
+     * Executes a /signchallenge request by passing authorization request details
+     *
+     * @returns {object} - JSON response body if one was received
+     */
+    async getSignedChallenge(authorizationReq) {
+        return this._post('signchallenge', authorizationReq);
+    }
+
+    /**
      * Executes a GET /otp request for the specified transaction request id
      *
      * @returns {object} - JSON response body if one was received
