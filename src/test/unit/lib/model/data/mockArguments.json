@@ -60,5 +60,72 @@
   "internalGetOTPResponse" : {
     "value": "123456"
   },
-  "fspId": "fake-fsp-id"
+  "fspId": "fake-fsp-id",
+  "bulkQuoteRequest": {
+    "bulkQuoteId": "fake-bulk-quote-id",
+    "payer": {
+      "partyIdInfo": {
+        "partyIdType": "MSISDN",
+        "partyIdentifier": "17855501914",
+        "fspId": "mojaloop-sdk"
+      },
+      "personalInfo": {
+        "complexName": {
+          "firstName": "John",
+          "lastName": "Doe"
+        },
+        "dateOfBirth": "2010-10-10"
+      },
+      "name": "John Doe",
+      "merchantClassificationCode": "123"
+    },
+    "expiration": "2019-06-04T04:02:10.378Z",
+    "individualQuotes": [
+      {
+        "quoteId": "fake-quote-id",
+        "transactionId": "fake-transaction-id",
+        "payee": {
+          "partyIdInfo": {
+            "partyIdType": "PERSONAL_ID",
+            "partyIdentifier": "123456789",
+            "partySubIdOrType": "PASSPORT",
+            "fspId": "goldenpayeefsp"
+          },
+          "personalInfo": {
+            "complexName": {
+              "firstName": "Jane",
+              "lastName": "Doe"
+            },
+            "dateOfBirth": "2010-10-10"
+          },
+          "name": "Jane Doe",
+          "merchantClassificationCode": "456"
+        },
+        "amountType": "SEND",
+        "amount": {
+          "currency": "XOF",
+          "amount": 10
+        },
+        "transactionType": {
+          "scenario": "TRANSFER",
+          "initiator": "PAYER",
+          "initiatorType": "CONSUMER"
+        }
+      }
+    ]
+  },
+  "internalBulkQuoteResponse": {
+    "expiration": "2019-11-12T09:02:10.378Z",
+    "individualQuotes": [
+      {
+        "quoteId": "fake-quote-id",
+        "transferAmount": 500,
+        "transferAmountCurrency": "XOF",
+        "payeeReceiveAmount": 490,
+        "payeeFspFee": 10,
+        "payeeFspCommission": 0,
+        "condition": "fH9pAYDQbmoZLPbvv3CSW2RfjU4jvM4ApG_fqGnR7Xs"
+      }
+    ]
+  }
 }

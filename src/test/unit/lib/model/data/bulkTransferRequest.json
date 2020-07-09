@@ -1,0 +1,29 @@
+{
+  "from": {
+    "displayName": "James Bush",
+    "idType": "MSISDN",
+    "idValue": "447710066017"
+  },
+  "payeeFsp": {
+    "fspId": "fake-payeefsp-id"
+  },
+  "homeTransactionId": "123ABC",
+  "individualTransfers": [
+    {
+      "to": {
+        "idType": "PERSONAL_ID",
+        "idValue": "123456789",
+        "idSubValue": "PASSPORT"
+      },
+      "amountType": "SEND",
+      "currency": "USD",
+      "amount": "100",
+      "transactionType": "TRANSFER",
+      "note": "test payment"
+    }
+  ],
+  "extensions": [
+    { "key": "tkey1", "value": "tvalue1" },
+    { "key": "tkey2", "value": "tvalue2" }
+  ]
+}
