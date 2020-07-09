@@ -25,8 +25,8 @@ describe('inboundThirdpartyTransactionModel', () => {
     let logger;
 
     beforeEach(async () => {
-        config = JSON.parse(JSON.stringify(defaultConfig));
-        mockAuthReqArgs = JSON.parse(JSON.stringify(mockAuthorizationArguments));
+        config = deepClone(defaultConfig);
+        mockAuthReqArgs = deepClone(mockAuthorizationArguments);
         logger = mockLogger({ app: 'InboundThirdpartyTransactionModel-test' });
     });
 
@@ -57,3 +57,7 @@ describe('inboundThirdpartyTransactionModel', () => {
     });
 
 });
+
+function deepClone(obj) {
+    return JSON.parse(JSON.stringify(obj));
+}
