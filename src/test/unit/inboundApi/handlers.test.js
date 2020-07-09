@@ -24,7 +24,6 @@ const AuthorizationsModel = require('@internal/model').OutboundAuthorizationsMod
 const ThirdpartyTrxnModelIn = require('@internal/model').InboundThirdpartyTransactionModel;
 const ThirdpartyTrxnModelOut = require('@internal/model').OutboundThirdpartyTransactionModel;
 
-
 describe('Inbound API handlers:', () => {
     let mockArgs;
     let mockTransactionRequest;
@@ -85,8 +84,8 @@ describe('Inbound API handlers:', () => {
                 },
                 response: {},
                 state: {
-                    conf: {},
-                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports })
+                    conf: {},                    
+                    logger: mockLogger({ app: 'inbound-handlers-unit-test' })
                 }
             };
 
@@ -124,7 +123,7 @@ describe('Inbound API handlers:', () => {
                             'ID': '1234567890'
                         }
                     },
-                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports }),
+                    logger: mockLogger({ app: 'inbound-handlers-unit-test' }),
                     cache: {
                         publish: async () => Promise.resolve(true)
                     } 
@@ -172,7 +171,7 @@ describe('Inbound API handlers:', () => {
                             'ID': '1234567890'
                         }
                     },
-                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports }),
+                    logger: mockLogger({ app: 'inbound-handlers-unit-test' }),
                     cache: {
                         publish: async () => Promise.resolve(true)
                     } 
@@ -213,7 +212,7 @@ describe('Inbound API handlers:', () => {
                             'ID': '1234567890'
                         }
                     },
-                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports })
+                    logger: mockLogger({ app: 'inbound-handlers-unit-test' })
                 }
             };
         });
@@ -243,7 +242,7 @@ describe('Inbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports })
+                    logger: mockLogger({ app: 'inbound-handlers-unit-test' })
                 }
             };
 
@@ -281,7 +280,7 @@ describe('Inbound API handlers:', () => {
                             'ID': '1234567890'
                         }
                     },
-                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports }),
+                    logger: mockLogger({ app: 'inbound-handlers-unit-test' }),
                     cache: {
                         publish: async () => Promise.resolve(true)
                     } 
@@ -329,7 +328,7 @@ describe('Inbound API handlers:', () => {
                             'ID': '1234567890'
                         }
                     },
-                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports }),
+                    logger: mockLogger({ app: 'inbound-handlers-unit-test' }),
                     cache: {
                         publish: async () => Promise.resolve(true)
                     } 
@@ -370,7 +369,7 @@ describe('Inbound API handlers:', () => {
                             'ID': '1234567890'
                         }
                     },
-                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports })
+                    logger: mockLogger({ app: 'inbound-handlers-unit-test' })
                 }
             };
         });

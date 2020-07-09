@@ -25,13 +25,13 @@ const mockLogger = require('../mockLogger');
 jest.mock('@internal/model');
 
 const handlers = require('../../../OutboundServer/handlers');
-const { OutboundTransfersModel, OutboundRequestToPayTransferModel, OutboundRequestToPayModel, OutboundAuthorizationsModel } = require('@internal/model');
 const {
     OutboundTransfersModel,
     OutboundBulkTransfersModel,
     OutboundBulkQuotesModel,
     OutboundRequestToPayTransferModel,
     OutboundRequestToPayModel,
+    OutboundAuthorizationsModel,
 } = require('@internal/model');
 
 /**

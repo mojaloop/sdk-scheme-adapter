@@ -35,8 +35,6 @@ module.exports = {
     InboundTransfersModel,
     OutboundTransfersModel,
     ProxyModel,
-    BackendError,
-    OutboundRequestToPayModel,
     OutboundAuthorizationsModel,
     PersistentStateMachine,
     InboundThirdpartyTransactionModel,
