@@ -159,7 +159,8 @@ const postQuotes = async (ctx) => {
     // kick off an asyncronous operation to handle the request
     (async () => {
         try {
-            if(ctx.state.conf.enableTestFeatures) {
+            if(ctx.state.conf.enableTestFeatures)
+             {
                 // we are in test mode so cache the request
                 const req = {
                     headers: ctx.request.headers,
@@ -497,7 +498,7 @@ const putTransactionRequestsById = async (ctx) => {
 };
 
 /**
- * Handles a PUT /transfers/{ID}. This is a response to a POST|GET /transfers request
+ * Handles a PUT /transfers/{ID}. This is a response to a POST|PATCH|GET /transfers request
  */
 const putTransfersById = async (ctx) => {
     if(ctx.state.conf.enableTestFeatures) {
@@ -951,7 +952,7 @@ module.exports = {
     '/transfers/{ID}': {
         get: getTransfersById,
         put: putTransfersById,
-       // patch: addithere // todo
+        patch: putTransfersById
     },
     '/transfers/{ID}/error': {
         put: putTransfersByIdError
