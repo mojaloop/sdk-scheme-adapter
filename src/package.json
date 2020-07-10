@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
-  "version": "10.1.5",
+  "version": "10.5.1",
   "description": "An adapter for connecting to Mojaloop API enabled switches.",
   "main": "index.js",
   "scripts": {
@@ -10,6 +10,9 @@
     "test:int": "jest --ci --reporters=default --reporters=jest-junit --env=node test/integration --forceExit"
   },
   "author": "Matt Kingston, James Bush, ModusBox Inc.",
+  "contributors": [
+    "Steven Oderayi <steven.oderayi@modusbox.com>"
+  ],
   "license": "Apache-2.0",
   "licenses": [
     {
@@ -26,7 +29,7 @@
     "@internal/router": "file:lib/router",
     "@internal/shared": "file:lib/model/lib/shared",
     "@internal/validate": "file:lib/validate",
-    "@mojaloop/sdk-standard-components": "^10.2.2",
+    "@mojaloop/sdk-standard-components": "^10.2.3",
     "ajv": "^6.12.2",
     "co-body": "^6.0.0",
     "dotenv": "^8.2.0",

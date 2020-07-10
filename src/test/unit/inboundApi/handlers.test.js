@@ -24,7 +24,6 @@ const AuthorizationsModel = require('@internal/model').OutboundAuthorizationsMod
 const ThirdpartyTrxnModelIn = require('@internal/model').InboundThirdpartyTransactionModel;
 const ThirdpartyTrxnModelOut = require('@internal/model').OutboundThirdpartyTransactionModel;
 
-
 describe('Inbound API handlers:', () => {
     let mockArgs;
     let mockTransactionRequest;
@@ -69,6 +68,320 @@ describe('Inbound API handlers:', () => {
         });
 
 
+    });
+
+    describe('POST /bulkQuotes', () => {
+
+        let mockContext;
+
+        beforeEach(() => {
+            mockContext = {
+                request: {
+                    body: mockArgs.bulkQuoteRequest,
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},                    
+                    logger: mockLogger({ app: 'inbound-handlers-unit-test' })
+                }
+            };
+
+        });
+
+        test('calls `model.bulkQuoteRequest` with the expected arguments.', async () => {
+            const bulkQuoteRequestSpy = jest.spyOn(Model.prototype, 'bulkQuoteRequest');
+
+            await expect(handlers['/bulkQuotes'].post(mockContext)).resolves.toBe(undefined);
+
+            expect(bulkQuoteRequestSpy).toHaveBeenCalledTimes(1);
+            expect(bulkQuoteRequestSpy.mock.calls[0][0]).toBe(mockContext.request.body);
+            expect(bulkQuoteRequestSpy.mock.calls[0][1]).toBe(mockContext.request.headers['fspiop-source']);
+        });
+    });
+
+    describe('PUT /bulkQuotes/{ID}', () => {
+
+        let mockContext;
+
+        beforeEach(() => {
+
+            mockContext = {
+                request: {
+                    body: mockArgs.bulkQuotePutRequest,
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    path: {
+                        params: {
+                            'ID': '1234567890'
+                        }
+                    },
+                    logger: mockLogger({ app: 'inbound-handlers-unit-test' }),
+                    cache: {
+                        publish: async () => Promise.resolve(true)
+                    } 
+                }
+            };
+        });
+
+        test('calls `ctx.state.cache.publish` with the expected arguments.', async () => {
+            const bulkQuotesSpy = jest.spyOn(mockContext.state.cache, 'publish');
+
+            await expect(handlers['/bulkQuotes/{ID}'].put(mockContext)).resolves.toBe(undefined);
+            expect(mockContext.response.status).toBe(200);
+            expect(bulkQuotesSpy).toHaveBeenCalledTimes(1);
+            expect(bulkQuotesSpy.mock.calls[0][1]).toMatchObject({
+                type: 'bulkQuoteResponse',
+                data: mockContext.request.body,
+                headers: mockContext.request.headers
+            });
+        });
+    });
+
+    describe('PUT /bulkQuotes/{ID}/error', () => {
+
+        let mockContext;
+
+        beforeEach(() => {
+
+            mockContext = {
+                request: {
+                    body: {
+                        errorInformation: {
+                            errorCode: '5100',
+                            errorDescription: 'Fake error'
+                        }
+                    },
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    path: {
+                        params: {
+                            'ID': '1234567890'
+                        }
+                    },
+                    logger: mockLogger({ app: 'inbound-handlers-unit-test' }),
+                    cache: {
+                        publish: async () => Promise.resolve(true)
+                    } 
+                }
+            };
+        });
+
+        test('calls `ctx.state.cache.publish` with the expected arguments.', async () => {
+            const bulkQuotesSpy = jest.spyOn(mockContext.state.cache, 'publish');
+
+            await expect(handlers['/bulkQuotes/{ID}/error'].put(mockContext)).resolves.toBe(undefined);
+            expect(mockContext.response.status).toBe(200);
+            expect(bulkQuotesSpy).toHaveBeenCalledTimes(1);
+            expect(bulkQuotesSpy.mock.calls[0][1]).toMatchObject({
+                type: 'bulkQuoteResponseError',
+                data: mockContext.request.body
+            });
+        });
+    });
+
+    describe('GET /bulkQuotes/{ID}', () => {
+
+        let mockContext;
+
+        beforeEach(() => {
+
+            mockContext = {
+                request: {
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    path: {
+                        params: {
+                            'ID': '1234567890'
+                        }
+                    },
+                    logger: mockLogger({ app: 'inbound-handlers-unit-test' })
+                }
+            };
+        });
+
+        test('calls `model.getBulkQuote` with the expected arguments.', async () => {
+            const bulkQuotesSpy = jest.spyOn(Model.prototype, 'getBulkQuote');
+
+            await expect(handlers['/bulkQuotes/{ID}'].get(mockContext)).resolves.toBe(undefined);
+
+            expect(bulkQuotesSpy).toHaveBeenCalledTimes(1);
+            expect(bulkQuotesSpy.mock.calls[0][1]).toBe(mockContext.request.headers['fspiop-source']);
+        });
+    });
+
+    describe('POST /bulkTransfers', () => {
+
+        let mockContext;
+
+        beforeEach(() => {
+            mockContext = {
+                request: {
+                    body: mockArgs.bulkTransferRequest,
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    logger: mockLogger({ app: 'inbound-handlers-unit-test' })
+                }
+            };
+
+        });
+
+        test('calls `model.prepareBulkTransfer` with the expected arguments.', async () => {
+            const bulkTransferRequestSpy = jest.spyOn(Model.prototype, 'prepareBulkTransfer');
+
+            await expect(handlers['/bulkTransfers'].post(mockContext)).resolves.toBe(undefined);
+
+            expect(bulkTransferRequestSpy).toHaveBeenCalledTimes(1);
+            expect(bulkTransferRequestSpy.mock.calls[0][0]).toBe(mockContext.request.body);
+            expect(bulkTransferRequestSpy.mock.calls[0][1]).toBe(mockContext.request.headers['fspiop-source']);
+        });
+    });
+
+    describe('PUT /bulkTransfers/{ID}', () => {
+
+        let mockContext;
+
+        beforeEach(() => {
+
+            mockContext = {
+                request: {
+                    body: mockArgs.bulkTransferPutRequest,
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    path: {
+                        params: {
+                            'ID': '1234567890'
+                        }
+                    },
+                    logger: mockLogger({ app: 'inbound-handlers-unit-test' }),
+                    cache: {
+                        publish: async () => Promise.resolve(true)
+                    } 
+                }
+            };
+        });
+
+        test('calls `ctx.state.cache.publish` with the expected arguments.', async () => {
+            const bulkTransfersSpy = jest.spyOn(mockContext.state.cache, 'publish');
+
+            await expect(handlers['/bulkTransfers/{ID}'].put(mockContext)).resolves.toBe(undefined);
+            expect(mockContext.response.status).toBe(200);
+            expect(bulkTransfersSpy).toHaveBeenCalledTimes(1);
+            expect(bulkTransfersSpy.mock.calls[0][1]).toMatchObject({
+                type: 'bulkTransferResponse',
+                data: mockContext.request.body,
+                headers: mockContext.request.headers
+            });
+        });
+    });
+
+    describe('PUT /bulkTransfers/{ID}/error', () => {
+
+        let mockContext;
+
+        beforeEach(() => {
+
+            mockContext = {
+                request: {
+                    body: {
+                        errorInformation: {
+                            errorCode: '5100',
+                            errorDescription: 'Fake error'
+                        }
+                    },
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    path: {
+                        params: {
+                            'ID': '1234567890'
+                        }
+                    },
+                    logger: mockLogger({ app: 'inbound-handlers-unit-test' }),
+                    cache: {
+                        publish: async () => Promise.resolve(true)
+                    } 
+                }
+            };
+        });
+
+        test('calls `ctx.state.cache.publish` with the expected arguments.', async () => {
+            const bulkTransfersSpy = jest.spyOn(mockContext.state.cache, 'publish');
+
+            await expect(handlers['/bulkTransfers/{ID}/error'].put(mockContext)).resolves.toBe(undefined);
+            expect(mockContext.response.status).toBe(200);
+            expect(bulkTransfersSpy).toHaveBeenCalledTimes(1);
+            expect(bulkTransfersSpy.mock.calls[0][1]).toMatchObject({
+                type: 'bulkTransferResponseError',
+                data: mockContext.request.body
+            });
+        });
+    });
+
+    describe('GET /bulkTransfers/{ID}', () => {
+
+        let mockContext;
+
+        beforeEach(() => {
+
+            mockContext = {
+                request: {
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    path: {
+                        params: {
+                            'ID': '1234567890'
+                        }
+                    },
+                    logger: mockLogger({ app: 'inbound-handlers-unit-test' })
+                }
+            };
+        });
+
+        test('calls `model.getBulkTransfer` with the expected arguments.', async () => {
+            const bulkTransfersSpy = jest.spyOn(Model.prototype, 'getBulkTransfer');
+
+            await expect(handlers['/bulkTransfers/{ID}'].get(mockContext)).resolves.toBe(undefined);
+
+            expect(bulkTransfersSpy).toHaveBeenCalledTimes(1);
+            expect(bulkTransfersSpy.mock.calls[0][1]).toBe(mockContext.request.headers['fspiop-source']);
+        });
     });
 
     describe('POST /transactionRequests', () => {

@@ -6,6 +6,8 @@
  *                                                                        *
  *  ORIGINAL AUTHOR:                                                      *
  *       James Bush - james.bush@modusbox.com                             *
+ *  CONTRIBUTORS:                                                         *
+ *       Steven Oderayi - steven.oderayi@modusbox.com                     *
  *       Paweł Marzec - pawel.marzec@modusbox.com                         *
  *       Sridhar Voruganti - sridhar.voruganti@modusbox.com               *
  **************************************************************************/
@@ -648,6 +650,280 @@ const putTransfersByIdError = async (ctx) => {
 };
 
 /**
+ * Handles a GET /bulkQuotes/{ID} request
+ */
+const getBulkQuotesById = async (ctx) => {
+    // kick off an asyncronous operation to handle the request
+    (async () => {
+        try {
+            if (ctx.state.conf.enableTestFeatures) {
+                // we are in test mode so cache the request
+                const req = {
+                    headers: ctx.request.headers
+                };
+                const res = await ctx.state.cache.set(
+                    `request_${ctx.state.path.params.ID}`, req);
+                ctx.state.logger.log(`Caching request : ${util.inspect(res)}`);
+            }
+
+            // use the transfers model to execute asynchronous stages with the switch
+            const model = new Model({
+                ...ctx.state.conf,
+                cache: ctx.state.cache,
+                logger: ctx.state.logger,
+                wso2Auth: ctx.state.wso2Auth,
+            });
+
+            const sourceFspId = ctx.request.headers['fspiop-source'];
+
+            // use the model to handle the request
+            const response = await model.getBulkQuote(ctx.state.path.params.ID,
+                sourceFspId);
+
+            // log the result
+            ctx.state.logger.push({response}).
+                log('Inbound transfers model handled GET /bulkQuotes/{ID} request');
+        }
+        catch(err) {
+            // nothing we can do if an error gets thrown back to us here apart from log it and continue
+            ctx.state.logger.push({ err }).log('Error handling GET /bulkQuotes/{ID}');
+        }
+    })();
+
+    // Note that we will have passed request validation, JWS etc... by this point
+    // so it is safe to return 202
+    ctx.response.status = 202;
+    ctx.response.body = '';
+};
+
+/**
+ * Handles a POST /bulkQuotes request
+ */
+const postBulkQuotes = async (ctx) => {
+    (async () => {
+        try {
+            if(ctx.state.conf.enableTestFeatures) {
+                // we are in test mode so cache the request
+                const req = {
+                    headers: ctx.request.headers,
+                    data: ctx.request.body
+                };
+                const res = await ctx.state.cache.set(`request_${ctx.request.body.bulkQuoteId}`, req);
+                ctx.state.logger.log(`Cacheing request: ${util.inspect(res)}`);
+            }
+
+            // use the transfers model to execute asynchronous stages with the switch
+            const model = new Model({
+                ...ctx.state.conf,
+                cache: ctx.state.cache,
+                logger: ctx.state.logger,
+                wso2Auth: ctx.state.wso2Auth,
+            });
+
+            const sourceFspId = ctx.request.headers['fspiop-source'];
+
+            // use the model to handle the request
+            const response = await model.bulkQuoteRequest(ctx.request.body, sourceFspId);
+
+            // log the result
+            ctx.state.logger.push({ response }).log('Inbound transfers model handled POST /bulkQuotes request');
+        }
+        catch(err) {
+            // nothing we can do if an error gets thrown back to us here apart from log it and continue
+            ctx.state.logger.push({ err }).log('Error handling POST /bulkQuotes');
+        }
+    })();
+
+    ctx.response.status = 202;
+    ctx.response.body = '';
+};
+
+/**
+ * Handles a PUT /bulkQuotes/{ID}. This is a response to a POST /bulkQuotes request
+ */
+const putBulkQuotesById = async (ctx) => {
+    if(ctx.state.conf.enableTestFeatures) {
+        // we are in test mode so cache the request
+        const req = {
+            headers: ctx.request.headers,
+            data: ctx.request.body
+        };
+        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        ctx.state.logger.log(`Cacheing callback: ${util.inspect(res)}`);
+    }
+
+    // publish an event onto the cache for subscribers to action
+    await ctx.state.cache.publish(`bulkQuotes_${ctx.state.path.params.ID}`, {
+        type: 'bulkQuoteResponse',
+        data: ctx.request.body,
+        headers: ctx.request.headers
+    });
+
+    ctx.response.status = 200;
+};
+
+/**
+ * Handles a PUT /bulkQuotes/{ID}/error request. This is an error response to a POST /bulkQuotes request
+ */
+const putBulkQuotesByIdError = async(ctx) => {
+    if(ctx.state.conf.enableTestFeatures) {
+        // we are in test mode so cache the request
+        const req = {
+            headers: ctx.request.headers,
+            data: ctx.request.body
+        };
+        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        ctx.state.logger.log(`Cacheing callback: ${util.inspect(res)}`);
+    }
+
+    // publish an event onto the cache for subscribers to action
+    await ctx.state.cache.publish(`bulkQuotes_${ctx.state.path.params.ID}`, {
+        type: 'bulkQuoteResponseError',
+        data: ctx.request.body
+    });
+
+    ctx.response.status = 200;
+    ctx.response.body = '';
+};
+
+/**
+ * Handles a GET /bulkTransfers/{ID} request
+ */
+const getBulkTransfersById = async (ctx) => {
+    // kick off an asyncronous operation to handle the request
+    (async () => {
+        try {
+            if (ctx.state.conf.enableTestFeatures) {
+                // we are in test mode so cache the request
+                const req = {
+                    headers: ctx.request.headers
+                };
+                const res = await ctx.state.cache.set(
+                    `request_${ctx.state.path.params.ID}`, req);
+                ctx.state.logger.log(`Caching request : ${util.inspect(res)}`);
+            }
+
+            // use the transfers model to execute asynchronous stages with the switch
+            const model = new Model({
+                ...ctx.state.conf,
+                cache: ctx.state.cache,
+                logger: ctx.state.logger,
+                wso2Auth: ctx.state.wso2Auth,
+            });
+
+            const sourceFspId = ctx.request.headers['fspiop-source'];
+
+            // use the model to handle the request
+            const response = await model.getBulkTransfer(ctx.state.path.params.ID,
+                sourceFspId);
+
+            // log the result
+            ctx.state.logger.push({response}).
+                log('Inbound transfers model handled GET /bulkTransfers/{ID} request');
+        }
+        catch(err) {
+            // nothing we can do if an error gets thrown back to us here apart from log it and continue
+            ctx.state.logger.push({ err }).log('Error handling GET /bulkTransfers/{ID}');
+        }
+    })();
+
+    // Note that we will have passed request validation, JWS etc... by this point
+    // so it is safe to return 202
+    ctx.response.status = 202;
+    ctx.response.body = '';
+};
+
+/**
+ * Handles a POST /bulkTransfers request
+ */
+const postBulkTransfers = async (ctx) => {
+    (async () => {
+        try {
+            if(ctx.state.conf.enableTestFeatures) {
+                // we are in test mode so cache the request
+                const req = {
+                    headers: ctx.request.headers,
+                    data: ctx.request.body
+                };
+                const res = await ctx.state.cache.set(`request_${ctx.request.body.bulkTransferId}`, req);
+                ctx.state.logger.log(`Cacheing request: ${util.inspect(res)}`);
+            }
+
+            // use the transfers model to execute asynchronous stages with the switch
+            const model = new Model({
+                ...ctx.state.conf,
+                cache: ctx.state.cache,
+                logger: ctx.state.logger,
+                wso2Auth: ctx.state.wso2Auth,
+            });
+
+            const sourceFspId = ctx.request.headers['fspiop-source'];
+
+            // use the model to handle the request
+            const response = await model.prepareBulkTransfer(ctx.request.body, sourceFspId);
+
+            // log the result
+            ctx.state.logger.push({ response }).log('Inbound transfers model handled POST /bulkTransfers request');
+        }
+        catch(err) {
+            // nothing we can do if an error gets thrown back to us here apart from log it and continue
+            ctx.state.logger.push({ err }).log('Error handling POST /bulkTransfers');
+        }
+    })();
+
+    ctx.response.status = 202;
+    ctx.response.body = '';
+};
+
+/**
+ * Handles a PUT /bulkTransfers/{ID}. This is a response to a POST /bulkTransfers request
+ */
+const putBulkTransfersById = async (ctx) => {
+    if(ctx.state.conf.enableTestFeatures) {
+        // we are in test mode so cache the request
+        const req = {
+            headers: ctx.request.headers,
+            data: ctx.request.body
+        };
+        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        ctx.state.logger.log(`Cacheing callback: ${util.inspect(res)}`);
+    }
+
+    // publish an event onto the cache for subscribers to action
+    await ctx.state.cache.publish(`bulkTransfer_${ctx.state.path.params.ID}`, {
+        type: 'bulkTransferResponse',
+        data: ctx.request.body,
+        headers: ctx.request.headers
+    });
+
+    ctx.response.status = 200;
+};
+
+/**
+ * Handles a PUT /bulkTransfers/{ID}/error request. This is an error response to a POST /bulkTransfers request
+ */
+const putBulkTransfersByIdError = async(ctx) => {
+    if(ctx.state.conf.enableTestFeatures) {
+        // we are in test mode so cache the request
+        const req = {
+            headers: ctx.request.headers,
+            data: ctx.request.body
+        };
+        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        ctx.state.logger.log(`Cacheing callback: ${util.inspect(res)}`);
+    }
+
+    // publish an event onto the cache for subscribers to action
+    await ctx.state.cache.publish(`bulkTransfer_${ctx.state.path.params.ID}`, {
+        type: 'bulkTransferResponseError',
+        data: ctx.request.body
+    });
+
+    ctx.response.status = 200;
+    ctx.response.body = '';
+};
+
+/**
  * Handles PUT /thirdPartyRequests/transactions/{ID} request. 
  * This is response to a POST /thirdPartyRequests/transactions request
  */
@@ -712,6 +988,26 @@ module.exports = {
     '/authorizations/{ID}': {
         get: getAuthorizationsById,
         put: putAuthorizationsById
+    },
+    '/bulkQuotes': {
+        post: postBulkQuotes
+    },
+    '/bulkQuotes/{ID}': {
+        get: getBulkQuotesById,
+        put: putBulkQuotesById
+    },
+    '/bulkQuotes/{ID}/error': {
+        put: putBulkQuotesByIdError
+    },
+    '/bulkTransfers': {
+        post: postBulkTransfers
+    },
+    '/bulkTransfers/{ID}': {
+        get: getBulkTransfersById,
+        put: putBulkTransfersById
+    },
+    '/bulkTransfers/{ID}/error': {
+        put: putBulkTransfersByIdError
     },
     '/participants/{ID}': {
         put: putParticipantsById
