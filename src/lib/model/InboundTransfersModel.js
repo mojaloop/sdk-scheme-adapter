@@ -34,6 +34,7 @@ class InboundTransfersModel {
         this._expirySeconds = config.expirySeconds;
         this._rejectTransfersOnExpiredQuotes = config.rejectTransfersOnExpiredQuotes;
         this._allowTransferWithoutQuote = config.allowTransferWithoutQuote;
+        this._reserveNotification = config.reserveNotification
 
         this._mojaloopRequests = new MojaloopRequests({
             logger: this._logger,
@@ -293,7 +294,7 @@ class InboundTransfersModel {
             // create a  mojaloop transfer fulfil response
             const mojaloopResponse = {
                 completedTimestamp: new Date(),
-                transferState: 'COMMITTED', // ENV var for committed or reserved
+                transferState: this._reserveNotification ? 'RESERVED' : 'COMMITTED',
                 fulfilment: fulfilment,
                 ...response.extensionList && {
                     extensionList: {
