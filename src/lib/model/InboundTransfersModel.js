@@ -41,6 +41,7 @@ class InboundTransfersModel {
             alsEndpoint: config.alsEndpoint,
             quotesEndpoint: config.quotesEndpoint,
             transfersEndpoint: config.transfersEndpoint,
+            bulkTransfersEndpoint: config.bulkTransfersEndpoint,
             dfspId: config.dfspId,
             tls: config.tls,
             jwsSign: config.jwsSign,
@@ -585,9 +586,9 @@ class InboundTransfersModel {
                     return {
                         transferId: transfer.transferId,
                         fulfilment: fulfilments[transfer.transferId],
-                        ...response.individualTransferResults[transfer.transferId].extensionList && {
+                        ...transfer.extensionList && {
                             extensionList: {
-                                extension: response.individualTransferResults[transfer.transferId].extensionList,
+                                extension: transfer.extensionList,
                             },
                         }
                     };
@@ -595,7 +596,7 @@ class InboundTransfersModel {
             }
 
             // make a callback to the source fsp with the transfer fulfilment
-            return this._mojaloopRequests.putBulkTransfers(bulkPrepareRequest.transferId, mojaloopResponse, sourceFspId);
+            return this._mojaloopRequests.putBulkTransfers(bulkPrepareRequest.bulkTransferId, mojaloopResponse, sourceFspId);
         }
         catch (err) {
             this._logger.push({ err }).log('Error in prepareBulkTransfers');
