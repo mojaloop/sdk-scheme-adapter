@@ -11,23 +11,35 @@
 'use strict';
 const StateMachine = require('javascript-state-machine');
 
-async function saveToCache() {
+function saveToCache() {
     const { data, cache, key, logger } = this.context;
-    try {
-        const res = await cache.set(key, data);
-        logger.push({ res }).log(`Persisted model in cache: ${key}`);
-    }
-    catch(err) {
-        logger.push({ err }).log(`Error saving model: ${key}`);
-        throw err;
-    }
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+        try {
+            const res = await cache.set(key, data);
+            logger.push({ res }).log(`Persisted model in cache: ${key}`);
+            resolve();
+        }
+        catch(error) {
+            logger.push({ error }).log(`Error saving model: ${key}`);
+            reject(error);
+        }
+    });
 }
 
-async function onAfterTransition(transition) {
-    const {data, logger} = this.context;
-    logger.log(`State machine transitioned '${transition.transition}': ${transition.from} -> ${transition.to}`);
-    data.currentState = transition.to;
-    await this.saveToCache();
+function onAfterTransition(transition) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+        const {data, logger} = this.context;
+        logger.log(`State machine transitioned '${transition.transition}': ${transition.from} -> ${transition.to}`);
+        data.currentState = transition.to;
+        try {
+            this.saveToCache();
+            resolve();
+        } catch (error) {
+            reject(error);
+        }
+    });
 }
 
 function onPendingTransition(transition) {
