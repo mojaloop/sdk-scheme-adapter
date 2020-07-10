@@ -570,7 +570,7 @@ describe('inboundModel', () => {
                 individualTransfers: [
                     {
                         transferId: 'fake-transfer-id',
-                        amount: {
+                        transferAmount: {
                             currency: 'USD',
                             amount: 20.13
                         },
