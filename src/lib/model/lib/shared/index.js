@@ -430,8 +430,8 @@ const mojaloopBulkPrepareToInternalBulkTransfer = (external, bulkQuotes, ilp) =>
             bulkTransferId: external.bulkTransferId,
             individualTransfers: external.individualTransfers.map((transfer) => ({
                 transferId: transfer.transferId,
-                currency: transfer.amount.currency,
-                amount: transfer.amount.amount,
+                currency: transfer.transferAmount.currency,
+                amount: transfer.transferAmount.amount,
             }))
         };
     }
