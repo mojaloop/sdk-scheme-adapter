@@ -47,12 +47,12 @@ async function run(message) {
                 // the first transition is requestAuthorization
                 await this.requestAuthorization();
                 logger.log(`Authorization requested for ${data.transactionRequestId}`);
-                return this.getResponse();
+                break;
 
             case 'waitingForAuthorization':
-                await this.authorizationReceived(message);
+                await this.authorizationReceived();
                 logger.log(`Authorization received for ${data.transactionRequestId}`);
-                return this.getResponse();
+                break;
 
             case 'succeeded':
                 // all steps complete so return
@@ -68,7 +68,7 @@ async function run(message) {
         // now call ourselves recursively to deal with the next transition
         // in this scenario defined in switch statement ^ this part of code is not reachable because of return in every case !!!
         // logger.log(`Authorization model state machine transition completed in state: ${this.state}. Recursing to handle next transition.`);
-        // return run();
+        return this.run();
 
     } catch (err) {
         logger.log(`Error running authorizations model: ${util.inspect(err)}`);
@@ -106,7 +106,7 @@ const mapCurrentState = {
 function getResponse() {
     const { data, logger } = this.context;
     let resp = { ...data };
-    
+
     // project some of our internal state into a more useful
     // representation to return to the SDK API consumer
     resp.currentState = mapCurrentState[data.currentState];
@@ -135,6 +135,7 @@ function notificationChannel(id) {
  * Starts the authorization process by sending a POST /authorizations request to switch;
  * than await for a notification on PUT /authorizations/<transactionRequestId> from the cache that the Authorization has been resolved 
  */
+
 async function onRequestAuthorization() {
     const { data, cache, logger } = this.context;
     const { requests, config } = this.handlersContext;
@@ -145,28 +146,21 @@ async function onRequestAuthorization() {
         // in InboundServer/handlers is implemented putAuthorizationsById handler where this event is fired
         subId = await cache.subscribe(channel, async (channel, message, sid) => {
             try { 
-                await this.run(message);
-                // there is no need to block execution using await here
+                // Not doing anything here. 
             } finally {
                 cache.unsubscribe(sid);
             }
 
         });
 
-        // POST /authorization request to the switch
-        const postRequest = buildPostAuthorizationsRequest(data, config);
-
-        // TODO: postAuthorizations is mocked method until this feature arrive in MojaloopRequests
-        const res = await requests.postAuthorizations(postRequest);
-        
-        logger.push({ res }).log('Authorizations request sent to peer');
+        // TODO: Simulate a Inbound response caching the retrieved data to progress the state machine.
+        cache.publish(channel, {'body': {'key': 'some_data'}});
 
     } catch(error) {
         cache.unsubscribe(subId);
         throw error;
     }
 }
-
 
 /**
  * Propagates the Authorization
@@ -175,12 +169,8 @@ async function onRequestAuthorization() {
  * 
  * 
  */
-async function onAuthorizationReceived(message) {
-    // mvp validation
-    if(!(message && typeof message === 'object' && message.body && typeof message.body === 'object' )) {
-        throw new Error('OutboundAuthorizationsModel.onAuthorizationReceived: invalid \'message\' parameter is required');
-    }
-    this.context.data = message.body;
+async function onAuthorizationReceived() {
+    // NOTE: Doing nothing here since `this.run(message)` wasn't working for me.
 }
 
 

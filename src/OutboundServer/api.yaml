@@ -364,13 +364,6 @@ paths:
       description: The HTTP request `POST /authorizations` is used to request the Payer to enter the applicable credentials in the PISP system.
       summary: /authorizations
       operationId: AuthorizationsPost
-      requestBody:
-        description: Perform authorization
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/authorizationsRequest'
       responses:
         200:
           $ref: '#/components/responses/authorizationsResponse'
