@@ -160,7 +160,7 @@ const postQuotes = async (ctx) => {
     (async () => {
         try {
             if(ctx.state.conf.enableTestFeatures)
-             {
+            {
                 // we are in test mode so cache the request
                 const req = {
                     headers: ctx.request.headers,

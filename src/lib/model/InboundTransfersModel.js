@@ -34,7 +34,7 @@ class InboundTransfersModel {
         this._expirySeconds = config.expirySeconds;
         this._rejectTransfersOnExpiredQuotes = config.rejectTransfersOnExpiredQuotes;
         this._allowTransferWithoutQuote = config.allowTransferWithoutQuote;
-        this._reserveNotification = config.reserveNotification
+        this._reserveNotification = config.reserveNotification;
 
         this._mojaloopRequests = new MojaloopRequests({
             logger: this._logger,
