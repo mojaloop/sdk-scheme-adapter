@@ -237,7 +237,7 @@ describe('Outbound API handlers:', () => {
             
             const mockContext = {
                 request: {
-                    body: {the: 'body'},
+                    body: {the: 'body', toParticipantId: 'pisp'},
                     headers: {
                         'fspiop-source': 'foo'
                     }

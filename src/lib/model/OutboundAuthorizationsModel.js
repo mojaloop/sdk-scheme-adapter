@@ -12,8 +12,8 @@
 
 const util = require('util');
 const { uuid } = require('uuidv4');
-const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const PSM = require('./common').PersistentStateMachine;
+const ThirdpartyRequests = require('@mojaloop/sdk-standard-components').ThirdpartyRequests;
 
 
 const specStateMachine = {
@@ -157,7 +157,7 @@ async function onRequestAuthorization() {
         const postRequest = buildPostAuthorizationsRequest(data, config);
 
         // TODO: postAuthorizations is mocked method until this feature arrive in MojaloopRequests
-        const res = await requests.postAuthorizations(postRequest);
+        const res = await requests.postAuthorizations(postRequest, data.toParticipantId);
         
         logger.push({ res }).log('Authorizations request sent to peer');
 
@@ -190,6 +190,9 @@ function buildPostAuthorizationsRequest(data/** , config */) {
         ...data
     };
 
+    // drop property not conforming the txr service
+    delete request.toParticipantId;
+
     return request;
 }
 
@@ -208,7 +211,7 @@ function injectHandlersContext(config, specStateMachine) {
         data: {
             handlersContext: {
                 config, // injects config property
-                requests:  new MojaloopRequests({
+                requests:  new ThirdpartyRequests({
                     logger: config.logger,
                     peerEndpoint: config.peerEndpoint,
                     alsEndpoint: config.alsEndpoint,

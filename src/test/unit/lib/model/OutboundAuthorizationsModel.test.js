@@ -67,7 +67,7 @@ describe('authorizationsModel', () => {
             },
             ...defaultConfig
         };
-        data = {the: 'mocked data'};
+        data = {the: 'mocked data', toParticipantId: 'pisp'};
     });
 
     describe('create', () => {
@@ -197,7 +197,7 @@ describe('authorizationsModel', () => {
             expect(cache.subscribe.mock.calls[0][0]).toEqual(channel);
 
             // check invocation of request.postAuthorizations
-            expect(MojaloopRequests.__postAuthorizations).toBeCalledWith(Model.buildPostAuthorizationsRequest(data, modelConfig));
+            expect(MojaloopRequests.__postAuthorizations).toBeCalledWith(Model.buildPostAuthorizationsRequest(data, modelConfig), data.toParticipantId);
 
             // ensure handler wasn't called before publishing the message
             expect(handler).not.toBeCalled();
