@@ -672,16 +672,8 @@ class InboundTransfersModel {
         if(err instanceof HTTPResponseError) {
             const e = err.getData();
             if(e.res && e.res.data) {
-                try {
-                    const bodyObj = JSON.parse(e.res.data);
-                    mojaloopErrorCode = Errors.MojaloopApiErrorCodeFromCode(`${bodyObj.statusCode}`);
-                }
-                catch(ex) {
-                    // do nothing
-                    this._logger.push({ ex }).log('Error parsing error message body as JSON');
-                }
+                mojaloopErrorCode = Errors.MojaloopApiErrorCodeFromCode(`${e.res.data.statusCode}`);
             }
-
         }
 
         return new Errors.MojaloopFSPIOPError(err, null, null, mojaloopErrorCode).toApiErrorObject();
