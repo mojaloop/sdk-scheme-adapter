@@ -672,9 +672,9 @@ class InboundTransfersModel {
 
         if(err instanceof HTTPResponseError) {
             const e = err.getData();
-            if(e.res && e.res.body) {
+            if(e.res && e.res.data) {
                 try {
-                    const bodyObj = JSON.parse(e.res.body);
+                    const bodyObj = JSON.parse(e.res.data);
                     mojaloopErrorCode = Errors.MojaloopApiErrorCodeFromCode(`${bodyObj.statusCode}`);
                 }
                 catch(ex) {
