@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
-  "version": "10.1.5",
+  "version": "10.6.0",
   "description": "An adapter for connecting to Mojaloop API enabled switches.",
   "main": "index.js",
   "scripts": {
@@ -26,7 +26,7 @@
     "@internal/router": "file:lib/router",
     "@internal/shared": "file:lib/model/lib/shared",
     "@internal/validate": "file:lib/validate",
-    "@mojaloop/sdk-standard-components": "^10.6.0",
+    "@mojaloop/sdk-standard-components": "^10.6.1",
     "ajv": "^6.12.2",
     "co-body": "^6.0.0",
     "dotenv": "^8.2.0",
