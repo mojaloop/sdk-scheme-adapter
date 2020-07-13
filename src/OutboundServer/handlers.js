@@ -6,18 +6,22 @@
  *                                                                        *
  *  ORIGINAL AUTHOR:                                                      *
  *       James Bush - james.bush@modusbox.com                             *
+ *  CONTRIBUTORS:                                                         *
+ *       Steven Oderayi - steven.oderayi@modusbox.com                     *
  **************************************************************************/
 
 'use strict';
 
 
 const util = require('util');
-const { 
+const {
     AccountsModel,
     OutboundTransfersModel,
+    OutboundBulkTransfersModel,
     OutboundRequestToPayTransferModel,
     OutboundRequestToPayModel,
-    OutboundAuthorizationsModel
+    OutboundBulkQuotesModel,
+    OutboundAuthorizationsModel,
 } = require('@internal/model');
 
 
@@ -66,6 +70,12 @@ const handleError = (method, err, ctx, stateField) => {
 const handleTransferError = (method, err, ctx) =>
     handleError(method, err, ctx, 'transferState');
 
+const handleBulkTransferError = (method, err, ctx) =>
+    handleError(method, err, ctx, 'bulkTransferState');
+
+const handleBulkQuoteError = (method, err, ctx) =>
+    handleError(method, err, ctx, 'bulkQuoteState');
+
 const handleAccountsError = (method, err, ctx) =>
     handleError(method, err, ctx, 'executionState');
 
@@ -110,36 +120,6 @@ const postTransfers = async (ctx) => {
 };
 
 /**
- * Handler for outbound transfer request initiation
- */
-const postRequestToPayTransfer = async (ctx) => {
-    try {
-        // this requires a multi-stage sequence with the switch.
-        let requestToPayTransferRequest = {
-            ...ctx.request.body
-        };
-
-        // use the merchant transfers model to execute asynchronous stages with the switch
-        const model = new OutboundRequestToPayTransferModel({
-            ...ctx.state.conf,
-            cache: ctx.state.cache,
-            logger: ctx.state.logger,
-            wso2Auth: ctx.state.wso2Auth,
-        });
-
-        // initialize the transfer model and start it running
-        await model.initialize(requestToPayTransferRequest);
-        const response = await model.run();
-        // return the result
-        ctx.response.status = 200;
-        ctx.response.body = response;
-    }
-    catch(err) {
-        return handleRequestToPayTransferError('postRequestToPayTransfer', err, ctx);
-    }
-};
-
-/**
  * Handler for outbound transfer request
  */
 const getTransfers = async (ctx) => {
@@ -171,8 +151,6 @@ const getTransfers = async (ctx) => {
     }
 };
 
-
-
 /**
  * Handler for resuming outbound transfers in scenarios where two-step transfers are enabled
  * by disabling the autoAcceptQuote SDK option
@@ -201,6 +179,157 @@ const putTransfers = async (ctx) => {
     }
     catch(err) {
         return handleTransferError('putTransfers', err, ctx);
+    }
+};
+
+/**
+ * Handler for outbound bulk transfer request
+ */
+const postBulkTransfers = async (ctx) => {
+    try {
+        // this requires a multi-stage sequence with the switch.
+        let bulkTransferRequest = {
+            ...ctx.request.body
+        };
+
+        // use the bulk transfers model to execute asynchronous stages with the switch
+        const model = new OutboundBulkTransfersModel({
+            ...ctx.state.conf,
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            wso2Auth: ctx.state.wso2Auth,
+        });
+
+        await model.initialize(bulkTransferRequest);
+        const response = await model.run();
+
+        // return the result
+        ctx.response.status = 200;
+        ctx.response.body = response;
+    }
+    catch (err) {
+        return handleBulkTransferError('postBulkTransfers', err, ctx);
+    }
+};
+
+/**
+ * Handler for outbound bulk transfer request
+ */
+const getBulkTransfers = async (ctx) => {
+    try {
+        const bulkTransferRequest = {
+            ...ctx.request.body,
+            bulkTransferId: ctx.state.path.params.bulkTransferId,
+            currentState: 'getBulkTransfer',
+        };
+
+        // use the bulk transfers model to execute asynchronous stages with the switch
+        const model = new OutboundBulkTransfersModel({
+            ...ctx.state.conf,
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            wso2Auth: ctx.state.wso2Auth,
+        });
+
+        await model.initialize(bulkTransferRequest);
+        const response = await model.getBulkTransfer();
+
+        // return the result
+        ctx.response.status = 200;
+        ctx.response.body = response;
+    }
+    catch (err) {
+        return handleBulkTransferError('getBulkTransfers', err, ctx);
+    }
+};
+
+/**
+ * Handler for outbound bulk quote request
+ */
+const postBulkQuotes = async (ctx) => {
+    try {
+        let bulkQuoteRequest = {
+            ...ctx.request.body
+        };
+
+        // use the bulk quotes model to execute asynchronous request with the switch
+        const model = new OutboundBulkQuotesModel({
+            ...ctx.state.conf,
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            wso2Auth: ctx.state.wso2Auth,
+        });
+
+        await model.initialize(bulkQuoteRequest);
+        const response = await model.run();
+
+        // return the result
+        ctx.response.status = 200;
+        ctx.response.body = response;
+    }
+    catch (err) {
+        return handleBulkQuoteError('postBulkQuotes', err, ctx);
+    }
+};
+
+/**
+ * Handler for outbound bulk quote request
+ */
+const getBulkQuoteById = async (ctx) => {
+    try {
+        const bulkQuoteRequest = {
+            ...ctx.request.body,
+            bulkQuoteId: ctx.state.path.params.bulkQuoteId,
+            currentState: 'getBulkQuote',
+        };
+
+        // use the bulk quotes model to execute asynchronous stages with the switch
+        const model = new OutboundBulkQuotesModel({
+            ...ctx.state.conf,
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            wso2Auth: ctx.state.wso2Auth,
+        });
+
+        await model.initialize(bulkQuoteRequest);
+        const response = await model.getBulkQuote();
+
+        // return the result
+        ctx.response.status = 200;
+        ctx.response.body = response;
+    }
+    catch (err) {
+        return handleBulkQuoteError('getBulkQuoteById', err, ctx);
+    }
+};
+
+/**
+ * Handler for outbound transfer request initiation
+ */
+const postRequestToPayTransfer = async (ctx) => {
+    try {
+        // this requires a multi-stage sequence with the switch.
+        let requestToPayTransferRequest = {
+            ...ctx.request.body
+        };
+
+        // use the merchant transfers model to execute asynchronous stages with the switch
+        const model = new OutboundRequestToPayTransferModel({
+            ...ctx.state.conf,
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            wso2Auth: ctx.state.wso2Auth,
+        });
+
+        // initialize the transfer model and start it running
+        await model.initialize(requestToPayTransferRequest);
+        const response = await model.run();
+        // return the result
+        ctx.response.status = 200;
+        ctx.response.body = response;
+    }
+    catch (err) {
+        return handleRequestToPayTransferError('postRequestToPayTransfer', err, ctx);
     }
 };
 
@@ -317,8 +446,10 @@ const postAuthorizations = async (ctx) => {
             wso2Auth: ctx.state.wso2Auth,
         };
 
+        const cacheKey = `post_authorizations_${authorizationsRequest.transactionRequestId}`;
+        
         // use the authorizations model to execute asynchronous stages with the switch
-        const model = await OutboundAuthorizationsModel.create(authorizationsRequest, modelConfig);
+        const model = await OutboundAuthorizationsModel.create(authorizationsRequest, cacheKey, modelConfig);
 
         // run model's workflow
         const response = await model.run();
@@ -332,7 +463,6 @@ const postAuthorizations = async (ctx) => {
     }
 };
 
-
 module.exports = {
     '/': {
         get: healthCheck
@@ -343,6 +473,18 @@ module.exports = {
     '/transfers/{transferId}': {
         get: getTransfers,
         put: putTransfers
+    },
+    '/bulkTransfers': {
+        post: postBulkTransfers
+    },
+    '/bulkTransfers/{bulkTransferId}': {
+        get: getBulkTransfers,
+    },
+    '/bulkQuotes': {
+        post: postBulkQuotes,
+    },
+    '/bulkQuotes/{bulkQuoteId}': {
+        get: getBulkQuoteById,
     },
     '/accounts': {
         post: postAccounts
