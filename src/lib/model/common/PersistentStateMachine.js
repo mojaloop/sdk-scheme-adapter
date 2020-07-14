@@ -12,7 +12,6 @@
 const StateMachine = require('javascript-state-machine');
 
 async function saveToCache() {
-    console.info('saveToCache');
     const { data, cache, key, logger } = this.context;
     try {
         const res = await cache.set(key, data);
@@ -66,9 +65,7 @@ async function create(data, cache, key, logger, stateMachineSpec ) {
     );
 
     const stateMachine = new StateMachine(stateMachineSpec);
-    logger.info(`A: initState: ${initState}, stateMachine.state: ${stateMachine.state}`);
     await stateMachine[initState];
-    logger.info(`B: initState: ${initState}, stateMachine.state: ${stateMachine.state}`);
     return stateMachine;
 }
 
