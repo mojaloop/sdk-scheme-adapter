@@ -84,6 +84,63 @@ class TestServer {
         }
     }
 
+    async stop() {
+        if (!this._server) {
+            return;
+        }
+        await new Promise(resolve => this._server.close(resolve));
+        this._wso2Auth.stop();
+        await this._cache.disconnect();
+        console.log('api shut down complete');
+    }
+
+    async _createLogger() {
+        const transports = await Promise.all([Transports.consoleDir()]);
+        // Set up a logger for each running server
+        return new Logger({
+            context: {
+                app: 'mojaloop-sdk-test-api'
+            },
+            space: this._conf.logIndent,
+            transports,
+        });
+    }
+
+    async _createCache() {
+        const transports = await Promise.all([Transports.consoleDir()]);
+        const logger = new Logger({
+            context: {
+                app: 'mojaloop-sdk-inboundCache'
+            },
+            space: this._conf.logIndent,
+            transports,
+        });
+
+        const cacheConfig = {
+            ...this._conf.cacheConfig,
+            logger
+        };
+
+        return new Cache(cacheConfig);
+    }
+
+    _createServer() {
+        let server;
+        // If config specifies TLS, start an HTTPS server; otherwise HTTP
+        if (this._conf.tls.test.mutualTLS.enabled) {
+            const testHttpsOpts = {
+                ...this._conf.tls.test.creds,
+                requestCert: true,
+                rejectUnauthorized: true // no effect if requestCert is not true
+            };
+            server = https.createServer(testHttpsOpts, this._api.callback());
+        } else {
+            server = http.createServer(this._api.callback());
+        }
+
+        return server;
+    }
+
     _createWsServer() {
         const wss = new ws.Server({ noServer: true });
 
@@ -153,63 +210,6 @@ class TestServer {
                 socket.send(keyDataStr);
             }
         }
-    }
-
-    _createServer() {
-        let server;
-        // If config specifies TLS, start an HTTPS server; otherwise HTTP
-        if (this._conf.tls.test.mutualTLS.enabled) {
-            const testHttpsOpts = {
-                ...this._conf.tls.test.creds,
-                requestCert: true,
-                rejectUnauthorized: true // no effect if requestCert is not true
-            };
-            server = https.createServer(testHttpsOpts, this._api.callback());
-        } else {
-            server = http.createServer(this._api.callback());
-        }
-
-        return server;
-    }
-
-    async stop() {
-        if (!this._server) {
-            return;
-        }
-        await new Promise(resolve => this._server.close(resolve));
-        this._wso2Auth.stop();
-        await this._cache.disconnect();
-        console.log('api shut down complete');
-    }
-
-    async _createLogger() {
-        const transports = await Promise.all([Transports.consoleDir()]);
-        // Set up a logger for each running server
-        return new Logger({
-            context: {
-                app: 'mojaloop-sdk-test-api'
-            },
-            space: this._conf.logIndent,
-            transports,
-        });
-    }
-
-    async _createCache() {
-        const transports = await Promise.all([Transports.consoleDir()]);
-        const logger = new Logger({
-            context: {
-                app: 'mojaloop-sdk-inboundCache'
-            },
-            space: this._conf.logIndent,
-            transports,
-        });
-
-        const cacheConfig = {
-            ...this._conf.cacheConfig,
-            logger
-        };
-
-        return new Cache(cacheConfig);
     }
 }
 
