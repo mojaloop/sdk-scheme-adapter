@@ -77,7 +77,7 @@ class TestServer {
         if (!this._conf.testingDisableServerStart) {
             this._server.on('upgrade', (req, socket, head) => {
                 this._wsapi.handleUpgrade(req, socket, head, (ws) =>
-                    this._wsapi.emit('connection', ws, req))
+                    this._wsapi.emit('connection', ws, req));
             });
             await new Promise((resolve) => this._server.listen(this._conf.testPort, resolve));
             this._logger.log(`Serving test API on port ${this._conf.testPort}`);
@@ -154,7 +154,7 @@ class TestServer {
         wss.on('connection', (socket, req) => {
             this._wsClients.set(socket, req);
             socket.on('close', () => {
-                this._wsClients.delete(socket)
+                this._wsClients.delete(socket);
             });
         });
 
