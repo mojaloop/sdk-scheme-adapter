@@ -23,11 +23,12 @@ const getAuthorizationsById = async (ctx) => {
     (async () => {
         try {
             if(ctx.state.conf.enableTestFeatures) {
+                const cache = ctx.state.cache;
                 // we are in test mode so cache the request
                 const req = {
                     headers: ctx.request.headers
                 };
-                const res = await ctx.state.cache.set(`request_${ctx.state.path.params.ID}`, req);
+                const res = await cache.set(`${cache.REQUEST_PREFIX}${ctx.state.path.params.ID}`, req);
                 ctx.state.logger.log(`Caching request : ${util.inspect(res)}`);
             }
 
@@ -104,11 +105,12 @@ const getPartiesByTypeAndId = async (ctx) => {
     (async () => {
         try {
             if(ctx.state.conf.enableTestFeatures) {
+                const cache = ctx.state.cache;
                 // we are in test mode so cache the request
                 const req = {
                     headers: ctx.request.headers
                 };
-                const res = await ctx.state.cache.set(`request_${ctx.state.path.params.ID}`, req);
+                const res = await cache.set(`${cache.REQUEST_PREFIX}${ctx.state.path.params.ID}`, req);
                 ctx.state.logger.log(`Caching request : ${util.inspect(res)}`);
             }
 
@@ -160,12 +162,13 @@ const postQuotes = async (ctx) => {
     (async () => {
         try {
             if(ctx.state.conf.enableTestFeatures) {
+                const cache = ctx.state.cache;
                 // we are in test mode so cache the request
                 const req = {
                     headers: ctx.request.headers,
                     data: ctx.request.body
                 };
-                const res = await ctx.state.cache.set(`request_${ctx.request.body.quoteId}`, req);
+                const res = await cache.set(`${cache.REQUEST_PREFIX}${ctx.request.body.quoteId}`, req);
                 ctx.state.logger.log(`Caching request: ${util.inspect(res)}`);
             }
 
@@ -206,12 +209,13 @@ const postTransfers = async (ctx) => {
     (async () => {
         try {
             if(ctx.state.conf.enableTestFeatures) {
+                const cache = ctx.state.cache;
                 // we are in test mode so cache the request
                 const req = {
                     headers: ctx.request.headers,
                     data: ctx.request.body
                 };
-                const res = await ctx.state.cache.set(`request_${ctx.request.body.transferId}`, req);
+                const res = await cache.set(`${cache.REQUEST_PREFIX}${ctx.request.body.transferId}`, req);
                 ctx.state.logger.log(`Caching request: ${util.inspect(res)}`);
             }
 
@@ -298,12 +302,13 @@ const postTransactionRequests = async (ctx) => {
     (async () => {
         try {
             if(ctx.state.conf.enableTestFeatures) {
+                const cache = ctx.state.cache;
                 // we are in test mode so cache the request
                 const req = {
                     headers: ctx.request.headers,
                     data: ctx.request.body
                 };
-                const res = await ctx.state.cache.set(`request_${ctx.request.body.transactionRequestId}`, req);
+                const res = await cache.set(`${cache.REQUEST_PREFIX}${ctx.request.body.transactionRequestId}`, req);
                 ctx.state.logger.log(`Caching request: ${util.inspect(res)}`);
             }
 
@@ -341,12 +346,13 @@ const postTransactionRequests = async (ctx) => {
  */
 const putAuthorizationsById = async (ctx) => {
     if(ctx.state.conf.enableTestFeatures) {
+        const cache = ctx.state.cache;
         // we are in test mode so cache the request
         const req = {
             headers: ctx.request.headers,
             data: ctx.request.body
         };
-        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        const res = await cache.set(`${cache.CALLBACK_PREFIX}${ctx.state.path.params.ID}`, req);
         ctx.state.logger.log(`Caching request: ${util.inspect(res)}`);
     }
 
@@ -368,12 +374,13 @@ const putAuthorizationsById = async (ctx) => {
  */
 const putParticipantsById = async (ctx) => {
     if(ctx.state.conf.enableTestFeatures) {
+        const cache = ctx.state.cache;
         // we are in test mode so cache the request
         const req = {
             headers: ctx.request.headers,
             data: ctx.request.body
         };
-        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        const res = await cache.set(`${cache.CALLBACK_PREFIX}${ctx.state.path.params.ID}`, req);
         ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
     }
 
@@ -392,12 +399,13 @@ const putParticipantsById = async (ctx) => {
  */
 const putParticipantsByIdError = async (ctx) => {
     if(ctx.state.conf.enableTestFeatures) {
+        const cache = ctx.state.cache;
         // we are in test mode so cache the request
         const req = {
             headers: ctx.request.headers,
             data: ctx.request.body
         };
-        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        const res = await cache.set(`${cache.CALLBACK_PREFIX}${ctx.state.path.params.ID}`, req);
         ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
     }
 
@@ -428,12 +436,13 @@ const putParticipantsByTypeAndId = async (ctx) => {
  */
 const putPartiesByTypeAndId = async (ctx) => {
     if(ctx.state.conf.enableTestFeatures) {
+        const cache = ctx.state.cache;
         // we are in test mode so cache the request
         const req = {
             headers: ctx.request.headers,
             data: ctx.request.body
         };
-        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        const res = await cache.set(`${cache.CALLBACK_PREFIX}${ctx.state.path.params.ID}`, req);
         ctx.state.logger.log(`Caching request: ${util.inspect(res)}`);
     }
 
@@ -453,12 +462,13 @@ const putPartiesByTypeAndId = async (ctx) => {
  */
 const putQuoteById = async (ctx) => {
     if(ctx.state.conf.enableTestFeatures) {
+        const cache = ctx.state.cache;
         // we are in test mode so cache the request
         const req = {
             headers: ctx.request.headers,
             data: ctx.request.body
         };
-        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        const res = await cache.set(`${cache.CALLBACK_PREFIX}${ctx.state.path.params.ID}`, req);
         ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
     }
 
@@ -477,12 +487,13 @@ const putQuoteById = async (ctx) => {
  */
 const putTransactionRequestsById = async (ctx) => {
     if(ctx.state.conf.enableTestFeatures) {
+        const cache = ctx.state.cache;
         // we are in test mode so cache the request
         const req = {
             headers: ctx.request.headers,
             data: ctx.request.body
         };
-        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        const res = await cache.set(`${cache.CALLBACK_PREFIX}${ctx.state.path.params.ID}`, req);
         ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
     }
 
@@ -501,12 +512,13 @@ const putTransactionRequestsById = async (ctx) => {
  */
 const putTransfersById = async (ctx) => {
     if(ctx.state.conf.enableTestFeatures) {
+        const cache = ctx.state.cache;
         // we are in test mode so cache the request
         const req = {
             headers: ctx.request.headers,
             data: ctx.request.body
         };
-        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        const res = await cache.set(`${cache.CALLBACK_PREFIX}${ctx.state.path.params.ID}`, req);
         ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
     }
 
@@ -525,12 +537,13 @@ const putTransfersById = async (ctx) => {
  */
 const putPartiesByTypeAndIdError = async(ctx) => {
     if(ctx.state.conf.enableTestFeatures) {
+        const cache = ctx.state.cache;
         // we are in test mode so cache the request
         const req = {
             headers: ctx.request.headers,
             data: ctx.request.body
         };
-        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        const res = await cache.set(`${cache.CALLBACK_PREFIX}${ctx.state.path.params.ID}`, req);
         ctx.state.logger.log(`Caching request: ${util.inspect(res)}`);
     }
 
@@ -555,12 +568,13 @@ const putPartiesByTypeAndIdError = async(ctx) => {
  */
 const putQuotesByIdError = async(ctx) => {
     if(ctx.state.conf.enableTestFeatures) {
+        const cache = ctx.state.cache;
         // we are in test mode so cache the request
         const req = {
             headers: ctx.request.headers,
             data: ctx.request.body
         };
-        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        const res = await cache.set(`${cache.CALLBACK_PREFIX}${ctx.state.path.params.ID}`, req);
         ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
     }
 
@@ -580,12 +594,13 @@ const putQuotesByIdError = async(ctx) => {
  */
 const putTransfersByIdError = async (ctx) => {
     if(ctx.state.conf.enableTestFeatures) {
+        const cache = ctx.state.cache;
         // we are in test mode so cache the request
         const req = {
             headers: ctx.request.headers,
             data: ctx.request.body
         };
-        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        const res = await cache.set(`${cache.CALLBACK_PREFIX}${ctx.state.path.params.ID}`, req);
         ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
     }
 
@@ -653,12 +668,13 @@ const postBulkQuotes = async (ctx) => {
     (async () => {
         try {
             if(ctx.state.conf.enableTestFeatures) {
+                const cache = ctx.state.cache;
                 // we are in test mode so cache the request
                 const req = {
                     headers: ctx.request.headers,
                     data: ctx.request.body
                 };
-                const res = await ctx.state.cache.set(`request_${ctx.request.body.bulkQuoteId}`, req);
+                const res = await cache.set(`${cache.REQUEST_PREFIX}${ctx.request.body.bulkQuoteId}`, req);
                 ctx.state.logger.log(`Caching request: ${util.inspect(res)}`);
             }
 
@@ -693,12 +709,13 @@ const postBulkQuotes = async (ctx) => {
  */
 const putBulkQuotesById = async (ctx) => {
     if(ctx.state.conf.enableTestFeatures) {
+        const cache = ctx.state.cache;
         // we are in test mode so cache the request
         const req = {
             headers: ctx.request.headers,
             data: ctx.request.body
         };
-        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        const res = await cache.set(`${cache.CALLBACK_PREFIX}${ctx.state.path.params.ID}`, req);
         ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
     }
 
@@ -717,12 +734,13 @@ const putBulkQuotesById = async (ctx) => {
  */
 const putBulkQuotesByIdError = async(ctx) => {
     if(ctx.state.conf.enableTestFeatures) {
+        const cache = ctx.state.cache;
         // we are in test mode so cache the request
         const req = {
             headers: ctx.request.headers,
             data: ctx.request.body
         };
-        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        const res = await cache.set(`${cache.CALLBACK_PREFIX}${ctx.state.path.params.ID}`, req);
         ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
     }
 
@@ -790,12 +808,13 @@ const postBulkTransfers = async (ctx) => {
     (async () => {
         try {
             if(ctx.state.conf.enableTestFeatures) {
+                const cache = ctx.state.cache;
                 // we are in test mode so cache the request
                 const req = {
                     headers: ctx.request.headers,
                     data: ctx.request.body
                 };
-                const res = await ctx.state.cache.set(`request_${ctx.request.body.bulkTransferId}`, req);
+                const res = await cache.set(`${cache.REQUEST_PREFIX}${ctx.request.body.bulkTransferId}`, req);
                 ctx.state.logger.log(`Caching request: ${util.inspect(res)}`);
             }
 
@@ -830,12 +849,13 @@ const postBulkTransfers = async (ctx) => {
  */
 const putBulkTransfersById = async (ctx) => {
     if(ctx.state.conf.enableTestFeatures) {
+        const cache = ctx.state.cache;
         // we are in test mode so cache the request
         const req = {
             headers: ctx.request.headers,
             data: ctx.request.body
         };
-        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        const res = await cache.set(`${cache.CALLBACK_PREFIX}${ctx.state.path.params.ID}`, req);
         ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
     }
 
@@ -854,12 +874,13 @@ const putBulkTransfersById = async (ctx) => {
  */
 const putBulkTransfersByIdError = async(ctx) => {
     if(ctx.state.conf.enableTestFeatures) {
+        const cache = ctx.state.cache;
         // we are in test mode so cache the request
         const req = {
             headers: ctx.request.headers,
             data: ctx.request.body
         };
-        const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
+        const res = await cache.set(`${cache.CALLBACK_PREFIX}${ctx.state.path.params.ID}`, req);
         ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
     }
 

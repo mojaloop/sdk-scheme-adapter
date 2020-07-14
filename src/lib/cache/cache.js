@@ -62,6 +62,24 @@ class Cache {
         this._subscriptionClient.on('message', this._onMessage.bind(this));
     }
 
+    /**
+     * Configure Redis to emit keyevent events. This corresponds to the application test mode, and
+     * enables us to listen for changes on callback_* and request_* keys.
+     * Docs: https://redis.io/topics/notifications
+     */
+    async setTestMode(enable) {
+        // See for modes: https://redis.io/topics/notifications#configuration
+        // This mode, 'Es$' is:
+        //   E     Keyevent events, published with __keyevent@<db>__ prefix.
+        //   s     Set commands
+        //   $     String commands
+        const mode = enable ? 'Es$' : '';
+        this._logger
+            .push({ 'notify-keyspace-events': mode })
+            .log('Configuring Redis to emit keyevent events');
+        this._client.config('SET', 'notify-keyspace-events', mode);
+    }
+
     async disconnect() {
         if (!this._connected) {
             return;
@@ -266,6 +284,10 @@ class Cache {
     }
 }
 
-Cache.EVENT_SET = '__keyevent@0__:set';
+// Define constants on the prototype, but prevent a user of the cache from overwriting them for all
+// instances
+Object.defineProperty(Cache.prototype, 'CALLBACK_PREFIX', { value: 'callback_', writable: false });
+Object.defineProperty(Cache.prototype, 'REQUEST_PREFIX', { value: 'request_', writable: false });
+Object.defineProperty(Cache.prototype, 'EVENT_SET', { value: '__keyevent@0__:set', writable: false });
 
 module.exports = Cache;
