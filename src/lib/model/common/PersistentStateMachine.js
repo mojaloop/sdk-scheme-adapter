@@ -12,6 +12,7 @@
 const StateMachine = require('javascript-state-machine');
 
 async function saveToCache() {
+    console.info('saveToCache');
     const { data, cache, key, logger } = this.context;
     try {
         const res = await cache.set(key, data);
@@ -27,7 +28,7 @@ async function onAfterTransition(transition) {
     const {data, logger} = this.context;
     logger.log(`State machine transitioned '${transition.transition}': ${transition.from} -> ${transition.to}`);
     data.currentState = transition.to;
-    await this.saveToCache();
+    this.saveToCache();
 }
 
 function onPendingTransition(transition) {
@@ -65,7 +66,9 @@ async function create(data, cache, key, logger, stateMachineSpec ) {
     );
 
     const stateMachine = new StateMachine(stateMachineSpec);
+    logger.info(`A: initState: ${initState}, stateMachine.state: ${stateMachine.state}`);
     await stateMachine[initState];
+    logger.info(`B: initState: ${initState}, stateMachine.state: ${stateMachine.state}`);
     return stateMachine;
 }
 
