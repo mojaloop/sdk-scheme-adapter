@@ -43,7 +43,6 @@ class Cache {
         this._callbackId = 0;
     }
 
-
     /**
      * Connects to a redis server and waits for ready events
      * Note: We create two connections. One for get, set and publish commands
@@ -149,7 +148,13 @@ class Cache {
 
                 // call the callback with the channel name, message and callbackId...
                 // ...(which is useful for unsubscribe)
-                this._callbacks[channel][k](channel, msg, k);
+                try {
+                    this._callbacks[channel][k](channel, msg, k);
+                } catch (err) {
+                    this._logger
+                        .push({ callbackId: k, err })
+                        .log('Unhandled error in cache subscription handler');
+                }
             });
         }
     }
@@ -261,5 +266,6 @@ class Cache {
     }
 }
 
+Cache.EVENT_SET = '__keyevent@0__:set';
 
 module.exports = Cache;
