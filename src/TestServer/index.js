@@ -34,31 +34,10 @@ class TestServer {
         this._logger = null;
     }
 
-    // TODO:
-    // 1. Turn on redis keyspace events
-    //    E.g., from redis-cli
-    //    config set "notify-keyspace-events" "Eg$"
-    //    See here: https://redis.io/topics/notifications#configuration
-    //    Preferably only when test features are enabled
-    // 2. this._wsapi.on('error') below
-
     async setupApi() {
         this._api = new Koa();
-        this._wsapi = new ws.Server({ noServer: true });
         this._wsClients = new Map();
-
-        this._wsapi.on('error', err => {
-            // TODO
-            console.log('ERROR');
-            throw err;
-        });
-
-        this._wsapi.on('connection', (socket, req) => {
-            this._wsClients.set(socket, req.url);
-            socket.on('close', () => {
-                this._wsClients.delete(socket)
-            });
-        });
+        this._wsapi = this._createWsServer();
 
         this._logger = await this._createLogger();
 
@@ -90,7 +69,8 @@ class TestServer {
 
     async start() {
         await this._cache.connect();
-        this._cache.subscribe(Cache.EVENT_SET, this._handleCacheKeySet.bind(this));
+        this._cache.subscribe(this._cache.EVENT_SET, this._handleCacheKeySet.bind(this));
+        this._cache.setTestMode(true);
         if (!this._conf.testingDisableWSO2AuthStart) {
             await this._wso2Auth.start();
         }
@@ -104,18 +84,73 @@ class TestServer {
         }
     }
 
+    _createWsServer() {
+        const wss = new ws.Server({ noServer: true });
+
+        wss.on('error', err => {
+            // Curtains down
+            this._logger.push({ err })
+                .log('Unhandled websocket error occurred. Shutting down gracefully.');
+            process.exitCode = 1;
+        });
+
+        wss.on('connection', (socket, req) => {
+            this._wsClients.set(socket, req);
+            socket.on('close', () => {
+                this._wsClients.delete(socket)
+            });
+        });
+
+        return wss;
+    }
+
     // Send the received notification to subscribers where appropriate.
-    async _handleCacheKeySet(channel, msg, id) {
-        const msgType = msg.split('_')[0]; // 'callback' or 'request'
-        const msgTypeRegex = new RegExp(`^\/${msgType}$`)
-        let keyData;
-        for (let [socket, url] of this._wsClients) {
-            if (msgTypeRegex.test(url)) {
-                console.log(`Matched client to callback ${url}`);
-                if (!keyData) {
-                    keyData = JSON.stringify(await this._cache.get(msg));
+    async _handleCacheKeySet(channel, key, id) {
+        const logger = this._logger.push({ key });
+        logger.push({ channel, id }).log('Received Redis keyevent notification');
+
+        // Only notify clients of callback and request keyevents, as we don't want to encourage
+        // dependency on unintended behaviour (i.e. create a proxy Redis client by sending all
+        // keyevent notifications to the client). Some of this is implicitly performed later in
+        // this method, but we use the root path `/` to enable clients to subscribe to all events,
+        // so we filter them here.
+        const allowedPrefixes = [this._cache.CALLBACK_PREFIX, this._cache.REQUEST_PREFIX];
+        if (!allowedPrefixes.some((prefix) => key.startsWith(prefix))) {
+            logger.push({ allowedPrefixes })
+                .log('Notification not of allowed message type. Ignored.');
+            return;
+        }
+
+        // Map urls to callback prefixes. For example, as a user of this service, if I want to
+        // subscribe to Redis keyevent notifications with the prefix this._cache.REQUEST_PREFIX (at
+        // the time of writing, that's 'request_') then I'll connect to `ws://this-server/request`.
+        // The map here defines that mapping, and exists to decouple the interface (the url) from
+        // the implementation (the "callback prefix").
+        const urlToMsgPrefixMap = new Map([
+            ['/request', this._cache.REQUEST_PREFIX],
+            ['/callback', this._cache.CALLBACK_PREFIX],
+        ]);
+        let keyData; // declare outside the loop here, then retrieve at most once
+        let keyDataStr;
+        for (let [socket, req] of this._wsClients) {
+            // If the url is the catch-all root (i.e. `ws://this-server/`) or the url corresponds
+            // (via urlToMsgPrefixMap) to the message prefix for this message.
+            const prefix = urlToMsgPrefixMap.get(req.url);
+            if (req.url === '/' || key.startsWith(prefix)) {
+                if (!keyData || !keyDataStr) {
+                    keyData = await this._cache.get(key);
+                    keyDataStr = JSON.stringify(keyData);
                 }
-                socket.send(keyData);
+                this._logger
+                    .push({
+                        url: req.url,
+                        key,
+                        ip: req.socket.remoteAddress,
+                        value: keyData,
+                        prefix,
+                    })
+                    .log('Pushing notification to subscribed client');
+                socket.send(keyDataStr);
             }
         }
     }
