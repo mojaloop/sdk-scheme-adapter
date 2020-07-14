@@ -28,7 +28,7 @@ const getAuthorizationsById = async (ctx) => {
                     headers: ctx.request.headers
                 };
                 const res = await ctx.state.cache.set(`request_${ctx.state.path.params.ID}`, req);
-                ctx.state.logger.log(`Cacheing request : ${util.inspect(res)}`);
+                ctx.state.logger.log(`Caching request : ${util.inspect(res)}`);
             }
 
             // use the transfers model to execute asynchronous stages with the switch
@@ -109,7 +109,7 @@ const getPartiesByTypeAndId = async (ctx) => {
                     headers: ctx.request.headers
                 };
                 const res = await ctx.state.cache.set(`request_${ctx.state.path.params.ID}`, req);
-                ctx.state.logger.log(`Cacheing request : ${util.inspect(res)}`);
+                ctx.state.logger.log(`Caching request : ${util.inspect(res)}`);
             }
 
             // use the transfers model to execute asynchronous stages with the switch
@@ -166,7 +166,7 @@ const postQuotes = async (ctx) => {
                     data: ctx.request.body
                 };
                 const res = await ctx.state.cache.set(`request_${ctx.request.body.quoteId}`, req);
-                ctx.state.logger.log(`Cacheing request: ${util.inspect(res)}`);
+                ctx.state.logger.log(`Caching request: ${util.inspect(res)}`);
             }
 
             // use the transfers model to execute asynchronous stages with the switch
@@ -212,7 +212,7 @@ const postTransfers = async (ctx) => {
                     data: ctx.request.body
                 };
                 const res = await ctx.state.cache.set(`request_${ctx.request.body.transferId}`, req);
-                ctx.state.logger.log(`Cacheing request: ${util.inspect(res)}`);
+                ctx.state.logger.log(`Caching request: ${util.inspect(res)}`);
             }
 
             // use the transfers model to execute asynchronous stages with the switch
@@ -304,7 +304,7 @@ const postTransactionRequests = async (ctx) => {
                     data: ctx.request.body
                 };
                 const res = await ctx.state.cache.set(`request_${ctx.request.body.transactionRequestId}`, req);
-                ctx.state.logger.log(`Cacheing request: ${util.inspect(res)}`);
+                ctx.state.logger.log(`Caching request: ${util.inspect(res)}`);
             }
 
             // use the transfers model to execute asynchronous stages with the switch
@@ -347,7 +347,7 @@ const putAuthorizationsById = async (ctx) => {
             data: ctx.request.body
         };
         const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
-        ctx.state.logger.log(`Cacheing request: ${util.inspect(res)}`);
+        ctx.state.logger.log(`Caching request: ${util.inspect(res)}`);
     }
 
     const idValue = ctx.state.path.params.ID;
@@ -434,7 +434,7 @@ const putPartiesByTypeAndId = async (ctx) => {
             data: ctx.request.body
         };
         const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
-        ctx.state.logger.log(`Cacheing request: ${util.inspect(res)}`);
+        ctx.state.logger.log(`Caching request: ${util.inspect(res)}`);
     }
 
     const idType = ctx.state.path.params.Type;
@@ -459,7 +459,7 @@ const putQuoteById = async (ctx) => {
             data: ctx.request.body
         };
         const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
-        ctx.state.logger.log(`Cacheing callback: ${util.inspect(res)}`);
+        ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
     }
 
     // publish an event onto the cache for subscribers to action
@@ -483,7 +483,7 @@ const putTransactionRequestsById = async (ctx) => {
             data: ctx.request.body
         };
         const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
-        ctx.state.logger.log(`Cacheing callback: ${util.inspect(res)}`);
+        ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
     }
 
     // publish an event onto the cache for subscribers to action
@@ -531,7 +531,7 @@ const putPartiesByTypeAndIdError = async(ctx) => {
             data: ctx.request.body
         };
         const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
-        ctx.state.logger.log(`Cacheing request: ${util.inspect(res)}`);
+        ctx.state.logger.log(`Caching request: ${util.inspect(res)}`);
     }
 
     const idType = ctx.state.path.params.Type;
@@ -561,7 +561,7 @@ const putQuotesByIdError = async(ctx) => {
             data: ctx.request.body
         };
         const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
-        ctx.state.logger.log(`Cacheing callback: ${util.inspect(res)}`);
+        ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
     }
 
     // publish an event onto the cache for subscribers to action
@@ -586,7 +586,7 @@ const putTransfersByIdError = async (ctx) => {
             data: ctx.request.body
         };
         const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
-        ctx.state.logger.log(`Cacheing callback: ${util.inspect(res)}`);
+        ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
     }
 
     // publish an event onto the cache for subscribers to action
@@ -659,7 +659,7 @@ const postBulkQuotes = async (ctx) => {
                     data: ctx.request.body
                 };
                 const res = await ctx.state.cache.set(`request_${ctx.request.body.bulkQuoteId}`, req);
-                ctx.state.logger.log(`Cacheing request: ${util.inspect(res)}`);
+                ctx.state.logger.log(`Caching request: ${util.inspect(res)}`);
             }
 
             // use the transfers model to execute asynchronous stages with the switch
@@ -699,7 +699,7 @@ const putBulkQuotesById = async (ctx) => {
             data: ctx.request.body
         };
         const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
-        ctx.state.logger.log(`Cacheing callback: ${util.inspect(res)}`);
+        ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
     }
 
     // publish an event onto the cache for subscribers to action
@@ -723,7 +723,7 @@ const putBulkQuotesByIdError = async(ctx) => {
             data: ctx.request.body
         };
         const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
-        ctx.state.logger.log(`Cacheing callback: ${util.inspect(res)}`);
+        ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
     }
 
     // publish an event onto the cache for subscribers to action
@@ -796,7 +796,7 @@ const postBulkTransfers = async (ctx) => {
                     data: ctx.request.body
                 };
                 const res = await ctx.state.cache.set(`request_${ctx.request.body.bulkTransferId}`, req);
-                ctx.state.logger.log(`Cacheing request: ${util.inspect(res)}`);
+                ctx.state.logger.log(`Caching request: ${util.inspect(res)}`);
             }
 
             // use the transfers model to execute asynchronous stages with the switch
@@ -836,7 +836,7 @@ const putBulkTransfersById = async (ctx) => {
             data: ctx.request.body
         };
         const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
-        ctx.state.logger.log(`Cacheing callback: ${util.inspect(res)}`);
+        ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
     }
 
     // publish an event onto the cache for subscribers to action
@@ -860,7 +860,7 @@ const putBulkTransfersByIdError = async(ctx) => {
             data: ctx.request.body
         };
         const res = await ctx.state.cache.set(`callback_${ctx.state.path.params.ID}`, req);
-        ctx.state.logger.log(`Cacheing callback: ${util.inspect(res)}`);
+        ctx.state.logger.log(`Caching callback: ${util.inspect(res)}`);
     }
 
     // publish an event onto the cache for subscribers to action

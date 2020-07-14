@@ -9,6 +9,7 @@
  **************************************************************************/
 
 const Koa = require('koa');
+const ws = require('ws');
 
 const https = require('https');
 const http = require('http');
@@ -32,6 +33,13 @@ class TestServer {
         this._server = null;
         this._logger = null;
     }
+
+    // TODO:
+    // 1. Turn on redis keyspace events
+    //    E.g., from redis-cli
+    //    config set "notify-keyspace-events" "Eg$"
+    //    See here: https://redis.io/topics/notifications#configuration
+    //    Preferably only when test features are enabled
 
     async setupApi() {
         this._api = new Koa();
@@ -65,6 +73,7 @@ class TestServer {
 
     async start() {
         await this._cache.connect();
+        this._cache.subscribe(Cache.EVENT_SET, this._handleCacheKeySet.bind(this));
         if (!this._conf.testingDisableWSO2AuthStart) {
             await this._wso2Auth.start();
         }
@@ -72,6 +81,39 @@ class TestServer {
             await new Promise((resolve) => this._server.listen(this._conf.testPort, resolve));
             this._logger.log(`Serving test API on port ${this._conf.testPort}`);
         }
+    }
+
+    _handleCacheKeySet(channel, msg, id) {
+        console.log('CACHE KEY SET');
+        console.log({ channel, msg, id });
+    }
+
+    _createServer() {
+        let server;
+        // If config specifies TLS, start an HTTPS server; otherwise HTTP
+        if (this._conf.tls.test.mutualTLS.enabled) {
+            const testHttpsOpts = {
+                ...this._conf.tls.test.creds,
+                requestCert: true,
+                rejectUnauthorized: true // no effect if requestCert is not true
+            };
+            server = https.createServer(testHttpsOpts, this._api.callback());
+        } else {
+            server = http.createServer(this._api.callback());
+        }
+
+        let wsServer = new ws.Server({ server });
+        wsServer.on('connection', (socket, req) => {
+            console.log('HULLO');
+            console.log(req.url);
+            wsServer.clients.forEach((client) => {
+                if (client.readyState === ws.OPEN) {
+                    client.send('HULLO');
+                }
+            });
+        });
+
+        return server;
     }
 
     async stop() {
@@ -112,22 +154,6 @@ class TestServer {
         };
 
         return new Cache(cacheConfig);
-    }
-
-    _createServer() {
-        let server;
-        // If config specifies TLS, start an HTTPS server; otherwise HTTP
-        if (this._conf.tls.test.mutualTLS.enabled) {
-            const testHttpsOpts = {
-                ...this._conf.tls.test.creds,
-                requestCert: true,
-                rejectUnauthorized: true // no effect if requestCert is not true
-            };
-            server = https.createServer(testHttpsOpts, this._api.callback());
-        } else {
-            server = http.createServer(this._api.callback());
-        }
-        return server;
     }
 }
 
