@@ -40,9 +40,26 @@ class TestServer {
     //    config set "notify-keyspace-events" "Eg$"
     //    See here: https://redis.io/topics/notifications#configuration
     //    Preferably only when test features are enabled
+    // 2. this._wsapi.on('error') below
 
     async setupApi() {
         this._api = new Koa();
+        this._wsapi = new ws.Server({ noServer: true });
+        this._wsClients = new Map();
+
+        this._wsapi.on('error', err => {
+            // TODO
+            console.log('ERROR');
+            throw err;
+        });
+
+        this._wsapi.on('connection', (socket, req) => {
+            this._wsClients.set(socket, req.url);
+            socket.on('close', () => {
+                this._wsClients.delete(socket)
+            });
+        });
+
         this._logger = await this._createLogger();
 
         this._cache = await this._createCache();
@@ -78,14 +95,29 @@ class TestServer {
             await this._wso2Auth.start();
         }
         if (!this._conf.testingDisableServerStart) {
+            this._server.on('upgrade', (req, socket, head) => {
+                this._wsapi.handleUpgrade(req, socket, head, (ws) =>
+                    this._wsapi.emit('connection', ws, req))
+            });
             await new Promise((resolve) => this._server.listen(this._conf.testPort, resolve));
             this._logger.log(`Serving test API on port ${this._conf.testPort}`);
         }
     }
 
-    _handleCacheKeySet(channel, msg, id) {
-        console.log('CACHE KEY SET');
-        console.log({ channel, msg, id });
+    // Send the received notification to subscribers where appropriate.
+    async _handleCacheKeySet(channel, msg, id) {
+        const msgType = msg.split('_')[0]; // 'callback' or 'request'
+        const msgTypeRegex = new RegExp(`^\/${msgType}$`)
+        let keyData;
+        for (let [socket, url] of this._wsClients) {
+            if (msgTypeRegex.test(url)) {
+                console.log(`Matched client to callback ${url}`);
+                if (!keyData) {
+                    keyData = JSON.stringify(await this._cache.get(msg));
+                }
+                socket.send(keyData);
+            }
+        }
     }
 
     _createServer() {
@@ -101,17 +133,6 @@ class TestServer {
         } else {
             server = http.createServer(this._api.callback());
         }
-
-        let wsServer = new ws.Server({ server });
-        wsServer.on('connection', (socket, req) => {
-            console.log('HULLO');
-            console.log(req.url);
-            wsServer.clients.forEach((client) => {
-                if (client.readyState === ws.OPEN) {
-                    client.send('HULLO');
-                }
-            });
-        });
 
         return server;
     }
