@@ -79,7 +79,7 @@ describe('authorizationsModel', () => {
             // model's methods layout
             const methods = [
                 'run', 'getResponse',
-                'onRequestAuthorization', 'onAuthorizationReceived'
+                'onRequestAuthorization'
             ];
 
             methods.forEach((method) => expect(typeof model[method]).toEqual('function'));
@@ -146,37 +146,6 @@ describe('authorizationsModel', () => {
 
     });
 
-    describe('onAuthorizationReceived', () => {
-        it('should validate input', async () => {
-            const invalidMessages = [
-                null,
-                undefined,
-                {},
-                {body: null}
-            ];
-            const model = await Model.create(data, cacheKey, modelConfig);
-
-            const testCases = invalidMessages.map(async (msg) => {
-                expect(() => model.onAuthorizationReceived(msg))
-                    .rejects.ToEqual(new Error('OutboundAuthorizationsModel.onAuthorizationReceived: invalid \'message\' parameter is required'));
-            });
-
-            await Promise.allSettled(testCases);
-        });
-
-        it('should properly setup context.data', async () => {
-            const message = {
-                body: {
-                    Iam: 'the-body'
-                }
-            };
-            const model = await Model.create(data, cacheKey, modelConfig);
-            await model.onAuthorizationReceived(message);
-
-            expect(model.context.data).toEqual(message.body);
-        });
-    });
-
     describe('onRequestAuthorization', () => {
 
         it('should implement happy flow', async () => {
@@ -187,39 +156,49 @@ describe('authorizationsModel', () => {
             // mock workflow execution which is tested in separate case
             model.run = jest.fn(() => Promise.resolve());
 
-            // invoke transition handler
-            await model.onRequestAuthorization();
-
-            // subscribe should be called only once
-            expect(cache.subscribe).toBeCalledTimes(1);
-
-            // subscribe should be done to proper notificationChannel
-            expect(cache.subscribe.mock.calls[0][0]).toEqual(channel);
-
-            // check invocation of request.postAuthorizations
-            expect(MojaloopRequests.__postAuthorizations).toBeCalledWith(Model.buildPostAuthorizationsRequest(data, modelConfig), data.toParticipantId);
-
-            // ensure handler wasn't called before publishing the message
-            expect(handler).not.toBeCalled();
-
-            // ensure that cache.unsubscribe does not happened
-            expect(cache.unsubscribe).not.toBeCalled();
-
-            // fire publication to channel with given message
             const message = {
-                body: {
+                data: {
                     Iam: 'the-body',
                     transactionRequestId: model.context.data.transactionRequestId
                 }
             };
-            await cache.publish(channel, message);
+
+            // manually invoke transition handler
+            model.onRequestAuthorization()
+                .then(() => {
+                    // subscribe should be called only once
+                    expect(cache.subscribe).toBeCalledTimes(1);
+
+                    // subscribe should be done to proper notificationChannel
+                    expect(cache.subscribe.mock.calls[0][0]).toEqual(channel);
+
+                    // check invocation of request.postAuthorizations
+                    expect(MojaloopRequests.__postAuthorizations).toBeCalledWith(Model.buildPostAuthorizationsRequest(data, modelConfig), data.toParticipantId);
+
+
+                    // check that this.context.data is updated
+                    expect(model.context.data).toEqual({
+                        Iam: 'the-body',
+                        transactionRequestId: model.context.data.transactionRequestId,
+                        
+                        // current state will be updated by onAfterTransition which isn't called 
+                        // when manual invocation of transition handler happens
+                        currentState: 'start'   
+                    });
+                });
+
+            // ensure handler wasn't called before publishing the message
+            expect(handler).not.toBeCalled();
+
+            // ensure that cache.unsubscribe does not happened before fire the message
+            expect(cache.unsubscribe).not.toBeCalled();
+           
+
+            // fire publication with given message
+            await cache.publish(channel, JSON.stringify(message));
 
             // handler should be called only once
             expect(handler).toBeCalledTimes(1);
-
-            // the workflow should be run only once
-            expect(model.run).toBeCalledTimes(1);
-            expect(model.run).toBeCalledWith(message);
 
             // handler should unsubscribe from notification channel
             expect(cache.unsubscribe).toBeCalledTimes(1);
@@ -232,28 +211,17 @@ describe('authorizationsModel', () => {
             const model = await Model.create(data, cacheKey, modelConfig);
             const { cache } = model.context;
 
-            // simulate error
-            model.run = jest.fn(() => Promise.reject('workflow failed'));
-            let theError = null;
-            try {
-                // invoke transition handler
-                await model.onRequestAuthorization();
+            // invoke transition handler
+            model.onRequestAuthorization().catch((err) => {
+                expect(err.message).toEqual('Unexpected token u in JSON at position 0');
+                expect(cache.unsubscribe).toBeCalledTimes(1);
+                expect(cache.unsubscribe).toBeCalledWith(subId);        
+            });
 
-                // fire publication to channel with given message
-                const message = {
-                    body: {
-                        Iam: 'the-body',
-                        transactionRequestId: data.transactionRequestId
-                    }
-                };
-                await cache.publish(channel, message);
+            // fire publication to channel with invalid message 
+            // should throw the exception from JSON.parse
+            await cache.publish(channel, undefined);
 
-            } catch(error) {
-                theError = error;
-            }
-            expect(theError).toEqual('workflow failed');
-            expect(cache.unsubscribe).toBeCalledTimes(1);
-            expect(cache.unsubscribe).toBeCalledWith(subId);
         });
 
         it('should unsubscribe from cache in case when error happens Mojaloop requests', async () => {
@@ -292,25 +260,12 @@ describe('authorizationsModel', () => {
             expect(result).toEqual({the: 'response'});
             expect(model.requestAuthorization).toBeCalledTimes(1);
             expect(model.getResponse).toBeCalledTimes(1);
-            expect(model.context.logger.log).toBeCalledWith(`Authorization requested for ${model.context.data.transactionRequestId}`);
+            expect(model.context.logger.log.mock.calls).toEqual([
+                ['State machine transitioned \'init\': none -> start'],
+                [`Authorization requested for ${model.context.data.transactionRequestId},  currentState: start`],
+                ['Authorization completed successfully']
+            ]);
         });
-
-        it('waitingForAuthorization', async () => {
-            const model = await Model.create(data, cacheKey, modelConfig);
-            
-            model.authorizationReceived = jest.fn();
-            model.getResponse = jest.fn(() => Promise.resolve({the: 'response'}));
-            
-            model.context.data.currentState = 'waitingForAuthorization';
-            const result = await model.run({the: 'message'});
-            
-            expect(result).toEqual({the: 'response'});
-            expect(model.authorizationReceived).toBeCalledTimes(1);
-            expect(model.authorizationReceived).toBeCalledWith({the: 'message'});
-            expect(model.getResponse).toBeCalledTimes(1);
-            expect(model.context.logger.log).toBeCalledWith(`Authorization received for ${model.context.data.transactionRequestId}`);
-        });
-
         it('succeeded', async () => {
             const model = await Model.create(data, cacheKey, modelConfig);
             

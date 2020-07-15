@@ -1641,7 +1641,18 @@ components:
             resend of the authentication value.
             TODO: enum specification will be defined when all values will be known
           type: string
-
+        currentState:
+          $ref: '#/components/schemas/authorizationsState'
+  
+    authorizationsState:
+      title: authorizationsState
+      description: state of POST authorizations
+      type: string
+      enum:
+        - WAITING_FOR_AUTHORIZATION_REQUEST
+        - COMPLETED
+        - ERROR_OCCURRED
+  
     bulkTransferRequest:
       type: object
       required:

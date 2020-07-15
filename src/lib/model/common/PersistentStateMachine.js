@@ -24,16 +24,15 @@ async function saveToCache() {
 }
 
 async function onAfterTransition(transition) {
-    const {data, logger} = this.context;
+    const { logger } = this.context;
     logger.log(`State machine transitioned '${transition.transition}': ${transition.from} -> ${transition.to}`);
-    data.currentState = transition.to;
-    this.saveToCache();
+    this.context.data.currentState = transition.to;
 }
 
 function onPendingTransition(transition) {
     // allow transitions to 'error' state while other transitions are in progress
     if(transition !== 'error') {
-        throw new Error(`Transition requested while another transition is in progress: ${transition}`);
+        throw new Error(`Transition '${transition}' requested while another transition is in progress.`);
     }
 }
 

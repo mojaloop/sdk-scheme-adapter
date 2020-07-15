@@ -20,8 +20,7 @@ const specStateMachine = {
     init: 'start',
     transitions: [
         { name: 'init', from: 'none', to: 'start' },
-        { name: 'requestAuthorization', from: 'start', to: 'waitingForAuthorization' },
-        { name: 'authorizationReceived', from: 'waitingForAuthorization', to: 'succeeded'},
+        { name: 'requestAuthorization', from: 'start', to: 'succeeded' },
         { name: 'error', from: '*', to: 'errored' },    
     ],
     methods: {
@@ -31,14 +30,13 @@ const specStateMachine = {
 
         // specific transitions handlers methods
         onRequestAuthorization,
-        onAuthorizationReceived
     }
 };
 
 /**
  * runs the workflow
  */
-async function run(message) {
+async function run() {
     const { data, logger } = this.context;
     try {
         // run transitions based on incoming state
@@ -46,14 +44,9 @@ async function run(message) {
             case 'start':
                 // the first transition is requestAuthorization
                 await this.requestAuthorization();
-                logger.log(`Authorization requested for ${data.transactionRequestId}`);
-                return this.getResponse();
+                logger.log(`Authorization requested for ${data.transactionRequestId},  currentState: ${data.currentState}`);
 
-            case 'waitingForAuthorization':
-                await this.authorizationReceived(message);
-                logger.log(`Authorization received for ${data.transactionRequestId}`);
-                return this.getResponse();
-
+            // eslint-disable-next-line no-fallthrough
             case 'succeeded':
                 // all steps complete so return
                 logger.log('Authorization completed successfully');
@@ -64,11 +57,6 @@ async function run(message) {
                 logger.log('State machine in errored state');
                 return;
         }
-
-        // now call ourselves recursively to deal with the next transition
-        // in this scenario defined in switch statement ^ this part of code is not reachable because of return in every case !!!
-        // logger.log(`Authorization model state machine transition completed in state: ${this.state}. Recursing to handle next transition.`);
-        // return run();
 
     } catch (err) {
         logger.log(`Error running authorizations model: ${util.inspect(err)}`);
@@ -92,7 +80,6 @@ async function run(message) {
 
 const mapCurrentState = {
     start: 'WAITING_FOR_AUTHORIZATION_REQUEST',
-    waitingForAuthorization: 'WAITING_FOR_AUTHORIZATION_RESPONSE',
     succeeded: 'COMPLETED',
     errored: 'ERROR_OCCURRED'
 };
@@ -141,48 +128,45 @@ async function onRequestAuthorization() {
     const channel = notificationChannel(data.transactionRequestId);
     let subId;
 
-    try {
-        // in InboundServer/handlers is implemented putAuthorizationsById handler where this event is fired
-        subId = await cache.subscribe(channel, async (channel, message, sid) => {
-            try { 
-                await this.run(message);
-                // there is no need to block execution using await here
-            } finally {
-                cache.unsubscribe(sid);
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise( async(resolve, reject) => {
+
+        try {
+            // in InboundServer/handlers is implemented putAuthorizationsById handler 
+            // where this event is fired but only if env ENABLE_PISP_MODE=true
+            subId = await cache.subscribe(channel, async (channel, message, sid) => {
+                
+                try { 
+                    const parsed = JSON.parse(message);
+                    this.context.data = {
+                        ...parsed.data,
+                        currentState: this.state
+                    };
+                    resolve();
+                } catch(err) {
+                    reject(err); 
+                } finally {
+                    if(sid) {
+                        cache.unsubscribe(sid);
+                    }
+                }
+            });
+            
+            // POST /authorization request to the switch
+            const postRequest = buildPostAuthorizationsRequest(data, config);
+            const res = await requests.postAuthorizations(postRequest, data.toParticipantId);
+            
+            logger.push({ res }).log('Authorizations request sent to peer');
+            
+        } catch(error) {
+            logger.push(error).error('Authorization request error');
+            if(subId) {
+                cache.unsubscribe(subId);
             }
-
-        });
-
-        // POST /authorization request to the switch
-        const postRequest = buildPostAuthorizationsRequest(data, config);
-
-        // TODO: postAuthorizations is mocked method until this feature arrive in MojaloopRequests
-        const res = await requests.postAuthorizations(postRequest, data.toParticipantId);
-        
-        logger.push({ res }).log('Authorizations request sent to peer');
-
-    } catch(error) {
-        cache.unsubscribe(subId);
-        throw error;
-    }
+            reject(error);
+        }
+    });
 }
-
-
-/**
- * Propagates the Authorization
- * we got the notification on PUT /authorizations/<transactionRequestId> @ InboundServer
- * so we can propagate it back to DFSP
- * 
- * 
- */
-async function onAuthorizationReceived(message) {
-    // mvp validation
-    if(!(message && typeof message === 'object' && message.body && typeof message.body === 'object' )) {
-        throw new Error('OutboundAuthorizationsModel.onAuthorizationReceived: invalid \'message\' parameter is required');
-    }
-    this.context.data = message.body;
-}
-
 
 function buildPostAuthorizationsRequest(data/** , config */) {
     // TODO: the request object must be valid to schema defined in sdk-standard-components
@@ -190,8 +174,9 @@ function buildPostAuthorizationsRequest(data/** , config */) {
         ...data
     };
 
-    // drop property not conforming the txr service
+    // drop properties not conforming to the txr service schema
     delete request.toParticipantId;
+    delete request.currentState;
 
     return request;
 }
