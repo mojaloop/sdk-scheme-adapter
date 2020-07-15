@@ -105,7 +105,7 @@ describe('PersistentStateMachine', () => {
             checkPSMLayout(psm);
 
             psm.init();
-            expect(() => psm.gogo()).toThrowError('Transition requested while another transition is in progress: gogo');
+            expect(() => psm.gogo()).toThrowError('Transition \'gogo\' requested while another transition is in progress');
             
         });
 
@@ -160,31 +160,6 @@ describe('PersistentStateMachine', () => {
     });
 
     describe('saveToCache', () => {
-        it('should be called after transition', async () => {
-            const psm = await PSM.create(data, cache, key, logger, smSpec);
-            checkPSMLayout(psm);
-            
-            // make transition from none -> start
-            await psm.init();
-
-            // check state
-            expect(psm.state).toEqual('start');
-
-            // check state propagation to data
-            expect(psm.context.data.currentState).toEqual('start');
-            
-            // make transition from start -> end
-            await psm.gogo();
-
-            // check state change
-            expect(psm.state).toEqual('end');
-            
-            // check what has been stored in cache 
-            expect(cache.set).toBeCalledWith(key, psm.context.data);
-            
-            // check state propagation to `context.data`
-            expect(psm.context.data.currentState).toEqual('end');
-        });
 
         it('should rethrow error from cache.set', async () => {
             

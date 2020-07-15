@@ -397,10 +397,7 @@ describe('Outbound API handlers:', () => {
             
             const mockContext = {
                 request: {
-                    body: {
-                        transactionRequestId: '123',
-                        the: 'body'
-                    },
+                    body: {the: 'body', toParticipantId: 'pisp', transactionRequestId: '123'},
                     headers: {
                         'fspiop-source': 'foo'
                     }
@@ -429,15 +426,13 @@ describe('Outbound API handlers:', () => {
             expect(createSpy).toBeCalledTimes(1);
             const request = mockContext.request;
             const state = mockContext.state;
-            expect(createSpy).toBeCalledWith(
-                request.body,
-                `post_authorizations_${request.body.transactionRequestId}`,
-                {
-                    cache: state.cache,
-                    logger: state.logger,
-                    wso2Auth: state.wso2Auth
-                }
-            );
+            const cacheKey = `post_authorizations_${request.body.transactionRequestId}`;
+            const expectedConfig = {
+                cache: state.cache,
+                logger: state.logger,
+                wso2Auth: state.wso2Auth
+            };
+            expect(createSpy).toBeCalledWith(request.body, cacheKey, expectedConfig);
 
             // run workflow
             expect(mockedPSM.run).toBeCalledTimes(1);

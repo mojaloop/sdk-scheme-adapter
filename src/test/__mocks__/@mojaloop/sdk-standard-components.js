@@ -11,7 +11,7 @@
 'use strict';
 
 const util = require('util');
-const { MojaloopRequests, Errors, WSO2Auth, Jws } = jest.requireActual('@mojaloop/sdk-standard-components');
+const { MojaloopRequests, ThirdpartyRequests, Errors, WSO2Auth, Jws } = jest.requireActual('@mojaloop/sdk-standard-components');
 
 
 class MockMojaloopRequests extends MojaloopRequests {
@@ -66,6 +66,15 @@ MockMojaloopRequests.__postBulkTransfers = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putBulkTransfers = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putBulkTransfersError = jest.fn(() => Promise.resolve());
 
+
+class MockThirdpartyRequests extends ThirdpartyRequests {
+    constructor(...args) {
+        super(...args);
+        MockThirdpartyRequests.__instance = this;
+        this.postAuthorizations = MockMojaloopRequests.__postAuthorizations;
+    }
+}
+MockMojaloopRequests.__postAuthorizations = jest.fn(() => Promise.resolve());
 
 class MockIlp {
     constructor(config) {
@@ -138,6 +147,7 @@ class MockJwsSigner {
 
 module.exports = {
     MojaloopRequests: MockMojaloopRequests,
+    ThirdpartyRequests: MockThirdpartyRequests,
     Ilp: MockIlp,
     Jws: {
         validator: MockJwsValidator,

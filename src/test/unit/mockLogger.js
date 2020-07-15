@@ -14,7 +14,9 @@ function mockLogger(context, keepQuiet) {
     // if keepQuite is undefined then be quiet
     if(keepQuiet || typeof keepQuiet === 'undefined') {
         const log = {
-            log: jest.fn()
+            log: jest.fn(),
+            info: jest.fn(),
+            error: jest.fn()
         };
         return {
             ...log,

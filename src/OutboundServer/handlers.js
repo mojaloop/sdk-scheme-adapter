@@ -447,7 +447,6 @@ const postAuthorizations = async (ctx) => {
         };
 
         const cacheKey = `post_authorizations_${authorizationsRequest.transactionRequestId}`;
-        
         // use the authorizations model to execute asynchronous stages with the switch
         const model = await OutboundAuthorizationsModel.create(authorizationsRequest, cacheKey, modelConfig);
 
