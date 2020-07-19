@@ -27,6 +27,15 @@ jest.mock('@internal/requests');
 const InboundServer = require('../../InboundServer');
 const TestServer = require('../../TestServer');
 
+const createWsClient = async (port, path) => {
+    const result = new WebSocket(`ws://127.0.0.1:${port}${path}`);
+    await new Promise((resolve, reject) => {
+        result.on('open', resolve);
+        result.on('error', reject);
+    });
+    return result;
+};
+
 describe('Test Server', () => {
     let testServer, inboundServer, inboundReq, testReq, serverConfig, inboundCache, testCache,
         wsClients;
@@ -52,19 +61,10 @@ describe('Test Server', () => {
         await inboundServer.start();
         inboundCache = cache.mock.instances[1];
 
-        const createWsClient = async (path) => {
-            const result = new WebSocket(`ws://127.0.0.1:${serverConfig.testPort}${path}`);
-            await new Promise((resolve, reject) => {
-                result.on('open', resolve);
-                result.on('error', reject);
-            });
-            return result;
-        };
-
         wsClients = {
-            root: await createWsClient('/'),
-            callback: await createWsClient('/callback'),
-            request: await createWsClient('/request'),
+            root: await createWsClient(serverConfig.testPort, '/'),
+            callbacks: await createWsClient(serverConfig.testPort, '/callback'),
+            requests: await createWsClient(serverConfig.testPort, '/request'),
         };
 
         expect(Object.values(wsClients).every((cli) => cli.readyState === WebSocket.OPEN)).toBe(true);
@@ -164,8 +164,16 @@ describe('Test Server', () => {
             'date': new Date().toISOString(),
         };
 
+        const putParticipantWsClient = await createWsClient(
+            serverConfig.testPort,
+            `/callback/${participantId}`
+        );
+
+        const putParticipantEndpointMessageReceived = new Promise(resolve => {
+            putParticipantWsClient.on('message', resolve);
+        });
         const serverCallbackEndpointMessageReceived = new Promise(resolve => {
-            wsClients.callback.on('message', resolve);
+            wsClients.callbacks.on('message', resolve);
         });
         const serverRootEndpointMessageReceived = new Promise(resolve => {
             wsClients.root.on('message', resolve);
@@ -210,11 +218,12 @@ describe('Test Server', () => {
 
         // Expect the client websockets to receive a message containing the callback headers and
         // body
-        const callbackEndpointResult = JSON.parse(await serverCallbackEndpointMessageReceived);
-        expect(callbackEndpointResult).toEqual(expectedMessage);
-
-        const rootEndpointResult = JSON.parse(await serverRootEndpointMessageReceived);
-        expect(rootEndpointResult).toEqual(expectedMessage);
+        const callbackClientResult = JSON.parse(await serverCallbackEndpointMessageReceived);
+        expect(callbackClientResult).toEqual(expectedMessage);
+        const rootClientResult = JSON.parse(await serverRootEndpointMessageReceived);
+        expect(rootClientResult).toEqual(expectedMessage);
+        const putParticipantClientClientResult = JSON.parse(await putParticipantEndpointMessageReceived);
+        expect(putParticipantClientClientResult).toEqual(expectedMessage);
     });
 
     test('WebSocket /request and / endpoint triggers send to client when callback received to inbound server', async () => {
@@ -225,8 +234,16 @@ describe('Test Server', () => {
             'date': new Date().toISOString(),
         };
 
+        const postQuoteWsClient = await createWsClient(
+            serverConfig.testPort,
+            `/request/${postQuotesBody.quoteId}`
+        );
+
+        const postQuoteEndpointMessageReceived = new Promise(resolve => {
+            postQuoteWsClient.on('message', resolve);
+        });
         const serverRequestEndpointMessageReceived = new Promise(resolve => {
-            wsClients.request.on('message', resolve);
+            wsClients.requests.on('message', resolve);
         });
         const serverRootEndpointMessageReceived = new Promise(resolve => {
             wsClients.root.on('message', resolve);
@@ -272,11 +289,12 @@ describe('Test Server', () => {
 
         // Expect the client websockets to receive a message containing the callback headers and
         // body
-        const callbackEndpointResult = JSON.parse(await serverRequestEndpointMessageReceived);
-        expect(callbackEndpointResult).toEqual(expectedMessage);
-
-        const rootEndpointResult = JSON.parse(await serverRootEndpointMessageReceived);
-        expect(rootEndpointResult).toEqual(expectedMessage);
+        const callbackClientResult = JSON.parse(await serverRequestEndpointMessageReceived);
+        expect(callbackClientResult).toEqual(expectedMessage);
+        const rootClientResult = JSON.parse(await serverRootEndpointMessageReceived);
+        expect(rootClientResult).toEqual(expectedMessage);
+        const postQuoteClientResult = JSON.parse(await postQuoteEndpointMessageReceived);
+        expect(postQuoteClientResult).toEqual(expectedMessage);
     });
 
     test('Websocket / endpoint receives both callbacks and requests', async () => {
