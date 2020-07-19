@@ -29,7 +29,7 @@ const TestServer = require('../../TestServer');
 
 describe('Test Server', () => {
     let testServer, inboundServer, inboundReq, testReq, serverConfig, inboundCache, testCache,
-        wsClients, wsClientMessages;
+        wsClients;
 
     beforeEach(async () => {
         cache.mockClear();
@@ -152,7 +152,7 @@ describe('Test Server', () => {
     test('Configures cache correctly', async () => {
         expect(testServer._cache.setTestMode).toBeCalledTimes(1);
         expect(testServer._cache.setTestMode).toHaveBeenCalledWith(true);
-    });;
+    });
 
     test('WebSocket /callback and / endpoint triggers send to client when callback received to inbound server', async () => {
         const participantId = '00000000-0000-1000-a000-000000000002';
@@ -174,7 +174,7 @@ describe('Test Server', () => {
         // get the callback function that the test server subscribed with, and mock the cache by
         // calling the callback when the inbound server sets a key in the cache.
         const callback = testServer._cache.subscribe.mock.calls[0][1];
-        inboundServer._cache.set = jest.fn(async (key, val) => await callback(
+        inboundServer._cache.set = jest.fn(async (key) => await callback(
             inboundServer._cache.EVENT_SET,
             key,
             1,
@@ -235,7 +235,7 @@ describe('Test Server', () => {
         // get the callback function that the test server subscribed with, and mock the cache by
         // calling the callback when the inbound server sets a key in the cache.
         const callback = testServer._cache.subscribe.mock.calls[0][1];
-        inboundServer._cache.set = jest.fn(async (key, val) => await callback(
+        inboundServer._cache.set = jest.fn(async (key) => await callback(
             inboundServer._cache.EVENT_SET,
             key,
             1,
@@ -294,7 +294,7 @@ describe('Test Server', () => {
         // get the callback function that the test server subscribed with, and mock the cache by
         // calling the callback when the inbound server sets a key in the cache.
         const callback = testServer._cache.subscribe.mock.calls[0][1];
-        inboundServer._cache.set = jest.fn(async (key, val) => await callback(
+        inboundServer._cache.set = jest.fn(async (key) => await callback(
             inboundServer._cache.EVENT_SET,
             key,
             1,
