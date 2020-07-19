@@ -199,17 +199,31 @@ class TestServer {
         // the time of writing, that's 'request_') then I'll connect to `ws://this-server/request`.
         // The map here defines that mapping, and exists to decouple the interface (the url) from
         // the implementation (the "callback prefix").
+        const endpoints = {
+            REQUEST: '/request',
+            CALLBACK: '/callback',
+        };
         const urlToMsgPrefixMap = new Map([
-            ['/request', this._cache.REQUEST_PREFIX],
-            ['/callback', this._cache.CALLBACK_PREFIX],
+            [endpoints.REQUEST, this._cache.REQUEST_PREFIX],
+            [endpoints.CALLBACK, this._cache.CALLBACK_PREFIX],
         ]);
         let keyData; // declare outside the loop here, then retrieve at most once
         let keyDataStr;
         for (let [socket, req] of this._wsClients) {
-            // If the url is the catch-all root (i.e. `ws://this-server/`) or the url corresponds
-            // (via urlToMsgPrefixMap) to the message prefix for this message.
+            // If
+            // - the url is the catch-all root (i.e. `ws://this-server/`), or
+            // - the url corresponds (via urlToMsgPrefixMap) to the message prefix for this
+            //   message. E.g. if the url is /callback and the key is
+            //   `${this._cache.CALLBACK_PREFIX}whatever`, or
+            // - the url matches the key, e.g. we replace the url prefix with the key prefix and
+            //   obtain a match. E.g. the url is /callback/hello and the key is callback_hello.
+            // send the message to the client.
             const prefix = urlToMsgPrefixMap.get(req.url);
-            if (req.url === '/' || key.startsWith(prefix)) {
+            const urlMatchesPrefix = urlToMsgPrefixMap.has(req.url) && key.startsWith(prefix);
+            const urlMatchesKey =
+                req.url.replace(new RegExp(`^${endpoints.REQUEST}/`), this._cache.REQUEST_PREFIX) === key ||
+                req.url.replace(new RegExp(`^${endpoints.CALLBACK}/`), this._cache.CALLBACK_PREFIX) === key;
+            if (req.url === '/' || urlMatchesPrefix || urlMatchesKey) {
                 if (!keyData || !keyDataStr) {
                     keyData = await this._cache.get(key);
                     keyDataStr = JSON.stringify(keyData);
