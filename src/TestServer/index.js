@@ -26,6 +26,10 @@ const router = require('@internal/router');
 const handlers = require('./handlers');
 const middlewares = require('../InboundServer/middlewares');
 
+const getWsIp = (req) => req.headers['x-forwarded-for']
+    ? req.headers['x-forwarded-for'].split(/\s*,\s*/)[0]
+    : req.socket.remoteAddress;
+
 class TestServer {
     constructor(conf) {
         this._conf = conf;
@@ -74,20 +78,25 @@ class TestServer {
         if (!this._conf.testingDisableWSO2AuthStart) {
             await this._wso2Auth.start();
         }
-        if (!this._conf.testingDisableServerStart) {
-            this._server.on('upgrade', (req, socket, head) => {
-                this._wsapi.handleUpgrade(req, socket, head, (ws) =>
-                    this._wsapi.emit('connection', ws, req));
-            });
-            await new Promise((resolve) => this._server.listen(this._conf.testPort, resolve));
-            this._logger.log(`Serving test API on port ${this._conf.testPort}`);
-        }
+        this._server.on('upgrade', (req, socket, head) => {
+            this._wsapi.handleUpgrade(req, socket, head, (ws) =>
+                this._wsapi.emit('connection', ws, req));
+        });
+        await new Promise((resolve) => this._server.listen(this._conf.testPort, resolve));
+        this._logger.log(`Serving test API on port ${this._conf.testPort}`);
     }
 
     async stop() {
         if (!this._server) {
             return;
         }
+        await new Promise(resolve => this._wsapi.close(resolve));
+        // If we don't want for all clients to close before shutting down, the socket close
+        // handlers will be called after we return from this function, resulting in behaviour
+        // occurring after the server tells the user it has shutdown.
+        await Promise.all([...this._wsClients.keys()].map(socket =>
+            new Promise(resolve => socket.on('close', resolve))
+        ));
         await new Promise(resolve => this._server.close(resolve));
         this._wso2Auth.stop();
         await this._cache.disconnect();
@@ -152,8 +161,15 @@ class TestServer {
         });
 
         wss.on('connection', (socket, req) => {
+            const logger = this._logger.push({
+                url: req.url,
+                ip: getWsIp(req),
+                remoteAddress: req.socket.remoteAddress,
+            });
+            logger.log('Websocket connection received');
             this._wsClients.set(socket, req);
-            socket.on('close', () => {
+            socket.on('close', (code, reason) => {
+                logger.push({ code, reason }).log('Websocket connection closed');
                 this._wsClients.delete(socket);
             });
         });
@@ -202,7 +218,7 @@ class TestServer {
                     .push({
                         url: req.url,
                         key,
-                        ip: req.socket.remoteAddress,
+                        ip: getWsIp(req),
                         value: keyData,
                         prefix,
                     })

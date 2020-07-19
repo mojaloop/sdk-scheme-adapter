@@ -17,6 +17,7 @@ const putPartiesBody = require('./data/putPartiesBody');
 const postQuotesBody = require('./data/postQuotesBody');
 const putParticipantsBody = require('./data/putParticipantsBody');
 const commonHttpHeaders = require('./data/commonHttpHeaders');
+const WebSocket = require('ws');
 
 const cache = require('@internal/cache');
 jest.mock('@internal/cache');
@@ -27,7 +28,8 @@ const InboundServer = require('../../InboundServer');
 const TestServer = require('../../TestServer');
 
 describe('Test Server', () => {
-    let testServer, inboundServer, inboundReq, testReq, serverConfig, inboundCache, testCache;
+    let testServer, inboundServer, inboundReq, testReq, serverConfig, inboundCache, testCache,
+        wsClients, wsClientMessages;
 
     beforeEach(async () => {
         cache.mockClear();
@@ -38,8 +40,11 @@ describe('Test Server', () => {
         };
 
         testServer = new TestServer(serverConfig);
-        testReq = supertest(await testServer.setupApi());
+        await testServer.setupApi();
         await testServer.start();
+
+        expect(testServer._server.listening).toBe(true);
+        testReq = supertest.agent(testServer._server);
         testCache = cache.mock.instances[0];
 
         inboundServer = new InboundServer(serverConfig);
@@ -47,10 +52,32 @@ describe('Test Server', () => {
         await inboundServer.start();
         inboundCache = cache.mock.instances[1];
 
+        const createWsClient = async (path) => {
+            const result = new WebSocket(`ws://127.0.0.1:${serverConfig.testPort}${path}`);
+            await new Promise((resolve, reject) => {
+                result.on('open', resolve);
+                result.on('error', reject);
+            });
+            return result;
+        };
+
+        wsClients = {
+            root: await createWsClient('/'),
+            callback: await createWsClient('/callback'),
+            request: await createWsClient('/request'),
+        };
+
+        expect(Object.values(wsClients).every((cli) => cli.readyState === WebSocket.OPEN)).toBe(true);
+        expect(testServer._wsClients.size).toBeGreaterThan(0);
+
         expect(cache).toHaveBeenCalledTimes(2);
     });
 
     afterEach(async () => {
+        await Promise.all(Object.values(wsClients).map((cli) => {
+            cli.close();
+            return new Promise((resolve) => cli.on('close', resolve));
+        }));
         await testServer.stop();
         await inboundServer.stop();
     });
@@ -112,5 +139,231 @@ describe('Test Server', () => {
         await testReq.get(`/callbacks/${participantId}`);
 
         expect(inboundCache.set.mock.calls[0][0]).toEqual(testCache.get.mock.calls[0][0]);
+    });
+
+    test('Subscribes to the keyevent set notification', async () => {
+        expect(testServer._cache.subscribe).toBeCalledTimes(1);
+        expect(testServer._cache.subscribe).toHaveBeenCalledWith(
+            testServer._cache.EVENT_SET,
+            expect.any(Function),
+        );
+    });
+
+    test('Configures cache correctly', async () => {
+        expect(testServer._cache.setTestMode).toBeCalledTimes(1);
+        expect(testServer._cache.setTestMode).toHaveBeenCalledWith(true);
+    });;
+
+    test('WebSocket /callback and / endpoint triggers send to client when callback received to inbound server', async () => {
+        const participantId = '00000000-0000-1000-a000-000000000002';
+
+        const headers = {
+            ...commonHttpHeaders,
+            'fspiop-http-method': 'PUT',
+            'fspiop-uri': `/participants/${participantId}`,
+            'date': new Date().toISOString(),
+        };
+
+        const serverCallbackEndpointMessageReceived = new Promise(resolve => {
+            wsClients.callback.on('message', resolve);
+        });
+        const serverRootEndpointMessageReceived = new Promise(resolve => {
+            wsClients.root.on('message', resolve);
+        });
+
+        // get the callback function that the test server subscribed with, and mock the cache by
+        // calling the callback when the inbound server sets a key in the cache.
+        const callback = testServer._cache.subscribe.mock.calls[0][1];
+        inboundServer._cache.set = jest.fn(async (key, val) => await callback(
+            inboundServer._cache.EVENT_SET,
+            key,
+            1,
+        ));
+        testServer._cache.get = jest.fn(() => ({
+            data: putParticipantsBody,
+            headers,
+        }));
+
+        await inboundReq
+            .put(`/participants/${participantId}`)
+            .send(putParticipantsBody)
+            .set(headers);
+
+        expect(inboundServer._cache.set).toHaveBeenCalledTimes(1);
+        expect(inboundServer._cache.set).toHaveBeenCalledWith(
+            `${testServer._cache.CALLBACK_PREFIX}${participantId}`,
+            {
+                data: putParticipantsBody,
+                headers: expect.objectContaining(headers),
+            }
+        );
+
+        expect(testServer._cache.get).toHaveBeenCalledTimes(1);
+        expect(testServer._cache.get).toHaveBeenCalledWith(
+            `${testServer._cache.CALLBACK_PREFIX}${participantId}`
+        );
+
+        const expectedMessage = {
+            data: putParticipantsBody,
+            headers: expect.objectContaining(headers),
+        };
+
+        // Expect the client websockets to receive a message containing the callback headers and
+        // body
+        const callbackEndpointResult = JSON.parse(await serverCallbackEndpointMessageReceived);
+        expect(callbackEndpointResult).toEqual(expectedMessage);
+
+        const rootEndpointResult = JSON.parse(await serverRootEndpointMessageReceived);
+        expect(rootEndpointResult).toEqual(expectedMessage);
+    });
+
+    test('WebSocket /request and / endpoint triggers send to client when callback received to inbound server', async () => {
+        const headers = {
+            ...commonHttpHeaders,
+            'fspiop-http-method': 'POST',
+            'fspiop-uri': '/quotes',
+            'date': new Date().toISOString(),
+        };
+
+        const serverRequestEndpointMessageReceived = new Promise(resolve => {
+            wsClients.request.on('message', resolve);
+        });
+        const serverRootEndpointMessageReceived = new Promise(resolve => {
+            wsClients.root.on('message', resolve);
+        });
+
+        // get the callback function that the test server subscribed with, and mock the cache by
+        // calling the callback when the inbound server sets a key in the cache.
+        const callback = testServer._cache.subscribe.mock.calls[0][1];
+        inboundServer._cache.set = jest.fn(async (key, val) => await callback(
+            inboundServer._cache.EVENT_SET,
+            key,
+            1,
+        ));
+        testServer._cache.get = jest.fn(() => ({
+            data: postQuotesBody,
+            headers,
+        }));
+
+        await inboundReq
+            .post('/quotes')
+            .send(postQuotesBody)
+            .set(headers);
+
+        // Called once for the quote request, once for the fulfilment
+        expect(inboundServer._cache.set).toHaveBeenCalledTimes(2);
+        expect(inboundServer._cache.set).toHaveBeenCalledWith(
+            `${testServer._cache.REQUEST_PREFIX}${postQuotesBody.quoteId}`,
+            {
+                data: postQuotesBody,
+                headers: expect.objectContaining(headers),
+            }
+        );
+
+        expect(testServer._cache.get).toHaveBeenCalledTimes(1);
+        expect(testServer._cache.get).toHaveBeenCalledWith(
+            `${testServer._cache.REQUEST_PREFIX}${postQuotesBody.quoteId}`
+        );
+
+        const expectedMessage = {
+            data: postQuotesBody,
+            headers: expect.objectContaining(headers),
+        };
+
+        // Expect the client websockets to receive a message containing the callback headers and
+        // body
+        const callbackEndpointResult = JSON.parse(await serverRequestEndpointMessageReceived);
+        expect(callbackEndpointResult).toEqual(expectedMessage);
+
+        const rootEndpointResult = JSON.parse(await serverRootEndpointMessageReceived);
+        expect(rootEndpointResult).toEqual(expectedMessage);
+    });
+
+    test('Websocket / endpoint receives both callbacks and requests', async () => {
+        const quoteRequestHeaders = {
+            ...commonHttpHeaders,
+            'fspiop-http-method': 'POST',
+            'fspiop-uri': '/quotes',
+            'date': new Date().toISOString(),
+        };
+
+        const serverRootEndpointMessageReceived = new Promise(resolve => {
+            wsClients.root.on('message', resolve);
+        });
+
+        // get the callback function that the test server subscribed with, and mock the cache by
+        // calling the callback when the inbound server sets a key in the cache.
+        const callback = testServer._cache.subscribe.mock.calls[0][1];
+        inboundServer._cache.set = jest.fn(async (key, val) => await callback(
+            inboundServer._cache.EVENT_SET,
+            key,
+            1,
+        ));
+        testServer._cache.get = jest.fn(() => ({
+            data: postQuotesBody,
+            headers: quoteRequestHeaders,
+        }));
+
+        await inboundReq
+            .post('/quotes')
+            .send(postQuotesBody)
+            .set(quoteRequestHeaders);
+
+        // Called once for the quote request, once for the fulfilment
+        expect(inboundServer._cache.set).toHaveBeenCalledTimes(2);
+        expect(inboundServer._cache.set).toHaveBeenCalledWith(
+            `${testServer._cache.REQUEST_PREFIX}${postQuotesBody.quoteId}`,
+            {
+                data: postQuotesBody,
+                headers: expect.objectContaining(quoteRequestHeaders),
+            }
+        );
+
+        expect(testServer._cache.get).toHaveBeenCalledTimes(1);
+        expect(testServer._cache.get).toHaveBeenCalledWith(
+            `${testServer._cache.REQUEST_PREFIX}${postQuotesBody.quoteId}`
+        );
+
+        const expectedMessage = {
+            data: postQuotesBody,
+            headers: expect.objectContaining(quoteRequestHeaders),
+        };
+
+        // Expect the client websockets to receive a message containing the callback
+        // quoteRequestHeaders and body
+        const rootEndpointResult = JSON.parse(await serverRootEndpointMessageReceived);
+        expect(rootEndpointResult).toEqual(expectedMessage);
+
+        const participantId = '00000000-0000-1000-a000-000000000002';
+
+        const putParticipantsHeaders = {
+            ...commonHttpHeaders,
+            'fspiop-http-method': 'PUT',
+            'fspiop-uri': `/participants/${participantId}`,
+            'date': new Date().toISOString(),
+        };
+
+        await inboundReq
+            .put(`/participants/${participantId}`)
+            .send(putParticipantsBody)
+            .set(putParticipantsHeaders);
+
+        // Called twice for the quote request earlier in this test, another time now for the put
+        // participants request
+        expect(inboundServer._cache.set).toHaveBeenCalledTimes(3);
+        expect(inboundServer._cache.set.mock.calls[2]).toEqual([
+            `${testServer._cache.CALLBACK_PREFIX}${participantId}`,
+            {
+                data: putParticipantsBody,
+                headers: expect.objectContaining(putParticipantsHeaders),
+            }
+        ]);
+
+        // Called once for the quote request earlier in this test, another time now for the
+        // participants callback
+        expect(testServer._cache.get).toHaveBeenCalledTimes(2);
+        expect(testServer._cache.get.mock.calls[1]).toEqual([
+            `${testServer._cache.CALLBACK_PREFIX}${participantId}`
+        ]);
     });
 });
