@@ -43,7 +43,6 @@ class Cache {
         this._callbackId = 0;
     }
 
-
     /**
      * Connects to a redis server and waits for ready events
      * Note: We create two connections. One for get, set and publish commands
@@ -61,6 +60,24 @@ class Cache {
 
         // hook up our sub message handler
         this._subscriptionClient.on('message', this._onMessage.bind(this));
+    }
+
+    /**
+     * Configure Redis to emit keyevent events. This corresponds to the application test mode, and
+     * enables us to listen for changes on callback_* and request_* keys.
+     * Docs: https://redis.io/topics/notifications
+     */
+    async setTestMode(enable) {
+        // See for modes: https://redis.io/topics/notifications#configuration
+        // This mode, 'Es$' is:
+        //   E     Keyevent events, published with __keyevent@<db>__ prefix.
+        //   s     Set commands
+        //   $     String commands
+        const mode = enable ? 'Es$' : '';
+        this._logger
+            .push({ 'notify-keyspace-events': mode })
+            .log('Configuring Redis to emit keyevent events');
+        this._client.config('SET', 'notify-keyspace-events', mode);
     }
 
     async disconnect() {
@@ -149,7 +166,13 @@ class Cache {
 
                 // call the callback with the channel name, message and callbackId...
                 // ...(which is useful for unsubscribe)
-                this._callbacks[channel][k](channel, msg, k);
+                try {
+                    this._callbacks[channel][k](channel, msg, k);
+                } catch (err) {
+                    this._logger
+                        .push({ callbackId: k, err })
+                        .log('Unhandled error in cache subscription handler');
+                }
             });
         }
     }
@@ -261,5 +284,10 @@ class Cache {
     }
 }
 
+// Define constants on the prototype, but prevent a user of the cache from overwriting them for all
+// instances
+Object.defineProperty(Cache.prototype, 'CALLBACK_PREFIX', { value: 'callback_', writable: false });
+Object.defineProperty(Cache.prototype, 'REQUEST_PREFIX', { value: 'request_', writable: false });
+Object.defineProperty(Cache.prototype, 'EVENT_SET', { value: '__keyevent@0__:set', writable: false });
 
 module.exports = Cache;
