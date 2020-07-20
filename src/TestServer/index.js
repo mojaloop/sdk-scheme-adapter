@@ -161,7 +161,7 @@ class TestServer {
         wss.on('error', err => {
             // Curtains down
             this._logger.push({ err })
-                .log('Unhandled websocket error occurred. Shutting down gracefully.');
+                .log('Unhandled websocket error occurred. Shutting down.');
             process.exit(1);
         });
 
