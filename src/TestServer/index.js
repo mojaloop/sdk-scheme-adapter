@@ -26,9 +26,14 @@ const router = require('@internal/router');
 const handlers = require('./handlers');
 const middlewares = require('../InboundServer/middlewares');
 
-const getWsIp = (req) => req.headers['x-forwarded-for']
-    ? req.headers['x-forwarded-for'].split(/\s*,\s*/)[0]
-    : req.socket.remoteAddress;
+const getWsIp = (req) => [
+    req.socket.remoteAddress,
+    ...(
+        req.headers['x-forwarded-for']
+            ? req.headers['x-forwarded-for'].split(/\s*,\s*/)
+            : []
+    )
+];
 
 class TestServer {
     constructor(conf) {
@@ -196,12 +201,12 @@ class TestServer {
 
         // Map urls to callback prefixes. For example, as a user of this service, if I want to
         // subscribe to Redis keyevent notifications with the prefix this._cache.REQUEST_PREFIX (at
-        // the time of writing, that's 'request_') then I'll connect to `ws://this-server/request`.
+        // the time of writing, that's 'request_') then I'll connect to `ws://this-server/requests`.
         // The map here defines that mapping, and exists to decouple the interface (the url) from
         // the implementation (the "callback prefix").
         const endpoints = {
-            REQUEST: '/request',
-            CALLBACK: '/callback',
+            REQUEST: '/requests',
+            CALLBACK: '/callbacks',
         };
         const urlToMsgPrefixMap = new Map([
             [endpoints.REQUEST, this._cache.REQUEST_PREFIX],
@@ -213,10 +218,10 @@ class TestServer {
             // If
             // - the url is the catch-all root (i.e. `ws://this-server/`), or
             // - the url corresponds (via urlToMsgPrefixMap) to the message prefix for this
-            //   message. E.g. if the url is /callback and the key is
+            //   message. E.g. if the url is /callbacks and the key is
             //   `${this._cache.CALLBACK_PREFIX}whatever`, or
             // - the url matches the key, e.g. we replace the url prefix with the key prefix and
-            //   obtain a match. E.g. the url is /callback/hello and the key is callback_hello.
+            //   obtain a match. E.g. the url is /callbacks/hello and the key is callback_hello.
             // send the message to the client.
             const prefix = urlToMsgPrefixMap.get(req.url);
             const urlMatchesPrefix = urlToMsgPrefixMap.has(req.url) && key.startsWith(prefix);

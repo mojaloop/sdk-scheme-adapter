@@ -63,8 +63,8 @@ describe('Test Server', () => {
 
         wsClients = {
             root: await createWsClient(serverConfig.testPort, '/'),
-            callbacks: await createWsClient(serverConfig.testPort, '/callback'),
-            requests: await createWsClient(serverConfig.testPort, '/request'),
+            callbacks: await createWsClient(serverConfig.testPort, '/callbacks'),
+            requests: await createWsClient(serverConfig.testPort, '/requests'),
         };
 
         expect(Object.values(wsClients).every((cli) => cli.readyState === WebSocket.OPEN)).toBe(true);
@@ -154,7 +154,7 @@ describe('Test Server', () => {
         expect(testServer._cache.setTestMode).toHaveBeenCalledWith(true);
     });
 
-    test('WebSocket /callback and / endpoint triggers send to client when callback received to inbound server', async () => {
+    test('WebSocket /callbacks and / endpoint triggers send to client when callback received to inbound server', async () => {
         const participantId = '00000000-0000-1000-a000-000000000002';
 
         const headers = {
@@ -166,7 +166,7 @@ describe('Test Server', () => {
 
         const putParticipantWsClient = await createWsClient(
             serverConfig.testPort,
-            `/callback/${participantId}`
+            `/callbacks/${participantId}`
         );
 
         const putParticipantEndpointMessageReceived = new Promise(resolve => {
@@ -226,7 +226,7 @@ describe('Test Server', () => {
         expect(putParticipantClientClientResult).toEqual(expectedMessage);
     });
 
-    test('WebSocket /request and / endpoint triggers send to client when callback received to inbound server', async () => {
+    test('WebSocket /requests and / endpoint triggers send to client when callback received to inbound server', async () => {
         const headers = {
             ...commonHttpHeaders,
             'fspiop-http-method': 'POST',
@@ -236,7 +236,7 @@ describe('Test Server', () => {
 
         const postQuoteWsClient = await createWsClient(
             serverConfig.testPort,
-            `/request/${postQuotesBody.quoteId}`
+            `/requests/${postQuotesBody.quoteId}`
         );
 
         const postQuoteEndpointMessageReceived = new Promise(resolve => {
