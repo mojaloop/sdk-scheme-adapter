@@ -22,6 +22,7 @@ const {
     OutboundRequestToPayModel,
     OutboundBulkQuotesModel,
     OutboundAuthorizationsModel,
+    OutboundThirdpartyTransactionModel
 } = require('@internal/model');
 
 
@@ -85,8 +86,11 @@ const handleRequestToPayError = (method, err, ctx) =>
 const handleRequestToPayTransferError = (method, err, ctx) =>
     handleError(method, err, ctx, 'requestToPayTransferState');
 
-const handleAuthorizationsError = (method, err, ctx) => 
+const handleAuthorizationsError = (method, err, ctx) =>
     handleError(method, err, ctx, 'authorizationsState');
+
+const handleThirdpartyRequestsTransactionsError = (method, err, ctx) =>
+    handleError(method, err, ctx, 'thirdpartyRequestsTransactionsState');
 
 /**
  * Handler for outbound transfer request initiation
@@ -447,6 +451,7 @@ const postAuthorizations = async (ctx) => {
         };
 
         const cacheKey = `post_authorizations_${authorizationsRequest.transactionRequestId}`;
+
         // use the authorizations model to execute asynchronous stages with the switch
         const model = await OutboundAuthorizationsModel.create(authorizationsRequest, cacheKey, modelConfig);
 
@@ -456,9 +461,43 @@ const postAuthorizations = async (ctx) => {
         // return the result
         ctx.response.status = 200;
         ctx.response.body = response;
-    
+
     } catch(err) {
         return handleAuthorizationsError('postAuthorizations', err, ctx);
+    }
+};
+
+const getThirdpartyRequestsTransactions = async (ctx) => {
+    try {
+        // prepare request
+        const thirdpartyRequestsTransactionRequest = {
+            ...ctx.request.body,
+            currentState: 'getTransaction',
+            transactionRequestId: ctx.state.path.params.transactionRequestId,
+        };
+
+        // prepare config
+        const modelConfig = {
+            ...ctx.state.conf,
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            wso2Auth: ctx.state.wso2Auth,
+        };
+
+        const cacheKey = `get_thirdparty_requests_transactions_${thirdpartyRequestsTransactionRequest}`;
+
+        // use the thirdparty requests transaction model to execute asynchronous stages with the switch
+        const model = await OutboundThirdpartyTransactionModel.create(thirdpartyRequestsTransactionRequest, cacheKey, modelConfig);
+
+        // run model's workflow
+        const response = await model.run();
+
+        // return the result
+        ctx.response.status = 200;
+        ctx.response.body = response;
+
+    } catch(err) {
+        return handleThirdpartyRequestsTransactionsError('getThirdpartyRequestsTransaction', err, ctx);
     }
 };
 
@@ -497,7 +536,10 @@ module.exports = {
     '/requestToPayTransfer/{requestToPayTransactionId}': {
         put: putRequestToPayTransfer
     },
-    '/authorizations' : {
+    '/authorizations': {
         post: postAuthorizations
+    },
+    '/thirdpartyRequests/transactions/{transactionRequestId}': {
+        get: getThirdpartyRequestsTransactions
     }
 };

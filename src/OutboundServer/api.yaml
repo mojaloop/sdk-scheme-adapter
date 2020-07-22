@@ -25,7 +25,7 @@ paths:
         - Health
       responses:
         200:
-          description: Returns empty body if the scheme adapter outbound transfers service is running.  
+          description: Returns empty body if the scheme adapter outbound transfers service is running.
   /transfers:
     post:
       summary: Sends money from one account to another
@@ -148,12 +148,12 @@ paths:
           $ref: '#/components/responses/bulkTransferServerError'
         504:
           $ref: '#/components/responses/bulkTransferTimeout'
-  
+
   /bulkTransfers/{bulkTransferId}:
     get:
       summary: Retrieves information for a specific bulk transfer
       description: >-
-        The HTTP request `GET /bulkTransfers/{bulktTransferId}` is used to get information regarding a bulk transfer created or requested earlier. 
+        The HTTP request `GET /bulkTransfers/{bulktTransferId}` is used to get information regarding a bulk transfer created or requested earlier.
         The `{bulkTransferId}` in the URI should contain the `bulkTransferId` that was used for the creation of the bulk transfer.
       tags:
         - BulkTransfers
@@ -201,7 +201,7 @@ paths:
     get:
       summary: Retrieves information for a specific bulk quote
       description: >-
-        The HTTP request `GET /bulkQuotes/{bulktQuoteId}` is used to get information regarding a bulk quote created or requested earlier. 
+        The HTTP request `GET /bulkQuotes/{bulktQuoteId}` is used to get information regarding a bulk quote created or requested earlier.
         The `{bulkQuoteId}` in the URI should contain the `bulkQuoteId` that was used for the creation of the bulk quote.
       tags:
         - BulkQuotes
@@ -381,10 +381,61 @@ paths:
         #   $ref: '#/components/responses/authorizationsPostServerError'
         # 504:
         #   $ref: '#/components/responses/authorizationsPostTimeout'
-        
-  
+  /thirdpartyRequests/transactions:
+    post:
+      summary: Initiates a third party request transaction.
+      description: >
+        The HTTP request `POST /thirdpartyRequests/transactions` is sent to the Switch to initiate a third party request transaction.
+      tags:
+        - thirdpartyRequest
+      requestBody:
+        description: Thirdparty requests transaction request body.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/thirdpartyRequestsTransactionRequest'
+      responses:
+        200:
+          $ref: '#/components/responses/thirdpartyRequestsTransactionResponse'
+        # 400:
+        #   $ref: '#/components/responses/authorizationsPostBadRequest'
+        # 500:
+        #   $ref: '#/components/responses/'
+        # 504:
+        #   $ref: '#/components/responses/'
+  /thirdpartyRequests/transactions/{transactionRequestId}:
+    get:
+      summary: Retrieves information for a specific thirdparty request transaction.
+      description: >
+        The HTTP request `GET /thirdpartyRequest/transaction/{transactionRequestId}` is used to get information regarding a thirdparty transaction created or requested earlier.
+        The `{transactionRequestId}` in the URI should contain the `ID` that was used for the creation of the thirdparty request transaction.
+      tags:
+        - thirdpartyRequest
+      parameters:
+        - $ref: '#/components/parameters/transactionRequestId'
+      responses:
+        200:
+          description: Thirdparty requests transaction information successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/thirdpartyRequestsTransactionResponse'
+        # 500:
+        #   description:
+        #   content:
+        #     application/json:
+        #       schema:
+        #         $ref: '#/components/schemas/'
 components:
   schemas:
+    accountAddress:
+      title: accountAddress
+      type: string
+      description: Unique routable address which is DFSP specific.
+      pattern: ^([0-9A-Za-z_~\-\.]+[0-9A-Za-z_~\-])$
+      minLength: 1
+      maxLength: 1023
 
     amountType:
       type: string
@@ -575,7 +626,7 @@ components:
         message:
           type: string
           description: Error message text.
-          
+
     errorTransferResponse:
       allOf:
         - $ref: '#/components/schemas/errorResponse'
@@ -848,9 +899,7 @@ components:
       type: object
       properties:
         address:
-          type: string
-          minLength: 1
-          maxLength: 1023
+          $ref: '#/components/schemas/accountAddress'
         currency:
           type: string
           minLength: 3
@@ -1129,7 +1178,7 @@ components:
           $ref: '#/components/schemas/transferStatus'
         fulfil:
           $ref: '#/components/schemas/transferFulfilment'
-    
+
     bulkTransferStatusResponse:
       type: object
       required:
@@ -1147,7 +1196,7 @@ components:
           maxItems: 1000
           items:
             $ref: '#/components/schemas/individualTransferFulfilment'
-    
+
     bulkQuoteStatusResponse:
       type: object
       required:
@@ -1230,7 +1279,7 @@ components:
           description: 'Optional extension, specific to deployment.'
       required:
         - transferState
-    
+
     mojaloopAuthenticationType:
       title: AuthenticationType
       type: string
@@ -1239,7 +1288,7 @@ components:
         - QRCODE
         - U2F
       description: Below are the allowed values for the enumeration AuthenticationType.
-    
+
     mojaloopAuthenticationValue:
       title: AuthenticationValue
       oneOf:
@@ -1247,7 +1296,7 @@ components:
         - $ref: '#/components/schemas/mojaloopQRCODE'
         - $ref: '#/components/schemas/mojaloopU2FPinValue'
       description: Contains the authentication value. The format depends on the authentication type used in the AuthenticationInfo complex type.
-    
+
     mojaloopOtpValue:
       title: OtpValue
       type: string
@@ -1267,15 +1316,15 @@ components:
       required:
       - pinValue
       - counter
-    
+
     mojaloopU2FPIN:
       title: U2FPIN
       type: string
       pattern: ^\S{1,64}$
       minLength: 1
       maxLength: 64
-      description: U2F challenge-response, where payer FSP verifies if the response provided by end-user device matches the previously registered key. 
-    
+      description: U2F challenge-response, where payer FSP verifies if the response provided by end-user device matches the previously registered key.
+
     mojaloopQRCODE:
       title: QRCODE
       type: string
@@ -1283,7 +1332,7 @@ components:
       minLength: 1
       maxLength: 64
       description: QR code used as One Time Password.
-    
+
     mojaloopAuthenticationInfo:
       title: AuthenticationInfo
       description: Data model for the complex type AuthenticationInfo
@@ -1296,7 +1345,7 @@ components:
           $ref: '#/components/schemas/mojaloopAuthenticationType'
         authenticationValue:
           $ref: '#/components/schemas/mojaloopAuthenticationValue'
-          
+
     individualTransferFulfilment:
       type: object
       description: A Mojaloop API transfer fulfilment for individual transfers in a bulk transfer
@@ -1309,7 +1358,7 @@ components:
         extensionList:
           $ref: '#/components/schemas/extensionListComplex'
           description: 'Optional extension, specific to deployment.'
-    
+
     mojaloopTransferState:
       type: string
       enum:
@@ -1373,7 +1422,7 @@ components:
       required:
         - currency
         - amount
-    
+
     mojaloopQuotesIDPutResponse:
       title: QuotesIDPutResponse
       description: 'PUT /quotes/{ID} object'
@@ -1509,14 +1558,14 @@ components:
         ^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$
       description: >
         The API data type Latitude is a JSON String in a lexical format that is
-        restricted by a regular expression for interoperability reasons.    
+        restricted by a regular expression for interoperability reasons.
     longitude:
       type: string
       pattern: >-
         ^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,6})?))$
       description: >-
         The API data type Longitude is a JSON String in a lexical format that is
-        restricted by a regular expression for interoperability reasons.    
+        restricted by a regular expression for interoperability reasons.
 
     ilpCondition:
       type: string
@@ -1593,13 +1642,13 @@ components:
           $ref: '#/components/schemas/accountsCreationState'
         lastError:
           $ref: '#/components/schemas/transferError'
-    
+
     authorizationsRequest:
       title: authorizationsRequest
       description: POST /authorizations Request object
       type: object
       properties:
-        toParticipantId: 
+        toParticipantId:
           type: string
         authenticationType:
           $ref: '#/components/schemas/mojaloopAuthenticationType'
@@ -1621,11 +1670,11 @@ components:
         - transactionRequestId
         - quote
       additionalProperties: false
-    
+
     authorizationsResponse:
       title: authorizationsResponse
       description: |
-        response body of POST/authorizations 
+        response body of POST/authorizations
         derived from AuthorizationsIDPutResponse
       type: object
       required:
@@ -1643,7 +1692,6 @@ components:
           type: string
         currentState:
           $ref: '#/components/schemas/authorizationsState'
-  
     authorizationsState:
       title: authorizationsState
       description: state of POST authorizations
@@ -1652,7 +1700,7 @@ components:
         - WAITING_FOR_AUTHORIZATION_REQUEST
         - COMPLETED
         - ERROR_OCCURRED
-  
+
     bulkTransferRequest:
       type: object
       required:
@@ -1675,8 +1723,8 @@ components:
           items:
             $ref: '#/components/schemas/individualTransfer'
         extensions:
-            $ref: '#/components/schemas/extensionList' 
-    
+            $ref: '#/components/schemas/extensionList'
+
     individualTransfer:
       title: IndividualTransfer
       type: object
@@ -1698,18 +1746,18 @@ components:
           maxLength: 128
           type: string
         extensions:
-          $ref: '#/components/schemas/extensionList'  
+          $ref: '#/components/schemas/extensionList'
       required:
         - transferId
         - to
         - amountType
         - currency
         - transactionType
-    
+
     individualTransferResult:
       type: object
       properties:
-        transferId: 
+        transferId:
           $ref: '#/components/schemas/mojaloopIdentifier'
         to:
           $ref: '#/components/schemas/transferParty'
@@ -1764,7 +1812,7 @@ components:
             $ref: '#/components/schemas/individualQuote'
         extensions:
           $ref: '#/components/schemas/extensionList'
-    
+
     individualQuote:
       title: IndividualQuote
       type: object
@@ -1793,7 +1841,7 @@ components:
         - amountType
         - currency
         - transactionType
-    
+
     bulkQuoteResponse:
       type: object
       required:
@@ -1813,11 +1861,11 @@ components:
           items:
             $ref: '#/components/schemas/individualQuoteResult'
           description: List of individualQuoteResults in a bulk transfer response.
-    
+
     individualQuoteResult:
       type: object
       properties:
-        quoteId: 
+        quoteId:
           $ref: '#/components/schemas/mojaloopIdentifier'
         to:
           $ref: '#/components/schemas/transferParty'
@@ -1837,7 +1885,7 @@ components:
             Object representing the last error to occur during a quote process. This may be a Mojaloop API error returned from another entity in the scheme
             or an object representing other types of error e.g. exceptions that may occur inside the scheme adapter.
           $ref: '#/components/schemas/quoteError'
-      
+
     quoteError:
       type: object
       description: This object represents a Mojaloop API error received at any time during the quote process
@@ -1858,7 +1906,69 @@ components:
           properties:
             bulkQuoteState:
               $ref: '#/components/schemas/bulkQuoteResponse'
-
+    thirdpartyRequestsTransactionRequest:
+      title: thirdpartyRequestTransaction
+      type: object
+      description: Object.
+      properties:
+        transactionRequestId:
+          $ref: '#/components/schemas/mojaloopCorrelationId'
+          description: >
+            Common ID between the FSPs for the transaction request object.
+            The ID should be reused for resends of the same transaction request.
+            A new ID should be generated for each new transaction request.
+        sourceAccountId:
+          $ref: '#/components/schemas/accountAddress'
+          description: DFSP specific account identifiers, e.g. `dfspa.alice.1234`
+        consentId:
+          allOf:
+            - $ref: '#/components/schemas/mojaloopCorrelationId'
+          description: >
+            Common ID between the PISP and FSP for the Consent object
+            This tells DFSP and auth-service which constent allows the PISP to initiate transaction.
+        payee:
+          $ref: '#/components/schemas/transferParty'
+          description: Information about the Payee in the proposed financial transaction.
+        payer:
+          $ref: '#/components/schemas/transferParty'
+          description: Information about the Payer in the proposed financial transaction.
+        amountType:
+          $ref: '#/components/schemas/amountType'
+          description: SEND for sendAmount, RECEIVE for receiveAmount.
+        amount:
+          $ref: '#/components/schemas/money'
+          description: Requested amount to be transferred from the Payer to Payee.
+        transactionType:
+          $ref: '#/components/schemas/transactionType'
+          description: Type of transaction.
+        expiration:
+          $ref: '#/components/schemas/timestamp'
+          description: >
+            Date and time until when the transaction request is valid.
+            It can be set to get a quick failure in case the peer FSP takes too long to respond.
+          example: '2016-05-24T08:38:08.699-04:00'
+      required:
+        - transactionRequestId
+        - sourceAccountId
+        - consentId
+        - payee
+        - payer
+        - amountType
+        - amount
+        - transactionType
+        - expiration
+    thirdpartyRequestsTransactionResponse:
+      title: thirdpartyTransactionResponse
+      type: object
+      description: The object sent in the PUT /thirdPartyRequests/transactions/{ID} request.
+      properties:
+        transactionId:
+          $ref: '#/components/schemas/mojaloopCorrelationId'
+          description: >
+            Identifies a related transaction (if a transaction has been created)
+        transactionRequestState:
+          $ref: '#/components/schemas/mojaloopTransactionRequestState'
+          description: State of the transaction request`
   responses:
     transferSuccess:
       description: Transfer completed successfully
@@ -1973,10 +2083,16 @@ components:
             $ref: '#/components/schemas/errorTransferResponse'
     authorizationsResponse:
       description: authorization response
-      content: 
+      content:
         application/json:
-          schema: 
+          schema:
             $ref: '#/components/schemas/authorizationsResponse'
+    thirdpartyRequestsTransactionResponse:
+      description: Thirdparty requests transaction response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/thirdpartyRequestsTransactionResponse'
 
   parameters:
     transferId:
@@ -2011,3 +2127,11 @@ components:
         pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
         type: string
       description: Identifier of the merchant request to pay transfer to continue as returned in the response to a `POST /requestToPayTransfer` request.
+    transactionRequestId:
+      name: transactionRequestId
+      in: path
+      required: true
+      schema:
+        pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+        type: string
+      description: Identifier of the thirdparty transaction request.
