@@ -214,6 +214,7 @@ describe('Test Server', () => {
         const expectedMessage = {
             data: putParticipantsBody,
             headers: expect.objectContaining(headers),
+            id: participantId
         };
 
         // Expect the client websockets to receive a message containing the callback headers and
@@ -285,6 +286,7 @@ describe('Test Server', () => {
         const expectedMessage = {
             data: postQuotesBody,
             headers: expect.objectContaining(headers),
+            id: postQuotesBody.quoteId,
         };
 
         // Expect the client websockets to receive a message containing the callback headers and
@@ -345,6 +347,7 @@ describe('Test Server', () => {
         const expectedMessage = {
             data: postQuotesBody,
             headers: expect.objectContaining(quoteRequestHeaders),
+            id: postQuotesBody.quoteId,
         };
 
         // Expect the client websockets to receive a message containing the callback
