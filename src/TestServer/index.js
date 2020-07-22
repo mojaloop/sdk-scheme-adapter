@@ -230,8 +230,16 @@ class TestServer {
                 req.url.replace(new RegExp(`^${endpoints.CALLBACK}/`), this._cache.CALLBACK_PREFIX) === key;
             if (req.url === '/' || urlMatchesPrefix || urlMatchesKey) {
                 if (!keyData || !keyDataStr) {
+                    // Strip off the prefix and send the user the id
+                    const requestId = [...urlToMsgPrefixMap.values()].reduce(
+                        (key, prefix) => key.replace(new RegExp(`^${prefix}`), ''),
+                        key
+                    );
                     keyData = await this._cache.get(key);
-                    keyDataStr = JSON.stringify(keyData);
+                    keyDataStr = JSON.stringify({
+                        ...keyData,
+                        id: requestId,
+                    });
                 }
                 this._logger
                     .push({
