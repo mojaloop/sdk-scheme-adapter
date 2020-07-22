@@ -3022,7 +3022,7 @@ components:
     
     AuthenticationValue:
       title: AuthenticationValue
-      oneOf:
+      anyOf:
         - $ref: '#/components/schemas/OtpValue'
         - $ref: '#/components/schemas/QRCODE'
         - $ref: '#/components/schemas/U2FPinValue'
