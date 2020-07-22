@@ -22,7 +22,6 @@ const {
 } = require('@mojaloop/sdk-standard-components');
 const shared = require('@internal/shared');
 
-const util = require('util');
 /**
  *  Models the operations required for performing inbound transfers
  */
