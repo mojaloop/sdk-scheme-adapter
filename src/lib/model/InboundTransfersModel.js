@@ -22,7 +22,7 @@ const {
 } = require('@mojaloop/sdk-standard-components');
 const shared = require('@internal/shared');
 
-
+const util = require('util');
 /**
  *  Models the operations required for performing inbound transfers
  */
@@ -667,22 +667,23 @@ class InboundTransfersModel {
 
     async _handleError(err) {
         let mojaloopErrorCode = Errors.MojaloopApiErrorCodes.INTERNAL_SERVER_ERROR;
-
-        if(err instanceof HTTPResponseError) {
+        if (err instanceof HTTPResponseError) {
             const e = err.getData();
-            if(e.res && e.res.body) {
-                try {
-                    const bodyObj = JSON.parse(e.res.body);
-                    mojaloopErrorCode = Errors.MojaloopApiErrorCodeFromCode(`${bodyObj.statusCode}`);
-                }
-                catch(ex) {
-                    // do nothing
-                    this._logger.push({ ex }).log('Error parsing error message body as JSON');
+            if(e.res && (e.res.body || e.res.data)) {
+                if(e.res.body) {
+                    try {
+                        const bodyObj = JSON.parse(e.res.body);
+                        mojaloopErrorCode = Errors.MojaloopApiErrorCodeFromCode(`${bodyObj.statusCode}`);
+                    } catch(ex) {
+                        // do nothing
+                        this._logger.push({ ex }).log('Error parsing error message body as JSON');
+                    }
+        
+                } else if(e.res.data) {
+                    mojaloopErrorCode = Errors.MojaloopApiErrorCodeFromCode(`${e.res.data.statusCode}`);
                 }
             }
-
         }
-
         return new Errors.MojaloopFSPIOPError(err, null, null, mojaloopErrorCode).toApiErrorObject();
     }
 }
