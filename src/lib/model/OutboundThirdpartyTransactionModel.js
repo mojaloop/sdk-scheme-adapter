@@ -28,7 +28,8 @@ const specStateMachine = {
         getResponse,
 
         // specific transitions handlers methods
-        onGetThirdPartyTransaction
+        onGetThirdPartyTransaction,
+        onPostThirdPartyTransaction
     }
 };
 
@@ -127,7 +128,8 @@ async function run() {
                 break;
 
             case 'postTransaction':
-                // To be implemented.
+                await this.postThirdPartyTransaction();
+                logger.log(`POST Thirdparty transaction requested for ${data.transactionRequestId},  currentState: ${data.currentState}`);
                 break;
 
             case 'succeeded':
@@ -192,6 +194,51 @@ async function onGetThirdPartyTransaction() {
 
             // Not sure what should be the destination FSP so using null for now.
             const res = await requests.getThirdpartyRequestsTransactions(data.transactionRequestId, null);
+            logger.push({ res }).log('Thirdparty transaction request sent to peer');
+
+        } catch(error) {
+            logger.push(error).error('GET thirdparty transaction request error');
+            if(subId) {
+                cache.unsubscribe(subId);
+            }
+            reject(error);
+        }
+    });
+}
+
+async function onPostThirdPartyTransaction() {
+    const { data, cache, logger } = this.context;
+    const { requests } = this.handlersContext;
+    const transferKey = notificationChannel(data.transactionRequestId);
+    let subId;
+
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+        try {
+
+            subId = await cache.subscribe(transferKey, (cn, message, subId) => {
+                try {
+                    const parsed = JSON.parse(message);
+                    this.context.data = {
+                        ...parsed.data,
+                        currentState: this.state
+                    };
+                    resolve();
+                } catch(err) {
+                    reject(err);
+                } finally {
+                    if(subId) {
+                        cache.unsubscribe(subId);
+                    }
+                }
+            });
+
+            const request = {
+                ...data
+            };
+
+            // Not sure what should be the destination FSP so using null for now.
+            const res = await requests.postThirdpartyRequestsTransactions(request, null);
             logger.push({ res }).log('Thirdparty transaction request sent to peer');
 
         } catch(error) {

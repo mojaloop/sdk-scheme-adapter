@@ -501,6 +501,39 @@ const getThirdpartyRequestsTransactions = async (ctx) => {
     }
 };
 
+const postThirdpartyRequestsTransactions = async (ctx) => {
+    try {
+        // prepare request
+        const thirdpartyRequestsTransactionRequest = {
+            ...ctx.request.body,
+            currentState: 'postTransaction',
+        };
+
+        // prepare config
+        const modelConfig = {
+            ...ctx.state.conf,
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            wso2Auth: ctx.state.wso2Auth,
+        };
+
+        const cacheKey = `post_thirdparty_requests_transactions_${ctx.request.body.transactionRequestId}`;
+
+        // use the thirdparty requests transaction model to execute asynchronous stages with the switch
+        const model = await OutboundThirdpartyTransactionModel.create(thirdpartyRequestsTransactionRequest, cacheKey, modelConfig);
+
+        // run model's workflow
+        const response = await model.run();
+
+        // return the result
+        ctx.response.status = 200;
+        ctx.response.body = response;
+
+    } catch(err) {
+        return handleThirdpartyRequestsTransactionsError('postThirdpartyRequestsTransaction', err, ctx);
+    }
+};
+
 module.exports = {
     '/': {
         get: healthCheck
@@ -541,5 +574,8 @@ module.exports = {
     },
     '/thirdpartyRequests/transactions/{transactionRequestId}': {
         get: getThirdpartyRequestsTransactions
-    }
+    },
+    '/thirdpartyRequests/transactions': {
+        post: postThirdpartyRequestsTransactions
+    },
 };

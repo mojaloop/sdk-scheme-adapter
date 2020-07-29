@@ -1458,6 +1458,136 @@ components:
         extensionList:
           $ref: '#/components/schemas/extensionList'
 
+    mojaloopParty:
+      title: mojaloopParty
+      type: object
+      description: Data model for the complex type Party.
+      properties:
+        accounts:
+          $ref: '#/components/schemas/accountList'
+          description: List of accounts associated with the party containing and DFSP routable address, currency identifier and description.
+        partyIdInfo:
+          $ref: '#/components/schemas/mojaloopPartyIdInfo'
+          description: Party Id type, id, sub ID or type, and FSP Id.
+        merchantClassificationCode:
+          type: string
+          description: Used in the context of Payee Information, where the Payee happens to be a merchant accepting merchant payments.
+          example: 4321
+        name:
+          type: string
+          description: Display name of the Party, could be a real name or a nick name.
+          example: Henrik Karlsson
+        personalInfo:
+          $ref: '#/components/schemas/mojaloopPartyPersonalInfo'
+          description: Personal information used to verify identity of Party such as first, middle, last name and date of birth.
+      required:
+        - partyIdInfo
+
+    mojaloopPartyIdInfo:
+      title: mojaloopPartyIdInfo
+      type: object
+      description: Data model for the complex type PartyIdInfo.
+      properties:
+        partyIdType:
+          type: string
+          description: Type of the identifier.
+          example: PERSONAL_ID
+        partyIdentifier:
+          type: string
+          description: An identifier for the Party.
+          example: 16135551212
+        partySubIdOrType:
+          type: string
+          description: A sub-identifier or sub-type for the Party.
+          example: DRIVING_LICENSE
+        fspId:
+          type: string
+          description: FSP ID (if known).
+          example: 1234
+      required:
+        - partyIdType
+        - partyIdentifier
+
+    mojaloopPartyPersonalInfo:
+      title: mojaloopPartyPersonalInfo
+      type: object
+      description: Data model for the complex type mojaloopPartyPersonalInfo.
+      properties:
+        complexName:
+          $ref: '#/components/schemas/mojaloopPartyComplexName'
+          description: First, middle and last name for the Party.
+        dateOfBirth:
+          type: string
+          description: Date of birth for the Party.
+          example: '1966-06-16'
+
+    mojaloopPartyComplexName:
+      title: PartyComplexName
+      type: object
+      description: Data model for the complex type mojaloopPartyComplexName.
+      properties:
+        firstName:
+          type: string
+          description: Party’s first name.
+          example: Henrik
+        middleName:
+          type: string
+          description: Party’s middle name.
+          example: Johannes
+        lastName:
+          type: string
+          description: Party’s last name.
+          example: Karlsson
+
+    mojaloopTransactionType:
+      title: TransactionType
+      type: object
+      description: Data model for the complex type mojaloopTransactionType.
+      properties:
+        scenario:
+          type: string
+          description: Deposit, withdrawal, refund, …
+          example: DEPOSIT
+        subScenario:
+          type: string
+          description: Possible sub-scenario, defined locally within the scheme.
+          example: Locally defined sub-scenario.
+        initiator:
+          type: string
+          description: Who is initiating the transaction - Payer or Payee.
+          example: PAYEE
+        initiatorType:
+          type: string
+          description: Consumer, agent, business, …
+          example: CONSUMER
+        refundInfo:
+          $ref: '#/components/schemas/mojaloopRefund'
+          description: Extra information specific to a refund scenario. Should only be populated if scenario is REFUND.
+        balanceOfPayments:
+          type: string
+          description: Balance of Payments code.
+          example: 123
+      required:
+        - scenario
+        - initiator
+        - initiatorType
+
+    mojaloopRefund:
+      title: mojaloopRefund
+      type: object
+      description: Data model for the complex type mojaloopRefund.
+      properties:
+        originalTransactionId:
+          type: string
+          description: Reference to the original transaction ID that is requested to be refunded.
+          example: b51ec534-ee48-4575-b6a9-ead2955b8069
+        refundReason:
+          type: string
+          description: Free text indicating the reason for the refund.
+          example: Free text indicating reason for the refund.
+      required:
+        - originalTransactionId
+
     transferError:
       type: object
       description: This object represents a Mojaloop API error received at any time during the transfer process
@@ -1927,19 +2057,19 @@ components:
             Common ID between the PISP and FSP for the Consent object
             This tells DFSP and auth-service which constent allows the PISP to initiate transaction.
         payee:
-          $ref: '#/components/schemas/transferParty'
+          $ref: '#/components/schemas/mojaloopParty'
           description: Information about the Payee in the proposed financial transaction.
         payer:
-          $ref: '#/components/schemas/transferParty'
+          $ref: '#/components/schemas/mojaloopParty'
           description: Information about the Payer in the proposed financial transaction.
         amountType:
           $ref: '#/components/schemas/amountType'
           description: SEND for sendAmount, RECEIVE for receiveAmount.
         amount:
-          $ref: '#/components/schemas/money'
+          $ref: '#/components/schemas/mojaloopMoney'
           description: Requested amount to be transferred from the Payer to Payee.
         transactionType:
-          $ref: '#/components/schemas/transactionType'
+          $ref: '#/components/schemas/mojaloopTransactionType'
           description: Type of transaction.
         expiration:
           $ref: '#/components/schemas/timestamp'

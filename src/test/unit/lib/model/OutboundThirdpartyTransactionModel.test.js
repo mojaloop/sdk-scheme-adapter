@@ -78,7 +78,8 @@ describe('thirdpartyTransactionModel', () => {
             // model's methods layout
             const methods = [
                 'run', 'getResponse',
-                'onGetThirdPartyTransaction'
+                'onGetThirdPartyTransaction',
+                'onPostThirdPartyTransaction'
             ];
 
             methods.forEach((method) => expect(typeof model[method]).toEqual('function'));
@@ -244,6 +245,107 @@ describe('thirdpartyTransactionModel', () => {
             expect(cache.unsubscribe).toBeCalledWith(subId);
         });
     });
+
+    describe('onPostThirdPartyTransaction', () => {
+
+        it('should implement happy flow', async () => {
+            data.transactionRequestId = uuid();
+            const channel = Model.notificationChannel(data.transactionRequestId);
+            const model = await Model.create(data, cacheKey, modelConfig);
+            const { cache } = model.context;
+            // mock workflow execution which is tested in separate case
+            model.run = jest.fn(() => Promise.resolve());
+
+            const message = {
+                data: {
+                    Iam: 'the-body',
+                    transactionRequestId: model.context.data.transactionRequestId
+                }
+            };
+
+            // manually invoke transition handler
+            model.onPostThirdPartyTransaction()
+                .then(() => {
+                    // subscribe should be called only once
+                    expect(cache.subscribe).toBeCalledTimes(1);
+
+                    // subscribe should be done to proper notificationChannel
+                    expect(cache.subscribe.mock.calls[0][0]).toEqual(channel);
+
+                    // check invocation of request.postThirdpartyRequestsTransactions
+                    expect(ThirdpartyRequests.__postThirdpartyRequestsTransactions).toBeCalledWith(data.transactionRequestId, null);
+
+                    // check that this.context.data is updated
+                    expect(model.context.data).toEqual({
+                        Iam: 'the-body',
+                        transactionRequestId: model.context.data.transactionRequestId,
+
+                        // current state will be updated by onAfterTransition which isn't called
+                        // when manual invocation of transition handler happens
+                        currentState: 'postTransaction'
+                    });
+                });
+
+            // ensure handler wasn't called before publishing the message
+            expect(handler).not.toBeCalled();
+
+            // ensure that cache.unsubscribe does not happened before fire the message
+            expect(cache.unsubscribe).not.toBeCalled();
+
+
+            // fire publication with given message
+            await cache.publish(channel, JSON.stringify(message));
+
+            // handler should be called only once
+            expect(handler).toBeCalledTimes(1);
+
+            // handler should unsubscribe from notification channel
+            expect(cache.unsubscribe).toBeCalledTimes(1);
+            expect(cache.unsubscribe).toBeCalledWith(subId);
+        });
+
+        it('should unsubscribe from cache in case when error happens in workflow run', async () => {
+            data.transactionRequestId = uuid();
+            const channel = Model.notificationChannel(data.transactionRequestId);
+            const model = await Model.create(data, cacheKey, modelConfig);
+            const { cache } = model.context;
+
+            // invoke transition handler
+            model.onPostThirdPartyTransaction().catch((err) => {
+                expect(err.message).toEqual('Unexpected token u in JSON at position 0');
+                expect(cache.unsubscribe).toBeCalledTimes(1);
+                expect(cache.unsubscribe).toBeCalledWith(subId);
+            });
+
+            // fire publication to channel with invalid message
+            // should throw the exception from JSON.parse
+            await cache.publish(channel, undefined);
+
+        });
+
+        it('should unsubscribe from cache in case when error happens Mojaloop requests', async () => {
+            // simulate error
+            ThirdpartyRequests.__postThirdpartyRequestsTransactions = jest.fn(() => Promise.reject('postThirdPartyTransaction failed'));
+            data.transactionRequestId = uuid();
+
+            const model = await Model.create(data, cacheKey, modelConfig);
+            const { cache } = model.context;
+
+            let theError = null;
+            // invoke transition handler
+            try {
+                await model.onPostThirdPartyTransaction();
+                throw new Error('this point should not be reached');
+            } catch (error) {
+                theError = error;
+            }
+            expect(theError).toEqual('postThirdPartyTransaction failed');
+            // handler should unsubscribe from notification channel
+            expect(cache.unsubscribe).toBeCalledTimes(1);
+            expect(cache.unsubscribe).toBeCalledWith(subId);
+        });
+    });
+
     describe('run get thirdparty transaction workflow', () => {
 
         it('start', async () => {
@@ -313,6 +415,77 @@ describe('thirdpartyTransactionModel', () => {
             // ensure we start transition to errored state
             expect(model.error).toBeCalledTimes(1);
         });
+    });
 
+    describe('run post thirdparty transaction workflow', () => {
+
+        it('start', async () => {
+            data.currentState = 'postTransaction';
+            const model = await Model.create(data, cacheKey, modelConfig);
+
+            model.onPostThirdPartyTransaction = jest.fn(() => Promise.resolve({the: 'response'}));
+            model.getResponse = jest.fn(() => Promise.resolve({the: 'response'}));
+
+            const result = await model.run();
+            expect(result).toEqual({the: 'response'});
+            expect(model.getResponse).toBeCalledTimes(1);
+            expect(model.context.logger.log.mock.calls).toEqual([
+                ['State machine transitioned \'init\': none -> postTransaction'],
+                ['State machine transitioned \'postThirdPartyTransaction\': postTransaction -> succeeded'],
+                [`POST Thirdparty transaction requested for ${data.transactionRequestId},  currentState: ${data.currentState}`],
+                ['Thirdparty request model state machine transition completed in state: succeeded. Recursing to handle next transition.'],
+                ['ThirdpartyTransaction completed successfully']
+            ]);
+        });
+
+        it('succeeded', async () => {
+            const model = await Model.create(data, cacheKey, modelConfig);
+
+            model.getResponse = jest.fn(() => Promise.resolve({the: 'response'}));
+
+            model.context.data.currentState = 'succeeded';
+            const result = await model.run();
+
+            expect(result).toEqual({the: 'response'});
+            expect(model.getResponse).toBeCalledTimes(1);
+            expect(model.context.logger.log).toBeCalledWith('ThirdpartyTransaction completed successfully');
+        });
+
+        it('errored', async () => {
+            const model = await Model.create(data, cacheKey, modelConfig);
+
+            model.getResponse = jest.fn(() => Promise.resolve({the: 'response'}));
+
+            model.context.data.currentState = 'errored';
+            const result = await model.run();
+
+            expect(result).toBeFalsy();
+            expect(model.getResponse).not.toBeCalled();
+            expect(model.context.logger.log).toBeCalledWith('State machine in errored state');
+        });
+
+        it('should handle errors', async () => {
+            const model = await Model.create(data, cacheKey, modelConfig);
+
+            model.getThirdPartyTransaction  = jest.fn(() => {
+                const err = new Error('postTransaction failed');
+                err.authorizationState = 'some';
+                return Promise.reject(err);
+            });
+            model.error = jest.fn();
+
+            let theError = null;
+            try {
+                await model.run();
+                throw new Error('this point should not be reached');
+            } catch(error) {
+                theError = error;
+            }
+            // check propagation of original error
+            expect(theError.message).toEqual('postTransaction failed');
+
+            // ensure we start transition to errored state
+            expect(model.error).toBeCalledTimes(1);
+        });
     });
 });
