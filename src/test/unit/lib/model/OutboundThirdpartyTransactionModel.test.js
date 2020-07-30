@@ -158,8 +158,8 @@ describe('thirdpartyTransactionModel', () => {
 
             const message = {
                 data: {
-                    Iam: 'the-body',
-                    transactionRequestId: model.context.data.transactionRequestId
+                    'transactionId': '5a2ad5dc-4ab1-4a22-8c5b-62f75252a8d5',
+                    'transactionRequestState': 'RECEIVED'
                 }
             };
 
@@ -177,8 +177,8 @@ describe('thirdpartyTransactionModel', () => {
 
                     // check that this.context.data is updated
                     expect(model.context.data).toEqual({
-                        Iam: 'the-body',
-                        transactionRequestId: model.context.data.transactionRequestId,
+                        'transactionId': '5a2ad5dc-4ab1-4a22-8c5b-62f75252a8d5',
+                        'transactionRequestState': 'RECEIVED',
 
                         // current state will be updated by onAfterTransition which isn't called
                         // when manual invocation of transition handler happens
@@ -258,8 +258,8 @@ describe('thirdpartyTransactionModel', () => {
 
             const message = {
                 data: {
-                    Iam: 'the-body',
-                    transactionRequestId: model.context.data.transactionRequestId
+                    'transactionId': '5a2ad5dc-4ab1-4a22-8c5b-62f75252a8d5',
+                    'transactionRequestState': 'RECEIVED'
                 }
             };
 
