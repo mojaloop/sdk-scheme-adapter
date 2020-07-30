@@ -67,7 +67,9 @@ describe('thirdpartyTransactionModel', () => {
             },
             ...defaultConfig
         };
-        data = {currentState: 'getTransaction'};
+        data = {
+            currentState: 'getTransaction',
+        };
     });
 
     describe('create', () => {
@@ -250,6 +252,20 @@ describe('thirdpartyTransactionModel', () => {
 
         it('should implement happy flow', async () => {
             data.transactionRequestId = uuid();
+            let payerInformation = {
+                'personalInfo': {
+                    'complexName': {
+                        'firstName': 'Ayesha',
+                        'lastName': 'Takia'
+                    }
+                },
+                'partyIdInfo': {
+                    'partyIdType': 'MSISDN',
+                    'partyIdentifier': '+44 8765 4321',
+                    'fspId': 'dfspa'
+                }
+            };
+            data.payer = payerInformation;
             const channel = Model.notificationChannel(data.transactionRequestId);
             const model = await Model.create(data, cacheKey, modelConfig);
             const { cache } = model.context;
@@ -273,13 +289,13 @@ describe('thirdpartyTransactionModel', () => {
                     expect(cache.subscribe.mock.calls[0][0]).toEqual(channel);
 
                     // check invocation of request.postThirdpartyRequestsTransactions
-                    expect(ThirdpartyRequests.__postThirdpartyRequestsTransactions).toBeCalledWith(data.transactionRequestId, null);
+                    expect(ThirdpartyRequests.__postThirdpartyRequestsTransactions).toBeCalledWith(data.transactionRequestId, 'dfspa');
 
                     // check that this.context.data is updated
                     expect(model.context.data).toEqual({
                         Iam: 'the-body',
                         transactionRequestId: model.context.data.transactionRequestId,
-
+                        payer: payerInformation,
                         // current state will be updated by onAfterTransition which isn't called
                         // when manual invocation of transition handler happens
                         currentState: 'postTransaction'
@@ -327,6 +343,20 @@ describe('thirdpartyTransactionModel', () => {
             // simulate error
             ThirdpartyRequests.__postThirdpartyRequestsTransactions = jest.fn(() => Promise.reject('postThirdPartyTransaction failed'));
             data.transactionRequestId = uuid();
+            let payerInformation = {
+                'personalInfo': {
+                    'complexName': {
+                        'firstName': 'Ayesha',
+                        'lastName': 'Takia'
+                    }
+                },
+                'partyIdInfo': {
+                    'partyIdType': 'MSISDN',
+                    'partyIdentifier': '+44 8765 4321',
+                    'fspId': 'dfspa'
+                }
+            };
+            data.payer = payerInformation;
 
             const model = await Model.create(data, cacheKey, modelConfig);
             const { cache } = model.context;
