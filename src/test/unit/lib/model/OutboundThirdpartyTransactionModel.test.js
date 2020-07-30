@@ -5,7 +5,7 @@
  *  specified in the corresponding source code repository.                *
  *                                                                        *
  *  ORIGINAL AUTHOR:                                                      *
- *       Paweł Marzec - pawel.marzec@modusbox.com                         *
+ *       Kevin Leyow - kevin.leyow@modusbox.com                           *
  **************************************************************************/
 
 'use strict';
@@ -359,19 +359,19 @@ describe('thirdpartyTransactionModel', () => {
             expect(model.getResponse).toBeCalledTimes(1);
             expect(model.context.logger.log.mock.calls).toEqual([
                 ['State machine transitioned \'init\': none -> getTransaction'],
-                ['State machine transitioned \'getThirdPartyTransaction\': getTransaction -> succeeded'],
+                ['State machine transitioned \'getThirdPartyTransaction\': getTransaction -> transactionSuccess'],
                 [`GET Thirdparty transaction requested for ${data.transactionRequestId},  currentState: ${data.currentState}`],
-                ['Thirdparty request model state machine transition completed in state: succeeded. Recursing to handle next transition.'],
+                ['Thirdparty request model state machine transition completed in state: transactionSuccess. Recursing to handle next transition.'],
                 ['ThirdpartyTransaction completed successfully']
             ]);
         });
 
-        it('succeeded', async () => {
+        it('transactionSuccess', async () => {
             const model = await Model.create(data, cacheKey, modelConfig);
 
             model.getResponse = jest.fn(() => Promise.resolve({the: 'response'}));
 
-            model.context.data.currentState = 'succeeded';
+            model.context.data.currentState = 'transactionSuccess';
             const result = await model.run();
 
             expect(result).toEqual({the: 'response'});
@@ -431,19 +431,19 @@ describe('thirdpartyTransactionModel', () => {
             expect(model.getResponse).toBeCalledTimes(1);
             expect(model.context.logger.log.mock.calls).toEqual([
                 ['State machine transitioned \'init\': none -> postTransaction'],
-                ['State machine transitioned \'postThirdPartyTransaction\': postTransaction -> succeeded'],
+                ['State machine transitioned \'postThirdPartyTransaction\': postTransaction -> transactionSuccess'],
                 [`POST Thirdparty transaction requested for ${data.transactionRequestId},  currentState: ${data.currentState}`],
-                ['Thirdparty request model state machine transition completed in state: succeeded. Recursing to handle next transition.'],
+                ['Thirdparty request model state machine transition completed in state: transactionSuccess. Recursing to handle next transition.'],
                 ['ThirdpartyTransaction completed successfully']
             ]);
         });
 
-        it('succeeded', async () => {
+        it('transactionSuccess', async () => {
             const model = await Model.create(data, cacheKey, modelConfig);
 
             model.getResponse = jest.fn(() => Promise.resolve({the: 'response'}));
 
-            model.context.data.currentState = 'succeeded';
+            model.context.data.currentState = 'transactionSuccess';
             const result = await model.run();
 
             expect(result).toEqual({the: 'response'});

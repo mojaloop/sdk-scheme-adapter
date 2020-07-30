@@ -18,8 +18,8 @@ const ThirdpartyRequests = require('@mojaloop/sdk-standard-components').Thirdpar
 
 const specStateMachine = {
     transitions: [
-        { name: 'getThirdPartyTransaction', from: 'getTransaction', to: 'succeeded' },
-        { name: 'postThirdPartyTransaction', from: 'postTransaction', to: 'succeeded' },
+        { name: 'getThirdPartyTransaction', from: 'getTransaction', to: 'transactionSuccess' },
+        { name: 'postThirdPartyTransaction', from: 'postTransaction', to: 'transactionSuccess' },
         { name: 'error', from: '*', to: 'errored' },
     ],
     methods: {
@@ -36,7 +36,7 @@ const specStateMachine = {
 const mapCurrentState = {
     getTransaction: 'WAITING',
     postTransaction: 'WAITING',
-    succeeded: 'COMPLETED',
+    transactionSuccess: 'COMPLETED',
     errored: 'ERROR_OCCURRED'
 };
 
@@ -132,7 +132,7 @@ async function run() {
                 logger.log(`POST Thirdparty transaction requested for ${data.transactionRequestId},  currentState: ${data.currentState}`);
                 break;
 
-            case 'succeeded':
+            case 'transactionSuccess':
                 // all steps complete so return
                 logger.log('ThirdpartyTransaction completed successfully');
                 return this.getResponse();
