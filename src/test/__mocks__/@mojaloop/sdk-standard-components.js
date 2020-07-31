@@ -72,9 +72,12 @@ class MockThirdpartyRequests extends ThirdpartyRequests {
         super(...args);
         MockThirdpartyRequests.__instance = this;
         this.postAuthorizations = MockMojaloopRequests.__postAuthorizations;
+        this.getThirdpartyRequestsTransactions = MockThirdpartyRequests.__getThirdpartyRequestsTransactions;
+        this.postThirdpartyRequestsTransactions = MockThirdpartyRequests.__postThirdpartyRequestsTransactions;
     }
 }
-MockMojaloopRequests.__postAuthorizations = jest.fn(() => Promise.resolve());
+MockThirdpartyRequests.__getThirdpartyRequestsTransactions = jest.fn(() => Promise.resolve());
+MockThirdpartyRequests.__postThirdpartyRequestsTransactions = jest.fn(() => Promise.resolve());
 
 class MockIlp {
     constructor(config) {
