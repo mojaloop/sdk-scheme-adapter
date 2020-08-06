@@ -339,9 +339,9 @@ describe('inboundModel', () => {
             BackendRequests.__getTransfers = jest.fn().mockReturnValue(
                 Promise.reject(new HTTPResponseError({
                     res: {
-                        data: JSON.stringify({
+                        data: {
                             statusCode: '3208'
-                        }),
+                        },
                     }
                 })));
 
@@ -512,9 +512,9 @@ describe('inboundModel', () => {
             BackendRequests.__getBulkTransfers = jest.fn().mockReturnValue(
                 Promise.reject(new HTTPResponseError({
                     res: {
-                        data: JSON.stringify({
+                        data: {
                             statusCode: '3208'
-                        }),
+                        },
                     }
                 })));
 
