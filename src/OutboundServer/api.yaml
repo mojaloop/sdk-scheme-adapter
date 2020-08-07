@@ -2090,7 +2090,7 @@ components:
     thirdpartyRequestsTransactionResponse:
       title: thirdpartyTransactionResponse
       type: object
-      description: The object sent in the PUT /thirdPartyRequests/transactions/{ID} request.
+      description: The object sent in the PUT /thirdpartyRequests/transactions/{ID} request.
       properties:
         transactionId:
           $ref: '#/components/schemas/mojaloopCorrelationId'

@@ -399,8 +399,8 @@ const putAuthorizationsById = async (ctx) => {
     }
 
     const idValue = ctx.state.path.params.ID;
-    
-    const authorizationChannel = ctx.state.conf.enablePISPMode 
+
+    const authorizationChannel = ctx.state.conf.enablePISPMode
         ? AuthorizationsModel.notificationChannel(idValue)
         : `otp_${ctx.state.path.params.ID}`;
 
@@ -924,8 +924,8 @@ const putBulkTransfersByIdError = async(ctx) => {
 };
 
 /**
- * Handles PUT /thirdPartyRequests/transactions/{ID} request. 
- * This is response to a POST /thirdPartyRequests/transactions request
+ * Handles PUT /thirdpartyRequests/transactions/{ID} request.
+ * This is response to a POST /thirdpartyRequests/transactions request
  */
 const putThirdPartyReqTransactionsById = async (ctx) => {
     if (ctx.state.conf.enableTestFeatures) {
@@ -940,7 +940,7 @@ const putThirdPartyReqTransactionsById = async (ctx) => {
 
     // publish an event onto the cache for subscribers to action
     await ThirdpartyTrxnModelOut.publishNotifications(ctx.state.cache, ctx.state.path.params.ID, {
-        type: 'thirdPartyTransactionsReqResponse',
+        type: 'thirdpartyTransactionsReqResponse',
         data: ctx.request.body,
         headers: ctx.request.headers
     });
@@ -949,8 +949,8 @@ const putThirdPartyReqTransactionsById = async (ctx) => {
 };
 
 /**
- * Handles PUT /thirdPartyRequests/transactions/{ID}/error. 
- * This is error response to POST /thirdPartyRequests/transactions request
+ * Handles PUT /thirdpartyRequests/transactions/{ID}/error.
+ * This is error response to POST /thirdpartyRequests/transactions request
  */
 const putThirdPartyReqTransactionsByIdError = async (ctx) => {
     if (ctx.state.conf.enableTestFeatures) {
@@ -965,7 +965,7 @@ const putThirdPartyReqTransactionsByIdError = async (ctx) => {
 
     // publish an event onto the cache for subscribers to action
     await ThirdpartyTrxnModelOut.publishNotifications(ctx.state.cache, ctx.state.path.params.ID, {
-        type: 'thirdPartyTransactionsReqErrorResponse',
+        type: 'thirdpartyTransactionsReqErrorResponse',
         data: ctx.request.body,
         headers: ctx.request.headers
     });
@@ -1064,10 +1064,10 @@ module.exports = {
     '/transactionRequests/{ID}': {
         put: putTransactionRequestsById
     },
-    '/thirdPartyRequests/transactions/{ID}': {
+    '/thirdpartyRequests/transactions/{ID}': {
         put: putThirdPartyReqTransactionsById
     },
-    '/thirdPartyRequests/transactions/{ID}/error': {
+    '/thirdpartyRequests/transactions/{ID}/error': {
         put: putThirdPartyReqTransactionsByIdError
     }
 };

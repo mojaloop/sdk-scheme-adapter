@@ -236,7 +236,7 @@ async function onPostThirdPartyTransaction() {
             const request = {
                 ...data
             };
-            console.log(data);
+
             // Request is routed to switch and then to the payer's fsp.
             const res = await requests.postThirdpartyRequestsTransactions(request, data.payer.partyIdInfo.fspId);
             logger.push({ res }).log('Thirdparty transaction request sent to peer');
