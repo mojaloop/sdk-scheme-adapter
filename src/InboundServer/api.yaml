@@ -2604,11 +2604,11 @@ paths:
           $ref: '#/components/responses/ErrorResponse501'
         503:
           $ref: '#/components/responses/ErrorResponse503'
-  /thirdpartyRequest/transactions/{ID}/error:
+  /thirdpartyRequests/transactions/{ID}/error:
     put:
       description: >
         If the server is unable to find the transaction request, or another processing error occurs,
-        the error callback `PUT /thirdpartyRequest/transactions/{ID}/error` is used.
+        the error callback `PUT /thirdpartyRequests/transactions/{ID}/error` is used.
         The `{ID}` in the URI should contain the `transactionRequestId` that was used for the creation of the transaction request.
       summary: Return transaction error
       tags:

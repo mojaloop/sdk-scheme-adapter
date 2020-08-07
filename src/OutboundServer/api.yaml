@@ -408,7 +408,7 @@ paths:
     get:
       summary: Retrieves information for a specific thirdparty request transaction.
       description: >
-        The HTTP request `GET /thirdpartyRequest/transaction/{transactionRequestId}` is used to get information regarding a thirdparty transaction created or requested earlier.
+        The HTTP request `GET /thirdpartyRequests/transactions/{transactionRequestId}` is used to get information regarding a thirdparty transaction created or requested earlier.
         The `{transactionRequestId}` in the URI should contain the `ID` that was used for the creation of the thirdparty request transaction.
       tags:
         - thirdpartyRequest
