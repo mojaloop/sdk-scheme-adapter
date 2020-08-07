@@ -84,7 +84,7 @@ describe('Inbound API handlers:', () => {
                 },
                 response: {},
                 state: {
-                    conf: {},                    
+                    conf: {},
                     logger: mockLogger({ app: 'inbound-handlers-unit-test' })
                 }
             };
@@ -126,7 +126,7 @@ describe('Inbound API handlers:', () => {
                     logger: mockLogger({ app: 'inbound-handlers-unit-test' }),
                     cache: {
                         publish: async () => Promise.resolve(true)
-                    } 
+                    }
                 }
             };
         });
@@ -174,7 +174,7 @@ describe('Inbound API handlers:', () => {
                     logger: mockLogger({ app: 'inbound-handlers-unit-test' }),
                     cache: {
                         publish: async () => Promise.resolve(true)
-                    } 
+                    }
                 }
             };
         });
@@ -283,7 +283,7 @@ describe('Inbound API handlers:', () => {
                     logger: mockLogger({ app: 'inbound-handlers-unit-test' }),
                     cache: {
                         publish: async () => Promise.resolve(true)
-                    } 
+                    }
                 }
             };
         });
@@ -331,7 +331,7 @@ describe('Inbound API handlers:', () => {
                     logger: mockLogger({ app: 'inbound-handlers-unit-test' }),
                     cache: {
                         publish: async () => Promise.resolve(true)
-                    } 
+                    }
                 }
             };
         });
@@ -584,7 +584,7 @@ describe('Inbound API handlers:', () => {
         });
     });
 
-    describe('PUT /thirdPartyRequests/transactions', () => {
+    describe('PUT /thirdpartyRequests/transactions', () => {
         let mockThirdPartyReqContext;
         beforeEach(() => {
             mockThirdPartyReqContext = {
@@ -612,15 +612,15 @@ describe('Inbound API handlers:', () => {
             };
         });
 
-        test('calls `model.thirdPartyRequests.transactions` with the expected arguments.', async () => {
+        test('calls `model.thirdpartyRequests.transactions` with the expected arguments.', async () => {
             const pubNotificatiosnSpy = jest.spyOn(ThirdpartyTrxnModelOut, 'publishNotifications');
 
-            await expect(handlers['/thirdPartyRequests/transactions/{ID}'].put(mockThirdPartyReqContext)).resolves.toBe(undefined);
+            await expect(handlers['/thirdpartyRequests/transactions/{ID}'].put(mockThirdPartyReqContext)).resolves.toBe(undefined);
 
             expect(pubNotificatiosnSpy).toHaveBeenCalledTimes(1);
             expect(pubNotificatiosnSpy).toHaveBeenCalledWith(mockThirdPartyReqContext.state.cache,
                 mockThirdPartyReqContext.state.path.params.ID, {
-                    type: 'thirdPartyTransactionsReqResponse',
+                    type: 'thirdpartyTransactionsReqResponse',
                     data: mockThirdPartyReqContext.request.body,
                     headers: mockThirdPartyReqContext.request.headers
                 });
