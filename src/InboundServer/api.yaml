@@ -4061,7 +4061,7 @@ components:
           description: A sub-identifier or sub-type for the Party.
           example: DRIVING_LICENSE
         fspId:
-          $ref: '/components/schemas/FspId'
+          $ref: '#/components/schemas/FspId'
           description: FSP ID (if known).
           example: 1234
         extensionList:
