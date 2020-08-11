@@ -1673,33 +1673,33 @@ paths:
       operationId: TransfersByIDPatch
       parameters:
         #Headers
-        - $ref: "#/components/parameters/Content-Length"
+        - $ref: '#/components/parameters/Content-Length'
       requestBody:
         description: Transfer notification upon completion.
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/TransfersIDPatchResponse"
+              $ref: '#/components/schemas/TransfersIDPatchResponse'
       responses:
         200:
-          $ref: "#/components/responses/Response200"
+          $ref: '#/components/responses/Response200'
         400:
-          $ref: "#/components/responses/ErrorResponse400"
+          $ref: '#/components/responses/ErrorResponse400'
         401:
-          $ref: "#/components/responses/ErrorResponse401"
+          $ref: '#/components/responses/ErrorResponse401'
         403:
-          $ref: "#/components/responses/ErrorResponse403"
+          $ref: '#/components/responses/ErrorResponse403'
         404:
-          $ref: "#/components/responses/ErrorResponse404"
+          $ref: '#/components/responses/ErrorResponse404'
         405:
-          $ref: "#/components/responses/ErrorResponse405"
+          $ref: '#/components/responses/ErrorResponse405'
         406:
-          $ref: "#/components/responses/ErrorResponse406"
+          $ref: '#/components/responses/ErrorResponse406'
         501:
-          $ref: "#/components/responses/ErrorResponse501"
+          $ref: '#/components/responses/ErrorResponse501'
         503:
-          $ref: "#/components/responses/ErrorResponse503"
+          $ref: '#/components/responses/ErrorResponse503'
 
   '/transfers/{ID}/error':
     put:
@@ -3938,15 +3938,15 @@ components:
       description: The object sent in the POST /participants/{Type}/{ID}/{SubId} and /participants/{Type}/{ID} requests. An additional optional ExtensionList element has been added as part of v1.1 changes.
       properties:
         fspId:
-          $ref: "#/components/schemas/FspId"
+          $ref: '#/components/schemas/FspId'
           description: FSP Identifier that the Party belongs to.
           example: 1234
         currency:
-          $ref: "#/components/schemas/Currency"
+          $ref: '#/components/schemas/Currency'
           description: Indicate that the provided Currency is supported by the Party.
           example: USD
         extensionList:
-          $ref: "#/components/schemas/ExtensionList"
+          $ref: '#/components/schemas/ExtensionList'
           description: Optional extension, specific to deployment.
       required:
         - fspId
@@ -4049,23 +4049,23 @@ components:
       description: Data model for the complex type PartyIdInfo. An ExtensionList element has been added to this reqeust in version v1.1
       properties:
         partyIdType:
-          $ref: "#/components/schemas/PartyIdType"
+          $ref: '#/components/schemas/PartyIdType'
           description: Type of the identifier.
           example: PERSONAL_ID
         partyIdentifier:
-          $ref: "#/components/schemas/PartyIdentifier"
+          $ref: '#/components/schemas/PartyIdentifier'
           description: An identifier for the Party.
           example: 16135551212
         partySubIdOrType:
-          $ref: "#/components/schemas/PartySubIdOrType"
+          $ref: '#/components/schemas/PartySubIdOrType'
           description: A sub-identifier or sub-type for the Party.
           example: DRIVING_LICENSE
         fspId:
-          $ref: "#/components/schemas/FspId"
+          $ref: '/components/schemas/FspId'
           description: FSP ID (if known).
           example: 1234
         extensionList:
-          $ref: "#/components/schemas/ExtensionList"
+          $ref: '#/components/schemas/ExtensionList'
           description: Optional extension, specific to deployment.
       required:
         - partyIdType
@@ -4480,15 +4480,15 @@ components:
       description: PATCH /transfers/{ID} object
       properties:
         completedTimestamp:
-          $ref: "#/components/schemas/DateTime"
+          $ref: '#/components/schemas/DateTime'
           description: Time and date when the transaction was completed.
           example: "2020-05-19T08:38:08.699-04:00"
         transferState:
-          $ref: "#/components/schemas/TransferState"
+          $ref: '#/components/schemas/TransferState'
           description: State of the transfer.
           example: RESERVED
         extensionList:
-          $ref: "#/components/schemas/ExtensionList"
+          $ref: '#/components/schemas/ExtensionList'
           description: Optional extension, specific to deployment.
       required:
         - completedTimestamp
