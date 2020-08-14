@@ -15,7 +15,7 @@ orbs:
 # defaults
 #
 # YAML defaults templates, in alphabetical order
-##  
+##
 defaults_Dependencies: &defaults_Dependencies |
   apk --no-cache add git
   apk --no-cache add ca-certificates
@@ -50,7 +50,7 @@ defaults_license_scanner: &defaults_license_scanner
 executors:
   default-docker:
     working_directory: /home/circleci/project
-    docker: 
+    docker:
       - image: node:12.16.1-alpine
 
   default-machine:
@@ -74,13 +74,13 @@ jobs:
           name: Access npm folder as root
           command: cd $(npm root -g)/npm
       - run:
-          name: Update NPM install
-          command: cd src && npm install
+          name: Update NPM install (using `npm ci`
+          command: cd src && npm ci
       - run:
           name: Delete build dependencies
           command: apk del build-dependencies
       - save_cache:
-          key: dependency-cache-5-{{ checksum "src/package.json" }}
+          key: dependency-cache-v1-{{ checksum "src/package-lock.json" }}
           paths:
             - src/node_modules
 
@@ -92,8 +92,9 @@ jobs:
           name: Install general dependencies
           command: *defaults_Dependencies
       - restore_cache:
-          keys:
-          - dependency-cache-5-{{ checksum "src/package.json" }}
+          key: dependency-cache-v1-{{ checksum "src/package-lock.json" }}
+          paths:
+            - src/node_modules
       - run:
           name: Execute unit tests
           command: cd src && npm run test
@@ -134,8 +135,9 @@ jobs:
           name: Install general dependencies
           command: *defaults_Dependencies
       - restore_cache:
-          keys:
-          - dependency-cache-5-{{ checksum "src/package.json" }}
+          key: dependency-cache-v1-{{ checksum "src/package-lock.json" }}
+          paths:
+            - src/node_modules
       - run:
           name: Create dir for lint results
           command: cd src && mkdir -p /lintresults
@@ -155,7 +157,9 @@ jobs:
           <<: *defaults_license_scanner
       - checkout
       - restore_cache:
-          key: dependency-cache-5-{{ checksum "src/package.json" }}
+          key: dependency-cache-v1-{{ checksum "src/package-lock.json" }}
+          paths:
+            - src/node_modules
       - run:
           name: Run the license-scanner
           command: cd /tmp/license-scanner && pathToRepo=$CIRCLE_WORKING_DIRECTORY make run
@@ -179,7 +183,7 @@ jobs:
           root: /tmp
           paths:
             - ./docker-image.tar
-      
+
   license-scan:
     executor: default-machine
     steps:
@@ -196,60 +200,60 @@ jobs:
       - store_artifacts:
           path: /tmp/license-scanner/results
           prefix: licenses
-  # Note: Disabled for now to investigate vulnerabilities without interfering with releases
-  # image-scan:
-  #   executor: anchore/anchore_engine
-  #   steps:
-  #     - setup_remote_docker
-  #     - checkout
-  #     - run:
-  #         name: Install docker dependencies for anchore
-  #         command: |
-  #           apk add --update python3 py3-pip docker python3-dev libffi-dev openssl-dev gcc libc-dev make jq npm
-  #     - run:
-  #         name: Install AWS CLI dependencies
-  #         command: *defaults_awsCliDependencies
-  #     - attach_workspace:
-  #         at: /tmp
-  #     - run:
-  #         name: Load the pre-built docker image from workspace
-  #         command: docker load -i /tmp/docker-image.tar
-  #     - run:
-  #         name: Download the mojaloop/ci-config repo
-  #         command: |
-  #           git clone https://github.com/mojaloop/ci-config /tmp/ci-config
-  #           # Generate the mojaloop anchore-policy
-  #           cd /tmp/ci-config/container-scanning && ./mojaloop-policy-generator.js /tmp/mojaloop-policy.json
-  #     - run:
-  #         name: Pull base image locally
-  #         command: |
-  #           docker pull node:12.16.1-alpine
-  #     # Analyze the base and derived image
-  #     # Note: It seems images are scanned in parallel, so preloading the base image result doesn't give us any real performance gain
-  #     - anchore/analyze_local_image:
-  #         # Force the older version, version 0.7.0 was just published, and is broken
-  #         anchore_version: v0.6.1
-  #         image_name: "docker.io/node:12.16.1-alpine $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG"
-  #         policy_failure: false
-  #         timeout: '500'
-  #         # Note: if the generated policy is invalid, this will fallback to the default policy, which we don't want!
-  #         policy_bundle_file_path: /tmp/mojaloop-policy.json
-  #     - run:
-  #         name: Upload Anchore reports to s3
-  #         command: |
-  #           aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/${CIRCLE_PROJECT_REPONAME}/ --recursive
-  #           aws s3 rm ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive --exclude "*" --include "${CIRCLE_PROJECT_REPONAME}*"
-  #           aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive
-  #     - run:
-  #         name: Evaluate failures
-  #         command: /tmp/ci-config/container-scanning/anchore-result-diff.js anchore-reports/node_12.16.1-alpine-policy.json anchore-reports/${CIRCLE_PROJECT_REPONAME}*-policy.json
-  #     - slack/status:
-  #         fail_only: true
-  #         webhook: "$SLACK_WEBHOOK_ANNOUNCMENT_CI_CD"
-  #         failure_message: 'Anchore Image Scan failed for: \`"${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_TAG}"\`'
-  #     - store_artifacts:
-  #         path: anchore-reports
-  
+
+   image-scan:
+     executor: anchore/anchore_engine
+     steps:
+       - setup_remote_docker
+       - checkout
+       - run:
+           name: Install docker dependencies for anchore
+           command: |
+             apk add --update python3 py3-pip docker python3-dev libffi-dev openssl-dev gcc libc-dev make jq npm
+       - run:
+           name: Install AWS CLI dependencies
+           command: *defaults_awsCliDependencies
+       - attach_workspace:
+           at: /tmp
+       - run:
+           name: Load the pre-built docker image from workspace
+           command: docker load -i /tmp/docker-image.tar
+       - run:
+           name: Download the mojaloop/ci-config repo
+           command: |
+             git clone https://github.com/mojaloop/ci-config /tmp/ci-config
+             # Generate the mojaloop anchore-policy
+             cd /tmp/ci-config/container-scanning && ./mojaloop-policy-generator.js /tmp/mojaloop-policy.json
+       - run:
+           name: Pull base image locally
+           command: |
+             docker pull node:12.16.1-alpine
+       # Analyze the base and derived image
+       # Note: It seems images are scanned in parallel, so preloading the base image result doesn't give us any real performance gain
+       - anchore/analyze_local_image:
+           # Force the older version, version 0.7.0 was just published, and is broken
+           anchore_version: v0.6.1
+           image_name: "docker.io/node:12.16.1-alpine $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG"
+           policy_failure: false
+           timeout: '500'
+           # Note: if the generated policy is invalid, this will fallback to the default policy, which we don't want!
+           policy_bundle_file_path: /tmp/mojaloop-policy.json
+       - run:
+           name: Upload Anchore reports to s3
+           command: |
+             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/${CIRCLE_PROJECT_REPONAME}/ --recursive
+             aws s3 rm ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive --exclude "*" --include "${CIRCLE_PROJECT_REPONAME}*"
+             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive
+       - run:
+           name: Evaluate failures
+           command: /tmp/ci-config/container-scanning/anchore-result-diff.js anchore-reports/node_12.16.1-alpine-policy.json anchore-reports/${CIRCLE_PROJECT_REPONAME}*-policy.json
+       - slack/status:
+           fail_only: true
+           webhook: "$SLACK_WEBHOOK_ANNOUNCMENT_CI_CD"
+           failure_message: 'Anchore Image Scan failed for: \`"${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_TAG}"\`'
+       - store_artifacts:
+           path: anchore-reports
+
   publish:
     executor: default-machine
     steps:
@@ -277,6 +281,11 @@ jobs:
           webhook: "$SLACK_WEBHOOK_ANNOUNCEMENT"
           success_message: '*"${CIRCLE_PROJECT_REPONAME}"* - Release \`"${CIRCLE_TAG}"\` \nhttps://github.com/mojaloop/"${CIRCLE_PROJECT_REPONAME}"/releases/tag/"${CIRCLE_TAG}"'
 
+##
+# Workflows
+#
+# CircleCI Workflow config
+##
 workflows:
   version: 2
   build_and_test:
@@ -358,17 +367,16 @@ workflows:
             branches:
               ignore:
                 - /.*/
-      # Note: Disabled for now to investigate vulnerabilities without interfering with releases
-      # - image-scan:
-      #     context: org-global
-      #     requires:
-      #       - build
-      #     filters:
-      #       tags:
-      #         only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
-      #       branches:
-      #         ignore:
-      #           - /.*/
+       - image-scan:
+           context: org-global
+           requires:
+             - build
+           filters:
+             tags:
+               only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
+             branches:
+               ignore:
+                 - /.*/
       - publish:
           context: org-global
           requires:
