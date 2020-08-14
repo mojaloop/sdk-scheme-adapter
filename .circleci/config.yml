@@ -147,6 +147,27 @@ jobs:
       - store_artifacts:
           path: /lintresults
 
+  vulnerability-check:
+    executor: default-docker
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-v1-{{ checksum "src/package.json" }}
+          paths:
+            - src/node_modules
+      - run:
+          name: Install general dependencies
+          command: *defaults_Dependencies
+      - run:
+          name: Create dir for test results
+          command: mkdir -p ./audit/results
+      - run:
+          name: Check for new npm vulnerabilities
+          command: cd src && npm run audit:check --silent -- --json > ../audit/results/auditResults.json
+      - store_artifacts:
+          path: ./audit/results
+          prefix: audit
+
   audit-licenses:
     executor: default-docker
     steps:
@@ -166,6 +187,28 @@ jobs:
       - store_artifacts:
           path: /tmp/license-scanner/results
           prefix: licenses
+
+  build-local:
+    executor: default-machine
+    steps:
+      - checkout
+      - run:
+          name: Build Docker local image for testing
+          command: >
+            echo "Building Docker image: local"
+            docker build
+            --build-arg CREATED="$(date -u --iso-8601=seconds)"
+            --build-arg VERSION="local"
+            --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
+            --build-arg REVISION="$CIRCLE_SHA1"
+            -t mojaloop/$CIRCLE_PROJECT_REPONAME:local .
+      - run:
+          name: Save docker image to workspace
+          command: docker save -o /tmp/docker-image.tar mojaloop/$CIRCLE_PROJECT_REPONAME:local
+      - persist_to_workspace:
+          root: /tmp
+          paths:
+            - ./docker-image.tar
 
   build:
     executor: default-machine
@@ -332,6 +375,17 @@ workflows:
               ignore:
                 - /feature*/
                 - /bugfix*/
+      - vulnerability-check:
+          context: org-global
+          requires:
+            - setup
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
       - audit-licenses:
           context: org-global
           requires:
@@ -343,44 +397,43 @@ workflows:
               ignore:
                 - /feature*/
                 - /bugfix*/
-      - build:
+      - build-local:
           context: org-global
-          requires:
-            - setup
-            - test-unit
-            - test-integration
-            - lint
-            - audit-licenses
           filters:
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
             branches:
               ignore:
-                - /.*/
+                - /feature*/
+                - /bugfix*/
+      - image-scan:
+          context: org-global
+          requires:
+            - build-local
+          filters:
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
       - license-scan:
           context: org-global
           requires:
-            - build
+            - build-local
+          filters:
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
+      - build:
+          context: org-global
           filters:
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
             branches:
               ignore:
                 - /.*/
-      - image-scan:
-         context: org-global
-         requires:
-           - build
-         filters:
-           tags:
-             only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
-           branches:
-             ignore:
-               - /.*/
       - publish:
           context: org-global
           requires:
-            - license-scan
+            - build
           filters:
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
