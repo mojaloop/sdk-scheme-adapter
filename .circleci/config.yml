@@ -194,14 +194,9 @@ jobs:
       - checkout
       - run:
           name: Build Docker local image for testing
-          command: >
+          command: |
             echo "Building Docker image: local"
-            docker build
-            --build-arg CREATED="$(date -u --iso-8601=seconds)"
-            --build-arg VERSION="local"
-            --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
-            --build-arg REVISION="$CIRCLE_SHA1"
-            -t mojaloop/$CIRCLE_PROJECT_REPONAME:local .
+            docker build -t mojaloop/$CIRCLE_PROJECT_REPONAME:local .
       - run:
           name: Save docker image to workspace
           command: docker save -o /tmp/docker-image.tar mojaloop/$CIRCLE_PROJECT_REPONAME:local
