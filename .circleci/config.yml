@@ -243,55 +243,52 @@ jobs:
   image-scan:
     executor: anchore/anchore_engine
     steps:
-     - setup_remote_docker
-     - checkout
-     - run:
-         name: Install docker dependencies for anchore
-         command: |
-           apk add --update python3 py3-pip docker python3-dev libffi-dev openssl-dev gcc libc-dev make jq npm
-     - run:
-         name: Install AWS CLI dependencies
-         command: *defaults_awsCliDependencies
-     - attach_workspace:
-         at: /tmp
-     - run:
-         name: Load the pre-built docker image from workspace
-         command: docker load -i /tmp/docker-image.tar
-     - run:
-         name: Download the mojaloop/ci-config repo
-         command: |
-           git clone https://github.com/mojaloop/ci-config /tmp/ci-config
-           # Generate the mojaloop anchore-policy
-           cd /tmp/ci-config/container-scanning && ./mojaloop-policy-generator.js /tmp/mojaloop-policy.json
-     - run:
-         name: Pull base image locally
-         command: |
-           docker pull node:12.16.1-alpine
-     # Analyze the base and derived image
-     # Note: It seems images are scanned in parallel, so preloading the base image result doesn't give us any real performance gain
-     - anchore/analyze_local_image:
-         # Force the older version, version 0.7.0 was just published, and is broken
-         anchore_version: v0.6.1
-         image_name: "docker.io/node:12.16.1-alpine $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG"
-         policy_failure: false
-         timeout: '500'
-         # Note: if the generated policy is invalid, this will fallback to the default policy, which we don't want!
-         policy_bundle_file_path: /tmp/mojaloop-policy.json
-     - run:
-         name: Upload Anchore reports to s3
-         command: |
-           aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/${CIRCLE_PROJECT_REPONAME}/ --recursive
-           aws s3 rm ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive --exclude "*" --include "${CIRCLE_PROJECT_REPONAME}*"
-           aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive
-     - run:
-         name: Evaluate failures
-         command: /tmp/ci-config/container-scanning/anchore-result-diff.js anchore-reports/node_12.16.1-alpine-policy.json anchore-reports/${CIRCLE_PROJECT_REPONAME}*-policy.json
-     - slack/status:
-         fail_only: true
-         webhook: "$SLACK_WEBHOOK_ANNOUNCMENT_CI_CD"
-         failure_message: 'Anchore Image Scan failed for: \`"${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_TAG}"\`'
-     - store_artifacts:
-         path: anchore-reports
+      - setup_remote_docker
+      - checkout
+      - run:
+          name: Install AWS CLI dependencies
+          command: *defaults_awsCliDependencies
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Load the pre-built docker image from workspace
+          command: docker load -i /tmp/docker-image.tar
+      - anchore/analyze_local_image:
+          dockerfile_path: ./Dockerfile
+          image_name: mojaloop/${CIRCLE_PROJECT_REPONAME}:local
+          # Anchore bug: if policy_failure is `true`, reports don't get written - we manually check for failures below
+          policy_failure: false
+          timeout: '500'
+      - run:
+          name: Evaluate Failures.
+          command: |
+            if [[ ! $(which jq) ]]; then
+              (set +o pipefail; apk add jq || apt-get install -y jq || yum install -y jq)
+            fi
+            if [[ $(ls anchore-reports/*content-os*.json 2> /dev/null) ]]; then
+              printf "\n%s\n" "The following OS packages are installed:"
+              jq '[.content | sort_by(.package) | .[] | {package: .package, version: .version}]' anchore-reports/*content-os*.json
+            fi
+            if [[ $(ls anchore-reports/*vuln*.json 2> /dev/null) ]]; then
+              printf "\n%s\n" "The following vulnerabilities were found:"
+              jq '[.vulnerabilities | group_by(.package) | .[] | {package: .[0].package, vuln: [.[].vuln]}]' anchore-reports/*vuln*.json
+            fi
+            #       - run:
+            #           name: Upload Anchore reports to s3
+            #           command: |
+            #             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/${CIRCLE_PROJECT_REPONAME}/ --recursive
+            #             aws s3 rm ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive --exclude "*" --include "${CIRCLE_PROJECT_REPONAME}*"
+            #             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive
+
+            # TODO: Enable this when we want to increase the strictness of our security policies
+            # failCount=$(cat anchore-reports/*policy*.json | grep 'fail' | wc -l)
+            # echo "FailCount is: ${failCount}"
+            # if [ $failCount -gt 0 ]; then
+            #   printf "Failed with a policy failure count of: ${failCount}"
+            #   exit 1
+          # fi
+      - store_artifacts:
+          path: anchore-reports
 
   publish:
     executor: default-machine
