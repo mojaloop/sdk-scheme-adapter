@@ -4,6 +4,8 @@
   "description": "An adapter for connecting to Mojaloop API enabled switches.",
   "main": "index.js",
   "scripts": {
+    "audit:resolve": "SHELL=sh resolve-audit --production",
+    "audit:check": "SHELL=sh check-audit --production",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "jest --ci --reporters=default --reporters=jest-junit --env=node test/unit",
@@ -11,6 +13,7 @@
   },
   "author": "Matt Kingston, James Bush, ModusBox Inc.",
   "contributors": [
+    "Kamuela Franco <kamuela.franco@modusbox.com>",
     "Steven Oderayi <steven.oderayi@modusbox.com>"
   ],
   "license": "Apache-2.0",
@@ -39,6 +42,7 @@
     "koa-body": "^4.1.1",
     "koa2-oauth-server": "^1.0.0",
     "node-fetch": "^2.6.0",
+    "npm-audit-resolver": "^2.2.1",
     "uuidv4": "^6.0.8",
     "ws": "^7.3.1"
   },
