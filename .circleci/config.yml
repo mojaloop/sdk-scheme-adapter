@@ -51,7 +51,7 @@ executors:
   default-docker:
     working_directory: /home/circleci/project
     docker:
-      - image: node:12.16.1-alpine
+      - image: node:12.18.3-alpine
 
   default-machine:
     machine:
@@ -74,7 +74,7 @@ jobs:
           name: Access npm folder as root
           command: cd $(npm root -g)/npm
       - run:
-          name: Update NPM install (using `npm ci`
+          name: Update NPM install (using `npm ci`)
           command: cd src && npm ci
       - run:
           name: Delete build dependencies
