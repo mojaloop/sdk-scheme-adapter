@@ -17,6 +17,7 @@
   "dependencies": {
     "@internal/requests": "file:lib/requests",
     "@internal/shared": "file:lib/shared",
-    "javascript-state-machine": "^3.1.0"
+    "javascript-state-machine": "^3.1.0",
+    "async-retry": "1.3.1"
   }
 }

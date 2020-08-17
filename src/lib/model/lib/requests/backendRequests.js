@@ -136,6 +136,12 @@ class BackendRequests {
         return this._get(url);
     }
 
+
+    async putTransfersNotification(notifcation, transferId) {
+        const url = `transfers/${transferId}`;
+        return this._put(url, notifcation);
+    }
+
     /**
      * Utility function for building outgoing request headers as required by the mojaloop api spec
      *
@@ -176,7 +182,7 @@ class BackendRequests {
             method: 'PUT',
             uri: buildUrl(this.backendEndpoint, url),
             headers: this._buildHeaders(),
-            body: JSON.stringify(body),
+            body: JSON.stringify(body)
         };
 
         try {

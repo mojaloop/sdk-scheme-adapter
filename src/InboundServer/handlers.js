@@ -531,6 +531,40 @@ const putTransfersById = async (ctx) => {
     ctx.response.status = 200;
 };
 
+const patchTransfersById = async (ctx) => {
+    const req = {
+        headers: ctx.request.headers,
+        data: ctx.request.body
+    };
+    
+    const idValue = ctx.state.path.params.ID;
+
+    if(ctx.state.conf.enableTestFeatures) {
+        const cache = ctx.state.cache;
+        // we are in test mode so cache the request
+        const req = {
+            headers: ctx.request.headers,
+            data: ctx.request.body
+        };
+        const res = await cache.set(`${cache.REQUEST_PREFIX}${idValue}`, req);
+        ctx.state.logger.log(`Caching request: ${util.inspect(res)}`);
+    }
+
+    // use the transfers model to execute asynchronous stages with the switch
+    const model = new Model({
+        ...ctx.state.conf,
+        cache: ctx.state.cache,
+        logger: ctx.state.logger,
+        wso2Auth: ctx.state.wso2Auth,
+    });
+
+    // send notification to the payee fsp
+    const response = await model.sendNotificationToPayee(req.data, idValue)
+
+    // log the result
+    ctx.state.logger.push({response}).
+        log('Inbound transfers model handled PATCH /transfers/{ID} request');
+}
 
 /**
  * Handles a PUT /parties/{Type}/{ID}/error request. This is an error response to a GET /parties/{Type}/{ID} request
@@ -972,7 +1006,7 @@ module.exports = {
     '/transfers/{ID}': {
         get: getTransfersById,
         put: putTransfersById,
-        patch: putTransfersById
+        patch: patchTransfersById
     },
     '/transfers/{ID}/error': {
         put: putTransfersByIdError
