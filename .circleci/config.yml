@@ -80,7 +80,7 @@ jobs:
           name: Delete build dependencies
           command: apk del build-dependencies
       - save_cache:
-          key: dependency-cache-v2-{{ checksum "src/package-lock.json" }}
+          key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
           paths:
             - src/node_modules
 
@@ -92,7 +92,7 @@ jobs:
           name: Install general dependencies
           command: *defaults_Dependencies
       - restore_cache:
-          key: dependency-cache-v2-{{ checksum "src/package-lock.json" }}
+          key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
           paths:
             - src/node_modules
       - run:
@@ -135,7 +135,7 @@ jobs:
           name: Install general dependencies
           command: *defaults_Dependencies
       - restore_cache:
-          key: dependency-cache-v2-{{ checksum "src/package-lock.json" }}
+          key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
           paths:
             - src/node_modules
       - run:
@@ -152,7 +152,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-v2-{{ checksum "src/package-lock.json" }}
+          key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
           paths:
             - src/node_modules
       - run:
@@ -178,7 +178,7 @@ jobs:
           <<: *defaults_license_scanner
       - checkout
       - restore_cache:
-          key: dependency-cache-v2-{{ checksum "src/package-lock.json" }}
+          key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
           paths:
             - src/node_modules
       - run:
