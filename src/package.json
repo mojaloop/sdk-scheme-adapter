@@ -1,9 +1,11 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
-  "version": "11.0.0",
+  "version": "11.0.1",
   "description": "An adapter for connecting to Mojaloop API enabled switches.",
   "main": "index.js",
   "scripts": {
+    "audit:resolve": "SHELL=sh resolve-audit --production",
+    "audit:check": "SHELL=sh check-audit --production",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "jest --ci --reporters=default --reporters=jest-junit --env=node test/unit",
@@ -11,6 +13,7 @@
   },
   "author": "Matt Kingston, James Bush, ModusBox Inc.",
   "contributors": [
+    "Kamuela Franco <kamuela.franco@modusbox.com>",
     "Steven Oderayi <steven.oderayi@modusbox.com>"
   ],
   "license": "Apache-2.0",
@@ -50,6 +53,7 @@
     "jest": "^26.0.1",
     "jest-junit": "^10.0.0",
     "nock": "^12.0.3",
+    "npm-audit-resolver": "2.2.0",
     "openapi-response-validator": "^4.0.0",
     "redis-mock": "^0.49.0",
     "supertest": "^4.0.2"
