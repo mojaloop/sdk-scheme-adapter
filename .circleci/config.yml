@@ -102,30 +102,30 @@ jobs:
           path: /home/circleci/project/src/
       - store_artifacts:
           path: /home/circleci/project/src/junit.xml
-
-  test-integration:
-    executor: default-machine
-    steps:
-      - checkout
-      - run:
-          name: Install Docker Compose
-          command: |
-            curl -L https://github.com/docker/compose/releases/download/1.25.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
-            chmod +x ~/docker-compose
-            sudo mv ~/docker-compose /usr/local/bin/docker-compose
-      - run:
-          name: Start docker-compose
-          command: docker-compose -f docker-compose.yml -f docker-compose.integration.yml up -d
-      - run:
-          name: Execute integration tests
-          command: docker exec -it scheme-adapter-int sh -c 'npm run test:int'
-      - run:
-          name: Copy results from docker
-          command: docker cp scheme-adapter-int:/src/junit.xml .
-      - store_test_results:
-          path: /home/circleci/project/
-      - store_artifacts:
-          path: /home/circleci/project/junit.xml
+# TODO: This needs to be rewritten without a dependency on devtools in the final built image
+#  test-integration:
+#    executor: default-machine
+#    steps:
+#      - checkout
+#      - run:
+#          name: Install Docker Compose
+#          command: |
+#            curl -L https://github.com/docker/compose/releases/download/1.25.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+#            chmod +x ~/docker-compose
+#            sudo mv ~/docker-compose /usr/local/bin/docker-compose
+#      - run:
+#          name: Start docker-compose
+#          command: docker-compose -f docker-compose.yml -f docker-compose.integration.yml up -d
+#      - run:
+#          name: Execute integration tests
+#          command: docker exec -it scheme-adapter-int sh -c 'npm run test:int'
+#      - run:
+#          name: Copy results from docker
+#          command: docker cp scheme-adapter-int:/src/junit.xml .
+#      - store_test_results:
+#          path: /home/circleci/project/
+#      - store_artifacts:
+#          path: /home/circleci/project/junit.xml
 
   lint:
     executor: default-docker
@@ -357,17 +357,18 @@ workflows:
               ignore:
                 - /feature*/
                 - /bugfix*/
-      - test-integration:
-          context: org-global
-          requires:
-            - setup
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore:
-                - /feature*/
-                - /bugfix*/
+# TODO: Re-enable after re-write
+#      - test-integration:
+#          context: org-global
+#          requires:
+#            - setup
+#          filters:
+#            tags:
+#              only: /.*/
+#            branches:
+#              ignore:
+#                - /feature*/
+#                - /bugfix*/
       - vulnerability-check:
           context: org-global
           requires:

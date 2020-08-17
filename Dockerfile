@@ -38,7 +38,6 @@ LABEL org.label-schema.url="https://mojaloop.io/"
 LABEL org.label-schema.version=$VERSION
 
 COPY --from=builder /src/ /src
-RUN npm prune --production
 COPY ./src ./src
 COPY ./secrets /
 
