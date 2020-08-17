@@ -19,7 +19,7 @@ COPY ./src/lib/model/package.json ./lib/model/package.json
 COPY ./src/lib/randomphrase/package.json ./lib/randomphrase/package.json
 COPY ./src/lib/router/package.json ./lib/router/package.json
 COPY ./src/lib/validate/package.json ./lib/validate/package.json
-RUN npm install
+RUN npm install --only=production
 
 FROM node:12.18.3-alpine
 
