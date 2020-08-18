@@ -558,13 +558,15 @@ const patchTransfersById = async (ctx) => {
         wso2Auth: ctx.state.wso2Auth,
     });
 
+    const sourceFspId = ctx.request.headers['fspiop-source'];
+
     // send notification to the payee fsp
-    const response = await model.sendNotificationToPayee(req.data, idValue)
+    const response = await model.sendNotificationToPayee(req.data, idValue, sourceFspId);
 
     // log the result
     ctx.state.logger.push({response}).
         log('Inbound transfers model handled PATCH /transfers/{ID} request');
-}
+};
 
 /**
  * Handles a PUT /parties/{Type}/{ID}/error request. This is an error response to a GET /parties/{Type}/{ID} request

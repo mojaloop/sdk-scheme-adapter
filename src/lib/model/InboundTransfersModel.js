@@ -21,7 +21,6 @@ const {
     Errors,
 } = require('@mojaloop/sdk-standard-components');
 const shared = require('@internal/shared');
-const retry = require('async-retry');
 
 /**
  *  Models the operations required for performing inbound transfers
@@ -669,25 +668,14 @@ class InboundTransfersModel {
         }
     }
 
-    async sendNotificationToPayee(body, transferId) {
+    async sendNotificationToPayee(body, transferId, sourceFspId) {
         try {
-            const res = await this._backendRequests.putTransfersNotification(body, transferId)
-            return res
+            return this._backendRequests.putTransfersNotification(body, transferId);
         } catch (err) {
-            if (this._retryCount) {
-                await retry(async () => {
-                    const res = await this._backendRequests.putTransfersNotification(body, transferId)
-                    return res
-                }, {
-                    retries: this._retryCount,
-                    minTimeout: this._retryDelayMs,
-                    maxTimeout: this._retryDelayMs,
-                    factor: 1
-                })
-            }
-            this._logger.push({ err }).log('Error in sendNotificationToPayee');
-            return
-            // const mojaloopError = await this._handleError(err);
+            this._logger.push({ err }).log('Error in getParticipants');
+            const mojaloopError = await this._handleError(err);
+            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            return this._mojaloopRequests.putTransfersError(transferId, mojaloopError, );
         }
     }
 
