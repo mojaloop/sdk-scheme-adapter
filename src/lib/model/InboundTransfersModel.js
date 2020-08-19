@@ -668,15 +668,15 @@ class InboundTransfersModel {
         }
     }
 
-    async sendNotificationToPayee(body, transferId, sourceFspId) {
+    async sendNotificationToPayee(body, transferId) {
         try {
             const res = await this._backendRequests.putTransfersNotification(body, transferId);
             return res;
         } catch (err) {
             this._logger.push({ err }).log('Error in getParticipants');
-            const mojaloopError = await this._handleError(err);
-            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
-            return this._mojaloopRequests.putTransfersError(transferId, mojaloopError, sourceFspId);
+            // const mojaloopError = await this._handleError(err);
+            // this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            // return this._mojaloopRequests.putTransfersError(transferId, mojaloopError, sourceFspId);
         }
     }
 

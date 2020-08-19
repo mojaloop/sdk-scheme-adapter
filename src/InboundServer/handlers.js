@@ -558,10 +558,8 @@ const patchTransfersById = async (ctx) => {
         wso2Auth: ctx.state.wso2Auth,
     });
 
-    const sourceFspId = ctx.request.headers['fspiop-source'];
-
     // send notification to the payee fsp
-    const response = await model.sendNotificationToPayee(req.data, idValue, sourceFspId);
+    const response = await model.sendNotificationToPayee(req.data, idValue);
 
     // log the result
     ctx.state.logger.push({response}).

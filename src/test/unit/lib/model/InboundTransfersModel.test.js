@@ -601,9 +601,7 @@ describe('inboundModel', () => {
         const transferId = '1234';
         let cache;
 
-        beforeEach(async () => {
-            MojaloopRequests.__putTransfersError.mockClear();
-
+        beforeEach(async () => { 
             cache = new Cache({
                 host: 'dummycachehost',
                 port: 1234,
@@ -632,22 +630,5 @@ describe('inboundModel', () => {
             expect(call[0]).toEqual(backendResponse.data);
             expect(call[1]).toEqual(transferId);
         });
-
-        test('fails to send notification to fsp backend', async () => {
-            const backendResponse = JSON.parse(JSON.stringify(notificationToPayee));
-            BackendRequests.__putTransfersNotification = jest.fn().mockReturnValue(Promise.reject({}));
-
-            const model = new Model({
-                ...config,
-                cache,
-                logger,
-            });
-
-            await model.sendNotificationToPayee(backendResponse.data, transferId);
-            expect(MojaloopRequests.__putTransfersError).toHaveBeenCalledTimes(1);
-            const call = MojaloopRequests.__putTransfersError.mock.calls[0];
-            expect(call[0]).toEqual(transferId);
-        });
-
     });
 });
