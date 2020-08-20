@@ -136,6 +136,11 @@ class BackendRequests {
         return this._get(url);
     }
 
+    /**
+     * Executes a PUT /transfers/{ID} request to forward notification for success
+     *
+     * @returns {object} - JSON response body if one was received
+     */
 
     async putTransfersNotification(notifcation, transferId) {
         const url = `transfers/${transferId}`;

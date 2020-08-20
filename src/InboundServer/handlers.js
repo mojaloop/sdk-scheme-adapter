@@ -508,7 +508,7 @@ const putTransactionRequestsById = async (ctx) => {
 };
 
 /**
- * Handles a PUT /transfers/{ID}. This is a response to a POST|PATCH|GET /transfers request
+ * Handles a PUT /transfers/{ID}. This is a response to a POST|GET /transfers request
  */
 const putTransfersById = async (ctx) => {
     if(ctx.state.conf.enableTestFeatures) {
@@ -531,6 +531,9 @@ const putTransfersById = async (ctx) => {
     ctx.response.status = 200;
 };
 
+/**
+ * Handles a PATCH /transfers/{ID} from the Switch to Payee for successful transfer 
+ */
 const patchTransfersById = async (ctx) => {
     const req = {
         headers: ctx.request.headers,
@@ -558,7 +561,7 @@ const patchTransfersById = async (ctx) => {
         wso2Auth: ctx.state.wso2Auth,
     });
 
-    // send notification to the payee fsp
+    // sends notification to the payee fsp
     const response = await model.sendNotificationToPayee(req.data, idValue);
 
     // log the result
