@@ -22,7 +22,6 @@ const {
 } = require('@mojaloop/sdk-standard-components');
 const shared = require('@internal/shared');
 
-
 /**
  *  Models the operations required for performing inbound transfers
  */
@@ -664,6 +663,18 @@ class InboundTransfersModel {
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
             return this._mojaloopRequests.putBulkTransfersError(bulkTransferId,
                 mojaloopError, sourceFspId);
+        }
+    }
+
+    /**
+    * Forwards Switch notification for fulfiled transfer to the DFSP backend, when acting as a payee 
+    */
+    async sendNotificationToPayee(body, transferId) {
+        try {
+            const res = await this._backendRequests.putTransfersNotification(body, transferId);
+            return res;
+        } catch (err) {
+            this._logger.push({ err }).log('Error in sendNotificationToPayee');
         }
     }
 
