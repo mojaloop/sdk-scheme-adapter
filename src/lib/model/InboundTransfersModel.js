@@ -22,7 +22,6 @@ const {
 } = require('@mojaloop/sdk-standard-components');
 const shared = require('@internal/shared');
 
-
 /**
  *  Models the operations required for performing inbound transfers
  */
@@ -42,6 +41,7 @@ class InboundTransfersModel {
             alsEndpoint: config.alsEndpoint,
             quotesEndpoint: config.quotesEndpoint,
             transfersEndpoint: config.transfersEndpoint,
+            bulkTransfersEndpoint: config.bulkTransfersEndpoint,
             dfspId: config.dfspId,
             tls: config.tls,
             jwsSign: config.jwsSign,
@@ -587,9 +587,9 @@ class InboundTransfersModel {
                     return {
                         transferId: transfer.transferId,
                         fulfilment: fulfilments[transfer.transferId],
-                        ...response.individualTransferResults[transfer.transferId].extensionList && {
+                        ...transfer.extensionList && {
                             extensionList: {
-                                extension: response.individualTransferResults[transfer.transferId].extensionList,
+                                extension: transfer.extensionList,
                             },
                         }
                     };
@@ -597,7 +597,7 @@ class InboundTransfersModel {
             }
 
             // make a callback to the source fsp with the transfer fulfilment
-            return this._mojaloopRequests.putBulkTransfers(bulkPrepareRequest.transferId, mojaloopResponse, sourceFspId);
+            return this._mojaloopRequests.putBulkTransfers(bulkPrepareRequest.bulkTransferId, mojaloopResponse, sourceFspId);
         }
         catch (err) {
             this._logger.push({ err }).log('Error in prepareBulkTransfers');
@@ -667,22 +667,26 @@ class InboundTransfersModel {
         }
     }
 
+    /**
+    * Forwards Switch notification for fulfiled transfer to the DFSP backend, when acting as a payee 
+    */
+    async sendNotificationToPayee(body, transferId) {
+        try {
+            const res = await this._backendRequests.putTransfersNotification(body, transferId);
+            return res;
+        } catch (err) {
+            this._logger.push({ err }).log('Error in sendNotificationToPayee');
+        }
+    }
+
     async _handleError(err) {
         let mojaloopErrorCode = Errors.MojaloopApiErrorCodes.INTERNAL_SERVER_ERROR;
 
         if(err instanceof HTTPResponseError) {
             const e = err.getData();
-            if(e.res && e.res.body) {
-                try {
-                    const bodyObj = JSON.parse(e.res.body);
-                    mojaloopErrorCode = Errors.MojaloopApiErrorCodeFromCode(`${bodyObj.statusCode}`);
-                }
-                catch(ex) {
-                    // do nothing
-                    this._logger.push({ ex }).log('Error parsing error message body as JSON');
-                }
+            if(e.res && e.res.data) {
+                mojaloopErrorCode = Errors.MojaloopApiErrorCodeFromCode(`${e.res.data.statusCode}`);
             }
-
         }
 
         return new Errors.MojaloopFSPIOPError(err, null, null, mojaloopErrorCode).toApiErrorObject();

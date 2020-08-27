@@ -1,6 +1,7 @@
 {
   "inboundPort": 4000,
   "outboundPort": 4001,
+  "testPort": 4002,
   "peerEndpoint": "172.17.0.2:3001",
   "backendEndpoint": "172.17.0.2:3001",
   "alsEndpoint": "127.0.0.1:6500",

@@ -32,6 +32,7 @@ class MockBackendRequests extends BackendRequests {
         this.postBulkQuotes = MockBackendRequests.__postBulkQuotes;
         this.getBulkTransfers = MockBackendRequests.__getBulkTransfers;
         this.postBulkTransfers = MockBackendRequests.__postBulkTransfers;
+        this.putTransfersNotification = MockBackendRequests.__putTransfersNotification;
     }
 }
 MockBackendRequests.__getParties = jest.fn(() => Promise.resolve({body: {}}));
@@ -44,6 +45,8 @@ MockBackendRequests.__getBulkQuotes = jest.fn(() => Promise.resolve({body: {}}))
 MockBackendRequests.__postBulkQuotes = jest.fn(() => Promise.resolve({body: {}}));
 MockBackendRequests.__getBulkTransfers = jest.fn(() => Promise.resolve({body: {}}));
 MockBackendRequests.__postBulkTransfers = jest.fn(() => Promise.resolve({body: {}}));
+MockBackendRequests.__putTransfersNotification = jest.fn(() => Promise.resolve({body: {}}));
+
 
 
 class HTTPResponseError extends Error {

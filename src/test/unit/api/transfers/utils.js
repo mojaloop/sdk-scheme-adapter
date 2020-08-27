@@ -49,6 +49,10 @@ function createGetTransfersTester({ reqInbound, reqOutbound, apiSpecsOutbound })
         const res = await reqOutbound.get(`/transfers/${TRANSFER_ID}`);
         const {body} = res;
         expect(res.statusCode).toEqual(responseCode);
+        delete body.initiatedTimestamp;
+        if (body.transferState) {
+            delete body.transferState.initiatedTimestamp;
+        }
         expect(body).toEqual(responseBody);
         const responseValidator = new OpenAPIResponseValidator(apiSpecsOutbound.paths['/transfers/{transferId}'].get);
         const err = responseValidator.validateResponse(responseCode, body);
@@ -159,6 +163,10 @@ function createPostTransfersTester(
         const res = await reqOutbound.post('/transfers').send(postTransfersSimpleBody);
         const {body} = res;
         expect(res.statusCode).toEqual(responseCode);
+        delete body.initiatedTimestamp;
+        if (body.transferState) {
+            delete body.transferState.initiatedTimestamp;
+        }
         expect(body).toEqual(responseBody);
         const responseValidator = new OpenAPIResponseValidator(apiSpecsOutbound.paths['/transfers'].post);
         const err = responseValidator.validateResponse(responseCode, body);
