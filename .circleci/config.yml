@@ -15,7 +15,7 @@ orbs:
 # defaults
 #
 # YAML defaults templates, in alphabetical order
-##  
+##
 defaults_Dependencies: &defaults_Dependencies |
   apk --no-cache add git
   apk --no-cache add ca-certificates
@@ -50,8 +50,8 @@ defaults_license_scanner: &defaults_license_scanner
 executors:
   default-docker:
     working_directory: /home/circleci/project
-    docker: 
-      - image: node:12.16.1-alpine
+    docker:
+      - image: node:12.18.3-alpine
 
   default-machine:
     machine:
@@ -74,13 +74,13 @@ jobs:
           name: Access npm folder as root
           command: cd $(npm root -g)/npm
       - run:
-          name: Update NPM install
-          command: cd src && npm install
+          name: Update NPM install (using `npm ci`)
+          command: cd src && npm ci
       - run:
           name: Delete build dependencies
           command: apk del build-dependencies
       - save_cache:
-          key: dependency-cache-5-{{ checksum "src/package.json" }}
+          key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
           paths:
             - src/node_modules
 
@@ -92,8 +92,9 @@ jobs:
           name: Install general dependencies
           command: *defaults_Dependencies
       - restore_cache:
-          keys:
-          - dependency-cache-5-{{ checksum "src/package.json" }}
+          key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
+          paths:
+            - src/node_modules
       - run:
           name: Execute unit tests
           command: cd src && npm run test
@@ -134,8 +135,9 @@ jobs:
           name: Install general dependencies
           command: *defaults_Dependencies
       - restore_cache:
-          keys:
-          - dependency-cache-5-{{ checksum "src/package.json" }}
+          key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
+          paths:
+            - src/node_modules
       - run:
           name: Create dir for lint results
           command: cd src && mkdir -p /lintresults
@@ -144,6 +146,27 @@ jobs:
           command: cd src && (npm run lint > /lintresults/results.txt)
       - store_artifacts:
           path: /lintresults
+
+  vulnerability-check:
+    executor: default-docker
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
+          paths:
+            - src/node_modules
+      - run:
+          name: Install general dependencies
+          command: *defaults_Dependencies
+      - run:
+          name: Create dir for test results
+          command: mkdir -p ./audit/results
+      - run:
+          name: Check for new npm vulnerabilities
+          command: cd src && npm run audit:check --silent -- --json > ../audit/results/auditResults.json
+      - store_artifacts:
+          path: ./audit/results
+          prefix: audit
 
   audit-licenses:
     executor: default-docker
@@ -155,13 +178,32 @@ jobs:
           <<: *defaults_license_scanner
       - checkout
       - restore_cache:
-          key: dependency-cache-5-{{ checksum "src/package.json" }}
+          key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
+          paths:
+            - src/node_modules
       - run:
           name: Run the license-scanner
           command: cd /tmp/license-scanner && pathToRepo=$CIRCLE_WORKING_DIRECTORY make run
       - store_artifacts:
           path: /tmp/license-scanner/results
           prefix: licenses
+
+  build-local:
+    executor: default-machine
+    steps:
+      - checkout
+      - run:
+          name: Build Docker local image for testing
+          command: |
+            echo "Building Docker image: local"
+            docker build -t mojaloop/$CIRCLE_PROJECT_REPONAME:local .
+      - run:
+          name: Save docker image to workspace
+          command: docker save -o /tmp/docker-image.tar mojaloop/$CIRCLE_PROJECT_REPONAME:local
+      - persist_to_workspace:
+          root: /tmp
+          paths:
+            - ./docker-image.tar
 
   build:
     executor: default-machine
@@ -179,10 +221,11 @@ jobs:
           root: /tmp
           paths:
             - ./docker-image.tar
-      
+
   license-scan:
     executor: default-machine
     steps:
+      - checkout
       - attach_workspace:
           at: /tmp
       - run:
@@ -192,64 +235,61 @@ jobs:
           <<: *defaults_license_scanner
       - run:
           name: Run the license-scanner
-          command: cd /tmp/license-scanner && mode=docker dockerImages=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG make run
+          command: cd /tmp/license-scanner && mode=docker dockerImages=mojaloop/$CIRCLE_PROJECT_REPONAME:local make run
       - store_artifacts:
           path: /tmp/license-scanner/results
           prefix: licenses
-  # Note: Disabled for now to investigate vulnerabilities without interfering with releases
-  # image-scan:
-  #   executor: anchore/anchore_engine
-  #   steps:
-  #     - setup_remote_docker
-  #     - checkout
-  #     - run:
-  #         name: Install docker dependencies for anchore
-  #         command: |
-  #           apk add --update python3 py3-pip docker python3-dev libffi-dev openssl-dev gcc libc-dev make jq npm
-  #     - run:
-  #         name: Install AWS CLI dependencies
-  #         command: *defaults_awsCliDependencies
-  #     - attach_workspace:
-  #         at: /tmp
-  #     - run:
-  #         name: Load the pre-built docker image from workspace
-  #         command: docker load -i /tmp/docker-image.tar
-  #     - run:
-  #         name: Download the mojaloop/ci-config repo
-  #         command: |
-  #           git clone https://github.com/mojaloop/ci-config /tmp/ci-config
-  #           # Generate the mojaloop anchore-policy
-  #           cd /tmp/ci-config/container-scanning && ./mojaloop-policy-generator.js /tmp/mojaloop-policy.json
-  #     - run:
-  #         name: Pull base image locally
-  #         command: |
-  #           docker pull node:12.16.1-alpine
-  #     # Analyze the base and derived image
-  #     # Note: It seems images are scanned in parallel, so preloading the base image result doesn't give us any real performance gain
-  #     - anchore/analyze_local_image:
-  #         # Force the older version, version 0.7.0 was just published, and is broken
-  #         anchore_version: v0.6.1
-  #         image_name: "docker.io/node:12.16.1-alpine $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG"
-  #         policy_failure: false
-  #         timeout: '500'
-  #         # Note: if the generated policy is invalid, this will fallback to the default policy, which we don't want!
-  #         policy_bundle_file_path: /tmp/mojaloop-policy.json
-  #     - run:
-  #         name: Upload Anchore reports to s3
-  #         command: |
-  #           aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/${CIRCLE_PROJECT_REPONAME}/ --recursive
-  #           aws s3 rm ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive --exclude "*" --include "${CIRCLE_PROJECT_REPONAME}*"
-  #           aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive
-  #     - run:
-  #         name: Evaluate failures
-  #         command: /tmp/ci-config/container-scanning/anchore-result-diff.js anchore-reports/node_12.16.1-alpine-policy.json anchore-reports/${CIRCLE_PROJECT_REPONAME}*-policy.json
-  #     - slack/status:
-  #         fail_only: true
-  #         webhook: "$SLACK_WEBHOOK_ANNOUNCMENT_CI_CD"
-  #         failure_message: 'Anchore Image Scan failed for: \`"${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_TAG}"\`'
-  #     - store_artifacts:
-  #         path: anchore-reports
-  
+
+  image-scan:
+    executor: anchore/anchore_engine
+    steps:
+      - setup_remote_docker
+      - checkout
+      - run:
+          name: Install AWS CLI dependencies
+          command: *defaults_awsCliDependencies
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Load the pre-built docker image from workspace
+          command: docker load -i /tmp/docker-image.tar
+      - anchore/analyze_local_image:
+          dockerfile_path: ./Dockerfile
+          image_name: mojaloop/${CIRCLE_PROJECT_REPONAME}:local
+          # Anchore bug: if policy_failure is `true`, reports don't get written - we manually check for failures below
+          policy_failure: false
+          timeout: '500'
+      - run:
+          name: Evaluate Failures.
+          command: |
+            if [[ ! $(which jq) ]]; then
+              (set +o pipefail; apk add jq || apt-get install -y jq || yum install -y jq)
+            fi
+            if [[ $(ls anchore-reports/*content-os*.json 2> /dev/null) ]]; then
+              printf "\n%s\n" "The following OS packages are installed:"
+              jq '[.content | sort_by(.package) | .[] | {package: .package, version: .version}]' anchore-reports/*content-os*.json
+            fi
+            if [[ $(ls anchore-reports/*vuln*.json 2> /dev/null) ]]; then
+              printf "\n%s\n" "The following vulnerabilities were found:"
+              jq '[.vulnerabilities | group_by(.package) | .[] | {package: .[0].package, vuln: [.[].vuln]}]' anchore-reports/*vuln*.json
+            fi
+            #       - run:
+            #           name: Upload Anchore reports to s3
+            #           command: |
+            #             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/${CIRCLE_PROJECT_REPONAME}/ --recursive
+            #             aws s3 rm ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive --exclude "*" --include "${CIRCLE_PROJECT_REPONAME}*"
+            #             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive
+
+            # TODO: Enable this when we want to increase the strictness of our security policies
+            # failCount=$(cat anchore-reports/*policy*.json | grep 'fail' | wc -l)
+            # echo "FailCount is: ${failCount}"
+            # if [ $failCount -gt 0 ]; then
+            #   printf "Failed with a policy failure count of: ${failCount}"
+            #   exit 1
+          # fi
+      - store_artifacts:
+          path: anchore-reports
+
   publish:
     executor: default-machine
     steps:
@@ -277,6 +317,11 @@ jobs:
           webhook: "$SLACK_WEBHOOK_ANNOUNCEMENT"
           success_message: '*"${CIRCLE_PROJECT_REPONAME}"* - Release \`"${CIRCLE_TAG}"\` \nhttps://github.com/mojaloop/"${CIRCLE_PROJECT_REPONAME}"/releases/tag/"${CIRCLE_TAG}"'
 
+##
+# Workflows
+#
+# CircleCI Workflow config
+##
 workflows:
   version: 2
   build_and_test:
@@ -323,6 +368,17 @@ workflows:
               ignore:
                 - /feature*/
                 - /bugfix*/
+      - vulnerability-check:
+          context: org-global
+          requires:
+            - setup
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
       - audit-licenses:
           context: org-global
           requires:
@@ -334,45 +390,43 @@ workflows:
               ignore:
                 - /feature*/
                 - /bugfix*/
-      - build:
+      - build-local:
           context: org-global
-          requires:
-            - setup
-            - test-unit
-            - test-integration
-            - lint
-            - audit-licenses
           filters:
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
             branches:
               ignore:
-                - /.*/
+                - /feature*/
+                - /bugfix*/
+      - image-scan:
+          context: org-global
+          requires:
+            - build-local
+          filters:
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
       - license-scan:
           context: org-global
           requires:
-            - build
+            - build-local
+          filters:
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
+      - build:
+          context: org-global
           filters:
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
             branches:
               ignore:
                 - /.*/
-      # Note: Disabled for now to investigate vulnerabilities without interfering with releases
-      # - image-scan:
-      #     context: org-global
-      #     requires:
-      #       - build
-      #     filters:
-      #       tags:
-      #         only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
-      #       branches:
-      #         ignore:
-      #           - /.*/
       - publish:
           context: org-global
           requires:
-            - license-scan
+            - build
           filters:
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/

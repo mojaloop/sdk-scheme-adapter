@@ -123,7 +123,7 @@ class BackendRequests {
      * @returns {object} - JSON response body if one was received
      */
     async postBulkTransfers(prepare) {
-        return this._post('bulktransfers', prepare);
+        return this._post('bulkTransfers', prepare);
     }
 
     /**
@@ -134,6 +134,17 @@ class BackendRequests {
     async getBulkTransfers(bulkTransferId) {
         const url = `bulkTransfers/${bulkTransferId}`;
         return this._get(url);
+    }
+
+    /**
+     * Executes a PUT /transfers/{ID} request to forward notification for success
+     *
+     * @returns {object} - JSON response body if one was received
+     */
+
+    async putTransfersNotification(notifcation, transferId) {
+        const url = `transfers/${transferId}`;
+        return this._put(url, notifcation);
     }
 
     /**
@@ -176,7 +187,7 @@ class BackendRequests {
             method: 'PUT',
             uri: buildUrl(this.backendEndpoint, url),
             headers: this._buildHeaders(),
-            body: JSON.stringify(body),
+            body: JSON.stringify(body)
         };
 
         try {
