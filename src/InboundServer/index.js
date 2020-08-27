@@ -34,6 +34,22 @@ class InboundServer {
         this._jwsVerificationKeys = {};
     }
 
+    _getVersionFromConfig () {
+
+        const resourceVersionMap = {}
+        this._conf.resourcesVersion
+          .split(',')
+          .forEach(e => e.split('=')
+          .reduce((p, c) => {
+              resourceVersionMap[p] = {
+                contentVersion: c,
+                acceptVersion: c.split('.')[0],
+              };
+            }));
+        return resourceVersionMap
+    };
+    
+
     async setupApi() {
         this._api = new Koa();
         this._logger = await this._createLogger();
@@ -54,7 +70,6 @@ class InboundServer {
         this._api.use(middlewares.createErrorHandler());
         this._api.use(middlewares.createRequestIdGenerator());
         this._api.use(middlewares.createHeaderValidator(this._logger));
-
         if(this._conf.validateInboundJws) {
             const jwsExclusions = [];
             if (!this._conf.validateInboundPutPartiesJws) {
@@ -72,6 +87,7 @@ class InboundServer {
         this._api.use(middlewares.createResponseBodyHandler());
 
         this._server = this._createServer();
+        this._api.context.resourceVersions = this._getVersionFromConfig(apiSpecs)
         return this._server;
     }
 

@@ -34,8 +34,8 @@ class InboundTransfersModel {
         this._expirySeconds = config.expirySeconds;
         this._rejectTransfersOnExpiredQuotes = config.rejectTransfersOnExpiredQuotes;
         this._allowTransferWithoutQuote = config.allowTransferWithoutQuote;
-        this._reserveNotification = config.reserveNotification
-
+        this._reserveNotification = config.reserveNotification;
+    
         this._mojaloopRequests = new MojaloopRequests({
             logger: this._logger,
             peerEndpoint: config.peerEndpoint,
@@ -46,7 +46,8 @@ class InboundTransfersModel {
             tls: config.tls,
             jwsSign: config.jwsSign,
             jwsSigningKey: config.jwsSigningKey,
-            wso2Auth: config.wso2Auth
+            wso2Auth: config.wso2Auth,
+            resourceVersions: config.resourceVersions
         });
 
         this._backendRequests = new BackendRequests({
