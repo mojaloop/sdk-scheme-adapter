@@ -14,17 +14,46 @@ require('dotenv').config();
 const { from } = require('env-var');
 const yaml = require('js-yaml');
 
-function getFileContent(path) {
+function getFileContent (path) {
     if (!fs.existsSync(path)) {
         throw new Error('File doesn\'t exist');
     }
     return fs.readFileSync(path);
 }
 
+/**
+     * Gets Resources versions from enviromental variable RESOURCES_VERSIONS
+     * should be string in format: "resouceOneName=1.0,resourceTwoName=1.1"
+     */
+function getVersionFromConfig (resourceString) {
+    const resourceVersionMap = {};
+    resourceString
+        .split(',')
+        .forEach(e => e.split('=')
+            .reduce((p, c) => {
+                resourceVersionMap[p] = {
+                    contentVersion: c,
+                    acceptVersion: c.split('.')[0],
+                };
+            }));
+    return resourceVersionMap;
+}
+    
+function validateResourcesVersions (resourceString) {
+    if (!resourceString) return '';
+    const resourceFormatRegex = /(([A-z])\w*)=([0-9]+).([0-9]+)(,*)/;
+    const noSpResources = resourceString.replace(/\s/g,'');
+    if (!resourceFormatRegex.test(noSpResources)) {
+        throw new Error('Resource versions format should be in format: "resouceOneName=1.0,resourceTwoName=1.1"');
+    }
+    return getVersionFromConfig(noSpResources);
+}
+
 const env = from(process.env, {
     asFileContent: (path) => getFileContent(path),
     asFileListContent: (pathList) => pathList.split(',').map((path) => getFileContent(path)),
     asYamlConfig: (path) => yaml.load(getFileContent(path)),
+    asResourcesVersions: (resourceString) => validateResourcesVersions(resourceString),
 });
 
 module.exports = {
@@ -132,6 +161,6 @@ module.exports = {
 
     proxyConfig: env.get('PROXY_CONFIG_PATH').asYamlConfig(),
     reserveNotification: env.get('RESERVE_NOTIFICATION').default('false').asBool(),
-    // resourcesVersion config should be string in format: "resouceOneName=1.0,resourceTwoName=1.1"
-    resourcesVersion: env.get('RESOURCES_VERSIONS').default('').asString()
+    // resourcesVersions config should be string in format: "resouceOneName=1.0,resourceTwoName=1.1"
+    resourcesVersions: env.get('RESOURCES_VERSIONS').default('').asResourcesVersions()
 };
