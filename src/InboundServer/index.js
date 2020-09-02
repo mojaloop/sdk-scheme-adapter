@@ -39,22 +39,22 @@ class InboundServer {
      * should be string in format: "resouceOneName=1.0,resourceTwoName=1.1"
      */
     _getVersionFromConfig () {
-        const resourceVersionMap = {}
+        const resourceVersionMap = {};
         if (this._conf.resourcesVersion) {
             this._conf.resourcesVersion
-            .split(',')
-            .forEach(e => e.split('=')
-            .reduce((p, c) => {
-                resourceVersionMap[p] = {
-                    contentVersion: c,
-                    acceptVersion: c.split('.')[0],
-                };
-                }));
-            return resourceVersionMap
+                .split(',')
+                .forEach(e => e.split('=')
+                    .reduce((p, c) => {
+                        resourceVersionMap[p] = {
+                            contentVersion: c,
+                            acceptVersion: c.split('.')[0],
+                        };
+                    }));
+            return resourceVersionMap;
         } else {
-            return null
+            return null;
         }
-    };
+    }
     
 
     async setupApi() {
@@ -94,7 +94,7 @@ class InboundServer {
         this._api.use(middlewares.createResponseBodyHandler());
 
         this._server = this._createServer();
-        this._api.context.resourceVersions = this._getVersionFromConfig(apiSpecs)
+        this._api.context.resourceVersions = this._getVersionFromConfig(apiSpecs);
         return this._server;
     }
 
