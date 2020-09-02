@@ -39,7 +39,7 @@ function getVersionFromConfig (resourceString) {
     return resourceVersionMap;
 }
     
-function validateResourcesVersions (resourceString) {
+function validateResourceVersions (resourceString) {
     if (!resourceString) return '';
     const resourceFormatRegex = /(([A-z])\w*)=([0-9]+).([0-9]+)(,*)/;
     const noSpResources = resourceString.replace(/\s/g,'');
@@ -53,7 +53,7 @@ const env = from(process.env, {
     asFileContent: (path) => getFileContent(path),
     asFileListContent: (pathList) => pathList.split(',').map((path) => getFileContent(path)),
     asYamlConfig: (path) => yaml.load(getFileContent(path)),
-    asResourcesVersions: (resourceString) => validateResourcesVersions(resourceString),
+    asResourceVersions: (resourceString) => validateResourceVersions(resourceString),
 });
 
 module.exports = {
@@ -161,6 +161,6 @@ module.exports = {
 
     proxyConfig: env.get('PROXY_CONFIG_PATH').asYamlConfig(),
     reserveNotification: env.get('RESERVE_NOTIFICATION').default('false').asBool(),
-    // resourcesVersions config should be string in format: "resouceOneName=1.0,resourceTwoName=1.1"
-    resourcesVersions: env.get('RESOURCES_VERSIONS').default('').asResourcesVersions()
+    // resourceVersions config should be string in format: "resouceOneName=1.0,resourceTwoName=1.1"
+    resourceVersions: env.get('RESOURCE_VERSIONS').default('').asResourceVersions()
 };
