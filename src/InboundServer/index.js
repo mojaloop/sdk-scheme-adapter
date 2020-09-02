@@ -34,19 +34,26 @@ class InboundServer {
         this._jwsVerificationKeys = {};
     }
 
+    /**
+     * Gets Resources versions from enviromental variable RESOURCES_VERSIONS
+     * should be string in format: "resouceOneName=1.0,resourceTwoName=1.1"
+     */
     _getVersionFromConfig () {
-
         const resourceVersionMap = {}
-        this._conf.resourcesVersion
-          .split(',')
-          .forEach(e => e.split('=')
-          .reduce((p, c) => {
-              resourceVersionMap[p] = {
-                contentVersion: c,
-                acceptVersion: c.split('.')[0],
-              };
-            }));
-        return resourceVersionMap
+        if (this._conf.resourcesVersion) {
+            this._conf.resourcesVersion
+            .split(',')
+            .forEach(e => e.split('=')
+            .reduce((p, c) => {
+                resourceVersionMap[p] = {
+                    contentVersion: c,
+                    acceptVersion: c.split('.')[0],
+                };
+                }));
+            return resourceVersionMap
+        } else {
+            return null
+        }
     };
     
 
