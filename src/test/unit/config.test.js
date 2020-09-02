@@ -93,4 +93,23 @@ describe('config', () => {
         const proxyConfig = require('./data/testFile');
         expect(config.proxyConfig).toEqual(proxyConfig);
     });
+
+    it('should transform correctly resources versions to config', () => {
+        
+        const resourcesVersions = {
+            resourceOneName: {
+                acceptVersion: '1',
+                contentVersion: '1.0',
+            },
+            resourceTwoName: {
+                acceptVersion: '1',
+                contentVersion: '1.1',
+            },
+
+        };
+        process.env.RESOURCES_VERSIONS = 'resourceOneName=1.0,resourceTwoName=1.1';
+        const config = require('../../config');
+        expect(config.resourcesVersions).toEqual(resourcesVersions);
+    });
+
 });
