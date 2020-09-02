@@ -96,7 +96,7 @@ describe('config', () => {
 
     it('should transform correctly resources versions to config', () => {
         
-        const resourcesVersions = {
+        const resourceVersions = {
             resourceOneName: {
                 acceptVersion: '1',
                 contentVersion: '1.0',
@@ -107,9 +107,9 @@ describe('config', () => {
             },
 
         };
-        process.env.RESOURCES_VERSIONS = 'resourceOneName=1.0,resourceTwoName=1.1';
+        process.env.RESOURCE_VERSIONS = 'resourceOneName=1.0,resourceTwoName=1.1';
         const config = require('../../config');
-        expect(config.resourcesVersions).toEqual(resourcesVersions);
+        expect(config.resourceVersions).toEqual(resourceVersions);
     });
 
 });

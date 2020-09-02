@@ -71,7 +71,7 @@ class InboundServer {
         this._api.use(middlewares.createResponseBodyHandler());
 
         this._server = this._createServer();
-        this._api.context.resourcesVersions = this._conf.resourcesVersions;
+        this._api.context.resourceVersions = this._conf.resourceVersions;
         return this._server;
     }
 
