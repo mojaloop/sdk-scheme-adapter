@@ -41,16 +41,12 @@ function getVersionFromConfig (resourceString) {
 
 function parseResourceVersions (resourceString) {
     if (!resourceString) return {};
-    const resourceFormatRegex = /(([A-Za-z])\w*)=([0-9]+).([0-9]+)([^;:|],*)/g
-    try {
-        const noSpResources = resourceString.replace(/\s/g,'');
-        if (!resourceFormatRegex.test(noSpResources)) {
-            throw new Error('Resource versions format should be in format: "resouceOneName=1.0,resourceTwoName=1.1"');
-        }
-        return getVersionFromConfig(noSpResources);
-    } catch (e) {
-        throw e
+    const resourceFormatRegex = /(([A-Za-z])\w*)=([0-9]+).([0-9]+)([^;:|],*)/g;
+    const noSpResources = resourceString.replace(/\s/g,'');
+    if (!resourceFormatRegex.test(noSpResources)) {
+        throw new Error('Resource versions format should be in format: "resouceOneName=1.0,resourceTwoName=1.1"');
     }
+    return getVersionFromConfig(noSpResources);
 }
 
 const env = from(process.env, {
