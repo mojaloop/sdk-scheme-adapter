@@ -38,6 +38,7 @@ const getAuthorizationsById = async (ctx) => {
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
                 wso2Auth: ctx.state.wso2Auth,
+                resourceVersions: ctx.resourceVersions,
             });
 
             const sourceFspId = ctx.request.headers['fspiop-source'];
@@ -73,6 +74,7 @@ const getParticipantsByTypeAndId = async (ctx) => {
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
                 wso2Auth: ctx.state.wso2Auth,
+                resourceVersions: ctx.resourceVersions,
             });
 
             const sourceFspId = ctx.request.headers['fspiop-source'];
@@ -120,6 +122,7 @@ const getPartiesByTypeAndId = async (ctx) => {
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
                 wso2Auth: ctx.state.wso2Auth,
+                resourceVersions: ctx.resourceVersions,
             });
 
             const sourceFspId = ctx.request.headers['fspiop-source'];
@@ -178,6 +181,7 @@ const postQuotes = async (ctx) => {
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
                 wso2Auth: ctx.state.wso2Auth,
+                resourceVersions: ctx.resourceVersions,
             });
 
             const sourceFspId = ctx.request.headers['fspiop-source'];
@@ -225,6 +229,7 @@ const postTransfers = async (ctx) => {
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
                 wso2Auth: ctx.state.wso2Auth,
+                resourceVersions: ctx.resourceVersions,
             });
 
             const sourceFspId = ctx.request.headers['fspiop-source'];
@@ -270,6 +275,7 @@ const getTransfersById = async (ctx) => {
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
                 wso2Auth: ctx.state.wso2Auth,
+                resourceVersions: ctx.resourceVersions,
             });
 
             const sourceFspId = ctx.request.headers['fspiop-source'];
@@ -318,6 +324,7 @@ const postTransactionRequests = async (ctx) => {
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
                 wso2Auth: ctx.state.wso2Auth,
+                resourceVersions: ctx.resourceVersions,
             });
 
             const sourceFspId = ctx.request.headers['fspiop-source'];
@@ -559,6 +566,7 @@ const patchTransfersById = async (ctx) => {
         cache: ctx.state.cache,
         logger: ctx.state.logger,
         wso2Auth: ctx.state.wso2Auth,
+        resourceVersions: ctx.resourceVersions,    
     });
 
     // sends notification to the payee fsp
@@ -674,6 +682,7 @@ const getBulkQuotesById = async (ctx) => {
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
                 wso2Auth: ctx.state.wso2Auth,
+                resourceVersions: ctx.resourceVersions,
             });
 
             const sourceFspId = ctx.request.headers['fspiop-source'];
@@ -721,6 +730,7 @@ const postBulkQuotes = async (ctx) => {
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
                 wso2Auth: ctx.state.wso2Auth,
+                resourceVersions: ctx.resourceVersions,
             });
 
             const sourceFspId = ctx.request.headers['fspiop-source'];
@@ -814,6 +824,7 @@ const getBulkTransfersById = async (ctx) => {
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
                 wso2Auth: ctx.state.wso2Auth,
+                resourceVersions: ctx.resourceVersions,
             });
 
             const sourceFspId = ctx.request.headers['fspiop-source'];
@@ -861,6 +872,7 @@ const postBulkTransfers = async (ctx) => {
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
                 wso2Auth: ctx.state.wso2Auth,
+                resourceVersions: ctx.resourceVersions,
             });
 
             const sourceFspId = ctx.request.headers['fspiop-source'];
