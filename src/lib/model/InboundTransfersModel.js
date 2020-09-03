@@ -46,7 +46,8 @@ class InboundTransfersModel {
             tls: config.tls,
             jwsSign: config.jwsSign,
             jwsSigningKey: config.jwsSigningKey,
-            wso2Auth: config.wso2Auth
+            wso2Auth: config.wso2Auth,
+            resourceVersions: config.resourceVersions
         });
 
         this._backendRequests = new BackendRequests({
