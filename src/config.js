@@ -38,25 +38,30 @@ function getVersionFromConfig (resourceString) {
             }));
     return resourceVersionMap;
 }
-    
-function validateResourceVersions (resourceString) {
-    if (!resourceString) return '';
-    const resourceFormatRegex = /(([A-z])\w*)=([0-9]+).([0-9]+)(,*)/;
-    const noSpResources = resourceString.replace(/\s/g,'');
-    if (!resourceFormatRegex.test(noSpResources)) {
-        throw new Error('Resource versions format should be in format: "resouceOneName=1.0,resourceTwoName=1.1"');
+
+function parseResourceVersions (resourceString) {
+    if (!resourceString) return {};
+    const resourceFormatRegex = /(([A-Za-z])\w*)=([0-9]+).([0-9]+)([^;:|],*)/g
+    try {
+        const noSpResources = resourceString.replace(/\s/g,'');
+        if (!resourceFormatRegex.test(noSpResources)) {
+            throw new Error('Resource versions format should be in format: "resouceOneName=1.0,resourceTwoName=1.1"');
+        }
+        return getVersionFromConfig(noSpResources);
+    } catch (e) {
+        throw e
     }
-    return getVersionFromConfig(noSpResources);
 }
 
 const env = from(process.env, {
     asFileContent: (path) => getFileContent(path),
     asFileListContent: (pathList) => pathList.split(',').map((path) => getFileContent(path)),
     asYamlConfig: (path) => yaml.load(getFileContent(path)),
-    asResourceVersions: (resourceString) => validateResourceVersions(resourceString),
+    asResourceVersions: (resourceString) => parseResourceVersions(resourceString),
 });
 
 module.exports = {
+    __parseResourceVersion: parseResourceVersions,
     inboundPort: env.get('INBOUND_LISTEN_PORT').default('4000').asPortNumber(),
     outboundPort: env.get('OUTBOUND_LISTEN_PORT').default('4001').asPortNumber(),
     testPort: env.get('TEST_LISTEN_PORT').default('4002').asPortNumber(),
