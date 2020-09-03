@@ -107,9 +107,13 @@ describe('config', () => {
             },
 
         };
-        process.env.RESOURCE_VERSIONS = 'resourceOneName=1.0,resourceTwoName=1.1';
-        const config = require('../../config');
-        expect(config.resourceVersions).toEqual(resourceVersions);
+        const parseResourceVersion = require('../../config').__parseResourceVersion;
+        expect(parseResourceVersion('resourceOneName=1.0,resourceTwoName=1.1')).toEqual(resourceVersions);
+    });
+
+    it('should throw an err if the resource string is not correctly formed', () => {
+        const parseResourceVersion = require('../../config').__parseResourceVersion;
+        expect(() => parseResourceVersion('resourceOneName=1.0;resourceTwoName=1.1')).toThrowError(new Error('Resource versions format should be in format: "resouceOneName=1.0,resourceTwoName=1.1"'));
     });
 
 });
