@@ -9,7 +9,7 @@ info:
   license:
     name: Apache License Version 2.0, January 2004
     url: http://www.apache.org/licenses/
-  version: 1.0.0
+  version: 1.1.0
 
 paths:
   /participants/{idType}/{idValue}:
@@ -169,6 +169,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/transferDetailsResponse'
+        500:
+          $ref: '#/components/responses/500'
+    put:
+      summary: Receive notification for a specific transfer
+      description: The HTTP request `PUT /transfers/{transferId}` is used to receive notification for transfer being fulfiled when the FSP is a Payee
+      tags:
+        - Transfers
+      parameters:
+        - $ref: '#/components/schemas/transferId'
+      requestBody:
+        description: An incoming notification for fulfiled transfer
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/fulfilNotification'
+      responses:
+        200:
+          description: The notification was accepted
         500:
           $ref: '#/components/responses/500'
 
@@ -345,6 +363,8 @@ components:
       - XDR
       - XOF
       - XPF
+      - XTS
+      - XXX
       - YER
       - ZAR
       - ZMW
@@ -774,13 +794,32 @@ components:
         extensions:
           $ref: '#/components/schemas/extensionList'
 
-
     transferStatus:
       type: string
       enum:
       - ERROR_OCCURRED
       - WAITING_FOR_QUOTE_ACCEPTANCE
       - COMPLETED
+
+    fulfilNotification:
+      title: TransfersIDPatchResponse
+      type: object
+      description: PUT /transfers/{transferId} object
+      properties:
+        completedTimestamp:
+          $ref: '#/components/schemas/timestamp'
+          description: Time and date when the transaction was completed.
+          example: "2020-05-19T08:38:08.699-04:00"
+        transferState:
+          $ref: '#/components/schemas/transferState'
+          description: State of the transfer.
+          example: COMMITTED
+        extensionList:
+          $ref: '#/components/schemas/ExtensionList'
+          description: Optional extension, specific to deployment.
+      required:
+        - completedTimestamp
+        - transferState
 
   responses:
     '400':

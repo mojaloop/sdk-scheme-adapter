@@ -22,7 +22,6 @@ const {
 } = require('@mojaloop/sdk-standard-components');
 const shared = require('@internal/shared');
 
-
 /**
  *  Models the operations required for performing inbound transfers
  */
@@ -34,6 +33,7 @@ class InboundTransfersModel {
         this._expirySeconds = config.expirySeconds;
         this._rejectTransfersOnExpiredQuotes = config.rejectTransfersOnExpiredQuotes;
         this._allowTransferWithoutQuote = config.allowTransferWithoutQuote;
+        this._reserveNotification = config.reserveNotification;
 
         this._mojaloopRequests = new MojaloopRequests({
             logger: this._logger,
@@ -46,7 +46,8 @@ class InboundTransfersModel {
             tls: config.tls,
             jwsSign: config.jwsSign,
             jwsSigningKey: config.jwsSigningKey,
-            wso2Auth: config.wso2Auth
+            wso2Auth: config.wso2Auth,
+            resourceVersions: config.resourceVersions
         });
 
         this._backendRequests = new BackendRequests({
@@ -294,7 +295,7 @@ class InboundTransfersModel {
             // create a  mojaloop transfer fulfil response
             const mojaloopResponse = {
                 completedTimestamp: new Date(),
-                transferState: 'COMMITTED',
+                transferState: this._reserveNotification ? 'RESERVED' : 'COMMITTED',
                 fulfilment: fulfilment,
                 ...response.extensionList && {
                     extensionList: {
@@ -663,6 +664,18 @@ class InboundTransfersModel {
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
             return this._mojaloopRequests.putBulkTransfersError(bulkTransferId,
                 mojaloopError, sourceFspId);
+        }
+    }
+
+    /**
+    * Forwards Switch notification for fulfiled transfer to the DFSP backend, when acting as a payee 
+    */
+    async sendNotificationToPayee(body, transferId) {
+        try {
+            const res = await this._backendRequests.putTransfersNotification(body, transferId);
+            return res;
+        } catch (err) {
+            this._logger.push({ err }).log('Error in sendNotificationToPayee');
         }
     }
 

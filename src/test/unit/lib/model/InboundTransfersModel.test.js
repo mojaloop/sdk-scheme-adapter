@@ -26,6 +26,7 @@ const getTransfersBackendResponse = require('./data/getTransfersBackendResponse'
 const getTransfersMojaloopResponse = require('./data/getTransfersMojaloopResponse');
 const getBulkTransfersBackendResponse = require('./data/getBulkTransfersBackendResponse');
 const getBulkTransfersMojaloopResponse = require('./data/getBulkTransfersMojaloopResponse');
+const notificationToPayee = require('./data/notificationToPayee');
 
 describe('inboundModel', () => {
     let config;
@@ -593,6 +594,41 @@ describe('inboundModel', () => {
             expect(MojaloopRequests.__putBulkTransfersError).toHaveBeenCalledTimes(0);
             expect(BackendRequests.__postBulkTransfers).toHaveBeenCalledTimes(1);
             expect(MojaloopRequests.__putBulkTransfers).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('sendNotificationToPayee:', () => {
+        const transferId = '1234';
+        let cache;
+
+        beforeEach(async () => { 
+            cache = new Cache({
+                host: 'dummycachehost',
+                port: 1234,
+                logger,
+            });
+            await cache.connect();
+        });
+
+        afterEach(async () => {
+            await cache.disconnect();
+        });
+
+        test('sends notification to fsp backend', async () => {
+            BackendRequests.__putTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({}));
+            const backendResponse = JSON.parse(JSON.stringify(notificationToPayee));
+
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+            });
+
+            await model.sendNotificationToPayee(backendResponse.data, transferId);
+            expect(BackendRequests.__putTransfersNotification).toHaveBeenCalledTimes(1);
+            const call = BackendRequests.__putTransfersNotification.mock.calls[0];
+            expect(call[0]).toEqual(backendResponse.data);
+            expect(call[1]).toEqual(transferId);
         });
     });
 });

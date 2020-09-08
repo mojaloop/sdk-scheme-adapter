@@ -50,9 +50,10 @@ const createHeaderValidator = (logger) => async (ctx, next) => {
         'application/vnd.interoperability.participants+json;version=1.0',
         'application/vnd.interoperability.quotes+json;version=1.0',
         'application/vnd.interoperability.bulkQuotes+json;version=1.0',
+        'application/vnd.interoperability.bulkTransfers+json;version=1.0',
         'application/vnd.interoperability.transactionRequests+json;version=1.0',
         'application/vnd.interoperability.transfers+json;version=1.0',
-        'application/vnd.interoperability.bulkTransfers+json;version=1.0',
+        'application/vnd.interoperability.transfers+json;version=1.1',
         'application/vnd.interoperability.authorizations+json;version=1.0',
         'application/json'
     ]);

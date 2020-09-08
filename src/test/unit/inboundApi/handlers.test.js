@@ -447,4 +447,41 @@ describe('Inbound API handlers:', () => {
             expect(authorizationsSpy.mock.calls[0][1]).toBe(mockAuthorizationContext.request.headers['fspiop-source']);
         });
     });
+
+    describe('PATCH /transfers/{ID}', () => {
+        let mockNotificationMessage;
+
+        beforeEach(() => {
+            mockNotificationMessage = {
+                request: {
+                    headers: {
+
+                    },
+                    body: {
+                        transferState: 'COMMITTED',
+                        completedTimestamp: '2020-08-18T09:39:33.552Z'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    path: {
+                        params: {
+                            'ID': '1234'
+                        }
+                    },
+                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports })
+                }
+            };
+        });
+
+        test('calls `model.sendNotificationToPayee with expected arguments', async () => {
+            const notificationSpy = jest.spyOn(Model.prototype, 'sendNotificationToPayee');
+
+            await expect(handlers['/transfers/{ID}'].patch(mockNotificationMessage)).resolves.toBe(undefined);
+            expect(notificationSpy).toHaveBeenCalledTimes(1);
+            expect(notificationSpy.mock.calls[0][1]).toBe(mockNotificationMessage.state.path.params.ID);
+        });
+
+    });
 });
