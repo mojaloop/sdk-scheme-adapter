@@ -118,6 +118,10 @@ class OutboundTransfersModel {
             this.data.currentState = 'start';
         }
 
+        if(!this.data.hasOwnProperty('initiatedTimestamp')) {
+            this.data.initiatedTimestamp = new Date().toISOString();
+        }
+
         this._initStateMachine(this.data.currentState);
     }
 

@@ -1,9 +1,11 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
-  "version": "11.0.0",
+  "version": "11.2.2",
   "description": "An adapter for connecting to Mojaloop API enabled switches.",
   "main": "index.js",
   "scripts": {
+    "audit:resolve": "SHELL=sh resolve-audit --production",
+    "audit:check": "SHELL=sh check-audit --production",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "jest --ci --reporters=default --reporters=jest-junit --env=node test/unit",
@@ -11,7 +13,9 @@
   },
   "author": "Matt Kingston, James Bush, ModusBox Inc.",
   "contributors": [
-    "Steven Oderayi <steven.oderayi@modusbox.com>"
+    "Kamuela Franco <kamuela.franco@modusbox.com>",
+    "Steven Oderayi <steven.oderayi@modusbox.com>",
+    "Valentin Genev <valentin.genev@modusbox.com>"
   ],
   "license": "Apache-2.0",
   "licenses": [
@@ -29,7 +33,7 @@
     "@internal/router": "file:lib/router",
     "@internal/shared": "file:lib/model/lib/shared",
     "@internal/validate": "file:lib/validate",
-    "@mojaloop/sdk-standard-components": "10.6.3",
+    "@mojaloop/sdk-standard-components": "11.5.2",
     "ajv": "^6.12.2",
     "co-body": "^6.0.0",
     "dotenv": "^8.2.0",
@@ -50,6 +54,7 @@
     "jest": "^26.0.1",
     "jest-junit": "^10.0.0",
     "nock": "^12.0.3",
+    "npm-audit-resolver": "2.2.0",
     "openapi-response-validator": "^4.0.0",
     "redis-mock": "^0.49.0",
     "supertest": "^4.0.2"
