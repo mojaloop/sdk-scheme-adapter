@@ -35,6 +35,7 @@
     "@internal/validate": "file:lib/validate",
     "@mojaloop/sdk-standard-components": "11.5.2",
     "ajv": "^6.12.2",
+    "ajv-keywords": "^3.5.2",
     "co-body": "^6.0.0",
     "dotenv": "^8.2.0",
     "env-var": "^6.1.1",
