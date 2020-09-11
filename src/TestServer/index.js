@@ -17,7 +17,6 @@ const yaml = require('js-yaml');
 const fs = require('fs');
 const path = require('path');
 
-const { WSO2Auth } = require('@mojaloop/sdk-standard-components');
 const { Logger, Transports } = require('@internal/log');
 const Cache = require('@internal/cache');
 
@@ -57,15 +56,9 @@ class TestServer {
         const validator = new Validate();
         await validator.initialise(apiSpecs);
 
-        this._wso2Auth = new WSO2Auth({
-            ...this._conf.wso2Auth,
-            logger: this._logger,
-            tlsCreds: this._conf.tls.test.mutualTLS.enabled && this._conf.tls.test.creds,
-        });
-
         this._api.use(middlewares.createErrorHandler());
         this._api.use(middlewares.createRequestIdGenerator());
-        const sharedState = { cache: this._cache, wso2Auth: this._wso2Auth, conf: this._conf };
+        const sharedState = { cache: this._cache, conf: this._conf };
         this._api.use(middlewares.createLogger(this._logger, sharedState));
 
         this._api.use(middlewares.createRequestValidator(validator));
@@ -80,9 +73,6 @@ class TestServer {
         await this._cache.connect();
         this._cache.subscribe(this._cache.EVENT_SET, this._handleCacheKeySet.bind(this));
         this._cache.setTestMode(true);
-        if (!this._conf.testingDisableWSO2AuthStart) {
-            await this._wso2Auth.start();
-        }
         this._server.on('upgrade', (req, socket, head) => {
             this._wsapi.handleUpgrade(req, socket, head, (ws) =>
                 this._wsapi.emit('connection', ws, req));
@@ -103,7 +93,6 @@ class TestServer {
             new Promise(resolve => socket.on('close', resolve))
         ));
         await new Promise(resolve => this._server.close(resolve));
-        this._wso2Auth.stop();
         await this._cache.disconnect();
         console.log('api shut down complete');
     }
