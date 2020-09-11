@@ -3213,10 +3213,9 @@ components:
       description: Extension value.
     FirstName:
       title: FirstName
-      type: string
-      minLength: 1
-      maxLength: 128
-      pattern: '^(?!\s*$)[\w .,''-]{1,128}$'
+      regexp: 
+        pattern: '^(?!\s*$)[\p{L}\p{Nd} .,''-]{1,128}$'
+        flags: 'u'
       description: First name of the Party (Name Type).
     FspId:
       title: FspId
