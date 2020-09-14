@@ -3,7 +3,7 @@ const path = require('path');
 const yaml = require('js-yaml');
 const supertest = require('supertest');
 const Validate = require('@internal/validate');
-const addCustomKeys = require('@internal/openapi');
+const { addCustomKeys } = require('@internal/openapi');
 
 const InboundServer = require('../../../InboundServer');
 const OutboundServer = require('../../../OutboundServer');

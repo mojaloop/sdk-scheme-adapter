@@ -1,0 +1,23 @@
+openapi: 3.0.0
+info:
+  version: '0.1'
+  title: Open API (Test)
+  description: API description
+paths:
+  '/test':
+    post:
+      summary: Test
+      responses:
+        '202':
+          description: 'OK'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                firstName: 
+                  pattern: '^(?!\s*$)[\p{L}\p{Nd} .,''-]{1,128}$'
+                lastName:
+                  pattern: '^(?!\s*$)[\p{L}\p{Nd} .,''-]{1,128}$'
+        required: true
+  
