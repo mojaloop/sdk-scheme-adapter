@@ -28,7 +28,7 @@ const ajv = new Ajv({ allErrors: true, coerceTypes: true });
 // necesarry to support validation of accented characters. More keywords can be
 // supported by adding the keywords to the options array. 
 // All keywords can be supported by removing the options array entirely.
-// require('ajv-keywords')(ajv, ['regexp']);
+require('ajv-keywords')(ajv, ['regexp']);
 
 const httpMethods = ['get', 'head', 'post', 'put', 'delete', 'connect', 'options', 'trace', 'patch'];
 
