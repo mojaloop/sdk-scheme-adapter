@@ -25,8 +25,10 @@ const Ajv = require('ajv');
 const ajv = new Ajv({ allErrors: true, coerceTypes: true });
 
 // We use `ajv-keywords` to support non-standard JSON-Schema keywords like 'regexp'
-// necesarry to support validation of accented characters.
-require('ajv-keywords')(ajv);
+// necesarry to support validation of accented characters. More keywords can be
+// supported by adding the keywords to the options array. 
+// All keywords can be supported by removing the options array entirely.
+// require('ajv-keywords')(ajv, ['regexp']);
 
 const httpMethods = ['get', 'head', 'post', 'put', 'delete', 'connect', 'options', 'trace', 'patch'];
 
