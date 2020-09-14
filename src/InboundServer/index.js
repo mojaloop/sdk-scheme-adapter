@@ -22,7 +22,7 @@ const Cache = require('@internal/cache');
 
 const Validate = require('@internal/validate');
 const router = require('@internal/router');
-const addCustomKeys = require('@internal/openapi');
+const { addCustomKeys } = require('@internal/openapi');
 const handlers = require('./handlers');
 const middlewares = require('./middlewares');
 

@@ -17,7 +17,7 @@
 // of unicode character classes.
 const addCustomKeys = (originalSchema, regexFlags = 'u') => {
     const key = 'pattern';
-    const clonedSchema = { ...originalSchema };
+    const clonedSchema = JSON.parse(JSON.stringify(originalSchema));
     updateSchema(clonedSchema, key, regexFlags);
     return clonedSchema;
 };
@@ -43,4 +43,4 @@ const updateSchema = (obj, key, regexFlags) => {
     }
 };
 
-module.exports = addCustomKeys;
+module.exports = { addCustomKeys };
