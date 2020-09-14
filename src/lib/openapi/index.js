@@ -16,7 +16,6 @@
 // used in conjunction with 'ajv-keywords' to support validation
 // of unicode character classes.
 const addCustomKeys = (originalSchema, regexFlags = 'u') => {
-    return originalSchema;
     const key = 'pattern';
     const clonedSchema = { ...originalSchema };
     updateSchema(clonedSchema, key, regexFlags);

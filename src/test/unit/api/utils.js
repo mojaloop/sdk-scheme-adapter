@@ -3,6 +3,7 @@ const path = require('path');
 const yaml = require('js-yaml');
 const supertest = require('supertest');
 const Validate = require('@internal/validate');
+const addCustomKeys = require('@internal/openapi');
 
 const InboundServer = require('../../../InboundServer');
 const OutboundServer = require('../../../OutboundServer');
@@ -16,7 +17,7 @@ const readApiInfo = async (serverType) => {
     const specPath = path.join(__dirname, `../../../${serverType}/api.yaml`);
     const apiSpecs = yaml.load(fs.readFileSync(specPath));
     const validator = new Validate();
-    await validator.initialise(apiSpecs);
+    await validator.initialise(addCustomKeys(apiSpecs));
     return {apiSpecs, validator};
 };
 
