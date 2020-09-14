@@ -22,15 +22,15 @@ describe('openapi', () => {
     describe('addCustomKeys', () => {
         test('should replace "pattern" key with "regexp"', async () => {
             const modifiedApiSpec = addCustomKeys(apiSpecs);
-            const pattern = apiSpecs.paths['/test'].post.requestBody.content['application/json'].schema.properties.firstName.pattern;
+            const pattern = apiSpecs.components.schemas.ComplexName.pattern;
             expect(apiSpecs).not.toEqual(modifiedApiSpec);
             expect(apiSpecs).not.toBe(modifiedApiSpec);
-            expect(modifiedApiSpec.paths['/test'].post.requestBody.content['application/json'].schema.properties.firstName.pattern).toBe(undefined);
-            expect(modifiedApiSpec.paths['/test'].post.requestBody.content['application/json'].schema.properties.firstName.regexp.pattern).toBe(pattern);
-            expect(modifiedApiSpec.paths['/test'].post.requestBody.content['application/json'].schema.properties.firstName.regexp.flags).toBe('u');
-            expect(modifiedApiSpec.paths['/test'].post.requestBody.content['application/json'].schema.properties.lastName.pattern).toBe(undefined);
-            expect(modifiedApiSpec.paths['/test'].post.requestBody.content['application/json'].schema.properties.lastName.regexp.pattern).toBe(pattern);
-            expect(modifiedApiSpec.paths['/test'].post.requestBody.content['application/json'].schema.properties.lastName.regexp.flags).toBe('u');
+            expect(modifiedApiSpec.components.schemas.ComplexName.pattern).toBe(undefined);
+            expect(modifiedApiSpec.components.schemas.ComplexName.regexp.pattern).toBe(pattern);
+            expect(modifiedApiSpec.components.schemas.ComplexName.regexp.flags).toBe('u');
+            expect(modifiedApiSpec.components.schemas.ComplexName.pattern).toBe(undefined);
+            expect(modifiedApiSpec.components.schemas.ComplexName.regexp.pattern).toBe(pattern);
+            expect(modifiedApiSpec.components.schemas.ComplexName.regexp.flags).toBe('u');
         });
     });
 });

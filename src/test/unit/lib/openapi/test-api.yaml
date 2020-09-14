@@ -16,8 +16,13 @@ paths:
             schema:
               properties:
                 firstName: 
-                  pattern: '^(?!\s*$)[\p{L}\p{Nd} .,''-]{1,128}$'
+                  $ref: '#/components/schemas/ComplexName'
                 lastName:
-                  pattern: '^(?!\s*$)[\p{L}\p{Nd} .,''-]{1,128}$'
+                  $ref: '#/components/schemas/ComplexName'
         required: true
-  
+
+components:
+  schemas:
+   ComplexName:
+      title: ComplexName
+      pattern: '^(?!\s*$)[\p{L}\p{Nd} .,''-]{1,128}$'
