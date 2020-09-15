@@ -14,7 +14,6 @@ const supertest = require('supertest');
 
 const defaultConfig = require('./data/defaultConfig');
 const putPartiesBody = require('./data/putPartiesBody');
-const putPartiesBodyAccented = require('./data/putPartiesBodyAccented');
 const postQuotesBody = require('./data/postQuotesBody');
 const putParticipantsBody = require('./data/putParticipantsBody');
 const commonHttpHeaders = require('./data/commonHttpHeaders');
@@ -61,24 +60,6 @@ describe('Inbound Server', () => {
             expect(Jws.validator.__validate).toHaveBeenCalledTimes(expectedValidationCalls);
         }
 
-        async function testPartiesUnicodeValidation() {
-            serverConfig.validateInboundJws = false;
-            serverConfig.validateInboundPutPartiesJws = false;
-            const svr = new InboundServer(serverConfig);
-            const req = supertest(await svr.setupApi());
-            await svr.start();
-            await req
-                .put('/parties/MSISDN/123456789')
-                .send(putPartiesBody)
-                .set(commonHttpHeaders)
-                .set('fspiop-http-method', 'PUT')
-                .set('fspiop-uri', '/parties/MSISDN/123456789')
-                .set('date', new Date().toISOString());
-            await svr.stop();
-            expect(Validate.prototype.validateRequest).toHaveBeenCalledTimes(1);
-            expect(Validate.prototype.validateRequest).not.toThrow();
-        }
-
         test('validates incoming JWS when VALIDATE_INBOUND_JWS and VALIDATE_INBOUND_PUT_PARTIES_JWS is true', () =>
             testPartiesJwsValidation(true, true, 1));
 
@@ -90,9 +71,6 @@ describe('Inbound Server', () => {
 
         test('does not validate incoming JWS when VALIDATE_INBOUND_JWS is false and VALIDATE_INBOUND_PUT_PARTIES_JWS is true', () =>
             testPartiesJwsValidation(false, true, 0));
-        
-        test('validates request contaning accented characters', () =>
-            testPartiesUnicodeValidation());
     });
 
     describe('PUT /quotes', () => {
