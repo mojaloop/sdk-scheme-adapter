@@ -24,7 +24,6 @@ describe('openapi', () => {
             const modifiedApiSpec = addCustomKeys(apiSpecs);
             const pattern = apiSpecs.components.schemas.ComplexName.pattern;
             expect(apiSpecs).not.toEqual(modifiedApiSpec);
-            expect(apiSpecs).not.toBe(modifiedApiSpec);
             expect(modifiedApiSpec.components.schemas.ComplexName.pattern).toBe(undefined);
             expect(modifiedApiSpec.components.schemas.ComplexName.regexp.pattern).toBe(pattern);
             expect(modifiedApiSpec.components.schemas.ComplexName.regexp.flags).toBe('u');

@@ -11,7 +11,7 @@
 'use strict';
 
 // Add non-standard/custom JSON-Schema keys to the API spec. 
-// Initial implementation is to basically replace "pattern" key
+// Initial implementation basically replaces "pattern" key
 // with "regexp: { pattern: '<REGEX>', flags: '<REGEX-FLAGS>' }" 
 // used in conjunction with 'ajv-keywords' to support validation
 // of unicode character classes.
