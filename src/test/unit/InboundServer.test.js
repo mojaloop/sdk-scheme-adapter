@@ -21,10 +21,8 @@ const commonHttpHeaders = require('./data/commonHttpHeaders');
 jest.mock('@internal/cache');
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('@internal/requests');
-jest.mock('@internal/validate');
 
 const { Jws } = require('@mojaloop/sdk-standard-components');
-const Validate = require('@internal/validate');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
@@ -39,7 +37,6 @@ describe('Inbound Server', () => {
 
         beforeEach(() => {
             Jws.validator.__validate.mockClear();
-            Validate.prototype.validateRequest.mockClear();
             serverConfig = JSON.parse(JSON.stringify(defaultConfig));
         });
 
