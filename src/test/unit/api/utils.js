@@ -13,11 +13,16 @@ const OutboundServer = require('../../../OutboundServer');
  * @param serverType String
  * @return {Promise<{apiSpecs: Object, validator: Validator}>}
  */
-const readApiInfo = async (serverType) => {
+const readApiInfo = async (serverType, useCustomKeywords = false) => {
     const specPath = path.join(__dirname, `../../../${serverType}/api.yaml`);
     const apiSpecs = yaml.load(fs.readFileSync(specPath));
     const validator = new Validate();
-    await validator.initialise(addCustomKeys(apiSpecs));
+    if (useCustomKeywords) {
+        await validator.initialise(addCustomKeys(apiSpecs));
+    } else {
+        await validator.initialise(apiSpecs);
+    }
+    
     return {apiSpecs, validator};
 };
 
@@ -26,7 +31,7 @@ const createValidators = async () => {
     const apiSpecsOutbound = apiInfoOutbound.apiSpecs;
     const requestValidatorOutbound = apiInfoOutbound.validator;
 
-    const apiInfoInbound = await readApiInfo('InboundServer');
+    const apiInfoInbound = await readApiInfo('InboundServer', true);
     const apiSpecsInbound = apiInfoInbound.apiSpecs;
     const requestValidatorInbound = apiInfoInbound.validator;
     return {
