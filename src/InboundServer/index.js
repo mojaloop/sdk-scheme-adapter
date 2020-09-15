@@ -43,9 +43,8 @@ class InboundServer {
 
         const specPath = path.join(__dirname, 'api.yaml');
         const apiSpecs = yaml.load(fs.readFileSync(specPath));
-        const modifiedApiSpec = addCustomKeys(apiSpecs);
         const validator = new Validate();
-        await validator.initialise(modifiedApiSpec);
+        await validator.initialise(addCustomKeys(apiSpecs));
 
         this._wso2Auth = new WSO2Auth({
             ...this._conf.wso2Auth,
