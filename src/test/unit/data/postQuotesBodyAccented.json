@@ -1,0 +1,52 @@
+{
+  "amount": {
+    "amount": "100",
+    "currency": "USD"
+  },
+  "amountType": "SEND",
+  "expiration": "2020-01-20T11:31:49.325Z",
+  "extensionList": {
+    "extension": [
+      {
+        "key": "qreqkey1",
+        "value": "qreqvalue1"
+      },
+      {
+        "key": "qreqkey2",
+        "value": "qreqvalue2"
+      }
+    ]
+  },
+  "note": "test payment",
+  "payee": {
+    "partyIdInfo": {
+      "fspId": "sim",
+      "partyIdType": "PERSONAL_ID",
+      "partyIdentifier": "987654321",
+      "partySubIdOrType": "PASSPORT"
+    },
+    "personalInfo": {
+      "complexName": {
+        "firstName": "Renée",
+        "middleName": "François",
+        "lastName": "Noël"
+      },
+      "dateOfBirth": "1980-01-01"
+    }
+  },
+  "payer": {
+    "name": "John Doe",
+    "partyIdInfo": {
+      "fspId": "mojaloop-sdk",
+      "partyIdType": "MSISDN",
+      "partyIdentifier": "123456789"
+    }
+  },
+  "quoteId": "00000000-0000-1000-8000-000000000002",
+  "transactionId": "00000000-0000-1000-8000-000000000001",
+  "transactionType": {
+    "initiator": "PAYER",
+    "initiatorType": "CONSUMER",
+    "scenario": "TRANSFER"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "party": {
+    "partyIdInfo": {
+      "partyIdType": "PERSONAL_ID",
+      "partyIdentifier": "987654321",
+      "partySubIdOrType": "PASSPORT",
+      "fspId": "sim"
+    },
+    "personalInfo": {
+      "complexName": {
+        "firstName": "Renée",
+        "middleName": "François",
+        "lastName": "Noël"
+      },
+      "dateOfBirth": "1980-01-01"
+    },
+    "name": "Renée Noël",
+    "merchantClassificationCode": "1234"
+  }
+}
