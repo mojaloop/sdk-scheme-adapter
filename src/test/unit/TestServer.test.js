@@ -15,6 +15,8 @@ const supertest = require('supertest');
 const defaultConfig = require('./data/defaultConfig');
 const putPartiesBody = require('./data/putPartiesBody');
 const postQuotesBody = require('./data/postQuotesBody');
+const putPartiesBodyAccented = require('./data/putPartiesBodyAccented');
+const postQuotesBodyAccented = require('./data/postQuotesBodyAccented');
 const putParticipantsBody = require('./data/putParticipantsBody');
 const commonHttpHeaders = require('./data/commonHttpHeaders');
 const WebSocket = require('ws');
@@ -111,6 +113,23 @@ describe('Test Server', () => {
         expect(inboundCache.set.mock.calls[0][0]).toEqual(testCache.get.mock.calls[0][0]);
     });
 
+    test('PUT /parties called with accented characters should succeed', async () => {
+        const MSISDN = '123456789';
+
+        await inboundReq
+            .put(`/parties/MSISDN/${MSISDN}`)
+            .send(putPartiesBodyAccented)
+            .set(commonHttpHeaders)
+            .set('fspiop-http-method', 'PUT')
+            .set('fspiop-uri', `/parties/MSISDN/${MSISDN}`)
+            .set('date', new Date().toISOString())
+            .expect(200);
+
+        await testReq.get(`/callbacks/${MSISDN}`);
+
+        expect(inboundCache.set.mock.calls[0][0]).toEqual(testCache.get.mock.calls[0][0]);
+    });
+
     test('POST /quotes requests cache get and set use same value', async () => {
         await inboundReq
             .post('/quotes')
@@ -121,6 +140,21 @@ describe('Test Server', () => {
             .set('date', new Date().toISOString());
 
         await testReq.get(`/requests/${postQuotesBody.quoteId}`);
+
+        expect(inboundCache.set.mock.calls[0][0]).toEqual(testCache.get.mock.calls[0][0]);
+    });
+
+    test('POST /quotes requests cache get and set use same value', async () => {
+        await inboundReq
+            .post('/quotes')
+            .send(postQuotesBodyAccented)
+            .set(commonHttpHeaders)
+            .set('fspiop-http-method', 'POST')
+            .set('fspiop-uri', '/quotes')
+            .set('date', new Date().toISOString())
+            .expect(202);
+
+        await testReq.get(`/requests/${postQuotesBodyAccented.quoteId}`);
 
         expect(inboundCache.set.mock.calls[0][0]).toEqual(testCache.get.mock.calls[0][0]);
     });

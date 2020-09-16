@@ -3216,7 +3216,7 @@ components:
       type: string
       minLength: 1
       maxLength: 128
-      pattern: '^(?!\s*$)[\w .,''-]{1,128}$'
+      pattern: '^(?!\s*$)[\p{L}\p{Nd} .,''-]{1,128}$'
       description: First name of the Party (Name Type).
     FspId:
       title: FspId
@@ -3256,7 +3256,7 @@ components:
       type: string
       minLength: 1
       maxLength: 128
-      pattern: '^(?!\s*$)[\w .,''-]{1,128}$'
+      pattern: '^(?!\s*$)[\p{L}\p{Nd} .,''-]{1,128}$'
       description: Last name of the Party (Name Type).
     Latitude:
       title: Latitude
@@ -3287,12 +3287,12 @@ components:
       type: string
       minLength: 1
       maxLength: 128
-      pattern: '^(?!\s*$)[\w .,''-]{1,128}$'
+      pattern: '^(?!\s*$)[\p{L}\p{Nd} .,''-]{1,128}$'
       description: Middle name of the Party (Name Type).
     Name:
       title: Name
       type: string
-      pattern: '^(?!\s*$)[\w .,''-]{1,128}$'
+      pattern: '^(?!\s*$)[\p{L}\p{Nd} .,''-]{1,128}$'
       description: >-
         The API data type Name is a JSON String, restricted by a regular
         expression to avoid characters which are generally not used in a name.
