@@ -22,6 +22,7 @@ const Cache = require('@internal/cache');
 
 const Validate = require('@internal/validate');
 const router = require('@internal/router');
+const { addCustomKeys } = require('@internal/openapi');
 const handlers = require('./handlers');
 const middlewares = require('./middlewares');
 
@@ -43,7 +44,7 @@ class InboundServer {
         const specPath = path.join(__dirname, 'api.yaml');
         const apiSpecs = yaml.load(fs.readFileSync(specPath));
         const validator = new Validate();
-        await validator.initialise(apiSpecs);
+        await validator.initialise(addCustomKeys(apiSpecs));
 
         this._wso2Auth = new WSO2Auth({
             ...this._conf.wso2Auth,
@@ -54,7 +55,7 @@ class InboundServer {
         this._api.use(middlewares.createErrorHandler());
         this._api.use(middlewares.createRequestIdGenerator());
         this._api.use(middlewares.createHeaderValidator(this._logger));
-        if(this._conf.validateInboundJws) {
+        if (this._conf.validateInboundJws) {
             const jwsExclusions = [];
             if (!this._conf.validateInboundPutPartiesJws) {
                 jwsExclusions.push('putParties');
