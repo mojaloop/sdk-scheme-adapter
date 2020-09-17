@@ -48,6 +48,7 @@ class OutboundTransfersModel {
             alsEndpoint: config.alsEndpoint,
             quotesEndpoint: config.quotesEndpoint,
             transfersEndpoint: config.transfersEndpoint,
+            transactionRequestsEndpoint: config.transactionRequestsEndpoint,
             dfspId: config.dfspId,
             tls: config.tls,
             jwsSign: config.jwsSign,

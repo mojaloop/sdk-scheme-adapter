@@ -97,6 +97,7 @@ module.exports = {
     alsEndpoint: env.get('ALS_ENDPOINT').asString(),
     quotesEndpoint: env.get('QUOTES_ENDPOINT').asString(),
     bulkQuotesEndpoint: env.get('BULK_QUOTES_ENDPOINT').asString(),
+    transactionRequestsEndpoint: env.get('TRANSACTION_REQUESTS_ENDPOINT').asString(),
     transfersEndpoint: env.get('TRANSFERS_ENDPOINT').asString(),
     bulkTransfersEndpoint: env.get('BULK_TRANSFERS_ENDPOINT').asString(),
     backendEndpoint: env.get('BACKEND_ENDPOINT').required().asString(),
