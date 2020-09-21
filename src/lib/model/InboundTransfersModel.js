@@ -43,6 +43,7 @@ class InboundTransfersModel {
             transfersEndpoint: config.transfersEndpoint,
             bulkTransfersEndpoint: config.bulkTransfersEndpoint,
             transactionRequestsEndpoint: config.transactionRequestsEndpoint,
+            bulkQuotesEndpoint: config.bulkQuotesEndpoint,
             dfspId: config.dfspId,
             tls: config.tls,
             jwsSign: config.jwsSign,
