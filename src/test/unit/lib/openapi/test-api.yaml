@@ -1,0 +1,28 @@
+openapi: 3.0.0
+info:
+  version: '0.1'
+  title: Open API (Test)
+  description: API description
+paths:
+  '/test':
+    post:
+      summary: Test
+      responses:
+        '202':
+          description: 'OK'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                firstName: 
+                  $ref: '#/components/schemas/ComplexName'
+                lastName:
+                  $ref: '#/components/schemas/ComplexName'
+        required: true
+
+components:
+  schemas:
+   ComplexName:
+      title: ComplexName
+      pattern: '^(?!\s*$)[\p{L}\p{Nd} .,''-]{1,128}$'
