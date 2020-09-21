@@ -39,6 +39,7 @@ describe('Inbound API handlers:', () => {
         let mockContext;
 
         beforeEach(() => {
+            jest.clearAllMocks();
             mockContext = {
                 request: {
                     body: mockArgs.quoteRequest,
@@ -56,6 +57,17 @@ describe('Inbound API handlers:', () => {
         });
 
         test('calls `model.quoteRequest` with the expected arguments.', async () => {
+            const quoteRequestSpy = jest.spyOn(Model.prototype, 'quoteRequest');
+
+            await expect(handlers['/quotes'].post(mockContext)).resolves.toBe(undefined);
+
+            expect(quoteRequestSpy).toHaveBeenCalledTimes(1);
+            expect(quoteRequestSpy.mock.calls[0][0]).toBe(mockContext.request.body);
+            expect(quoteRequestSpy.mock.calls[0][1]).toBe(mockContext.request.headers['fspiop-source']);
+        });
+
+        test('calls `model.quoteRequest` with accented characters in names', async () => {
+            mockContext.request.body = mockArgs.quoteRequestAccented;
             const quoteRequestSpy = jest.spyOn(Model.prototype, 'quoteRequest');
 
             await expect(handlers['/quotes'].post(mockContext)).resolves.toBe(undefined);

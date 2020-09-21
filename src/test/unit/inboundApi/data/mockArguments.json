@@ -25,6 +25,33 @@
       "merchantClassificationCode": "123"
     }
   },
+  "quoteRequestAccented": {
+    "quoteId": "fake-quote-id",
+    "transactionId": "fake-transaction-id",
+    "amountType": "SEND",
+    "amount": {
+      "currency": "XOF",
+      "amount": 10
+    },
+    "expiration": "2019-06-04T04:02:10.378Z",
+    "payer": {
+      "partyIdInfo": {
+        "partyIdType": "MSISDN",
+        "partyIdentifier": "17855501914",
+        "fspId": "mojaloop-sdk"
+      },
+      "personalInfo": {
+        "complexName": {
+          "firstName": "Renée",
+          "lastName": "Noël",
+          "middleName": "François"
+        },
+        "dateOfBirth": "2010-10-10"
+      },
+      "name": "Renée Noël",
+      "merchantClassificationCode": "123"
+    }
+  },
   "bulkQuoteRequest": {
     "bulkQuoteId": "fake-bulk-quote-id",
     "payer": {

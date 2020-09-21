@@ -24,7 +24,13 @@ const { Errors } = require('@mojaloop/sdk-standard-components');
 const Ajv = require('ajv');
 const ajv = new Ajv({ allErrors: true, coerceTypes: true });
 
-const httpMethods = ['get', 'head', 'post', 'put', 'delete', 'connnect', 'options', 'trace', 'patch'];
+// We use `ajv-keywords` to support non-standard JSON-Schema keywords like 'regexp'
+// necesarry to support validation of accented characters. 
+// More custom keywords can be supported by adding the keywords to the options array. 
+// All custom keywords can be supported by removing the options array entirely.
+require('ajv-keywords')(ajv, ['regexp']);
+
+const httpMethods = ['get', 'head', 'post', 'put', 'delete', 'connect', 'options', 'trace', 'patch'];
 
 // Create a json schema in the format we've chosen to use
 const createSchema = (pathValue, methodValue) => {
