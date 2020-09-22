@@ -243,7 +243,7 @@ class OutboundBulkTransfersModel {
         }
 
         bulkTransferRequest.individualTransfers = this.data.individualTransfers.map((individualTransfer) => {
-            if (bulkTransferRequest.payeeFsp !== individualTransfer.to.fspId) throw new BackendError('payee fsps are not the same into the whole bulk', 500)
+            if (bulkTransferRequest.payeeFsp !== individualTransfer.to.fspId) throw new BackendError('payee fsps are not the same into the whole bulk', 500);
 
             const transferId = individualTransfer.transferId || uuid();
 
