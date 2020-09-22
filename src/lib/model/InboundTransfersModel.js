@@ -413,7 +413,7 @@ class InboundTransfersModel {
                     (quoteResult) => quoteResult.quoteId === quote.quoteId
                 );
                 const quoteResponse = {
-                    amount: mojaloopIndividualQuote.transferAmount,
+                    transferAmount: mojaloopIndividualQuote.transferAmount,
                     note: mojaloopIndividualQuote.note || '',
                 };
                 const { fulfilment, ilpPacket, condition } = this._ilp.getQuoteResponseIlp(
