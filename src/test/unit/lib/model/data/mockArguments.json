@@ -116,7 +116,7 @@
   },
   "internalBulkQuoteResponse": {
     "expiration": "2019-11-12T09:02:10.378Z",
-    "individualQuotes": [
+    "individualQuoteResults": [
       {
         "quoteId": "fake-quote-id",
         "transferAmount": 500,
