@@ -150,25 +150,25 @@ describe('inboundModel', () => {
             expect(MojaloopRequests.__putBulkQuotes.mock.calls[0][1].individualQuoteResults[0].condition).toBe(expectedQuoteResponseILP.condition);
             expect(MojaloopRequests.__putBulkQuotes.mock.calls[0][2]).toBe(mockArgs.fspId);
         });
-            test('adds a custom expiration property in case it is not defined.', async() => {
-                // set a custom mock time in the global Date object in order to avoid race conditions.
-                // Make sure to clear it at the end of the test case.
-                const currentTime = new Date().getTime();
-                const dateSpy = jest.spyOn(Date.prototype, 'getTime').mockImplementation(() => currentTime);
-                const expectedExpirationDate = new Date(currentTime + (config.expirySeconds * 1000)).toISOString();
+        test('adds a custom expiration property in case it is not defined.', async() => {
+            // set a custom mock time in the global Date object in order to avoid race conditions.
+            // Make sure to clear it at the end of the test case.
+            const currentTime = new Date().getTime();
+            const dateSpy = jest.spyOn(Date.prototype, 'getTime').mockImplementation(() => currentTime);
+            const expectedExpirationDate = new Date(currentTime + (config.expirySeconds * 1000)).toISOString();
 
-                delete mockArgs.internalBulkQuoteResponse.expiration;
+            delete mockArgs.internalBulkQuoteResponse.expiration;
 
-                await model.bulkQuoteRequest(mockArgs.bulkQuoteRequest, mockArgs.fspId);
+            await model.bulkQuoteRequest(mockArgs.bulkQuoteRequest, mockArgs.fspId);
 
-                expect(MojaloopRequests.__putBulkQuotes).toHaveBeenCalledTimes(1);
-                expect(MojaloopRequests.__putBulkQuotes.mock.calls[0][1].expiration).toBe(expectedExpirationDate);
-                expect(MojaloopRequests.__putBulkQuotes.mock.calls[0][1].individualQuoteResults[0].ilpPacket).toBe(expectedQuoteResponseILP.ilpPacket);
-                expect(MojaloopRequests.__putBulkQuotes.mock.calls[0][1].individualQuoteResults[0].condition).toBe(expectedQuoteResponseILP.condition);
-                expect(MojaloopRequests.__putBulkQuotes.mock.calls[0][2]).toBe(mockArgs.fspId);
+            expect(MojaloopRequests.__putBulkQuotes).toHaveBeenCalledTimes(1);
+            expect(MojaloopRequests.__putBulkQuotes.mock.calls[0][1].expiration).toBe(expectedExpirationDate);
+            expect(MojaloopRequests.__putBulkQuotes.mock.calls[0][1].individualQuoteResults[0].ilpPacket).toBe(expectedQuoteResponseILP.ilpPacket);
+            expect(MojaloopRequests.__putBulkQuotes.mock.calls[0][1].individualQuoteResults[0].condition).toBe(expectedQuoteResponseILP.condition);
+            expect(MojaloopRequests.__putBulkQuotes.mock.calls[0][2]).toBe(mockArgs.fspId);
 
-                dateSpy.mockClear();
-            });
+            dateSpy.mockClear();
+        });
 
     });
 
