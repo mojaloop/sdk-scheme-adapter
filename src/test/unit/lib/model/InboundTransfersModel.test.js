@@ -118,6 +118,7 @@ describe('inboundModel', () => {
         let cache;
 
         beforeEach(async () => {
+            // eslint-disable-next-line no-unused-vars
             expectedQuoteResponseILP = Ilp.__response;
             BackendRequests.__postBulkQuotes = jest.fn().mockReturnValue(Promise.resolve(mockArgs.internalBulkQuoteResponse));
 
@@ -127,7 +128,7 @@ describe('inboundModel', () => {
                 logger,
             });
             await cache.connect();
-
+            // eslint-disable-next-line no-unused-vars
             model = new Model({
                 ...config,
                 cache,
@@ -140,7 +141,7 @@ describe('inboundModel', () => {
             await cache.disconnect();
         });
 
-        test('calls `mojaloopRequests.putBulkQuotes` with the expected arguments.', async () => {
+        test('calls mojaloopRequests.putBulkQuotes with the expected arguments.', async () => {
             await model.bulkQuoteRequest(mockArgs.bulkQuoteRequest, mockArgs.fspId);
 
             expect(MojaloopRequests.__putBulkQuotes).toHaveBeenCalledTimes(1);
@@ -149,8 +150,7 @@ describe('inboundModel', () => {
             expect(MojaloopRequests.__putBulkQuotes.mock.calls[0][1].individualQuoteResults[0].condition).toBe(expectedQuoteResponseILP.condition);
             expect(MojaloopRequests.__putBulkQuotes.mock.calls[0][2]).toBe(mockArgs.fspId);
         });
-
-        test('adds a custom `expiration` property in case it is not defined.', async() => {
+        test('adds a custom expiration property in case it is not defined.', async() => {
             // set a custom mock time in the global Date object in order to avoid race conditions.
             // Make sure to clear it at the end of the test case.
             const currentTime = new Date().getTime();
@@ -169,7 +169,6 @@ describe('inboundModel', () => {
 
             dateSpy.mockClear();
         });
-
 
     });
 
