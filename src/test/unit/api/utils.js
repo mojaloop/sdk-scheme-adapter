@@ -40,12 +40,12 @@ const createTestServers = async (config) => {
     const defConfig = JSON.parse(JSON.stringify(config));
     defConfig.requestProcessingTimeoutSeconds = 2;
     const serverOutbound = new OutboundServer(defConfig);
-    const reqOutbound = supertest(await serverOutbound.setupApi());
     await serverOutbound.start();
+    const reqOutbound = supertest(serverOutbound._server);
 
     const serverInbound = new InboundServer(defConfig);
-    const reqInbound = supertest(await serverInbound.setupApi());
     await serverInbound.start();
+    const reqInbound = supertest(serverInbound._server);
 
     return {
         serverOutbound,

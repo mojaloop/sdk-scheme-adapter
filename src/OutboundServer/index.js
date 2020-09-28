@@ -32,9 +32,37 @@ class OutboundServer {
         this._api = null;
         this._server = null;
         this._logger = null;
+        this._setupApi();
+        this._server = http.createServer(this._api.callback());
     }
 
-    async setupApi() {
+    async start() {
+        await this._cache.connect();
+
+        const specPath = path.join(__dirname, 'api.yaml');
+        const apiSpecs = yaml.load(fs.readFileSync(specPath));
+        await this._validator.initialise(apiSpecs);
+
+        if (!this._conf.testingDisableWSO2AuthStart) {
+            await this._wso2Auth.start();
+        }
+
+        await new Promise((resolve) => this._server.listen(this._conf.outboundPort, resolve));
+
+        this._logger.log(`Serving outbound API on port ${this._conf.outboundPort}`);
+    }
+
+    async stop() {
+        if (!this._server) {
+            return;
+        }
+        await new Promise(resolve => this._server.close(resolve));
+        this._wso2Auth.stop();
+        await this._cache.disconnect();
+        console.log('outbound shut down complete');
+    }
+
+    _setupApi() {
         this._api = new Koa();
         this._logger = new Logger.Logger({
             context: {
@@ -45,12 +73,12 @@ class OutboundServer {
             })
         });
 
-        this._cache = this._createCache();
+        this._cache = new Cache({
+            ...this._conf.cacheConfig,
+            logger: this._logger.push({ component: 'cache' })
+        });
 
-        const specPath = path.join(__dirname, 'api.yaml');
-        const apiSpecs = yaml.load(fs.readFileSync(specPath));
-        const validator = new Validate();
-        await validator.initialise(apiSpecs);
+        this._validator = new Validate();
 
         this._wso2Auth = new WSO2Auth({
             ...this._conf.wso2Auth,
@@ -79,46 +107,8 @@ class OutboundServer {
             }));
         }
 
-        this._api.use(middlewares.createRequestValidator(validator));
+        this._api.use(middlewares.createRequestValidator(this._validator));
         this._api.use(router(handlers));
-
-        this._server = this._createServer();
-        return this._server;
-    }
-
-    async start() {
-        await this._cache.connect();
-        if (!this._conf.testingDisableWSO2AuthStart) {
-            await this._wso2Auth.start();
-        }
-        await new Promise((resolve) => this._server.listen(this._conf.outboundPort, resolve));
-        this._logger.log(`Serving outbound API on port ${this._conf.outboundPort}`);
-    }
-
-    async stop() {
-        if (!this._server) {
-            return;
-        }
-        await new Promise(resolve => this._server.close(resolve));
-        this._wso2Auth.stop();
-        await this._cache.disconnect();
-        console.log('outbound shut down complete');
-    }
-
-    _createCache() {
-        return new Cache({
-            ...this._conf.cacheConfig,
-            logger: this._logger.push({ component: 'cache' })
-        });
-    }
-
-    async _createLogger() {
-        // Set up a logger for each running server
-        return ;
-    }
-
-    _createServer() {
-        return http.createServer(this._api.callback());
     }
 }
 

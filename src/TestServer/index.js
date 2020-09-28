@@ -40,51 +40,27 @@ class TestServer {
         this._api = null;
         this._server = null;
         this._logger = null;
-    }
-
-    async setupApi() {
-        this._api = new Koa();
-        this._wsClients = new Map();
-        this._wsapi = this._createWsServer();
-
-        this._logger = new Logger.Logger({
-            context: {
-                app: 'mojaloop-sdk-test-api'
-            },
-            stringify: Logger.buildStringify({
-                space: this._conf.logIndent,
-            })
-        });
-
-        this._cache = this._createCache();
-
-        const specPath = path.join(__dirname, 'api.yaml');
-        const apiSpecs = yaml.load(fs.readFileSync(specPath));
-        const validator = new Validate();
-        await validator.initialise(apiSpecs);
-
-        this._api.use(middlewares.createErrorHandler());
-        this._api.use(middlewares.createRequestIdGenerator());
-        const sharedState = { cache: this._cache, conf: this._conf };
-        this._api.use(middlewares.createLogger(this._logger, sharedState));
-
-        this._api.use(middlewares.createRequestValidator(validator));
-        this._api.use(router(handlers));
-        this._api.use(middlewares.createResponseBodyHandler());
-
-        this._server = this._createServer();
-        return this._server;
+        this._setupApi();
+        this._createServer();
+        this._createWsServer();
     }
 
     async start() {
         await this._cache.connect();
         this._cache.subscribe(this._cache.EVENT_SET, this._handleCacheKeySet.bind(this));
         this._cache.setTestMode(true);
+
+        const specPath = path.join(__dirname, 'api.yaml');
+        const apiSpecs = yaml.load(fs.readFileSync(specPath));
+        await this._validator.initialise(apiSpecs);
+
         this._server.on('upgrade', (req, socket, head) => {
             this._wsapi.handleUpgrade(req, socket, head, (ws) =>
                 this._wsapi.emit('connection', ws, req));
         });
+
         await new Promise((resolve) => this._server.listen(this._conf.testPort, resolve));
+
         this._logger.log(`Serving test API on port ${this._conf.testPort}`);
     }
 
@@ -104,15 +80,37 @@ class TestServer {
         console.log('api shut down complete');
     }
 
-    _createCache() {
-        return new Cache({
+    _setupApi() {
+        this._api = new Koa();
+        this._wsClients = new Map();
+
+        this._logger = new Logger.Logger({
+            context: {
+                app: 'mojaloop-sdk-test-api'
+            },
+            stringify: Logger.buildStringify({
+                space: this._conf.logIndent,
+            })
+        });
+
+        this._cache = new Cache({
             ...this._conf.cacheConfig,
             logger: this._logger.push({ component: 'cache' })
         });
+
+        this._validator = new Validate();
+
+        this._api.use(middlewares.createErrorHandler());
+        this._api.use(middlewares.createRequestIdGenerator());
+        const sharedState = { cache: this._cache, conf: this._conf };
+        this._api.use(middlewares.createLogger(this._logger, sharedState));
+
+        this._api.use(middlewares.createRequestValidator(this._validator));
+        this._api.use(router(handlers));
+        this._api.use(middlewares.createResponseBodyHandler());
     }
 
     _createServer() {
-        let server;
         // If config specifies TLS, start an HTTPS server; otherwise HTTP
         if (this._conf.tls.test.mutualTLS.enabled) {
             const testHttpsOpts = {
@@ -120,25 +118,22 @@ class TestServer {
                 requestCert: true,
                 rejectUnauthorized: true // no effect if requestCert is not true
             };
-            server = https.createServer(testHttpsOpts, this._api.callback());
+            this._server = https.createServer(testHttpsOpts, this._api.callback());
         } else {
-            server = http.createServer(this._api.callback());
+            this._server = http.createServer(this._api.callback());
         }
-
-        return server;
     }
 
     _createWsServer() {
-        const wss = new ws.Server({ noServer: true });
+        this._wsapi = new ws.Server({ noServer: true });
 
-        wss.on('error', err => {
-            // Curtains down
+        this._wsapi.on('error', err => {
             this._logger.push({ err })
                 .log('Unhandled websocket error occurred. Shutting down.');
             process.exit(1);
         });
 
-        wss.on('connection', (socket, req) => {
+        this._wsapi.on('connection', (socket, req) => {
             const logger = this._logger.push({
                 url: req.url,
                 ip: getWsIp(req),
@@ -151,8 +146,6 @@ class TestServer {
                 this._wsClients.delete(socket);
             });
         });
-
-        return wss;
     }
 
     // Send the received notification to subscribers where appropriate.

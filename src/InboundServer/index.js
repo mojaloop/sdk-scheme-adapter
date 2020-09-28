@@ -31,9 +31,40 @@ class InboundServer {
         this._server = null;
         this._logger = null;
         this._jwsVerificationKeys = {};
+        this._setupApi();
+        this._createServer();
     }
 
-    async setupApi() {
+    async start() {
+        this._startJwsWatcher();
+
+        await this._cache.connect();
+
+        const specPath = path.join(__dirname, 'api.yaml');
+        const apiSpecs = yaml.load(fs.readFileSync(specPath));
+        await this._validator.initialise(apiSpecs);
+
+        if (!this._conf.testingDisableWSO2AuthStart) {
+            await this._wso2Auth.start();
+        }
+
+        await new Promise((resolve) => this._server.listen(this._conf.inboundPort, resolve));
+
+        this._logger.log(`Serving inbound API on port ${this._conf.inboundPort}`);
+    }
+
+    async stop() {
+        if (!this._server) {
+            return;
+        }
+        await new Promise(resolve => this._server.close(resolve));
+        this._wso2Auth.stop();
+        await this._cache.disconnect();
+        this._stopJwsWatcher();
+        console.log('inbound shut down complete');
+    }
+
+    _setupApi() {
         this._api = new Koa();
         this._logger = new Logger.Logger({
             context: {
@@ -44,12 +75,12 @@ class InboundServer {
             })
         });
 
-        this._cache = await this._createCache();
+        this._cache = new Cache({
+            ...this._conf.cacheConfig,
+            logger: this._logger.push({ component: 'cache' })
+        });
 
-        const specPath = path.join(__dirname, 'api.yaml');
-        const apiSpecs = yaml.load(fs.readFileSync(specPath));
-        const validator = new Validate();
-        await validator.initialise(apiSpecs);
+        this._validator = new Validate();
 
         this._wso2Auth = new WSO2Auth({
             ...this._conf.wso2Auth,
@@ -72,45 +103,14 @@ class InboundServer {
         const sharedState = { cache: this._cache, wso2Auth: this._wso2Auth, conf: this._conf };
         this._api.use(middlewares.createLogger(this._logger, sharedState));
 
-        this._api.use(middlewares.createRequestValidator(validator));
+        this._api.use(middlewares.createRequestValidator(this._validator));
         this._api.use(router(handlers));
         this._api.use(middlewares.createResponseBodyHandler());
 
-        this._server = this._createServer();
         this._api.context.resourceVersions = this._conf.resourceVersions;
-        return this._server;
-    }
-
-    async start() {
-        this._startJwsWatcher();
-        await this._cache.connect();
-        if (!this._conf.testingDisableWSO2AuthStart) {
-            await this._wso2Auth.start();
-        }
-        await new Promise((resolve) => this._server.listen(this._conf.inboundPort, resolve));
-        this._logger.log(`Serving inbound API on port ${this._conf.inboundPort}`);
-    }
-
-    async stop() {
-        if (!this._server) {
-            return;
-        }
-        await new Promise(resolve => this._server.close(resolve));
-        this._wso2Auth.stop();
-        await this._cache.disconnect();
-        this._stopJwsWatcher();
-        console.log('inbound shut down complete');
-    }
-
-    _createCache() {
-        return new Cache({
-            ...this._conf.cacheConfig,
-            logger: this._logger.push({ component: 'cache' })
-        });
     }
 
     _createServer() {
-        let server;
         // If config specifies TLS, start an HTTPS server; otherwise HTTP
         if (this._conf.tls.inbound.mutualTLS.enabled) {
             const inboundHttpsOpts = {
@@ -118,11 +118,10 @@ class InboundServer {
                 requestCert: true,
                 rejectUnauthorized: true // no effect if requestCert is not true
             };
-            server = https.createServer(inboundHttpsOpts, this._api.callback());
+            this._server = https.createServer(inboundHttpsOpts, this._api.callback());
         } else {
-            server = http.createServer(this._api.callback());
+            this._server = http.createServer(this._api.callback());
         }
-        return server;
     }
 
     _getJwsKeys() {

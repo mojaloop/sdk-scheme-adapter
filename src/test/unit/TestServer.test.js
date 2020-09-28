@@ -49,17 +49,16 @@ describe('Test Server', () => {
         };
 
         testServer = new TestServer(serverConfig);
-        const testServerServer = await testServer.setupApi()
         await testServer.start();
-        testServerPort = testServerServer.address().port;
+        testServerPort = testServer._server.address().port;
 
         expect(testServer._server.listening).toBe(true);
         testReq = supertest.agent(testServer._server);
         testCache = cache.mock.instances[0];
 
         inboundServer = new InboundServer(serverConfig);
-        inboundReq = supertest(await inboundServer.setupApi());
         await inboundServer.start();
+        inboundReq = supertest(inboundServer._server);
         inboundCache = cache.mock.instances[1];
 
         wsClients = {
