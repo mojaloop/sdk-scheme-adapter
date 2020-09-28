@@ -91,10 +91,8 @@ class OutboundServer {
         if (!this._conf.testingDisableWSO2AuthStart) {
             await this._wso2Auth.start();
         }
-        if (!this._conf.testingDisableServerStart) {
-            await new Promise((resolve) => this._server.listen(this._conf.outboundPort, resolve));
-            this._logger.log(`Serving outbound API on port ${this._conf.outboundPort}`);
-        }
+        await new Promise((resolve) => this._server.listen(this._conf.outboundPort, resolve));
+        this._logger.log(`Serving outbound API on port ${this._conf.outboundPort}`);
     }
 
     async stop() {

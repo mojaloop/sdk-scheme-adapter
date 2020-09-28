@@ -38,7 +38,7 @@ const createWsClient = async (port, path) => {
 
 describe('Test Server', () => {
     let testServer, inboundServer, inboundReq, testReq, serverConfig, inboundCache, testCache,
-        wsClients;
+        wsClients, testServerPort;
 
     beforeEach(async () => {
         cache.mockClear();
@@ -49,8 +49,9 @@ describe('Test Server', () => {
         };
 
         testServer = new TestServer(serverConfig);
-        await testServer.setupApi();
+        const testServerServer = await testServer.setupApi()
         await testServer.start();
+        testServerPort = testServerServer.address().port;
 
         expect(testServer._server.listening).toBe(true);
         testReq = supertest.agent(testServer._server);
@@ -62,9 +63,9 @@ describe('Test Server', () => {
         inboundCache = cache.mock.instances[1];
 
         wsClients = {
-            root: await createWsClient(serverConfig.testPort, '/'),
-            callbacks: await createWsClient(serverConfig.testPort, '/callbacks'),
-            requests: await createWsClient(serverConfig.testPort, '/requests'),
+            root: await createWsClient(testServerPort, '/'),
+            callbacks: await createWsClient(testServerPort, '/callbacks'),
+            requests: await createWsClient(testServerPort, '/requests'),
         };
 
         expect(Object.values(wsClients).every((cli) => cli.readyState === WebSocket.OPEN)).toBe(true);
@@ -165,7 +166,7 @@ describe('Test Server', () => {
         };
 
         const putParticipantWsClient = await createWsClient(
-            serverConfig.testPort,
+            testServerPort,
             `/callbacks/${participantId}`
         );
 
@@ -236,7 +237,7 @@ describe('Test Server', () => {
         };
 
         const postQuoteWsClient = await createWsClient(
-            serverConfig.testPort,
+            testServerPort,
             `/requests/${postQuotesBody.quoteId}`
         );
 

@@ -87,10 +87,8 @@ class InboundServer {
         if (!this._conf.testingDisableWSO2AuthStart) {
             await this._wso2Auth.start();
         }
-        if (!this._conf.testingDisableServerStart) {
-            await new Promise((resolve) => this._server.listen(this._conf.inboundPort, resolve));
-            this._logger.log(`Serving inbound API on port ${this._conf.inboundPort}`);
-        }
+        await new Promise((resolve) => this._server.listen(this._conf.inboundPort, resolve));
+        this._logger.log(`Serving inbound API on port ${this._conf.inboundPort}`);
     }
 
     async stop() {
