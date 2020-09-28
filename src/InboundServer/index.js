@@ -16,8 +16,7 @@ const yaml = require('js-yaml');
 const fs = require('fs');
 const path = require('path');
 
-const { WSO2Auth } = require('@mojaloop/sdk-standard-components');
-const { Logger, Transports } = require('@internal/log');
+const { WSO2Auth, Logger } = require('@mojaloop/sdk-standard-components');
 const Cache = require('@internal/cache');
 
 const Validate = require('@internal/validate');
@@ -36,7 +35,14 @@ class InboundServer {
 
     async setupApi() {
         this._api = new Koa();
-        this._logger = await this._createLogger();
+        this._logger = new Logger.Logger({
+            context: {
+                app: 'mojaloop-sdk-inbound-api',
+            },
+            stringify: Logger.buildStringify({
+                space: this._conf.logIndent,
+            })
+        });
 
         this._cache = await this._createCache();
 
@@ -98,34 +104,11 @@ class InboundServer {
         console.log('inbound shut down complete');
     }
 
-    async _createLogger() {
-        const transports = await Promise.all([Transports.consoleDir()]);
-        // Set up a logger for each running server
-        return new Logger({
-            context: {
-                app: 'mojaloop-sdk-inbound-api'
-            },
-            space: this._conf.logIndent,
-            transports,
-        });
-    }
-
-    async _createCache() {
-        const transports = await Promise.all([Transports.consoleDir()]);
-        const logger = new Logger({
-            context: {
-                app: 'mojaloop-sdk-inboundCache'
-            },
-            space: this._conf.logIndent,
-            transports,
-        });
-
-        const cacheConfig = {
+    _createCache() {
+        return new Cache({
             ...this._conf.cacheConfig,
-            logger
-        };
-
-        return new Cache(cacheConfig);
+            logger: this._logger.push({ component: 'cache' })
+        });
     }
 
     _createServer() {

@@ -23,7 +23,6 @@ const OutboundServerMiddleware = require('./OutboundServer/middlewares.js');
 const Router = require('@internal/router');
 const Validate = require('@internal/validate');
 const RandomPhrase = require('@internal/randomphrase');
-const Log = require('@internal/log');
 const Cache = require('@internal/cache');
 
 /**
@@ -123,6 +122,5 @@ module.exports = {
     Router: Router,
     Validate: Validate,
     RandomPhrase: RandomPhrase,
-    Log: Log,
     Cache: Cache
 };

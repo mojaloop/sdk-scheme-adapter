@@ -14,11 +14,10 @@ jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('redis');
 
 const defaultConfig = require('./data/defaultConfig');
-const { Logger, Transports } = require('@internal/log');
 const Model = require('@internal/model').InboundTransfersModel;
 const mockArguments = require('./data/mockArguments');
 const mockTxnReqquestsArguments = require('./data/mockTxnRequestsArguments');
-const { MojaloopRequests, Ilp } = require('@mojaloop/sdk-standard-components');
+const { MojaloopRequests, Ilp, Logger } = require('@mojaloop/sdk-standard-components');
 const { BackendRequests, HTTPResponseError } = require('@internal/requests');
 const Cache = require('@internal/cache');
 
@@ -35,12 +34,7 @@ describe('inboundModel', () => {
     let logger;
 
     beforeAll(async () => {
-        const logTransports = await Promise.all([Transports.consoleDir()]);
-        logger = new Logger({
-            context: { app: 'inbound-model-unit-tests' },
-            space: 4,
-            transports: logTransports,
-        });
+        logger = new Logger.Logger({ context: { app: 'inbound-model-unit-tests' } });
     });
 
     beforeEach(async () => {

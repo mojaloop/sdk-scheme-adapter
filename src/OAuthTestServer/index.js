@@ -13,7 +13,7 @@
 const Koa = require('koa');
 const koaBody = require('koa-body');
 const OAuthServer = require('koa2-oauth-server');
-const { Logger, Transports } = require('@internal/log');
+const { Logger } = require('@mojaloop/sdk-standard-components');
 const { InMemoryCache } = require('./model');
 
 class OAuthTestServer {
@@ -46,7 +46,14 @@ class OAuthTestServer {
 
     async setupApi() {
         this._api = new Koa();
-        this._logger = await this._createLogger();
+        this._logger = new Logger.Logger({
+            context: {
+                app: 'mojaloop-sdk-oauth-test-server',
+            },
+            stringify: Logger.buildStringify({
+                space: this._conf.logIndent,
+            })
+        });
 
         this._api.oauth = new OAuthServer({
             model: new InMemoryCache(this._conf),
@@ -60,18 +67,6 @@ class OAuthTestServer {
         this._api.use(async (next) => {
             this.body = 'Secret area';
             await next();
-        });
-    }
-
-    async _createLogger() {
-        const transports = await Promise.all([Transports.consoleDir()]);
-        // Set up a logger for each running server
-        return new Logger({
-            context: {
-                app: 'mojaloop-sdk-oauth-test-server'
-            },
-            space: this._conf.logIndent,
-            transports,
         });
     }
 }

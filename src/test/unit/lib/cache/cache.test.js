@@ -13,11 +13,10 @@
 jest.mock('redis');
 
 const Cache = require('@internal/cache');
-const { Logger } = require('@internal/log');
+const { Logger } = require('@mojaloop/sdk-standard-components');
 
 const createCache = async() => {
-    const logTransports = [() => {}];
-    const logger = new Logger({ context: { app: 'model-unit-tests-cache' }, space: 4, transports: logTransports });
+    const logger = new Logger.Logger({ context: { app: 'model-unit-tests-cache' } });
     const cache = new Cache({
         host: 'dummyhost',
         port: 1234,

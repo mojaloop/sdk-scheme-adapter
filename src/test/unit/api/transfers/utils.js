@@ -1,7 +1,7 @@
 const nock = require('nock');
 const OpenAPIResponseValidator = require('openapi-response-validator').default;
 
-const { Logger } = require('@internal/log');
+const { Logger } = require('@mojaloop/sdk-standard-components');
 const defaultConfig = require('../../data/defaultConfig');
 const postTransfersSimpleBody = require('./data/postTransfersSimpleBody');
 
@@ -74,12 +74,7 @@ function createGetTransfersTester({ reqInbound, reqOutbound, apiSpecsOutbound })
 function createPostTransfersTester(
     { requestValidatorInbound, reqInbound, reqOutbound, apiSpecsOutbound }) {
 
-    const logTransports = [() => {}];
-    const logger = new Logger({
-        context: { app: 'outbound-model-unit-tests' },
-        space: 4,
-        transports: logTransports,
-    });
+    const logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests' } });
 
     /**
      *

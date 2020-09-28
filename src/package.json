@@ -26,7 +26,6 @@
   ],
   "dependencies": {
     "@internal/cache": "file:lib/cache",
-    "@internal/log": "file:lib/log",
     "@internal/model": "file:lib/model",
     "@internal/randomphrase": "file:lib/randomphrase",
     "@internal/requests": "file:lib/model/lib/requests",
