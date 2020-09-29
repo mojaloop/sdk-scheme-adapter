@@ -42,7 +42,6 @@ const defaultCacheConfig = {
 };
 
 const createCache = async (config) => {
-    const transports = [];
     config.logger = new Logger.Logger({
         context: {
             app: 'mojaloop-sdk-inboundCache'
@@ -65,7 +64,7 @@ describe('Cache', () => {
         // Act
         await cache.set('keyA', JSON.stringify(value));
         const result = await cache.get('keyA');
-        
+
         // Assert
         expect(result).toStrictEqual(value);
     });

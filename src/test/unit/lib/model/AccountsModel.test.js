@@ -87,7 +87,7 @@ describe('AccountsModel', () => {
     }
 
     beforeAll(() => {
-        logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests-cache' } })
+        logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests-cache' } });
     });
 
     beforeEach(async () => {
