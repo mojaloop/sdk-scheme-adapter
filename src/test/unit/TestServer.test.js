@@ -18,6 +18,7 @@ const postQuotesBody = require('./data/postQuotesBody');
 const putParticipantsBody = require('./data/putParticipantsBody');
 const commonHttpHeaders = require('./data/commonHttpHeaders');
 const WebSocket = require('ws');
+const { Logger } = require('@mojaloop/sdk-standard-components');
 
 const cache = require('@internal/cache');
 jest.mock('@internal/cache');
@@ -38,10 +39,12 @@ const createWsClient = async (port, path) => {
 
 describe('Test Server', () => {
     let testServer, inboundServer, inboundReq, testReq, serverConfig, inboundCache, testCache,
-        wsClients, testServerPort;
+        wsClients, testServerPort, logger;
 
     beforeEach(async () => {
         cache.mockClear();
+
+        logger = new Logger.Logger();
 
         serverConfig = {
             ...JSON.parse(JSON.stringify(defaultConfig)),
@@ -56,7 +59,7 @@ describe('Test Server', () => {
         testReq = supertest.agent(testServer._server);
         testCache = cache.mock.instances[0];
 
-        inboundServer = new InboundServer(serverConfig);
+        inboundServer = new InboundServer(serverConfig, logger);
         await inboundServer.start();
         inboundReq = supertest(inboundServer._server);
         inboundCache = cache.mock.instances[1];

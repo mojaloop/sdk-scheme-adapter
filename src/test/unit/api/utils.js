@@ -6,6 +6,7 @@ const Validate = require('@internal/validate');
 
 const InboundServer = require('../../../InboundServer');
 const OutboundServer = require('../../../OutboundServer');
+const { Logger } = require('@mojaloop/sdk-standard-components');
 
 /**
  * Get OpenAPI spec and Validator for specified server
@@ -43,7 +44,7 @@ const createTestServers = async (config) => {
     await serverOutbound.start();
     const reqOutbound = supertest(serverOutbound._server);
 
-    const serverInbound = new InboundServer(defConfig);
+    const serverInbound = new InboundServer(defConfig, new Logger.Logger());
     await serverInbound.start();
     const reqInbound = supertest(serverInbound._server);
 

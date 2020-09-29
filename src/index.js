@@ -10,6 +10,7 @@
 
 'use strict';
 
+const { hostname } = require('os');
 const config = require('./config');
 const InboundServer = require('./InboundServer');
 const OutboundServer = require('./OutboundServer');
@@ -35,10 +36,17 @@ class Server {
         this.outboundServer = null;
         this.oauthTestServer = null;
         this.testServer = null;
+        this.logger = new Logger.Logger({
+            context: {
+                // If we're running from a Mojaloop helm chart deployment, we'll have a SIM_NAME
+                simulator: process.env['SIM_NAME'],
+                hostname: hostname(),
+            }
+        })
     }
 
     async start() {
-        this.inboundServer = new InboundServer(this.conf);
+        this.inboundServer = new InboundServer(this.conf, this.logger);
         this.outboundServer = new OutboundServer(this.conf);
         this.oauthTestServer = new OAuthTestServer({
             clientKey: this.conf.oauthTestServer.clientKey,

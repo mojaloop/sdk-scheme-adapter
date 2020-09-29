@@ -19,14 +19,12 @@ const path = require('path');
 
 const { WSO2Auth, Logger } = require('@mojaloop/sdk-standard-components');
 const Cache = require('@internal/cache');
+const check = require('@internal/check');
 
 const Validate = require('@internal/validate');
 const router = require('@internal/router');
 const handlers = require('./handlers');
 const middlewares = require('./middlewares');
-
-// TODO: consider splitting much of InboundServer out into a separate InboundAPI class. Then, when
-// reconfiguring InboundServer, destroy the instance of InboundAPI and create a new one.
 
 class InboundApi {
     constructor(conf, logger, validator) {
@@ -63,10 +61,17 @@ class InboundApi {
     }
 
     async stop() {
-        this._wso2Auth.stop();
-        await this._cache.disconnect();
+        if (this._wso2Auth) {
+            this._wso2Auth.stop();
+            this._wso2Auth = null;
+        }
+        if (this._cache) {
+            await this._cache.disconnect();
+            this._cache = null;
+        }
         if (this._keyWatcher) {
             this._keyWatcher.close();
+            this._keyWatcher = null;
         }
     }
 
@@ -140,10 +145,10 @@ class InboundApi {
 }
 
 class InboundServer {
-    constructor(conf) {
+    constructor(conf, logger) {
         this._conf = conf;
         this._validator = new Validate();
-        this._logger = InboundServer._CreateLogger(conf);
+        this._logger = logger.push({ app: 'mojaloop-sdk-inbound-api' });
         this._api = new InboundApi(conf, this._logger, this._validator);
         this._server = this._createServer(
             conf.tls.inbound.mutualTLS.enabled,
@@ -152,22 +157,8 @@ class InboundServer {
         );
     }
 
-    // TODO: there are two pieces of evidence that we should be passing the logger to the server
-    // constructors:
-    // 1. managing the logger lifetime here
-    // 2. its config is not inbound server specific
-    static _CreateLogger(conf) {
-        return new Logger.Logger({
-            context: {
-                app: 'mojaloop-sdk-inbound-api',
-            },
-            stringify: Logger.buildStringify({
-                space: conf.logIndent,
-            })
-        });
-    }
-
     async start() {
+        assert(!this._server.listening, 'Server already listening');
         const specPath = path.join(__dirname, 'api.yaml');
         const apiSpecs = yaml.load(fs.readFileSync(specPath));
         await this._validator.initialise(apiSpecs);
@@ -177,20 +168,25 @@ class InboundServer {
     }
 
     async stop() {
-        if (!this._server) {
-            return;
+        if (this._server) {
+            await new Promise(resolve => this._server.close(resolve));
+            this._server = null;
         }
-        await this._api.stop();
-        await new Promise(resolve => this._server.close(resolve));
+        if (this._api) {
+            await this._api.stop();
+            this._api = null;
+        }
         console.log('inbound shut down complete');
     }
 
     async reconfigure(conf) {
+        if (check.deepEqual(conf, this._conf)) {
+            return;
+        }
         assert(
             this._conf.tls.inbound.mutualTLS.enabled === conf.tls.inbound.mutualTLS.enabled,
             'Cannot live restart an HTTPS server as HTTP or vice versa',
         );
-        this._logger = InboundServer._CreateLogger(conf);
         const api = new InboundApi(conf, this._logger, this._validator);
         this._server.removeAllListeners('request');
         this._server.on('request', api.callback());
