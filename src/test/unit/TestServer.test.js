@@ -182,8 +182,8 @@ describe('Test Server', () => {
         // get the callback function that the test server subscribed with, and mock the cache by
         // calling the callback when the inbound server sets a key in the cache.
         const callback = testServer._cache.subscribe.mock.calls[0][1];
-        inboundServer._cache.set = jest.fn(async (key) => await callback(
-            inboundServer._cache.EVENT_SET,
+        inboundServer._api._cache.set = jest.fn(async (key) => await callback(
+            inboundServer._api._cache.EVENT_SET,
             key,
             1,
         ));
@@ -197,8 +197,8 @@ describe('Test Server', () => {
             .send(putParticipantsBody)
             .set(headers);
 
-        expect(inboundServer._cache.set).toHaveBeenCalledTimes(1);
-        expect(inboundServer._cache.set).toHaveBeenCalledWith(
+        expect(inboundServer._api._cache.set).toHaveBeenCalledTimes(1);
+        expect(inboundServer._api._cache.set).toHaveBeenCalledWith(
             `${testServer._cache.CALLBACK_PREFIX}${participantId}`,
             {
                 data: putParticipantsBody,
@@ -253,8 +253,8 @@ describe('Test Server', () => {
         // get the callback function that the test server subscribed with, and mock the cache by
         // calling the callback when the inbound server sets a key in the cache.
         const callback = testServer._cache.subscribe.mock.calls[0][1];
-        inboundServer._cache.set = jest.fn(async (key) => await callback(
-            inboundServer._cache.EVENT_SET,
+        inboundServer._api._cache.set = jest.fn(async (key) => await callback(
+            inboundServer._api._cache.EVENT_SET,
             key,
             1,
         ));
@@ -269,8 +269,8 @@ describe('Test Server', () => {
             .set(headers);
 
         // Called once for the quote request, once for the fulfilment
-        expect(inboundServer._cache.set).toHaveBeenCalledTimes(2);
-        expect(inboundServer._cache.set).toHaveBeenCalledWith(
+        expect(inboundServer._api._cache.set).toHaveBeenCalledTimes(2);
+        expect(inboundServer._api._cache.set).toHaveBeenCalledWith(
             `${testServer._cache.REQUEST_PREFIX}${postQuotesBody.quoteId}`,
             {
                 data: postQuotesBody,
@@ -314,8 +314,8 @@ describe('Test Server', () => {
         // get the callback function that the test server subscribed with, and mock the cache by
         // calling the callback when the inbound server sets a key in the cache.
         const callback = testServer._cache.subscribe.mock.calls[0][1];
-        inboundServer._cache.set = jest.fn(async (key) => await callback(
-            inboundServer._cache.EVENT_SET,
+        inboundServer._api._cache.set = jest.fn(async (key) => await callback(
+            inboundServer._api._cache.EVENT_SET,
             key,
             1,
         ));
@@ -330,8 +330,8 @@ describe('Test Server', () => {
             .set(quoteRequestHeaders);
 
         // Called once for the quote request, once for the fulfilment
-        expect(inboundServer._cache.set).toHaveBeenCalledTimes(2);
-        expect(inboundServer._cache.set).toHaveBeenCalledWith(
+        expect(inboundServer._api._cache.set).toHaveBeenCalledTimes(2);
+        expect(inboundServer._api._cache.set).toHaveBeenCalledWith(
             `${testServer._cache.REQUEST_PREFIX}${postQuotesBody.quoteId}`,
             {
                 data: postQuotesBody,
@@ -371,8 +371,8 @@ describe('Test Server', () => {
 
         // Called twice for the quote request earlier in this test, another time now for the put
         // participants request
-        expect(inboundServer._cache.set).toHaveBeenCalledTimes(3);
-        expect(inboundServer._cache.set.mock.calls[2]).toEqual([
+        expect(inboundServer._api._cache.set).toHaveBeenCalledTimes(3);
+        expect(inboundServer._api._cache.set.mock.calls[2]).toEqual([
             `${testServer._cache.CALLBACK_PREFIX}${participantId}`,
             {
                 data: putParticipantsBody,

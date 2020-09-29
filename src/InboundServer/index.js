@@ -25,113 +25,53 @@ const router = require('@internal/router');
 const handlers = require('./handlers');
 const middlewares = require('./middlewares');
 
-class InboundServer {
-    constructor(conf) {
-        this._validator = new Validate();
-        // Anything that will change if the configuration changes should be configured inside the
-        // _configure method, as that will be called from the reconfigure method
-        this._configure(conf);
-    }
+// TODO: consider splitting much of InboundServer out into a separate InboundAPI class. Then, when
+// reconfiguring InboundServer, destroy the instance of InboundAPI and create a new one.
 
-    async start() {
-        this._initialise();
-        await new Promise((resolve) => this._server.listen(this._conf.inboundPort, resolve));
-        this._logger.log(`Serving inbound API on port ${this._conf.inboundPort}`);
-    }
-
-    async stop() {
-        if (!this._server) {
-            return;
-        }
-        await new Promise(resolve => this._server.close(resolve));
-        await InboundServer._Deinitialise(this._wso2Auth, this._cache, this._keyWatcher);
-        console.log('inbound shut down complete');
-    }
-
-    async reconfigure(conf) {
-        assert(
-            this._conf.tls.inbound.mutualTLS.enabled === conf.tls.inbound.mutualTLS.enabled,
-            'Cannot live restart an HTTPS server as HTTP or vice versa',
-        );
-        const [oldWso2Auth, oldCache, oldKeyWatcher] = [this._wso2Auth, this._cache, this._keyWatcher];
-        this._configure(conf);
-        this._server.removeAllListeners('request');
-        this._server.on('request', this._api.callback());
-        await InboundServer._Deinitialise(oldWso2Auth, oldCache, oldKeyWatcher);
-    }
-
-    async _configure(conf) {
+class InboundApi {
+    constructor(conf, logger, validator) {
         this._conf = conf;
-        this._logger = new Logger.Logger({
-            context: {
-                app: 'mojaloop-sdk-inbound-api',
-            },
-            stringify: Logger.buildStringify({
-                space: conf.logIndent,
-            })
-        });
         this._cache = new Cache({
             ...conf.cacheConfig,
-            logger: this._logger.push({ component: 'cache' })
+            logger: logger.push({ component: 'cache' })
         });
         this._wso2Auth = new WSO2Auth({
             ...conf.wso2Auth,
-            logger: this._logger,
+            logger,
             tlsCreds: conf.tls.outbound.mutualTLS.enabled && conf.tls.outbound.creds,
         });
         if (conf.validateInboundJws) {
-            this._jwsVerificationKeys = InboundServer._GetJwsKeys(conf.jwsVerificationKeysDirectory);
+            this._jwsVerificationKeys = InboundApi._GetJwsKeys(conf.jwsVerificationKeysDirectory);
         }
-        this._api = InboundServer._SetupApi({
+        this._api = InboundApi._SetupApi({
             conf,
-            logger: this._logger,
-            validator: this._validator,
+            logger,
+            validator,
             cache: this._cache,
             jwsVerificationKeys: this._jwsVerificationKeys,
             wso2Auth: this._wso2Auth,
         });
-        this._server = this._createServer(
-            conf.tls.inbound.mutualTLS.enabled,
-            this._conf.tls.inbound.creds,
-            this._api.callback()
-        );
     }
 
-    static async _Deinitialise(wso2Auth, cache, keyWatcher) {
-        wso2Auth.stop();
-        await cache.disconnect();
-        if (keyWatcher) {
-            keyWatcher.close();
-        }
-    }
-
-    async _initialise() {
+    async start() {
         this._startJwsWatcher();
-
         await this._cache.connect();
-
-        if (!this._validator.initialised) {
-            const specPath = path.join(__dirname, 'api.yaml');
-            const apiSpecs = yaml.load(fs.readFileSync(specPath));
-            await this._validator.initialise(apiSpecs);
-        }
 
         if (!this._conf.testingDisableWSO2AuthStart) {
             await this._wso2Auth.start();
         }
     }
 
-    _createServer(tlsEnabled, tlsCreds, handler) {
-        if (!tlsEnabled) {
-            return http.createServer(handler);
+    async stop() {
+        this._wso2Auth.stop();
+        await this._cache.disconnect();
+        if (this._keyWatcher) {
+            this._keyWatcher.close();
         }
+    }
 
-        const inboundHttpsOpts = {
-            ...tlsCreds,
-            requestCert: true,
-            rejectUnauthorized: true // no effect if requestCert is not true
-        };
-        return https.createServer(inboundHttpsOpts, handler);
+    callback() {
+        return this._api.callback();
     }
 
     _startJwsWatcher() {
@@ -197,6 +137,80 @@ class InboundServer {
         }
         return keys;
     }
+}
+
+class InboundServer {
+    constructor(conf) {
+        this._conf = conf;
+        this._validator = new Validate();
+        this._logger = InboundServer._CreateLogger(conf);
+        this._api = new InboundApi(conf, this._logger, this._validator);
+        this._server = this._createServer(
+            conf.tls.inbound.mutualTLS.enabled,
+            conf.tls.inbound.creds,
+            this._api.callback()
+        );
+    }
+
+    // TODO: there are two pieces of evidence that we should be passing the logger to the server
+    // constructors:
+    // 1. managing the logger lifetime here
+    // 2. its config is not inbound server specific
+    static _CreateLogger(conf) {
+        return new Logger.Logger({
+            context: {
+                app: 'mojaloop-sdk-inbound-api',
+            },
+            stringify: Logger.buildStringify({
+                space: conf.logIndent,
+            })
+        });
+    }
+
+    async start() {
+        const specPath = path.join(__dirname, 'api.yaml');
+        const apiSpecs = yaml.load(fs.readFileSync(specPath));
+        await this._validator.initialise(apiSpecs);
+        await this._api.start();
+        await new Promise((resolve) => this._server.listen(this._conf.inboundPort, resolve));
+        this._logger.log(`Serving inbound API on port ${this._conf.inboundPort}`);
+    }
+
+    async stop() {
+        if (!this._server) {
+            return;
+        }
+        await this._api.stop();
+        await new Promise(resolve => this._server.close(resolve));
+        console.log('inbound shut down complete');
+    }
+
+    async reconfigure(conf) {
+        assert(
+            this._conf.tls.inbound.mutualTLS.enabled === conf.tls.inbound.mutualTLS.enabled,
+            'Cannot live restart an HTTPS server as HTTP or vice versa',
+        );
+        this._logger = InboundServer._CreateLogger(conf);
+        const api = new InboundApi(conf, this._logger, this._validator);
+        this._server.removeAllListeners('request');
+        this._server.on('request', api.callback());
+        this._api.stop();
+        this._api = api;
+    }
+
+    _createServer(tlsEnabled, tlsCreds, handler) {
+        if (!tlsEnabled) {
+            return http.createServer(handler);
+        }
+
+        const inboundHttpsOpts = {
+            ...tlsCreds,
+            requestCert: true,
+            rejectUnauthorized: true // no effect if requestCert is not true
+        };
+        return https.createServer(inboundHttpsOpts, handler);
+    }
+
 }
 
 module.exports = InboundServer;

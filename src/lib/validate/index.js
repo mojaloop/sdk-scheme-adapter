@@ -146,8 +146,6 @@ class Validator {
             },
             methods: { ...pathSpec }
         }));
-
-        this.initialised = true;
     }
 
     // TODO: roll the entire validation functionality into a single function? Or split it out into
