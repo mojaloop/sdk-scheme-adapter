@@ -12,7 +12,6 @@ WORKDIR /src/
 COPY ./src/package.json ./package.json
 COPY ./src/package-lock.json ./package-lock.json
 COPY ./src/lib/cache/package.json ./lib/cache/package.json
-COPY ./src/lib/log/package.json ./lib/log/package.json
 COPY ./src/lib/model/lib/requests/package.json ./lib/model/lib/requests/package.json
 COPY ./src/lib/model/lib/shared/package.json ./lib/model/lib/shared/package.json
 COPY ./src/lib/model/package.json ./lib/model/package.json
