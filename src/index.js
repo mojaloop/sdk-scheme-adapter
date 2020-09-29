@@ -58,24 +58,20 @@ class Server {
 
     async _startTestServer() {
         if (this.conf.enableTestFeatures) {
-            await this.testServer.setupApi();
             await this.testServer.start();
         }
     }
 
     async _startInboundServer() {
-        await this.inboundServer.setupApi();
         await this.inboundServer.start();
     }
 
     async _startOutboundServer() {
-        await this.outboundServer.setupApi();
         await this.outboundServer.start();
     }
 
     async _startOAuthTestServer() {
         if (this.conf.oauthTestServer.enabled) {
-            await this.oauthTestServer.setupApi();
             await this.oauthTestServer.start();
         }
     }

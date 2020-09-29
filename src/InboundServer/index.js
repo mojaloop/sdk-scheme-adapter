@@ -26,30 +26,15 @@ const middlewares = require('./middlewares');
 
 class InboundServer {
     constructor(conf) {
-        this._conf = conf;
-        this._api = null;
-        this._server = null;
-        this._logger = null;
-        this._jwsVerificationKeys = {};
-        this._setupApi();
-        this._createServer();
+        this._validator = new Validate();
+        // Anything that will change if the configuration changes should be configured inside the
+        // _configure method, as that will be called from the reconfigure method
+        this._configure(conf);
     }
 
     async start() {
-        this._startJwsWatcher();
-
-        await this._cache.connect();
-
-        const specPath = path.join(__dirname, 'api.yaml');
-        const apiSpecs = yaml.load(fs.readFileSync(specPath));
-        await this._validator.initialise(apiSpecs);
-
-        if (!this._conf.testingDisableWSO2AuthStart) {
-            await this._wso2Auth.start();
-        }
-
+        this._initialise();
         await new Promise((resolve) => this._server.listen(this._conf.inboundPort, resolve));
-
         this._logger.log(`Serving inbound API on port ${this._conf.inboundPort}`);
     }
 
@@ -58,84 +43,94 @@ class InboundServer {
             return;
         }
         await new Promise(resolve => this._server.close(resolve));
-        this._wso2Auth.stop();
-        await this._cache.disconnect();
-        this._stopJwsWatcher();
+        await InboundServer._Deinitialise(this._wso2Auth, this._cache, this._keyWatcher);
         console.log('inbound shut down complete');
     }
 
-    _setupApi() {
-        this._api = new Koa();
+    async reconfigure(conf) {
+        assert(
+            this._conf.tls.inbound.mutualTLS.enabled === conf.tls.inbound.mutualTLS.enabled,
+            'Cannot live restart an HTTPS server as HTTP or vice versa',
+        );
+        const [oldWso2Auth, oldCache, oldKeyWatcher] = [this._wso2Auth, this._cache, this._keyWatcher];
+        this._configure(conf);
+        this._server.removeAllListeners('request');
+        this._server.on('request', this._api.callback());
+        await InboundServer._Deinitialise(oldWso2Auth, oldCache, oldKeyWatcher);
+    }
+
+    async _configure(conf) {
+        this._conf = conf;
         this._logger = new Logger.Logger({
             context: {
                 app: 'mojaloop-sdk-inbound-api',
             },
             stringify: Logger.buildStringify({
-                space: this._conf.logIndent,
+                space: conf.logIndent,
             })
         });
-
         this._cache = new Cache({
-            ...this._conf.cacheConfig,
+            ...conf.cacheConfig,
             logger: this._logger.push({ component: 'cache' })
         });
-
-        this._validator = new Validate();
-
         this._wso2Auth = new WSO2Auth({
-            ...this._conf.wso2Auth,
+            ...conf.wso2Auth,
             logger: this._logger,
-            tlsCreds: this._conf.tls.outbound.mutualTLS.enabled && this._conf.tls.outbound.creds,
+            tlsCreds: conf.tls.outbound.mutualTLS.enabled && conf.tls.outbound.creds,
         });
-
-        this._api.use(middlewares.createErrorHandler());
-        this._api.use(middlewares.createRequestIdGenerator());
-        this._api.use(middlewares.createHeaderValidator(this._logger));
-        if(this._conf.validateInboundJws) {
-            const jwsExclusions = [];
-            if (!this._conf.validateInboundPutPartiesJws) {
-                jwsExclusions.push('putParties');
-            }
-            this._jwsVerificationKeys = this._getJwsKeys();
-            this._api.use(middlewares.createJwsValidator(this._logger, this._jwsVerificationKeys, jwsExclusions));
+        if (conf.validateInboundJws) {
+            this._jwsVerificationKeys = InboundServer._GetJwsKeys(conf.jwsVerificationKeysDirectory);
         }
-
-        const sharedState = { cache: this._cache, wso2Auth: this._wso2Auth, conf: this._conf };
-        this._api.use(middlewares.createLogger(this._logger, sharedState));
-
-        this._api.use(middlewares.createRequestValidator(this._validator));
-        this._api.use(router(handlers));
-        this._api.use(middlewares.createResponseBodyHandler());
-
-        this._api.context.resourceVersions = this._conf.resourceVersions;
+        this._api = InboundServer._SetupApi({
+            conf,
+            logger: this._logger,
+            validator: this._validator,
+            cache: this._cache,
+            jwsVerificationKeys: this._jwsVerificationKeys,
+            wso2Auth: this._wso2Auth,
+        });
+        this._server = this._createServer(
+            conf.tls.inbound.mutualTLS.enabled,
+            this._conf.tls.inbound.creds,
+            this._api.callback()
+        );
     }
 
-    _createServer() {
-        // If config specifies TLS, start an HTTPS server; otherwise HTTP
-        if (this._conf.tls.inbound.mutualTLS.enabled) {
-            const inboundHttpsOpts = {
-                ...this._conf.tls.inbound.creds,
-                requestCert: true,
-                rejectUnauthorized: true // no effect if requestCert is not true
-            };
-            this._server = https.createServer(inboundHttpsOpts, this._api.callback());
-        } else {
-            this._server = http.createServer(this._api.callback());
+    static async _Deinitialise(wso2Auth, cache, keyWatcher) {
+        wso2Auth.stop();
+        await cache.disconnect();
+        if (keyWatcher) {
+            keyWatcher.close();
         }
     }
 
-    _getJwsKeys() {
-        const keys = {};
-        if (this._conf.jwsVerificationKeysDirectory) {
-            fs.readdirSync(this._conf.jwsVerificationKeysDirectory)
-                .filter(f => f.endsWith('.pem'))
-                .forEach(f => {
-                    const keyName = path.basename(f, '.pem');
-                    const keyPath = path.join(this._conf.jwsVerificationKeysDirectory, f);
-                    keys[keyName] = fs.readFileSync(keyPath);
-                });
+    async _initialise() {
+        this._startJwsWatcher();
+
+        await this._cache.connect();
+
+        if (!this._validator.initialised) {
+            const specPath = path.join(__dirname, 'api.yaml');
+            const apiSpecs = yaml.load(fs.readFileSync(specPath));
+            await this._validator.initialise(apiSpecs);
         }
-        return keys;
+
+        if (!this._conf.testingDisableWSO2AuthStart) {
+            await this._wso2Auth.start();
+        }
+    }
+
+    _createServer(tlsEnabled, tlsCreds, handler) {
+        if (!tlsEnabled) {
+            return http.createServer(handler);
+        }
+
+        const inboundHttpsOpts = {
+            ...tlsCreds,
+            requestCert: true,
+            rejectUnauthorized: true // no effect if requestCert is not true
+        };
+        return https.createServer(inboundHttpsOpts, handler);
     }
 
     _startJwsWatcher() {
@@ -162,14 +157,44 @@ class InboundServer {
             }
         };
         if (this._conf.jwsVerificationKeysDirectory) {
-            this.keyWatcher = fs.watch(this._conf.jwsVerificationKeysDirectory, watchHandler);
+            this._keyWatcher = fs.watch(this._conf.jwsVerificationKeysDirectory, watchHandler);
         }
     }
 
-    _stopJwsWatcher() {
-        if (this.keyWatcher) {
-            this.keyWatcher.close();
+    static _SetupApi({ conf, logger, validator, cache, jwsVerificationKeys, wso2Auth }) {
+        const api = new Koa();
+
+        api.use(middlewares.createErrorHandler());
+        api.use(middlewares.createRequestIdGenerator());
+        api.use(middlewares.createHeaderValidator(logger));
+        if (conf.validateInboundJws) {
+            const jwsExclusions = conf.validateInboundPutPartiesJws ? [] : ['putParties'];
+            api.use(middlewares.createJwsValidator(logger, jwsVerificationKeys, jwsExclusions));
         }
+
+        const sharedState = { cache, wso2Auth, conf };
+        api.use(middlewares.createLogger(logger, sharedState)); // TODO: shared state here is odd
+        api.use(middlewares.createRequestValidator(validator));
+        api.use(router(handlers));
+        api.use(middlewares.createResponseBodyHandler());
+
+        api.context.resourceVersions = conf.resourceVersions;
+
+        return api;
+    }
+
+    static _GetJwsKeys(fromDir) {
+        const keys = {};
+        if (fromDir) {
+            fs.readdirSync(fromDir)
+                .filter(f => f.endsWith('.pem'))
+                .forEach(f => {
+                    const keyName = path.basename(f, '.pem');
+                    const keyPath = path.join(fromDir, f);
+                    keys[keyName] = fs.readFileSync(keyPath);
+                });
+        }
+        return keys;
     }
 }
 
