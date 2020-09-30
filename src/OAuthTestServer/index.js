@@ -25,10 +25,11 @@ class OAuthTestServer {
      * @param {String} conf.clientSecret Customer Secret
      * @param {String} conf.logIndent
      */
-    constructor(conf) {
+    constructor(conf, logger) {
         this._conf = conf;
         this._api = null;
-        this._logger = null;
+        this._logger = logger.push({ app: 'mojaloop-sdk-oauth-test-server' });
+        this._setupApi();
     }
 
     async start() {
@@ -44,16 +45,8 @@ class OAuthTestServer {
         console.log('OAuth2 Test Server shut down complete');
     }
 
-    async setupApi() {
+    async _setupApi() {
         this._api = new Koa();
-        this._logger = new Logger.Logger({
-            context: {
-                app: 'mojaloop-sdk-oauth-test-server',
-            },
-            stringify: Logger.buildStringify({
-                space: this._conf.logIndent,
-            })
-        });
 
         this._api.oauth = new OAuthServer({
             model: new InMemoryCache(this._conf),
