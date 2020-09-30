@@ -10,6 +10,7 @@
 
 'use strict';
 
+const { hostname } = require('os');
 const config = require('./config');
 const InboundServer = require('./InboundServer');
 const OutboundServer = require('./OutboundServer');
@@ -23,8 +24,8 @@ const OutboundServerMiddleware = require('./OutboundServer/middlewares.js');
 const Router = require('@internal/router');
 const Validate = require('@internal/validate');
 const RandomPhrase = require('@internal/randomphrase');
-const Log = require('@internal/log');
 const Cache = require('@internal/cache');
+const { Logger } = require('@mojaloop/sdk-standard-components');
 
 /**
  * Class that creates and manages http servers that expose the scheme adapter APIs.
@@ -36,49 +37,40 @@ class Server {
         this.outboundServer = null;
         this.oauthTestServer = null;
         this.testServer = null;
+        this.logger = new Logger.Logger({
+            context: {
+                // If we're running from a Mojaloop helm chart deployment, we'll have a SIM_NAME
+                simulator: process.env['SIM_NAME'],
+                hostname: hostname(),
+            }
+        });
+        this.cache = new Cache({
+            ...conf.cacheConfig,
+            logger: this.logger.push({ component: 'cache' })
+        });
     }
 
     async start() {
-        this.inboundServer = new InboundServer(this.conf);
-        this.outboundServer = new OutboundServer(this.conf);
+        this.inboundServer = new InboundServer(this.conf, this.logger, this.cache);
+        this.outboundServer = new OutboundServer(this.conf, this.logger, this.cache);
         this.oauthTestServer = new OAuthTestServer({
             clientKey: this.conf.oauthTestServer.clientKey,
             clientSecret: this.conf.oauthTestServer.clientSecret,
             port: this.conf.oauthTestServer.listenPort,
             logIndent: this.conf.logIndent,
-        });
-        this.testServer = new TestServer(this.conf);
+        }, this.logger);
+        this.testServer = new TestServer(this.conf, this.logger, this.cache);
 
+        const startTestServer = this.conf.enableTestFeatures ? this.testServer.start() : null;
+        const startOauthTestServer = this.conf.oauthTestServer.enabled
+            ?  this.oauthTestServer.start()
+            : null;
         await Promise.all([
-            this._startInboundServer(),
-            this._startOutboundServer(),
-            this._startOAuthTestServer(),
-            this._startTestServer(),
+            this.inboundServer.start(),
+            this.outboundServer.start(),
+            startTestServer,
+            startOauthTestServer,
         ]);
-    }
-
-    async _startTestServer() {
-        if (this.conf.enableTestFeatures) {
-            await this.testServer.setupApi();
-            await this.testServer.start();
-        }
-    }
-
-    async _startInboundServer() {
-        await this.inboundServer.setupApi();
-        await this.inboundServer.start();
-    }
-
-    async _startOutboundServer() {
-        await this.outboundServer.setupApi();
-        await this.outboundServer.start();
-    }
-
-    async _startOAuthTestServer() {
-        if (this.conf.oauthTestServer.enabled) {
-            await this.oauthTestServer.setupApi();
-            await this.oauthTestServer.start();
-        }
     }
 
     stop() {
@@ -123,6 +115,5 @@ module.exports = {
     Router: Router,
     Validate: Validate,
     RandomPhrase: RandomPhrase,
-    Log: Log,
     Cache: Cache
 };

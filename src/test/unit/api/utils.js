@@ -6,6 +6,8 @@ const Validate = require('@internal/validate');
 
 const InboundServer = require('../../../InboundServer');
 const OutboundServer = require('../../../OutboundServer');
+const { Logger } = require('@mojaloop/sdk-standard-components');
+const Cache = require('@internal/cache');
 
 /**
  * Get OpenAPI spec and Validator for specified server
@@ -37,15 +39,20 @@ const createValidators = async () => {
 };
 
 const createTestServers = async (config) => {
+    const logger = new Logger.Logger();
     const defConfig = JSON.parse(JSON.stringify(config));
+    const cache = new Cache({
+        ...defConfig.cacheConfig,
+        logger: logger.push({ component: 'cache' })
+    });
     defConfig.requestProcessingTimeoutSeconds = 2;
-    const serverOutbound = new OutboundServer(defConfig);
-    const reqOutbound = supertest(await serverOutbound.setupApi());
+    const serverOutbound = new OutboundServer(defConfig, logger, cache);
     await serverOutbound.start();
+    const reqOutbound = supertest(serverOutbound._server);
 
-    const serverInbound = new InboundServer(defConfig);
-    const reqInbound = supertest(await serverInbound.setupApi());
+    const serverInbound = new InboundServer(defConfig, logger, cache);
     await serverInbound.start();
+    const reqInbound = supertest(serverInbound._server);
 
     return {
         serverOutbound,

@@ -10,23 +10,12 @@
 
 'use strict';
 
-
-const { Logger, Transports } = require('@internal/log');
-
-
+const { Logger } = require('@mojaloop/sdk-standard-components');
 
 describe('Logger', () => {
 
     test('logs non-circular without throwing', async () => {
-        const transports = await Promise.all([Transports.consoleDir()]);
-
-        let logger = new Logger({
-            context: {
-                app: 'test'
-            },
-            space: 4,
-            transports,
-        });
+        let logger = new Logger.Logger({ context: { app: 'test' } });
 
         const testOb = {
             a: 'test',
@@ -34,26 +23,12 @@ describe('Logger', () => {
             c: [1, 2, 3]
         };
 
-        try {
-            logger = logger.push(testOb);
-            await logger.log('This is a test');
-        }
-        catch(e) {
-            expect(e).toBe(undefined); 
-        }
+        expect(() => logger.push(testOb).log('This is a test')).not.toThrow();
     });
 
 
     test('logs circular without throwing', async () => {
-        const transports = await Promise.all([Transports.consoleDir()]);
-
-        let logger = new Logger({
-            context: {
-                app: 'test'
-            },
-            space: 4,
-            transports,
-        });
+        let logger = new Logger.Logger({ context: { app: 'test' } });
 
         const testOb = {
             a: 'test',
@@ -64,13 +39,7 @@ describe('Logger', () => {
         // create a circular reference in testOb
         testOb.d = testOb;
 
-        try {
-            logger = logger.push(testOb);
-            await logger.log('This is a test');
-        }
-        catch(e) {
-            expect(e).toBe(undefined); 
-        }
+        expect(() => logger.push(testOb).log('This is a test')).not.toThrow();
     });
 
 });

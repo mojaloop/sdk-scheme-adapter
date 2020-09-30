@@ -30,7 +30,6 @@ describe('index.js', () => {
         expect(typeof(index.Router)).toBe('function');
         expect(typeof(index.Validate)).toBe('function');
         expect(typeof(index.RandomPhrase)).toBe('function');
-        expect(typeof(index.Log)).toBe('object');
         expect(typeof(index.Cache)).toBe('function');
     });
 });
