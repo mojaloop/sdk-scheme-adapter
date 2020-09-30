@@ -13,7 +13,6 @@
 const Koa = require('koa');
 const koaBody = require('koa-body');
 const OAuthServer = require('koa2-oauth-server');
-const { Logger } = require('@mojaloop/sdk-standard-components');
 const { InMemoryCache } = require('./model');
 
 class OAuthTestServer {

@@ -11,16 +11,11 @@
 const Koa = require('koa');
 const ws = require('ws');
 
-const assert = require('assert').strict;
 const https = require('https');
 const http = require('http');
 const yaml = require('js-yaml');
 const fs = require('fs').promises;
 const path = require('path');
-
-const { Logger } = require('@mojaloop/sdk-standard-components');
-const Cache = require('@internal/cache');
-const check = require('@internal/check');
 
 const Validate = require('@internal/validate');
 const router = require('@internal/router');
@@ -42,7 +37,7 @@ class TestApi {
 
         this._api.use(middlewares.createErrorHandler());
         this._api.use(middlewares.createRequestIdGenerator());
-        this._api.use(middlewares.applyState({ cache, conf }))
+        this._api.use(middlewares.applyState({ cache, conf }));
         this._api.use(middlewares.createLogger(logger));
 
         this._api.use(middlewares.createRequestValidator(validator));

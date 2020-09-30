@@ -9,8 +9,6 @@
  **************************************************************************/
 
 
-const util = require('util');
-const randomPhrase = require('@internal/randomphrase');
 const { ProxyModel } = require('@internal/model');
 const { applyState, createErrorHandler, createLogger, createRequestIdGenerator } =
     require('../InboundServer/middlewares');

@@ -16,7 +16,7 @@ const yaml = require('js-yaml');
 const fs = require('fs');
 const path = require('path');
 
-const { WSO2Auth, Logger } = require('@mojaloop/sdk-standard-components');
+const { WSO2Auth } = require('@mojaloop/sdk-standard-components');
 
 const Validate = require('@internal/validate');
 const router = require('@internal/router');

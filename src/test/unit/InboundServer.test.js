@@ -45,7 +45,7 @@ describe('Inbound Server', () => {
             serverConfig.validateInboundJws = validateInboundJws;
             serverConfig.validateInboundPutPartiesJws = validateInboundPutPartiesJws;
             const logger = new Logger.Logger();
-            const cache = new Cache({ ...serverConfig.cacheConfig, logger: logger.push({ component: 'cache' }) })
+            const cache = new Cache({ ...serverConfig.cacheConfig, logger: logger.push({ component: 'cache' }) });
             const svr = new InboundServer(serverConfig, logger, cache);
             await svr.start();
             await supertest(svr._server)
@@ -82,7 +82,7 @@ describe('Inbound Server', () => {
             serverConfig.validateInboundJws = validateInboundJws;
             serverConfig.validateInboundPutPartiesJws = validateInboundPutPartiesJws;
             const logger = new Logger.Logger();
-            const cache = new Cache({ ...serverConfig.cacheConfig, logger: logger.push({ component: 'cache' }) })
+            const cache = new Cache({ ...serverConfig.cacheConfig, logger: logger.push({ component: 'cache' }) });
             const svr = new InboundServer(serverConfig, logger, cache);
             await svr.start();
             await supertest(svr._server)
@@ -114,7 +114,7 @@ describe('Inbound Server', () => {
             serverConfig.validateInboundJws = validateInboundJws;
             serverConfig.validateInboundPutPartiesJws = validateInboundPutPartiesJws;
             const logger = new Logger.Logger();
-            const cache = new Cache({ ...serverConfig.cacheConfig, logger: logger.push({ component: 'cache' }) })
+            const cache = new Cache({ ...serverConfig.cacheConfig, logger: logger.push({ component: 'cache' }) });
             const svr = new InboundServer(serverConfig, logger, cache);
             await svr.start();
             await supertest(svr._server)
@@ -159,7 +159,7 @@ describe('Inbound Server', () => {
         async function testTlsServer(enableTls) {
             defConfig.tls.inbound.mutualTLS.enabled = enableTls;
             const logger = new Logger.Logger();
-            const cache = new Cache({ ...defConfig.cacheConfig, logger: logger.push({ component: 'cache' }) })
+            const cache = new Cache({ ...defConfig.cacheConfig, logger: logger.push({ component: 'cache' }) });
             const server = new InboundServer(defConfig, logger, cache);
             await server.start();
             if (enableTls) {
@@ -192,7 +192,7 @@ describe('Inbound Server', () => {
             fs.writeFileSync(mockFilePath, 'foo-key');
             serverConfig.jwsVerificationKeysDirectory = keysDir;
             const logger = new Logger.Logger();
-            const cache = new Cache({ ...serverConfig.cacheConfig, logger: logger.push({ component: 'cache' }) })
+            const cache = new Cache({ ...serverConfig.cacheConfig, logger: logger.push({ component: 'cache' }) });
             svr = new InboundServer(serverConfig, logger, cache);
             await svr.start();
         });

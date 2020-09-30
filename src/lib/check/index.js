@@ -7,7 +7,7 @@ const assert = require('assert').strict;
 module.exports = Object.fromEntries(
     Object.entries(assert).map(([k, f]) => [k, (...args) => {
         try {
-            f.bind(assert)(...args)
+            f.bind(assert)(...args);
             return true;
         } catch (err) {
             return false;

@@ -7,7 +7,7 @@ const Validate = require('@internal/validate');
 const InboundServer = require('../../../InboundServer');
 const OutboundServer = require('../../../OutboundServer');
 const { Logger } = require('@mojaloop/sdk-standard-components');
-const Cache = require('@internal/cache')
+const Cache = require('@internal/cache');
 
 /**
  * Get OpenAPI spec and Validator for specified server
