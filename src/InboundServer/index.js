@@ -108,8 +108,8 @@ class InboundApi {
             api.use(middlewares.createJwsValidator(logger, jwsVerificationKeys, jwsExclusions));
         }
 
-        const sharedState = { cache, wso2Auth, conf };
-        api.use(middlewares.createLogger(logger, sharedState)); // TODO: shared state here is odd
+        api.use(middlewares.applyState({ cache, wso2Auth, conf }));
+        api.use(middlewares.createLogger(logger));
         api.use(middlewares.createRequestValidator(validator));
         api.use(router(handlers));
         api.use(middlewares.createResponseBodyHandler());

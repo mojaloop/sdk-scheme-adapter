@@ -39,14 +39,10 @@ class OutboundApi {
         });
 
         this._api.use(middlewares.createErrorHandler());
-
-        // outbound always expects application/json
-        this._api.use(koaBody());
-
-        // TODO: what is going on here- this should probably be on the Koa context, if it's needed
-        // at all
-        const sharedState = { cache: this._cache, wso2Auth: this._wso2Auth, conf };
-        this._api.use(middlewares.createLogger(this._logger, sharedState));
+        this._api.use(middlewares.createRequestIdGenerator());
+        this._api.use(koaBody()); // outbound always expects application/json
+        this._api.use(middlewares.applyState({ cache, wso2Auth: this._wso2Auth, conf }));
+        this._api.use(middlewares.createLogger(this._logger));
 
         //Note that we strip off any path on peerEndpoint config after the origin.
         //this is to allow proxy routed requests to hit any path on the peer origin

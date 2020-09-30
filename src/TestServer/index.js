@@ -42,9 +42,8 @@ class TestApi {
 
         this._api.use(middlewares.createErrorHandler());
         this._api.use(middlewares.createRequestIdGenerator());
-        // TODO: what exactly is this?
-        const sharedState = { cache, conf };
-        this._api.use(middlewares.createLogger(logger, sharedState));
+        this._api.use(middlewares.applyState({ cache, conf }))
+        this._api.use(middlewares.createLogger(logger));
 
         this._api.use(middlewares.createRequestValidator(validator));
         this._api.use(router(handlers));

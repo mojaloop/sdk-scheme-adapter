@@ -38,8 +38,8 @@ const createWsClient = async (port, path) => {
 };
 
 describe('Test Server', () => {
-    let testServer, inboundServer, inboundReq, testReq, serverConfig, inboundCache, testCache,
-        wsClients, testServerPort, logger, cache;
+    let testServer, inboundServer, inboundReq, testReq, serverConfig, wsClients, testServerPort,
+        logger, cache;
 
     beforeEach(async () => {
         Cache.mockClear();
@@ -51,7 +51,6 @@ describe('Test Server', () => {
             enableTestFeatures: true,
         };
         cache = new Cache({ ...serverConfig.cacheConfig, logger: logger.push({ component: 'cache' }) });
-        // cache = jest.fn();
 
         testServer = new TestServer(serverConfig, logger, cache);
         await testServer.start();
@@ -59,12 +58,10 @@ describe('Test Server', () => {
 
         expect(testServer._server.listening).toBe(true);
         testReq = supertest.agent(testServer._server);
-        testCache = cache;
 
         inboundServer = new InboundServer(serverConfig, logger, cache);
         await inboundServer.start();
         inboundReq = supertest(inboundServer._server);
-        inboundCache = cache;
 
         wsClients = {
             root: await createWsClient(testServerPort, '/'),
@@ -113,7 +110,7 @@ describe('Test Server', () => {
 
         await testReq.get(`/callbacks/${MSISDN}`);
 
-        expect(inboundCache.set.mock.calls[0][0]).toEqual(testCache.get.mock.calls[0][0]);
+        expect(cache.set.mock.calls[0][0]).toEqual(cache.get.mock.calls[0][0]);
     });
 
     test('POST /quotes requests cache get and set use same value', async () => {
@@ -127,7 +124,7 @@ describe('Test Server', () => {
 
         await testReq.get(`/requests/${postQuotesBody.quoteId}`);
 
-        expect(inboundCache.set.mock.calls[0][0]).toEqual(testCache.get.mock.calls[0][0]);
+        expect(cache.set.mock.calls[0][0]).toEqual(cache.get.mock.calls[0][0]);
     });
 
     test('PUT /participants callbacks cache get and set use same value', async () => {
@@ -143,7 +140,7 @@ describe('Test Server', () => {
 
         await testReq.get(`/callbacks/${participantId}`);
 
-        expect(inboundCache.set.mock.calls[0][0]).toEqual(testCache.get.mock.calls[0][0]);
+        expect(cache.set.mock.calls[0][0]).toEqual(cache.get.mock.calls[0][0]);
     });
 
     test('Subscribes to the keyevent set notification', async () => {

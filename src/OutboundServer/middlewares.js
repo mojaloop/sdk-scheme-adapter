@@ -12,46 +12,8 @@
 const util = require('util');
 const randomPhrase = require('@internal/randomphrase');
 const { ProxyModel } = require('@internal/model');
-
-
-/**
- * Log raw to console as a last resort
- * @return {Function}
- */
-const createErrorHandler = () => async (ctx, next) => {
-    try {
-        await next();
-    } catch (err) {
-        // TODO: return a 500 here if the response has not already been sent?
-        console.log(`Error caught in catchall: ${err.stack || util.inspect(err, { depth: 10 })}`);
-    }
-};
-
-
-/**
- * Add a log context for each request, log the receipt and handling thereof
- * @param logger
- * @param sharedState
- * @return {Function}
- */
-const createLogger = (logger, sharedState) => async (ctx, next) => {
-    ctx.state = {
-        ...ctx.state,
-        ...sharedState,
-    };
-    ctx.state.logger = logger.push({ request: {
-        id: randomPhrase(),
-        path: ctx.path,
-        method: ctx.method
-    }});
-    ctx.state.logger.log('Request received');
-    try {
-        await next();
-    } catch (err) {
-        ctx.state.logger.push(err).log('Error');
-    }
-    await ctx.state.logger.log('Request processed');
-};
+const { applyState, createErrorHandler, createLogger, createRequestIdGenerator } =
+    require('../InboundServer/middlewares');
 
 
 /**
@@ -98,6 +60,8 @@ const createProxy = (opts) => {
 };
 
 module.exports = {
+    applyState,
+    createRequestIdGenerator,
     createErrorHandler,
     createLogger,
     createRequestValidator,
