@@ -10,6 +10,7 @@
 
 const Koa = require('koa');
 
+const assert = require('assert').strict;
 const https = require('https');
 const http = require('http');
 const yaml = require('js-yaml');
@@ -17,145 +18,55 @@ const fs = require('fs');
 const path = require('path');
 
 const { WSO2Auth } = require('@mojaloop/sdk-standard-components');
-const { Logger, Transports } = require('@internal/log');
-const Cache = require('@internal/cache');
+const check = require('@internal/check');
 
 const Validate = require('@internal/validate');
 const router = require('@internal/router');
 const handlers = require('./handlers');
 const middlewares = require('./middlewares');
 
-class InboundServer {
-    constructor(conf) {
+class InboundApi {
+    constructor(conf, logger, cache, validator) {
         this._conf = conf;
-        this._api = null;
-        this._server = null;
-        this._logger = null;
-        this._jwsVerificationKeys = {};
-    }
-
-    async setupApi() {
-        this._api = new Koa();
-        this._logger = await this._createLogger();
-
-        this._cache = await this._createCache();
-
-        const specPath = path.join(__dirname, 'api.yaml');
-        const apiSpecs = yaml.load(fs.readFileSync(specPath));
-        const validator = new Validate();
-        await validator.initialise(apiSpecs);
-
+        this._cache = cache;
         this._wso2Auth = new WSO2Auth({
-            ...this._conf.wso2Auth,
-            logger: this._logger,
-            tlsCreds: this._conf.tls.outbound.mutualTLS.enabled && this._conf.tls.outbound.creds,
+            ...conf.wso2Auth,
+            logger,
+            tlsCreds: conf.tls.outbound.mutualTLS.enabled && conf.tls.outbound.creds,
         });
-
-        this._api.use(middlewares.createErrorHandler());
-        this._api.use(middlewares.createRequestIdGenerator());
-        this._api.use(middlewares.createHeaderValidator(this._logger));
-        if(this._conf.validateInboundJws) {
-            const jwsExclusions = [];
-            if (!this._conf.validateInboundPutPartiesJws) {
-                jwsExclusions.push('putParties');
-            }
-            this._jwsVerificationKeys = this._getJwsKeys();
-            this._api.use(middlewares.createJwsValidator(this._logger, this._jwsVerificationKeys, jwsExclusions));
+        if (conf.validateInboundJws) {
+            this._jwsVerificationKeys = InboundApi._GetJwsKeys(conf.jwsVerificationKeysDirectory);
         }
-
-        const sharedState = { cache: this._cache, wso2Auth: this._wso2Auth, conf: this._conf };
-        this._api.use(middlewares.createLogger(this._logger, sharedState));
-
-        this._api.use(middlewares.createRequestValidator(validator));
-        this._api.use(router(handlers));
-        this._api.use(middlewares.createResponseBodyHandler());
-
-        this._server = this._createServer();
-        this._api.context.resourceVersions = this._conf.resourceVersions;
-        return this._server;
+        this._api = InboundApi._SetupApi({
+            conf,
+            logger,
+            validator,
+            cache,
+            jwsVerificationKeys: this._jwsVerificationKeys,
+            wso2Auth: this._wso2Auth,
+        });
     }
 
     async start() {
         this._startJwsWatcher();
         await this._cache.connect();
+
         if (!this._conf.testingDisableWSO2AuthStart) {
             await this._wso2Auth.start();
-        }
-        if (!this._conf.testingDisableServerStart) {
-            await new Promise((resolve) => this._server.listen(this._conf.inboundPort, resolve));
-            this._logger.log(`Serving inbound API on port ${this._conf.inboundPort}`);
         }
     }
 
     async stop() {
-        if (!this._server) {
-            return;
-        }
-        await new Promise(resolve => this._server.close(resolve));
         this._wso2Auth.stop();
         await this._cache.disconnect();
-        this._stopJwsWatcher();
-        console.log('inbound shut down complete');
-    }
-
-    async _createLogger() {
-        const transports = await Promise.all([Transports.consoleDir()]);
-        // Set up a logger for each running server
-        return new Logger({
-            context: {
-                app: 'mojaloop-sdk-inbound-api'
-            },
-            space: this._conf.logIndent,
-            transports,
-        });
-    }
-
-    async _createCache() {
-        const transports = await Promise.all([Transports.consoleDir()]);
-        const logger = new Logger({
-            context: {
-                app: 'mojaloop-sdk-inboundCache'
-            },
-            space: this._conf.logIndent,
-            transports,
-        });
-
-        const cacheConfig = {
-            ...this._conf.cacheConfig,
-            logger
-        };
-
-        return new Cache(cacheConfig);
-    }
-
-    _createServer() {
-        let server;
-        // If config specifies TLS, start an HTTPS server; otherwise HTTP
-        if (this._conf.tls.inbound.mutualTLS.enabled) {
-            const inboundHttpsOpts = {
-                ...this._conf.tls.inbound.creds,
-                requestCert: true,
-                rejectUnauthorized: true // no effect if requestCert is not true
-            };
-            server = https.createServer(inboundHttpsOpts, this._api.callback());
-        } else {
-            server = http.createServer(this._api.callback());
+        if (this._keyWatcher) {
+            this._keyWatcher.close();
+            this._keyWatcher = null;
         }
-        return server;
     }
 
-    _getJwsKeys() {
-        const keys = {};
-        if (this._conf.jwsVerificationKeysDirectory) {
-            fs.readdirSync(this._conf.jwsVerificationKeysDirectory)
-                .filter(f => f.endsWith('.pem'))
-                .forEach(f => {
-                    const keyName = path.basename(f, '.pem');
-                    const keyPath = path.join(this._conf.jwsVerificationKeysDirectory, f);
-                    keys[keyName] = fs.readFileSync(keyPath);
-                });
-        }
-        return keys;
+    callback() {
+        return this._api.callback();
     }
 
     _startJwsWatcher() {
@@ -182,15 +93,110 @@ class InboundServer {
             }
         };
         if (this._conf.jwsVerificationKeysDirectory) {
-            this.keyWatcher = fs.watch(this._conf.jwsVerificationKeysDirectory, watchHandler);
+            this._keyWatcher = fs.watch(this._conf.jwsVerificationKeysDirectory, watchHandler);
         }
     }
 
-    _stopJwsWatcher() {
-        if (this.keyWatcher) {
-            this.keyWatcher.close();
+    static _SetupApi({ conf, logger, validator, cache, jwsVerificationKeys, wso2Auth }) {
+        const api = new Koa();
+
+        api.use(middlewares.createErrorHandler());
+        api.use(middlewares.createRequestIdGenerator());
+        api.use(middlewares.createHeaderValidator(logger));
+        if (conf.validateInboundJws) {
+            const jwsExclusions = conf.validateInboundPutPartiesJws ? [] : ['putParties'];
+            api.use(middlewares.createJwsValidator(logger, jwsVerificationKeys, jwsExclusions));
         }
+
+        api.use(middlewares.applyState({ cache, wso2Auth, conf }));
+        api.use(middlewares.createLogger(logger));
+        api.use(middlewares.createRequestValidator(validator));
+        api.use(router(handlers));
+        api.use(middlewares.createResponseBodyHandler());
+
+        api.context.resourceVersions = conf.resourceVersions;
+
+        return api;
     }
+
+    static _GetJwsKeys(fromDir) {
+        const keys = {};
+        if (fromDir) {
+            fs.readdirSync(fromDir)
+                .filter(f => f.endsWith('.pem'))
+                .forEach(f => {
+                    const keyName = path.basename(f, '.pem');
+                    const keyPath = path.join(fromDir, f);
+                    keys[keyName] = fs.readFileSync(keyPath);
+                });
+        }
+        return keys;
+    }
+}
+
+class InboundServer {
+    constructor(conf, logger, cache) {
+        this._conf = conf;
+        this._validator = new Validate();
+        this._logger = logger.push({ app: 'mojaloop-sdk-inbound-api' });
+        this._api = new InboundApi(conf, this._logger, cache, this._validator);
+        this._server = this._createServer(
+            conf.tls.inbound.mutualTLS.enabled,
+            conf.tls.inbound.creds,
+            this._api.callback()
+        );
+    }
+
+    async start() {
+        assert(!this._server.listening, 'Server already listening');
+        const specPath = path.join(__dirname, 'api.yaml');
+        const apiSpecs = yaml.load(fs.readFileSync(specPath));
+        await this._validator.initialise(apiSpecs);
+        await this._api.start();
+        await new Promise((resolve) => this._server.listen(this._conf.inboundPort, resolve));
+        this._logger.log(`Serving inbound API on port ${this._conf.inboundPort}`);
+    }
+
+    async stop() {
+        if (this._server) {
+            await new Promise(resolve => this._server.close(resolve));
+            this._server = null;
+        }
+        if (this._api) {
+            await this._api.stop();
+            this._api = null;
+        }
+        console.log('inbound shut down complete');
+    }
+
+    async reconfigure(conf) {
+        if (check.deepEqual(conf, this._conf)) {
+            return;
+        }
+        assert(
+            this._conf.tls.inbound.mutualTLS.enabled === conf.tls.inbound.mutualTLS.enabled,
+            'Cannot live restart an HTTPS server as HTTP or vice versa',
+        );
+        const api = new InboundApi(conf, this._logger, this._validator);
+        this._server.removeAllListeners('request');
+        this._server.on('request', api.callback());
+        this._api.stop();
+        this._api = api;
+    }
+
+    _createServer(tlsEnabled, tlsCreds, handler) {
+        if (!tlsEnabled) {
+            return http.createServer(handler);
+        }
+
+        const inboundHttpsOpts = {
+            ...tlsCreds,
+            requestCert: true,
+            rejectUnauthorized: true // no effect if requestCert is not true
+        };
+        return https.createServer(inboundHttpsOpts, handler);
+    }
+
 }
 
 module.exports = InboundServer;

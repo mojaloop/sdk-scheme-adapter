@@ -125,16 +125,24 @@ const createJwsValidator = (logger, keys, exclusions) => {
 
 
 /**
- * Add a log context for each request, log the receipt and handling thereof
- * @param logger
+ * Add request state.
+ * TODO: this should probably be app context:
+ * https://github.com/koajs/koa/blob/master/docs/api/index.md#appcontext
  * @param sharedState
  * @return {Function}
  */
-const createLogger = (logger, sharedState) => async (ctx, next) => {
-    ctx.state = {
-        ...ctx.state,
-        ...sharedState,
-    };
+const applyState = (sharedState) => async (ctx, next) => {
+    Object.assign(ctx.state, sharedState);
+    await next();
+};
+
+
+/**
+ * Add a log context for each request, log the receipt and handling thereof
+ * @param logger
+ * @return {Function}
+ */
+const createLogger = (logger) => async (ctx, next) => {
     ctx.state.logger = logger.push({ request: {
         id: ctx.request.id,
         path: ctx.path,
@@ -200,6 +208,7 @@ const createResponseBodyHandler = () => async (ctx, next) => {
 
 
 module.exports = {
+    applyState,
     createErrorHandler,
     createRequestIdGenerator,
     createHeaderValidator,

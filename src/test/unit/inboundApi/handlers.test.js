@@ -16,22 +16,15 @@ const handlers = require('../../../InboundServer/handlers');
 const Model = require('@internal/model').InboundTransfersModel;
 const mockArguments = require('./data/mockArguments');
 const mockTransactionRequestData = require('./data/mockTransactionRequest');
-const { Logger, Transports } = require('@internal/log');
-
-let logTransports;
+const { Logger } = require('@mojaloop/sdk-standard-components');
 
 describe('Inbound API handlers:', () => {
     let mockArgs;
     let mockTransactionRequest;
 
-    beforeAll(async () => {
-        logTransports = await Promise.all([Transports.consoleDir()]);
-    });
-
     beforeEach(() => {
         mockArgs = JSON.parse(JSON.stringify(mockArguments));
         mockTransactionRequest = JSON.parse(JSON.stringify(mockTransactionRequestData));
-
     });
 
     describe('POST /quotes', () => {
@@ -49,7 +42,7 @@ describe('Inbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports })
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' } }),
                 }
             };
 
@@ -83,7 +76,7 @@ describe('Inbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports })
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' } }),
                 }
             };
 
@@ -121,7 +114,7 @@ describe('Inbound API handlers:', () => {
                             'ID': '1234567890'
                         }
                     },
-                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports }),
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' } }),
                     cache: {
                         publish: async () => Promise.resolve(true)
                     } 
@@ -169,7 +162,7 @@ describe('Inbound API handlers:', () => {
                             'ID': '1234567890'
                         }
                     },
-                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports }),
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' } }),
                     cache: {
                         publish: async () => Promise.resolve(true)
                     } 
@@ -210,7 +203,7 @@ describe('Inbound API handlers:', () => {
                             'ID': '1234567890'
                         }
                     },
-                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports })
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' } }),
                 }
             };
         });
@@ -240,7 +233,7 @@ describe('Inbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports })
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' } }),
                 }
             };
 
@@ -278,7 +271,7 @@ describe('Inbound API handlers:', () => {
                             'ID': '1234567890'
                         }
                     },
-                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports }),
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' } }),
                     cache: {
                         publish: async () => Promise.resolve(true)
                     } 
@@ -326,7 +319,7 @@ describe('Inbound API handlers:', () => {
                             'ID': '1234567890'
                         }
                     },
-                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports }),
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' } }),
                     cache: {
                         publish: async () => Promise.resolve(true)
                     } 
@@ -367,7 +360,7 @@ describe('Inbound API handlers:', () => {
                             'ID': '1234567890'
                         }
                     },
-                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports })
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' } }),
                 }
             };
         });
@@ -397,7 +390,7 @@ describe('Inbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports })
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' } }),
                 }
             };
         });
@@ -433,7 +426,7 @@ describe('Inbound API handlers:', () => {
                             'ID': '1234'
                         }
                     },
-                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports })
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' } }),
                 }
             };
         });
@@ -470,7 +463,7 @@ describe('Inbound API handlers:', () => {
                             'ID': '1234'
                         }
                     },
-                    logger: new Logger({ context: { app: 'inbound-handlers-unit-test' }, space: 4, transports: logTransports })
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' } }),
                 }
             };
         });

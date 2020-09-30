@@ -17,9 +17,8 @@ jest.mock('redis');
 const util = require('util');
 const Cache = require('@internal/cache');
 const Model = require('@internal/model').OutboundRequestToPayModel;
-const { Logger, Transports } = require('@internal/log');
 
-const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
+const { MojaloopRequests, Logger } = require('@mojaloop/sdk-standard-components');
 const StateMachine = require('javascript-state-machine');
 
 const defaultConfig = require('./data/defaultConfig');
@@ -57,8 +56,7 @@ describe('outboundModel', () => {
      */
     
     beforeAll(async () => {
-        const logTransports = await Promise.all([Transports.consoleDir()]);
-        logger = new Logger({ context: { app: 'outbound-model-unit-tests-cache' }, space: 4, transports: logTransports });
+        logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests-cache' } });
         transactionRequestResponse = JSON.parse(JSON.stringify(transactionRequestResponseTemplate));
     });
 
