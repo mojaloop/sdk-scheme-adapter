@@ -22,6 +22,7 @@ jest.mock('@internal/cache');
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('@internal/requests');
 
+const Cache = require('@internal/cache');
 const { Jws, Logger } = require('@mojaloop/sdk-standard-components');
 const path = require('path');
 const fs = require('fs');
@@ -43,7 +44,9 @@ describe('Inbound Server', () => {
         async function testPartiesJwsValidation(validateInboundJws, validateInboundPutPartiesJws, expectedValidationCalls) {
             serverConfig.validateInboundJws = validateInboundJws;
             serverConfig.validateInboundPutPartiesJws = validateInboundPutPartiesJws;
-            const svr = new InboundServer(serverConfig, new Logger.Logger());
+            const logger = new Logger.Logger();
+            const cache = new Cache({ ...serverConfig.cacheConfig, logger: logger.push({ component: 'cache' }) })
+            const svr = new InboundServer(serverConfig, logger, cache);
             await svr.start();
             await supertest(svr._server)
                 .put('/parties/MSISDN/123456789')
@@ -78,7 +81,9 @@ describe('Inbound Server', () => {
         async function testQuotesJwsValidation(validateInboundJws, validateInboundPutPartiesJws, expectedValidationCalls) {
             serverConfig.validateInboundJws = validateInboundJws;
             serverConfig.validateInboundPutPartiesJws = validateInboundPutPartiesJws;
-            const svr = new InboundServer(serverConfig, new Logger.Logger());
+            const logger = new Logger.Logger();
+            const cache = new Cache({ ...serverConfig.cacheConfig, logger: logger.push({ component: 'cache' }) })
+            const svr = new InboundServer(serverConfig, logger, cache);
             await svr.start();
             await supertest(svr._server)
                 .post('/quotes')
@@ -108,7 +113,9 @@ describe('Inbound Server', () => {
         async function testParticipantsJwsValidation(validateInboundJws, validateInboundPutPartiesJws, expectedValidationCalls) {
             serverConfig.validateInboundJws = validateInboundJws;
             serverConfig.validateInboundPutPartiesJws = validateInboundPutPartiesJws;
-            const svr = new InboundServer(serverConfig, new Logger.Logger());
+            const logger = new Logger.Logger();
+            const cache = new Cache({ ...serverConfig.cacheConfig, logger: logger.push({ component: 'cache' }) })
+            const svr = new InboundServer(serverConfig, logger, cache);
             await svr.start();
             await supertest(svr._server)
                 .put('/participants/00000000-0000-1000-a000-000000000002')
@@ -151,7 +158,9 @@ describe('Inbound Server', () => {
 
         async function testTlsServer(enableTls) {
             defConfig.tls.inbound.mutualTLS.enabled = enableTls;
-            const server = new InboundServer(defConfig, new Logger.Logger());
+            const logger = new Logger.Logger();
+            const cache = new Cache({ ...defConfig.cacheConfig, logger: logger.push({ component: 'cache' }) })
+            const server = new InboundServer(defConfig, logger, cache);
             await server.start();
             if (enableTls) {
                 expect(httpsServerSpy).toHaveBeenCalled();
@@ -182,7 +191,9 @@ describe('Inbound Server', () => {
             const mockFilePath = path.join(keysDir, 'mojaloop-sdk.pem');
             fs.writeFileSync(mockFilePath, 'foo-key');
             serverConfig.jwsVerificationKeysDirectory = keysDir;
-            svr = new InboundServer(serverConfig, new Logger.Logger());
+            const logger = new Logger.Logger();
+            const cache = new Cache({ ...serverConfig.cacheConfig, logger: logger.push({ component: 'cache' }) })
+            svr = new InboundServer(serverConfig, logger, cache);
             await svr.start();
         });
 

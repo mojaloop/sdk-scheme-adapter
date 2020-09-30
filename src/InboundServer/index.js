@@ -18,7 +18,6 @@ const fs = require('fs');
 const path = require('path');
 
 const { WSO2Auth, Logger } = require('@mojaloop/sdk-standard-components');
-const Cache = require('@internal/cache');
 const check = require('@internal/check');
 
 const Validate = require('@internal/validate');
@@ -27,12 +26,9 @@ const handlers = require('./handlers');
 const middlewares = require('./middlewares');
 
 class InboundApi {
-    constructor(conf, logger, validator) {
+    constructor(conf, logger, cache, validator) {
         this._conf = conf;
-        this._cache = new Cache({
-            ...conf.cacheConfig,
-            logger: logger.push({ component: 'cache' })
-        });
+        this._cache = cache;
         this._wso2Auth = new WSO2Auth({
             ...conf.wso2Auth,
             logger,
@@ -45,7 +41,7 @@ class InboundApi {
             conf,
             logger,
             validator,
-            cache: this._cache,
+            cache,
             jwsVerificationKeys: this._jwsVerificationKeys,
             wso2Auth: this._wso2Auth,
         });
@@ -61,14 +57,8 @@ class InboundApi {
     }
 
     async stop() {
-        if (this._wso2Auth) {
-            this._wso2Auth.stop();
-            this._wso2Auth = null;
-        }
-        if (this._cache) {
-            await this._cache.disconnect();
-            this._cache = null;
-        }
+        this._wso2Auth.stop();
+        await this._cache.disconnect();
         if (this._keyWatcher) {
             this._keyWatcher.close();
             this._keyWatcher = null;
@@ -145,11 +135,11 @@ class InboundApi {
 }
 
 class InboundServer {
-    constructor(conf, logger) {
+    constructor(conf, logger, cache) {
         this._conf = conf;
         this._validator = new Validate();
         this._logger = logger.push({ app: 'mojaloop-sdk-inbound-api' });
-        this._api = new InboundApi(conf, this._logger, this._validator);
+        this._api = new InboundApi(conf, this._logger, cache, this._validator);
         this._server = this._createServer(
             conf.tls.inbound.mutualTLS.enabled,
             conf.tls.inbound.creds,
