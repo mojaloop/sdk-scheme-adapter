@@ -12,7 +12,6 @@
 
 'use strict';
 
-const util = require('util');
 const Model = require('@internal/model').InboundTransfersModel;
 
 /**
