@@ -18,7 +18,6 @@ const fs = require('fs');
 const path = require('path');
 
 const { WSO2Auth } = require('@mojaloop/sdk-standard-components');
-const check = require('@internal/check');
 
 const Validate = require('@internal/validate');
 const router = require('@internal/router');
@@ -173,21 +172,6 @@ class InboundServer {
             this._api = null;
         }
         console.log('inbound shut down complete');
-    }
-
-    async reconfigure(conf) {
-        if (check.deepEqual(conf, this._conf)) {
-            return;
-        }
-        assert(
-            this._conf.inbound.tls.mutualTLS.enabled === conf.inbound.tls.mutualTLS.enabled,
-            'Cannot live restart an HTTPS server as HTTP or vice versa',
-        );
-        const api = new InboundApi(conf, this._logger, this._validator);
-        this._server.removeAllListeners('request');
-        this._server.on('request', api.callback());
-        this._api.stop();
-        this._api = api;
     }
 
     _createServer(tlsEnabled, tlsCreds, handler) {
