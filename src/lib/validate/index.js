@@ -194,7 +194,7 @@ class Validator {
                 throw err;
             }
 
-            err =  new Error(util.format('Request failed validation', validationResult));
+            err = new Error(util.format('Request failed validation', validationResult));
             Object.assign(err, firstError);
             throw err;
         }

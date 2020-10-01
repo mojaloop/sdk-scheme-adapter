@@ -18,8 +18,9 @@ const postQuotesBody = require('./data/postQuotesBody');
 const putParticipantsBody = require('./data/putParticipantsBody');
 const commonHttpHeaders = require('./data/commonHttpHeaders');
 const WebSocket = require('ws');
+const { Logger } = require('@mojaloop/sdk-standard-components');
 
-const cache = require('@internal/cache');
+const Cache = require('@internal/cache');
 jest.mock('@internal/cache');
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('@internal/requests');
@@ -37,40 +38,41 @@ const createWsClient = async (port, path) => {
 };
 
 describe('Test Server', () => {
-    let testServer, inboundServer, inboundReq, testReq, serverConfig, inboundCache, testCache,
-        wsClients;
+    let testServer, inboundServer, inboundReq, testReq, serverConfig, wsClients, testServerPort,
+        logger, cache;
 
     beforeEach(async () => {
-        cache.mockClear();
+        Cache.mockClear();
+
+        logger = new Logger.Logger();
 
         serverConfig = {
             ...JSON.parse(JSON.stringify(defaultConfig)),
             enableTestFeatures: true,
         };
+        cache = new Cache({ ...serverConfig.cacheConfig, logger: logger.push({ component: 'cache' }), enableTestFeatures: true });
 
-        testServer = new TestServer(serverConfig);
-        await testServer.setupApi();
+        testServer = new TestServer({ tls: serverConfig.test.tls, logger, cache });
         await testServer.start();
+        testServerPort = testServer._server.address().port;
 
         expect(testServer._server.listening).toBe(true);
         testReq = supertest.agent(testServer._server);
-        testCache = cache.mock.instances[0];
 
-        inboundServer = new InboundServer(serverConfig);
-        inboundReq = supertest(await inboundServer.setupApi());
+        inboundServer = new InboundServer(serverConfig, logger, cache);
         await inboundServer.start();
-        inboundCache = cache.mock.instances[1];
+        inboundReq = supertest(inboundServer._server);
 
         wsClients = {
-            root: await createWsClient(serverConfig.testPort, '/'),
-            callbacks: await createWsClient(serverConfig.testPort, '/callbacks'),
-            requests: await createWsClient(serverConfig.testPort, '/requests'),
+            root: await createWsClient(testServerPort, '/'),
+            callbacks: await createWsClient(testServerPort, '/callbacks'),
+            requests: await createWsClient(testServerPort, '/requests'),
         };
 
         expect(Object.values(wsClients).every((cli) => cli.readyState === WebSocket.OPEN)).toBe(true);
-        expect(testServer._wsClients.size).toBeGreaterThan(0);
+        expect(testServer._wsapi._wsClients.size).toBeGreaterThan(0);
 
-        expect(cache).toHaveBeenCalledTimes(2);
+        expect(Cache).toHaveBeenCalledTimes(1);
     });
 
     afterEach(async () => {
@@ -84,9 +86,9 @@ describe('Test Server', () => {
 
     // TODO: check this happens correctly with top-level server if possible?
     test('Inbound server and Test server construct cache with same parameters when provided same config', async () => {
-        expect(cache).toHaveBeenCalledTimes(2);
-        const testArgs = { ...cache.mock.calls[0][0], logger: expect.anything() };
-        expect(cache).toHaveBeenNthCalledWith(2, testArgs);
+        expect(Cache).toHaveBeenCalledTimes(1);
+        const testArgs = { ...Cache.mock.calls[0][0], logger: expect.anything() };
+        expect(Cache).toHaveBeenNthCalledWith(1, testArgs);
     });
 
     test('Health check', async () => {
@@ -108,7 +110,7 @@ describe('Test Server', () => {
 
         await testReq.get(`/callbacks/${MSISDN}`);
 
-        expect(inboundCache.set.mock.calls[0][0]).toEqual(testCache.get.mock.calls[0][0]);
+        expect(cache.set.mock.calls[0][0]).toEqual(cache.get.mock.calls[0][0]);
     });
 
     test('POST /quotes requests cache get and set use same value', async () => {
@@ -122,7 +124,7 @@ describe('Test Server', () => {
 
         await testReq.get(`/requests/${postQuotesBody.quoteId}`);
 
-        expect(inboundCache.set.mock.calls[0][0]).toEqual(testCache.get.mock.calls[0][0]);
+        expect(cache.set.mock.calls[0][0]).toEqual(cache.get.mock.calls[0][0]);
     });
 
     test('PUT /participants callbacks cache get and set use same value', async () => {
@@ -138,20 +140,15 @@ describe('Test Server', () => {
 
         await testReq.get(`/callbacks/${participantId}`);
 
-        expect(inboundCache.set.mock.calls[0][0]).toEqual(testCache.get.mock.calls[0][0]);
+        expect(cache.set.mock.calls[0][0]).toEqual(cache.get.mock.calls[0][0]);
     });
 
     test('Subscribes to the keyevent set notification', async () => {
-        expect(testServer._cache.subscribe).toBeCalledTimes(1);
-        expect(testServer._cache.subscribe).toHaveBeenCalledWith(
-            testServer._cache.EVENT_SET,
+        expect(testServer._wsapi._cache.subscribe).toBeCalledTimes(1);
+        expect(testServer._wsapi._cache.subscribe).toHaveBeenCalledWith(
+            testServer._wsapi._cache.EVENT_SET,
             expect.any(Function),
         );
-    });
-
-    test('Configures cache correctly', async () => {
-        expect(testServer._cache.setTestMode).toBeCalledTimes(1);
-        expect(testServer._cache.setTestMode).toHaveBeenCalledWith(true);
     });
 
     test('WebSocket /callbacks and / endpoint triggers send to client when callback received to inbound server', async () => {
@@ -165,7 +162,7 @@ describe('Test Server', () => {
         };
 
         const putParticipantWsClient = await createWsClient(
-            serverConfig.testPort,
+            testServerPort,
             `/callbacks/${participantId}`
         );
 
@@ -181,13 +178,13 @@ describe('Test Server', () => {
 
         // get the callback function that the test server subscribed with, and mock the cache by
         // calling the callback when the inbound server sets a key in the cache.
-        const callback = testServer._cache.subscribe.mock.calls[0][1];
-        inboundServer._cache.set = jest.fn(async (key) => await callback(
-            inboundServer._cache.EVENT_SET,
+        const callback = testServer._wsapi._cache.subscribe.mock.calls[0][1];
+        inboundServer._api._cache.set = jest.fn(async (key) => await callback(
+            inboundServer._api._cache.EVENT_SET,
             key,
             1,
         ));
-        testServer._cache.get = jest.fn(() => ({
+        testServer._wsapi._cache.get = jest.fn(() => ({
             data: putParticipantsBody,
             headers,
         }));
@@ -197,18 +194,18 @@ describe('Test Server', () => {
             .send(putParticipantsBody)
             .set(headers);
 
-        expect(inboundServer._cache.set).toHaveBeenCalledTimes(1);
-        expect(inboundServer._cache.set).toHaveBeenCalledWith(
-            `${testServer._cache.CALLBACK_PREFIX}${participantId}`,
+        expect(inboundServer._api._cache.set).toHaveBeenCalledTimes(1);
+        expect(inboundServer._api._cache.set).toHaveBeenCalledWith(
+            `${testServer._wsapi._cache.CALLBACK_PREFIX}${participantId}`,
             {
                 data: putParticipantsBody,
                 headers: expect.objectContaining(headers),
             }
         );
 
-        expect(testServer._cache.get).toHaveBeenCalledTimes(1);
-        expect(testServer._cache.get).toHaveBeenCalledWith(
-            `${testServer._cache.CALLBACK_PREFIX}${participantId}`
+        expect(testServer._wsapi._cache.get).toHaveBeenCalledTimes(1);
+        expect(testServer._wsapi._cache.get).toHaveBeenCalledWith(
+            `${testServer._wsapi._cache.CALLBACK_PREFIX}${participantId}`
         );
 
         const expectedMessage = {
@@ -236,7 +233,7 @@ describe('Test Server', () => {
         };
 
         const postQuoteWsClient = await createWsClient(
-            serverConfig.testPort,
+            testServerPort,
             `/requests/${postQuotesBody.quoteId}`
         );
 
@@ -252,13 +249,13 @@ describe('Test Server', () => {
 
         // get the callback function that the test server subscribed with, and mock the cache by
         // calling the callback when the inbound server sets a key in the cache.
-        const callback = testServer._cache.subscribe.mock.calls[0][1];
-        inboundServer._cache.set = jest.fn(async (key) => await callback(
-            inboundServer._cache.EVENT_SET,
+        const callback = testServer._wsapi._cache.subscribe.mock.calls[0][1];
+        inboundServer._api._cache.set = jest.fn(async (key) => await callback(
+            inboundServer._api._cache.EVENT_SET,
             key,
             1,
         ));
-        testServer._cache.get = jest.fn(() => ({
+        testServer._wsapi._cache.get = jest.fn(() => ({
             data: postQuotesBody,
             headers,
         }));
@@ -269,18 +266,18 @@ describe('Test Server', () => {
             .set(headers);
 
         // Called once for the quote request, once for the fulfilment
-        expect(inboundServer._cache.set).toHaveBeenCalledTimes(2);
-        expect(inboundServer._cache.set).toHaveBeenCalledWith(
-            `${testServer._cache.REQUEST_PREFIX}${postQuotesBody.quoteId}`,
+        expect(inboundServer._api._cache.set).toHaveBeenCalledTimes(2);
+        expect(inboundServer._api._cache.set).toHaveBeenCalledWith(
+            `${testServer._wsapi._cache.REQUEST_PREFIX}${postQuotesBody.quoteId}`,
             {
                 data: postQuotesBody,
                 headers: expect.objectContaining(headers),
             }
         );
 
-        expect(testServer._cache.get).toHaveBeenCalledTimes(1);
-        expect(testServer._cache.get).toHaveBeenCalledWith(
-            `${testServer._cache.REQUEST_PREFIX}${postQuotesBody.quoteId}`
+        expect(testServer._wsapi._cache.get).toHaveBeenCalledTimes(1);
+        expect(testServer._wsapi._cache.get).toHaveBeenCalledWith(
+            `${testServer._wsapi._cache.REQUEST_PREFIX}${postQuotesBody.quoteId}`
         );
 
         const expectedMessage = {
@@ -313,13 +310,13 @@ describe('Test Server', () => {
 
         // get the callback function that the test server subscribed with, and mock the cache by
         // calling the callback when the inbound server sets a key in the cache.
-        const callback = testServer._cache.subscribe.mock.calls[0][1];
-        inboundServer._cache.set = jest.fn(async (key) => await callback(
-            inboundServer._cache.EVENT_SET,
+        const callback = testServer._wsapi._cache.subscribe.mock.calls[0][1];
+        inboundServer._api._cache.set = jest.fn(async (key) => await callback(
+            inboundServer._api._cache.EVENT_SET,
             key,
             1,
         ));
-        testServer._cache.get = jest.fn(() => ({
+        testServer._wsapi._cache.get = jest.fn(() => ({
             data: postQuotesBody,
             headers: quoteRequestHeaders,
         }));
@@ -330,18 +327,18 @@ describe('Test Server', () => {
             .set(quoteRequestHeaders);
 
         // Called once for the quote request, once for the fulfilment
-        expect(inboundServer._cache.set).toHaveBeenCalledTimes(2);
-        expect(inboundServer._cache.set).toHaveBeenCalledWith(
-            `${testServer._cache.REQUEST_PREFIX}${postQuotesBody.quoteId}`,
+        expect(inboundServer._api._cache.set).toHaveBeenCalledTimes(2);
+        expect(inboundServer._api._cache.set).toHaveBeenCalledWith(
+            `${testServer._wsapi._cache.REQUEST_PREFIX}${postQuotesBody.quoteId}`,
             {
                 data: postQuotesBody,
                 headers: expect.objectContaining(quoteRequestHeaders),
             }
         );
 
-        expect(testServer._cache.get).toHaveBeenCalledTimes(1);
-        expect(testServer._cache.get).toHaveBeenCalledWith(
-            `${testServer._cache.REQUEST_PREFIX}${postQuotesBody.quoteId}`
+        expect(testServer._wsapi._cache.get).toHaveBeenCalledTimes(1);
+        expect(testServer._wsapi._cache.get).toHaveBeenCalledWith(
+            `${testServer._wsapi._cache.REQUEST_PREFIX}${postQuotesBody.quoteId}`
         );
 
         const expectedMessage = {
@@ -371,9 +368,9 @@ describe('Test Server', () => {
 
         // Called twice for the quote request earlier in this test, another time now for the put
         // participants request
-        expect(inboundServer._cache.set).toHaveBeenCalledTimes(3);
-        expect(inboundServer._cache.set.mock.calls[2]).toEqual([
-            `${testServer._cache.CALLBACK_PREFIX}${participantId}`,
+        expect(inboundServer._api._cache.set).toHaveBeenCalledTimes(3);
+        expect(inboundServer._api._cache.set.mock.calls[2]).toEqual([
+            `${testServer._wsapi._cache.CALLBACK_PREFIX}${participantId}`,
             {
                 data: putParticipantsBody,
                 headers: expect.objectContaining(putParticipantsHeaders),
@@ -382,9 +379,9 @@ describe('Test Server', () => {
 
         // Called once for the quote request earlier in this test, another time now for the
         // participants callback
-        expect(testServer._cache.get).toHaveBeenCalledTimes(2);
-        expect(testServer._cache.get.mock.calls[1]).toEqual([
-            `${testServer._cache.CALLBACK_PREFIX}${participantId}`
+        expect(testServer._wsapi._cache.get).toHaveBeenCalledTimes(2);
+        expect(testServer._wsapi._cache.get.mock.calls[1]).toEqual([
+            `${testServer._wsapi._cache.CALLBACK_PREFIX}${participantId}`
         ]);
     });
 });

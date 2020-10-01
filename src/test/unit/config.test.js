@@ -67,7 +67,7 @@ describe('config', () => {
         fs.writeFileSync(cert, certContent);
         process.env.IN_SERVER_CERT_PATH = cert;
         const config = require('../../config');
-        const content = config.tls.inbound.creds.cert.toString();
+        const content = config.inbound.tls.creds.cert.toString();
         expect(content).toBe(certContent);
     });
 
@@ -83,7 +83,7 @@ describe('config', () => {
         certs.forEach((cert, index) => fs.writeFileSync(cert, certContent[index]));
         process.env.IN_CA_CERT_PATH = certs.join(',');
         const config = require('../../config');
-        const content = config.tls.inbound.creds.ca.map(ca => ca.toString());
+        const content = config.inbound.tls.creds.ca.map(ca => ca.toString());
         expect(content).toStrictEqual(certContent);
     });
 
@@ -93,4 +93,27 @@ describe('config', () => {
         const proxyConfig = require('./data/testFile');
         expect(config.proxyConfig).toEqual(proxyConfig);
     });
+
+    it('should transform correctly resources versions to config', () => {
+
+        const resourceVersions = {
+            resourceOneName: {
+                acceptVersion: '1',
+                contentVersion: '1.0',
+            },
+            resourceTwoName: {
+                acceptVersion: '1',
+                contentVersion: '1.1',
+            },
+
+        };
+        const parseResourceVersion = require('../../config').__parseResourceVersion;
+        expect(parseResourceVersion('resourceOneName=1.0,resourceTwoName=1.1')).toEqual(resourceVersions);
+    });
+
+    it('should throw an err if the resource string is not correctly formed', () => {
+        const parseResourceVersion = require('../../config').__parseResourceVersion;
+        expect(() => parseResourceVersion('resourceOneName=1.0;resourceTwoName=1.1')).toThrowError(new Error('Resource versions format should be in format: "resouceOneName=1.0,resourceTwoName=1.1"'));
+    });
+
 });

@@ -17,8 +17,6 @@ const fs = require('fs');
 const path = require('path');
 
 const { WSO2Auth } = require('@mojaloop/sdk-standard-components');
-const { Logger, Transports } = require('@internal/log');
-const Cache = require('@internal/cache');
 
 const Validate = require('@internal/validate');
 const router = require('@internal/router');
@@ -27,112 +25,96 @@ const middlewares = require('./middlewares');
 
 const endpointRegex = /\/.*/g;
 
-class OutboundServer {
-    constructor(conf) {
-        this._conf = conf;
-        this._api = null;
-        this._server = null;
-        this._logger = null;
-    }
-
-    async setupApi() {
+class OutboundApi {
+    constructor(conf, logger, cache, validator) {
+        this._logger = logger;
         this._api = new Koa();
-        this._logger = await this._createLogger();
-
-        this._cache = await this._createCache();
-
-        const specPath = path.join(__dirname, 'api.yaml');
-        const apiSpecs = yaml.load(fs.readFileSync(specPath));
-        const validator = new Validate();
-        await validator.initialise(apiSpecs);
+        this._conf = conf;
+        this._cache = cache;
 
         this._wso2Auth = new WSO2Auth({
             ...this._conf.wso2Auth,
             logger: this._logger,
-            tlsCreds: this._conf.tls.outbound.mutualTLS.enabled && this._conf.tls.outbound.creds,
+            tlsCreds: this._conf.outbound.tls.mutualTLS.enabled && this._conf.outbound.tls.creds,
         });
 
         this._api.use(middlewares.createErrorHandler());
-
-        // outbound always expects application/json
-        this._api.use(koaBody());
-
-        const sharedState = { cache: this._cache, wso2Auth: this._wso2Auth, conf: this._conf };
-        this._api.use(middlewares.createLogger(this._logger, sharedState));
+        this._api.use(middlewares.createRequestIdGenerator());
+        this._api.use(koaBody()); // outbound always expects application/json
+        this._api.use(middlewares.applyState({ cache, wso2Auth: this._wso2Auth, conf }));
+        this._api.use(middlewares.createLogger(this._logger));
 
         //Note that we strip off any path on peerEndpoint config after the origin.
         //this is to allow proxy routed requests to hit any path on the peer origin
         //irrespective of any base path on the PEER_ENDPOINT setting
-        if (this._conf.proxyConfig) {
+        if (conf.proxyConfig) {
             this._api.use(middlewares.createProxy({
-                ...this._conf,
-                peerEndpoint: this._conf.peerEndpoint.replace(endpointRegex, ''),
-                proxyConfig: this._conf.proxyConfig,
+                ...conf,
+                peerEndpoint: conf.peerEndpoint.replace(endpointRegex, ''),
+                proxyConfig: conf.proxyConfig,
                 logger: this._logger,
                 wso2Auth: this._wso2Auth,
+                tls: conf.outbound.tls,
             }));
         }
 
         this._api.use(middlewares.createRequestValidator(validator));
         this._api.use(router(handlers));
-
-        this._server = this._createServer();
-        return this._server;
     }
 
     async start() {
-        await this._cache.connect();
         if (!this._conf.testingDisableWSO2AuthStart) {
             await this._wso2Auth.start();
         }
-        if (!this._conf.testingDisableServerStart) {
-            await new Promise((resolve) => this._server.listen(this._conf.outboundPort, resolve));
-            this._logger.log(`Serving outbound API on port ${this._conf.outboundPort}`);
-        }
+        this._wso2Auth.start();
     }
 
     async stop() {
-        if (!this._server) {
-            return;
-        }
-        await new Promise(resolve => this._server.close(resolve));
         this._wso2Auth.stop();
-        await this._cache.disconnect();
-        console.log('outbound shut down complete');
     }
 
-    async _createCache() {
-        const transports = await Promise.all([Transports.consoleDir()]);
-        const logger = new Logger({
-            context: {
-                app: 'mojaloop-sdk-outboundCache'
-            },
-            space: this._conf.logIndent,
-            transports,
-        });
+    callback() {
+        return this._api.callback();
+    }
+}
 
-        const cacheConfig = {
-            ...this._conf.cacheConfig,
-            logger
-        };
-
-        return new Cache(cacheConfig);
+class OutboundServer {
+    constructor(conf, logger, cache) {
+        this._validator = new Validate();
+        this._conf = conf;
+        this._logger = logger;
+        this._server = null;
+        this._api = new OutboundApi(
+            conf,
+            this._logger.push({ component: 'api' }),
+            cache,
+            this._validator
+        );
+        this._server = http.createServer(this._api.callback());
     }
 
-    async _createLogger() {
-        const transports = await Promise.all([Transports.consoleDir()]);
-        // Set up a logger for each running server
-        return new Logger({
-            context: {
-                app: 'mojaloop-sdk-outbound-api'
-            },
-            space: this._conf.logIndent,
-            transports,
-        });
+    async start() {
+        await this._api.start();
+
+        const specPath = path.join(__dirname, 'api.yaml');
+        const apiSpecs = yaml.load(fs.readFileSync(specPath));
+        await this._validator.initialise(apiSpecs);
+
+        await new Promise((resolve) => this._server.listen(this._conf.outbound.port, resolve));
+
+        this._logger.log(`Serving outbound API on port ${this._conf.outbound.port}`);
     }
 
-    _createServer() {
-        return http.createServer(this._api.callback());
+    async stop() {
+        if (this._server) {
+            await new Promise(resolve => this._server.close(resolve));
+            this._server = null;
+        }
+        if (this._api) {
+            await this._api.stop();
+            this._api = null;
+        }
+        this._logger.log('Shut down complete');
     }
 }
 

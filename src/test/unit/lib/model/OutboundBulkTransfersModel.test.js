@@ -17,9 +17,8 @@ jest.mock('redis');
 const util = require('util');
 const Cache = require('@internal/cache');
 const Model = require('@internal/model').OutboundBulkTransfersModel;
-const { Logger, Transports } = require('@internal/log');
 
-const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
+const { MojaloopRequests, Logger } = require('@mojaloop/sdk-standard-components');
 const StateMachine = require('javascript-state-machine');
 
 const defaultConfig = require('./data/defaultConfig');
@@ -59,12 +58,13 @@ describe('outboundBulkTransferModel', () => {
             ...config,
             cache,
             logger,
+            tls: config.outbound.tls,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(bulkTransferRequest)));
 
         let expectError;
-        
+
         if (rejects.transferFulfils && delays.prepareTransfer && expirySeconds < delays.prepareTransfer) {
             expectError = 'Bulk transfer fulfils missed expiry deadline';
         }
@@ -77,8 +77,7 @@ describe('outboundBulkTransferModel', () => {
     }
 
     beforeAll(async () => {
-        const logTransports = await Promise.all([Transports.consoleDir()]);
-        logger = new Logger({ context: { app: 'outbound-model-unit-tests-cache' }, space: 4, transports: logTransports });
+        logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests-cache' } });
     });
 
     beforeEach(async () => {
@@ -102,6 +101,7 @@ describe('outboundBulkTransferModel', () => {
             cache,
             logger,
             ...config,
+            tls: config.outbound.tls,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(bulkTransferRequest)));
@@ -128,6 +128,7 @@ describe('outboundBulkTransferModel', () => {
             cache,
             logger,
             ...config,
+            tls: config.outbound.tls,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(bulkTransferRequest)));
@@ -156,6 +157,7 @@ describe('outboundBulkTransferModel', () => {
             cache,
             logger,
             ...config,
+            tls: config.outbound.tls,
         });
 
         const BULK_TRANSFER_ID = 'btx-id000011';
@@ -226,6 +228,7 @@ describe('outboundBulkTransferModel', () => {
             cache,
             logger,
             ...config,
+            tls: config.outbound.tls,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(bulkTransferRequest)));

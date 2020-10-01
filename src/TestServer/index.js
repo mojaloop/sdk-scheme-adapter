@@ -14,12 +14,8 @@ const ws = require('ws');
 const https = require('https');
 const http = require('http');
 const yaml = require('js-yaml');
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
-
-const { WSO2Auth } = require('@mojaloop/sdk-standard-components');
-const { Logger, Transports } = require('@internal/log');
-const Cache = require('@internal/cache');
 
 const Validate = require('@internal/validate');
 const router = require('@internal/router');
@@ -35,137 +31,39 @@ const getWsIp = (req) => [
     )
 ];
 
-class TestServer {
-    constructor(conf) {
-        this._conf = conf;
-        this._api = null;
-        this._server = null;
-        this._logger = null;
-    }
-
-    async setupApi() {
+class TestApi {
+    constructor(logger, validator, cache) {
         this._api = new Koa();
-        this._wsClients = new Map();
-        this._wsapi = this._createWsServer();
-
-        this._logger = await this._createLogger();
-
-        this._cache = await this._createCache();
-
-        const specPath = path.join(__dirname, 'api.yaml');
-        const apiSpecs = yaml.load(fs.readFileSync(specPath));
-        const validator = new Validate();
-        await validator.initialise(apiSpecs);
-
-        this._wso2Auth = new WSO2Auth({
-            ...this._conf.wso2Auth,
-            logger: this._logger,
-            tlsCreds: this._conf.tls.test.mutualTLS.enabled && this._conf.tls.test.creds,
-        });
 
         this._api.use(middlewares.createErrorHandler());
         this._api.use(middlewares.createRequestIdGenerator());
-        const sharedState = { cache: this._cache, wso2Auth: this._wso2Auth, conf: this._conf };
-        this._api.use(middlewares.createLogger(this._logger, sharedState));
+        this._api.use(middlewares.applyState({ cache }));
+        this._api.use(middlewares.createLogger(logger));
 
         this._api.use(middlewares.createRequestValidator(validator));
         this._api.use(router(handlers));
         this._api.use(middlewares.createResponseBodyHandler());
-
-        this._server = this._createServer();
-        return this._server;
     }
 
-    async start() {
-        await this._cache.connect();
-        this._cache.subscribe(this._cache.EVENT_SET, this._handleCacheKeySet.bind(this));
-        this._cache.setTestMode(true);
-        if (!this._conf.testingDisableWSO2AuthStart) {
-            await this._wso2Auth.start();
-        }
-        this._server.on('upgrade', (req, socket, head) => {
-            this._wsapi.handleUpgrade(req, socket, head, (ws) =>
-                this._wsapi.emit('connection', ws, req));
-        });
-        await new Promise((resolve) => this._server.listen(this._conf.testPort, resolve));
-        this._logger.log(`Serving test API on port ${this._conf.testPort}`);
+    callback() {
+        return this._api.callback();
     }
+}
 
-    async stop() {
-        if (!this._server) {
-            return;
-        }
-        await new Promise(resolve => this._wsapi.close(resolve));
-        // If we don't want for all clients to close before shutting down, the socket close
-        // handlers will be called after we return from this function, resulting in behaviour
-        // occurring after the server tells the user it has shutdown.
-        await Promise.all([...this._wsClients.keys()].map(socket =>
-            new Promise(resolve => socket.on('close', resolve))
-        ));
-        await new Promise(resolve => this._server.close(resolve));
-        this._wso2Auth.stop();
-        await this._cache.disconnect();
-        console.log('api shut down complete');
-    }
+class WsServer extends ws.Server {
+    constructor(logger, cache) {
+        super({ noServer: true });
+        this._wsClients = new Map();
+        this._logger = logger;
+        this._cache = cache;
 
-    async _createLogger() {
-        const transports = await Promise.all([Transports.consoleDir()]);
-        // Set up a logger for each running server
-        return new Logger({
-            context: {
-                app: 'mojaloop-sdk-test-api'
-            },
-            space: this._conf.logIndent,
-            transports,
-        });
-    }
-
-    async _createCache() {
-        const transports = await Promise.all([Transports.consoleDir()]);
-        const logger = new Logger({
-            context: {
-                app: 'mojaloop-sdk-inboundCache'
-            },
-            space: this._conf.logIndent,
-            transports,
-        });
-
-        const cacheConfig = {
-            ...this._conf.cacheConfig,
-            logger
-        };
-
-        return new Cache(cacheConfig);
-    }
-
-    _createServer() {
-        let server;
-        // If config specifies TLS, start an HTTPS server; otherwise HTTP
-        if (this._conf.tls.test.mutualTLS.enabled) {
-            const testHttpsOpts = {
-                ...this._conf.tls.test.creds,
-                requestCert: true,
-                rejectUnauthorized: true // no effect if requestCert is not true
-            };
-            server = https.createServer(testHttpsOpts, this._api.callback());
-        } else {
-            server = http.createServer(this._api.callback());
-        }
-
-        return server;
-    }
-
-    _createWsServer() {
-        const wss = new ws.Server({ noServer: true });
-
-        wss.on('error', err => {
-            // Curtains down
+        this.on('error', err => {
             this._logger.push({ err })
                 .log('Unhandled websocket error occurred. Shutting down.');
             process.exit(1);
         });
 
-        wss.on('connection', (socket, req) => {
+        this.on('connection', (socket, req) => {
             const logger = this._logger.push({
                 url: req.url,
                 ip: getWsIp(req),
@@ -178,8 +76,21 @@ class TestServer {
                 this._wsClients.delete(socket);
             });
         });
+    }
 
-        return wss;
+    async start() {
+        await this._cache.subscribe(this._cache.EVENT_SET, this._handleCacheKeySet.bind(this));
+    }
+
+    // Close the server then wait for all the client sockets to close
+    async stop() {
+        await new Promise(resolve => this.close(resolve));
+        // If we don't wait for all clients to close before shutting down, the socket close
+        // handlers will be called after we return from this function, resulting in behaviour
+        // occurring after the server tells the user it has shutdown.
+        await Promise.all([...this._wsClients.keys()].map(socket =>
+            new Promise(resolve => socket.on('close', resolve))
+        ));
     }
 
     // Send the received notification to subscribers where appropriate.
@@ -254,6 +165,70 @@ class TestServer {
             }
         }
     }
+}
+
+class TestServer {
+    constructor({ port, tls, logger, cache }) {
+        this._port = port;
+        this._logger = logger;
+        this._validator = new Validate();
+        this._api = new TestApi(this._logger.push({ component: 'api' }), this._validator, cache);
+        this._server = this._createHttpServer(
+            tls.mutualTLS.enabled,
+            tls.creds,
+            this._api.callback(),
+        );
+        // TODO: why does this appear to need to be called before this._createHttpServer (try
+        // reorder it then run the tests)
+        this._wsapi = new WsServer(this._logger.push({ component: 'websocket-server' }), cache);
+    }
+
+    async start() {
+        if (this._server.listening) {
+            return;
+        }
+        const fileData = await fs.readFile(path.join(__dirname, 'api.yaml'));
+        await this._validator.initialise(yaml.load(fileData));
+
+        await this._wsapi.start();
+
+        this._server.on('upgrade', (req, socket, head) => {
+            this._wsapi.handleUpgrade(req, socket, head, (ws) =>
+                this._wsapi.emit('connection', ws, req));
+        });
+
+        await new Promise((resolve) => this._server.listen(this._port, resolve));
+
+        this._logger.log(`Serving test API on port ${this._port}`);
+    }
+
+    async stop() {
+        if (this._wsapi) {
+            this._logger.log('Shutting down websocket server');
+            this._wsapi.stop();
+            this._wsapi = null;
+        }
+        if (this._server) {
+            this._logger.log('Shutting down http server');
+            await new Promise(resolve => this._server.close(resolve));
+            this._server = null;
+        }
+        this._logger.log('Test server shutdown complete');
+    }
+
+    _createHttpServer(tlsEnabled, tlsCreds, handler) {
+        if (!tlsEnabled) {
+            return http.createServer(handler);
+        }
+
+        const inboundHttpsOpts = {
+            ...tlsCreds,
+            requestCert: true,
+            rejectUnauthorized: true // no effect if requestCert is not true
+        };
+        return https.createServer(inboundHttpsOpts, handler);
+    }
+
 }
 
 module.exports = TestServer;

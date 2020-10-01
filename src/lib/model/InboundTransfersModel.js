@@ -42,11 +42,14 @@ class InboundTransfersModel {
             quotesEndpoint: config.quotesEndpoint,
             transfersEndpoint: config.transfersEndpoint,
             bulkTransfersEndpoint: config.bulkTransfersEndpoint,
+            transactionRequestsEndpoint: config.transactionRequestsEndpoint,
+            bulkQuotesEndpoint: config.bulkQuotesEndpoint,
             dfspId: config.dfspId,
-            tls: config.tls,
+            tls: config.inbound.tls,
             jwsSign: config.jwsSign,
             jwsSigningKey: config.jwsSigningKey,
-            wso2Auth: config.wso2Auth
+            wso2Auth: config.wso2Auth,
+            resourceVersions: config.resourceVersions
         });
 
         this._backendRequests = new BackendRequests({
@@ -410,7 +413,7 @@ class InboundTransfersModel {
                     (quoteResult) => quoteResult.quoteId === quote.quoteId
                 );
                 const quoteResponse = {
-                    amount: mojaloopIndividualQuote.transferAmount,
+                    transferAmount: mojaloopIndividualQuote.transferAmount,
                     note: mojaloopIndividualQuote.note || '',
                 };
                 const { fulfilment, ilpPacket, condition } = this._ilp.getQuoteResponseIlp(

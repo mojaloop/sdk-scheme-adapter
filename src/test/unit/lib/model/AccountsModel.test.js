@@ -15,11 +15,10 @@ jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('redis');
 
 const Cache = require('@internal/cache');
-const { Logger } = require('@internal/log');
 const { AccountsModel } = require('@internal/model');
 
 const StateMachine = require('javascript-state-machine');
-const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
+const { MojaloopRequests, Logger } = require('@mojaloop/sdk-standard-components');
 
 const defaultConfig = require('./data/defaultConfig');
 const transferRequest = require('./data/transferRequest');
@@ -65,6 +64,7 @@ describe('AccountsModel', () => {
 
         const model = new AccountsModel({
             ...defaultConfig,
+            tls: defaultConfig.outbound.tls,
             cache,
             logger,
         });
@@ -88,8 +88,7 @@ describe('AccountsModel', () => {
     }
 
     beforeAll(() => {
-        const logTransports = [() => {}];
-        logger = new Logger({ context: { app: 'outbound-model-unit-tests-cache' }, space: 4, transports: logTransports });
+        logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests-cache' } });
     });
 
     beforeEach(async () => {
@@ -108,6 +107,7 @@ describe('AccountsModel', () => {
     test('initializes to starting state', async () => {
         const model = new AccountsModel({
             ...defaultConfig,
+            tls: defaultConfig.outbound.tls,
             cache,
             logger,
         });
