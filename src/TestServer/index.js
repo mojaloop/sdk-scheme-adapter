@@ -172,9 +172,9 @@ class WsServer extends ws.Server {
 class TestServer {
     constructor({ port, tls, logger, cache }) {
         this._port = port;
-        this._logger = logger.push({ app: 'mojaloop-sdk-test-api' });
+        this._logger = logger;
         this._validator = new Validate();
-        this._api = new TestApi(this._logger, this._validator, cache);
+        this._api = new TestApi(this._logger.push({ component: 'api' }), this._validator, cache);
         this._server = this._createHttpServer(
             tls.mutualTLS.enabled,
             tls.creds,
