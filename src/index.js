@@ -46,7 +46,8 @@ class Server {
         });
         this.cache = new Cache({
             ...conf.cacheConfig,
-            logger: this.logger.push({ component: 'cache' })
+            logger: this.logger.push({ component: 'cache' }),
+            enableTestFeatures: conf.enableTestFeatures,
         });
     }
 
@@ -76,6 +77,8 @@ class Server {
             logger: this.logger.push({ app: 'mojaloop-sdk-test-api' }),
             cache: this.cache,
         });
+
+        await this.cache.connect();
 
         const startTestServer = this.conf.enableTestFeatures ? this.testServer.start() : null;
         const startOauthTestServer = this.conf.oauthTestServer.enabled

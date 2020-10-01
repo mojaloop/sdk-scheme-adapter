@@ -50,7 +50,7 @@ describe('Test Server', () => {
             ...JSON.parse(JSON.stringify(defaultConfig)),
             enableTestFeatures: true,
         };
-        cache = new Cache({ ...serverConfig.cacheConfig, logger: logger.push({ component: 'cache' }) });
+        cache = new Cache({ ...serverConfig.cacheConfig, logger: logger.push({ component: 'cache' }), enableTestFeatures: true });
 
         testServer = new TestServer({ tls: serverConfig.test.tls, logger, cache });
         await testServer.start();
@@ -149,11 +149,6 @@ describe('Test Server', () => {
             testServer._wsapi._cache.EVENT_SET,
             expect.any(Function),
         );
-    });
-
-    test('Configures cache correctly', async () => {
-        expect(testServer._wsapi._cache.setTestMode).toBeCalledTimes(1);
-        expect(testServer._wsapi._cache.setTestMode).toHaveBeenCalledWith(true);
     });
 
     test('WebSocket /callbacks and / endpoint triggers send to client when callback received to inbound server', async () => {

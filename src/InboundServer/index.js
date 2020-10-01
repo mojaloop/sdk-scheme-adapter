@@ -49,8 +49,6 @@ class InboundApi {
 
     async start() {
         this._startJwsWatcher();
-        await this._cache.connect();
-
         if (!this._conf.testingDisableWSO2AuthStart) {
             await this._wso2Auth.start();
         }
@@ -58,7 +56,6 @@ class InboundApi {
 
     async stop() {
         this._wso2Auth.stop();
-        await this._cache.disconnect();
         if (this._keyWatcher) {
             this._keyWatcher.close();
             this._keyWatcher = null;
