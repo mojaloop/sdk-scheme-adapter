@@ -63,7 +63,6 @@ class OutboundApi {
     }
 
     async start() {
-        await this._cache.connect();
         if (!this._conf.testingDisableWSO2AuthStart) {
             await this._wso2Auth.start();
         }
@@ -71,7 +70,6 @@ class OutboundApi {
     }
 
     async stop() {
-        await this._cache.disconnect();
         this._wso2Auth.stop();
     }
 

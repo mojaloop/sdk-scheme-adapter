@@ -79,9 +79,7 @@ class WsServer extends ws.Server {
     }
 
     async start() {
-        await this._cache.connect();
         await this._cache.subscribe(this._cache.EVENT_SET, this._handleCacheKeySet.bind(this));
-        await this._cache.setTestMode(true);
     }
 
     // Close the server then wait for all the client sockets to close
