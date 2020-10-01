@@ -45,6 +45,7 @@ const createTestServers = async (config) => {
         ...defConfig.cacheConfig,
         logger: logger.push({ component: 'cache' })
     });
+    await cache.connect();
     defConfig.requestProcessingTimeoutSeconds = 2;
     const serverOutbound = new OutboundServer(defConfig, logger, cache);
     await serverOutbound.start();
