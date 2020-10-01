@@ -22,12 +22,11 @@ class OAuthTestServer {
      * @param {number} conf.port OAuth server listen port
      * @param {string} conf.clientKey Customer Key
      * @param {String} conf.clientSecret Customer Secret
-     * @param {String} conf.logIndent
      */
-    constructor(conf, logger) {
+    constructor(conf) {
         this._conf = conf;
         this._api = null;
-        this._logger = logger.push({ app: 'mojaloop-sdk-oauth-test-server' });
+        this._logger = conf.logger;
         this._setupApi();
     }
 

@@ -142,8 +142,13 @@ class InboundServer {
     constructor(conf, logger, cache) {
         this._conf = conf;
         this._validator = new Validate();
-        this._logger = logger.push({ app: 'mojaloop-sdk-inbound-api' });
-        this._api = new InboundApi(conf, this._logger, cache, this._validator);
+        this._logger = logger;
+        this._api = new InboundApi(
+            conf,
+            this._logger.push({ component: 'api' }),
+            cache,
+            this._validator
+        );
         this._server = this._createServer(
             conf.inbound.tls.mutualTLS.enabled,
             conf.inbound.tls.creds,

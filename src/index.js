@@ -51,19 +51,29 @@ class Server {
     }
 
     async start() {
-        this.inboundServer = new InboundServer(this.conf, this.logger, this.cache);
-        this.outboundServer = new OutboundServer(this.conf, this.logger, this.cache);
+        this.inboundServer = new InboundServer(
+            this.conf,
+            this.logger.push({ app: 'mojaloop-sdk-inbound-api' }),
+            this.cache
+        );
+
+        this.outboundServer = new OutboundServer(
+            this.conf,
+            this.logger.push({ app: 'mojaloop-sdk-outbound-api' }),
+            this.cache
+        );
+
         this.oauthTestServer = new OAuthTestServer({
             clientKey: this.conf.oauthTestServer.clientKey,
             clientSecret: this.conf.oauthTestServer.clientSecret,
             port: this.conf.oauthTestServer.listenPort,
-            logIndent: this.conf.logIndent,
-        }, this.logger);
+            logger: this.logger.push({ app: 'mojaloop-sdk-oauth-test-server' }),
+        });
 
         this.testServer = new TestServer({
             port: this.conf.test.port,
             tls: this.conf.test.tls,
-            logger: this.logger,
+            logger: this.logger.push({ app: 'mojaloop-sdk-test-api' }),
             cache: this.cache,
         });
 
