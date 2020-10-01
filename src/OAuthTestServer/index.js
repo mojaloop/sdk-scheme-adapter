@@ -23,7 +23,7 @@ class OAuthTestServer {
      * @param {string} conf.clientKey Customer Key
      * @param {String} conf.clientSecret Customer Secret
      */
-    constructor(conf, logger) {
+    constructor(conf) {
         this._conf = conf;
         this._api = null;
         this._logger = conf.logger;
