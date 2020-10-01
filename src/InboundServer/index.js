@@ -18,7 +18,6 @@ const fs = require('fs');
 const path = require('path');
 
 const { WSO2Auth } = require('@mojaloop/sdk-standard-components');
-const check = require('@internal/check');
 
 const Validate = require('@internal/validate');
 const router = require('@internal/router');
