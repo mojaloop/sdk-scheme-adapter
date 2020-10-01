@@ -111,6 +111,10 @@ class InboundApi {
         api.use(middlewares.applyState({ cache, wso2Auth, conf }));
         api.use(middlewares.createLogger(logger));
         api.use(middlewares.createRequestValidator(validator));
+        api.use(middlewares.assignFspiopIdentifier());
+        if (conf.enableTestFeatures) {
+            api.use(middlewares.cacheRequest(cache));
+        }
         api.use(router(handlers));
         api.use(middlewares.createResponseBodyHandler());
 
