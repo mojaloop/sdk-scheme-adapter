@@ -81,6 +81,10 @@ class Cache {
         // hook up our sub message handler
         this._subscriptionClient.on('message', this._onMessage.bind(this));
 
+        if (this._config.enableTestFeatures) {
+            this.setTestMode(true);
+        }
+
         this._inProgressConnection = null;
         this._connectionState = CONN_ST.CONNECTED;
     }
