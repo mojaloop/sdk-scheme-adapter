@@ -32,12 +32,12 @@ const getWsIp = (req) => [
 ];
 
 class TestApi {
-    constructor(conf, logger, validator, cache) {
+    constructor(logger, validator, cache) {
         this._api = new Koa();
 
         this._api.use(middlewares.createErrorHandler());
         this._api.use(middlewares.createRequestIdGenerator());
-        this._api.use(middlewares.applyState({ cache, conf }));
+        this._api.use(middlewares.applyState({ cache }));
         this._api.use(middlewares.createLogger(logger));
 
         this._api.use(middlewares.createRequestValidator(validator));
@@ -170,14 +170,14 @@ class WsServer extends ws.Server {
 }
 
 class TestServer {
-    constructor(conf, logger, cache) {
-        this._conf = conf;
+    constructor({ port, tls, logger, cache }) {
+        this._port = port;
         this._logger = logger.push({ app: 'mojaloop-sdk-test-api' });
         this._validator = new Validate();
-        this._api = new TestApi(conf, this._logger, this._validator, cache);
+        this._api = new TestApi(this._logger, this._validator, cache);
         this._server = this._createHttpServer(
-            conf.tls.test.mutualTLS.enabled,
-            conf.tls.test.creds,
+            tls.mutualTLS.enabled,
+            tls.creds,
             this._api.callback(),
         );
         // TODO: why does this appear to need to be called before this._createHttpServer (try
@@ -199,9 +199,9 @@ class TestServer {
                 this._wsapi.emit('connection', ws, req));
         });
 
-        await new Promise((resolve) => this._server.listen(this._conf.testPort, resolve));
+        await new Promise((resolve) => this._server.listen(this._port, resolve));
 
-        this._logger.log(`Serving test API on port ${this._conf.testPort}`);
+        this._logger.log(`Serving test API on port ${this._port}`);
     }
 
     async stop() {

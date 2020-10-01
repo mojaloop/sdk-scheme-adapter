@@ -59,7 +59,13 @@ class Server {
             port: this.conf.oauthTestServer.listenPort,
             logIndent: this.conf.logIndent,
         }, this.logger);
-        this.testServer = new TestServer(this.conf, this.logger, this.cache);
+
+        this.testServer = new TestServer({
+            port: this.conf.testPort,
+            tls: this.conf.tls.test,
+            logger: this.logger,
+            cache: this.cache,
+        });
 
         const startTestServer = this.conf.enableTestFeatures ? this.testServer.start() : null;
         const startOauthTestServer = this.conf.oauthTestServer.enabled
