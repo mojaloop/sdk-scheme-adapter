@@ -27,7 +27,7 @@ const endpointRegex = /\/.*/g;
 
 class OutboundApi {
     constructor(conf, logger, cache, validator) {
-        this._logger = logger.push({ component: 'api' });
+        this._logger = logger;
         this._api = new Koa();
         this._conf = conf;
         this._cache = cache;
@@ -84,9 +84,14 @@ class OutboundServer {
     constructor(conf, logger, cache) {
         this._validator = new Validate();
         this._conf = conf;
-        this._logger = logger.push({ app: 'mojaloop-sdk-outbound-api' });
+        this._logger = logger;
         this._server = null;
-        this._api = new OutboundApi(conf, this._logger, cache, this._validator);
+        this._api = new OutboundApi(
+            conf,
+            this._logger.push({ component: 'api' }),
+            cache,
+            this._validator
+        );
         this._server = http.createServer(this._api.callback());
     }
 
