@@ -58,12 +58,13 @@ describe('outboundBulkTransferModel', () => {
             ...config,
             cache,
             logger,
+            tls: config.outbound.tls,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(bulkTransferRequest)));
 
         let expectError;
-        
+
         if (rejects.transferFulfils && delays.prepareTransfer && expirySeconds < delays.prepareTransfer) {
             expectError = 'Bulk transfer fulfils missed expiry deadline';
         }
@@ -100,6 +101,7 @@ describe('outboundBulkTransferModel', () => {
             cache,
             logger,
             ...config,
+            tls: config.outbound.tls,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(bulkTransferRequest)));
@@ -126,6 +128,7 @@ describe('outboundBulkTransferModel', () => {
             cache,
             logger,
             ...config,
+            tls: config.outbound.tls,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(bulkTransferRequest)));
@@ -154,6 +157,7 @@ describe('outboundBulkTransferModel', () => {
             cache,
             logger,
             ...config,
+            tls: config.outbound.tls,
         });
 
         const BULK_TRANSFER_ID = 'btx-id000011';
@@ -224,6 +228,7 @@ describe('outboundBulkTransferModel', () => {
             cache,
             logger,
             ...config,
+            tls: config.outbound.tls,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(bulkTransferRequest)));

@@ -35,7 +35,7 @@ class OutboundApi {
         this._wso2Auth = new WSO2Auth({
             ...this._conf.wso2Auth,
             logger: this._logger,
-            tlsCreds: this._conf.tls.outbound.mutualTLS.enabled && this._conf.tls.outbound.creds,
+            tlsCreds: this._conf.outbound.tls.mutualTLS.enabled && this._conf.outbound.tls.creds,
         });
 
         this._api.use(middlewares.createErrorHandler());
@@ -54,6 +54,7 @@ class OutboundApi {
                 proxyConfig: conf.proxyConfig,
                 logger: this._logger,
                 wso2Auth: this._wso2Auth,
+                tls: conf.outbound.tls,
             }));
         }
 
@@ -96,9 +97,9 @@ class OutboundServer {
         const apiSpecs = yaml.load(fs.readFileSync(specPath));
         await this._validator.initialise(apiSpecs);
 
-        await new Promise((resolve) => this._server.listen(this._conf.outboundPort, resolve));
+        await new Promise((resolve) => this._server.listen(this._conf.outbound.port, resolve));
 
-        this._logger.log(`Serving outbound API on port ${this._conf.outboundPort}`);
+        this._logger.log(`Serving outbound API on port ${this._conf.outbound.port}`);
     }
 
     async stop() {
