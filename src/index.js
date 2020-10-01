@@ -61,8 +61,8 @@ class Server {
         }, this.logger);
 
         this.testServer = new TestServer({
-            port: this.conf.testPort,
-            tls: this.conf.tls.test,
+            port: this.conf.test.port,
+            tls: this.conf.test.tls,
             logger: this.logger,
             cache: this.cache,
         });

@@ -32,7 +32,7 @@ class OutboundRequestToPayModel {
         this._dfspId = config.dfspId;
         this._expirySeconds = config.expirySeconds;
         this._autoAcceptParty = config.autoAcceptParty;
-        
+
         this._requests = new MojaloopRequests({
             logger: this._logger,
             peerEndpoint: config.peerEndpoint,

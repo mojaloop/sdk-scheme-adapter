@@ -32,7 +32,7 @@ class InboundApi {
         this._wso2Auth = new WSO2Auth({
             ...conf.wso2Auth,
             logger,
-            tlsCreds: conf.tls.outbound.mutualTLS.enabled && conf.tls.outbound.creds,
+            tlsCreds: conf.outbound.tls.mutualTLS.enabled && conf.outbound.tls.creds,
         });
         if (conf.validateInboundJws) {
             this._jwsVerificationKeys = InboundApi._GetJwsKeys(conf.jwsVerificationKeysDirectory);
@@ -145,8 +145,8 @@ class InboundServer {
         this._logger = logger.push({ app: 'mojaloop-sdk-inbound-api' });
         this._api = new InboundApi(conf, this._logger, cache, this._validator);
         this._server = this._createServer(
-            conf.tls.inbound.mutualTLS.enabled,
-            conf.tls.inbound.creds,
+            conf.inbound.tls.mutualTLS.enabled,
+            conf.inbound.tls.creds,
             this._api.callback()
         );
     }
@@ -157,8 +157,8 @@ class InboundServer {
         const apiSpecs = yaml.load(fs.readFileSync(specPath));
         await this._validator.initialise(apiSpecs);
         await this._api.start();
-        await new Promise((resolve) => this._server.listen(this._conf.inboundPort, resolve));
-        this._logger.log(`Serving inbound API on port ${this._conf.inboundPort}`);
+        await new Promise((resolve) => this._server.listen(this._conf.inbound.port, resolve));
+        this._logger.log(`Serving inbound API on port ${this._conf.inbound.port}`);
     }
 
     async stop() {
@@ -178,7 +178,7 @@ class InboundServer {
             return;
         }
         assert(
-            this._conf.tls.inbound.mutualTLS.enabled === conf.tls.inbound.mutualTLS.enabled,
+            this._conf.inbound.tls.mutualTLS.enabled === conf.inbound.tls.mutualTLS.enabled,
             'Cannot live restart an HTTPS server as HTTP or vice versa',
         );
         const api = new InboundApi(conf, this._logger, this._validator);

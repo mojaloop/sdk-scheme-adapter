@@ -58,11 +58,9 @@ const env = from(process.env, {
 
 module.exports = {
     __parseResourceVersion: parseResourceVersions,
-    inboundPort: env.get('INBOUND_LISTEN_PORT').default('4000').asPortNumber(),
-    outboundPort: env.get('OUTBOUND_LISTEN_PORT').default('4001').asPortNumber(),
-    testPort: env.get('TEST_LISTEN_PORT').default('4002').asPortNumber(),
-    tls: {
-        inbound: {
+    inbound: {
+        port: env.get('INBOUND_LISTEN_PORT').default('4000').asPortNumber(),
+        tls: {
             mutualTLS: {
                 enabled: env.get('INBOUND_MUTUAL_TLS_ENABLED').default('false').asBool(),
             },
@@ -72,7 +70,10 @@ module.exports = {
                 key: env.get('IN_SERVER_KEY_PATH').asFileContent(),
             },
         },
-        outbound: {
+    },
+    outbound: {
+        port: env.get('OUTBOUND_LISTEN_PORT').default('4001').asPortNumber(),
+        tls: {
             mutualTLS: {
                 enabled: env.get('OUTBOUND_MUTUAL_TLS_ENABLED').default('false').asBool(),
             },
@@ -82,7 +83,10 @@ module.exports = {
                 key: env.get('OUT_CLIENT_KEY_PATH').asFileContent(),
             },
         },
-        test: {
+    },
+    test: {
+        port: env.get('TEST_LISTEN_PORT').default('4002').asPortNumber(),
+        tls: {
             mutualTLS: {
                 enabled: env.get('TEST_MUTUAL_TLS_ENABLED').default('false').asBool(),
             },

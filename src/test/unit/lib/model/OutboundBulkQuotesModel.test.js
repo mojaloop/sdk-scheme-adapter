@@ -61,6 +61,7 @@ describe('OutboundBulkQuotesModel', () => {
             ...config,
             cache,
             logger,
+            tls: config.outbound.tls,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(bulkQuoteRequest)));
@@ -108,6 +109,7 @@ describe('OutboundBulkQuotesModel', () => {
             cache,
             logger,
             ...config,
+            tls: config.outbound.tls,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(bulkQuoteRequest)));
@@ -119,11 +121,12 @@ describe('OutboundBulkQuotesModel', () => {
             emitBulkQuoteResponseCacheMessage(cache, bulkQuoteId, bulkQuoteResponse);
             return Promise.resolve();
         });
-        
+
         const model = new Model({
             cache,
             logger,
             ...config,
+            tls: config.outbound.tls,
         });
 
         const BULK_QUOTE_ID = 'bq-id000011';
@@ -166,6 +169,7 @@ describe('OutboundBulkQuotesModel', () => {
             cache,
             logger,
             ...config,
+            tls: config.outbound.tls,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(bulkQuoteRequest)));
@@ -229,6 +233,7 @@ describe('OutboundBulkQuotesModel', () => {
             cache,
             logger,
             ...config,
+            tls: config.outbound.tls,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(bulkQuoteRequest)));

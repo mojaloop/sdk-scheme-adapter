@@ -52,7 +52,7 @@ describe('Test Server', () => {
         };
         cache = new Cache({ ...serverConfig.cacheConfig, logger: logger.push({ component: 'cache' }) });
 
-        testServer = new TestServer({ tls: serverConfig.tls.test, logger, cache });
+        testServer = new TestServer({ tls: serverConfig.test.tls, logger, cache });
         await testServer.start();
         testServerPort = testServer._server.address().port;
 
