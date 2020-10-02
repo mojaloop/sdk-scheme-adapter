@@ -807,6 +807,7 @@ class OutboundTransfersModel {
 
                 // avoid circular ref between transferState.lastError and err
                 err.transferState = JSON.parse(JSON.stringify(this.getResponse()));
+                await this._save();
             }
             throw err;
         }
