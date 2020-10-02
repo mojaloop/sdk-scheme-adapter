@@ -11,7 +11,6 @@
 const Koa = require('koa');
 const ws = require('ws');
 
-const https = require('https');
 const http = require('http');
 const yaml = require('js-yaml');
 const fs = require('fs').promises;
@@ -168,18 +167,14 @@ class WsServer extends ws.Server {
 }
 
 class TestServer {
-    constructor({ port, tls, logger, cache }) {
+    constructor({ port, logger, cache }) {
         this._port = port;
         this._logger = logger;
         this._validator = new Validate();
         this._api = new TestApi(this._logger.push({ component: 'api' }), this._validator, cache);
-        this._server = this._createHttpServer(
-            tls.mutualTLS.enabled,
-            tls.creds,
-            this._api.callback(),
-        );
-        // TODO: why does this appear to need to be called before this._createHttpServer (try
-        // reorder it then run the tests)
+        this._server = http.createServer(this._api.callback());
+        // TODO: why does this appear to need to be called after creating this._server (try reorder
+        // it then run the tests)
         this._wsapi = new WsServer(this._logger.push({ component: 'websocket-server' }), cache);
     }
 
@@ -215,20 +210,6 @@ class TestServer {
         }
         this._logger.log('Test server shutdown complete');
     }
-
-    _createHttpServer(tlsEnabled, tlsCreds, handler) {
-        if (!tlsEnabled) {
-            return http.createServer(handler);
-        }
-
-        const inboundHttpsOpts = {
-            ...tlsCreds,
-            requestCert: true,
-            rejectUnauthorized: true // no effect if requestCert is not true
-        };
-        return https.createServer(inboundHttpsOpts, handler);
-    }
-
 }
 
 module.exports = TestServer;
