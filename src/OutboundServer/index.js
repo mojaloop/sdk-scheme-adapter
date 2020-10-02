@@ -66,7 +66,6 @@ class OutboundApi {
         if (!this._conf.testingDisableWSO2AuthStart) {
             await this._wso2Auth.start();
         }
-        this._wso2Auth.start();
     }
 
     async stop() {
