@@ -784,6 +784,7 @@ class OutboundTransfersModel {
 
                 case 'errored':
                     // stopped in errored state
+                    await this._save();
                     this._logger.log('State machine in errored state');
                     return;
             }
