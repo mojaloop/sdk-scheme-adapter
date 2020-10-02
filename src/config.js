@@ -86,16 +86,6 @@ module.exports = {
     },
     test: {
         port: env.get('TEST_LISTEN_PORT').default('4002').asPortNumber(),
-        tls: {
-            mutualTLS: {
-                enabled: env.get('TEST_MUTUAL_TLS_ENABLED').default('false').asBool(),
-            },
-            creds: {
-                ca: env.get('TEST_CA_CERT_PATH').asFileListContent(),
-                cert: env.get('TEST_CLIENT_CERT_PATH').asFileContent(),
-                key: env.get('TEST_CLIENT_KEY_PATH').asFileContent(),
-            },
-        },
     },
     peerEndpoint: env.get('PEER_ENDPOINT').required().asString(),
     alsEndpoint: env.get('ALS_ENDPOINT').asString(),
