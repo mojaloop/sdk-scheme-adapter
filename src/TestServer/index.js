@@ -11,7 +11,6 @@
 const Koa = require('koa');
 const ws = require('ws');
 
-const https = require('https');
 const http = require('http');
 const yaml = require('js-yaml');
 const fs = require('fs').promises;
@@ -173,9 +172,9 @@ class TestServer {
         this._logger = logger;
         this._validator = new Validate();
         this._api = new TestApi(this._logger.push({ component: 'api' }), this._validator, cache);
-        this._server = http.createServer(this._api.callback())
-        // TODO: why does this appear to need to be called after this._createHttpServer (try
-        // reorder it then run the tests)
+        this._server = http.createServer(this._api.callback());
+        // TODO: why does this appear to need to be called after creating this._server (try reorder
+        // it then run the tests)
         this._wsapi = new WsServer(this._logger.push({ component: 'websocket-server' }), cache);
     }
 
