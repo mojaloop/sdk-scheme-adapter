@@ -171,7 +171,7 @@ class InboundServer {
             await this._api.stop();
             this._api = null;
         }
-        console.log('inbound shut down complete');
+        this._logger.log('inbound shut down complete');
     }
 
     _createServer(tlsEnabled, tlsCreds, handler) {

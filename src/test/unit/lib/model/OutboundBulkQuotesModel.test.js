@@ -14,7 +14,6 @@
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('redis');
 
-const util = require('util');
 const Cache = require('@internal/cache');
 const Model = require('@internal/model').OutboundBulkQuotesModel;
 
@@ -81,7 +80,7 @@ describe('OutboundBulkQuotesModel', () => {
     }
 
     beforeAll(async () => {
-        logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests-cache' } });
+        logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests-cache' }, stringify: () => '' });
         bulkQuoteResponse = JSON.parse(JSON.stringify(bulkQuoteResponseTemplate));
     });
 
@@ -141,8 +140,6 @@ describe('OutboundBulkQuotesModel', () => {
         // start the model running
         const result = await model.run();
 
-        console.log(`Result after get bulk quote: ${util.inspect(result)}`);
-
         expect(MojaloopRequests.__getBulkQuotes).toHaveBeenCalledTimes(1);
 
         // check we stopped at succeeded state
@@ -178,8 +175,6 @@ describe('OutboundBulkQuotesModel', () => {
 
         // start the model running
         const result = await model.run();
-
-        console.log(`Result after bulk quote: ${util.inspect(result)}`);
 
         expect(MojaloopRequests.__postBulkQuotes).toHaveBeenCalledTimes(1);
 

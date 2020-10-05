@@ -40,7 +40,7 @@ class OAuthTestServer {
             return;
         }
         await new Promise(resolve => this._api.close(resolve));
-        console.log('OAuth2 Test Server shut down complete');
+        this._logger.log('OAuth2 Test Server shut down complete');
     }
 
     async _setupApi() {
