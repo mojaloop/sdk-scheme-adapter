@@ -42,7 +42,8 @@ class Server {
                 // If we're running from a Mojaloop helm chart deployment, we'll have a SIM_NAME
                 simulator: process.env['SIM_NAME'],
                 hostname: hostname(),
-            }
+            },
+            stringify: Logger.buildStringify({ space: conf.logIndent }),
         });
         this.cache = new Cache({
             ...conf.cacheConfig,
@@ -73,7 +74,6 @@ class Server {
 
         this.testServer = new TestServer({
             port: this.conf.test.port,
-            tls: this.conf.test.tls,
             logger: this.logger.push({ app: 'mojaloop-sdk-test-api' }),
             cache: this.cache,
         });
@@ -128,11 +128,11 @@ if(require.main === module) {
 // export things we want to expose e.g. for unit tests and users who dont want to use the entire
 // scheme adapter as a service
 module.exports = {
-    Server: Server,
-    InboundServerMiddleware: InboundServerMiddleware,
-    OutboundServerMiddleware: OutboundServerMiddleware,
-    Router: Router,
-    Validate: Validate,
-    RandomPhrase: RandomPhrase,
-    Cache: Cache
+    Cache,
+    InboundServerMiddleware,
+    OutboundServerMiddleware,
+    RandomPhrase,
+    Router,
+    Server,
+    Validate,
 };

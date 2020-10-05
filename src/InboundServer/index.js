@@ -53,7 +53,7 @@ class InboundApi {
         }
     }
 
-    async stop() {
+    stop() {
         this._wso2Auth.stop();
         if (this._keyWatcher) {
             this._keyWatcher.close();
