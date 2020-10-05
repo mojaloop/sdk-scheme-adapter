@@ -16,7 +16,7 @@ const Cache = require('@internal/cache');
 const { Logger } = require('@mojaloop/sdk-standard-components');
 
 const createCache = async() => {
-    const logger = new Logger.Logger({ context: { app: 'model-unit-tests-cache' } });
+    const logger = new Logger.Logger({ context: { app: 'model-unit-tests-cache' }, stringify: () => '' });
     const cache = new Cache({
         host: 'dummyhost',
         port: 1234,
@@ -58,9 +58,8 @@ describe('Cache', () => {
         // create a promise that only gets resoled if the subscription gets the
         // correct message
         const cb1Promise = new Promise((resolve) => {
-            const mockCb1 = jest.fn((cn, msg, subId) => {
+            const mockCb1 = jest.fn((cn, msg) => {
                 expect(cn).toBe(chan1);
-                console.log(`callback on subId: ${subId}`);
 
                 const value = JSON.parse(msg);
                 // check we got the expected message
@@ -83,9 +82,8 @@ describe('Cache', () => {
         // create a second promise that only gets resoled if the second subscription gets the
         // correct message
         const cb2Promise = new Promise((resolve) => {
-            const mockCb2 = jest.fn((cn, msg, subId) => {
+            const mockCb2 = jest.fn((cn, msg) => {
                 expect(cn).toBe(chan2);
-                console.log(`callback on subId: ${subId}`);
 
                 // check we got the expected message
                 const value = JSON.parse(msg);

@@ -58,7 +58,8 @@ class OutboundTransfersModel {
         });
 
         this._ilp = new Ilp({
-            secret: config.ilpSecret
+            secret: config.ilpSecret,
+            logger: this._logger,
         });
     }
 

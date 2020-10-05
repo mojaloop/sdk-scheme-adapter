@@ -42,7 +42,7 @@ describe('Inbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' } }),
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
                 }
             };
 
@@ -76,7 +76,7 @@ describe('Inbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' } }),
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
                 }
             };
 
@@ -114,7 +114,7 @@ describe('Inbound API handlers:', () => {
                             'ID': '1234567890'
                         }
                     },
-                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' } }),
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
                     cache: {
                         publish: async () => Promise.resolve(true)
                     } 
@@ -162,7 +162,7 @@ describe('Inbound API handlers:', () => {
                             'ID': '1234567890'
                         }
                     },
-                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' } }),
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
                     cache: {
                         publish: async () => Promise.resolve(true)
                     } 
@@ -203,7 +203,7 @@ describe('Inbound API handlers:', () => {
                             'ID': '1234567890'
                         }
                     },
-                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' } }),
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
                 }
             };
         });
@@ -233,7 +233,7 @@ describe('Inbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' } }),
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
                 }
             };
 
@@ -271,7 +271,7 @@ describe('Inbound API handlers:', () => {
                             'ID': '1234567890'
                         }
                     },
-                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' } }),
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
                     cache: {
                         publish: async () => Promise.resolve(true)
                     } 
@@ -319,7 +319,7 @@ describe('Inbound API handlers:', () => {
                             'ID': '1234567890'
                         }
                     },
-                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' } }),
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
                     cache: {
                         publish: async () => Promise.resolve(true)
                     } 
@@ -360,7 +360,7 @@ describe('Inbound API handlers:', () => {
                             'ID': '1234567890'
                         }
                     },
-                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' } }),
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
                 }
             };
         });
@@ -390,7 +390,7 @@ describe('Inbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' } }),
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
                 }
             };
         });
@@ -426,7 +426,7 @@ describe('Inbound API handlers:', () => {
                             'ID': '1234'
                         }
                     },
-                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' } }),
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
                 }
             };
         });
@@ -463,7 +463,7 @@ describe('Inbound API handlers:', () => {
                             'ID': '1234'
                         }
                     },
-                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' } }),
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
                 }
             };
         });

@@ -44,7 +44,7 @@ describe('Test Server', () => {
     beforeEach(async () => {
         Cache.mockClear();
 
-        logger = new Logger.Logger();
+        logger = new Logger.Logger({ stringify: () => '' });
 
         serverConfig = {
             ...JSON.parse(JSON.stringify(defaultConfig)),

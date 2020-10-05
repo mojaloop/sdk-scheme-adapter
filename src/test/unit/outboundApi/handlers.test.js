@@ -140,12 +140,12 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: console
+                    logger: { log: () => {} },
                 }
             };
 
             await handlers['/transfers'].post(mockContext);
-            
+
             // check response is correct
             expect(mockContext.response.status).toEqual(500);
             expect(mockContext.response.body).toBeTruthy();
@@ -168,7 +168,7 @@ describe('Outbound API handlers:', () => {
                     conf: {
                         outboundErrorStatusCodeExtensionKey: 'extErrorKey'  // <- tell the handler to use this extensionList item as source of statusCode
                     },
-                    logger: console
+                    logger: { log: () => {} },
                 }
             };
 
@@ -200,7 +200,7 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: console,
+                    logger: { log: () => {} },
                     path: {
                         params: {
                             transferId: '12345'
@@ -232,12 +232,12 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: console
+                    logger: { log: () => {} },
                 }
             };
 
             await handlers['/bulkTransfers'].post(mockContext);
-            
+
             // check response is correct
             expect(mockContext.response.status).toEqual(500);
             expect(mockContext.response.body).toBeTruthy();
@@ -260,7 +260,7 @@ describe('Outbound API handlers:', () => {
                     conf: {
                         outboundErrorStatusCodeExtensionKey: 'extErrorKey'  // <- tell the handler to use this extensionList item as source of statusCode
                     },
-                    logger: console
+                    logger: { log: () => {} },
                 }
             };
 
@@ -290,12 +290,12 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: console
+                    logger: { log: () => {} },
                 }
             };
 
             await handlers['/bulkQuotes'].post(mockContext);
-            
+
             // check response is correct
             expect(mockContext.response.status).toEqual(500);
             expect(mockContext.response.body).toBeTruthy();
@@ -318,7 +318,7 @@ describe('Outbound API handlers:', () => {
                     conf: {
                         outboundErrorStatusCodeExtensionKey: 'extErrorKey'  // <- tell the handler to use this extensionList item as source of statusCode
                     },
-                    logger: console
+                    logger: { log: () => {} },
                 }
             };
 
@@ -348,7 +348,7 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: console
+                    logger: { log: () => {} },
                 }
             };
 
@@ -375,7 +375,7 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: console
+                    logger: { log: () => {} }
                 }
             };
 
@@ -389,5 +389,5 @@ describe('Outbound API handlers:', () => {
             expect(mockContext.response.body.requestToPayState).toEqual(mockRequestToPayError.requestToPayState);
         });
     });
-    
+
 });

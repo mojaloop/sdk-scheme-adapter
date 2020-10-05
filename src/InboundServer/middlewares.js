@@ -18,6 +18,7 @@ const { Jws, Errors } = require('@mojaloop/sdk-standard-components');
  * Log raw to console as a last resort
  * @return {Function}
  */
+// TODO: perhaps this should be in the Koa error handler
 const createErrorHandler = () => async (ctx, next) => {
     try {
         await next();
