@@ -96,7 +96,7 @@ class InboundApi {
     static _SetupApi({ conf, logger, validator, cache, jwsVerificationKeys, wso2Auth }) {
         const api = new Koa();
 
-        api.use(middlewares.createErrorHandler());
+        api.use(middlewares.createErrorHandler(logger));
         api.use(middlewares.createRequestIdGenerator());
         api.use(middlewares.createHeaderValidator(logger));
         if (conf.validateInboundJws) {

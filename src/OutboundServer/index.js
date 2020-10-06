@@ -38,7 +38,7 @@ class OutboundApi {
             tlsCreds: this._conf.outbound.tls.mutualTLS.enabled && this._conf.outbound.tls.creds,
         });
 
-        this._api.use(middlewares.createErrorHandler());
+        this._api.use(middlewares.createErrorHandler(this._logger));
         this._api.use(middlewares.createRequestIdGenerator());
         this._api.use(koaBody()); // outbound always expects application/json
         this._api.use(middlewares.applyState({ cache, wso2Auth: this._wso2Auth, conf }));
