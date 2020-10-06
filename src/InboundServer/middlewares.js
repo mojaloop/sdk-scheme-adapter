@@ -8,7 +8,6 @@
  *       James Bush - james.bush@modusbox.com                             *
  **************************************************************************/
 
-const util = require('util');
 const coBody = require('co-body');
 
 const randomPhrase = require('@internal/randomphrase');
