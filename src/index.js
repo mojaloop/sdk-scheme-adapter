@@ -31,20 +31,13 @@ const { Logger } = require('@mojaloop/sdk-standard-components');
  * Class that creates and manages http servers that expose the scheme adapter APIs.
  */
 class Server {
-    constructor(conf) {
+    constructor(conf, logger) {
         this.conf = conf;
         this.inboundServer = null;
         this.outboundServer = null;
         this.oauthTestServer = null;
         this.testServer = null;
-        this.logger = new Logger.Logger({
-            context: {
-                // If we're running from a Mojaloop helm chart deployment, we'll have a SIM_NAME
-                simulator: process.env['SIM_NAME'],
-                hostname: hostname(),
-            },
-            stringify: Logger.buildStringify({ space: conf.logIndent }),
-        });
+        this.logger = logger;
         this.cache = new Cache({
             ...conf.cacheConfig,
             logger: this.logger.push({ component: 'cache' }),
@@ -107,18 +100,25 @@ if(require.main === module) {
     (async () => {
         // this module is main i.e. we were started as a server;
         // not used in unit test or "require" scenarios
-        const svr = new Server(config);
+        const logger = new Logger.Logger({
+            context: {
+                // If we're running from a Mojaloop helm chart deployment, we'll have a SIM_NAME
+                simulator: process.env['SIM_NAME'],
+                hostname: hostname(),
+            },
+            stringify: Logger.buildStringify({ space: config.logIndent }),
+        });
+        const svr = new Server(config, logger);
 
         // handle SIGTERM to exit gracefully
         process.on('SIGTERM', async () => {
-            console.log('SIGTERM received. Shutting down APIs...');
-
+            logger.log('SIGTERM received. Shutting down APIs...');
             await svr.stop();
             process.exit(0);
         });
 
         svr.start().catch(err => {
-            console.log(err);
+            logger.push({ err }).log('Error starting server');
             process.exit(1);
         });
     })();

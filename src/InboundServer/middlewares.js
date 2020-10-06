@@ -18,13 +18,12 @@ const { Jws, Errors } = require('@mojaloop/sdk-standard-components');
  * Log raw to console as a last resort
  * @return {Function}
  */
-// TODO: perhaps this should be in the Koa error handler
-const createErrorHandler = () => async (ctx, next) => {
+const createErrorHandler = (logger) => async (ctx, next) => {
     try {
         await next();
     } catch (err) {
         // TODO: return a 500 here if the response has not already been sent?
-        console.log(`Error caught in catchall: ${err.stack || util.inspect(err, { depth: 10 })}`);
+        logger.push({ err }).log('Error caught in catchall');
     }
 };
 
