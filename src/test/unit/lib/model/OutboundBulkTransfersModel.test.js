@@ -14,7 +14,6 @@
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('redis');
 
-const util = require('util');
 const Cache = require('@internal/cache');
 const Model = require('@internal/model').OutboundBulkTransfersModel;
 
@@ -77,7 +76,7 @@ describe('outboundBulkTransferModel', () => {
     }
 
     beforeAll(async () => {
-        logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests-cache' } });
+        logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests-cache' }, stringify: () => '' });
     });
 
     beforeEach(async () => {
@@ -138,8 +137,6 @@ describe('outboundBulkTransferModel', () => {
         // start the model running
         const result = await model.run();
 
-        console.log(`Result after bulk transfer stage: ${util.inspect(result)}`);
-
         expect(MojaloopRequests.__postBulkTransfers).toHaveBeenCalledTimes(1);
 
         // check we stopped at succeeded state
@@ -172,8 +169,6 @@ describe('outboundBulkTransferModel', () => {
 
         // start the model running
         const result = await model.run();
-
-        console.log(`Result after get bulk transfer: ${util.inspect(result)}`);
 
         expect(MojaloopRequests.__getBulkTransfers).toHaveBeenCalledTimes(1);
 

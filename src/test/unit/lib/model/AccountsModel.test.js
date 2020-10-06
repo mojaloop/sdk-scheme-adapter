@@ -77,8 +77,6 @@ describe('AccountsModel', () => {
         // wait for the model to reach a terminal state
         const result = await model.run();
 
-        // console.log(`Accounts creation result: ${util.inspect(result)}`);
-
         const expectedRequestsCount = currencies.length *
             (Math.floor(count / MAX_ITEMS_PER_REQUEST) + ((count % MAX_ITEMS_PER_REQUEST) ? 1 : 0));
         expect(MojaloopRequests.__postParticipants).toHaveBeenCalledTimes(expectedRequestsCount);
@@ -88,7 +86,7 @@ describe('AccountsModel', () => {
     }
 
     beforeAll(() => {
-        logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests-cache' } });
+        logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests-cache' }, stringify: () => '' });
     });
 
     beforeEach(async () => {

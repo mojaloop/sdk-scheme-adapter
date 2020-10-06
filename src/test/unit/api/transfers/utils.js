@@ -57,7 +57,6 @@ function createGetTransfersTester({ reqInbound, reqOutbound, apiSpecsOutbound })
         const responseValidator = new OpenAPIResponseValidator(apiSpecsOutbound.paths['/transfers/{transferId}'].get);
         const err = responseValidator.validateResponse(responseCode, body);
         if (err) {
-            console.log(body);
             throw err;
         }
     };
@@ -74,7 +73,7 @@ function createGetTransfersTester({ reqInbound, reqOutbound, apiSpecsOutbound })
 function createPostTransfersTester(
     { requestValidatorInbound, reqInbound, reqOutbound, apiSpecsOutbound }) {
 
-    const logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests' } });
+    const logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests' }, stringify: () => '' });
 
     /**
      *
@@ -166,7 +165,6 @@ function createPostTransfersTester(
         const responseValidator = new OpenAPIResponseValidator(apiSpecsOutbound.paths['/transfers'].post);
         const err = responseValidator.validateResponse(responseCode, body);
         if (err) {
-            console.log(body);
             throw err;
         }
         await pendingRequest;

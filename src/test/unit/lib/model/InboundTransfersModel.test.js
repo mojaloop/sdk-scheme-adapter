@@ -34,7 +34,7 @@ describe('inboundModel', () => {
     let logger;
 
     beforeAll(async () => {
-        logger = new Logger.Logger({ context: { app: 'inbound-model-unit-tests' } });
+        logger = new Logger.Logger({ context: { app: 'inbound-model-unit-tests' }, stringify: () => '' });
     });
 
     beforeEach(async () => {
