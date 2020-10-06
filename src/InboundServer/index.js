@@ -96,7 +96,7 @@ class InboundApi {
     static _SetupApi({ conf, logger, validator, cache, jwsVerificationKeys, wso2Auth }) {
         const api = new Koa();
 
-        api.use(middlewares.createErrorHandler());
+        api.use(middlewares.createErrorHandler(logger));
         api.use(middlewares.createRequestIdGenerator());
         api.use(middlewares.createHeaderValidator(logger));
         if (conf.validateInboundJws) {
@@ -171,7 +171,7 @@ class InboundServer {
             await this._api.stop();
             this._api = null;
         }
-        console.log('inbound shut down complete');
+        this._logger.log('inbound shut down complete');
     }
 
     _createServer(tlsEnabled, tlsCreds, handler) {

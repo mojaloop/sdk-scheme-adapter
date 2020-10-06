@@ -14,7 +14,6 @@
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('redis');
 
-const util = require('util');
 const Cache = require('@internal/cache');
 const Model = require('@internal/model').OutboundTransfersModel;
 
@@ -107,7 +106,7 @@ describe('outboundModel', () => {
     }
 
     beforeAll(async () => {
-        logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests-cache' } });
+        logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests-cache' }, stringify: () => '' });
         quoteResponse = JSON.parse(JSON.stringify(quoteResponseTemplate));
     });
 
@@ -200,8 +199,6 @@ describe('outboundModel', () => {
         // start the model running
         const result = await model.run();
 
-        console.log(`Result after three stage transfer: ${util.inspect(result)}`);
-
         expect(MojaloopRequests.__getParties).toHaveBeenCalledTimes(1);
         expect(MojaloopRequests.__postQuotes).toHaveBeenCalledTimes(1);
         expect(MojaloopRequests.__postTransfers).toHaveBeenCalledTimes(1);
@@ -282,8 +279,6 @@ describe('outboundModel', () => {
         // start the model running
         const result = await model.run();
 
-        console.log(`Result after three stage transfer: ${util.inspect(result)}`);
-
         expect(MojaloopRequests.__getParties).toHaveBeenCalledTimes(1);
         expect(MojaloopRequests.__postQuotes).toHaveBeenCalledTimes(1);
         expect(MojaloopRequests.__postTransfers).toHaveBeenCalledTimes(1);
@@ -319,8 +314,6 @@ describe('outboundModel', () => {
         // start the model running
         const result = await model.run();
 
-        console.log(`Result after get transfer: ${util.inspect(result)}`);
-
         expect(MojaloopRequests.__getTransfers).toHaveBeenCalledTimes(1);
 
         // check we stopped at payeeResolved state
@@ -351,8 +344,6 @@ describe('outboundModel', () => {
         // wait for the model to reach a terminal state
         const result = await resultPromise;
 
-        console.log(`Result after resolve payee: ${util.inspect(result)}`);
-
         // check we stopped at payeeResolved state
         expect(result.currentState).toBe('WAITING_FOR_PARTY_ACCEPTANCE');
         expect(StateMachine.__instance.state).toBe('payeeResolved');
@@ -382,8 +373,6 @@ describe('outboundModel', () => {
         // wait for the model to reach a terminal state
         let result = await resultPromise;
 
-        console.log(`Result after resolve payee: ${util.inspect(result)}`);
-
         // check we stopped at payeeResolved state
         expect(result.currentState).toBe('WAITING_FOR_PARTY_ACCEPTANCE');
         expect(StateMachine.__instance.state).toBe('payeeResolved');
@@ -410,8 +399,6 @@ describe('outboundModel', () => {
 
         // wait for the model to reach a terminal state
         result = await resultPromise;
-
-        console.log(`Result after request quote: ${util.inspect(result)}`);
 
         // check we stopped at payeeResolved state
         expect(result.currentState).toBe('WAITING_FOR_QUOTE_ACCEPTANCE');
@@ -442,8 +429,6 @@ describe('outboundModel', () => {
         // wait for the model to reach a terminal state
         let result = await resultPromise;
 
-        console.log(`Result after resolve payee: ${util.inspect(result)}`);
-
         // check we stopped at payeeResolved state
         expect(result.currentState).toBe('WAITING_FOR_PARTY_ACCEPTANCE');
         expect(StateMachine.__instance.state).toBe('payeeResolved');
@@ -471,8 +456,6 @@ describe('outboundModel', () => {
         // wait for the model to reach a terminal state
         result = await resultPromise;
 
-        console.log(`Result after request quote: ${util.inspect(result)}`);
-
         // check we stopped at quoteReceived state
         expect(result.currentState).toBe('WAITING_FOR_QUOTE_ACCEPTANCE');
         expect(StateMachine.__instance.state).toBe('quoteReceived');
@@ -497,8 +480,6 @@ describe('outboundModel', () => {
 
         // wait for the model to reach a terminal state
         result = await resultPromise;
-
-        console.log(`Result after transfer fulfil: ${util.inspect(result)}`);
 
         // check we stopped at quoteReceived state
         expect(result.currentState).toBe('COMPLETED');
@@ -551,8 +532,6 @@ describe('outboundModel', () => {
         // wait for the model to reach a terminal state
         const result = await resultPromise;
 
-        console.log(`Result after three stage transfer: ${util.inspect(result)}`);
-
         // check we stopped at payeeResolved state
         expect(result.currentState).toBe('COMPLETED');
         expect(StateMachine.__instance.state).toBe('succeeded');
@@ -603,8 +582,6 @@ describe('outboundModel', () => {
 
         // wait for the model to reach a terminal state
         const result = await resultPromise;
-
-        console.log(`Result after three stage transfer: ${util.inspect(result)}`);
 
         // check we stopped at payeeResolved state
         expect(result.currentState).toBe('COMPLETED');

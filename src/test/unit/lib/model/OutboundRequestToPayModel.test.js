@@ -14,7 +14,6 @@
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('redis');
 
-const util = require('util');
 const Cache = require('@internal/cache');
 const Model = require('@internal/model').OutboundRequestToPayModel;
 
@@ -54,9 +53,9 @@ describe('outboundModel', () => {
      * @param {boolean} rejects.quoteResponse
      * @param {boolean} rejects.transferFulfils
      */
-    
+
     beforeAll(async () => {
-        logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests-cache' } });
+        logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests-cache' }, stringify: () => '' });
         transactionRequestResponse = JSON.parse(JSON.stringify(transactionRequestResponseTemplate));
     });
 
@@ -65,7 +64,7 @@ describe('outboundModel', () => {
         MojaloopRequests.__postParticipants = jest.fn(() => Promise.resolve());
         MojaloopRequests.__getParties = jest.fn(() => Promise.resolve());
         MojaloopRequests.__postTransactionRequests = jest.fn(() => Promise.resolve());
-        
+
         cache = new Cache({
             host: 'dummycachehost',
             port: 1234,
@@ -93,7 +92,7 @@ describe('outboundModel', () => {
 
     test('executes all two stages without halting when AUTO_ACCEPT_PARTY is true', async () => {
         config.autoAcceptParty = true;
-        
+
         MojaloopRequests.__getParties = jest.fn(() => {
             emitPartyCacheMessage(cache, payeeParty);
             return Promise.resolve();
@@ -119,11 +118,9 @@ describe('outboundModel', () => {
         // start the model running
         const result = await model.run();
 
-        console.log(`Result after two stage transfer: ${util.inspect(result)}`);
-
         expect(MojaloopRequests.__getParties).toHaveBeenCalledTimes(1);
         expect(MojaloopRequests.__postTransactionRequests).toHaveBeenCalledTimes(1);
-        
+
         // check we stopped at payeeResolved state
         expect(result.currentState).toBe('COMPLETED');
         expect(result.requestToPayState).toBe('RECEIVED');
@@ -137,7 +134,7 @@ describe('outboundModel', () => {
             emitPartyCacheMessage(cache, payeeParty);
             return Promise.resolve();
         });
-        
+
         const model = new Model({
             cache,
             logger,
@@ -158,12 +155,10 @@ describe('outboundModel', () => {
         // wait for the model to reach a terminal state
         const result = await resultPromise;
 
-        console.log(`Result after resolve payee: ${util.inspect(result)}`);
-
         // check we stopped at payeeResolved state
         expect(result.currentState).toBe('WAITING_FOR_PARTY_ACCEPTANCE');
         expect(StateMachine.__instance.state).toBe('payeeResolved');
     });
-    
-    
+
+
 });
