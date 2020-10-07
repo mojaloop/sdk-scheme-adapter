@@ -46,7 +46,7 @@ class OAuthTestServer {
         this._logger.log('OAuth2 Test Server shut down complete');
     }
 
-    static async _SetupApi({ clientKey, clientSecret }) {
+    static _SetupApi({ clientKey, clientSecret }) {
         const result = new Koa();
 
         result.oauth = new OAuthServer({
@@ -56,7 +56,7 @@ class OAuthTestServer {
         });
 
         result.use(koaBody());
-        result.use(this._api.oauth.token());
+        result.use(result.oauth.token());
     }
 }
 
