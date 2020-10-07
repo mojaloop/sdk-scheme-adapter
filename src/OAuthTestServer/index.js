@@ -10,6 +10,7 @@
 
 'use strict';
 
+const http = require('http');
 const Koa = require('koa');
 const koaBody = require('koa-body');
 const OAuthServer = require('koa2-oauth-server');
@@ -22,43 +23,40 @@ class OAuthTestServer {
      * @param {number} conf.port OAuth server listen port
      * @param {string} conf.clientKey Customer Key
      * @param {String} conf.clientSecret Customer Secret
+     * @param {Logger} conf.logger Logger
      */
     constructor(conf) {
         this._conf = conf;
         this._api = null;
         this._logger = conf.logger;
-        this._setupApi();
+        this._api = this._SetupApi();
+        this._server = http.createServer(this._api.callback());
     }
 
     async start() {
-        await new Promise((resolve) => this._api.listen(this._conf.port, resolve));
-        this._logger.log(`Serving OAuth2 Test Server on port ${this._conf.port}`);
+        if (this._server.listening) {
+            return;
+        }
+        await new Promise((resolve) => this._server.listen(this._conf.port, resolve));
+        this._logger.push({ port: this._conf.port }).log('Serving OAuth2 Test Server');
     }
 
     async stop() {
-        if (this._api) {
-            return;
-        }
-        await new Promise(resolve => this._api.close(resolve));
+        await new Promise(resolve => this._server.close(resolve));
         this._logger.log('OAuth2 Test Server shut down complete');
     }
 
-    async _setupApi() {
-        this._api = new Koa();
+    static async _SetupApi({ clientKey, clientSecret }) {
+        const result = new Koa();
 
-        this._api.oauth = new OAuthServer({
-            model: new InMemoryCache(this._conf),
+        result.oauth = new OAuthServer({
+            model: new InMemoryCache({ clientKey, clientSecret }),
             accessTokenLifetime: 60 * 60,
             allowBearerTokensInQueryString: true,
         });
 
-        this._api.use(koaBody());
-        this._api.use(this._api.oauth.token());
-
-        this._api.use(async (next) => {
-            this.body = 'Secret area';
-            await next();
-        });
+        result.use(koaBody());
+        result.use(this._api.oauth.token());
     }
 }
 
