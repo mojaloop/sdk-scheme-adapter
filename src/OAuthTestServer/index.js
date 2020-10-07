@@ -25,11 +25,11 @@ class OAuthTestServer {
      * @param {String} conf.clientSecret Customer Secret
      * @param {Logger} conf.logger Logger
      */
-    constructor(conf) {
-        this._conf = conf;
+    constructor({ port, clientKey, clientSecret, logger }) {
         this._api = null;
-        this._logger = conf.logger;
-        this._api = this._SetupApi();
+        this._port = port;
+        this._logger = logger;
+        this._api = OAuthTestServer._SetupApi({ clientKey, clientSecret });
         this._server = http.createServer(this._api.callback());
     }
 
@@ -37,8 +37,8 @@ class OAuthTestServer {
         if (this._server.listening) {
             return;
         }
-        await new Promise((resolve) => this._server.listen(this._conf.port, resolve));
-        this._logger.push({ port: this._conf.port }).log('Serving OAuth2 Test Server');
+        await new Promise((resolve) => this._server.listen(this._port, resolve));
+        this._logger.push({ port: this._port }).log('Serving OAuth2 Test Server');
     }
 
     async stop() {
@@ -57,6 +57,8 @@ class OAuthTestServer {
 
         result.use(koaBody());
         result.use(result.oauth.token());
+
+        return result;
     }
 }
 
