@@ -10,15 +10,13 @@
 
 class InMemoryCache {
     /**
-     *
-     * @param {Object} opts
      * @param {string} opts.clientKey Customer Key
      * @param {String} opts.clientSecret Customer Secret
      */
-    constructor(opts) {
+    constructor({ clientKey : clientId, clientSecret }) {
         this.clients = [{
-            clientId : opts.clientKey,
-            clientSecret : opts.clientSecret,
+            clientId,
+            clientSecret,
             grants: [
                 'client_credentials'
             ],
