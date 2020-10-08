@@ -501,7 +501,7 @@ class OutboundRequestToPayTransferModel {
 
     async _requestAuthorization() {
         // eslint-disable-next-line no-async-promise-executor
-        return new Promise(async (resolve, reject) => {
+        return new Promise(async (resolve) => {
             // let use here OutboundAuthorizationsModel which allows to do synchronous call to get Authorization from PISP
             this._logger.log('OutboundRequestToPayTransferModel._requestAuthorization');
             // prepare request
