@@ -322,7 +322,7 @@ const postRequestToPayTransfer = async (ctx) => {
             ...ctx.state.conf,
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            wso2Auth: ctx.state.wso2Auth,
+            wso2Auth: ctx.state.wso2Auth
         });
 
         // initialize the transfer model and start it running

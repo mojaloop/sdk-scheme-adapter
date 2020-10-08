@@ -16,10 +16,12 @@ const StateMachine = require('javascript-state-machine');
 const { Ilp, MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const shared = require('@internal/shared');
 const { BackendError } = require('./common');
-
+const { BackendRequests } = require('@internal/requests');
+const OutboundAuthorizationsModel = require('./OutboundAuthorizationsModel.js');
 const requestToPayTransferStateEnum = {
     'WAITING_FOR_QUOTE_ACCEPTANCE': 'WAITING_FOR_QUOTE_ACCEPTANCE',
     'WAITING_FOR_OTP_ACCEPTANCE': 'WAITING_FOR_OTP_ACCEPTANCE',
+    'WAITING_FOR_AUTHORIZATION_ACCEPTANCE': 'WAITING_FOR_AUTHORIZATION_ACCEPTANCE',
     'ERROR_OCCURRED': 'ERROR_OCCURRED',
     'COMPLETED': 'COMPLETED',
 };
@@ -30,6 +32,7 @@ const requestToPayTransferStateEnum = {
  */
 class OutboundRequestToPayTransferModel {
     constructor(config) {
+        this._config = { ...config };
         this._cache = config.cache;
         this._logger = config.logger;
         this._requestProcessingTimeoutSeconds = config.requestProcessingTimeoutSeconds;
@@ -58,9 +61,18 @@ class OutboundRequestToPayTransferModel {
             wso2Auth: config.wso2Auth
         });
 
+        this._backendRequests = new BackendRequests({
+            logger: this._logger,
+            backendEndpoint: config.backendEndpoint,
+            dfspId: config.dfspId
+        });
+
         this._ilp = new Ilp({
             secret: config.ilpSecret
         });
+
+        this._enablePISPMode = config.enablePISPMode;
+        this._logger.info('enablePISPMode: ', this._enablePISPMode);
     }
     /**
      * Initializes the requestToPayTransfer model
@@ -93,7 +105,9 @@ class OutboundRequestToPayTransferModel {
             transitions: [
                 { name: 'requestQuote', from: 'start', to: 'quoteReceived' },
                 { name: 'requestOTP', from: 'quoteReceived', to: 'otpReceived' },
+                { name: 'requestAuthorization', from: 'quoteReceived', to: 'authorizationReceived' },
                 { name: 'executeTransfer', from: 'otpReceived', to: 'succeeded' },
+                { name: 'executeAuthorizedTransfer', from: 'authorizationReceived', to: 'succeeded' },
                 { name: 'error', from: '*', to: 'errored' },
             ],
             methods: {
@@ -122,7 +136,10 @@ class OutboundRequestToPayTransferModel {
                     // next transition is to requestQuote
                     await this.stateMachine.requestQuote();
                     this._logger.log(`Quote received for transfer ${this.data.transferId}`);
+
+                    
                     if(this.stateMachine.state === 'quoteReceived' && this.data.initiatorType === 'BUSINESS' && !this._autoAcceptR2PBusinessQuotes) {
+                        // kick-off postAuthorizations here for PISP flow
                         //we break execution here and return the quote response details to allow asynchronous accept or reject
                         //of the quote
                         await this._save();
@@ -131,19 +148,31 @@ class OutboundRequestToPayTransferModel {
                     break;
 
                 case 'quoteReceived':
-                    // next transition is requestOTP
-                    await this.stateMachine.requestOTP();
-                    if(this.data.initiatorType !== 'BUSINESS') {
-                        this._logger.log(`OTP received for transactionId: ${this.data.requestToPayTransactionId} and transferId: ${this.data.transferId}`);
-                        if(this.stateMachine.state === 'otpReceived' && !this._autoAcceptR2PDeviceOTP) {
-                            //we break execution here and return the otp response details to allow asynchronous accept or reject
-                            //of the quote
-                            await this._save();
-                            return this.getResponse();
+                    // decide PISP or OTP flow
+                    if (this._enablePISPMode) {
+                        await this.stateMachine.requestAuthorization();
+                        await this._save();
+                        // let executeTransfer in recursive call of run()
+                    } else {
+                        await this.stateMachine.requestOTP();
+                        if (this.data.initiatorType !== 'BUSINESS') {
+                            this._logger.log(`OTP received for transactionId: ${this.data.requestToPayTransactionId} and transferId: ${this.data.transferId}`);
+                            if (this.stateMachine.state === 'otpReceived' && !this._autoAcceptR2PDeviceOTP) {
+                                //we break execution here and return the otp response details to allow asynchronous accept or reject
+                                //of the quote
+                                await this._save();
+                                return this.getResponse();
+                            }
                         }
                     }
                     break;
                 
+                case 'authorizationReceived': 
+                    // next transition is executeTransfer
+                    await this.stateMachine.executeAuthorizedTransfer();
+                    this._logger.log(`Transfer ${this.data.transferId} has been completed`);
+                    break;
+
                 case 'otpReceived':
                     // next transition is executeTransfer
                     await this.stateMachine.executeTransfer();
@@ -163,7 +192,7 @@ class OutboundRequestToPayTransferModel {
             }
 
             // now call ourslves recursively to deal with the next transition
-            this._logger.log(`RequestToPay Transfer model state machine transition completed in state: ${this.stateMachine.state}. Recusring to handle next transition.`);
+            this._logger.log(`RequestToPay Transfer model state machine transition completed in state: ${this.stateMachine.state}. Recursing to handle next transition.`);
             return this.run();
         }
         catch(err) {
@@ -209,11 +238,16 @@ class OutboundRequestToPayTransferModel {
                 // request a quote
                 return this._requestQuote();
 
+            case 'requestAuthorization':
+                // request an OTP
+                return this._requestAuthorization();
+
             case 'requestOTP':
                 // request an OTP
                 return this._requestOTP();
 
             case 'executeTransfer':
+            case 'executeAuthorizedTransfer':
                 // prepare a transfer and wait for fulfillment
                 return this._executeTransfer();
 
@@ -462,6 +496,52 @@ class OutboundRequestToPayTransferModel {
 
                 return reject(err);
             }
+        });
+    }
+
+    async _requestAuthorization() {
+        // eslint-disable-next-line no-async-promise-executor
+        return new Promise(async (resolve) => {
+            // let use here OutboundAuthorizationsModel which allows to do synchronous call to get Authorization from PISP
+            this._logger.log('OutboundRequestToPayTransferModel._requestAuthorization');
+            // prepare request
+            const authorizationsRequest = {
+                // here is hardcoded address of PISP because in this flow there is no way to get it so we are mocking it out
+                // take a look in thirdparty-scheme-adapter PISPTransactionModel(WIP)
+                toParticipantId: 'pisp',
+                authenticationType: 'U2F',
+                retriesLeft: '1',
+                amount: {
+                    currency: 'USD',
+                    amount: this.data.amount
+                },
+                transactionId: this.data.transferId,
+                transactionRequestId: this.data.requestToPayTransactionId,
+                quote: { ...this.data.quoteResponse },
+            };
+                
+            const modelConfig = { ...this._config };
+
+            const cacheKey = `post_authorizations_${authorizationsRequest.transactionRequestId}`;
+
+            // use the authorizations model to execute asynchronous stages with the switch
+            const model = await OutboundAuthorizationsModel.create(authorizationsRequest, cacheKey, modelConfig);
+
+            // run model's workflow
+
+            this.data.authorizationResponse = await model.run();
+            // here is POC: happy flow 
+            // the authorizationResponse should be analyzed
+            // and the pinValue should be validated but this is out of the scope of this POC
+            this._logger.push({ authorizationResponse: this.data.authorizationResponse }).log('authorizationResponse received');
+            
+            // let call backend service which will validate pinValue
+            // TODO: add `/validate-authorization` path to mojaloop_simulator
+            // const validateResponse = await this._backendRequests.validateAuthorization(this.data.authorizationResponse);
+            // if (validateResponse.validationResult !== 'OK') {
+            //     return reject(new Error('Invalid Authorization of Transaction'));
+            // }
+            resolve(this.data.authorizationResponse);
         });
     }
 
@@ -821,7 +901,11 @@ class OutboundRequestToPayTransferModel {
             case 'quoteReceived':
                 resp.currentState = requestToPayTransferStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE;
                 break;
-
+            
+            case 'authorizationReceived':
+                resp.currentState = requestToPayTransferStateEnum.WAITING_FOR_AUTHORIZATION_ACCEPTANCE;
+                break;
+    
             case 'otpReceived':
                 resp.currentState = requestToPayTransferStateEnum.WAITING_FOR_OTP_ACCEPTANCE;
                 break;
