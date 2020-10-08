@@ -135,11 +135,10 @@ async function onRequestAuthorization() {
             // in InboundServer/handlers is implemented putAuthorizationsById handler 
             // where this event is fired but only if env ENABLE_PISP_MODE=true
             subId = await cache.subscribe(channel, async (channel, message, sid) => {
-                
                 try { 
                     const parsed = JSON.parse(message);
                     this.context.data = {
-                        ...parsed.data,
+                        ...parsed,
                         currentState: this.state
                     };
                     resolve();
@@ -147,7 +146,7 @@ async function onRequestAuthorization() {
                     reject(err); 
                 } finally {
                     if(sid) {
-                        cache.unsubscribe(sid);
+                        cache.unsubscribe(channel, sid);
                     }
                 }
             });
@@ -161,7 +160,7 @@ async function onRequestAuthorization() {
         } catch(error) {
             logger.push(error).error('Authorization request error');
             if(subId) {
-                cache.unsubscribe(subId);
+                cache.unsubscribe(channel, subId);
             }
             reject(error);
         }
@@ -190,7 +189,6 @@ function buildPostAuthorizationsRequest(data/** , config */) {
  * @returns {Object}                    - the altered specStateMachine
  */
 function injectHandlersContext(config, specStateMachine) {
-    // TODO: postAuthorizations is a mocked method until this feature arrive in MojaloopRequests
     return { 
         ...specStateMachine,
         data: {

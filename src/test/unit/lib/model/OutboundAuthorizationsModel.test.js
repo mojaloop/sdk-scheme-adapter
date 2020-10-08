@@ -202,7 +202,7 @@ describe('authorizationsModel', () => {
 
             // handler should unsubscribe from notification channel
             expect(cache.unsubscribe).toBeCalledTimes(1);
-            expect(cache.unsubscribe).toBeCalledWith(subId);
+            expect(cache.unsubscribe).toBeCalledWith(channel, subId);
         });
 
         it('should unsubscribe from cache in case when error happens in workflow run', async () => {
@@ -215,7 +215,7 @@ describe('authorizationsModel', () => {
             model.onRequestAuthorization().catch((err) => {
                 expect(err.message).toEqual('Unexpected token u in JSON at position 0');
                 expect(cache.unsubscribe).toBeCalledTimes(1);
-                expect(cache.unsubscribe).toBeCalledWith(subId);        
+                expect(cache.unsubscribe).toBeCalledWith(channel, subId);        
             });
 
             // fire publication to channel with invalid message 
@@ -228,7 +228,8 @@ describe('authorizationsModel', () => {
             // simulate error
             MojaloopRequests.__postAuthorizations = jest.fn(() => Promise.reject('postAuthorization failed'));
             data.transactionRequestId = uuid();
-
+            
+            const channel = Model.notificationChannel(data.transactionRequestId);
             const model = await Model.create(data, cacheKey, modelConfig);
             const { cache } = model.context;
 
@@ -243,7 +244,7 @@ describe('authorizationsModel', () => {
             expect(theError).toEqual('postAuthorization failed');
             // handler should unsubscribe from notification channel
             expect(cache.unsubscribe).toBeCalledTimes(1);
-            expect(cache.unsubscribe).toBeCalledWith(subId);
+            expect(cache.unsubscribe).toBeCalledWith(channel, subId);
         });
 
     });

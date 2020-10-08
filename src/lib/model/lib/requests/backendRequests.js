@@ -46,6 +46,10 @@ class BackendRequests {
         return this._post('signchallenge', authorizationReq);
     }
 
+    async validateAuthorization(authorizationResponse) {
+        return this._post('validate-authorization', authorizationResponse);
+    }
+
     /**
      * Executes a GET /otp request for the specified transaction request id
      *
