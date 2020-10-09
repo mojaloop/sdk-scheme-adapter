@@ -46,8 +46,8 @@ class BackendRequests {
         return this._post('signchallenge', authorizationReq);
     }
 
-    async validateAuthorization(authorizationResponse) {
-        return this._post('validate-authorization', authorizationResponse);
+    async verifyAuthorization(authorizationResponse) {
+        return this._post('verify-authorization', authorizationResponse);
     }
 
     /**

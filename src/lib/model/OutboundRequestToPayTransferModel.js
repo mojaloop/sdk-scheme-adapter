@@ -501,7 +501,7 @@ class OutboundRequestToPayTransferModel {
 
     async _requestAuthorization() {
         // eslint-disable-next-line no-async-promise-executor
-        return new Promise(async (resolve) => {
+        return new Promise(async (resolve, reject) => {
             // let use here OutboundAuthorizationsModel which allows to do synchronous call to get Authorization from PISP
             this._logger.log('OutboundRequestToPayTransferModel._requestAuthorization');
             // prepare request
@@ -535,12 +535,17 @@ class OutboundRequestToPayTransferModel {
             // and the pinValue should be validated but this is out of the scope of this POC
             this._logger.push({ authorizationResponse: this.data.authorizationResponse }).log('authorizationResponse received');
             
+            const requestVerify = {
+                transactionRequestId: this.data.requestToPayTransactionId,
+                authenticationInfo: this.data.authenticationInfo,
+                responseType: this.data.responseType
+            };
+
             // let call backend service which will validate pinValue
-            // TODO: add `/validate-authorization` path to mojaloop_simulator
-            // const validateResponse = await this._backendRequests.validateAuthorization(this.data.authorizationResponse);
-            // if (validateResponse.validationResult !== 'OK') {
-            //     return reject(new Error('Invalid Authorization of Transaction'));
-            // }
+            const verifyResponse = await this._backendRequests.verifyAuthorization(requestVerify);
+            if (verifyResponse.verifyResult !== 'OK') {
+                return reject(new Error('Invalid Authorization of Transaction'));
+            }
             resolve(this.data.authorizationResponse);
         });
     }
