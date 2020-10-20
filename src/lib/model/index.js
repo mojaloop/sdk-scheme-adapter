@@ -23,7 +23,7 @@ const OutboundAuthorizationsModel = require('./OutboundAuthorizationsModel');
 const InboundThirdpartyTransactionModel = require('./InboundThirdpartyTransactionModel');
 const OutboundThirdpartyTransactionModel = require('./OutboundThirdpartyTransactionModel');
 const { BackendError, PersistentStateMachine } = require('./common');
-
+const PartiesModel = require('./PartiesModel');
 
 module.exports = {
     AccountsModel,
@@ -39,4 +39,5 @@ module.exports = {
     PersistentStateMachine,
     InboundThirdpartyTransactionModel,
     OutboundThirdpartyTransactionModel,
+    PartiesModel,
 };
