@@ -51,7 +51,7 @@ async function run(type, id, subId) {
         // run transitions based on incoming state
         switch(data.currentState) {
             case 'start':
-                // the first transition is requestAuthorization
+                // the first transition is requestPartiesInformation
                 await this.requestPartiesInformation(type, id, subId);
                 // don't await to finish the save
                 this.saveToCache();
@@ -69,7 +69,7 @@ async function run(type, id, subId) {
                 return;
         }
     } catch (err) {
-        logger.log(`Error running authorizations model: ${util.inspect(err)}`);
+        logger.log(`Error running Parties model: ${util.inspect(err)}`);
 
         // as this function is recursive, we don't want to error the state machine multiple times
         if(data.currentState !== 'errored') {
@@ -80,7 +80,7 @@ async function run(type, id, subId) {
             // transition to errored state
             await this.error(err);
 
-            // avoid circular ref between authorizationState.lastError and err
+            // avoid circular ref between requestPartiesInformationState.lastError and err
             err.requestPartiesInformationState = JSON.parse(JSON.stringify(this.getResponse()));
         }
         throw err;

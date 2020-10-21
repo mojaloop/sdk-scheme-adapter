@@ -138,7 +138,7 @@ describe('PartiesModel', () => {
                     // subscribe should be done to proper notificationChannel
                     expect(cache.subscribe.mock.calls[0][0]).toEqual(channel);
 
-                    // check invocation of request.postAuthorizations
+                    // check invocation of request.getParties
                     expect(MojaloopRequests.__getParties).toBeCalledWith(type, id, subIdValue);
 
                     // check that this.context.data is updated
@@ -283,7 +283,7 @@ describe('PartiesModel', () => {
             
             model.requestPartiesInformation = jest.fn(() => {
                 const err = new Error('requestPartiesInformation failed');
-                err.authorizationState = 'some';
+                err.requestPartiesInformationState = 'some';
                 return Promise.reject(err);
             });
             model.error = jest.fn();
