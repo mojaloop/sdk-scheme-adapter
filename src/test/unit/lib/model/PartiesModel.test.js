@@ -100,13 +100,13 @@ describe('PartiesModel', () => {
 
     describe('channelName', () => {
         it('should validate input', () => {
-            expect(Model.channelName()).toEqual('parties');
+            expect(Model.channelName()).toEqual('parties-undefined-undefined-undefined');
         });
 
         it('should generate proper channel name', () => {
             const type = uuid();
             const id = uuid();
-            expect(Model.channelName(type, id)).toEqual(`parties-${type}-${id}`);
+            expect(Model.channelName(type, id)).toEqual(`parties-${type}-${id}-undefined`);
         });
     });
 

@@ -19,6 +19,8 @@ const Model = require('@internal/model').InboundTransfersModel;
 const AuthorizationsModel = require('@internal/model').OutboundAuthorizationsModel;
 const ThirdpartyTrxnModelIn = require('@internal/model').InboundThirdpartyTransactionModel;
 const ThirdpartyTrxnModelOut = require('@internal/model').OutboundThirdpartyTransactionModel;
+const PartiesModel = require('@internal/model').PartiesModel;
+
 /**
  * Handles a GET /authorizations/{id} request
  */
@@ -491,9 +493,14 @@ const putPartiesByTypeAndId = async (ctx) => {
     const idValue = ctx.state.path.params.ID;
     const idSubValue = ctx.state.path.params.SubId;
 
-    // publish an event onto the cache for subscribers to action
+    // generate keys
     const cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
+    const channelName = PartiesModel.channelName(idType, idValue, idSubValue);
+
+    // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(cacheId, ctx.request.body);
+    await ctx.state.cache.publish(channelName, ctx.request.body);
+
     ctx.response.status = 200;
 };
 
@@ -592,9 +599,15 @@ const putPartiesByTypeAndIdError = async(ctx) => {
     // note that we publish the event the same way we publish a success PUT
     // the subscriber will notice the body contains an errorInformation property
     // and recognise it as an error response
+    // generate keys
     const cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
-    await ctx.state.cache.publish(cacheId, ctx.request.body);
+    const channelName = PartiesModel.channelName(idType, idValue, idSubValue);
 
+    // publish an event onto the cache for subscribers to action
+    await Promise.all([
+        ctx.state.cache.publish(cacheId, ctx.request.body),
+        ctx.state.cache.publish(channelName, ctx.request.body)
+    ]);
     ctx.response.status = 200;
     ctx.response.body = '';
 };
