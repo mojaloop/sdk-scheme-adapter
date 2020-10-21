@@ -22,7 +22,8 @@ const {
     OutboundRequestToPayModel,
     OutboundBulkQuotesModel,
     OutboundAuthorizationsModel,
-    OutboundThirdpartyTransactionModel
+    OutboundThirdpartyTransactionModel,
+    PartiesModel
 } = require('@internal/model');
 
 
@@ -92,6 +93,10 @@ const handleAuthorizationsError = (method, err, ctx) =>
 const handleThirdpartyRequestsTransactionsError = (method, err, ctx) =>
     handleError(method, err, ctx, 'thirdpartyRequestsTransactionsState');
 
+
+const handleRequestPartiesInformationError = (method, err, ctx) =>
+    handleError(method, err, ctx, 'requestPartiesInformationState');
+    
 /**
  * Handler for outbound transfer request initiation
  */
@@ -534,6 +539,40 @@ const postThirdpartyRequestsTransactions = async (ctx) => {
     }
 };
 
+const getPartiesByTypeAndId = async (ctx) => {
+    const type = ctx.state.path.params.Type;
+    const id = ctx.state.path.params.ID;
+    const subId = ctx.state.path.params.SubId;
+
+    try {
+        // prepare config
+        const modelConfig = {
+            ...ctx.state.conf,
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            wso2Auth: ctx.state.wso2Auth,
+        };
+
+        const cacheKey = PartiesModel.generateKey(type, id, subId);
+
+        // use the authorizations model to execute asynchronous stages with the switch
+        const model = await PartiesModel.create({}, cacheKey, modelConfig);
+
+        // run model's workflow
+        const response = await model.run(type, id, subId);
+
+        // return the result
+        if (response.errorInformation) {
+            ctx.response.status = 404;
+        } else {
+            ctx.response.status = 200;
+        }
+        ctx.response.body = response;
+    } catch (err) {
+        return handleRequestPartiesInformationError('getPartiesByTypeAndId', err, ctx);
+    }
+};
+
 module.exports = {
     '/': {
         get: healthCheck
@@ -578,4 +617,10 @@ module.exports = {
     '/thirdpartyRequests/transactions': {
         post: postThirdpartyRequestsTransactions
     },
+    '/parties/{Type}/{ID}': {
+        get: getPartiesByTypeAndId
+    },
+    '/parties/{Type}/{ID}/{SubId}': {
+        get: getPartiesByTypeAndId
+    }
 };

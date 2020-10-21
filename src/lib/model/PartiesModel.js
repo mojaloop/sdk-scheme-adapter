@@ -42,7 +42,7 @@ const specStateMachine = {
 async function run(type, id, subId) {
     // input validation
     const channel = channelName(type, id, subId);
-    if (channel === 'parties') {
+    if (channel.indexOf('-undefined-') != -1) {
         throw new Error('PartiesModel.run required at least two string arguments: \'type\' and \'id\'');
     }
 
@@ -173,7 +173,7 @@ async function onRequestPartiesInformation(type, id, subId) {
  */
 function channelName(type, id, subId) {
     const tokens = ['parties', type, id, subId];
-    return tokens.filter(t => !!t).join('-');
+    return tokens.map(x => `${x}`).join('-');
 }
 
 

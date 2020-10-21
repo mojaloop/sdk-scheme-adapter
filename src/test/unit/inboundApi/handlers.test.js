@@ -23,6 +23,7 @@ const mockLogger = require('../mockLogger');
 const AuthorizationsModel = require('@internal/model').OutboundAuthorizationsModel;
 const ThirdpartyTrxnModelIn = require('@internal/model').InboundThirdpartyTransactionModel;
 const ThirdpartyTrxnModelOut = require('@internal/model').OutboundThirdpartyTransactionModel;
+const PartiesModel = require('@internal/model').PartiesModel;
 
 describe('Inbound API handlers:', () => {
     let mockArgs;
@@ -624,6 +625,83 @@ describe('Inbound API handlers:', () => {
                     data: mockThirdPartyReqContext.request.body,
                     headers: mockThirdPartyReqContext.request.headers
                 });
+        });
+    });
+
+    describe('PUT /parties/{Type}/{ID}', () => {
+        let mockPutPartiesCtx;
+        beforeEach(() => {
+            mockPutPartiesCtx = {
+                request: {
+                    headers: {
+                        'fspiop-source': 'foo'
+                    },
+                    body: {
+                        party: { Iam: 'mocked-party' }
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    path: {
+                        params: {
+                            'Type': 'MSISDN',
+                            'ID': '123456789'
+                        }
+                    },
+                    logger: mockLogger({ app: 'inbound-handlers-unit-test' }),
+                    cache: {
+                        publish: jest.fn(() => Promise.resolve())
+                    },
+                }
+            };
+        });
+
+        test('calls cache.publish with the expected arguments.', async () => {
+            PartiesModel.channelName = jest.fn(() => 'mocked-parties-channel');
+            await expect(handlers['/parties/{Type}/{ID}'].put(mockPutPartiesCtx)).resolves.toBe(undefined);
+            expect(mockPutPartiesCtx.state.cache.publish).toHaveBeenCalledWith('MSISDN_123456789', {party: { Iam: 'mocked-party' }});
+            expect(mockPutPartiesCtx.state.cache.publish).toHaveBeenCalledWith('mocked-parties-channel', {party: { Iam: 'mocked-party' }});
+            expect(mockPutPartiesCtx.response.status).toBe(200);
+        });
+    });
+
+    describe('PUT /parties/{Type}/{ID}/{SubId}', () => {
+        let mockPutPartiesCtx;
+        beforeEach(() => {
+            mockPutPartiesCtx = {
+                request: {
+                    headers: {
+                        'fspiop-source': 'foo'
+                    },
+                    body: {
+                        party: { Iam: 'mocked-party' }
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    path: {
+                        params: {
+                            'Type': 'MSISDN',
+                            'ID': '123456789',
+                            'SubId': 'abcdefg'
+                        }
+                    },
+                    logger: mockLogger({ app: 'inbound-handlers-unit-test' }),
+                    cache: {
+                        publish: jest.fn(() => Promise.resolve())
+                    },
+                }
+            };
+        });
+
+        test('calls cache.publish with the expected arguments.', async () => {
+            PartiesModel.channelName = jest.fn(() => 'mocked-parties-channel');
+            await expect(handlers['/parties/{Type}/{ID}'].put(mockPutPartiesCtx)).resolves.toBe(undefined);
+            expect(mockPutPartiesCtx.state.cache.publish).toHaveBeenCalledWith('MSISDN_123456789_abcdefg', {party: { Iam: 'mocked-party' }});
+            expect(mockPutPartiesCtx.state.cache.publish).toHaveBeenCalledWith('mocked-parties-channel', {party: { Iam: 'mocked-party' }});
+            expect(mockPutPartiesCtx.response.status).toBe(200);
         });
     });
 
