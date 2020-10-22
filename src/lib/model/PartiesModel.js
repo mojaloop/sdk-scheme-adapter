@@ -125,7 +125,7 @@ function getResponse() {
 async function onRequestPartiesInformation(fsm, type, id, subId) {
     const { cache, logger } = this.context;
     const { requests } = this.handlersContext;
-    logger.push({ type, id, subId }).error('onReqeustPartiesInformation - arguments')
+    logger.push({ type, id, subId }).error('onReqeustPartiesInformation - arguments');
     const channel = channelName(type, id, subId);
     let sid;
 
