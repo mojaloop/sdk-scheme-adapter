@@ -555,7 +555,7 @@ const getPartiesByTypeAndId = async (ctx) => {
 
         const cacheKey = PartiesModel.generateKey(type, id, subId);
 
-        // use the authorizations model to execute asynchronous stages with the switch
+        // use the parties model to execute asynchronous stages with the switch
         const model = await PartiesModel.create({}, cacheKey, modelConfig);
 
         // run model's workflow

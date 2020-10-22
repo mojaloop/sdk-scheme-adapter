@@ -130,7 +130,7 @@ describe('PartiesModel', () => {
             };
 
             // manually invoke transition handler
-            model.onRequestPartiesInformation(type, id, subIdValue)
+            model.onRequestPartiesInformation(model.fsm, type, id, subIdValue)
                 .then(() => {
                     // subscribe should be called only once
                     expect(cache.subscribe).toBeCalledTimes(1);
@@ -178,7 +178,7 @@ describe('PartiesModel', () => {
             const { cache } = model.context;
 
             // invoke transition handler
-            model.onRequestPartiesInformation(type, id, subIdValue).catch((err) => {
+            model.onRequestPartiesInformation(model.fsm, type, id, subIdValue).catch((err) => {
                 expect(err.message).toEqual('Unexpected token u in JSON at position 0');
                 expect(cache.unsubscribe).toBeCalledTimes(1);
                 expect(cache.unsubscribe).toBeCalledWith(channel, subId);        
@@ -204,7 +204,7 @@ describe('PartiesModel', () => {
             let theError = null;
             // invoke transition handler
             try {
-                await model.onRequestPartiesInformation(type, id, subIdValue);
+                await model.onRequestPartiesInformation(model.fsm, type, id, subIdValue);
                 throw new Error('this point should not be reached');
             } catch (error) {
                 theError = error;
