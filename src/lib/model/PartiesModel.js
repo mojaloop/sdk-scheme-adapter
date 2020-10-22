@@ -122,9 +122,10 @@ function getResponse() {
  * @param {string} [subId]  - the optional party subId
  * @returns {string} - the pub/sub channel name
  */
-async function onRequestPartiesInformation(type, id, subId) {
+async function onRequestPartiesInformation(fsm, type, id, subId) {
     const { cache, logger } = this.context;
     const { requests } = this.handlersContext;
+    logger.push({ type, id, subId }).error('onReqeustPartiesInformation - arguments')
     const channel = channelName(type, id, subId);
     let sid;
 
