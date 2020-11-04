@@ -132,12 +132,15 @@ module.exports = {
         clientSecret: env.get('OAUTH_TOKEN_ENDPOINT_CLIENT_SECRET').asString(),
         listenPort: env.get('OAUTH_TOKEN_ENDPOINT_LISTEN_PORT').asPortNumber(),
     },
-    wso2Auth: {
-        staticToken: env.get('WSO2_BEARER_TOKEN').asString(),
-        tokenEndpoint: env.get('OAUTH_TOKEN_ENDPOINT').asString(),
-        clientKey: env.get('OAUTH_CLIENT_KEY').asString(),
-        clientSecret: env.get('OAUTH_CLIENT_SECRET').asString(),
-        refreshSeconds: env.get('OAUTH_REFRESH_SECONDS').default('60').asIntPositive(),
+    wso2: {
+        auth: {
+            staticToken: env.get('WSO2_BEARER_TOKEN').asString(),
+            tokenEndpoint: env.get('OAUTH_TOKEN_ENDPOINT').asString(),
+            clientKey: env.get('OAUTH_CLIENT_KEY').asString(),
+            clientSecret: env.get('OAUTH_CLIENT_SECRET').asString(),
+            refreshSeconds: env.get('OAUTH_REFRESH_SECONDS').default('60').asIntPositive(),
+        },
+        requestAuthFailureRetryTimes: env.get('WSO2_AUTH_FAILURE_REQUEST_RETRIES').default('0').asIntPositive(),
     },
     rejectExpiredQuoteResponses: env.get('REJECT_EXPIRED_QUOTE_RESPONSES').default('false').asBool(),
     rejectTransfersOnExpiredQuotes: env.get('REJECT_TRANSFERS_ON_EXPIRED_QUOTES').default('false').asBool(),

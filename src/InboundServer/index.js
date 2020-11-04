@@ -16,6 +16,7 @@ const http = require('http');
 const yaml = require('js-yaml');
 const fs = require('fs');
 const path = require('path');
+const EventEmitter = require('events');
 
 const { WSO2Auth } = require('@mojaloop/sdk-standard-components');
 
@@ -24,15 +25,23 @@ const router = require('@internal/router');
 const handlers = require('./handlers');
 const middlewares = require('./middlewares');
 
-class InboundApi {
+class InboundApi extends EventEmitter {
     constructor(conf, logger, cache, validator) {
+        super({ captureExceptions: true });
         this._conf = conf;
         this._cache = cache;
-        this._wso2Auth = new WSO2Auth({
-            ...conf.wso2Auth,
-            logger,
-            tlsCreds: conf.outbound.tls.mutualTLS.enabled && conf.outbound.tls.creds,
+        this._wso2 = {
+            auth: new WSO2Auth({
+                ...conf.wso2.auth,
+                logger,
+                tlsCreds: conf.outbound.tls.mutualTLS.enabled && conf.outbound.tls.creds,
+            }),
+            retryWso2AuthFailureTimes: conf.wso2.requestAuthFailureRetryTimes,
+        };
+        this._wso2.auth.on('error', (msg) => {
+            this.emit('error', 'WSO2 auth error in InboundApi', msg);
         });
+
         if (conf.validateInboundJws) {
             this._jwsVerificationKeys = InboundApi._GetJwsKeys(conf.jwsVerificationKeysDirectory);
         }
@@ -42,19 +51,19 @@ class InboundApi {
             validator,
             cache,
             jwsVerificationKeys: this._jwsVerificationKeys,
-            wso2Auth: this._wso2Auth,
+            wso2: this._wso2,
         });
     }
 
     async start() {
         this._startJwsWatcher();
         if (!this._conf.testingDisableWSO2AuthStart) {
-            await this._wso2Auth.start();
+            await this._wso2.auth.start();
         }
     }
 
     stop() {
-        this._wso2Auth.stop();
+        this._wso2.auth.stop();
         if (this._keyWatcher) {
             this._keyWatcher.close();
             this._keyWatcher = null;
@@ -93,7 +102,7 @@ class InboundApi {
         }
     }
 
-    static _SetupApi({ conf, logger, validator, cache, jwsVerificationKeys, wso2Auth }) {
+    static _SetupApi({ conf, logger, validator, cache, jwsVerificationKeys, wso2 }) {
         const api = new Koa();
 
         api.use(middlewares.createErrorHandler(logger));
@@ -104,7 +113,7 @@ class InboundApi {
             api.use(middlewares.createJwsValidator(logger, jwsVerificationKeys, jwsExclusions));
         }
 
-        api.use(middlewares.applyState({ cache, wso2Auth, conf }));
+        api.use(middlewares.applyState({ cache, wso2, conf }));
         api.use(middlewares.createLogger(logger));
         api.use(middlewares.createRequestValidator(validator));
         api.use(middlewares.assignFspiopIdentifier());
@@ -134,8 +143,9 @@ class InboundApi {
     }
 }
 
-class InboundServer {
+class InboundServer extends EventEmitter {
     constructor(conf, logger, cache) {
+        super({ captureExceptions: true });
         this._conf = conf;
         this._validator = new Validate();
         this._logger = logger;
@@ -145,6 +155,9 @@ class InboundServer {
             cache,
             this._validator
         );
+        this._api.on('error', (...args) => {
+            this.emit('error', ...args);
+        });
         this._server = this._createServer(
             conf.inbound.tls.mutualTLS.enabled,
             conf.inbound.tls.creds,
