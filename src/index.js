@@ -12,6 +12,8 @@
 
 const { hostname } = require('os');
 const config = require('./config');
+const EventEmitter = require('events');
+
 const InboundServer = require('./InboundServer');
 const OutboundServer = require('./OutboundServer');
 const OAuthTestServer = require('./OAuthTestServer');
@@ -30,33 +32,36 @@ const { Logger } = require('@mojaloop/sdk-standard-components');
 /**
  * Class that creates and manages http servers that expose the scheme adapter APIs.
  */
-class Server {
+class Server extends EventEmitter {
     constructor(conf, logger) {
+        super({ captureExceptions: true });
         this.conf = conf;
-        this.inboundServer = null;
-        this.outboundServer = null;
-        this.oauthTestServer = null;
-        this.testServer = null;
         this.logger = logger;
         this.cache = new Cache({
             ...conf.cacheConfig,
             logger: this.logger.push({ component: 'cache' }),
             enableTestFeatures: conf.enableTestFeatures,
         });
-    }
 
-    async start() {
         this.inboundServer = new InboundServer(
             this.conf,
             this.logger.push({ app: 'mojaloop-sdk-inbound-api' }),
             this.cache
         );
+        this.inboundServer.on('error', (...args) => {
+            this.logger.push({ args }).log('Unhandled error in Inbound Server');
+            this.emit('error', 'Unhandled error in Inbound Server');
+        });
 
         this.outboundServer = new OutboundServer(
             this.conf,
             this.logger.push({ app: 'mojaloop-sdk-outbound-api' }),
             this.cache
         );
+        this.outboundServer.on('error', (...args) => {
+            this.logger.push({ args }).log('Unhandled error in Outbound Server');
+            this.emit('error', 'Unhandled error in Outbound Server');
+        });
 
         this.oauthTestServer = new OAuthTestServer({
             clientKey: this.conf.oauthTestServer.clientKey,
@@ -70,7 +75,9 @@ class Server {
             logger: this.logger.push({ app: 'mojaloop-sdk-test-api' }),
             cache: this.cache,
         });
+    }
 
+    async start() {
         await this.cache.connect();
 
         const startTestServer = this.conf.enableTestFeatures ? this.testServer.start() : null;
@@ -109,6 +116,10 @@ if(require.main === module) {
             stringify: Logger.buildStringify({ space: config.logIndent }),
         });
         const svr = new Server(config, logger);
+        svr.on('error', (err) => {
+            logger.push({ err }).log('Unhandled server error');
+            process.exit(1);
+        });
 
         // handle SIGTERM to exit gracefully
         process.on('SIGTERM', async () => {

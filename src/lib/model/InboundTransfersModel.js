@@ -48,7 +48,7 @@ class InboundTransfersModel {
             tls: config.inbound.tls,
             jwsSign: config.jwsSign,
             jwsSigningKey: config.jwsSigningKey,
-            wso2Auth: config.wso2Auth,
+            wso2: config.wso2,
             resourceVersions: config.resourceVersions
         });
 
