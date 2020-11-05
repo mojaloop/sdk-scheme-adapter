@@ -26,7 +26,7 @@ const getAuthorizationsById = async (ctx) => {
                 ...ctx.state.conf,
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
-                wso2Auth: ctx.state.wso2Auth,
+                wso2: ctx.state.wso2,
                 resourceVersions: ctx.resourceVersions,
             });
 
@@ -62,7 +62,7 @@ const getParticipantsByTypeAndId = async (ctx) => {
                 ...ctx.state.conf,
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
-                wso2Auth: ctx.state.wso2Auth,
+                wso2: ctx.state.wso2,
                 resourceVersions: ctx.resourceVersions,
             });
 
@@ -100,7 +100,7 @@ const getPartiesByTypeAndId = async (ctx) => {
                 ...ctx.state.conf,
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
-                wso2Auth: ctx.state.wso2Auth,
+                wso2: ctx.state.wso2,
                 resourceVersions: ctx.resourceVersions,
             });
 
@@ -148,7 +148,7 @@ const postQuotes = async (ctx) => {
                 ...ctx.state.conf,
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
-                wso2Auth: ctx.state.wso2Auth,
+                wso2: ctx.state.wso2,
                 resourceVersions: ctx.resourceVersions,
             });
 
@@ -185,7 +185,7 @@ const postTransfers = async (ctx) => {
                 ...ctx.state.conf,
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
-                wso2Auth: ctx.state.wso2Auth,
+                wso2: ctx.state.wso2,
                 resourceVersions: ctx.resourceVersions,
             });
 
@@ -221,7 +221,7 @@ const getTransfersById = async (ctx) => {
                 ...ctx.state.conf,
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
-                wso2Auth: ctx.state.wso2Auth,
+                wso2: ctx.state.wso2,
                 resourceVersions: ctx.resourceVersions,
             });
 
@@ -259,7 +259,7 @@ const postTransactionRequests = async (ctx) => {
                 ...ctx.state.conf,
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
-                wso2Auth: ctx.state.wso2Auth,
+                wso2: ctx.state.wso2,
                 resourceVersions: ctx.resourceVersions,
             });
 
@@ -413,7 +413,7 @@ const patchTransfersById = async (ctx) => {
         ...ctx.state.conf,
         cache: ctx.state.cache,
         logger: ctx.state.logger,
-        wso2Auth: ctx.state.wso2Auth,
+        wso2: ctx.state.wso2,
         resourceVersions: ctx.resourceVersions,
     });
 
@@ -486,7 +486,7 @@ const getBulkQuotesById = async (ctx) => {
                 ...ctx.state.conf,
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
-                wso2Auth: ctx.state.wso2Auth,
+                wso2: ctx.state.wso2,
                 resourceVersions: ctx.resourceVersions,
             });
 
@@ -523,7 +523,7 @@ const postBulkQuotes = async (ctx) => {
                 ...ctx.state.conf,
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
-                wso2Auth: ctx.state.wso2Auth,
+                wso2: ctx.state.wso2,
                 resourceVersions: ctx.resourceVersions,
             });
 
@@ -585,7 +585,7 @@ const getBulkTransfersById = async (ctx) => {
                 ...ctx.state.conf,
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
-                wso2Auth: ctx.state.wso2Auth,
+                wso2: ctx.state.wso2,
                 resourceVersions: ctx.resourceVersions,
             });
 
@@ -622,7 +622,7 @@ const postBulkTransfers = async (ctx) => {
                 ...ctx.state.conf,
                 cache: ctx.state.cache,
                 logger: ctx.state.logger,
-                wso2Auth: ctx.state.wso2Auth,
+                wso2: ctx.state.wso2,
                 resourceVersions: ctx.resourceVersions,
             });
 

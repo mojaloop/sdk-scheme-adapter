@@ -15,6 +15,7 @@ const koaBody = require('koa-body');
 const yaml = require('js-yaml');
 const fs = require('fs');
 const path = require('path');
+const EventEmitter = require('events');
 
 const { WSO2Auth } = require('@mojaloop/sdk-standard-components');
 
@@ -25,23 +26,30 @@ const middlewares = require('./middlewares');
 
 const endpointRegex = /\/.*/g;
 
-class OutboundApi {
+class OutboundApi extends EventEmitter {
     constructor(conf, logger, cache, validator) {
+        super({ captureExceptions: true });
         this._logger = logger;
         this._api = new Koa();
         this._conf = conf;
         this._cache = cache;
 
-        this._wso2Auth = new WSO2Auth({
-            ...this._conf.wso2Auth,
-            logger: this._logger,
-            tlsCreds: this._conf.outbound.tls.mutualTLS.enabled && this._conf.outbound.tls.creds,
+        this._wso2 = {
+            auth: new WSO2Auth({
+                ...this._conf.wso2.auth,
+                logger: this._logger,
+                tlsCreds: this._conf.outbound.tls.mutualTLS.enabled && this._conf.outbound.tls.creds,
+            }),
+            retryWso2AuthFailureTimes: conf.wso2.requestAuthFailureRetryTimes,
+        };
+        this._wso2.auth.on('error', (msg) => {
+            this.emit('error', 'WSO2 auth error in OutboundApi', msg);
         });
 
         this._api.use(middlewares.createErrorHandler(this._logger));
         this._api.use(middlewares.createRequestIdGenerator());
         this._api.use(koaBody()); // outbound always expects application/json
-        this._api.use(middlewares.applyState({ cache, wso2Auth: this._wso2Auth, conf }));
+        this._api.use(middlewares.applyState({ cache, wso2: this._wso2, conf }));
         this._api.use(middlewares.createLogger(this._logger));
 
         //Note that we strip off any path on peerEndpoint config after the origin.
@@ -53,7 +61,7 @@ class OutboundApi {
                 peerEndpoint: conf.peerEndpoint.replace(endpointRegex, ''),
                 proxyConfig: conf.proxyConfig,
                 logger: this._logger,
-                wso2Auth: this._wso2Auth,
+                wso2Auth: this._wso2.auth,
                 tls: conf.outbound.tls,
             }));
         }
@@ -64,12 +72,12 @@ class OutboundApi {
 
     async start() {
         if (!this._conf.testingDisableWSO2AuthStart) {
-            await this._wso2Auth.start();
+            await this._wso2.auth.start();
         }
     }
 
     async stop() {
-        this._wso2Auth.stop();
+        this._wso2.auth.stop();
     }
 
     callback() {
@@ -77,8 +85,9 @@ class OutboundApi {
     }
 }
 
-class OutboundServer {
+class OutboundServer extends EventEmitter {
     constructor(conf, logger, cache) {
+        super({ captureExceptions: true });
         this._validator = new Validate();
         this._conf = conf;
         this._logger = logger;
@@ -89,6 +98,9 @@ class OutboundServer {
             cache,
             this._validator
         );
+        this._api.on('error', (...args) => {
+            this.emit('error', ...args);
+        });
         this._server = http.createServer(this._api.callback());
     }
 

@@ -100,7 +100,7 @@ const postTransfers = async (ctx) => {
             ...ctx.state.conf,
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            wso2Auth: ctx.state.wso2Auth,
+            wso2: ctx.state.wso2,
         });
 
         // initialize the transfer model and start it running
@@ -132,7 +132,7 @@ const getTransfers = async (ctx) => {
             ...ctx.state.conf,
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            wso2Auth: ctx.state.wso2Auth,
+            wso2: ctx.state.wso2,
         });
 
         // initialize the transfer model and start it running
@@ -160,7 +160,7 @@ const putTransfers = async (ctx) => {
             ...ctx.state.conf,
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            wso2Auth: ctx.state.wso2Auth,
+            wso2: ctx.state.wso2,
         });
 
         // TODO: check the incoming body to reject party or quote when requested to do so
@@ -194,7 +194,7 @@ const postBulkTransfers = async (ctx) => {
             ...ctx.state.conf,
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            wso2Auth: ctx.state.wso2Auth,
+            wso2: ctx.state.wso2,
         });
 
         await model.initialize(bulkTransferRequest);
@@ -225,7 +225,7 @@ const getBulkTransfers = async (ctx) => {
             ...ctx.state.conf,
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            wso2Auth: ctx.state.wso2Auth,
+            wso2: ctx.state.wso2,
         });
 
         await model.initialize(bulkTransferRequest);
@@ -254,7 +254,7 @@ const postBulkQuotes = async (ctx) => {
             ...ctx.state.conf,
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            wso2Auth: ctx.state.wso2Auth,
+            wso2: ctx.state.wso2,
         });
 
         await model.initialize(bulkQuoteRequest);
@@ -285,7 +285,7 @@ const getBulkQuoteById = async (ctx) => {
             ...ctx.state.conf,
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            wso2Auth: ctx.state.wso2Auth,
+            wso2: ctx.state.wso2,
         });
 
         await model.initialize(bulkQuoteRequest);
@@ -315,7 +315,7 @@ const postRequestToPayTransfer = async (ctx) => {
             ...ctx.state.conf,
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            wso2Auth: ctx.state.wso2Auth,
+            wso2: ctx.state.wso2,
         });
 
         // initialize the transfer model and start it running
@@ -342,7 +342,7 @@ const putRequestToPayTransfer = async (ctx) => {
             ...ctx.state.conf,
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            wso2Auth: ctx.state.wso2Auth,
+            wso2: ctx.state.wso2,
         });
 
         // TODO: check the incoming body to reject party or quote when requested to do so
@@ -376,7 +376,7 @@ const postAccounts = async (ctx) => {
             tls: ctx.state.conf.outbound.tls,
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            wso2Auth: ctx.state.wso2Auth,
+            wso2: ctx.state.wso2,
         });
 
         const state = {
@@ -408,7 +408,7 @@ const postRequestToPay = async (ctx) => {
             ...ctx.state.conf,
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            wso2Auth: ctx.state.wso2Auth,
+            wso2: ctx.state.wso2,
         });
 
         // initialize the transfer model and start it running

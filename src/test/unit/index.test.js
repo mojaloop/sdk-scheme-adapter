@@ -10,6 +10,9 @@
 
 'use strict';
 
+const { Logger } = require('@mojaloop/sdk-standard-components');
+const defaultConfig = require('./data/defaultConfig');
+
 jest.mock('dotenv', () => ({
     config: jest.fn()
 }));
@@ -21,8 +24,25 @@ process.env.CACHE_PORT = '6379';
 
 const index = require('../../index.js');
 
-
 describe('index.js', () => {
+    test('WSO2 error events in OutboundServer propagate to top-level server', () => {
+        const logger = new Logger.Logger({ stringify: () => '' });
+        const svr = new index.Server(defaultConfig, logger);
+        const cb = jest.fn();
+        svr.on('error', cb);
+        svr.outboundServer._api._wso2.auth.emit('error', 'msg');
+        expect(cb).toHaveBeenCalledTimes(1);
+    });
+
+    test('WSO2 error events in InboundServer propagate to top-level server', () => {
+        const logger = new Logger.Logger({ stringify: () => '' });
+        const svr = new index.Server(defaultConfig, logger);
+        const cb = jest.fn();
+        svr.on('error', cb);
+        svr.inboundServer._api._wso2.auth.emit('error', 'msg');
+        expect(cb).toHaveBeenCalledTimes(1);
+    });
+
     test('Exports expected modules', () => {
         expect(typeof(index.Server)).toBe('function');
         expect(typeof(index.InboundServerMiddleware)).toBe('object');
