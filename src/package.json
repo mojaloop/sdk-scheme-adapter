@@ -8,7 +8,7 @@
     "audit:check": "SHELL=sh check-audit --production",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test": "jest --ci --reporters=default --reporters=jest-junit --env=node test/unit/index.test.js",
+    "test": "jest --ci --reporters=default --reporters=jest-junit --env=node test/unit/",
     "test:int": "jest --ci --reporters=default --reporters=jest-junit --env=node test/integration --forceExit"
   },
   "author": "Matt Kingston, James Bush, ModusBox Inc.",
