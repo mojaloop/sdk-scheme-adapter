@@ -193,6 +193,9 @@ class InboundTransfersModel {
                 fulfilment: fulfilment
             });
 
+            // now store the quoteRespnse data against the quoteId in our cache to be sent as a response to GET /quotes/{ID}
+            await this._cache.set(`quoteResponse_${quoteRequest.quoteId}`, mojaloopResponse);
+
             // make a callback to the source fsp with the quote response
             return this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId);
         }
@@ -201,6 +204,30 @@ class InboundTransfersModel {
             const mojaloopError = await this._handleError(err);
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
             return await this._mojaloopRequests.putQuotesError(quoteRequest.quoteId,
+                mojaloopError, sourceFspId);
+        }
+    }
+
+    /**
+     * This is executed as when GET /quotes/{ID} request is made to get the response of a previous POST /quotes request. 
+     * Gets the quoteResponse from the cache and makes a callback to the originator with result
+     */
+    async getQuoteRequest(quoteId, sourceFspId) {
+        try {
+            // Get the quoteRespnse data for the quoteId from the cache to be sent as a response to GET /quotes/{ID}
+            const quoteResponse = await this._cache.get(`quoteResponse_${quoteId}`);
+            // Make a PUT /quotes/{ID} callback to the source fsp with the quote response
+            if(quoteResponse != null) {
+                return this._mojaloopRequests.putQuotes(quoteId, quoteResponse, sourceFspId);
+            }
+            // If no quoteResponse is found in the cache, do nothing
+            return;
+        }
+        catch(err) {
+            this._logger.push({ err }).log('Error in getQuoteRequest');
+            const mojaloopError = await this._handleError(err);
+            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            return await this._mojaloopRequests.putQuotesError(quoteId,
                 mojaloopError, sourceFspId);
         }
     }

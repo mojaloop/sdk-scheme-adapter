@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
-  "version": "11.9.0",
+  "version": "11.10.0",
   "description": "An adapter for connecting to Mojaloop API enabled switches.",
   "main": "index.js",
   "scripts": {
@@ -15,7 +15,8 @@
   "contributors": [
     "Kamuela Franco <kamuela.franco@modusbox.com>",
     "Steven Oderayi <steven.oderayi@modusbox.com>",
-    "Valentin Genev <valentin.genev@modusbox.com>"
+    "Valentin Genev <valentin.genev@modusbox.com>",
+    "Shashikant Hirugade <shashikant.hirugade@modusbox.com>"
   ],
   "license": "Apache-2.0",
   "licenses": [
