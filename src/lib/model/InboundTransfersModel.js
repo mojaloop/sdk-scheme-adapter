@@ -216,12 +216,17 @@ class InboundTransfersModel {
         try {
             // Get the quoteRespnse data for the quoteId from the cache to be sent as a response to GET /quotes/{ID}
             const quoteResponse = await this._cache.get(`quoteResponse_${quoteId}`);
-            // Make a PUT /quotes/{ID} callback to the source fsp with the quote response
-            if(quoteResponse != null) {
-                return this._mojaloopRequests.putQuotes(quoteId, quoteResponse, sourceFspId);
+            
+            // If no quoteResponse is found in the cache, make an error callback to the source fsp
+            if (!quoteResponse) {
+                const err = new Error('Quote Id not found');
+                const mojaloopError = await this._handleError(err, Errors.MojaloopApiErrorCodes.QUOTE_ID_NOT_FOUND);
+                this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+                return await this._mojaloopRequests.putQuotesError(quoteId,
+                    mojaloopError, sourceFspId); 
             }
-            // If no quoteResponse is found in the cache, do nothing
-            return;
+            // Make a PUT /quotes/{ID} callback to the source fsp with the quote response
+            return this._mojaloopRequests.putQuotes(quoteId, quoteResponse, sourceFspId);
         }
         catch(err) {
             this._logger.push({ err }).log('Error in getQuoteRequest');
@@ -709,9 +714,7 @@ class InboundTransfersModel {
         }
     }
 
-    async _handleError(err) {
-        let mojaloopErrorCode = Errors.MojaloopApiErrorCodes.INTERNAL_SERVER_ERROR;
-
+    async _handleError(err, mojaloopErrorCode = Errors.MojaloopApiErrorCodes.INTERNAL_SERVER_ERROR) {
         if(err instanceof HTTPResponseError) {
             const e = err.getData();
             if(e.res && e.res.data) {
