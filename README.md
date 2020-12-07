@@ -159,7 +159,7 @@ docker cp scheme-adapter-int:/src/junit.xml .
 The status of a previously sent quotation request can be get by executing `GET /quotes/{ID}`.
 When the response to the original quote request is sent, the response is cached in the redis store. When a `GET /quotes/{ID}` is received,
 the cached response is retrieved from the redis store and returned to the caller as a body with `PUT /quotes/{ID}` request.
-It is recommended to setup redis as a persistent store for this feature to work properly. Also only the payer dfsp is supposed to make the `GET /quotes/{ID}` request.
+When the redis is setup as a persistent store then it will return the response for all the quote requests sent with `POST /quotes`. If the the redis is setup as cache with expiry time then it will not return response for the expired quotes when the cache expires. Also only the payer dfsp is supposed to make the `GET /quotes/{ID}` request.
 If the quote response is not found in the redis store `PUT /quotes/{ID}` will be made with the following body
 ```
 {
