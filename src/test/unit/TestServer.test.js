@@ -265,8 +265,8 @@ describe('Test Server', () => {
             .send(postQuotesBody)
             .set(headers);
 
-        // Called once for the quote request, once for the fulfilment
-        expect(inboundServer._api._cache.set).toHaveBeenCalledTimes(2);
+        // Called twice for the quote request, once for the fulfilment
+        expect(inboundServer._api._cache.set).toHaveBeenCalledTimes(3);
         expect(inboundServer._api._cache.set).toHaveBeenCalledWith(
             `${testServer._wsapi._cache.REQUEST_PREFIX}${postQuotesBody.quoteId}`,
             {
@@ -326,8 +326,8 @@ describe('Test Server', () => {
             .send(postQuotesBody)
             .set(quoteRequestHeaders);
 
-        // Called once for the quote request, once for the fulfilment
-        expect(inboundServer._api._cache.set).toHaveBeenCalledTimes(2);
+        // Called twice for the quote request, once for the fulfilment
+        expect(inboundServer._api._cache.set).toHaveBeenCalledTimes(3);
         expect(inboundServer._api._cache.set).toHaveBeenCalledWith(
             `${testServer._wsapi._cache.REQUEST_PREFIX}${postQuotesBody.quoteId}`,
             {
@@ -366,10 +366,10 @@ describe('Test Server', () => {
             .send(putParticipantsBody)
             .set(putParticipantsHeaders);
 
-        // Called twice for the quote request earlier in this test, another time now for the put
+        // Called thrice for the quote request earlier in this test, another time now for the put
         // participants request
-        expect(inboundServer._api._cache.set).toHaveBeenCalledTimes(3);
-        expect(inboundServer._api._cache.set.mock.calls[2]).toEqual([
+        expect(inboundServer._api._cache.set).toHaveBeenCalledTimes(4);
+        expect(inboundServer._api._cache.set.mock.calls[3]).toEqual([
             `${testServer._wsapi._cache.CALLBACK_PREFIX}${participantId}`,
             {
                 data: putParticipantsBody,
