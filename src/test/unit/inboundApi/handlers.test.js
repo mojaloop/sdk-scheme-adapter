@@ -61,6 +61,44 @@ describe('Inbound API handlers:', () => {
 
     });
 
+    describe('GET /quotes', () => {
+
+        let mockContext;
+
+        beforeEach(() => {
+            mockContext = {
+                request: {
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    path: {
+                        params: {
+                            'ID': '1234567890'
+                        }
+                    },
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
+                }
+            };
+
+        });
+
+        test('calls `model.getQuoteRequest` with the expected arguments.', async () => {
+            const getQuoteRequestSpy = jest.spyOn(Model.prototype, 'getQuoteRequest');
+
+            await expect(handlers['/quotes/{ID}'].get(mockContext)).resolves.toBe(undefined);
+
+            expect(getQuoteRequestSpy).toHaveBeenCalledTimes(1);
+            expect(getQuoteRequestSpy.mock.calls[0][1]).toBe(mockContext.request.headers['fspiop-source']);
+
+        });
+
+
+    });
+
     describe('POST /bulkQuotes', () => {
 
         let mockContext;

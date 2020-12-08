@@ -371,6 +371,42 @@ const putQuoteById = async (ctx) => {
 };
 
 /**
+ * Handles a GET /quotes/{ID}
+ */
+const getQuoteById = async (ctx) => {
+    // kick off an asyncronous operation to handle the request
+    (async () => {
+        try {
+            // use the transfers model to execute asynchronous stages with the switch
+            const model = new Model({
+                ...ctx.state.conf,
+                cache: ctx.state.cache,
+                logger: ctx.state.logger,
+                wso2: ctx.state.wso2,
+                resourceVersions: ctx.resourceVersions,
+            });
+
+            const sourceFspId = ctx.request.headers['fspiop-source'];
+
+            // use the model to handle the request
+            const response = await model.getQuoteRequest(ctx.state.path.params.ID, sourceFspId);
+
+            // log the result
+            ctx.state.logger.push({ response }).log('Inbound transfers model handled GET /quotes request');
+        }
+        catch(err) {
+            // nothing we can do if an error gets thrown back to us here apart from log it and continue
+            ctx.state.logger.push({ err }).log('Error handling GET /quotes');
+        }
+    })();
+
+    // Note that we will have passed request validation, JWS etc... by this point
+    // so it is safe to return 200
+    ctx.response.status = 200;
+
+};
+
+/**
  * Handles a PUT /quotes/{ID}. This is a response to a POST /quotes request
  */
 const putTransactionRequestsById = async (ctx) => {
@@ -739,7 +775,8 @@ module.exports = {
         post: postQuotes
     },
     '/quotes/{ID}': {
-        put: putQuoteById
+        put: putQuoteById,
+        get: getQuoteById
     },
     '/quotes/{ID}/error': {
         put: putQuotesByIdError
