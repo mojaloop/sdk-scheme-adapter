@@ -106,6 +106,7 @@ module.exports = {
     autoAcceptR2PBusinessQuotes: env.get('AUTO_ACCEPT_R2P_BUSINESS_QUOTES').default('false').asBool(),
     autoAcceptR2PDeviceQuotes: env.get('AUTO_ACCEPT_R2P_DEVICE_QUOTES').default('true').asBool(),
     autoAcceptR2PDeviceOTP: env.get('AUTO_ACCEPT_R2P_DEVICE_OTP').default('false').asBool(),
+    autoAcceptParticipantsPut: env.get('AUTO_ACCEPT_PARTICIPANTS_PUT').default('false').asBool(),
 
     /* TODO:  high-risk transactions can require additional clearing check */
     // enableClearingCheck: env.get('ENABLE_CLEARING_CHECK').default('false').asBool(),
