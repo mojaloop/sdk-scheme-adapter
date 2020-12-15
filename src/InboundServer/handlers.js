@@ -334,8 +334,40 @@ const putParticipantsByIdError = async (ctx) => {
  * Handles a PUT /participants/{idType}/{idValue} request
  */
 const putParticipantsByTypeAndId = async (ctx) => {
-    // SDK does not make participants requests so we should not expect any calls to this method
-    ctx.response.status = 501;
+    // Allow putParticipants only for testing purpose when `AUTO_ACCEPT_PARTICIPANTS_PUT` env variable is set to true.
+    if(ctx.state.conf.autoAcceptParticipantsPut){
+        const idType = ctx.state.path.params.Type;
+        const idValue = ctx.state.path.params.ID;
+        const idSubValue = ctx.state.path.params.SubId;
+
+        // publish an event onto the cache for subscribers to action
+        const cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
+        await ctx.state.cache.publish(cacheId, ctx.request.body);
+        ctx.response.status = 200;
+    } else {
+        // SDK does not make participants requests so we should not expect any calls to this method
+        ctx.response.status = 501;
+        ctx.response.body = '';
+    }
+};
+
+
+/**
+ * Handles a PUT /participants/{Type}/{ID}/{SubId}/error request. This is an error response to a GET /participants/{Type}/{ID}/{SubId} request
+ */
+const putParticipantsByTypeAndIdError = async(ctx) => {
+    const idType = ctx.state.path.params.Type;
+    const idValue = ctx.state.path.params.ID;
+    const idSubValue = ctx.state.path.params.SubId;
+
+    // publish an event onto the cache for subscribers to action
+    // note that we publish the event the same way we publish a success PUT
+    // the subscriber will notice the body contains an errorInformation property
+    // and recognise it as an error response
+    const cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
+    await ctx.state.cache.publish(cacheId, ctx.request.body);
+
+    ctx.response.status = 200;
     ctx.response.body = '';
 };
 
@@ -748,9 +780,12 @@ module.exports = {
         put: putParticipantsByTypeAndId,
         get: getParticipantsByTypeAndId
     },
-    '/participants/{Type}/{SubId}/{ID}': {
+    '/participants/{Type}/{ID}/{SubId}': {
         put: putParticipantsByTypeAndId,
         get: getParticipantsByTypeAndId
+    },
+    '/participants/{Type}/{ID}/{SubId}/error': {
+        put: putParticipantsByTypeAndIdError
     },
     '/participants/{ID}/error': {
         put: putParticipantsByIdError
