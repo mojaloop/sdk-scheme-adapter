@@ -63,8 +63,12 @@ const assignFspiopIdentifier = () => async (ctx, next) => {
         '/participants/{Type}/{ID}': {
             get: () => ctx.state.path.params.ID,
         },
-        '/participants/{Type}/{SubId}/{ID}': {
+        '/participants/{Type}/{ID}/{SubId}': {
             get: () => ctx.state.path.params.ID,
+            put: () => ctx.state.path.params.ID,
+        },
+        '/participants/{Type}/{ID}/{SubId}/error': {
+            put: () => ctx.state.path.params.ID,
         },
         '/participants/{ID}/error': {
             put: () => ctx.state.path.params.ID,
