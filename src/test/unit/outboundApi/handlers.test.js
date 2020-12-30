@@ -143,7 +143,7 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: mockLogger({ app: 'outbound-api-handlers-test'})
+                    logger: console
                 }
             };
 
@@ -171,7 +171,7 @@ describe('Outbound API handlers:', () => {
                     conf: {
                         outboundErrorStatusCodeExtensionKey: 'extErrorKey'  // <- tell the handler to use this extensionList item as source of statusCode
                     },
-                    logger: mockLogger({ app: 'outbound-api-handlers-test'})
+                    logger: console
                 }
             };
 
@@ -235,7 +235,7 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: mockLogger({ app: 'outbound-api-handlers-test'})
+                    logger: console
                 }
             };
 
@@ -378,7 +378,7 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: mockLogger({ app: 'outbound-api-handlers-test'})
+                    logger: console
                 }
             };
 

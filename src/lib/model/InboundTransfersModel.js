@@ -22,6 +22,7 @@ const {
 } = require('@mojaloop/sdk-standard-components');
 const shared = require('@internal/shared');
 
+
 /**
  *  Models the operations required for performing inbound transfers
  */
@@ -40,6 +41,7 @@ class InboundTransfersModel {
             alsEndpoint: config.alsEndpoint,
             quotesEndpoint: config.quotesEndpoint,
             transfersEndpoint: config.transfersEndpoint,
+            bulkTransfersEndpoint: config.bulkTransfersEndpoint,
             dfspId: config.dfspId,
             tls: config.tls,
             jwsSign: config.jwsSign,
@@ -584,9 +586,9 @@ class InboundTransfersModel {
                     return {
                         transferId: transfer.transferId,
                         fulfilment: fulfilments[transfer.transferId],
-                        ...response.individualTransferResults[transfer.transferId].extensionList && {
+                        ...transfer.extensionList && {
                             extensionList: {
-                                extension: response.individualTransferResults[transfer.transferId].extensionList,
+                                extension: transfer.extensionList,
                             },
                         }
                     };
@@ -594,7 +596,7 @@ class InboundTransfersModel {
             }
 
             // make a callback to the source fsp with the transfer fulfilment
-            return this._mojaloopRequests.putBulkTransfers(bulkPrepareRequest.transferId, mojaloopResponse, sourceFspId);
+            return this._mojaloopRequests.putBulkTransfers(bulkPrepareRequest.bulkTransferId, mojaloopResponse, sourceFspId);
         }
         catch (err) {
             this._logger.push({ err }).log('Error in prepareBulkTransfers');
@@ -666,23 +668,14 @@ class InboundTransfersModel {
 
     async _handleError(err) {
         let mojaloopErrorCode = Errors.MojaloopApiErrorCodes.INTERNAL_SERVER_ERROR;
-        if (err instanceof HTTPResponseError) {
+
+        if(err instanceof HTTPResponseError) {
             const e = err.getData();
-            if(e.res && (e.res.body || e.res.data)) {
-                if(e.res.body) {
-                    try {
-                        const bodyObj = JSON.parse(e.res.body);
-                        mojaloopErrorCode = Errors.MojaloopApiErrorCodeFromCode(`${bodyObj.statusCode}`);
-                    } catch(ex) {
-                        // do nothing
-                        this._logger.push({ ex }).log('Error parsing error message body as JSON');
-                    }
-        
-                } else if(e.res.data) {
-                    mojaloopErrorCode = Errors.MojaloopApiErrorCodeFromCode(`${e.res.data.statusCode}`);
-                }
+            if(e.res && e.res.data) {
+                mojaloopErrorCode = Errors.MojaloopApiErrorCodeFromCode(`${e.res.data.statusCode}`);
             }
         }
+
         return new Errors.MojaloopFSPIOPError(err, null, null, mojaloopErrorCode).toApiErrorObject();
     }
 }

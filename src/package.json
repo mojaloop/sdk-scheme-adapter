@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
-  "version": "10.6.2",
+  "version": "10.6.3",
   "description": "An adapter for connecting to Mojaloop API enabled switches.",
   "main": "index.js",
   "scripts": {
@@ -40,7 +40,8 @@
     "koa-body": "^4.1.1",
     "koa2-oauth-server": "^1.0.0",
     "node-fetch": "^2.6.0",
-    "uuidv4": "^6.0.8"
+    "uuidv4": "^6.0.8",
+    "ws": "^7.3.1"
   },
   "devDependencies": {
     "@types/jest": "^25.2.1",

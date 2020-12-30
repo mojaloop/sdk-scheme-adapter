@@ -136,7 +136,7 @@ class BackendRequests {
      * @returns {object} - JSON response body if one was received
      */
     async postBulkTransfers(prepare) {
-        return this._post('bulktransfers', prepare);
+        return this._post('bulkTransfers', prepare);
     }
 
     /**
