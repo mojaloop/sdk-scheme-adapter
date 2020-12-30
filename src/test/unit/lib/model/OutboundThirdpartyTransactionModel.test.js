@@ -252,6 +252,7 @@ describe('thirdpartyTransactionModel', () => {
 
         it('should implement happy flow', async () => {
             data.transactionRequestId = uuid();
+            data.currentState = 'postTransaction';
             let payerInformation = {
                 'personalInfo': {
                     'complexName': {
@@ -289,13 +290,12 @@ describe('thirdpartyTransactionModel', () => {
                     expect(cache.subscribe.mock.calls[0][0]).toEqual(channel);
 
                     // check invocation of request.postThirdpartyRequestsTransactions
-                    expect(ThirdpartyRequests.__postThirdpartyRequestsTransactions).toBeCalledWith(data.transactionRequestId, 'dfspa');
+                    expect(ThirdpartyRequests.__postThirdpartyRequestsTransactions).toBeCalledWith(data, 'dfspa');
 
                     // check that this.context.data is updated
                     expect(model.context.data).toEqual({
-                        Iam: 'the-body',
-                        transactionRequestId: model.context.data.transactionRequestId,
-                        payer: payerInformation,
+                        'transactionId': '5a2ad5dc-4ab1-4a22-8c5b-62f75252a8d5',
+                        'transactionRequestState': 'RECEIVED',
                         // current state will be updated by onAfterTransition which isn't called
                         // when manual invocation of transition handler happens
                         currentState: 'postTransaction'

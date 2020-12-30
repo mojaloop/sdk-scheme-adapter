@@ -25,7 +25,7 @@ paths:
         - Health
       responses:
         200:
-          description: Returns empty body if the scheme adapter outbound transfers service is running.
+          description: Returns empty body if the scheme adapter outbound transfers service is running.  
   /transfers:
     post:
       summary: Sends money from one account to another
@@ -1142,6 +1142,7 @@ components:
             or an object representing other types of error e.g. exceptions that may occur inside the scheme adapter.
           $ref: '#/components/schemas/transferError'
 
+
     transferResponse:
       type: object
       required:
@@ -1732,14 +1733,14 @@ components:
         ^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$
       description: >
         The API data type Latitude is a JSON String in a lexical format that is
-        restricted by a regular expression for interoperability reasons.
+        restricted by a regular expression for interoperability reasons.    
     longitude:
       type: string
       pattern: >-
         ^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,6})?))$
       description: >-
         The API data type Longitude is a JSON String in a lexical format that is
-        restricted by a regular expression for interoperability reasons.
+        restricted by a regular expression for interoperability reasons.    
 
     ilpCondition:
       type: string
