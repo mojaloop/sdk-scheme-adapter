@@ -322,7 +322,6 @@ describe('thirdpartyTransactionModel', () => {
 
         it('should unsubscribe from cache in case when error happens in workflow run', async () => {
             data.transactionRequestId = uuid();
-
             const channel = Model.notificationChannel(data.transactionRequestId);
             const model = await Model.create(data, cacheKey, modelConfig);
             const { cache } = model.context;

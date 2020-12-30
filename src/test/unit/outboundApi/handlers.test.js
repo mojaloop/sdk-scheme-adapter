@@ -143,12 +143,12 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: console
+                    logger: mockLogger({ app: 'outbound-api-handlers-test'})
                 }
             };
 
             await handlers['/transfers'].post(mockContext);
-            
+
             // check response is correct
             expect(mockContext.response.status).toEqual(500);
             expect(mockContext.response.body).toBeTruthy();
@@ -171,7 +171,7 @@ describe('Outbound API handlers:', () => {
                     conf: {
                         outboundErrorStatusCodeExtensionKey: 'extErrorKey'  // <- tell the handler to use this extensionList item as source of statusCode
                     },
-                    logger: console
+                    logger: mockLogger({ app: 'outbound-api-handlers-test'})
                 }
             };
 
@@ -203,7 +203,7 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: console,
+                    logger: mockLogger({ app: 'outbound-api-handlers-test'}),
                     path: {
                         params: {
                             transferId: '12345'
@@ -235,12 +235,12 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: console
+                    logger: mockLogger({ app: 'outbound-api-handlers-test'})
                 }
             };
 
             await handlers['/bulkTransfers'].post(mockContext);
-            
+
             // check response is correct
             expect(mockContext.response.status).toEqual(500);
             expect(mockContext.response.body).toBeTruthy();
@@ -263,7 +263,7 @@ describe('Outbound API handlers:', () => {
                     conf: {
                         outboundErrorStatusCodeExtensionKey: 'extErrorKey'  // <- tell the handler to use this extensionList item as source of statusCode
                     },
-                    logger: console
+                    logger: mockLogger({ app: 'outbound-api-handlers-test'})
                 }
             };
 
@@ -293,12 +293,12 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: console
+                    logger: mockLogger({ app: 'outbound-api-handlers-test'})
                 }
             };
 
             await handlers['/bulkQuotes'].post(mockContext);
-            
+
             // check response is correct
             expect(mockContext.response.status).toEqual(500);
             expect(mockContext.response.body).toBeTruthy();
@@ -321,7 +321,7 @@ describe('Outbound API handlers:', () => {
                     conf: {
                         outboundErrorStatusCodeExtensionKey: 'extErrorKey'  // <- tell the handler to use this extensionList item as source of statusCode
                     },
-                    logger: console
+                    logger: mockLogger({ app: 'outbound-api-handlers-test'})
                 }
             };
 
@@ -351,7 +351,7 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: console
+                    logger: mockLogger({ app: 'outbound-api-handlers-test'})
                 }
             };
 
@@ -378,7 +378,7 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: console
+                    logger: mockLogger({ app: 'outbound-api-handlers-test'})
                 }
             };
 
@@ -395,7 +395,7 @@ describe('Outbound API handlers:', () => {
 
     describe('POST /authorizations', () => {
         test('happy flow', async() => {
-            
+
             const mockContext = {
                 request: {
                     body: {the: 'body', toParticipantId: 'pisp', transactionRequestId: '123'},
@@ -411,12 +411,12 @@ describe('Outbound API handlers:', () => {
                     cache: { the: 'mocked cache' }
                 },
             };
-            
+
             // mock state machine
             const mockedPSM = {
                 run: jest.fn(async () => ({ the: 'run response' }))
             };
-            
+
             const createSpy = jest.spyOn(OutboundAuthorizationsModel, 'create')
                 .mockImplementationOnce(async () => mockedPSM);
 
@@ -447,7 +447,7 @@ describe('Outbound API handlers:', () => {
 
     describe('GET /parties/{Type}/{ID}/{SubId}', () => {
         test('happy flow', async() => {
-            
+
             const mockContext = {
                 request: {},
                 response: {},
@@ -465,12 +465,12 @@ describe('Outbound API handlers:', () => {
                     },
                 },
             };
-            
+
             // mock state machine
             const mockedPSM = {
                 run: jest.fn(async () => ({ the: 'run response' }))
             };
-            
+
             const createSpy = jest.spyOn(PartiesModel, 'create')
                 .mockImplementationOnce(async () => mockedPSM);
 
@@ -495,7 +495,7 @@ describe('Outbound API handlers:', () => {
             expect(mockContext.response.body).toEqual({ the: 'run response' });
         });
 
-        test('error flow', async() => {    
+        test('error flow', async() => {
             const mockContext = {
                 request: {},
                 response: {},
@@ -513,12 +513,12 @@ describe('Outbound API handlers:', () => {
                     },
                 },
             };
-            
+
             // mock state machine
             const mockedPSM = {
                 run: jest.fn(async () => ({ errorInformation: { Iam: 'the-error'} }))
             };
-            
+
             const createSpy = jest.spyOn(PartiesModel, 'create')
                 .mockImplementationOnce(async () => mockedPSM);
 
@@ -545,7 +545,7 @@ describe('Outbound API handlers:', () => {
     });
     describe('GET /parties/{Type}/{ID}', () => {
         test('happy flow', async() => {
-            
+
             const mockContext = {
                 request: {},
                 response: {},
@@ -562,12 +562,12 @@ describe('Outbound API handlers:', () => {
                     },
                 },
             };
-            
+
             // mock state machine
             const mockedPSM = {
                 run: jest.fn(async () => ({ the: 'run response' }))
             };
-            
+
             const createSpy = jest.spyOn(PartiesModel, 'create')
                 .mockImplementationOnce(async () => mockedPSM);
 
@@ -592,7 +592,7 @@ describe('Outbound API handlers:', () => {
             expect(mockContext.response.body).toEqual({ the: 'run response' });
         });
 
-        test('error flow', async() => {    
+        test('error flow', async() => {
             const mockContext = {
                 request: {},
                 response: {},
@@ -609,12 +609,12 @@ describe('Outbound API handlers:', () => {
                     },
                 },
             };
-            
+
             // mock state machine
             const mockedPSM = {
                 run: jest.fn(async () => ({ errorInformation: { Iam: 'the-error'} }))
             };
-            
+
             const createSpy = jest.spyOn(PartiesModel, 'create')
                 .mockImplementationOnce(async () => mockedPSM);
 
@@ -638,5 +638,5 @@ describe('Outbound API handlers:', () => {
             expect(mockContext.response.status).toBe(404);
             expect(mockContext.response.body).toEqual({ errorInformation: { Iam: 'the-error'} });
         });
-    });    
+    });
 });
