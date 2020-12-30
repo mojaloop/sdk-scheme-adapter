@@ -131,5 +131,6 @@ module.exports = {
     outboundErrorStatusCodeExtensionKey: env.get('OUTBOUND_ERROR_STATUSCODE_EXTENSION_KEY').asString(),
 
     proxyConfig: env.get('PROXY_CONFIG_PATH').asYamlConfig(),
+    reserveNotification: env.get('RESERVE_NOTIFICATION').default('false').asBool(),
     enablePISPMode: env.get('ENABLE_PISP_MODE').default('false').asBool()
 };

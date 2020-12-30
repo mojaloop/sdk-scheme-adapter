@@ -566,7 +566,7 @@ const putTransactionRequestsById = async (ctx) => {
 };
 
 /**
- * Handles a PUT /transfers/{ID}. This is a response to a POST|GET /transfers request
+ * Handles a PUT /transfers/{ID}. This is a response to a POST|PATCH|GET /transfers request
  */
 const putTransfersById = async (ctx) => {
     if(ctx.state.conf.enableTestFeatures) {
@@ -1090,7 +1090,8 @@ module.exports = {
     },
     '/transfers/{ID}': {
         get: getTransfersById,
-        put: putTransfersById
+        put: putTransfersById,
+        patch: putTransfersById
     },
     '/transfers/{ID}/error': {
         put: putTransfersByIdError
