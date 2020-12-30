@@ -18,13 +18,128 @@ const { Jws, Errors } = require('@mojaloop/sdk-standard-components');
  * Log raw to console as a last resort
  * @return {Function}
  */
-const createErrorHandler = () => async (ctx, next) => {
+const createErrorHandler = (logger) => async (ctx, next) => {
     try {
         await next();
     } catch (err) {
         // TODO: return a 500 here if the response has not already been sent?
-        console.log(`Error caught in catchall: ${err.stack || util.inspect(err, { depth: 10 })}`);
+        logger.push({ err }).log('Error caught in catchall');
     }
+};
+
+
+/**
+ * tag each incoming request with the FSPIOP identifier from it's path or body
+ * @return {Function}
+ */
+const assignFspiopIdentifier = () => async (ctx, next) => {
+    const getters = {
+        '/authorizations/{ID}': {
+            get: () => ctx.state.path.params.ID,
+            put: () => ctx.state.path.params.ID,
+        },
+        '/bulkQuotes': {
+            post: () => ctx.request.body.bulkQuoteId,
+        },
+        '/bulkQuotes/{ID}': {
+            get: () => ctx.state.path.params.ID,
+            put: () => ctx.state.path.params.ID,
+        },
+        '/bulkQuotes/{ID}/error': {
+            put: () => ctx.state.path.params.ID,
+        },
+        '/bulkTransfers': {
+            post: () => ctx.request.body.bulkTransferId,
+        },
+        '/bulkTransfers/{ID}': {
+            get: () => ctx.state.path.params.ID,
+            put: () => ctx.state.path.params.ID,
+        },
+        '/bulkTransfers/{ID}/error': {
+            put: () => ctx.state.path.params.ID,
+        },
+        '/participants/{ID}': {
+            put: () => ctx.state.path.params.ID,
+        },
+        '/participants/{Type}/{ID}': {
+            get: () => ctx.state.path.params.ID,
+        },
+        '/participants/{Type}/{ID}/{SubId}': {
+            get: () => ctx.state.path.params.ID,
+            put: () => ctx.state.path.params.ID,
+        },
+        '/participants/{Type}/{ID}/{SubId}/error': {
+            put: () => ctx.state.path.params.ID,
+        },
+        '/participants/{ID}/error': {
+            put: () => ctx.state.path.params.ID,
+        },
+        '/parties/{Type}/{ID}': {
+            get: () => ctx.state.path.params.ID,
+            put: () => ctx.state.path.params.ID,
+        },
+        '/parties/{Type}/{ID}/{SubId}': {
+            get: () => ctx.state.path.params.ID,
+            put: () => ctx.state.path.params.ID,
+        },
+        '/parties/{Type}/{ID}/error': {
+            put: () => ctx.state.path.params.ID,
+        },
+        '/parties/{Type}/{ID}/{SubId}/error': {
+            put: () => ctx.state.path.params.ID,
+        },
+        '/quotes': {
+            post: () => ctx.request.body.quoteId,
+        },
+        '/quotes/{ID}': {
+            put: () => ctx.state.path.params.ID,
+        },
+        '/quotes/{ID}/error': {
+            put: () => ctx.state.path.params.ID,
+        },
+        '/transfers': {
+            post: () => ctx.request.body.transferId,
+        },
+        '/transfers/{ID}': {
+            get: () => ctx.state.path.params.ID,
+            put: () => ctx.state.path.params.ID,
+            patch: () => ctx.state.path.params.ID,
+        },
+        '/transfers/{ID}/error': {
+            put: () => ctx.state.path.params.ID,
+        },
+        '/transactionRequests': {
+            post: () => ctx.request.body.transactionRequestId,
+        },
+        '/transactionRequests/{ID}': {
+            put: () => ctx.state.path.params.ID,
+        }
+    }[ctx.state.path.pattern];
+    if (getters) {
+        const getter = getters[ctx.method.toLowerCase()];
+        if (getter) {
+            ctx.state.fspiopId = getter(ctx.request);
+        }
+    }
+    await next();
+};
+
+
+/**
+ * cache incoming requests and callbacks
+ * @return {Function}
+ */
+const cacheRequest = (cache) => async (ctx, next) => {
+    if (ctx.state.fspiopId) {
+        const req = {
+            headers: ctx.request.headers,
+            data: ctx.request.body,
+        };
+        const prefix = ctx.method.toLowerCase() === 'put' ? cache.CALLBACK_PREFIX : cache.REQUEST_PREFIX;
+        const res = await cache.set(`${prefix}${ctx.state.fspiopId}`, req);
+        ctx.state.logger.push({ res }).log('Caching request');
+    }
+    await next();
 };
 
 
@@ -49,7 +164,9 @@ const createHeaderValidator = (logger) => async (ctx, next) => {
         'application/vnd.interoperability.parties+json;version=1.0',
         'application/vnd.interoperability.participants+json;version=1.0',
         'application/vnd.interoperability.quotes+json;version=1.0',
+        'application/vnd.interoperability.quotes+json;version=1.1',
         'application/vnd.interoperability.bulkQuotes+json;version=1.0',
+        'application/vnd.interoperability.bulkQuotes+json;version=1.1',
         'application/vnd.interoperability.bulkTransfers+json;version=1.0',
         'application/vnd.interoperability.transactionRequests+json;version=1.0',
         'application/vnd.interoperability.transfers+json;version=1.0',
@@ -123,16 +240,24 @@ const createJwsValidator = (logger, keys, exclusions) => {
 
 
 /**
- * Add a log context for each request, log the receipt and handling thereof
- * @param logger
+ * Add request state.
+ * TODO: this should probably be app context:
+ * https://github.com/koajs/koa/blob/master/docs/api/index.md#appcontext
  * @param sharedState
  * @return {Function}
  */
-const createLogger = (logger, sharedState) => async (ctx, next) => {
-    ctx.state = {
-        ...ctx.state,
-        ...sharedState,
-    };
+const applyState = (sharedState) => async (ctx, next) => {
+    Object.assign(ctx.state, sharedState);
+    await next();
+};
+
+
+/**
+ * Add a log context for each request, log the receipt and handling thereof
+ * @param logger
+ * @return {Function}
+ */
+const createLogger = (logger) => async (ctx, next) => {
     ctx.state.logger = logger.push({ request: {
         id: ctx.request.id,
         path: ctx.path,
@@ -198,6 +323,9 @@ const createResponseBodyHandler = () => async (ctx, next) => {
 
 
 module.exports = {
+    applyState,
+    assignFspiopIdentifier,
+    cacheRequest,
     createErrorHandler,
     createRequestIdGenerator,
     createHeaderValidator,

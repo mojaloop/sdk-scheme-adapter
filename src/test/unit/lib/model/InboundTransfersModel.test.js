@@ -14,11 +14,10 @@ jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('redis');
 
 const defaultConfig = require('./data/defaultConfig');
-const { Logger, Transports } = require('@internal/log');
 const Model = require('@internal/model').InboundTransfersModel;
 const mockArguments = require('./data/mockArguments');
 const mockTxnReqquestsArguments = require('./data/mockTxnRequestsArguments');
-const { MojaloopRequests, Ilp } = require('@mojaloop/sdk-standard-components');
+const { MojaloopRequests, Ilp, Logger } = require('@mojaloop/sdk-standard-components');
 const { BackendRequests, HTTPResponseError } = require('@internal/requests');
 const Cache = require('@internal/cache');
 
@@ -26,6 +25,7 @@ const getTransfersBackendResponse = require('./data/getTransfersBackendResponse'
 const getTransfersMojaloopResponse = require('./data/getTransfersMojaloopResponse');
 const getBulkTransfersBackendResponse = require('./data/getBulkTransfersBackendResponse');
 const getBulkTransfersMojaloopResponse = require('./data/getBulkTransfersMojaloopResponse');
+const notificationToPayee = require('./data/notificationToPayee');
 
 describe('inboundModel', () => {
     let config;
@@ -34,12 +34,7 @@ describe('inboundModel', () => {
     let logger;
 
     beforeAll(async () => {
-        const logTransports = await Promise.all([Transports.consoleDir()]);
-        logger = new Logger({
-            context: { app: 'inbound-model-unit-tests' },
-            space: 4,
-            transports: logTransports,
-        });
+        logger = new Logger.Logger({ context: { app: 'inbound-model-unit-tests' }, stringify: () => '' });
     });
 
     beforeEach(async () => {
@@ -117,6 +112,7 @@ describe('inboundModel', () => {
         let cache;
 
         beforeEach(async () => {
+            // eslint-disable-next-line no-unused-vars
             expectedQuoteResponseILP = Ilp.__response;
             BackendRequests.__postBulkQuotes = jest.fn().mockReturnValue(Promise.resolve(mockArgs.internalBulkQuoteResponse));
 
@@ -126,7 +122,7 @@ describe('inboundModel', () => {
                 logger,
             });
             await cache.connect();
-
+            // eslint-disable-next-line no-unused-vars
             model = new Model({
                 ...config,
                 cache,
@@ -139,7 +135,7 @@ describe('inboundModel', () => {
             await cache.disconnect();
         });
 
-        test('calls `mojaloopRequests.putBulkQuotes` with the expected arguments.', async () => {
+        test('calls mojaloopRequests.putBulkQuotes with the expected arguments.', async () => {
             await model.bulkQuoteRequest(mockArgs.bulkQuoteRequest, mockArgs.fspId);
 
             expect(MojaloopRequests.__putBulkQuotes).toHaveBeenCalledTimes(1);
@@ -148,8 +144,7 @@ describe('inboundModel', () => {
             expect(MojaloopRequests.__putBulkQuotes.mock.calls[0][1].individualQuoteResults[0].condition).toBe(expectedQuoteResponseILP.condition);
             expect(MojaloopRequests.__putBulkQuotes.mock.calls[0][2]).toBe(mockArgs.fspId);
         });
-
-        test('adds a custom `expiration` property in case it is not defined.', async() => {
+        test('adds a custom expiration property in case it is not defined.', async() => {
             // set a custom mock time in the global Date object in order to avoid race conditions.
             // Make sure to clear it at the end of the test case.
             const currentTime = new Date().getTime();
@@ -168,7 +163,6 @@ describe('inboundModel', () => {
 
             dateSpy.mockClear();
         });
-
 
     });
 
@@ -593,6 +587,41 @@ describe('inboundModel', () => {
             expect(MojaloopRequests.__putBulkTransfersError).toHaveBeenCalledTimes(0);
             expect(BackendRequests.__postBulkTransfers).toHaveBeenCalledTimes(1);
             expect(MojaloopRequests.__putBulkTransfers).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('sendNotificationToPayee:', () => {
+        const transferId = '1234';
+        let cache;
+
+        beforeEach(async () => { 
+            cache = new Cache({
+                host: 'dummycachehost',
+                port: 1234,
+                logger,
+            });
+            await cache.connect();
+        });
+
+        afterEach(async () => {
+            await cache.disconnect();
+        });
+
+        test('sends notification to fsp backend', async () => {
+            BackendRequests.__putTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({}));
+            const backendResponse = JSON.parse(JSON.stringify(notificationToPayee));
+
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+            });
+
+            await model.sendNotificationToPayee(backendResponse.data, transferId);
+            expect(BackendRequests.__putTransfersNotification).toHaveBeenCalledTimes(1);
+            const call = BackendRequests.__putTransfersNotification.mock.calls[0];
+            expect(call[0]).toEqual(backendResponse.data);
+            expect(call[1]).toEqual(transferId);
         });
     });
 });

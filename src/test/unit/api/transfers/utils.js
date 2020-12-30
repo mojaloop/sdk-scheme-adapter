@@ -1,7 +1,7 @@
 const nock = require('nock');
 const OpenAPIResponseValidator = require('openapi-response-validator').default;
 
-const { Logger } = require('@internal/log');
+const { Logger } = require('@mojaloop/sdk-standard-components');
 const defaultConfig = require('../../data/defaultConfig');
 const postTransfersSimpleBody = require('./data/postTransfersSimpleBody');
 
@@ -49,11 +49,14 @@ function createGetTransfersTester({ reqInbound, reqOutbound, apiSpecsOutbound })
         const res = await reqOutbound.get(`/transfers/${TRANSFER_ID}`);
         const {body} = res;
         expect(res.statusCode).toEqual(responseCode);
+        delete body.initiatedTimestamp;
+        if (body.transferState) {
+            delete body.transferState.initiatedTimestamp;
+        }
         expect(body).toEqual(responseBody);
         const responseValidator = new OpenAPIResponseValidator(apiSpecsOutbound.paths['/transfers/{transferId}'].get);
         const err = responseValidator.validateResponse(responseCode, body);
         if (err) {
-            console.log(body);
             throw err;
         }
     };
@@ -70,12 +73,7 @@ function createGetTransfersTester({ reqInbound, reqOutbound, apiSpecsOutbound })
 function createPostTransfersTester(
     { requestValidatorInbound, reqInbound, reqOutbound, apiSpecsOutbound }) {
 
-    const logTransports = [() => {}];
-    const logger = new Logger({
-        context: { app: 'outbound-model-unit-tests' },
-        space: 4,
-        transports: logTransports,
-    });
+    const logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests' }, stringify: () => '' });
 
     /**
      *
@@ -159,11 +157,14 @@ function createPostTransfersTester(
         const res = await reqOutbound.post('/transfers').send(postTransfersSimpleBody);
         const {body} = res;
         expect(res.statusCode).toEqual(responseCode);
+        delete body.initiatedTimestamp;
+        if (body.transferState) {
+            delete body.transferState.initiatedTimestamp;
+        }
         expect(body).toEqual(responseBody);
         const responseValidator = new OpenAPIResponseValidator(apiSpecsOutbound.paths['/transfers'].post);
         const err = responseValidator.validateResponse(responseCode, body);
         if (err) {
-            console.log(body);
             throw err;
         }
         await pendingRequest;

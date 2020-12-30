@@ -73,12 +73,15 @@ function injectHandlersContext(config, specStateMachine) {
                     logger: config.logger,
                     peerEndpoint: config.peerEndpoint,
                     alsEndpoint: config.alsEndpoint,
+                    quotesEndpoint: config.quotesEndpoint,
+                    transfersEndpoint: config.transfersEndpoint,
+                    transactionRequestsEndpoint: config.transactionRequestsEndpoint,
                     dfspId: config.dfspId,
-                    tls: config.tls,
+                    tls: config.outbound.tls,
                     jwsSign: config.jwsSign,
                     jwsSignPutParties: config.jwsSignPutParties,
                     jwsSigningKey: config.jwsSigningKey,
-                    wso2Auth: config.wso2Auth
+                    wso2: config.wso2,
                 })
             }
         }

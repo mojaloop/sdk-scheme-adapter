@@ -13,6 +13,12 @@
 const util = require('util');
 const redis = require('redis');
 
+const CONN_ST = {
+    CONNECTED: 'CONNECTED',
+    CONNECTING: 'CONNECTING',
+    DISCONNECTED: 'DISCONNECTED',
+    DISCONNECTING: 'DISCONNECTING',
+};
 
 /**
  * A shared cache abstraction over a REDIS distributed key/value store
@@ -29,6 +35,9 @@ class Cache {
 
         // a redis connection to handle get, set and publish operations
         this._client = null;
+
+        // connection/disconnection logic
+        this._connectionState = CONN_ST.DISCONNECTED;
 
         // a redis connection to handle subscribe operations and published message routing
         // Note that REDIS docs suggest a client that is in SUBSCRIBE mode
@@ -51,15 +60,51 @@ class Cache {
      * See: https://redis.io/topics/pubsub
      */
     async connect() {
-        if (this._connected) {
-            throw new Error('already connected');
+        switch(this._connectionState) {
+            case CONN_ST.CONNECTED:
+                return;
+            case CONN_ST.CONNECTING:
+                await this._inProgressConnection;
+                return;
+            case CONN_ST.DISCONNECTED:
+                break;
+            case CONN_ST.DISCONNECTING:
+                // TODO: should this be an error?
+                // If we're disconnecting, we'll let that finish first
+                await this._inProgressDisconnection;
+                break;
         }
-        this._connected = true;
-        this._client = await this._getClient();
-        this._subscriptionClient = await this._getClient();
+        this._connectionState = CONN_ST.CONNECTING;
+        this._inProgressConnection = Promise.all([this._getClient(), this._getClient()]);
+        [this._client, this._subscriptionClient] = await this._inProgressConnection;
 
         // hook up our sub message handler
         this._subscriptionClient.on('message', this._onMessage.bind(this));
+
+        if (this._config.enableTestFeatures) {
+            this.setTestMode(true);
+        }
+
+        this._inProgressConnection = null;
+        this._connectionState = CONN_ST.CONNECTED;
+    }
+
+    /**
+     * Configure Redis to emit keyevent events. This corresponds to the application test mode, and
+     * enables us to listen for changes on callback_* and request_* keys.
+     * Docs: https://redis.io/topics/notifications
+     */
+    async setTestMode(enable) {
+        // See for modes: https://redis.io/topics/notifications#configuration
+        // This mode, 'Es$' is:
+        //   E     Keyevent events, published with __keyevent@<db>__ prefix.
+        //   s     Set commands
+        //   $     String commands
+        const mode = enable ? 'Es$' : '';
+        this._logger
+            .push({ 'notify-keyspace-events': mode })
+            .log('Configuring Redis to emit keyevent events');
+        this._client.config('SET', 'notify-keyspace-events', mode);
     }
 
     /**
@@ -81,14 +126,30 @@ class Cache {
     }
 
     async disconnect() {
-        if (!this._connected) {
-            return;
+        switch(this._connectionState) {
+            case CONN_ST.CONNECTED:
+                break;
+            case CONN_ST.CONNECTING:
+                // TODO: should this be an error?
+                // If we're connecting, we'll let that finish first
+                await this._inProgressConnection;
+                break;
+            case CONN_ST.DISCONNECTED:
+                return;
+            case CONN_ST.DISCONNECTING:
+                await this._inProgressDisconnection;
+                return;
         }
-        await Promise.all([
+        this._connectionState = CONN_ST.DISCONNECTING;
+        this._inProgressDisconnection = Promise.all([
             new Promise(resolve => this._client.quit(resolve)),
             new Promise(resolve => this._subscriptionClient.quit(resolve))
         ]);
-        this._connected = false;
+        this._client = null;
+        this._subscriptionClient = null;
+        await this._inProgressDisconnection;
+        this._inProgressDisconnection = null;
+        this._connectionState = CONN_ST.DISCONNECTED;
     }
 
 

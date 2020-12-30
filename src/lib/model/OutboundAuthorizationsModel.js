@@ -21,7 +21,7 @@ const specStateMachine = {
     transitions: [
         { name: 'init', from: 'none', to: 'start' },
         { name: 'requestAuthorization', from: 'start', to: 'succeeded' },
-        { name: 'error', from: '*', to: 'errored' },    
+        { name: 'error', from: '*', to: 'errored' },
     ],
     methods: {
         // workflow methods
@@ -93,7 +93,7 @@ const mapCurrentState = {
 function getResponse() {
     const { data, logger } = this.context;
     let resp = { ...data };
-    
+
     // project some of our internal state into a more useful
     // representation to return to the SDK API consumer
     resp.currentState = mapCurrentState[data.currentState];
@@ -120,7 +120,7 @@ function notificationChannel(id) {
 /**
  * Requests Authorization
  * Starts the authorization process by sending a POST /authorizations request to switch;
- * than await for a notification on PUT /authorizations/<transactionRequestId> from the cache that the Authorization has been resolved 
+ * than await for a notification on PUT /authorizations/<transactionRequestId> from the cache that the Authorization has been resolved
  */
 async function onRequestAuthorization() {
     const { data, cache, logger } = this.context;
@@ -132,10 +132,10 @@ async function onRequestAuthorization() {
     return new Promise( async(resolve, reject) => {
 
         try {
-            // in InboundServer/handlers is implemented putAuthorizationsById handler 
+            // in InboundServer/handlers is implemented putAuthorizationsById handler
             // where this event is fired but only if env ENABLE_PISP_MODE=true
             subId = await cache.subscribe(channel, async (channel, message, sid) => {
-                try { 
+                try {
                     const parsed = JSON.parse(message);
                     this.context.data = {
                         ...parsed,
@@ -143,20 +143,20 @@ async function onRequestAuthorization() {
                     };
                     resolve();
                 } catch(err) {
-                    reject(err); 
+                    reject(err);
                 } finally {
                     if(sid) {
                         cache.unsubscribe(channel, sid);
                     }
                 }
             });
-            
+
             // POST /authorization request to the switch
             const postRequest = buildPostAuthorizationsRequest(data, config);
             const res = await requests.postAuthorizations(postRequest, data.toParticipantId);
-            
+
             logger.push({ res }).log('Authorizations request sent to peer');
-            
+
         } catch(error) {
             logger.push(error).error('Authorization request error');
             if(subId) {
@@ -183,13 +183,13 @@ function buildPostAuthorizationsRequest(data/** , config */) {
 /**
  * injects the config into state machine data
  * so it will be accessible to on transition notification handlers via `this.handlersContext`
- * 
+ *
  * @param {Object} config               - config to be injected into state machine data
  * @param {Object} specStateMachine     - specState machine to be altered
  * @returns {Object}                    - the altered specStateMachine
  */
 function injectHandlersContext(config, specStateMachine) {
-    return { 
+    return {
         ...specStateMachine,
         data: {
             handlersContext: {
@@ -198,12 +198,15 @@ function injectHandlersContext(config, specStateMachine) {
                     logger: config.logger,
                     peerEndpoint: config.peerEndpoint,
                     alsEndpoint: config.alsEndpoint,
+                    quotesEndpoint: config.quotesEndpoint,
+                    transfersEndpoint: config.transfersEndpoint,
+                    transactionRequestsEndpoint: config.transactionRequestsEndpoint,
                     dfspId: config.dfspId,
-                    tls: config.tls,
+                    tls: config.outbound.tls,
                     jwsSign: config.jwsSign,
                     jwsSignPutParties: config.jwsSignPutParties,
                     jwsSigningKey: config.jwsSigningKey,
-                    wso2Auth: config.wso2Auth
+                    wso2: config.wso2,
                 })
             }
         }
@@ -213,7 +216,7 @@ function injectHandlersContext(config, specStateMachine) {
 
 /**
  * creates a new instance of state machine specified in specStateMachine ^
- * 
+ *
  * @param {Object} data     - payload data
  * @param {String} key      - the cache key where state machine will store the payload data after each transition
  * @param {Object} config   - the additional configuration for transition handlers
@@ -243,8 +246,8 @@ module.exports = {
     create,
     loadFromCache,
     notificationChannel,
-    
+
     // exports for testing purposes
-    mapCurrentState,         
+    mapCurrentState,
     buildPostAuthorizationsRequest
 };

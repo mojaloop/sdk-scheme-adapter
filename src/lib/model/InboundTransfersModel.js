@@ -22,7 +22,6 @@ const {
 } = require('@mojaloop/sdk-standard-components');
 const shared = require('@internal/shared');
 
-
 /**
  *  Models the operations required for performing inbound transfers
  */
@@ -43,11 +42,14 @@ class InboundTransfersModel {
             quotesEndpoint: config.quotesEndpoint,
             transfersEndpoint: config.transfersEndpoint,
             bulkTransfersEndpoint: config.bulkTransfersEndpoint,
+            transactionRequestsEndpoint: config.transactionRequestsEndpoint,
+            bulkQuotesEndpoint: config.bulkQuotesEndpoint,
             dfspId: config.dfspId,
-            tls: config.tls,
+            tls: config.inbound.tls,
             jwsSign: config.jwsSign,
             jwsSigningKey: config.jwsSigningKey,
-            wso2Auth: config.wso2Auth
+            wso2: config.wso2,
+            resourceVersions: config.resourceVersions
         });
 
         this._backendRequests = new BackendRequests({
@@ -59,7 +61,8 @@ class InboundTransfersModel {
         this._checkIlp = config.checkIlp;
 
         this._ilp = new Ilp({
-            secret: config.ilpSecret
+            secret: config.ilpSecret,
+            logger: this._logger,
         });
     }
 
@@ -190,6 +193,9 @@ class InboundTransfersModel {
                 fulfilment: fulfilment
             });
 
+            // now store the quoteRespnse data against the quoteId in our cache to be sent as a response to GET /quotes/{ID}
+            await this._cache.set(`quoteResponse_${quoteRequest.quoteId}`, mojaloopResponse);
+
             // make a callback to the source fsp with the quote response
             return this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId);
         }
@@ -198,6 +204,35 @@ class InboundTransfersModel {
             const mojaloopError = await this._handleError(err);
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
             return await this._mojaloopRequests.putQuotesError(quoteRequest.quoteId,
+                mojaloopError, sourceFspId);
+        }
+    }
+
+    /**
+     * This is executed as when GET /quotes/{ID} request is made to get the response of a previous POST /quotes request. 
+     * Gets the quoteResponse from the cache and makes a callback to the originator with result
+     */
+    async getQuoteRequest(quoteId, sourceFspId) {
+        try {
+            // Get the quoteRespnse data for the quoteId from the cache to be sent as a response to GET /quotes/{ID}
+            const quoteResponse = await this._cache.get(`quoteResponse_${quoteId}`);
+            
+            // If no quoteResponse is found in the cache, make an error callback to the source fsp
+            if (!quoteResponse) {
+                const err = new Error('Quote Id not found');
+                const mojaloopError = await this._handleError(err, Errors.MojaloopApiErrorCodes.QUOTE_ID_NOT_FOUND);
+                this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+                return await this._mojaloopRequests.putQuotesError(quoteId,
+                    mojaloopError, sourceFspId); 
+            }
+            // Make a PUT /quotes/{ID} callback to the source fsp with the quote response
+            return this._mojaloopRequests.putQuotes(quoteId, quoteResponse, sourceFspId);
+        }
+        catch(err) {
+            this._logger.push({ err }).log('Error in getQuoteRequest');
+            const mojaloopError = await this._handleError(err);
+            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            return await this._mojaloopRequests.putQuotesError(quoteId,
                 mojaloopError, sourceFspId);
         }
     }
@@ -411,7 +446,7 @@ class InboundTransfersModel {
                     (quoteResult) => quoteResult.quoteId === quote.quoteId
                 );
                 const quoteResponse = {
-                    amount: mojaloopIndividualQuote.transferAmount,
+                    transferAmount: mojaloopIndividualQuote.transferAmount,
                     note: mojaloopIndividualQuote.note || '',
                 };
                 const { fulfilment, ilpPacket, condition } = this._ilp.getQuoteResponseIlp(
@@ -667,9 +702,19 @@ class InboundTransfersModel {
         }
     }
 
-    async _handleError(err) {
-        let mojaloopErrorCode = Errors.MojaloopApiErrorCodes.INTERNAL_SERVER_ERROR;
+    /**
+    * Forwards Switch notification for fulfiled transfer to the DFSP backend, when acting as a payee 
+    */
+    async sendNotificationToPayee(body, transferId) {
+        try {
+            const res = await this._backendRequests.putTransfersNotification(body, transferId);
+            return res;
+        } catch (err) {
+            this._logger.push({ err }).log('Error in sendNotificationToPayee');
+        }
+    }
 
+    async _handleError(err, mojaloopErrorCode = Errors.MojaloopApiErrorCodes.INTERNAL_SERVER_ERROR) {
         if(err instanceof HTTPResponseError) {
             const e = err.getData();
             if(e.res && e.res.data) {

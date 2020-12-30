@@ -48,16 +48,18 @@ class OutboundTransfersModel {
             alsEndpoint: config.alsEndpoint,
             quotesEndpoint: config.quotesEndpoint,
             transfersEndpoint: config.transfersEndpoint,
+            transactionRequestsEndpoint: config.transactionRequestsEndpoint,
             dfspId: config.dfspId,
-            tls: config.tls,
+            tls: config.outbound.tls,
             jwsSign: config.jwsSign,
             jwsSignPutParties: config.jwsSignPutParties,
             jwsSigningKey: config.jwsSigningKey,
-            wso2Auth: config.wso2Auth
+            wso2: config.wso2,
         });
 
         this._ilp = new Ilp({
-            secret: config.ilpSecret
+            secret: config.ilpSecret,
+            logger: this._logger,
         });
     }
 
@@ -116,6 +118,10 @@ class OutboundTransfersModel {
         // initialize the transfer state machine to its starting state
         if(!this.data.hasOwnProperty('currentState')) {
             this.data.currentState = 'start';
+        }
+
+        if(!this.data.hasOwnProperty('initiatedTimestamp')) {
+            this.data.initiatedTimestamp = new Date().toISOString();
         }
 
         this._initStateMachine(this.data.currentState);
@@ -779,6 +785,7 @@ class OutboundTransfersModel {
 
                 case 'errored':
                     // stopped in errored state
+                    await this._save();
                     this._logger.log('State machine in errored state');
                     return;
             }
@@ -801,6 +808,7 @@ class OutboundTransfersModel {
 
                 // avoid circular ref between transferState.lastError and err
                 err.transferState = JSON.parse(JSON.stringify(this.getResponse()));
+                await this._save();
             }
             throw err;
         }

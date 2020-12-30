@@ -347,7 +347,7 @@ const mojaloopBulkQuotesRequestToInternal = (external) => {
  * @returns {object}
  */
 const internalBulkQuotesResponseToMojaloop = (internal) => {
-    const individualQuoteResults = internal.individualQuotes.map((quote) => {
+    const individualQuoteResults = internal.individualQuoteResults.map((quote) => {
         const externalQuote = {
             quoteId: quote.quoteId,
             transferAmount: {

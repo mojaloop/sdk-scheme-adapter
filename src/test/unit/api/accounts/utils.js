@@ -53,7 +53,6 @@ function createPostAccountsTester({ reqInbound, reqOutbound, apiSpecsOutbound })
         const responseValidator = new OpenAPIResponseValidator(apiSpecsOutbound.paths['/accounts'].post);
         const err = responseValidator.validateResponse(responseCode, body);
         if (err) {
-            console.log(body);
             throw err;
         }
         await pendingRequest;

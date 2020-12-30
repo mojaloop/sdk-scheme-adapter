@@ -19,7 +19,9 @@ const Model = require('@internal/model').InboundTransfersModel;
 const mockArguments = require('./data/mockArguments');
 const mockTransactionRequestData = require('./data/mockTransactionRequest');
 const mockAuthorizationArguments = require('../lib/model/data/mockAuthorizationArguments.json');
+// TODO: decide between logger implementations
 const mockLogger = require('../mockLogger');
+const { Logger } = require('@mojaloop/sdk-standard-components');
 const AuthorizationsModel = require('@internal/model').OutboundAuthorizationsModel;
 const ThirdpartyTrxnModelIn = require('@internal/model').InboundThirdpartyTransactionModel;
 const ThirdpartyTrxnModelOut = require('@internal/model').OutboundThirdpartyTransactionModel;
@@ -66,6 +68,44 @@ describe('Inbound API handlers:', () => {
             expect(quoteRequestSpy).toHaveBeenCalledWith(
                 mockContext.request.body,
                 mockContext.request.headers['fspiop-source']);
+        });
+
+
+    });
+
+    describe('GET /quotes', () => {
+
+        let mockContext;
+
+        beforeEach(() => {
+            mockContext = {
+                request: {
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    path: {
+                        params: {
+                            'ID': '1234567890'
+                        }
+                    },
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
+                }
+            };
+
+        });
+
+        test('calls `model.getQuoteRequest` with the expected arguments.', async () => {
+            const getQuoteRequestSpy = jest.spyOn(Model.prototype, 'getQuoteRequest');
+
+            await expect(handlers['/quotes/{ID}'].get(mockContext)).resolves.toBe(undefined);
+
+            expect(getQuoteRequestSpy).toHaveBeenCalledTimes(1);
+            expect(getQuoteRequestSpy.mock.calls[0][1]).toBe(mockContext.request.headers['fspiop-source']);
+
         });
 
 

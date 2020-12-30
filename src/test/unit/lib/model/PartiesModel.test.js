@@ -23,7 +23,7 @@ describe('PartiesModel', () => {
     let cacheKey;
     let data;
     let modelConfig;
-  
+
     const subId = 123;
     let handler = null;
     beforeEach(async () => {
@@ -41,7 +41,7 @@ describe('PartiesModel', () => {
                     handler = jest.fn(h);
                     return subId;
                 }),
-            
+
                 // mock publish and call stored handler
                 publish: jest.fn(async (channel, message) => await handler(channel, message, subId)),
 
@@ -50,7 +50,7 @@ describe('PartiesModel', () => {
             ...defaultConfig
         };
         data = { the: 'mocked data' };
-        
+
         cacheKey = 'cache-key';
     });
 
@@ -59,7 +59,7 @@ describe('PartiesModel', () => {
             const model = await Model.create(data, cacheKey, modelConfig);
 
             expect(model.state).toBe('start');
-            
+
             // model's methods layout
             const methods = [
                 'run', 'getResponse',
@@ -71,7 +71,7 @@ describe('PartiesModel', () => {
     });
 
     describe('getResponse', () => {
-        
+
         it('should remap currentState', async () => {
             const model = await Model.create(data, cacheKey, modelConfig);
             const states = model.allStates();
@@ -81,12 +81,12 @@ describe('PartiesModel', () => {
                 const result = model.getResponse();
                 expect(result.currentState).toEqual(Model.mapCurrentState[state]);
             });
-            
+
         });
 
         it('should handle unexpected state', async() => {
             const model = await Model.create(data, cacheKey, modelConfig);
-            
+
             // simulate lack of state by undefined property
             delete model.context.data.currentState;
 
@@ -144,9 +144,9 @@ describe('PartiesModel', () => {
                     // check that this.context.data is updated
                     expect(model.context.data).toEqual({
                         ...message,
-                        // current state will be updated by onAfterTransition which isn't called 
+                        // current state will be updated by onAfterTransition which isn't called
                         // when manual invocation of transition handler happens
-                        currentState: 'start'   
+                        currentState: 'start'
                     });
                 });
 
@@ -155,7 +155,7 @@ describe('PartiesModel', () => {
 
             // ensure that cache.unsubscribe does not happened before fire the message
             expect(cache.unsubscribe).not.toBeCalled();
-           
+
 
             // fire publication with given message
             await cache.publish(channel, JSON.stringify(message));
@@ -181,10 +181,10 @@ describe('PartiesModel', () => {
             model.onRequestPartiesInformation(model.fsm, type, id, subIdValue).catch((err) => {
                 expect(err.message).toEqual('Unexpected token u in JSON at position 0');
                 expect(cache.unsubscribe).toBeCalledTimes(1);
-                expect(cache.unsubscribe).toBeCalledWith(channel, subId);        
+                expect(cache.unsubscribe).toBeCalledWith(channel, subId);
             });
 
-            // fire publication to channel with invalid message 
+            // fire publication to channel with invalid message
             // should throw the exception from JSON.parse
             await cache.publish(channel, undefined);
 
@@ -224,7 +224,7 @@ describe('PartiesModel', () => {
             const subIdValue = uuid();
 
             const model = await Model.create(data, cacheKey, modelConfig);
-            
+
             model.requestPartiesInformation = jest.fn();
             model.getResponse = jest.fn(() => Promise.resolve({the: 'response'}));
 
@@ -246,12 +246,12 @@ describe('PartiesModel', () => {
             const subIdValue = uuid();
 
             const model = await Model.create(data, cacheKey, modelConfig);
-            
+
             model.getResponse = jest.fn(() => Promise.resolve({the: 'response'}));
-            
+
             model.context.data.currentState = 'succeeded';
             const result = await model.run(type, id, subIdValue);
-            
+
             expect(result).toEqual({the: 'response'});
             expect(model.getResponse).toBeCalledTimes(1);
             expect(model.context.logger.log).toBeCalledWith('Party information retrieved successfully');
@@ -263,12 +263,12 @@ describe('PartiesModel', () => {
             const subIdValue = uuid();
 
             const model = await Model.create(data, cacheKey, modelConfig);
-            
+
             model.getResponse = jest.fn(() => Promise.resolve({the: 'response'}));
-            
+
             model.context.data.currentState = 'errored';
             const result = await model.run(type, id, subIdValue);
-            
+
             expect(result).toBeFalsy();
             expect(model.getResponse).not.toBeCalled();
             expect(model.context.logger.log).toBeCalledWith('State machine in errored state');
@@ -280,7 +280,7 @@ describe('PartiesModel', () => {
             const subIdValue = uuid();
 
             const model = await Model.create(data, cacheKey, modelConfig);
-            
+
             model.requestPartiesInformation = jest.fn(() => {
                 const err = new Error('requestPartiesInformation failed');
                 err.requestPartiesInformationState = 'some';
@@ -288,7 +288,7 @@ describe('PartiesModel', () => {
             });
             model.error = jest.fn();
             model.context.data.currentState = 'start';
-            
+
             let theError = null;
             try {
                 await model.run(type, id, subIdValue);

@@ -42,7 +42,7 @@ class OutboundBulkTransfersModel {
             jwsSign: config.jwsSign,
             jwsSignPutParties: config.jwsSignPutParties,
             jwsSigningKey: config.jwsSigningKey,
-            wso2Auth: config.wso2Auth
+            wso2: config.wso2,
         });
     }
 
@@ -204,7 +204,7 @@ class OutboundBulkTransfersModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /bulkTransfers request to the switch
             try {
-                const res = await this._requests.postBulkTransfers(bulkTransferPrepare, this.data.payeeFsp.fspId);
+                const res = await this._requests.postBulkTransfers(bulkTransferPrepare, this.data.from.fspId);
                 this._logger.push({ res }).log('Bulk transfer request sent to peer');
             }
             catch (err) {
@@ -231,7 +231,7 @@ class OutboundBulkTransfersModel {
             bulkTransferId: this.data.bulkTransferId,
             bulkQuoteId: this.data.bulkQuoteId,
             payerFsp: this._dfspId,
-            payeeFsp: this.data.payeeFsp.fspId,
+            payeeFsp: this.data.individualTransfers[0].to.fspId,
             expiration: this._getExpirationTimestamp()
         };
 
@@ -243,6 +243,8 @@ class OutboundBulkTransfersModel {
         }
 
         bulkTransferRequest.individualTransfers = this.data.individualTransfers.map((individualTransfer) => {
+            if (bulkTransferRequest.payeeFsp !== individualTransfer.to.fspId) throw new BackendError('payee fsps are not the same into the whole bulk', 500);
+
             const transferId = individualTransfer.transferId || uuid();
 
             const transferPrepare = {
@@ -260,6 +262,7 @@ class OutboundBulkTransfersModel {
                     extension: individualTransfer.extensions
                 };
             }
+
 
             return transferPrepare;
         });

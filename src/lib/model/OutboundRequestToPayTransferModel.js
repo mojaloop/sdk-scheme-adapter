@@ -58,7 +58,7 @@ class OutboundRequestToPayTransferModel {
             jwsSign: config.jwsSign,
             jwsSignPutParties: config.jwsSignPutParties,
             jwsSigningKey: config.jwsSigningKey,
-            wso2Auth: config.wso2Auth
+            wso2: config.wso2,
         });
 
         this._backendRequests = new BackendRequests({
@@ -68,7 +68,8 @@ class OutboundRequestToPayTransferModel {
         });
 
         this._ilp = new Ilp({
-            secret: config.ilpSecret
+            secret: config.ilpSecret,
+            logger: this._logger,
         });
 
         this._enablePISPMode = config.enablePISPMode;

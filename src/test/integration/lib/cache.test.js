@@ -33,7 +33,7 @@
 jest.dontMock('redis');
 
 const Cache = require('@internal/cache');
-const { Logger } = require('@internal/log');
+const { Logger } = require('@mojaloop/sdk-standard-components');
 
 const defaultCacheConfig = {
     host: 'redis',
@@ -42,13 +42,11 @@ const defaultCacheConfig = {
 };
 
 const createCache = async (config) => {
-    const transports = [];
-    config.logger = new Logger({
+    config.logger = new Logger.Logger({
         context: {
             app: 'mojaloop-sdk-inboundCache'
         },
-        space: 4,
-        transports
+        stringify: Logger.buildStringify({ space: 4 }),
     });
     const cache = new Cache(config);
     await cache.connect();
@@ -66,7 +64,7 @@ describe('Cache', () => {
         // Act
         await cache.set('keyA', JSON.stringify(value));
         const result = await cache.get('keyA');
-        
+
         // Assert
         expect(result).toStrictEqual(value);
     });

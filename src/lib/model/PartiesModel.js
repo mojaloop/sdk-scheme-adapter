@@ -56,7 +56,7 @@ async function run(type, id, subId) {
                 // don't await to finish the save
                 this.saveToCache();
                 logger.log(`Party information requested for /${type}/${id}/${subId},  currentState: ${data.currentState}`);
-    
+
             // eslint-disable-next-line no-fallthrough
             case 'succeeded':
                 // all steps complete so return
@@ -101,7 +101,7 @@ const mapCurrentState = {
 function getResponse() {
     const { data, logger } = this.context;
     let resp = { ...data };
-    
+
     // project some of our internal state into a more useful
     // representation to return to the SDK API consumer
     resp.currentState = mapCurrentState[data.currentState];
@@ -132,13 +132,13 @@ async function onRequestPartiesInformation(fsm, type, id, subId) {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise( async(resolve, reject) => {
         try {
-            // in InboundServer/handlers is implemented putPartiesById handler 
+            // in InboundServer/handlers is implemented putPartiesById handler
             sid = await cache.subscribe(channel, async (channel, message, sid) => {
                 // unsubscribe first
                 cache.unsubscribe(channel, sid);
 
                 // protect against malformed JSON message
-                try { 
+                try {
                     const parsed = JSON.parse(message);
                     this.context.data = {
                         ...parsed,
@@ -146,15 +146,15 @@ async function onRequestPartiesInformation(fsm, type, id, subId) {
                     };
                     resolve();
                 } catch(err) {
-                    reject(err); 
+                    reject(err);
                 }
             });
-            
+
             // GET /parties request to the switch
             const res = await requests.getParties(type, id, subId);
-            
+
             logger.push({ res }).log(' RequestPartiesInformation sent to peer');
-            
+
         } catch(error) {
             logger.push(error).error('RequestPartiesInformation error');
             cache.unsubscribe(channel, sid);
@@ -198,7 +198,7 @@ function generateKey(type, id, subId) {
  * @returns {Object}        - the altered specStateMachine
  */
 function injectHandlersContext(config) {
-    return { 
+    return {
         ...specStateMachine,
         data: {
             handlersContext: {
@@ -207,12 +207,15 @@ function injectHandlersContext(config) {
                     logger: config.logger,
                     peerEndpoint: config.peerEndpoint,
                     alsEndpoint: config.alsEndpoint,
+                    quotesEndpoint: config.quotesEndpoint,
+                    transfersEndpoint: config.transfersEndpoint,
+                    transactionRequestsEndpoint: config.transactionRequestsEndpoint,
                     dfspId: config.dfspId,
-                    tls: config.tls,
+                    tls: config.outbound.tls,
                     jwsSign: config.jwsSign,
                     jwsSignPutParties: config.jwsSignPutParties,
                     jwsSigningKey: config.jwsSigningKey,
-                    wso2Auth: config.wso2Auth
+                    wso2: config.wso2,
                 })
             }
         }

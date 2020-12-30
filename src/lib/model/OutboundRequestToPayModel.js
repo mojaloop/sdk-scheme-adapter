@@ -32,7 +32,7 @@ class OutboundRequestToPayModel {
         this._dfspId = config.dfspId;
         this._expirySeconds = config.expirySeconds;
         this._autoAcceptParty = config.autoAcceptParty;
-        
+
         this._requests = new MojaloopRequests({
             logger: this._logger,
             peerEndpoint: config.peerEndpoint,
@@ -42,7 +42,7 @@ class OutboundRequestToPayModel {
             jwsSign: config.jwsSign,
             jwsSignPutParties: config.jwsSignPutParties,
             jwsSigningKey: config.jwsSigningKey,
-            wso2Auth: config.wso2Auth
+            wso2: config.wso2,
         });
     }
 

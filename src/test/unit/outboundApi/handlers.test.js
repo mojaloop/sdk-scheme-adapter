@@ -406,7 +406,6 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    wso2Auth: 'mocked wso2Auth',
                     logger: mockLogger({ app: 'outbound-api-handlers-test'}),
                     cache: { the: 'mocked cache' }
                 },
@@ -453,7 +452,6 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    wso2Auth: 'mocked wso2Auth',
                     logger: mockLogger({ app: 'outbound-api-handlers-test'}),
                     cache: { the: 'mocked cache' },
                     path: {
@@ -501,7 +499,6 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    wso2Auth: 'mocked wso2Auth',
                     logger: mockLogger({ app: 'outbound-api-handlers-test'}),
                     cache: { the: 'mocked cache' },
                     path: {
@@ -551,7 +548,6 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    wso2Auth: 'mocked wso2Auth',
                     logger: mockLogger({ app: 'outbound-api-handlers-test'}),
                     cache: { the: 'mocked cache' },
                     path: {
@@ -598,7 +594,6 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    wso2Auth: 'mocked wso2Auth',
                     logger: mockLogger({ app: 'outbound-api-handlers-test'}),
                     cache: { the: 'mocked cache' },
                     path: {

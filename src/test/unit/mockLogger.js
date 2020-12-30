@@ -8,7 +8,7 @@
  *       Paweł Marzec - pawel.marzec@modusbox.com                         *
  **************************************************************************/
 
-const { Logger, Transports } = require('@internal/log');
+const { Logger } = require('@mojaloop/sdk-standard-components');
 
 function mockLogger(context, keepQuiet) {
     // if keepQuite is undefined then be quiet
@@ -24,8 +24,7 @@ function mockLogger(context, keepQuiet) {
         };
     }
     // let be elaborative and dir logging to console
-    const consoleTransport = Transports.consoleDir();
-    return new Logger({ context: context, space: 4, transports: [ consoleTransport ] });
+    return new Logger({ context: context, space: 4 });
 }
 
 module.exports = mockLogger;

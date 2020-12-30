@@ -14,12 +14,10 @@
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('redis');
 
-const util = require('util');
 const Cache = require('@internal/cache');
 const Model = require('@internal/model').OutboundRequestToPayTransferModel;
-const { Logger, Transports } = require('@internal/log');
 
-const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
+const { MojaloopRequests, Logger } = require('@mojaloop/sdk-standard-components');
 const StateMachine = require('javascript-state-machine');
 
 const defaultConfig = require('./data/defaultConfig');
@@ -55,11 +53,10 @@ describe('outboundRequestToPayTransferModel', () => {
      * @param {boolean} rejects.quoteResponse
      * @param {boolean} rejects.transferFulfils
      */
-    
+
 
     beforeAll(async () => {
-        const logTransports = await Promise.all([Transports.consoleDir()]);
-        logger = new Logger({ context: { app: 'outbound-model-unit-tests-cache' }, space: 4, transports: logTransports });
+        logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests-cache' }, stringify: () => '' });
         quoteResponse = JSON.parse(JSON.stringify(quoteResponseTemplate));
     });
 
@@ -90,6 +87,7 @@ describe('outboundRequestToPayTransferModel', () => {
             cache,
             logger,
             ...config,
+            tls: config.outbound.tls,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(requestToPayTransferRequest)));
@@ -144,6 +142,7 @@ describe('outboundRequestToPayTransferModel', () => {
             cache,
             logger,
             ...config,
+            tls: config.outbound.tls,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(requestToPayTransferRequest)));
@@ -152,8 +151,6 @@ describe('outboundRequestToPayTransferModel', () => {
 
         // start the model running
         const result = await model.run();
-
-        console.log(`Result after three stage transfer: ${util.inspect(result)}`);
 
         expect(MojaloopRequests.__postQuotes).toHaveBeenCalledTimes(1);
         expect(MojaloopRequests.__getAuthorizations).toHaveBeenCalledTimes(1);
@@ -165,7 +162,7 @@ describe('outboundRequestToPayTransferModel', () => {
     });
 
     // test('halts and resumes after quotes and otp stages when AUTO_ACCEPT_QUOTES is false and AUTO_ACCEPT_OTP is false', async () => {
-        
+
     //     config.autoAcceptR2PDeviceOTP = false;
     //     config.autoAcceptR2PDeviceQuotes = false;
 
@@ -173,6 +170,7 @@ describe('outboundRequestToPayTransferModel', () => {
     //         cache,
     //         logger,
     //         ...config,
+    //         tls: config.outbound.tls,
     //     });
 
     //     await model.initialize(JSON.parse(JSON.stringify(requestToPayTransferRequest)));
@@ -188,8 +186,6 @@ describe('outboundRequestToPayTransferModel', () => {
     //     // wait for the model to reach a terminal state
     //     let result = await resultPromise;
 
-    //     console.log(`Result after request quote: ${util.inspect(result)}`);
-
     //     // check we stopped at quoteReceived state
     //     expect(result.currentState).toBe('WAITING_FOR_QUOTE_ACCEPTANCE');
     //     expect(StateMachine.__instance.state).toBe('quoteReceived');
@@ -201,6 +197,7 @@ describe('outboundRequestToPayTransferModel', () => {
     //         cache,
     //         logger,
     //         ...config,
+    //         tls: config.outbound.tls,
     //     });
 
     //     await model.load(requestToPayTransactionId);
@@ -217,8 +214,6 @@ describe('outboundRequestToPayTransferModel', () => {
     //     // wait for the model to reach a terminal state
     //     result = await resultPromise;
 
-    //     console.log(`Result after request otp: ${util.inspect(result)}`);
-
     //     // check we stopped at quoteReceived state
     //     expect(result.currentState).toBe('WAITING_FOR_OTP_ACCEPTANCE');
     //     expect(StateMachine.__instance.state).toBe('otpReceived');
@@ -228,6 +223,7 @@ describe('outboundRequestToPayTransferModel', () => {
     //         cache,
     //         logger,
     //         ...config,
+    //         tls: config.outbound.tls,
     //     });
 
     //     await model.load(requestToPayTransactionId);
@@ -244,13 +240,11 @@ describe('outboundRequestToPayTransferModel', () => {
     //     // wait for the model to reach a terminal state
     //     result = await resultPromise;
 
-    //     console.log(`Result after transfer fulfil: ${util.inspect(result)}`);
-
     //     // check we stopped at quoteReceived state
     //     expect(result.currentState).toBe('COMPLETED');
     //     expect(StateMachine.__instance.state).toBe('succeeded');
 
     // });
 
-    
+
 });

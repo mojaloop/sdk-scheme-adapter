@@ -11,7 +11,10 @@
 
 'use strict';
 
+const { hostname } = require('os');
 const config = require('./config');
+const EventEmitter = require('events');
+
 const InboundServer = require('./InboundServer');
 const OutboundServer = require('./OutboundServer');
 const OAuthTestServer = require('./OAuthTestServer');
@@ -24,62 +27,70 @@ const OutboundServerMiddleware = require('./OutboundServer/middlewares.js');
 const Router = require('@internal/router');
 const Validate = require('@internal/validate');
 const RandomPhrase = require('@internal/randomphrase');
-const Log = require('@internal/log');
 const Cache = require('@internal/cache');
+const { Logger } = require('@mojaloop/sdk-standard-components');
 
 /**
  * Class that creates and manages http servers that expose the scheme adapter APIs.
  */
-class Server {
-    constructor(conf) {
+class Server extends EventEmitter {
+    constructor(conf, logger) {
+        super({ captureExceptions: true });
         this.conf = conf;
-        this.inboundServer = null;
-        this.outboundServer = null;
-        this.oauthTestServer = null;
-        this.testServer = null;
-    }
+        this.logger = logger;
+        this.cache = new Cache({
+            ...conf.cacheConfig,
+            logger: this.logger.push({ component: 'cache' }),
+            enableTestFeatures: conf.enableTestFeatures,
+        });
 
-    async start() {
-        this.inboundServer = new InboundServer(this.conf);
-        this.outboundServer = new OutboundServer(this.conf);
+        this.inboundServer = new InboundServer(
+            this.conf,
+            this.logger.push({ app: 'mojaloop-sdk-inbound-api' }),
+            this.cache
+        );
+        this.inboundServer.on('error', (...args) => {
+            this.logger.push({ args }).log('Unhandled error in Inbound Server');
+            this.emit('error', 'Unhandled error in Inbound Server');
+        });
+
+        this.outboundServer = new OutboundServer(
+            this.conf,
+            this.logger.push({ app: 'mojaloop-sdk-outbound-api' }),
+            this.cache
+        );
+        this.outboundServer.on('error', (...args) => {
+            this.logger.push({ args }).log('Unhandled error in Outbound Server');
+            this.emit('error', 'Unhandled error in Outbound Server');
+        });
+
         this.oauthTestServer = new OAuthTestServer({
             clientKey: this.conf.oauthTestServer.clientKey,
             clientSecret: this.conf.oauthTestServer.clientSecret,
             port: this.conf.oauthTestServer.listenPort,
-            logIndent: this.conf.logIndent,
+            logger: this.logger.push({ app: 'mojaloop-sdk-oauth-test-server' }),
         });
-        this.testServer = new TestServer(this.conf);
 
+        this.testServer = new TestServer({
+            port: this.conf.test.port,
+            logger: this.logger.push({ app: 'mojaloop-sdk-test-api' }),
+            cache: this.cache,
+        });
+    }
+
+    async start() {
+        await this.cache.connect();
+
+        const startTestServer = this.conf.enableTestFeatures ? this.testServer.start() : null;
+        const startOauthTestServer = this.conf.oauthTestServer.enabled
+            ?  this.oauthTestServer.start()
+            : null;
         await Promise.all([
-            this._startInboundServer(),
-            this._startOutboundServer(),
-            this._startOAuthTestServer(),
-            this._startTestServer(),
+            this.inboundServer.start(),
+            this.outboundServer.start(),
+            startTestServer,
+            startOauthTestServer,
         ]);
-    }
-
-    async _startTestServer() {
-        if (this.conf.enableTestFeatures) {
-            await this.testServer.setupApi();
-            await this.testServer.start();
-        }
-    }
-
-    async _startInboundServer() {
-        await this.inboundServer.setupApi();
-        await this.inboundServer.start();
-    }
-
-    async _startOutboundServer() {
-        await this.outboundServer.setupApi();
-        await this.outboundServer.start();
-    }
-
-    async _startOAuthTestServer() {
-        if (this.conf.oauthTestServer.enabled) {
-            await this.oauthTestServer.setupApi();
-            await this.oauthTestServer.start();
-        }
     }
 
     stop() {
@@ -97,18 +108,29 @@ if(require.main === module) {
     (async () => {
         // this module is main i.e. we were started as a server;
         // not used in unit test or "require" scenarios
-        const svr = new Server(config);
+        const logger = new Logger.Logger({
+            context: {
+                // If we're running from a Mojaloop helm chart deployment, we'll have a SIM_NAME
+                simulator: process.env['SIM_NAME'],
+                hostname: hostname(),
+            },
+            stringify: Logger.buildStringify({ space: config.logIndent }),
+        });
+        const svr = new Server(config, logger);
+        svr.on('error', (err) => {
+            logger.push({ err }).log('Unhandled server error');
+            process.exit(1);
+        });
 
         // handle SIGTERM to exit gracefully
         process.on('SIGTERM', async () => {
-            console.log('SIGTERM received. Shutting down APIs...');
-
+            logger.log('SIGTERM received. Shutting down APIs...');
             await svr.stop();
             process.exit(0);
         });
 
         svr.start().catch(err => {
-            console.log(err);
+            logger.push({ err }).log('Error starting server');
             process.exit(1);
         });
     })();
@@ -118,12 +140,11 @@ if(require.main === module) {
 // export things we want to expose e.g. for unit tests and users who dont want to use the entire
 // scheme adapter as a service
 module.exports = {
-    Server: Server,
-    InboundServerMiddleware: InboundServerMiddleware,
-    OutboundServerMiddleware: OutboundServerMiddleware,
-    Router: Router,
-    Validate: Validate,
-    RandomPhrase: RandomPhrase,
-    Log: Log,
-    Cache: Cache
+    Cache,
+    InboundServerMiddleware,
+    OutboundServerMiddleware,
+    RandomPhrase,
+    Router,
+    Server,
+    Validate,
 };
