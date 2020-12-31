@@ -14,7 +14,6 @@
 
 'use strict';
 
-const util = require('util');
 const Model = require('@internal/model').InboundTransfersModel;
 const AuthorizationsModel = require('@internal/model').OutboundAuthorizationsModel;
 const ThirdpartyTrxnModelIn = require('@internal/model').InboundThirdpartyTransactionModel;
