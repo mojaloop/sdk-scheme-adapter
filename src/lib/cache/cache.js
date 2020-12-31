@@ -107,24 +107,6 @@ class Cache {
         this._client.config('SET', 'notify-keyspace-events', mode);
     }
 
-    /**
-     * Configure Redis to emit keyevent events. This corresponds to the application test mode, and
-     * enables us to listen for changes on callback_* and request_* keys.
-     * Docs: https://redis.io/topics/notifications
-     */
-    async setTestMode(enable) {
-        // See for modes: https://redis.io/topics/notifications#configuration
-        // This mode, 'Es$' is:
-        //   E     Keyevent events, published with __keyevent@<db>__ prefix.
-        //   s     Set commands
-        //   $     String commands
-        const mode = enable ? 'Es$' : '';
-        this._logger
-            .push({ 'notify-keyspace-events': mode })
-            .log('Configuring Redis to emit keyevent events');
-        this._client.config('SET', 'notify-keyspace-events', mode);
-    }
-
     async disconnect() {
         switch(this._connectionState) {
             case CONN_ST.CONNECTED:
