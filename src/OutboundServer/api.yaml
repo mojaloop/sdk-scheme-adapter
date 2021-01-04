@@ -25,7 +25,7 @@ paths:
         - Health
       responses:
         200:
-          description: Returns empty body if the scheme adapter outbound transfers service is running.  
+          description: Returns empty body if the scheme adapter outbound transfers service is running.
   /transfers:
     post:
       summary: Sends money from one account to another
@@ -381,7 +381,7 @@ paths:
         #   $ref: '#/components/responses/authorizationsPostServerError'
         # 504:
         #   $ref: '#/components/responses/authorizationsPostTimeout'
-  
+
   /thirdpartyRequests/transactions:
     post:
       summary: Initiates a third party request transaction.
@@ -405,7 +405,7 @@ paths:
         #   $ref: '#/components/responses/'
         # 504:
         #   $ref: '#/components/responses/'
-  
+
   /thirdpartyRequests/transactions/{transactionRequestId}:
     get:
       summary: Retrieves information for a specific thirdparty request transaction.
@@ -429,7 +429,7 @@ paths:
         #     application/json:
         #       schema:
         #         $ref: '#/components/schemas/'
-  
+
   /parties/{Type}/{ID}:
     parameters:
       - $ref: '#/components/parameters/Type'
@@ -651,6 +651,8 @@ components:
       - XDR
       - XOF
       - XPF
+      - XTS
+      - XXX
       - YER
       - ZAR
       - ZMW
@@ -1733,14 +1735,14 @@ components:
         ^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$
       description: >
         The API data type Latitude is a JSON String in a lexical format that is
-        restricted by a regular expression for interoperability reasons.    
+        restricted by a regular expression for interoperability reasons.
     longitude:
       type: string
       pattern: >-
         ^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,6})?))$
       description: >-
         The API data type Longitude is a JSON String in a lexical format that is
-        restricted by a regular expression for interoperability reasons.    
+        restricted by a regular expression for interoperability reasons.
 
     ilpCondition:
       type: string
@@ -2144,7 +2146,7 @@ components:
         transactionRequestState:
           $ref: '#/components/schemas/mojaloopTransactionRequestState'
           description: State of the transaction request`
-    
+
     Party:
       title: Party
       type: object
@@ -2221,7 +2223,7 @@ components:
       maxLength: 128
       pattern: '^(?!\s*$)[\w .,''-]{1,128}$'
       description: Middle name of the Party (Name Type).
-    
+
     LastName:
       title: LastName
       type: string
@@ -2229,7 +2231,7 @@ components:
       maxLength: 128
       pattern: '^(?!\s*$)[\w .,''-]{1,128}$'
       description: Last name of the Party (Name Type).
-    
+
     DateOfBirth:
       title: DateofBirth (type Date)
       type: string
@@ -2641,7 +2643,7 @@ components:
       required:
         - key
         - value
-    
+
     ExtensionList:
       title: ExtensionList
       type: object
@@ -2784,7 +2786,7 @@ components:
 
     PartiesByIdResponse:
       description: PartiesByIdResponse
-      content: 
+      content:
         application/json:
           schema:
             type: object
@@ -2801,7 +2803,7 @@ components:
 
     PartiesByIdError404:
       description: PartiesByIdError404
-      content: 
+      content:
         application/json:
           schema:
             type: object
@@ -2868,4 +2870,4 @@ components:
       required: true
       schema:
         type: string
-    
+

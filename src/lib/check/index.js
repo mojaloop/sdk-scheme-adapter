@@ -1,5 +1,5 @@
 /**************************************************************************
- *  (C) Copyright ModusBox Inc. 2019 - All rights reserved.               *
+ *  (C) Copyright ModusBox Inc. 2020 - All rights reserved.               *
  *                                                                        *
  *  This file is made available under the terms of the license agreement  *
  *  specified in the corresponding source code repository.                *
@@ -8,14 +8,18 @@
  *       Matt Kingston - matt.kingston@modusbox.com                       *
  **************************************************************************/
 
-'use strict';
+// This module maps all methods on Node assert to non-throwing "check" functions which return true
+// if the assertion succeeded and false otherwise
 
-const words = require('./words.json');
+const assert = require('assert').strict;
 
-const randomEl = arr => arr[Math.floor(Math.random() * arr.length)];
-module.exports = (separator = '-') => [
-    randomEl(words.adjectives),
-    randomEl(words.nouns),
-    randomEl(words.adjectives),
-    randomEl(words.nouns)
-].join(separator);
+module.exports = Object.fromEntries(
+    Object.entries(assert).map(([k, f]) => [k, (...args) => {
+        try {
+            f.bind(assert)(...args);
+            return true;
+        } catch (err) {
+            return false;
+        }
+    }])
+);

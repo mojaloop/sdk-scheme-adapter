@@ -40,10 +40,10 @@ class OutboundBulkQuotesModel {
             peerEndpoint: config.peerEndpoint,
             bulkQuotesEndpoint: config.bulkQuotesEndpoint,
             dfspId: config.dfspId,
-            tls: config.tls,
+            tls: config.outbound.tls,
             jwsSign: config.jwsSign,
             jwsSigningKey: config.jwsSigningKey,
-            wso2Auth: config.wso2Auth
+            wso2: config.wso2,
         });
     }
 

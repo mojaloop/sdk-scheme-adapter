@@ -14,12 +14,10 @@
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('redis');
 
-const util = require('util');
 const Cache = require('@internal/cache');
 const Model = require('@internal/model').OutboundBulkQuotesModel;
-const { Logger, Transports } = require('@internal/log');
 
-const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
+const { MojaloopRequests, Logger } = require('@mojaloop/sdk-standard-components');
 const StateMachine = require('javascript-state-machine');
 
 const defaultConfig = require('./data/defaultConfig');
@@ -62,6 +60,7 @@ describe('OutboundBulkQuotesModel', () => {
             ...config,
             cache,
             logger,
+            tls: config.outbound.tls,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(bulkQuoteRequest)));
@@ -81,8 +80,7 @@ describe('OutboundBulkQuotesModel', () => {
     }
 
     beforeAll(async () => {
-        const logTransports = await Promise.all([Transports.consoleDir()]);
-        logger = new Logger({ context: { app: 'outbound-model-unit-tests-cache' }, space: 4, transports: logTransports });
+        logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests-cache' }, stringify: () => '' });
         bulkQuoteResponse = JSON.parse(JSON.stringify(bulkQuoteResponseTemplate));
     });
 
@@ -110,6 +108,7 @@ describe('OutboundBulkQuotesModel', () => {
             cache,
             logger,
             ...config,
+            tls: config.outbound.tls,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(bulkQuoteRequest)));
@@ -121,11 +120,12 @@ describe('OutboundBulkQuotesModel', () => {
             emitBulkQuoteResponseCacheMessage(cache, bulkQuoteId, bulkQuoteResponse);
             return Promise.resolve();
         });
-        
+
         const model = new Model({
             cache,
             logger,
             ...config,
+            tls: config.outbound.tls,
         });
 
         const BULK_QUOTE_ID = 'bq-id000011';
@@ -139,8 +139,6 @@ describe('OutboundBulkQuotesModel', () => {
 
         // start the model running
         const result = await model.run();
-
-        console.log(`Result after get bulk quote: ${util.inspect(result)}`);
 
         expect(MojaloopRequests.__getBulkQuotes).toHaveBeenCalledTimes(1);
 
@@ -168,6 +166,7 @@ describe('OutboundBulkQuotesModel', () => {
             cache,
             logger,
             ...config,
+            tls: config.outbound.tls,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(bulkQuoteRequest)));
@@ -176,8 +175,6 @@ describe('OutboundBulkQuotesModel', () => {
 
         // start the model running
         const result = await model.run();
-
-        console.log(`Result after bulk quote: ${util.inspect(result)}`);
 
         expect(MojaloopRequests.__postBulkQuotes).toHaveBeenCalledTimes(1);
 
@@ -231,6 +228,7 @@ describe('OutboundBulkQuotesModel', () => {
             cache,
             logger,
             ...config,
+            tls: config.outbound.tls,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(bulkQuoteRequest)));

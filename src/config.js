@@ -21,18 +21,46 @@ function getFileContent(path) {
     return fs.readFileSync(path);
 }
 
+/**
+     * Gets Resources versions from enviromental variable RESOURCES_VERSIONS
+     * should be string in format: "resouceOneName=1.0,resourceTwoName=1.1"
+     */
+function getVersionFromConfig (resourceString) {
+    const resourceVersionMap = {};
+    resourceString
+        .split(',')
+        .forEach(e => e.split('=')
+            .reduce((p, c) => {
+                resourceVersionMap[p] = {
+                    contentVersion: c,
+                    acceptVersion: c.split('.')[0],
+                };
+            }));
+    return resourceVersionMap;
+}
+
+function parseResourceVersions (resourceString) {
+    if (!resourceString) return {};
+    const resourceFormatRegex = /(([A-Za-z])\w*)=([0-9]+).([0-9]+)([^;:|],*)/g;
+    const noSpResources = resourceString.replace(/\s/g,'');
+    if (!resourceFormatRegex.test(noSpResources)) {
+        throw new Error('Resource versions format should be in format: "resouceOneName=1.0,resourceTwoName=1.1"');
+    }
+    return getVersionFromConfig(noSpResources);
+}
+
 const env = from(process.env, {
     asFileContent: (path) => getFileContent(path),
     asFileListContent: (pathList) => pathList.split(',').map((path) => getFileContent(path)),
     asYamlConfig: (path) => yaml.load(getFileContent(path)),
+    asResourceVersions: (resourceString) => parseResourceVersions(resourceString),
 });
 
 module.exports = {
-    inboundPort: env.get('INBOUND_LISTEN_PORT').default('4000').asPortNumber(),
-    outboundPort: env.get('OUTBOUND_LISTEN_PORT').default('4001').asPortNumber(),
-    testPort: env.get('TEST_LISTEN_PORT').default('4002').asPortNumber(),
-    tls: {
-        inbound: {
+    __parseResourceVersion: parseResourceVersions,
+    inbound: {
+        port: env.get('INBOUND_LISTEN_PORT').default('4000').asPortNumber(),
+        tls: {
             mutualTLS: {
                 enabled: env.get('INBOUND_MUTUAL_TLS_ENABLED').default('false').asBool(),
             },
@@ -42,7 +70,10 @@ module.exports = {
                 key: env.get('IN_SERVER_KEY_PATH').asFileContent(),
             },
         },
-        outbound: {
+    },
+    outbound: {
+        port: env.get('OUTBOUND_LISTEN_PORT').default('4001').asPortNumber(),
+        tls: {
             mutualTLS: {
                 enabled: env.get('OUTBOUND_MUTUAL_TLS_ENABLED').default('false').asBool(),
             },
@@ -52,21 +83,15 @@ module.exports = {
                 key: env.get('OUT_CLIENT_KEY_PATH').asFileContent(),
             },
         },
-        test: {
-            mutualTLS: {
-                enabled: env.get('TEST_MUTUAL_TLS_ENABLED').default('false').asBool(),
-            },
-            creds: {
-                ca: env.get('TEST_CA_CERT_PATH').asFileListContent(),
-                cert: env.get('TEST_CLIENT_CERT_PATH').asFileContent(),
-                key: env.get('TEST_CLIENT_KEY_PATH').asFileContent(),
-            },
-        },
+    },
+    test: {
+        port: env.get('TEST_LISTEN_PORT').default('4002').asPortNumber(),
     },
     peerEndpoint: env.get('PEER_ENDPOINT').required().asString(),
     alsEndpoint: env.get('ALS_ENDPOINT').asString(),
     quotesEndpoint: env.get('QUOTES_ENDPOINT').asString(),
     bulkQuotesEndpoint: env.get('BULK_QUOTES_ENDPOINT').asString(),
+    transactionRequestsEndpoint: env.get('TRANSACTION_REQUESTS_ENDPOINT').asString(),
     transfersEndpoint: env.get('TRANSFERS_ENDPOINT').asString(),
     bulkTransfersEndpoint: env.get('BULK_TRANSFERS_ENDPOINT').asString(),
     backendEndpoint: env.get('BACKEND_ENDPOINT').required().asString(),
@@ -81,6 +106,7 @@ module.exports = {
     autoAcceptR2PBusinessQuotes: env.get('AUTO_ACCEPT_R2P_BUSINESS_QUOTES').default('false').asBool(),
     autoAcceptR2PDeviceQuotes: env.get('AUTO_ACCEPT_R2P_DEVICE_QUOTES').default('true').asBool(),
     autoAcceptR2PDeviceOTP: env.get('AUTO_ACCEPT_R2P_DEVICE_OTP').default('false').asBool(),
+    autoAcceptParticipantsPut: env.get('AUTO_ACCEPT_PARTICIPANTS_PUT').default('false').asBool(),
 
     /* TODO:  high-risk transactions can require additional clearing check */
     // enableClearingCheck: env.get('ENABLE_CLEARING_CHECK').default('false').asBool(),
@@ -107,12 +133,15 @@ module.exports = {
         clientSecret: env.get('OAUTH_TOKEN_ENDPOINT_CLIENT_SECRET').asString(),
         listenPort: env.get('OAUTH_TOKEN_ENDPOINT_LISTEN_PORT').asPortNumber(),
     },
-    wso2Auth: {
-        staticToken: env.get('WSO2_BEARER_TOKEN').asString(),
-        tokenEndpoint: env.get('OAUTH_TOKEN_ENDPOINT').asString(),
-        clientKey: env.get('OAUTH_CLIENT_KEY').asString(),
-        clientSecret: env.get('OAUTH_CLIENT_SECRET').asString(),
-        refreshSeconds: env.get('OAUTH_REFRESH_SECONDS').default('60').asIntPositive(),
+    wso2: {
+        auth: {
+            staticToken: env.get('WSO2_BEARER_TOKEN').asString(),
+            tokenEndpoint: env.get('OAUTH_TOKEN_ENDPOINT').asString(),
+            clientKey: env.get('OAUTH_CLIENT_KEY').asString(),
+            clientSecret: env.get('OAUTH_CLIENT_SECRET').asString(),
+            refreshSeconds: env.get('OAUTH_REFRESH_SECONDS').default('60').asIntPositive(),
+        },
+        requestAuthFailureRetryTimes: env.get('WSO2_AUTH_FAILURE_REQUEST_RETRIES').default('0').asIntPositive(),
     },
     rejectExpiredQuoteResponses: env.get('REJECT_EXPIRED_QUOTE_RESPONSES').default('false').asBool(),
     rejectTransfersOnExpiredQuotes: env.get('REJECT_TRANSFERS_ON_EXPIRED_QUOTES').default('false').asBool(),
@@ -132,5 +161,7 @@ module.exports = {
 
     proxyConfig: env.get('PROXY_CONFIG_PATH').asYamlConfig(),
     reserveNotification: env.get('RESERVE_NOTIFICATION').default('false').asBool(),
+    // resourceVersions config should be string in format: "resouceOneName=1.0,resourceTwoName=1.1"
+    resourceVersions: env.get('RESOURCE_VERSIONS').default('').asResourceVersions(),
     enablePISPMode: env.get('ENABLE_PISP_MODE').default('false').asBool()
 };

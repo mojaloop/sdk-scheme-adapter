@@ -322,6 +322,21 @@ describe('thirdpartyTransactionModel', () => {
 
         it('should unsubscribe from cache in case when error happens in workflow run', async () => {
             data.transactionRequestId = uuid();
+            data.currentState = 'postTransaction';
+            let payerInformation = {
+                'personalInfo': {
+                    'complexName': {
+                        'firstName': 'Ayesha',
+                        'lastName': 'Takia'
+                    }
+                },
+                'partyIdInfo': {
+                    'partyIdType': 'MSISDN',
+                    'partyIdentifier': '+44 8765 4321',
+                    'fspId': 'dfspa'
+                }
+            };
+            data.payer = payerInformation;
             const channel = Model.notificationChannel(data.transactionRequestId);
             const model = await Model.create(data, cacheKey, modelConfig);
             const { cache } = model.context;

@@ -19,12 +19,12 @@ describe('PersistentStateMachine', () => {
     let data;
     let smSpec;
     const key = 'cache-key';
-    
+
     const logger = mockLogger({app: 'persistent-state-machine-test'});
 
     function checkPSMLayout(psm, optData) {
         expect(psm).toBeTruthy();
-        
+
         expect(psm.state).toEqual((optData && optData.currentState) || smSpec.init || 'none');
 
         expect(psm.context).toEqual({
@@ -54,7 +54,7 @@ describe('PersistentStateMachine', () => {
                 { name: 'init', from: 'none', to: 'start'},
                 { name: 'gogo', from: 'start', to: 'end' },
                 { name: 'error', from: '*', to: 'errored' }
-            ], 
+            ],
             methods: {
                 onGogo: async () => {
                     return new Promise( (resolved) => {
@@ -62,14 +62,14 @@ describe('PersistentStateMachine', () => {
                     } );
                 },
                 onError: () => {
-                    console.error('onError');
+                    logger.log('onError');
                 }
             }
         };
 
         // test data
         data = { the: 'data' };
-        
+
         cache = new Cache({
             host: 'dummycachehost',
             port: 1234,
@@ -99,20 +99,20 @@ describe('PersistentStateMachine', () => {
         expect(psm.state).toEqual('start');
     });
 
-    describe('onPendingTransition', () => {        
+    describe('onPendingTransition', () => {
         it('should throw error if not `error` transition', async () => {
             const psm = await PSM.create(data, cache, key, logger, smSpec);
             checkPSMLayout(psm);
 
             psm.init();
             expect(() => psm.gogo()).toThrowError('Transition \'gogo\' requested while another transition is in progress');
-            
+
         });
 
         it('should not throw error if `error` transition called when `gogo` is pending', (done) => {
             PSM.create(data, cache, key, logger, smSpec).then((psm) => {
                 checkPSMLayout(psm);
-    
+
                 psm.init()
                     .then(() => {
                         expect(psm.state).toEqual('start');
@@ -124,7 +124,7 @@ describe('PersistentStateMachine', () => {
                     .then(done)
                     .catch(shouldNotBeExecuted);
             });
-        }); 
+        });
     });
 
     describe('loadFromCache', () => {
@@ -162,14 +162,14 @@ describe('PersistentStateMachine', () => {
     describe('saveToCache', () => {
 
         it('should rethrow error from cache.set', async () => {
-            
+
             // mock to simulate throwing error
             cache.set = jest.fn(() => { throw new Error('error from cache.set'); });
-            
+
             const psm = await PSM.create(data, cache, key, logger, smSpec);
             checkPSMLayout(psm);
 
-            // transition `init` should encounter exception when saving `context.data` 
+            // transition `init` should encounter exception when saving `context.data`
             expect(() => psm.init()).rejects.toEqual(new Error('error from cache.set'));
         });
     });

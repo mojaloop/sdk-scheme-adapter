@@ -10,10 +10,10 @@
 
 'use strict';
 
+const http = require('http');
 const Koa = require('koa');
 const koaBody = require('koa-body');
 const OAuthServer = require('koa2-oauth-server');
-const { Logger, Transports } = require('@internal/log');
 const { InMemoryCache } = require('./model');
 
 class OAuthTestServer {
@@ -23,56 +23,42 @@ class OAuthTestServer {
      * @param {number} conf.port OAuth server listen port
      * @param {string} conf.clientKey Customer Key
      * @param {String} conf.clientSecret Customer Secret
-     * @param {String} conf.logIndent
+     * @param {Logger} conf.logger Logger
      */
-    constructor(conf) {
-        this._conf = conf;
+    constructor({ port, clientKey, clientSecret, logger }) {
         this._api = null;
-        this._logger = null;
+        this._port = port;
+        this._logger = logger;
+        this._api = OAuthTestServer._SetupApi({ clientKey, clientSecret });
+        this._server = http.createServer(this._api.callback());
     }
 
     async start() {
-        await new Promise((resolve) => this._api.listen(this._conf.port, resolve));
-        this._logger.log(`Serving OAuth2 Test Server on port ${this._conf.port}`);
+        if (this._server.listening) {
+            return;
+        }
+        await new Promise((resolve) => this._server.listen(this._port, resolve));
+        this._logger.push({ port: this._port }).log('Serving OAuth2 Test Server');
     }
 
     async stop() {
-        if (this._api) {
-            return;
-        }
-        await new Promise(resolve => this._api.close(resolve));
-        console.log('OAuth2 Test Server shut down complete');
+        await new Promise(resolve => this._server.close(resolve));
+        this._logger.log('OAuth2 Test Server shut down complete');
     }
 
-    async setupApi() {
-        this._api = new Koa();
-        this._logger = await this._createLogger();
+    static _SetupApi({ clientKey, clientSecret }) {
+        const result = new Koa();
 
-        this._api.oauth = new OAuthServer({
-            model: new InMemoryCache(this._conf),
+        result.oauth = new OAuthServer({
+            model: new InMemoryCache({ clientKey, clientSecret }),
             accessTokenLifetime: 60 * 60,
             allowBearerTokensInQueryString: true,
         });
 
-        this._api.use(koaBody());
-        this._api.use(this._api.oauth.token());
+        result.use(koaBody());
+        result.use(result.oauth.token());
 
-        this._api.use(async (next) => {
-            this.body = 'Secret area';
-            await next();
-        });
-    }
-
-    async _createLogger() {
-        const transports = await Promise.all([Transports.consoleDir()]);
-        // Set up a logger for each running server
-        return new Logger({
-            context: {
-                app: 'mojaloop-sdk-oauth-test-server'
-            },
-            space: this._conf.logIndent,
-            transports,
-        });
+        return result;
     }
 }
 

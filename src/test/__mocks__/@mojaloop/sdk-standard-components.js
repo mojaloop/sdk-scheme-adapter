@@ -10,8 +10,9 @@
 
 'use strict';
 
+const assert = require('assert').strict;
 const util = require('util');
-const { MojaloopRequests, ThirdpartyRequests, Errors, WSO2Auth, Jws } = jest.requireActual('@mojaloop/sdk-standard-components');
+const { MojaloopRequests, ThirdpartyRequests, Errors, WSO2Auth, Jws, Logger } = jest.requireActual('@mojaloop/sdk-standard-components');
 
 
 class MockMojaloopRequests extends MojaloopRequests {
@@ -81,40 +82,42 @@ MockThirdpartyRequests.__postThirdpartyRequestsTransactions = jest.fn(() => Prom
 
 class MockIlp {
     constructor(config) {
-        console.log('MockIlp constructed');
+        assert(config.logger, 'Must supply a logger to Ilp constructor');
+        this.logger = config.logger;
+        this.logger.log('MockIlp constructed');
         this.config = config;
     }
 
     calculateFulfil(ilpPacket) {
-        console.log(`Mock ILP not calculating fulfil from ilp packet ${ilpPacket}`);
+        this.logger.log(`Mock ILP not calculating fulfil from ilp packet ${ilpPacket}`);
         return 'mockGeneratedFulfilment';
     }
 
     calculateConditionFromFulfil(fulfil) {
-        console.log(`Mock ILP not calculating condition from fulfil ${fulfil}`);
+        this.logger.log(`Mock ILP not calculating condition from fulfil ${fulfil}`);
         return 'mockGeneratedCondition';
     }
 
     validateFulfil(fulfil, condition) {
-        console.log(`Mock ILP not checking fulfil ${fulfil} against condition ${condition}`);
+        this.logger.log(`Mock ILP not checking fulfil ${fulfil} against condition ${condition}`);
         return true;
     }
 
     getResponseIlp(...args) {
-        console.log(`MockIlp.getResponseIlp called with args: ${util.inspect(args)}`);
+        this.logger.log(`MockIlp.getResponseIlp called with args: ${util.inspect(args)}`);
 
         return MockIlp.__response;
     }
 
     getQuoteResponseIlp(...args) {
-        console.log(`MockIlp.getQuoteResponseIlp called with args: ${util.inspect(args)}`);
+        this.logger.log(`MockIlp.getQuoteResponseIlp called with args: ${util.inspect(args)}`);
 
         return this.getResponseIlp(...args);
     }
 
 
     getTransactionObject(...args) {
-        console.log(`MockIlp.getTrasnactionObject called with args: ${util.inspect(args)}`);
+        this.logger.log(`MockIlp.getTrasnactionObject called with args: ${util.inspect(args)}`);
 
         return MockIlp.__transactionObject;
     }
@@ -142,8 +145,9 @@ MockJwsValidator.__validate = jest.fn(() => true);
 
 class MockJwsSigner {
     constructor(config) {
+        assert(config.logger, 'Must supply a logger to JWS signer constructor');
         this.config = config;
-        console.log(`MockJwsSigner constructed with config: ${util.inspect(config)}`);
+        config.logger.log(`MockJwsSigner constructed with config: ${util.inspect(config)}`);
     }
 }
 
@@ -158,4 +162,5 @@ module.exports = {
     },
     Errors,
     WSO2Auth,
+    Logger,
 };

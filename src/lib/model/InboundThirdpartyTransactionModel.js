@@ -36,11 +36,13 @@ class InboundThirdpartyTransactionModel {
             alsEndpoint: config.alsEndpoint,
             quotesEndpoint: config.quotesEndpoint,
             transfersEndpoint: config.transfersEndpoint,
+            transactionRequestsEndpoint: config.transactionRequestsEndpoint,
             dfspId: config.dfspId,
-            tls: config.tls,
+            tls: config.outbound.tls,
             jwsSign: config.jwsSign,
+            jwsSignPutParties: config.jwsSignPutParties,
             jwsSigningKey: config.jwsSigningKey,
-            wso2Auth: config.wso2Auth
+            wso2: config.wso2,
         });
 
         this._backendRequests = new BackendRequests({
@@ -51,7 +53,7 @@ class InboundThirdpartyTransactionModel {
     }
 
     /**
-     * Queries the backend API to get the authorization details and makes a 
+     * Queries the backend API to get the authorization details and makes a
      * callback to the originator with the result
      */
     async postAuthorizations(authorizationsReq, sourceFspId) {
@@ -91,7 +93,7 @@ class InboundThirdpartyTransactionModel {
                         // do nothing
                         this._logger.push({ ex }).log('Error parsing error message body as JSON');
                     }
-        
+
                 } else if(e.res.data) {
                     mojaloopErrorCode = Errors.MojaloopApiErrorCodeFromCode(`${e.res.data.statusCode}`);
                 }
