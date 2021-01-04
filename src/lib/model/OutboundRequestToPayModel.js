@@ -38,7 +38,7 @@ class OutboundRequestToPayModel {
             peerEndpoint: config.peerEndpoint,
             alsEndpoint: config.alsEndpoint,
             dfspId: config.dfspId,
-            tls: config.tls,
+            tls: config.outbound.tls,
             jwsSign: config.jwsSign,
             jwsSignPutParties: config.jwsSignPutParties,
             jwsSigningKey: config.jwsSigningKey,
@@ -293,7 +293,7 @@ class OutboundRequestToPayModel {
                     this._logger.push({ transactionRequestResponse }).log('Transaction Request Response received');
                     this.data.requestToPayState = transactionRequestResponse.transactionRequestState;
 
-                    
+
                     return resolve(transactionRequestResponse);
                 }
                 catch(err) {

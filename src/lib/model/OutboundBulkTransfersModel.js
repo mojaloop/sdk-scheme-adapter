@@ -38,7 +38,7 @@ class OutboundBulkTransfersModel {
             peerEndpoint: config.peerEndpoint,
             bulkTransfersEndpoint: config.bulkTransfersEndpoint,
             dfspId: config.dfspId,
-            tls: config.tls,
+            tls: config.outbound.tls,
             jwsSign: config.jwsSign,
             jwsSignPutParties: config.jwsSignPutParties,
             jwsSigningKey: config.jwsSigningKey,
@@ -256,7 +256,7 @@ class OutboundBulkTransfersModel {
                 ilpPacket: individualTransfer.ilpPacket,
                 condition: individualTransfer.condition,
             };
-            
+
             if (individualTransfer.extensions && individualTransfer.extensions.length > 0) {
                 bulkTransferRequest.extensionList = {
                     extension: individualTransfer.extensions
