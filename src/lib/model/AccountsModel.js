@@ -36,7 +36,7 @@ class AccountsModel {
             logger: this._logger,
             peerEndpoint: config.alsEndpoint,
             dfspId: config.dfspId,
-            tls: config.tls,
+            tls: config.outbound.tls,
             jwsSign: config.jwsSign,
             jwsSigningKey: config.jwsSigningKey,
             wso2: config.wso2,

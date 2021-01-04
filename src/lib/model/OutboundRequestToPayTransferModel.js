@@ -54,7 +54,7 @@ class OutboundRequestToPayTransferModel {
             authorizationsEndpoint: config.authorizationsEndpoint,
             transfersEndpoint: config.transfersEndpoint,
             dfspId: config.dfspId,
-            tls: config.tls,
+            tls: config.outbound.tls,
             jwsSign: config.jwsSign,
             jwsSignPutParties: config.jwsSignPutParties,
             jwsSigningKey: config.jwsSigningKey,
@@ -138,7 +138,7 @@ class OutboundRequestToPayTransferModel {
                     await this.stateMachine.requestQuote();
                     this._logger.log(`Quote received for transfer ${this.data.transferId}`);
 
-                    
+
                     if(this.stateMachine.state === 'quoteReceived' && this.data.initiatorType === 'BUSINESS' && !this._autoAcceptR2PBusinessQuotes) {
                         // kick-off postAuthorizations here for PISP flow
                         //we break execution here and return the quote response details to allow asynchronous accept or reject
@@ -167,8 +167,8 @@ class OutboundRequestToPayTransferModel {
                         }
                     }
                     break;
-                
-                case 'authorizationReceived': 
+
+                case 'authorizationReceived':
                     // next transition is executeTransfer
                     await this.stateMachine.executeAuthorizedTransfer();
                     this._logger.log(`Transfer ${this.data.transferId} has been completed`);
@@ -263,7 +263,7 @@ class OutboundRequestToPayTransferModel {
     }
 
     /**
-     * This method is used to communicate back to the Payee that a rejection is being 
+     * This method is used to communicate back to the Payee that a rejection is being
      * sent because the OTP did not match.
      */
     async rejectRequestToPay() {
@@ -274,7 +274,7 @@ class OutboundRequestToPayTransferModel {
         const response = {
             status : `${this.data.requestToPayTransactionId} has been REJECTED`
         };
-        return JSON.stringify(response);      
+        return JSON.stringify(response);
     }
 
 
@@ -520,7 +520,7 @@ class OutboundRequestToPayTransferModel {
                 transactionRequestId: this.data.requestToPayTransactionId,
                 quote: { ...this.data.quoteResponse },
             };
-                
+
             const modelConfig = { ...this._config };
 
             const cacheKey = `post_authorizations_${authorizationsRequest.transactionRequestId}`;
@@ -531,11 +531,11 @@ class OutboundRequestToPayTransferModel {
             // run model's workflow
 
             this.data.authorizationResponse = await model.run();
-            // here is POC: happy flow 
+            // here is POC: happy flow
             // the authorizationResponse should be analyzed
             // and the pinValue should be validated but this is out of the scope of this POC
             this._logger.push({ authorizationResponse: this.data.authorizationResponse }).log('authorizationResponse received');
-            
+
             // let call backend service which will validate pinValue
             // TODO: add `/validate-authorization` path to mojaloop_simulator
             // const validateResponse = await this._backendRequests.validateAuthorization(this.data.authorizationResponse);
@@ -547,7 +547,7 @@ class OutboundRequestToPayTransferModel {
     }
 
     /**
-     * Sends request for 
+     * Sends request for
      * Starts the quote resolution process by sending a POST /quotes request to the switch;
      * then waits for a notification from the cache that the quote response has been received
      */
@@ -556,7 +556,7 @@ class OutboundRequestToPayTransferModel {
         return new Promise(async (resolve, reject) => {
 
             if( this.data.initiatorType && this.data.initiatorType === 'BUSINESS') return resolve();
-            
+
             // listen for events on the quoteId
             const otpKey = `otp_${this.data.requestToPayTransactionId}`;
 
@@ -577,9 +577,9 @@ class OutboundRequestToPayTransferModel {
 
                     const otpResponseBody = otpResponse.data;
                     this._logger.push({ otpResponseBody }).log('OTP response received');
-                    
+
                     this.data.otpResponse = otpResponseBody;
-                    
+
                     return resolve(otpResponse);
                 }
                 catch(err) {
@@ -663,7 +663,7 @@ class OutboundRequestToPayTransferModel {
         return quote;
     }
 
-    
+
     /**
      * Executes a transfer
      * Starts the transfer process by sending a POST /transfers (prepare) request to the switch;
@@ -902,11 +902,11 @@ class OutboundRequestToPayTransferModel {
             case 'quoteReceived':
                 resp.currentState = requestToPayTransferStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE;
                 break;
-            
+
             case 'authorizationReceived':
                 resp.currentState = requestToPayTransferStateEnum.WAITING_FOR_AUTHORIZATION_ACCEPTANCE;
                 break;
-    
+
             case 'otpReceived':
                 resp.currentState = requestToPayTransferStateEnum.WAITING_FOR_OTP_ACCEPTANCE;
                 break;
@@ -966,7 +966,7 @@ class OutboundRequestToPayTransferModel {
     }
 
 
-    
+
 }
 
 
