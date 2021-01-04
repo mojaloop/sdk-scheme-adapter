@@ -167,26 +167,6 @@ describe('thirdpartyTransactionModel', () => {
 
             // manually invoke transition handler
             model.onGetThirdPartyTransaction()
-                .then(() => {
-                    // subscribe should be called only once
-                    expect(cache.subscribe).toBeCalledTimes(1);
-
-                    // subscribe should be done to proper notificationChannel
-                    expect(cache.subscribe.mock.calls[0][0]).toEqual(channel);
-
-                    // check invocation of request.getThirdpartyRequestsTransactions
-                    expect(ThirdpartyRequests.__getThirdpartyRequestsTransactions).toBeCalledWith(data.transactionRequestId, null);
-
-                    // check that this.context.data is updated
-                    expect(model.context.data).toEqual({
-                        'transactionId': '5a2ad5dc-4ab1-4a22-8c5b-62f75252a8d5',
-                        'transactionRequestState': 'RECEIVED',
-
-                        // current state will be updated by onAfterTransition which isn't called
-                        // when manual invocation of transition handler happens
-                        currentState: 'getTransaction'
-                    });
-                });
 
             // ensure handler wasn't called before publishing the message
             expect(handler).not.toBeCalled();
@@ -200,6 +180,25 @@ describe('thirdpartyTransactionModel', () => {
 
             // handler should be called only once
             expect(handler).toBeCalledTimes(1);
+
+            // subscribe should be called only once
+            expect(cache.subscribe).toBeCalledTimes(1);
+
+            // subscribe should be done to proper notificationChannel
+            expect(cache.subscribe.mock.calls[0][0]).toEqual(channel);
+
+            // check invocation of request.getThirdpartyRequestsTransactions
+            expect(ThirdpartyRequests.__getThirdpartyRequestsTransactions).toBeCalledWith(data.transactionRequestId, null);
+
+            // check that this.context.data is updated
+            expect(model.context.data).toEqual({
+                'transactionId': '5a2ad5dc-4ab1-4a22-8c5b-62f75252a8d5',
+                'transactionRequestState': 'RECEIVED',
+
+                // current state will be updated by onAfterTransition which isn't called
+                // when manual invocation of transition handler happens
+                currentState: 'getTransaction'
+            });
 
             // handler should unsubscribe from notification channel
             expect(cache.unsubscribe).toBeCalledTimes(1);

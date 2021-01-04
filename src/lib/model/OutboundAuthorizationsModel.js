@@ -138,7 +138,7 @@ async function onRequestAuthorization() {
                 try {
                     const parsed = JSON.parse(message);
                     this.context.data = {
-                        ...parsed,
+                        ...parsed.data,
                         currentState: this.state
                     };
                     resolve();
