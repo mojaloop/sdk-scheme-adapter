@@ -166,7 +166,7 @@ describe('thirdpartyTransactionModel', () => {
             };
 
             // manually invoke transition handler
-            model.onGetThirdPartyTransaction()
+            model.onGetThirdPartyTransaction();
 
             // ensure handler wasn't called before publishing the message
             expect(handler).not.toBeCalled();
