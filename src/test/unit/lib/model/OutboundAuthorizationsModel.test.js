@@ -46,7 +46,7 @@ describe('authorizationsModel', () => {
                     handler = jest.fn(h);
                     return subId;
                 }),
-            
+
                 // mock publish and call stored handler
                 publish: jest.fn(async (channel, message) => await handler(channel, message, subId)),
 
@@ -62,7 +62,7 @@ describe('authorizationsModel', () => {
             const model = await Model.create(data, cacheKey, modelConfig);
 
             expect(model.state).toBe('start');
-            
+
             // model's methods layout
             const methods = [
                 'run', 'getResponse',
@@ -85,7 +85,7 @@ describe('authorizationsModel', () => {
     });
 
     describe('getResponse', () => {
-        
+
         it('should remap currentState', async () => {
             const model = await Model.create(data, cacheKey, modelConfig);
             const states = model.allStates();
@@ -96,12 +96,12 @@ describe('authorizationsModel', () => {
                 const result = model.getResponse();
                 expect(result.currentState).toEqual(Model.mapCurrentState[state]);
             });
-            
+
         });
 
         it('should handle unexpected state', async() => {
             const model = await Model.create(data, cacheKey, modelConfig);
-            
+
             // simulate lack of state by undefined property
             delete model.context.data.currentState;
 
@@ -151,41 +151,38 @@ describe('authorizationsModel', () => {
             };
 
             // manually invoke transition handler
-            model.onRequestAuthorization()
-                .then(() => {
-                    // subscribe should be called only once
-                    expect(cache.subscribe).toBeCalledTimes(1);
-
-                    // subscribe should be done to proper notificationChannel
-                    expect(cache.subscribe.mock.calls[0][0]).toEqual(channel);
-
-                    // check invocation of request.postAuthorizations
-                    expect(MojaloopRequests.__postAuthorizations).toBeCalledWith(Model.buildPostAuthorizationsRequest(data, modelConfig), data.toParticipantId);
-
-
-                    // check that this.context.data is updated
-                    expect(model.context.data).toEqual({
-                        Iam: 'the-body',
-                        transactionRequestId: model.context.data.transactionRequestId,
-                        
-                        // current state will be updated by onAfterTransition which isn't called 
-                        // when manual invocation of transition handler happens
-                        currentState: 'start'   
-                    });
-                });
+            model.onRequestAuthorization();
 
             // ensure handler wasn't called before publishing the message
             expect(handler).not.toBeCalled();
 
             // ensure that cache.unsubscribe does not happened before fire the message
             expect(cache.unsubscribe).not.toBeCalled();
-           
 
             // fire publication with given message
             await cache.publish(channel, JSON.stringify(message));
 
             // handler should be called only once
             expect(handler).toBeCalledTimes(1);
+
+            // subscribe should be called only once
+            expect(cache.subscribe).toBeCalledTimes(1);
+
+            // subscribe should be done to proper notificationChannel
+            expect(cache.subscribe.mock.calls[0][0]).toEqual(channel);
+
+            // check invocation of request.postAuthorizations
+            expect(MojaloopRequests.__postAuthorizations).toBeCalledWith(Model.buildPostAuthorizationsRequest(data, modelConfig), data.toParticipantId);
+
+            // check that this.context.data is updated
+            expect(model.context.data).toEqual({
+                Iam: 'the-body',
+                transactionRequestId: model.context.data.transactionRequestId,
+
+                // current state will be updated by onAfterTransition which isn't called
+                // when manual invocation of transition handler happens
+                currentState: 'start'
+            });
 
             // handler should unsubscribe from notification channel
             expect(cache.unsubscribe).toBeCalledTimes(1);
@@ -202,10 +199,10 @@ describe('authorizationsModel', () => {
             model.onRequestAuthorization().catch((err) => {
                 expect(err.message).toEqual('Unexpected token u in JSON at position 0');
                 expect(cache.unsubscribe).toBeCalledTimes(1);
-                expect(cache.unsubscribe).toBeCalledWith(channel, subId);        
+                expect(cache.unsubscribe).toBeCalledWith(channel, subId);
             });
 
-            // fire publication to channel with invalid message 
+            // fire publication to channel with invalid message
             // should throw the exception from JSON.parse
             await cache.publish(channel, undefined);
 
@@ -215,7 +212,7 @@ describe('authorizationsModel', () => {
             // simulate error
             MojaloopRequests.__postAuthorizations = jest.fn(() => Promise.reject('postAuthorization failed'));
             data.transactionRequestId = uuid();
-            
+
             const channel = Model.notificationChannel(data.transactionRequestId);
             const model = await Model.create(data, cacheKey, modelConfig);
             const { cache } = model.context;
@@ -239,7 +236,7 @@ describe('authorizationsModel', () => {
     describe('run workflow', () => {
         it('start', async () => {
             const model = await Model.create(data, cacheKey, modelConfig);
-            
+
             model.requestAuthorization = jest.fn();
             model.getResponse = jest.fn(() => Promise.resolve({the: 'response'}));
 
@@ -256,12 +253,12 @@ describe('authorizationsModel', () => {
         });
         it('succeeded', async () => {
             const model = await Model.create(data, cacheKey, modelConfig);
-            
+
             model.getResponse = jest.fn(() => Promise.resolve({the: 'response'}));
-            
+
             model.context.data.currentState = 'succeeded';
             const result = await model.run({the: 'message'});
-            
+
             expect(result).toEqual({the: 'response'});
             expect(model.getResponse).toBeCalledTimes(1);
             expect(model.context.logger.log).toBeCalledWith('Authorization completed successfully');
@@ -269,12 +266,12 @@ describe('authorizationsModel', () => {
 
         it('errored', async () => {
             const model = await Model.create(data, cacheKey, modelConfig);
-            
+
             model.getResponse = jest.fn(() => Promise.resolve({the: 'response'}));
-            
+
             model.context.data.currentState = 'errored';
             const result = await model.run({the: 'message'});
-            
+
             expect(result).toBeFalsy();
             expect(model.getResponse).not.toBeCalled();
             expect(model.context.logger.log).toBeCalledWith('State machine in errored state');
@@ -282,7 +279,7 @@ describe('authorizationsModel', () => {
 
         it('should handle errors', async () => {
             const model = await Model.create(data, cacheKey, modelConfig);
-            
+
             model.requestAuthorization = jest.fn(() => {
                 const err = new Error('requestAuthorization failed');
                 err.authorizationState = 'some';
@@ -290,7 +287,7 @@ describe('authorizationsModel', () => {
             });
             model.error = jest.fn();
             model.context.data.currentState = 'start';
-            
+
             let theError = null;
             try {
                 await model.run();
