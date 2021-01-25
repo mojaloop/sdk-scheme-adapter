@@ -66,10 +66,10 @@ jobs:
   setup:
     executor: default-docker
     steps:
-      - checkout
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
+      - checkout
       - run:
           name: Access npm folder as root
           command: cd $(npm root -g)/npm
@@ -87,10 +87,10 @@ jobs:
   test-unit:
     executor: default-docker
     steps:
-      - checkout
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
+      - checkout
       - restore_cache:
           key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
           paths:
@@ -130,10 +130,10 @@ jobs:
   lint:
     executor: default-docker
     steps:
-      - checkout
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
+      - checkout
       - restore_cache:
           key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
           paths:
@@ -150,14 +150,14 @@ jobs:
   vulnerability-check:
     executor: default-docker
     steps:
+      - run:
+          name: Install general dependencies
+          command: *defaults_Dependencies
       - checkout
       - restore_cache:
           key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
           paths:
             - src/node_modules
-      - run:
-          name: Install general dependencies
-          command: *defaults_Dependencies
       - run:
           name: Create dir for test results
           command: mkdir -p ./audit/results
@@ -174,9 +174,9 @@ jobs:
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
+      - checkout
       - run:
           <<: *defaults_license_scanner
-      - checkout
       - restore_cache:
           key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
           paths:
