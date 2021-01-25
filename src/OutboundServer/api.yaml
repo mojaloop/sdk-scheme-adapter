@@ -714,6 +714,8 @@ components:
       - DEVICE
       - IBAN
       - ALIAS
+      - CONSENT
+      - THIRD_PARTY_LINK
       description: Below are the allowed values for the enumeration.
 
         - MSISDN -  An MSISDN (Mobile Station International Subscriber Directory Number, that is, the phone number) is used as reference to a participant. The MSISDN identifier should be in international format according to the [ITU-T E.164 standard](https://www.itu.int/rec/T-REC-E.164/en). Optionally, the MSISDN may be prefixed by a single plus sign, indicating the international prefix.
@@ -2275,6 +2277,8 @@ components:
         - ACCOUNT_ID
         - IBAN
         - ALIAS
+        - CONSENT
+        - THIRD_PARTY_LINK
       description: >-
         Below are the allowed values for the enumeration - MSISDN An MSISDN
         (Mobile Station International Subscriber Directory Number, that is, the

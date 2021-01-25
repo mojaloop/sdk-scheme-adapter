@@ -3525,6 +3525,8 @@ components:
         - ACCOUNT_ID
         - IBAN
         - ALIAS
+        - CONSENT
+        - THIRD_PARTY_LINK
       description: >-
         Below are the allowed values for the enumeration - MSISDN An MSISDN
         (Mobile Station International Subscriber Directory Number, that is, the
