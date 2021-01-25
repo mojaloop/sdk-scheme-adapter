@@ -54,11 +54,19 @@ const createCache = async (config) => {
     return cache;
 };
 
-let cache;
 describe('Cache', () => {
+    let cache;
+
+    beforeEach(async () => { 
+        cache = await createCache(defaultCacheConfig);
+    });
+
+    afterEach(async () => {
+        await cache.disconnect();
+    });
+    
     test('Sets and retrieves an object in the cache', async () => {
         // Arrange
-        cache = await createCache(defaultCacheConfig);
         const value = {test: true};
 
         // Act
