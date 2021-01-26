@@ -424,6 +424,10 @@ workflows:
 
       - build-local:
           context: org-global
+          requires:
+            - test-integration
+            - validate-openapi
+            - test-unit
           filters:
             branches:
               ignore:
