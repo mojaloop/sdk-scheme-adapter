@@ -10,6 +10,9 @@
     "lint:fix": "eslint . --fix",
     "test": "jest --ci --reporters=default --reporters=jest-junit --env=node test/unit/",
     "test:int": "jest --ci --reporters=default --reporters=jest-junit --env=node test/integration",
+    "test:api": "npm run test:api:in; npm run test:api:out",
+    "test:api:in": "swagger-cli validate ./InboundServer/api.yaml",
+    "test:api:out": "swagger-cli validate ./OutboundServer/api.yaml",
     "updates:check": "npm-check-updates",
     "updates:update": "npm-check-updates -u && npm install"
   },
@@ -61,6 +64,7 @@
     "npm-check-updates": "^11.0.2",
     "openapi-response-validator": "^7.2.3",
     "redis-mock": "^0.49.0",
+    "swagger-cli": "^4.0.4",
     "supertest": "^6.1.2"
   }
 }
