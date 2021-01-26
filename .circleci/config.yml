@@ -362,11 +362,19 @@ workflows:
               ignore:
                 - /feature*/
                 - /bugfix*/
-      - validate-api:
+
+      - validate-openapi:
           context: org-global
           requires:
             - setup
-  
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
+                
       - lint:
           context: org-global
           requires:
