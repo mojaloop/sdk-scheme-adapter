@@ -34,7 +34,7 @@ class InboundApi extends EventEmitter {
             auth: new WSO2Auth({
                 ...conf.wso2.auth,
                 logger,
-                tlsCreds: conf.outbound.tls.mutualTLS.enabled && conf.outbound.tls.creds,
+                tlsCreds: conf.mutualTLS.outboundRequests.enabled && conf.mutualTLS.outboundRequests.creds,
             }),
             retryWso2AuthFailureTimes: conf.wso2.requestAuthFailureRetryTimes,
         };
@@ -159,8 +159,8 @@ class InboundServer extends EventEmitter {
             this.emit('error', ...args);
         });
         this._server = this._createServer(
-            conf.inbound.tls.mutualTLS.enabled,
-            conf.inbound.tls.creds,
+            conf.mutualTLS.inboundRequests.enabled,
+            conf.mutualTLS.inboundRequests.creds,
             this._api.callback()
         );
     }
@@ -171,8 +171,8 @@ class InboundServer extends EventEmitter {
         const apiSpecs = yaml.load(fs.readFileSync(specPath));
         await this._validator.initialise(apiSpecs);
         await this._api.start();
-        await new Promise((resolve) => this._server.listen(this._conf.inbound.port, resolve));
-        this._logger.log(`Serving inbound API on port ${this._conf.inbound.port}`);
+        await new Promise((resolve) => this._server.listen(this._conf.inboundServerPort, resolve));
+        this._logger.log(`Serving inbound API on port ${this._conf.inboundServerPort}`);
     }
 
     async stop() {

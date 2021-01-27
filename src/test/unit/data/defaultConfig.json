@@ -1,27 +1,15 @@
 {
-  "test": {
-    "tls": {
-      "mutualTLS": { "enabled": false },
+  "mutualTLS": {
+    "inboundRequests": {
+      "enabled": false,
       "creds": {
         "ca": null,
         "cert": null,
         "key": null
       }
-    }
-  },
-  "inbound": {
-    "tls": {
-      "mutualTLS": { "enabled": false },
-      "creds": {
-        "ca": null,
-        "cert": null,
-        "key": null
-      }
-    }
-  },
-  "outbound": {
-    "tls": {
-      "mutualTLS": { "enabled": false },
+    },
+    "outboundRequests": {
+      "enabled": false,
       "creds": {
         "ca": null,
         "cert": null,
