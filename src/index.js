@@ -71,7 +71,7 @@ class Server extends EventEmitter {
         });
 
         this.testServer = new TestServer({
-            port: this.conf.test.port,
+            port: this.conf.testServerPort,
             logger: this.logger.push({ app: 'mojaloop-sdk-test-api' }),
             cache: this.cache,
         });

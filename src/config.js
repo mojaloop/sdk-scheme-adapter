@@ -58,25 +58,17 @@ const env = from(process.env, {
 
 module.exports = {
     __parseResourceVersion: parseResourceVersions,
-    inbound: {
-        port: env.get('INBOUND_LISTEN_PORT').default('4000').asPortNumber(),
-        tls: {
-            mutualTLS: {
-                enabled: env.get('INBOUND_MUTUAL_TLS_ENABLED').default('false').asBool(),
-            },
+    mutualTLS: {
+        inboundRequests: {
+            enabled: env.get('INBOUND_MUTUAL_TLS_ENABLED').default('false').asBool(),
             creds: {
                 ca: env.get('IN_CA_CERT_PATH').asFileListContent(),
                 cert: env.get('IN_SERVER_CERT_PATH').asFileContent(),
                 key: env.get('IN_SERVER_KEY_PATH').asFileContent(),
             },
         },
-    },
-    outbound: {
-        port: env.get('OUTBOUND_LISTEN_PORT').default('4001').asPortNumber(),
-        tls: {
-            mutualTLS: {
-                enabled: env.get('OUTBOUND_MUTUAL_TLS_ENABLED').default('false').asBool(),
-            },
+        outboundRequests: {
+            enabled: env.get('OUTBOUND_MUTUAL_TLS_ENABLED').default('false').asBool(),
             creds: {
                 ca: env.get('OUT_CA_CERT_PATH').asFileListContent(),
                 cert: env.get('OUT_CLIENT_CERT_PATH').asFileContent(),
@@ -84,9 +76,9 @@ module.exports = {
             },
         },
     },
-    test: {
-        port: env.get('TEST_LISTEN_PORT').default('4002').asPortNumber(),
-    },
+    inboundServerPort: env.get('INBOUND_LISTEN_PORT').default('4000').asPortNumber(),
+    outboundServerPort: env.get('OUTBOUND_LISTEN_PORT').default('4001').asPortNumber(),
+    testServerPort: env.get('TEST_LISTEN_PORT').default('4002').asPortNumber(),
     peerEndpoint: env.get('PEER_ENDPOINT').required().asString(),
     alsEndpoint: env.get('ALS_ENDPOINT').asString(),
     quotesEndpoint: env.get('QUOTES_ENDPOINT').asString(),

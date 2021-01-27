@@ -1,26 +1,14 @@
 {
-  "inbound": {
-      "port": 4000,
-      "tls": {
-          "mutualTLS": { "enabled": false },
-          "creds": {
-              "ca": null,
-              "cert": null,
-              "key": null
-          }
-      }
+  "tls": {
+    "enabled": false,
+    "creds": {
+      "ca": null,
+      "cert": null,
+      "key": null
+    }
   },
-  "outbound": {
-      "port": 4001,
-      "tls": {
-          "mutualTLS": { "enabled": false },
-          "creds": {
-              "ca": null,
-              "cert": null,
-              "key": null
-          }
-      }
-  },
+  "inboundServerPort": 4000,
+  "outboundServerPort": 4001,
   "peerEndpoint": "172.17.0.2:3001",
   "backendEndpoint": "172.17.0.2:3001",
   "alsEndpoint": "127.0.0.1:6500",

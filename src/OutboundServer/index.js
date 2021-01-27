@@ -38,7 +38,7 @@ class OutboundApi extends EventEmitter {
             auth: new WSO2Auth({
                 ...this._conf.wso2.auth,
                 logger: this._logger,
-                tlsCreds: this._conf.outbound.tls.mutualTLS.enabled && this._conf.outbound.tls.creds,
+                tlsCreds: this._conf.mutualTLS.outboundRequests.enabled && this._conf.mutualTLS.outboundRequests.creds,
             }),
             retryWso2AuthFailureTimes: conf.wso2.requestAuthFailureRetryTimes,
         };
@@ -62,7 +62,7 @@ class OutboundApi extends EventEmitter {
                 proxyConfig: conf.proxyConfig,
                 logger: this._logger,
                 wso2Auth: this._wso2.auth,
-                tls: conf.outbound.tls,
+                tls: conf.mutualTLS.outboundRequests,
             }));
         }
 
@@ -111,9 +111,9 @@ class OutboundServer extends EventEmitter {
         const apiSpecs = yaml.load(fs.readFileSync(specPath));
         await this._validator.initialise(apiSpecs);
 
-        await new Promise((resolve) => this._server.listen(this._conf.outbound.port, resolve));
+        await new Promise((resolve) => this._server.listen(this._conf.outboundServerPort, resolve));
 
-        this._logger.log(`Serving outbound API on port ${this._conf.outbound.port}`);
+        this._logger.log(`Serving outbound API on port ${this._conf.outboundServerPort}`);
     }
 
     async stop() {

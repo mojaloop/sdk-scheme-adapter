@@ -64,7 +64,6 @@ describe('AccountsModel', () => {
 
         const model = new AccountsModel({
             ...defaultConfig,
-            tls: defaultConfig.outbound.tls,
             cache,
             logger,
         });
@@ -105,7 +104,6 @@ describe('AccountsModel', () => {
     test('initializes to starting state', async () => {
         const model = new AccountsModel({
             ...defaultConfig,
-            tls: defaultConfig.outbound.tls,
             cache,
             logger,
         });
