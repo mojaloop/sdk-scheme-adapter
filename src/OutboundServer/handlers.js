@@ -373,7 +373,6 @@ const postAccounts = async (ctx) => {
     try {
         const model = new AccountsModel({
             ...ctx.state.conf,
-            tls: ctx.state.conf.outbound.tls,
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2: ctx.state.wso2,

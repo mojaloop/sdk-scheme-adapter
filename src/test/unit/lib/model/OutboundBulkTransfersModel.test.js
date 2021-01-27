@@ -57,7 +57,6 @@ describe('outboundBulkTransferModel', () => {
             ...config,
             cache,
             logger,
-            tls: config.outbound.tls,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(bulkTransferRequest)));
@@ -100,7 +99,6 @@ describe('outboundBulkTransferModel', () => {
             cache,
             logger,
             ...config,
-            tls: config.outbound.tls,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(bulkTransferRequest)));
@@ -127,7 +125,6 @@ describe('outboundBulkTransferModel', () => {
             cache,
             logger,
             ...config,
-            tls: config.outbound.tls,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(bulkTransferRequest)));
@@ -154,7 +151,6 @@ describe('outboundBulkTransferModel', () => {
             cache,
             logger,
             ...config,
-            tls: config.outbound.tls,
         });
 
         const BULK_TRANSFER_ID = 'btx-id000011';
@@ -223,7 +219,6 @@ describe('outboundBulkTransferModel', () => {
             cache,
             logger,
             ...config,
-            tls: config.outbound.tls,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(bulkTransferRequest)));

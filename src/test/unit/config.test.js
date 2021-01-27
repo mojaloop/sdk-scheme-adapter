@@ -67,7 +67,7 @@ describe('config', () => {
         fs.writeFileSync(cert, certContent);
         process.env.IN_SERVER_CERT_PATH = cert;
         const config = require('../../config');
-        const content = config.inbound.tls.creds.cert.toString();
+        const content = config.mutualTLS.inboundRequests.creds.cert.toString();
         expect(content).toBe(certContent);
     });
 
@@ -83,7 +83,7 @@ describe('config', () => {
         certs.forEach((cert, index) => fs.writeFileSync(cert, certContent[index]));
         process.env.IN_CA_CERT_PATH = certs.join(',');
         const config = require('../../config');
-        const content = config.inbound.tls.creds.ca.map(ca => ca.toString());
+        const content = config.mutualTLS.inboundRequests.creds.ca.map(ca => ca.toString());
         expect(content).toStrictEqual(certContent);
     });
 

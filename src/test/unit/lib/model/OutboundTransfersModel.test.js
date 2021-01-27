@@ -811,7 +811,7 @@ describe('outboundModel', () => {
 
 
     async function testTlsServer(enableTls) {
-        config.outbound.tls.mutualTLS.enabled = enableTls;
+        config.tls.enabled = enableTls;
 
         new Model({
             cache,

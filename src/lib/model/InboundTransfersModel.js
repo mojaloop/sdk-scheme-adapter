@@ -45,7 +45,7 @@ class InboundTransfersModel {
             transactionRequestsEndpoint: config.transactionRequestsEndpoint,
             bulkQuotesEndpoint: config.bulkQuotesEndpoint,
             dfspId: config.dfspId,
-            tls: config.inbound.tls,
+            tls: config.tls,
             jwsSign: config.jwsSign,
             jwsSigningKey: config.jwsSigningKey,
             wso2: config.wso2,
