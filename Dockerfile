@@ -1,4 +1,4 @@
-FROM node:12.18.3-alpine as builder
+FROM node:14.15-alpine as builder
 
 RUN apk add --no-cache git python build-base
 
@@ -21,7 +21,7 @@ COPY ./src/lib/router/package.json ./lib/router/package.json
 COPY ./src/lib/validate/package.json ./lib/validate/package.json
 RUN npm ci --only=production
 
-FROM node:12.18.3-alpine
+FROM node:14.15-alpine
 
 ARG BUILD_DATE
 ARG VCS_URL
