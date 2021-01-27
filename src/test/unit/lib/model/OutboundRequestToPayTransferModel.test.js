@@ -87,7 +87,6 @@ describe('outboundRequestToPayTransferModel', () => {
             cache,
             logger,
             ...config,
-            tls: config.outbound.tls,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(requestToPayTransferRequest)));
@@ -142,7 +141,6 @@ describe('outboundRequestToPayTransferModel', () => {
             cache,
             logger,
             ...config,
-            tls: config.outbound.tls,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(requestToPayTransferRequest)));
@@ -170,7 +168,6 @@ describe('outboundRequestToPayTransferModel', () => {
     //         cache,
     //         logger,
     //         ...config,
-    //         tls: config.outbound.tls,
     //     });
 
     //     await model.initialize(JSON.parse(JSON.stringify(requestToPayTransferRequest)));
@@ -197,7 +194,6 @@ describe('outboundRequestToPayTransferModel', () => {
     //         cache,
     //         logger,
     //         ...config,
-    //         tls: config.outbound.tls,
     //     });
 
     //     await model.load(requestToPayTransactionId);
@@ -223,7 +219,6 @@ describe('outboundRequestToPayTransferModel', () => {
     //         cache,
     //         logger,
     //         ...config,
-    //         tls: config.outbound.tls,
     //     });
 
     //     await model.load(requestToPayTransactionId);

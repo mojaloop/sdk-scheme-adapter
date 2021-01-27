@@ -82,7 +82,6 @@ describe('outboundModel', () => {
             cache,
             logger,
             ...config,
-            tls: config.outbound.tls,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(requestToPayRequest)));
@@ -108,7 +107,6 @@ describe('outboundModel', () => {
             cache,
             logger,
             ...config,
-            tls: config.outbound.tls,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(requestToPayRequest)));
@@ -139,7 +137,6 @@ describe('outboundModel', () => {
             cache,
             logger,
             ...config,
-            tls: config.outbound.tls,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(requestToPayRequest)));

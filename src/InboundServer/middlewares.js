@@ -246,7 +246,13 @@ const createJwsValidator = (logger, keys, exclusions) => {
  * @return {Function}
  */
 const applyState = (sharedState) => async (ctx, next) => {
-    Object.assign(ctx.state, sharedState);
+    Object.assign(ctx.state, {
+        ...sharedState,
+        conf: {
+            ...sharedState.conf,
+            tls: sharedState?.conf?.mutualTLS?.outboundRequests,
+        }
+    });
     await next();
 };
 
