@@ -28,7 +28,6 @@ const transactionRequestResponseTemplate = require('./data/transactionRequestRes
 
 const genPartyId = (party) => {
     const { partyIdType, partyIdentifier, partySubIdOrType } = party.party.partyIdInfo;
-    // return `${partyIdType}_${partyIdentifier}` + (partySubIdOrType ? `_${partySubIdOrType}` : '');
     return PartiesModel.channelName(partyIdType, partyIdentifier, partySubIdOrType);
 };
 
