@@ -15,11 +15,13 @@ const mockBulkQuoteError = require('./data/mockBulkQuoteError');
 const mockBulkTransferError = require('./data/mockBulkTransferError');
 const mockRequestToPayError = require('./data/mockRequestToPayError');
 const mockRequestToPayTransferError = require('./data/mockRequestToPayTransferError');
+const mockGetPartiesError = require('./data/mockGetPartiesError');
 const transferRequest = require('./data/transferRequest');
 const bulkTransferRequest = require('./data/bulkTransferRequest');
 const bulkQuoteRequest = require('./data/bulkQuoteRequest');
 const requestToPayPayload = require('./data/requestToPay');
 const requestToPayTransferRequest = require('./data/requestToPayTransferRequest');
+const mockLogger = require('../mockLogger');
 
 jest.mock('@internal/model');
 
@@ -30,6 +32,7 @@ const {
     OutboundBulkQuotesModel,
     OutboundRequestToPayTransferModel,
     OutboundRequestToPayModel,
+    PartiesModel
 } = require('@internal/model');
 
 /**
@@ -390,4 +393,249 @@ describe('Outbound API handlers:', () => {
         });
     });
 
+    describe('GET /parties/{Type}/{ID}/{SubId}', () => {
+        test('happy flow', async() => {
+            
+            const mockContext = {
+                request: {},
+                response: {},
+                state: {
+                    conf: {},
+                    wso2Auth: 'mocked wso2Auth',
+                    logger: mockLogger({ app: 'outbound-api-handlers-test'}),
+                    cache: { the: 'mocked cache' },
+                    path: {
+                        params: {
+                            'Type': 'MSISDN',
+                            'ID': '1234567890',
+                            'SubId': 'abcdefgh'
+                        },
+                    },
+                },
+            };
+            
+            // mock state machine
+            const mockedPSM = {
+                run: jest.fn(async () => ({ the: 'run response' }))
+            };
+            
+            const createSpy = jest.spyOn(PartiesModel, 'create')
+                .mockImplementationOnce(async () => mockedPSM);
+
+            // invoke handler
+            await handlers['/parties/{Type}/{ID}/{SubId}'].get(mockContext);
+
+            // PSM model creation
+            const state = mockContext.state;
+            const cacheKey = PartiesModel.channelName('MSISDN', '1234567890', 'abcdefgh');
+            const expectedConfig = {
+                cache: state.cache,
+                logger: state.logger,
+                wso2Auth: state.wso2Auth
+            };
+            expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
+
+            // run workflow
+            expect(mockedPSM.run).toBeCalledWith('MSISDN', '1234567890', 'abcdefgh');
+
+            // response
+            expect(mockContext.response.status).toBe(200);
+            expect(mockContext.response.body).toEqual({ the: 'run response' });
+        });
+
+        test('error flow', async() => {    
+            const mockContext = {
+                request: {},
+                response: {},
+                state: {
+                    conf: {},
+                    wso2Auth: 'mocked wso2Auth',
+                    logger: mockLogger({ app: 'outbound-api-handlers-test'}),
+                    cache: { the: 'mocked cache' },
+                    path: {
+                        params: {
+                            'Type': 'MSISDN',
+                            'ID': '1234567890',
+                            'SubId': 'abcdefgh'
+                        },
+                    },
+                },
+            };
+            
+            // mock state machine
+            const mockedPSM = {
+                run: jest.fn(async () => ({ errorInformation: { Iam: 'the-error'} }))
+            };
+            
+            const createSpy = jest.spyOn(PartiesModel, 'create')
+                .mockImplementationOnce(async () => mockedPSM);
+
+            // invoke handler
+            await handlers['/parties/{Type}/{ID}/{SubId}'].get(mockContext);
+
+            // PSM model creation
+            const state = mockContext.state;
+            const cacheKey = PartiesModel.channelName('MSISDN', '1234567890', 'abcdefgh');
+            const expectedConfig = {
+                cache: state.cache,
+                logger: state.logger,
+                wso2Auth: state.wso2Auth
+            };
+            expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
+
+            // run workflow
+            expect(mockedPSM.run).toBeCalledWith('MSISDN', '1234567890', 'abcdefgh');
+
+            // response
+            expect(mockContext.response.status).toBe(404);
+            expect(mockContext.response.body).toEqual({ errorInformation: { Iam: 'the-error'} });
+        });
+    });
+    describe('GET /parties/{Type}/{ID}', () => {
+        test('happy flow', async() => {
+            
+            const mockContext = {
+                request: {},
+                response: {},
+                state: {
+                    conf: {},
+                    wso2Auth: 'mocked wso2Auth',
+                    logger: mockLogger({ app: 'outbound-api-handlers-test'}),
+                    cache: { the: 'mocked cache' },
+                    path: {
+                        params: {
+                            'Type': 'MSISDN',
+                            'ID': '1234567890'
+                        },
+                    },
+                },
+            };
+            
+            // mock state machine
+            const mockedPSM = {
+                run: jest.fn(async () => ({ the: 'run response' }))
+            };
+            
+            const createSpy = jest.spyOn(PartiesModel, 'create')
+                .mockImplementationOnce(async () => mockedPSM);
+
+            // invoke handler
+            await handlers['/parties/{Type}/{ID}'].get(mockContext);
+
+            // PSM model creation
+            const state = mockContext.state;
+            const cacheKey = PartiesModel.channelName('MSISDN', '1234567890');
+            const expectedConfig = {
+                cache: state.cache,
+                logger: state.logger,
+                wso2Auth: state.wso2Auth
+            };
+            expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
+
+            // run workflow
+            expect(mockedPSM.run).toBeCalledWith('MSISDN', '1234567890', undefined);
+
+            // response
+            expect(mockContext.response.status).toBe(200);
+            expect(mockContext.response.body).toEqual({ the: 'run response' });
+        });
+
+        test('error flow', async() => {    
+            const mockContext = {
+                request: {},
+                response: {},
+                state: {
+                    conf: {},
+                    wso2Auth: 'mocked wso2Auth',
+                    logger: mockLogger({ app: 'outbound-api-handlers-test'}),
+                    cache: { the: 'mocked cache' },
+                    path: {
+                        params: {
+                            'Type': 'MSISDN',
+                            'ID': '1234567890'
+                        },
+                    },
+                },
+            };
+            
+            // mock state machine
+            const mockedPSM = {
+                run: jest.fn(async () => ({ errorInformation: { Iam: 'the-error'} }))
+            };
+            
+            const createSpy = jest.spyOn(PartiesModel, 'create')
+                .mockImplementationOnce(async () => mockedPSM);
+
+            // invoke handler
+            await handlers['/parties/{Type}/{ID}'].get(mockContext);
+
+            // PSM model creation
+            const state = mockContext.state;
+            const cacheKey = PartiesModel.channelName('MSISDN', '1234567890');
+            const expectedConfig = {
+                cache: state.cache,
+                logger: state.logger,
+                wso2Auth: state.wso2Auth
+            };
+            expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
+
+            // run workflow
+            expect(mockedPSM.run).toBeCalledWith('MSISDN', '1234567890', undefined);
+
+            // response
+            expect(mockContext.response.status).toBe(404);
+            expect(mockContext.response.body).toEqual({ errorInformation: { Iam: 'the-error'} });
+        });
+
+        test('mojaloop error propagation', async() => {    
+            const mockContext = {
+                request: {},
+                response: {},
+                state: {
+                    conf: {},
+                    wso2Auth: 'mocked wso2Auth',
+                    logger: mockLogger({ app: 'outbound-api-handlers-test'}),
+                    cache: { the: 'mocked cache' },
+                    path: {
+                        params: {
+                            'Type': 'MSISDN',
+                            'ID': '1234567890'
+                        },
+                    },
+                },
+            };
+            
+            // mock state machine
+            const mockedPSM = {
+                run: jest.fn(async () => { throw mockGetPartiesError; })
+            };
+            
+            const createSpy = jest.spyOn(PartiesModel, 'create')
+                .mockImplementationOnce(async () => mockedPSM);
+
+            // invoke handler
+            await handlers['/parties/{Type}/{ID}'].get(mockContext);
+
+            // PSM model creation
+            const state = mockContext.state;
+            const cacheKey = PartiesModel.channelName('MSISDN', '1234567890');
+            const expectedConfig = {
+                cache: state.cache,
+                logger: state.logger,
+                wso2Auth: state.wso2Auth
+            };
+            expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
+
+            // run workflow
+            expect(mockedPSM.run).toBeCalledWith('MSISDN', '1234567890', undefined);
+
+            // response
+            expect(mockContext.response.status).toBe(500);
+            expect(mockContext.response.body).toEqual({
+                message: 'Mock error',
+                statusCode: '500',
+                requestPartiesInformationState: {}
+            });
+        });
+    }); 
 });

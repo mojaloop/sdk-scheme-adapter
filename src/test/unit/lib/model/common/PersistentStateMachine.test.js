@@ -169,9 +169,10 @@ describe('PersistentStateMachine', () => {
             
             const psm = await PSM.create(data, cache, key, logger, smSpec);
             checkPSMLayout(psm);
+            await psm.init();
 
-            // transition `init` should encounter exception when saving `context.data` 
-            expect(() => psm.init()).rejects.toEqual(new Error('error from cache.set'));
+            expect(() => psm.saveToCache())
+                .rejects.toEqual(new Error('error from cache.set'));
         });
     });
 
