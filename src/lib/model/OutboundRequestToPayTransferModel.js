@@ -16,6 +16,7 @@ const StateMachine = require('javascript-state-machine');
 const { Ilp, MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const shared = require('@internal/shared');
 const { BackendError } = require('./common');
+const PartiesModel = require('./PartiesModel');
 
 const requestToPayTransferStateEnum = {
     'WAITING_FOR_QUOTE_ACCEPTANCE': 'WAITING_FOR_QUOTE_ACCEPTANCE',
@@ -253,8 +254,13 @@ class OutboundRequestToPayTransferModel {
         // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
             // listen for resolution events on the payee idType and idValue
-            const payeeKey = `${this.data.to.idType}_${this.data.to.idValue}`
-              + (this.data.to.idSubValue ? `_${this.data.to.idSubValue}` : '');
+            // const payeeKey = `${this.data.to.idType}_${this.data.to.idValue}`
+            //   + (this.data.to.idSubValue ? `_${this.data.to.idSubValue}` : '');
+            const payeeKey = PartiesModel.channelName(
+                this.data.to.idType,
+                this.data.to.idValue,
+                this.data.to.idSubValue
+            );
 
             // hook up a subscriber to handle response messages
             const subId = await this._cache.subscribe(payeeKey, (cn, msg, subId) => {
