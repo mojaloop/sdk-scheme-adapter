@@ -571,7 +571,7 @@ describe('Outbound API handlers:', () => {
             expect(mockContext.response.body).toEqual({ errorInformation: { Iam: 'the-error'} });
         });
 
-        test('mojaloop error propagation', async() => {    
+        test('mojaloop error propagation for /parties/{Type}/{ID}', async() => {    
             
             // mock state machine
             const mockedPSM = {
@@ -605,5 +605,40 @@ describe('Outbound API handlers:', () => {
                 requestPartiesInformationState: {}
             });
         });
+        test('mojaloop error propagation for /parties/{Type}/{ID}/{SubId}', async() => {    
+            
+            // mock state machine
+            const mockedPSM = {
+                run: jest.fn(async () => { throw mockGetPartiesError; })
+            };
+            
+            const createSpy = jest.spyOn(PartiesModel, 'create')
+                .mockImplementationOnce(async () => mockedPSM);
+
+            // invoke handler
+            await handlers['/parties/{Type}/{ID}/{SubId}'].get(mockContext);
+
+            // PSM model creation
+            const state = mockContext.state;
+            const cacheKey = PartiesModel.channelName('MSISDN', '1234567890');
+            const expectedConfig = {
+                cache: state.cache,
+                logger: state.logger,
+                wso2Auth: state.wso2Auth
+            };
+            expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
+
+            // run workflow
+            expect(mockedPSM.run).toBeCalledWith('MSISDN', '1234567890', undefined);
+
+            // response
+            expect(mockContext.response.status).toBe(500);
+            expect(mockContext.response.body).toEqual({
+                message: 'Mock error',
+                statusCode: '500',
+                requestPartiesInformationState: {}
+            });
+        });
+
     }); 
 });
