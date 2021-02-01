@@ -492,24 +492,24 @@ describe('Outbound API handlers:', () => {
         });
     });
     describe('GET /parties/{Type}/{ID}', () => {
-        test('happy flow', async() => {
-            
-            const mockContext = {
-                request: {},
-                response: {},
-                state: {
-                    conf: {},
-                    wso2Auth: 'mocked wso2Auth',
-                    logger: mockLogger({ app: 'outbound-api-handlers-test'}),
-                    cache: { the: 'mocked cache' },
-                    path: {
-                        params: {
-                            'Type': 'MSISDN',
-                            'ID': '1234567890'
-                        },
+        const mockContext = {
+            request: {},
+            response: {},
+            state: {
+                conf: {},
+                wso2Auth: 'mocked wso2Auth',
+                logger: mockLogger({ app: 'outbound-api-handlers-test'}),
+                cache: { the: 'mocked cache' },
+                path: {
+                    params: {
+                        'Type': 'MSISDN',
+                        'ID': '1234567890'
                     },
                 },
-            };
+            },
+        };
+        test('happy flow', async() => {
+            
             
             // mock state machine
             const mockedPSM = {
@@ -540,23 +540,7 @@ describe('Outbound API handlers:', () => {
             expect(mockContext.response.body).toEqual({ the: 'run response' });
         });
 
-        test('error flow', async() => {    
-            const mockContext = {
-                request: {},
-                response: {},
-                state: {
-                    conf: {},
-                    wso2Auth: 'mocked wso2Auth',
-                    logger: mockLogger({ app: 'outbound-api-handlers-test'}),
-                    cache: { the: 'mocked cache' },
-                    path: {
-                        params: {
-                            'Type': 'MSISDN',
-                            'ID': '1234567890'
-                        },
-                    },
-                },
-            };
+        test('not found error flow', async() => {    
             
             // mock state machine
             const mockedPSM = {
@@ -588,22 +572,6 @@ describe('Outbound API handlers:', () => {
         });
 
         test('mojaloop error propagation', async() => {    
-            const mockContext = {
-                request: {},
-                response: {},
-                state: {
-                    conf: {},
-                    wso2Auth: 'mocked wso2Auth',
-                    logger: mockLogger({ app: 'outbound-api-handlers-test'}),
-                    cache: { the: 'mocked cache' },
-                    path: {
-                        params: {
-                            'Type': 'MSISDN',
-                            'ID': '1234567890'
-                        },
-                    },
-                },
-            };
             
             // mock state machine
             const mockedPSM = {

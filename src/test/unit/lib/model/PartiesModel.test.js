@@ -15,6 +15,7 @@ jest.mock('@mojaloop/sdk-standard-components');
 
 const { uuid } = require('uuidv4');
 const Model = require('@internal/model').PartiesModel;
+const PSM = require('@internal/model/common').PersistentStateMachine;
 const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const defaultConfig = require('./data/defaultConfig');
 const mockLogger = require('../../mockLogger');
@@ -107,6 +108,33 @@ describe('PartiesModel', () => {
             const type = uuid();
             const id = uuid();
             expect(Model.channelName(type, id)).toEqual(`parties-${type}-${id}-undefined`);
+        });
+
+        it('should generate proper channel name when all params specified', () => {
+            const type = uuid();
+            const id = uuid();
+            const subId = uuid();
+            expect(Model.channelName(type, id, subId)).toEqual(`parties-${type}-${id}-${subId}`);
+        });
+    });
+
+    describe('generateKey', () => {
+        it('should generate proper cache key', () => {
+            const type = uuid();
+            const id = uuid();
+            expect(Model.generateKey(type, id)).toEqual(`key-${Model.channelName(type, id)}`);
+        });
+
+        it('should handle lack of id param', () => {
+            const type = uuid();
+            expect(Model.generateKey(type)).toEqual(`key-${Model.channelName(type)}`);
+        });
+
+        it('should handle all params', () => {
+            const type = uuid();
+            const id = uuid();
+            const subId = uuid();
+            expect(Model.generateKey(type, id, subId)).toEqual(`key-${Model.channelName(type, id, subId)}`);
         });
     });
 
@@ -274,6 +302,26 @@ describe('PartiesModel', () => {
             expect(model.context.logger.log).toBeCalledWith('State machine in errored state');
         });
 
+        it('handling errors', async (done) => {
+            const type = uuid();
+            const id = uuid();
+            const subIdValue = uuid();
+
+            const model = await Model.create(data, cacheKey, modelConfig);
+            
+            model.requestPartiesInformation = jest.fn(() => { throw new Error('mocked error'); });
+
+            model.context.data.currentState = 'start';
+            
+            model.run(type, id, subIdValue).catch((err) => {
+                expect(model.context.data.currentState).toEqual('errored');
+                expect(err.requestPartiesInformationState).toEqual( {
+                    ...data,
+                    currentState: 'ERROR_OCCURRED',
+                });
+                done();
+            });
+        });
         it('should handle errors', async () => {
             const type = uuid();
             const id = uuid();
@@ -301,6 +349,43 @@ describe('PartiesModel', () => {
 
             // ensure we start transition to errored state
             expect(model.error).toBeCalledTimes(1);
+        });
+
+        it('should handle input validation for id/subId params', async () => {
+            const type = uuid();
+            const model = await Model.create(data, cacheKey, modelConfig);
+            
+            expect(() => model.run(type))
+                .rejects.toEqual(
+                    new Error('PartiesModel.run required at least two string arguments: \'type\' and \'id\'')
+                );
+        });
+    });
+
+    describe('loadFromCache', () => {
+        test('should use PSM.loadFromCache properly', async () => {
+            const spyLoadFromCache = jest.spyOn(PSM, 'loadFromCache');
+            const key = uuid();
+
+            // act
+            const model = await Model.loadFromCache(key, modelConfig);
+
+            // assert
+            // check does model is proper
+            expect(typeof model.requestPartiesInformation).toEqual('function');
+
+            // check how cache.get has been called
+            expect(modelConfig.cache.get).toBeCalledWith(key);
+
+            // check how loadFromCache from parent PSM module was used
+            expect(spyLoadFromCache).toBeCalledTimes(1);
+            expect(spyLoadFromCache).toBeCalledWith(
+                modelConfig.cache,
+                key,
+                modelConfig.logger,
+                expect.anything(),
+                expect.anything()
+            );
         });
     });
 });
