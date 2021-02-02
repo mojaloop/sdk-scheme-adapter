@@ -8,11 +8,13 @@
  *       James Bush - james.bush@modusbox.com                             *
  *  CONTRIBUTORS:                                                         *
  *       Steven Oderayi - steven.oderayi@modusbox.com                     *
+ *       Paweł Marzec - pawel.marzec@modusbox.com                         *
  **************************************************************************/
 
 'use strict';
 
 const Model = require('@internal/model').InboundTransfersModel;
+const PartiesModel = require('@internal/model').PartiesModel;
 
 /**
  * Handles a GET /authorizations/{id} request
@@ -382,9 +384,28 @@ const putPartiesByTypeAndId = async (ctx) => {
     const idSubValue = ctx.state.path.params.SubId;
 
     // publish an event onto the cache for subscribers to action
-    const cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
+    const cacheId = PartiesModel.channelName(idType, idValue, idSubValue);
     await ctx.state.cache.publish(cacheId, ctx.request.body);
     ctx.response.status = 200;
+};
+
+/**
+ * Handles a PUT /parties/{Type}/{ID}/error request. This is an error response to a GET /parties/{Type}/{ID} request
+ */
+const putPartiesByTypeAndIdError = async(ctx) => {
+    const idType = ctx.state.path.params.Type;
+    const idValue = ctx.state.path.params.ID;
+    const idSubValue = ctx.state.path.params.SubId;
+
+    // publish an event onto the cache for subscribers to action
+    // note that we publish the event the same way we publish a success PUT
+    // the subscriber will notice the body contains an errorInformation property
+    // and recognise it as an error response
+    const cacheId = PartiesModel.channelName(idType, idValue, idSubValue);
+    await ctx.state.cache.publish(cacheId, ctx.request.body);
+
+    ctx.response.status = 200;
+    ctx.response.body = '';
 };
 
 
@@ -492,26 +513,6 @@ const patchTransfersById = async (ctx) => {
     ctx.state.logger.push({response}).
         log('Inbound transfers model handled PATCH /transfers/{ID} request');
 };
-
-/**
- * Handles a PUT /parties/{Type}/{ID}/error request. This is an error response to a GET /parties/{Type}/{ID} request
- */
-const putPartiesByTypeAndIdError = async(ctx) => {
-    const idType = ctx.state.path.params.Type;
-    const idValue = ctx.state.path.params.ID;
-    const idSubValue = ctx.state.path.params.SubId;
-
-    // publish an event onto the cache for subscribers to action
-    // note that we publish the event the same way we publish a success PUT
-    // the subscriber will notice the body contains an errorInformation property
-    // and recognise it as an error response
-    const cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
-    await ctx.state.cache.publish(cacheId, ctx.request.body);
-
-    ctx.response.status = 200;
-    ctx.response.body = '';
-};
-
 
 /**
  * Handles a PUT /quotes/{ID}/error request. This is an error response to a POST /quotes request

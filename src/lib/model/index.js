@@ -19,7 +19,8 @@ const OutboundRequestToPayTransferModel = require('./OutboundRequestToPayTransfe
 const AccountsModel = require('./AccountsModel');
 const ProxyModel = require('./ProxyModel');
 const OutboundRequestToPayModel = require('./OutboundRequestToPayModel');
-const { BackendError } = require('./common');
+const { BackendError, PersistentStateMachine } = require('./common');
+const PartiesModel = require('./PartiesModel');
 
 
 module.exports = {
@@ -32,4 +33,6 @@ module.exports = {
     InboundTransfersModel,
     OutboundTransfersModel,
     ProxyModel,
+    PersistentStateMachine,
+    PartiesModel,
 };

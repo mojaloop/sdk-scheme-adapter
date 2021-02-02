@@ -356,6 +356,47 @@ paths:
         504:
           $ref: '#/components/responses/accountsCreationTimeout'
 
+  /parties/{Type}/{ID}:
+    parameters:
+      - $ref: '#/components/parameters/Type'
+      - $ref: '#/components/parameters/ID'
+    get:
+      description: >-
+        The HTTP request GET /parties// (or GET /parties///) is used to lookup
+        information regarding the requested Party, defined by ,  and optionally
+        (for example, GET /parties/MSISDN/123456789, or GET
+        /parties/BUSINESS/shoecompany/employee1).
+      summary: PartiesByTypeAndID
+      tags:
+        - parties
+      operationId: PartiesByTypeAndID
+      responses:
+        '200':
+          $ref: '#/components/responses/PartiesByIdResponse'
+        '404':
+          $ref: '#/components/responses/PartiesByIdError404'
+
+  /parties/{Type}/{ID}/{SubId}:
+    parameters:
+      - $ref: '#/components/parameters/Type'
+      - $ref: '#/components/parameters/ID'
+      - $ref: '#/components/parameters/SubId'
+    get:
+      description: >-
+        The HTTP request GET /parties// (or GET /parties///) is used to lookup
+        information regarding the requested Party, defined by ,  and optionally
+        (for example, GET /parties/MSISDN/123456789, or GET
+        /parties/BUSINESS/shoecompany/employee1).
+      summary: PartiesSubIdByTypeAndID
+      tags:
+        - parties
+      operationId: PartiesSubIdByTypeAndID
+      responses:
+        '200':
+          $ref: '#/components/responses/PartiesByIdResponse'
+        '404':
+          $ref: '#/components/responses/PartiesByIdError404'
+
 components:
   schemas:
 
@@ -680,7 +721,6 @@ components:
 
         - OTHER_ID - Any other type of identification type number is used in reference to a party.
 
-
     money:
       pattern: ^([0]|([1-9][0-9]{0,17}))([.][0-9]{0,3}[1-9])?$
       type: string
@@ -778,6 +818,7 @@ components:
 
         extensionList:
           $ref: '#/components/schemas/extensionList'
+
     extensionItem:
       type: object
       properties:
@@ -1630,6 +1671,518 @@ components:
             bulkQuoteState:
               $ref: '#/components/schemas/bulkQuoteResponse'
 
+    # /parties/... schemas
+    AccountList:
+      title: AccountList
+      type: object
+      description: Data model for the complex type AccountList
+      properties:
+        account:
+          type: array
+          items:
+            $ref: '#/components/schemas/Account'
+          minItems: 1
+          maxItems: 32
+          description: Accounts associated with the Party
+      required:
+        - account
+
+    Account:
+      title: Account
+      type: object
+      description: Data model for the complex type Account
+      properties:
+        address:
+          $ref: '#/components/schemas/AccountAddress'
+          type: string
+          description: Unique routable address which is DFSP specific.
+        currency:
+          $ref: '#/components/schemas/Currency'
+          type: string
+          description: Currency of the amount.
+        description:
+          $ref: '#/components/schemas/Name'
+          type: string
+          description: The name of the account.
+      required:
+        - address
+        - currency
+        - description
+    AccountAddress:
+      title: AccountAddress
+      type: string
+      description: Unique routable address which is DFSP specific.
+      pattern: ^([0-9A-Za-z_~\-\.]+[0-9A-Za-z_~\-])$
+      minLength: 1
+      maxLength: 1023
+
+    PartiesCurrentState:
+      type: string
+      enum:
+        - 'WAITING_FOR_REQUEST_PARTY_INFORMATION'
+        - 'COMPLETED'
+        - 'ERROR_OCCURRED'
+    Party:
+      title: Party
+      type: object
+      description: Data model for the complex type Party.
+      properties:
+        accounts:
+          $ref: '#/components/schemas/AccountList'
+          description: List of accounts associated with the party containing and DFSP routable address, currency identifier and description.
+        partyIdInfo:
+          $ref: '#/components/schemas/PartyIdInfo'
+          description: 'Party Id type, id, sub ID or type, and FSP Id.'
+        merchantClassificationCode:
+          $ref: '#/components/schemas/MerchantClassificationCode'
+          description: >-
+            Used in the context of Payee Information, where the Payee happens to
+            be a merchant accepting merchant payments.
+        name:
+          $ref: '#/components/schemas/PartyName'
+          description: 'Display name of the Party, could be a real name or a nick name.'
+        personalInfo:
+          $ref: '#/components/schemas/PartyPersonalInfo'
+          description: >-
+            Personal information used to verify identity of Party such as first,
+            middle, last name and date of birth.
+      required:
+        - partyIdInfo
+
+    PartyName:
+      title: PartyName
+      type: string
+      minLength: 1
+      maxLength: 128
+      description: Name of the Party. Could be a real name or a nickname.
+
+    PartyPersonalInfo:
+      title: PartyPersonalInfo
+      type: object
+      description: Data model for the complex type PartyPersonalInfo.
+      properties:
+        complexName:
+          $ref: '#/components/schemas/PartyComplexName'
+          description: 'First, middle and last name for the Party.'
+        dateOfBirth:
+          $ref: '#/components/schemas/DateOfBirth'
+          description: Date of birth for the Party.
+
+    PartyComplexName:
+      title: PartyComplexName
+      type: object
+      description: Data model for the complex type PartyComplexName.
+      properties:
+        firstName:
+          $ref: '#/components/schemas/FirstName'
+          description: Party’s first name.
+        middleName:
+          $ref: '#/components/schemas/MiddleName'
+          description: Party’s middle name.
+        lastName:
+          $ref: '#/components/schemas/LastName'
+          description: Party’s last name.
+
+    FirstName:
+      title: FirstName
+      type: string
+      minLength: 1
+      maxLength: 128
+      pattern: '^(?!\s*$)[\w .,''-]{1,128}$'
+      description: First name of the Party (Name Type).
+
+    MiddleName:
+      title: MiddleName
+      type: string
+      minLength: 1
+      maxLength: 128
+      pattern: '^(?!\s*$)[\w .,''-]{1,128}$'
+      description: Middle name of the Party (Name Type).
+
+    LastName:
+      title: LastName
+      type: string
+      minLength: 1
+      maxLength: 128
+      pattern: '^(?!\s*$)[\w .,''-]{1,128}$'
+      description: Last name of the Party (Name Type).
+
+    DateOfBirth:
+      title: DateofBirth (type Date)
+      type: string
+      pattern: >-
+        ^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)$
+      description: Date of Birth of the Party.
+
+    PartyIdInfo:
+      title: PartyIdInfo
+      type: object
+      description: Data model for the complex type PartyIdInfo.
+      properties:
+        partyIdType:
+          $ref: '#/components/schemas/PartyIdType'
+          description: Type of the identifier.
+        partyIdentifier:
+          $ref: '#/components/schemas/PartyIdentifier'
+          description: An identifier for the Party.
+        partySubIdOrType:
+          $ref: '#/components/schemas/PartySubIdOrType'
+          description: A sub-identifier or sub-type for the Party.
+        fspId:
+          $ref: '#/components/schemas/FspId'
+          description: FSP ID (if known)
+        extensionList:
+          $ref: '#/components/schemas/ExtensionList'
+          description: 'Optional extension, specific to deployment.'
+      required:
+        - partyIdType
+        - partyIdentifier
+
+    PartyIdType:
+      title: PartyIdTypeEnum
+      type: string
+      enum:
+        - MSISDN
+        - EMAIL
+        - PERSONAL_ID
+        - BUSINESS
+        - DEVICE
+        - ACCOUNT_ID
+        - IBAN
+        - ALIAS
+      description: >-
+        Below are the allowed values for the enumeration - MSISDN An MSISDN
+        (Mobile Station International Subscriber Directory Number, that is, the
+        phone number) is used as reference to a participant. The MSISDN
+        identifier should be in international format according to the ITU-T
+        E.164 standard. Optionally, the MSISDN may be prefixed by a single plus
+        sign, indicating the international prefix. - EMAIL An email is used as
+        reference to a participant. The format of the email should be according
+        to the informational RFC 3696. - PERSONAL_ID A personal identifier is
+        used as reference to a participant. Examples of personal identification
+        are passport number, birth certificate number, and national registration
+        number. The identifier number is added in the PartyIdentifier element.
+        The personal identifier type is added in the PartySubIdOrType element. -
+        BUSINESS A specific Business (for example, an organization or a company)
+        is used as reference to a participant. The BUSINESS identifier can be in
+        any format. To make a transaction connected to a specific username or
+        bill number in a Business, the PartySubIdOrType element should be used.
+        - DEVICE A specific device (for example, a POS or ATM) ID connected to a
+        specific business or organization is used as reference to a Party. For
+        referencing a specific device under a specific business or organization,
+        use the PartySubIdOrType element. - ACCOUNT_ID A bank account number or
+        FSP account ID should be used as reference to a participant. The
+        ACCOUNT_ID identifier can be in any format, as formats can greatly
+        differ depending on country and FSP. - IBAN A bank account number or FSP
+        account ID is used as reference to a participant. The IBAN identifier
+        can consist of up to 34 alphanumeric characters and should be entered
+        without whitespace. - ALIAS An alias is used as reference to a
+        participant. The alias should be created in the FSP as an alternative
+        reference to an account owner. Another example of an alias is a username
+        in the FSP system. The ALIAS identifier can be in any format. It is also
+        possible to use the PartySubIdOrType element for identifying an account
+        under an Alias defined by the PartyIdentifier.
+
+    PartyIdentifier:
+      title: PartyIdentifier
+      type: string
+      minLength: 1
+      maxLength: 128
+      description: Identifier of the Party.
+
+    PartySubIdOrType:
+      title: PartySubIdOrType
+      type: string
+      minLength: 1
+      maxLength: 128
+      description: >-
+        Either a sub-identifier of a PartyIdentifier, or a sub-type of the
+        PartyIdType, normally a PersonalIdentifierType.
+
+    Currency:
+      title: CurrencyEnum
+      description: >-
+        The currency codes defined in ISO 4217 as three-letter alphabetic codes
+        are used as the standard naming representation for currencies.
+      type: string
+      minLength: 3
+      maxLength: 3
+      enum:
+        - AED
+        - AFN
+        - ALL
+        - AMD
+        - ANG
+        - AOA
+        - ARS
+        - AUD
+        - AWG
+        - AZN
+        - BAM
+        - BBD
+        - BDT
+        - BGN
+        - BHD
+        - BIF
+        - BMD
+        - BND
+        - BOB
+        - BRL
+        - BSD
+        - BTN
+        - BWP
+        - BYN
+        - BZD
+        - CAD
+        - CDF
+        - CHF
+        - CLP
+        - CNY
+        - COP
+        - CRC
+        - CUC
+        - CUP
+        - CVE
+        - CZK
+        - DJF
+        - DKK
+        - DOP
+        - DZD
+        - EGP
+        - ERN
+        - ETB
+        - EUR
+        - FJD
+        - FKP
+        - GBP
+        - GEL
+        - GGP
+        - GHS
+        - GIP
+        - GMD
+        - GNF
+        - GTQ
+        - GYD
+        - HKD
+        - HNL
+        - HRK
+        - HTG
+        - HUF
+        - IDR
+        - ILS
+        - IMP
+        - INR
+        - IQD
+        - IRR
+        - ISK
+        - JEP
+        - JMD
+        - JOD
+        - JPY
+        - KES
+        - KGS
+        - KHR
+        - KMF
+        - KPW
+        - KRW
+        - KWD
+        - KYD
+        - KZT
+        - LAK
+        - LBP
+        - LKR
+        - LRD
+        - LSL
+        - LYD
+        - MAD
+        - MDL
+        - MGA
+        - MKD
+        - MMK
+        - MNT
+        - MOP
+        - MRO
+        - MUR
+        - MVR
+        - MWK
+        - MXN
+        - MYR
+        - MZN
+        - NAD
+        - NGN
+        - NIO
+        - NOK
+        - NPR
+        - NZD
+        - OMR
+        - PAB
+        - PEN
+        - PGK
+        - PHP
+        - PKR
+        - PLN
+        - PYG
+        - QAR
+        - RON
+        - RSD
+        - RUB
+        - RWF
+        - SAR
+        - SBD
+        - SCR
+        - SDG
+        - SEK
+        - SGD
+        - SHP
+        - SLL
+        - SOS
+        - SPL
+        - SRD
+        - STD
+        - SVC
+        - SYP
+        - SZL
+        - THB
+        - TJS
+        - TMT
+        - TND
+        - TOP
+        - TRY
+        - TTD
+        - TVD
+        - TWD
+        - TZS
+        - UAH
+        - UGX
+        - USD
+        - UYU
+        - UZS
+        - VEF
+        - VND
+        - VUV
+        - WST
+        - XAF
+        - XCD
+        - XDR
+        - XOF
+        - XPF
+        - YER
+        - ZAR
+        - ZMW
+        - ZWD
+    Name:
+      title: Name
+      type: string
+      pattern: '^(?!\s*$)[\w .,''-]{1,128}$'
+      description: >-
+        The API data type Name is a JSON String, restricted by a regular
+        expression to avoid characters which are generally not used in a name.
+        Regular Expression - The regular expression for restricting the Name
+        type is "^(?!\s*$)[\w .,'-]{1,128}$". The restriction does not allow a
+        string consisting of whitespace only, all Unicode characters are
+        allowed, as well as the period (.) (apostrophe (‘), dash (-), comma (,)
+        and space characters ( ). Note -  In some programming languages, Unicode
+        support must be specifically enabled. For example, if Java is used the
+        flag UNICODE_CHARACTER_CLASS must be enabled to allow Unicode
+        characters.
+
+    FspId:
+      title: FspId
+      type: string
+      minLength: 1
+      maxLength: 32
+      description: FSP identifier.
+
+    ExtensionKey:
+      title: ExtensionKey
+      type: string
+      minLength: 1
+      maxLength: 32
+      description: Extension key.
+
+    ExtensionValue:
+      title: ExtensionValue
+      type: string
+      minLength: 1
+      maxLength: 128
+      description: Extension value.
+
+    Extension:
+      title: Extension
+      type: object
+      description: Data model for the complex type Extension
+      properties:
+        key:
+          $ref: '#/components/schemas/ExtensionKey'
+          description: Extension key.
+        value:
+          $ref: '#/components/schemas/ExtensionValue'
+          description: Extension value.
+      required:
+        - key
+        - value
+    
+    ExtensionList:
+      title: ExtensionList
+      type: object
+      description: Data model for the complex type ExtensionList
+      properties:
+        extension:
+          type: array
+          items:
+            $ref: '#/components/schemas/Extension'
+          minItems: 1
+          maxItems: 16
+          description: Number of Extension elements
+      required:
+        - extension
+
+    MerchantClassificationCode:
+      title: MerchantClassificationCode
+      type: string
+      pattern: '^[\d]{1,4}$'
+      description: >-
+        A limited set of pre-defined numbers. This list would be a limited set
+        of numbers identifying a set of popular merchant types like School Fees,
+        Pubs and Restaurants, Groceries, etc.
+
+    ErrorInformation:
+      title: ErrorInformation
+      type: object
+      description: Data model for the complex type ErrorInformation.
+      properties:
+        errorCode:
+          $ref: '#/components/schemas/ErrorCode'
+          description: Specific error number.
+        errorDescription:
+          $ref: '#/components/schemas/ErrorDescription'
+          description: Error description string.
+        extensionList:
+          $ref: '#/components/schemas/ExtensionList'
+          description: 'Optional list of extensions, specific to deployment.'
+      required:
+        - errorCode
+        - errorDescription
+
+    ErrorCode:
+      title: ErrorCode
+      type: string
+      pattern: '^[1-9]\d{3}$'
+      description: >-
+        The API data type ErrorCode is a JSON String of four characters,
+        consisting of digits only. Negative numbers are not allowed. A leading
+        zero is not allowed. Each error code in the API is a four-digit number,
+        for example, 1234, where the first number (1 in the example) represents
+        the high-level error category, the second number (2 in the example)
+        represents the low-level error category, and the last two numbers (34 in
+        the example) represents the specific error.
+
+    ErrorDescription:
+      title: ErrorDescription
+      type: string
+      minLength: 1
+      maxLength: 128
+      description: Error description string.
 
   responses:
     transferSuccess:
@@ -1744,7 +2297,32 @@ components:
           schema:
             $ref: '#/components/schemas/errorTransferResponse'
 
-
+    
+    PartiesByIdResponse:
+      description: PartiesByIdResponse
+      content: 
+        application/json:
+          schema:
+            type: object
+            description: 'GET /parties/{Type}/{ID} response object'
+            properties:
+              party:
+                $ref: '#/components/schemas/Party'
+                description: Information regarding the requested Party.
+              currentState:
+                $ref: '#/components/schemas/PartiesCurrentState'
+            required:
+              - party
+              - currentState
+    PartiesByIdError404:
+      description: PartiesByIdError404
+      content: 
+        application/json:
+          schema:
+            type: object
+            properties:
+              errorInformation:
+                $ref: '#/components/schemas/ErrorInformation'
   parameters:
     transferId:
       name: transferId
@@ -1778,3 +2356,21 @@ components:
         pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
         type: string
       description: Identifier of the merchant request to pay transfer to continue as returned in the response to a `POST /requestToPayTransfer` request.
+    ID:
+      name: ID
+      in: path
+      required: true
+      schema:
+        type: string
+    Type:
+      name: Type
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/PartyIdType'
+    SubId:
+      name: SubId
+      in: path
+      required: true
+      schema:
+        type: string

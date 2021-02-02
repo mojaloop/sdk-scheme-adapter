@@ -127,6 +127,21 @@ jobs:
       - store_artifacts:
           path: /home/circleci/project/junit.xml
 
+  validate-openapi:
+    executor: default-docker
+    steps:
+      - run:
+          name: Install general dependencies
+          command: *defaults_Dependencies
+      - checkout
+      - restore_cache:
+          key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
+          paths:
+            - src/node_modules
+      - run:
+          name: Execute unit tests
+          command: cd src && npm run validate:api
+
   lint:
     executor: default-docker
     steps:
@@ -335,6 +350,7 @@ workflows:
               ignore:
                 - /feature*/
                 - /bugfix*/
+
       - test-unit:
           context: org-global
           requires:
@@ -346,6 +362,19 @@ workflows:
               ignore:
                 - /feature*/
                 - /bugfix*/
+
+      - validate-openapi:
+          context: org-global
+          requires:
+            - setup
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
+
       - lint:
           context: org-global
           requires:
@@ -357,6 +386,7 @@ workflows:
               ignore:
                 - /feature*/
                 - /bugfix*/
+
       - test-integration:
           context: org-global
           requires:
@@ -368,6 +398,7 @@ workflows:
               ignore:
                 - /feature*/
                 - /bugfix*/
+
       - vulnerability-check:
           context: org-global
           requires:
@@ -390,13 +421,19 @@ workflows:
               ignore:
                 - /feature*/
                 - /bugfix*/
+
       - build-local:
           context: org-global
+          requires:
+            - test-integration
+            - validate-openapi
+            - test-unit
           filters:
             branches:
               ignore:
                 - /feature*/
                 - /bugfix*/
+
       - image-scan:
           context: org-global
           requires:
@@ -406,6 +443,7 @@ workflows:
               ignore:
                 - /feature*/
                 - /bugfix*/
+
       - license-scan:
           context: org-global
           requires:
@@ -415,14 +453,25 @@ workflows:
               ignore:
                 - /feature*/
                 - /bugfix*/
+
       - build:
           context: org-global
+          requires:
+            - license-scan
+            - image-scan
+            - audit-licenses
+            - vulnerability-check
+            - test-integration
+            - lint
+            - validate-openapi
+            - test-unit
           filters:
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
             branches:
               ignore:
                 - /.*/
+
       - publish:
           context: org-global
           requires:
