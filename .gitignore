@@ -4,3 +4,4 @@ node_modules/
 src/junit.xml
 .vscode
 secrets/*.pem
+coverage

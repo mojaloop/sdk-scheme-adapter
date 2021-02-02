@@ -16,6 +16,7 @@ jest.mock('redis');
 
 const Cache = require('@internal/cache');
 const Model = require('@internal/model').OutboundTransfersModel;
+const PartiesModel = require('@internal/model').PartiesModel;
 
 const { MojaloopRequests, Logger } = require('@mojaloop/sdk-standard-components');
 const StateMachine = require('javascript-state-machine');
@@ -28,7 +29,8 @@ const transferFulfil = require('./data/transferFulfil');
 
 const genPartyId = (party) => {
     const { partyIdType, partyIdentifier, partySubIdOrType } = party.party.partyIdInfo;
-    return `${partyIdType}_${partyIdentifier}` + (partySubIdOrType ? `_${partySubIdOrType}` : '');
+    // return `${partyIdType}_${partyIdentifier}` + (partySubIdOrType ? `_${partySubIdOrType}` : '');
+    return PartiesModel.channelName(partyIdType, partyIdentifier, partySubIdOrType);
 };
 
 // util function to simulate a party resolution subscription message on a cache client

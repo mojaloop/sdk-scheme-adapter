@@ -21,6 +21,7 @@ const {
     OutboundRequestToPayTransferModel,
     OutboundRequestToPayModel,
     OutboundBulkQuotesModel,
+    PartiesModel
 } = require('@internal/model');
 
 
@@ -84,6 +85,9 @@ const handleRequestToPayError = (method, err, ctx) =>
 const handleRequestToPayTransferError = (method, err, ctx) =>
     handleError(method, err, ctx, 'requestToPayTransferState');
 
+const handleRequestPartiesInformationError = (method, err, ctx) =>
+    handleError(method, err, ctx, 'requestPartiesInformationState');
+    
 
 /**
  * Handler for outbound transfer request initiation
@@ -428,6 +432,40 @@ const healthCheck = async (ctx) => {
     ctx.response.body = '';
 };
 
+const getPartiesByTypeAndId = async (ctx) => {
+    const type = ctx.state.path.params.Type;
+    const id = ctx.state.path.params.ID;
+    const subId = ctx.state.path.params.SubId;
+
+    try {
+        // prepare config
+        const modelConfig = {
+            ...ctx.state.conf,
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            wso2Auth: ctx.state.wso2Auth,
+        };
+
+        const cacheKey = PartiesModel.generateKey(type, id, subId);
+
+        // use the parties model to execute asynchronous stages with the switch
+        const model = await PartiesModel.create({}, cacheKey, modelConfig);
+
+        // run model's workflow
+        const response = await model.run(type, id, subId);
+
+        // return the result
+        if (response.errorInformation) {
+            ctx.response.status = 404;
+        } else {
+            ctx.response.status = 200;
+        }
+        ctx.response.body = response;
+    } catch (err) {
+        return handleRequestPartiesInformationError('getPartiesByTypeAndId', err, ctx);
+    }
+};
+
 module.exports = {
     '/': {
         get: healthCheck
@@ -462,5 +500,11 @@ module.exports = {
     },
     '/requestToPayTransfer/{requestToPayTransactionId}': {
         put: putRequestToPayTransfer
+    },
+    '/parties/{Type}/{ID}': {
+        get: getPartiesByTypeAndId
+    },
+    '/parties/{Type}/{ID}/{SubId}': {
+        get: getPartiesByTypeAndId
     },
 };
