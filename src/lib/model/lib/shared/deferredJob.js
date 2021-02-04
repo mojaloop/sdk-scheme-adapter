@@ -94,6 +94,7 @@ class DeferredJob {
         }
     }
     
+    // trigger the deferred job
     async trigger(message) {
         // message must be stringified before passing via channel
         const stringified = JSON.stringify(message);

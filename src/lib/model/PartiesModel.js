@@ -158,6 +158,15 @@ function channelName(type, id, subId) {
     return tokens.map(x => `${x}`).join('-');
 }
 
+/**
+ * 
+ * @param {object} cache
+*  @param {string} type     - the party type
+ * @param {string} id       - the party id
+ * @param {string} subId    - the party subId, could be undefined!
+ * @param {object} message  - the message used to trigger deferred job
+ * @returns {Promise} - the promise which resolves when deferred job is invoked
+ */
 function triggerDeferredJob({ cache, type, id, subId, message }) {
     const cn = channelName(type, id, subId);
     return deferredJob(cache, cn).trigger(message);
