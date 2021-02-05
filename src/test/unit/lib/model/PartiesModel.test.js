@@ -19,6 +19,8 @@ const PSM = require('@internal/model/common').PersistentStateMachine;
 const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const defaultConfig = require('./data/defaultConfig');
 const mockLogger = require('../../mockLogger');
+const deferredJob = require('@internal/shared').deferredJob;
+const pt = require('promise-timeout');
 
 describe('PartiesModel', () => {
     let cacheKey;
@@ -140,7 +142,7 @@ describe('PartiesModel', () => {
 
     describe('onRequestPartiesInformation', () => {
 
-        it('should implement happy flow', async () => {
+        it('should implement happy flow', async (done) => {
             const type = uuid();
             const id = uuid();
             const subIdValue = uuid();
@@ -176,6 +178,13 @@ describe('PartiesModel', () => {
                         // when manual invocation of transition handler happens
                         currentState: 'start'   
                     });
+                    // handler should be called only once
+                    expect(handler).toBeCalledTimes(1);
+
+                    // handler should unsubscribe from notification channel
+                    expect(cache.unsubscribe).toBeCalledTimes(1);
+                    expect(cache.unsubscribe).toBeCalledWith(channel, subId);
+                    done();
                 });
 
             // ensure handler wasn't called before publishing the message
@@ -184,19 +193,68 @@ describe('PartiesModel', () => {
             // ensure that cache.unsubscribe does not happened before fire the message
             expect(cache.unsubscribe).not.toBeCalled();
            
-
             // fire publication with given message
-            await cache.publish(channel, JSON.stringify(message));
+            const df = deferredJob(cache, channel);
+            setImmediate(() => df.trigger(message));
 
-            // handler should be called only once
-            expect(handler).toBeCalledTimes(1);
-
-            // handler should unsubscribe from notification channel
-            expect(cache.unsubscribe).toBeCalledTimes(1);
-            expect(cache.unsubscribe).toBeCalledWith(channel, subId);
         });
 
-        it('should unsubscribe from cache in case when error happens in workflow run', async () => {
+        it('should handle timeouts', async (done) => {
+            const type = uuid();
+            const id = uuid();
+            const subIdValue = uuid();
+
+            const channel = Model.channelName(type, id, subIdValue);
+            const model = await Model.create(data, cacheKey, modelConfig);
+            const { cache } = model.context;
+            // mock workflow execution which is tested in separate case
+            model.run = jest.fn(() => Promise.resolve());
+
+            const message = {
+                party: {
+                    Iam: 'the-body'
+                }
+            };
+
+            // manually invoke transition handler
+            model.onRequestPartiesInformation(model.fsm, type, id, subIdValue)
+                .catch((err) => {
+                    // subscribe should be called only once
+                    expect(err instanceof pt.TimeoutError).toBeTruthy();
+
+                    // subscribe should be done to proper notificationChannel
+                    expect(cache.subscribe.mock.calls[0][0]).toEqual(channel);
+
+                    // check invocation of request.getParties
+                    expect(MojaloopRequests.__getParties).toBeCalledWith(type, id, subIdValue);
+
+                    // handler should be called only once
+                    expect(handler).toBeCalledTimes(0);
+
+                    // handler should unsubscribe from notification channel
+                    expect(cache.unsubscribe).toBeCalledTimes(1);
+                    expect(cache.unsubscribe).toBeCalledWith(channel, subId);
+                    done();
+                });
+
+            // ensure handler wasn't called before publishing the message
+            expect(handler).not.toBeCalled();
+
+            // ensure that cache.unsubscribe does not happened before fire the message
+            expect(cache.unsubscribe).not.toBeCalled();
+           
+            // fire publication with given message
+            const df = deferredJob(cache, channel);
+            
+            setTimeout(
+                () => { df.trigger(message); },
+                // ensure that publication will be far long after timeout should be auto triggered
+                (modelConfig.requestProcessingTimeoutSeconds+1)*1000
+            );
+
+        });
+
+        it('should unsubscribe from cache in case when error happens in workflow run', async (done) => {
             const type = uuid();
             const id = uuid();
             const subIdValue = uuid();
@@ -209,16 +267,17 @@ describe('PartiesModel', () => {
             model.onRequestPartiesInformation(model.fsm, type, id, subIdValue).catch((err) => {
                 expect(err.message).toEqual('Unexpected token u in JSON at position 0');
                 expect(cache.unsubscribe).toBeCalledTimes(1);
-                expect(cache.unsubscribe).toBeCalledWith(channel, subId);        
+                expect(cache.unsubscribe).toBeCalledWith(channel, subId);
+                done();
             });
 
             // fire publication to channel with invalid message 
             // should throw the exception from JSON.parse
-            await cache.publish(channel, undefined);
-
+            const df = deferredJob(cache, channel);
+            setImmediate(() => df.trigger(undefined));
         });
 
-        it('should unsubscribe from cache in case when error happens Mojaloop requests', async () => {
+        it('should unsubscribe from cache in case when error happens Mojaloop requests', async (done) => {
             // simulate error
             MojaloopRequests.__getParties = jest.fn(() => Promise.reject('getParties failed'));
             const type = uuid();
@@ -236,11 +295,12 @@ describe('PartiesModel', () => {
                 throw new Error('this point should not be reached');
             } catch (error) {
                 theError = error;
+                expect(theError).toEqual('getParties failed');
+                // handler should unsubscribe from notification channel
+                expect(cache.unsubscribe).toBeCalledTimes(1);
+                expect(cache.unsubscribe).toBeCalledWith(channel, subId);
+                done();
             }
-            expect(theError).toEqual('getParties failed');
-            // handler should unsubscribe from notification channel
-            expect(cache.unsubscribe).toBeCalledTimes(1);
-            expect(cache.unsubscribe).toBeCalledWith(channel, subId);
         });
 
     });
