@@ -13,6 +13,7 @@ const util = require('util');
 
 const PSM = require('./common').PersistentStateMachine;
 const MojaloopRequests = require('@mojaloop/sdk-standard-components').MojaloopRequests;
+const deferredJob = require('@internal/shared/deferredJob');
 
 const specStateMachine = {
     init: 'start',
@@ -124,43 +125,23 @@ function getResponse() {
  */
 async function onRequestPartiesInformation(fsm, type, id, subId) {
     const { cache, logger } = this.context;
-    const { requests } = this.handlersContext;
+    const { requests, config } = this.handlersContext;
     logger.push({ type, id, subId }).error('onReqeustPartiesInformation - arguments');
-    const channel = channelName(type, id, subId);
-    let sid;
-
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise( async(resolve, reject) => {
-        try {
-            // in InboundServer/handlers is implemented putPartiesById handler 
-            sid = await cache.subscribe(channel, async (channel, message, sid) => {
-                // unsubscribe first
-                cache.unsubscribe(channel, sid);
-
-                // protect against malformed JSON message
-                try { 
-                    const parsed = JSON.parse(message);
-                    this.context.data = {
-                        ...parsed,
-                        currentState: this.state
-                    };
-                    resolve();
-                } catch(err) {
-                    reject(err); 
-                }
-            });
-            
-            // GET /parties request to the switch
+    
+    return deferredJob(cache, channelName(type, id, subId))
+        .init(async (channel) => {
             const res = await requests.getParties(type, id, subId);
-            
-            logger.push({ res }).log(' RequestPartiesInformation sent to peer');
-            
-        } catch(error) {
-            logger.push(error).error('RequestPartiesInformation error');
-            cache.unsubscribe(channel, sid);
-            reject(error);
-        }
-    });
+            logger.push({ res, channel }).log('RequestPartiesInformation sent to peer, listening on response');
+            return res;
+        })
+        .job((message) => {
+            this.context.data = {
+                ...message,
+                currentState: this.state
+            };
+            logger.push({ message }).log('RequestPartiesInformation message received');
+        })
+        .wait(config.requestProcessingTimeoutSeconds * 1000);
 }
 
 
@@ -177,6 +158,19 @@ function channelName(type, id, subId) {
     return tokens.map(x => `${x}`).join('-');
 }
 
+/**
+ * 
+ * @param {object} cache
+*  @param {string} type     - the party type
+ * @param {string} id       - the party id
+ * @param {string} subId    - the party subId, could be undefined!
+ * @param {object} message  - the message used to trigger deferred job
+ * @returns {Promise} - the promise which resolves when deferred job is invoked
+ */
+function triggerDeferredJob({ cache, type, id, subId, message }) {
+    const cn = channelName(type, id, subId);
+    return deferredJob(cache, cn).trigger(message);
+}
 
 /**
  * @name generateKey
@@ -247,6 +241,7 @@ async function loadFromCache(key, config) {
 
 module.exports = {
     channelName,
+    triggerDeferredJob,
     create,
     generateKey,
     loadFromCache,

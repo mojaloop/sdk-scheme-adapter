@@ -16,7 +16,7 @@
   "ilpSecret": "mojaloop-sdk",
   "checkIlp": true,
   "expirySeconds": 60,
-  "requestProcessingTimeoutSeconds": 30,
+  "requestProcessingTimeoutSeconds": 3,
   "autoAcceptQuotes": true,
   "autoAcceptParty": true,
   "useQuoteSourceFSPAsTransferPayeeFSP": false,
