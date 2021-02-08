@@ -12,6 +12,9 @@
 
 const Async2SyncModel = require('./Async2SyncModel');
 
+
+// delegated methods for PartiesModel
+
 /**
  * @name channelName
  * @description generates the pub/sub channel name
