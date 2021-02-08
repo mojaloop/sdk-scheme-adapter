@@ -440,7 +440,11 @@ describe('Outbound API handlers:', () => {
             expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
 
             // run workflow
-            expect(mockedPSM.run).toBeCalledWith('MSISDN', '1234567890', 'abcdefgh');
+            expect(mockedPSM.run).toBeCalledWith({
+                type: 'MSISDN',
+                id: '1234567890',
+                subId: 'abcdefgh'
+            });
 
             // response
             expect(mockContext.response.status).toBe(200);
@@ -492,14 +496,18 @@ describe('Outbound API handlers:', () => {
             expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
 
             // run workflow
-            expect(mockedPSM.run).toBeCalledWith('MSISDN', '1234567890', 'abcdefgh');
+            expect(mockedPSM.run).toBeCalledWith({
+                type: 'MSISDN',
+                id: '1234567890',
+                subId: 'abcdefgh'
+            });
 
             // response
             expect(mockContext.response.status).toBe(404);
             expect(mockContext.response.body).toEqual({ errorInformation: { Iam: 'the-error'} });
         });
     });
-    describe.only('GET /parties/{Type}/{ID}', () => {
+    describe('GET /parties/{Type}/{ID}', () => {
         const mockContext = {
             request: {},
             response: {},
