@@ -507,7 +507,7 @@ describe('Outbound API handlers:', () => {
             expect(mockContext.response.body).toEqual({ errorInformation: { Iam: 'the-error'} });
         });
     });
-    describe('GET /parties/{Type}/{ID}', () => {
+    describe.only('GET /parties/{Type}/{ID}', () => {
         const mockContext = {
             request: {},
             response: {},
