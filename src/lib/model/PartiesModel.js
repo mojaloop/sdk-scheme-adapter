@@ -12,6 +12,9 @@
 
 const Async2SyncModel = require('./Async2SyncModel');
 
+
+// delegated methods for PartiesModel
+
 /**
  * @name channelName
  * @description generates the pub/sub channel name
@@ -49,9 +52,13 @@ function argsValidation({ type, id, subId }) {
     }
 }
 
-module.exports = Async2SyncModel.generate({
+// generate model 
+const PartiesModel = Async2SyncModel.generate({
     modelName: 'PartiesModel',
     channelNameMethod: channelName,
     requestActionMethod: requestAction,
     argsValidationMethod: argsValidation
 });
+
+module.exports = PartiesModel;
+
