@@ -19,7 +19,7 @@ function generate({
     /**
      * @name channelNameMethod
      * @description generates the pub/sub channel name
-     * @param {object} args     - the arguments passed as object, same as passed to `run, triggerDeferredJob, generateKey` method
+     * @param {object} args - the arguments passed as object, same as passed to `run, triggerDeferredJob, generateKey` method
      * @returns {string} - the pub/sub channel name
      */
     channelNameMethod,
