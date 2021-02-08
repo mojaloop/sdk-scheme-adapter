@@ -427,7 +427,11 @@ describe('Outbound API handlers:', () => {
 
             // PSM model creation
             const state = mockContext.state;
-            const cacheKey = PartiesModel.channelName('MSISDN', '1234567890', 'abcdefgh');
+            const cacheKey = PartiesModel.channelName({
+                type: 'MSISDN',
+                id: '1234567890',
+                subId: 'abcdefgh'
+            });
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
@@ -475,7 +479,11 @@ describe('Outbound API handlers:', () => {
 
             // PSM model creation
             const state = mockContext.state;
-            const cacheKey = PartiesModel.channelName('MSISDN', '1234567890', 'abcdefgh');
+            const cacheKey = PartiesModel.channelName({
+                type: 'MSISDN',
+                id: '1234567890',
+                subId: 'abcdefgh'
+            });
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
@@ -491,7 +499,7 @@ describe('Outbound API handlers:', () => {
             expect(mockContext.response.body).toEqual({ errorInformation: { Iam: 'the-error'} });
         });
     });
-    describe('GET /parties/{Type}/{ID}', () => {
+    describe.only('GET /parties/{Type}/{ID}', () => {
         const mockContext = {
             request: {},
             response: {},
@@ -524,7 +532,10 @@ describe('Outbound API handlers:', () => {
 
             // PSM model creation
             const state = mockContext.state;
-            const cacheKey = PartiesModel.channelName('MSISDN', '1234567890');
+            const cacheKey = PartiesModel.channelName({
+                type: 'MSISDN',
+                id: '1234567890'
+            });
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
@@ -533,7 +544,7 @@ describe('Outbound API handlers:', () => {
             expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
 
             // run workflow
-            expect(mockedPSM.run).toBeCalledWith('MSISDN', '1234567890', undefined);
+            expect(mockedPSM.run).toBeCalledWith({ type: 'MSISDN', id: '1234567890', subId: undefined });
 
             // response
             expect(mockContext.response.status).toBe(200);
@@ -555,7 +566,10 @@ describe('Outbound API handlers:', () => {
 
             // PSM model creation
             const state = mockContext.state;
-            const cacheKey = PartiesModel.channelName('MSISDN', '1234567890');
+            const cacheKey = PartiesModel.channelName({
+                type: 'MSISDN',
+                id: '1234567890'
+            });
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
@@ -564,7 +578,11 @@ describe('Outbound API handlers:', () => {
             expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
 
             // run workflow
-            expect(mockedPSM.run).toBeCalledWith('MSISDN', '1234567890', undefined);
+            expect(mockedPSM.run).toBeCalledWith({
+                type: 'MSISDN',
+                id: '1234567890',
+                subId: undefined
+            });
 
             // response
             expect(mockContext.response.status).toBe(404);
@@ -586,7 +604,10 @@ describe('Outbound API handlers:', () => {
 
             // PSM model creation
             const state = mockContext.state;
-            const cacheKey = PartiesModel.channelName('MSISDN', '1234567890');
+            const cacheKey = PartiesModel.channelName({
+                type: 'MSISDN',
+                id: '1234567890'
+            });
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
@@ -595,7 +616,11 @@ describe('Outbound API handlers:', () => {
             expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
 
             // run workflow
-            expect(mockedPSM.run).toBeCalledWith('MSISDN', '1234567890', undefined);
+            expect(mockedPSM.run).toBeCalledWith({
+                type: 'MSISDN',
+                id: '1234567890',
+                subId: undefined
+            });
 
             // response
             expect(mockContext.response.status).toBe(500);
@@ -620,7 +645,10 @@ describe('Outbound API handlers:', () => {
 
             // PSM model creation
             const state = mockContext.state;
-            const cacheKey = PartiesModel.channelName('MSISDN', '1234567890');
+            const cacheKey = PartiesModel.channelName({
+                type: 'MSISDN',
+                id: '1234567890'
+            });
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
@@ -629,7 +657,11 @@ describe('Outbound API handlers:', () => {
             expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
 
             // run workflow
-            expect(mockedPSM.run).toBeCalledWith('MSISDN', '1234567890', undefined);
+            expect(mockedPSM.run).toBeCalledWith({
+                type: 'MSISDN',
+                id: '1234567890',
+                subId: undefined
+            });
 
             // response
             expect(mockContext.response.status).toBe(500);

@@ -383,13 +383,15 @@ const putPartiesByTypeAndId = async (ctx) => {
     const idValue = ctx.state.path.params.ID;
     const idSubValue = ctx.state.path.params.SubId;
 
-    // publish an event onto the cache for subscribers to action
+    // publish an event onto the cache for subscribers to finish the action
     await PartiesModel.triggerDeferredJob({
         cache: ctx.state.cache,
-        type: idType,
-        id: idValue,
-        subId: idSubValue,
-        message: ctx.request.body
+        message: ctx.request.body, 
+        args: {
+            type: idType,
+            id: idValue,
+            subId: idSubValue
+        }
     });
 
     ctx.response.status = 200;
@@ -406,13 +408,15 @@ const putPartiesByTypeAndIdError = async(ctx) => {
     // publish an event onto the cache for subscribers to action
     // note that we publish the event the same way we publish a success PUT
     // the subscriber will notice the body contains an errorInformation property
-    // and recognise it as an error response
+    // and recognizes it as an error response
     await PartiesModel.triggerDeferredJob({
         cache: ctx.state.cache,
-        type: idType,
-        id: idValue,
-        subId: idSubValue,
-        message: ctx.request.body
+        message: ctx.request.body, 
+        args: {
+            type: idType,
+            id: idValue,
+            subId: idSubValue
+        }
     });
 
     ctx.response.status = 200;
