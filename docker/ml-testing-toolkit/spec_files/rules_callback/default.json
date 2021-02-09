@@ -1,0 +1,74 @@
+[
+  {
+    "ruleId": 1,
+    "priority": 1,
+    "description": "get /parties/{Type}/{ID}",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "pathParams",
+          "operator": "notEqual",
+          "value": "OPAQUE",
+          "path": "Type"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/parties/{Type}/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "get"
+        }
+      ]
+    },
+    "event": {
+      "method": "put",
+      "path": "/parties/{Type}/{ID}",
+      "params": {
+        "headers": {
+          "Content-Type": "application/vnd.interoperability.parties+json;version=1.0",
+          "Date": "Wed, 27 May 2020 11:13:34 GMT",
+          "X-Forwarded-For": "sed eiusmod sunt",
+          "FSPIOP-Source": "{$config.FSPID}",
+          "FSPIOP-Destination": "mojaloop-sdk",
+          "FSPIOP-Encryption": "magna Excepteur dolore nisi fugiat",
+          "FSPIOP-Signature": "nisi",
+          "FSPIOP-URI": "veniam reprehenderit anim ut",
+          "FSPIOP-HTTP-Method": "PUT",
+          "Content-Length": ""
+        },
+        "body": {
+          "party": {
+            "partyIdInfo": {
+              "partyIdType": "{$request.params.Type}",
+              "partyIdentifier": "{$request.params.ID}",
+              "fspId": "{$config.FSPID}"
+            },
+            "merchantClassificationCode": "4321",
+            "name": "Justin Trudeau",
+            "personalInfo": {
+              "complexName": {
+                "firstName": "Justin",
+                "middleName": "Pierre",
+                "lastName": "Trudeau"
+              },
+              "dateOfBirth": "1980-01-01"
+            }
+          }
+        }
+      },
+      "delay": 50000,
+      "type": "FIXED_CALLBACK"
+    },
+    "type": "callback",
+    "version": 1
+  }
+]
