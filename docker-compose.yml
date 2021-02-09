@@ -1,9 +1,17 @@
 version: '3.4'
+networks:
+  mojaloop-net:
+    name: mojaloop-net
+
 services:
   redis:
+    networks:
+        - mojaloop-net
     image: "redis:5.0.4-alpine"
 
   scheme-adapter:
+    networks:
+        - mojaloop-net
     build:
       context: .
     env_file: ./src/test/config/integration.env
@@ -15,7 +23,9 @@ services:
       - redis
 
   ml-testing-toolkit:
-    image: mojaloop/ml-testing-toolkit:v11.7.7
+    networks:
+        - mojaloop-net
+    image: mojaloop/ml-testing-toolkit:v11.7.11
     container_name: ml-testing-toolkit
     volumes:
       - "./docker/ml-testing-toolkit/spec_files:/opt/mojaloop-testing-toolkit/spec_files"
@@ -30,6 +40,19 @@ services:
       - mongo
 
   mongo:
+    networks:
+        - mojaloop-net
     image: mongo
     ports:
       - "27018:27017"
+
+  # mojaloop-testing-toolkit-ui:
+  #   image: mojaloop/ml-testing-toolkit-ui:v11.8.4
+  #   ports:
+  #     - "6060:6060"
+  #   environment:
+  #     - API_BASE_URL=http://localhost:5050
+  #     - AUTH_ENABLED=FALSE
+  #   command:
+  #     - sh
+  #     - /usr/share/nginx/start.sh
