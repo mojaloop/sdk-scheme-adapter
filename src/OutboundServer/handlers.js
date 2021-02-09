@@ -446,13 +446,13 @@ const getPartiesByTypeAndId = async (ctx) => {
             wso2Auth: ctx.state.wso2Auth,
         };
 
-        const cacheKey = PartiesModel.generateKey(type, id, subId);
+        const cacheKey = PartiesModel.generateKey({ type, id, subId });
 
         // use the parties model to execute asynchronous stages with the switch
         const model = await PartiesModel.create({}, cacheKey, modelConfig);
 
         // run model's workflow
-        const response = await model.run(type, id, subId);
+        const response = await model.run({ type, id, subId });
 
         // return the result
         if (response.errorInformation) {

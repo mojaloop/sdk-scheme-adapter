@@ -65,8 +65,9 @@ describe('PartiesModel', () => {
             
             // model's methods layout
             const methods = [
-                'run', 'getResponse',
-                'onRequestPartiesInformation'
+                'run',
+                'getResponse',
+                'onRequestAction'
             ];
 
             methods.forEach((method) => expect(typeof model[method]).toEqual('function'));
@@ -97,26 +98,26 @@ describe('PartiesModel', () => {
             expect(resp.currentState).toEqual(Model.mapCurrentState.errored);
 
             // ensure that we log the problem properly
-            expect(modelConfig.logger.error).toHaveBeenCalledWith(`Parties model response being returned from an unexpected state: ${undefined}. Returning ERROR_OCCURRED state`);
+            expect(modelConfig.logger.error).toHaveBeenCalledWith(`PartiesModel model response being returned from an unexpected state: ${undefined}. Returning ERROR_OCCURRED state`);
         });
     });
 
     describe('channelName', () => {
         it('should validate input', () => {
-            expect(Model.channelName()).toEqual('parties-undefined-undefined-undefined');
+            expect(Model.channelName({})).toEqual('parties-undefined-undefined-undefined');
         });
 
         it('should generate proper channel name', () => {
             const type = uuid();
             const id = uuid();
-            expect(Model.channelName(type, id)).toEqual(`parties-${type}-${id}-undefined`);
+            expect(Model.channelName({ type, id })).toEqual(`parties-${type}-${id}-undefined`);
         });
 
         it('should generate proper channel name when all params specified', () => {
             const type = uuid();
             const id = uuid();
             const subId = uuid();
-            expect(Model.channelName(type, id, subId)).toEqual(`parties-${type}-${id}-${subId}`);
+            expect(Model.channelName({ type, id, subId })).toEqual(`parties-${type}-${id}-${subId}`);
         });
     });
 
@@ -124,30 +125,30 @@ describe('PartiesModel', () => {
         it('should generate proper cache key', () => {
             const type = uuid();
             const id = uuid();
-            expect(Model.generateKey(type, id)).toEqual(`key-${Model.channelName(type, id)}`);
+            expect(Model.generateKey({ type, id })).toEqual(`key-${Model.channelName({ type, id })}`);
         });
 
         it('should handle lack of id param', () => {
             const type = uuid();
-            expect(Model.generateKey(type)).toEqual(`key-${Model.channelName(type)}`);
+            expect(() => Model.generateKey({ type })).toThrowError(new Error('PartiesModel args required at least two string arguments: \'type\' and \'id\''));
         });
 
         it('should handle all params', () => {
             const type = uuid();
             const id = uuid();
             const subId = uuid();
-            expect(Model.generateKey(type, id, subId)).toEqual(`key-${Model.channelName(type, id, subId)}`);
+            expect(Model.generateKey({ type, id, subId })).toEqual(`key-${Model.channelName({ type, id, subId })}`);
         });
     });
 
-    describe('onRequestPartiesInformation', () => {
+    describe('onRequestAction', () => {
 
         it('should implement happy flow', async (done) => {
             const type = uuid();
             const id = uuid();
             const subIdValue = uuid();
 
-            const channel = Model.channelName(type, id, subIdValue);
+            const channel = Model.channelName({ type, id, subId: subIdValue });
             const model = await Model.create(data, cacheKey, modelConfig);
             const { cache } = model.context;
             // mock workflow execution which is tested in separate case
@@ -160,7 +161,7 @@ describe('PartiesModel', () => {
             };
 
             // manually invoke transition handler
-            model.onRequestPartiesInformation(model.fsm, type, id, subIdValue)
+            model.onRequestAction(model.fsm, { type, id, subId: subIdValue })
                 .then(() => {
                     // subscribe should be called only once
                     expect(cache.subscribe).toBeCalledTimes(1);
@@ -204,7 +205,7 @@ describe('PartiesModel', () => {
             const id = uuid();
             const subIdValue = uuid();
 
-            const channel = Model.channelName(type, id, subIdValue);
+            const channel = Model.channelName({ type, id, subId: subIdValue });
             const model = await Model.create(data, cacheKey, modelConfig);
             const { cache } = model.context;
             // mock workflow execution which is tested in separate case
@@ -217,7 +218,7 @@ describe('PartiesModel', () => {
             };
 
             // manually invoke transition handler
-            model.onRequestPartiesInformation(model.fsm, type, id, subIdValue)
+            model.onRequestAction(model.fsm, { type, id, subId: subIdValue })
                 .catch((err) => {
                     // subscribe should be called only once
                     expect(err instanceof pt.TimeoutError).toBeTruthy();
@@ -259,12 +260,12 @@ describe('PartiesModel', () => {
             const id = uuid();
             const subIdValue = uuid();
 
-            const channel = Model.channelName(type, id, subIdValue);
+            const channel = Model.channelName({ type, id, subId: subIdValue });
             const model = await Model.create(data, cacheKey, modelConfig);
             const { cache } = model.context;
 
             // invoke transition handler
-            model.onRequestPartiesInformation(model.fsm, type, id, subIdValue).catch((err) => {
+            model.onRequestAction(model.fsm, { type, id, subId: subIdValue }).catch((err) => {
                 expect(err.message).toEqual('Unexpected token u in JSON at position 0');
                 expect(cache.unsubscribe).toBeCalledTimes(1);
                 expect(cache.unsubscribe).toBeCalledWith(channel, subId);
@@ -284,14 +285,14 @@ describe('PartiesModel', () => {
             const id = uuid();
             const subIdValue = uuid();
 
-            const channel = Model.channelName(type, id, subIdValue);
+            const channel = Model.channelName({ type, id, subId: subIdValue });
             const model = await Model.create(data, cacheKey, modelConfig);
             const { cache } = model.context;
 
             let theError = null;
             // invoke transition handler
             try {
-                await model.onRequestPartiesInformation(model.fsm, type, id, subIdValue);
+                await model.onRequestAction(model.fsm, { type, id, subId: subIdValue });
                 throw new Error('this point should not be reached');
             } catch (error) {
                 theError = error;
@@ -313,18 +314,17 @@ describe('PartiesModel', () => {
 
             const model = await Model.create(data, cacheKey, modelConfig);
             
-            model.requestPartiesInformation = jest.fn();
+            model.requestAction = jest.fn();
             model.getResponse = jest.fn(() => Promise.resolve({the: 'response'}));
 
             model.context.data.currentState = 'start';
-            const result = await model.run(type, id, subIdValue);
+            const result = await model.run({ type, id, subId: subIdValue });
             expect(result).toEqual({the: 'response'});
-            expect(model.requestPartiesInformation).toBeCalledTimes(1);
+            expect(model.requestAction).toBeCalledTimes(1);
             expect(model.getResponse).toBeCalledTimes(1);
             expect(model.context.logger.log.mock.calls).toEqual([
                 ['State machine transitioned \'init\': none -> start'],
-                [`Party information requested for /${type}/${id}/${subIdValue},  currentState: start`],
-                ['Party information retrieved successfully'],
+                ['Action called successfully'],
                 [`Persisted model in cache: ${cacheKey}`],
             ]);
         });
@@ -338,11 +338,11 @@ describe('PartiesModel', () => {
             model.getResponse = jest.fn(() => Promise.resolve({the: 'response'}));
             
             model.context.data.currentState = 'succeeded';
-            const result = await model.run(type, id, subIdValue);
+            const result = await model.run({ type, id, subId: subIdValue });
             
             expect(result).toEqual({the: 'response'});
             expect(model.getResponse).toBeCalledTimes(1);
-            expect(model.context.logger.log).toBeCalledWith('Party information retrieved successfully');
+            expect(model.context.logger.log).toBeCalledWith('Action called successfully');
         });
 
         it('errored', async () => {
@@ -355,7 +355,7 @@ describe('PartiesModel', () => {
             model.getResponse = jest.fn(() => Promise.resolve({the: 'response'}));
             
             model.context.data.currentState = 'errored';
-            const result = await model.run(type, id, subIdValue);
+            const result = await model.run({ type, id, subId: subIdValue });
             
             expect(result).toBeFalsy();
             expect(model.getResponse).not.toBeCalled();
@@ -369,13 +369,13 @@ describe('PartiesModel', () => {
 
             const model = await Model.create(data, cacheKey, modelConfig);
             
-            model.requestPartiesInformation = jest.fn(() => { throw new Error('mocked error'); });
+            model.requestAction = jest.fn(() => { throw new Error('mocked error'); });
 
             model.context.data.currentState = 'start';
             
-            model.run(type, id, subIdValue).catch((err) => {
+            model.run({ type, id, subId: subIdValue }).catch((err) => {
                 expect(model.context.data.currentState).toEqual('errored');
-                expect(err.requestPartiesInformationState).toEqual( {
+                expect(err.requestActionState).toEqual( {
                     ...data,
                     currentState: 'ERROR_OCCURRED',
                 });
@@ -389,9 +389,9 @@ describe('PartiesModel', () => {
 
             const model = await Model.create(data, cacheKey, modelConfig);
             
-            model.requestPartiesInformation = jest.fn(() => {
-                const err = new Error('requestPartiesInformation failed');
-                err.requestPartiesInformationState = 'some';
+            model.requestAction = jest.fn(() => {
+                const err = new Error('requestAction failed');
+                err.requestActionState = 'some';
                 return Promise.reject(err);
             });
             model.error = jest.fn();
@@ -399,13 +399,13 @@ describe('PartiesModel', () => {
             
             let theError = null;
             try {
-                await model.run(type, id, subIdValue);
+                await model.run({ type, id, subId: subIdValue });
                 throw new Error('this point should not be reached');
             } catch(error) {
                 theError = error;
             }
             // check propagation of original error
-            expect(theError.message).toEqual('requestPartiesInformation failed');
+            expect(theError.message).toEqual('requestAction failed');
 
             // ensure we start transition to errored state
             expect(model.error).toBeCalledTimes(1);
@@ -417,7 +417,7 @@ describe('PartiesModel', () => {
             
             expect(() => model.run(type))
                 .rejects.toEqual(
-                    new Error('PartiesModel.run required at least two string arguments: \'type\' and \'id\'')
+                    new Error('PartiesModel args required at least two string arguments: \'type\' and \'id\'')
                 );
         });
     });
@@ -432,7 +432,7 @@ describe('PartiesModel', () => {
 
             // assert
             // check does model is proper
-            expect(typeof model.requestPartiesInformation).toEqual('function');
+            expect(typeof model.requestAction).toEqual('function');
 
             // check how cache.get has been called
             expect(modelConfig.cache.get).toBeCalledWith(key);
