@@ -1,13 +1,16 @@
 version: '3.4'
-volumes:
-  node_modules:
+# volumes:
+#   node_modules:
+networks:
+  mojaloop-net:
+    name: mojaloop-net
 
 services:
-  redis:
-    image: "redis:5.0.4-alpine"
 
   # non-server running container to launch tests from
   scheme-adapter-int:
+    networks:
+      - mojaloop-net
     container_name: scheme-adapter-int
     build:
       context: .
@@ -15,9 +18,9 @@ services:
       target: builder
     env_file: ./src/test/config/integration.env
     volumes:
-      # - ./src/test:/src/test
+    #   # - ./src/test:/src/test
       - ./src:/src
-      - node_modules:/src/node_modules
+    #   - node_modules:/src/node_modules
     depends_on:
       - redis
     command:

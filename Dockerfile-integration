@@ -1,4 +1,4 @@
-FROM node:12.18.3-alpine as builder
+FROM node:14.15-alpine as builder
 
 RUN apk add --no-cache git python build-base
 
@@ -21,7 +21,7 @@ COPY ./src/lib/router/package.json ./lib/router/package.json
 COPY ./src/lib/validate/package.json ./lib/validate/package.json
 RUN npm ci
 
-FROM node:12.18.3-alpine
+FROM node:14.15-alpine
 
 ARG BUILD_DATE
 ARG VCS_URL
@@ -30,7 +30,7 @@ ARG VERSION
 
 # See http://label-schema.org/rc1/ for label schema info
 LABEL org.label-schema.schema-version="1.0"
-LABEL org.label-schema.name="sdk-scheme-adapter"
+LABEL org.label-schema.name="sdk-scheme-adapter-integration"
 LABEL org.label-schema.build-date=$BUILD_DATE
 LABEL org.label-schema.vcs-url=$VCS_URL
 LABEL org.label-schema.vcs-ref=$VCS_REF
@@ -41,4 +41,4 @@ COPY --from=builder /src/ /src
 COPY ./src ./src
 COPY ./secrets /
 
-CMD ["node", "src/index.js"]
+CMD ["sh", "-c"]
