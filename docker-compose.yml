@@ -13,3 +13,23 @@ services:
       - "4002:4002"
     depends_on:
       - redis
+
+  ml-testing-toolkit:
+    image: mojaloop/ml-testing-toolkit:v11.7.7
+    container_name: ml-testing-toolkit
+    volumes:
+      - "./docker/ml-testing-toolkit/spec_files:/opt/mojaloop-testing-toolkit/spec_files"
+      - "./docker/ml-testing-toolkit/secrets:/opt/mojaloop-testing-toolkit/secrets"
+    ports:
+      - "15000:5000"
+      - "5050:5050"
+    environment:
+      - AUTH_ENABLED=FALSE
+    command: npm start
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo
+    ports:
+      - "27018:27017"
