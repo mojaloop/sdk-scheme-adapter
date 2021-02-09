@@ -28,7 +28,11 @@ const transactionRequestResponseTemplate = require('./data/transactionRequestRes
 
 const genPartyId = (party) => {
     const { partyIdType, partyIdentifier, partySubIdOrType } = party.party.partyIdInfo;
-    return PartiesModel.channelName(partyIdType, partyIdentifier, partySubIdOrType);
+    return PartiesModel.channelName({
+        type: partyIdType,
+        id: partyIdentifier,
+        subId: partySubIdOrType
+    });
 };
 
 // util function to simulate a party resolution subscription message on a cache client
