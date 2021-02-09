@@ -5,6 +5,9 @@ networks:
   mojaloop-net:
     name: mojaloop-net
 
+volumes:
+  node_modules:
+
 services:
 
   # non-server running container to launch tests from
@@ -20,7 +23,7 @@ services:
     volumes:
     #   # - ./src/test:/src/test
       - ./src:/src
-    #   - node_modules:/src/node_modules
+      - node_modules:/src/node_modules
     depends_on:
       - redis
     command:
