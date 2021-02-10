@@ -142,9 +142,7 @@ function generate({
     /**
      * @name onRequestAction
      * @description generates the pub/sub channel name
-     * @param {string} type     - the party type
-     * @param {string} id       - the party id
-     * @param {string} [subId]  - the optional party subId
+     * @param {object} args - the arguments passed as object
      * @returns {string} - the pub/sub channel name
      */
     async function onRequestAction(fsm, args) {

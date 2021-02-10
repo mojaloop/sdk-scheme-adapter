@@ -34,6 +34,9 @@ function channelName({ type, id, subId }) {
  * @description invokes the call to switch
  * @param {object} requests - MojaloopRequests instance
  * @param {array} args - the arguments passed as object to `run` method
+ *   @param {string} args.type     - the party type
+ *   @param {string} args.id       - the party id
+ *   @param {string} [args.subId]  - the optional party subId
  */
 function requestAction(requests, { type, id, subId }) {
     return requests.getParties(type, id, subId);
@@ -44,6 +47,9 @@ function requestAction(requests, { type, id, subId }) {
  * @description makes validation of args object, invoked in `run, triggerDeferredJob, generateKey` methods to ensure everything is going well
  * @param {object} requests - MojaloopRequests instance
  * @param {array} args - the arguments passed as object to `run` method
+ *   @param {string} args.type     - the party type
+ *   @param {string} args.id       - the party id
+ *   @param {string} [args.subId]  - the optional party subId
  */
 function argsValidation({ type, id, subId }) {
     const channel = channelName({ type, id, subId });
