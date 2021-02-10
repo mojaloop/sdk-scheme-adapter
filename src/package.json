@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "jest --ci --reporters=default --reporters=jest-junit --env=node test/unit/",
-    "test:int": "jest --ci --reporters=default --reporters=jest-junit --env=node test/integration",
+    "test:int": "./wait4/wait4.js scheme-adapter-int; jest --ci --reporters=default --reporters=jest-junit --env=node test/integration",
     "validate:api": "npm run validate:api:in; npm run validate:api:out",
     "validate:api:in": "swagger-cli validate ./InboundServer/api.yaml",
     "validate:api:out": "swagger-cli validate ./OutboundServer/api.yaml",
