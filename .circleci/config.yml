@@ -133,8 +133,8 @@ jobs:
           command: |
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             chmod +x ./docker/wait4/wait4.js
-            chmod +x ./docker/wait4/setup_hosts_file.sh
-            sh -c "./docker/wait4/setup_hosts_file.sh"
+            # chmod +x ./docker/wait4/setup_hosts_file.sh
+            # sh -c "./docker/wait4/setup_hosts_file.sh"
             sh -c "./docker/wait4/wait4.js cicd-integration-tests"
       - run:
           name: Execute integration tests

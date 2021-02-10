@@ -20,6 +20,11 @@ module.exports = {
           description: 'Redis Cache',
           uri: 'redis:6379',
           method: 'ncat'
+        },
+        {
+          description: 'ml-testing-toolkit',
+          uri: 'ml-testing-toolkit:5000',
+          method: 'ncat'
         }
       ]
     },
@@ -28,21 +33,21 @@ module.exports = {
       wait4: [
         {
           description: 'Inbound service',
-          uri: 'scheme-adapter:4000',
+          uri: 'localhost:4000',
           method: 'ncat'
         },
         {
           description: 'Outbound service',
-          uri: 'scheme-adapter:4001',
+          uri: 'localhost:4001',
           method: 'ncat'
         },
         {
-          uri: 'ml-testing-toolkit:5000',
+          uri: 'localhost:5000',
           method: 'ncat'
         },
         {
           description: 'Redis Cache',
-          uri: 'redis:6379',
+          uri: 'localhost:6379',
           method: 'ncat'
         }
       ]
