@@ -107,6 +107,12 @@ jobs:
     executor: default-machine
     steps:
       - checkout
+      - run:
+          name: Install Docker Compose
+          command: |
+            curl -L https://github.com/docker/compose/releases/download/1.28.2/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+            chmod +x ~/docker-compose
+            sudo mv ~/docker-compose /usr/local/bin/docker-compose
       - restore_cache:
           key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
       - run:
