@@ -8,7 +8,8 @@ services:
     networks:
         - mojaloop-net
     image: "redis:5.0.4-alpine"
-
+    ports:
+      - "6379:6379"
   scheme-adapter:
     networks:
         - mojaloop-net
@@ -31,7 +32,7 @@ services:
       - "./docker/ml-testing-toolkit/spec_files:/opt/mojaloop-testing-toolkit/spec_files"
       - "./docker/ml-testing-toolkit/secrets:/opt/mojaloop-testing-toolkit/secrets"
     ports:
-      - "15000:5000"
+      - "5000:5000"
       - "5050:5050"
     environment:
       - AUTH_ENABLED=FALSE

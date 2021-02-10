@@ -40,6 +40,5 @@ LABEL org.label-schema.version=$VERSION
 COPY --from=builder /src/ /src
 COPY ./src ./src
 COPY ./secrets /
-COPY ./docker/wait4 ./src/wait4
 
 CMD ["sh", "-c"]

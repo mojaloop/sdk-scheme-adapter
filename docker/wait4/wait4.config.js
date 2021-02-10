@@ -24,7 +24,7 @@ module.exports = {
       ]
     },
     {
-      name: 'scheme-adapter-int',
+      name: 'cicd-integration-tests',
       wait4: [
         {
           description: 'Inbound service',
@@ -40,6 +40,11 @@ module.exports = {
           uri: 'ml-testing-toolkit:5000',
           method: 'ncat'
         },
+        {
+          description: 'Redis Cache',
+          uri: 'redis:6379',
+          method: 'ncat'
+        }
       ]
     },
     {
