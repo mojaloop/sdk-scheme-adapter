@@ -141,6 +141,7 @@ jobs:
           command: |
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             cd src
+            npm ci
             npm run test:int
       - run:
           name: prepare test/results
