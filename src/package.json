@@ -32,6 +32,10 @@
       "url": "http://www.apache.org/licenses/LICENSE-2.0"
     }
   ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:mojaloop/sdk-scheme-adapter.git"
+  },
   "dependencies": {
     "@internal/cache": "file:lib/cache",
     "@internal/check": "file:lib/check",
