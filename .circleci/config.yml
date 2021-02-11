@@ -10,7 +10,7 @@ orbs:
   anchore: anchore/anchore-engine@1.6.0
   deploy-kube: mojaloop/deployment@0.1.6
   slack: circleci/slack@3.4.2
-  pr-tools: mojaloop/pr-tools@0.1.9
+  pr-tools: mojaloop/pr-tools@0.1.10
 
 
 ##
