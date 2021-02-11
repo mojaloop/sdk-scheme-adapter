@@ -10,7 +10,8 @@ orbs:
   anchore: anchore/anchore-engine@1.6.0
   deploy-kube: mojaloop/deployment@0.1.6
   slack: circleci/slack@3.4.2
-  pr-tools: mojaloop/pr-tools@0.1.8
+  # temp turn pr-tools off and wait till they will be fixed
+  # pr-tools: mojaloop/pr-tools@0.1.10
 
 
 ##
@@ -95,8 +96,6 @@ jobs:
       - checkout
       - restore_cache:
           key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
-          paths:
-            - src/node_modules
       - run:
           name: Execute unit tests
           command: cd src && npm run test
@@ -112,22 +111,48 @@ jobs:
       - run:
           name: Install Docker Compose
           command: |
-            curl -L https://github.com/docker/compose/releases/download/1.25.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+            curl -L https://github.com/docker/compose/releases/download/1.28.2/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
             chmod +x ~/docker-compose
             sudo mv ~/docker-compose /usr/local/bin/docker-compose
+      - restore_cache:
+          key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
+      - run:
+          name: Set up NVM
+          command: |
+            echo ${NVM_DIR}
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm install v10.15.3
+            nvm alias default v10.15.3
       - run:
           name: Start docker-compose
-          command: docker-compose -f docker-compose.yml -f docker-compose.integration.yml up -d
+          command: |
+            docker-compose pull
+            docker-compose build
+            docker-compose up -d
+      - run:
+          name: Execute Wait4 script
+          command: |
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            chmod +x ./docker/wait4/wait4.js
+            # chmod +x ./docker/wait4/setup_hosts_file.sh
+            # sh -c "./docker/wait4/setup_hosts_file.sh"
+            sh -c "./docker/wait4/wait4.js cicd-integration-tests"
       - run:
           name: Execute integration tests
-          command: docker exec -it scheme-adapter-int sh -c 'npm run test:int'
+          command: |
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            cd src
+            npm ci
+            npm run test:int
       - run:
-          name: Copy results from docker
-          command: docker cp scheme-adapter-int:/src/junit.xml .
-      - store_test_results:
-          path: /home/circleci/project/
+          name: prepare test/results
+          command: |
+            mkdir -p test/results
+            mv src/junit.xml test/results
       - store_artifacts:
-          path: /home/circleci/project/junit.xml
+          path: ./test/results
+      - store_test_results:
+          path: ./test/results
 
   validate-openapi:
     executor: default-docker
@@ -343,8 +368,9 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - pr-tools/pr-title-check:
-          context: org-global
+      # temp turn pr-tools off and wait till they will be fixed
+      # - pr-tools/pr-title-check:
+      #     context: org-global
       - setup:
           context: org-global
           filters:
