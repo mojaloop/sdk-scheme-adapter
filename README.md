@@ -87,7 +87,7 @@ _Note that these instructions are for Linux based systems. For Mac and/or Window
 
    ```bash
    docker network ls
-   ``` 
+   ```
 
    to find the list of docker networks on your local machine. Identity the docker network created by docker-compose, docker-compose will assign a name based on the directory name from which you ran the `docker-compose up` command.
 
@@ -168,4 +168,20 @@ If the quote response is not found in the redis store `PUT /quotes/{ID}` will be
       "errorDescription":"Quote ID not found"
    }
 }
+```
+
+### Dev Tools
+This project uses @redocly/openapi-cli and @mojaloop/api-snippets to build interfaces.
+
+Any interface changes should be done in the corresponding `api-template.yaml`
+file and then rebuilt using the command below or the `build:openapi` scripts.
+
+```bash
+openapi bundle --output api.yaml --ext yaml api_template.yaml
+```
+
+To rebuild the inbound interface run
+
+```bash
+npm run build:openapi:inbound
 ```
