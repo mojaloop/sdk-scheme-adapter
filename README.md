@@ -148,11 +148,16 @@ npm run test
 ### Integration Tests
 
 ```bash
-docker-compose -f docker-compose.yml -f docker-compose.integration.yml up -d
-docker exec -it scheme-adapter-int sh -c 'npm run test:int'
+docker-compose -f docker-compose.yml build
+docker-compose -f docker-compose.yml up -d
+./docker/wait4/wait4.js cicd-integration-tests
+cd src
+npm run test:int
+cd ../
+docker-compose -f docker-compose.yml down
 
-# copy results out
-docker cp scheme-adapter-int:/src/junit.xml .
+# test report you can find in
+src/junit.xml
 ```
 
 ### Get status of quote request

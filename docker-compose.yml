@@ -50,11 +50,15 @@ services:
     image: mongo
     ports:
       - "27018:27017"
-
+  #
+  # for local development we want to have ttk-ui
+  #
   # mojaloop-testing-toolkit-ui:
   #   image: mojaloop/ml-testing-toolkit-ui:v11.8.4
   #   ports:
   #     - "6060:6060"
+  #   networks:
+  #     - mojaloop-net
   #   environment:
   #     - API_BASE_URL=http://localhost:5050
   #     - AUTH_ENABLED=FALSE
