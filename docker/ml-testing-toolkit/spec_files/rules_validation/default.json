@@ -1,0 +1,672 @@
+[
+  {
+    "ruleId": 1,
+    "priority": 1,
+    "description": "get /parties/{Type}/{ID}",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "pathParams",
+          "operator": "equal",
+          "value": "ERROR1000",
+          "path": "ID"
+        },
+        {
+          "fact": "pathParams",
+          "operator": "equal",
+          "value": "ALIAS",
+          "path": "Type"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/parties/{Type}/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "get"
+        }
+      ]
+    },
+    "event": {
+      "method": "put",
+      "path": "/parties/{Type}/{ID}/error",
+      "params": {
+        "headers": {
+          "Content-Type": "application/vnd.interoperability.parties+json;version=1.0",
+          "Date": "Fri, 02 Feb 1996 03:04:05 GMT",
+          "FSPIOP-Source": "switch"
+        },
+        "body": {
+          "errorInformation": {
+            "errorCode": "1000",
+            "errorDescription": "This is an error description",
+            "extensionList": {
+              "extension": [
+                {
+                  "key": "errorDescription",
+                  "value": "This is a more detailed error description"
+                },
+                {
+                  "key": "errorDescription",
+                  "value": "This is a more detailed error description"
+                }
+              ]
+            }
+          }
+        },
+        "scripts": {}
+      },
+      "type": "FIXED_ERROR_CALLBACK"
+    },
+    "type": "validation",
+    "version": 1
+  },
+  {
+    "ruleId": 2,
+    "priority": 2,
+    "description": "get /parties/{Type}/{ID}",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "pathParams",
+          "operator": "equal",
+          "value": "ERROR1001",
+          "path": "ID"
+        },
+        {
+          "fact": "pathParams",
+          "operator": "equal",
+          "value": "ALIAS",
+          "path": "Type"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/parties/{Type}/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "get"
+        }
+      ]
+    },
+    "event": {
+      "method": "put",
+      "path": "/parties/{Type}/{ID}/error",
+      "params": {
+        "headers": {
+          "Content-Type": "application/vnd.interoperability.parties+json;version=1.0",
+          "Date": "Fri, 02 Feb 1996 03:04:05 GMT",
+          "FSPIOP-Source": "switch"
+        },
+        "body": {
+          "errorInformation": {
+            "errorCode": "1001",
+            "errorDescription": "This is an error description",
+            "extensionList": {
+              "extension": [
+                {
+                  "key": "errorDescription",
+                  "value": "This is a more detailed error description"
+                },
+                {
+                  "key": "errorDescription",
+                  "value": "This is a more detailed error description"
+                }
+              ]
+            }
+          }
+        },
+        "scripts": {}
+      },
+      "type": "FIXED_ERROR_CALLBACK"
+    },
+    "type": "validation",
+    "version": 1
+  },
+  {
+    "ruleId": 3,
+    "priority": 3,
+    "description": "get /parties/{Type}/{ID}",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "pathParams",
+          "operator": "equal",
+          "value": "ERROR3200",
+          "path": "ID"
+        },
+        {
+          "fact": "pathParams",
+          "operator": "equal",
+          "value": "ALIAS",
+          "path": "Type"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/parties/{Type}/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "get"
+        }
+      ]
+    },
+    "event": {
+      "method": "put",
+      "path": "/parties/{Type}/{ID}/error",
+      "params": {
+        "headers": {
+          "Content-Type": "application/vnd.interoperability.parties+json;version=1.0",
+          "Date": "Fri, 02 Feb 1996 03:04:05 GMT",
+          "FSPIOP-Source": "switch"
+        },
+        "body": {
+          "errorInformation": {
+            "errorCode": "3200",
+            "errorDescription": "This is an error description",
+            "extensionList": {
+              "extension": [
+                {
+                  "key": "errorDescription",
+                  "value": "This is a more detailed error description"
+                },
+                {
+                  "key": "errorDescription",
+                  "value": "This is a more detailed error description"
+                }
+              ]
+            }
+          }
+        },
+        "scripts": {}
+      },
+      "type": "FIXED_ERROR_CALLBACK"
+    },
+    "type": "validation",
+    "version": 1
+  },
+  {
+    "ruleId": 4,
+    "priority": 4,
+    "description": "get /parties/{Type}/{ID}",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "pathParams",
+          "operator": "equal",
+          "value": "ERROR3201",
+          "path": "ID"
+        },
+        {
+          "fact": "pathParams",
+          "operator": "equal",
+          "value": "ALIAS",
+          "path": "Type"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/parties/{Type}/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "get"
+        }
+      ]
+    },
+    "event": {
+      "method": "put",
+      "path": "/parties/{Type}/{ID}/error",
+      "params": {
+        "headers": {
+          "Content-Type": "application/vnd.interoperability.parties+json;version=1.0",
+          "Date": "Fri, 02 Feb 1996 03:04:05 GMT",
+          "FSPIOP-Source": "switch"
+        },
+        "body": {
+          "errorInformation": {
+            "errorCode": "3201",
+            "errorDescription": "This is an error description",
+            "extensionList": {
+              "extension": [
+                {
+                  "key": "errorDescription",
+                  "value": "This is a more detailed error description"
+                },
+                {
+                  "key": "errorDescription",
+                  "value": "This is a more detailed error description"
+                }
+              ]
+            }
+          }
+        },
+        "scripts": {}
+      },
+      "type": "FIXED_ERROR_CALLBACK"
+    },
+    "type": "validation",
+    "version": 1
+  },
+  {
+    "ruleId": 5,
+    "priority": 5,
+    "description": "get /parties/{Type}/{ID}",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "pathParams",
+          "operator": "equal",
+          "value": "ERROR3204",
+          "path": "ID"
+        },
+        {
+          "fact": "pathParams",
+          "operator": "equal",
+          "value": "ALIAS",
+          "path": "Type"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/parties/{Type}/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "get"
+        }
+      ]
+    },
+    "event": {
+      "method": "put",
+      "path": "/parties/{Type}/{ID}/error",
+      "params": {
+        "headers": {
+          "Content-Type": "application/vnd.interoperability.parties+json;version=1.0",
+          "Date": "Fri, 02 Feb 1996 03:04:05 GMT",
+          "FSPIOP-Source": "switch"
+        },
+        "body": {
+          "errorInformation": {
+            "errorCode": "3204",
+            "errorDescription": "This is an error description",
+            "extensionList": {
+              "extension": [
+                {
+                  "key": "errorDescription",
+                  "value": "This is a more detailed error description"
+                },
+                {
+                  "key": "errorDescription",
+                  "value": "This is a more detailed error description"
+                }
+              ]
+            }
+          }
+        },
+        "scripts": {}
+      },
+      "type": "FIXED_ERROR_CALLBACK"
+    },
+    "type": "validation",
+    "version": 1
+  },
+  {
+    "ruleId": 6,
+    "priority": 1,
+    "description": "post /thirdpartyRequests/transactions",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 0,
+      "type": "thirdparty_pisp",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "body",
+          "operator": "equal",
+          "value": "ERROR6000",
+          "path": "sourceAccountId"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/thirdpartyRequests/transactions"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": "put",
+      "path": "/thirdpartyRequests/transactions/{ID}/error",
+      "params": {
+        "headers": {
+          "Content-Type": "application/vnd.interoperability.thirdparty+json;version=1.0",
+          "Date": "Fri, 02 Feb 2020 03:04:05 GMT",
+          "FSPIOP-Source": "switch"
+        },
+        "body": {
+          "errorInformation": {
+            "errorCode": "6000",
+            "errorDescription": "This is an error description",
+            "extensionList": {
+              "extension": [
+                {
+                  "key": "errorDescription",
+                  "value": "This is a more detailed error description"
+                },
+                {
+                  "key": "errorDescription",
+                  "value": "This is a more detailed error description"
+                }
+              ]
+            }
+          }
+        },
+        "scripts": {}
+      },
+      "type": "FIXED_ERROR_CALLBACK"
+    },
+    "type": "validation",
+    "version": 1
+  },
+  {
+    "ruleId": 7,
+    "priority": 1,
+    "description": "post /thirdpartyRequests/transactions",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 0,
+      "type": "thirdparty_pisp",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "body",
+          "operator": "equal",
+          "value": "ERROR6001",
+          "path": "sourceAccountId"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/thirdpartyRequests/transactions"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": "put",
+      "path": "/thirdpartyRequests/transactions/{ID}/error",
+      "params": {
+        "headers": {
+          "Content-Type": "application/vnd.interoperability.thirdparty+json;version=1.0",
+          "Date": "Fri, 02 Feb 2020 03:04:05 GMT",
+          "FSPIOP-Source": "switch"
+        },
+        "body": {
+          "errorInformation": {
+            "errorCode": "6001",
+            "errorDescription": "This is an error description",
+            "extensionList": {
+              "extension": [
+                {
+                  "key": "errorDescription",
+                  "value": "This is a more detailed error description"
+                },
+                {
+                  "key": "errorDescription",
+                  "value": "This is a more detailed error description"
+                }
+              ]
+            }
+          }
+        },
+        "scripts": {}
+      },
+      "type": "FIXED_ERROR_CALLBACK"
+    },
+    "type": "validation",
+    "version": 1
+  },
+  {
+    "ruleId": 8,
+    "priority": 1,
+    "description": "post /thirdpartyRequests/transactions",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 0,
+      "type": "thirdparty_pisp",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "body",
+          "operator": "equal",
+          "value": "6bfa9378-e94b-43dc-b909-dfc025bc51f2",
+          "path": "consentId"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/thirdpartyRequests/transactions"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": "put",
+      "path": "/thirdpartyRequests/transactions/{ID}/error",
+      "params": {
+        "headers": {
+          "Content-Type": "application/vnd.interoperability.thirdparty+json;version=1.0",
+          "Date": "Fri, 02 Feb 2020 03:04:05 GMT",
+          "FSPIOP-Source": "switch"
+        },
+        "body": {
+          "errorInformation": {
+            "errorCode": "6103",
+            "errorDescription": "This is an error description",
+            "extensionList": {
+              "extension": [
+                {
+                  "key": "errorDescription",
+                  "value": "This is a more detailed error description"
+                },
+                {
+                  "key": "errorDescription",
+                  "value": "This is a more detailed error description"
+                }
+              ]
+            }
+          }
+        },
+        "scripts": {}
+      },
+      "type": "FIXED_ERROR_CALLBACK"
+    },
+    "type": "validation",
+    "version": 1
+  },
+  {
+    "ruleId": 9,
+    "priority": 1,
+    "description": "post /thirdpartyRequests/transactions",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 0,
+      "type": "thirdparty_pisp",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "body",
+          "operator": "equal",
+          "value": "inefficient.funds",
+          "path": "sourceAccountId"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/thirdpartyRequests/transactions"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": "put",
+      "path": "/thirdpartyRequests/transactions/{ID}/error",
+      "params": {
+        "headers": {
+          "Content-Type": "application/vnd.interoperability.thirdparty+json;version=1.0",
+          "Date": "Fri, 02 Feb 2020 03:04:05 GMT",
+          "FSPIOP-Source": "switch"
+        },
+        "body": {
+          "errorInformation": {
+            "errorCode": "6105",
+            "errorDescription": "This is an error description",
+            "extensionList": {
+              "extension": [
+                {
+                  "key": "errorDescription",
+                  "value": "This is a more detailed error description"
+                },
+                {
+                  "key": "errorDescription",
+                  "value": "This is a more detailed error description"
+                }
+              ]
+            }
+          }
+        },
+        "scripts": {}
+      },
+      "type": "FIXED_ERROR_CALLBACK"
+    },
+    "type": "validation",
+    "version": 1
+  },
+  {
+    "ruleId": 10,
+    "priority": 1,
+    "description": "post /thirdpartyRequests/transactions",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 0,
+      "type": "thirdparty_pisp",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "body",
+          "operator": "equal",
+          "value": "quote.fail",
+          "path": "sourceAccountId"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/thirdpartyRequests/transactions"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": "put",
+      "path": "/thirdpartyRequests/transactions/{ID}/error",
+      "params": {
+        "headers": {
+          "Content-Type": "application/vnd.interoperability.thirdparty+json;version=1.0",
+          "Date": "Fri, 02 Feb 2020 03:04:05 GMT",
+          "FSPIOP-Source": "switch"
+        },
+        "body": {
+          "errorInformation": {
+            "errorCode": "6105",
+            "errorDescription": "This is an error description",
+            "extensionList": {
+              "extension": [
+                {
+                  "key": "errorDescription",
+                  "value": "This is a more detailed error description"
+                },
+                {
+                  "key": "errorDescription",
+                  "value": "This is a more detailed error description"
+                }
+              ]
+            }
+          }
+        },
+        "scripts": {}
+      },
+      "type": "FIXED_ERROR_CALLBACK"
+    },
+    "type": "validation",
+    "version": 1
+  }
+]

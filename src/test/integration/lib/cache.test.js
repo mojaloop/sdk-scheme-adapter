@@ -34,10 +34,11 @@ jest.dontMock('redis');
 
 const Cache = require('@internal/cache');
 const { Logger } = require('@mojaloop/sdk-standard-components');
+const env = require('../testEnv');
 
 const defaultCacheConfig = {
-    host: 'redis',
-    port: 6379,
+    host: env.redis.host,
+    port: env.redis.port,
     logger: null
 };
 

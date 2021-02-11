@@ -1,0 +1,1623 @@
+[
+  {
+    "ruleId": 1,
+    "priority": 1,
+    "description": "post /settlementWindows/{id}",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "settlements",
+      "asynchronous": false
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/settlementWindows/{id}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "state": "OPEN"
+        },
+        "statusCode": "200"
+      },
+      "delay": 0,
+      "type": "MOCK_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 2,
+    "priority": 1,
+    "description": "post /settlements",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "settlements",
+      "asynchronous": false
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/settlements"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "id": "123",
+          "state": "PENDING_SETTLEMENT",
+          "settlementWindows": [
+            [
+              {
+                "id": 123,
+                "createdDate": "1954-11-03",
+                "state": "PENDING_SETTLEMENT",
+                "reason": "do",
+                "changedDate": "1954-11-03"
+              }
+            ]
+          ],
+          "participants": [
+            {
+              "id": -91450113,
+              "accounts": [
+                {
+                  "id": 81795155,
+                  "reason": "veniam est proident commodo aliqua",
+                  "state": "PENDING_SETTLEMENT",
+                  "netSettlementAmount": {
+                    "amount": 100,
+                    "currency": "USD"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "statusCode": "200"
+      },
+      "delay": 0,
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 3,
+    "priority": 1,
+    "description": "get /settlements/{id}",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "settlements",
+      "asynchronous": false
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/settlements/{id}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "get"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "id": "{$request.params.id}",
+          "state": "PS_TRANSFERS_RECORDED",
+          "settlementWindows": [
+            [
+              {
+                "createdDate": "2020-02-10",
+                "id": "{$request.params.id}",
+                "state": "PS_TRANSFERS_RECORDED",
+                "reason": "amet cillum culpa v",
+                "changedDate": "2020-02-10"
+              }
+            ]
+          ],
+          "participants": [
+            {
+              "id": -35933071,
+              "accounts": [
+                {
+                  "id": -14386227,
+                  "reason": "aliquip aliqua nulla deserunt",
+                  "state": "PS_TRANSFERS_RECORDED",
+                  "netSettlementAmount": {
+                    "amount": 100,
+                    "currency": "USD"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "statusCode": "200"
+      },
+      "delay": 0,
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 4,
+    "priority": 1,
+    "description": "get /settlementWindows",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "settlements",
+      "asynchronous": false
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/settlementWindows"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "get"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": [
+          {
+            "createdDate": "2020-02-10",
+            "id": 123,
+            "state": "{$request.query.state}",
+            "reason": "string",
+            "changedDate": "2020-02-10"
+          }
+        ],
+        "statusCode": "200"
+      },
+      "delay": 0,
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 5,
+    "priority": 1,
+    "description": "put /consentRequests/{ID} - final authorization",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 0,
+      "type": "thirdparty_pisp",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/consentRequests/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "put"
+        },
+        {
+          "fact": "body",
+          "operator": "equal",
+          "value": "111222",
+          "path": "authToken"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "scripts": {
+          "exec": [
+            "const userConfig = JSON.parse(pm.globals.get('userConfig'))",
+            "const curDate = (new Date()).toUTCString()",
+            "const consentRequestId = pm.request.url.path[1]",
+            "const thirdpartyRequest = {",
+            "url: userConfig.CALLBACK_ENDPOINT + '/consents',",
+            "method: 'post',",
+            "header: {",
+            "  'FSPIOP-Source': 'dfspA',",
+            "  'Accept': 'application/vnd.interoperability.thirdparty+json;version=1.0',",
+            "  'Content-Type': 'application/vnd.interoperability.thirdparty+json;version=1.0',",
+            "  'Date': curDate",
+            "},",
+            "body: {",
+            "  mode: 'raw',",
+            "  raw: JSON.stringify({",
+            "  \"id\": \"9d553d59-610f-44aa-b7ec-b483af24e98a\",",
+            "  \"requestId\": consentRequestId,",
+            "  \"participantId\": \"dfspA\",",
+            "  \"initiatorId\": \"pispA\",",
+            "  \"scopes\": [",
+            "    {",
+            "      \"accountId\": \"dfspa.alice.1234\",",
+            "      \"actions\": [",
+            "        \"accounts.transfer\",",
+            "        \"accounts.getBalance\"",
+            "      ]",
+            "    },",
+            "    {",
+            "      \"accountId\": \"dfspa.alice.5678\",",
+            "      \"actions\": [",
+            "        \"accounts.transfer\",",
+            "        \"accounts.getBalance\"",
+            "      ]",
+            "    }",
+            "  ]",
+            "})",
+            "}",
+            "}",
+            "pm.sendRequest(thirdpartyRequest, function (err, response) {",
+            "console.log('consents response : '+JSON.stringify(response.json()))",
+            "});"
+          ]
+        }
+      },
+      "type": "MOCK_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 6,
+    "priority": 1,
+    "description": "put /consents/{ID} - generic",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 0,
+      "type": "thirdparty_pisp",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/consents/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "put"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "scripts": {
+          "exec": [
+            "const userConfig = JSON.parse(pm.globals.get('userConfig'))",
+            "const curDate = (new Date()).toUTCString()",
+            "const consentId = pm.request.url.path[1]",
+            "console.log('authToken is', pm.request.body.authToken)",
+            "",
+            "const thirdpartyRequest = {",
+            "url: userConfig.CALLBACK_ENDPOINT + '/consents/' + consentId,",
+            "method: 'put',",
+            "header: {",
+            "  'FSPIOP-Source': 'auth.dfspA',",
+            "  'Accept': 'application/vnd.interoperability.thirdparty+json;version=1.0',",
+            "  'Content-Type': 'application/vnd.interoperability.thirdparty+json;version=1.0',",
+            "  'Date': curDate",
+            "},",
+            "body: {",
+            "  mode: 'raw',",
+            "  raw: JSON.stringify({",
+            "  \"requestId\": \"4cab6274-8b3e-41b4-83ce-fc0847409155\",",
+            "  \"participantId\": \"dfspA\",",
+            "  \"initiatorId\": \"pispA\",",
+            "  \"scopes\": [",
+            "    {",
+            "      \"accountId\": \"dfspa.alice.1234\",",
+            "      \"actions\": [",
+            "        \"accounts.transfer\",",
+            "        \"accounts.getBalance\"",
+            "      ]",
+            "    },",
+            "    {",
+            "      \"accountId\": \"dfspa.alice.5678\",",
+            "      \"actions\": [",
+            "        \"accounts.transfer\",",
+            "        \"accounts.getBalance\"",
+            "      ]",
+            "    }",
+            "  ],",
+            "  \"credential\": {",
+            "    \"id\": \"9876\",",
+            "    \"type\": \"FIDO\",",
+            "    \"status\": \"VERIFIED\",",
+            "    \"challenge\": {",
+            "      \"payload\": \"base64 encoded challenge\",",
+            "      \"signature\": \"payload signed by PISP - using private key\"",
+            "    },",
+            "    \"payload\": \"base64 encoded bytes- using public key\"",
+            "  }",
+            "})",
+            "}",
+            "}",
+            "pm.sendRequest(thirdpartyRequest, function (err, response) {",
+            "console.log('consents response : '+JSON.stringify(response.json()))",
+            "});"
+          ]
+        }
+      },
+      "type": "MOCK_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 7,
+    "priority": 1,
+    "description": "put /authorizations/{ID}",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 0,
+      "type": "thirdparty_pisp",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "headers",
+          "operator": "equal",
+          "value": "nonexistent-dfsp",
+          "path": "FSPIOP-Destination"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/authorizations/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "put"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "errorInformation": {
+            "errorCode": "3201",
+            "errorDescription": "ad magna",
+            "extensionList": {
+              "extension": [
+                {
+                  "key": "dolor esse ut",
+                  "value": "dolor"
+                }
+              ]
+            }
+          }
+        },
+        "statusCode": "400",
+        "scripts": {}
+      },
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 8,
+    "priority": 1,
+    "description": "put /authorizations/{ID}",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 0,
+      "type": "thirdparty_pisp",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "pathParams",
+          "operator": "equal",
+          "value": "f4a0e590-7cee-4e98-a48a-b7a22d23ff12",
+          "path": "ID"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/authorizations/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "put"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "errorInformation": {
+            "errorCode": "6205",
+            "errorDescription": "nostrud",
+            "extensionList": {
+              "extension": [
+                {
+                  "key": "amet",
+                  "value": "id ea"
+                }
+              ]
+            }
+          }
+        },
+        "statusCode": "400",
+        "scripts": {}
+      },
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 9,
+    "priority": 1,
+    "description": "put /authorizations/{ID}",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 0,
+      "type": "thirdparty_pisp",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "pathParams",
+          "operator": "equal",
+          "value": "d35943eb-b7a0-49f5-8d61-23cf6806d552",
+          "path": "ID"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/authorizations/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "put"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "errorInformation": {
+            "errorCode": "6000",
+            "errorDescription": "quis nostrud esse",
+            "extensionList": {
+              "extension": [
+                {
+                  "key": "i",
+                  "value": "laboris commodo in"
+                }
+              ]
+            }
+          }
+        },
+        "statusCode": "400",
+        "scripts": {}
+      },
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 10,
+    "priority": 1,
+    "description": "put /authorizations/{ID}",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 0,
+      "type": "thirdparty_pisp",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "pathParams",
+          "operator": "equal",
+          "value": "7c4b1be2-dff2-441d-9d94-6aa2c1a5169f",
+          "path": "ID"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/authorizations/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "put"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "errorInformation": {
+            "errorCode": "6201",
+            "errorDescription": "ex laboris",
+            "extensionList": {
+              "extension": [
+                {
+                  "key": "mollit ",
+                  "value": "in exercitation Lorem"
+                }
+              ]
+            }
+          }
+        },
+        "statusCode": "400",
+        "scripts": {}
+      },
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 11,
+    "priority": 1,
+    "description": "put /authorizations/{ID}",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 0,
+      "type": "thirdparty_pisp",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "pathParams",
+          "operator": "equal",
+          "value": "3dc003a0-5e49-4271-99ac-598053ed4488",
+          "path": "ID"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/authorizations/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "put"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "errorInformation": {
+            "errorCode": "6105",
+            "errorDescription": "amet consectetur cupidatat",
+            "extensionList": {
+              "extension": [
+                {
+                  "key": "eiusmod consequat vo",
+                  "value": "Duis dolor sit aliquip dolor"
+                }
+              ]
+            }
+          }
+        },
+        "statusCode": "400",
+        "scripts": {}
+      },
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 12,
+    "priority": 1,
+    "description": "put /authorizations/{ID}",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 0,
+      "type": "thirdparty_pisp",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "pathParams",
+          "operator": "equal",
+          "value": "58a715c8-7c9c-46d5-8705-ba57093e77a9",
+          "path": "ID"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/authorizations/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "put"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "errorInformation": {
+            "errorCode": "6105",
+            "errorDescription": "irure",
+            "extensionList": {
+              "extension": [
+                {
+                  "key": "ex velit reprehenderi",
+                  "value": "est"
+                }
+              ]
+            }
+          }
+        },
+        "statusCode": "400",
+        "scripts": {}
+      },
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 13,
+    "priority": 1,
+    "description": "put /authorizations/{ID}",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 0,
+      "type": "thirdparty_pisp",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "pathParams",
+          "operator": "equal",
+          "value": "e4283875-d152-4681-aae3-691365c60deb",
+          "path": "ID"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/authorizations/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "put"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "errorInformation": {
+            "errorCode": "6200",
+            "errorDescription": "et aute ea adipisicing",
+            "extensionList": {
+              "extension": [
+                {
+                  "key": "irure",
+                  "value": "amet reprehenderit veniam"
+                }
+              ]
+            }
+          }
+        },
+        "statusCode": "400",
+        "scripts": {}
+      },
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 14,
+    "priority": 1,
+    "description": "put /consentRequests/{ID} - DFSP add authUri for WEB flow",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 0,
+      "type": "thirdparty_pisp",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "body",
+          "operator": "equal",
+          "value": "dfspa.com/authorize?consentRequestId=xxxxx",
+          "path": "authUri"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/consentRequests/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "put"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "scripts": {
+          "exec": [
+            "const userConfig = JSON.parse(pm.globals.get('userConfig'))",
+            "const curDate = (new Date()).toUTCString()",
+            "const consentRequestId = pm.request.url.path[1]",
+            "const thirdpartyRequest = {",
+            "  url: userConfig.CALLBACK_ENDPOINT + '/consentRequests/' + consentRequestId,",
+            "  method: 'put',",
+            "  header: {",
+            "    'FSPIOP-Source': 'pispA',",
+            "    'Accept': 'application/vnd.interoperability.thirdparty+json;version=1.0',",
+            "    'Content-Type': 'application/vnd.interoperability.thirdparty+json;version=1.0',",
+            "    'Date': curDate",
+            "  },",
+            "  body: {",
+            "    mode: 'raw',",
+            "    raw: JSON.stringify({",
+            "      \"initiatorId\": \"pispA\",",
+            "      \"authChannels\": [\"WEB\"],",
+            "      \"scopes\": [",
+            "        {",
+            "          \"accountId\": \"dfspa.alice.1234\",",
+            "          \"actions\": [",
+            "            \"accounts.transfer\",",
+            "            \"accounts.getBalance\"",
+            "          ]",
+            "        },",
+            "        {",
+            "          \"accountId\": \"dfspa.alice.5678\",",
+            "          \"actions\": [",
+            "            \"accounts.transfer\",",
+            "            \"accounts.getBalance\"",
+            "          ]",
+            "        }",
+            "      ],",
+            "      \"callbackUri\": \"pisp-app://callback.com\",",
+            "      \"authUri\": \"dfspa.com/authorize?consentRequestId=xxxxx\",",
+            "      \"authToken\": \"111222\"",
+            "    })",
+            "  }",
+            "}",
+            "",
+            "pm.sendRequest(thirdpartyRequest, function (err, response) {",
+            "  console.log('consents response : '+JSON.stringify(response.json()))",
+            "});"
+          ]
+        }
+      },
+      "type": "MOCK_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 15,
+    "priority": 1,
+    "description": "put /consentRequests/{ID} - DFSP request for OTP flow",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 0,
+      "type": "thirdparty_pisp",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/consentRequests/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "put"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "scripts": {
+          "exec": [
+            "const userConfig = JSON.parse(pm.globals.get('userConfig'))",
+            "const curDate = (new Date()).toUTCString()",
+            "const consentRequestId = pm.request.url.path[1]",
+            "const thirdpartyRequest = {",
+            "  url: userConfig.CALLBACK_ENDPOINT + '/consentRequests/' + consentRequestId,",
+            "  method: 'put',",
+            "  header: {",
+            "    'FSPIOP-Source': 'pispA',",
+            "    'Accept': 'application/vnd.interoperability.thirdparty+json;version=1.0',",
+            "    'Content-Type': 'application/vnd.interoperability.thirdparty+json;version=1.0',",
+            "    'Date': curDate",
+            "  },",
+            "  body: {",
+            "    mode: 'raw',",
+            "    raw: JSON.stringify({",
+            "      \"initiatorId\": \"pispA\",",
+            "      \"authChannels\": [\"OTP\"],",
+            "      \"scopes\": [",
+            "        {",
+            "          \"accountId\": \"dfspa.alice.1234\",",
+            "          \"actions\": [",
+            "            \"accounts.transfer\",",
+            "            \"accounts.getBalance\"",
+            "          ]",
+            "        },",
+            "        {",
+            "          \"accountId\": \"dfspa.alice.5678\",",
+            "          \"actions\": [",
+            "            \"accounts.transfer\",",
+            "            \"accounts.getBalance\"",
+            "          ]",
+            "        }",
+            "      ],",
+            "      \"callbackUri\": \"pisp-app://callback.com\",",
+            "      \"authToken\": \"111222\"",
+            "    })",
+            "  }",
+            "}",
+            "",
+            "pm.sendRequest(thirdpartyRequest, function (err, response) {",
+            "  console.log('consents response : '+JSON.stringify(response.json()))",
+            "});"
+          ]
+        }
+      },
+      "type": "MOCK_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 16,
+    "priority": 1,
+    "description": "put /consents/{ID} - response to challenge from auth-service",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 0,
+      "type": "thirdparty_pisp",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "body",
+          "operator": "equal",
+          "value": "PENDING",
+          "path": "credential.status"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/consents/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "put"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "scripts": {
+          "exec": [
+            "const userConfig = JSON.parse(pm.globals.get('userConfig'))",
+            "const curDate = (new Date()).toUTCString()",
+            "const consentId = pm.request.url.path[1]",
+            "console.log('authToken is', pm.request.body.authToken)",
+            "",
+            "const thirdpartyRequest = {",
+            "url: userConfig.CALLBACK_ENDPOINT + '/consents/' + consentId,",
+            "method: 'put',",
+            "header: {",
+            "  'FSPIOP-Source': 'auth.dfspA',",
+            "  'Accept': 'application/vnd.interoperability.thirdparty+json;version=1.0',",
+            "  'Content-Type': 'application/vnd.interoperability.thirdparty+json;version=1.0',",
+            "  'Date': curDate",
+            "},",
+            "body: {",
+            "  mode: 'raw',",
+            "  raw: JSON.stringify({",
+            "  \"requestId\": \"4cab6274-8b3e-41b4-83ce-fc0847409155\",",
+            "  \"participantId\": \"dfspA\",",
+            "  \"initiatorId\": \"pispA\",",
+            "  \"scopes\": [",
+            "    {",
+            "      \"accountId\": \"dfspa.alice.1234\",",
+            "      \"actions\": [",
+            "        \"accounts.transfer\",",
+            "        \"accounts.getBalance\"",
+            "      ]",
+            "    },",
+            "    {",
+            "      \"accountId\": \"dfspa.alice.5678\",",
+            "      \"actions\": [",
+            "        \"accounts.transfer\",",
+            "        \"accounts.getBalance\"",
+            "      ]",
+            "    }",
+            "  ],",
+            "  \"credential\": {",
+            "    \"id\": \"9876\",",
+            "    \"type\": \"FIDO\",",
+            "    \"status\": \"PENDING\",",
+            "    \"challenge\": {",
+            "      \"payload\": \"base64 encoded challenge\",",
+            "      \"signature\": \"payload signed by PISP - using private key\"",
+            "    },",
+            "    \"payload\": \"base64 encoded bytes- using public key\"",
+            "  }",
+            "})",
+            "}",
+            "}",
+            "pm.sendRequest(thirdpartyRequest, function (err, response) {",
+            "console.log('consents response : '+JSON.stringify(response.json()))",
+            "});"
+          ]
+        }
+      },
+      "type": "MOCK_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 17,
+    "priority": 1,
+    "description": "get /participants/CONSENT/{ID} - generic",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "pathParams",
+          "operator": "equal",
+          "value": "CONSENT",
+          "path": "Type"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/participants/{Type}/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "get"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "scripts": {
+          "exec": [
+            "const userConfig = JSON.parse(pm.globals.get('userConfig'))",
+            "const curDate = (new Date()).toUTCString()",
+            "const consentId = pm.request.url.path[2]",
+            "",
+            "const participantsRequest = {",
+            "url: userConfig.ALS_ENDPOINT + '/participants/CONSENT/' + consentId,",
+            "method: 'delete',",
+            "header: {",
+            "  'FSPIOP-Source': 'dfspa',",
+            "  'Accept': 'application/vnd.interoperability.participants+json;version=1.0',",
+            "  'Content-Type': 'application/vnd.interoperability.participants+json;version=1.0',",
+            "  'Date': curDate",
+            "}",
+            "}",
+            "pm.sendRequest(participantsRequest, function (err, response) {",
+            "console.log('consents response : '+JSON.stringify(response.json()))",
+            "});"
+          ]
+        }
+      },
+      "type": "MOCK_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 18,
+    "priority": 1,
+    "description": "post /participants/CONSENT/{ID} - generic",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "pathParams",
+          "operator": "equal",
+          "value": "CONSENT",
+          "path": "Type"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/participants/{Type}/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "scripts": {
+          "exec": [
+            "const userConfig = JSON.parse(pm.globals.get('userConfig'))",
+            "const curDate = (new Date()).toUTCString()",
+            "const consentId = pm.request.url.path[2]",
+            "",
+            "const participantsRequest = {",
+            "url: userConfig.ALS_ENDPOINT + '/participants/CONSENT/' + consentId,",
+            "method: 'post',",
+            "header: {",
+            "  'FSPIOP-Source': 'dfspa',",
+            "  'Accept': 'application/vnd.interoperability.participants+json;version=1.0',",
+            "  'Content-Type': 'application/vnd.interoperability.participants+json;version=1.0',",
+            "  'Date': curDate",
+            "},",
+            "body: {",
+            "  mode: 'raw',",
+            "  raw: JSON.stringify({",
+            "   \"fspId\": \"dfspa\"",
+            "  })",
+            "}",
+            "}",
+            "pm.sendRequest(participantsRequest, function (err, response) {",
+            "console.log('consents response : '+JSON.stringify(response.json()))",
+            "});"
+          ]
+        }
+      },
+      "type": "MOCK_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 19,
+    "priority": 1,
+    "description": "delete /participants/CONSENT/{ID} - generic",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "pathParams",
+          "operator": "equal",
+          "value": "CONSENT",
+          "path": "Type"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/participants/{Type}/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "delete"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "scripts": {
+          "exec": [
+            "const userConfig = JSON.parse(pm.globals.get('userConfig'))",
+            "const curDate = (new Date()).toUTCString()",
+            "const consentId = pm.request.url.path[2]",
+            "",
+            "const participantsRequest = {",
+            "url: userConfig.ALS_ENDPOINT + '/participants/CONSENT/' + consentId,",
+            "method: 'delete',",
+            "header: {",
+            "  'FSPIOP-Source': 'dfspa',",
+            "  'Accept': 'application/vnd.interoperability.participants+json;version=1.0',",
+            "  'Content-Type': 'application/vnd.interoperability.participants+json;version=1.0',",
+            "  'Date': curDate",
+            "}",
+            "}",
+            "pm.sendRequest(participantsRequest, function (err, response) {",
+            "console.log('consents response : '+JSON.stringify(response.json()))",
+            "});"
+          ]
+        }
+      },
+      "type": "MOCK_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 21,
+    "priority": 1,
+    "description": "post /login",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 0,
+      "type": "thirdparty_simulator",
+      "asynchronous": false
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/login"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {},
+        "statusCode": "200",
+        "scripts": {}
+      },
+      "delay": 0,
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 22,
+    "priority": 1,
+    "description": "post /authorize",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 0,
+      "type": "thirdparty_simulator",
+      "asynchronous": false
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/authorize"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "secret": "{$environment.secretOrOTPAuth}"
+        },
+        "statusCode": "200",
+        "scripts": {
+          "exec": [
+            "const body = JSON.parse(pm.request.body)",
+            "const consReqId = body.consentRequestId",
+            "pm.environment.set(consReqId, 'some-secret-' + consReqId)",
+            "pm.environment.set('secretOrOTPAuth', 'some-secret-' + consReqId)"
+          ]
+        }
+      },
+      "delay": 0,
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 23,
+    "priority": 1,
+    "description": "post /sendOTP",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 0,
+      "type": "thirdparty_simulator",
+      "asynchronous": false
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/sendOTP"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "otp": "{$environment.secretOrOTPPost}"
+        },
+        "statusCode": "200",
+        "scripts": {
+          "exec": [
+            "const body = JSON.parse(pm.request.body)",
+            "const consReqId = body.consentRequestId",
+            "pm.environment.set(consReqId, body.message)",
+            "pm.environment.set('secretOrOTPPost', body.message)"
+          ]
+        }
+      },
+      "delay": 0,
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 24,
+    "priority": 2,
+    "description": "post /verifyOTPorSecret -FAIL",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 0,
+      "type": "thirdparty_simulator",
+      "asynchronous": false
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "body",
+          "operator": "equal",
+          "value": "000000",
+          "path": "value"
+        },
+        {
+          "fact": "body",
+          "operator": "equal",
+          "value": "000001",
+          "path": "value"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/verifyOTPorSecret"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "statusCode": "401",
+          "status": "FAIL",
+          "secretOrOTP": "{$request.body.value}"
+        },
+        "statusCode": "401",
+        "scripts": {
+          "exec": []
+        }
+      },
+      "delay": 0,
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 25,
+    "priority": 1,
+    "description": "post /verifyOTPorSecret",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 0,
+      "type": "thirdparty_simulator",
+      "asynchronous": false
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/verifyOTPorSecret"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "statusCode": "{$environment.statusCode}",
+          "status": "{$environment.verifyOTPorSecretStatus}"
+        },
+        "statusCode": "200",
+        "scripts": {
+          "exec": [
+            "const body = JSON.parse(pm.request.body)",
+            "const secretOrOTPVerify = pm.environment.get(body.consentRequestId)",
+            "if (body.value == secretOrOTPVerify) {",
+            "  pm.environment.set('verifyOTPorSecretStatus', 'SUCCESS')",
+            "  pm.environment.set('statusCode', 200)",
+            "} else {",
+            " pm.environment.set('verifyOTPorSecretStatus', 'FAIL')",
+            " pm.environment.set('statusCode', 401)",
+            "}"
+          ]
+        }
+      },
+      "delay": 0,
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 26,
+    "priority": 1,
+    "description": "get /OTPorSecret/{ID}",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 0,
+      "type": "thirdparty_simulator",
+      "asynchronous": false
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/OTPorSecret/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "get"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "value": "{$environment.secretOrOTPGet}"
+        },
+        "statusCode": "200",
+        "scripts": {
+          "exec": [
+            "const consReqId = pm.request.url.path[1]",
+            "const secretOrOTPGet = pm.environment.get(consReqId)",
+            "pm.environment.set('secretOrOTPGet', secretOrOTPGet)"
+          ]
+        }
+      },
+      "delay": 0,
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 27,
+    "priority": 1,
+    "description": "post  /store/consentRequests/{ID}",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 0,
+      "type": "thirdparty_simulator",
+      "asynchronous": false
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/store/consentRequests/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "value": "{$environment.consReqStorePost}"
+        },
+        "statusCode": "200",
+        "scripts": {
+          "exec": [
+            "const body = JSON.parse(pm.request.body)",
+            "const consReqId = (pm.request.url.path[2] + '-store')",
+            "const searchRegExp = /\\\"/gi",
+            "const replaceWith = '\\''",
+            "const reqAsStr = JSON.stringify(body)",
+            "const reqAsObj = reqAsStr.replace(searchRegExp, replaceWith)",
+            "pm.environment.set(consReqId, reqAsObj)",
+            "pm.environment.set('consReqStorePost', reqAsObj)"
+          ]
+        }
+      },
+      "delay": 0,
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 28,
+    "priority": 1,
+    "description": "get /store/consentRequests/{ID}",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 0,
+      "type": "thirdparty_simulator",
+      "asynchronous": false
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/store/consentRequests/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "get"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "value": "{$environment.consReqStoreGet}"
+        },
+        "statusCode": "200",
+        "scripts": {
+          "exec": [
+            "const consReqId = (pm.request.url.path[2] + '-store')",
+            "const consReqStoreGet = pm.environment.get(consReqId)",
+            "pm.environment.set('consReqStoreGet', consReqStoreGet)"
+          ]
+        }
+      },
+      "delay": 0,
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  }
+]

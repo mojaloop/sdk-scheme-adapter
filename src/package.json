@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
-  "version": "11.11.2",
+  "version": "11.11.3",
   "description": "An adapter for connecting to Mojaloop API enabled switches.",
   "main": "index.js",
   "scripts": {
@@ -32,6 +32,10 @@
       "url": "http://www.apache.org/licenses/LICENSE-2.0"
     }
   ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:mojaloop/sdk-scheme-adapter.git"
+  },
   "dependencies": {
     "@internal/cache": "file:lib/cache",
     "@internal/check": "file:lib/check",
@@ -43,6 +47,7 @@
     "@internal/validate": "file:lib/validate",
     "@mojaloop/sdk-standard-components": "14.0.0",
     "ajv": "6.12.6",
+    "axios": "^0.21.1",
     "co-body": "^6.1.0",
     "dotenv": "^8.2.0",
     "env-var": "^7.0.0",
