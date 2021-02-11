@@ -1432,6 +1432,127 @@ paths:
           $ref: '#/components/responses/501'
         '503':
           $ref: '#/components/responses/503'
+  '/transfers/{ID}':
+    parameters:
+      - $ref: '#/components/parameters/ID'
+      - $ref: '#/components/parameters/Content-Type'
+      - $ref: '#/components/parameters/Date'
+      - $ref: '#/components/parameters/X-Forwarded-For'
+      - $ref: '#/components/parameters/FSPIOP-Source'
+      - $ref: '#/components/parameters/FSPIOP-Destination'
+      - $ref: '#/components/parameters/FSPIOP-Encryption'
+      - $ref: '#/components/parameters/FSPIOP-Signature'
+      - $ref: '#/components/parameters/FSPIOP-URI'
+      - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+    get:
+      description: >-
+        The HTTP request `GET /transfers/{ID}` is used to get information
+        regarding a transfer created or requested earlier. The `{ID}` in the URI
+        should contain the `transferId` that was used for the creation of the
+        transfer.
+      summary: Retrieve transfer information
+      tags:
+        - transfers
+      operationId: TransfersByIDGet
+      parameters:
+        - $ref: '#/components/parameters/Accept'
+      responses:
+        '202':
+          $ref: '#/components/responses/202'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '406':
+          $ref: '#/components/responses/406'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+    patch:
+      description: >-
+        The HTTP request PATCH /transfers/<ID> is used by a Switch to update the
+        state of a previously reserved transfer, if the Payee FSP has requested
+        a commit notification when the Switch has completed processing of the
+        transfer. The <ID> in the URI should contain the transferId that was
+        used for the creation of the transfer. Please note that this request
+        does not generate a callback.
+      summary: Return transfer information
+      tags:
+        - transfers
+      operationId: TransfersByIDPatch
+      parameters:
+        - $ref: '#/components/parameters/Content-Length'
+      requestBody:
+        description: Transfer notification upon completion.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransfersIDPatchResponse'
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '406':
+          $ref: '#/components/responses/406'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+    put:
+      description: >-
+        The callback `PUT /transfers/{ID}` is used to inform the client of a
+        requested or created transfer. The `{ID}` in the URI should contain the
+        `transferId` that was used for the creation of the transfer, or the
+        `{ID}` that was used in the `GET /transfers/{ID}` request.
+      summary: Return transfer information
+      tags:
+        - transfers
+      operationId: TransfersByIDPut
+      parameters:
+        - $ref: '#/components/parameters/Content-Length'
+      requestBody:
+        description: Transfer information returned.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransfersIDPutResponse'
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '406':
+          $ref: '#/components/responses/406'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
   /transfers:
     post:
       description: >-
@@ -3204,6 +3325,74 @@ components:
           example: ENTERED
       required:
         - responseType
+    IlpFulfilment:
+      title: IlpFulfilment
+      type: string
+      pattern: '^[A-Za-z0-9-_]{43}$'
+      maxLength: 48
+      description: Fulfilment that must be attached to the transfer by the Payee.
+    TransferState:
+      title: TransferState
+      type: string
+      enum:
+        - RECEIVED
+        - RESERVED
+        - COMMITTED
+        - ABORTED
+      description: >-
+        Below are the allowed values for the enumeration.
+
+        - RECEIVED - Next ledger has received the transfer.
+
+        - RESERVED - Next ledger has reserved the transfer.
+
+        - COMMITTED - Next ledger has successfully performed the transfer.
+
+        - ABORTED - Next ledger has aborted the transfer due to a rejection or
+        failure to perform the transfer.
+    TransfersIDPutResponse:
+      title: TransfersIDPutResponse
+      type: object
+      description: 'The object sent in the PUT /transfers/{ID} callback.'
+      properties:
+        fulfilment:
+          $ref: '#/components/schemas/IlpFulfilment'
+          description: >-
+            Fulfilment of the condition specified with the transaction.
+            Mandatory if transfer has completed successfully.
+          example: WLctttbu2HvTsa1XWvUoGRcQozHsqeu9Ahl2JW9Bsu8
+        completedTimestamp:
+          $ref: '#/components/schemas/DateTime'
+          description: Time and date when the transaction was completed.
+          example: '2016-05-24T08:38:08.699-04:00'
+        transferState:
+          $ref: '#/components/schemas/TransferState'
+          description: State of the transfer.
+          example: COMMITTED
+        extensionList:
+          $ref: '#/components/schemas/ExtensionList'
+          description: 'Optional extension, specific to deployment.'
+      required:
+        - transferState
+    TransfersIDPatchResponse:
+      title: TransfersIDPatchResponse
+      type: object
+      description: 'PATCH /transfers/{ID} object'
+      properties:
+        completedTimestamp:
+          $ref: '#/components/schemas/DateTime'
+          description: Time and date when the transaction was completed.
+          example: '2020-05-19T08:38:08.699-04:00'
+        transferState:
+          $ref: '#/components/schemas/TransferState'
+          description: State of the transfer.
+          example: RESERVED
+        extensionList:
+          $ref: '#/components/schemas/ExtensionList'
+          description: 'Optional extension, specific to deployment.'
+      required:
+        - completedTimestamp
+        - transferState
     TransfersPostRequest:
       title: TransfersPostRequest
       type: object
@@ -3371,12 +3560,6 @@ components:
           description: 'Optional extension, specific to deployment.'
       required:
         - expiration
-    IlpFulfilment:
-      title: IlpFulfilment
-      type: string
-      pattern: '^[A-Za-z0-9-_]{43}$'
-      maxLength: 48
-      description: Fulfilment that must be attached to the transfer by the Payee.
     IndividualTransferResult:
       title: IndividualTransferResult
       type: object

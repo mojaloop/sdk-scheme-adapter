@@ -49,6 +49,8 @@ paths:
     $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/authorizations_ID_error.yaml'
   '/transfers/{ID}/error':
     $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/transfers_ID_error.yaml'
+  '/transfers/{ID}':
+    $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/transfers_ID.yaml'
   '/transfers':
     $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/transfers.yaml'
   '/transactions/{ID}':
