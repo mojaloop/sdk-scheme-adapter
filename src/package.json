@@ -6,7 +6,9 @@
   "scripts": {
     "audit:resolve": "SHELL=sh resolve-audit --production",
     "audit:check": "SHELL=sh check-audit --production",
+    "build:openapi": "npm run build:openapi:inbound && npm run build:openapi:outbound",
     "build:openapi:inbound": "openapi bundle --output ./InboundServer/api.yaml --ext yaml ./InboundServer/api_template.yaml",
+    "build:openapi:outbound": "openapi bundle --output ./OutboundServer/api.yaml --ext yaml ./OutboundServer/api_template.yaml",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "jest --ci --reporters=default --reporters=jest-junit --env=node test/unit/",
