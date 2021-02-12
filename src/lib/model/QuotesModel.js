@@ -39,6 +39,13 @@ function channelName({ quoteId /* ,fspId, quote - are not used here */ }) {
  *   @param {string} args.quote - the quote payload
  */
 function requestAction(requests, { /* quoteId - is not used here */ fspId, quote }) {
+    if ( !fspId ) {
+        throw new Error('QuotesModel args requires \'fspId\' to be nonempty string');
+    }
+
+    if ( !(quote  && typeof(quote) === 'object') ) {
+        throw new Error('QuotesModel.requestAction args requires \'quote\' to be specified');
+    }
     return requests.postQuotes(quote, fspId);
 }
 
@@ -58,7 +65,7 @@ function argsValidation({ quoteId, fspId, quote }) {
         throw new Error('QuotesModel args requires \'fspId\' to be nonempty string');
     }
     if (quote && quote.quoteId !== quoteId) {
-        throw new Error('QuotesModel args requires \'quote.quoteId\' to be the equal in value');
+        throw new Error('QuotesModel args requires properties \'quote.quoteId\' and \'quoteId\' to be the equal in value');
     }
 }
 
