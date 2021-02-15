@@ -40,10 +40,20 @@ function generate({
      */
     argsValidationMethod,
 
+    /**
+     * @name reformatMessageMethod
+     * @description reformats message received from PUB/SUB channel, it is optional method, if not specified identify function is used by default
+     * @param {object} message - message received
+     * @returns {object} - reformatted message
+     */
+    reformatMessageMethod,
+
     // the name of the model, used for logging
     modelName
 }) {
 
+    // don't reformat message if method not specified
+    const reformatMessage = reformatMessageMethod || ((m) => m);
 
     const specStateMachine = {
         init: 'start',
@@ -158,7 +168,7 @@ function generate({
             })
             .job((message) => {
                 this.context.data = {
-                    ...message,
+                    ...reformatMessage(message),
                     currentState: this.state
                 };
                 logger.push({ message }).log('requestActionMethod message received');
@@ -174,7 +184,7 @@ function generate({
      * @param {object} args - args passed to channelNameMethod
      * @returns {Promise} - the promise which resolves when deferred job is invoked
      */
-    function triggerDeferredJob({ cache, message, args }) {
+    async function triggerDeferredJob({ cache, message, args }) {
         // input validation, it should throws if any of args is invalid
         argsValidationMethod(args);
 

@@ -69,12 +69,25 @@ function argsValidation({ quoteId, fspId, quote }) {
     }
 }
 
+/**
+ * @name reformatMessage
+ * @description reformats message received from PUB/SUB channel, it is optional method, if not specified identify function is used by default
+ * @param {object} message - message received
+ * @returns {object} - reformatted message
+ */
+function reformatMessage(message) {
+    return {
+        quotes: { ...message }
+    };
+}
+    
 // generate model 
 const QuotesModel = Async2SyncModel.generate({
     modelName: 'QuotesModel',
     channelNameMethod: channelName,
     requestActionMethod: requestAction,
-    argsValidationMethod: argsValidation
+    argsValidationMethod: argsValidation,
+    reformatMessageMethod: reformatMessage
 });
 
 module.exports = QuotesModel;
