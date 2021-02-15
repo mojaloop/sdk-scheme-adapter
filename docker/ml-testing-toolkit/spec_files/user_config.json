@@ -1,0 +1,45 @@
+{
+  "VERSION": 1,
+  "CALLBACK_ENDPOINT": "http://scheme-adapter:4000",
+  "ALS_ENDPOINT": "http://account-lookup-service:4002",
+  "CALLBACK_RESOURCE_ENDPOINTS": {
+    "enabled": false,
+    "endpoints": [
+      {
+        "method": "put",
+        "path": "/parties/{Type}/{ID}",
+        "endpoint": "http://localhost:4001"
+      },
+      {
+        "method": "put",
+        "path": "/quotes/{ID}",
+        "endpoint": "http://localhost:3002"
+      },
+      {
+        "method": "put",
+        "path": "/transfers/{ID}",
+        "endpoint": "http://localhost:3000"
+      }
+    ]
+  },
+  "HUB_ONLY_MODE": false,
+  "ENDPOINTS_DFSP_WISE": {
+    "dfsps": {}
+  },
+  "SEND_CALLBACK_ENABLE": true,
+  "FSPID": "switch",
+  "DEFAULT_USER_FSPID": "userdfsp",
+  "TRANSFERS_VALIDATION_WITH_PREVIOUS_QUOTES": true,
+  "TRANSFERS_VALIDATION_ILP_PACKET": true,
+  "TRANSFERS_VALIDATION_CONDITION": true,
+  "ILP_SECRET": "secret",
+  "VERSIONING_SUPPORT_ENABLE": true,
+  "VALIDATE_INBOUND_JWS": false,
+  "VALIDATE_INBOUND_PUT_PARTIES_JWS": false,
+  "JWS_SIGN": false,
+  "JWS_SIGN_PUT_PARTIES": false,
+  "INBOUND_MUTUAL_TLS_ENABLED": false,
+  "OUTBOUND_MUTUAL_TLS_ENABLED": false,
+  "ADVANCED_FEATURES_ENABLED": true,
+  "CALLBACK_TIMEOUT": 20000
+}

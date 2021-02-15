@@ -1,0 +1,161 @@
+[
+  {
+    "ruleId": 1,
+    "priority": 1,
+    "description": "post /thirdpartyRequests/transactions",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 0,
+      "type": "thirdparty_pisp",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/thirdpartyRequests/transactions"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "scripts": {
+          "exec": [
+            "const userConfig = JSON.parse(pm.globals.get('userConfig'))",
+            "const curDate = (new Date()).toUTCString()",
+            "const thirdpartyRequest = {",
+            "  url: userConfig.CALLBACK_ENDPOINT + '/authorizations',",
+            "  method: 'POST',",
+            "  header: {",
+            "      'FSPIOP-Source': 'switch',",
+            "      'Accept': 'application/vnd.interoperability.thirdparty+json;version=1.0',",
+            "      'Content-Type': 'application/vnd.interoperability.thirdparty+json;version=1.0',",
+            "      'Date': curDate",
+            "  },",
+            "  body: {",
+            "    mode: 'raw',",
+            "    raw: JSON.stringify({",
+            "      \"authenticationType\": \"U2F\",",
+            "        \"retriesLeft\": \"1\",",
+            "        \"amount\": {",
+            "          \"currency\": \"USD\",",
+            "          \"amount\": \"124.45\"",
+            "        },",
+            "        \"transactionId\": \"2f169631-ef99-4cb1-96dc-91e8fc08f539\",",
+            "        \"transactionRequestId\": \"7d34f91d-d078-4077-8263-2c047876fcf6\",",
+            "        \"quote\": {",
+            "          \"transferAmount\": {",
+            "            \"currency\": \"USD\",",
+            "            \"amount\": \"124.45\"",
+            "          },",
+            "          \"payeeReceiveAmount\": {",
+            "            \"currency\": \"USD\",",
+            "            \"amount\": \"123.45\"",
+            "          },",
+            "          \"payeeFspFee\": {",
+            "            \"currency\": \"USD\",",
+            "            \"amount\": \"1\"",
+            "          },",
+            "          \"payeeFspCommission\": {",
+            "            \"currency\": \"USD\",",
+            "            \"amount\": \"0\"",
+            "          },",
+            "          \"expiration\": \"2020-08-24T08:38:08.699-04:00\",",
+            "          \"geoCode\": {",
+            "            \"latitude\": \"+45.4215\",",
+            "            \"longitude\": \"+75.6972\"",
+            "          },",
+            "          \"ilpPacket\": \"AYIBgQAAAAAAAASwNGxldmVsb25lLmRmc3AxLm1lci45T2RTOF81MDdqUUZ\",",
+            "          \"condition\": \"f5sqb7tBTWPd5Y8BDFdMm9BJR_MNI4isf8p8n4D5pHA\",",
+            "          \"extensionList\": {",
+            "            \"extension\": [",
+            "              {",
+            "                \"key\": \"errorDescription\",",
+            "                \"value\": \"This is a more detailed error description\"",
+            "              }",
+            "            ]",
+            "          }",
+            "        }",
+            "    })",
+            "  }",
+            "}",
+            "pm.sendRequest(thirdpartyRequest, function (err, response) {",
+            "  console.log('authorizations response : '+JSON.stringify(response.json()))",
+            "});"
+          ]
+        }
+      },
+      "type": "MOCK_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 2,
+    "priority": 1,
+    "description": "put /authorizations/{ID}",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 0,
+      "type": "thirdparty_pisp",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/authorizations/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "put"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "scripts": {
+          "exec": [
+            "const userConfig = JSON.parse(pm.globals.get('userConfig'))",
+            "const curDate = (new Date()).toUTCString()",
+            "const thirdpartyRequest = {",
+            "url: userConfig.CALLBACK_ENDPOINT + '/thirdpartyRequests/transactions/7d34f91d-d078-4077-8263-2c047876fcf6',",
+            "method: 'patch',",
+            "header: {",
+            "  'FSPIOP-Source': 'switch',",
+            "  'Accept': 'application/vnd.interoperability.thirdparty+json;version=1.0',",
+            "  'Content-Type': 'application/vnd.interoperability.thirdparty+json;version=1.0',",
+            "  'Date': curDate",
+            "},",
+            "body: {",
+            "  mode: 'raw',",
+            "  raw: JSON.stringify({",
+            "    \"transactionId\": \"2f169631-ef99-4cb1-96dc-91e8fc08f539\",",
+            "    \"transactionRequestState\": \"ACCEPTED\"",
+            "  })",
+            "}",
+            "}",
+            "pm.sendRequest(thirdpartyRequest, function (err, response) {",
+            "console.log('transactions response : '+JSON.stringify(response.json()))",
+            "});"
+          ]
+        }
+      },
+      "type": "MOCK_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  }
+]
