@@ -358,8 +358,8 @@ paths:
 
   /parties/{Type}/{ID}:
     parameters:
-      - $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/parameters/Type.yaml'
-      - $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/parameters/ID.yaml'
+      - $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/parameters/Type.yaml'
+      - $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/parameters/ID.yaml'
     get:
       description: >-
         The HTTP request GET /parties// (or GET /parties///) is used to lookup
@@ -378,9 +378,9 @@ paths:
 
   /parties/{Type}/{ID}/{SubId}:
     parameters:
-      - $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/parameters/Type.yaml'
-      - $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/parameters/ID.yaml'
-      - $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/parameters/SubId.yaml'
+      - $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/parameters/Type.yaml'
+      - $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/parameters/ID.yaml'
+      - $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/parameters/SubId.yaml'
     get:
       description: >-
         The HTTP request GET /parties// (or GET /parties///) is used to lookup
@@ -484,34 +484,34 @@ components:
         - idValue
       properties:
         type:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransactionInitiatorType.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransactionInitiatorType.yaml'
         idType:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartyIdType.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/components/schemas/PartyIdType.yaml'
         idValue:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartyIdentifier.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartyIdentifier.yaml'
         idSubValue:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartySubIdOrType.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartySubIdOrType.yaml'
         displayName:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Name.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Name.yaml'
         firstName:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/FirstName.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/FirstName.yaml'
         middleName:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/MiddleName.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/MiddleName.yaml'
         lastName:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/LastName.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/LastName.yaml'
         dateOfBirth:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/DateOfBirth.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/DateOfBirth.yaml'
         merchantClassificationCode:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/MerchantClassificationCode.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/MerchantClassificationCode.yaml'
         fspId:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/FspId.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/FspId.yaml'
         extensionList:
           $ref: '#/components/schemas/extensionListEmptiable'
 
     extensionListEmptiable:
       type: array
       items:
-        $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Extension.yaml'
+        $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Extension.yaml'
       minItems: 0
       maxItems: 16
 
@@ -534,15 +534,15 @@ components:
         to:
           $ref: '#/components/schemas/transferParty'
         amountType:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/AmountType.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/AmountType.yaml'
         currency:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml'
         amount:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Amount.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Amount.yaml'
         transactionType:
           $ref: '#/components/schemas/transactionType'
         note:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Note.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Note.yaml'
         quoteRequestExtensions:
           $ref: '#/components/schemas/extensionListEmptiable'
         transferRequestExtensions:
@@ -569,17 +569,17 @@ components:
         to:
           $ref: '#/components/schemas/transferParty'
         amountType:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/AmountType.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/AmountType.yaml'
         currency:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml'
         amount:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Amount.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Amount.yaml'
         scenario:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransactionType.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransactionType.yaml'
         initiator:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransactionInitiator.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransactionInitiator.yaml'
         initiatorType:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransactionInitiatorType.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransactionInitiatorType.yaml'
 
     requestToPayResponse:
       type: object
@@ -594,26 +594,25 @@ components:
         - requestToPayState
       properties:
         transactionRequestId:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
         from:
           $ref: '#/components/schemas/transferParty'
         to:
           $ref: '#/components/schemas/transferParty'
         amountType:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/AmountType.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/AmountType.yaml'
         currency:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml'
         amount:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Amount.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Amount.yaml'
         scenario:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransactionType.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransactionType.yaml'
         initiator:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransactionInitiator.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransactionInitiator.yaml'
         initiatorType:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransactionInitiatorType.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransactionInitiatorType.yaml'
         authenticationType:
-          type: string
-          description: OTP or QR Code, otherwise empty
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/AuthenticationType.yaml'
         requestToPayState:
           $ref: '#/components/schemas/mojaloopTransactionRequestState'
 
@@ -638,17 +637,17 @@ components:
         to:
           $ref: '#/components/schemas/transferParty'
         amountType:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/AmountType.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/AmountType.yaml'
         currency:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml'
         amount:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Amount.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Amount.yaml'
         scenario:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransactionType.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransactionType.yaml'
         initiator:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransactionInitiator.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransactionInitiator.yaml'
         initiatorType:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransactionInitiatorType.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransactionInitiatorType.yaml'
         note:
           maxLength: 128
           type: string
@@ -665,7 +664,7 @@ components:
         - transactionType
       properties:
         transferId:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
         requestToPayTransactionId:
           type: string
           description: Transaction ID from the DFSP backend, used to reconcile transactions between the Switch and DFSP backend systems.
@@ -674,11 +673,11 @@ components:
         to:
           $ref: '#/components/schemas/transferParty'
         amountType:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/AmountType.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/AmountType.yaml'
         currency:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml'
         amount:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Amount.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Amount.yaml'
         transactionType:
           $ref: '#/components/schemas/transactionType'
         note:
@@ -687,7 +686,7 @@ components:
         currentState:
           $ref: '#/components/schemas/transferStatus'
         quoteId:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
         quoteResponse:
           $ref: '#/components/schemas/quote'
         quoteResponseSource:
@@ -716,7 +715,7 @@ components:
         - transactionType
       properties:
         transferId:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
         homeTransactionId:
           type: string
           description: Transaction ID from the DFSP backend, used to reconcile transactions between the Switch and DFSP backend systems.
@@ -725,11 +724,11 @@ components:
         to:
           $ref: '#/components/schemas/transferParty'
         amountType:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/AmountType.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/AmountType.yaml'
         currency:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml'
         amount:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Amount.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Amount.yaml'
         transactionType:
           $ref: '#/components/schemas/transactionType'
         note:
@@ -738,7 +737,7 @@ components:
         currentState:
           $ref: '#/components/schemas/transferStatus'
         quoteId:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
         quoteResponse:
           $ref: '#/components/schemas/quote'
         quoteResponseSource:
@@ -761,7 +760,7 @@ components:
         - individualTransferResults
       properties:
         transferId:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
         from:
           $ref: '#/components/schemas/transferParty'
         individualTransferResults:
@@ -779,7 +778,7 @@ components:
         - fulfil
       properties:
         transferId:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
         currentState:
           $ref: '#/components/schemas/transferStatus'
         fulfil:
@@ -793,7 +792,7 @@ components:
         - fulfils
       properties:
         bulkTransferId:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
         currentState:
           $ref: '#/components/schemas/bulkTransferStatus'
         fulfils:
@@ -811,7 +810,7 @@ components:
         - individualQuotes
       properties:
         bulkQuoteId:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
         currentState:
           $ref: '#/components/schemas/bulkQuoteStatus'
         individualQuotes:
@@ -823,23 +822,23 @@ components:
 
     quote:
       description: Mojaloop API response to a quote request
-      $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/QuotesIDPutResponse.yaml'
+      $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/QuotesIDPutResponse.yaml'
 
     transferFulfilment:
       description: A Mojaloop API transfer fulfilment
-      $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransfersIDPutResponse.yaml'
+      $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransfersIDPutResponse.yaml'
 
     individualTransferFulfilment:
       type: object
       description: A Mojaloop API transfer fulfilment for individual transfers in a bulk transfer
       properties:
         fulfilment:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/IlpFulfilment.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/IlpFulfilment.yaml'
           description: >
             Fulfilment of the condition specified with the transaction.
             Mandatory if transfer has completed successfully.
         extensionList:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/ExtensionList.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/ExtensionList.yaml'
           description: 'Optional extension, specific to deployment.'
 
     mojaloopTransactionRequestState:
@@ -871,7 +870,7 @@ components:
       type: object
       properties:
         errorInformation:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/ErrorInformation.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/ErrorInformation.yaml'
 
     transferStatus:
       type: string
@@ -909,13 +908,13 @@ components:
         - currency
         properties:
           idType:
-            $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartyIdType.yaml'
+            $ref: '../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/components/schemas/PartyIdType.yaml'
           idValue:
-            $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartyIdentifier.yaml'
+            $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartyIdentifier.yaml'
           idSubValue:
-            $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartySubIdOrType.yaml'
+            $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartySubIdOrType.yaml'
           currency:
-            $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml'
+            $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml'
 
     accountCreationStatus:
       type: array
@@ -926,11 +925,11 @@ components:
         - idValue
         properties:
           idType:
-            $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartyIdType.yaml'
+            $ref: '../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/components/schemas/PartyIdType.yaml'
           idValue:
-            $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartyIdentifier.yaml'
+            $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartyIdentifier.yaml'
           idSubValue:
-            $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartySubIdOrType.yaml'
+            $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartySubIdOrType.yaml'
           error:
             $ref: '#/components/schemas/errorResponse'
 
@@ -940,7 +939,7 @@ components:
         - accounts
       properties:
         modelId:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
         accounts:
           $ref: '#/components/schemas/accountsRequest'
         response:
@@ -961,7 +960,7 @@ components:
           type: string
           description: Transaction ID from the DFSP backend, used to reconcile transactions between the Switch and DFSP backend systems.
         bulkTransferId:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
         from:
           $ref: '#/components/schemas/transferParty'
         individualTransfers:
@@ -972,7 +971,7 @@ components:
           items:
             $ref: '#/components/schemas/individualTransfer'
         extensions:
-            $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/ExtensionList.yaml'
+            $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/ExtensionList.yaml'
 
     individualTransfer:
       title: IndividualTransfer
@@ -980,22 +979,22 @@ components:
       description: Data model for the complex type 'individualTransfer'.
       properties:
         transferId:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
         to:
           $ref: '#/components/schemas/transferParty'
         amountType:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/AmountType.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/AmountType.yaml'
         currency:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml'
         amount:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Amount.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Amount.yaml'
         transactionType:
           $ref: '#/components/schemas/transactionType'
         note:
           maxLength: 128
           type: string
         extensions:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/ExtensionList.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/ExtensionList.yaml'
       required:
         - transferId
         - to
@@ -1007,22 +1006,22 @@ components:
       type: object
       properties:
         transferId:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
         to:
           $ref: '#/components/schemas/transferParty'
         amountType:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/AmountType.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/AmountType.yaml'
         currency:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml'
         amount:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Amount.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Amount.yaml'
         transactionType:
           $ref: '#/components/schemas/transactionType'
         note:
           maxLength: 128
           type: string
         quoteId:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
         quoteResponse:
           $ref: '#/components/schemas/quote'
         quoteResponseSource:
@@ -1049,7 +1048,7 @@ components:
           type: string
           description: Transaction ID from the DFSP backend, used to reconcile transactions between the Switch and DFSP backend systems.
         bulkQuoteId:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
         from:
           $ref: '#/components/schemas/transferParty'
         individualQuotes:
@@ -1060,7 +1059,7 @@ components:
           items:
             $ref: '#/components/schemas/individualQuote'
         extensions:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/ExtensionList.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/ExtensionList.yaml'
 
     individualQuote:
       title: IndividualQuote
@@ -1068,21 +1067,21 @@ components:
       description: Data model for the complex type 'individualQuote'.
       properties:
         quoteId:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
         to:
           $ref: '#/components/schemas/transferParty'
         amountType:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/AmountType.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/AmountType.yaml'
         currency:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml'
         amount:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Amount.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Amount.yaml'
         transactionType:
           $ref: '#/components/schemas/transactionType'
         note:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Note.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Note.yaml'
         extensions:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/ExtensionList.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/ExtensionList.yaml'
       required:
         - quoteId
         - to
@@ -1097,7 +1096,7 @@ components:
         - individualQuoteResults
       properties:
         quoteId:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
         homeTransactionId:
           type: string
           description: Transaction ID from the DFSP backend, used to reconcile transactions between the Switch and DFSP backend systems.
@@ -1114,15 +1113,15 @@ components:
       type: object
       properties:
         quoteId:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
         to:
           $ref: '#/components/schemas/transferParty'
         amountType:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/AmountType.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/AmountType.yaml'
         currency:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml'
         amount:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Amount.yaml'
+          $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Amount.yaml'
         transactionType:
           $ref: '#/components/schemas/transactionType'
         note:
@@ -1162,61 +1161,6 @@ components:
         - 'WAITING_FOR_REQUEST_PARTY_INFORMATION'
         - 'COMPLETED'
         - 'ERROR_OCCURRED'
-
-    AccountList:
-      title: AccountList
-      type: object
-      description: Data model for the complex type AccountList
-      properties:
-        account:
-          type: array
-          items:
-            $ref: '#/components/schemas/Account'
-          minItems: 1
-          maxItems: 32
-          description: Accounts associated with the Party
-      required:
-        - account
-
-    Account:
-      title: Account
-      type: object
-      description: Data model for the complex type Account
-      properties:
-        address:
-          $ref: '../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/components/schemas/AccountAddress.yaml'
-          type: string
-          description: Unique routable address which is DFSP specific.
-        currency:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml'
-          type: string
-          description: Currency of the amount.
-        description:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Name.yaml'
-          type: string
-          description: The name of the account.
-      required:
-        - address
-        - currency
-        - description
-
-    Party:
-      title: Party
-      type: object
-      description: Data model for the complex type Party.
-      properties:
-        accounts:
-          $ref: '#/components/schemas/AccountList'
-        partyIdInfo:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartyIdInfo.yaml'
-        merchantClassificationCode:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/MerchantClassificationCode.yaml'
-        name:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartyName.yaml'
-        personalInfo:
-          $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartyPersonalInfo.yaml'
-      required:
-        - partyIdInfo
 
   responses:
     transferSuccess:
@@ -1339,7 +1283,7 @@ components:
             description: 'GET /parties/{Type}/{ID} response object'
             properties:
               party:
-                $ref: '#/components/schemas/Party'
+                $ref: '../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/components/schemas/Party.yaml'
                 description: Information regarding the requested Party.
               currentState:
                 $ref: '#/components/schemas/PartiesCurrentState'
@@ -1354,33 +1298,33 @@ components:
             type: object
             properties:
               errorInformation:
-                $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/ErrorInformation.yaml'
+                $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/ErrorInformation.yaml'
   parameters:
     transferId:
       name: transferId
       in: path
       required: true
       schema:
-        $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
+        $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
       description: Identifier of the transfer to continue as returned in the response to a `POST /transfers` request.
     bulkTransferId:
       name: bulkTransferId
       in: path
       required: true
       schema:
-        $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
+        $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
       description: Identifier of the bulk transfer to continue as returned in the response to a `POST /bulkTransfers` request.
     bulkQuoteId:
       name: bulkQuoteId
       in: path
       required: true
       schema:
-        $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
+        $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
       description: Identifier of the bulk transfer to continue as returned in the response to a `POST /bulkTransfers` request.
     requestToPayTransactionId:
       name: requestToPayTransactionId
       in: path
       required: true
       schema:
-        $ref: '../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
+        $ref: '../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml'
       description: Identifier of the merchant request to pay transfer to continue as returned in the response to a `POST /requestToPayTransfer` request.

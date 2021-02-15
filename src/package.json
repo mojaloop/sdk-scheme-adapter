@@ -43,6 +43,7 @@
     "@internal/router": "file:lib/router",
     "@internal/shared": "file:lib/model/lib/shared",
     "@internal/validate": "file:lib/validate",
+    "@mojaloop/api-snippets": "12.0.1",
     "@mojaloop/sdk-standard-components": "14.0.0",
     "ajv": "6.12.6",
     "co-body": "^6.1.0",
