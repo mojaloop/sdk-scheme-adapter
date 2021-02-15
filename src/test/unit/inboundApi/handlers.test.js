@@ -14,6 +14,9 @@ jest.mock('@internal/model');
 
 const handlers = require('../../../InboundServer/handlers');
 const Model = require('@internal/model').InboundTransfersModel;
+const QuotesModel = require('@internal/model').QuotesModel;
+const PartiesModel = require('@internal/model').PartiesModel;
+
 const mockArguments = require('./data/mockArguments');
 const mockTransactionRequestData = require('./data/mockTransactionRequest');
 const { Logger } = require('@mojaloop/sdk-standard-components');
@@ -95,8 +98,51 @@ describe('Inbound API handlers:', () => {
             expect(getQuoteRequestSpy.mock.calls[0][1]).toBe(mockContext.request.headers['fspiop-source']);
 
         });
+    });
 
+    describe('PUT /quotes', () => {
 
+        let mockContext;
+
+        beforeEach(() => {
+            mockContext = {
+                request: {
+                    body: { the: 'mocked-body' }, 
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    path: {
+                        params: {
+                            'ID': '1234567890'
+                        }
+                    },
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
+                    cache: {
+                        publish: jest.fn(() => Promise.resolve(true))
+                    } 
+                }
+            };
+
+        });
+
+        test('calls `QuotesModel.triggerDeferredJobSpy` with the expected arguments.', async () => {
+            const triggerDeferredJobSpy = jest.spyOn(QuotesModel, 'triggerDeferredJob');
+
+            await expect(handlers['/quotes/{ID}'].put(mockContext)).resolves.toBe(undefined);
+
+            expect(triggerDeferredJobSpy).toHaveBeenCalledTimes(1);
+            expect(triggerDeferredJobSpy).toBeCalledWith({
+                cache: mockContext.state.cache,
+                message: mockContext.request.body,
+                args: { 
+                    quoteId: mockContext.state.path.params.ID
+                }
+            });
+        });
     });
 
     describe('POST /bulkQuotes', () => {
@@ -514,5 +560,72 @@ describe('Inbound API handlers:', () => {
             expect(notificationSpy.mock.calls[0][1]).toBe(mockNotificationMessage.state.path.params.ID);
         });
 
+    });
+
+    describe('PUT /parties/{Type}/{ID}[/{SubId}]', () => {
+
+        let mockContext;
+
+        beforeEach(() => {
+            mockContext = {
+                request: {
+                    body: { the: 'mocked-body' }, 
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    path: {
+                        params: {
+                            'Type': 'MSISDN',
+                            'ID': '1234567890'
+                        }
+                    },
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
+                    cache: {
+                        publish: jest.fn(() => Promise.resolve(true))
+                    } 
+                }
+            };
+
+        });
+
+        test('calls `PartiesModel.triggerDeferredJobSpy` with the expected arguments.', async () => {
+            const triggerDeferredJobSpy = jest.spyOn(PartiesModel, 'triggerDeferredJob');
+
+            await expect(handlers['/parties/{Type}/{ID}'].put(mockContext)).resolves.toBe(undefined);
+
+            expect(triggerDeferredJobSpy).toHaveBeenCalledTimes(1);
+            expect(triggerDeferredJobSpy).toBeCalledWith({
+                cache: mockContext.state.cache,
+                message: mockContext.request.body,
+                args: {
+                    type: mockContext.state.path.params.Type,
+                    id: mockContext.state.path.params.ID
+                }
+            });
+        });
+        
+        test('calls `PartiesModel.triggerDeferredJobSpy` with the expected arguments when SubId param specified.', async () => {
+            const triggerDeferredJobSpy = jest.spyOn(PartiesModel, 'triggerDeferredJob');
+
+            // add extra parameter
+            mockContext.state.path.params.SubId = 'sub-id';
+
+            await expect(handlers['/parties/{Type}/{ID}/{SubId}'].put(mockContext)).resolves.toBe(undefined);
+
+            expect(triggerDeferredJobSpy).toHaveBeenCalledTimes(2);
+            expect(triggerDeferredJobSpy).toBeCalledWith({
+                cache: mockContext.state.cache,
+                message: mockContext.request.body,
+                args: {
+                    type: mockContext.state.path.params.Type,
+                    id: mockContext.state.path.params.ID,
+                    subId: mockContext.state.path.params.SubId
+                }
+            });
+        });
     });
 });

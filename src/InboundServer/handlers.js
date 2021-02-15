@@ -15,6 +15,7 @@
 
 const Model = require('@internal/model').InboundTransfersModel;
 const PartiesModel = require('@internal/model').PartiesModel;
+const QuotesModel = require('@internal/model').QuotesModel;
 
 /**
  * Handles a GET /authorizations/{id} request
@@ -428,15 +429,55 @@ const putPartiesByTypeAndIdError = async(ctx) => {
  * Handles a PUT /quotes/{ID}. This is a response to a POST /quotes request
  */
 const putQuoteById = async (ctx) => {
+    // TODO: refactor legacy models to use QuotesModel
+    // - OutboundRequestToPayTransferModel
+    // - OutboundTransfersModel
     // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`qt_${ctx.state.path.params.ID}`, {
-        type: 'quoteResponse',
-        data: ctx.request.body,
-        headers: ctx.request.headers
+    // await ctx.state.cache.publish(`qt_${ctx.state.path.params.ID}`, {
+    //     type: 'quoteResponse',
+    //     data: ctx.request.body,
+    //     headers: ctx.request.headers
+    // });
+
+    // duplicate publication until legacy code refactored
+    await QuotesModel.triggerDeferredJob({
+        cache: ctx.state.cache,
+        message: ctx.request.body, 
+        args: {
+            quoteId: ctx.state.path.params.ID
+        }
     });
 
     ctx.response.status = 200;
 };
+
+
+/**
+ * Handles a PUT /quotes/{ID}/error request. This is an error response to a POST /quotes request
+ */
+const putQuotesByIdError = async (ctx) => {
+    // TODO: refactor legacy models to use QuotesModel
+    // - OutboundRequestToPayTransferModel
+    // - OutboundTransfersModel
+    // publish an event onto the cache for subscribers to action
+    await ctx.state.cache.publish(`qt_${ctx.state.path.params.ID}`, {
+        type: 'quoteResponseError',
+        data: ctx.request.body
+    });
+
+    // duplicate publication until legacy code refactored
+    await QuotesModel.triggerDeferredJob({
+        cache: ctx.state.cache,
+        message: ctx.request.body, 
+        args: {
+            quoteId: ctx.state.path.params.ID
+        }
+    });
+    
+    ctx.response.status = 200;
+    ctx.response.body = '';
+};
+
 
 /**
  * Handles a GET /quotes/{ID}
@@ -528,21 +569,6 @@ const patchTransfersById = async (ctx) => {
     ctx.state.logger.push({response}).
         log('Inbound transfers model handled PATCH /transfers/{ID} request');
 };
-
-/**
- * Handles a PUT /quotes/{ID}/error request. This is an error response to a POST /quotes request
- */
-const putQuotesByIdError = async(ctx) => {
-    // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`qt_${ctx.state.path.params.ID}`, {
-        type: 'quoteResponseError',
-        data: ctx.request.body
-    });
-
-    ctx.response.status = 200;
-    ctx.response.body = '';
-};
-
 
 /**
  * Handles a PUT /transfers/{ID}/error. This is an error response to a POST /transfers request
