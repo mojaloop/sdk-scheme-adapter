@@ -433,11 +433,11 @@ const putQuoteById = async (ctx) => {
     // - OutboundRequestToPayTransferModel
     // - OutboundTransfersModel
     // publish an event onto the cache for subscribers to action
-    // await ctx.state.cache.publish(`qt_${ctx.state.path.params.ID}`, {
-    //     type: 'quoteResponse',
-    //     data: ctx.request.body,
-    //     headers: ctx.request.headers
-    // });
+    await ctx.state.cache.publish(`qt_${ctx.state.path.params.ID}`, {
+        type: 'quoteResponse',
+        data: ctx.request.body,
+        headers: ctx.request.headers
+    });
 
     // duplicate publication until legacy code refactored
     await QuotesModel.triggerDeferredJob({
