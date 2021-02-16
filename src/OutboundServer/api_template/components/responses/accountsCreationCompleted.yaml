@@ -1,0 +1,5 @@
+description: Accounts creation completed
+content:
+  application/json:
+    schema:
+      $ref: ../schemas/accountsResponse.yaml

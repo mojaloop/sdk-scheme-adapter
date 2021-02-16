@@ -1,0 +1,34 @@
+put:
+  summary: >-
+    Continues a transfer that has paused at the otp stage in order to accept or
+    reject quote
+  description: >
+    The HTTP request `PUT /transfers/{transferId}` is used to continue a
+    transfer initiated via the `POST /transfers` method that has halted after
+    party lookup and/or quotation stage.
+
+
+    The request body should contain either the "acceptOTP" or "acceptQuote"
+    property set to `true` as required to continue the transfer.
+
+
+    See the description of the `POST /requestToPayTransfer` HTTP method for more
+    information on modes of transfer.
+  tags:
+    - RequestToPayTransferID
+  requestBody:
+    content:
+      application/json:
+        schema:
+          oneOf:
+            - $ref: ../components/schemas/transferContinuationAcceptQuote.yaml
+            - $ref: ../components/schemas/transferContinuationAcceptOTP.yaml
+  parameters:
+    - $ref: ../components/parameters/requestToPayTransactionId.yaml
+  responses:
+    '200':
+      $ref: ../components/responses/transferSuccess.yaml
+    '500':
+      $ref: ../components/responses/transferServerError.yaml
+    '504':
+      $ref: ../components/responses/transferTimeout.yaml

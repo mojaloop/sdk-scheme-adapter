@@ -1,0 +1,58 @@
+put:
+  summary: >-
+    Continues a transfer that has paused at the quote stage in order to accept
+    or reject payee party and/or quote
+  description: >
+    The HTTP request `PUT /transfers/{transferId}` is used to continue a
+    transfer initiated via the `POST /transfers` method that has halted after
+    party lookup and/or quotation stage.
+
+
+    The request body should contain either the "acceptParty" or "acceptQuote"
+    property set to `true` as required to continue the transfer.
+
+
+    See the description of the `POST /transfers` HTTP method for more
+    information on modes of transfer.
+  tags:
+    - Transfers
+  requestBody:
+    content:
+      application/json:
+        schema:
+          oneOf:
+            - $ref: ../components/schemas/transferContinuationAcceptParty.yaml
+            - $ref: ../components/schemas/transferContinuationAcceptQuote.yaml
+  parameters:
+    - $ref: ../components/parameters/transferId.yaml
+  responses:
+    '200':
+      $ref: ../components/responses/transferSuccess.yaml
+    '500':
+      $ref: ../components/responses/transferServerError.yaml
+    '504':
+      $ref: ../components/responses/transferTimeout.yaml
+get:
+  summary: Retrieves information for a specific transfer
+  description: >-
+    The HTTP request `GET /transfers/{transferId}` is used to get information
+    regarding a transfer created or requested earlier. The `{transferId}` in the
+    URI should contain the `transferId` that was used for the creation of the
+    transfer.
+  tags:
+    - Transfers
+  parameters:
+    - $ref: ../components/parameters/transferId.yaml
+  responses:
+    '200':
+      description: Transfer information successfully retrieved
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/transferStatusResponse.yaml
+    '500':
+      description: An error occurred processing the transfer
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/errorResponse.yaml

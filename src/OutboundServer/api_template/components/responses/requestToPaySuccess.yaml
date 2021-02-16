@@ -1,0 +1,5 @@
+description: Request to Pay completed successfully
+content:
+  application/json:
+    schema:
+      $ref: ../schemas/requestToPayResponse.yaml
