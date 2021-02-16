@@ -45,6 +45,7 @@
     "@internal/router": "file:lib/router",
     "@internal/shared": "file:lib/model/lib/shared",
     "@internal/validate": "file:lib/validate",
+    "@koa/cors": "^3.1.0",
     "@mojaloop/sdk-standard-components": "14.0.0",
     "ajv": "6.12.6",
     "axios": "^0.21.1",
