@@ -432,770 +432,6 @@ paths:
           $ref: '#/components/responses/PartiesByIdError404'
 components:
   schemas:
-    errorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: string
-          description: Error code as string.
-        message:
-          type: string
-          description: Error message text.
-    errorTransferResponse:
-      allOf:
-        - $ref: '#/components/schemas/errorResponse'
-        - type: object
-          required:
-            - transferState
-          properties:
-            transferState:
-              $ref: '#/components/schemas/transferResponse'
-    bulkTransferErrorResponse:
-      allOf:
-        - $ref: '#/components/schemas/errorResponse'
-        - type: object
-          required:
-            - bulkTansferState
-          properties:
-            bulkTransferState:
-              $ref: '#/components/schemas/bulkTransferResponse'
-    errorAccountsResponse:
-      allOf:
-        - $ref: '#/components/schemas/errorResponse'
-        - type: object
-          required:
-            - executionState
-          properties:
-            executionState:
-              $ref: '#/components/schemas/accountsResponse'
-    transactionType:
-      type: string
-      enum:
-        - TRANSFER
-      description: Type of transaction.
-    transferContinuationAcceptParty:
-      type: object
-      required:
-        - acceptParty
-      properties:
-        acceptParty:
-          type: boolean
-          enum:
-            - true
-    transferContinuationAcceptQuote:
-      type: object
-      required:
-        - acceptQuote
-      properties:
-        acceptQuote:
-          type: boolean
-          enum:
-            - true
-            - false
-    transferContinuationAcceptOTP:
-      type: object
-      required:
-        - acceptOTP
-      properties:
-        acceptOTP:
-          type: boolean
-          enum:
-            - true
-            - false
-    transferParty:
-      type: object
-      required:
-        - idType
-        - idValue
-      properties:
-        type:
-          $ref: '#/components/schemas/TransactionInitiatorType'
-        idType:
-          $ref: '#/components/schemas/PartyIdType'
-        idValue:
-          $ref: '#/components/schemas/PartyIdentifier'
-        idSubValue:
-          $ref: '#/components/schemas/PartySubIdOrType'
-        displayName:
-          $ref: '#/components/schemas/Name'
-        firstName:
-          $ref: '#/components/schemas/FirstName'
-        middleName:
-          $ref: '#/components/schemas/MiddleName'
-        lastName:
-          $ref: '#/components/schemas/LastName'
-        dateOfBirth:
-          $ref: '#/components/schemas/DateOfBirth'
-        merchantClassificationCode:
-          $ref: '#/components/schemas/MerchantClassificationCode'
-        fspId:
-          $ref: '#/components/schemas/FspId'
-        extensionList:
-          $ref: '#/components/schemas/extensionListEmptiable'
-    extensionListEmptiable:
-      type: array
-      items:
-        $ref: '#/components/schemas/Extension'
-      minItems: 0
-      maxItems: 16
-    transferRequest:
-      type: object
-      required:
-        - homeTransactionId
-        - from
-        - to
-        - amountType
-        - currency
-        - amount
-        - transactionType
-      properties:
-        homeTransactionId:
-          type: string
-          description: >-
-            Transaction ID from the DFSP backend, used to reconcile transactions
-            between the Switch and DFSP backend systems.
-        from:
-          $ref: '#/components/schemas/transferParty'
-        to:
-          $ref: '#/components/schemas/transferParty'
-        amountType:
-          $ref: '#/components/schemas/AmountType'
-        currency:
-          $ref: '#/components/schemas/Currency'
-        amount:
-          $ref: '#/components/schemas/Amount'
-        transactionType:
-          $ref: '#/components/schemas/transactionType'
-        note:
-          $ref: '#/components/schemas/Note'
-        quoteRequestExtensions:
-          $ref: '#/components/schemas/extensionListEmptiable'
-        transferRequestExtensions:
-          $ref: '#/components/schemas/extensionListEmptiable'
-    requestToPayRequest:
-      type: object
-      required:
-        - homeTransactionId
-        - from
-        - to
-        - amountType
-        - currency
-        - amount
-        - scenario
-        - initiator
-        - initiatorType
-      properties:
-        homeTransactionId:
-          type: string
-          description: >-
-            Transaction ID from the DFSP backend, used to reconcile transactions
-            between the Switch and DFSP backend systems.
-        from:
-          $ref: '#/components/schemas/transferParty'
-        to:
-          $ref: '#/components/schemas/transferParty'
-        amountType:
-          $ref: '#/components/schemas/AmountType'
-        currency:
-          $ref: '#/components/schemas/Currency'
-        amount:
-          $ref: '#/components/schemas/Amount'
-        scenario:
-          $ref: '#/components/schemas/TransactionType'
-        initiator:
-          $ref: '#/components/schemas/TransactionInitiator'
-        initiatorType:
-          $ref: '#/components/schemas/TransactionInitiatorType'
-    requestToPayResponse:
-      type: object
-      required:
-        - transactionRequestId
-        - from
-        - to
-        - amountType
-        - currency
-        - amount
-        - transactionType
-        - requestToPayState
-      properties:
-        transactionRequestId:
-          $ref: '#/components/schemas/CorrelationId'
-        from:
-          $ref: '#/components/schemas/transferParty'
-        to:
-          $ref: '#/components/schemas/transferParty'
-        amountType:
-          $ref: '#/components/schemas/AmountType'
-        currency:
-          $ref: '#/components/schemas/Currency'
-        amount:
-          $ref: '#/components/schemas/Amount'
-        scenario:
-          $ref: '#/components/schemas/TransactionType'
-        initiator:
-          $ref: '#/components/schemas/TransactionInitiator'
-        initiatorType:
-          $ref: '#/components/schemas/TransactionInitiatorType'
-        authenticationType:
-          $ref: '#/components/schemas/AuthenticationType'
-        requestToPayState:
-          $ref: '#/components/schemas/mojaloopTransactionRequestState'
-    requestToPayTransferRequest:
-      type: object
-      required:
-        - requestToPayTransactionId
-        - from
-        - to
-        - amountType
-        - currency
-        - amount
-        - scenario
-        - initiator
-        - initiatorType
-      properties:
-        requestToPayTransactionId:
-          type: string
-          description: >-
-            Transaction ID from the DFSP backend, used to reconcile transactions
-            between the Switch and DFSP backend systems.
-        from:
-          $ref: '#/components/schemas/transferParty'
-        to:
-          $ref: '#/components/schemas/transferParty'
-        amountType:
-          $ref: '#/components/schemas/AmountType'
-        currency:
-          $ref: '#/components/schemas/Currency'
-        amount:
-          $ref: '#/components/schemas/Amount'
-        scenario:
-          $ref: '#/components/schemas/TransactionType'
-        initiator:
-          $ref: '#/components/schemas/TransactionInitiator'
-        initiatorType:
-          $ref: '#/components/schemas/TransactionInitiatorType'
-        note:
-          maxLength: 128
-          type: string
-    requestToPayTransferResponse:
-      type: object
-      required:
-        - requestToPayTransactionId
-        - from
-        - to
-        - amountType
-        - currency
-        - amount
-        - transactionType
-      properties:
-        transferId:
-          $ref: '#/components/schemas/CorrelationId'
-        requestToPayTransactionId:
-          type: string
-          description: >-
-            Transaction ID from the DFSP backend, used to reconcile transactions
-            between the Switch and DFSP backend systems.
-        from:
-          $ref: '#/components/schemas/transferParty'
-        to:
-          $ref: '#/components/schemas/transferParty'
-        amountType:
-          $ref: '#/components/schemas/AmountType'
-        currency:
-          $ref: '#/components/schemas/Currency'
-        amount:
-          $ref: '#/components/schemas/Amount'
-        transactionType:
-          $ref: '#/components/schemas/transactionType'
-        note:
-          maxLength: 128
-          type: string
-        currentState:
-          $ref: '#/components/schemas/transferStatus'
-        quoteId:
-          $ref: '#/components/schemas/CorrelationId'
-        quoteResponse:
-          $ref: '#/components/schemas/QuotesIDPutResponse'
-        quoteResponseSource:
-          type: string
-          description: >
-            FSPID of the entity that supplied the quote response. This may not
-            be the same as the FSPID of the entity which owns the end user
-            account in the case of a FOREX transfer. i.e. it may be a FOREX
-            gateway.
-        fulfil:
-          $ref: '#/components/schemas/TransfersIDPutResponse'
-        lastError:
-          description: >
-            Object representing the last error to occur during a transfer
-            process. This may be a Mojaloop API error returned from another
-            entity in the scheme or an object representing other types of error
-            e.g. exceptions that may occur inside the scheme adapter.
-          $ref: '#/components/schemas/transferError'
-    transferResponse:
-      type: object
-      required:
-        - homeTransactionId
-        - from
-        - to
-        - amountType
-        - currency
-        - amount
-        - transactionType
-      properties:
-        transferId:
-          $ref: '#/components/schemas/CorrelationId'
-        homeTransactionId:
-          type: string
-          description: >-
-            Transaction ID from the DFSP backend, used to reconcile transactions
-            between the Switch and DFSP backend systems.
-        from:
-          $ref: '#/components/schemas/transferParty'
-        to:
-          $ref: '#/components/schemas/transferParty'
-        amountType:
-          $ref: '#/components/schemas/AmountType'
-        currency:
-          $ref: '#/components/schemas/Currency'
-        amount:
-          $ref: '#/components/schemas/Amount'
-        transactionType:
-          $ref: '#/components/schemas/transactionType'
-        note:
-          maxLength: 128
-          type: string
-        currentState:
-          $ref: '#/components/schemas/transferStatus'
-        quoteId:
-          $ref: '#/components/schemas/CorrelationId'
-        quoteResponse:
-          $ref: '#/components/schemas/QuotesIDPutResponse'
-        quoteResponseSource:
-          type: string
-          description: >
-            FSPID of the entity that supplied the quote response. This may not
-            be the same as the FSPID of the entity which owns the end user
-            account in the case of a FOREX transfer. i.e. it may be a FOREX
-            gateway.
-        fulfil:
-          $ref: '#/components/schemas/TransfersIDPutResponse'
-        lastError:
-          description: >
-            Object representing the last error to occur during a transfer
-            process. This may be a Mojaloop API error returned from another
-            entity in the scheme or an object representing other types of error
-            e.g. exceptions that may occur inside the scheme adapter.
-          $ref: '#/components/schemas/transferError'
-    bulkTransferResponse:
-      type: object
-      required:
-        - from
-        - individualTransferResults
-      properties:
-        transferId:
-          $ref: '#/components/schemas/CorrelationId'
-        from:
-          $ref: '#/components/schemas/transferParty'
-        individualTransferResults:
-          type: array
-          maxItems: 1000
-          items:
-            $ref: '#/components/schemas/individualTransferResult'
-          description: List of individual transfer result in a bulk transfer response.
-    transferStatusResponse:
-      type: object
-      required:
-        - transferId
-        - currentState
-        - fulfil
-      properties:
-        transferId:
-          $ref: '#/components/schemas/CorrelationId'
-        currentState:
-          $ref: '#/components/schemas/transferStatus'
-        fulfil:
-          $ref: '#/components/schemas/TransfersIDPutResponse'
-    bulkTransferStatusResponse:
-      type: object
-      required:
-        - bulkTransferId
-        - currentState
-        - fulfils
-      properties:
-        bulkTransferId:
-          $ref: '#/components/schemas/CorrelationId'
-        currentState:
-          $ref: '#/components/schemas/bulkTransferStatus'
-        fulfils:
-          type: array
-          minItems: 1
-          maxItems: 1000
-          items:
-            $ref: '#/components/schemas/individualTransferFulfilment'
-    bulkQuoteStatusResponse:
-      type: object
-      required:
-        - bulkQuoteId
-        - currentState
-        - individualQuotes
-      properties:
-        bulkQuoteId:
-          $ref: '#/components/schemas/CorrelationId'
-        currentState:
-          $ref: '#/components/schemas/bulkQuoteStatus'
-        individualQuotes:
-          type: array
-          minItems: 1
-          maxItems: 1000
-          items:
-            $ref: '#/components/schemas/individualQuote'
-    quote:
-      description: Mojaloop API response to a quote request
-      $ref: '#/components/schemas/QuotesIDPutResponse'
-    transferFulfilment:
-      description: A Mojaloop API transfer fulfilment
-      $ref: '#/components/schemas/TransfersIDPutResponse'
-    individualTransferFulfilment:
-      type: object
-      description: >-
-        A Mojaloop API transfer fulfilment for individual transfers in a bulk
-        transfer
-      properties:
-        fulfilment:
-          $ref: '#/components/schemas/IlpFulfilment'
-          description: >
-            Fulfilment of the condition specified with the transaction.
-            Mandatory if transfer has completed successfully.
-        extensionList:
-          $ref: '#/components/schemas/ExtensionList'
-          description: 'Optional extension, specific to deployment.'
-    mojaloopTransactionRequestState:
-      title: TransactionRequestStateEnum
-      type: string
-      enum:
-        - RECEIVED
-        - PENDING
-        - ACCEPTED
-        - REJECTED
-      description: >-
-        Below are the allowed values for the enumeration - RECEIVED Payer FSP
-        has received the transaction from the Payee FSP. - PENDING Payer FSP has
-        sent the transaction request to the Payer. - ACCEPTED Payer has approved
-        the transaction. - REJECTED Payer has rejected the transaction.
-    transferError:
-      type: object
-      description: >-
-        This object represents a Mojaloop API error received at any time during
-        the transfer process
-      properties:
-        httpStatusCode:
-          type: integer
-          description: >-
-            The HTTP status code returned to the caller. This is the same as the
-            actual HTTP status code returned with the response.
-        mojaloopError:
-          description: >-
-            If a transfer process results in an error callback during the
-            asynchronous Mojaloop API exchange, this property will contain the
-            underlying Mojaloop API error object.
-          $ref: '#/components/schemas/mojaloopError'
-    mojaloopError:
-      type: object
-      properties:
-        errorInformation:
-          $ref: '#/components/schemas/ErrorInformation'
-    transferStatus:
-      type: string
-      enum:
-        - ERROR_OCCURRED
-        - WAITING_FOR_PARTY_ACCEPTANCE
-        - WAITING_FOR_QUOTE_ACCEPTANCE
-        - COMPLETED
-    bulkTransferStatus:
-      type: string
-      enum:
-        - ERROR_OCCURRED
-        - COMPLETED
-    bulkQuoteStatus:
-      type: string
-      enum:
-        - ERROR_OCCURRED
-        - COMPLETED
-    accountsCreationState:
-      type: string
-      enum:
-        - ERROR_OCCURRED
-        - COMPLETED
-    accountsRequest:
-      type: array
-      items:
-        type: object
-        required:
-          - idType
-          - idValue
-          - currency
-        properties:
-          idType:
-            $ref: '#/components/schemas/PartyIdType'
-          idValue:
-            $ref: '#/components/schemas/PartyIdentifier'
-          idSubValue:
-            $ref: '#/components/schemas/PartySubIdOrType'
-          currency:
-            $ref: '#/components/schemas/Currency'
-    accountCreationStatus:
-      type: array
-      items:
-        type: object
-        required:
-          - idType
-          - idValue
-        properties:
-          idType:
-            $ref: '#/components/schemas/PartyIdType'
-          idValue:
-            $ref: '#/components/schemas/PartyIdentifier'
-          idSubValue:
-            $ref: '#/components/schemas/PartySubIdOrType'
-          error:
-            $ref: '#/components/schemas/errorResponse'
-    accountsResponse:
-      type: object
-      required:
-        - accounts
-      properties:
-        modelId:
-          $ref: '#/components/schemas/CorrelationId'
-        accounts:
-          $ref: '#/components/schemas/accountsRequest'
-        response:
-          $ref: '#/components/schemas/accountCreationStatus'
-        currentState:
-          $ref: '#/components/schemas/accountsCreationState'
-        lastError:
-          $ref: '#/components/schemas/transferError'
-    bulkTransferRequest:
-      type: object
-      required:
-        - homeTransactionId
-        - from
-        - individualTransfers
-      properties:
-        homeTransactionId:
-          type: string
-          description: >-
-            Transaction ID from the DFSP backend, used to reconcile transactions
-            between the Switch and DFSP backend systems.
-        bulkTransferId:
-          $ref: '#/components/schemas/CorrelationId'
-        from:
-          $ref: '#/components/schemas/transferParty'
-        individualTransfers:
-          description: List of individual transfers in a bulk transfer.
-          type: array
-          minItems: 1
-          maxItems: 1000
-          items:
-            $ref: '#/components/schemas/individualTransfer'
-        extensions:
-          $ref: '#/components/schemas/ExtensionList'
-    individualTransfer:
-      title: IndividualTransfer
-      type: object
-      description: Data model for the complex type 'individualTransfer'.
-      properties:
-        transferId:
-          $ref: '#/components/schemas/CorrelationId'
-        to:
-          $ref: '#/components/schemas/transferParty'
-        amountType:
-          $ref: '#/components/schemas/AmountType'
-        currency:
-          $ref: '#/components/schemas/Currency'
-        amount:
-          $ref: '#/components/schemas/Amount'
-        transactionType:
-          $ref: '#/components/schemas/transactionType'
-        note:
-          maxLength: 128
-          type: string
-        extensions:
-          $ref: '#/components/schemas/ExtensionList'
-      required:
-        - transferId
-        - to
-        - amountType
-        - currency
-        - transactionType
-    individualTransferResult:
-      type: object
-      properties:
-        transferId:
-          $ref: '#/components/schemas/CorrelationId'
-        to:
-          $ref: '#/components/schemas/transferParty'
-        amountType:
-          $ref: '#/components/schemas/AmountType'
-        currency:
-          $ref: '#/components/schemas/Currency'
-        amount:
-          $ref: '#/components/schemas/Amount'
-        transactionType:
-          $ref: '#/components/schemas/transactionType'
-        note:
-          maxLength: 128
-          type: string
-        quoteId:
-          $ref: '#/components/schemas/CorrelationId'
-        quoteResponse:
-          $ref: '#/components/schemas/QuotesIDPutResponse'
-        quoteResponseSource:
-          type: string
-          description: >
-            FSPID of the entity that supplied the quote response. This may not
-            be the same as the FSPID of the entity which owns the end user
-            account in the case of a FOREX transfer. i.e. it may be a FOREX
-            gateway.
-        fulfil:
-          $ref: '#/components/schemas/TransfersIDPutResponse'
-        lastError:
-          description: >
-            Object representing the last error to occur during a transfer
-            process. This may be a Mojaloop API error returned from another
-            entity in the scheme or an object representing other types of error
-            e.g. exceptions that may occur inside the scheme adapter.
-          $ref: '#/components/schemas/transferError'
-    bulkQuoteRequest:
-      type: object
-      required:
-        - homeTransactionId
-        - from
-        - individualQuotes
-      properties:
-        homeTransactionId:
-          type: string
-          description: >-
-            Transaction ID from the DFSP backend, used to reconcile transactions
-            between the Switch and DFSP backend systems.
-        bulkQuoteId:
-          $ref: '#/components/schemas/CorrelationId'
-        from:
-          $ref: '#/components/schemas/transferParty'
-        individualQuotes:
-          description: List of individual quotes in a bulk quote.
-          type: array
-          minItems: 1
-          maxItems: 1000
-          items:
-            $ref: '#/components/schemas/individualQuote'
-        extensions:
-          $ref: '#/components/schemas/ExtensionList'
-    individualQuote:
-      title: IndividualQuote
-      type: object
-      description: Data model for the complex type 'individualQuote'.
-      properties:
-        quoteId:
-          $ref: '#/components/schemas/CorrelationId'
-        to:
-          $ref: '#/components/schemas/transferParty'
-        amountType:
-          $ref: '#/components/schemas/AmountType'
-        currency:
-          $ref: '#/components/schemas/Currency'
-        amount:
-          $ref: '#/components/schemas/Amount'
-        transactionType:
-          $ref: '#/components/schemas/transactionType'
-        note:
-          $ref: '#/components/schemas/Note'
-        extensions:
-          $ref: '#/components/schemas/ExtensionList'
-      required:
-        - quoteId
-        - to
-        - amountType
-        - currency
-        - transactionType
-    bulkQuoteResponse:
-      type: object
-      required:
-        - from
-        - individualQuoteResults
-      properties:
-        quoteId:
-          $ref: '#/components/schemas/CorrelationId'
-        homeTransactionId:
-          type: string
-          description: >-
-            Transaction ID from the DFSP backend, used to reconcile transactions
-            between the Switch and DFSP backend systems.
-        from:
-          $ref: '#/components/schemas/transferParty'
-        individualQuoteResults:
-          type: array
-          maxItems: 1000
-          items:
-            $ref: '#/components/schemas/individualQuoteResult'
-          description: List of individualQuoteResults in a bulk transfer response.
-    individualQuoteResult:
-      type: object
-      properties:
-        quoteId:
-          $ref: '#/components/schemas/CorrelationId'
-        to:
-          $ref: '#/components/schemas/transferParty'
-        amountType:
-          $ref: '#/components/schemas/AmountType'
-        currency:
-          $ref: '#/components/schemas/Currency'
-        amount:
-          $ref: '#/components/schemas/Amount'
-        transactionType:
-          $ref: '#/components/schemas/transactionType'
-        note:
-          maxLength: 128
-          type: string
-        lastError:
-          description: >
-            Object representing the last error to occur during a quote process.
-            This may be a Mojaloop API error returned from another entity in the
-            scheme or an object representing other types of error e.g.
-            exceptions that may occur inside the scheme adapter.
-          $ref: '#/components/schemas/quoteError'
-    quoteError:
-      type: object
-      description: >-
-        This object represents a Mojaloop API error received at any time during
-        the quote process
-      properties:
-        httpStatusCode:
-          type: integer
-          description: >-
-            The HTTP status code returned to the caller. This is the same as the
-            actual HTTP status code returned with the response.
-        mojaloopError:
-          description: >-
-            If a quote process results in an error callback during the
-            asynchronous Mojaloop API exchange, this property will contain the
-            underlying Mojaloop API error object.
-          $ref: '#/components/schemas/mojaloopError'
-    bulkQuoteErrorResponse:
-      allOf:
-        - $ref: '#/components/schemas/errorResponse'
-        - type: object
-          required:
-            - bulkTansferState
-          properties:
-            bulkQuoteState:
-              $ref: '#/components/schemas/bulkQuoteResponse'
-    PartiesCurrentState:
-      type: string
-      enum:
-        - WAITING_FOR_REQUEST_PARTY_INFORMATION
-        - COMPLETED
-        - ERROR_OCCURRED
     TransactionInitiatorType:
       title: TransactionInitiatorType
       type: string
@@ -1421,6 +657,42 @@ components:
       required:
         - key
         - value
+    extensionListEmptiable:
+      type: array
+      items:
+        $ref: '#/components/schemas/Extension'
+      minItems: 0
+      maxItems: 16
+    transferParty:
+      type: object
+      required:
+        - idType
+        - idValue
+      properties:
+        type:
+          $ref: '#/components/schemas/TransactionInitiatorType'
+        idType:
+          $ref: '#/components/schemas/PartyIdType'
+        idValue:
+          $ref: '#/components/schemas/PartyIdentifier'
+        idSubValue:
+          $ref: '#/components/schemas/PartySubIdOrType'
+        displayName:
+          $ref: '#/components/schemas/Name'
+        firstName:
+          $ref: '#/components/schemas/FirstName'
+        middleName:
+          $ref: '#/components/schemas/MiddleName'
+        lastName:
+          $ref: '#/components/schemas/LastName'
+        dateOfBirth:
+          $ref: '#/components/schemas/DateOfBirth'
+        merchantClassificationCode:
+          $ref: '#/components/schemas/MerchantClassificationCode'
+        fspId:
+          $ref: '#/components/schemas/FspId'
+        extensionList:
+          $ref: '#/components/schemas/extensionListEmptiable'
     AmountType:
       title: AmountType
       type: string
@@ -1619,12 +891,51 @@ components:
         without a minor currency unit. It also only allows four digits in the
         minor currency unit; a negative value is not allowed. Using more than 18
         digits in the major currency unit is not allowed.
+    transactionType:
+      type: string
+      enum:
+        - TRANSFER
+      description: Type of transaction.
     Note:
       title: Note
       type: string
       minLength: 1
       maxLength: 128
       description: Memo assigned to transaction.
+    transferRequest:
+      type: object
+      required:
+        - homeTransactionId
+        - from
+        - to
+        - amountType
+        - currency
+        - amount
+        - transactionType
+      properties:
+        homeTransactionId:
+          type: string
+          description: >-
+            Transaction ID from the DFSP backend, used to reconcile transactions
+            between the Switch and DFSP backend systems.
+        from:
+          $ref: '#/components/schemas/transferParty'
+        to:
+          $ref: '#/components/schemas/transferParty'
+        amountType:
+          $ref: '#/components/schemas/AmountType'
+        currency:
+          $ref: '#/components/schemas/Currency'
+        amount:
+          $ref: '#/components/schemas/Amount'
+        transactionType:
+          $ref: '#/components/schemas/transactionType'
+        note:
+          $ref: '#/components/schemas/Note'
+        quoteRequestExtensions:
+          $ref: '#/components/schemas/extensionListEmptiable'
+        transferRequestExtensions:
+          $ref: '#/components/schemas/extensionListEmptiable'
     CorrelationId:
       title: CorrelationId
       type: string
@@ -1637,6 +948,13 @@ components:
         4122](https://tools.ietf.org/html/rfc4122), that is restricted by a
         regular expression for interoperability reasons. A UUID is always 36
         characters long, 32 hexadecimal symbols and 4 dashes (‘-‘).
+    transferStatus:
+      type: string
+      enum:
+        - ERROR_OCCURRED
+        - WAITING_FOR_PARTY_ACCEPTANCE
+        - WAITING_FOR_QUOTE_ACCEPTANCE
+        - COMPLETED
     Money:
       title: Money
       type: object
@@ -1861,6 +1179,427 @@ components:
       required:
         - errorCode
         - errorDescription
+    mojaloopError:
+      type: object
+      properties:
+        errorInformation:
+          $ref: '#/components/schemas/ErrorInformation'
+    transferError:
+      type: object
+      description: >-
+        This object represents a Mojaloop API error received at any time during
+        the transfer process
+      properties:
+        httpStatusCode:
+          type: integer
+          description: >-
+            The HTTP status code returned to the caller. This is the same as the
+            actual HTTP status code returned with the response.
+        mojaloopError:
+          description: >-
+            If a transfer process results in an error callback during the
+            asynchronous Mojaloop API exchange, this property will contain the
+            underlying Mojaloop API error object.
+          $ref: '#/components/schemas/mojaloopError'
+    transferResponse:
+      type: object
+      required:
+        - homeTransactionId
+        - from
+        - to
+        - amountType
+        - currency
+        - amount
+        - transactionType
+      properties:
+        transferId:
+          $ref: '#/components/schemas/CorrelationId'
+        homeTransactionId:
+          type: string
+          description: >-
+            Transaction ID from the DFSP backend, used to reconcile transactions
+            between the Switch and DFSP backend systems.
+        from:
+          $ref: '#/components/schemas/transferParty'
+        to:
+          $ref: '#/components/schemas/transferParty'
+        amountType:
+          $ref: '#/components/schemas/AmountType'
+        currency:
+          $ref: '#/components/schemas/Currency'
+        amount:
+          $ref: '#/components/schemas/Amount'
+        transactionType:
+          $ref: '#/components/schemas/transactionType'
+        note:
+          $ref: '#/components/schemas/Note'
+        currentState:
+          $ref: '#/components/schemas/transferStatus'
+        quoteId:
+          $ref: '#/components/schemas/CorrelationId'
+        quoteResponse:
+          $ref: '#/components/schemas/QuotesIDPutResponse'
+        quoteResponseSource:
+          type: string
+          description: >
+            FSPID of the entity that supplied the quote response. This may not
+            be the same as the FSPID of the entity which owns the end user
+            account in the case of a FOREX transfer. i.e. it may be a FOREX
+            gateway.
+        fulfil:
+          $ref: '#/components/schemas/TransfersIDPutResponse'
+        lastError:
+          description: >
+            Object representing the last error to occur during a transfer
+            process. This may be a Mojaloop API error returned from another
+            entity in the scheme or an object representing other types of error
+            e.g. exceptions that may occur inside the scheme adapter.
+          $ref: '#/components/schemas/transferError'
+    errorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: string
+          description: Error code as string.
+        message:
+          type: string
+          description: Error message text.
+    errorTransferResponse:
+      allOf:
+        - $ref: '#/components/schemas/errorResponse'
+        - type: object
+          required:
+            - transferState
+          properties:
+            transferState:
+              $ref: '#/components/schemas/transferResponse'
+    transferStatusResponse:
+      type: object
+      required:
+        - transferId
+        - currentState
+        - fulfil
+      properties:
+        transferId:
+          $ref: '#/components/schemas/CorrelationId'
+        currentState:
+          $ref: '#/components/schemas/transferStatus'
+        fulfil:
+          $ref: '#/components/schemas/TransfersIDPutResponse'
+    transferContinuationAcceptParty:
+      type: object
+      required:
+        - acceptParty
+      properties:
+        acceptParty:
+          type: boolean
+          enum:
+            - true
+    transferContinuationAcceptQuote:
+      type: object
+      required:
+        - acceptQuote
+      properties:
+        acceptQuote:
+          type: boolean
+          enum:
+            - true
+            - false
+    individualTransfer:
+      title: IndividualTransfer
+      type: object
+      description: Data model for the complex type 'individualTransfer'.
+      properties:
+        transferId:
+          $ref: '#/components/schemas/CorrelationId'
+        to:
+          $ref: '#/components/schemas/transferParty'
+        amountType:
+          $ref: '#/components/schemas/AmountType'
+        currency:
+          $ref: '#/components/schemas/Currency'
+        amount:
+          $ref: '#/components/schemas/Amount'
+        transactionType:
+          $ref: '#/components/schemas/transactionType'
+        note:
+          $ref: '#/components/schemas/Note'
+        extensions:
+          $ref: '#/components/schemas/ExtensionList'
+      required:
+        - transferId
+        - to
+        - amountType
+        - currency
+        - transactionType
+    bulkTransferRequest:
+      type: object
+      required:
+        - homeTransactionId
+        - from
+        - individualTransfers
+      properties:
+        homeTransactionId:
+          type: string
+          description: >-
+            Transaction ID from the DFSP backend, used to reconcile transactions
+            between the Switch and DFSP backend systems.
+        bulkTransferId:
+          $ref: '#/components/schemas/CorrelationId'
+        from:
+          $ref: '#/components/schemas/transferParty'
+        individualTransfers:
+          description: List of individual transfers in a bulk transfer.
+          type: array
+          minItems: 1
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/individualTransfer'
+        extensions:
+          $ref: '#/components/schemas/ExtensionList'
+    individualTransferResult:
+      type: object
+      properties:
+        transferId:
+          $ref: '#/components/schemas/CorrelationId'
+        to:
+          $ref: '#/components/schemas/transferParty'
+        amountType:
+          $ref: '#/components/schemas/AmountType'
+        currency:
+          $ref: '#/components/schemas/Currency'
+        amount:
+          $ref: '#/components/schemas/Amount'
+        transactionType:
+          $ref: '#/components/schemas/transactionType'
+        note:
+          $ref: '#/components/schemas/Note'
+        quoteId:
+          $ref: '#/components/schemas/CorrelationId'
+        quoteResponse:
+          $ref: '#/components/schemas/QuotesIDPutResponse'
+        quoteResponseSource:
+          type: string
+          description: >
+            FSPID of the entity that supplied the quote response. This may not
+            be the same as the FSPID of the entity which owns the end user
+            account in the case of a FOREX transfer. i.e. it may be a FOREX
+            gateway.
+        fulfil:
+          $ref: '#/components/schemas/TransfersIDPutResponse'
+        lastError:
+          description: >
+            Object representing the last error to occur during a transfer
+            process. This may be a Mojaloop API error returned from another
+            entity in the scheme or an object representing other types of error
+            e.g. exceptions that may occur inside the scheme adapter.
+          $ref: '#/components/schemas/transferError'
+    bulkTransferResponse:
+      type: object
+      required:
+        - from
+        - individualTransferResults
+      properties:
+        transferId:
+          $ref: '#/components/schemas/CorrelationId'
+        from:
+          $ref: '#/components/schemas/transferParty'
+        individualTransferResults:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/individualTransferResult'
+          description: List of individual transfer result in a bulk transfer response.
+    bulkTransferErrorResponse:
+      allOf:
+        - $ref: '#/components/schemas/errorResponse'
+        - type: object
+          required:
+            - bulkTansferState
+          properties:
+            bulkTransferState:
+              $ref: '#/components/schemas/bulkTransferResponse'
+    bulkTransferStatus:
+      type: string
+      enum:
+        - ERROR_OCCURRED
+        - COMPLETED
+    individualTransferFulfilment:
+      type: object
+      description: >-
+        A Mojaloop API transfer fulfilment for individual transfers in a bulk
+        transfer
+      properties:
+        fulfilment:
+          $ref: '#/components/schemas/IlpFulfilment'
+          description: >
+            Fulfilment of the condition specified with the transaction.
+            Mandatory if transfer has completed successfully.
+        extensionList:
+          $ref: '#/components/schemas/ExtensionList'
+          description: 'Optional extension, specific to deployment.'
+    bulkTransferStatusResponse:
+      type: object
+      required:
+        - bulkTransferId
+        - currentState
+        - fulfils
+      properties:
+        bulkTransferId:
+          $ref: '#/components/schemas/CorrelationId'
+        currentState:
+          $ref: '#/components/schemas/bulkTransferStatus'
+        fulfils:
+          type: array
+          minItems: 1
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/individualTransferFulfilment'
+    individualQuote:
+      title: IndividualQuote
+      type: object
+      description: Data model for the complex type 'individualQuote'.
+      properties:
+        quoteId:
+          $ref: '#/components/schemas/CorrelationId'
+        to:
+          $ref: '#/components/schemas/transferParty'
+        amountType:
+          $ref: '#/components/schemas/AmountType'
+        currency:
+          $ref: '#/components/schemas/Currency'
+        amount:
+          $ref: '#/components/schemas/Amount'
+        transactionType:
+          $ref: '#/components/schemas/transactionType'
+        note:
+          $ref: '#/components/schemas/Note'
+        extensions:
+          $ref: '#/components/schemas/ExtensionList'
+      required:
+        - quoteId
+        - to
+        - amountType
+        - currency
+        - transactionType
+    bulkQuoteRequest:
+      type: object
+      required:
+        - homeTransactionId
+        - from
+        - individualQuotes
+      properties:
+        homeTransactionId:
+          type: string
+          description: >-
+            Transaction ID from the DFSP backend, used to reconcile transactions
+            between the Switch and DFSP backend systems.
+        bulkQuoteId:
+          $ref: '#/components/schemas/CorrelationId'
+        from:
+          $ref: '#/components/schemas/transferParty'
+        individualQuotes:
+          description: List of individual quotes in a bulk quote.
+          type: array
+          minItems: 1
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/individualQuote'
+        extensions:
+          $ref: '#/components/schemas/ExtensionList'
+    quoteError:
+      type: object
+      description: >-
+        This object represents a Mojaloop API error received at any time during
+        the quote process
+      properties:
+        httpStatusCode:
+          type: integer
+          description: >-
+            The HTTP status code returned to the caller. This is the same as the
+            actual HTTP status code returned with the response.
+        mojaloopError:
+          description: >-
+            If a quote process results in an error callback during the
+            asynchronous Mojaloop API exchange, this property will contain the
+            underlying Mojaloop API error object.
+          $ref: '#/components/schemas/mojaloopError'
+    individualQuoteResult:
+      type: object
+      properties:
+        quoteId:
+          $ref: '#/components/schemas/CorrelationId'
+        to:
+          $ref: '#/components/schemas/transferParty'
+        amountType:
+          $ref: '#/components/schemas/AmountType'
+        currency:
+          $ref: '#/components/schemas/Currency'
+        amount:
+          $ref: '#/components/schemas/Amount'
+        transactionType:
+          $ref: '#/components/schemas/transactionType'
+        note:
+          $ref: '#/components/schemas/Note'
+        lastError:
+          description: >
+            Object representing the last error to occur during a quote process.
+            This may be a Mojaloop API error returned from another entity in the
+            scheme or an object representing other types of error e.g.
+            exceptions that may occur inside the scheme adapter.
+          $ref: '#/components/schemas/quoteError'
+    bulkQuoteResponse:
+      type: object
+      required:
+        - from
+        - individualQuoteResults
+      properties:
+        quoteId:
+          $ref: '#/components/schemas/CorrelationId'
+        homeTransactionId:
+          type: string
+          description: >-
+            Transaction ID from the DFSP backend, used to reconcile transactions
+            between the Switch and DFSP backend systems.
+        from:
+          $ref: '#/components/schemas/transferParty'
+        individualQuoteResults:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/individualQuoteResult'
+          description: List of individualQuoteResults in a bulk transfer response.
+    bulkQuoteErrorResponse:
+      allOf:
+        - $ref: '#/components/schemas/errorResponse'
+        - type: object
+          required:
+            - bulkTansferState
+          properties:
+            bulkQuoteState:
+              $ref: '#/components/schemas/bulkQuoteResponse'
+    bulkQuoteStatus:
+      type: string
+      enum:
+        - ERROR_OCCURRED
+        - COMPLETED
+    bulkQuoteStatusResponse:
+      type: object
+      required:
+        - bulkQuoteId
+        - currentState
+        - individualQuotes
+      properties:
+        bulkQuoteId:
+          $ref: '#/components/schemas/CorrelationId'
+        currentState:
+          $ref: '#/components/schemas/bulkQuoteStatus'
+        individualQuotes:
+          type: array
+          minItems: 1
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/individualQuote'
     TransactionScenario:
       title: TransactionScenario
       type: string
@@ -1983,6 +1722,40 @@ components:
         - scenario
         - initiator
         - initiatorType
+    requestToPayRequest:
+      type: object
+      required:
+        - homeTransactionId
+        - from
+        - to
+        - amountType
+        - currency
+        - amount
+        - scenario
+        - initiator
+        - initiatorType
+      properties:
+        homeTransactionId:
+          type: string
+          description: >-
+            Transaction ID from the DFSP backend, used to reconcile transactions
+            between the Switch and DFSP backend systems.
+        from:
+          $ref: '#/components/schemas/transferParty'
+        to:
+          $ref: '#/components/schemas/transferParty'
+        amountType:
+          $ref: '#/components/schemas/AmountType'
+        currency:
+          $ref: '#/components/schemas/Currency'
+        amount:
+          $ref: '#/components/schemas/Amount'
+        scenario:
+          $ref: '#/components/schemas/TransactionType'
+        initiator:
+          $ref: '#/components/schemas/TransactionInitiator'
+        initiatorType:
+          $ref: '#/components/schemas/TransactionInitiatorType'
     AuthenticationType:
       title: AuthenticationType
       type: string
@@ -1993,6 +1766,216 @@ components:
         Below are the allowed values for the enumeration AuthenticationType.
         - OTP - One-time password generated by the Payer FSP.
         - QRCODE - QR code used as One Time Password.
+    TransactionRequestState:
+      title: TransactionRequestState
+      type: string
+      enum:
+        - RECEIVED
+        - PENDING
+        - ACCEPTED
+        - REJECTED
+      description: |-
+        Below are the allowed values for the enumeration.
+        - RECEIVED - Payer FSP has received the transaction from the Payee FSP.
+        - PENDING - Payer FSP has sent the transaction request to the Payer.
+        - ACCEPTED - Payer has approved the transaction.
+        - REJECTED - Payer has rejected the transaction.
+    requestToPayResponse:
+      type: object
+      required:
+        - transactionRequestId
+        - from
+        - to
+        - amountType
+        - currency
+        - amount
+        - transactionType
+        - requestToPayState
+      properties:
+        transactionRequestId:
+          $ref: '#/components/schemas/CorrelationId'
+        from:
+          $ref: '#/components/schemas/transferParty'
+        to:
+          $ref: '#/components/schemas/transferParty'
+        amountType:
+          $ref: '#/components/schemas/AmountType'
+        currency:
+          $ref: '#/components/schemas/Currency'
+        amount:
+          $ref: '#/components/schemas/Amount'
+        scenario:
+          $ref: '#/components/schemas/TransactionType'
+        initiator:
+          $ref: '#/components/schemas/TransactionInitiator'
+        initiatorType:
+          $ref: '#/components/schemas/TransactionInitiatorType'
+        authenticationType:
+          $ref: '#/components/schemas/AuthenticationType'
+        requestToPayState:
+          $ref: '#/components/schemas/TransactionRequestState'
+    requestToPayTransferRequest:
+      type: object
+      required:
+        - requestToPayTransactionId
+        - from
+        - to
+        - amountType
+        - currency
+        - amount
+        - scenario
+        - initiator
+        - initiatorType
+      properties:
+        requestToPayTransactionId:
+          type: string
+          description: >-
+            Transaction ID from the DFSP backend, used to reconcile transactions
+            between the Switch and DFSP backend systems.
+        from:
+          $ref: '#/components/schemas/transferParty'
+        to:
+          $ref: '#/components/schemas/transferParty'
+        amountType:
+          $ref: '#/components/schemas/AmountType'
+        currency:
+          $ref: '#/components/schemas/Currency'
+        amount:
+          $ref: '#/components/schemas/Amount'
+        scenario:
+          $ref: '#/components/schemas/TransactionType'
+        initiator:
+          $ref: '#/components/schemas/TransactionInitiator'
+        initiatorType:
+          $ref: '#/components/schemas/TransactionInitiatorType'
+        note:
+          $ref: '#/components/schemas/Note'
+    requestToPayTransferResponse:
+      type: object
+      required:
+        - requestToPayTransactionId
+        - from
+        - to
+        - amountType
+        - currency
+        - amount
+        - transactionType
+      properties:
+        transferId:
+          $ref: '#/components/schemas/CorrelationId'
+        requestToPayTransactionId:
+          type: string
+          description: >-
+            Transaction ID from the DFSP backend, used to reconcile transactions
+            between the Switch and DFSP backend systems.
+        from:
+          $ref: '#/components/schemas/transferParty'
+        to:
+          $ref: '#/components/schemas/transferParty'
+        amountType:
+          $ref: '#/components/schemas/AmountType'
+        currency:
+          $ref: '#/components/schemas/Currency'
+        amount:
+          $ref: '#/components/schemas/Amount'
+        transactionType:
+          $ref: '#/components/schemas/transactionType'
+        note:
+          $ref: '#/components/schemas/Note'
+        currentState:
+          $ref: '#/components/schemas/transferStatus'
+        quoteId:
+          $ref: '#/components/schemas/CorrelationId'
+        quoteResponse:
+          $ref: '#/components/schemas/QuotesIDPutResponse'
+        quoteResponseSource:
+          type: string
+          description: >
+            FSPID of the entity that supplied the quote response. This may not
+            be the same as the FSPID of the entity which owns the end user
+            account in the case of a FOREX transfer. i.e. it may be a FOREX
+            gateway.
+        fulfil:
+          $ref: '#/components/schemas/TransfersIDPutResponse'
+        lastError:
+          description: >
+            Object representing the last error to occur during a transfer
+            process. This may be a Mojaloop API error returned from another
+            entity in the scheme or an object representing other types of error
+            e.g. exceptions that may occur inside the scheme adapter.
+          $ref: '#/components/schemas/transferError'
+    transferContinuationAcceptOTP:
+      type: object
+      required:
+        - acceptOTP
+      properties:
+        acceptOTP:
+          type: boolean
+          enum:
+            - true
+            - false
+    accountsRequest:
+      type: array
+      items:
+        type: object
+        required:
+          - idType
+          - idValue
+          - currency
+        properties:
+          idType:
+            $ref: '#/components/schemas/PartyIdType'
+          idValue:
+            $ref: '#/components/schemas/PartyIdentifier'
+          idSubValue:
+            $ref: '#/components/schemas/PartySubIdOrType'
+          currency:
+            $ref: '#/components/schemas/Currency'
+    accountCreationStatus:
+      type: array
+      items:
+        type: object
+        required:
+          - idType
+          - idValue
+        properties:
+          idType:
+            $ref: '#/components/schemas/PartyIdType'
+          idValue:
+            $ref: '#/components/schemas/PartyIdentifier'
+          idSubValue:
+            $ref: '#/components/schemas/PartySubIdOrType'
+          error:
+            $ref: '#/components/schemas/errorResponse'
+    accountsCreationState:
+      type: string
+      enum:
+        - ERROR_OCCURRED
+        - COMPLETED
+    accountsResponse:
+      type: object
+      required:
+        - accounts
+      properties:
+        modelId:
+          $ref: '#/components/schemas/CorrelationId'
+        accounts:
+          $ref: '#/components/schemas/accountsRequest'
+        response:
+          $ref: '#/components/schemas/accountCreationStatus'
+        currentState:
+          $ref: '#/components/schemas/accountsCreationState'
+        lastError:
+          $ref: '#/components/schemas/transferError'
+    errorAccountsResponse:
+      allOf:
+        - $ref: '#/components/schemas/errorResponse'
+        - type: object
+          required:
+            - executionState
+          properties:
+            executionState:
+              $ref: '#/components/schemas/accountsResponse'
     AccountAddress:
       title: AccountAddress
       type: string
@@ -2103,6 +2086,12 @@ components:
           $ref: '#/components/schemas/PartyPersonalInfo'
       required:
         - partyIdInfo
+    PartiesCurrentState:
+      type: string
+      enum:
+        - WAITING_FOR_REQUEST_PARTY_INFORMATION
+        - COMPLETED
+        - ERROR_OCCURRED
   responses:
     transferSuccess:
       description: Transfer completed successfully
@@ -2176,24 +2165,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/bulkQuoteErrorResponse'
-    accountsCreationCompleted:
-      description: Accounts creation completed
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/accountsResponse'
-    accountsCreationError:
-      description: An error occurred creating accounts
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errorAccountsResponse'
-    accountsCreationTimeout:
-      description: Timeout occurred creating accounts
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errorAccountsResponse'
     requestToPaySuccess:
       description: Request to Pay completed successfully
       content:
@@ -2212,6 +2183,24 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/errorTransferResponse'
+    accountsCreationCompleted:
+      description: Accounts creation completed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/accountsResponse'
+    accountsCreationError:
+      description: An error occurred creating accounts
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errorAccountsResponse'
+    accountsCreationTimeout:
+      description: Timeout occurred creating accounts
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errorAccountsResponse'
     PartiesByIdResponse:
       description: PartiesByIdResponse
       content:

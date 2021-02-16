@@ -1,0 +1,20 @@
+parameters:
+  - $ref: >-
+      ../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/parameters/Type.yaml
+  - $ref: >-
+      ../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/parameters/ID.yaml
+get:
+  description: >-
+    The HTTP request GET /parties// (or GET /parties///) is used to lookup
+    information regarding the requested Party, defined by ,  and optionally (for
+    example, GET /parties/MSISDN/123456789, or GET
+    /parties/BUSINESS/shoecompany/employee1).
+  summary: PartiesByTypeAndID
+  tags:
+    - parties
+  operationId: PartiesByTypeAndID
+  responses:
+    '200':
+      $ref: ../components/responses/PartiesByIdResponse.yaml
+    '404':
+      $ref: ../components/responses/PartiesByIdError404.yaml
