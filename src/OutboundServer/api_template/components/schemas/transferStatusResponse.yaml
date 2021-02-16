@@ -1,0 +1,13 @@
+type: object
+required:
+  - transferId
+  - currentState
+  - fulfil
+properties:
+  transferId:
+    $ref: >-
+      ../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml
+  currentState:
+    $ref: ./transferStatus.yaml
+  fulfil:
+    $ref: ./transferFulfilment.yaml

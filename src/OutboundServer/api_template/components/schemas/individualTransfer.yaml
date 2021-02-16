@@ -1,0 +1,32 @@
+title: IndividualTransfer
+type: object
+description: Data model for the complex type 'individualTransfer'.
+properties:
+  transferId:
+    $ref: >-
+      ../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml
+  to:
+    $ref: ./transferParty.yaml
+  amountType:
+    $ref: >-
+      ../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/AmountType.yaml
+  currency:
+    $ref: >-
+      ../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml
+  amount:
+    $ref: >-
+      ../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Amount.yaml
+  transactionType:
+    $ref: ./transactionType.yaml
+  note:
+    $ref: >-
+      ../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Note.yaml
+  extensions:
+    $ref: >-
+      ../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/ExtensionList.yaml
+required:
+  - transferId
+  - to
+  - amountType
+  - currency
+  - transactionType

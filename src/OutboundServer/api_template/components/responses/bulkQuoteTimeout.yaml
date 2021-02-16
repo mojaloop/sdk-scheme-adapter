@@ -1,0 +1,5 @@
+description: Timeout occurred processing the bulk quote
+content:
+  application/json:
+    schema:
+      $ref: ../schemas/bulkQuoteErrorResponse.yaml

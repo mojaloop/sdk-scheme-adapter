@@ -1,0 +1,8 @@
+allOf:
+  - $ref: ./errorResponse.yaml
+  - type: object
+    required:
+      - transferState
+    properties:
+      transferState:
+        $ref: ./transferResponse.yaml

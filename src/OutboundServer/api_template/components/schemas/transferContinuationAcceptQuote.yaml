@@ -1,0 +1,9 @@
+type: object
+required:
+  - acceptQuote
+properties:
+  acceptQuote:
+    type: boolean
+    enum:
+      - true
+      - false

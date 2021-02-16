@@ -1,0 +1,9 @@
+name: bulkQuoteId
+in: path
+required: true
+schema:
+  $ref: >-
+    ../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml
+description: >-
+  Identifier of the bulk transfer to continue as returned in the response to a
+  `POST /bulkTransfers` request.
