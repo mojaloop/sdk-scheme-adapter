@@ -1282,6 +1282,55 @@ components:
         sent the transaction request to the Payer. - ACCEPTED Payer has approved
         the transaction. - REJECTED Payer has rejected the transaction.
 
+    mojaloopRefund:
+      title: Refund
+      type: object
+      description: Data model for the complex type Refund.
+      properties:
+        originalTransactionId:
+          type: string
+          description: Reference to the original transaction ID that is requested to be refunded.
+          example: b51ec534-ee48-4575-b6a9-ead2955b8069
+        refundReason:
+          type: string
+          description: Free text indicating the reason for the refund.
+          example: Free text indicating reason for the refund.
+      required:
+        - originalTransactionId
+    mojaloopTransactionType:
+      title: TransactionType
+      type: object
+      description: Data model for the complex type TransactionType.
+      properties:
+        scenario:
+          type: string
+          description: 'Deposit, withdrawal, refund, …'
+          example: DEPOSIT
+        subScenario:
+          type: string
+          description: 'Possible sub-scenario, defined locally within the scheme.'
+          example: Locally defined sub-scenario.
+        initiator:
+          type: string
+          description: Who is initiating the transaction - Payer or Payee.
+          example: PAYEE
+        initiatorType:
+          type: string
+          description: 'Consumer, agent, business, …'
+          example: CONSUMER
+        refundInfo:
+          $ref: '#/components/schemas/mojaloopRefund'
+          description: >-
+            Extra information specific to a refund scenario. Should only be populated
+            if scenario is REFUND.
+        balanceOfPayments:
+          type: string
+          description: Balance of Payments code.
+          example: 123
+      required:
+        - scenario
+        - initiator
+        - initiatorType
     mojaloopMoney:
       title: Money
       type: object
@@ -2313,7 +2362,7 @@ components:
             fees:
               $ref: '#/components/schemas/Money'
             transactionType:
-              $ref: '#/components/schemas/transactionType'
+              $ref: '#/components/schemas/mojaloopTransactionType'
             geoCode:
               $ref: '#/components/schemas/geoCode'
             note:
