@@ -1,0 +1,5 @@
+description: Bulk quote completed successfully
+content:
+  application/json:
+    schema:
+      $ref: ../schemas/bulkQuoteResponse.yaml

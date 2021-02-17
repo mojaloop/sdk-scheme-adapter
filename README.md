@@ -190,3 +190,9 @@ To rebuild the inbound interface run
 ```bash
 npm run build:openapi:inbound
 ```
+
+To rebuild the outbound interface run
+
+```bash
+npm run build:openapi:outbound
+```

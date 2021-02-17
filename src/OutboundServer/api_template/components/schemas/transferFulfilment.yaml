@@ -1,0 +1,3 @@
+description: A Mojaloop API transfer fulfilment
+$ref: >-
+  ../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransfersIDPutResponse.yaml

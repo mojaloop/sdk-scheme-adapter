@@ -1,0 +1,8 @@
+allOf:
+  - $ref: ./errorResponse.yaml
+  - type: object
+    required:
+      - bulkTansferState
+    properties:
+      bulkQuoteState:
+        $ref: ./bulkQuoteResponse.yaml

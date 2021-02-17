@@ -1,0 +1,5 @@
+description: Timeout occurred creating accounts
+content:
+  application/json:
+    schema:
+      $ref: ../schemas/errorAccountsResponse.yaml
