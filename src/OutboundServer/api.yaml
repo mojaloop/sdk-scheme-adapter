@@ -2073,118 +2073,6 @@ components:
         - WAITING_FOR_REQUEST_PARTY_INFORMATION
         - COMPLETED
         - ERROR_OCCURRED
-    PartyIdType-2:
-      title: PartyIdType
-      type: string
-      enum:
-        - MSISDN
-        - EMAIL
-        - PERSONAL_ID
-        - BUSINESS
-        - DEVICE
-        - ACCOUNT_ID
-        - IBAN
-        - ALIAS
-      description: >-
-        Below are the allowed values for the enumeration.
-
-        - MSISDN - An MSISDN (Mobile Station International Subscriber Directory
-        Number, that is, the phone number) is used as reference to a
-        participant. The MSISDN identifier should be in international format
-        according to the [ITU-T E.164
-        standard](https://www.itu.int/rec/T-REC-E.164/en). Optionally, the
-        MSISDN may be prefixed by a single plus sign, indicating the
-        international prefix.
-
-        - EMAIL - An email is used as reference to a participant. The format of
-        the email should be according to the informational [RFC
-        3696](https://tools.ietf.org/html/rfc3696).
-
-        - PERSONAL_ID - A personal identifier is used as reference to a
-        participant. Examples of personal identification are passport number,
-        birth certificate number, and national registration number. The
-        identifier number is added in the PartyIdentifier element. The personal
-        identifier type is added in the PartySubIdOrType element.
-
-        - BUSINESS - A specific Business (for example, an organization or a
-        company) is used as reference to a participant. The BUSINESS identifier
-        can be in any format. To make a transaction connected to a specific
-        username or bill number in a Business, the PartySubIdOrType element
-        should be used.
-
-        - DEVICE - A specific device (for example, a POS or ATM) ID connected to
-        a specific business or organization is used as reference to a Party. For
-        referencing a specific device under a specific business or organization,
-        use the PartySubIdOrType element.
-
-        - ACCOUNT_ID - A bank account number or FSP account ID should be used as
-        reference to a participant. The ACCOUNT_ID identifier can be in any
-        format, as formats can greatly differ depending on country and FSP.
-
-        - IBAN - A bank account number or FSP account ID is used as reference to
-        a participant. The IBAN identifier can consist of up to 34 alphanumeric
-        characters and should be entered without whitespace.
-
-        - ALIAS An alias is used as reference to a participant. The alias should
-        be created in the FSP as an alternative reference to an account owner.
-        Another example of an alias is a username in the FSP system. The ALIAS
-        identifier can be in any format. It is also possible to use the
-        PartySubIdOrType element for identifying an account under an Alias
-        defined by the PartyIdentifier.
-    PartyIdInfo-2:
-      title: PartyIdInfo
-      type: object
-      description: >-
-        Data model for the complex type PartyIdInfo. An ExtensionList element
-        has been added to this reqeust in version v1.1
-      properties:
-        partyIdType:
-          $ref: '#/components/schemas/PartyIdType-2'
-          description: Type of the identifier.
-          example: PERSONAL_ID
-        partyIdentifier:
-          $ref: '#/components/schemas/PartyIdentifier'
-          description: An identifier for the Party.
-          example: 16135551212
-        partySubIdOrType:
-          $ref: '#/components/schemas/PartySubIdOrType'
-          description: A sub-identifier or sub-type for the Party.
-          example: DRIVING_LICENSE
-        fspId:
-          $ref: '#/components/schemas/FspId'
-          description: FSP ID (if known).
-          example: 1234
-        extensionList:
-          $ref: '#/components/schemas/ExtensionList'
-          description: 'Optional extension, specific to deployment.'
-      required:
-        - partyIdType
-        - partyIdentifier
-    Party-2:
-      title: Party
-      type: object
-      description: Data model for the complex type Party.
-      properties:
-        partyIdInfo:
-          $ref: '#/components/schemas/PartyIdInfo-2'
-          description: 'Party Id type, id, sub ID or type, and FSP Id.'
-        merchantClassificationCode:
-          $ref: '#/components/schemas/MerchantClassificationCode'
-          description: >-
-            Used in the context of Payee Information, where the Payee happens to
-            be a merchant accepting merchant payments.
-          example: 4321
-        name:
-          $ref: '#/components/schemas/PartyName'
-          description: 'Display name of the Party, could be a real name or a nick name.'
-          example: Henrik Karlsson
-        personalInfo:
-          $ref: '#/components/schemas/PartyPersonalInfo'
-          description: >-
-            Personal information used to verify identity of Party such as first,
-            middle, last name and date of birth.
-      required:
-        - partyIdInfo
     QuotesPostRequest:
       title: QuotesPostRequest
       type: object
@@ -2212,10 +2100,10 @@ components:
           description: Identifies an optional previously-sent transaction request.
           example: a8323bc6-c228-4df2-ae82-e5a997baf890
         payee:
-          $ref: '#/components/schemas/Party-2'
+          $ref: '#/components/schemas/Party'
           description: Information about the Payee in the proposed financial transaction.
         payer:
-          $ref: '#/components/schemas/Party-2'
+          $ref: '#/components/schemas/Party'
           description: Information about the Payer in the proposed financial transaction.
         amountType:
           $ref: '#/components/schemas/AmountType'

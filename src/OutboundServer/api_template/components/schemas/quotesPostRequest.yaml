@@ -7,7 +7,7 @@ properties:
       ../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/FspId.yaml
   quotesPostRequest:
     $ref: >-
-      ../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/QuotesPostRequest.yaml
+      ../../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/components/schemas/QuotesPostRequest.yaml
 required: 
   - fspId
   - quotesPostRequest
