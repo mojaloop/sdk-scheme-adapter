@@ -1,0 +1,5 @@
+description: An error occurred processing the quotes request
+content:
+  application/json:
+    schema:
+      $ref: ../schemas/errorQuotesResponse.yaml

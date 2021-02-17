@@ -20,29 +20,31 @@ info:
     url: 'http://www.apache.org/licenses/'
   version: 1.0.0
 paths:
-  /:
-    $ref: paths.yaml
-  /transfers:
+  '/':
+    $ref: health.yaml
+  '/transfers':
     $ref: paths/transfers.yaml
   '/transfers/{transferId}':
     $ref: 'paths/transfers_transferId.yaml'
-  /bulkTransfers:
+  '/bulkTransfers':
     $ref: paths/bulkTransfers.yaml
   '/bulkTransfers/{bulkTransferId}':
     $ref: 'paths/bulkTransfers_bulkTransferId.yaml'
-  /bulkQuotes:
+  '/bulkQuotes':
     $ref: paths/bulkQuotes.yaml
   '/bulkQuotes/{bulkQuoteId}':
     $ref: 'paths/bulkQuotes_bulkQuoteId.yaml'
-  /requestToPay:
+  '/requestToPay':
     $ref: paths/requestToPay.yaml
-  /requestToPayTransfer:
+  '/requestToPayTransfer':
     $ref: paths/requestToPayTransfer.yaml
   '/requestToPayTransfer/{requestToPayTransactionId}':
     $ref: 'paths/requestToPayTransfer_requestToPayTransactionId.yaml'
-  /accounts:
+  '/accounts':
     $ref: paths/accounts.yaml
   '/parties/{Type}/{ID}':
     $ref: 'paths/parties_Type_ID.yaml'
   '/parties/{Type}/{ID}/{SubId}':
     $ref: 'paths/parties_Type_ID_SubId.yaml'
+  '/quotes':
+    $ref: 'paths/quotes.yaml'
