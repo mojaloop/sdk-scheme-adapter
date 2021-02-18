@@ -1,0 +1,9 @@
+allOf:
+  - $ref: ./errorResponse.yaml
+  - type: object
+    # TODO: refactor to have proper response
+    # required:
+    #   - transferState
+    # properties:
+    #   currentState:
+    #     $ref: ./transferResponse.yaml

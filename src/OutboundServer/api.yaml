@@ -407,9 +407,9 @@ paths:
       operationId: PartiesByTypeAndID
       responses:
         '200':
-          $ref: '#/components/responses/PartiesByIdResponse'
+          $ref: '#/components/responses/partiesByIdResponse'
         '404':
-          $ref: '#/components/responses/PartiesByIdError404'
+          $ref: '#/components/responses/partiesByIdError404'
   '/parties/{Type}/{ID}/{SubId}':
     parameters:
       - $ref: '#/components/parameters/Type'
@@ -427,9 +427,28 @@ paths:
       operationId: PartiesSubIdByTypeAndID
       responses:
         '200':
-          $ref: '#/components/responses/PartiesByIdResponse'
+          $ref: '#/components/responses/partiesByIdResponse'
         '404':
-          $ref: '#/components/responses/PartiesByIdError404'
+          $ref: '#/components/responses/partiesByIdError404'
+  /quotes:
+    post:
+      summary: Quotes endpoint
+      description: is used to request quotes from other DFSP
+      tags:
+        - quotes
+      operationId: QuotesPost
+      requestBody:
+        description: Quotes request payload
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/quotesPostRequest'
+        required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/quotesPostSuccess'
+        '500':
+          $ref: '#/components/responses/quotesServerError'
 components:
   schemas:
     TransactionInitiatorType:
@@ -650,10 +669,8 @@ components:
       properties:
         key:
           $ref: '#/components/schemas/ExtensionKey'
-          description: Extension key.
         value:
           $ref: '#/components/schemas/ExtensionValue'
-          description: Extension value.
       required:
         - key
         - value
@@ -962,12 +979,8 @@ components:
       properties:
         currency:
           $ref: '#/components/schemas/Currency'
-          description: Currency of the amount.
-          example: USD
         amount:
           $ref: '#/components/schemas/Amount'
-          description: Amount of Money.
-          example: '123.45'
       required:
         - currency
         - amount
@@ -1168,12 +1181,8 @@ components:
       properties:
         errorCode:
           $ref: '#/components/schemas/ErrorCode'
-          description: Specific error number.
-          example: 5100
         errorDescription:
           $ref: '#/components/schemas/ErrorDescription'
-          description: Error description string.
-          example: This is an error description.
         extensionList:
           $ref: '#/components/schemas/ExtensionList'
       required:
@@ -1669,14 +1678,8 @@ components:
       properties:
         originalTransactionId:
           $ref: '#/components/schemas/CorrelationId'
-          description: >-
-            Reference to the original transaction ID that is requested to be
-            refunded.
-          example: b51ec534-ee48-4575-b6a9-ead2955b8069
         refundReason:
           $ref: '#/components/schemas/RefundReason'
-          description: Free text indicating the reason for the refund.
-          example: Free text indicating reason for the refund.
       required:
         - originalTransactionId
     BalanceOfPayments:
@@ -1695,29 +1698,16 @@ components:
       properties:
         scenario:
           $ref: '#/components/schemas/TransactionScenario'
-          description: 'Deposit, withdrawal, refund, …'
-          example: DEPOSIT
         subScenario:
           $ref: '#/components/schemas/TransactionSubScenario'
-          description: 'Possible sub-scenario, defined locally within the scheme.'
-          example: Locally defined sub-scenario.
         initiator:
           $ref: '#/components/schemas/TransactionInitiator'
-          description: Who is initiating the transaction - Payer or Payee.
-          example: PAYEE
         initiatorType:
           $ref: '#/components/schemas/TransactionInitiatorType'
-          description: 'Consumer, agent, business, …'
-          example: CONSUMER
         refundInfo:
           $ref: '#/components/schemas/Refund'
-          description: >-
-            Extra information specific to a refund scenario. Should only be
-            populated if scenario is REFUND.
         balanceOfPayments:
           $ref: '#/components/schemas/BalanceOfPayments'
-          description: Balance of Payments code.
-          example: 123
       required:
         - scenario
         - initiator
@@ -2047,16 +2037,10 @@ components:
       properties:
         firstName:
           $ref: '#/components/schemas/FirstName'
-          description: Party’s first name.
-          example: Henrik
         middleName:
           $ref: '#/components/schemas/MiddleName'
-          description: Party’s middle name.
-          example: Johannes
         lastName:
           $ref: '#/components/schemas/LastName'
-          description: Party’s last name.
-          example: Karlsson
     PartyPersonalInfo:
       title: PartyPersonalInfo
       type: object
@@ -2064,11 +2048,8 @@ components:
       properties:
         complexName:
           $ref: '#/components/schemas/PartyComplexName'
-          description: 'First, middle and last name for the Party.'
         dateOfBirth:
           $ref: '#/components/schemas/DateOfBirth'
-          description: Date of birth for the Party.
-          example: '1966-06-16'
     Party:
       title: Party
       type: object
@@ -2086,12 +2067,158 @@ components:
           $ref: '#/components/schemas/PartyPersonalInfo'
       required:
         - partyIdInfo
-    PartiesCurrentState:
+    partiesCurrentState:
       type: string
       enum:
         - WAITING_FOR_REQUEST_PARTY_INFORMATION
         - COMPLETED
         - ERROR_OCCURRED
+    QuotesPostRequest:
+      title: QuotesPostRequest
+      type: object
+      description: The object sent in the POST /quotes request.
+      properties:
+        quoteId:
+          $ref: '#/components/schemas/CorrelationId'
+          description: >-
+            Common ID between the FSPs for the quote object, decided by the
+            Payer FSP. The ID should be reused for resends of the same quote for
+            a transaction. A new ID should be generated for each new quote for a
+            transaction.
+          example: b51ec534-ee48-4575-b6a9-ead2955b8069
+        transactionId:
+          $ref: '#/components/schemas/CorrelationId'
+          description: >-
+            Common ID (decided by the Payer FSP) between the FSPs for the future
+            transaction object. The actual transaction will be created as part
+            of a successful transfer process. The ID should be reused for
+            resends of the same quote for a transaction. A new ID should be
+            generated for each new quote for a transaction.
+          example: a8323bc6-c228-4df2-ae82-e5a997baf899
+        transactionRequestId:
+          $ref: '#/components/schemas/CorrelationId'
+          description: Identifies an optional previously-sent transaction request.
+          example: a8323bc6-c228-4df2-ae82-e5a997baf890
+        payee:
+          $ref: '#/components/schemas/Party'
+          description: Information about the Payee in the proposed financial transaction.
+        payer:
+          $ref: '#/components/schemas/Party'
+          description: Information about the Payer in the proposed financial transaction.
+        amountType:
+          $ref: '#/components/schemas/AmountType'
+          description: 'SEND for send amount, RECEIVE for receive amount.'
+          example: SEND
+        amount:
+          $ref: '#/components/schemas/Money'
+          description: >-
+            Depending on amountType - If SEND - The amount the Payer would like
+            to send, that is, the amount that should be withdrawn from the Payer
+            account including any fees. The amount is updated by each
+            participating entity in the transaction. If RECEIVE - The amount the
+            Payee should receive, that is, the amount that should be sent to the
+            receiver exclusive any fees. The amount is not updated by any of the
+            participating entities.
+        fees:
+          $ref: '#/components/schemas/Money'
+          description: >-
+            The fees in the transaction. The fees element should be empty if
+            fees should be non-disclosed. The fees element should be non-empty
+            if fees should be disclosed.
+        transactionType:
+          $ref: '#/components/schemas/TransactionType'
+          description: Type of transaction for which the quote is requested.
+        geoCode:
+          $ref: '#/components/schemas/GeoCode'
+          description: >-
+            Longitude and Latitude of the initiating Party. Can be used to
+            detect fraud.
+        note:
+          $ref: '#/components/schemas/Note'
+          description: A memo that will be attached to the transaction.
+          example: Free-text memo.
+        expiration:
+          $ref: '#/components/schemas/DateTime'
+          description: >-
+            Expiration is optional. It can be set to get a quick failure in case
+            the peer FSP takes too long to respond. Also, it may be beneficial
+            for Consumer, Agent, and Merchant to know that their request has a
+            time limit.
+          example: '2016-05-24T08:38:08.699-04:00'
+        extensionList:
+          $ref: '#/components/schemas/ExtensionList'
+          description: 'Optional extension, specific to deployment.'
+      required:
+        - quoteId
+        - transactionId
+        - payee
+        - payer
+        - amountType
+        - amount
+        - transactionType
+    quotesPostRequest:
+      title: QuotesPostRequest
+      type: object
+      properties:
+        fspId:
+          title: destination DFSP requested to calculate the quote
+          $ref: '#/components/schemas/FspId'
+        quotesPostRequest:
+          $ref: '#/components/schemas/QuotesPostRequest'
+      required:
+        - fspId
+        - quotesPostRequest
+    async2SyncCurrentState:
+      type: string
+      enum:
+        - WAITING_FOR_ACTION
+        - COMPLETED
+        - ERROR_OCCURRED
+    quotesPostResponse:
+      title: QuotesPostResponse
+      type: object
+      properties:
+        quotes:
+          title: QuotesIDPutResponse
+          type: object
+          description: 'The object sent in the PUT /quotes/{ID} callback.'
+          properties:
+            transferAmount:
+              $ref: '#/components/schemas/Money'
+            payeeReceiveAmount:
+              $ref: '#/components/schemas/Money'
+            payeeFspFee:
+              $ref: '#/components/schemas/Money'
+            payeeFspCommission:
+              $ref: '#/components/schemas/Money'
+            expiration:
+              type: string
+              description: >-
+                Date and time until when the quotation is valid and can be
+                honored when used in the subsequent transaction.
+              example: '2016-05-24T08:38:08.699-04:00'
+            geoCode:
+              $ref: '#/components/schemas/GeoCode'
+            ilpPacket:
+              $ref: '#/components/schemas/IlpPacket'
+            condition:
+              $ref: '#/components/schemas/IlpCondition'
+            extensionList:
+              $ref: '#/components/schemas/ExtensionList'
+          required:
+            - transferAmount
+            - expiration
+            - ilpPacket
+            - condition
+        currentState:
+          $ref: '#/components/schemas/async2SyncCurrentState'
+      required:
+        - quotes
+        - currentState
+    errorQuotesResponse:
+      allOf:
+        - $ref: '#/components/schemas/errorResponse'
+        - type: object
   responses:
     transferSuccess:
       description: Transfer completed successfully
@@ -2201,7 +2328,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/errorAccountsResponse'
-    PartiesByIdResponse:
+    partiesByIdResponse:
       description: PartiesByIdResponse
       content:
         application/json:
@@ -2213,11 +2340,11 @@ components:
                 $ref: '#/components/schemas/Party'
                 description: Information regarding the requested Party.
               currentState:
-                $ref: '#/components/schemas/PartiesCurrentState'
+                $ref: '#/components/schemas/partiesCurrentState'
             required:
               - party
               - currentState
-    PartiesByIdError404:
+    partiesByIdError404:
       description: PartiesByIdError404
       content:
         application/json:
@@ -2226,6 +2353,18 @@ components:
             properties:
               errorInformation:
                 $ref: '#/components/schemas/ErrorInformation'
+    quotesPostSuccess:
+      description: sync response from POST /quotes
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/quotesPostResponse'
+    quotesServerError:
+      description: An error occurred processing the quotes request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errorQuotesResponse'
   parameters:
     transferId:
       name: transferId
