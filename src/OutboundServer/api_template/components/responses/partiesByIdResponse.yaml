@@ -1,4 +1,4 @@
-description: PartiesByIdResponse
+description:  PartiesByIdResponse
 content:
   application/json:
     schema:
