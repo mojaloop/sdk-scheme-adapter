@@ -1,4 +1,4 @@
-description: PartiesByIdError404
+description:  PartiesByIdError404
 content:
   application/json:
     schema:
