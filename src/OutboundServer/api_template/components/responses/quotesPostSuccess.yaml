@@ -1,0 +1,5 @@
+description: sync response from POST /quotes
+content: 
+  application/json:
+    schema:
+      $ref: ../schemas/quotesPostResponse.yaml

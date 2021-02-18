@@ -1,0 +1,20 @@
+post:
+  summary: Quotes endpoint
+  description: >-
+    is used to request quotes from other DFSP
+  tags:
+    - quotes
+  operationId: QuotesPost
+  requestBody:
+    description: Quotes request payload
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/quotesPostRequest.yaml
+    required: true
+  responses:
+    '200':
+      $ref: ../components/responses/quotesPostSuccess.yaml
+    '500':
+      $ref: ../components/responses/quotesServerError.yaml
+  

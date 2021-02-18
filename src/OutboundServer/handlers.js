@@ -21,7 +21,8 @@ const {
     OutboundRequestToPayTransferModel,
     OutboundRequestToPayModel,
     OutboundBulkQuotesModel,
-    PartiesModel
+    PartiesModel,
+    QuotesModel,
 } = require('@internal/model');
 
 
@@ -88,6 +89,8 @@ const handleRequestToPayTransferError = (method, err, ctx) =>
 const handleRequestPartiesInformationError = (method, err, ctx) =>
     handleError(method, err, ctx, 'requestPartiesInformationState');
     
+const handleRequestQuotesInformationError = (method, err, ctx) =>
+    handleError(method, err, ctx, 'requestQuotesInformationState');
 
 /**
  * Handler for outbound transfer request initiation
@@ -437,6 +440,8 @@ const getPartiesByTypeAndId = async (ctx) => {
     const id = ctx.state.path.params.ID;
     const subId = ctx.state.path.params.SubId;
 
+    const args = { type, id, subId };
+
     try {
         // prepare config
         const modelConfig = {
@@ -446,13 +451,13 @@ const getPartiesByTypeAndId = async (ctx) => {
             wso2Auth: ctx.state.wso2Auth,
         };
 
-        const cacheKey = PartiesModel.generateKey({ type, id, subId });
+        const cacheKey = PartiesModel.generateKey(args);
 
         // use the parties model to execute asynchronous stages with the switch
         const model = await PartiesModel.create({}, cacheKey, modelConfig);
 
         // run model's workflow
-        const response = await model.run({ type, id, subId });
+        const response = await model.run(args);
 
         // return the result
         if (response.errorInformation) {
@@ -463,6 +468,36 @@ const getPartiesByTypeAndId = async (ctx) => {
         ctx.response.body = response;
     } catch (err) {
         return handleRequestPartiesInformationError('getPartiesByTypeAndId', err, ctx);
+    }
+};
+
+const postQuotes = async (ctx) => {
+    const quote = { ...ctx.request.body.quotesPostRequest };
+    const fspId = ctx.request.body.fspId;
+    const args = { quoteId: quote.quoteId, fspId, quote };
+
+    try {
+        // prepare config
+        const modelConfig = {
+            ...ctx.state.conf,
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            wso2Auth: ctx.state.wso2Auth,
+        };
+
+        const cacheKey = QuotesModel.generateKey(args);
+
+        // use the parties model to execute asynchronous stages with the switch
+        const model = await QuotesModel.create({}, cacheKey, modelConfig);
+
+        // run model's workflow
+        const response = await model.run(args);
+
+        // return the result
+        ctx.response.status = 200;
+        ctx.response.body = response;
+    } catch (err) {
+        return handleRequestQuotesInformationError('postQuotes', err, ctx);
     }
 };
 
@@ -506,5 +541,8 @@ module.exports = {
     },
     '/parties/{Type}/{ID}/{SubId}': {
         get: getPartiesByTypeAndId
+    },
+    '/quotes': {
+        post: postQuotes
     },
 };

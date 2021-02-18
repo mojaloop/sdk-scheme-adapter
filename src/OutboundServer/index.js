@@ -16,6 +16,7 @@ const yaml = require('js-yaml');
 const fs = require('fs');
 const path = require('path');
 const EventEmitter = require('events');
+const cors = require('@koa/cors');
 
 const { WSO2Auth } = require('@mojaloop/sdk-standard-components');
 
@@ -45,6 +46,10 @@ class OutboundApi extends EventEmitter {
         this._wso2.auth.on('error', (msg) => {
             this.emit('error', 'WSO2 auth error in OutboundApi', msg);
         });
+
+        // use CORS
+        // https://github.com/koajs/cors
+        this._api.use(cors());
 
         this._api.use(middlewares.createErrorHandler(this._logger));
         this._api.use(middlewares.createRequestIdGenerator());
