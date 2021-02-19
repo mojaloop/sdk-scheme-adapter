@@ -449,6 +449,25 @@ paths:
           $ref: '#/components/responses/quotesPostSuccess'
         '500':
           $ref: '#/components/responses/quotesServerError'
+  /simpleTransfers:
+    post:
+      summary: Simple Transfers endpoint
+      description: is used to request a transfer
+      tags:
+        - transfers
+      operationId: SimpleTransfersPost
+      requestBody:
+        description: Simple Transfer request payload
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/simpleTransfersPostRequest'
+        required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/simpleTransfersPostSuccess'
+        '500':
+          $ref: '#/components/responses/simpleTransfersServerError'
 components:
   schemas:
     TransactionInitiatorType:
@@ -2219,6 +2238,85 @@ components:
       allOf:
         - $ref: '#/components/schemas/errorResponse'
         - type: object
+    TransfersPostRequest:
+      title: TransfersPostRequest
+      type: object
+      description: The object sent in the POST /transfers request.
+      properties:
+        transferId:
+          $ref: '#/components/schemas/CorrelationId'
+          description: >-
+            The common ID between the FSPs and the optional Switch for the
+            transfer object, decided by the Payer FSP. The ID should be reused
+            for resends of the same transfer. A new ID should be generated for
+            each new transfer.
+          example: b51ec534-ee48-4575-b6a9-ead2955b8069
+        payeeFsp:
+          $ref: '#/components/schemas/FspId'
+          description: Payee FSP in the proposed financial transaction.
+          example: 1234
+        payerFsp:
+          $ref: '#/components/schemas/FspId'
+          description: Payer FSP in the proposed financial transaction.
+          example: 5678
+        amount:
+          $ref: '#/components/schemas/Money'
+          description: The transfer amount to be sent.
+        ilpPacket:
+          $ref: '#/components/schemas/IlpPacket'
+          description: >-
+            The ILP Packet containing the amount delivered to the Payee and the
+            ILP Address of the Payee and any other end-to-end data.
+          example: >-
+            AYIBgQAAAAAAAASwNGxldmVsb25lLmRmc3AxLm1lci45T2RTOF81MDdqUUZERmZlakgyOVc4bXFmNEpLMHlGTFGCAUBQU0svMS4wCk5vbmNlOiB1SXlweUYzY3pYSXBFdzVVc05TYWh3CkVuY3J5cHRpb246IG5vbmUKUGF5bWVudC1JZDogMTMyMzZhM2ItOGZhOC00MTYzLTg0NDctNGMzZWQzZGE5OGE3CgpDb250ZW50LUxlbmd0aDogMTM1CkNvbnRlbnQtVHlwZTogYXBwbGljYXRpb24vanNvbgpTZW5kZXItSWRlbnRpZmllcjogOTI4MDYzOTEKCiJ7XCJmZWVcIjowLFwidHJhbnNmZXJDb2RlXCI6XCJpbnZvaWNlXCIsXCJkZWJpdE5hbWVcIjpcImFsaWNlIGNvb3BlclwiLFwiY3JlZGl0TmFtZVwiOlwibWVyIGNoYW50XCIsXCJkZWJpdElkZW50aWZpZXJcIjpcIjkyODA2MzkxXCJ9IgA
+        condition:
+          $ref: '#/components/schemas/IlpCondition'
+          description: The condition that must be fulfilled to commit the transfer.
+          example: f5sqb7tBTWPd5Y8BDFdMm9BJR_MNI4isf8p8n4D5pHA
+        expiration:
+          $ref: '#/components/schemas/DateTime'
+          description: >-
+            Expiration can be set to get a quick failure expiration of the
+            transfer. The transfer should be rolled back if no fulfilment is
+            delivered before this time.
+          example: '2016-05-24T08:38:08.699-04:00'
+        extensionList:
+          $ref: '#/components/schemas/ExtensionList'
+          description: 'Optional extension, specific to deployment.'
+      required:
+        - transferId
+        - payeeFsp
+        - payerFsp
+        - amount
+        - ilpPacket
+        - condition
+        - expiration
+    simpleTransfersPostRequest:
+      title: SimpleTransfersPostRequest
+      type: object
+      properties:
+        fspId:
+          $ref: '#/components/schemas/FspId'
+        transfersPostRequest:
+          $ref: '#/components/schemas/TransfersPostRequest'
+      required:
+        - fspId
+        - transfersPostRequest
+    simpleTransfersPostResponse:
+      title: SimpleTransfersPostResponse
+      type: object
+      properties:
+        transfer:
+          $ref: '#/components/schemas/TransfersIDPutResponse'
+        currentState:
+          $ref: '#/components/schemas/async2SyncCurrentState'
+      required:
+        - quotes
+        - currentState
+    errorSimpleTransfersResponse:
+      allOf:
+        - $ref: '#/components/schemas/errorResponse'
+        - type: object
   responses:
     transferSuccess:
       description: Transfer completed successfully
@@ -2365,6 +2463,18 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/errorQuotesResponse'
+    simpleTransfersPostSuccess:
+      description: sync response from POST /simpleTransfers
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/simpleTransfersPostResponse'
+    simpleTransfersServerError:
+      description: An error occurred processing the simple transfers request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errorSimpleTransfersResponse'
   parameters:
     transferId:
       name: transferId
