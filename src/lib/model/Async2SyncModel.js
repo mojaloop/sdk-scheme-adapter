@@ -75,7 +75,7 @@ function generate({
     /**
      * @name run
      * @description run the workflow logic
-     * @param {arguments} args - arguments 
+     * @param {arguments} args - arguments
      * @returns {Object} - the http response payload
      */
     async function run(args) {
@@ -91,7 +91,7 @@ function generate({
                     await this.requestAction(args);
                     // don't await to finish the save
                     this.saveToCache();
-        
+
                 // eslint-disable-next-line no-fallthrough
                 case 'succeeded':
                     // all steps complete so return
@@ -136,7 +136,7 @@ function generate({
     function getResponse() {
         const { data, logger } = this.context;
         let resp = { ...data };
-        
+
         // project some of our internal state into a more useful
         // representation to return to the SDK API consumer
         resp.currentState = mapCurrentState[data.currentState];
@@ -159,7 +159,7 @@ function generate({
         const { cache, logger } = this.context;
         const { requests, config } = this.handlersContext;
         logger.push({ args }).log('onRequestAction - arguments');
-        
+
         return deferredJob(cache, channelNameMethod(args))
             .init(async (channel) => {
                 const res = await requestActionMethod(requests, args);
@@ -178,7 +178,7 @@ function generate({
 
 
     /**
-     * 
+     *
      * @param {object} cache - the cache instance used to publish message
      * @param {object} message  - the message used to trigger deferred job
      * @param {object} args - args passed to channelNameMethod
@@ -226,7 +226,7 @@ function generate({
                         alsEndpoint: config.alsEndpoint,
                         quotesEndpoint: config.quotesEndpoint,
                         transfersEndpoint: config.transfersEndpoint,
-                        transactionRequestsEndpoint: config.transactionRequestsEndpoint,            
+                        transactionRequestsEndpoint: config.transactionRequestsEndpoint,
                         dfspId: config.dfspId,
                         tls: config.tls,
                         jwsSign: config.jwsSign,
