@@ -16,6 +16,7 @@ const handlers = require('../../../InboundServer/handlers');
 const Model = require('@internal/model').InboundTransfersModel;
 const QuotesModel = require('@internal/model').QuotesModel;
 const PartiesModel = require('@internal/model').PartiesModel;
+const TransfersModel = require('@internal/model').TransfersModel;
 
 const mockArguments = require('./data/mockArguments');
 const mockTransactionRequestData = require('./data/mockTransactionRequest');
@@ -28,6 +29,8 @@ describe('Inbound API handlers:', () => {
     beforeEach(() => {
         mockArgs = JSON.parse(JSON.stringify(mockArguments));
         mockTransactionRequest = JSON.parse(JSON.stringify(mockTransactionRequestData));
+        jest.resetAllMocks()
+        jest
     });
 
     describe('POST /quotes', () => {
@@ -107,7 +110,7 @@ describe('Inbound API handlers:', () => {
         beforeEach(() => {
             mockContext = {
                 request: {
-                    body: { the: 'mocked-body' }, 
+                    body: { the: 'mocked-body' },
                     headers: {
                         'fspiop-source': 'foo'
                     }
@@ -123,7 +126,7 @@ describe('Inbound API handlers:', () => {
                     logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
                     cache: {
                         publish: jest.fn(() => Promise.resolve(true))
-                    } 
+                    }
                 }
             };
 
@@ -138,7 +141,7 @@ describe('Inbound API handlers:', () => {
             expect(triggerDeferredJobSpy).toBeCalledWith({
                 cache: mockContext.state.cache,
                 message: mockContext.request.body,
-                args: { 
+                args: {
                     quoteId: mockContext.state.path.params.ID
                 }
             });
@@ -201,7 +204,7 @@ describe('Inbound API handlers:', () => {
                     logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
                     cache: {
                         publish: async () => Promise.resolve(true)
-                    } 
+                    }
                 }
             };
         });
@@ -249,7 +252,7 @@ describe('Inbound API handlers:', () => {
                     logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
                     cache: {
                         publish: async () => Promise.resolve(true)
-                    } 
+                    }
                 }
             };
         });
@@ -358,7 +361,7 @@ describe('Inbound API handlers:', () => {
                     logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
                     cache: {
                         publish: async () => Promise.resolve(true)
-                    } 
+                    }
                 }
             };
         });
@@ -406,7 +409,7 @@ describe('Inbound API handlers:', () => {
                     logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
                     cache: {
                         publish: async () => Promise.resolve(true)
-                    } 
+                    }
                 }
             };
         });
@@ -569,7 +572,7 @@ describe('Inbound API handlers:', () => {
         beforeEach(() => {
             mockContext = {
                 request: {
-                    body: { the: 'mocked-body' }, 
+                    body: { the: 'mocked-body' },
                     headers: {
                         'fspiop-source': 'foo'
                     }
@@ -586,7 +589,7 @@ describe('Inbound API handlers:', () => {
                     logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
                     cache: {
                         publish: jest.fn(() => Promise.resolve(true))
-                    } 
+                    }
                 }
             };
 
@@ -607,7 +610,7 @@ describe('Inbound API handlers:', () => {
                 }
             });
         });
-        
+
         test('calls `PartiesModel.triggerDeferredJobSpy` with the expected arguments when SubId param specified.', async () => {
             const triggerDeferredJobSpy = jest.spyOn(PartiesModel, 'triggerDeferredJob');
 
@@ -616,7 +619,7 @@ describe('Inbound API handlers:', () => {
 
             await expect(handlers['/parties/{Type}/{ID}/{SubId}'].put(mockContext)).resolves.toBe(undefined);
 
-            expect(triggerDeferredJobSpy).toHaveBeenCalledTimes(2);
+            expect(triggerDeferredJobSpy).toHaveBeenCalledTimes(1);
             expect(triggerDeferredJobSpy).toBeCalledWith({
                 cache: mockContext.state.cache,
                 message: mockContext.request.body,
