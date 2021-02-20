@@ -2311,7 +2311,7 @@ components:
         currentState:
           $ref: '#/components/schemas/async2SyncCurrentState'
       required:
-        - quotes
+        - transfer
         - currentState
     errorSimpleTransfersResponse:
       allOf:

@@ -7,5 +7,5 @@ properties:
   currentState:
     $ref: ../schemas/async2SyncCurrentState.yaml
 required:
-  - quotes
+  - transfer
   - currentState
