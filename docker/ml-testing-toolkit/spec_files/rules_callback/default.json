@@ -337,7 +337,7 @@
         {
           "fact": "headers",
           "operator": "equal",
-          "value": "timeout-fsp-id",
+          "value": "timeout-fsp-id-transfer",
           "path": "FSPIOP-Destination"
         },
         {
@@ -364,19 +364,9 @@
           "X-Forwarded-For": "sed eiusmod sunt"
         },
         "body": {
-          "transferState": "ABORTED",
-          "extensionList": {
-            "extension": [
-              {
-                "key": "errorDescription",
-                "value": "This is a more detailed error description"
-              },
-              {
-                "key": "errorDescription",
-                "value": "This is a more detailed error description"
-              }
-            ]
-          }
+          "fulfilment": "WLctttbu2HvTsa1XWvUoGRcQozHsqeu9Ahl2JW9Bsu8",
+          "transferState": "COMMITTED",
+          "completedTimestamp": "2021-05-24T08:38:08.699-04:00"
         },
         "scripts": {},
         "delay": 60000
@@ -389,7 +379,7 @@
   {
     "ruleId": 6,
     "priority": 1,
-    "description": "post /quotes",
+    "description": "post /transfers",
     "apiVersion": {
       "minorVersion": 0,
       "majorVersion": 1,
@@ -401,7 +391,7 @@
         {
           "fact": "operationPath",
           "operator": "equal",
-          "value": "/quotes"
+          "value": "/transfers"
         },
         {
           "fact": "method",
@@ -412,10 +402,10 @@
     },
     "event": {
       "method": "put",
-      "path": "/quotes/{ID}",
+      "path": "/transfers/{ID}",
       "params": {
         "headers": {
-          "Content-Type": "application/vnd.interoperability.quotes+json;version=1.0",
+          "Content-Type": "application/vnd.interoperability.transfers+json;version=1.0",
           "Date": "Wed, 27 May 2020 11:13:34 GMT",
           "FSPIOP-Source": "{$config.FSPID}",
           "FSPIOP-Destination": "mojaloop-sdk",
