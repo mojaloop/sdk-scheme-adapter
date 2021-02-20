@@ -29,8 +29,6 @@ describe('Inbound API handlers:', () => {
     beforeEach(() => {
         mockArgs = JSON.parse(JSON.stringify(mockArguments));
         mockTransactionRequest = JSON.parse(JSON.stringify(mockTransactionRequestData));
-        jest.resetAllMocks()
-        jest
     });
 
     describe('POST /quotes', () => {
@@ -627,6 +625,127 @@ describe('Inbound API handlers:', () => {
                     type: mockContext.state.path.params.Type,
                     id: mockContext.state.path.params.ID,
                     subId: mockContext.state.path.params.SubId
+                }
+            });
+        });
+    });
+
+    describe('PUT /transfers/{ID}', () => {
+
+        let mockContext;
+
+        beforeEach(() => {
+            mockContext = {
+                request: {
+                    body: { the: 'mocked-body' },
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    path: {
+                        params: {
+                            'ID': '1234567890'
+                        }
+                    },
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
+                    cache: {
+                        publish: jest.fn(() => Promise.resolve(true))
+                    }
+                }
+            };
+
+        });
+
+        test('calls `TransfersModel.triggerDeferredJobSpy` with the expected arguments.', async () => {
+            const triggerDeferredJobSpy = jest.spyOn(TransfersModel, 'triggerDeferredJob');
+
+            await expect(handlers['/transfers/{ID}'].put(mockContext)).resolves.toBe(undefined);
+
+            expect(triggerDeferredJobSpy).toHaveBeenCalledTimes(1);
+            expect(triggerDeferredJobSpy).toBeCalledWith({
+                cache: mockContext.state.cache,
+                message: mockContext.request.body,
+                args: {
+                    transferId: mockContext.state.path.params.ID
+                }
+            });
+        });
+
+        test('calls `TransfersModel.triggerDeferredJobSpy` with the expected arguments when SubId param specified.', async () => {
+            const triggerDeferredJobSpy = jest.spyOn(TransfersModel, 'triggerDeferredJob');
+
+            await expect(handlers['/transfers/{ID}'].put(mockContext)).resolves.toBe(undefined);
+
+            expect(triggerDeferredJobSpy).toHaveBeenCalledTimes(1);
+            expect(triggerDeferredJobSpy).toBeCalledWith({
+                cache: mockContext.state.cache,
+                message: mockContext.request.body,
+                args: {
+                    transferId: mockContext.state.path.params.ID,
+                }
+            });
+        });
+    });
+
+    describe('PUT /transfers/{ID}/error', () => {
+
+        let mockContext;
+
+        beforeEach(() => {
+            mockContext = {
+                request: {
+                    body: { the: 'mocked-body' },
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    path: {
+                        params: {
+                            'Type': 'MSISDN',
+                            'ID': '1234567890'
+                        }
+                    },
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
+                    cache: {
+                        publish: jest.fn(() => Promise.resolve(true))
+                    }
+                }
+            };
+
+        });
+
+        test('calls `TransfersModel.triggerDeferredJobSpy` with the expected arguments.', async () => {
+            const triggerDeferredJobSpy = jest.spyOn(TransfersModel, 'triggerDeferredJob');
+
+            await expect(handlers['/transfers/{ID}'].put(mockContext)).resolves.toBe(undefined);
+
+            expect(triggerDeferredJobSpy).toHaveBeenCalledTimes(1);
+            expect(triggerDeferredJobSpy).toBeCalledWith({
+                cache: mockContext.state.cache,
+                message: mockContext.request.body,
+                args: {
+                    transferId: mockContext.state.path.params.ID
+                }
+            });
+        });
+
+        test('calls `TransfersModel.triggerDeferredJobSpy` with the expected arguments when SubId param specified.', async () => {
+            const triggerDeferredJobSpy = jest.spyOn(TransfersModel, 'triggerDeferredJob');
+
+            await expect(handlers['/transfers/{ID}/error'].put(mockContext)).resolves.toBe(undefined);
+
+            expect(triggerDeferredJobSpy).toHaveBeenCalledTimes(1);
+            expect(triggerDeferredJobSpy).toBeCalledWith({
+                cache: mockContext.state.cache,
+                message: mockContext.request.body,
+                args: {
+                    transferId: mockContext.state.path.params.ID,
                 }
             });
         });
