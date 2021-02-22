@@ -1,12 +1,13 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
-  "version": "11.13.0",
+  "version": "11.13.1",
   "description": "An adapter for connecting to Mojaloop API enabled switches.",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
     "audit:resolve": "SHELL=sh resolve-audit --production",
     "audit:check": "SHELL=sh check-audit --production",
+    "build": "npm run build:openapi; npm run build:dto:outbound",
     "build:openapi": "npm run build:openapi:inbound && npm run build:openapi:outbound",
     "build:openapi:inbound": "openapi bundle --output ./InboundServer/api.yaml --ext yaml ./InboundServer/api_template.yaml",
     "build:openapi:outbound": "openapi bundle --output ./OutboundServer/api.yaml --ext yaml ./OutboundServer/api_template/openapi.yaml",
