@@ -166,7 +166,7 @@ jobs:
             - src/node_modules
       - run:
           name: Execute unit tests
-          command: cd src && npm run validate:api
+          command: cd src && npm run build:openapi && npm run validate:api
 
   lint:
     executor: default-docker

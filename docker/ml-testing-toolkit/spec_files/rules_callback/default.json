@@ -422,5 +422,116 @@
     },
     "type": "callback",
     "version": 1
+  },
+  {
+    "ruleId": 7,
+    "priority": 1,
+    "description": "post /authorizations",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "headers",
+          "operator": "equal",
+          "value": "timeout-fsp-id",
+          "path": "FSPIOP-Destination"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/authorizations"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": "put",
+      "path": "/authorizations/{ID}",
+      "params": {
+        "headers": {
+          "Content-Type": "application/vnd.interoperability.authorizations+json;version=1.0",
+          "Date": "Wed, 27 May 2020 11:13:34 GMT",
+          "FSPIOP-Source": "{$config.FSPID}",
+          "FSPIOP-Destination": "mojaloop-sdk",
+          "X-Forwarded-For": "sed eiusmod sunt"
+        },
+        "body": {
+          "authenticationInfo": {
+            "authentication": "U2F",
+            "authenticationValue": {
+              "pinValue": "101010",
+              "counter": "3"
+            }
+          },
+          "responseType": "ENTERED"
+        },
+        "scripts": {},
+        "delay": 60000
+      },
+      "type": "FIXED_CALLBACK"
+    },
+    "type": "callback",
+    "version": 1
+  },
+  {
+    "ruleId": 8,
+    "priority": 1,
+    "description": "post /authorizations",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/authorizations"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": "put",
+      "path": "/authorizations/{ID}",
+      "params": {
+        "headers": {
+          "Content-Type": "application/vnd.interoperability.authorizations+json;version=1.0",
+          "Date": "Wed, 27 May 2020 11:13:34 GMT",
+          "FSPIOP-Source": "{$config.FSPID}",
+          "FSPIOP-Destination": "mojaloop-sdk",
+          "X-Forwarded-For": "sed eiusmod sunt"
+        },
+        "body": {
+          "authenticationInfo": {
+            "authentication": "U2F",
+            "authenticationValue": {
+              "pinValue": "101010",
+              "counter": "3"
+            }
+          },
+          "responseType": "ENTERED"
+        },
+        "scripts": {}
+      },
+      "type": "FIXED_CALLBACK"
+    },
+    "type": "callback",
+    "version": 1
   }
 ]

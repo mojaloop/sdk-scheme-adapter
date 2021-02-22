@@ -17,6 +17,7 @@ const Model = require('@internal/model').InboundTransfersModel;
 const QuotesModel = require('@internal/model').QuotesModel;
 const PartiesModel = require('@internal/model').PartiesModel;
 const TransfersModel = require('@internal/model').TransfersModel;
+const AuthorizationsModel = require('@internal/model').AuthorizationsModel;
 
 const mockArguments = require('./data/mockArguments');
 const mockTransactionRequestData = require('./data/mockTransactionRequest');
@@ -523,6 +524,51 @@ describe('Inbound API handlers:', () => {
 
             expect(authorizationsSpy).toHaveBeenCalledTimes(1);
             expect(authorizationsSpy.mock.calls[0][1]).toBe(mockAuthorizationContext.request.headers['fspiop-source']);
+        });
+    });
+
+        describe('PUT /authorizations', () => {
+
+        let mockContext;
+
+        beforeEach(() => {
+            mockContext = {
+                request: {
+                    body: { the: 'mocked-body' }, 
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    path: {
+                        params: {
+                            'ID': '1234'
+                        }
+                    },
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
+                    cache: {
+                        publish: jest.fn(() => Promise.resolve(true))
+                    } 
+                }
+            };
+
+        });
+
+        test('calls `AuthorizationsModel.triggerDeferredJobSpy` with the expected arguments.', async () => {
+            const triggerDeferredJobSpy = jest.spyOn(AuthorizationsModel, 'triggerDeferredJob');
+
+            await expect(handlers['/authorizations/{ID}'].put(mockContext)).resolves.toBe(undefined);
+
+            expect(triggerDeferredJobSpy).toHaveBeenCalledTimes(1);
+            expect(triggerDeferredJobSpy).toBeCalledWith({
+                cache: mockContext.state.cache,
+                message: mockContext.request.body,
+                args: { 
+                    transactionRequestId: mockContext.state.path.params.ID
+                }
+            });
         });
     });
 
