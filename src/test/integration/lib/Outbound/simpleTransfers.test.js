@@ -7,6 +7,15 @@ const transfersPostRequest = require('./data/transfersPostRequest.json');
 
 jest.dontMock('redis');
 
+/*
+"TRANSFERS_VALIDATION_WITH_PREVIOUS_QUOTES": false,
+"TRANSFERS_VALIDATION_ILP_PACKET": false,
+"TRANSFERS_VALIDATION_CONDITION": false,
+
+Ensure these values in the TTK `user_config.json` file are set to false.
+Since we are testing the /transfers endpoint in isolation without a prior
+quote and a fake `ilpPacket` and `condition`.
+*/
 describe('/simpleTransfers', () => {
 
     test('post - happy flow', async () => {
