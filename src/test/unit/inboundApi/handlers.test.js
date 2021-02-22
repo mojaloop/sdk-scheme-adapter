@@ -527,7 +527,7 @@ describe('Inbound API handlers:', () => {
         });
     });
 
-        describe('PUT /authorizations', () => {
+    describe('PUT /authorizations', () => {
 
         let mockContext;
 

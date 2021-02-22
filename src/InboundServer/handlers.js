@@ -304,8 +304,8 @@ const putAuthorizationsById = async (ctx) => {
         headers: ctx.request.headers
     });
 
-     // duplicate publication until legacy code refactored
-     await AuthorizationsModel.triggerDeferredJob({
+    // duplicate publication until legacy code refactored
+    await AuthorizationsModel.triggerDeferredJob({
         cache: ctx.state.cache,
         message: ctx.request.body, 
         args: {
@@ -329,7 +329,7 @@ const putAuthorizationsByIdError = async (ctx) => {
     });
 
     // duplicate publication until legacy code refactored
-     await AuthorizationsModel.triggerDeferredJob({
+    await AuthorizationsModel.triggerDeferredJob({
         cache: ctx.state.cache,
         message: ctx.request.body, 
         args: {
