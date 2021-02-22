@@ -162,8 +162,6 @@ jobs:
       - checkout
       - restore_cache:
           key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
-          paths:
-            - src/node_modules
       - run:
           name: Execute unit tests
           command: cd src && npm run validate:api
