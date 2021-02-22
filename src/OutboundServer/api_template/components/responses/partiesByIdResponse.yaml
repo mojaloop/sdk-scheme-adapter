@@ -10,7 +10,7 @@ content:
             ../../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/components/schemas/Party.yaml
           description: Information regarding the requested Party.
         currentState:
-          $ref: ../schemas/partiesCurrentState.yaml
+          $ref: ../schemas/async2SyncCurrentState.yaml
       required:
         - party
         - currentState
