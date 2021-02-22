@@ -23,6 +23,7 @@ const {
     OutboundBulkQuotesModel,
     PartiesModel,
     QuotesModel,
+    TransfersModel,
 } = require('@internal/model');
 
 
@@ -88,9 +89,13 @@ const handleRequestToPayTransferError = (method, err, ctx) =>
 
 const handleRequestPartiesInformationError = (method, err, ctx) =>
     handleError(method, err, ctx, 'requestPartiesInformationState');
-    
+
 const handleRequestQuotesInformationError = (method, err, ctx) =>
     handleError(method, err, ctx, 'requestQuotesInformationState');
+
+const handleRequestSimpleTransfersInformationError = (method, err, ctx) =>
+    handleError(method, err, ctx, 'requestSimpleTransfersInformationState');
+
 
 /**
  * Handler for outbound transfer request initiation
@@ -501,6 +506,35 @@ const postQuotes = async (ctx) => {
     }
 };
 
+const postSimpleTransfers = async (ctx) => {
+    const transfer = { ...ctx.request.body.transfersPostRequest };
+    const fspId = ctx.request.body.fspId;
+    const args = { transferId: transfer.transferId, fspId, transfer };
+
+    try {
+        // prepare config
+        const modelConfig = {
+            ...ctx.state.conf,
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            wso2Auth: ctx.state.wso2Auth,
+        };
+
+        const cacheKey = TransfersModel.generateKey(args);
+
+        // use the parties model to execute asynchronous stages with the switch
+        const model = await TransfersModel.create({}, cacheKey, modelConfig);
+
+        // run model's workflow
+        const response = await model.run(args);
+        // return the result
+        ctx.response.status = 200;
+        ctx.response.body = response;
+    } catch (err) {
+        return handleRequestSimpleTransfersInformationError('postSimpleTransfers', err, ctx);
+    }
+};
+
 module.exports = {
     '/': {
         get: healthCheck
@@ -544,5 +578,8 @@ module.exports = {
     },
     '/quotes': {
         post: postQuotes
+    },
+    '/simpleTransfers': {
+        post: postSimpleTransfers
     },
 };

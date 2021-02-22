@@ -35,6 +35,7 @@ const {
     OutboundRequestToPayModel,
     PartiesModel,
     QuotesModel,
+    TransfersModel
 } = require('@internal/model');
 
 /**
@@ -397,7 +398,7 @@ describe('Outbound API handlers:', () => {
 
     describe('GET /parties/{Type}/{ID}/{SubId}', () => {
         test('happy flow', async() => {
-            
+
             const mockContext = {
                 request: {},
                 response: {},
@@ -415,12 +416,12 @@ describe('Outbound API handlers:', () => {
                     },
                 },
             };
-            
+
             // mock state machine
             const mockedPSM = {
                 run: jest.fn(async () => ({ the: 'run response' }))
             };
-            
+
             const createSpy = jest.spyOn(PartiesModel, 'create')
                 .mockImplementationOnce(async () => mockedPSM);
 
@@ -453,7 +454,7 @@ describe('Outbound API handlers:', () => {
             expect(mockContext.response.body).toEqual({ the: 'run response' });
         });
 
-        test('error flow', async() => {    
+        test('error flow', async() => {
             const mockContext = {
                 request: {},
                 response: {},
@@ -471,12 +472,12 @@ describe('Outbound API handlers:', () => {
                     },
                 },
             };
-            
+
             // mock state machine
             const mockedPSM = {
                 run: jest.fn(async () => ({ errorInformation: { Iam: 'the-error'} }))
             };
-            
+
             const createSpy = jest.spyOn(PartiesModel, 'create')
                 .mockImplementationOnce(async () => mockedPSM);
 
@@ -517,7 +518,7 @@ describe('Outbound API handlers:', () => {
                 conf: {},
                 wso2Auth: 'mocked wso2Auth',
                 logger: mockLogger({ app: 'outbound-api-handlers-test'}),
-                cache: { 
+                cache: {
                     subscribe: jest.fn(() => Promise.resolve())
                 },
                 path: {
@@ -529,13 +530,13 @@ describe('Outbound API handlers:', () => {
             },
         };
         test('happy flow', async() => {
-            
-            
+
+
             // mock state machine
             const mockedPSM = {
                 run: jest.fn(async () => ({ the: 'run response' }))
             };
-            
+
             const createSpy = jest.spyOn(PartiesModel, 'create')
                 .mockImplementationOnce(async () => mockedPSM);
 
@@ -563,13 +564,13 @@ describe('Outbound API handlers:', () => {
             expect(mockContext.response.body).toEqual({ the: 'run response' });
         });
 
-        test('not found error flow', async() => {    
-            
+        test('not found error flow', async() => {
+
             // mock state machine
             const mockedPSM = {
                 run: jest.fn(async () => ({ errorInformation: { Iam: 'the-error'} }))
             };
-            
+
             const createSpy = jest.spyOn(PartiesModel, 'create')
                 .mockImplementationOnce(async () => mockedPSM);
 
@@ -601,13 +602,13 @@ describe('Outbound API handlers:', () => {
             expect(mockContext.response.body).toEqual({ errorInformation: { Iam: 'the-error'} });
         });
 
-        test('mojaloop error propagation for /parties/{Type}/{ID}', async() => {    
-            
+        test('mojaloop error propagation for /parties/{Type}/{ID}', async() => {
+
             // mock state machine
             const mockedPSM = {
                 run: jest.fn(async () => { throw mockGetPartiesError; })
             };
-            
+
             const createSpy = jest.spyOn(PartiesModel, 'create')
                 .mockImplementationOnce(async () => mockedPSM);
 
@@ -642,13 +643,13 @@ describe('Outbound API handlers:', () => {
                 requestPartiesInformationState: {}
             });
         });
-        test('mojaloop error propagation for /parties/{Type}/{ID}/{SubId}', async() => {    
-            
+        test('mojaloop error propagation for /parties/{Type}/{ID}/{SubId}', async() => {
+
             // mock state machine
             const mockedPSM = {
                 run: jest.fn(async () => { throw mockGetPartiesError; })
             };
-            
+
             const createSpy = jest.spyOn(PartiesModel, 'create')
                 .mockImplementationOnce(async () => mockedPSM);
 
@@ -683,7 +684,7 @@ describe('Outbound API handlers:', () => {
                 requestPartiesInformationState: {}
             });
         });
-    }); 
+    });
 
     describe('POST /quotes', () => {
         const mockContext = {
@@ -700,19 +701,19 @@ describe('Outbound API handlers:', () => {
                 conf: {},
                 wso2Auth: 'mocked wso2Auth',
                 logger: mockLogger({ app: 'outbound-api-handlers-test' }),
-                cache: { 
+                cache: {
                     subscribe: jest.fn(() => Promise.resolve())
                 }
             },
         };
         test('happy flow', async () => {
-            
-            
+
+
             // mock state machine
             const mockedPSM = {
                 run: jest.fn(async () => ({ the: 'run response' }))
             };
-            
+
             const createSpy = jest.spyOn(QuotesModel, 'create')
                 .mockImplementationOnce(async () => mockedPSM);
 
@@ -732,8 +733,8 @@ describe('Outbound API handlers:', () => {
             expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
 
             // run workflow
-            expect(mockedPSM.run).toBeCalledWith({ 
-                quoteId: mockContext.request.body.quotesPostRequest.quoteId, 
+            expect(mockedPSM.run).toBeCalledWith({
+                quoteId: mockContext.request.body.quotesPostRequest.quoteId,
                 fspId: mockContext.request.body.fspId,
                 quote: mockContext.request.body.quotesPostRequest
             });
@@ -743,13 +744,13 @@ describe('Outbound API handlers:', () => {
             expect(mockContext.response.body).toEqual({ the: 'run response' });
         });
 
-        test('mojaloop error propagation for /parties/{Type}/{ID}', async() => {    
-            
+        test('mojaloop error propagation for /parties/{Type}/{ID}', async() => {
+
             // mock state machine
             const mockedPSM = {
                 run: jest.fn(async () => { throw { mocked: 'error' }; })
             };
-            
+
             const createSpy = jest.spyOn(QuotesModel, 'create')
                 .mockImplementationOnce(async () => mockedPSM);
 
@@ -769,8 +770,8 @@ describe('Outbound API handlers:', () => {
             expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
 
             // run workflow
-            expect(mockedPSM.run).toBeCalledWith({ 
-                quoteId: mockContext.request.body.quotesPostRequest.quoteId, 
+            expect(mockedPSM.run).toBeCalledWith({
+                quoteId: mockContext.request.body.quotesPostRequest.quoteId,
                 fspId: mockContext.request.body.fspId,
                 quote: mockContext.request.body.quotesPostRequest
             });
@@ -780,6 +781,105 @@ describe('Outbound API handlers:', () => {
             expect(mockContext.response.body).toEqual({
                 message: 'Unspecified error',
                 requestQuotesInformationState: {},
+                statusCode: '500',
+            });
+        });
+    });
+    describe('POST /simpleTransfers', () => {
+        const mockContext = {
+            request: {
+                body: {
+                    fspId: uuid(),
+                    transfersPostRequest: {
+                        transferId: uuid()
+                    }
+                }
+            },
+            response: {},
+            state: {
+                conf: {},
+                wso2Auth: 'mocked wso2Auth',
+                logger: mockLogger({ app: 'outbound-api-handlers-test' }),
+                cache: {
+                    subscribe: jest.fn(() => Promise.resolve())
+                }
+            },
+        };
+        test('happy flow', async () => {
+
+
+            // mock state machine
+            const mockedPSM = {
+                run: jest.fn(async () => ({ the: 'run response' }))
+            };
+
+            const createSpy = jest.spyOn(TransfersModel, 'create')
+                .mockImplementationOnce(async () => mockedPSM);
+
+            // invoke handler
+            await handlers['/simpleTransfers'].post(mockContext);
+
+            // PSM model creation
+            const state = mockContext.state;
+            const cacheKey = TransfersModel.channelName({
+                transferId: mockContext.request.body.transfersPostRequest.transferId
+            });
+            const expectedConfig = {
+                cache: state.cache,
+                logger: state.logger,
+                wso2Auth: state.wso2Auth
+            };
+            expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
+
+            // run workflow
+            expect(mockedPSM.run).toBeCalledWith({
+                transferId: mockContext.request.body.transfersPostRequest.transferId,
+                fspId: mockContext.request.body.fspId,
+                transfer: mockContext.request.body.transfersPostRequest
+            });
+
+            // response
+            expect(mockContext.response.status).toBe(200);
+            expect(mockContext.response.body).toEqual({ the: 'run response' });
+        });
+
+        test('mojaloop error propagation for /simpleTransfers', async() => {
+
+            // mock state machine
+            const mockedPSM = {
+                run: jest.fn(async () => { throw { mocked: 'error' }; })
+            };
+
+            const createSpy = jest.spyOn(TransfersModel, 'create')
+                .mockImplementationOnce(async () => mockedPSM);
+
+            // invoke handler
+            await handlers['/simpleTransfers'].post(mockContext);
+
+            // PSM model creation
+            const state = mockContext.state;
+            const cacheKey = TransfersModel.channelName({
+                transferId: mockContext.request.body.transfersPostRequest.transferId
+            });
+            const expectedConfig = {
+                cache: state.cache,
+                logger: state.logger,
+                wso2Auth: state.wso2Auth
+            };
+            expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
+
+            // run workflow
+            expect(mockedPSM.run).toBeCalledWith({
+                transferId: mockContext.request.body.transfersPostRequest.transferId,
+                fspId: mockContext.request.body.fspId,
+                transfer: mockContext.request.body.transfersPostRequest
+            });
+
+            // response
+            expect(mockContext.response.status).toBe(500);
+            expect(mockContext.response.body).toEqual({
+                message: 'Unspecified error',
+                requestSimpleTransfersInformationState: {},
                 statusCode: '500',
             });
         });

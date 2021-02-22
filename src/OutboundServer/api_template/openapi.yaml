@@ -48,3 +48,6 @@ paths:
     $ref: 'paths/parties_Type_ID_SubId.yaml'
   '/quotes':
     $ref: 'paths/quotes.yaml'
+  '/simpleTransfers':
+    $ref: 'paths/simpleTransfers.yaml'
+

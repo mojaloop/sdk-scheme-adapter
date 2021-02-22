@@ -16,6 +16,7 @@
 const Model = require('@internal/model').InboundTransfersModel;
 const PartiesModel = require('@internal/model').PartiesModel;
 const QuotesModel = require('@internal/model').QuotesModel;
+const TransfersModel = require('@internal/model').TransfersModel;
 
 /**
  * Handles a GET /authorizations/{id} request
@@ -387,7 +388,7 @@ const putPartiesByTypeAndId = async (ctx) => {
     // publish an event onto the cache for subscribers to finish the action
     await PartiesModel.triggerDeferredJob({
         cache: ctx.state.cache,
-        message: ctx.request.body, 
+        message: ctx.request.body,
         args: {
             type: idType,
             id: idValue,
@@ -412,7 +413,7 @@ const putPartiesByTypeAndIdError = async(ctx) => {
     // and recognizes it as an error response
     await PartiesModel.triggerDeferredJob({
         cache: ctx.state.cache,
-        message: ctx.request.body, 
+        message: ctx.request.body,
         args: {
             type: idType,
             id: idValue,
@@ -442,7 +443,7 @@ const putQuoteById = async (ctx) => {
     // duplicate publication until legacy code refactored
     await QuotesModel.triggerDeferredJob({
         cache: ctx.state.cache,
-        message: ctx.request.body, 
+        message: ctx.request.body,
         args: {
             quoteId: ctx.state.path.params.ID
         }
@@ -468,12 +469,12 @@ const putQuotesByIdError = async (ctx) => {
     // duplicate publication until legacy code refactored
     await QuotesModel.triggerDeferredJob({
         cache: ctx.state.cache,
-        message: ctx.request.body, 
+        message: ctx.request.body,
         args: {
             quoteId: ctx.state.path.params.ID
         }
     });
-    
+
     ctx.response.status = 200;
     ctx.response.body = '';
 };
@@ -533,10 +534,21 @@ const putTransactionRequestsById = async (ctx) => {
  * Handles a PUT /transfers/{ID}. This is a response to a POST|GET /transfers request
  */
 const putTransfersById = async (ctx) => {
+    // TODO: refactor legacy models to use TransfersModel
+    // - OutboundRequestToPayTransferModel
+    // - OutboundTransfersModel
     // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(`tf_${ctx.state.path.params.ID}`, {
         type: 'transferFulfil',
         data: ctx.request.body
+    });
+
+    await TransfersModel.triggerDeferredJob({
+        cache: ctx.state.cache,
+        message: ctx.request.body,
+        args: {
+            transferId: ctx.state.path.params.ID,
+        }
     });
 
     ctx.response.status = 200;
@@ -574,10 +586,21 @@ const patchTransfersById = async (ctx) => {
  * Handles a PUT /transfers/{ID}/error. This is an error response to a POST /transfers request
  */
 const putTransfersByIdError = async (ctx) => {
+    // TODO: refactor legacy models to use TransfersModel
+    // - OutboundRequestToPayTransferModel
+    // - OutboundTransfersModel
     // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(`tf_${ctx.state.path.params.ID}`, {
         type: 'transferError',
         data: ctx.request.body
+    });
+
+    await TransfersModel.triggerDeferredJob({
+        cache: ctx.state.cache,
+        message: ctx.request.body,
+        args: {
+            transferId: ctx.state.path.params.ID,
+        }
     });
 
     ctx.response.status = 200;
