@@ -44,6 +44,18 @@ defaults_license_scanner: &defaults_license_scanner
     git clone https://github.com/mojaloop/license-scanner /tmp/license-scanner
     cd /tmp/license-scanner && make build default-files set-up
 
+defaults_npm_auth: &defaults_npm_auth
+  name: Update NPM registry auth token
+  command: cd src; echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
+
+defaults_npm_publish_release: &defaults_npm_publish_release
+  name: Publish NPM $RELEASE_TAG artifact
+  command: |
+    source $BASH_ENV
+    cd src
+    echo "Publishing tag $RELEASE_TAG"
+    npm publish --tag $RELEASE_TAG --access public
+
 ##
 # Executors
 #
@@ -329,7 +341,7 @@ jobs:
       - store_artifacts:
           path: anchore-reports
 
-  publish:
+  publish-docker:
     executor: default-machine
     steps:
       - checkout
@@ -355,7 +367,23 @@ jobs:
       - slack/status:
           webhook: "$SLACK_WEBHOOK_ANNOUNCEMENT"
           success_message: '*"${CIRCLE_PROJECT_REPONAME}"* - Release \`"${CIRCLE_TAG}"\` \nhttps://github.com/mojaloop/"${CIRCLE_PROJECT_REPONAME}"/releases/tag/"${CIRCLE_TAG}"'
-
+  publish-npm:
+    executor: default-docker
+    steps:
+      - checkout
+      - run:
+          name: Install general dependencies
+          command: *defaults_Dependencies
+      - restore_cache:
+          key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
+      - run:
+          name: setup environment vars for LATEST release
+          command: |
+            echo 'export RELEASE_TAG=$RELEASE_TAG_PROD' >> $BASH_ENV
+      - run:
+          <<: *defaults_npm_auth
+      - run:
+          <<: *defaults_npm_publish_release
 ##
 # Workflows
 #
@@ -498,7 +526,18 @@ workflows:
               ignore:
                 - /.*/
 
-      - publish:
+      - publish-docker:
+          context: org-global
+          requires:
+            - build
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
+            branches:
+              ignore:
+                - /.*/
+
+      - publish-npm:
           context: org-global
           requires:
             - build
