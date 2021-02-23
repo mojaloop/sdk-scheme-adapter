@@ -2109,10 +2109,10 @@ components:
           $ref: '#/components/schemas/PartyPersonalInfo'
       required:
         - partyIdInfo
-    partiesCurrentState:
+    async2SyncCurrentState:
       type: string
       enum:
-        - WAITING_FOR_REQUEST_PARTY_INFORMATION
+        - WAITING_FOR_ACTION
         - COMPLETED
         - ERROR_OCCURRED
     QuotesPostRequest:
@@ -2210,12 +2210,6 @@ components:
       required:
         - fspId
         - quotesPostRequest
-    async2SyncCurrentState:
-      type: string
-      enum:
-        - WAITING_FOR_ACTION
-        - COMPLETED
-        - ERROR_OCCURRED
     quotesPostResponse:
       title: QuotesPostResponse
       type: object
@@ -2625,7 +2619,7 @@ components:
                 $ref: '#/components/schemas/Party'
                 description: Information regarding the requested Party.
               currentState:
-                $ref: '#/components/schemas/partiesCurrentState'
+                $ref: '#/components/schemas/async2SyncCurrentState'
             required:
               - party
               - currentState
