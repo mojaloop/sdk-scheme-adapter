@@ -350,7 +350,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-          - dependency-cache-{{ checksum "package-lock.json" }}
+          - dependency-cache-{{ checksum "src/package-lock.json" }}
       - run:
           name: Configure git
           command: |
@@ -391,7 +391,7 @@ jobs:
           command: |
             git diff --no-indent-heuristic master~1 HEAD CHANGELOG.md | sed -n '/^+[^+]/ s/^+//p' > /tmp/changes
             echo 'export RELEASE_CHANGES=`cat /tmp/changes`' >> $BASH_ENV
-            echo 'export RELEASE_TAG=`cat package-lock.json | jq -r .version`' >> $BASH_ENV
+            echo 'export RELEASE_TAG=`cat src/package-lock.json | jq -r .version`' >> $BASH_ENV
       - run:
           name: check the release changes
           command: |
