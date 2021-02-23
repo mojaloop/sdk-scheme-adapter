@@ -426,7 +426,7 @@
   {
     "ruleId": 7,
     "priority": 1,
-    "description": "post /authorizations",
+    "description": "post /authorizations timeout",
     "apiVersion": {
       "minorVersion": 0,
       "majorVersion": 1,
