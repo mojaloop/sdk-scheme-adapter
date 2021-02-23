@@ -1,0 +1,13 @@
+title: AuthorizationsPostResponse
+description: POST /authorizations response object
+type: object
+properties:
+  authenticationInfo:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/components/schemas/AuthenticationInfo.yaml'
+  responseType:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/components/schemas/AuthorizationResponseType.yaml'
+  currentState:
+    $ref: ../schemas/async2SyncCurrentState.yaml
+required:
+  - responseType
+additionalProperties: false
