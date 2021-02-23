@@ -32,7 +32,7 @@
 
 jest.dontMock('redis');
 
-const Cache = require('@internal/cache');
+const Cache = require('../../../lib/cache');
 const { Logger } = require('@mojaloop/sdk-standard-components');
 const env = require('../testEnv');
 

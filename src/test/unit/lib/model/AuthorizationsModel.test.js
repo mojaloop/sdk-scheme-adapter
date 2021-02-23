@@ -14,12 +14,12 @@
 jest.mock('@mojaloop/sdk-standard-components');
 
 const { uuid } = require('uuidv4');
-const Model = require('@internal/model').AuthorizationsModel;
-const PSM = require('@internal/model/common').PersistentStateMachine;
+const Model = require('../../../../lib/model').AuthorizationsModel;
+const PSM = require('../../../../lib/model/common').PersistentStateMachine;
 const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const defaultConfig = require('./data/defaultConfig');
 const mockLogger = require('../../mockLogger');
-const deferredJob = require('@internal/shared').deferredJob;
+const deferredJob = require('../../../../lib/model/lib/shared').deferredJob;
 const pt = require('promise-timeout');
 const authorizationsResponse = require('./data/putAuthorizationsResponse.json');
 

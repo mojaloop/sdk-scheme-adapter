@@ -14,8 +14,8 @@
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('redis');
 
-const Cache = require('@internal/cache');
-const Model = require('@internal/model').OutboundRequestToPayTransferModel;
+const Cache = require('../../../../lib/cache');
+const Model = require('../../../../lib/model').OutboundRequestToPayTransferModel;
 
 const { MojaloopRequests, Logger } = require('@mojaloop/sdk-standard-components');
 const StateMachine = require('javascript-state-machine');

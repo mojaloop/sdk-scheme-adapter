@@ -10,7 +10,7 @@
 
 const coBody = require('co-body');
 
-const randomPhrase = require('@internal/randomphrase');
+const randomPhrase = require('../lib/randomphrase');
 const { Jws, Errors } = require('@mojaloop/sdk-standard-components');
 
 /**

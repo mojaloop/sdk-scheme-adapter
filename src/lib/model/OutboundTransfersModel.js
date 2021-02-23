@@ -14,7 +14,7 @@ const util = require('util');
 const { uuid } = require('uuidv4');
 const StateMachine = require('javascript-state-machine');
 const { Ilp, MojaloopRequests } = require('@mojaloop/sdk-standard-components');
-const shared = require('@internal/shared');
+const shared = require('./lib/shared');
 const { BackendError } = require('./common');
 const PartiesModel = require('./PartiesModel');
 

@@ -13,7 +13,7 @@ const util = require('util');
 
 const PSM = require('./common').PersistentStateMachine;
 const MojaloopRequests = require('@mojaloop/sdk-standard-components').MojaloopRequests;
-const deferredJob = require('@internal/shared/deferredJob');
+const deferredJob = require('./lib/shared/deferredJob');
 
 function generate({
     /**

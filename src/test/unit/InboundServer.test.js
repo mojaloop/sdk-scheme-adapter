@@ -18,11 +18,11 @@ const postQuotesBody = require('./data/postQuotesBody');
 const putParticipantsBody = require('./data/putParticipantsBody');
 const commonHttpHeaders = require('./data/commonHttpHeaders');
 
-jest.mock('@internal/cache');
+jest.mock('../../lib/cache');
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('@internal/requests');
 
-const Cache = require('@internal/cache');
+const Cache = require('../../lib/cache');
 const { Jws, Logger } = require('@mojaloop/sdk-standard-components');
 const path = require('path');
 const fs = require('fs');
