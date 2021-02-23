@@ -24,6 +24,7 @@ const {
     PartiesModel,
     QuotesModel,
     TransfersModel,
+    AuthorizationsModel
 } = require('@internal/model');
 
 
@@ -96,6 +97,8 @@ const handleRequestQuotesInformationError = (method, err, ctx) =>
 const handleRequestSimpleTransfersInformationError = (method, err, ctx) =>
     handleError(method, err, ctx, 'requestSimpleTransfersInformationState');
 
+const handleRequestAuthorizationsInformationError = (method, err, ctx) =>
+    handleError(method, err, ctx, 'requestAuthorizationsInformationState');
 
 /**
  * Handler for outbound transfer request initiation
@@ -535,6 +538,37 @@ const postSimpleTransfers = async (ctx) => {
     }
 };
 
+const postAuthorizations = async (ctx) => {
+
+    const authorization = { ...ctx.request.body.authorizationsPostRequest };
+    const fspId = ctx.request.body.fspId;
+    const args = { transactionRequestId: authorization.transactionRequestId, fspId, authorization };
+
+    try {
+        // prepare config
+        const modelConfig = {
+            ...ctx.state.conf,
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            wso2Auth: ctx.state.wso2Auth,
+        };
+
+        const cacheKey = AuthorizationsModel.generateKey(args);
+
+        // use the authorizations model to execute asynchronous stages with the switch
+        const model = await AuthorizationsModel.create({}, cacheKey, modelConfig);
+
+        // run model's workflow
+        const response = await model.run(args);
+
+        // return the result
+        ctx.response.status = 200;
+        ctx.response.body = response;
+    } catch (err) {
+        return handleRequestAuthorizationsInformationError('postAuthorizations', err, ctx);
+    }
+};
+
 module.exports = {
     '/': {
         get: healthCheck
@@ -582,4 +616,7 @@ module.exports = {
     '/simpleTransfers': {
         post: postSimpleTransfers
     },
+    '/authorizations': {
+        post: postAuthorizations
+    }    
 };

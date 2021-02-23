@@ -17,6 +17,7 @@ const Model = require('@internal/model').InboundTransfersModel;
 const PartiesModel = require('@internal/model').PartiesModel;
 const QuotesModel = require('@internal/model').QuotesModel;
 const TransfersModel = require('@internal/model').TransfersModel;
+const AuthorizationsModel = require('@internal/model').AuthorizationsModel;
 
 /**
  * Handles a GET /authorizations/{id} request
@@ -302,7 +303,42 @@ const putAuthorizationsById = async (ctx) => {
         data: ctx.request.body,
         headers: ctx.request.headers
     });
+
+    // duplicate publication until legacy code refactored
+    await AuthorizationsModel.triggerDeferredJob({
+        cache: ctx.state.cache,
+        message: ctx.request.body, 
+        args: {
+            transactionRequestId: ctx.state.path.params.ID
+        }
+    });
+
     ctx.response.status = 200;
+};
+
+/**
+ * Handles a PUT /authorizations/{ID}/error request. 
+ * This is an error response to a POST /authorizations request
+ */
+const putAuthorizationsByIdError = async (ctx) => {
+    
+    // publish an event onto the cache for subscribers to action
+    await ctx.state.cache.publish(`otp_${ctx.state.path.params.ID}`, {
+        type: 'authorizationResponseError',
+        data: ctx.request.body,
+    });
+
+    // duplicate publication until legacy code refactored
+    await AuthorizationsModel.triggerDeferredJob({
+        cache: ctx.state.cache,
+        message: ctx.request.body, 
+        args: {
+            transactionRequestId: ctx.state.path.params.ID
+        }
+    });
+    
+    ctx.response.status = 200;
+    ctx.response.body = '';
 };
 
 /**
@@ -817,6 +853,9 @@ module.exports = {
     '/authorizations/{ID}': {
         get: getAuthorizationsById,
         put: putAuthorizationsById
+    },
+    '/authorizations/{ID}/error': {
+        put: putAuthorizationsByIdError
     },
     '/bulkQuotes': {
         post: postBulkQuotes
