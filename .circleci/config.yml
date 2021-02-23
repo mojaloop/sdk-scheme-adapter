@@ -596,7 +596,6 @@ workflows:
             - pr-tools/pr-title-check
             - validate-openapi
             - test-unit
-            - test-coverage
             - vulnerability-check
             - audit-licenses
             - test-integration
@@ -624,7 +623,6 @@ workflows:
             - pr-tools/pr-title-check
             - validate-openapi
             - test-unit
-            - test-coverage
             - vulnerability-check
             - audit-licenses
             - test-integration
@@ -643,7 +641,6 @@ workflows:
             - pr-tools/pr-title-check
             - validate-openapi
             - test-unit
-            - test-coverage
             - vulnerability-check
             - audit-licenses
             - test-integration
