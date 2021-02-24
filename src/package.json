@@ -20,7 +20,8 @@
     "validate:api:in": "swagger-cli validate ./InboundServer/api.yaml",
     "validate:api:out": "swagger-cli validate ./OutboundServer/api.yaml",
     "updates:check": "npm-check-updates",
-    "updates:update": "npm-check-updates -u && npm install"
+    "updates:update": "npm-check-updates -u && npm install",
+    "release": "standard-version --releaseCommitMessageFormat 'chore(release): {{currentTag}} [skip ci]'"
   },
   "author": "Matt Kingston, James Bush, ModusBox Inc.",
   "contributors": [
