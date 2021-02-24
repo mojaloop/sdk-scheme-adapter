@@ -373,7 +373,7 @@ jobs:
           # Note: this is rather imperfect, but will do for now
           name: Format the changelog into the github release body and get release tag
           command: |
-            git diff --no-indent-heuristic master~1 HEAD CHANGELOG.md | sed -n '/^+[^+]/ s/^+//p' > /tmp/changes
+            git diff --no-indent-heuristic master~1 HEAD src/CHANGELOG.md | sed -n '/^+[^+]/ s/^+//p' > /tmp/changes
             echo 'export RELEASE_CHANGES=`cat /tmp/changes`' >> $BASH_ENV
             echo 'export RELEASE_TAG=`cat src/package-lock.json | jq -r .version`' >> $BASH_ENV
       - run:
@@ -385,7 +385,7 @@ jobs:
           tag: v${RELEASE_TAG}
           title: v${RELEASE_TAG} Release
           description: ${RELEASE_CHANGES}
-          file-path: CHANGELOG.md
+          file-path: src/CHANGELOG.md
       - slack/status:
           webhook: "$SLACK_WEBHOOK_ANNOUNCEMENT"
           success_message: '*"${CIRCLE_PROJECT_REPONAME}"* - Release \`"v${RELEASE_TAG}"\` \nhttps://github.com/mojaloop/"${CIRCLE_PROJECT_REPONAME}"/releases/tag/"v${RELEASE_TAG}"'
