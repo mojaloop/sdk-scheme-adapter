@@ -531,6 +531,8 @@ workflows:
             - validate-openapi
             - test-unit
           filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?/
             branches:
               ignore:
                 - /feature*/
@@ -541,6 +543,8 @@ workflows:
           requires:
             - build-local
           filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?/
             branches:
               ignore:
                 - /feature*/
@@ -551,6 +555,8 @@ workflows:
           requires:
             - build-local
           filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?/
             branches:
               ignore:
                 - /feature*/
