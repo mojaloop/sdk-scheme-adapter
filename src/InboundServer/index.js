@@ -20,8 +20,8 @@ const EventEmitter = require('events');
 
 const { WSO2Auth } = require('@mojaloop/sdk-standard-components');
 
-const Validate = require('@internal/validate');
-const router = require('@internal/router');
+const Validate = require('../lib/validate');
+const router = require('../lib/router');
 const handlers = require('./handlers');
 const middlewares = require('./middlewares');
 

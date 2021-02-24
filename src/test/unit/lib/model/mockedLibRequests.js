@@ -11,7 +11,7 @@
 'use strict';
 
 const util = require('util');
-const { BackendRequests } = jest.requireActual('@internal/requests');
+const { BackendRequests } = jest.requireActual('../../../../lib/model/lib/requests');
 
 const respErrSym = Symbol('ResponseErrorDataSym');
 
@@ -46,7 +46,6 @@ MockBackendRequests.__postBulkQuotes = jest.fn(() => Promise.resolve({body: {}})
 MockBackendRequests.__getBulkTransfers = jest.fn(() => Promise.resolve({body: {}}));
 MockBackendRequests.__postBulkTransfers = jest.fn(() => Promise.resolve({body: {}}));
 MockBackendRequests.__putTransfersNotification = jest.fn(() => Promise.resolve({body: {}}));
-
 
 
 class HTTPResponseError extends Error {

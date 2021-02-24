@@ -148,5 +148,5 @@ module.exports = {
     },
     Errors,
     WSO2Auth,
-    Logger,
+    Logger
 };

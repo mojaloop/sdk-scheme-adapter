@@ -9,7 +9,7 @@
  **************************************************************************/
 
 
-const { ProxyModel } = require('@internal/model');
+const { ProxyModel } = require('../lib/model');
 const { applyState, createErrorHandler, createLogger, createRequestIdGenerator } =
     require('../InboundServer/middlewares');
 

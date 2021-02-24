@@ -20,11 +20,11 @@ const commonHttpHeaders = require('./data/commonHttpHeaders');
 const WebSocket = require('ws');
 const { Logger } = require('@mojaloop/sdk-standard-components');
 
-const Cache = require('@internal/cache');
-jest.mock('@internal/cache');
+jest.mock('../../lib/cache');
 jest.mock('@mojaloop/sdk-standard-components');
-jest.mock('@internal/requests');
+jest.mock('../../lib/model/lib/requests', () => require('./lib/model/mockedLibRequests'));
 
+const Cache = require('../../lib/cache');
 const InboundServer = require('../../InboundServer');
 const TestServer = require('../../TestServer');
 

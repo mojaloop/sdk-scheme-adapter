@@ -12,14 +12,15 @@
 // we use a mock standard components lib to intercept and mock certain funcs
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('redis');
+jest.mock('../../../../lib/model/lib/requests',() => require('./mockedLibRequests'));
 
 const defaultConfig = require('./data/defaultConfig');
-const Model = require('@internal/model').InboundTransfersModel;
+const Model = require('../../../../lib/model').InboundTransfersModel;
 const mockArguments = require('./data/mockArguments');
 const mockTxnReqquestsArguments = require('./data/mockTxnRequestsArguments');
 const { MojaloopRequests, Ilp, Logger } = require('@mojaloop/sdk-standard-components');
-const { BackendRequests, HTTPResponseError } = require('@internal/requests');
-const Cache = require('@internal/cache');
+const { BackendRequests, HTTPResponseError } = require('../../../../lib/model/lib/requests');
+const Cache = require('../../../../lib/cache');
 
 const getTransfersBackendResponse = require('./data/getTransfersBackendResponse');
 const getTransfersMojaloopResponse = require('./data/getTransfersMojaloopResponse');

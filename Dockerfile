@@ -11,14 +11,6 @@ WORKDIR /src/
 # relying on docker-compose.
 COPY ./src/package.json ./package.json
 COPY ./src/package-lock.json ./package-lock.json
-COPY ./src/lib/cache/package.json ./lib/cache/package.json
-COPY ./src/lib/check/package.json ./lib/check/package.json
-COPY ./src/lib/model/lib/requests/package.json ./lib/model/lib/requests/package.json
-COPY ./src/lib/model/lib/shared/package.json ./lib/model/lib/shared/package.json
-COPY ./src/lib/model/package.json ./lib/model/package.json
-COPY ./src/lib/randomphrase/package.json ./lib/randomphrase/package.json
-COPY ./src/lib/router/package.json ./lib/router/package.json
-COPY ./src/lib/validate/package.json ./lib/validate/package.json
 RUN npm ci --only=production
 
 FROM node:14.15-alpine

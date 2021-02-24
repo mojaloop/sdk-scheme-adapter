@@ -10,14 +10,14 @@
 
 'use strict';
 
-jest.mock('@internal/model');
+jest.mock('../../../lib/model');
 
 const handlers = require('../../../InboundServer/handlers');
-const Model = require('@internal/model').InboundTransfersModel;
-const QuotesModel = require('@internal/model').QuotesModel;
-const PartiesModel = require('@internal/model').PartiesModel;
-const TransfersModel = require('@internal/model').TransfersModel;
-const AuthorizationsModel = require('@internal/model').AuthorizationsModel;
+const Model = require('../../../lib/model').InboundTransfersModel;
+const QuotesModel = require('../../../lib/model').QuotesModel;
+const PartiesModel = require('../../../lib/model').PartiesModel;
+const TransfersModel = require('../../../lib/model').TransfersModel;
+const AuthorizationsModel = require('../../../lib/model').AuthorizationsModel;
 
 const mockArguments = require('./data/mockArguments');
 const mockTransactionRequestData = require('./data/mockTransactionRequest');

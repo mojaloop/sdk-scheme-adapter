@@ -91,6 +91,7 @@ export declare namespace Schemas {
   type PartyPersonalInfo = components["schemas"]["PartyPersonalInfo"];
   type Party = components["schemas"]["Party"];
   type async2SyncCurrentState = components["schemas"]["async2SyncCurrentState"];
+  type partiesByIdResponse = components["schemas"]["partiesByIdResponse"];
   type QuotesPostRequest = components["schemas"]["QuotesPostRequest"];
   type quotesPostRequest = components["schemas"]["quotesPostRequest"];
   type quotesPostResponse = components["schemas"]["quotesPostResponse"];
