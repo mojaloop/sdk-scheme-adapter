@@ -19,7 +19,7 @@ const PSM = require('../../../../lib/model/common').PersistentStateMachine;
 const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const defaultConfig = require('./data/defaultConfig');
 const mockLogger = require('../../mockLogger');
-const deferredJob = require('../../../../lib/model/lib/shared').deferredJob;
+const deferredJob = require('../../../../lib/model/lib').deferredJob;
 const pt = require('promise-timeout');
 const putQuotesResponse = require('./data/putQuotesResponse.json');
 
