@@ -47,7 +47,6 @@
     "@internal/model": "file:lib/model",
     "@internal/randomphrase": "file:lib/randomphrase",
     "@internal/requests": "file:lib/model/lib/requests",
-    "@internal/router": "file:lib/router",
     "@internal/shared": "file:lib/model/lib/shared",
     "@internal/validate": "file:lib/validate",
     "@koa/cors": "^3.1.0",
