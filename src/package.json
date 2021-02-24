@@ -43,8 +43,6 @@
     "url": "git@github.com:mojaloop/sdk-scheme-adapter.git"
   },
   "dependencies": {
-    "@internal/model": "file:lib/model",
-    "@internal/randomphrase": "file:lib/randomphrase",
     "@internal/requests": "file:lib/model/lib/requests",
     "@internal/shared": "file:lib/model/lib/shared",
     "@internal/validate": "file:lib/validate",
@@ -55,6 +53,7 @@
     "co-body": "^6.1.0",
     "dotenv": "^8.2.0",
     "env-var": "^7.0.0",
+    "javascript-state-machine": "^3.1.0",
     "js-yaml": "^3.14.1",
     "koa": "^2.13.1",
     "koa-body": "^4.2.0",
