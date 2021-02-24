@@ -256,23 +256,6 @@ jobs:
           paths:
             - ./docker-image.tar
 
-  build:
-    executor: default-machine
-    steps:
-      - checkout
-      - run:
-          name: Build Docker $CIRCLE_TAG image
-          command: |
-            echo "Building Docker image: $CIRCLE_TAG"
-            docker build -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG .
-      - run:
-          name: Save docker image to workspace
-          command: docker save -o /tmp/docker-image.tar $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG
-      - persist_to_workspace:
-          root: /tmp
-          paths:
-            - ./docker-image.tar
-
   license-scan:
     executor: default-machine
     steps:
