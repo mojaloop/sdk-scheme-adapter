@@ -248,23 +248,6 @@ jobs:
           paths:
             - ./docker-image.tar
 
-  build:
-    executor: default-machine
-    steps:
-      - checkout
-      - run:
-          name: Build Docker $CIRCLE_TAG image
-          command: |
-            echo "Building Docker image: $CIRCLE_TAG"
-            docker build -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG .
-      - run:
-          name: Save docker image to workspace
-          command: docker save -o /tmp/docker-image.tar $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG
-      - persist_to_workspace:
-          root: /tmp
-          paths:
-            - ./docker-image.tar
-
   license-scan:
     executor: default-machine
     steps:
@@ -379,7 +362,7 @@ jobs:
           # Note: this is rather imperfect, but will do for now
           name: Format the changelog into the github release body and get release tag
           command: |
-            git diff --no-indent-heuristic master~1 HEAD CHANGELOG.md | sed -n '/^+[^+]/ s/^+//p' > /tmp/changes
+            git diff --no-indent-heuristic master~1 HEAD src/CHANGELOG.md | sed -n '/^+[^+]/ s/^+//p' > /tmp/changes
             echo 'export RELEASE_CHANGES=`cat /tmp/changes`' >> $BASH_ENV
             echo 'export RELEASE_TAG=`cat src/package-lock.json | jq -r .version`' >> $BASH_ENV
       - run:
@@ -391,7 +374,7 @@ jobs:
           tag: v${RELEASE_TAG}
           title: v${RELEASE_TAG} Release
           description: ${RELEASE_CHANGES}
-          file-path: CHANGELOG.md
+          file-path: src/CHANGELOG.md
       - slack/status:
           webhook: "$SLACK_WEBHOOK_ANNOUNCEMENT"
           success_message: '*"${CIRCLE_PROJECT_REPONAME}"* - Release \`"v${RELEASE_TAG}"\` \nhttps://github.com/mojaloop/"${CIRCLE_PROJECT_REPONAME}"/releases/tag/"v${RELEASE_TAG}"'
@@ -411,14 +394,15 @@ jobs:
       - run:
           name: Re-tag pre built image
           command: |
-            docker tag $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG
+            docker tag $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:latest
+            docker tag $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG
       - run:
           name: Publish Docker image $CIRCLE_TAG & Latest tag to Docker Hub
           command: |
             echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG"
             docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG
-            echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG"
-            docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG
+            echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:latest"
+            docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:latest
 
   publish-npm:
     executor: default-docker
@@ -536,6 +520,8 @@ workflows:
             - validate-openapi
             - test-unit
           filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?/
             branches:
               ignore:
                 - /feature*/
@@ -546,6 +532,8 @@ workflows:
           requires:
             - build-local
           filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?/
             branches:
               ignore:
                 - /feature*/
@@ -556,33 +544,18 @@ workflows:
           requires:
             - build-local
           filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?/
             branches:
               ignore:
                 - /feature*/
                 - /bugfix*/
 
-      - build:
-          context: org-global
-          requires:
-            - license-scan
-            - image-scan
-            - audit-licenses
-            - vulnerability-check
-            - test-integration
-            - lint
-            - validate-openapi
-            - test-unit
-          filters:
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
-            branches:
-              ignore:
-                - /.*/
-
       # New commits to master release automatically
       - release:
           context: org-global
           requires:
+            - build-local
             - pr-tools/pr-title-check
             - validate-openapi
             - test-unit
@@ -610,6 +583,7 @@ workflows:
       - publish-docker:
           context: org-global
           requires:
+            - build-local
             - pr-tools/pr-title-check
             - validate-openapi
             - test-unit
