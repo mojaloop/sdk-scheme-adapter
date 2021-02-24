@@ -10,7 +10,7 @@
 
 'use strict';
 
-const Cache = jest.createMockFromModule('@internal/cache');
+const Cache = jest.createMockFromModule('../../../../../lib/cache');
 
 const PSM = require('../../../../../lib/model').PersistentStateMachine;
 const mockLogger = require('../../../mockLogger');
