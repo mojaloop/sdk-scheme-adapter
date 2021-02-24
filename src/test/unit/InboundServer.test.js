@@ -20,7 +20,7 @@ const commonHttpHeaders = require('./data/commonHttpHeaders');
 
 jest.mock('../../lib/cache');
 jest.mock('@mojaloop/sdk-standard-components');
-jest.mock('@internal/requests');
+jest.mock('../../lib/model/lib/requests', () => require('./lib/model/mockedLibRequests'));
 
 const Cache = require('../../lib/cache');
 const { Jws, Logger } = require('@mojaloop/sdk-standard-components');
