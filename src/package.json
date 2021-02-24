@@ -43,7 +43,6 @@
     "url": "git@github.com:mojaloop/sdk-scheme-adapter.git"
   },
   "dependencies": {
-    "@internal/check": "file:lib/check",
     "@internal/model": "file:lib/model",
     "@internal/randomphrase": "file:lib/randomphrase",
     "@internal/requests": "file:lib/model/lib/requests",
