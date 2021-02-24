@@ -13,11 +13,11 @@
 
 'use strict';
 
-const Model = require('@internal/model').InboundTransfersModel;
-const PartiesModel = require('@internal/model').PartiesModel;
-const QuotesModel = require('@internal/model').QuotesModel;
-const TransfersModel = require('@internal/model').TransfersModel;
-const AuthorizationsModel = require('@internal/model').AuthorizationsModel;
+const Model = require('../lib/model').InboundTransfersModel;
+const PartiesModel = require('../lib/model').PartiesModel;
+const QuotesModel = require('../lib/model').QuotesModel;
+const TransfersModel = require('../lib/model').TransfersModel;
+const AuthorizationsModel = require('../lib/model').AuthorizationsModel;
 
 /**
  * Handles a GET /authorizations/{id} request

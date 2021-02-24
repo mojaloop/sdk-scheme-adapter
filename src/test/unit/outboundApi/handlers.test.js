@@ -24,7 +24,7 @@ const requestToPayTransferRequest = require('./data/requestToPayTransferRequest'
 const mockLogger = require('../mockLogger');
 const { uuid } = require('uuidv4');
 
-jest.mock('@internal/model');
+jest.mock('../../../lib/model');
 
 const handlers = require('../../../OutboundServer/handlers');
 const {
@@ -37,7 +37,7 @@ const {
     QuotesModel,
     TransfersModel,
     AuthorizationsModel
-} = require('@internal/model');
+} = require('../../../lib/model');
 
 /**
  * Mock the outbound transfer model to simulate throwing errors

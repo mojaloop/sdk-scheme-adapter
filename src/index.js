@@ -23,10 +23,10 @@ const TestServer = require('./TestServer');
 // scheme adapter as a service
 const InboundServerMiddleware = require('./InboundServer/middlewares.js');
 const OutboundServerMiddleware = require('./OutboundServer/middlewares.js');
-const Router = require('@internal/router');
-const Validate = require('@internal/validate');
-const RandomPhrase = require('@internal/randomphrase');
-const Cache = require('@internal/cache');
+const Router = require('./lib/router');
+const Validate = require('./lib/validate');
+const RandomPhrase = require('./lib/randomphrase');
+const Cache = require('./lib/cache');
 const { Logger } = require('@mojaloop/sdk-standard-components');
 
 /**

@@ -14,13 +14,13 @@
 const {
     BackendRequests,
     HTTPResponseError,
-} = require('@internal/requests');
+} = require('./lib/requests');
 const {
     MojaloopRequests,
     Ilp,
     Errors,
 } = require('@mojaloop/sdk-standard-components');
-const shared = require('@internal/shared');
+const shared = require('./lib/shared');
 
 /**
  *  Models the operations required for performing inbound transfers

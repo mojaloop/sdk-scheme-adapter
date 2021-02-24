@@ -288,14 +288,14 @@ export interface operations {
   /** The HTTP request GET /parties// (or GET /parties///) is used to lookup information regarding the requested Party, defined by ,  and optionally (for example, GET /parties/MSISDN/123456789, or GET /parties/BUSINESS/shoecompany/employee1). */
   PartiesByTypeAndID: {
     responses: {
-      200: components["responses"]["partiesByIdResponse"];
+      200: components["responses"]["partiesByIdSuccess"];
       404: components["responses"]["partiesByIdError404"];
     };
   };
   /** The HTTP request GET /parties// (or GET /parties///) is used to lookup information regarding the requested Party, defined by ,  and optionally (for example, GET /parties/MSISDN/123456789, or GET /parties/BUSINESS/shoecompany/employee1). */
   PartiesSubIdByTypeAndID: {
     responses: {
-      200: components["responses"]["partiesByIdResponse"];
+      200: components["responses"]["partiesByIdSuccess"];
       404: components["responses"]["partiesByIdError404"];
     };
   };
@@ -1085,6 +1085,12 @@ export interface components {
       | "WAITING_FOR_ACTION"
       | "COMPLETED"
       | "ERROR_OCCURRED";
+    /** GET /parties/{Type}/{ID} response object */
+    partiesByIdResponse: {
+      /** Information regarding the requested Party. */
+      party: components["schemas"]["Party"];
+      currentState: components["schemas"]["async2SyncCurrentState"];
+    };
     /** The object sent in the POST /quotes request. */
     QuotesPostRequest: {
       /** Common ID between the FSPs for the quote object, decided by the Payer FSP. The ID should be reused for resends of the same quote for a transaction. A new ID should be generated for each new quote for a transaction. */
@@ -1341,14 +1347,10 @@ export interface components {
         "application/json": components["schemas"]["errorAccountsResponse"];
       };
     };
-    /** PartiesByIdResponse */
-    partiesByIdResponse: {
+    /** PartiesByIdSuccess */
+    partiesByIdSuccess: {
       content: {
-        "application/json": {
-          /** Information regarding the requested Party. */
-          party: components["schemas"]["Party"];
-          currentState: components["schemas"]["async2SyncCurrentState"];
-        };
+        "application/json": components["schemas"]["partiesByIdResponse"];
       };
     };
     /** PartiesByIdError404 */

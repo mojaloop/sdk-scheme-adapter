@@ -25,7 +25,7 @@ const {
     QuotesModel,
     TransfersModel,
     AuthorizationsModel
-} = require('@internal/model');
+} = require('../lib/model');
 
 
 /**
