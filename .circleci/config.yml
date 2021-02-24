@@ -349,8 +349,9 @@ jobs:
           command: *defaults_Dependencies
       - checkout
       - restore_cache:
-          keys:
-          - dependency-cache-{{ checksum "src/package-lock.json" }}
+          key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
+          paths:
+            - src/node_modules
       - run:
           name: Configure git
           command: |
