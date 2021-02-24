@@ -15,6 +15,6 @@ get:
   operationId: PartiesByTypeAndID
   responses:
     '200':
-      $ref: ../components/responses/partiesByIdResponse.yaml
+      $ref: ../components/responses/partiesByIdSuccess.yaml
     '404':
       $ref: ../components/responses/partiesByIdError404.yaml
