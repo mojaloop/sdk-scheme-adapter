@@ -407,7 +407,7 @@ paths:
       operationId: PartiesByTypeAndID
       responses:
         '200':
-          $ref: '#/components/responses/partiesByIdResponse'
+          $ref: '#/components/responses/partiesByIdSuccess'
         '404':
           $ref: '#/components/responses/partiesByIdError404'
   '/parties/{Type}/{ID}/{SubId}':
@@ -427,7 +427,7 @@ paths:
       operationId: PartiesSubIdByTypeAndID
       responses:
         '200':
-          $ref: '#/components/responses/partiesByIdResponse'
+          $ref: '#/components/responses/partiesByIdSuccess'
         '404':
           $ref: '#/components/responses/partiesByIdError404'
   /quotes:
@@ -2115,6 +2115,19 @@ components:
         - WAITING_FOR_ACTION
         - COMPLETED
         - ERROR_OCCURRED
+    partiesByIdResponse:
+      title: partiesByIdResponse
+      type: object
+      description: 'GET /parties/{Type}/{ID} response object'
+      properties:
+        party:
+          $ref: '#/components/schemas/Party'
+          description: Information regarding the requested Party.
+        currentState:
+          $ref: '#/components/schemas/async2SyncCurrentState'
+      required:
+        - party
+        - currentState
     QuotesPostRequest:
       title: QuotesPostRequest
       type: object
@@ -2607,22 +2620,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/errorAccountsResponse'
-    partiesByIdResponse:
-      description: PartiesByIdResponse
+    partiesByIdSuccess:
+      description: PartiesByIdSuccess
       content:
         application/json:
           schema:
-            type: object
-            description: 'GET /parties/{Type}/{ID} response object'
-            properties:
-              party:
-                $ref: '#/components/schemas/Party'
-                description: Information regarding the requested Party.
-              currentState:
-                $ref: '#/components/schemas/async2SyncCurrentState'
-            required:
-              - party
-              - currentState
+            $ref: '#/components/schemas/partiesByIdResponse'
     partiesByIdError404:
       description: PartiesByIdError404
       content:
