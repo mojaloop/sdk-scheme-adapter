@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [11.15.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.14.9...v11.15.0) (2021-03-18)
+
+
+### Features
+
+* add authorization definition for Outbound typescript ([#268](https://github.com/mojaloop/sdk-scheme-adapter/issues/268)) ([78402ba](https://github.com/mojaloop/sdk-scheme-adapter/commit/78402bab71f98ff6f5cd29c07313b4f8e129c808))
+
 ### [11.14.9](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.14.8...v11.14.9) (2021-03-08)
 
 
