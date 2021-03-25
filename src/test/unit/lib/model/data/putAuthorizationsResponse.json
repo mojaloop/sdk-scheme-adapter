@@ -1,0 +1,10 @@
+{
+  "authenticationInfo": {
+    "authentication": "U2F",
+    "authenticationValue": {
+      "pinValue": "101010",
+      "counter": "3"
+    }
+  },
+  "responseType": "ENTERED"
+}

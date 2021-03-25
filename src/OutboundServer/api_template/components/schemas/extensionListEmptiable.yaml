@@ -1,0 +1,6 @@
+type: array
+items:
+  $ref: >-
+    ../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Extension.yaml
+minItems: 0
+maxItems: 16

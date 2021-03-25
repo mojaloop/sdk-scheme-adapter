@@ -16,8 +16,8 @@ const yaml = require('js-yaml');
 const fs = require('fs').promises;
 const path = require('path');
 
-const Validate = require('@internal/validate');
-const router = require('@internal/router');
+const Validate = require('../lib/validate');
+const router = require('../lib/router');
 const handlers = require('./handlers');
 const middlewares = require('../InboundServer/middlewares');
 

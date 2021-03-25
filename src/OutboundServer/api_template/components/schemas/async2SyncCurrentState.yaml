@@ -1,0 +1,5 @@
+type: string
+enum:
+  - 'WAITING_FOR_ACTION'
+  - 'COMPLETED'
+  - 'ERROR_OCCURRED'

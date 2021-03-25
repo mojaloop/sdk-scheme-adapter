@@ -13,8 +13,11 @@
 
 'use strict';
 
-const Model = require('@internal/model').InboundTransfersModel;
-const PartiesModel = require('@internal/model').PartiesModel;
+const Model = require('../lib/model').InboundTransfersModel;
+const PartiesModel = require('../lib/model').PartiesModel;
+const QuotesModel = require('../lib/model').QuotesModel;
+const TransfersModel = require('../lib/model').TransfersModel;
+const AuthorizationsModel = require('../lib/model').AuthorizationsModel;
 
 /**
  * Handles a GET /authorizations/{id} request
@@ -300,7 +303,42 @@ const putAuthorizationsById = async (ctx) => {
         data: ctx.request.body,
         headers: ctx.request.headers
     });
+
+    // duplicate publication until legacy code refactored
+    await AuthorizationsModel.triggerDeferredJob({
+        cache: ctx.state.cache,
+        message: ctx.request.body, 
+        args: {
+            transactionRequestId: ctx.state.path.params.ID
+        }
+    });
+
     ctx.response.status = 200;
+};
+
+/**
+ * Handles a PUT /authorizations/{ID}/error request. 
+ * This is an error response to a POST /authorizations request
+ */
+const putAuthorizationsByIdError = async (ctx) => {
+    
+    // publish an event onto the cache for subscribers to action
+    await ctx.state.cache.publish(`otp_${ctx.state.path.params.ID}`, {
+        type: 'authorizationResponseError',
+        data: ctx.request.body,
+    });
+
+    // duplicate publication until legacy code refactored
+    await AuthorizationsModel.triggerDeferredJob({
+        cache: ctx.state.cache,
+        message: ctx.request.body, 
+        args: {
+            transactionRequestId: ctx.state.path.params.ID
+        }
+    });
+    
+    ctx.response.status = 200;
+    ctx.response.body = '';
 };
 
 /**
@@ -386,7 +424,7 @@ const putPartiesByTypeAndId = async (ctx) => {
     // publish an event onto the cache for subscribers to finish the action
     await PartiesModel.triggerDeferredJob({
         cache: ctx.state.cache,
-        message: ctx.request.body, 
+        message: ctx.request.body,
         args: {
             type: idType,
             id: idValue,
@@ -411,7 +449,7 @@ const putPartiesByTypeAndIdError = async(ctx) => {
     // and recognizes it as an error response
     await PartiesModel.triggerDeferredJob({
         cache: ctx.state.cache,
-        message: ctx.request.body, 
+        message: ctx.request.body,
         args: {
             type: idType,
             id: idValue,
@@ -428,6 +466,9 @@ const putPartiesByTypeAndIdError = async(ctx) => {
  * Handles a PUT /quotes/{ID}. This is a response to a POST /quotes request
  */
 const putQuoteById = async (ctx) => {
+    // TODO: refactor legacy models to use QuotesModel
+    // - OutboundRequestToPayTransferModel
+    // - OutboundTransfersModel
     // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(`qt_${ctx.state.path.params.ID}`, {
         type: 'quoteResponse',
@@ -435,8 +476,45 @@ const putQuoteById = async (ctx) => {
         headers: ctx.request.headers
     });
 
+    // duplicate publication until legacy code refactored
+    await QuotesModel.triggerDeferredJob({
+        cache: ctx.state.cache,
+        message: ctx.request.body,
+        args: {
+            quoteId: ctx.state.path.params.ID
+        }
+    });
+
     ctx.response.status = 200;
 };
+
+
+/**
+ * Handles a PUT /quotes/{ID}/error request. This is an error response to a POST /quotes request
+ */
+const putQuotesByIdError = async (ctx) => {
+    // TODO: refactor legacy models to use QuotesModel
+    // - OutboundRequestToPayTransferModel
+    // - OutboundTransfersModel
+    // publish an event onto the cache for subscribers to action
+    await ctx.state.cache.publish(`qt_${ctx.state.path.params.ID}`, {
+        type: 'quoteResponseError',
+        data: ctx.request.body
+    });
+
+    // duplicate publication until legacy code refactored
+    await QuotesModel.triggerDeferredJob({
+        cache: ctx.state.cache,
+        message: ctx.request.body,
+        args: {
+            quoteId: ctx.state.path.params.ID
+        }
+    });
+
+    ctx.response.status = 200;
+    ctx.response.body = '';
+};
+
 
 /**
  * Handles a GET /quotes/{ID}
@@ -492,10 +570,21 @@ const putTransactionRequestsById = async (ctx) => {
  * Handles a PUT /transfers/{ID}. This is a response to a POST|GET /transfers request
  */
 const putTransfersById = async (ctx) => {
+    // TODO: refactor legacy models to use TransfersModel
+    // - OutboundRequestToPayTransferModel
+    // - OutboundTransfersModel
     // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(`tf_${ctx.state.path.params.ID}`, {
         type: 'transferFulfil',
         data: ctx.request.body
+    });
+
+    await TransfersModel.triggerDeferredJob({
+        cache: ctx.state.cache,
+        message: ctx.request.body,
+        args: {
+            transferId: ctx.state.path.params.ID,
+        }
     });
 
     ctx.response.status = 200;
@@ -530,28 +619,24 @@ const patchTransfersById = async (ctx) => {
 };
 
 /**
- * Handles a PUT /quotes/{ID}/error request. This is an error response to a POST /quotes request
- */
-const putQuotesByIdError = async(ctx) => {
-    // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`qt_${ctx.state.path.params.ID}`, {
-        type: 'quoteResponseError',
-        data: ctx.request.body
-    });
-
-    ctx.response.status = 200;
-    ctx.response.body = '';
-};
-
-
-/**
  * Handles a PUT /transfers/{ID}/error. This is an error response to a POST /transfers request
  */
 const putTransfersByIdError = async (ctx) => {
+    // TODO: refactor legacy models to use TransfersModel
+    // - OutboundRequestToPayTransferModel
+    // - OutboundTransfersModel
     // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(`tf_${ctx.state.path.params.ID}`, {
         type: 'transferError',
         data: ctx.request.body
+    });
+
+    await TransfersModel.triggerDeferredJob({
+        cache: ctx.state.cache,
+        message: ctx.request.body,
+        args: {
+            transferId: ctx.state.path.params.ID,
+        }
     });
 
     ctx.response.status = 200;
@@ -768,6 +853,9 @@ module.exports = {
     '/authorizations/{ID}': {
         get: getAuthorizationsById,
         put: putAuthorizationsById
+    },
+    '/authorizations/{ID}/error': {
+        put: putAuthorizationsByIdError
     },
     '/bulkQuotes': {
         post: postBulkQuotes

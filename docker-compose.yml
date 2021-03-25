@@ -1,9 +1,18 @@
-version: '3.4'
+version: '3.7'
+networks:
+  mojaloop-net:
+    name: mojaloop-net
+
 services:
   redis:
+    networks:
+        - mojaloop-net
     image: "redis:5.0.4-alpine"
-
+    ports:
+      - "6379:6379"
   scheme-adapter:
+    networks:
+        - mojaloop-net
     build:
       context: .
     env_file: ./src/test/config/integration.env
@@ -13,3 +22,46 @@ services:
       - "4002:4002"
     depends_on:
       - redis
+    command: sh -c "/wait4/wait4.js sdk-scheme-adapter; node src/index.js"
+    volumes:
+      - ./docker/wait4:/wait4
+
+  ml-testing-toolkit:
+    networks:
+        - mojaloop-net
+    image: mojaloop/ml-testing-toolkit:v11.7.11
+    container_name: ml-testing-toolkit
+    volumes:
+      - "./docker/ml-testing-toolkit/spec_files:/opt/mojaloop-testing-toolkit/spec_files"
+      - "./docker/ml-testing-toolkit/secrets:/opt/mojaloop-testing-toolkit/secrets"
+
+    ports:
+      - "5000:5000"
+      - "5050:5050"
+    environment:
+      - AUTH_ENABLED=FALSE
+    command: npm start
+    depends_on:
+      - mongo
+
+  mongo:
+    networks:
+        - mojaloop-net
+    image: mongo
+    ports:
+      - "27018:27017"
+  #
+  # for local development we want to have ttk-ui
+  #
+  # mojaloop-testing-toolkit-ui:
+  #   image: mojaloop/ml-testing-toolkit-ui:v11.8.4
+  #   ports:
+  #     - "6060:6060"
+  #   networks:
+  #     - mojaloop-net
+  #   environment:
+  #     - API_BASE_URL=http://localhost:5050
+  #     - AUTH_ENABLED=FALSE
+  #   command:
+  #     - sh
+  #     - /usr/share/nginx/start.sh

@@ -1,0 +1,5 @@
+description: Bulk transfer completed successfully
+content:
+  application/json:
+    schema:
+      $ref: ../schemas/bulkTransferResponse.yaml

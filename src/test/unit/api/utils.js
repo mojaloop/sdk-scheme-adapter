@@ -2,12 +2,12 @@ const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
 const supertest = require('supertest');
-const Validate = require('@internal/validate');
+const Validate = require('../../../lib/validate');
 
 const InboundServer = require('../../../InboundServer');
 const OutboundServer = require('../../../OutboundServer');
 const { Logger } = require('@mojaloop/sdk-standard-components');
-const Cache = require('@internal/cache');
+const Cache = require('../../../lib/cache');
 
 /**
  * Get OpenAPI spec and Validator for specified server

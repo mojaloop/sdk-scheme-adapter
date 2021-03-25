@@ -26,6 +26,7 @@ class MockMojaloopRequests extends MojaloopRequests {
         this.putQuotes = MockMojaloopRequests.__putQuotes;
         this.putQuotesError = MockMojaloopRequests.__putQuotesError;
         this.getAuthorizations = MockMojaloopRequests.__getAuthorizations;
+        this.postAuthorizations = MockMojaloopRequests.__postAuthorizations;        
         this.putAuthorizations = MockMojaloopRequests.__putAuthorizations;
         this.getTransfers = MockMojaloopRequests.__getTransfers;
         this.putTransactionRequests = MockMojaloopRequests.__putTransactionRequests;
@@ -49,6 +50,7 @@ MockMojaloopRequests.__postQuotes = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putQuotes = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putQuotesError = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__getAuthorizations = jest.fn(() => Promise.resolve());
+MockMojaloopRequests.__postAuthorizations = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putAuthorizations = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__getTransfers = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putTransactionRequests = jest.fn(() => Promise.resolve());
@@ -146,5 +148,5 @@ module.exports = {
     },
     Errors,
     WSO2Auth,
-    Logger,
+    Logger
 };

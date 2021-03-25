@@ -13,7 +13,7 @@ const util = require('util');
 
 const PSM = require('./common').PersistentStateMachine;
 const MojaloopRequests = require('@mojaloop/sdk-standard-components').MojaloopRequests;
-const deferredJob = require('@internal/shared/deferredJob');
+const deferredJob = require('./lib').deferredJob;
 
 function generate({
     /**
@@ -40,10 +40,20 @@ function generate({
      */
     argsValidationMethod,
 
+    /**
+     * @name reformatMessageMethod
+     * @description reformats message received from PUB/SUB channel, it is optional method, if not specified identify function is used by default
+     * @param {object} message - message received
+     * @returns {object} - reformatted message
+     */
+    reformatMessageMethod,
+
     // the name of the model, used for logging
     modelName
 }) {
 
+    // don't reformat message if method not specified
+    const reformatMessage = reformatMessageMethod || ((m) => m);
 
     const specStateMachine = {
         init: 'start',
@@ -65,7 +75,7 @@ function generate({
     /**
      * @name run
      * @description run the workflow logic
-     * @param {arguments} args - arguments 
+     * @param {arguments} args - arguments
      * @returns {Object} - the http response payload
      */
     async function run(args) {
@@ -81,7 +91,7 @@ function generate({
                     await this.requestAction(args);
                     // don't await to finish the save
                     this.saveToCache();
-        
+
                 // eslint-disable-next-line no-fallthrough
                 case 'succeeded':
                     // all steps complete so return
@@ -126,7 +136,7 @@ function generate({
     function getResponse() {
         const { data, logger } = this.context;
         let resp = { ...data };
-        
+
         // project some of our internal state into a more useful
         // representation to return to the SDK API consumer
         resp.currentState = mapCurrentState[data.currentState];
@@ -149,7 +159,7 @@ function generate({
         const { cache, logger } = this.context;
         const { requests, config } = this.handlersContext;
         logger.push({ args }).log('onRequestAction - arguments');
-        
+
         return deferredJob(cache, channelNameMethod(args))
             .init(async (channel) => {
                 const res = await requestActionMethod(requests, args);
@@ -158,7 +168,7 @@ function generate({
             })
             .job((message) => {
                 this.context.data = {
-                    ...message,
+                    ...reformatMessage(message),
                     currentState: this.state
                 };
                 logger.push({ message }).log('requestActionMethod message received');
@@ -168,13 +178,13 @@ function generate({
 
 
     /**
-     * 
+     *
      * @param {object} cache - the cache instance used to publish message
      * @param {object} message  - the message used to trigger deferred job
      * @param {object} args - args passed to channelNameMethod
      * @returns {Promise} - the promise which resolves when deferred job is invoked
      */
-    function triggerDeferredJob({ cache, message, args }) {
+    async function triggerDeferredJob({ cache, message, args }) {
         // input validation, it should throws if any of args is invalid
         argsValidationMethod(args);
 
@@ -214,6 +224,9 @@ function generate({
                         logger: config.logger,
                         peerEndpoint: config.peerEndpoint,
                         alsEndpoint: config.alsEndpoint,
+                        quotesEndpoint: config.quotesEndpoint,
+                        transfersEndpoint: config.transfersEndpoint,
+                        transactionRequestsEndpoint: config.transactionRequestsEndpoint,
                         dfspId: config.dfspId,
                         tls: config.tls,
                         jwsSign: config.jwsSign,

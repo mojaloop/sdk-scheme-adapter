@@ -1,0 +1,23 @@
+post:
+  summary: Sends money from one account to multiple accounts
+  description: >
+    The HTTP request `POST /bulkTransfers` is used to request the movement of
+    funds from payer DFSP to payees' DFSP.
+  tags:
+    - BulkTransfers
+  requestBody:
+    description: Bulk transfer request body
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/bulkTransferRequest.yaml
+    required: true
+  responses:
+    '200':
+      $ref: ../components/responses/bulkTransferSuccess.yaml
+    '400':
+      $ref: ../components/responses/bulkTransferBadRequest.yaml
+    '500':
+      $ref: ../components/responses/bulkTransferServerError.yaml
+    '504':
+      $ref: ../components/responses/bulkTransferTimeout.yaml

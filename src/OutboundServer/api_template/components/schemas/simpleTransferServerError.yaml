@@ -1,0 +1,5 @@
+description: An error occurred processing the simple transfers request
+content:
+  application/json:
+    schema:
+      $ref: ../schemas/errorSimpleTransfersResponse.yaml

@@ -1,0 +1,26 @@
+post:
+  summary: Create accounts on the Account Lookup Service
+  description: >-
+    The HTTP request `POST /accounts` is used to create account information on
+    the Account Lookup Service (ALS) regarding the provided list of identities.
+
+
+    Caller DFSP is used as the account source FSP information
+  tags:
+    - Accounts
+  requestBody:
+    description: Identities list request body
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/accountsRequest.yaml
+    required: true
+  responses:
+    '200':
+      $ref: ../components/responses/accountsCreationCompleted.yaml
+    '400':
+      $ref: ../components/responses/accountsCreationError.yaml
+    '500':
+      $ref: ../components/responses/accountsCreationError.yaml
+    '504':
+      $ref: ../components/responses/accountsCreationTimeout.yaml

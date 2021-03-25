@@ -1,0 +1,24 @@
+get:
+  summary: Retrieves information for a specific bulk quote
+  description: >-
+    The HTTP request `GET /bulkQuotes/{bulktQuoteId}` is used to get information
+    regarding a bulk quote created or requested earlier. The `{bulkQuoteId}` in
+    the URI should contain the `bulkQuoteId` that was used for the creation of
+    the bulk quote.
+  tags:
+    - BulkQuotes
+  parameters:
+    - $ref: ../components/parameters/bulkQuoteId.yaml
+  responses:
+    '200':
+      description: Bulk quote information successfully retrieved
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/bulkQuoteStatusResponse.yaml
+    '500':
+      description: An error occurred processing the bulk quote
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/errorResponse.yaml
