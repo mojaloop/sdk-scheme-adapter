@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [11.16.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.15.0...v11.16.0) (2021-03-26)
+
+
+### Features
+
+* add extensionList to quote request/response ([#269](https://github.com/mojaloop/sdk-scheme-adapter/issues/269)) ([9cbed66](https://github.com/mojaloop/sdk-scheme-adapter/commit/9cbed66f0db4190f2f34cd7ba3d531a8bbb95d79))
+
 ## [11.15.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.14.9...v11.15.0) (2021-03-18)
 
 
