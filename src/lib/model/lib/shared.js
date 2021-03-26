@@ -149,6 +149,10 @@ const mojaloopQuoteRequestToInternal = (external) => {
         internal.expiration = external.expiration;
     }
 
+    if(external.extensionList) {
+        internal.extensionList = external.extensionList;
+    }
+
     return internal;
 };
 
@@ -192,6 +196,10 @@ const internalQuoteResponseToMojaloop = (internal) => {
 
     if(internal.geoCode) {
         external.geoCode = internal.geoCode;
+    }
+
+    if(internal.extensionList) {
+        external.extensionList = internal.extensionList;
     }
 
     return external;
