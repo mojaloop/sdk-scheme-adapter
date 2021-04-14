@@ -1230,9 +1230,11 @@ export interface components {
     AuthorizationResponseType: "ENTERED" | "REJECTED" | "RESEND";
     /** POST /authorizations response object */
     authorizationsPostResponse: {
-      authenticationInfo?: components["schemas"]["AuthenticationInfo"];
-      responseType: components["schemas"]["AuthorizationResponseType"];
-      currentState?: components["schemas"]["async2SyncCurrentState"];
+      authorizations: {
+        authenticationInfo?: components["schemas"]["AuthenticationInfo"];
+        responseType: components["schemas"]["AuthorizationResponseType"];
+      };
+      currentState: components["schemas"]["async2SyncCurrentState"];
     };
     errorAuthorizationsResponse: components["schemas"]["errorResponse"] & {
       [key: string]: any;
