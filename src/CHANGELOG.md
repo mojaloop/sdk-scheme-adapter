@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [11.16.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.16.0...v11.16.1) (2021-04-14)
+
+
+### Bug Fixes
+
+* **api-outbound:** proper response schema for post /authorization sync response ([#270](https://github.com/mojaloop/sdk-scheme-adapter/issues/270)) ([6535c1d](https://github.com/mojaloop/sdk-scheme-adapter/commit/6535c1de145ff58db48bc5be61dae9b0133786d8))
+
 ## [11.16.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.15.0...v11.16.0) (2021-03-26)
 
 
