@@ -2498,14 +2498,20 @@ components:
       description: POST /authorizations response object
       type: object
       properties:
-        authenticationInfo:
-          $ref: '#/components/schemas/AuthenticationInfo'
-        responseType:
-          $ref: '#/components/schemas/AuthorizationResponseType'
+        authorizations:
+          type: object
+          properties:
+            authenticationInfo:
+              $ref: '#/components/schemas/AuthenticationInfo'
+            responseType:
+              $ref: '#/components/schemas/AuthorizationResponseType'
+          required:
+            - responseType
         currentState:
           $ref: '#/components/schemas/async2SyncCurrentState'
       required:
-        - responseType
+        - authorizations
+        - currentState
       additionalProperties: false
     errorAuthorizationsResponse:
       allOf:
