@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [11.16.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.16.1...v11.16.2) (2021-04-21)
+
+
+### Bug Fixes
+
+* correct transfers response structure as per API def ([#271](https://github.com/mojaloop/sdk-scheme-adapter/issues/271)) ([b143281](https://github.com/mojaloop/sdk-scheme-adapter/commit/b143281f6252bf5d228c94223959c6d7805a9efb))
+
 ### [11.16.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.16.0...v11.16.1) (2021-04-14)
 
 
