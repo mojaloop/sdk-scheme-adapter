@@ -158,7 +158,7 @@ describe('TransfersModel', () => {
 
                     // check that this.context.data is updated
                     expect(model.context.data).toEqual({
-                        transfers: { ...message },
+                        transfer: { ...message },
                         // current state will be updated by onAfterTransition which isn't called
                         // when manual invocation of transition handler happens
                         currentState: 'start'
