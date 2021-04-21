@@ -65,7 +65,7 @@ function argsValidation({ transferId, fspId, transfer }) {
  */
 function reformatMessage(message) {
     return {
-        transfers: { ...message }
+        transfer: { ...message }
     };
 }
 
