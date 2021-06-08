@@ -41,26 +41,27 @@ describe('/simpleTransfers', () => {
         expect(typeof res.data.transfer).toEqual('object');
     });
 
-    test('post - timeout', (done) => {
+    test('post - timeout', async () => {
         const postTransfersURI = `${env.OutboundHostURI}/simpleTransfers`;
         const transferId = uuid();
-        axios({
-            method: 'POST',
-            url: postTransfersURI,
-            data: {
-                fspId: 'timeout-fsp-id-transfer',
-                transfersPostRequest: {
-                    ...transfersPostRequest,
-                    transferId
+        try {
+            await axios({
+                method: 'POST',
+                url: postTransfersURI,
+                data: {
+                    fspId: 'timeout-fsp-id-transfer',
+                    transfersPostRequest: {
+                        ...transfersPostRequest,
+                        transferId
+                    }
+                },
+                headers: {
+                    'access-control-allow-origin': '*'
                 }
-            },
-            headers: {
-                'access-control-allow-origin': '*'
-            }
-        }).catch(err => {
+            });
+        } catch (err) {
             expect(err.response.status).toEqual(500);
             expect(err.response.data.message).toEqual('Timeout');
-            done();
-        });
+        }
     });
 });
