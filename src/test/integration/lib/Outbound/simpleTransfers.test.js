@@ -41,7 +41,7 @@ describe('/simpleTransfers', () => {
         expect(typeof res.data.transfer).toEqual('object');
     });
 
-    test('post - timeout', async (done) => {
+    test('post - timeout', (done) => {
         const postTransfersURI = `${env.OutboundHostURI}/simpleTransfers`;
         const transferId = uuid();
         axios({
