@@ -83,10 +83,15 @@ describe('Outbound Transfers API', () => {
                 serversInfo.reqOutbound.post('/transfers').
                     send(postTransfersBadBody).
                     expect(400, {
-                        message: '.body.to.idType should be equal to one of the allowed values',
+                        message: 'must be equal to one of the allowed values',
                         statusCode: 400,
                     }).
-                    end(done);
+                    end((err) => {
+                        if (err) {
+                            return done(err);
+                        }
+                        return done();
+                    });
             });
 
         test('should return success response', () => {
