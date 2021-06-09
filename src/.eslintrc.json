@@ -25,5 +25,6 @@
     ],
     "no-console": 2,
     "no-prototype-builtins": "off"
-  }
+  },
+  "plugins": ["jest"]
 }

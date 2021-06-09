@@ -143,7 +143,7 @@ describe('PartiesModel', () => {
 
     describe('onRequestAction', () => {
 
-        it('should implement happy flow', async (done) => {
+        it('should implement happy flow', async () => {
             const type = uuid();
             const id = uuid();
             const subIdValue = uuid();
@@ -160,33 +160,35 @@ describe('PartiesModel', () => {
                 }
             };
 
-            // manually invoke transition handler
-            model.onRequestAction(model.fsm, { type, id, subId: subIdValue })
-                .then(() => {
-                    // subscribe should be called only once
-                    expect(cache.subscribe).toBeCalledTimes(1);
+            const onRequestActionPromise = new Promise((resolve, reject) => {
+                // manually invoke transition handler
+                model.onRequestAction(model.fsm, { type, id, subId: subIdValue })
+                    .then(() => {
+                        // subscribe should be called only once
+                        expect(cache.subscribe).toBeCalledTimes(1);
 
-                    // subscribe should be done to proper notificationChannel
-                    expect(cache.subscribe.mock.calls[0][0]).toEqual(channel);
+                        // subscribe should be done to proper notificationChannel
+                        expect(cache.subscribe.mock.calls[0][0]).toEqual(channel);
 
-                    // check invocation of request.getParties
-                    expect(MojaloopRequests.__getParties).toBeCalledWith(type, id, subIdValue);
+                        // check invocation of request.getParties
+                        expect(MojaloopRequests.__getParties).toBeCalledWith(type, id, subIdValue);
 
-                    // check that this.context.data is updated
-                    expect(model.context.data).toEqual({
-                        ...message,
-                        // current state will be updated by onAfterTransition which isn't called 
-                        // when manual invocation of transition handler happens
-                        currentState: 'start'   
-                    });
-                    // handler should be called only once
-                    expect(handler).toBeCalledTimes(1);
+                        // check that this.context.data is updated
+                        expect(model.context.data).toEqual({
+                            ...message,
+                            // current state will be updated by onAfterTransition which isn't called 
+                            // when manual invocation of transition handler happens
+                            currentState: 'start'   
+                        });
+                        // handler should be called only once
+                        expect(handler).toBeCalledTimes(1);
 
-                    // handler should unsubscribe from notification channel
-                    expect(cache.unsubscribe).toBeCalledTimes(1);
-                    expect(cache.unsubscribe).toBeCalledWith(channel, subId);
-                    done();
-                });
+                        // handler should unsubscribe from notification channel
+                        expect(cache.unsubscribe).toBeCalledTimes(1);
+                        expect(cache.unsubscribe).toBeCalledWith(channel, subId);
+                        resolve();
+                    }).catch((err) => { reject(err); } );
+            });
 
             // ensure handler wasn't called before publishing the message
             expect(handler).not.toBeCalled();
@@ -198,9 +200,11 @@ describe('PartiesModel', () => {
             const df = deferredJob(cache, channel);
             setImmediate(() => df.trigger(message));
 
+            // wait for onRequestAction
+            await onRequestActionPromise;
         });
 
-        it('should handle timeouts', async (done) => {
+        it('should handle timeouts', async () => {
             const type = uuid();
             const id = uuid();
             const subIdValue = uuid();
@@ -217,26 +221,29 @@ describe('PartiesModel', () => {
                 }
             };
 
-            // manually invoke transition handler
-            model.onRequestAction(model.fsm, { type, id, subId: subIdValue })
-                .catch((err) => {
-                    // subscribe should be called only once
-                    expect(err instanceof pt.TimeoutError).toBeTruthy();
+            const onRequestActionPromise = new Promise((resolve, reject) => {
+                // manually invoke transition handler
+                model.onRequestAction(model.fsm, { type, id, subId: subIdValue })
+                    .then(() => reject())
+                    .catch((err) => {
+                        // subscribe should be called only once
+                        expect(err instanceof pt.TimeoutError).toBeTruthy();
 
-                    // subscribe should be done to proper notificationChannel
-                    expect(cache.subscribe.mock.calls[0][0]).toEqual(channel);
+                        // subscribe should be done to proper notificationChannel
+                        expect(cache.subscribe.mock.calls[0][0]).toEqual(channel);
 
-                    // check invocation of request.getParties
-                    expect(MojaloopRequests.__getParties).toBeCalledWith(type, id, subIdValue);
+                        // check invocation of request.getParties
+                        expect(MojaloopRequests.__getParties).toBeCalledWith(type, id, subIdValue);
 
-                    // handler should be called only once
-                    expect(handler).toBeCalledTimes(0);
+                        // handler should be called only once
+                        expect(handler).toBeCalledTimes(0);
 
-                    // handler should unsubscribe from notification channel
-                    expect(cache.unsubscribe).toBeCalledTimes(1);
-                    expect(cache.unsubscribe).toBeCalledWith(channel, subId);
-                    done();
-                });
+                        // handler should unsubscribe from notification channel
+                        expect(cache.unsubscribe).toBeCalledTimes(1);
+                        expect(cache.unsubscribe).toBeCalledWith(channel, subId);
+                        resolve();
+                    });
+            });
 
             // ensure handler wasn't called before publishing the message
             expect(handler).not.toBeCalled();
@@ -253,9 +260,11 @@ describe('PartiesModel', () => {
                 (modelConfig.requestProcessingTimeoutSeconds+1)*1000
             );
 
+            // wait for onRequestAction
+            await onRequestActionPromise;
         });
 
-        it('should unsubscribe from cache in case when error happens in workflow run', async (done) => {
+        it('should unsubscribe from cache in case when error happens in workflow run', async () => {
             const type = uuid();
             const id = uuid();
             const subIdValue = uuid();
@@ -264,21 +273,28 @@ describe('PartiesModel', () => {
             const model = await Model.create(data, cacheKey, modelConfig);
             const { cache } = model.context;
 
-            // invoke transition handler
-            model.onRequestAction(model.fsm, { type, id, subId: subIdValue }).catch((err) => {
-                expect(err.message).toEqual('Unexpected token u in JSON at position 0');
-                expect(cache.unsubscribe).toBeCalledTimes(1);
-                expect(cache.unsubscribe).toBeCalledWith(channel, subId);
-                done();
+            const onRequestActionPromise = new Promise((resolve, reject) => {
+                // invoke transition handler
+                model.onRequestAction(model.fsm, { type, id, subId: subIdValue })
+                    .then(() => reject())
+                    .catch((err) => {
+                        expect(err.message).toEqual('Unexpected token u in JSON at position 0');
+                        expect(cache.unsubscribe).toBeCalledTimes(1);
+                        expect(cache.unsubscribe).toBeCalledWith(channel, subId);
+                        resolve();
+                    });
             });
 
             // fire publication to channel with invalid message 
             // should throw the exception from JSON.parse
             const df = deferredJob(cache, channel);
             setImmediate(() => df.trigger(undefined));
+
+            // wait for onRequestAction
+            await onRequestActionPromise;
         });
 
-        it('should unsubscribe from cache in case when error happens Mojaloop requests', async (done) => {
+        it('should unsubscribe from cache in case when error happens Mojaloop requests', async () => {
             // simulate error
             MojaloopRequests.__getParties = jest.fn(() => Promise.reject('getParties failed'));
             const type = uuid();
@@ -300,7 +316,6 @@ describe('PartiesModel', () => {
                 // handler should unsubscribe from notification channel
                 expect(cache.unsubscribe).toBeCalledTimes(1);
                 expect(cache.unsubscribe).toBeCalledWith(channel, subId);
-                done();
             }
         });
 
@@ -362,7 +377,7 @@ describe('PartiesModel', () => {
             expect(model.context.logger.log).toBeCalledWith('State machine in errored state');
         });
 
-        it('handling errors', async (done) => {
+        it('handling errors', async () => {
             const type = uuid();
             const id = uuid();
             const subIdValue = uuid();
@@ -372,16 +387,18 @@ describe('PartiesModel', () => {
             model.requestAction = jest.fn(() => { throw new Error('mocked error'); });
 
             model.context.data.currentState = 'start';
-            
-            model.run({ type, id, subId: subIdValue }).catch((err) => {
+            try {
+                await model.run({ type, id, subId: subIdValue });
+                throw new Error('this point should not be reached');
+            } catch (err) {
                 expect(model.context.data.currentState).toEqual('errored');
                 expect(err.requestActionState).toEqual( {
                     ...data,
                     currentState: 'ERROR_OCCURRED',
                 });
-                done();
-            });
+            }
         });
+
         it('should handle errors', async () => {
             const type = uuid();
             const id = uuid();
