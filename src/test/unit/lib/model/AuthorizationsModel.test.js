@@ -370,6 +370,7 @@ describe('AuthorizationsModel', () => {
 
             try { 
                 await model.run({ transactionRequestId, fspId, authorization });
+                throw new Error('this point should not be reached');
             } catch (err) {
                 expect(model.context.data.currentState).toEqual('errored');
                 expect(err.requestActionState).toEqual({
