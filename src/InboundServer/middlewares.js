@@ -161,6 +161,7 @@ const createRequestIdGenerator = () => async (ctx, next) => {
 const createHeaderValidator = (logger) => async (ctx, next) => {
     const validHeaders = new Set([
         'application/vnd.interoperability.parties+json;version=1.0',
+        'application/vnd.interoperability.parties+json;version=1.1',
         'application/vnd.interoperability.participants+json;version=1.0',
         'application/vnd.interoperability.quotes+json;version=1.0',
         'application/vnd.interoperability.quotes+json;version=1.1',
