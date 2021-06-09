@@ -189,7 +189,7 @@ class Validator {
                 err = new Errors.MojaloopFSPIOPError(firstError, util.format('Request failed validation', 
                     validationResult), null, Errors.MojaloopApiErrorCodes.MISSING_ELEMENT);
 
-                // overwrite the defaul error message with something more useful
+                // overwrite the default error message with something more useful
                 err.apiErrorCode.message = `${firstError.dataPath} ${firstError.message}`;
                 throw err;
             }

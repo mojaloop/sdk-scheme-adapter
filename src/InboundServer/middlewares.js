@@ -171,8 +171,7 @@ const createHeaderValidator = (logger) => async (ctx, next) => {
         'application/vnd.interoperability.transactionRequests+json;version=1.0',
         'application/vnd.interoperability.transfers+json;version=1.0',
         'application/vnd.interoperability.transfers+json;version=1.1',
-        'application/vnd.interoperability.authorizations+json;version=1.0',
-        'application/json'
+        'application/vnd.interoperability.authorizations+json;version=1.0'
     ]);
     if (validHeaders.has(ctx.request.headers['content-type'])) {
         try {
@@ -186,6 +185,19 @@ const createHeaderValidator = (logger) => async (ctx, next) => {
                 Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX).toApiErrorObject();
             return;
         }
+    } else { // We must deal with invalid content-type header
+        const err = new Errors.MojaloopFSPIOPError(
+            null, 
+            `Invalid header content-type: ${ctx.request.headers['content-type']}`, 
+            null,
+            Errors.MojaloopApiErrorCodes.UNACCEPTABLE_VERSION);
+        // overwrite the default error message with something more useful
+        err.apiErrorCode.message = `${err.apiErrorCode.message} - ${err.message}`;
+
+        logger.push({ err }).log('Error validating requested content-type header');
+        ctx.response.status = Errors.MojaloopApiErrorCodes.UNACCEPTABLE_VERSION.httpStatusCode;
+        ctx.response.body = err.toApiErrorObject();
+        return;
     }
     await next();
 };
