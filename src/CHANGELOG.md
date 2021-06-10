@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [11.17.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.16.2...v11.17.0) (2021-06-09)
+
+
+### Features
+
+* **2151:** helm-release-v12.1.0 ([391dacc](https://github.com/mojaloop/sdk-scheme-adapter/commit/391dacc88558acb75277c197c64f0ee8aa5ada17))
+
 ### [11.16.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.16.1...v11.16.2) (2021-04-21)
 
 
