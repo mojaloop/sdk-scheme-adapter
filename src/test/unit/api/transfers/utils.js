@@ -4,7 +4,6 @@ const OpenAPIResponseValidator = require('openapi-response-validator').default;
 const { Logger } = require('@mojaloop/sdk-standard-components');
 const defaultConfig = require('../../data/defaultConfig');
 const postTransfersSimpleBody = require('./data/postTransfersSimpleBody');
-const commonHttpHeaders = require('../../data/commonHttpHeaders');
 
 /**
  *

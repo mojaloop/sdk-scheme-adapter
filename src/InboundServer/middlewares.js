@@ -12,7 +12,7 @@ const coBody = require('co-body');
 
 const randomPhrase = require('../lib/randomphrase');
 const { Jws, Errors } = require('@mojaloop/sdk-standard-components');
-const { parseAcceptHeader, parseContentTypeHeader, protocolVersions, protocolVersionsMap } = require('../../src/lib/util/headerValidation')
+const { parseAcceptHeader, parseContentTypeHeader, protocolVersions, protocolVersionsMap } = require('../../src/lib/util/headerValidation');
 
 const defaultProtocolResources = [
     'parties',
@@ -22,12 +22,12 @@ const defaultProtocolResources = [
     'bulkTransfers',
     'transactionRequests',
     'authorizations'
-  ]
+];
 
 const defaultProtocolVersions = [
     ...protocolVersions.ONE,
     protocolVersions.anyVersion
-]
+];
 
 const errorMessages = {
     REQUESTED_VERSION_NOT_SUPPORTED: 'The Client requested an unsupported version, see extension list for supported version(s).',
@@ -36,7 +36,7 @@ const errorMessages = {
     REQUIRE_ACCEPT_HEADER: 'Accept is required',
     REQUIRE_CONTENT_TYPE_HEADER: 'Content-type is required',
     SUPPLIED_VERSION_NOT_SUPPORTED: 'Client supplied a protocol version which is not supported by the server'
-}
+};
 
 /**
  * Log raw to console as a last resort
@@ -191,11 +191,11 @@ const createHeaderValidator = (logger) => async (
     next,
     resources = defaultProtocolResources,
     supportedProtocolVersions = defaultProtocolVersions
-    ) => {
-    const request = ctx.request
+) => {
+    const request = ctx.request;
 
     // First, extract the resource type from the path
-    const resource = request.path.replace(/^\//, '').split('/')[0]
+    const resource = request.path.replace(/^\//, '').split('/')[0];
 
     // Only validate requests for the requested resources
     if (!resources.includes(resource)) {
@@ -215,7 +215,7 @@ const createHeaderValidator = (logger) => async (
             ).toApiErrorObject();
             return;
         }
-        const accept = parseAcceptHeader(resource, request.headers.accept)
+        const accept = parseAcceptHeader(resource, request.headers.accept);
         if (!accept.valid) {
             ctx.response.status = Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX.httpStatusCode;
             ctx.response.body = new Errors.MojaloopFSPIOPError(
@@ -241,10 +241,18 @@ const createHeaderValidator = (logger) => async (
 
     // Always validate the content-type header
     if (request.headers['content-type'] === undefined) {
-        throw createFSPIOPError(Enums.FSPIOPErrorCodes.MISSING_ELEMENT, errorMessages.REQUIRE_CONTENT_TYPE_HEADER)
+        ctx.response.status = Errors.MojaloopApiErrorCodes.MISSING_ELEMENT.httpStatusCode;
+        ctx.response.body = new Errors.MojaloopFSPIOPError(
+            Errors.MojaloopApiErrorObjectFromCode(Errors.MojaloopApiErrorCodes.MISSING_ELEMENT.httpStatusCode),
+            errorMessages.REQUIRE_CONTENT_TYPE_HEADER,
+            null,
+            Errors.MojaloopApiErrorCodes.MISSING_ELEMENT,
+            protocolVersionsMap
+        ).toApiErrorObject();
+        return;
     }
 
-    const contentType = parseContentTypeHeader(resource, request.headers['content-type'])
+    const contentType = parseContentTypeHeader(resource, request.headers['content-type']);
     if (!contentType.valid) {
         ctx.response.status = Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX.httpStatusCode;
         ctx.response.body = new Errors.MojaloopFSPIOPError(

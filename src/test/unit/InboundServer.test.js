@@ -73,9 +73,10 @@ describe('Inbound Server', () => {
                 .set('fspiop-uri', '/parties/MSISDN/123456789')
                 .set('date', new Date().toISOString());
             await svr.stop();
-            expect(result.status).toEqual(expectedStatusCode)
+            expect(result.status).toEqual(expectedStatusCode);
+
             if (expectedBody) {
-                expect(result.body).toEqual(expectedBody)
+                expect(result.body).toEqual(expectedBody);
             }
         }
 
@@ -97,12 +98,22 @@ describe('Inbound Server', () => {
 
         test('returns error on invalid quotes content-type headers', async () => {
             await testPartiesHeaderValidation(
+                'application/json',
+                400,
+                {
+                    'errorInformation': {
+                        'errorCode': '3101',
+                        'errorDescription': 'Malformed syntax'
+                    }
+                }
+            );
+            await testPartiesHeaderValidation(
                 'application/vnd.interoperability.test+json;version=1.0',
                 400,
                 {
-                    "errorInformation": {
-                        "errorCode": "3101",
-                        "errorDescription": "Malformed syntax"
+                    'errorInformation': {
+                        'errorCode': '3101',
+                        'errorDescription': 'Malformed syntax'
                     }
                 }
             );
@@ -110,10 +121,10 @@ describe('Inbound Server', () => {
                 'application/vnd.interoperability.parties+json;version=6.0',
                 406,
                 {
-                    "errorInformation": {
-                        "errorCode": "3001",
-                        "errorDescription": "Unacceptable version requested",
-                        "extensionList": expect.any(Array)
+                    'errorInformation': {
+                        'errorCode': '3001',
+                        'errorDescription': 'Unacceptable version requested',
+                        'extensionList': expect.any(Array)
                     }
                 }
             );
@@ -145,7 +156,7 @@ describe('Inbound Server', () => {
             expect(Jws.validator.__validate).toHaveBeenCalledTimes(expectedValidationCalls);
         }
 
-        async function testQuoteHeaderValidation(contentType, expectedStatusCode, expectedBody = null) {
+        async function testQuotesHeaderValidation(contentType, expectedStatusCode, expectedBody = null) {
             const logger = new Logger.Logger({ stringify: () => '' });
             const cache = new Cache({ ...serverConfig.cacheConfig, logger: logger.push({ component: 'cache' }) });
             const svr = new InboundServer(serverConfig, logger, cache);
@@ -159,9 +170,9 @@ describe('Inbound Server', () => {
                 .set('fspiop-uri', '/quotes')
                 .set('date', new Date().toISOString());
             await svr.stop();
-            expect(result.status).toEqual(expectedStatusCode)
+            expect(result.status).toEqual(expectedStatusCode);
             if (expectedBody) {
-                expect(result.body).toEqual(expectedBody)
+                expect(result.body).toEqual(expectedBody);
             }
         }
 
@@ -172,28 +183,38 @@ describe('Inbound Server', () => {
             testQuotesJwsValidation(true, true, 1));
 
         test('processes quotes request with valid content-type headers successfully', async () => {
-            await testQuoteHeaderValidation('application/vnd.interoperability.quotes+json;version=1.0', 202);
+            await testQuotesHeaderValidation('application/vnd.interoperability.quotes+json;version=1.0', 202);
         });
 
         test('returns error on invalid quotes content-type headers', async () => {
-            await testQuoteHeaderValidation(
-                'application/vnd.interoperability.parties+json;version=1.0',
+            await testQuotesHeaderValidation(
+                'application/json',
                 400,
                 {
-                    "errorInformation": {
-                        "errorCode": "3101",
-                        "errorDescription": "Malformed syntax"
+                    'errorInformation': {
+                        'errorCode': '3101',
+                        'errorDescription': 'Malformed syntax'
                     }
                 }
             );
-            await testQuoteHeaderValidation(
+            await testQuotesHeaderValidation(
+                'application/vnd.interoperability.parties+json;version=1.0',
+                400,
+                {
+                    'errorInformation': {
+                        'errorCode': '3101',
+                        'errorDescription': 'Malformed syntax'
+                    }
+                }
+            );
+            await testQuotesHeaderValidation(
                 'application/vnd.interoperability.quotes+json;version=6.0',
                 406,
                 {
-                    "errorInformation": {
-                        "errorCode": "3001",
-                        "errorDescription": "Unacceptable version requested",
-                        "extensionList": expect.any(Array)
+                    'errorInformation': {
+                        'errorCode': '3001',
+                        'errorDescription': 'Unacceptable version requested',
+                        'extensionList': expect.any(Array)
                     }
                 }
             );
@@ -240,9 +261,9 @@ describe('Inbound Server', () => {
                 .set('fspiop-uri', '/participants/00000000-0000-1000-a000-000000000002')
                 .set('date', new Date().toISOString());
             await svr.stop();
-            expect(result.status).toEqual(expectedStatusCode)
+            expect(result.status).toEqual(expectedStatusCode);
             if (expectedBody) {
-                expect(result.body).toEqual(expectedBody)
+                expect(result.body).toEqual(expectedBody);
             }
         }
 
@@ -258,12 +279,22 @@ describe('Inbound Server', () => {
 
         test('returns error on invalid participants content-type headers', async () => {
             await testParticipantsHeaderValidation(
+                'application/json',
+                400,
+                {
+                    'errorInformation': {
+                        'errorCode': '3101',
+                        'errorDescription': 'Malformed syntax'
+                    }
+                }
+            );
+            await testParticipantsHeaderValidation(
                 'application/vnd.interoperability.parties+json;version=1.0',
                 400,
                 {
-                    "errorInformation": {
-                        "errorCode": "3101",
-                        "errorDescription": "Malformed syntax"
+                    'errorInformation': {
+                        'errorCode': '3101',
+                        'errorDescription': 'Malformed syntax'
                     }
                 }
             );
@@ -271,10 +302,10 @@ describe('Inbound Server', () => {
                 'application/vnd.interoperability.participants+json;version=6.0',
                 406,
                 {
-                    "errorInformation": {
-                        "errorCode": "3001",
-                        "errorDescription": "Unacceptable version requested",
-                        "extensionList": expect.any(Array)
+                    'errorInformation': {
+                        'errorCode': '3001',
+                        'errorDescription': 'Unacceptable version requested',
+                        'extensionList': expect.any(Array)
                     }
                 }
             );
