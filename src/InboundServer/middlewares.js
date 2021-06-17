@@ -179,7 +179,9 @@ const createRequestIdGenerator = () => async (ctx, next) => {
 
 /**
  * Deal with mojaloop API content type headers, treat as JSON
- * This is based the hapi header validation plugin found in `central-services-shared`
+ * This is based on the Hapi header validation plugin found in `central-services-shared`
+ * Since `sdk-scheme-adapter` uses Koa instead of Hapi we convert the plugin
+ * into middleware
  * @param logger
  * @return {Function}
  */
