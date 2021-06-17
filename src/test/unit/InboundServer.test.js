@@ -92,11 +92,11 @@ describe('Inbound Server', () => {
         test('does not validate incoming JWS when VALIDATE_INBOUND_JWS is false and VALIDATE_INBOUND_PUT_PARTIES_JWS is true', () =>
             testPartiesJwsValidation(false, true, 0));
 
-        test('processes quotes request with valid content-type headers successfully', async () => {
+        test('processes parties request with valid content-type headers successfully', async () => {
             await testPartiesHeaderValidation('application/vnd.interoperability.parties+json;version=1.0', 200);
         });
 
-        test('returns error on invalid quotes content-type headers', async () => {
+        test('returns error on invalid parties content-type headers', async () => {
             await testPartiesHeaderValidation(
                 'application/json',
                 400,
