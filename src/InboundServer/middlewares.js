@@ -12,6 +12,31 @@ const coBody = require('co-body');
 
 const randomPhrase = require('../lib/randomphrase');
 const { Jws, Errors } = require('@mojaloop/sdk-standard-components');
+const { parseAcceptHeader, parseContentTypeHeader, protocolVersions, protocolVersionsMap } = require('../../src/lib/util/headerValidation')
+
+const defaultProtocolResources = [
+    'parties',
+    'participants',
+    'quotes',
+    'transfers',
+    'bulkTransfers',
+    'transactionRequests',
+    'authorizations'
+  ]
+
+const defaultProtocolVersions = [
+    ...protocolVersions.ONE,
+    protocolVersions.anyVersion
+]
+
+const errorMessages = {
+    REQUESTED_VERSION_NOT_SUPPORTED: 'The Client requested an unsupported version, see extension list for supported version(s).',
+    INVALID_ACCEPT_HEADER: 'Invalid accept header',
+    INVALID_CONTENT_TYPE_HEADER: 'Invalid content-type header',
+    REQUIRE_ACCEPT_HEADER: 'Accept is required',
+    REQUIRE_CONTENT_TYPE_HEADER: 'Content-type is required',
+    SUPPLIED_VERSION_NOT_SUPPORTED: 'Client supplied a protocol version which is not supported by the server'
+}
 
 /**
  * Log raw to console as a last resort
@@ -154,38 +179,102 @@ const createRequestIdGenerator = () => async (ctx, next) => {
 
 /**
  * Deal with mojaloop API content type headers, treat as JSON
+ * This is based the hapi header validation plugin found in `central-services-shared`
  * @param logger
  * @return {Function}
  */
 //
-const createHeaderValidator = (logger) => async (ctx, next) => {
-    const validHeaders = new Set([
-        'application/vnd.interoperability.parties+json;version=1.0',
-        'application/vnd.interoperability.parties+json;version=1.1',
-        'application/vnd.interoperability.participants+json;version=1.0',
-        'application/vnd.interoperability.quotes+json;version=1.0',
-        'application/vnd.interoperability.quotes+json;version=1.1',
-        'application/vnd.interoperability.bulkQuotes+json;version=1.0',
-        'application/vnd.interoperability.bulkQuotes+json;version=1.1',
-        'application/vnd.interoperability.bulkTransfers+json;version=1.0',
-        'application/vnd.interoperability.transactionRequests+json;version=1.0',
-        'application/vnd.interoperability.transfers+json;version=1.0',
-        'application/vnd.interoperability.transfers+json;version=1.1',
-        'application/vnd.interoperability.authorizations+json;version=1.0',
-        'application/json'
-    ]);
-    if (validHeaders.has(ctx.request.headers['content-type'])) {
-        try {
-            ctx.request.body = await coBody.json(ctx.req);
-        }
-        catch(err) {
-            // error parsing body
-            logger.push({ err }).log('Error parsing body');
-            ctx.response.status = Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX.httpStatusCode;
-            ctx.response.body = new Errors.MojaloopFSPIOPError(err, err.message, null,
-                Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX).toApiErrorObject();
+const createHeaderValidator = (logger) => async (
+    ctx,
+    next,
+    resources = defaultProtocolResources,
+    supportedProtocolVersions = defaultProtocolVersions
+    ) => {
+    const request = ctx.request
+
+    // First, extract the resource type from the path
+    const resource = request.path.replace(/^\//, '').split('/')[0]
+
+    // Only validate requests for the requested resources
+    if (!resources.includes(resource)) {
+        await next();
+    }
+
+    // Always validate the accept header for a get request, or optionally if it has been
+    // supplied
+    if (request.method.toLowerCase() === 'get' || request.headers.accept) {
+        if (request.headers.accept === undefined) {
+            ctx.response.status = Errors.MojaloopApiErrorCodes.MISSING_ELEMENT.httpStatusCode;
+            ctx.response.body = new Errors.MojaloopFSPIOPError(
+                Errors.MojaloopApiErrorObjectFromCode(Errors.MojaloopApiErrorCodes.MISSING_ELEMENT.httpStatusCode),
+                errorMessages.REQUIRE_ACCEPT_HEADER,
+                null,
+                Errors.MojaloopApiErrorCodes.MISSING_ELEMENT
+            ).toApiErrorObject();
             return;
         }
+        const accept = parseAcceptHeader(resource, request.headers.accept)
+        if (!accept.valid) {
+            ctx.response.status = Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX.httpStatusCode;
+            ctx.response.body = new Errors.MojaloopFSPIOPError(
+                Errors.MojaloopApiErrorObjectFromCode(Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX.httpStatusCode),
+                errorMessages.INVALID_ACCEPT_HEADER,
+                null,
+                Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX
+            ).toApiErrorObject();
+            return;
+        }
+        if (!supportedProtocolVersions.some(supportedVer => accept.versions.has(supportedVer))) {
+            ctx.response.status = Errors.MojaloopApiErrorCodes.UNACCEPTABLE_VERSION.httpStatusCode;
+            ctx.response.body = new Errors.MojaloopFSPIOPError(
+                Errors.MojaloopApiErrorObjectFromCode(Errors.MojaloopApiErrorCodes.UNACCEPTABLE_VERSION.httpStatusCode),
+                errorMessages.REQUESTED_VERSION_NOT_SUPPORTED,
+                null,
+                Errors.MojaloopApiErrorCodes.UNACCEPTABLE_VERSION,
+                protocolVersionsMap
+            ).toApiErrorObject();
+            return;
+        }
+    }
+
+    // Always validate the content-type header
+    if (request.headers['content-type'] === undefined) {
+        throw createFSPIOPError(Enums.FSPIOPErrorCodes.MISSING_ELEMENT, errorMessages.REQUIRE_CONTENT_TYPE_HEADER)
+    }
+
+    const contentType = parseContentTypeHeader(resource, request.headers['content-type'])
+    if (!contentType.valid) {
+        ctx.response.status = Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX.httpStatusCode;
+        ctx.response.body = new Errors.MojaloopFSPIOPError(
+            Errors.MojaloopApiErrorObjectFromCode(Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX.httpStatusCode),
+            errorMessages.INVALID_CONTENT_TYPE_HEADER,
+            null,
+            Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX
+        ).toApiErrorObject();
+        return;
+    }
+    if (!supportedProtocolVersions.includes(contentType.version)) {
+        ctx.response.status = Errors.MojaloopApiErrorCodes.UNACCEPTABLE_VERSION.httpStatusCode;
+        ctx.response.body = new Errors.MojaloopFSPIOPError(
+            Errors.MojaloopApiErrorObjectFromCode(Errors.MojaloopApiErrorCodes.UNACCEPTABLE_VERSION.httpStatusCode),
+            errorMessages.SUPPLIED_VERSION_NOT_SUPPORTED,
+            null,
+            Errors.MojaloopApiErrorCodes.UNACCEPTABLE_VERSION,
+            protocolVersionsMap
+        ).toApiErrorObject();
+        return;
+    }
+
+    try {
+        ctx.request.body = await coBody.json(ctx.req);
+    }
+    catch(err) {
+        // error parsing body
+        logger.push({ err }).log('Error parsing body');
+        ctx.response.status = Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX.httpStatusCode;
+        ctx.response.body = new Errors.MojaloopFSPIOPError(err, err.message, null,
+            Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX).toApiErrorObject();
+        return;
     }
     await next();
 };

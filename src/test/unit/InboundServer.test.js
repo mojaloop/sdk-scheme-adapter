@@ -16,7 +16,6 @@ const defaultConfig = require('./data/defaultConfig');
 const putPartiesBody = require('./data/putPartiesBody');
 const postQuotesBody = require('./data/postQuotesBody');
 const putParticipantsBody = require('./data/putParticipantsBody');
-const commonHttpHeaders = require('./data/commonHttpHeaders');
 
 jest.mock('../../lib/cache');
 jest.mock('@mojaloop/sdk-standard-components');
@@ -51,7 +50,7 @@ describe('Inbound Server', () => {
             await supertest(svr._server)
                 .put('/parties/MSISDN/123456789')
                 .send(putPartiesBody)
-                .set(commonHttpHeaders)
+                .set('content-type', 'application/vnd.interoperability.parties+json;version=1.0')
                 .set('fspiop-http-method', 'PUT')
                 .set('fspiop-uri', '/parties/MSISDN/123456789')
                 .set('date', new Date().toISOString());
@@ -88,7 +87,7 @@ describe('Inbound Server', () => {
             await supertest(svr._server)
                 .post('/quotes')
                 .send(postQuotesBody)
-                .set(commonHttpHeaders)
+                .set('content-type', 'application/vnd.interoperability.quotes+json;version=1.0')
                 .set('fspiop-http-method', 'POST')
                 .set('fspiop-uri', '/quotes')
                 .set('date', new Date().toISOString());
@@ -120,7 +119,7 @@ describe('Inbound Server', () => {
             await supertest(svr._server)
                 .put('/participants/00000000-0000-1000-a000-000000000002')
                 .send(putParticipantsBody)
-                .set(commonHttpHeaders)
+                .set('content-type', 'application/vnd.interoperability.participants+json;version=1.0')
                 .set('fspiop-http-method', 'PUT')
                 .set('fspiop-uri', '/participants/00000000-0000-1000-a000-000000000002')
                 .set('date', new Date().toISOString());

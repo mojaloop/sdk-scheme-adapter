@@ -4,6 +4,7 @@ const OpenAPIResponseValidator = require('openapi-response-validator').default;
 const { Logger } = require('@mojaloop/sdk-standard-components');
 const defaultConfig = require('../../data/defaultConfig');
 const postTransfersSimpleBody = require('./data/postTransfersSimpleBody');
+const commonHttpHeaders = require('../../data/commonHttpHeaders');
 
 /**
  *
@@ -35,6 +36,7 @@ function createGetTransfersTester({ reqInbound, reqOutbound, apiSpecsOutbound })
 
             return reqInbound.put(putUrl)
                 .send(putBody)
+                .set('content-type', 'application/vnd.interoperability.transfers+json;version=1.0')
                 .set('Date', new Date().toISOString())
                 .set('fspiop-source', 'mojaloop-sdk')
                 .expect(200);
@@ -101,19 +103,23 @@ function createPostTransfersTester(
             const method = req.method;
             let putBody;
             let putUrl;
+            let contentType;
             requestValidatorInbound.validateRequest(
                 {method, path: urlPath, request: {headers, body}}, logger);
             if (urlPath.startsWith('/parties/')) {
                 putBody = await Promise.resolve(bodyFn.parties.put());
                 putUrl = urlPath;
+                contentType = 'application/vnd.interoperability.parties+json;version=1.0';
             } else if (urlPath === '/quotes') {
                 expect(body).toEqual(bodyFn.quotes.post(body));
                 putBody = await Promise.resolve(bodyFn.quotes.put(body));
                 putUrl = `/quotes/${body.quoteId}`;
+                contentType = 'application/vnd.interoperability.quotes+json;version=1.0';
             } else if (urlPath === '/transfers') {
                 expect(body).toEqual(bodyFn.transfers.post(body));
                 putBody = await Promise.resolve(bodyFn.transfers.put(body));
                 putUrl = `/transfers/${body.transferId}`;
+                contentType = 'application/vnd.interoperability.transfers+json;version=1.0';
             } else {
                 throw new Error(`Unexpected url ${urlPath}`);
             }
@@ -126,6 +132,7 @@ function createPostTransfersTester(
             currentRequest = reqInbound.put(putUrl)
                 .send(putBody)
                 .set('Date', new Date().toISOString())
+                .set('content-type', contentType)
                 .set('fspiop-source', 'mojaloop-sdk')
                 .expect(200);
             return currentRequest;
