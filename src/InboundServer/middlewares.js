@@ -12,31 +12,16 @@ const coBody = require('co-body');
 
 const randomPhrase = require('../lib/randomphrase');
 const { Jws, Errors } = require('@mojaloop/sdk-standard-components');
-const { parseAcceptHeader, parseContentTypeHeader, protocolVersions, protocolVersionsMap } = require('../../src/lib/util/headerValidation');
-
-const defaultProtocolResources = [
-    'parties',
-    'participants',
-    'quotes',
-    'transfers',
-    'bulkTransfers',
-    'transactionRequests',
-    'authorizations'
-];
-
-const defaultProtocolVersions = [
-    ...protocolVersions.ONE,
-    protocolVersions.anyVersion
-];
-
-const errorMessages = {
-    REQUESTED_VERSION_NOT_SUPPORTED: 'The Client requested an unsupported version, see extension list for supported version(s).',
-    INVALID_ACCEPT_HEADER: 'Invalid accept header',
-    INVALID_CONTENT_TYPE_HEADER: 'Invalid content-type header',
-    REQUIRE_ACCEPT_HEADER: 'Accept is required',
-    REQUIRE_CONTENT_TYPE_HEADER: 'Content-type is required',
-    SUPPLIED_VERSION_NOT_SUPPORTED: 'Client supplied a protocol version which is not supported by the server'
-};
+const {
+    parseAcceptHeader,
+    parseContentTypeHeader,
+    protocolVersionsMap
+} = require('@mojaloop/central-services-shared').Util.HeaderValidation;
+const {
+    defaultProtocolResources,
+    defaultProtocolVersions,
+    errorMessages
+} = require('@mojaloop/central-services-shared').Util.Hapi.FSPIOPHeaderValidation;
 
 /**
  * Log raw to console as a last resort
