@@ -1,0 +1,49 @@
+{
+  "decisions": {
+    "1556|@mojaloop/central-services-shared>widdershins>node-fetch": {
+      "decision": "fix",
+      "madeAt": 1624032509533
+    },
+    "1589|@mojaloop/central-services-shared>rc>ini": {
+      "decision": "fix",
+      "madeAt": 1624032519962
+    },
+    "1654|@mojaloop/central-services-shared>widdershins>swagger2openapi>yargs>y18n": {
+      "decision": "fix",
+      "madeAt": 1624032531602
+    },
+    "1654|@mojaloop/central-services-shared>widdershins>yargs>y18n": {
+      "decision": "fix",
+      "madeAt": 1624032531602
+    },
+    "1673|@mojaloop/central-services-shared>openapi-backend>lodash": {
+      "decision": "fix",
+      "madeAt": 1624032541954
+    },
+    "1673|@mojaloop/central-services-shared>shins>sanitize-html>lodash": {
+      "decision": "fix",
+      "madeAt": 1624032541954
+    },
+    "1673|koa2-oauth-server>00unidentified>lodash": {
+      "decision": "fix",
+      "madeAt": 1624032544849
+    },
+    "1500|@mojaloop/central-services-shared>widdershins>yargs>yargs-parser": {
+      "decision": "ignore",
+      "madeAt": 1624032547741,
+      "expiresAt": 1626624496536
+    },
+    "1675|@mojaloop/central-services-shared>shins>sanitize-html": {
+      "decision": "ignore",
+      "madeAt": 1624032548905,
+      "expiresAt": 1626624496536
+    },
+    "1676|@mojaloop/central-services-shared>shins>sanitize-html": {
+      "decision": "ignore",
+      "madeAt": 1624032548905,
+      "expiresAt": 1626624496536
+    }
+  },
+  "rules": {},
+  "version": 1
+}
