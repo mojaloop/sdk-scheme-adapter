@@ -104,6 +104,7 @@ describe('Test Server', () => {
             .put(`/parties/MSISDN/${MSISDN}`)
             .send(putPartiesBody)
             .set(commonHttpHeaders)
+            .set('content-type', 'application/vnd.interoperability.parties+json;version=1.0')
             .set('fspiop-http-method', 'PUT')
             .set('fspiop-uri', `/parties/MSISDN/${MSISDN}`)
             .set('date', new Date().toISOString());
@@ -118,6 +119,7 @@ describe('Test Server', () => {
             .post('/quotes')
             .send(postQuotesBody)
             .set(commonHttpHeaders)
+            .set('content-type', 'application/vnd.interoperability.quotes+json;version=1.0')
             .set('fspiop-http-method', 'POST')
             .set('fspiop-uri', '/quotes')
             .set('date', new Date().toISOString());
@@ -134,6 +136,7 @@ describe('Test Server', () => {
             .put(`/participants/${participantId}`)
             .send(putParticipantsBody)
             .set(commonHttpHeaders)
+            .set('content-type', 'application/vnd.interoperability.participants+json;version=1.0')
             .set('fspiop-http-method', 'PUT')
             .set('fspiop-uri', `/participants/${participantId}`)
             .set('date', new Date().toISOString());
@@ -156,6 +159,7 @@ describe('Test Server', () => {
 
         const headers = {
             ...commonHttpHeaders,
+            'content-type': 'application/vnd.interoperability.participants+json;version=1.0',
             'fspiop-http-method': 'PUT',
             'fspiop-uri': `/participants/${participantId}`,
             'date': new Date().toISOString(),
@@ -227,6 +231,7 @@ describe('Test Server', () => {
     test('WebSocket /requests and / endpoint triggers send to client when callback received to inbound server', async () => {
         const headers = {
             ...commonHttpHeaders,
+            'content-type': 'application/vnd.interoperability.quotes+json;version=1.0',
             'fspiop-http-method': 'POST',
             'fspiop-uri': '/quotes',
             'date': new Date().toISOString(),
@@ -299,6 +304,7 @@ describe('Test Server', () => {
     test('Websocket / endpoint receives both callbacks and requests', async () => {
         const quoteRequestHeaders = {
             ...commonHttpHeaders,
+            'content-type': 'application/vnd.interoperability.quotes+json;version=1.0',
             'fspiop-http-method': 'POST',
             'fspiop-uri': '/quotes',
             'date': new Date().toISOString(),
@@ -356,6 +362,7 @@ describe('Test Server', () => {
 
         const putParticipantsHeaders = {
             ...commonHttpHeaders,
+            'content-type': 'application/vnd.interoperability.participants+json;version=1.0',
             'fspiop-http-method': 'PUT',
             'fspiop-uri': `/participants/${participantId}`,
             'date': new Date().toISOString(),

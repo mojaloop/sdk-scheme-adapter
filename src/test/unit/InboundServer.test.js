@@ -51,12 +51,33 @@ describe('Inbound Server', () => {
             await supertest(svr._server)
                 .put('/parties/MSISDN/123456789')
                 .send(putPartiesBody)
-                .set(commonHttpHeaders)
+                .set('content-type', 'application/vnd.interoperability.parties+json;version=1.0')
                 .set('fspiop-http-method', 'PUT')
                 .set('fspiop-uri', '/parties/MSISDN/123456789')
                 .set('date', new Date().toISOString());
             await svr.stop();
             expect(Jws.validator.__validate).toHaveBeenCalledTimes(expectedValidationCalls);
+        }
+
+        async function testPartiesHeaderValidation(contentType, expectedStatusCode, expectedBody = null) {
+            const logger = new Logger.Logger({ stringify: () => '' });
+            const cache = new Cache({ ...serverConfig.cacheConfig, logger: logger.push({ component: 'cache' }) });
+            const svr = new InboundServer(serverConfig, logger, cache);
+            await svr.start();
+            const result = await supertest(svr._server)
+                .put('/parties/MSISDN/123456789')
+                .send(putPartiesBody)
+                .set(commonHttpHeaders)
+                .set('content-type', contentType)
+                .set('fspiop-http-method', 'PUT')
+                .set('fspiop-uri', '/parties/MSISDN/123456789')
+                .set('date', new Date().toISOString());
+            await svr.stop();
+            expect(result.status).toEqual(expectedStatusCode);
+
+            if (expectedBody) {
+                expect(result.body).toEqual(expectedBody);
+            }
         }
 
         test('validates incoming JWS when VALIDATE_INBOUND_JWS and VALIDATE_INBOUND_PUT_PARTIES_JWS is true', () =>
@@ -70,9 +91,47 @@ describe('Inbound Server', () => {
 
         test('does not validate incoming JWS when VALIDATE_INBOUND_JWS is false and VALIDATE_INBOUND_PUT_PARTIES_JWS is true', () =>
             testPartiesJwsValidation(false, true, 0));
+
+        test('processes parties request with valid content-type headers successfully', async () => {
+            await testPartiesHeaderValidation('application/vnd.interoperability.parties+json;version=1.0', 200);
+        });
+
+        test('returns error on invalid parties content-type headers', async () => {
+            await testPartiesHeaderValidation(
+                'application/json',
+                400,
+                {
+                    'errorInformation': {
+                        'errorCode': '3101',
+                        'errorDescription': 'Malformed syntax'
+                    }
+                }
+            );
+            await testPartiesHeaderValidation(
+                'application/vnd.interoperability.test+json;version=1.0',
+                400,
+                {
+                    'errorInformation': {
+                        'errorCode': '3101',
+                        'errorDescription': 'Malformed syntax'
+                    }
+                }
+            );
+            await testPartiesHeaderValidation(
+                'application/vnd.interoperability.parties+json;version=6.0',
+                406,
+                {
+                    'errorInformation': {
+                        'errorCode': '3001',
+                        'errorDescription': 'Unacceptable version requested',
+                        'extensionList': expect.any(Array)
+                    }
+                }
+            );
+        });
     });
 
-    describe('PUT /quotes', () => {
+    describe('POST /quotes', () => {
         let serverConfig;
         beforeEach(() => {
             Jws.validator.__validate.mockClear();
@@ -89,6 +148,7 @@ describe('Inbound Server', () => {
                 .post('/quotes')
                 .send(postQuotesBody)
                 .set(commonHttpHeaders)
+                .set('content-type', 'application/vnd.interoperability.quotes+json;version=1.0')
                 .set('fspiop-http-method', 'POST')
                 .set('fspiop-uri', '/quotes')
                 .set('date', new Date().toISOString());
@@ -96,11 +156,69 @@ describe('Inbound Server', () => {
             expect(Jws.validator.__validate).toHaveBeenCalledTimes(expectedValidationCalls);
         }
 
+        async function testQuotesHeaderValidation(contentType, expectedStatusCode, expectedBody = null) {
+            const logger = new Logger.Logger({ stringify: () => '' });
+            const cache = new Cache({ ...serverConfig.cacheConfig, logger: logger.push({ component: 'cache' }) });
+            const svr = new InboundServer(serverConfig, logger, cache);
+            await svr.start();
+            const result = await supertest(svr._server)
+                .post('/quotes')
+                .send(postQuotesBody)
+                .set(commonHttpHeaders)
+                .set('content-type', contentType)
+                .set('fspiop-http-method', 'POST')
+                .set('fspiop-uri', '/quotes')
+                .set('date', new Date().toISOString());
+            await svr.stop();
+            expect(result.status).toEqual(expectedStatusCode);
+            if (expectedBody) {
+                expect(result.body).toEqual(expectedBody);
+            }
+        }
+
         test('validates incoming JWS on other routes when VALIDATE_INBOUND_JWS is true and VALIDATE_INBOUND_PUT_PARTIES_JWS is false', () =>
             testQuotesJwsValidation(true, false, 1));
 
         test('validates incoming JWS on other routes when VALIDATE_INBOUND_JWS is true and VALIDATE_INBOUND_PUT_PARTIES_JWS is true', () =>
             testQuotesJwsValidation(true, true, 1));
+
+        test('processes quotes request with valid content-type headers successfully', async () => {
+            await testQuotesHeaderValidation('application/vnd.interoperability.quotes+json;version=1.0', 202);
+        });
+
+        test('returns error on invalid quotes content-type headers', async () => {
+            await testQuotesHeaderValidation(
+                'application/json',
+                400,
+                {
+                    'errorInformation': {
+                        'errorCode': '3101',
+                        'errorDescription': 'Malformed syntax'
+                    }
+                }
+            );
+            await testQuotesHeaderValidation(
+                'application/vnd.interoperability.parties+json;version=1.0',
+                400,
+                {
+                    'errorInformation': {
+                        'errorCode': '3101',
+                        'errorDescription': 'Malformed syntax'
+                    }
+                }
+            );
+            await testQuotesHeaderValidation(
+                'application/vnd.interoperability.quotes+json;version=6.0',
+                406,
+                {
+                    'errorInformation': {
+                        'errorCode': '3001',
+                        'errorDescription': 'Unacceptable version requested',
+                        'extensionList': expect.any(Array)
+                    }
+                }
+            );
+        });
     });
 
     describe('PUT /participants', () => {
@@ -121,6 +239,7 @@ describe('Inbound Server', () => {
                 .put('/participants/00000000-0000-1000-a000-000000000002')
                 .send(putParticipantsBody)
                 .set(commonHttpHeaders)
+                .set('content-type', 'application/vnd.interoperability.participants+json;version=1.0')
                 .set('fspiop-http-method', 'PUT')
                 .set('fspiop-uri', '/participants/00000000-0000-1000-a000-000000000002')
                 .set('date', new Date().toISOString());
@@ -128,11 +247,69 @@ describe('Inbound Server', () => {
             expect(Jws.validator.__validate).toHaveBeenCalledTimes(expectedValidationCalls);
         }
 
+        async function testParticipantsHeaderValidation(contentType, expectedStatusCode, expectedBody = null) {
+            const logger = new Logger.Logger({ stringify: () => '' });
+            const cache = new Cache({ ...serverConfig.cacheConfig, logger: logger.push({ component: 'cache' }) });
+            const svr = new InboundServer(serverConfig, logger, cache);
+            await svr.start();
+            const result = await supertest(svr._server)
+                .put('/participants/00000000-0000-1000-a000-000000000002')
+                .send(putParticipantsBody)
+                .set(commonHttpHeaders)
+                .set('content-type', contentType)
+                .set('fspiop-http-method', 'PUT')
+                .set('fspiop-uri', '/participants/00000000-0000-1000-a000-000000000002')
+                .set('date', new Date().toISOString());
+            await svr.stop();
+            expect(result.status).toEqual(expectedStatusCode);
+            if (expectedBody) {
+                expect(result.body).toEqual(expectedBody);
+            }
+        }
+
         test('validates incoming JWS when VALIDATE_INBOUND_JWS is true', () =>
             testParticipantsJwsValidation(true, true, 1));
 
         test('does not validate incoming JWS when VALIDATE_INBOUND_JWS is false ', () =>
             testParticipantsJwsValidation(false, false, 0));
+
+        test('processes participants request with valid content-type headers successfully', async () => {
+            await testParticipantsHeaderValidation('application/vnd.interoperability.participants+json;version=1.0', 200);
+        });
+
+        test('returns error on invalid participants content-type headers', async () => {
+            await testParticipantsHeaderValidation(
+                'application/json',
+                400,
+                {
+                    'errorInformation': {
+                        'errorCode': '3101',
+                        'errorDescription': 'Malformed syntax'
+                    }
+                }
+            );
+            await testParticipantsHeaderValidation(
+                'application/vnd.interoperability.parties+json;version=1.0',
+                400,
+                {
+                    'errorInformation': {
+                        'errorCode': '3101',
+                        'errorDescription': 'Malformed syntax'
+                    }
+                }
+            );
+            await testParticipantsHeaderValidation(
+                'application/vnd.interoperability.participants+json;version=6.0',
+                406,
+                {
+                    'errorInformation': {
+                        'errorCode': '3001',
+                        'errorDescription': 'Unacceptable version requested',
+                        'extensionList': expect.any(Array)
+                    }
+                }
+            );
+        });
     });
 
     describe('mTLS test', () => {
