@@ -36,6 +36,7 @@ function createPostAccountsTester({ reqInbound, reqOutbound, apiSpecsOutbound })
             return reqInbound.put(putUrl)
                 .send(putBody)
                 .set('Date', new Date().toISOString())
+                .set('content-type', 'application/vnd.interoperability.participants+json;version=1.0')
                 .set('fspiop-source', 'mojaloop-sdk')
                 .expect(200);
         };
