@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [11.18.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.17.1...v11.18.0) (2021-06-21)
+
+
+### Features
+
+* **#2264:** add more robust header validation for inbound server ([#278](https://github.com/mojaloop/sdk-scheme-adapter/issues/278)) ([9ea24d7](https://github.com/mojaloop/sdk-scheme-adapter/commit/9ea24d748ccd58fdfb30c77e98b021aa6a607b4f)), closes [#2264](https://github.com/mojaloop/sdk-scheme-adapter/issues/2264)
+
 ### [11.17.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.17.0...v11.17.1) (2021-06-11)
 
 
