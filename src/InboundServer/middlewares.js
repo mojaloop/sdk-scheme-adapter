@@ -22,6 +22,7 @@ const {
     defaultProtocolVersions,
     errorMessages
 } = require('@mojaloop/central-services-shared').Util.Hapi.FSPIOPHeaderValidation;
+const { shared } = require('../lib/model/lib');
 
 /**
  * Log raw to console as a last resort
@@ -331,11 +332,12 @@ const createJwsValidator = (logger, keys, exclusions) => {
  * @return {Function}
  */
 const applyState = (sharedState) => async (ctx, next) => {
+    const outboundRequests = (sharedState && shared.conf && sharedState.conf.mutualTLS && sharedState.conf.mutualTLS.outboundRequests) || {};
     Object.assign(ctx.state, {
         ...sharedState,
         conf: {
             ...sharedState.conf,
-            tls: sharedState?.conf?.mutualTLS?.outboundRequests,
+            tls: outboundRequests
         }
     });
     await next();
