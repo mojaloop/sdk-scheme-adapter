@@ -731,6 +731,8 @@ components:
           $ref: '#/components/schemas/transferId'
         quote:
           $ref: '#/components/schemas/quoteResponse'
+        quoteRequestExtensions:
+          $ref: '#/components/schemas/extensionList'
         from:
           $ref: '#/components/schemas/transferParty'
         to:

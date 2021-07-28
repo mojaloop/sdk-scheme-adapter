@@ -1,9 +1,12 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
-  "version": "11.18.0",
+  "version": "11.18.1",
   "description": "An adapter for connecting to Mojaloop API enabled switches.",
   "main": "index.js",
   "types": "index.d.ts",
+  "engines": {
+    "node": ">=14.15"
+  },
   "scripts": {
     "audit:resolve": "SHELL=sh resolve-audit --production",
     "audit:check": "SHELL=sh check-audit --production",
