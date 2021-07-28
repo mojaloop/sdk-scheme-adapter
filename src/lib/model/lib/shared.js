@@ -250,8 +250,8 @@ const mojaloopPrepareToInternalTransfer = (external, quote) => {
             transactionType: quote.request.transactionType.scenario,
             note: quote.request.note
         };
-        if (quote.internalRequest && quote.internalRequest.extensionList) {
-            internal.quoteRequestExtensions = { ...quote.internalRequest.extensionList };
+        if (quote.internalRequest && quote.internalRequest.extensionList && quote.internalRequest.extensionList.extension) {
+            internal.quoteRequestExtensions = { ...quote.internalRequest.extensionList.extension };
         }
     } else {
         internal = {
