@@ -30,18 +30,22 @@
     },
     "1500|@mojaloop/central-services-shared>widdershins>yargs>yargs-parser": {
       "decision": "ignore",
-      "madeAt": 1624032547741,
-      "expiresAt": 1626624496536
+      "madeAt": 1627405042660,
+      "expiresAt": 1628009810340
     },
     "1675|@mojaloop/central-services-shared>shins>sanitize-html": {
       "decision": "ignore",
-      "madeAt": 1624032548905,
-      "expiresAt": 1626624496536
+      "madeAt": 1627405048605,
+      "expiresAt": 1628009810340
     },
     "1676|@mojaloop/central-services-shared>shins>sanitize-html": {
       "decision": "ignore",
-      "madeAt": 1624032548905,
-      "expiresAt": 1626624496536
+      "madeAt": 1627405048605,
+      "expiresAt": 1628009810340
+    },
+    "1766|@mojaloop/central-services-shared>widdershins>urijs": {
+      "decision": "fix",
+      "madeAt": 1627405029179
     }
   },
   "rules": {},
