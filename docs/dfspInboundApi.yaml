@@ -155,13 +155,13 @@ paths:
           $ref: '#/components/responses/500'
 
   /transfers/{transferId}:
+    parameters:
+      - $ref: '#/components/parameters/transferId'
     get:
       summary: Retrieves information for a specific transfer
       description: The HTTP request `GET /transfers/{transferId}` is used to get information regarding a transfer created or requested earlier. The `{transferId}` in the URI should contain the `transferId` that was used for the creation of the transfer.
       tags:
         - Transfers
-      parameters:
-        - $ref: '#/components/schemas/transferId'
       responses:
         200:
           description: The transfer was accepted
@@ -176,8 +176,6 @@ paths:
       description: The HTTP request `PUT /transfers/{transferId}` is used to receive notification for transfer being fulfiled when the FSP is a Payee
       tags:
         - Transfers
-      parameters:
-        - $ref: '#/components/schemas/transferId'
       requestBody:
         description: An incoming notification for fulfiled transfer
         content:
@@ -599,6 +597,8 @@ components:
         expiration:
           $ref: '#/components/schemas/timestamp'
           description: An optional deadline for responding to the quote request.
+        extensionList:
+          $ref: '#/components/schemas/extensionList'
 
     quoteResponse:
       type: object
@@ -645,6 +645,8 @@ components:
         geoCode:
           $ref: '#/components/schemas/geoCode'
           description: Longitude and Latitude of the Payee. Can be used to detect fraud.
+        extensionList:
+          $ref: '#/components/schemas/extensionList'
 
     timestamp:
       type: string
@@ -660,6 +662,68 @@ components:
       type: string
       enum:
       - TRANSFER
+
+    scenario:
+      type: string
+      enum:
+      - TRANSFER
+
+    amountCurrency:
+      type: object
+      description: Object containing Amount and Currency of the transfer.
+      required:
+        - amount
+        - currency
+      properties:
+        amount:
+          $ref: '#/components/schemas/money'
+        currency:
+          $ref: '#/components/schemas/currency'
+
+    transactionTypeObject:
+      type: object
+      description: Object containing transfer object.
+      required:
+        - scenario
+        - initiator
+        - initiatorType
+      properties:
+        scenario:
+          $ref: '#/components/schemas/scenario'
+        initiator:
+          $ref: '#/components/schemas/initiator'
+        initiatorType:
+          $ref: '#/components/schemas/initiatorType'
+          description: Specifies the type of the transaction initiator.
+      
+    ilpPacketData:
+      type: object
+      description: Object containing transfer object.
+      required:
+        - quoteId
+        - transactionId
+        - payer
+        - payee
+        - amount
+        - transactionType
+      properties:
+        quoteId:
+          $ref: '#/components/schemas/quoteId'
+        transactionId:
+          $ref: '#/components/schemas/transactionId'
+          description: Identifier for the transaction, decided by the Payer FSP during the creation of the quote.
+        payer:
+          $ref: '#/components/schemas/transferParty'
+          description: Information about the Payer in the proposed financial transaction.
+        payee:
+          $ref: '#/components/schemas/transferParty'
+          description: Information about the Payee in the proposed financial transaction.
+        amount:
+          $ref: '#/components/schemas/amountCurrency'
+          description: Amount and currency of the transaction
+        transactionType:
+          $ref: '#/components/schemas/transactionTypeObject'
+          description: Information about type of transaction and initiator.
 
     transferId:
       pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
@@ -698,6 +762,9 @@ components:
         merchantClassificationCode:
           type: string
           description: Up to 4 digits specifying the sender's merchant classification, if known and applicable.
+        fspId:
+          type: string
+          description: Mojaloop scheme FSPID of the DFSP which owns the party account.
         extensionList:
           $ref: '#/components/schemas/extensionList'
 
@@ -726,6 +793,7 @@ components:
         - currency
         - amount
         - transactionType
+        - ilpPacket
       properties:
         transferId:
           $ref: '#/components/schemas/transferId'
@@ -745,6 +813,13 @@ components:
           $ref: '#/components/schemas/money'
         transactionType:
           $ref: '#/components/schemas/transactionType'
+        ilpPacket:
+          type: object
+          required: 
+            - data
+          properties:
+            data:
+              $ref: '#/components/schemas/ilpPacketData'
         note:
           maxLength: 128
           type: string
@@ -800,6 +875,7 @@ components:
       type: string
       enum:
       - ERROR_OCCURRED
+      - WAITING_FOR_PARTY_ACCEPTANCE
       - WAITING_FOR_QUOTE_ACCEPTANCE
       - COMPLETED
 
@@ -808,20 +884,151 @@ components:
       type: object
       description: PUT /transfers/{transferId} object
       properties:
-        completedTimestamp:
+        transferId:
+          $ref: '#/components/schemas/transferId'
+        direction:
+          type: string
+          enum:
+            - INBOUND
+        quoteRequest:
+          type: object
+          properties:
+            headers:
+              type: object
+            body:
+              type: object
+        quoteResponse:
+          type: object
+          properties:
+            headers:
+              type: object
+            body:
+              type: object
+        prepare:
+          type: object
+          properties:
+            headers:
+              type: object
+            body:
+              type: object
+        fulfil:
+          type: object
+          properties:
+            headers:
+              type: object
+            body:
+              type: object
+        quote:
+          type: object
+          properties:
+            request:
+              type: object
+            internalRequest:
+              type: object
+            response:
+              type: object
+            mojaloopResponse:
+              type: object
+            fulfilment:
+              type: string
+        currentState:
+          $ref: '#/components/schemas/transferStatus'
+        lastError:
+          $ref: '#/components/schemas/transferError'
+        initiatedTimestamp:
           $ref: '#/components/schemas/timestamp'
-          description: Time and date when the transaction was completed.
-          example: "2020-05-19T08:38:08.699-04:00"
-        transferState:
-          $ref: '#/components/schemas/transferState'
-          description: State of the transfer.
-          example: COMMITTED
-        extensionList:
-          $ref: '#/components/schemas/ExtensionList'
-          description: Optional extension, specific to deployment.
+        finalNotification:
+          type: object
+          properties:
+            completedTimestamp:
+              $ref: '#/components/schemas/timestamp'
+              description: Time and date when the transaction was completed.
+              example: "2020-05-19T08:38:08.699-04:00"
+            transferState:
+              $ref: '#/components/schemas/transferState'
+              description: State of the transfer.
+              example: COMMITTED
+            extensionList:
+              $ref: '#/components/schemas/extensionList'
+              description: Optional extension, specific to deployment.
+          required:
+            - completedTimestamp
+            - transferState
+
+    extensionListComplex:
+      type: object
+      description: Data model for the complex type ExtensionList
+      properties:
+        extension:
+          type: array
+          items:
+            $ref: '#/components/schemas/extensionItem'
+          minItems: 1
+          maxItems: 16
+          description: Number of Extension elements
       required:
-        - completedTimestamp
-        - transferState
+        - extension
+
+    transferError:
+      type: object
+      description: This object represents a Mojaloop API error received at any time during the transfer process
+      properties:
+        httpStatusCode:
+          type: integer
+          description: The HTTP status code returned to the caller. This is the same as the actual HTTP status code returned with the response.
+        mojaloopError:
+          description: If a transfer process results in an error callback during the asynchronous Mojaloop API exchange, this property will contain the underlying Mojaloop API error object.
+          $ref: '#/components/schemas/mojaloopError'
+
+    generalError:
+      type: object
+      description: This object may represent a number of different error object types and so its properties may vary significantly.
+
+    mojaloopError:
+      type: object
+      properties:
+        errorInformation:
+          $ref: '#/components/schemas/errorInformation'
+
+    errorInformation:
+      title: ErrorInformation
+      type: object
+      description: A Mojaloop API error information construct.
+      properties:
+        errorCode:
+          $ref: '#/components/schemas/errorCode'
+          description: Specific error number.
+        errorDescription:
+          $ref: '#/components/schemas/errorDescription'
+          description: Error description string.
+        extensionList:
+          $ref: '#/components/schemas/extensionListComplex'
+          description: 'Optional list of extensions, specific to deployment.'
+      required:
+        - errorCode
+        - errorDescription
+
+    errorCode:
+      title: ErrorCode
+      type: string
+      pattern: '^[1-9]\d{3}$'
+      description: >
+        The API data type errorCode is a JSON String of four characters,
+        consisting of digits only. Negative numbers are not allowed. A leading
+        zero is not allowed. Each error code in the API is a four-digit number,
+        for example, 1234, where the first number (1 in the example) represents
+        the high-level error category, the second number (2 in the example)
+        represents the low-level error category, and the last two numbers (34 in
+        the example) represents the specific error.
+
+    errorDescription:
+      title: ErrorDescription
+      type: string
+      minLength: 1
+      maxLength: 128
+      description: Error description string.
+
+
 
   responses:
     '400':
@@ -840,6 +1047,13 @@ components:
             $ref: '#/components/schemas/errorResponse'
 
   parameters:
+    transferId:
+      name: transferId
+      in: path
+      required: true
+      schema:
+        type: string
+
     idType:
       name: idType
       in: path
