@@ -656,7 +656,7 @@ components:
       type: string
       minLength: 1
       maxLength: 128
-      pattern: >
+      pattern: >-
         ^(?!\s*$)[\p{L}\p{gc=Mark}\p{digit}\p{gc=Connector_Punctuation}\p{Join_Control}
         .,''-]{1,128}$
       description: First name of the Party (Name Type).
@@ -666,7 +666,7 @@ components:
       type: string
       minLength: 1
       maxLength: 128
-      pattern: >
+      pattern: >-
         ^(?!\s*$)[\p{L}\p{gc=Mark}\p{digit}\p{gc=Connector_Punctuation}\p{Join_Control}
         .,''-]{1,128}$
       description: Middle name of the Party (Name Type).
@@ -676,7 +676,7 @@ components:
       type: string
       minLength: 1
       maxLength: 128
-      pattern: >
+      pattern: >-
         ^(?!\s*$)[\p{L}\p{gc=Mark}\p{digit}\p{gc=Connector_Punctuation}\p{Join_Control}
         .,''-]{1,128}$
       description: Last name of the Party (Name Type).
