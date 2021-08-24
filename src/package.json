@@ -73,7 +73,7 @@
   "devDependencies": {
     "@babel/core": "^7.14.3",
     "@babel/preset-env": "^7.14.9",
-    "@mojaloop/api-snippets": "^12.6.3",
+    "@mojaloop/api-snippets": "^12.6.4",
     "@mojaloop/central-services-error-handling": "11.3.0",
     "@mojaloop/central-services-logger": "10.6.1",
     "@mojaloop/central-services-metrics": "11.0.0",
