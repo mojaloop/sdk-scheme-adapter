@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [11.18.5](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.18.4...v11.18.5) (2021-08-25)
+
+
+### Chore
+
+* regenerate openapi3 definitions ([#281](https://github.com/mojaloop/sdk-scheme-adapter/issues/281)) ([3db7a0a](https://github.com/mojaloop/sdk-scheme-adapter/commit/3db7a0a9b2a4459e0c817bfe31738104d23e6543))
+
 ### [11.18.4](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.18.3...v11.18.4) (2021-08-06)
 
 ### [11.18.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.18.0...v11.18.2) (2021-07-28)
