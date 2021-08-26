@@ -6,3 +6,10 @@ src/junit.xml
 secrets/*.pem
 coverage
 src/.env
+
+# https://devspace.sh/
+devspace*
+.devspace/**.*
+
+*.log
+*IGNORE*
