@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [11.18.6](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.18.5...v11.18.6) (2021-08-26)
+
+
+### Bug Fixes
+
+* **mojaloop/#2433:** sdk-scheme-adapter-v11.18.5-release-failing-on-startup ([39cc8e2](https://github.com/mojaloop/sdk-scheme-adapter/commit/39cc8e2df09676798e0e6062d13f3de903544adf)), closes [mojaloop/#2433](https://github.com/mojaloop/sdk-scheme-adapter/issues/2433)
+
 ### [11.18.5](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.18.4...v11.18.5) (2021-08-25)
 
 
