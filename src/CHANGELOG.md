@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [11.18.7](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.18.6...v11.18.7) (2021-08-27)
+
+
+### Bug Fixes
+
+* **mojaloop/#2436:** sdk-sch-adapter inb-API responds incorrectly for 'Unknown uri' error scenario ([132f941](https://github.com/mojaloop/sdk-scheme-adapter/commit/132f941a365bfa60b456d21b4a5d301fb3af9695)), closes [mojaloop/#2436](https://github.com/mojaloop/sdk-scheme-adapter/issues/2436)
+
 ### [11.18.6](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.18.5...v11.18.6) (2021-08-26)
 
 
