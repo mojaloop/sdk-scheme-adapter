@@ -185,6 +185,7 @@ const createHeaderValidator = (logger) => async (
     // Only validate requests for the requested resources
     if (!resources.includes(resource)) {
         await next();
+        return;
     }
 
     // Always validate the accept header for a get request, or optionally if it has been
