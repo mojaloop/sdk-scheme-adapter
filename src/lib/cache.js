@@ -100,7 +100,7 @@ class Cache {
         const mode = enable ? 'Es$' : '';
         this._logger
             .push({ 'notify-keyspace-events': mode })
-            .log('REDIS Client Configured to emit keyevent events');
+            .log('REDIS client Configured to emit keyspace-events');
         this._client.config('SET', 'notify-keyspace-events', mode);
     }
 
@@ -248,12 +248,12 @@ class Cache {
             });
 
             client.on('ready', () => {
-                this._logger.log(`REDIS Client ready at: ${this._config.host}:${this._config.port}`);
+                this._logger.log(`REDIS client ready at: ${this._config.host}:${this._config.port}`);
                 return resolve(client);
             });
 
             client.on('connect', () => {
-                this._logger.log(`REDIS Client connected at: ${this._config.host}:${this._config.port}`);
+                this._logger.log(`REDIS client connected at: ${this._config.host}:${this._config.port}`);
             });
         });
     }
