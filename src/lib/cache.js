@@ -74,16 +74,13 @@ class Cache {
                 await this._inProgressDisconnection;
                 break;
         }
+
         this._connectionState = CONN_ST.CONNECTING;
         this._inProgressConnection = Promise.all([this._getClient(), this._getClient()]);
         [this._client, this._subscriptionClient] = await this._inProgressConnection;
 
         // hook up our sub message handler
         this._subscriptionClient.on('message', this._onMessage.bind(this));
-
-        if (this._config.enableTestFeatures) {
-            this.setTestMode(true);
-        }
 
         this._inProgressConnection = null;
         this._connectionState = CONN_ST.CONNECTED;
@@ -103,7 +100,7 @@ class Cache {
         const mode = enable ? 'Es$' : '';
         this._logger
             .push({ 'notify-keyspace-events': mode })
-            .log('Configuring Redis to emit keyevent events');
+            .log('REDIS Client Configured to emit keyevent events');
         this._client.config('SET', 'notify-keyspace-events', mode);
     }
 
@@ -231,13 +228,32 @@ class Cache {
             const client = redis.createClient(this._config);
 
             client.on('error', (err) => {
-                this._logger.push({ err }).log('Error from REDIS client getting subscriber');
+                this._logger.push({ err }).log('REDIS client Error');
                 return reject(err);
             });
 
+            client.on('reconnecting', (err) => {
+                this._logger.push({ err }).log('REDIS client Reconnecting');
+                return reject(err);
+            });
+
+            client.on('subscribe', (channel, count) => {
+                this._logger.push({ channel, count }).log('REDIS client subscribe');
+                // On a subscribe event, ensure that testFeatures are enabled.
+                // This is required here in the advent of a disconnect/reconnect event. Redis client will re-subscribe all subscriptions, but previously enabledTestFeatures will be lost.
+                // Handling this on the on subscribe event will ensure its always configured.
+                if (this._config.enableTestFeatures) {
+                    this.setTestMode(true);
+                }
+            });
+
             client.on('ready', () => {
-                this._logger.log(`Connected to REDIS at: ${this._config.host}:${this._config.port}`);
+                this._logger.log(`REDIS Client ready at: ${this._config.host}:${this._config.port}`);
                 return resolve(client);
+            });
+
+            client.on('connect', () => {
+                this._logger.log(`REDIS Client connected at: ${this._config.host}:${this._config.port}`);
             });
         });
     }
