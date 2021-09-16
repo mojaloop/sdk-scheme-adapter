@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [11.18.8](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.18.7...v11.18.8) (2021-09-16)
+
+
+### Bug Fixes
+
+* **mojaloop/#2478:** sdk-scheme-adapter does not publish ws notifications when cache is restarted ([0a301c5](https://github.com/mojaloop/sdk-scheme-adapter/commit/0a301c59f3a17adc3e32d1965353b776c568ecae)), closes [mojaloop/#2478](https://github.com/mojaloop/sdk-scheme-adapter/issues/2478)
+
+
+### Chore
+
+* maintenance updates ([ebe5ce5](https://github.com/mojaloop/sdk-scheme-adapter/commit/ebe5ce56c93ae564c4e1055c65ba130f11b623f2))
+
 ### [11.18.7](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.18.6...v11.18.7) (2021-08-27)
 
 
