@@ -17,7 +17,6 @@ const Model = require('../lib/model').InboundTransfersModel;
 const PartiesModel = require('../lib/model').PartiesModel;
 const QuotesModel = require('../lib/model').QuotesModel;
 const TransfersModel = require('../lib/model').TransfersModel;
-const AuthorizationsModel = require('../lib/model').AuthorizationsModel;
 
 /**
  * Handles a GET /authorizations/{id} request
