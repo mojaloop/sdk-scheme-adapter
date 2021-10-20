@@ -303,43 +303,9 @@ const putAuthorizationsById = async (ctx) => {
         data: ctx.request.body,
         headers: ctx.request.headers
     });
-
-    // duplicate publication until legacy code refactored
-    await AuthorizationsModel.triggerDeferredJob({
-        cache: ctx.state.cache,
-        message: ctx.request.body, 
-        args: {
-            transactionRequestId: ctx.state.path.params.ID
-        }
-    });
-
     ctx.response.status = 200;
 };
 
-/**
- * Handles a PUT /authorizations/{ID}/error request. 
- * This is an error response to a POST /authorizations request
- */
-const putAuthorizationsByIdError = async (ctx) => {
-    
-    // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`otp_${ctx.state.path.params.ID}`, {
-        type: 'authorizationResponseError',
-        data: ctx.request.body,
-    });
-
-    // duplicate publication until legacy code refactored
-    await AuthorizationsModel.triggerDeferredJob({
-        cache: ctx.state.cache,
-        message: ctx.request.body, 
-        args: {
-            transactionRequestId: ctx.state.path.params.ID
-        }
-    });
-    
-    ctx.response.status = 200;
-    ctx.response.body = '';
-};
 
 /**
  * Handles a PUT /participants/{ID}. This is a response to a POST /participants request
@@ -853,9 +819,6 @@ module.exports = {
     '/authorizations/{ID}': {
         get: getAuthorizationsById,
         put: putAuthorizationsById
-    },
-    '/authorizations/{ID}/error': {
-        put: putAuthorizationsByIdError
     },
     '/bulkQuotes': {
         post: postBulkQuotes
