@@ -1,5 +1,0 @@
-description: Sync response from POST /authorizations
-content:
-  application/json:
-    schema:
-      $ref: ../schemas/authorizationsPostResponse.yaml

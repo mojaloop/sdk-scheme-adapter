@@ -50,6 +50,3 @@ paths:
     $ref: 'paths/quotes.yaml'
   '/simpleTransfers':
     $ref: 'paths/simpleTransfers.yaml'
-  '/authorizations':
-     $ref: 'paths/authorizations.yaml'
-
