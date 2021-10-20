@@ -35,8 +35,7 @@ const {
     OutboundRequestToPayModel,
     PartiesModel,
     QuotesModel,
-    TransfersModel,
-    AuthorizationsModel
+    TransfersModel
 } = require('../../../lib/model');
 
 /**
@@ -885,102 +884,4 @@ describe('Outbound API handlers:', () => {
             });
         });
     });
-    describe('POST /authorizations', () => {
-        const mockContext = {
-            request: {
-                body: {
-                    fspId: uuid(),
-                    authorizationsPostRequest: {
-                        transactionRequestId: uuid()
-                    }
-                }
-            },
-            response: {},
-            state: {
-                conf: {},
-                wso2Auth: 'mocked wso2Auth',
-                logger: mockLogger({ app: 'outbound-api-handlers-test' }),
-                cache: { 
-                    subscribe: jest.fn(() => Promise.resolve())
-                }
-            },
-        };
-        test('happy flow', async () => {
-            
-            // mock state machine
-            const mockedPSM = {
-                run: jest.fn(async () => ({ the: 'run response' }))
-            };
-            
-            const createSpy = jest.spyOn(AuthorizationsModel, 'create')
-                .mockImplementationOnce(async () => mockedPSM);
-
-            // invoke handler
-            await handlers['/authorizations'].post(mockContext);
-
-            // PSM model creation
-            const state = mockContext.state;
-            const cacheKey = AuthorizationsModel.channelName({
-                transactionRequestId: mockContext.request.body.authorizationsPostRequest.transactionRequestId
-            });
-            const expectedConfig = {
-                cache: state.cache,
-                logger: state.logger,
-                wso2Auth: state.wso2Auth
-            };
-            expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
-
-            // run workflow
-            expect(mockedPSM.run).toBeCalledWith({ 
-                transactionRequestId: mockContext.request.body.authorizationsPostRequest.transactionRequestId,
-                fspId: mockContext.request.body.fspId,
-                authorization: mockContext.request.body.authorizationsPostRequest
-            });
-
-            // response
-            expect(mockContext.response.status).toBe(200);
-            expect(mockContext.response.body).toEqual({ the: 'run response' });
-        });
-
-        test('mojaloop error propagation for /authorizations/{ID}', async() => {    
-            
-            // mock state machine
-            const mockedPSM = {
-                run: jest.fn(async () => { throw { mocked: 'error' }; })
-            };
-            
-            const createSpy = jest.spyOn(AuthorizationsModel, 'create')
-                .mockImplementationOnce(async () => mockedPSM);
-
-            // invoke handler
-            await handlers['/authorizations'].post(mockContext);
-
-            // PSM model creation
-            const state = mockContext.state;
-            const cacheKey = AuthorizationsModel.channelName({
-                transactionRequestId: mockContext.request.body.authorizationsPostRequest.transactionRequestId
-            });
-            const expectedConfig = {
-                cache: state.cache,
-                logger: state.logger,
-                wso2Auth: state.wso2Auth
-            };
-            expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
-
-            // run workflow
-            expect(mockedPSM.run).toBeCalledWith({ 
-                transactionRequestId: mockContext.request.body.authorizationsPostRequest.transactionRequestId, 
-                fspId: mockContext.request.body.fspId,
-                authorization: mockContext.request.body.authorizationsPostRequest
-            });
-
-            // response
-            expect(mockContext.response.status).toBe(500);
-            expect(mockContext.response.body).toEqual({
-                message: 'Unspecified error',
-                requestAuthorizationsInformationState: {},
-                statusCode: '500',
-            });
-        });
-    });    
 });

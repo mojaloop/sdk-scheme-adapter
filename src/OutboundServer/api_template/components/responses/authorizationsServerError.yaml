@@ -1,5 +1,0 @@
-description: An error occurred processing the authorizations request
-content:
-  application/json:
-    schema:
-      $ref: ../schemas/errorAuthorizationsResponse.yaml

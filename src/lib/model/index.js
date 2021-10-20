@@ -23,7 +23,6 @@ const { BackendError, PersistentStateMachine } = require('./common');
 const PartiesModel = require('./PartiesModel');
 const QuotesModel = require('./QuotesModel');
 const TransfersModel = require('./TransfersModel');
-const AuthorizationsModel = require('./AuthorizationsModel');
 
 module.exports = {
     AccountsModel,
@@ -38,6 +37,5 @@ module.exports = {
     PersistentStateMachine,
     PartiesModel,
     QuotesModel,
-    TransfersModel,
-    AuthorizationsModel
+    TransfersModel
 };
