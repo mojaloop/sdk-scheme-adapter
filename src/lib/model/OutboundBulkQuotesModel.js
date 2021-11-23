@@ -44,6 +44,7 @@ class OutboundBulkQuotesModel {
             jwsSign: config.jwsSign,
             jwsSigningKey: config.jwsSigningKey,
             wso2: config.wso2,
+            resourceVersions: config.resourceVersions,
         });
     }
 
