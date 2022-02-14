@@ -21,6 +21,7 @@ const mockTxnReqquestsArguments = require('./data/mockTxnRequestsArguments');
 const { MojaloopRequests, Ilp, Logger } = require('@mojaloop/sdk-standard-components');
 const { BackendRequests, HTTPResponseError } = require('../../../../lib/model/lib/requests');
 const Cache = require('../../../../lib/cache');
+const shared = require('../../../../lib/model/lib/shared');
 
 const getTransfersBackendResponse = require('./data/getTransfersBackendResponse');
 const getTransfersMojaloopResponse = require('./data/getTransfersMojaloopResponse');
@@ -232,9 +233,9 @@ describe('inboundModel', () => {
 
         test('calls `mojaloopRequests.putAuthorizations` with the expected arguments.', async () => {
             await model.getAuthorizations('123456', mockTxnReqArgs.fspId);
-            
+
             expect(MojaloopRequests.__putAuthorizations).toHaveBeenCalledTimes(1);
-            
+
         });
 
 
@@ -398,6 +399,43 @@ describe('inboundModel', () => {
                 cache,
                 logger,
                 allowTransferWithoutQuote: true,
+            });
+
+            await model.prepareTransfer(args, mockArgs.fspId);
+
+            expect(MojaloopRequests.__putTransfersError).toHaveBeenCalledTimes(0);
+            expect(BackendRequests.__postTransfers).toHaveBeenCalledTimes(1);
+            expect(MojaloopRequests.__putTransfers).toHaveBeenCalledTimes(1);
+        });
+
+        test.only('allow transfer and transaction id mismatch', async () => {
+            const transactionId = 'mockTransactionId';
+            const TRANSFER_ID = 'transfer-id';
+            shared.mojaloopPrepareToInternalTransfer = jest.fn().mockReturnValueOnce({});
+
+            cache.set(`quote_${transactionId}`, {
+                fulfilment: '',
+                mojaloopResponse: {
+                    response: ''
+                }
+            });
+
+            const args = {
+                transferId: TRANSFER_ID,
+                amount: {
+                    currency: 'USD',
+                    amount: 20.13
+                },
+                ilpPacket: 'mockIlpPacket',
+                condition: 'mockGeneratedCondition'
+            };
+
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+                allowTransferIdTransactionIdMismatch: true,
+                checkIlp: false,
             });
 
             await model.prepareTransfer(args, mockArgs.fspId);
@@ -574,7 +612,7 @@ describe('inboundModel', () => {
                     }
                 ]
             };
-            
+
             const model = new Model({
                 ...config,
                 cache,
@@ -595,7 +633,7 @@ describe('inboundModel', () => {
         const transferId = '1234';
         let cache;
 
-        beforeEach(async () => { 
+        beforeEach(async () => {
             cache = new Cache({
                 host: 'dummycachehost',
                 port: 1234,
