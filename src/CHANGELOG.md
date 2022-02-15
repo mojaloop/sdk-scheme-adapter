@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [11.18.12](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.18.11...v11.18.12) (2022-02-15)
+
+
+### Chore
+
+* add config option for mismatch id's ([#291](https://github.com/mojaloop/sdk-scheme-adapter/issues/291)) ([8e9717a](https://github.com/mojaloop/sdk-scheme-adapter/commit/8e9717a02c6d19f93b78f5b293917050be0ade84))
+
 ### [11.18.11](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.18.9...v11.18.11) (2021-11-25)
 
 ### [11.18.9](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.18.8...v11.18.9) (2021-10-20)
