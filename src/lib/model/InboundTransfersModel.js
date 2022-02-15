@@ -34,6 +34,7 @@ class InboundTransfersModel {
         this._rejectTransfersOnExpiredQuotes = config.rejectTransfersOnExpiredQuotes;
         this._allowTransferWithoutQuote = config.allowTransferWithoutQuote;
         this._reserveNotification = config.reserveNotification;
+        this._allowDifferentTransferTransactionId = config.allowDifferentTransferTransactionId;
 
         this._mojaloopRequests = new MojaloopRequests({
             logger: this._logger,
@@ -175,7 +176,7 @@ class InboundTransfersModel {
                 response.expiration = new Date(expiration).toISOString();
             }
 
-            // project our internal quote reponse into mojaloop quote response form
+            // project our internal quote response into mojaloop quote response form
             const mojaloopResponse = shared.internalQuoteResponseToMojaloop(response);
 
             // create our ILP packet and condition and tag them on to our internal quote response
@@ -193,7 +194,7 @@ class InboundTransfersModel {
                 fulfilment: fulfilment
             });
 
-            // now store the quoteRespnse data against the quoteId in our cache to be sent as a response to GET /quotes/{ID}
+            // now store the quoteResponse data against the quoteId in our cache to be sent as a response to GET /quotes/{ID}
             await this._cache.set(`quoteResponse_${quoteRequest.quoteId}`, mojaloopResponse);
 
             // make a callback to the source fsp with the quote response
@@ -209,21 +210,21 @@ class InboundTransfersModel {
     }
 
     /**
-     * This is executed as when GET /quotes/{ID} request is made to get the response of a previous POST /quotes request. 
+     * This is executed as when GET /quotes/{ID} request is made to get the response of a previous POST /quotes request.
      * Gets the quoteResponse from the cache and makes a callback to the originator with result
      */
     async getQuoteRequest(quoteId, sourceFspId) {
         try {
             // Get the quoteRespnse data for the quoteId from the cache to be sent as a response to GET /quotes/{ID}
             const quoteResponse = await this._cache.get(`quoteResponse_${quoteId}`);
-            
+
             // If no quoteResponse is found in the cache, make an error callback to the source fsp
             if (!quoteResponse) {
                 const err = new Error('Quote Id not found');
                 const mojaloopError = await this._handleError(err, Errors.MojaloopApiErrorCodes.QUOTE_ID_NOT_FOUND);
                 this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
                 return await this._mojaloopRequests.putQuotesError(quoteId,
-                    mojaloopError, sourceFspId); 
+                    mojaloopError, sourceFspId);
             }
             // Make a PUT /quotes/{ID} callback to the source fsp with the quote response
             return this._mojaloopRequests.putQuotes(quoteId, quoteResponse, sourceFspId);
@@ -270,14 +271,20 @@ class InboundTransfersModel {
 
 
     /**
-     * Validates  an incoming transfer prepare request and makes a callback to the originator with
+     * Validates an incoming transfer prepare request and makes a callback to the originator with
      * the result
      */
     async prepareTransfer(prepareRequest, sourceFspId) {
         try {
-
             // retrieve our quote data
-            const quote = await this._cache.get(`quote_${prepareRequest.transferId}`);
+            let quote;
+
+            if (this._allowDifferentTransferTransactionId) {
+                const transactionId = this._ilp.getTransactionObject(prepareRequest.ilpPacket).transactionId;
+                quote = await this._cache.get(`quote_${transactionId}`);
+            } else {
+                quote = await this._cache.get(`quote_${prepareRequest.transferId}`);
+            }
 
             if(!quote) {
                 // Check whether to allow transfers without a previous quote.
@@ -703,7 +710,7 @@ class InboundTransfersModel {
     }
 
     /**
-    * Forwards Switch notification for fulfiled transfer to the DFSP backend, when acting as a payee 
+    * Forwards Switch notification for fulfiled transfer to the DFSP backend, when acting as a payee
     */
     async sendNotificationToPayee(body, transferId) {
         try {
