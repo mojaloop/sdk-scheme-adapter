@@ -408,7 +408,7 @@ describe('inboundModel', () => {
             expect(MojaloopRequests.__putTransfers).toHaveBeenCalledTimes(1);
         });
 
-        test.only('allow transfer and transaction id mismatch', async () => {
+        test('allow different transfer and transaction id', async () => {
             const transactionId = 'mockTransactionId';
             const TRANSFER_ID = 'transfer-id';
             shared.mojaloopPrepareToInternalTransfer = jest.fn().mockReturnValueOnce({});
@@ -434,7 +434,7 @@ describe('inboundModel', () => {
                 ...config,
                 cache,
                 logger,
-                allowTransferIdTransactionIdMismatch: true,
+                allowDifferentTransferTransactionId: true,
                 checkIlp: false,
             });
 

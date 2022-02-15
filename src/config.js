@@ -159,5 +159,5 @@ module.exports = {
     // in 3PPI DFSP's generate their own `transferId` which is associated with
     // a transactionRequestId. this option decodes the ilp packet for
     // the `transactionId` to retrieve the quote from cache
-    allowTransferIdTransactionIdMismatch: env.get('ALLOW_TRANSFER_TRANSACTION_ID_MISMATCH').default('false').asBool(),
+    allowDifferentTransferTransactionId: env.get('ALLOW_DIFFERENT_TRANSFER_TRANSACTION_ID').default('false').asBool(),
 };

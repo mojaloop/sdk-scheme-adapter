@@ -34,7 +34,7 @@ class InboundTransfersModel {
         this._rejectTransfersOnExpiredQuotes = config.rejectTransfersOnExpiredQuotes;
         this._allowTransferWithoutQuote = config.allowTransferWithoutQuote;
         this._reserveNotification = config.reserveNotification;
-        this._allowTransferIdTransactionIdMismatch = config.allowTransferIdTransactionIdMismatch;
+        this._allowDifferentTransferTransactionId = config.allowDifferentTransferTransactionId;
 
         this._mojaloopRequests = new MojaloopRequests({
             logger: this._logger,
@@ -279,7 +279,7 @@ class InboundTransfersModel {
             // retrieve our quote data
             let quote;
 
-            if (this._allowTransferIdTransactionIdMismatch) {
+            if (this._allowDifferentTransferTransactionId) {
                 const transactionId = this._ilp.getTransactionObject(prepareRequest.ilpPacket).transactionId;
                 quote = await this._cache.get(`quote_${transactionId}`);
             } else {
