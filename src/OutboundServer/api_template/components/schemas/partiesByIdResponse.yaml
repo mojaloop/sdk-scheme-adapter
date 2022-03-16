@@ -4,7 +4,7 @@
   properties:
     party:
       $ref: >-
-        ../../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/components/schemas/Party.yaml
+        ../../../../node_modules/@mojaloop/api-snippets/thirdparty/v1_0/openapi3/components/schemas/Party.yaml
       description: Information regarding the requested Party.
     currentState:
       $ref: ../schemas/async2SyncCurrentState.yaml
