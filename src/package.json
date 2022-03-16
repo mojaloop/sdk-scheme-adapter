@@ -57,7 +57,7 @@
     "@mojaloop/central-services-metrics": "11.0.0",
     "@mojaloop/central-services-shared": "14.0.0",
     "@mojaloop/event-sdk": "10.7.1",
-    "@mojaloop/sdk-standard-components": "15.13.0",
+    "@mojaloop/sdk-standard-components": "^16.0.0",
     "ajv": "8.6.3",
     "ajv-keywords": "5.0.0",
     "axios": "^0.21.4",

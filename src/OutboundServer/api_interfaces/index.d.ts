@@ -83,9 +83,6 @@ export declare namespace Schemas {
   type accountsCreationState = components['schemas']['accountsCreationState'];
   type accountsResponse = components['schemas']['accountsResponse'];
   type errorAccountsResponse = components['schemas']['errorAccountsResponse'];
-  type AccountAddress = components['schemas']['AccountAddress'];
-  type Account = components['schemas']['Account'];
-  type AccountList = components['schemas']['AccountList'];
   type PartyIdInfo = components['schemas']['PartyIdInfo'];
   type PartyName = components['schemas']['PartyName'];
   type PartyComplexName = components['schemas']['PartyComplexName'];
@@ -101,17 +98,4 @@ export declare namespace Schemas {
   type simpleTransfersPostRequest = components['schemas']['simpleTransfersPostRequest'];
   type simpleTransfersPostResponse = components['schemas']['simpleTransfersPostResponse'];
   type errorSimpleTransfersResponse = components['schemas']['errorSimpleTransfersResponse'];
-  type AuthorizationChannelType = components['schemas']['AuthorizationChannelType'];
-  type Integer = components['schemas']['Integer'];
-  type AuthorizationsPostRequest = components['schemas']['AuthorizationsPostRequest'];
-  type authorizationsPostRequest = components['schemas']['authorizationsPostRequest'];
-  type OtpValue = components['schemas']['OtpValue'];
-  type QRCODE = components['schemas']['QRCODE'];
-  type U2FPIN = components['schemas']['U2FPIN'];
-  type U2FPinValue = components['schemas']['U2FPinValue'];
-  type AuthenticationValue = components['schemas']['AuthenticationValue'];
-  type AuthenticationInfo = components['schemas']['AuthenticationInfo'];
-  type AuthorizationResponseType = components['schemas']['AuthorizationResponseType'];
-  type authorizationsPostResponse = components['schemas']['authorizationsPostResponse'];
-  type errorAuthorizationsResponse = components['schemas']['errorAuthorizationsResponse'];
 }
