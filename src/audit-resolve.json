@@ -272,6 +272,123 @@
       "decision": "ignore",
       "madeAt": 1644879161354,
       "expiresAt": 1647471110577
+    },
+    "1064587|@mojaloop/central-services-shared>widdershins>urijs": {
+      "decision": "fix",
+      "madeAt": 1647565572809
+    },
+    "1064606|@mojaloop/central-services-shared>widdershins>urijs": {
+      "decision": "fix",
+      "madeAt": 1647565572809
+    },
+    "1067233|@mojaloop/central-services-shared>widdershins>urijs": {
+      "decision": "fix",
+      "madeAt": 1647565572809
+    },
+    "1064843|@mojaloop/event-sdk>@grpc/proto-loader>yargs>string-width>strip-ansi>ansi-regex": {
+      "decision": "ignore",
+      "madeAt": 1647565608486,
+      "expiresAt": 1650157604921
+    },
+    "1064843|@mojaloop/central-services-shared>widdershins>oas-resolver>yargs>string-width>strip-ansi>ansi-regex": {
+      "decision": "ignore",
+      "madeAt": 1647565608486,
+      "expiresAt": 1650157604921
+    },
+    "1064843|@mojaloop/central-services-shared>widdershins>oas-resolver>yargs>cliui>string-width>strip-ansi>ansi-regex": {
+      "decision": "ignore",
+      "madeAt": 1647565608486,
+      "expiresAt": 1650157604921
+    },
+    "1064843|@mojaloop/central-services-shared>widdershins>swagger2openapi>oas-resolver>yargs>cliui>string-width>strip-ansi>ansi-regex": {
+      "decision": "ignore",
+      "madeAt": 1647565608486,
+      "expiresAt": 1650157604921
+    },
+    "1064843|@mojaloop/central-services-shared>widdershins>swagger2openapi>oas-validator>oas-resolver>yargs>cliui>string-width>strip-ansi>ansi-regex": {
+      "decision": "ignore",
+      "madeAt": 1647565608486,
+      "expiresAt": 1650157604921
+    },
+    "1064843|@mojaloop/central-services-shared>widdershins>swagger2openapi>oas-validator>oas-resolver>yargs>cliui>wrap-ansi>string-width>strip-ansi>ansi-regex": {
+      "decision": "ignore",
+      "madeAt": 1647565608486,
+      "expiresAt": 1650157604921
+    },
+    "1064843|@mojaloop/event-sdk>@grpc/proto-loader>yargs>cliui>wrap-ansi>strip-ansi>ansi-regex": {
+      "decision": "ignore",
+      "madeAt": 1647565608486,
+      "expiresAt": 1650157604921
+    },
+    "1064843|@mojaloop/central-services-shared>widdershins>oas-resolver>yargs>cliui>wrap-ansi>strip-ansi>ansi-regex": {
+      "decision": "ignore",
+      "madeAt": 1647565608486,
+      "expiresAt": 1650157604921
+    },
+    "1064843|@mojaloop/central-services-shared>widdershins>swagger2openapi>oas-resolver>yargs>cliui>wrap-ansi>strip-ansi>ansi-regex": {
+      "decision": "ignore",
+      "madeAt": 1647565608486,
+      "expiresAt": 1650157604921
+    },
+    "1064843|@mojaloop/central-services-shared>widdershins>swagger2openapi>oas-validator>oas-resolver>yargs>cliui>wrap-ansi>strip-ansi>ansi-regex": {
+      "decision": "ignore",
+      "madeAt": 1647565608487,
+      "expiresAt": 1650157604921
+    },
+    "1064843|@mojaloop/event-sdk>@grpc/proto-loader>yargs>cliui>strip-ansi>ansi-regex": {
+      "decision": "ignore",
+      "madeAt": 1647565608487,
+      "expiresAt": 1650157604921
+    },
+    "1064661|@mojaloop/central-services-shared>shins>markdown-it": {
+      "decision": "ignore",
+      "madeAt": 1647565592292,
+      "expiresAt": 1650157555692
+    },
+    "1064744|@mojaloop/central-services-shared>widdershins>openapi-sampler>json-pointer": {
+      "decision": "ignore",
+      "madeAt": 1647565593879,
+      "expiresAt": 1650157555692
+    },
+    "1064761|@mojaloop/central-services-shared>widdershins>swagger2openapi>better-ajv-errors>jsonpointer": {
+      "decision": "ignore",
+      "madeAt": 1647565594838,
+      "expiresAt": 1650157555692
+    },
+    "1064761|@mojaloop/central-services-shared>widdershins>swagger2openapi>oas-validator>better-ajv-errors>jsonpointer": {
+      "decision": "ignore",
+      "madeAt": 1647565594838,
+      "expiresAt": 1650157555692
+    },
+    "1064843|@mojaloop/central-services-shared>widdershins>yargs>string-width>strip-ansi>ansi-regex": {
+      "decision": "ignore",
+      "madeAt": 1647565599016,
+      "expiresAt": 1650157555692
+    },
+    "1064843|@mojaloop/central-services-shared>widdershins>yargs>cliui>string-width>strip-ansi>ansi-regex": {
+      "decision": "ignore",
+      "madeAt": 1647565599016,
+      "expiresAt": 1650157555692
+    },
+    "1065159|@mojaloop/central-services-shared>widdershins>swagger2openapi>oas-validator>ajv": {
+      "decision": "ignore",
+      "madeAt": 1647565600359,
+      "expiresAt": 1650157555692
+    },
+    "1065367|@mojaloop/central-services-shared>shins>sanitize-html": {
+      "decision": "ignore",
+      "madeAt": 1647565601450,
+      "expiresAt": 1650157555692
+    },
+    "1065368|@mojaloop/central-services-shared>shins>sanitize-html": {
+      "decision": "ignore",
+      "madeAt": 1647565601450,
+      "expiresAt": 1650157555692
+    },
+    "1065523|@mojaloop/central-services-shared>widdershins>yargs>yargs-parser": {
+      "decision": "ignore",
+      "madeAt": 1647565602524,
+      "expiresAt": 1650157555692
     }
   },
   "rules": {},
