@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [12.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.18.12...v12.0.0) (2022-03-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* update typescript interfaces using latest api-snippets (#297)
+
+### Refactors
+
+* update typescript interfaces using latest api-snippets ([#297](https://github.com/mojaloop/sdk-scheme-adapter/issues/297)) ([9a72083](https://github.com/mojaloop/sdk-scheme-adapter/commit/9a7208372976297a307a57478fb339b4ebbdc790))
+
 ### [11.18.12](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.18.11...v11.18.12) (2022-02-15)
 
 
