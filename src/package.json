@@ -53,8 +53,8 @@
   "@comment dependencies": [
     "koa2-oauth-server is an old unmaintained repo. It uses the now unsupported git protocol.",
     "Please see https://github.blog/2021-09-01-improving-git-protocol-security-github/ for more information.",
-    "If you regenerate package-lock.json, you will manually have to update `git://` to `https://` on it's",
-    "dependency."
+    "If you regenerate package-lock.json, you will manually have to update `git://` to `https://` on its",
+    "dependencies."
   ],
   "dependencies": {
     "@koa/cors": "^3.1.0",
