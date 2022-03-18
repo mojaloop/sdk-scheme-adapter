@@ -126,7 +126,7 @@ _Note that these instructions are for Linux based systems. For Mac and/or Window
    }'
    ```
 
-   The respose from the above call should indicate the result of the communication between the scheme-adapter and the Mojaloop API enabled switch or simulator.
+   The response from the above call should indicate the result of the communication between the scheme-adapter and the Mojaloop API enabled switch or simulator.
 
 1. Speak to your switch operator or use your simulator to test the inbound (receiving money) API.
 
