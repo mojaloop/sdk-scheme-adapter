@@ -46,13 +46,12 @@ defaults_license_scanner: &defaults_license_scanner
 
 defaults_npm_auth: &defaults_npm_auth
   name: Update NPM registry auth token
-  command: cd src; echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
+  command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
 
 defaults_npm_publish_release: &defaults_npm_publish_release
   name: Publish NPM $RELEASE_TAG artifact
   command: |
     source $BASH_ENV
-    cd src
     echo "Publishing tag $RELEASE_TAG"
     npm publish --tag $RELEASE_TAG --access public
 
@@ -89,7 +88,7 @@ jobs:
           command: cd $(npm root -g)/npm
       - run:
           name: Update NPM install (using `npm ci`)
-          command: cd src && npm ci
+          command: npm ci
       - run:
           name: Delete build dependencies
           command: apk del build-dependencies
@@ -109,7 +108,7 @@ jobs:
           key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
       - run:
           name: Execute unit tests
-          command: cd src && npm run test
+          command: npm run test
       - store_test_results:
           path: /home/circleci/project/src/
       - store_artifacts:
@@ -152,7 +151,6 @@ jobs:
           name: Execute integration tests
           command: |
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            cd src
             npm ci
             npm run test:int
       - run:
@@ -176,7 +174,7 @@ jobs:
           key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
       - run:
           name: Execute unit tests
-          command: cd src && npm run build:openapi && npm run validate:api
+          command: npm run build:openapi && npm run validate:api
 
   lint:
     executor: default-docker
@@ -189,10 +187,10 @@ jobs:
           key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
       - run:
           name: Create dir for lint results
-          command: cd src && mkdir -p /lintresults
+          command: mkdir -p /lintresults
       - run:
           name: Execute linting
-          command: cd src && (npm run lint > /lintresults/results.txt)
+          command: (npm run lint > /lintresults/results.txt)
       - store_artifacts:
           path: /lintresults
 
@@ -210,7 +208,7 @@ jobs:
           command: mkdir -p ./audit/results
       - run:
           name: Check for new npm vulnerabilities
-          command: cd src && npm run audit:check --silent -- --json > ../audit/results/auditResults.json
+          command: npm run audit:check --silent -- --json > ../audit/results/auditResults.json
       - store_artifacts:
           path: ./audit/results
 
@@ -227,7 +225,7 @@ jobs:
           key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
       - run:
           name: Prune non-production packages before running license-scanner
-          command: cd src && npm prune --production
+          command: npm prune --production
       - run:
           name: Run the license-scanner
           command: cd /tmp/license-scanner && pathToRepo=$CIRCLE_WORKING_DIRECTORY make run
@@ -341,7 +339,7 @@ jobs:
             ssh-keyscan github.com >> ~/.ssh/known_hosts
       - run:
           name: Generate changelog and bump package version
-          command: cd src && npm run release
+          command: npm run release
       - run:
           name: Push the release
           command: git push --follow-tags origin ${CIRCLE_BRANCH}
