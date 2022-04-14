@@ -5,7 +5,7 @@
   "main": "index.js",
   "types": "index.d.ts",
   "engines": {
-    "node": ">=14.15"
+    "node": "=16.x"
   },
   "scripts": {
     "audit:resolve": "SHELL=sh resolve-audit --production",
@@ -49,12 +49,6 @@
     "type": "git",
     "url": "git@github.com:mojaloop/sdk-scheme-adapter.git"
   },
-  "@comment dependencies": [
-    "koa2-oauth-server is an old unmaintained repo. It uses the now unsupported git protocol.",
-    "Please see https://github.blog/2021-09-01-improving-git-protocol-security-github/ for more information.",
-    "If you regenerate package-lock.json, you will manually have to update `git://` to `https://` on its",
-    "dependencies."
-  ],
   "dependencies": {
     "@koa/cors": "^3.1.0",
     "@mojaloop/central-services-error-handling": "11.3.0",
@@ -70,12 +64,13 @@
     "co-body": "^6.1.0",
     "dotenv": "^10.0.0",
     "env-var": "^7.0.1",
+    "express": "^4.17.2",
     "javascript-state-machine": "^3.1.0",
     "js-yaml": "^4.1.0",
     "json-schema-ref-parser": "^9.0.9",
     "koa": "^2.13.1",
     "koa-body": "^4.2.0",
-    "koa2-oauth-server": "^1.0.0",
+    "oauth2-server": "^4.0.0-dev.2",
     "openapi-jsonschema-parameters": "^9.3.0",
     "promise-timeout": "^1.3.0",
     "redis": "^3.1.2",

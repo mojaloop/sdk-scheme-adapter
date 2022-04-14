@@ -1,4 +1,4 @@
-FROM node:14.15-alpine as builder
+FROM node:16-alpine as builder
 
 RUN apk add --no-cache git python build-base
 
@@ -12,7 +12,7 @@ WORKDIR /src
 COPY ./src/package.json .
 COPY ./src/package-lock.json .
 RUN npm ci --only=production
-FROM node:14.15-alpine
+FROM node:16-alpine
 
 ARG BUILD_DATE
 ARG VCS_URL
