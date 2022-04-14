@@ -389,6 +389,31 @@
       "decision": "ignore",
       "madeAt": 1647565602524,
       "expiresAt": 1650157555692
+    },
+    "1069972|@mojaloop/central-services-shared>@mojaloop/event-sdk>moment": {
+      "decision": "ignore",
+      "madeAt": 1649898254012,
+      "expiresAt": 1652490250295
+    },
+    "1069972|@mojaloop/event-sdk>moment": {
+      "decision": "ignore",
+      "madeAt": 1649898254012,
+      "expiresAt": 1652490250295
+    },
+    "1067456|@mojaloop/central-services-shared>widdershins>markdown-it": {
+      "decision": "ignore",
+      "madeAt": 1649898255401,
+      "expiresAt": 1652490250295
+    },
+    "1068310|@mojaloop/central-services-shared>widdershins>yargs>yargs-parser": {
+      "decision": "ignore",
+      "madeAt": 1649898256486,
+      "expiresAt": 1652490250295
+    },
+    "1067946|ajv": {
+      "decision": "ignore",
+      "madeAt": 1649898257344,
+      "expiresAt": 1652490250295
     }
   },
   "rules": {},
