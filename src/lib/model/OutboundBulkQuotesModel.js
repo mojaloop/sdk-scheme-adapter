@@ -115,7 +115,7 @@ class OutboundBulkQuotesModel {
 
             case 'requestBulkQuote':
                 return this._requestBulkQuote();
-            
+
             case 'getBulkQuote':
                 return this._getBulkQuote(this.data.bulkQuoteId);
 
@@ -266,7 +266,7 @@ class OutboundBulkQuotesModel {
             };
 
             individualQuote.note && (quote.note = individualQuote.note);
-            
+
             if (individualQuote.extensions && individualQuote.extensions.length > 0) {
                 bulkQuoteRequest.extensionList = {
                     extension: individualQuote.extensions
@@ -440,7 +440,7 @@ class OutboundBulkQuotesModel {
                     await this.stateMachine.requestBulkQuote();
                     this._logger.log(`Quotes resolved for bulk quote ${this.data.bulkQuoteId}`);
                     break;
-                
+
                 case 'getBulkQuote':
                     await this.stateMachine.getBulkQuote();
                     this._logger.log(`Get bulk quote ${this.data.bulkQuoteId} has been completed`);

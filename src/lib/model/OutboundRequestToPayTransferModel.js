@@ -145,7 +145,7 @@ class OutboundRequestToPayTransferModel {
                         }
                     }
                     break;
-                
+
                 case 'otpReceived':
                     // next transition is executeTransfer
                     await this.stateMachine.executeTransfer();
@@ -230,7 +230,7 @@ class OutboundRequestToPayTransferModel {
     }
 
     /**
-     * This method is used to communicate back to the Payee that a rejection is being 
+     * This method is used to communicate back to the Payee that a rejection is being
      * sent because the OTP did not match.
      */
     async rejectRequestToPay() {
@@ -241,7 +241,7 @@ class OutboundRequestToPayTransferModel {
         const response = {
             status : `${this.data.requestToPayTransactionId} has been REJECTED`
         };
-        return JSON.stringify(response);      
+        return JSON.stringify(response);
     }
 
 
@@ -471,7 +471,7 @@ class OutboundRequestToPayTransferModel {
     }
 
     /**
-     * Sends request for 
+     * Sends request for
      * Starts the quote resolution process by sending a POST /quotes request to the switch;
      * then waits for a notification from the cache that the quote response has been received
      */
@@ -480,7 +480,7 @@ class OutboundRequestToPayTransferModel {
         return new Promise(async (resolve, reject) => {
 
             if( this.data.initiatorType && this.data.initiatorType === 'BUSINESS') return resolve();
-            
+
             // listen for events on the quoteId
             const otpKey = `otp_${this.data.requestToPayTransactionId}`;
 
@@ -501,9 +501,9 @@ class OutboundRequestToPayTransferModel {
 
                     const otpResponseBody = otpResponse.data;
                     this._logger.push({ otpResponseBody }).log('OTP response received');
-                    
+
                     this.data.otpResponse = otpResponseBody;
-                    
+
                     return resolve(otpResponse);
                 }
                 catch(err) {
@@ -587,7 +587,7 @@ class OutboundRequestToPayTransferModel {
         return quote;
     }
 
-    
+
     /**
      * Executes a transfer
      * Starts the transfer process by sending a POST /transfers (prepare) request to the switch;
@@ -886,7 +886,7 @@ class OutboundRequestToPayTransferModel {
     }
 
 
-    
+
 }
 
 

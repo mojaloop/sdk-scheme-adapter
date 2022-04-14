@@ -277,7 +277,7 @@ class OutboundTransfersModel {
             // a GET /parties request to the switch
             try {
                 const res = await this._requests.getParties(this.data.to.idType, this.data.to.idValue,
-                    this.data.to.idSubValue);
+                    this.data.to.idSubValue, this.data.to.fspId);
                 this._logger.push({ peer: res }).log('Party lookup sent to peer');
             }
             catch(err) {
