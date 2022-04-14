@@ -376,7 +376,7 @@ describe('Inbound Server', () => {
 
         afterEach(async () => {
             await svr.stop();
-            fs.rmdirSync(keysDir, { recursive: true });
+            fs.rmSync(keysDir, { recursive: true });
         });
 
         it('updates server configuration when a new JWS verification key '

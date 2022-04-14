@@ -24,7 +24,7 @@ defaults_Dependencies: &defaults_Dependencies |
   apk --no-cache add curl
   apk --no-cache add openssh-client
   apk --no-cache add bash
-  apk add --no-cache -t build-dependencies make gcc g++ python libtool autoconf automake
+  apk add --no-cache -t build-dependencies make gcc g++ python3 libtool autoconf automake
   npm config set unsafe-perm true
   npm install -g node-gyp
 
@@ -65,11 +65,11 @@ executors:
   default-docker:
     working_directory: /home/circleci/project
     docker:
-      - image: node:14.15-alpine
+      - image: node:16-alpine
 
   default-machine:
     machine:
-      image: ubuntu-1604:201903-01
+      image: ubuntu-2004:202010-01
 
 ##
 # Jobs

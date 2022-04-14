@@ -57,6 +57,9 @@ class OAuthTestServer {
     }
 
     async stop() {
+        if (!this._app) {
+            return;
+        }
         await new Promise(resolve => this._app.close(resolve));
         this._app = null;
         this._logger.log('OAuth2 Test Server shut down complete');
