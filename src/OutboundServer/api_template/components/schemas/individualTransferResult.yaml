@@ -2,26 +2,26 @@ type: object
 properties:
   transferId:
     $ref: >-
-      ../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml
+      ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml
   to:
     $ref: ./transferParty.yaml
   amountType:
     $ref: >-
-      ../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/AmountType.yaml
+      ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/AmountType.yaml
   currency:
     $ref: >-
-      ../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml
+      ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml
   amount:
     $ref: >-
-      ../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Amount.yaml
+      ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Amount.yaml
   transactionType:
     $ref: ./transactionType.yaml
   note:
     $ref: >-
-      ../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Note.yaml
+      ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Note.yaml
   quoteId:
     $ref: >-
-      ../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml
+      ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml
   quoteResponse:
     $ref: ./quote.yaml
   quoteResponseSource:

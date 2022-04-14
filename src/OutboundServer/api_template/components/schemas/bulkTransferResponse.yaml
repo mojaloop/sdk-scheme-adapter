@@ -5,7 +5,7 @@ required:
 properties:
   transferId:
     $ref: >-
-      ../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml
+      ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml
   from:
     $ref: ./transferParty.yaml
   individualTransferResults:
