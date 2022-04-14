@@ -132,8 +132,8 @@ jobs:
           command: |
             echo ${NVM_DIR}
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm install v10.15.3
-            nvm alias default v10.15.3
+            nvm install v16.14
+            nvm alias default v16.14
       - run:
           name: Start docker-compose
           command: |
