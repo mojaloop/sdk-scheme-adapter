@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/thirdparty-api-svc](https://github.com/mojaloop/thirdparty-api-svc)
+### [12.0.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v12.0.1...v12.0.2) (2022-04-19)
+
+
+### Chore
+
+* move files out of src/ ([#300](https://github.com/mojaloop/sdk-scheme-adapter/issues/300)) ([b80f943](https://github.com/mojaloop/sdk-scheme-adapter/commit/b80f943760a2bfc09415c64fd31faf84782a523e))
+
 ### [12.0.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v12.0.0...v12.0.1) (2022-04-19)
 
 
