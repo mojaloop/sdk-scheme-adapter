@@ -1,6 +1,10 @@
-# Changelog
+# Changelog: [mojaloop/thirdparty-api-svc](https://github.com/mojaloop/thirdparty-api-svc)
+### [12.0.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v12.0.0...v12.0.1) (2022-04-19)
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### Bug Fixes
+
+* remove outdated koa2-oauth-server and bump to node 16 ([#302](https://github.com/mojaloop/sdk-scheme-adapter/issues/302)) ([9c1ae18](https://github.com/mojaloop/sdk-scheme-adapter/commit/9c1ae18375f033fe59c219fa7cc970bd4d0c72f2))
 
 ## [12.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.18.12...v12.0.0) (2022-03-18)
 
