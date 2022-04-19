@@ -33,7 +33,7 @@ describe('config', () => {
 
     afterEach(() => {
         process.env = { ...env };
-        fs.rmdirSync(certDir, { recursive: true });
+        fs.rmSync(certDir, { recursive: true });
         jest.resetModules();
     });
 

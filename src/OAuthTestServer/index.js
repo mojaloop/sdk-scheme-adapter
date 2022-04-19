@@ -10,11 +10,13 @@
 
 'use strict';
 
-const http = require('http');
-const Koa = require('koa');
-const koaBody = require('koa-body');
-const OAuthServer = require('koa2-oauth-server');
+const { assert } = require('assert');
+const express = require('express');
+const bodyParser = require('body-parser');
+const OAuth2Server = require('oauth2-server');
 const { InMemoryCache } = require('./model');
+const {Request, Response} = require('oauth2-server');
+const UnauthorizedRequestError = require('oauth2-server/lib/errors/unauthorized-request-error');
 
 class OAuthTestServer {
     /**
@@ -29,36 +31,95 @@ class OAuthTestServer {
         this._api = null;
         this._port = port;
         this._logger = logger;
-        this._api = OAuthTestServer._SetupApi({ clientKey, clientSecret });
-        this._server = http.createServer(this._api.callback());
+        this._clientKey = clientKey;
+        this._clientSecret = clientSecret;
     }
 
     async start() {
-        if (this._server.listening) {
+        if (this._app) {
             return;
         }
-        await new Promise((resolve) => this._server.listen(this._port, resolve));
-        this._logger.push({ port: this._port }).log('Serving OAuth2 Test Server');
-    }
+        this._app = express();
 
-    async stop() {
-        await new Promise(resolve => this._server.close(resolve));
-        this._logger.log('OAuth2 Test Server shut down complete');
-    }
-
-    static _SetupApi({ clientKey, clientSecret }) {
-        const result = new Koa();
-
-        result.oauth = new OAuthServer({
-            model: new InMemoryCache({ clientKey, clientSecret }),
+        this._oauth = new OAuth2Server({
+            model: new InMemoryCache({ clientKey: this._clientKey, clientSecret:this._clientSecret }),
             accessTokenLifetime: 60 * 60,
             allowBearerTokensInQueryString: true,
         });
 
-        result.use(koaBody());
-        result.use(result.oauth.token());
+        this._app.use(bodyParser.urlencoded({ extended: false }));
+        this._app.use(bodyParser.json());
+        this._app.use(this.tokenMiddleware());
 
-        return result;
+
+        await new Promise((resolve) => this._app.listen(this._port, resolve));
+        this._logger.push({ port: this._port }).log('Serving OAuth2 Test Server');
+    }
+
+    async stop() {
+        if (!this._app) {
+            return;
+        }
+        await new Promise(resolve => this._app.close(resolve));
+        this._app = null;
+        this._logger.log('OAuth2 Test Server shut down complete');
+    }
+
+    async reconfigure({ port, clientKey, clientSecret, logger }) {
+        assert(port === this._port, 'Cannot reconfigure running port');
+        return () => {
+            this._port = port;
+            this._logger = logger;
+            this.stop().then(() => this.start());
+            this._api = OAuthTestServer._SetupApi({ clientKey, clientSecret });
+            this._logger.log('restarted');
+        };
+    }
+
+    handleResponse(req, res, response) {
+        if (response.status === 302) {
+            const location = response.headers.location;
+            delete response.headers.location;
+            res.set(response.headers);
+            res.redirect(location);
+        } else {
+            res.set(response.headers);
+            res.status(response.status).send(response.body);
+        }
+    }
+
+    handleError(e, req, res, response) {
+        if (response) {
+            res.set(response.headers);
+        }
+
+        res.status(e.code);
+
+        if (e instanceof UnauthorizedRequestError) {
+            return res.send();
+        }
+
+        res.send({ error: e.name, error_description: e.message });
+    }
+
+    tokenMiddleware(options) {
+        return async (req, res, next) => {
+            const request = new Request(req);
+            const response = new Response(res);
+
+            let token;
+
+            try {
+                token = await this._oauth.token(request, response, options);
+                res.locals.oauth = {token};
+            } catch (e) {
+                await this.handleError(e, req, res, response, next);
+                return;
+            }
+
+            await this.handleResponse(req, res, response);
+
+        };
     }
 }
 
