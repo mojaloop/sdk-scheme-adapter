@@ -3,7 +3,7 @@ type: object
 properties:
   transfer:
     $ref: >-
-      ../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransfersIDPutResponse.yaml
+      ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransfersIDPutResponse.yaml
   currentState:
     $ref: ../schemas/async2SyncCurrentState.yaml
 required:

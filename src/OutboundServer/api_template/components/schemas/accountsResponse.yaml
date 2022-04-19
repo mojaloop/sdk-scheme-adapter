@@ -4,7 +4,7 @@ required:
 properties:
   modelId:
     $ref: >-
-      ../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml
+      ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml
   accounts:
     $ref: ./accountsRequest.yaml
   response:
