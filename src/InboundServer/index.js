@@ -24,6 +24,7 @@ const Validate = require('../lib/validate');
 const router = require('../lib/router');
 const handlers = require('./handlers');
 const middlewares = require('./middlewares');
+const check = require('../lib/check');
 
 class InboundApi extends EventEmitter {
     constructor(conf, logger, cache, validator) {
@@ -43,7 +44,7 @@ class InboundApi extends EventEmitter {
         });
 
         if (conf.validateInboundJws) {
-            this._jwsVerificationKeys = InboundApi._GetJwsKeys(conf.jwsVerificationKeysDirectory);
+            this._jwsVerificationKeys = conf.pm4mlEnabled ? conf.peerJWSKeys :  InboundApi._GetJwsKeys(conf.jwsVerificationKeysDirectory);
         }
         this._api = InboundApi._SetupApi({
             conf,
@@ -185,6 +186,37 @@ class InboundServer extends EventEmitter {
             this._api = null;
         }
         this._logger.log('inbound shut down complete');
+    }
+
+    async reconfigure(conf, logger, cache) {
+        // It may be possible to extract the socket from an existing HTTP/HTTPS server and replace
+        // it in a new server of the other type, as Node's HTTP and HTTPS servers both eventually
+        // are subclasses of net.Server. This wasn't considered as a requirement at the time of
+        // writing.
+        assert(
+            this._conf.mutualTLS.inboundRequests.enabled === conf.mutualTLS.inboundRequests.enabled,
+            'Cannot live-restart an HTTPS server as HTTP or vice versa',
+        );
+        const newApi = new InboundApi(conf, logger, cache, this._validator);
+        await newApi.start();
+        return () => {
+            this._logger = logger;
+            this._cache = cache;
+            // TODO: .tls might be undefined, causing an.. err.. undefined dereference..
+            const tlsCredsChanged = check.notDeepEqual(
+                conf.inbound.tls.creds,
+                this._conf.inbound.tls.creds
+            );
+            if (this._conf.mutualTLS.inboundRequests.enabled && tlsCredsChanged) {
+                this._server.setSecureContext(conf.inbound.tls.creds);
+            }
+            this._server.removeAllListeners('request');
+            this._server.on('request', newApi.callback());
+            this._api.stop();
+            this._api = newApi;
+            this._conf = conf;
+            this._logger.log('restarted');
+        };
     }
 
     _createServer(tlsEnabled, tlsCreds, handler) {
