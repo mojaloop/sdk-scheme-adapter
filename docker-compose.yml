@@ -15,7 +15,7 @@ services:
         - mojaloop-net
     build:
       context: .
-    env_file: ./src/test/config/integration.env
+    env_file: ./test/config/integration.env
     ports:
       - "4000:4000"
       - "4001:4001"

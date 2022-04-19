@@ -1,0 +1,515 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="235" failures="0" errors="0" time="14.365">
+  <testsuite name="Proxy" errors="0" failures="0" skipped="0" timestamp="2022-04-14T02:09:04" time="7.575" tests="15">
+    <testcase classname="Proxy should return success POST response" name="Proxy should return success POST response" time="0.705">
+    </testcase>
+    <testcase classname="Proxy should return success PUT response" name="Proxy should return success PUT response" time="0.413">
+    </testcase>
+    <testcase classname="Proxy should return success GET response" name="Proxy should return success GET response" time="0.394">
+    </testcase>
+    <testcase classname="Proxy should return error response" name="Proxy should return error response" time="0.362">
+    </testcase>
+    <testcase classname="Proxy should forward by path regexp" name="Proxy should forward by path regexp" time="0.363">
+    </testcase>
+    <testcase classname="Proxy should forward by query params" name="Proxy should forward by query params" time="0.366">
+    </testcase>
+    <testcase classname="Proxy should not forward by query params" name="Proxy should not forward by query params" time="0.338">
+    </testcase>
+    <testcase classname="Proxy should forward by header params" name="Proxy should forward by header params" time="0.336">
+    </testcase>
+    <testcase classname="Proxy should not forward by header params" name="Proxy should not forward by header params" time="0.322">
+    </testcase>
+    <testcase classname="Proxy should forward by header values" name="Proxy should forward by header values" time="0.323">
+    </testcase>
+    <testcase classname="Proxy should forward using multi-match rule (path and headers)" name="Proxy should forward using multi-match rule (path and headers)" time="0.325">
+    </testcase>
+    <testcase classname="Proxy should not forward using multi-match rule (wrong headers)" name="Proxy should not forward using multi-match rule (wrong headers)" time="0.354">
+    </testcase>
+    <testcase classname="Proxy should forward using multi-match rule (query)" name="Proxy should forward using multi-match rule (query)" time="0.341">
+    </testcase>
+    <testcase classname="Proxy should forward using multi-match rule (headers)" name="Proxy should forward using multi-match rule (headers)" time="0.348">
+    </testcase>
+    <testcase classname="Proxy should handle binary response" name="Proxy should handle binary response" time="0.36">
+    </testcase>
+  </testsuite>
+  <testsuite name="Outbound Transfers API" errors="0" failures="0" skipped="0" timestamp="2022-04-14T02:09:04" time="7.654" tests="6">
+    <testcase classname="Outbound Transfers API POST /transfers fails validation on invalid request and gives detailed error message indicating source of failure" name="Outbound Transfers API POST /transfers fails validation on invalid request and gives detailed error message indicating source of failure" time="0.45">
+    </testcase>
+    <testcase classname="Outbound Transfers API POST /transfers should return success response" name="Outbound Transfers API POST /transfers should return success response" time="0.598">
+    </testcase>
+    <testcase classname="Outbound Transfers API POST /transfers should return timeout error response on party resolution" name="Outbound Transfers API POST /transfers should return timeout error response on party resolution" time="2.608">
+    </testcase>
+    <testcase classname="Outbound Transfers API POST /transfers should return mojaloop error response on party resolution" name="Outbound Transfers API POST /transfers should return mojaloop error response on party resolution" time="0.511">
+    </testcase>
+    <testcase classname="Outbound Transfers API GET /transfers should return COMMITTED transaction state" name="Outbound Transfers API GET /transfers should return COMMITTED transaction state" time="0.47">
+    </testcase>
+    <testcase classname="Outbound Transfers API GET /transfers should return transfer not found error" name="Outbound Transfers API GET /transfers should return transfer not found error" time="0.387">
+    </testcase>
+  </testsuite>
+  <testsuite name="Outbound Accounts API" errors="0" failures="0" skipped="0" timestamp="2022-04-14T02:09:04" time="7.876" tests="5">
+    <testcase classname="Outbound Accounts API POST /accounts should return success response" name="Outbound Accounts API POST /accounts should return success response" time="0.506">
+    </testcase>
+    <testcase classname="Outbound Accounts API POST /accounts should return success response with error info on invalid currency (1)" name="Outbound Accounts API POST /accounts should return success response with error info on invalid currency (1)" time="0.501">
+    </testcase>
+    <testcase classname="Outbound Accounts API POST /accounts should return success response with error info on errorInformation presence (2)" name="Outbound Accounts API POST /accounts should return success response with error info on errorInformation presence (2)" time="0.419">
+    </testcase>
+    <testcase classname="Outbound Accounts API POST /accounts should return timeout error response" name="Outbound Accounts API POST /accounts should return timeout error response" time="3.361">
+    </testcase>
+    <testcase classname="Outbound Accounts API POST /accounts should return mojaloop error response" name="Outbound Accounts API POST /accounts should return mojaloop error response" time="0.457">
+    </testcase>
+  </testsuite>
+  <testsuite name="outboundModel" errors="0" failures="0" skipped="0" timestamp="2022-04-14T02:09:04" time="8.78" tests="19">
+    <testcase classname="outboundModel initializes to starting state" name="outboundModel initializes to starting state" time="0.004">
+    </testcase>
+    <testcase classname="outboundModel executes all three transfer stages without halting when AUTO_ACCEPT_PARTY and AUTO_ACCEPT_QUOTES are true" name="outboundModel executes all three transfer stages without halting when AUTO_ACCEPT_PARTY and AUTO_ACCEPT_QUOTES are true" time="0.007">
+    </testcase>
+    <testcase classname="outboundModel uses quote response transfer amount for transfer prepare" name="outboundModel uses quote response transfer amount for transfer prepare" time="0.005">
+    </testcase>
+    <testcase classname="outboundModel test get transfer" name="outboundModel test get transfer" time="0.002">
+    </testcase>
+    <testcase classname="outboundModel resolves payee and halts when AUTO_ACCEPT_PARTY is false" name="outboundModel resolves payee and halts when AUTO_ACCEPT_PARTY is false" time="0.001">
+    </testcase>
+    <testcase classname="outboundModel halts after resolving payee, resumes and then halts after receiving quote response when AUTO_ACCEPT_PARTY is false and AUTO_ACCEPT_QUOTES is false" name="outboundModel halts after resolving payee, resumes and then halts after receiving quote response when AUTO_ACCEPT_PARTY is false and AUTO_ACCEPT_QUOTES is false" time="0.003">
+    </testcase>
+    <testcase classname="outboundModel halts and resumes after parties and quotes stages when AUTO_ACCEPT_PARTY is false and AUTO_ACCEPT_QUOTES is false" name="outboundModel halts and resumes after parties and quotes stages when AUTO_ACCEPT_PARTY is false and AUTO_ACCEPT_QUOTES is false" time="0.003">
+    </testcase>
+    <testcase classname="outboundModel uses payee party fspid for transfer prepare when config USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP is false" name="outboundModel uses payee party fspid for transfer prepare when config USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP is false" time="0.002">
+    </testcase>
+    <testcase classname="outboundModel uses quote response source fspid for transfer prepare when config USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP is true" name="outboundModel uses quote response source fspid for transfer prepare when config USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP is true" time="0.002">
+    </testcase>
+    <testcase classname="outboundModel pass quote response `expiration` deadline" name="outboundModel pass quote response `expiration` deadline" time="1.004">
+    </testcase>
+    <testcase classname="outboundModel pass transfer fulfills `expiration` deadline" name="outboundModel pass transfer fulfills `expiration` deadline" time="1.002">
+    </testcase>
+    <testcase classname="outboundModel pass all stages `expiration` deadlines" name="outboundModel pass all stages `expiration` deadlines" time="2.004">
+    </testcase>
+    <testcase classname="outboundModel fail on quote response `expiration` deadline" name="outboundModel fail on quote response `expiration` deadline" time="2.031">
+    </testcase>
+    <testcase classname="outboundModel fail on transfer fulfills `expiration` deadline" name="outboundModel fail on transfer fulfills `expiration` deadline" time="2.008">
+    </testcase>
+    <testcase classname="outboundModel Throws with mojaloop error in response body when party resolution error callback occurs" name="outboundModel Throws with mojaloop error in response body when party resolution error callback occurs" time="0.002">
+    </testcase>
+    <testcase classname="outboundModel Throws with mojaloop error in response body when quote request error callback occurs" name="outboundModel Throws with mojaloop error in response body when quote request error callback occurs" time="0.002">
+    </testcase>
+    <testcase classname="outboundModel Throws with mojaloop error in response body when transfer request error callback occurs" name="outboundModel Throws with mojaloop error in response body when transfer request error callback occurs" time="0.002">
+    </testcase>
+    <testcase classname="outboundModel Outbound server should use HTTPS if outbound mTLS enabled" name="outboundModel Outbound server should use HTTPS if outbound mTLS enabled" time="0">
+    </testcase>
+    <testcase classname="outboundModel Outbound server should use HTTP if outbound mTLS disabled" name="outboundModel Outbound server should use HTTP if outbound mTLS disabled" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="QuotesModel" errors="0" failures="0" skipped="0" timestamp="2022-04-14T02:09:12" time="3.193" tests="20">
+    <testcase classname="QuotesModel create proper creation of model" name="QuotesModel create proper creation of model" time="0.004">
+    </testcase>
+    <testcase classname="QuotesModel getResponse should remap currentState" name="QuotesModel getResponse should remap currentState" time="0.001">
+    </testcase>
+    <testcase classname="QuotesModel getResponse should handle unexpected state" name="QuotesModel getResponse should handle unexpected state" time="0.001">
+    </testcase>
+    <testcase classname="QuotesModel channelName should validate input" name="QuotesModel channelName should validate input" time="0.001">
+    </testcase>
+    <testcase classname="QuotesModel channelName should generate proper channel name" name="QuotesModel channelName should generate proper channel name" time="0">
+    </testcase>
+    <testcase classname="QuotesModel generateKey should generate proper cache key" name="QuotesModel generateKey should generate proper cache key" time="0.001">
+    </testcase>
+    <testcase classname="QuotesModel generateKey should handle lack of quoteId param" name="QuotesModel generateKey should handle lack of quoteId param" time="0.032">
+    </testcase>
+    <testcase classname="QuotesModel onRequestAction should implement happy flow" name="QuotesModel onRequestAction should implement happy flow" time="0.004">
+    </testcase>
+    <testcase classname="QuotesModel onRequestAction should handle timeouts" name="QuotesModel onRequestAction should handle timeouts" time="3.003">
+    </testcase>
+    <testcase classname="QuotesModel onRequestAction should unsubscribe from cache in case when error happens in workflow run" name="QuotesModel onRequestAction should unsubscribe from cache in case when error happens in workflow run" time="0.001">
+    </testcase>
+    <testcase classname="QuotesModel onRequestAction should unsubscribe from cache in case when error happens Mojaloop requests" name="QuotesModel onRequestAction should unsubscribe from cache in case when error happens Mojaloop requests" time="0.001">
+    </testcase>
+    <testcase classname="QuotesModel run workflow start" name="QuotesModel run workflow start" time="0.001">
+    </testcase>
+    <testcase classname="QuotesModel run workflow succeeded" name="QuotesModel run workflow succeeded" time="0.001">
+    </testcase>
+    <testcase classname="QuotesModel run workflow errored" name="QuotesModel run workflow errored" time="0">
+    </testcase>
+    <testcase classname="QuotesModel run workflow handling errors" name="QuotesModel run workflow handling errors" time="0.001">
+    </testcase>
+    <testcase classname="QuotesModel run workflow should handle errors" name="QuotesModel run workflow should handle errors" time="0.001">
+    </testcase>
+    <testcase classname="QuotesModel run workflow should handle input validation for lack of quoteId param" name="QuotesModel run workflow should handle input validation for lack of quoteId param" time="0.001">
+    </testcase>
+    <testcase classname="QuotesModel run workflow should handle input validation for not quoteId &amp; quote.quoteId be in sync" name="QuotesModel run workflow should handle input validation for not quoteId &amp; quote.quoteId be in sync" time="0">
+    </testcase>
+    <testcase classname="QuotesModel run workflow should handle input validation for fspId param" name="QuotesModel run workflow should handle input validation for fspId param" time="0.001">
+    </testcase>
+    <testcase classname="QuotesModel loadFromCache should use PSM.loadFromCache properly" name="QuotesModel loadFromCache should use PSM.loadFromCache properly" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="PartiesModel" errors="0" failures="0" skipped="0" timestamp="2022-04-14T02:09:12" time="3.185" tests="20">
+    <testcase classname="PartiesModel create proper creation of model" name="PartiesModel create proper creation of model" time="0.004">
+    </testcase>
+    <testcase classname="PartiesModel getResponse should remap currentState" name="PartiesModel getResponse should remap currentState" time="0.001">
+    </testcase>
+    <testcase classname="PartiesModel getResponse should handle unexpected state" name="PartiesModel getResponse should handle unexpected state" time="0.001">
+    </testcase>
+    <testcase classname="PartiesModel channelName should validate input" name="PartiesModel channelName should validate input" time="0.001">
+    </testcase>
+    <testcase classname="PartiesModel channelName should generate proper channel name" name="PartiesModel channelName should generate proper channel name" time="0">
+    </testcase>
+    <testcase classname="PartiesModel channelName should generate proper channel name when all params specified" name="PartiesModel channelName should generate proper channel name when all params specified" time="0.001">
+    </testcase>
+    <testcase classname="PartiesModel generateKey should generate proper cache key" name="PartiesModel generateKey should generate proper cache key" time="0">
+    </testcase>
+    <testcase classname="PartiesModel generateKey should handle lack of id param" name="PartiesModel generateKey should handle lack of id param" time="0.025">
+    </testcase>
+    <testcase classname="PartiesModel generateKey should handle all params" name="PartiesModel generateKey should handle all params" time="0">
+    </testcase>
+    <testcase classname="PartiesModel onRequestAction should implement happy flow" name="PartiesModel onRequestAction should implement happy flow" time="0.004">
+    </testcase>
+    <testcase classname="PartiesModel onRequestAction should handle timeouts" name="PartiesModel onRequestAction should handle timeouts" time="3.002">
+    </testcase>
+    <testcase classname="PartiesModel onRequestAction should unsubscribe from cache in case when error happens in workflow run" name="PartiesModel onRequestAction should unsubscribe from cache in case when error happens in workflow run" time="0.001">
+    </testcase>
+    <testcase classname="PartiesModel onRequestAction should unsubscribe from cache in case when error happens Mojaloop requests" name="PartiesModel onRequestAction should unsubscribe from cache in case when error happens Mojaloop requests" time="0.001">
+    </testcase>
+    <testcase classname="PartiesModel run workflow start" name="PartiesModel run workflow start" time="0.001">
+    </testcase>
+    <testcase classname="PartiesModel run workflow succeeded" name="PartiesModel run workflow succeeded" time="0.001">
+    </testcase>
+    <testcase classname="PartiesModel run workflow errored" name="PartiesModel run workflow errored" time="0">
+    </testcase>
+    <testcase classname="PartiesModel run workflow handling errors" name="PartiesModel run workflow handling errors" time="0.001">
+    </testcase>
+    <testcase classname="PartiesModel run workflow should handle errors" name="PartiesModel run workflow should handle errors" time="0.001">
+    </testcase>
+    <testcase classname="PartiesModel run workflow should handle input validation for id/subId params" name="PartiesModel run workflow should handle input validation for id/subId params" time="0.001">
+    </testcase>
+    <testcase classname="PartiesModel loadFromCache should use PSM.loadFromCache properly" name="PartiesModel loadFromCache should use PSM.loadFromCache properly" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="TransfersModel" errors="0" failures="0" skipped="0" timestamp="2022-04-14T02:09:12" time="3.174" tests="20">
+    <testcase classname="TransfersModel create proper creation of model" name="TransfersModel create proper creation of model" time="0.004">
+    </testcase>
+    <testcase classname="TransfersModel getResponse should remap currentState" name="TransfersModel getResponse should remap currentState" time="0.001">
+    </testcase>
+    <testcase classname="TransfersModel getResponse should handle unexpected state" name="TransfersModel getResponse should handle unexpected state" time="0.001">
+    </testcase>
+    <testcase classname="TransfersModel channelName should validate input" name="TransfersModel channelName should validate input" time="0">
+    </testcase>
+    <testcase classname="TransfersModel channelName should generate proper channel name" name="TransfersModel channelName should generate proper channel name" time="0">
+    </testcase>
+    <testcase classname="TransfersModel generateKey should generate proper cache key" name="TransfersModel generateKey should generate proper cache key" time="0">
+    </testcase>
+    <testcase classname="TransfersModel generateKey should handle lack of transferId param" name="TransfersModel generateKey should handle lack of transferId param" time="0.024">
+    </testcase>
+    <testcase classname="TransfersModel onRequestAction should implement happy flow" name="TransfersModel onRequestAction should implement happy flow" time="0.004">
+    </testcase>
+    <testcase classname="TransfersModel onRequestAction should handle timeouts" name="TransfersModel onRequestAction should handle timeouts" time="3.003">
+    </testcase>
+    <testcase classname="TransfersModel onRequestAction should unsubscribe from cache in case when error happens in workflow run" name="TransfersModel onRequestAction should unsubscribe from cache in case when error happens in workflow run" time="0.002">
+    </testcase>
+    <testcase classname="TransfersModel onRequestAction should unsubscribe from cache in case when error happens Mojaloop requests" name="TransfersModel onRequestAction should unsubscribe from cache in case when error happens Mojaloop requests" time="0.001">
+    </testcase>
+    <testcase classname="TransfersModel run workflow start" name="TransfersModel run workflow start" time="0.001">
+    </testcase>
+    <testcase classname="TransfersModel run workflow succeeded" name="TransfersModel run workflow succeeded" time="0.001">
+    </testcase>
+    <testcase classname="TransfersModel run workflow errored" name="TransfersModel run workflow errored" time="0">
+    </testcase>
+    <testcase classname="TransfersModel run workflow handling errors" name="TransfersModel run workflow handling errors" time="0.002">
+    </testcase>
+    <testcase classname="TransfersModel run workflow should handle errors" name="TransfersModel run workflow should handle errors" time="0">
+    </testcase>
+    <testcase classname="TransfersModel run workflow should handle input validation for lack of transferId param" name="TransfersModel run workflow should handle input validation for lack of transferId param" time="0">
+    </testcase>
+    <testcase classname="TransfersModel run workflow should handle input validation for not transferId &amp; transfer.transferId be in sync" name="TransfersModel run workflow should handle input validation for not transferId &amp; transfer.transferId be in sync" time="0">
+    </testcase>
+    <testcase classname="TransfersModel run workflow should handle input validation for fspId param" name="TransfersModel run workflow should handle input validation for fspId param" time="0.001">
+    </testcase>
+    <testcase classname="TransfersModel loadFromCache should use PSM.loadFromCache properly" name="TransfersModel loadFromCache should use PSM.loadFromCache properly" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="Test Server" errors="0" failures="0" skipped="0" timestamp="2022-04-14T02:09:13" time="3.461" tests="9">
+    <testcase classname="Test Server Inbound server and Test server construct cache with same parameters when provided same config" name="Test Server Inbound server and Test server construct cache with same parameters when provided same config" time="0.387">
+    </testcase>
+    <testcase classname="Test Server Health check" name="Test Server Health check" time="0.255">
+    </testcase>
+    <testcase classname="Test Server PUT /parties cache get and set use same value" name="Test Server PUT /parties cache get and set use same value" time="0.255">
+    </testcase>
+    <testcase classname="Test Server POST /quotes requests cache get and set use same value" name="Test Server POST /quotes requests cache get and set use same value" time="0.239">
+    </testcase>
+    <testcase classname="Test Server PUT /participants callbacks cache get and set use same value" name="Test Server PUT /participants callbacks cache get and set use same value" time="0.227">
+    </testcase>
+    <testcase classname="Test Server Subscribes to the keyevent set notification" name="Test Server Subscribes to the keyevent set notification" time="0.208">
+    </testcase>
+    <testcase classname="Test Server WebSocket /callbacks and / endpoint triggers send to client when callback received to inbound server" name="Test Server WebSocket /callbacks and / endpoint triggers send to client when callback received to inbound server" time="0.214">
+    </testcase>
+    <testcase classname="Test Server WebSocket /requests and / endpoint triggers send to client when callback received to inbound server" name="Test Server WebSocket /requests and / endpoint triggers send to client when callback received to inbound server" time="0.218">
+    </testcase>
+    <testcase classname="Test Server Websocket / endpoint receives both callbacks and requests" name="Test Server Websocket / endpoint receives both callbacks and requests" time="0.21">
+    </testcase>
+  </testsuite>
+  <testsuite name="index.js" errors="0" failures="0" skipped="0" timestamp="2022-04-14T02:09:17" time="0.781" tests="3">
+    <testcase classname="index.js WSO2 error events in OutboundServer propagate to top-level server" name="index.js WSO2 error events in OutboundServer propagate to top-level server" time="0.003">
+    </testcase>
+    <testcase classname="index.js WSO2 error events in InboundServer propagate to top-level server" name="index.js WSO2 error events in InboundServer propagate to top-level server" time="0">
+    </testcase>
+    <testcase classname="index.js Exports expected modules" name="index.js Exports expected modules" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="AccountsModel" errors="0" failures="0" skipped="0" timestamp="2022-04-14T02:09:17" time="0.242" tests="3">
+    <testcase classname="AccountsModel initializes to starting state" name="AccountsModel initializes to starting state" time="0.003">
+    </testcase>
+    <testcase classname="AccountsModel create 100 accounts" name="AccountsModel create 100 accounts" time="0.005">
+    </testcase>
+    <testcase classname="AccountsModel create 20000 accounts" name="AccountsModel create 20000 accounts" time="0.112">
+    </testcase>
+  </testsuite>
+  <testsuite name="Inbound Server" errors="0" failures="0" skipped="0" timestamp="2022-04-14T02:09:04" time="13.346" tests="19">
+    <testcase classname="Inbound Server PUT /parties validates incoming JWS when VALIDATE_INBOUND_JWS and VALIDATE_INBOUND_PUT_PARTIES_JWS is true" name="Inbound Server PUT /parties validates incoming JWS when VALIDATE_INBOUND_JWS and VALIDATE_INBOUND_PUT_PARTIES_JWS is true" time="0.479">
+    </testcase>
+    <testcase classname="Inbound Server PUT /parties does not validate incoming JWS when VALIDATE_INBOUND_JWS is true and VALIDATE_INBOUND_PUT_PARTIES_JWS is false" name="Inbound Server PUT /parties does not validate incoming JWS when VALIDATE_INBOUND_JWS is true and VALIDATE_INBOUND_PUT_PARTIES_JWS is false" time="0.339">
+    </testcase>
+    <testcase classname="Inbound Server PUT /parties does not validate incoming JWS when VALIDATE_INBOUND_JWS is false and VALIDATE_INBOUND_PUT_PARTIES_JWS is false" name="Inbound Server PUT /parties does not validate incoming JWS when VALIDATE_INBOUND_JWS is false and VALIDATE_INBOUND_PUT_PARTIES_JWS is false" time="0.281">
+    </testcase>
+    <testcase classname="Inbound Server PUT /parties does not validate incoming JWS when VALIDATE_INBOUND_JWS is false and VALIDATE_INBOUND_PUT_PARTIES_JWS is true" name="Inbound Server PUT /parties does not validate incoming JWS when VALIDATE_INBOUND_JWS is false and VALIDATE_INBOUND_PUT_PARTIES_JWS is true" time="0.268">
+    </testcase>
+    <testcase classname="Inbound Server PUT /parties processes parties request with valid content-type headers successfully" name="Inbound Server PUT /parties processes parties request with valid content-type headers successfully" time="0.273">
+    </testcase>
+    <testcase classname="Inbound Server PUT /parties returns error on invalid parties content-type headers" name="Inbound Server PUT /parties returns error on invalid parties content-type headers" time="0.868">
+    </testcase>
+    <testcase classname="Inbound Server POST /quotes validates incoming JWS on other routes when VALIDATE_INBOUND_JWS is true and VALIDATE_INBOUND_PUT_PARTIES_JWS is false" name="Inbound Server POST /quotes validates incoming JWS on other routes when VALIDATE_INBOUND_JWS is true and VALIDATE_INBOUND_PUT_PARTIES_JWS is false" time="0.23">
+    </testcase>
+    <testcase classname="Inbound Server POST /quotes validates incoming JWS on other routes when VALIDATE_INBOUND_JWS is true and VALIDATE_INBOUND_PUT_PARTIES_JWS is true" name="Inbound Server POST /quotes validates incoming JWS on other routes when VALIDATE_INBOUND_JWS is true and VALIDATE_INBOUND_PUT_PARTIES_JWS is true" time="0.228">
+    </testcase>
+    <testcase classname="Inbound Server POST /quotes processes quotes request with valid content-type headers successfully" name="Inbound Server POST /quotes processes quotes request with valid content-type headers successfully" time="0.227">
+    </testcase>
+    <testcase classname="Inbound Server POST /quotes returns error on invalid quotes content-type headers" name="Inbound Server POST /quotes returns error on invalid quotes content-type headers" time="0.661">
+    </testcase>
+    <testcase classname="Inbound Server PUT /participants validates incoming JWS when VALIDATE_INBOUND_JWS is true" name="Inbound Server PUT /participants validates incoming JWS when VALIDATE_INBOUND_JWS is true" time="0.226">
+    </testcase>
+    <testcase classname="Inbound Server PUT /participants does not validate incoming JWS when VALIDATE_INBOUND_JWS is false " name="Inbound Server PUT /participants does not validate incoming JWS when VALIDATE_INBOUND_JWS is false " time="0.217">
+    </testcase>
+    <testcase classname="Inbound Server PUT /participants processes participants request with valid content-type headers successfully" name="Inbound Server PUT /participants processes participants request with valid content-type headers successfully" time="0.245">
+    </testcase>
+    <testcase classname="Inbound Server PUT /participants returns error on invalid participants content-type headers" name="Inbound Server PUT /participants returns error on invalid participants content-type headers" time="0.736">
+    </testcase>
+    <testcase classname="Inbound Server mTLS test Inbound server should use HTTPS if inbound mTLS enabled" name="Inbound Server mTLS test Inbound server should use HTTPS if inbound mTLS enabled" time="0.25">
+    </testcase>
+    <testcase classname="Inbound Server mTLS test Inbound server should use HTTP if inbound mTLS disabled" name="Inbound Server mTLS test Inbound server should use HTTP if inbound mTLS disabled" time="0.268">
+    </testcase>
+    <testcase classname="Inbound Server JWS verification keys updates server configuration when a new JWS verification key is added to the target monitored folder." name="Inbound Server JWS verification keys updates server configuration when a new JWS verification key is added to the target monitored folder." time="1.298">
+    </testcase>
+    <testcase classname="Inbound Server JWS verification keys updates server configuration when a new JWS verification key is removed from the target monitored folder." name="Inbound Server JWS verification keys updates server configuration when a new JWS verification key is removed from the target monitored folder." time="2.232">
+    </testcase>
+    <testcase classname="Inbound Server JWS verification keys updates server configuration when a new JWS verification key is changed in the target monitored folder." name="Inbound Server JWS verification keys updates server configuration when a new JWS verification key is changed in the target monitored folder." time="2.219">
+    </testcase>
+  </testsuite>
+  <testsuite name="Outbound API handlers:" errors="0" failures="0" skipped="0" timestamp="2022-04-14T02:09:18" time="0.167" tests="19">
+    <testcase classname="Outbound API handlers: POST /transfers returns correct error response body when model throws mojaloop error" name="Outbound API handlers: POST /transfers returns correct error response body when model throws mojaloop error" time="0.002">
+    </testcase>
+    <testcase classname="Outbound API handlers: POST /transfers uses correct extension list error code for response body statusCode when configured to do so" name="Outbound API handlers: POST /transfers uses correct extension list error code for response body statusCode when configured to do so" time="0">
+    </testcase>
+    <testcase classname="Outbound API handlers: PUT /transfers returns correct error response body when model throws mojaloop error" name="Outbound API handlers: PUT /transfers returns correct error response body when model throws mojaloop error" time="0.001">
+    </testcase>
+    <testcase classname="Outbound API handlers: POST /bulkTransfers returns correct error response body when model throws mojaloop error" name="Outbound API handlers: POST /bulkTransfers returns correct error response body when model throws mojaloop error" time="0.001">
+    </testcase>
+    <testcase classname="Outbound API handlers: POST /bulkTransfers uses correct extension list error code for response body statusCode when configured to do so" name="Outbound API handlers: POST /bulkTransfers uses correct extension list error code for response body statusCode when configured to do so" time="0.001">
+    </testcase>
+    <testcase classname="Outbound API handlers: POST /bulkQuotes returns correct error response body when model throws mojaloop error" name="Outbound API handlers: POST /bulkQuotes returns correct error response body when model throws mojaloop error" time="0.002">
+    </testcase>
+    <testcase classname="Outbound API handlers: POST /bulkQuotes uses correct extension list error code for response body statusCode when configured to do so" name="Outbound API handlers: POST /bulkQuotes uses correct extension list error code for response body statusCode when configured to do so" time="0.003">
+    </testcase>
+    <testcase classname="Outbound API handlers: POST /requestToPayTransfer returns correct error response body when model throws mojaloop error" name="Outbound API handlers: POST /requestToPayTransfer returns correct error response body when model throws mojaloop error" time="0.001">
+    </testcase>
+    <testcase classname="Outbound API handlers: POST /requestToPay returns correct error response body when model throws mojaloop error" name="Outbound API handlers: POST /requestToPay returns correct error response body when model throws mojaloop error" time="0">
+    </testcase>
+    <testcase classname="Outbound API handlers: GET /parties/{Type}/{ID}/{SubId} happy flow" name="Outbound API handlers: GET /parties/{Type}/{ID}/{SubId} happy flow" time="0.001">
+    </testcase>
+    <testcase classname="Outbound API handlers: GET /parties/{Type}/{ID}/{SubId} error flow" name="Outbound API handlers: GET /parties/{Type}/{ID}/{SubId} error flow" time="0">
+    </testcase>
+    <testcase classname="Outbound API handlers: GET /parties/{Type}/{ID} happy flow" name="Outbound API handlers: GET /parties/{Type}/{ID} happy flow" time="0">
+    </testcase>
+    <testcase classname="Outbound API handlers: GET /parties/{Type}/{ID} not found error flow" name="Outbound API handlers: GET /parties/{Type}/{ID} not found error flow" time="0.001">
+    </testcase>
+    <testcase classname="Outbound API handlers: GET /parties/{Type}/{ID} mojaloop error propagation for /parties/{Type}/{ID}" name="Outbound API handlers: GET /parties/{Type}/{ID} mojaloop error propagation for /parties/{Type}/{ID}" time="0">
+    </testcase>
+    <testcase classname="Outbound API handlers: GET /parties/{Type}/{ID} mojaloop error propagation for /parties/{Type}/{ID}/{SubId}" name="Outbound API handlers: GET /parties/{Type}/{ID} mojaloop error propagation for /parties/{Type}/{ID}/{SubId}" time="0.001">
+    </testcase>
+    <testcase classname="Outbound API handlers: POST /quotes happy flow" name="Outbound API handlers: POST /quotes happy flow" time="0">
+    </testcase>
+    <testcase classname="Outbound API handlers: POST /quotes mojaloop error propagation for /parties/{Type}/{ID}" name="Outbound API handlers: POST /quotes mojaloop error propagation for /parties/{Type}/{ID}" time="0.001">
+    </testcase>
+    <testcase classname="Outbound API handlers: POST /simpleTransfers happy flow" name="Outbound API handlers: POST /simpleTransfers happy flow" time="0">
+    </testcase>
+    <testcase classname="Outbound API handlers: POST /simpleTransfers mojaloop error propagation for /simpleTransfers" name="Outbound API handlers: POST /simpleTransfers mojaloop error propagation for /simpleTransfers" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="inboundModel" errors="0" failures="0" skipped="0" timestamp="2022-04-14T02:09:18" time="0.165" tests="20">
+    <testcase classname="inboundModel quoteRequest calls `mojaloopRequests.putQuotes` with the expected arguments." name="inboundModel quoteRequest calls `mojaloopRequests.putQuotes` with the expected arguments." time="0.005">
+    </testcase>
+    <testcase classname="inboundModel quoteRequest adds a custom `expiration` property in case it is not defined." name="inboundModel quoteRequest adds a custom `expiration` property in case it is not defined." time="0.001">
+    </testcase>
+    <testcase classname="inboundModel bulkQuoteRequest calls mojaloopRequests.putBulkQuotes with the expected arguments." name="inboundModel bulkQuoteRequest calls mojaloopRequests.putBulkQuotes with the expected arguments." time="0.002">
+    </testcase>
+    <testcase classname="inboundModel bulkQuoteRequest adds a custom expiration property in case it is not defined." name="inboundModel bulkQuoteRequest adds a custom expiration property in case it is not defined." time="0.001">
+    </testcase>
+    <testcase classname="inboundModel transactionRequest calls `mojaloopRequests.putTransactionRequests` with the expected arguments." name="inboundModel transactionRequest calls `mojaloopRequests.putTransactionRequests` with the expected arguments." time="0.001">
+    </testcase>
+    <testcase classname="inboundModel authorizations calls `mojaloopRequests.putAuthorizations` with the expected arguments." name="inboundModel authorizations calls `mojaloopRequests.putAuthorizations` with the expected arguments." time="0.001">
+    </testcase>
+    <testcase classname="inboundModel transferPrepare: fail on quote `expiration` deadline." name="inboundModel transferPrepare: fail on quote `expiration` deadline." time="0.002">
+    </testcase>
+    <testcase classname="inboundModel transferPrepare: getTransfer should return COMMITTED transfer" name="inboundModel transferPrepare: getTransfer should return COMMITTED transfer" time="0.001">
+    </testcase>
+    <testcase classname="inboundModel transferPrepare: getTransfer should not return fulfillment from payer" name="inboundModel transferPrepare: getTransfer should not return fulfillment from payer" time="0.001">
+    </testcase>
+    <testcase classname="inboundModel transferPrepare: getTransfer should return not found error" name="inboundModel transferPrepare: getTransfer should return not found error" time="0.001">
+    </testcase>
+    <testcase classname="inboundModel transferPrepare: fail on transfer without quote." name="inboundModel transferPrepare: fail on transfer without quote." time="0">
+    </testcase>
+    <testcase classname="inboundModel transferPrepare: pass on transfer without quote." name="inboundModel transferPrepare: pass on transfer without quote." time="0">
+    </testcase>
+    <testcase classname="inboundModel transferPrepare: allow different transfer and transaction id" name="inboundModel transferPrepare: allow different transfer and transaction id" time="0.004">
+    </testcase>
+    <testcase classname="inboundModel prepareBulkTransfer: fail on bulk quote `expiration` deadline." name="inboundModel prepareBulkTransfer: fail on bulk quote `expiration` deadline." time="0.001">
+    </testcase>
+    <testcase classname="inboundModel prepareBulkTransfer: getBulkTransfer should return COMMITTED bulk transfer" name="inboundModel prepareBulkTransfer: getBulkTransfer should return COMMITTED bulk transfer" time="0.001">
+    </testcase>
+    <testcase classname="inboundModel prepareBulkTransfer: getBulkTransfer should not return fulfillment from payer" name="inboundModel prepareBulkTransfer: getBulkTransfer should not return fulfillment from payer" time="0.001">
+    </testcase>
+    <testcase classname="inboundModel prepareBulkTransfer: getBulkTransfer should return not found error" name="inboundModel prepareBulkTransfer: getBulkTransfer should return not found error" time="0.001">
+    </testcase>
+    <testcase classname="inboundModel prepareBulkTransfer: fail on bulk transfer without bulk quote." name="inboundModel prepareBulkTransfer: fail on bulk transfer without bulk quote." time="0">
+    </testcase>
+    <testcase classname="inboundModel prepareBulkTransfer: pass on bulk transfer without bulk quote." name="inboundModel prepareBulkTransfer: pass on bulk transfer without bulk quote." time="0.001">
+    </testcase>
+    <testcase classname="inboundModel sendNotificationToPayee: sends notification to fsp backend" name="inboundModel sendNotificationToPayee: sends notification to fsp backend" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="Inbound API handlers:" errors="0" failures="0" skipped="0" timestamp="2022-04-14T02:09:18" time="0.165" tests="20">
+    <testcase classname="Inbound API handlers: POST /quotes calls `model.quoteRequest` with the expected arguments." name="Inbound API handlers: POST /quotes calls `model.quoteRequest` with the expected arguments." time="0.002">
+    </testcase>
+    <testcase classname="Inbound API handlers: GET /quotes calls `model.getQuoteRequest` with the expected arguments." name="Inbound API handlers: GET /quotes calls `model.getQuoteRequest` with the expected arguments." time="0.001">
+    </testcase>
+    <testcase classname="Inbound API handlers: PUT /quotes calls `QuotesModel.triggerDeferredJobSpy` with the expected arguments." name="Inbound API handlers: PUT /quotes calls `QuotesModel.triggerDeferredJobSpy` with the expected arguments." time="0.001">
+    </testcase>
+    <testcase classname="Inbound API handlers: POST /bulkQuotes calls `model.bulkQuoteRequest` with the expected arguments." name="Inbound API handlers: POST /bulkQuotes calls `model.bulkQuoteRequest` with the expected arguments." time="0.001">
+    </testcase>
+    <testcase classname="Inbound API handlers: PUT /bulkQuotes/{ID} calls `ctx.state.cache.publish` with the expected arguments." name="Inbound API handlers: PUT /bulkQuotes/{ID} calls `ctx.state.cache.publish` with the expected arguments." time="0.001">
+    </testcase>
+    <testcase classname="Inbound API handlers: PUT /bulkQuotes/{ID}/error calls `ctx.state.cache.publish` with the expected arguments." name="Inbound API handlers: PUT /bulkQuotes/{ID}/error calls `ctx.state.cache.publish` with the expected arguments." time="0.001">
+    </testcase>
+    <testcase classname="Inbound API handlers: GET /bulkQuotes/{ID} calls `model.getBulkQuote` with the expected arguments." name="Inbound API handlers: GET /bulkQuotes/{ID} calls `model.getBulkQuote` with the expected arguments." time="0.003">
+    </testcase>
+    <testcase classname="Inbound API handlers: POST /bulkTransfers calls `model.prepareBulkTransfer` with the expected arguments." name="Inbound API handlers: POST /bulkTransfers calls `model.prepareBulkTransfer` with the expected arguments." time="0.001">
+    </testcase>
+    <testcase classname="Inbound API handlers: PUT /bulkTransfers/{ID} calls `ctx.state.cache.publish` with the expected arguments." name="Inbound API handlers: PUT /bulkTransfers/{ID} calls `ctx.state.cache.publish` with the expected arguments." time="0">
+    </testcase>
+    <testcase classname="Inbound API handlers: PUT /bulkTransfers/{ID}/error calls `ctx.state.cache.publish` with the expected arguments." name="Inbound API handlers: PUT /bulkTransfers/{ID}/error calls `ctx.state.cache.publish` with the expected arguments." time="0.001">
+    </testcase>
+    <testcase classname="Inbound API handlers: GET /bulkTransfers/{ID} calls `model.getBulkTransfer` with the expected arguments." name="Inbound API handlers: GET /bulkTransfers/{ID} calls `model.getBulkTransfer` with the expected arguments." time="0.001">
+    </testcase>
+    <testcase classname="Inbound API handlers: POST /transactionRequests calls `model.transactionRequest` with the expected arguments." name="Inbound API handlers: POST /transactionRequests calls `model.transactionRequest` with the expected arguments." time="0.001">
+    </testcase>
+    <testcase classname="Inbound API handlers: GET /authorizations calls `model.authorizations` with the expected arguments." name="Inbound API handlers: GET /authorizations calls `model.authorizations` with the expected arguments." time="0.001">
+    </testcase>
+    <testcase classname="Inbound API handlers: PATCH /transfers/{ID} calls `model.sendNotificationToPayee with expected arguments" name="Inbound API handlers: PATCH /transfers/{ID} calls `model.sendNotificationToPayee with expected arguments" time="0.001">
+    </testcase>
+    <testcase classname="Inbound API handlers: PUT /parties/{Type}/{ID}[/{SubId}] calls `PartiesModel.triggerDeferredJobSpy` with the expected arguments." name="Inbound API handlers: PUT /parties/{Type}/{ID}[/{SubId}] calls `PartiesModel.triggerDeferredJobSpy` with the expected arguments." time="0">
+    </testcase>
+    <testcase classname="Inbound API handlers: PUT /parties/{Type}/{ID}[/{SubId}] calls `PartiesModel.triggerDeferredJobSpy` with the expected arguments when SubId param specified." name="Inbound API handlers: PUT /parties/{Type}/{ID}[/{SubId}] calls `PartiesModel.triggerDeferredJobSpy` with the expected arguments when SubId param specified." time="0.001">
+    </testcase>
+    <testcase classname="Inbound API handlers: PUT /transfers/{ID} calls `TransfersModel.triggerDeferredJobSpy` with the expected arguments." name="Inbound API handlers: PUT /transfers/{ID} calls `TransfersModel.triggerDeferredJobSpy` with the expected arguments." time="0">
+    </testcase>
+    <testcase classname="Inbound API handlers: PUT /transfers/{ID} calls `TransfersModel.triggerDeferredJobSpy` with the expected arguments when SubId param specified." name="Inbound API handlers: PUT /transfers/{ID} calls `TransfersModel.triggerDeferredJobSpy` with the expected arguments when SubId param specified." time="0.001">
+    </testcase>
+    <testcase classname="Inbound API handlers: PUT /transfers/{ID}/error calls `TransfersModel.triggerDeferredJobSpy` with the expected arguments." name="Inbound API handlers: PUT /transfers/{ID}/error calls `TransfersModel.triggerDeferredJobSpy` with the expected arguments." time="0">
+    </testcase>
+    <testcase classname="Inbound API handlers: PUT /transfers/{ID}/error calls `TransfersModel.triggerDeferredJobSpy` with the expected arguments when SubId param specified." name="Inbound API handlers: PUT /transfers/{ID}/error calls `TransfersModel.triggerDeferredJobSpy` with the expected arguments when SubId param specified." time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="config" errors="0" failures="0" skipped="0" timestamp="2022-04-14T02:09:18" time="0.189" tests="9">
+    <testcase classname="config correctly parses OUTBOUND_ERROR_STATUSCODE_EXTENSION_KEY when set" name="config correctly parses OUTBOUND_ERROR_STATUSCODE_EXTENSION_KEY when set" time="0.018">
+    </testcase>
+    <testcase classname="config correctly parses OUTBOUND_ERROR_STATUSCODE_EXTENSION_KEY when NOT set" name="config correctly parses OUTBOUND_ERROR_STATUSCODE_EXTENSION_KEY when NOT set" time="0.012">
+    </testcase>
+    <testcase classname="config correctly parses VALIDATE_INBOUND_PUT_PARTIES_JWS when NOT set" name="config correctly parses VALIDATE_INBOUND_PUT_PARTIES_JWS when NOT set" time="0.01">
+    </testcase>
+    <testcase classname="config correctly parses VALIDATE_INBOUND_PUT_PARTIES_JWS when set" name="config correctly parses VALIDATE_INBOUND_PUT_PARTIES_JWS when set" time="0.01">
+    </testcase>
+    <testcase classname="config return single cert content from IN_SERVER_CERT_PATH" name="config return single cert content from IN_SERVER_CERT_PATH" time="0.01">
+    </testcase>
+    <testcase classname="config return multiple cert content from IN_CA_CERT_PATH" name="config return multiple cert content from IN_CA_CERT_PATH" time="0.011">
+    </testcase>
+    <testcase classname="config should parse proxy config yaml file as json object" name="config should parse proxy config yaml file as json object" time="0.012">
+    </testcase>
+    <testcase classname="config should transform correctly resources versions to config" name="config should transform correctly resources versions to config" time="0.014">
+    </testcase>
+    <testcase classname="config should throw an err if the resource string is not correctly formed" name="config should throw an err if the resource string is not correctly formed" time="0.021">
+    </testcase>
+  </testsuite>
+  <testsuite name="PersistentStateMachine" errors="0" failures="0" skipped="0" timestamp="2022-04-14T02:09:18" time="0.152" tests="8">
+    <testcase classname="PersistentStateMachine module layout" name="PersistentStateMachine module layout" time="0.002">
+    </testcase>
+    <testcase classname="PersistentStateMachine create" name="PersistentStateMachine create" time="0.003">
+    </testcase>
+    <testcase classname="PersistentStateMachine onPendingTransition should throw error if not `error` transition" name="PersistentStateMachine onPendingTransition should throw error if not `error` transition" time="0.013">
+    </testcase>
+    <testcase classname="PersistentStateMachine onPendingTransition should not throw error if `error` transition called when `gogo` is pending" name="PersistentStateMachine onPendingTransition should not throw error if `error` transition called when `gogo` is pending" time="0.003">
+    </testcase>
+    <testcase classname="PersistentStateMachine loadFromCache should properly call cache.get, get expected data in `context.data` and setup state of machine" name="PersistentStateMachine loadFromCache should properly call cache.get, get expected data in `context.data` and setup state of machine" time="0.001">
+    </testcase>
+    <testcase classname="PersistentStateMachine loadFromCache should throw when received invalid data from `cache.get`" name="PersistentStateMachine loadFromCache should throw when received invalid data from `cache.get`" time="0.001">
+    </testcase>
+    <testcase classname="PersistentStateMachine loadFromCache should propagate error received from `cache.get`" name="PersistentStateMachine loadFromCache should propagate error received from `cache.get`" time="0">
+    </testcase>
+    <testcase classname="PersistentStateMachine saveToCache should rethrow error from cache.set" name="PersistentStateMachine saveToCache should rethrow error from cache.set" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="outboundModel" errors="0" failures="0" skipped="0" timestamp="2022-04-14T02:09:18" time="0.141" tests="3">
+    <testcase classname="outboundModel initializes to starting state" name="outboundModel initializes to starting state" time="0.004">
+    </testcase>
+    <testcase classname="outboundModel executes all two stages without halting when AUTO_ACCEPT_PARTY is true" name="outboundModel executes all two stages without halting when AUTO_ACCEPT_PARTY is true" time="0.004">
+    </testcase>
+    <testcase classname="outboundModel resolves payee and halts when AUTO_ACCEPT_PARTY is false" name="outboundModel resolves payee and halts when AUTO_ACCEPT_PARTY is false" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="outboundRequestToPayTransferModel" errors="0" failures="0" skipped="0" timestamp="2022-04-14T02:09:18" time="0.135" tests="2">
+    <testcase classname="outboundRequestToPayTransferModel initializes to starting state" name="outboundRequestToPayTransferModel initializes to starting state" time="0.003">
+    </testcase>
+    <testcase classname="outboundRequestToPayTransferModel executes all three transfer stages without halting when AUTO_ACCEPT_QUOTES and AUTO_ACCEPT_PARTY are true" name="outboundRequestToPayTransferModel executes all three transfer stages without halting when AUTO_ACCEPT_QUOTES and AUTO_ACCEPT_PARTY are true" time="0.006">
+    </testcase>
+  </testsuite>
+  <testsuite name="OutboundBulkQuotesModel" errors="0" failures="0" skipped="0" timestamp="2022-04-14T02:09:15" time="3.175" tests="6">
+    <testcase classname="OutboundBulkQuotesModel initializes to starting state" name="OutboundBulkQuotesModel initializes to starting state" time="0.003">
+    </testcase>
+    <testcase classname="OutboundBulkQuotesModel test get bulk quote" name="OutboundBulkQuotesModel test get bulk quote" time="0.003">
+    </testcase>
+    <testcase classname="OutboundBulkQuotesModel sends bulk quotes request with correct payload" name="OutboundBulkQuotesModel sends bulk quotes request with correct payload" time="0.003">
+    </testcase>
+    <testcase classname="OutboundBulkQuotesModel pass quote response `expiration` deadline" name="OutboundBulkQuotesModel pass quote response `expiration` deadline" time="1.001">
+    </testcase>
+    <testcase classname="OutboundBulkQuotesModel fail on quote response `expiration` deadline" name="OutboundBulkQuotesModel fail on quote response `expiration` deadline" time="2.029">
+    </testcase>
+    <testcase classname="OutboundBulkQuotesModel Throws with mojaloop error in response body when quote request error callback occurs" name="OutboundBulkQuotesModel Throws with mojaloop error in response body when quote request error callback occurs" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="outboundBulkTransferModel" errors="0" failures="0" skipped="0" timestamp="2022-04-14T02:09:15" time="3.16" tests="6">
+    <testcase classname="outboundBulkTransferModel initializes to starting state" name="outboundBulkTransferModel initializes to starting state" time="0.003">
+    </testcase>
+    <testcase classname="outboundBulkTransferModel executes bulk transfer" name="outboundBulkTransferModel executes bulk transfer" time="0.004">
+    </testcase>
+    <testcase classname="outboundBulkTransferModel test get bulk transfer" name="outboundBulkTransferModel test get bulk transfer" time="0.002">
+    </testcase>
+    <testcase classname="outboundBulkTransferModel pass transfer fulfills `expiration` deadline" name="outboundBulkTransferModel pass transfer fulfills `expiration` deadline" time="1.002">
+    </testcase>
+    <testcase classname="outboundBulkTransferModel fail on transfer fulfills `expiration` deadline" name="outboundBulkTransferModel fail on transfer fulfills `expiration` deadline" time="2.017">
+    </testcase>
+    <testcase classname="outboundBulkTransferModel Throws with mojaloop error in response body when transfer request error callback occurs" name="outboundBulkTransferModel Throws with mojaloop error in response body when transfer request error callback occurs" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="Cache" errors="0" failures="0" skipped="0" timestamp="2022-04-14T02:09:15" time="3.112" tests="3">
+    <testcase classname="Cache Makes connections to redis server for cache operations" name="Cache Makes connections to redis server for cache operations" time="0.002">
+    </testcase>
+    <testcase classname="Cache Makes subscriber callbacks on the correct channels when messages arrive" name="Cache Makes subscriber callbacks on the correct channels when messages arrive" time="0.003">
+    </testcase>
+    <testcase classname="Cache Unsubscribed callbacks do not get called when messages arrive" name="Cache Unsubscribed callbacks do not get called when messages arrive" time="3.003">
+    </testcase>
+  </testsuite>
+</testsuites>

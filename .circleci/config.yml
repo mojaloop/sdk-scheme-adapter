@@ -46,13 +46,12 @@ defaults_license_scanner: &defaults_license_scanner
 
 defaults_npm_auth: &defaults_npm_auth
   name: Update NPM registry auth token
-  command: cd src; echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
+  command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
 
 defaults_npm_publish_release: &defaults_npm_publish_release
   name: Publish NPM $RELEASE_TAG artifact
   command: |
     source $BASH_ENV
-    cd src
     echo "Publishing tag $RELEASE_TAG"
     npm publish --tag $RELEASE_TAG --access public
 
@@ -89,14 +88,14 @@ jobs:
           command: cd $(npm root -g)/npm
       - run:
           name: Update NPM install (using `npm ci`)
-          command: cd src && npm ci
+          command: npm ci
       - run:
           name: Delete build dependencies
           command: apk del build-dependencies
       - save_cache:
-          key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
+          key: dependency-cache-v3-{{ checksum "package-lock.json" }}
           paths:
-            - src/node_modules
+            - node_modules
 
   test-unit:
     executor: default-docker
@@ -106,14 +105,14 @@ jobs:
           command: *defaults_Dependencies
       - checkout
       - restore_cache:
-          key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
+          key: dependency-cache-v3-{{ checksum "package-lock.json" }}
       - run:
           name: Execute unit tests
-          command: cd src && npm run test
+          command: npm run test
       - store_test_results:
-          path: /home/circleci/project/src/
+          path: /home/circleci/project/
       - store_artifacts:
-          path: /home/circleci/project/src/junit.xml
+          path: /home/circleci/project/junit.xml
 
   test-integration:
     executor: default-machine
@@ -126,7 +125,7 @@ jobs:
             chmod +x ~/docker-compose
             sudo mv ~/docker-compose /usr/local/bin/docker-compose
       - restore_cache:
-          key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
+          key: dependency-cache-v3-{{ checksum "package-lock.json" }}
       - run:
           name: Set up NVM
           command: |
@@ -152,14 +151,13 @@ jobs:
           name: Execute integration tests
           command: |
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            cd src
             npm ci
             npm run test:int
       - run:
           name: prepare test/results
           command: |
             mkdir -p test/results
-            mv src/junit.xml test/results
+            mv junit.xml test/results
       - store_artifacts:
           path: ./test/results
       - store_test_results:
@@ -173,10 +171,10 @@ jobs:
           command: *defaults_Dependencies
       - checkout
       - restore_cache:
-          key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
+          key: dependency-cache-v3-{{ checksum "package-lock.json" }}
       - run:
           name: Execute unit tests
-          command: cd src && npm run build:openapi && npm run validate:api
+          command: npm run build:openapi && npm run validate:api
 
   lint:
     executor: default-docker
@@ -186,13 +184,13 @@ jobs:
           command: *defaults_Dependencies
       - checkout
       - restore_cache:
-          key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
+          key: dependency-cache-v3-{{ checksum "package-lock.json" }}
       - run:
           name: Create dir for lint results
-          command: cd src && mkdir -p /lintresults
+          command: mkdir -p /lintresults
       - run:
           name: Execute linting
-          command: cd src && (npm run lint > /lintresults/results.txt)
+          command: (npm run lint > /lintresults/results.txt)
       - store_artifacts:
           path: /lintresults
 
@@ -204,13 +202,13 @@ jobs:
           command: *defaults_Dependencies
       - checkout
       - restore_cache:
-          key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
+          key: dependency-cache-v3-{{ checksum "package-lock.json" }}
       - run:
           name: Create dir for test results
           command: mkdir -p ./audit/results
       - run:
           name: Check for new npm vulnerabilities
-          command: cd src && npm run audit:check --silent -- --json > ../audit/results/auditResults.json
+          command: npm run audit:check --silent -- --json > ./audit/results/auditResults.json
       - store_artifacts:
           path: ./audit/results
 
@@ -224,10 +222,10 @@ jobs:
       - run:
           <<: *defaults_license_scanner
       - restore_cache:
-          key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
+          key: dependency-cache-v3-{{ checksum "package-lock.json" }}
       - run:
           name: Prune non-production packages before running license-scanner
-          command: cd src && npm prune --production
+          command: npm prune --production
       - run:
           name: Run the license-scanner
           command: cd /tmp/license-scanner && pathToRepo=$CIRCLE_WORKING_DIRECTORY make run
@@ -326,7 +324,7 @@ jobs:
           command: *defaults_Dependencies
       - checkout
       - restore_cache:
-          key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
+          key: dependency-cache-v3-{{ checksum "package-lock.json" }}
       - run:
           name: Configure git
           command: |
@@ -341,7 +339,7 @@ jobs:
             ssh-keyscan github.com >> ~/.ssh/known_hosts
       - run:
           name: Generate changelog and bump package version
-          command: cd src && npm run release
+          command: npm run release
       - run:
           name: Push the release
           command: git push --follow-tags origin ${CIRCLE_BRANCH}
@@ -365,9 +363,9 @@ jobs:
           # Note: this is rather imperfect, but will do for now
           name: Format the changelog into the github release body and get release tag
           command: |
-            git diff --no-indent-heuristic master~1 HEAD src/CHANGELOG.md | sed -n '/^+[^+]/ s/^+//p' > /tmp/changes
+            git diff --no-indent-heuristic master~1 HEAD CHANGELOG.md | sed -n '/^+[^+]/ s/^+//p' > /tmp/changes
             echo 'export RELEASE_CHANGES=`cat /tmp/changes`' >> $BASH_ENV
-            echo 'export RELEASE_TAG=`cat src/package-lock.json | jq -r .version`' >> $BASH_ENV
+            echo 'export RELEASE_TAG=`cat package-lock.json | jq -r .version`' >> $BASH_ENV
       - run:
           name: check the release changes
           command: |
@@ -377,7 +375,7 @@ jobs:
           tag: v${RELEASE_TAG}
           title: v${RELEASE_TAG} Release
           description: ${RELEASE_CHANGES}
-          file-path: src/CHANGELOG.md
+          file-path: CHANGELOG.md
       - slack/status:
           webhook: "$SLACK_WEBHOOK_ANNOUNCEMENT"
           success_message: '*"${CIRCLE_PROJECT_REPONAME}"* - Release \`"v${RELEASE_TAG}"\` \nhttps://github.com/mojaloop/"${CIRCLE_PROJECT_REPONAME}"/releases/tag/"v${RELEASE_TAG}"'
@@ -415,7 +413,7 @@ jobs:
           name: Install general dependencies
           command: *defaults_Dependencies
       - restore_cache:
-          key: dependency-cache-v3-{{ checksum "src/package-lock.json" }}
+          key: dependency-cache-v3-{{ checksum "package-lock.json" }}
       - run:
           name: setup environment vars for LATEST release
           command: |

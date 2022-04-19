@@ -21,19 +21,19 @@ properties:
     $ref: ./transferParty.yaml
   amountType:
     $ref: >-
-      ../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/AmountType.yaml
+      ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/AmountType.yaml
   currency:
     $ref: >-
-      ../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml
+      ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml
   amount:
     $ref: >-
-      ../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Amount.yaml
+      ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Amount.yaml
   scenario:
     $ref: >-
-      ../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransactionType.yaml
+      ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransactionType.yaml
   initiator:
     $ref: >-
-      ../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransactionInitiator.yaml
+      ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransactionInitiator.yaml
   initiatorType:
     $ref: >-
-      ../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransactionInitiatorType.yaml
+      ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransactionInitiatorType.yaml
