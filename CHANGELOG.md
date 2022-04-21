@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/thirdparty-api-svc](https://github.com/mojaloop/thirdparty-api-svc)
+### [12.2.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v12.2.0...v12.2.1) (2022-04-21)
+
+
+### Chore
+
+* **deps:** bump validator from 13.6.0 to 13.7.0 ([#309](https://github.com/mojaloop/sdk-scheme-adapter/issues/309)) ([3800820](https://github.com/mojaloop/sdk-scheme-adapter/commit/3800820b095fa86147189e836817c49b380b6814))
+
 ## [12.2.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v12.1.0...v12.2.0) (2022-04-21)
 
 
