@@ -1,4 +1,19 @@
 # Changelog: [mojaloop/thirdparty-api-svc](https://github.com/mojaloop/thirdparty-api-svc)
+## [12.1.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v12.0.2...v12.1.0) (2022-04-21)
+
+
+### Features
+
+* port control client and service from ml connector ([#308](https://github.com/mojaloop/sdk-scheme-adapter/issues/308)) ([e6c963c](https://github.com/mojaloop/sdk-scheme-adapter/commit/e6c963c5e5faa17f6a39e0b70f34c3e3717ba090))
+
+
+### Chore
+
+* **deps:** bump async from 2.6.3 to 2.6.4 ([#305](https://github.com/mojaloop/sdk-scheme-adapter/issues/305)) ([a20d7fd](https://github.com/mojaloop/sdk-scheme-adapter/commit/a20d7fd0c324fcac948b30e5521fd798e387c6d3))
+* **deps:** bump minimist from 1.2.5 to 1.2.6 ([#307](https://github.com/mojaloop/sdk-scheme-adapter/issues/307)) ([cf33fdc](https://github.com/mojaloop/sdk-scheme-adapter/commit/cf33fdc7691d29f07e36ea2460c2686333e5f449))
+* **deps:** bump trim-off-newlines from 1.0.1 to 1.0.3 ([#306](https://github.com/mojaloop/sdk-scheme-adapter/issues/306)) ([086bee6](https://github.com/mojaloop/sdk-scheme-adapter/commit/086bee692f6c5ab12c7e3bcdd6ff8688d26ff69d))
+* **deps:** bump urijs from 1.19.10 to 1.19.11 ([#304](https://github.com/mojaloop/sdk-scheme-adapter/issues/304)) ([17aebdc](https://github.com/mojaloop/sdk-scheme-adapter/commit/17aebdcae89169540a32d3ae61f7dadab24868c1))
+
 ### [12.0.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v12.0.1...v12.0.2) (2022-04-19)
 
 
