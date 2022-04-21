@@ -68,7 +68,7 @@ const mojaloopPartyToInternalParty = (external) => {
         internal.idType = external.partyIdInfo.partyIdType;
         internal.idValue = external.partyIdInfo.partyIdentifier;
         internal.idSubValue = external.partyIdInfo.partySubIdOrType;
-        // Note: we dont map fspid to internal transferParty object
+        internal.fspId = external.partyIdInfo.fspId;
         if(external.partyIdInfo.extensionList){
             internal.extensionList = external.partyIdInfo.extensionList.extension;
         }
@@ -109,6 +109,7 @@ const mojaloopPartyIdInfoToInternalPartyIdInfo = (external) => {
     internal.idType = external.partyIdType;
     internal.idValue = external.partyIdentifier;
     internal.idSubValue = external.partySubIdOrType;
+    internal.fspId = external.fspId;
 
     return internal;
 };
@@ -411,19 +412,19 @@ const mojaloopBulkPrepareToInternalBulkTransfer = (external, bulkQuotes, ilp) =>
     if (bulkQuotes) {
         // create a map of internal individual quotes payees indexed by quotedId, for faster lookup
         const internalQuotesPayeesByQuoteId = {};
-        
+
         for (const quote of bulkQuotes.internalRequest.individualQuotes) {
             internalQuotesPayeesByQuoteId[quote.quoteId] = quote.to;
         }
-        
+
         // create a map of external individual transfers indexed by quotedId, for faster lookup
         const externalTransferIdsByQuoteId = {};
-        
+
         for (const transfer of external.individualTransfers) {
             const transactionObject = ilp.getTransactionObject(transfer.ilpPacket);
             externalTransferIdsByQuoteId[transactionObject.quoteId] = transfer.transferId;
         }
-        
+
         internal = {
             bulkTransferId: external.bulkTransferId,
             bulkQuotes: bulkQuotes.response,

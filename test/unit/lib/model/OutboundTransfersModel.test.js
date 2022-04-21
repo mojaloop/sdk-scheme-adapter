@@ -354,6 +354,39 @@ describe('outboundModel', () => {
         expect(StateMachine.__instance.state).toBe('payeeResolved');
     });
 
+    test('uses payee party fspid as source header when supplied - resolving payee', async () => {
+        config.autoAcceptParty = false;
+
+        const model = new Model({
+            cache,
+            logger,
+            ...config,
+        });
+
+        let req = JSON.parse(JSON.stringify(transferRequest));
+        const testFspId = 'TESTDESTFSPID';
+        req.to.fspId = testFspId;
+
+        await model.initialize(req);
+
+        expect(StateMachine.__instance.state).toBe('start');
+
+        // start the model running
+        const resultPromise = model.run();
+
+        // now we started the model running we simulate a callback with the resolved party
+        emitPartyCacheMessage(cache, payeeParty);
+
+        // wait for the model to reach a terminal state
+        const result = await resultPromise;
+
+        // check we stopped at payeeResolved state
+        expect(result.currentState).toBe('WAITING_FOR_PARTY_ACCEPTANCE');
+        expect(StateMachine.__instance.state).toBe('payeeResolved');
+
+        // check getParties mojaloop requests method was called with the correct arguments
+        expect(MojaloopRequests.__getParties).toHaveBeenCalledWith(req.to.idType, req.to.idValue, req.to.idSubValue, testFspId);
+    });
 
     test('halts after resolving payee, resumes and then halts after receiving quote response when AUTO_ACCEPT_PARTY is false and AUTO_ACCEPT_QUOTES is false', async () => {
         config.autoAcceptParty = false;

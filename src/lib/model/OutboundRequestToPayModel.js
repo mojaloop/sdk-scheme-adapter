@@ -297,7 +297,7 @@ class OutboundRequestToPayModel {
                     this._logger.push({ transactionRequestResponse }).log('Transaction Request Response received');
                     this.data.requestToPayState = transactionRequestResponse.transactionRequestState;
 
-                    
+
                     return resolve(transactionRequestResponse);
                 }
                 catch(err) {
