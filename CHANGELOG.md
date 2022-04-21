@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/thirdparty-api-svc](https://github.com/mojaloop/thirdparty-api-svc)
+## [12.2.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v12.1.0...v12.2.0) (2022-04-21)
+
+
+### Features
+
+* port use payee FSPID as GET /parties destination header if provided ([#301](https://github.com/mojaloop/sdk-scheme-adapter/issues/301)) ([3ad0ba5](https://github.com/mojaloop/sdk-scheme-adapter/commit/3ad0ba5f745b459ff6d9484c83ac3f384faf34b2))
+
 ## [12.1.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v12.0.2...v12.1.0) (2022-04-21)
 
 
