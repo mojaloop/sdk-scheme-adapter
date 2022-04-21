@@ -22,8 +22,8 @@ function getFileContent (path) {
 }
 
 /**
-     * Gets Resources versions from enviromental variable RESOURCES_VERSIONS
-     * should be string in format: "resouceOneName=1.0,resourceTwoName=1.1"
+     * Gets Resources versions from environmental variable RESOURCES_VERSIONS
+     * should be string in format: "resourceOneName=1.0,resourceTwoName=1.1"
      */
 function getVersionFromConfig (resourceString) {
     const resourceVersionMap = {};
@@ -44,7 +44,7 @@ function parseResourceVersions (resourceString) {
     const resourceFormatRegex = /(([A-Za-z])\w*)=([0-9]+).([0-9]+)([^;:|],*)/g;
     const noSpResources = resourceString.replace(/\s/g,'');
     if (!resourceFormatRegex.test(noSpResources)) {
-        throw new Error('Resource versions format should be in format: "resouceOneName=1.0,resourceTwoName=1.1"');
+        throw new Error('Resource versions format should be in format: "resourceOneName=1.0,resourceTwoName=1.1"');
     }
     return getVersionFromConfig(noSpResources);
 }
@@ -58,10 +58,6 @@ const env = from(process.env, {
 
 module.exports = {
     __parseResourceVersion: parseResourceVersions,
-    control: {
-        mgmtAPIWsUrl: env.get('MGMT_API_WS_URL').required().asString(),
-        mgmtAPIWsPort: env.get('MGMT_API_WS_PORT').default('4005').asPortNumber()
-    },
     mutualTLS: {
         inboundRequests: {
             enabled: env.get('INBOUND_MUTUAL_TLS_ENABLED').default('false').asBool(),
@@ -166,4 +162,8 @@ module.exports = {
     allowDifferentTransferTransactionId: env.get('ALLOW_DIFFERENT_TRANSFER_TRANSACTION_ID').default('false').asBool(),
 
     pm4mlEnabled: env.get('PM4ML_ENABLED').default('false').asBool(),
+    control: {
+        mgmtAPIWsUrl: env.get('MGMT_API_WS_URL').default('127.0.0.1').asString(),
+        mgmtAPIWsPort: env.get('MGMT_API_WS_PORT').default('4005').asPortNumber()
+    },
 };
