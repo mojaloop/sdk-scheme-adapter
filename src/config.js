@@ -58,6 +58,10 @@ const env = from(process.env, {
 
 module.exports = {
     __parseResourceVersion: parseResourceVersions,
+    control: {
+        mgmtAPIWsUrl: env.get('MGMT_API_WS_URL').required().asString(),
+        mgmtAPIWsPort: env.get('MGMT_API_WS_PORT').default('4005').asPortNumber()
+    },
     mutualTLS: {
         inboundRequests: {
             enabled: env.get('INBOUND_MUTUAL_TLS_ENABLED').default('false').asBool(),
@@ -160,4 +164,6 @@ module.exports = {
     // a transactionRequestId. this option decodes the ilp packet for
     // the `transactionId` to retrieve the quote from cache
     allowDifferentTransferTransactionId: env.get('ALLOW_DIFFERENT_TRANSFER_TRANSACTION_ID').default('false').asBool(),
+
+    pm4mlEnabled: env.get('PM4ML_ENABLED').default('false').asBool(),
 };
