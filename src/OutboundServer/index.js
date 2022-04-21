@@ -132,6 +132,21 @@ class OutboundServer extends EventEmitter {
         }
         this._logger.log('Shut down complete');
     }
+
+    async reconfigure(conf, logger, cache, metricsClient) {
+        const newApi = new OutboundApi(conf, logger, cache, this._validator, metricsClient);
+        await newApi.start();
+        return () => {
+            this._logger = logger;
+            this._cache = cache;
+            this._server.removeAllListeners('request');
+            this._server.on('request', newApi.callback());
+            this._api.stop();
+            this._api = newApi;
+            this._conf = conf;
+            this._logger.log('restarted');
+        };
+    }
 }
 
 module.exports = OutboundServer;

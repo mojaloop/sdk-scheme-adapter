@@ -1,11 +1,11 @@
 .idea
 node_modules/
 .swp
-src/junit.xml
+junit.xml
 .vscode
 secrets/*.pem
 coverage
-src/.env
+.env
 
 # https://devspace.sh/
 devspace*
