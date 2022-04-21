@@ -257,7 +257,7 @@ class OutboundBulkTransfersModel {
                 ilpPacket: individualTransfer.ilpPacket,
                 condition: individualTransfer.condition,
             };
-            
+
             if (individualTransfer.extensions && individualTransfer.extensions.length > 0) {
                 bulkTransferRequest.extensionList = {
                     extension: individualTransfer.extensions
