@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/thirdparty-api-svc](https://github.com/mojaloop/thirdparty-api-svc)
+### [12.2.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v12.2.1...v12.2.2) (2022-04-22)
+
+
+### Bug Fixes
+
+* make management url config option optional ([#310](https://github.com/mojaloop/sdk-scheme-adapter/issues/310)) ([93c4048](https://github.com/mojaloop/sdk-scheme-adapter/commit/93c4048d5a604be81ce90365ff3f9cd42b531fef))
+
 ### [12.2.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v12.2.0...v12.2.1) (2022-04-21)
 
 
