@@ -35,7 +35,7 @@ class InboundApi extends EventEmitter {
             auth: new WSO2Auth({
                 ...conf.wso2.auth,
                 logger,
-                tlsCreds: conf.mutualTLS.outboundRequests.enabled && conf.mutualTLS.outboundRequests.creds,
+                tlsCreds: conf.inbound.tls.mutualTLS.enabled && conf.inbound.tls.creds,
             }),
             retryWso2AuthFailureTimes: conf.wso2.requestAuthFailureRetryTimes,
         };
@@ -160,8 +160,8 @@ class InboundServer extends EventEmitter {
             this.emit('error', ...args);
         });
         this._server = this._createServer(
-            conf.mutualTLS.inboundRequests.enabled,
-            conf.mutualTLS.inboundRequests.creds,
+            conf.inbound.tls.mutualTLS.enabled,
+            conf.inbound.tls.creds,
             this._api.callback()
         );
     }
@@ -194,7 +194,7 @@ class InboundServer extends EventEmitter {
         // are subclasses of net.Server. This wasn't considered as a requirement at the time of
         // writing.
         assert(
-            this._conf.mutualTLS.inboundRequests.enabled === conf.mutualTLS.inboundRequests.enabled,
+            this._conf.inbound.tls.mutualTLS.enabled === conf.inbound.tls.mutualTLS.enabled,
             'Cannot live-restart an HTTPS server as HTTP or vice versa',
         );
         const newApi = new InboundApi(conf, logger, cache, this._validator);
@@ -207,7 +207,7 @@ class InboundServer extends EventEmitter {
                 conf.inbound.tls.creds,
                 this._conf.inbound.tls.creds
             );
-            if (this._conf.mutualTLS.inboundRequests.enabled && tlsCredsChanged) {
+            if (this._conf.inbound.tls.mutualTLS.enabled && tlsCredsChanged) {
                 this._server.setSecureContext(conf.inbound.tls.creds);
             }
             this._server.removeAllListeners('request');

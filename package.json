@@ -78,6 +78,7 @@
     "oauth2-server": "^4.0.0-dev.2",
     "openapi-jsonschema-parameters": "^9.3.0",
     "promise-timeout": "^1.3.0",
+    "random-word-slugs": "^0.1.6",
     "redis": "^3.1.2",
     "uuidv4": "^6.2.12",
     "ws": "^7.5.5"

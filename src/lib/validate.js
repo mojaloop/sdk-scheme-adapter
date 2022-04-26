@@ -24,7 +24,7 @@ const { Errors } = require('@mojaloop/sdk-standard-components');
 const Ajv = require('ajv');
 const ajv = new Ajv({ allErrors: true, coerceTypes: true, strict: false });
 
-const httpMethods = ['get', 'head', 'post', 'put', 'delete', 'connnect', 'options', 'trace', 'patch'];
+const httpMethods = ['get', 'head', 'post', 'put', 'delete', 'connect', 'options', 'trace', 'patch'];
 
 // Create a json schema in the format we've chosen to use
 const createSchema = (pathValue, methodValue) => {
@@ -186,7 +186,7 @@ class Validator {
 
             if(firstError.keyword === 'required') {
                 // this is a missing required property; there is a specific mojaloop api spec error code for this
-                err = new Errors.MojaloopFSPIOPError(firstError, util.format('Request failed validation', 
+                err = new Errors.MojaloopFSPIOPError(firstError, util.format('Request failed validation',
                     validationResult), null, Errors.MojaloopApiErrorCodes.MISSING_ELEMENT);
 
                 // overwrite the defaul error message with something more useful
