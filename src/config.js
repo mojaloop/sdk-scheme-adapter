@@ -58,17 +58,29 @@ const env = from(process.env, {
 
 module.exports = {
     __parseResourceVersion: parseResourceVersions,
-    mutualTLS: {
-        inboundRequests: {
-            enabled: env.get('INBOUND_MUTUAL_TLS_ENABLED').default('false').asBool(),
+    control: {
+        mgmtAPIWsUrl: env.get('MGMT_API_WS_URL').default('127.0.0.1').asString(),
+        mgmtAPIWsPort: env.get('MGMT_API_WS_PORT').default('4005').asPortNumber()
+    },
+    inbound: {
+        port: env.get('INBOUND_LISTEN_PORT').default('4000').asPortNumber(),
+        tls: {
+            mutualTLS: {
+                enabled: env.get('INBOUND_MUTUAL_TLS_ENABLED').default('false').asBool(),
+            },
             creds: {
                 ca: env.get('IN_CA_CERT_PATH').asFileListContent(),
                 cert: env.get('IN_SERVER_CERT_PATH').asFileContent(),
                 key: env.get('IN_SERVER_KEY_PATH').asFileContent(),
             },
         },
-        outboundRequests: {
-            enabled: env.get('OUTBOUND_MUTUAL_TLS_ENABLED').default('false').asBool(),
+    },
+    outbound: {
+        port: env.get('OUTBOUND_LISTEN_PORT').default('4001').asPortNumber(),
+        tls: {
+            mutualTLS: {
+                enabled: env.get('OUTBOUND_MUTUAL_TLS_ENABLED').default('false').asBool(),
+            },
             creds: {
                 ca: env.get('OUT_CA_CERT_PATH').asFileListContent(),
                 cert: env.get('OUT_CLIENT_CERT_PATH').asFileContent(),
@@ -76,9 +88,9 @@ module.exports = {
             },
         },
     },
-    inboundServerPort: env.get('INBOUND_LISTEN_PORT').default('4000').asPortNumber(),
-    outboundServerPort: env.get('OUTBOUND_LISTEN_PORT').default('4001').asPortNumber(),
-    testServerPort: env.get('TEST_LISTEN_PORT').default('4002').asPortNumber(),
+    test: {
+        port: env.get('TEST_LISTEN_PORT').default('4002').asPortNumber(),
+    },
     peerEndpoint: env.get('PEER_ENDPOINT').required().asString(),
     alsEndpoint: env.get('ALS_ENDPOINT').asString(),
     quotesEndpoint: env.get('QUOTES_ENDPOINT').asString(),
@@ -92,6 +104,9 @@ module.exports = {
     ilpSecret: env.get('ILP_SECRET').default('mojaloop-sdk').asString(),
     checkIlp: env.get('CHECK_ILP').default('true').asBool(),
     expirySeconds: env.get('EXPIRY_SECONDS').default('60').asIntPositive(),
+
+    multiplePartiesResponse: env.get('MULTIPLE_PARTIES_RESPONSE').default('false').asBool(),
+    multiplePartiesResponseSeconds: env.get('MULTIPLE_PARTIES_RESPONSE_SECONDS').default('30').asIntPositive(),
 
     autoAcceptQuotes: env.get('AUTO_ACCEPT_QUOTES').default('true').asBool(),
     autoAcceptParty: env.get('AUTO_ACCEPT_PARTY').default('true').asBool(),
@@ -153,17 +168,19 @@ module.exports = {
 
     proxyConfig: env.get('PROXY_CONFIG_PATH').asYamlConfig(),
     reserveNotification: env.get('RESERVE_NOTIFICATION').default('false').asBool(),
+    sendFinalNotificationIfRequested: env.get('SEND_FINAL_NOTIFICATION_IF_REQUESTED').default('false').asBool(),
+
     // resourceVersions config should be string in format: "resourceOneName=1.0,resourceTwoName=1.1"
     resourceVersions: env.get('RESOURCE_VERSIONS').default('').asResourceVersions(),
+
+    metrics: {
+        port: env.get('METRICS_SERVER_LISTEN_PORT').default('4004').asPortNumber()
+    },
 
     // in 3PPI DFSP's generate their own `transferId` which is associated with
     // a transactionRequestId. this option decodes the ilp packet for
     // the `transactionId` to retrieve the quote from cache
     allowDifferentTransferTransactionId: env.get('ALLOW_DIFFERENT_TRANSFER_TRANSACTION_ID').default('false').asBool(),
 
-    pm4mlEnabled: env.get('PM4ML_ENABLED').default('false').asBool(),
-    control: {
-        mgmtAPIWsUrl: env.get('MGMT_API_WS_URL').default('127.0.0.1').asString(),
-        mgmtAPIWsPort: env.get('MGMT_API_WS_PORT').default('4005').asPortNumber()
-    },
+    pm4mlEnabled: env.get('PM4ML_ENABLED').default('false').asBool()
 };

@@ -1,15 +1,28 @@
 {
-  "mutualTLS": {
-    "inboundRequests": {
-      "enabled": false,
+  "control": {},
+  "test": {
+    "tls": {
+      "mutualTLS": { "enabled": false },
       "creds": {
         "ca": null,
         "cert": null,
         "key": null
       }
-    },
-    "outboundRequests": {
-      "enabled": false,
+    }
+  },
+  "inbound": {
+    "tls": {
+      "mutualTLS": { "enabled": false },
+      "creds": {
+        "ca": null,
+        "cert": null,
+        "key": null
+      }
+    }
+  },
+  "outbound": {
+    "tls": {
+      "mutualTLS": { "enabled": false },
       "creds": {
         "ca": null,
         "cert": null,
@@ -54,5 +67,8 @@
   "rejectExpiredQuoteResponses": false,
   "rejectExpiredTransferFulfils": false,
   "rejectTransfersOnExpiredQuotes": false,
-  "logIndent": 2
+  "logIndent": 2,
+  "metrics": {
+    "port": 4004
+  }
 }

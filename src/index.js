@@ -25,7 +25,6 @@ const InboundServerMiddleware = require('./InboundServer/middlewares.js');
 const OutboundServerMiddleware = require('./OutboundServer/middlewares.js');
 const Router = require('./lib/router');
 const Validate = require('./lib/validate');
-const RandomPhrase = require('./lib/randomphrase');
 const Cache = require('./lib/cache');
 const { Logger } = require('@mojaloop/sdk-standard-components');
 
@@ -142,7 +141,6 @@ module.exports = {
     Cache,
     InboundServerMiddleware,
     OutboundServerMiddleware,
-    RandomPhrase,
     Router,
     Server,
     Validate,

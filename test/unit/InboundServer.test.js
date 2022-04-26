@@ -334,7 +334,7 @@ describe('Inbound Server', () => {
         });
 
         async function testTlsServer(enableTls) {
-            defConfig.mutualTLS.inboundRequests.enabled = enableTls;
+            defConfig.inbound.tls.mutualTLS.enabled = enableTls;
             const logger = new Logger.Logger({ stringify: () => '' });
             const cache = new Cache({ ...defConfig.cacheConfig, logger: logger.push({ component: 'cache' }) });
             const server = new InboundServer(defConfig, logger, cache);

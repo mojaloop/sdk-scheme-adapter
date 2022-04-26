@@ -50,7 +50,6 @@ describe('index.js', () => {
         expect(typeof(index.OutboundServerMiddleware)).toBe('object');
         expect(typeof(index.Router)).toBe('function');
         expect(typeof(index.Validate)).toBe('function');
-        expect(typeof(index.RandomPhrase)).toBe('function');
         expect(typeof(index.Cache)).toBe('function');
     });
 });

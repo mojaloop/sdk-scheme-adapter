@@ -10,7 +10,7 @@
 
 const coBody = require('co-body');
 
-const randomPhrase = require('../lib/randomphrase');
+const { generateSlug } = require('random-word-slugs');
 const { Jws, Errors } = require('@mojaloop/sdk-standard-components');
 const {
     parseAcceptHeader,
@@ -157,7 +157,7 @@ const cacheRequest = (cache) => async (ctx, next) => {
  * @return {Function}
  */
 const createRequestIdGenerator = () => async (ctx, next) => {
-    ctx.request.id = randomPhrase();
+    ctx.request.id = generateSlug(4);
     await next();
 };
 

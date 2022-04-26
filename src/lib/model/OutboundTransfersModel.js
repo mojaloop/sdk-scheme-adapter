@@ -51,7 +51,10 @@ class OutboundTransfersModel {
             transfersEndpoint: config.transfersEndpoint,
             transactionRequestsEndpoint: config.transactionRequestsEndpoint,
             dfspId: config.dfspId,
-            tls: config.tls,
+            tls: {
+                enabled: config.outbound.tls.mutualTLS.enabled,
+                creds: config.outbound.tls.creds,
+            },
             jwsSign: config.jwsSign,
             jwsSignPutParties: config.jwsSignPutParties,
             jwsSigningKey: config.jwsSigningKey,

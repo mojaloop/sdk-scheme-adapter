@@ -11,7 +11,7 @@
 
 const ws = require('ws');
 const jsonPatch = require('fast-json-patch');
-const randomPhrase = require('~/lib/randomphrase');
+const { generateSlug } = require('random-word-slugs');
 const { getInternalEventEmitter, INTERNAL_EVENTS } = require('./events');
 
 const ControlServerEventEmitter = getInternalEventEmitter();
@@ -58,7 +58,7 @@ const deserialise = (msg) => {
 };
 
 
-const buildMsg = (verb, msg, data, id = randomPhrase()) => serialise({
+const buildMsg = (verb, msg, data, id = generateSlug(4)) => serialise({
     verb,
     msg,
     data,
@@ -197,7 +197,7 @@ class Server extends ws.Server {
      * @param {object} params Updated configuration
      */
     async broadcastConfigChange(updatedConfig) {
-        const updateConfMsg = build.CONFIGURATION.PATCH({}, updatedConfig, randomPhrase());
+        const updateConfMsg = build.CONFIGURATION.PATCH({}, updatedConfig, generateSlug(4));
         const errorLogger = (socket, message) => (err) =>
             this._logger
                 .push({ message, ip: this._clientData.get(socket).ip, err })
