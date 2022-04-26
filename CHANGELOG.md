@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/thirdparty-api-svc](https://github.com/mojaloop/thirdparty-api-svc)
+### [12.2.3](https://github.com/mojaloop/sdk-scheme-adapter/compare/v12.2.2...v12.2.3) (2022-04-26)
+
+
+### Refactors
+
+* change config structure and remove unused code ([#311](https://github.com/mojaloop/sdk-scheme-adapter/issues/311)) ([c2e69e7](https://github.com/mojaloop/sdk-scheme-adapter/commit/c2e69e751daf7ad74ae213e8987946fdb84dd427))
+
 ### [12.2.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v12.2.1...v12.2.2) (2022-04-22)
 
 
