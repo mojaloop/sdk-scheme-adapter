@@ -172,8 +172,8 @@ class InboundServer extends EventEmitter {
         const apiSpecs = yaml.load(fs.readFileSync(specPath));
         await this._validator.initialise(apiSpecs);
         await this._api.start();
-        await new Promise((resolve) => this._server.listen(this._conf.inboundServerPort, resolve));
-        this._logger.log(`Serving inbound API on port ${this._conf.inboundServerPort}`);
+        await new Promise((resolve) => this._server.listen(this._conf.inbound.port, resolve));
+        this._logger.log(`Serving outbound API on port ${this._conf.inbound.port}`);
     }
 
     async stop() {

@@ -111,14 +111,11 @@ class OutboundServer extends EventEmitter {
 
     async start() {
         await this._api.start();
-
         const specPath = path.join(__dirname, 'api.yaml');
         const apiSpecs = yaml.load(fs.readFileSync(specPath));
         await this._validator.initialise(apiSpecs);
-
-        await new Promise((resolve) => this._server.listen(this._conf.outboundServerPort, resolve));
-
-        this._logger.log(`Serving outbound API on port ${this._conf.outboundServerPort}`);
+        await new Promise((resolve) => this._server.listen(this._conf.outbound.port, resolve));
+        this._logger.log(`Serving outbound API on port ${this._conf.outbound.port}`);
     }
 
     async stop() {

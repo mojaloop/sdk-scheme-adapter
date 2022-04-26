@@ -4,7 +4,6 @@ const axios = require('axios');
 const env = require('../../testEnv');
 
 jest.dontMock('redis');
-jest.setTimeout(10000);
 
 describe('/parties', () => {
 
