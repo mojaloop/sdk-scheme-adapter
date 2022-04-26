@@ -6,7 +6,7 @@ const env = require('../../testEnv');
 const quotesPostRequest = require('./data/quotesPostRequest.json');
 
 jest.dontMock('redis');
-
+jest.setTimeout(10000);
 describe('/quotes', () => {
 
     test('post - happy flow', async () => {

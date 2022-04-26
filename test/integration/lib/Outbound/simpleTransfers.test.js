@@ -6,6 +6,7 @@ const env = require('../../testEnv');
 const transfersPostRequest = require('./data/transfersPostRequest.json');
 
 jest.dontMock('redis');
+jest.setTimeout(10000);
 
 /*
 "TRANSFERS_VALIDATION_WITH_PREVIOUS_QUOTES": false,
