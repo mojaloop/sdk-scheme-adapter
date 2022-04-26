@@ -197,7 +197,7 @@ class Server extends ws.Server {
      * @param {object} params Updated configuration
      */
     async broadcastConfigChange(updatedConfig) {
-        const updateConfMsg = build.CONFIGURATION.PATCH({}, updatedConfig, generateSlug());
+        const updateConfMsg = build.CONFIGURATION.PATCH({}, updatedConfig, generateSlug(4));
         const errorLogger = (socket, message) => (err) =>
             this._logger
                 .push({ message, ip: this._clientData.get(socket).ip, err })
