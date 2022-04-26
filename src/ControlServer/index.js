@@ -26,8 +26,8 @@ const assert = require('assert').strict;
 
 const ws = require('ws');
 const jsonPatch = require('fast-json-patch');
+const { generateSlug } = require('random-word-slugs');
 
-const randomPhrase = require('~/lib/randomphrase');
 
 /**************************************************************************
  * The message protocol messages, verbs, and errors
@@ -76,7 +76,7 @@ const deserialise = (msg) => {
     });
 };
 
-const buildMsg = (verb, msg, data, id = randomPhrase()) => serialise({
+const buildMsg = (verb, msg, data, id = generateSlug(4)) => serialise({
     verb,
     msg,
     data,
