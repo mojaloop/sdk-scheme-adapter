@@ -112,6 +112,7 @@ const postTransfers = async (ctx) => {
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2: ctx.state.wso2,
+            metricsClient: ctx.state.metricsClient,
         });
 
         // initialize the transfer model and start it running
@@ -144,6 +145,7 @@ const getTransfers = async (ctx) => {
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2: ctx.state.wso2,
+            metricsClient: ctx.state.metricsClient,
         });
 
         // initialize the transfer model and start it running
@@ -172,6 +174,7 @@ const putTransfers = async (ctx) => {
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2: ctx.state.wso2,
+            metricsClient: ctx.state.metricsClient,
         });
 
         // TODO: check the incoming body to reject party or quote when requested to do so

@@ -10,8 +10,12 @@
 
 'use strict';
 
+const promClient = require('prom-client');
 const { Logger } = require('@mojaloop/sdk-standard-components');
 const defaultConfig = require('./data/defaultConfig');
+const { MetricsClient } = require('~/lib/metrics');
+
+const TestControlServer = require('~/ControlServer');
 
 jest.mock('dotenv', () => ({
     config: jest.fn()

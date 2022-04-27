@@ -66,6 +66,36 @@ class OutboundTransfersModel {
             secret: config.ilpSecret,
             logger: this._logger,
         });
+
+        this.metrics = {
+            partyLookupRequests: config.metricsClient.getCounter(
+                'mojaloop_connector_outbound_party_lookup_request_count',
+                'Count of outbound party lookup requests sent'),
+            partyLookupResponses: config.metricsClient.getCounter(
+                'mojaloop_connector_outbound_party_lookup_response_count',
+                'Count of responses received to outbound party lookups'),
+            quoteRequests: config.metricsClient.getCounter(
+                'mojaloop_connector_outbound_quote_request_count',
+                'Count of outbound quote requests sent'),
+            quoteResponses: config.metricsClient.getCounter(
+                'mojaloop_connector_outbound_quote_response_count',
+                'Count of responses received to outbound quote requests'),
+            transferPrepares: config.metricsClient.getCounter(
+                'mojaloop_connector_outbound_transfer_prepare_count',
+                'Count of outbound transfer prepare requests sent'),
+            transferFulfils: config.metricsClient.getCounter(
+                'mojaloop_connector_outbound_transfer_fulfil_response_count',
+                'Count of responses received to outbound transfer prepares'),
+            partyLookupLatency: config.metricsClient.getHistogram(
+                'mojaloop_connector_outbound_party_lookup_latency',
+                'Time taken for a response to a party lookup request to be received'),
+            quoteRequestLatency: config.metricsClient.getHistogram(
+                'mojaloop_connector_outbound_quote_request_latency',
+                'Time taken for a response to a quote request to be received'),
+            transferLatency: config.metricsClient.getHistogram(
+                'mojaloop_connector_outbound_transfer_latency',
+                'Time taken for a response to a transfer prepare to be received')
+        };
     }
 
 
@@ -185,9 +215,16 @@ class OutboundTransfersModel {
                 subId: this.data.to.idSubValue
             });
 
+            let latencyTimerDone;
+
             // hook up a subscriber to handle response messages
             const subId = await this._cache.subscribe(payeeKey, (cn, msg, subId) => {
                 try {
+                    if(latencyTimerDone) {
+                        latencyTimerDone();
+                    }
+                    this.metrics.partyLookupResponses.inc();
+
                     let payee = JSON.parse(msg);
 
                     if(payee.errorInformation) {
@@ -279,8 +316,10 @@ class OutboundTransfersModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a GET /parties request to the switch
             try {
+                latencyTimerDone = this.metrics.partyLookupLatency.startTimer();
                 const res = await this._requests.getParties(this.data.to.idType, this.data.to.idValue,
                     this.data.to.idSubValue, this.data.to.fspId);
+                this.metrics.partyLookupRequests.inc();
                 this._logger.push({ peer: res }).log('Party lookup sent to peer');
             }
             catch(err) {
@@ -312,10 +351,16 @@ class OutboundTransfersModel {
 
             // listen for events on the quoteId
             const quoteKey = `qt_${quote.quoteId}`;
+            let latencyTimerDone;
 
             // hook up a subscriber to handle response messages
             const subId = await this._cache.subscribe(quoteKey, (cn, msg, subId) => {
                 try {
+                    if(latencyTimerDone) {
+                        latencyTimerDone();
+                    }
+                    this.metrics.quoteResponses.inc();
+
                     let error;
                     let message = JSON.parse(msg);
 
@@ -380,7 +425,9 @@ class OutboundTransfersModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /quotes request to the switch
             try {
+                latencyTimerDone = this.metrics.quoteRequestLatency.startTimer();
                 const res = await this._requests.postQuotes(quote, this.data.to.fspId);
+                this.metrics.quoteRequests.inc();
                 this._logger.push({ res }).log('Quote request sent to peer');
             }
             catch(err) {
@@ -459,12 +506,20 @@ class OutboundTransfersModel {
             // listen for events on the transferId
             const transferKey = `tf_${this.data.transferId}`;
 
+            let latencyTimerDone;
+
             const subId = await this._cache.subscribe(transferKey, async (cn, msg, subId) => {
                 try {
                     let error;
                     let message = JSON.parse(msg);
 
+                    if(latencyTimerDone) {
+                        latencyTimerDone();
+                    }
+
                     if (message.type === 'transferFulfil') {
+                        this.metrics.transferFulfils.inc();
+
                         if (this._rejectExpiredTransferFulfils) {
                             const now = new Date().toISOString();
                             if (now > prepare.expiration) {
@@ -523,7 +578,9 @@ class OutboundTransfersModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /transfers request to the switch
             try {
+                latencyTimerDone = this.metrics.transferLatency.startTimer();
                 const res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource);
+                this.metrics.transferPrepares.inc();
                 this._logger.push({ res }).log('Transfer prepare sent to peer');
             }
             catch(err) {
