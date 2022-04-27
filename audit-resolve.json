@@ -434,6 +434,71 @@
       "decision": "ignore",
       "madeAt": 1650459475376,
       "expiresAt": 1653051469252
+    },
+    "1070245|@mojaloop/central-services-shared>@mojaloop/event-sdk>moment": {
+      "decision": "ignore",
+      "madeAt": 1651072086111,
+      "expiresAt": 1653664079920
+    },
+    "1070245|@mojaloop/event-sdk>moment": {
+      "decision": "ignore",
+      "madeAt": 1651072086111,
+      "expiresAt": 1653664079920
+    },
+    "1070030|@mojaloop/central-services-shared>@mojaloop/event-sdk>moment>shins>markdown-it": {
+      "decision": "ignore",
+      "madeAt": 1651072088351,
+      "expiresAt": 1653664079920
+    },
+    "1070030|widdershins>markdown-it": {
+      "decision": "ignore",
+      "madeAt": 1651072088351,
+      "expiresAt": 1653664079920
+    },
+    "1068154|@mojaloop/central-services-shared>@mojaloop/event-sdk>moment>shins>markdown-it>sanitize-html": {
+      "decision": "ignore",
+      "madeAt": 1651072089481,
+      "expiresAt": 1653664079920
+    },
+    "1068155|@mojaloop/central-services-shared>@mojaloop/event-sdk>moment>shins>markdown-it>sanitize-html": {
+      "decision": "ignore",
+      "madeAt": 1651072090420,
+      "expiresAt": 1653664079920
+    },
+    "1070250|ansi-regex": {
+      "decision": "ignore",
+      "madeAt": 1651072091389,
+      "expiresAt": 1653664079920
+    },
+    "1070252|ansi-regex": {
+      "decision": "ignore",
+      "madeAt": 1651072092335,
+      "expiresAt": 1653664079920
+    },
+    "1070256|ejs": {
+      "decision": "ignore",
+      "madeAt": 1651072093304,
+      "expiresAt": 1653664079920
+    },
+    "1067536|json-pointer": {
+      "decision": "ignore",
+      "madeAt": 1651072094695,
+      "expiresAt": 1653664079920
+    },
+    "1067553|swagger2openapi>better-ajv-errors>jsonpointer": {
+      "decision": "ignore",
+      "madeAt": 1651072095680,
+      "expiresAt": 1653664079920
+    },
+    "1067946|swagger2openapi>better-ajv-errors>jsonpointer>oas-validator>ajv": {
+      "decision": "ignore",
+      "madeAt": 1651072096735,
+      "expiresAt": 1653664079920
+    },
+    "1068310|widdershins>markdown-it>yargs>yargs-parser": {
+      "decision": "ignore",
+      "madeAt": 1651072098082,
+      "expiresAt": 1653664079920
     }
   },
   "rules": {},
