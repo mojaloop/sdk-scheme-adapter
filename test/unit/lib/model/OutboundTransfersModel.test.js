@@ -442,14 +442,11 @@ describe('outboundModel', () => {
         expect(StateMachine.__instance.state).toBe('payeeResolved');
 
         // now run the model again. this should trigger transition to quote request
-        resultPromise = model.run();
-
+        resultPromise = model.run({ acceptParty: true });
         // now we started the model running we simulate a callback with the quote response
         cache.publish(`qt_${model.data.quoteId}`, JSON.stringify(quoteResponse));
-
         // wait for the model to reach a terminal state
         result = await resultPromise;
-
         // check we stopped at payeeResolved state
         expect(result.currentState).toBe('WAITING_FOR_QUOTE_ACCEPTANCE');
         expect(StateMachine.__instance.state).toBe('quoteReceived');
@@ -500,7 +497,7 @@ describe('outboundModel', () => {
         expect(StateMachine.__instance.state).toBe('payeeResolved');
 
         // now run the model again. this should trigger transition to quote request
-        resultPromise = model.run();
+        resultPromise = model.run({ acceptParty: true });
 
         // now we started the model running we simulate a callback with the quote response
         cache.publish(`qt_${model.data.quoteId}`, JSON.stringify(quoteResponse));
@@ -526,7 +523,7 @@ describe('outboundModel', () => {
         expect(StateMachine.__instance.state).toBe('quoteReceived');
 
         // now run the model again. this should trigger transition to quote request
-        resultPromise = model.run();
+        resultPromise = model.run({ acceptQuote: true });
 
         // now we started the model running we simulate a callback with the transfer fulfilment
         cache.publish(`tf_${model.data.transferId}`, JSON.stringify(transferFulfil));

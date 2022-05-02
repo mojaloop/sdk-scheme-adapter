@@ -3,6 +3,7 @@
   "amountType": "SEND",
   "currency": "USD",
   "currentState": "COMPLETED",
+  "direction": "OUTBOUND",
   "from": {
     "displayName": "John Doe",
     "idType": "MSISDN",
