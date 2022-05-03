@@ -19,7 +19,8 @@ const defaultConfig = require('./data/defaultConfig.json');
 const { Logger } = require('@mojaloop/sdk-standard-components');
 const { MetricsClient } = require('~/lib/metrics');
 
-const TestControlServer = require('./ControlServer');
+const TestControlServer = require('~/ControlServer');
+
 
 process.env.PEER_ENDPOINT = '172.17.0.3:4000';
 process.env.BACKEND_ENDPOINT = '172.17.0.5:4000';
@@ -28,7 +29,6 @@ process.env.CACHE_PORT = '6379';
 process.env.MGMT_API_WS_URL = '0.0.0.0';
 
 const index = require('~/index.js');
-
 
 describe('index.js', () => {
     beforeEach(() => {
