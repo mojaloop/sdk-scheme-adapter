@@ -23,7 +23,6 @@ const {
 } = require('@mojaloop/sdk-standard-components');
 const shared = require('./lib/shared');
 const { TransferStateEnum } = require('./common');
-const { config } = require('dotenv');
 
 /**
  *  Models the operations required for performing inbound transfers
@@ -38,7 +37,7 @@ class InboundTransfersModel {
         this._allowTransferWithoutQuote = config.allowTransferWithoutQuote;
         this._reserveNotification = config.reserveNotification;
         this._allowDifferentTransferTransactionId = config.allowDifferentTransferTransactionId;
-        this._pm4mlEnabled = config.pm4mlEnabled;
+        this._mojaloopConnectorMode = config.mojaloopConnectorMode;
 
         this._mojaloopRequests = new MojaloopRequests({
             logger: this._logger,
@@ -172,10 +171,9 @@ class InboundTransfersModel {
      * Asks the backend for a response to an incoming quote request and makes a callback to the originator with
      * the result
      */
-    async quoteRequest(quoteRequest, sourceFspId) {
-        if(config._pm4mlEnabled){
-            const request = quoteRequest;
-            const quoteRequest = request.body;
+    async quoteRequest(request, sourceFspId) {
+        if(this._mojaloopConnectorMode){
+            const quoteRequest = request;
             // keep track of our state.
             // note that instances of this model typically only live as long as it takes to
             // handle an incoming request and send a response asynchronously, but we hold onto
@@ -208,7 +206,7 @@ class InboundTransfersModel {
                     const expiration = new Date().getTime() + (this._expirySeconds * 1000);
                     response.expiration = new Date(expiration).toISOString();
                 }
-                // project our internal quote reponse into mojaloop quote response form
+                // project our internal quote response into mojaloop quote response form
                 const mojaloopResponse = shared.internalQuoteResponseToMojaloop(response);
                 // create our ILP packet and condition and tag them on to our internal quote response
                 const { fulfilment, ilpPacket, condition } = this._ilp.getQuoteResponseIlp(quoteRequest, mojaloopResponse);
@@ -241,6 +239,7 @@ class InboundTransfersModel {
                     mojaloopError, sourceFspId);
             }
         } else {
+            const quoteRequest = request;
             try {
                 const internalForm = shared.mojaloopQuoteRequestToInternal(quoteRequest);
 
@@ -280,8 +279,7 @@ class InboundTransfersModel {
 
                 // make a callback to the source fsp with the quote response
                 return this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId);
-            }
-            catch(err) {
+            } catch(err) {
                 this._logger.push({ err }).log('Error in quoteRequest');
                 const mojaloopError = await this._handleError(err);
                 this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
@@ -356,11 +354,10 @@ class InboundTransfersModel {
      * Validates an incoming transfer prepare request and makes a callback to the originator with
      * the result
      */
-    async prepareTransfer(prepareRequest, sourceFspId) {
-        try {
-            if(this._pm4mlEnabled) {
-                const request = prepareRequest;
-                const prepareRequest = request.body;
+    async prepareTransfer(request, sourceFspId) {
+        if(this._mojaloopConnectorMode) {
+            const prepareRequest = request;
+            try {
                 // retrieve our quote data
                 this.data = await this._cache.get(`transferModel_in_${prepareRequest.transferId}`);
                 const quote = this.data.quote;
@@ -427,8 +424,16 @@ class InboundTransfersModel {
                 this.data.currentState = this._reserveNotification ? TransferStateEnum.RESERVED : TransferStateEnum.COMPLETED;
                 await this._save();
                 return res;
-
-            } else {
+            } catch(err) {
+                this._logger.push({ err }).log('Error in prepareTransfer');
+                const mojaloopError = await this._handleError(err);
+                this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+                return await this._mojaloopRequests.putTransfersError(prepareRequest.transferId,
+                    mojaloopError, sourceFspId);
+            }
+        } else {
+            const prepareRequest = request;
+            try {
                 // retrieve our quote data
                 let quote;
 
@@ -502,14 +507,13 @@ class InboundTransfersModel {
                 // make a callback to the source fsp with the transfer fulfilment
                 return this._mojaloopRequests.putTransfers(prepareRequest.transferId, mojaloopResponse,
                     sourceFspId);
+            } catch(err) {
+                this._logger.push({ err }).log('Error in prepareTransfer');
+                const mojaloopError = await this._handleError(err);
+                this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+                return await this._mojaloopRequests.putTransfersError(prepareRequest.transferId,
+                    mojaloopError, sourceFspId);
             }
-        }
-        catch(err) {
-            this._logger.push({ err }).log('Error in prepareTransfer');
-            const mojaloopError = await this._handleError(err);
-            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
-            return await this._mojaloopRequests.putTransfersError(prepareRequest.transferId,
-                mojaloopError, sourceFspId);
         }
     }
 
@@ -867,11 +871,11 @@ class InboundTransfersModel {
     * Forwards Switch notification for fulfiled transfer to the DFSP backend, when acting as a payee
     */
     async sendNotificationToPayee(body, transferId) {
-        if (this._pm4mlEnabled) {
+        if (this._mojaloopConnectorMode) {
             try {
                 // load any cached state for this transfer e.g. quote request/response etc...
                 this.data = await this._cache.get(`transferModel_in_${transferId}`);
-                // if we didnt have anything cached, start from scratch
+                // if we didn't have anything cached, start from scratch
                 if(!this.data) {
                     this.data = {};
                 }

@@ -182,7 +182,7 @@ const putTransfers = async (ctx) => {
         // load the transfer model from cache and start it running again
         await model.load(ctx.state.path.params.transferId);
 
-        const response = await model.run();
+        const response = await model.run(ctx.request.body);
 
         // return the result
         ctx.response.status = 200;

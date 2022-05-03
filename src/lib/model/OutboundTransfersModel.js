@@ -38,7 +38,7 @@ class OutboundTransfersModel {
         this._multiplePartiesResponse = config.multiplePartiesResponse;
         this._multiplePartiesResponseSeconds = config.multiplePartiesResponseSeconds;
         this._sendFinalNotificationIfRequested = config.sendFinalNotificationIfRequested;
-        this._pm4mlEnabled = config.pm4mlEnabled;
+        this._mojaloopConnectorMode = config.mojaloopConnectorMode;
 
         if (this._autoAcceptParty && this._multiplePartiesResponse) {
             throw new Error('Conflicting config options provided: autoAcceptParty and multiplePartiesResponse');
@@ -242,17 +242,31 @@ class OutboundTransfersModel {
                         latencyTimerDone();
                     }
                     this.metrics.partyLookupResponses.inc();
+                    let payee;
+                    console.log(JSON.parse(msg));
+                    if (this._mojaloopConnectorMode) {
+                        this.data.getPartiesResponse = JSON.parse(msg);
+                        if(this.data.getPartiesResponse && this.data.getPartiesResponse.errorInformation) {
+                            // this is an error response to our GET /parties request
+                            const err = new BackendError(`Got an error response resolving party: ${util.inspect(this.data.getPartiesResponse, { depth: Infinity })}`, 500);
+                            err.mojaloopError = this.data.getPartiesResponse;
+                            // cancel the timeout handler
+                            clearTimeout(timeout);
+                            return reject(err);
+                        }
+                        payee = this.data.getPartiesResponse;
+                    } else {
+                        payee = JSON.parse(msg);
 
-                    let payee = JSON.parse(msg);
+                        if(payee.errorInformation) {
+                            // this is an error response to our GET /parties request
+                            const err = new BackendError(`Got an error response resolving party: ${util.inspect(payee, { depth: Infinity })}`, 500);
+                            err.mojaloopError = payee;
 
-                    if(payee.errorInformation) {
-                        // this is an error response to our GET /parties request
-                        const err = new BackendError(`Got an error response resolving party: ${util.inspect(payee, { depth: Infinity })}`, 500);
-                        err.mojaloopError = payee;
-
-                        // cancel the timeout handler
-                        clearTimeout(timeout);
-                        return reject(err);
+                            // cancel the timeout handler
+                            clearTimeout(timeout);
+                            return reject(err);
+                        }
                     }
 
                     if(!payee.party) {
@@ -342,7 +356,7 @@ class OutboundTransfersModel {
                 const res = await this._requests.getParties(this.data.to.idType, this.data.to.idValue,
                     this.data.to.idSubValue, this.data.to.fspId);
 
-                if (this._pm4mlEnabled) {
+                if (this._mojaloopConnectorMode) {
                     this.data.getPartiesRequest = res.originalRequest;
                 }
 
@@ -376,13 +390,13 @@ class OutboundTransfersModel {
             // const timer = setTimeout((cn, msg, subId) => {
             const payeeResolver = (msg) => {
                 this.data.getPartiesResponse = JSON.parse(msg);
-                if(this.data.getPartiesResponse.body.errorInformation) {
+                if(this.data.getPartiesResponse.errorInformation) {
                     // this is an error response to our GET /parties request
-                    const err = new BackendError(`Got an error response resolving party: ${util.inspect(this.data.getPartiesResponse.body, { depth: Infinity })}`, 500);
-                    err.mojaloopError = this.data.getPartiesResponse.body;
+                    const err = new BackendError(`Got an error response resolving party: ${util.inspect(this.data.getPartiesResponse, { depth: Infinity })}`, 500);
+                    err.mojaloopError = this.data.getPartiesResponse;
                     throw err;
                 }
-                let payee = this.data.getPartiesResponse.body;
+                let payee = this.data.getPartiesResponse;
                 if(!payee.party) {
                     // we should never get a non-error response without a party, but just in case...
                     // cancel the timeout handler
@@ -518,20 +532,12 @@ class OutboundTransfersModel {
                         return reject(error);
                     }
 
-                    if (this._pm4mlEnabled) {
-                        this.data.quoteResponse = {
-                            headers: message.headers,
-                            body: message.data
-                        };
-                        this._logger.push({ quoteResponse: this.data.quoteResponse.body }).log('Quote response received');
-                        this.data.quoteResponseSource = this.data.quoteResponse.headers['fspiop-source'];
-                    } else {
-                        const quoteResponseBody = message.data;
-                        const quoteResponseHeaders = message.headers;
-                        this._logger.push({ quoteResponseBody }).log('Quote response received');
-                        this.data.quoteResponse = quoteResponseBody;
-                        this.data.quoteResponseSource = quoteResponseHeaders['fspiop-source'];
-                    }
+
+                    const quoteResponseBody = message.data;
+                    const quoteResponseHeaders = message.headers;
+                    this._logger.push({ quoteResponseBody }).log('Quote response received');
+                    this.data.quoteResponse = quoteResponseBody;
+                    this.data.quoteResponseSource = quoteResponseHeaders['fspiop-source'];
 
                     return resolve(quote);
                 }
@@ -562,7 +568,7 @@ class OutboundTransfersModel {
                 latencyTimerDone = this.metrics.quoteRequestLatency.startTimer();
                 const res = await this._requests.postQuotes(quote, this.data.to.fspId);
 
-                if(this._pm4mlEnabled){
+                if(this._mojaloopConnectorMode){
                     this.data.quoteRequest = res.originalRequest;
                 }
 
@@ -668,14 +674,8 @@ class OutboundTransfersModel {
                             }
                         }
                     } else if (message.type === 'transferError') {
-                        if (this._pm4mlEnabled) {
-                            error = new BackendError(`Got an error response preparing transfer: ${util.inspect(message.data.body, { depth: Infinity })}`, 500);
-                            error.mojaloopError = message.data.body;
-                        } else {
-                            error = new BackendError(`Got an error response preparing transfer: ${util.inspect(message.data, { depth: Infinity })}`, 500);
-                            error.mojaloopError = message.data;
-                        }
-
+                        error = new BackendError(`Got an error response preparing transfer: ${util.inspect(message.data, { depth: Infinity })}`, 500);
+                        error.mojaloopError = message.data;
                     } else {
                         this._logger.push({ message }).log(`Ignoring cache notification for transfer ${transferKey}. Unknown message type ${message.type}.`);
                         return;
@@ -693,14 +693,14 @@ class OutboundTransfersModel {
                         return reject(error);
                     }
 
-                    if (this._pm4mlEnabled) {
+                    if (this._mojaloopConnectorMode) {
                         const fulfil = message.data;
-                        this._logger.push({ fulfil: fulfil.body }).log('Transfer fulfil received');
+                        this._logger.push({ fulfil: fulfil }).log('Transfer fulfil received');
                         this.data.fulfil = fulfil;
-                        if(this._checkIlp && !this._ilp.validateFulfil(fulfil.body.fulfilment, this.data.quoteResponse.body.condition)) {
+                        if(this._checkIlp && !this._ilp.validateFulfil(fulfil.fulfilment, this.data.quoteResponse.condition)) {
                             throw new Error('Invalid fulfilment received from peer DFSP.');
                         }
-                        if(this._sendFinalNotificationIfRequested && fulfil.body.transferState === 'RESERVED') {
+                        if(this._sendFinalNotificationIfRequested && fulfil.transferState === 'RESERVED') {
                         // we need to send a PATCH notification back to say we have committed the transfer.
                         // Note that this is normally a switch only responsibility but the capability is
                         // implemented here to support testing use cases where the mojaloop-connector is
@@ -717,7 +717,7 @@ class OutboundTransfersModel {
                             this.data.patch = res.originalRequest;
                             this._logger.log(`PATCH final notification sent to peer for transfer ${this.data.transferId}`);
                         }
-                        return resolve(fulfil.body);
+                        return resolve(fulfil);
                     } else {
                         const fulfil = message.data;
                         this._logger.push({ fulfil }).log('Transfer fulfil received');
@@ -758,7 +758,7 @@ class OutboundTransfersModel {
                 latencyTimerDone = this.metrics.transferLatency.startTimer();
                 const res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource);
 
-                if (this._pm4mlEnabled) {
+                if (this._mojaloopConnectorMode) {
                     this.data.prepare = res.originalRequest;
                 }
                 this.metrics.transferPrepares.inc();
@@ -793,13 +793,8 @@ class OutboundTransfersModel {
                     let message = JSON.parse(msg);
 
                     if (message.type === 'transferError') {
-                        if (this._pm4mlEnabled) {
-                            error = new BackendError(`Got an error response retrieving transfer: ${util.inspect(message.data.body, { depth: Infinity })}`, 500);
-                            error.mojaloopError = message.data.body;
-                        } else {
-                            error = new BackendError(`Got an error response retrieving transfer: ${util.inspect(message.data, { depth: Infinity })}`, 500);
-                            error.mojaloopError = message.data;
-                        }
+                        error = new BackendError(`Got an error response retrieving transfer: ${util.inspect(message.data, { depth: Infinity })}`, 500);
+                        error.mojaloopError = message.data;
                     } else if (message.type !== 'transferFulfil') {
                         this._logger.push({ message }).log(`Ignoring cache notification for transfer ${transferKey}. Unknown message type ${message.type}.`);
                         return;
@@ -820,13 +815,8 @@ class OutboundTransfersModel {
                     const fulfil = message.data;
                     this.data.fulfil = fulfil;
 
-                    if (this._pm4mlEnabled) {
-                        this._logger.push({ fulfil: fulfil.body }).log('Transfer fulfil received');
-                        return resolve(this.data.fulfil);
-                    } else {
-                        this._logger.push({ fulfil }).log('Transfer fulfil received');
-                        return resolve(this.data);
-                    }
+                    this._logger.push({ fulfil }).log('Transfer fulfil received');
+                    return resolve(this.data);
                 }
                 catch(err) {
                     return reject(err);
@@ -872,42 +862,22 @@ class OutboundTransfersModel {
      * @returns {object} - the transfer prepare payload
      */
     _buildTransferPrepare() {
-        let prepare;
-        if (config._pm4mlEnabled) {
-            prepare = {
-                transferId: this.data.transferId,
-                payeeFsp: this.data.to.fspId,
-                payerFsp: this._dfspId,
-                amount: {
-                    // We use the transfer currency and amount specified in the quote response
-                    // rather than the original request. In Forex cases we may have requested
-                    // a RECEIVE amount in a currency we cannot send. FXP should always give us
-                    // a quote response with transferAmount in the correct currency.
-                    currency: this.data.quoteResponse.body.transferAmount.currency,
-                    amount: this.data.quoteResponse.body.transferAmount.amount
-                },
-                ilpPacket: this.data.quoteResponse.body.ilpPacket,
-                condition: this.data.quoteResponse.body.condition,
-                expiration: this._getExpirationTimestamp()
-            };
-        } else {
-            prepare = {
-                transferId: this.data.transferId,
-                payeeFsp: this.data.to.fspId,
-                payerFsp: this._dfspId,
-                amount: {
-                    // We use the transfer currency and amount specified in the quote response
-                    // rather than the original request. In Forex cases we may have requested
-                    // a RECEIVE amount in a currency we cannot send. FXP should always give us
-                    // a quote response with transferAmount in the correct currency.
-                    currency: this.data.quoteResponse.transferAmount.currency,
-                    amount: this.data.quoteResponse.transferAmount.amount
-                },
-                ilpPacket: this.data.quoteResponse.ilpPacket,
-                condition: this.data.quoteResponse.condition,
-                expiration: this._getExpirationTimestamp()
-            };
-        }
+        const prepare = {
+            transferId: this.data.transferId,
+            payeeFsp: this.data.to.fspId,
+            payerFsp: this._dfspId,
+            amount: {
+                // We use the transfer currency and amount specified in the quote response
+                // rather than the original request. In Forex cases we may have requested
+                // a RECEIVE amount in a currency we cannot send. FXP should always give us
+                // a quote response with transferAmount in the correct currency.
+                currency: this.data.quoteResponse.transferAmount.currency,
+                amount: this.data.quoteResponse.transferAmount.amount
+            },
+            ilpPacket: this.data.quoteResponse.ilpPacket,
+            condition: this.data.quoteResponse.condition,
+            expiration: this._getExpirationTimestamp()
+        };
 
         if(this._useQuoteSourceFSPAsTransferPayeeFSP) {
             prepare.payeeFsp = this.data.quoteResponseSource;
@@ -985,7 +955,7 @@ class OutboundTransfersModel {
         try {
             this.data.currentState = this.stateMachine.state;
             let res;
-            if (this._pm4mlEnabled) {
+            if (this._mojaloopConnectorMode) {
                 res = await this._cache.set(`transferModel_out_${this.data.transferId}`, this.data);
             } else {
                 res = await this._cache.set(`transferModel_${this.data.transferId}`, this.data);
@@ -1007,7 +977,7 @@ class OutboundTransfersModel {
     async load(transferId) {
         try {
             let data;
-            if (config._pm4mlEnabled) {
+            if (this._mojaloopConnectorMode) {
                 data = await this._cache.get(`transferModel_out_${transferId}`);
             } else {
                 data = await this._cache.get(`transferModel_${transferId}`);
