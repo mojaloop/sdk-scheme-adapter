@@ -10,16 +10,16 @@
 
 'use strict';
 
-jest.mock('dotenv', () => ({
-    config: jest.fn()
-}));
-
 const promClient = require('prom-client');
-const defaultConfig = require('./data/defaultConfig.json');
 const { Logger } = require('@mojaloop/sdk-standard-components');
+const defaultConfig = require('./data/defaultConfig');
 const { MetricsClient } = require('~/lib/metrics');
 
 const TestControlServer = require('./ControlServer');
+
+jest.mock('dotenv', () => ({
+    config: jest.fn()
+}));
 
 process.env.PEER_ENDPOINT = '172.17.0.3:4000';
 process.env.BACKEND_ENDPOINT = '172.17.0.5:4000';
@@ -28,7 +28,6 @@ process.env.CACHE_PORT = '6379';
 process.env.MGMT_API_WS_URL = '0.0.0.0';
 
 const index = require('~/index.js');
-
 
 describe('index.js', () => {
     beforeEach(() => {

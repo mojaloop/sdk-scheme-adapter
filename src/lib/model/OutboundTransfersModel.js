@@ -532,10 +532,10 @@ class OutboundTransfersModel {
                         return reject(error);
                     }
 
-
                     const quoteResponseBody = message.data;
                     const quoteResponseHeaders = message.headers;
                     this._logger.push({ quoteResponseBody }).log('Quote response received');
+
                     this.data.quoteResponse = quoteResponseBody;
                     this.data.quoteResponseSource = quoteResponseHeaders['fspiop-source'];
 
@@ -730,6 +730,7 @@ class OutboundTransfersModel {
                         return resolve(fulfil);
                     }
 
+                    return resolve(fulfil);
                 }
                 catch(err) {
                     return reject(err);

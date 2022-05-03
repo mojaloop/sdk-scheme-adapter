@@ -445,8 +445,10 @@ describe('outboundModel', () => {
         resultPromise = model.run({ acceptParty: true });
         // now we started the model running we simulate a callback with the quote response
         cache.publish(`qt_${model.data.quoteId}`, JSON.stringify(quoteResponse));
+
         // wait for the model to reach a terminal state
         result = await resultPromise;
+
         // check we stopped at payeeResolved state
         expect(result.currentState).toBe('WAITING_FOR_QUOTE_ACCEPTANCE');
         expect(StateMachine.__instance.state).toBe('quoteReceived');
