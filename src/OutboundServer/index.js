@@ -28,12 +28,13 @@ const middlewares = require('./middlewares');
 const endpointRegex = /\/.*/g;
 
 class OutboundApi extends EventEmitter {
-    constructor(conf, logger, cache, validator) {
+    constructor(conf, logger, cache, validator, metricsClient) {
         super({ captureExceptions: true });
         this._logger = logger;
         this._api = new Koa();
         this._conf = conf;
         this._cache = cache;
+        this._metricsClient = metricsClient;
 
         this._wso2 = {
             auth: new WSO2Auth({
@@ -54,7 +55,7 @@ class OutboundApi extends EventEmitter {
         this._api.use(middlewares.createErrorHandler(this._logger));
         this._api.use(middlewares.createRequestIdGenerator());
         this._api.use(koaBody()); // outbound always expects application/json
-        this._api.use(middlewares.applyState({ cache, wso2: this._wso2, conf }));
+        this._api.use(middlewares.applyState({ cache, wso2: this._wso2, conf, metricsClient }));
         this._api.use(middlewares.createLogger(this._logger));
 
         //Note that we strip off any path on peerEndpoint config after the origin.
@@ -91,7 +92,7 @@ class OutboundApi extends EventEmitter {
 }
 
 class OutboundServer extends EventEmitter {
-    constructor(conf, logger, cache) {
+    constructor(conf, logger, cache, metricsClient) {
         super({ captureExceptions: true });
         this._validator = new Validate();
         this._conf = conf;
@@ -101,7 +102,8 @@ class OutboundServer extends EventEmitter {
             conf,
             this._logger.push({ component: 'api' }),
             cache,
-            this._validator
+            this._validator,
+            metricsClient
         );
         this._api.on('error', (...args) => {
             this.emit('error', ...args);

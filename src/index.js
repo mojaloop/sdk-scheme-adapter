@@ -18,6 +18,7 @@ const InboundServer = require('./InboundServer');
 const OutboundServer = require('./OutboundServer');
 const OAuthTestServer = require('./OAuthTestServer');
 const TestServer = require('./TestServer');
+const { MetricsServer, MetricsClient } = require('./lib/metrics');
 
 // import things we want to expose e.g. for unit tests and users who dont want to use the entire
 // scheme adapter as a service
@@ -27,6 +28,16 @@ const Router = require('./lib/router');
 const Validate = require('./lib/validate');
 const Cache = require('./lib/cache');
 const { Logger } = require('@mojaloop/sdk-standard-components');
+
+const LOG_ID = {
+    INBOUND:   { app: 'mojaloop-connector-inbound-api' },
+    OUTBOUND:  { app: 'mojaloop-connector-outbound-api' },
+    TEST:      { app: 'mojaloop-connector-test-api' },
+    OAUTHTEST: { app: 'mojaloop-connector-oauth-test-server' },
+    CONTROL:   { app: 'mojaloop-connector-control-client' },
+    METRICS:   { app: 'mojaloop-connector-metrics' },
+    CACHE:     { component: 'cache' },
+};
 
 /**
  * Class that creates and manages http servers that expose the scheme adapter APIs.
@@ -42,10 +53,18 @@ class Server extends EventEmitter {
             enableTestFeatures: conf.enableTestFeatures,
         });
 
+        this.metricsClient = new MetricsClient();
+
+        this.metricsServer = new MetricsServer({
+            port: this.conf.metrics.port,
+            logger: this.logger.push(LOG_ID.METRICS)
+        });
+
         this.inboundServer = new InboundServer(
             this.conf,
             this.logger.push({ app: 'mojaloop-sdk-inbound-api' }),
-            this.cache
+            this.cache,
+            this.metricsClient
         );
         this.inboundServer.on('error', (...args) => {
             this.logger.push({ args }).log('Unhandled error in Inbound Server');
@@ -55,7 +74,8 @@ class Server extends EventEmitter {
         this.outboundServer = new OutboundServer(
             this.conf,
             this.logger.push({ app: 'mojaloop-sdk-outbound-api' }),
-            this.cache
+            this.cache,
+            this.metricsClient
         );
         this.outboundServer.on('error', (...args) => {
             this.logger.push({ args }).log('Unhandled error in Outbound Server');
@@ -86,6 +106,7 @@ class Server extends EventEmitter {
         await Promise.all([
             this.inboundServer.start(),
             this.outboundServer.start(),
+            this.metricsServer.start(),
             startTestServer,
             startOauthTestServer,
         ]);
@@ -97,6 +118,7 @@ class Server extends EventEmitter {
             this.outboundServer.stop(),
             this.oauthTestServer.stop(),
             this.testServer.stop(),
+            this.metricsServer.stop(),
         ]);
     }
 }
