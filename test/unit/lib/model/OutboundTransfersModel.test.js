@@ -15,6 +15,7 @@ jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('redis');
 
 const Cache = require('~/lib/cache');
+const { MetricsClient } = require('~/lib/metrics');
 const Model = require('~/lib/model').OutboundTransfersModel;
 const PartiesModel = require('~/lib/model').PartiesModel;
 
@@ -50,6 +51,7 @@ describe('outboundModel', () => {
     let config;
     let logger;
     let cache;
+    let metricsClient;
 
     /**
      *
@@ -91,6 +93,7 @@ describe('outboundModel', () => {
             ...config,
             cache,
             logger,
+            metricsClient,
         });
 
         await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
@@ -113,6 +116,7 @@ describe('outboundModel', () => {
     beforeAll(async () => {
         logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests-cache' }, stringify: () => '' });
         quoteResponse = JSON.parse(JSON.stringify(quoteResponseTemplate));
+        metricsClient = new MetricsClient();
     });
 
     beforeEach(async () => {
@@ -140,6 +144,7 @@ describe('outboundModel', () => {
         const model = new Model({
             cache,
             logger,
+            metricsClient,
             ...config,
         });
 
@@ -194,6 +199,7 @@ describe('outboundModel', () => {
         const model = new Model({
             cache,
             logger,
+            metricsClient,
             ...config,
         });
 
@@ -274,6 +280,7 @@ describe('outboundModel', () => {
         const model = new Model({
             cache,
             logger,
+            metricsClient,
             ...config,
         });
 
@@ -303,6 +310,7 @@ describe('outboundModel', () => {
         const model = new Model({
             cache,
             logger,
+            metricsClient,
             ...config,
         });
 
@@ -333,6 +341,7 @@ describe('outboundModel', () => {
         const model = new Model({
             cache,
             logger,
+            metricsClient,
             ...config,
         });
 
@@ -360,6 +369,7 @@ describe('outboundModel', () => {
         const model = new Model({
             cache,
             logger,
+            metricsClient,
             ...config,
         });
 
@@ -395,6 +405,7 @@ describe('outboundModel', () => {
         let model = new Model({
             cache,
             logger,
+            metricsClient,
             ...config,
         });
 
@@ -421,6 +432,7 @@ describe('outboundModel', () => {
         model = new Model({
             cache,
             logger,
+            metricsClient,
             ...config,
         });
 
@@ -451,6 +463,7 @@ describe('outboundModel', () => {
         let model = new Model({
             cache,
             logger,
+            metricsClient,
             ...config,
         });
 
@@ -477,6 +490,7 @@ describe('outboundModel', () => {
         model = new Model({
             cache,
             logger,
+            metricsClient,
             ...config,
         });
 
@@ -502,6 +516,7 @@ describe('outboundModel', () => {
         model = new Model({
             cache,
             logger,
+            metricsClient,
             ...config,
         });
 
@@ -557,6 +572,7 @@ describe('outboundModel', () => {
         const model = new Model({
             cache,
             logger,
+            metricsClient,
             ...config,
         });
 
@@ -608,6 +624,7 @@ describe('outboundModel', () => {
         const model = new Model({
             cache,
             logger,
+            metricsClient,
             ...config,
         });
 
@@ -701,6 +718,7 @@ describe('outboundModel', () => {
         const model = new Model({
             cache,
             logger,
+            metricsClient,
             ...config,
         });
 
@@ -763,6 +781,7 @@ describe('outboundModel', () => {
         const model = new Model({
             cache,
             logger,
+            metricsClient,
             ...config,
         });
 
@@ -823,6 +842,7 @@ describe('outboundModel', () => {
         const model = new Model({
             cache,
             logger,
+            metricsClient,
             ...config,
         });
 
@@ -854,6 +874,7 @@ describe('outboundModel', () => {
         new Model({
             cache,
             logger,
+            metricsClient,
             ...config
         });
 
@@ -866,4 +887,19 @@ describe('outboundModel', () => {
 
     test('Outbound server should use HTTP if outbound mTLS disabled', () =>
         testTlsServer(false));
+
+    test('Outbound transfers model should record metrics', async () => {
+        const metrics = metricsClient._prometheusRegister.metrics();
+        expect(metrics).toBeTruthy();
+
+        expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_outbound_party_lookup_request_count'));
+        expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_outbound_party_lookup_response_count'));
+        expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_outbound_quote_request_count'));
+        expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_outbound_quote_response_count'));
+        expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_outbound_transfer_prepare_count'));
+        expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_outbound_transfer_fulfil_response_count'));
+        expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_outbound_quote_request_latency'));
+        expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_outbound_transfer_latency'));
+        expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_outbound_party_lookup_latency'));
+    });
 });

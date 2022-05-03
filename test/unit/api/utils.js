@@ -6,6 +6,7 @@ const Validate = require('~/lib/validate');
 
 const InboundServer = require('~/InboundServer');
 const OutboundServer = require('~/OutboundServer');
+const { MetricsClient } = require('~/lib/metrics');
 const { Logger } = require('@mojaloop/sdk-standard-components');
 const Cache = require('~/lib/cache');
 
@@ -47,7 +48,9 @@ const createTestServers = async (config) => {
     });
     await cache.connect();
     defConfig.requestProcessingTimeoutSeconds = 2;
-    const serverOutbound = new OutboundServer(defConfig, logger, cache);
+    const metricsClient = new MetricsClient();
+    metricsClient._prometheusRegister.clear();
+    const serverOutbound = new OutboundServer(defConfig, logger, cache, metricsClient);
     await serverOutbound.start();
     const reqOutbound = supertest(serverOutbound._server);
 
