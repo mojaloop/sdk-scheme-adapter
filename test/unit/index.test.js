@@ -19,7 +19,7 @@ const defaultConfig = require('./data/defaultConfig.json');
 const { Logger } = require('@mojaloop/sdk-standard-components');
 const { MetricsClient } = require('~/lib/metrics');
 
-const TestControlServer = require('~/ControlServer');
+const TestControlServer = require('./ControlServer');
 
 
 process.env.PEER_ENDPOINT = '172.17.0.3:4000';
