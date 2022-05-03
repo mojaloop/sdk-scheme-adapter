@@ -899,4 +899,39 @@ describe('outboundModel', () => {
         expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_outbound_transfer_latency'));
         expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_outbound_party_lookup_latency'));
     });
+
+    test('skips resolving party when to.fspid is specified and skipPartyLookup is truthy', async () => {
+        config.autoAcceptParty = false;
+        config.autoAcceptQuotes = false;
+
+        let model = new Model({
+            cache,
+            logger,
+            metricsClient,
+            ...config,
+        });
+
+        let req = JSON.parse(JSON.stringify(transferRequest));
+        const testFspId = 'TESTDESTFSPID';
+        req.to.fspId = testFspId;
+        req.skipPartyLookup = true;
+
+        await model.initialize(req);
+
+        expect(StateMachine.__instance.state).toBe('start');
+
+        // start the model running
+        let resultPromise = model.run();
+
+        // now we started the model running we simulate a callback with the quote response
+        cache.publish(`qt_${model.data.quoteId}`, JSON.stringify(quoteResponse));
+
+        // wait for the model to reach a terminal state
+        let result = await resultPromise;
+
+        // check we stopped at quoteReceived state
+        expect(result.currentState).toBe('WAITING_FOR_QUOTE_ACCEPTANCE');
+        expect(StateMachine.__instance.state).toBe('quoteReceived');
+    });
+
 });

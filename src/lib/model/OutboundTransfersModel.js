@@ -1071,6 +1071,9 @@ class OutboundTransfersModel {
                     break;
 
                 case 'payeeResolved':
+                    console.log(this._autoAcceptParty);
+                    console.log(this.data.acceptParty);
+                    console.log(this.data.skipPartyLookup);
                     if(!this._autoAcceptParty && !this.data.acceptParty && !this.data.skipPartyLookup) {
                         // resuming after a party resolution halt, backend did not accept the party.
                         await this.stateMachine.abort('Payee rejected by backend');
