@@ -183,5 +183,4 @@ module.exports = {
     allowDifferentTransferTransactionId: env.get('ALLOW_DIFFERENT_TRANSFER_TRANSACTION_ID').default('false').asBool(),
 
     pm4mlEnabled: env.get('PM4ML_ENABLED').default('false').asBool(),
-    mojaloopConnectorMode: env.get('MOJALOOP_CONNECTOR_MODE').default('false').asBool()
 };
