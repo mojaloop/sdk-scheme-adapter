@@ -38,7 +38,6 @@ class OutboundTransfersModel {
         this._multiplePartiesResponse = config.multiplePartiesResponse;
         this._multiplePartiesResponseSeconds = config.multiplePartiesResponseSeconds;
         this._sendFinalNotificationIfRequested = config.sendFinalNotificationIfRequested;
-        this._mojaloopConnectorMode = config.mojaloopConnectorMode;
 
         if (this._autoAcceptParty && this._multiplePartiesResponse) {
             throw new Error('Conflicting config options provided: autoAcceptParty and multiplePartiesResponse');
@@ -242,32 +241,17 @@ class OutboundTransfersModel {
                         latencyTimerDone();
                     }
                     this.metrics.partyLookupResponses.inc();
-                    let payee;
-                    console.log(JSON.parse(msg));
-                    if (this._mojaloopConnectorMode) {
-                        this.data.getPartiesResponse = JSON.parse(msg);
-                        if(this.data.getPartiesResponse && this.data.getPartiesResponse.errorInformation) {
-                            // this is an error response to our GET /parties request
-                            const err = new BackendError(`Got an error response resolving party: ${util.inspect(this.data.getPartiesResponse, { depth: Infinity })}`, 500);
-                            err.mojaloopError = this.data.getPartiesResponse;
-                            // cancel the timeout handler
-                            clearTimeout(timeout);
-                            return reject(err);
-                        }
-                        payee = this.data.getPartiesResponse;
-                    } else {
-                        payee = JSON.parse(msg);
 
-                        if(payee.errorInformation) {
-                            // this is an error response to our GET /parties request
-                            const err = new BackendError(`Got an error response resolving party: ${util.inspect(payee, { depth: Infinity })}`, 500);
-                            err.mojaloopError = payee;
-
-                            // cancel the timeout handler
-                            clearTimeout(timeout);
-                            return reject(err);
-                        }
+                    this.data.getPartiesResponse = JSON.parse(msg);
+                    if(this.data.getPartiesResponse.body && this.data.getPartiesResponse.body.errorInformation) {
+                        // this is an error response to our GET /parties request
+                        const err = new BackendError(`Got an error response resolving party: ${util.inspect(this.data.getPartiesResponse.body, { depth: Infinity })}`, 500);
+                        err.mojaloopError = this.data.getPartiesResponse.body;
+                        // cancel the timeout handler
+                        clearTimeout(timeout);
+                        return reject(err);
                     }
+                    let payee = this.data.getPartiesResponse.body;
 
                     if(!payee.party) {
                         // we should never get a non-error response without a party, but just in case...
@@ -356,9 +340,7 @@ class OutboundTransfersModel {
                 const res = await this._requests.getParties(this.data.to.idType, this.data.to.idValue,
                     this.data.to.idSubValue, this.data.to.fspId);
 
-                if (this._mojaloopConnectorMode) {
-                    this.data.getPartiesRequest = res.originalRequest;
-                }
+                this.data.getPartiesRequest = res.originalRequest;
 
                 this.metrics.partyLookupRequests.inc();
                 this._logger.push({ peer: res }).log('Party lookup sent to peer');
@@ -390,13 +372,15 @@ class OutboundTransfersModel {
             // const timer = setTimeout((cn, msg, subId) => {
             const payeeResolver = (msg) => {
                 this.data.getPartiesResponse = JSON.parse(msg);
-                if(this.data.getPartiesResponse.errorInformation) {
+
+                if(this.data.getPartiesResponse.body.errorInformation) {
                     // this is an error response to our GET /parties request
-                    const err = new BackendError(`Got an error response resolving party: ${util.inspect(this.data.getPartiesResponse, { depth: Infinity })}`, 500);
-                    err.mojaloopError = this.data.getPartiesResponse;
+                    const err = new BackendError(`Got an error response resolving party: ${util.inspect(this.data.getPartiesResponse.body, { depth: Infinity })}`, 500);
+                    err.mojaloopError = this.data.getPartiesResponse.body;
                     throw err;
                 }
-                let payee = this.data.getPartiesResponse;
+                let payee = this.data.getPartiesResponse.body;
+
                 if(!payee.party) {
                     // we should never get a non-error response without a party, but just in case...
                     // cancel the timeout handler
@@ -532,12 +516,12 @@ class OutboundTransfersModel {
                         return reject(error);
                     }
 
-                    const quoteResponseBody = message.data;
-                    const quoteResponseHeaders = message.headers;
-                    this._logger.push({ quoteResponseBody }).log('Quote response received');
-
-                    this.data.quoteResponse = quoteResponseBody;
-                    this.data.quoteResponseSource = quoteResponseHeaders['fspiop-source'];
+                    this.data.quoteResponse = {
+                        headers: message.headers,
+                        body: message.data
+                    };
+                    this._logger.push({ quoteResponse: this.data.quoteResponse.body }).log('Quote response received');
+                    this.data.quoteResponseSource = this.data.quoteResponse.headers['fspiop-source'];
 
                     return resolve(quote);
                 }
@@ -568,9 +552,7 @@ class OutboundTransfersModel {
                 latencyTimerDone = this.metrics.quoteRequestLatency.startTimer();
                 const res = await this._requests.postQuotes(quote, this.data.to.fspId);
 
-                if(this._mojaloopConnectorMode){
-                    this.data.quoteRequest = res.originalRequest;
-                }
+                this.data.quoteRequest = res.originalRequest;
 
                 this.metrics.quoteRequests.inc();
                 this._logger.push({ res }).log('Quote request sent to peer');
@@ -674,8 +656,8 @@ class OutboundTransfersModel {
                             }
                         }
                     } else if (message.type === 'transferError') {
-                        error = new BackendError(`Got an error response preparing transfer: ${util.inspect(message.data, { depth: Infinity })}`, 500);
-                        error.mojaloopError = message.data;
+                        error = new BackendError(`Got an error response preparing transfer: ${util.inspect(message.data.body, { depth: Infinity })}`, 500);
+                        error.mojaloopError = message.data.body;
                     } else {
                         this._logger.push({ message }).log(`Ignoring cache notification for transfer ${transferKey}. Unknown message type ${message.type}.`);
                         return;
@@ -693,14 +675,13 @@ class OutboundTransfersModel {
                         return reject(error);
                     }
 
-                    if (this._mojaloopConnectorMode) {
-                        const fulfil = message.data;
-                        this._logger.push({ fulfil: fulfil }).log('Transfer fulfil received');
-                        this.data.fulfil = fulfil;
-                        if(this._checkIlp && !this._ilp.validateFulfil(fulfil.fulfilment, this.data.quoteResponse.condition)) {
-                            throw new Error('Invalid fulfilment received from peer DFSP.');
-                        }
-                        if(this._sendFinalNotificationIfRequested && fulfil.transferState === 'RESERVED') {
+                    const fulfil = message.data;
+                    this._logger.push({ fulfil: fulfil.body }).log('Transfer fulfil received');
+                    this.data.fulfil = fulfil;
+                    if(this._checkIlp && !this._ilp.validateFulfil(fulfil.body.fulfilment, this.data.quoteResponse.body.condition)) {
+                        throw new Error('Invalid fulfilment received from peer DFSP.');
+                    }
+                    if(this._sendFinalNotificationIfRequested && fulfil.body.transferState === 'RESERVED') {
                         // we need to send a PATCH notification back to say we have committed the transfer.
                         // Note that this is normally a switch only responsibility but the capability is
                         // implemented here to support testing use cases where the mojaloop-connector is
@@ -708,29 +689,16 @@ class OutboundTransfersModel {
                         // receive this notification.
                         // Note that the transfer is considered committed as far as this (payer) side is concerned
                         // we will use the current server time as committed timestamp.
-                            const patchNotification = {
-                                completedTimestamp: (new Date()).toISOString(),
-                                transferState: 'COMMITTED',
-                            };
-                            const res = this._requests.patchTransfers(this.data.transferId,
-                                patchNotification, this.data.quoteResponseSource);
-                            this.data.patch = res.originalRequest;
-                            this._logger.log(`PATCH final notification sent to peer for transfer ${this.data.transferId}`);
-                        }
-                        return resolve(fulfil);
-                    } else {
-                        const fulfil = message.data;
-                        this._logger.push({ fulfil }).log('Transfer fulfil received');
-                        this.data.fulfil = fulfil;
-
-                        if(this._checkIlp && !this._ilp.validateFulfil(fulfil.fulfilment, this.data.quoteResponse.condition)) {
-                            throw new Error('Invalid fulfilment received from peer DFSP.');
-                        }
-
-                        return resolve(fulfil);
+                        const patchNotification = {
+                            completedTimestamp: (new Date()).toISOString(),
+                            transferState: 'COMMITTED',
+                        };
+                        const res = this._requests.patchTransfers(this.data.transferId,
+                            patchNotification, this.data.quoteResponseSource);
+                        this.data.patch = res.originalRequest;
+                        this._logger.log(`PATCH final notification sent to peer for transfer ${this.data.transferId}`);
                     }
-
-                    return resolve(fulfil);
+                    return resolve(fulfil.body);
                 }
                 catch(err) {
                     return reject(err);
@@ -759,9 +727,8 @@ class OutboundTransfersModel {
                 latencyTimerDone = this.metrics.transferLatency.startTimer();
                 const res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource);
 
-                if (this._mojaloopConnectorMode) {
-                    this.data.prepare = res.originalRequest;
-                }
+                this.data.prepare = res.originalRequest;
+
                 this.metrics.transferPrepares.inc();
                 this._logger.push({ res }).log('Transfer prepare sent to peer');
             }
@@ -792,32 +759,26 @@ class OutboundTransfersModel {
                 try {
                     let error;
                     let message = JSON.parse(msg);
-
                     if (message.type === 'transferError') {
-                        error = new BackendError(`Got an error response retrieving transfer: ${util.inspect(message.data, { depth: Infinity })}`, 500);
-                        error.mojaloopError = message.data;
+                        error = new BackendError(`Got an error response retrieving transfer: ${util.inspect(message.data.body, { depth: Infinity })}`, 500);
+                        error.mojaloopError = message.data.body;
                     } else if (message.type !== 'transferFulfil') {
-                        this._logger.push({ message }).log(`Ignoring cache notification for transfer ${transferKey}. Unknown message type ${message.type}.`);
+                        this._logger.push({ message }).log(`Ignoring cache notification for transfer ${transferKey}. Uknokwn message type ${message.type}.`);
                         return;
                     }
-
                     // cancel the timeout handler
                     clearTimeout(timeout);
-
                     // stop listening for transfer fulfil messages
                     this._cache.unsubscribe(transferKey, subId).catch(e => {
                         this._logger.log(`Error unsubscribing (in callback) ${transferKey} ${subId}: ${e.stack || util.inspect(e)}`);
                     });
-
                     if (error) {
                         return reject(error);
                     }
-
                     const fulfil = message.data;
+                    this._logger.push({ fulfil: fulfil.body }).log('Transfer fulfil received');
                     this.data.fulfil = fulfil;
-
-                    this._logger.push({ fulfil }).log('Transfer fulfil received');
-                    return resolve(this.data);
+                    return resolve(this.data.fulfil);
                 }
                 catch(err) {
                     return reject(err);
@@ -863,7 +824,7 @@ class OutboundTransfersModel {
      * @returns {object} - the transfer prepare payload
      */
     _buildTransferPrepare() {
-        const prepare = {
+        let prepare = {
             transferId: this.data.transferId,
             payeeFsp: this.data.to.fspId,
             payerFsp: this._dfspId,
@@ -872,11 +833,11 @@ class OutboundTransfersModel {
                 // rather than the original request. In Forex cases we may have requested
                 // a RECEIVE amount in a currency we cannot send. FXP should always give us
                 // a quote response with transferAmount in the correct currency.
-                currency: this.data.quoteResponse.transferAmount.currency,
-                amount: this.data.quoteResponse.transferAmount.amount
+                currency: this.data.quoteResponse.body.transferAmount.currency,
+                amount: this.data.quoteResponse.body.transferAmount.amount
             },
-            ilpPacket: this.data.quoteResponse.ilpPacket,
-            condition: this.data.quoteResponse.condition,
+            ilpPacket: this.data.quoteResponse.body.ilpPacket,
+            condition: this.data.quoteResponse.body.condition,
             expiration: this._getExpirationTimestamp()
         };
 
@@ -955,12 +916,7 @@ class OutboundTransfersModel {
     async _save() {
         try {
             this.data.currentState = this.stateMachine.state;
-            let res;
-            if (this._mojaloopConnectorMode) {
-                res = await this._cache.set(`transferModel_out_${this.data.transferId}`, this.data);
-            } else {
-                res = await this._cache.set(`transferModel_${this.data.transferId}`, this.data);
-            }
+            const res = await this._cache.set(`transferModel_out_${this.data.transferId}`, this.data);
             this._logger.push({ res }).log('Persisted transfer model in cache');
         }
         catch(err) {
@@ -977,12 +933,7 @@ class OutboundTransfersModel {
      */
     async load(transferId) {
         try {
-            let data;
-            if (this._mojaloopConnectorMode) {
-                data = await this._cache.get(`transferModel_out_${transferId}`);
-            } else {
-                data = await this._cache.get(`transferModel_${transferId}`);
-            }
+            const data = await this._cache.get(`transferModel_out_${transferId}`);
 
             if(!data) {
                 throw new Error(`No cached data found for transferId: ${transferId}`);
@@ -999,6 +950,8 @@ class OutboundTransfersModel {
 
     /**
      * Returns a promise that resolves when the state machine has reached a terminal state
+     *
+     * @param mergeDate {object} - an object to merge with the model state (data) before running the state machine
      */
     async run(mergeData) {
         try {
@@ -1042,9 +995,6 @@ class OutboundTransfersModel {
                     break;
 
                 case 'payeeResolved':
-                    console.log(this._autoAcceptParty);
-                    console.log(this.data.acceptParty);
-                    console.log(this.data.skipPartyLookup);
                     if(!this._autoAcceptParty && !this.data.acceptParty && !this.data.skipPartyLookup) {
                         // resuming after a party resolution halt, backend did not accept the party.
                         await this.stateMachine.abort('Payee rejected by backend');

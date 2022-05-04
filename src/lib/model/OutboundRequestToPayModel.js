@@ -155,17 +155,16 @@ class OutboundRequestToPayModel {
             // hook up a subscriber to handle response messages
             const subId = await this._cache.subscribe(payeeKey, (cn, msg, subId) => {
                 try {
-                    let payee = JSON.parse(msg);
-
-                    if(payee.errorInformation) {
+                    this.data.getPartiesResponse = JSON.parse(msg);
+                    if(this.data.getPartiesResponse.body.errorInformation) {
                         // this is an error response to our GET /parties request
-                        const err = new BackendError(`Got an error response resolving party: ${util.inspect(payee)}`, 500);
-                        err.mojaloopError = payee;
-
+                        const err = new BackendError(`Got an error response resolving party: ${util.inspect(this.data.getPartiesResponse.body, { depth: Infinity })}`, 500);
+                        err.mojaloopError = this.data.getPartiesResponse.body;
                         // cancel the timeout handler
                         clearTimeout(timeout);
                         return reject(err);
                     }
+                    let payee = this.data.getPartiesResponse.body;
 
                     if(!payee.party) {
                         // we should never get a non-error response without a party, but just in case...

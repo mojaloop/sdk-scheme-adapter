@@ -159,7 +159,10 @@ const postQuotes = async (ctx) => {
             const sourceFspId = ctx.request.headers['fspiop-source'];
 
             // use the model to handle the request
-            const response = await model.quoteRequest(ctx.request.body, sourceFspId);
+            const response = await model.quoteRequest({
+                body: ctx.request.body,
+                headers: ctx.request.headers,
+            }, sourceFspId);
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled POST /quotes request');
@@ -196,7 +199,10 @@ const postTransfers = async (ctx) => {
             const sourceFspId = ctx.request.headers['fspiop-source'];
 
             // use the model to handle the request
-            const response = await model.prepareTransfer(ctx.request.body, sourceFspId);
+            const response = await model.prepareTransfer({
+                body: ctx.request.body,
+                headers: ctx.request.headers,
+            }, sourceFspId);
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled POST /transfers request');
@@ -389,7 +395,10 @@ const putPartiesByTypeAndId = async (ctx) => {
     // publish an event onto the cache for subscribers to finish the action
     await PartiesModel.triggerDeferredJob({
         cache: ctx.state.cache,
-        message: ctx.request.body,
+        message: {
+            headers: ctx.request.headers,
+            body: ctx.request.body
+        },
         args: {
             type: idType,
             id: idValue,
@@ -399,33 +408,6 @@ const putPartiesByTypeAndId = async (ctx) => {
 
     ctx.response.status = 200;
 };
-
-/**
- * Handles a PUT /parties/{Type}/{ID}/error request. This is an error response to a GET /parties/{Type}/{ID} request
- */
-const putPartiesByTypeAndIdError = async(ctx) => {
-    const idType = ctx.state.path.params.Type;
-    const idValue = ctx.state.path.params.ID;
-    const idSubValue = ctx.state.path.params.SubId;
-
-    // publish an event onto the cache for subscribers to action
-    // note that we publish the event the same way we publish a success PUT
-    // the subscriber will notice the body contains an errorInformation property
-    // and recognizes it as an error response
-    await PartiesModel.triggerDeferredJob({
-        cache: ctx.state.cache,
-        message: ctx.request.body,
-        args: {
-            type: idType,
-            id: idValue,
-            subId: idSubValue
-        }
-    });
-
-    ctx.response.status = 200;
-    ctx.response.body = '';
-};
-
 
 /**
  * Handles a PUT /quotes/{ID}. This is a response to a POST /quotes request
@@ -541,12 +523,18 @@ const putTransfersById = async (ctx) => {
     // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(`tf_${ctx.state.path.params.ID}`, {
         type: 'transferFulfil',
-        data: ctx.request.body
+        data: {
+            body: ctx.request.body,
+            headers: ctx.request.headers
+        }
     });
 
     await TransfersModel.triggerDeferredJob({
         cache: ctx.state.cache,
-        message: ctx.request.body,
+        message: {
+            body: ctx.request.body,
+            headers: ctx.request.headers
+        },
         args: {
             transferId: ctx.state.path.params.ID,
         }
@@ -584,6 +572,35 @@ const patchTransfersById = async (ctx) => {
 };
 
 /**
+ * Handles a PUT /parties/{Type}/{ID}/error request. This is an error response to a GET /parties/{Type}/{ID} request
+ */
+const putPartiesByTypeAndIdError = async(ctx) => {
+    const idType = ctx.state.path.params.Type;
+    const idValue = ctx.state.path.params.ID;
+    const idSubValue = ctx.state.path.params.SubId;
+
+    // publish an event onto the cache for subscribers to action
+    // note that we publish the event the same way we publish a success PUT
+    // the subscriber will notice the body contains an errorInformation property
+    // and recognizes it as an error response
+    await PartiesModel.triggerDeferredJob({
+        cache: ctx.state.cache,
+        message: {
+            headers: ctx.request.headers,
+            body: ctx.request.body
+        },
+        args: {
+            type: idType,
+            id: idValue,
+            subId: idSubValue
+        }
+    });
+
+    ctx.response.status = 200;
+    ctx.response.body = '';
+};
+
+/**
  * Handles a PUT /transfers/{ID}/error. This is an error response to a POST /transfers request
  */
 const putTransfersByIdError = async (ctx) => {
@@ -593,12 +610,18 @@ const putTransfersByIdError = async (ctx) => {
     // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(`tf_${ctx.state.path.params.ID}`, {
         type: 'transferError',
-        data: ctx.request.body
+        data: {
+            body: ctx.request.body,
+            headers: ctx.request.headers
+        }
     });
 
     await TransfersModel.triggerDeferredJob({
         cache: ctx.state.cache,
-        message: ctx.request.body,
+        message: {
+            body: ctx.request.body,
+            headers: ctx.request.headers
+        },
         args: {
             transferId: ctx.state.path.params.ID,
         }
@@ -805,6 +828,7 @@ const putBulkTransfersByIdError = async(ctx) => {
     ctx.response.status = 200;
     ctx.response.body = '';
 };
+
 
 const healthCheck = async(ctx) => {
     ctx.response.status = 200;

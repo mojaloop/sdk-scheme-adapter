@@ -37,7 +37,6 @@ class InboundTransfersModel {
         this._allowTransferWithoutQuote = config.allowTransferWithoutQuote;
         this._reserveNotification = config.reserveNotification;
         this._allowDifferentTransferTransactionId = config.allowDifferentTransferTransactionId;
-        this._mojaloopConnectorMode = config.mojaloopConnectorMode;
 
         this._mojaloopRequests = new MojaloopRequests({
             logger: this._logger,
@@ -172,120 +171,82 @@ class InboundTransfersModel {
      * the result
      */
     async quoteRequest(request, sourceFspId) {
-        if(this._mojaloopConnectorMode){
-            const quoteRequest = request;
-            // keep track of our state.
-            // note that instances of this model typically only live as long as it takes to
-            // handle an incoming request and send a response asynchronously, but we hold onto
-            // some state across async ops
-            this.data = {
-                // transferId: this follows the slightly dodgy assumption that transferId will be same as this transactionId.
-                // so far this has held in moja implementations but may not always be the case. regardless, future FSPIOP API
-                // versions MUST deal with this cleanly so we can expect to eliminate this assumption at some point.
-                transferId: quoteRequest.transactionId,
-                direction: 'INBOUND',
-                quoteRequest: {
-                    headers: request.headers,
-                    body: request.body
-                },
-                currentState: TransferStateEnum.QUOTE_REQUEST_RECEIVED,
-                initiatedTimestamp: new Date().toISOString(),
+        const quoteRequest = request.body;
+
+        // keep track of our state.
+        // note that instances of this model typically only live as long as it takes to
+        // handle an incoming request and send a response asynchronously, but we hold onto
+        // some state across async ops
+
+        this.data = {
+            // transferId: this follows the slightly dodgy assumption that transferId will be same as this transactionId.
+            // so far this has held in moja implementations but may not always be the case. regardless, future FSPIOP API
+            // versions MUST deal with this cleanly so we can expect to eliminate this assumption at some point.
+            transferId: quoteRequest.transactionId,
+            direction: 'INBOUND',
+            quoteRequest: {
+                headers: request.headers,
+                body: request.body
+            },
+            currentState: TransferStateEnum.QUOTE_REQUEST_RECEIVED,
+            initiatedTimestamp: new Date().toISOString(),
+        };
+
+        // persist the transfer record in the cache. if we crash after this at least we will
+        // have a record of the request in the cache.
+        await this._save();
+
+        try {
+            const internalForm = shared.mojaloopQuoteRequestToInternal(quoteRequest);
+
+            // make a call to the backend to ask for a quote response
+            const response = await this._backendRequests.postQuoteRequests(internalForm);
+
+            if(!response) {
+                // make an error callback to the source fsp
+                return 'No response from backend';
+            }
+
+            if(!response.expiration) {
+                const expiration = new Date().getTime() + (this._expirySeconds * 1000);
+                response.expiration = new Date(expiration).toISOString();
+            }
+
+            // project our internal quote reponse into mojaloop quote response form
+            const mojaloopResponse = shared.internalQuoteResponseToMojaloop(response);
+
+            // create our ILP packet and condition and tag them on to our internal quote response
+            const { fulfilment, ilpPacket, condition } = this._ilp.getQuoteResponseIlp(quoteRequest, mojaloopResponse);
+
+            mojaloopResponse.ilpPacket = ilpPacket;
+            mojaloopResponse.condition = condition;
+
+            // now store the fulfilment and the quote data against the quoteId in our cache
+            this.data.quote = {
+                request: quoteRequest,
+                internalRequest: internalForm,
+                response: response,
+                mojaloopResponse: mojaloopResponse,
+                fulfilment: fulfilment
             };
-            // persist the transfer record in the cache. if we crash after this at least we will
-            // have a record of the request in the cache.
             await this._save();
-            try {
-                const internalForm = shared.mojaloopQuoteRequestToInternal(quoteRequest);
-                // make a call to the backend to ask for a quote response
-                const response = await this._backendRequests.postQuoteRequests(internalForm);
-                if(!response) {
-                    // make an error callback to the source fsp
-                    return 'No response from backend';
-                }
-                if(!response.expiration) {
-                    const expiration = new Date().getTime() + (this._expirySeconds * 1000);
-                    response.expiration = new Date(expiration).toISOString();
-                }
-                // project our internal quote response into mojaloop quote response form
-                const mojaloopResponse = shared.internalQuoteResponseToMojaloop(response);
-                // create our ILP packet and condition and tag them on to our internal quote response
-                const { fulfilment, ilpPacket, condition } = this._ilp.getQuoteResponseIlp(quoteRequest, mojaloopResponse);
-                mojaloopResponse.ilpPacket = ilpPacket;
-                mojaloopResponse.condition = condition;
-                // now store the fulfilment and the quote data against the quoteId in our cache
-                this.data.quote = {
-                    request: quoteRequest,
-                    internalRequest: internalForm,
-                    response: response,
-                    mojaloopResponse: mojaloopResponse,
-                    fulfilment: fulfilment
-                };
-                await this._save();
-                // make a callback to the source fsp with the quote response
-                const res = await this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId);
-                this.data.quoteResponse = {
-                    headers: res.originalRequest.headers,
-                    body: res.originalRequest.body,
-                };
-                this.data.currentState = TransferStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE;
-                await this._save();
-                return res;
-            }
-            catch(err) {
-                this._logger.push({ err }).log('Error in quoteRequest');
-                const mojaloopError = await this._handleError(err);
-                this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
-                return await this._mojaloopRequests.putQuotesError(quoteRequest.quoteId,
-                    mojaloopError, sourceFspId);
-            }
-        } else {
-            const quoteRequest = request;
-            try {
-                const internalForm = shared.mojaloopQuoteRequestToInternal(quoteRequest);
 
-                // make a call to the backend to ask for a quote response
-                const response = await this._backendRequests.postQuoteRequests(internalForm);
-
-                if(!response) {
-                    // make an error callback to the source fsp
-                    return 'No response from backend';
-                }
-
-                if(!response.expiration) {
-                    const expiration = new Date().getTime() + (this._expirySeconds * 1000);
-                    response.expiration = new Date(expiration).toISOString();
-                }
-
-                // project our internal quote response into mojaloop quote response form
-                const mojaloopResponse = shared.internalQuoteResponseToMojaloop(response);
-
-                // create our ILP packet and condition and tag them on to our internal quote response
-                const { fulfilment, ilpPacket, condition } = this._ilp.getQuoteResponseIlp(quoteRequest, mojaloopResponse);
-
-                mojaloopResponse.ilpPacket = ilpPacket;
-                mojaloopResponse.condition = condition;
-
-                // now store the fulfilment and the quote data against the quoteId in our cache
-                await this._cache.set(`quote_${quoteRequest.transactionId}`, {
-                    request: quoteRequest,
-                    internalRequest: internalForm,
-                    response: response,
-                    mojaloopResponse: mojaloopResponse,
-                    fulfilment: fulfilment
-                });
-
-                // now store the quoteResponse data against the quoteId in our cache to be sent as a response to GET /quotes/{ID}
-                await this._cache.set(`quoteResponse_${quoteRequest.quoteId}`, mojaloopResponse);
-
-                // make a callback to the source fsp with the quote response
-                return this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId);
-            } catch(err) {
-                this._logger.push({ err }).log('Error in quoteRequest');
-                const mojaloopError = await this._handleError(err);
-                this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
-                return await this._mojaloopRequests.putQuotesError(quoteRequest.quoteId,
-                    mojaloopError, sourceFspId);
-            }
+            // make a callback to the source fsp with the quote response
+            const res = await this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId);
+            this.data.quoteResponse = {
+                headers: res.originalRequest.headers,
+                body: res.originalRequest.body,
+            };
+            this.data.currentState = TransferStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE;
+            await this._save();
+            return res;
+        }
+        catch(err) {
+            this._logger.push({ err }).log('Error in quoteRequest');
+            const mojaloopError = await this._handleError(err);
+            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            return await this._mojaloopRequests.putQuotesError(quoteRequest.quoteId,
+                mojaloopError, sourceFspId);
         }
     }
 
@@ -355,165 +316,92 @@ class InboundTransfersModel {
      * the result
      */
     async prepareTransfer(request, sourceFspId) {
-        if(this._mojaloopConnectorMode) {
-            const prepareRequest = request;
-            try {
-                // retrieve our quote data
-                this.data = await this._cache.get(`transferModel_in_${prepareRequest.transferId}`);
-                const quote = this.data.quote;
-                if(!this.data || !quote) {
-                    // NOTE that in mojaloop connector we absolutely require a previous quote before allowing a transfer
-                    // to proceed. This is a difference to the mojaloop sdk-scheme-adapter which allows this as an option.
-                    // this is to simplify the implementation of introspection features.
-                    // Check whether to allow transfers without a previous quote.
-                    //if(!this._allowTransferWithoutQuote) {
-                    throw new Error(`Corresponding quote not found for transfer ${prepareRequest.transferId}`);
-                    //}
-                }
-                // persist our state so we have a record if we crash during processing the prepare
-                this.data.prepare = request;
-                this.data.currentState = TransferStateEnum.PREPARE_RECEIVED;
-                await this._save();
-                // retrieve fulfilment and condition
-                const fulfilment = quote.fulfilment;
-                const condition = quote.mojaloopResponse.condition;
-                // check incoming ILP matches our persisted values
-                if(this._checkIlp && (prepareRequest.condition !== condition)) {
-                    throw new Error(`ILP condition in transfer prepare for ${prepareRequest.transferId} does not match quote`);
-                }
-                if (this._rejectTransfersOnExpiredQuotes) {
-                    const now = new Date().toISOString();
-                    const expiration = quote.mojaloopResponse.expiration;
-                    if (now > expiration) {
-                        const error = Errors.MojaloopApiErrorObjectFromCode(Errors.MojaloopApiErrorCodes.QUOTE_EXPIRED);
-                        this._logger.error(`Error in prepareTransfer: quote expired for transfer ${prepareRequest.transferId}, system time=${now} > quote time=${expiration}`);
-                        await this.updateStateWithError(error);
-                        return this._mojaloopRequests.putTransfersError(prepareRequest.transferId, error, sourceFspId);
-                    }
-                }
-                // project the incoming transfer prepare into an internal transfer request
-                const internalForm = shared.mojaloopPrepareToInternalTransfer(prepareRequest, quote, this._ilp);
-                // make a call to the backend to inform it of the incoming transfer
-                const response = await this._backendRequests.postTransfers(internalForm);
-                if(!response) {
-                    // make an error callback to the source fsp
-                    return 'No response from backend';
-                }
+        const prepareRequest = request.body;
 
-                this._logger.log(`Transfer accepted by backend returning homeTransactionId: ${response.homeTransactionId} for mojaloop transferId: ${prepareRequest.transferId}`);
-                this.data.homeTransactionId = response.homeTransactionId;
+        try {
+            // retrieve our quote data
+            this.data = await this._cache.get(`transferModel_in_${prepareRequest.transferId}`);
+            const quote = this.data.quote;
 
-                // create a  mojaloop transfer fulfil response
-                const mojaloopResponse = {
-                    completedTimestamp: new Date(),
-                    transferState: this._reserveNotification ? 'RESERVED' : 'COMMITTED',
-                    fulfilment: fulfilment,
-                    ...response.extensionList && {
-                        extensionList: {
-                            extension: response.extensionList,
-                        },
-                    },
-                };
-                    // make a callback to the source fsp with the transfer fulfilment
-                const res = await this._mojaloopRequests.putTransfers(prepareRequest.transferId, mojaloopResponse,
-                    sourceFspId);
-                this.data.fulfil = {
-                    headers: res.originalRequest.headers,
-                    body: res.originalRequest.body,
-                };
-                this.data.currentState = this._reserveNotification ? TransferStateEnum.RESERVED : TransferStateEnum.COMPLETED;
-                await this._save();
-                return res;
-            } catch(err) {
-                this._logger.push({ err }).log('Error in prepareTransfer');
-                const mojaloopError = await this._handleError(err);
-                this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
-                return await this._mojaloopRequests.putTransfersError(prepareRequest.transferId,
-                    mojaloopError, sourceFspId);
+            if(!this.data || !quote) {
+                // NOTE that in mojaloop connector we absolutely require a previous quote before allowing a transfer
+                // to proceed. This is a difference to the mojaloop sdk-scheme-adapter which allows this as an option.
+                // this is to simplify the implementation of introspection features.
+
+                // Check whether to allow transfers without a previous quote.
+                //if(!this._allowTransferWithoutQuote) {
+                throw new Error(`Corresponding quote not found for transfer ${prepareRequest.transferId}`);
+                //}
             }
-        } else {
-            const prepareRequest = request;
-            try {
-                // retrieve our quote data
-                let quote;
 
-                if (this._allowDifferentTransferTransactionId) {
-                    const transactionId = this._ilp.getTransactionObject(prepareRequest.ilpPacket).transactionId;
-                    quote = await this._cache.get(`quote_${transactionId}`);
-                } else {
-                    quote = await this._cache.get(`quote_${prepareRequest.transferId}`);
-                }
+            // persist our state so we have a record if we crash during processing the prepare
+            this.data.prepare = request;
+            this.data.currentState = TransferStateEnum.PREPARE_RECEIVED;
+            await this._save();
 
-                if(!quote) {
-                    // Check whether to allow transfers without a previous quote.
-                    if(!this._allowTransferWithoutQuote) {
-                        throw new Error(`Corresponding quote not found for transfer ${prepareRequest.transferId}`);
-                    }
-                }
+            // retrieve fulfilment and condition
+            const fulfilment = quote.fulfilment;
+            const condition = quote.mojaloopResponse.condition;
 
-                // Calculate or retrieve fulfilment and condition
-                let fulfilment = null;
-                let condition = null;
-                if(quote) {
-                    fulfilment = quote.fulfilment;
-                    condition = quote.mojaloopResponse.condition;
-                }
-                else {
-                    fulfilment = this._ilp.calculateFulfil(prepareRequest.ilpPacket);
-                    condition = this._ilp.calculateConditionFromFulfil(fulfilment);
-                }
-
-                // check incoming ILP matches our persisted values
-                if(this._checkIlp && (prepareRequest.condition !== condition)) {
-                    throw new Error(`ILP condition in transfer prepare for ${prepareRequest.transferId} does not match quote`);
-                }
-
-
-                if (quote && this._rejectTransfersOnExpiredQuotes) {
-                    const now = new Date().toISOString();
-                    const expiration = quote.mojaloopResponse.expiration;
-                    if (now > expiration) {
-                        const error = Errors.MojaloopApiErrorObjectFromCode(Errors.MojaloopApiErrorCodes.QUOTE_EXPIRED);
-                        this._logger.error(`Error in prepareTransfer: quote expired for transfer ${prepareRequest.transferId}, system time=${now} > quote time=${expiration}`);
-                        return this._mojaloopRequests.putTransfersError(prepareRequest.transferId, error, sourceFspId);
-                    }
-                }
-
-                // project the incoming transfer prepare into an internal transfer request
-                const internalForm = shared.mojaloopPrepareToInternalTransfer(prepareRequest, quote, this._ilp);
-
-                // make a call to the backend to inform it of the incoming transfer
-                const response = await this._backendRequests.postTransfers(internalForm);
-
-                if(!response) {
-                    // make an error callback to the source fsp
-                    return 'No response from backend';
-                }
-
-                this._logger.log(`Transfer accepted by backend returning homeTransactionId: ${response.homeTransactionId} for mojaloop transferId: ${prepareRequest.transferId}`);
-
-                // create a  mojaloop transfer fulfil response
-                const mojaloopResponse = {
-                    completedTimestamp: new Date(),
-                    transferState: this._reserveNotification ? 'RESERVED' : 'COMMITTED',
-                    fulfilment: fulfilment,
-                    ...response.extensionList && {
-                        extensionList: {
-                            extension: response.extensionList,
-                        },
-                    },
-                };
-
-                // make a callback to the source fsp with the transfer fulfilment
-                return this._mojaloopRequests.putTransfers(prepareRequest.transferId, mojaloopResponse,
-                    sourceFspId);
-            } catch(err) {
-                this._logger.push({ err }).log('Error in prepareTransfer');
-                const mojaloopError = await this._handleError(err);
-                this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
-                return await this._mojaloopRequests.putTransfersError(prepareRequest.transferId,
-                    mojaloopError, sourceFspId);
+            // check incoming ILP matches our persisted values
+            if(this._checkIlp && (prepareRequest.condition !== condition)) {
+                throw new Error(`ILP condition in transfer prepare for ${prepareRequest.transferId} does not match quote`);
             }
+
+            if (this._rejectTransfersOnExpiredQuotes) {
+                const now = new Date().toISOString();
+                const expiration = quote.mojaloopResponse.expiration;
+                if (now > expiration) {
+                    const error = Errors.MojaloopApiErrorObjectFromCode(Errors.MojaloopApiErrorCodes.QUOTE_EXPIRED);
+                    this._logger.error(`Error in prepareTransfer: quote expired for transfer ${prepareRequest.transferId}, system time=${now} > quote time=${expiration}`);
+                    await this.updateStateWithError(error);
+                    return this._mojaloopRequests.putTransfersError(prepareRequest.transferId, error, sourceFspId);
+                }
+            }
+
+            // project the incoming transfer prepare into an internal transfer request
+            const internalForm = shared.mojaloopPrepareToInternalTransfer(prepareRequest, quote, this._ilp);
+
+            // make a call to the backend to inform it of the incoming transfer
+            const response = await this._backendRequests.postTransfers(internalForm);
+
+            if(!response) {
+                // make an error callback to the source fsp
+                return 'No response from backend';
+            }
+
+            this._logger.log(`Transfer accepted by backend returning homeTransactionId: ${response.homeTransactionId} for mojaloop transferId: ${prepareRequest.transferId}`);
+            this.data.homeTransactionId = response.homeTransactionId;
+
+            // create a  mojaloop transfer fulfil response
+            const mojaloopResponse = {
+                completedTimestamp: new Date(),
+                transferState: this._reserveNotification ? 'RESERVED' : 'COMMITTED',
+                fulfilment: fulfilment,
+                ...response.extensionList && {
+                    extensionList: {
+                        extension: response.extensionList,
+                    },
+                },
+            };
+
+            // make a callback to the source fsp with the transfer fulfilment
+            const res = await this._mojaloopRequests.putTransfers(prepareRequest.transferId, mojaloopResponse,
+                sourceFspId);
+            this.data.fulfil = {
+                headers: res.originalRequest.headers,
+                body: res.originalRequest.body,
+            };
+            this.data.currentState = this._reserveNotification ? TransferStateEnum.RESERVED : TransferStateEnum.COMPLETED;
+            await this._save();
+            return res;
+        }
+        catch(err) {
+            this._logger.push({ err }).log('Error in prepareTransfer');
+            const mojaloopError = await this._handleError(err);
+            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            return await this._mojaloopRequests.putTransfersError(prepareRequest.transferId,
+                mojaloopError, sourceFspId);
         }
     }
 
@@ -871,39 +759,35 @@ class InboundTransfersModel {
     * Forwards Switch notification for fulfiled transfer to the DFSP backend, when acting as a payee
     */
     async sendNotificationToPayee(body, transferId) {
-        if (this._mojaloopConnectorMode) {
-            try {
-                // load any cached state for this transfer e.g. quote request/response etc...
-                this.data = await this._cache.get(`transferModel_in_${transferId}`);
-                // if we didn't have anything cached, start from scratch
-                if(!this.data) {
-                    this.data = {};
-                }
-                // tag the final notification body on to the state
-                this.data.finalNotification = body;
-                if(body.transferState === 'COMMITTED') {
-                    // if the transfer was successful in the switch, set the overall transfer state to COMPLETED
-                    this.data.currentState = TransferStateEnum.COMPLETED;
-                }
-                else {
-                    // if the final notification has anything other than COMMITTED as the final state, set an error
-                    // in the transfer state.
-                    this.data.currentState == TransferStateEnum.ERROR_OCCURRED;
-                    this.data.lastError = 'Final notification state not COMMITTED';
-                }
-                await this._save();
-                const res = await this._backendRequests.putTransfersNotification(this.data, transferId);
-                return res;
-            } catch (err) {
-                this._logger.push({ err }).log('Error notifying backend of final transfer state');
+        try {
+            // load any cached state for this transfer e.g. quote request/response etc...
+            this.data = await this._cache.get(`transferModel_in_${transferId}`);
+
+            // if we didnt have anything cached, start from scratch
+            if(!this.data) {
+                this.data = {};
             }
-        } else {
-            try {
-                const res = await this._backendRequests.putTransfersNotification(body, transferId);
-                return res;
-            } catch (err) {
-                this._logger.push({ err }).log('Error in sendNotificationToPayee');
+
+            // tag the final notification body on to the state
+            this.data.finalNotification = body;
+
+            if(body.transferState === 'COMMITTED') {
+                // if the transfer was successful in the switch, set the overall transfer state to COMPLETED
+                this.data.currentState = TransferStateEnum.COMPLETED;
             }
+            else {
+                // if the final notification has anything other than COMMITTED as the final state, set an error
+                // in the transfer state.
+                this.data.currentState == TransferStateEnum.ERROR_OCCURED;
+                this.data.lastError = 'Final notification state not COMMITTED';
+            }
+
+            await this._save();
+
+            const res = await this._backendRequests.putTransfersNotification(this.data, transferId);
+            return res;
+        } catch (err) {
+            this._logger.push({ err }).log('Error notifying backend of final transfer state');
         }
     }
 
