@@ -5,8 +5,8 @@
     "amount": "100",
     "amountType": "SEND",
     "currency": "USD",
-    "currentState": "ERROR_OCCURRED",
     "direction": "OUTBOUND",
+    "currentState": "ERROR_OCCURRED",
     "from": {
       "displayName": "John Doe",
       "idType": "MSISDN",

@@ -10,21 +10,45 @@
     "idValue": "123456789"
   },
   "fulfil": {
-    "completedTimestamp": "2017-11-15T14:16:09.663+01:00",
-    "extensionList": {
-      "extension": [
-        {
-          "key": "treskey1",
-          "value": "tresvalue1"
+    "body": {
+      "completedTimestamp": "2017-11-15T14:16:09.663+01:00",
+      "extensionList": {
+        "extension": [
+          {
+            "key": "treskey1",
+            "value": "tresvalue1"
+          },
+          {
+            "key": "treskey2",
+            "value": "tresvalue2"
+          }
+        ]
+      },
+      "fulfilment": "87mm1reS3SAi8oIWXgBkLmgWc1MkZ_yLbFDX5XAdo5o",
+      "transferState": "COMMITTED"
+    }
+  },
+  "getPartiesResponse": {
+    "body": {
+      "party": {
+        "merchantClassificationCode": "1234",
+        "name": "John Doe",
+        "partyIdInfo": {
+          "fspId": "sim",
+          "partyIdType": "PERSONAL_ID",
+          "partyIdentifier": "987654321",
+          "partySubIdOrType": "PASSPORT"
         },
-        {
-          "key": "treskey2",
-          "value": "tresvalue2"
+        "personalInfo": {
+          "complexName": {
+            "firstName": "John",
+            "lastName": "Doe",
+            "middleName": "Someone"
+          },
+          "dateOfBirth": "1980-01-01"
         }
-      ]
-    },
-    "fulfilment": "87mm1reS3SAi8oIWXgBkLmgWc1MkZ_yLbFDX5XAdo5o",
-    "transferState": "COMMITTED"
+      }
+    }
   },
   "homeTransactionId": "123ABC",
   "note": "test payment",
@@ -40,40 +64,42 @@
     }
   ],
   "quoteResponse": {
-    "condition": "fH9pAYDQbmoZLPbvv3CSW2RfjU4jvM4ApG_fqGnR7Xs",
-    "expiration": "2017-11-15T14:17:09.663+01:00",
-    "extensionList": {
-      "extension": [
-        {
-          "key": "qreskey1",
-          "value": "qresvalue1"
-        },
-        {
-          "key": "qreskey2",
-          "value": "qresvalue2"
-        }
-      ]
-    },
-    "geoCode": {
-      "latitude": "53.295971",
-      "longitude": "-0.038500"
-    },
-    "ilpPacket": "AQAAAAAAACasIWcuc2UubW9iaWxlbW9uZXkubXNpc2RuLjEyMzQ1Njc4OYIEIXsNCiAgICAidHJhbnNhY3Rpb25JZCI6ICI4NWZlYWMyZi0zOWIyLTQ5MWItODE3ZS00YTAzMjAzZDRmMTQiLA0KICAgICJxdW90ZUlkIjogIjdjMjNlODBjLWQwNzgtNDA3Ny04MjYzLTJjMDQ3ODc2ZmNmNiIsDQogICAgInBheWVlIjogew0KICAgICAgICAicGFydHlJZEluZm8iOiB7DQogICAgICAgICAgICAicGFydHlJZFR5cGUiOiAiTVNJU0ROIiwNCiAgICAgICAgICAgICJwYXJ0eUlkZW50aWZpZXIiOiAiMTIzNDU2Nzg5IiwNCiAgICAgICAgICAgICJmc3BJZCI6ICJNb2JpbGVNb25leSINCiAgICAgICAgfSwNCiAgICAgICAgInBlcnNvbmFsSW5mbyI6IHsNCiAgICAgICAgICAgICJjb21wbGV4TmFtZSI6IHsNCiAgICAgICAgICAgICAgICAiZmlyc3ROYW1lIjogIkhlbnJpayIsDQogICAgICAgICAgICAgICAgImxhc3ROYW1lIjogIkthcmxzc29uIg0KICAgICAgICAgICAgfQ0KICAgICAgICB9DQogICAgfSwNCiAgICAicGF5ZXIiOiB7DQogICAgICAgICJwZXJzb25hbEluZm8iOiB7DQogICAgICAgICAgICAiY29tcGxleE5hbWUiOiB7DQogICAgICAgICAgICAgICAgImZpcnN0TmFtZSI6ICJNYXRzIiwNCiAgICAgICAgICAgICAgICAibGFzdE5hbWUiOiAiSGFnbWFuIg0KICAgICAgICAgICAgfQ0KICAgICAgICB9LA0KICAgICAgICAicGFydHlJZEluZm8iOiB7DQogICAgICAgICAgICAicGFydHlJZFR5cGUiOiAiSUJBTiIsDQogICAgICAgICAgICAicGFydHlJZGVudGlmaWVyIjogIlNFNDU1MDAwMDAwMDA1ODM5ODI1NzQ2NiIsDQogICAgICAgICAgICAiZnNwSWQiOiAiQmFua05yT25lIg0KICAgICAgICB9DQogICAgfSwNCiAgICAiYW1vdW50Ijogew0KICAgICAgICAiYW1vdW50IjogIjEwMCIsDQogICAgICAgICJjdXJyZW5jeSI6ICJVU0QiDQogICAgfSwNCiAgICAidHJhbnNhY3Rpb25UeXBlIjogew0KICAgICAgICAic2NlbmFyaW8iOiAiVFJBTlNGRVIiLA0KICAgICAgICAiaW5pdGlhdG9yIjogIlBBWUVSIiwNCiAgICAgICAgImluaXRpYXRvclR5cGUiOiAiQ09OU1VNRVIiDQogICAgfSwNCiAgICAibm90ZSI6ICJGcm9tIE1hdHMiDQp9DQo==",
-    "payeeFspCommission": {
-      "amount": "5",
-      "currency": "USD"
-    },
-    "payeeFspFee": {
-      "amount": "5",
-      "currency": "USD"
-    },
-    "payeeReceiveAmount": {
-      "amount": "490",
-      "currency": "USD"
-    },
-    "transferAmount": {
-      "amount": "500",
-      "currency": "USD"
+    "body": {
+      "condition": "fH9pAYDQbmoZLPbvv3CSW2RfjU4jvM4ApG_fqGnR7Xs",
+      "expiration": "2017-11-15T14:17:09.663+01:00",
+      "extensionList": {
+        "extension": [
+          {
+            "key": "qreskey1",
+            "value": "qresvalue1"
+          },
+          {
+            "key": "qreskey2",
+            "value": "qresvalue2"
+          }
+        ]
+      },
+      "geoCode": {
+        "latitude": "53.295971",
+        "longitude": "-0.038500"
+      },
+      "ilpPacket": "AQAAAAAAACasIWcuc2UubW9iaWxlbW9uZXkubXNpc2RuLjEyMzQ1Njc4OYIEIXsNCiAgICAidHJhbnNhY3Rpb25JZCI6ICI4NWZlYWMyZi0zOWIyLTQ5MWItODE3ZS00YTAzMjAzZDRmMTQiLA0KICAgICJxdW90ZUlkIjogIjdjMjNlODBjLWQwNzgtNDA3Ny04MjYzLTJjMDQ3ODc2ZmNmNiIsDQogICAgInBheWVlIjogew0KICAgICAgICAicGFydHlJZEluZm8iOiB7DQogICAgICAgICAgICAicGFydHlJZFR5cGUiOiAiTVNJU0ROIiwNCiAgICAgICAgICAgICJwYXJ0eUlkZW50aWZpZXIiOiAiMTIzNDU2Nzg5IiwNCiAgICAgICAgICAgICJmc3BJZCI6ICJNb2JpbGVNb25leSINCiAgICAgICAgfSwNCiAgICAgICAgInBlcnNvbmFsSW5mbyI6IHsNCiAgICAgICAgICAgICJjb21wbGV4TmFtZSI6IHsNCiAgICAgICAgICAgICAgICAiZmlyc3ROYW1lIjogIkhlbnJpayIsDQogICAgICAgICAgICAgICAgImxhc3ROYW1lIjogIkthcmxzc29uIg0KICAgICAgICAgICAgfQ0KICAgICAgICB9DQogICAgfSwNCiAgICAicGF5ZXIiOiB7DQogICAgICAgICJwZXJzb25hbEluZm8iOiB7DQogICAgICAgICAgICAiY29tcGxleE5hbWUiOiB7DQogICAgICAgICAgICAgICAgImZpcnN0TmFtZSI6ICJNYXRzIiwNCiAgICAgICAgICAgICAgICAibGFzdE5hbWUiOiAiSGFnbWFuIg0KICAgICAgICAgICAgfQ0KICAgICAgICB9LA0KICAgICAgICAicGFydHlJZEluZm8iOiB7DQogICAgICAgICAgICAicGFydHlJZFR5cGUiOiAiSUJBTiIsDQogICAgICAgICAgICAicGFydHlJZGVudGlmaWVyIjogIlNFNDU1MDAwMDAwMDA1ODM5ODI1NzQ2NiIsDQogICAgICAgICAgICAiZnNwSWQiOiAiQmFua05yT25lIg0KICAgICAgICB9DQogICAgfSwNCiAgICAiYW1vdW50Ijogew0KICAgICAgICAiYW1vdW50IjogIjEwMCIsDQogICAgICAgICJjdXJyZW5jeSI6ICJVU0QiDQogICAgfSwNCiAgICAidHJhbnNhY3Rpb25UeXBlIjogew0KICAgICAgICAic2NlbmFyaW8iOiAiVFJBTlNGRVIiLA0KICAgICAgICAiaW5pdGlhdG9yIjogIlBBWUVSIiwNCiAgICAgICAgImluaXRpYXRvclR5cGUiOiAiQ09OU1VNRVIiDQogICAgfSwNCiAgICAibm90ZSI6ICJGcm9tIE1hdHMiDQp9DQo==",
+      "payeeFspCommission": {
+        "amount": "5",
+        "currency": "USD"
+      },
+      "payeeFspFee": {
+        "amount": "5",
+        "currency": "USD"
+      },
+      "payeeReceiveAmount": {
+        "amount": "490",
+        "currency": "USD"
+      },
+      "transferAmount": {
+        "amount": "500",
+        "currency": "USD"
+      }
     }
   },
   "quoteResponseSource": "mojaloop-sdk",
