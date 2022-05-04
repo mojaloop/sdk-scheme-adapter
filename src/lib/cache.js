@@ -250,6 +250,10 @@ class Cache {
                 }
             });
 
+            client.on('connect', () => {
+                this._logger.log(`REDIS client connected at: ${this._config.host}:${this._config.port}`);
+            });
+
             client.on('ready', () => {
                 this._logger.log(`Connected to REDIS at: ${this._config.host}:${this._config.port}`);
                 return resolve(client);
