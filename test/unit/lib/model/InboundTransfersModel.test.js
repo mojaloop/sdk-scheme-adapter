@@ -456,8 +456,16 @@ describe('inboundModel', () => {
                 .toEqual(HOME_TRANSACTION_ID);
         });
 
-        test.skip('pass on transfer without quote.', async () => {
+        test('pass on transfer without quote.', async () => {
             const TRANSFER_ID = 'without_quote-transfer-id';
+            cache.set(`transferModel_in_${TRANSFER_ID}`, {
+                fulfilment: '',
+                mojaloopResponse: {
+                    response: ''
+                },
+                quote: null
+            });
+
             const args = {
                 body: {
                     transferId: TRANSFER_ID,
@@ -489,10 +497,16 @@ describe('inboundModel', () => {
             const TRANSFER_ID = 'transfer-id';
             shared.mojaloopPrepareToInternalTransfer = jest.fn().mockReturnValueOnce({});
 
-            cache.set(`quote_${transactionId}`, {
+            cache.set(`transferModel_in_${transactionId}`, {
                 fulfilment: '',
                 mojaloopResponse: {
                     response: ''
+                },
+                quote: {
+                    fulfilment: 'mockFulfilment',
+                    mojaloopResponse: {
+                        condition: 'mockCondition',
+                    }
                 }
             });
 

@@ -319,13 +319,19 @@ class InboundTransfersModel {
         const prepareRequest = request.body;
         try {
             // retrieve our quote data
-            this.data = await this._cache.get(`transferModel_in_${prepareRequest.transferId}`);
+            if (this._allowDifferentTransferTransactionId) {
+                const transactionId = this._ilp.getTransactionObject(prepareRequest.ilpPacket).transactionId;
+                this.data = await this._cache.get(`transferModel_in_${transactionId}`);
+            } else {
+                this.data = await this._cache.get(`transferModel_in_${prepareRequest.transferId}`);
+            }
+
             const quote = this.data.quote;
 
             if(!this.data || !quote) {
-                // NOTE that in mojaloop connector we absolutely require a previous quote before allowing a transfer
-                // to proceed. This is a difference to the mojaloop sdk-scheme-adapter which allows this as an option.
-                // this is to simplify the implementation of introspection features.
+                // NOTE If you are using the adapter in as an old "mojaloop connector" it absolutely requires a
+                // previous quote before allowing a transfer to proceed.
+                // This is a different to the a typical mojaloop sdk-scheme-adapter setup which allows this as an option.
 
                 // Check whether to allow transfers without a previous quote.
                 if(!this._allowTransferWithoutQuote) {
@@ -338,9 +344,17 @@ class InboundTransfersModel {
             this.data.currentState = TransferStateEnum.PREPARE_RECEIVED;
             await this._save();
 
-            // retrieve fulfilment and condition
-            const fulfilment = quote.fulfilment;
-            const condition = quote.mojaloopResponse.condition;
+            // Calculate or retrieve fulfilment and condition
+            let fulfilment = null;
+            let condition = null;
+            if(quote) {
+                fulfilment = quote.fulfilment;
+                condition = quote.mojaloopResponse.condition;
+            }
+            else {
+                fulfilment = this._ilp.calculateFulfil(prepareRequest.ilpPacket);
+                condition = this._ilp.calculateConditionFromFulfil(fulfilment);
+            }
 
             // check incoming ILP matches our persisted values
             if(this._checkIlp && (prepareRequest.condition !== condition)) {
@@ -395,6 +409,7 @@ class InboundTransfersModel {
             await this._save();
             return res;
         } catch(err) {
+            console.log(err)
             this._logger.push({ err }).log('Error in prepareTransfer');
             const mojaloopError = await this._handleError(err);
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
