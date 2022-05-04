@@ -21,8 +21,8 @@ const CONN_ST = {
 };
 
 /**
- * A shared cache abstraction over a REDIS distributed key/value store
- */
+  * A shared cache abstraction over a REDIS distributed key/value store
+  */
 class Cache {
     constructor(config) {
         this._config = config;
@@ -53,12 +53,12 @@ class Cache {
     }
 
     /**
-     * Connects to a redis server and waits for ready events
-     * Note: We create two connections. One for get, set and publish commands
-     * and another for subscribe commands. We do this as we are not supposed
-     * to issue any non-pub/sub related commands on a connection used for sub
-     * See: https://redis.io/topics/pubsub
-     */
+      * Connects to a redis server and waits for ready events
+      * Note: We create two connections. One for get, set and publish commands
+      * and another for subscribe commands. We do this as we are not supposed
+      * to issue any non-pub/sub related commands on a connection used for sub
+      * See: https://redis.io/topics/pubsub
+      */
     async connect() {
         switch(this._connectionState) {
             case CONN_ST.CONNECTED:
@@ -74,7 +74,6 @@ class Cache {
                 await this._inProgressDisconnection;
                 break;
         }
-
         this._connectionState = CONN_ST.CONNECTING;
         this._inProgressConnection = Promise.all([this._getClient(), this._getClient()]);
         [this._client, this._subscriptionClient] = await this._inProgressConnection;
@@ -82,15 +81,19 @@ class Cache {
         // hook up our sub message handler
         this._subscriptionClient.on('message', this._onMessage.bind(this));
 
+        if (this._config.enableTestFeatures) {
+            this.setTestMode(true);
+        }
+
         this._inProgressConnection = null;
         this._connectionState = CONN_ST.CONNECTED;
     }
 
     /**
-     * Configure Redis to emit keyevent events. This corresponds to the application test mode, and
-     * enables us to listen for changes on callback_* and request_* keys.
-     * Docs: https://redis.io/topics/notifications
-     */
+      * Configure Redis to emit keyevent events. This corresponds to the application test mode, and
+      * enables us to listen for changes on callback_* and request_* keys.
+      * Docs: https://redis.io/topics/notifications
+      */
     async setTestMode(enable) {
         // See for modes: https://redis.io/topics/notifications#configuration
         // This mode, 'Es$' is:
@@ -100,7 +103,7 @@ class Cache {
         const mode = enable ? 'Es$' : '';
         this._logger
             .push({ 'notify-keyspace-events': mode })
-            .log('REDIS client Configured to emit keyspace-events');
+            .log('Configuring Redis to emit keyevent events');
         this._client.config('SET', 'notify-keyspace-events', mode);
     }
 
@@ -133,12 +136,12 @@ class Cache {
 
 
     /**
-     * Subscribes to a channel
-     *
-     * @param channel {string} - The channel name to subscribe to
-     * @param callback {function} - Callback function to be executed when messages arrive on the specified channel
-     * @returns {Promise} - Promise that resolves with an integer callback Id to submit in unsubscribe request
-     */
+      * Subscribes to a channel
+      *
+      * @param channel {string} - The channel name to subscribe to
+      * @param callback {function} - Callback function to be executed when messages arrive on the specified channel
+      * @returns {Promise} - Promise that resolves with an integer callback Id to submit in unsubscribe request
+      */
     async subscribe(channel, callback) {
         return new Promise((resolve, reject) => {
             this._subscriptionClient.subscribe(channel, (err) => {
@@ -168,11 +171,11 @@ class Cache {
 
 
     /**
-     * Unsubscribes a callback from a channel
-     *
-     * @param channel {string} - name of the channel to unsubscribe from
-     * @param callbackId {integer} - id of the callback to remove
-     */
+      * Unsubscribes a callback from a channel
+      *
+      * @param channel {string} - name of the channel to unsubscribe from
+      * @param callbackId {integer} - id of the callback to remove
+      */
     async unsubscribe(channel, callbackId) {
         return new Promise((resolve, reject) => {
             if(this._callbacks[channel] && this._callbacks[channel][callbackId]) {
@@ -196,8 +199,8 @@ class Cache {
 
 
     /**
-     * Handler for published messages
-     */
+      * Handler for published messages
+      */
     async _onMessage(channel, msg) {
         if(this._callbacks[channel]) {
             // we have some callbacks to make
@@ -219,16 +222,16 @@ class Cache {
 
 
     /**
-     * Returns a new redis client
-     *
-     * @returns {object} - a connected REDIS client
-     * */
+      * Returns a new redis client
+      *
+      * @returns {object} - a connected REDIS client
+      * */
     async _getClient() {
         return new Promise((resolve, reject) => {
             const client = redis.createClient(this._config);
 
             client.on('error', (err) => {
-                this._logger.push({ err }).log('REDIS client Error');
+                this._logger.push({ err }).log('Error from REDIS client getting subscriber');
                 return reject(err);
             });
 
@@ -247,25 +250,25 @@ class Cache {
                 }
             });
 
-            client.on('ready', () => {
-                this._logger.log(`REDIS client ready at: ${this._config.host}:${this._config.port}`);
-                return resolve(client);
-            });
-
             client.on('connect', () => {
                 this._logger.log(`REDIS client connected at: ${this._config.host}:${this._config.port}`);
+            });
+
+            client.on('ready', () => {
+                this._logger.log(`Connected to REDIS at: ${this._config.host}:${this._config.port}`);
+                return resolve(client);
             });
         });
     }
 
 
     /**
-     * Publishes the specified message to the specified channel
-     *
-     * @param channelName {string} - channel name to publish to
-     * @param value - any type that will be converted to a JSON string (unless it is already a string) and published as the message
-     * @returns {Promise} - Promise that will resolve with redis replies or reject with an error
-     */
+      * Publishes the specified message to the specified channel
+      *
+      * @param channelName {string} - channel name to publish to
+      * @param value - any type that will be converted to a JSON string (unless it is already a string) and published as the message
+      * @returns {Promise} - Promise that will resolve with redis replies or reject with an error
+      */
     async publish(channelName, value) {
         return new Promise((resolve, reject) => {
             if(typeof(value) !== 'string') {
@@ -288,11 +291,11 @@ class Cache {
 
 
     /**
-     * Sets a value in the cache
-     *
-     * @param key {string} - cache key
-     * @param value {stirng} - cache value
-     */
+      * Sets a value in the cache
+      *
+      * @param key {string} - cache key
+      * @param value {stirng} - cache value
+      */
     async set(key, value) {
         return new Promise((resolve, reject) => {
             //if we are given an object, turn it into a string
@@ -313,10 +316,65 @@ class Cache {
     }
 
     /**
-     * Gets a value from the cache
-     *
-     * @param key {string} - cache key
-     */
+      * Add the specified value to the set stored at key
+      *
+      * @param key {string} - cache key
+      * @param value {string} - cache value
+      */
+    async add(key, value) {
+        return new Promise((resolve, reject) => {
+            //if we are given an object, turn it into a string
+            if(typeof(value) !== 'string') {
+                value = JSON.stringify(value);
+            }
+
+            this._client.sadd(key, value, (err, replies) => {
+                if(err) {
+                    this._logger.push({ key, value, err }).log(`Error setting cache key: ${key}`);
+                    return reject(err);
+                }
+
+                this._logger.push({ key, value, replies }).log(`Add cache key: ${key}`);
+                return resolve(replies);
+            });
+        });
+    }
+
+    /**
+      * Returns all the members of the set value stored at key
+      *
+      * @param key {string} - cache key
+      */
+    async members(key) {
+        return new Promise((resolve, reject) => {
+            this._client.smembers(key, (err, value) => {
+                if(err) {
+                    this._logger.push({ key, err }).log(`Error getting cache key: ${key}`);
+                    return reject(err);
+                }
+
+                this._logger.push({ key, value }).log(`Got cache key: ${key}`);
+
+                if(typeof(value) === 'string') {
+                    try {
+                        value = JSON.parse(value);
+                    }
+                    catch(err) {
+                        this._logger.push({ err }).log('Error parsing JSON cache value');
+                        return reject(err);
+                    }
+                }
+
+                return resolve(value);
+            });
+        });
+    }
+
+    /**
+      * Gets a value from the cache
+      *
+      * @param key {string} - cache key
+      */
     async get(key) {
         return new Promise((resolve, reject) => {
             this._client.get(key, (err, value) => {

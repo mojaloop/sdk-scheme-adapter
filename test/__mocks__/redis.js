@@ -26,6 +26,10 @@ class RedisClient extends redisMock.RedisClient {
         }
     }
 
+    config(...args) {
+        this._executeCallback(...args);
+    }
+
     subscribe(...args) {
         super.subscribe(...args);
         this._executeCallback(...args);
