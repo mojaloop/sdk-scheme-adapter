@@ -17,7 +17,6 @@ const { Ilp, MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const shared = require('./lib/shared');
 const { BackendError, TransferStateEnum } = require('./common');
 const PartiesModel = require('./PartiesModel');
-const { config } = require('dotenv');
 
 /**
  *  Models the state machine and operations required for performing an outbound transfer
@@ -346,7 +345,7 @@ class OutboundTransfersModel {
                 this._logger.push({ peer: res }).log('Party lookup sent to peer');
             }
             catch(err) {
-                // cancel the timout and unsubscribe before rejecting the promise
+                // cancel the timeout and unsubscribe before rejecting the promise
                 clearTimeout(timeout);
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
@@ -420,7 +419,11 @@ class OutboundTransfersModel {
             // listen for resolution events on the payee idType and idValue
             // const payeeKey = `${this.data.to.idType}_${this.data.to.idValue}`
             //     + (this.data.to.idSubValue ? `_${this.data.to.idSubValue}` : '');
-            const payeeKey = PartiesModel.channelName(this.data.to.idType, this.data.to.idValue, this.data.to.idSubValue);
+            const payeeKey = PartiesModel.channelName({
+                type: this.data.to.idType,
+                id: this.data.to.idValue,
+                subId: this.data.to.idSubValue
+            });
             const timer = setTimeout(async () => {
                 if(latencyTimerDone) {
                     latencyTimerDone();
@@ -637,12 +640,12 @@ class OutboundTransfersModel {
 
             const subId = await this._cache.subscribe(transferKey, async (cn, msg, subId) => {
                 try {
-                    let error;
-                    let message = JSON.parse(msg);
-
                     if(latencyTimerDone) {
                         latencyTimerDone();
                     }
+
+                    let error;
+                    let message = JSON.parse(msg);
 
                     if (message.type === 'transferFulfil') {
                         this.metrics.transferFulfils.inc();
@@ -1053,6 +1056,7 @@ class OutboundTransfersModel {
                     // The state is not handled here, throwing an error to avoid an infinite recursion of this function
                     await this._save();
                     this._logger.error(`State machine in unhandled(${this.data.currentState}) state`);
+                    return;
             }
 
             // now call ourselves recursively to deal with the next transition

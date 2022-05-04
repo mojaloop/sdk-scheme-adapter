@@ -39,8 +39,24 @@ properties:
   quoteId:
     $ref: >-
       ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml
+  getPartiesResponse:
+    type: object
+    required:
+      - body
+    properties:
+      body:
+        type: object
+      headers:
+        type: object
   quoteResponse:
-    $ref: ./quote.yaml
+    type: object
+    required:
+      - body
+    properties:
+      body:
+        $ref: './quote.yaml'
+      headers:
+        type: object
   quoteResponseSource:
     type: string
     description: >

@@ -317,7 +317,6 @@ class InboundTransfersModel {
      */
     async prepareTransfer(request, sourceFspId) {
         const prepareRequest = request.body;
-
         try {
             // retrieve our quote data
             this.data = await this._cache.get(`transferModel_in_${prepareRequest.transferId}`);
@@ -329,9 +328,9 @@ class InboundTransfersModel {
                 // this is to simplify the implementation of introspection features.
 
                 // Check whether to allow transfers without a previous quote.
-                //if(!this._allowTransferWithoutQuote) {
-                throw new Error(`Corresponding quote not found for transfer ${prepareRequest.transferId}`);
-                //}
+                if(!this._allowTransferWithoutQuote) {
+                    throw new Error(`Corresponding quote not found for transfer ${prepareRequest.transferId}`);
+                }
             }
 
             // persist our state so we have a record if we crash during processing the prepare
@@ -395,8 +394,7 @@ class InboundTransfersModel {
             this.data.currentState = this._reserveNotification ? TransferStateEnum.RESERVED : TransferStateEnum.COMPLETED;
             await this._save();
             return res;
-        }
-        catch(err) {
+        } catch(err) {
             this._logger.push({ err }).log('Error in prepareTransfer');
             const mojaloopError = await this._handleError(err);
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);

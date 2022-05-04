@@ -1279,8 +1279,24 @@ components:
           $ref: '#/components/schemas/transferStatus'
         quoteId:
           $ref: '#/components/schemas/CorrelationId'
+        getPartiesResponse:
+          type: object
+          required:
+            - body
+          properties:
+            body:
+              type: object
+            headers:
+              type: object
         quoteResponse:
-          $ref: '#/components/schemas/QuotesIDPutResponse'
+          type: object
+          required:
+            - body
+          properties:
+            body:
+              $ref: '#/components/schemas/QuotesIDPutResponse'
+            headers:
+              type: object
         quoteResponseSource:
           type: string
           description: >

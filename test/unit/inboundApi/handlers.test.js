@@ -58,7 +58,7 @@ describe('Inbound API handlers:', () => {
             await expect(handlers['/quotes'].post(mockContext)).resolves.toBe(undefined);
 
             expect(quoteRequestSpy).toHaveBeenCalledTimes(1);
-            expect(quoteRequestSpy.mock.calls[0][0]).toBe(mockContext.request.body);
+            expect(quoteRequestSpy.mock.calls[0][0]).toStrictEqual(mockContext.request);
             expect(quoteRequestSpy.mock.calls[0][1]).toBe(mockContext.request.headers['fspiop-source']);
         });
 
@@ -601,7 +601,10 @@ describe('Inbound API handlers:', () => {
             expect(triggerDeferredJobSpy).toHaveBeenCalledTimes(1);
             expect(triggerDeferredJobSpy).toBeCalledWith({
                 cache: mockContext.state.cache,
-                message: mockContext.request.body,
+                message: {
+                    body: mockContext.request.body,
+                    headers: mockContext.request.headers,
+                },
                 args: {
                     type: mockContext.state.path.params.Type,
                     id: mockContext.state.path.params.ID
@@ -620,7 +623,10 @@ describe('Inbound API handlers:', () => {
             expect(triggerDeferredJobSpy).toHaveBeenCalledTimes(1);
             expect(triggerDeferredJobSpy).toBeCalledWith({
                 cache: mockContext.state.cache,
-                message: mockContext.request.body,
+                message: {
+                    body: mockContext.request.body,
+                    headers: mockContext.request.headers,
+                },
                 args: {
                     type: mockContext.state.path.params.Type,
                     id: mockContext.state.path.params.ID,
@@ -667,8 +673,10 @@ describe('Inbound API handlers:', () => {
             expect(triggerDeferredJobSpy).toHaveBeenCalledTimes(1);
             expect(triggerDeferredJobSpy).toBeCalledWith({
                 cache: mockContext.state.cache,
-                message: mockContext.request.body,
-                args: {
+                message: {
+                    body: mockContext.request.body,
+                    headers: mockContext.request.headers,
+                },                args: {
                     transferId: mockContext.state.path.params.ID
                 }
             });
@@ -682,8 +690,10 @@ describe('Inbound API handlers:', () => {
             expect(triggerDeferredJobSpy).toHaveBeenCalledTimes(1);
             expect(triggerDeferredJobSpy).toBeCalledWith({
                 cache: mockContext.state.cache,
-                message: mockContext.request.body,
-                args: {
+                message: {
+                    body: mockContext.request.body,
+                    headers: mockContext.request.headers,
+                },                args: {
                     transferId: mockContext.state.path.params.ID,
                 }
             });
@@ -728,7 +738,10 @@ describe('Inbound API handlers:', () => {
             expect(triggerDeferredJobSpy).toHaveBeenCalledTimes(1);
             expect(triggerDeferredJobSpy).toBeCalledWith({
                 cache: mockContext.state.cache,
-                message: mockContext.request.body,
+                message: {
+                    body: mockContext.request.body,
+                    headers: mockContext.request.headers,
+                },
                 args: {
                     transferId: mockContext.state.path.params.ID
                 }
@@ -743,7 +756,10 @@ describe('Inbound API handlers:', () => {
             expect(triggerDeferredJobSpy).toHaveBeenCalledTimes(1);
             expect(triggerDeferredJobSpy).toBeCalledWith({
                 cache: mockContext.state.cache,
-                message: mockContext.request.body,
+                message: {
+                    body: mockContext.request.body,
+                    headers: mockContext.request.headers,
+                },
                 args: {
                     transferId: mockContext.state.path.params.ID,
                 }

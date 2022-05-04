@@ -730,7 +730,14 @@ export interface components {
       note?: components["schemas"]["Note"];
       currentState?: components["schemas"]["transferStatus"];
       quoteId?: components["schemas"]["CorrelationId"];
-      quoteResponse?: components["schemas"]["QuotesIDPutResponse"];
+      getPartiesResponse?: {
+        body: { [key: string]: unknown };
+        headers?: { [key: string]: unknown };
+      };
+      quoteResponse?: {
+        body: components["schemas"]["QuotesIDPutResponse"];
+        headers?: { [key: string]: unknown };
+      };
       /** FSPID of the entity that supplied the quote response. This may not be the same as the FSPID of the entity which owns the end user account in the case of a FOREX transfer. i.e. it may be a FOREX gateway. */
       quoteResponseSource?: string;
       fulfil?: {

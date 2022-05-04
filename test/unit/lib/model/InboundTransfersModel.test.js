@@ -55,6 +55,12 @@ describe('inboundModel', () => {
         beforeEach(async () => {
             expectedQuoteResponseILP = Ilp.__response;
             BackendRequests.__postQuoteRequests = jest.fn().mockReturnValue(Promise.resolve(mockArgs.internalQuoteResponse));
+            MojaloopRequests.__putQuotes = jest.fn().mockReturnValue(Promise.resolve({
+                originalRequest: {
+                    headers: {},
+                    body: {},
+                }
+            }));
 
             cache = new Cache({
                 host: 'dummycachehost',
@@ -78,11 +84,18 @@ describe('inboundModel', () => {
         test('calls `mojaloopRequests.putQuotes` with the expected arguments.', async () => {
             await model.quoteRequest(mockArgs.quoteRequest, mockArgs.fspId);
 
+            expect(BackendRequests.__postQuoteRequests).toHaveBeenCalledTimes(1);
+            expect(BackendRequests.__postQuoteRequests.mock.calls[0][0]).toEqual(mockArgs.internalQuoteRequest);
+
             expect(MojaloopRequests.__putQuotes).toHaveBeenCalledTimes(1);
             expect(MojaloopRequests.__putQuotes.mock.calls[0][1].expiration).toBe(mockArgs.internalQuoteResponse.expiration);
             expect(MojaloopRequests.__putQuotes.mock.calls[0][1].ilpPacket).toBe(expectedQuoteResponseILP.ilpPacket);
             expect(MojaloopRequests.__putQuotes.mock.calls[0][1].condition).toBe(expectedQuoteResponseILP.condition);
             expect(MojaloopRequests.__putQuotes.mock.calls[0][2]).toBe(mockArgs.fspId);
+
+            // check the extension list gets translated correctly to the mojaloop form
+            expect(MojaloopRequests.__putQuotes.mock.calls[0][1].extensionList)
+                .toStrictEqual(mockArgs.internalQuoteResponse.extensionList);
         });
 
         test('adds a custom `expiration` property in case it is not defined.', async() => {
@@ -247,7 +260,12 @@ describe('inboundModel', () => {
         beforeEach(async () => {
             MojaloopRequests.__putTransfersError.mockClear();
             BackendRequests.__postTransfers = jest.fn().mockReturnValue(Promise.resolve({}));
-            MojaloopRequests.__putTransfers = jest.fn().mockReturnValue(Promise.resolve({}));
+            MojaloopRequests.__putTransfers = jest.fn().mockReturnValue(Promise.resolve({
+                originalRequest: {
+                    headers: {},
+                    body: {},
+                }
+            }));
 
             cache = new Cache({
                 host: 'dummycachehost',
@@ -269,13 +287,17 @@ describe('inboundModel', () => {
                 logger,
                 rejectTransfersOnExpiredQuotes: true,
             });
-            cache.set(`quote_${TRANSFER_ID}`, {
-                mojaloopResponse: {
-                    expiration: new Date(new Date().getTime() - 1000).toISOString(),
+            cache.set(`transferModel_in_${TRANSFER_ID}`, {
+                quote: {
+                    mojaloopResponse: {
+                        expiration: new Date(new Date().getTime() - 1000).toISOString(),
+                    }
                 }
             });
             const args = {
-                transferId: TRANSFER_ID,
+                body: {
+                    transferId: TRANSFER_ID,
+                }
             };
 
             await model.prepareTransfer(args, mockArgs.fspId);
@@ -358,13 +380,15 @@ describe('inboundModel', () => {
         test('fail on transfer without quote.', async () => {
             const TRANSFER_ID = 'without_quote-transfer-id';
             const args = {
-                transferId: TRANSFER_ID,
-                amount: {
-                    currency: 'USD',
-                    amount: 20.13
-                },
-                ilpPacket: 'mockBase64encodedIlpPacket',
-                condition: 'mockGeneratedCondition'
+                body: {
+                    transferId: TRANSFER_ID,
+                    amount: {
+                        currency: 'USD',
+                        amount: 20.13
+                    },
+                    ilpPacket: 'mockBase64encodedIlpPacket',
+                    condition: 'mockGeneratedCondition'
+                }
             };
 
             const model = new Model({
@@ -382,16 +406,68 @@ describe('inboundModel', () => {
             expect(call[1].errorInformation.errorCode).toEqual('2001');
         });
 
-        test('pass on transfer without quote.', async () => {
+        test('stores homeTransactionId in cache when received by dfsp acting as payee', async () => {
+            const TRANSFER_ID = 'transfer-id';
+            const HOME_TRANSACTION_ID = 'mockHomeTransactionId';
+            shared.mojaloopPrepareToInternalTransfer = jest.fn().mockReturnValueOnce({});
+
+            // mock response from dfsp acting as payee
+            BackendRequests.__postTransfers = jest.fn().mockReturnValueOnce(Promise.resolve({
+                homeTransactionId: HOME_TRANSACTION_ID,
+                transferId: TRANSFER_ID
+            }));
+
+            const args = {
+                body: {
+                    transferId: TRANSFER_ID,
+                    amount: {
+                        currency: 'USD',
+                        amount: 20.13
+                    },
+                    ilpPacket: 'mockBase64encodedIlpPacket',
+                    condition: 'mockGeneratedCondition'
+                }
+            };
+
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+                checkIlp: false,
+                rejectTransfersOnExpiredQuotes: false
+            });
+
+            cache.set(`transferModel_in_${TRANSFER_ID}`, {
+                transferId: TRANSFER_ID,
+                quote: {
+                    fulfilment: 'mockFulfilment',
+                    mojaloopResponse: {
+                        condition: 'mockCondition',
+                    }
+                }
+            });
+
+            await model.prepareTransfer(args, mockArgs.fspId);
+
+            expect(MojaloopRequests.__putTransfersError).toHaveBeenCalledTimes(0);
+            expect(BackendRequests.__postTransfers).toHaveBeenCalledTimes(1);
+            expect(MojaloopRequests.__putTransfers).toHaveBeenCalledTimes(1);
+            expect((await cache.get(`transferModel_in_${TRANSFER_ID}`)).homeTransactionId)
+                .toEqual(HOME_TRANSACTION_ID);
+        });
+
+        test.skip('pass on transfer without quote.', async () => {
             const TRANSFER_ID = 'without_quote-transfer-id';
             const args = {
-                transferId: TRANSFER_ID,
-                amount: {
-                    currency: 'USD',
-                    amount: 20.13
-                },
-                ilpPacket: 'mockBase64encodedIlpPacket',
-                condition: 'mockGeneratedCondition'
+                body: {
+                    transferId: TRANSFER_ID,
+                    amount: {
+                        currency: 'USD',
+                        amount: 20.13
+                    },
+                    ilpPacket: 'mockBase64encodedIlpPacket',
+                    condition: 'mockGeneratedCondition'
+                }
             };
 
             const model = new Model({
@@ -421,13 +497,15 @@ describe('inboundModel', () => {
             });
 
             const args = {
-                transferId: TRANSFER_ID,
-                amount: {
-                    currency: 'USD',
-                    amount: 20.13
-                },
-                ilpPacket: 'mockIlpPacket',
-                condition: 'mockGeneratedCondition'
+                body: {
+                    transferId: TRANSFER_ID,
+                    amount: {
+                        currency: 'USD',
+                        amount: 20.13
+                    },
+                    ilpPacket: 'mockIlpPacket',
+                    condition: 'mockGeneratedCondition'
+                }
             };
 
             const model = new Model({
@@ -648,7 +726,12 @@ describe('inboundModel', () => {
 
         test('sends notification to fsp backend', async () => {
             BackendRequests.__putTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({}));
-            const backendResponse = JSON.parse(JSON.stringify(notificationToPayee));
+            const notif = JSON.parse(JSON.stringify(notificationToPayee));
+
+            const expectedRequest = {
+                currentState: 'COMPLETED',
+                finalNotification: notif.data,
+            };
 
             const model = new Model({
                 ...config,
@@ -656,11 +739,94 @@ describe('inboundModel', () => {
                 logger,
             });
 
-            await model.sendNotificationToPayee(backendResponse.data, transferId);
+            await model.sendNotificationToPayee(notif.data, transferId);
             expect(BackendRequests.__putTransfersNotification).toHaveBeenCalledTimes(1);
             const call = BackendRequests.__putTransfersNotification.mock.calls[0];
-            expect(call[0]).toEqual(backendResponse.data);
+            expect(call[0]).toEqual(expectedRequest);
             expect(call[1]).toEqual(transferId);
+        });
+    });
+
+    describe('error handling:', () => {
+        let cache;
+        beforeEach(async () => {
+            cache = new Cache({
+                host: 'dummycachehost',
+                port: 1234,
+                logger,
+            });
+            await cache.connect();
+        });
+        afterEach(async () => {
+            await cache.disconnect();
+        });
+        test('creates mojaloop spec error body when backend returns standard error code', async () => {
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+            });
+            const testErr = new HTTPResponseError({
+                msg: 'Request returned non-success status code 500',
+                res: {
+                    data: {
+                        statusCode: '3200',
+                    },
+                }
+            });
+            const err = await model._handleError(testErr);
+            expect(err).toBeDefined();
+            expect(err.errorInformation).toBeDefined();
+            expect(err.errorInformation.errorCode).toEqual('3200');
+            // error message should be the default one, not custom.
+            // it is debatibale whether this is truly correct, to overwrite
+            // and custom error message; but it is the case for now.
+            expect(err.errorInformation.errorDescription).toEqual('Generic ID not found');
+        });
+        test('creates custom error body when backend returns custom error code', async () => {
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+            });
+            const customMessage = 'some custom message';
+            const testErr = new HTTPResponseError({
+                msg: 'Request returned non-success status code 500',
+                res: {
+                    data: {
+                        statusCode: '3299',
+                        message: customMessage,
+                    },
+                }
+            });
+            const err = await model._handleError(testErr);
+            expect(err).toBeDefined();
+            expect(err.errorInformation).toBeDefined();
+            expect(err.errorInformation.errorCode).toEqual('3299');
+            expect(err.errorInformation.errorDescription).toEqual(customMessage);
+        });
+        test('creates custom error message when backend returns standard error code and message', async () => {
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+            });
+            const customMessage = 'some custom message';
+            const testErr = new HTTPResponseError({
+                msg: 'Request returned non-success status code 500',
+                res: {
+                    data: {
+                        statusCode: '3200',
+                        message: customMessage,
+                    },
+                }
+            });
+            const err = await model._handleError(testErr);
+            expect(err).toBeDefined();
+            expect(err.errorInformation).toBeDefined();
+            expect(err.errorInformation.errorCode).toEqual('3200');
+            // error message should be custom
+            expect(err.errorInformation.errorDescription).toEqual(customMessage);
         });
     });
 });

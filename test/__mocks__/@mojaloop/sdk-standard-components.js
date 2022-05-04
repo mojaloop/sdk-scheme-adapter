@@ -40,6 +40,7 @@ class MockMojaloopRequests extends MojaloopRequests {
         this.postBulkTransfers = MockMojaloopRequests.__postBulkTransfers;
         this.putBulkTransfers = MockMojaloopRequests.__putBulkTransfers;
         this.putBulkTransfersError = MockMojaloopRequests.__putBulkTransfersError;
+        this.patchTransfers = MockMojaloopRequests.__patchTransfers;
     }
 }
 MockMojaloopRequests.__postParticipants = jest.fn(() => Promise.resolve());
@@ -63,7 +64,7 @@ MockMojaloopRequests.__getBulkTransfers = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__postBulkTransfers = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putBulkTransfers = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putBulkTransfersError = jest.fn(() => Promise.resolve());
-
+MockMojaloopRequests.__patchTransfers = jest.fn(() => Promise.resolve());
 
 class MockIlp {
     constructor(config) {
@@ -146,5 +147,5 @@ module.exports = {
     },
     Errors,
     WSO2Auth,
-    Logger
+    Logger,
 };
