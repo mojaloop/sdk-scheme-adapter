@@ -409,7 +409,6 @@ class InboundTransfersModel {
             await this._save();
             return res;
         } catch(err) {
-            console.log(err)
             this._logger.push({ err }).log('Error in prepareTransfer');
             const mojaloopError = await this._handleError(err);
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
