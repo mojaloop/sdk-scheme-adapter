@@ -235,6 +235,25 @@ class Cache {
                 return reject(err);
             });
 
+            client.on('reconnecting', (err) => {
+                this._logger.push({ err }).log('REDIS client Reconnecting');
+                return reject(err);
+            });
+
+            client.on('subscribe', (channel, count) => {
+                this._logger.push({ channel, count }).log('REDIS client subscribe');
+                // On a subscribe event, ensure that testFeatures are enabled.
+                // This is required here in the advent of a disconnect/reconnect event. Redis client will re-subscribe all subscriptions, but previously enabledTestFeatures will be lost.
+                // Handling this on the on subscribe event will ensure its always configured.
+                if (this._config.enableTestFeatures) {
+                    this.setTestMode(true);
+                }
+            });
+
+            client.on('connect', () => {
+                this._logger.log(`REDIS client connected at: ${this._config.host}:${this._config.port}`);
+            });
+
             client.on('ready', () => {
                 this._logger.log(`Connected to REDIS at: ${this._config.host}:${this._config.port}`);
                 return resolve(client);
