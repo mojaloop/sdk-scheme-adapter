@@ -1,4 +1,12 @@
 # Changelog: [mojaloop/thirdparty-api-svc](https://github.com/mojaloop/thirdparty-api-svc)
+## [12.3.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v12.2.3...v12.3.0) (2022-05-04)
+
+
+### Features
+
+* port over prom client metrics ([#312](https://github.com/mojaloop/sdk-scheme-adapter/issues/312)) ([8de66d5](https://github.com/mojaloop/sdk-scheme-adapter/commit/8de66d505b94cddb5e3b8e857ae491f85058d395))
+* pull in live reconfiguration logic ([#313](https://github.com/mojaloop/sdk-scheme-adapter/issues/313)) ([ae5648a](https://github.com/mojaloop/sdk-scheme-adapter/commit/ae5648a500eaab80804db0298facc1e352482fb9))
+
 ### [12.2.3](https://github.com/mojaloop/sdk-scheme-adapter/compare/v12.2.2...v12.2.3) (2022-04-26)
 
 
