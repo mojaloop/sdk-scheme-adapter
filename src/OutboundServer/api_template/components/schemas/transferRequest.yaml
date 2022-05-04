@@ -35,3 +35,6 @@ properties:
     $ref: ./extensionListEmptiable.yaml
   transferRequestExtensions:
     $ref: ./extensionListEmptiable.yaml
+  skipPartyLookup:
+    description: Set to true if supplying an FSPID for the payee party and no party resolution is needed. This may be useful is a previous party resolution has been performed.
+    type: boolean

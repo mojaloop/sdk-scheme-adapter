@@ -530,7 +530,7 @@ components:
         certificate
 
         number, and national registration number. The identifier number is added
-        in
+        in 
 
         the PartyIdentifier element. The personal identifier type is added in
         the
@@ -591,10 +591,10 @@ components:
         and
 
         a DFSP which allows the PISP permission to perform actions on behalf of
-        the
+        the 
 
         customer. A Consent has an authoritative source: either the DFSP who
-        issued
+        issued 
 
         the Consent, or an Auth Service which administers the Consent.
 
@@ -602,10 +602,10 @@ components:
         a PISP,
 
         a DFSP, and a specific Customer's account at the DFSP. The content of
-        the link
+        the link 
 
         is created by the DFSP at the time when it gives permission to the PISP
-        for
+        for 
 
         specific access to a given account.
       example: PERSONAL_ID
@@ -1003,7 +1003,10 @@ components:
         transferRequestExtensions:
           $ref: '#/components/schemas/extensionListEmptiable'
         skipPartyLookup:
-          description: Set to true if supplying an FSPID for the payee party and no party resolution is needed. This may be useful is a previous party resolution has been performed.
+          description: >-
+            Set to true if supplying an FSPID for the payee party and no party
+            resolution is needed. This may be useful is a previous party
+            resolution has been performed.
           type: boolean
     CorrelationId:
       title: CorrelationId
@@ -1286,7 +1289,14 @@ components:
             account in the case of a FOREX transfer. i.e. it may be a FOREX
             gateway.
         fulfil:
-          $ref: '#/components/schemas/TransfersIDPutResponse'
+          type: object
+          required:
+            - body
+          properties:
+            body:
+              $ref: '#/components/schemas/TransfersIDPutResponse'
+            headers:
+              type: object
         lastError:
           description: >
             Object representing the last error to occur during a transfer
@@ -1295,7 +1305,10 @@ components:
             e.g. exceptions that may occur inside the scheme adapter.
           $ref: '#/components/schemas/transferError'
         skipPartyLookup:
-          description: Set to true if supplying an FSPID for the payee party and no party resolution is needed. This may be useful is a previous party resolution has been performed.
+          description: >-
+            Set to true if supplying an FSPID for the payee party and no party
+            resolution is needed. This may be useful is a previous party
+            resolution has been performed.
           type: boolean
     errorResponse:
       type: object
@@ -1327,7 +1340,14 @@ components:
         currentState:
           $ref: '#/components/schemas/transferStatus'
         fulfil:
-          $ref: '#/components/schemas/TransfersIDPutResponse'
+          type: object
+          required:
+            - body
+          properties:
+            body:
+              $ref: '#/components/schemas/TransfersIDPutResponse'
+            headers:
+              type: object
     transferContinuationAcceptParty:
       type: object
       required:
