@@ -2020,6 +2020,113 @@ components:
       enum:
         - ERROR_OCCURRED
         - COMPLETED
+    PartyIdType-2:
+      title: PartyIdType
+      type: string
+      enum:
+        - MSISDN
+        - EMAIL
+        - PERSONAL_ID
+        - BUSINESS
+        - DEVICE
+        - ACCOUNT_ID
+        - IBAN
+        - ALIAS
+      description: >-
+        Below are the allowed values for the enumeration.
+
+        - MSISDN - An MSISDN (Mobile Station International Subscriber Directory
+        Number, that is, the phone number) is used as reference to a
+        participant. The MSISDN identifier should be in international format
+        according to the [ITU-T E.164
+        standard](https://www.itu.int/rec/T-REC-E.164/en). Optionally, the
+        MSISDN may be prefixed by a single plus sign, indicating the
+        international prefix.
+
+        - EMAIL - An email is used as reference to a participant. The format of
+        the email should be according to the informational [RFC
+        3696](https://tools.ietf.org/html/rfc3696).
+
+        - PERSONAL_ID - A personal identifier is used as reference to a
+        participant. Examples of personal identification are passport number,
+        birth certificate number, and national registration number. The
+        identifier number is added in the PartyIdentifier element. The personal
+        identifier type is added in the PartySubIdOrType element.
+
+        - BUSINESS - A specific Business (for example, an organization or a
+        company) is used as reference to a participant. The BUSINESS identifier
+        can be in any format. To make a transaction connected to a specific
+        username or bill number in a Business, the PartySubIdOrType element
+        should be used.
+
+        - DEVICE - A specific device (for example, a POS or ATM) ID connected to
+        a specific business or organization is used as reference to a Party. For
+        referencing a specific device under a specific business or organization,
+        use the PartySubIdOrType element.
+
+        - ACCOUNT_ID - A bank account number or FSP account ID should be used as
+        reference to a participant. The ACCOUNT_ID identifier can be in any
+        format, as formats can greatly differ depending on country and FSP.
+
+        - IBAN - A bank account number or FSP account ID is used as reference to
+        a participant. The IBAN identifier can consist of up to 34 alphanumeric
+        characters and should be entered without whitespace.
+
+        - ALIAS An alias is used as reference to a participant. The alias should
+        be created in the FSP as an alternative reference to an account owner.
+        Another example of an alias is a username in the FSP system. The ALIAS
+        identifier can be in any format. It is also possible to use the
+        PartySubIdOrType element for identifying an account under an Alias
+        defined by the PartyIdentifier.
+    PartyIdInfo:
+      title: PartyIdInfo
+      type: object
+      description: >-
+        Data model for the complex type PartyIdInfo. An ExtensionList element
+        has been added to this reqeust in version v1.1
+      properties:
+        partyIdType:
+          $ref: '#/components/schemas/PartyIdType-2'
+        partyIdentifier:
+          $ref: '#/components/schemas/PartyIdentifier'
+        partySubIdOrType:
+          $ref: '#/components/schemas/PartySubIdOrType'
+        fspId:
+          $ref: '#/components/schemas/FspId'
+        extensionList:
+          $ref: '#/components/schemas/ExtensionList'
+      required:
+        - partyIdType
+        - partyIdentifier
+    PartyResult:
+      title: PartyResult
+      type: object
+      description: Data model for the complex type PartyResult.
+      properties:
+        partyId:
+          $ref: '#/components/schemas/PartyIdInfo'
+        errorInformation:
+          $ref: '#/components/schemas/ErrorInformation'
+      required:
+        - partyId
+    ParticipantsIDPutResponse:
+      title: ParticipantsIDPutResponse
+      type: object
+      description: 'The object sent in the PUT /participants/{ID} callback.'
+      properties:
+        partyList:
+          type: array
+          items:
+            $ref: '#/components/schemas/PartyResult'
+          minItems: 1
+          maxItems: 10000
+          description: >-
+            List of PartyResult elements that were either created or failed to
+            be created.
+        currency:
+          $ref: '#/components/schemas/Currency'
+      required:
+        - partyList
     accountsResponse:
       type: object
       required:
@@ -2035,6 +2142,15 @@ components:
           $ref: '#/components/schemas/accountsCreationState'
         lastError:
           $ref: '#/components/schemas/transferError'
+        postAccountsResponse:
+          type: object
+          required:
+            - body
+          properties:
+            body:
+              $ref: '#/components/schemas/ParticipantsIDPutResponse'
+            headers:
+              type: object
     errorAccountsResponse:
       allOf:
         - $ref: '#/components/schemas/errorResponse'
@@ -2044,7 +2160,7 @@ components:
           properties:
             executionState:
               $ref: '#/components/schemas/accountsResponse'
-    PartyIdInfo:
+    PartyIdInfo-2:
       title: PartyIdInfo
       type: object
       description: Data model for the complex type PartyIdInfo.
@@ -2094,7 +2210,7 @@ components:
       description: Data model for the complex type Party.
       properties:
         partyIdInfo:
-          $ref: '#/components/schemas/PartyIdInfo'
+          $ref: '#/components/schemas/PartyIdInfo-2'
         merchantClassificationCode:
           $ref: '#/components/schemas/MerchantClassificationCode'
         name:

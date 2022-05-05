@@ -48,8 +48,23 @@ function createPostAccountsTester({ reqInbound, reqOutbound, apiSpecsOutbound })
             });
 
         const res = await reqOutbound.post('/accounts').send(postAccountsBody);
+        console.log(res)
         const {body} = res;
         expect(res.statusCode).toEqual(responseCode);
+
+        // remove elements of the response we do not want/need to compare for correctness.
+        // timestamps on requests/responses for example will be set by the HTTP framework
+        // and we dont want to compare against static values.
+        if (body.executionState) {
+            if(body.executionState.postAccountsResponse) {
+                delete body.executionState.postAccountsResponse.headers;
+            }
+        }
+
+        if(body.postAccountsResponse) {
+            delete body.postAccountsResponse.headers;
+        }
+
         expect(body).toEqual(responseBody);
         const responseValidator = new OpenAPIResponseValidator(apiSpecsOutbound.paths['/accounts'].post);
         const err = responseValidator.validateResponse(responseCode, body);

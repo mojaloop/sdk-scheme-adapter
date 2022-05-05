@@ -305,8 +305,10 @@ const putAuthorizationsById = async (ctx) => {
     // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(cacheId, {
         type: 'authorizationsResponse',
-        data: ctx.request.body,
-        headers: ctx.request.headers
+        data: {
+            body: ctx.request.body,
+            headers: ctx.request.headers
+        }
     });
     ctx.response.status = 200;
 };
@@ -319,7 +321,10 @@ const putParticipantsById = async (ctx) => {
     // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(`ac_${ctx.state.path.params.ID}`, {
         type: 'accountsCreationSuccessfulResponse',
-        data: ctx.request.body
+        data: {
+            body: ctx.request.body,
+            headers: ctx.request.headers
+        }
     });
 
     ctx.response.status = 200;
@@ -333,7 +338,10 @@ const putParticipantsByIdError = async (ctx) => {
     // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(`ac_${ctx.state.path.params.ID}`, {
         type: 'accountsCreationErrorResponse',
-        data: ctx.request.body
+        data: {
+            body: ctx.request.body,
+            headers: ctx.request.headers
+        }
     });
 
     ctx.response.status = 200;
@@ -353,7 +361,12 @@ const putParticipantsByTypeAndId = async (ctx) => {
 
         // publish an event onto the cache for subscribers to action
         const cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
-        await ctx.state.cache.publish(cacheId, ctx.request.body);
+        await ctx.state.cache.publish(cacheId, {
+            data: {
+                body: ctx.request.body,
+                headers: ctx.request.headers
+            }
+        });
         ctx.response.status = 200;
     } else {
         // SDK does not make participants requests so we should not expect any calls to this method
@@ -376,7 +389,12 @@ const putParticipantsByTypeAndIdError = async(ctx) => {
     // the subscriber will notice the body contains an errorInformation property
     // and recognise it as an error response
     const cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
-    await ctx.state.cache.publish(cacheId, ctx.request.body);
+    await ctx.state.cache.publish(cacheId, {
+        data: {
+            body: ctx.request.body,
+            headers: ctx.request.headers
+        }
+    });
 
     ctx.response.status = 200;
     ctx.response.body = '';
@@ -419,14 +437,19 @@ const putQuoteById = async (ctx) => {
     // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(`qt_${ctx.state.path.params.ID}`, {
         type: 'quoteResponse',
-        data: ctx.request.body,
-        headers: ctx.request.headers
+        data: {
+            body: ctx.request.body,
+            headers: ctx.request.headers
+        }
     });
 
     // duplicate publication until legacy code refactored
     await QuotesModel.triggerDeferredJob({
         cache: ctx.state.cache,
-        message: ctx.request.body,
+        message: {
+            headers: ctx.request.headers,
+            body: ctx.request.body
+        },
         args: {
             quoteId: ctx.state.path.params.ID
         }
@@ -446,7 +469,10 @@ const putQuotesByIdError = async (ctx) => {
     // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(`qt_${ctx.state.path.params.ID}`, {
         type: 'quoteResponseError',
-        data: ctx.request.body
+        data: {
+            body: ctx.request.body,
+            headers: ctx.request.headers
+        }
     });
 
     // duplicate publication until legacy code refactored
@@ -506,8 +532,10 @@ const putTransactionRequestsById = async (ctx) => {
     // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(`txnreq_${ctx.state.path.params.ID}`, {
         type: 'transactionRequestResponse',
-        data: ctx.request.body,
-        headers: ctx.request.headers
+        data: {
+            body: ctx.request.body,
+            headers: ctx.request.headers
+        }
     });
 
     ctx.response.status = 200;
@@ -709,8 +737,10 @@ const putBulkQuotesById = async (ctx) => {
     // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(`bulkQuotes_${ctx.state.path.params.ID}`, {
         type: 'bulkQuoteResponse',
-        data: ctx.request.body,
-        headers: ctx.request.headers
+        data: {
+            body: ctx.request.body,
+            headers: ctx.request.headers
+        }
     });
 
     ctx.response.status = 200;
@@ -723,7 +753,10 @@ const putBulkQuotesByIdError = async(ctx) => {
     // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(`bulkQuotes_${ctx.state.path.params.ID}`, {
         type: 'bulkQuoteResponseError',
-        data: ctx.request.body
+        data: {
+            body: ctx.request.body,
+            headers: ctx.request.headers
+        }
     });
 
     ctx.response.status = 200;
@@ -808,8 +841,10 @@ const putBulkTransfersById = async (ctx) => {
     // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(`bulkTransfer_${ctx.state.path.params.ID}`, {
         type: 'bulkTransferResponse',
-        data: ctx.request.body,
-        headers: ctx.request.headers
+        data: {
+            body: ctx.request.body,
+            headers: ctx.request.headers
+        }
     });
 
     ctx.response.status = 200;
@@ -822,7 +857,10 @@ const putBulkTransfersByIdError = async(ctx) => {
     // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(`bulkTransfer_${ctx.state.path.params.ID}`, {
         type: 'bulkTransferResponseError',
-        data: ctx.request.body
+        data: {
+            body: ctx.request.body,
+            headers: ctx.request.headers
+        }
     });
 
     ctx.response.status = 200;

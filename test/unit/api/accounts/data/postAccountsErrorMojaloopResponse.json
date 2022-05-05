@@ -1,5 +1,15 @@
 {
+  "message": "Got an error response creating accounts: {\n  errorInformation: { errorCode: '3204', errorDescription: 'Party not found' }\n}",
+  "statusCode": "3204",
   "executionState": {
+    "postAccountsResponse": {
+      "body": {
+        "errorInformation": {
+          "errorCode": "3204",
+          "errorDescription": "Party not found"
+        }
+      }
+    },
     "accounts": [
       {
         "currency": "USD",
@@ -19,7 +29,5 @@
     },
     "modelId": "00000000-0000-1000-8000-000000000001",
     "response": []
-  },
-  "message": "Got an error response creating accounts: {\n  errorInformation: { errorCode: '3204', errorDescription: 'Party not found' }\n}",
-  "statusCode": "3204"
+  }
 }

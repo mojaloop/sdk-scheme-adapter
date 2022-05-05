@@ -13,3 +13,13 @@ properties:
     $ref: ./accountsCreationState.yaml
   lastError:
     $ref: ./transferError.yaml
+  postAccountsResponse:
+    type: object
+    required:
+      - body
+    properties:
+      body:
+        $ref: >-
+          ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/ParticipantsIDPutResponse.yaml
+      headers:
+        type: object

@@ -133,20 +133,23 @@ class AccountsModel {
 
 
     async _executeCreateAccountsRequest(request) {
+        const accountRequest = request;
+
         // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
-            const requestKey = `ac_${request.requestId}`;
+            const requestKey = `ac_${accountRequest.requestId}`;
 
             const subId = await this._cache.subscribe(requestKey, async (cn, msg, subId) => {
                 try {
                     let error;
-                    let message = JSON.parse(msg);
+                    const message = JSON.parse(msg);
+                    this._data.postAccountsResponse = message.data;
 
                     if (message.type === 'accountsCreationErrorResponse') {
-                        error = new BackendError(`Got an error response creating accounts: ${util.inspect(message.data)}`, 500);
-                        error.mojaloopError = message.data;
+                        error = new BackendError(`Got an error response creating accounts: ${util.inspect(this._data.postAccountsResponse.body)}`, 500);
+                        error.mojaloopError = this._data.postAccountsResponse.body;
                     } else if (message.type !== 'accountsCreationSuccessfulResponse') {
-                        this._logger.push({ message }).log(
+                        this._logger.push(util.inspect(this._data.postAccountsResponse)).log(
                             `Ignoring cache notification for request ${requestKey}. ` +
                             `Unknown message type ${message.type}.`
                         );
@@ -167,7 +170,7 @@ class AccountsModel {
                         return reject(error);
                     }
 
-                    const response = message.data;
+                    const response = this._data.postAccountsResponse;
                     this._logger.push({ response }).log('Account creation response received');
                     return resolve(response);
                 }
@@ -178,7 +181,7 @@ class AccountsModel {
 
             // set up a timeout for the request
             const timeout = setTimeout(() => {
-                const err = new BackendError(`Timeout waiting for response to account creation request ${request.requestId}`, 504);
+                const err = new BackendError(`Timeout waiting for response to account creation request ${accountRequest.requestId}`, 504);
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this._cache.unsubscribe(requestKey, subId).catch(e => {
@@ -191,7 +194,7 @@ class AccountsModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /participants request to the switch
             try {
-                const res = await this._requests.postParticipants(request);
+                const res = await this._requests.postParticipants(accountRequest);
                 this._logger.push({ res }).log('Account creation request sent to peer');
             }
             catch(err) {
@@ -218,11 +221,12 @@ class AccountsModel {
     }
 
     _buildClientResponse(response) {
-        return response.partyList.map(party => ({
+        console.log(response)
+        return response.body.partyList.map(party => ({
             idType: party.partyId.partyIdType,
             idValue: party.partyId.partyIdentifier,
             idSubValue: party.partyId.partySubIdOrType,
-            ...!response.currency && {
+            ...!response.body.currency && {
                 error: {
                     statusCode: Errors.MojaloopApiErrorCodes.CLIENT_ERROR.code,
                     message: 'Provided currency not supported',
@@ -295,7 +299,6 @@ class AccountsModel {
                 resp.currentState = stateEnum.ERROR_OCCURRED;
                 break;
         }
-
         return resp;
     }
 

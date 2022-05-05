@@ -138,7 +138,10 @@ describe('Inbound API handlers:', () => {
             expect(triggerDeferredJobSpy).toHaveBeenCalledTimes(1);
             expect(triggerDeferredJobSpy).toBeCalledWith({
                 cache: mockContext.state.cache,
-                message: mockContext.request.body,
+                message: {
+                    body: mockContext.request.body,
+                    headers: mockContext.request.headers,
+                },
                 args: {
                     quoteId: mockContext.state.path.params.ID
                 }
@@ -215,8 +218,10 @@ describe('Inbound API handlers:', () => {
             expect(bulkQuotesSpy).toHaveBeenCalledTimes(1);
             expect(bulkQuotesSpy.mock.calls[0][1]).toMatchObject({
                 type: 'bulkQuoteResponse',
-                data: mockContext.request.body,
-                headers: mockContext.request.headers
+                data: {
+                    body: mockContext.request.body,
+                    headers: mockContext.request.headers,
+                }
             });
         });
     });
@@ -263,7 +268,10 @@ describe('Inbound API handlers:', () => {
             expect(bulkQuotesSpy).toHaveBeenCalledTimes(1);
             expect(bulkQuotesSpy.mock.calls[0][1]).toMatchObject({
                 type: 'bulkQuoteResponseError',
-                data: mockContext.request.body
+                data: {
+                    body: mockContext.request.body,
+                    headers: mockContext.request.headers,
+                }
             });
         });
     });
@@ -372,8 +380,10 @@ describe('Inbound API handlers:', () => {
             expect(bulkTransfersSpy).toHaveBeenCalledTimes(1);
             expect(bulkTransfersSpy.mock.calls[0][1]).toMatchObject({
                 type: 'bulkTransferResponse',
-                data: mockContext.request.body,
-                headers: mockContext.request.headers
+                data: {
+                    body: mockContext.request.body,
+                    headers: mockContext.request.headers,
+                }
             });
         });
     });
@@ -420,7 +430,10 @@ describe('Inbound API handlers:', () => {
             expect(bulkTransfersSpy).toHaveBeenCalledTimes(1);
             expect(bulkTransfersSpy.mock.calls[0][1]).toMatchObject({
                 type: 'bulkTransferResponseError',
-                data: mockContext.request.body
+                data: {
+                    body: mockContext.request.body,
+                    headers: mockContext.request.headers,
+                }
             });
         });
     });
@@ -676,7 +689,8 @@ describe('Inbound API handlers:', () => {
                 message: {
                     body: mockContext.request.body,
                     headers: mockContext.request.headers,
-                },                args: {
+                },
+                args: {
                     transferId: mockContext.state.path.params.ID
                 }
             });
@@ -693,7 +707,8 @@ describe('Inbound API handlers:', () => {
                 message: {
                     body: mockContext.request.body,
                     headers: mockContext.request.headers,
-                },                args: {
+                },
+                args: {
                     transferId: mockContext.state.path.params.ID,
                 }
             });
