@@ -212,7 +212,7 @@ class InboundTransfersModel {
                 response.expiration = new Date(expiration).toISOString();
             }
 
-            // project our internal quote reponse into mojaloop quote response form
+            // project our internal quote response into mojaloop quote response form
             const mojaloopResponse = shared.internalQuoteResponseToMojaloop(response);
 
             // create our ILP packet and condition and tag them on to our internal quote response
@@ -295,7 +295,7 @@ class InboundTransfersModel {
                 return 'No response from backend';
             }
 
-            // project our internal quote reponse into mojaloop quote response form
+            // project our internal quote response into mojaloop quote response form
             const mojaloopResponse = shared.internalTransactionRequestResponseToMojaloop(response);
 
             // make a callback to the source fsp with the quote response
