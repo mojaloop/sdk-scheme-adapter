@@ -185,7 +185,7 @@ class OutboundTransfersModel {
             case 'resolvePayee':
                 // resolve the payee
                 if (this._multiplePartiesResponse) {
-                    return this._resolveMultiplePayees();
+                    return this._resolveBatchPayees();
                 }
                 return this._resolvePayee();
 
@@ -363,7 +363,7 @@ class OutboundTransfersModel {
      * Starts the payee resolution process by sending a GET /parties request to the switch;
      * then waits for a specified number of seconds and resolve payees with responses from the cache.
      */
-    _resolveMultiplePayees() {
+    _resolveBatchPayees() {
         // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
             let latencyTimerDone;
