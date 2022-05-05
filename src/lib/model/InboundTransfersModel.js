@@ -845,9 +845,10 @@ class InboundTransfersModel {
         }
         return mojaloopError;
     }
+
     /**
-             * Persists the model state to cache for reinstantiation at a later point
-             */
+     * Persists the model state to cache for reinstantiation at a later point
+     */
     async _save() {
         try {
             const res = await this._cache.set(`transferModel_in_${this.data.transferId}`, this.data);

@@ -35,7 +35,7 @@ function createGetTransfersTester({ reqInbound, reqOutbound, apiSpecsOutbound })
 
             return reqInbound.put(putUrl)
                 .send(putBody)
-                .set('content-type', 'application/vnd.interoperability.transfers+json;version=1.0')
+                .set('content-type', 'application/vnd.interoperability.transfers+json;version=1.1')
                 .set('Date', new Date().toISOString())
                 .set('fspiop-source', 'mojaloop-sdk')
                 .expect(200);
@@ -148,17 +148,17 @@ function createPostTransfersTester(
             if (urlPath.startsWith('/parties/')) {
                 putBody = await Promise.resolve(bodyFn.parties.put());
                 putUrl = urlPath;
-                contentType = 'application/vnd.interoperability.parties+json;version=1.0';
+                contentType = 'application/vnd.interoperability.parties+json;version=1.1';
             } else if (urlPath === '/quotes') {
                 expect(body).toEqual(bodyFn.quotes.post(body));
                 putBody = await Promise.resolve(bodyFn.quotes.put(body));
                 putUrl = `/quotes/${body.quoteId}`;
-                contentType = 'application/vnd.interoperability.quotes+json;version=1.0';
+                contentType = 'application/vnd.interoperability.quotes+json;version=1.1';
             } else if (urlPath === '/transfers') {
                 expect(body).toEqual(bodyFn.transfers.post(body));
                 putBody = await Promise.resolve(bodyFn.transfers.put(body));
                 putUrl = `/transfers/${body.transferId}`;
-                contentType = 'application/vnd.interoperability.transfers+json;version=1.0';
+                contentType = 'application/vnd.interoperability.transfers+json;version=1.1';
             } else {
                 throw new Error(`Unexpected url ${urlPath}`);
             }
