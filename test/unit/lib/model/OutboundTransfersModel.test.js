@@ -212,7 +212,7 @@ describe('outboundModel', () => {
         MojaloopRequests.__postTransfers = jest.fn((postTransfersBody, destFspId) => {
             //ensure that the `MojaloopRequests.postTransfers` method has been called with the correct arguments
             // set as the destination FSPID, picked up from the header's value `fspiop-source`
-            expect(model.data.quoteResponseSource).toBe(quoteResponse.headers['fspiop-source']);
+            expect(model.data.quoteResponseSource).toBe(quoteResponse.data.headers['fspiop-source']);
 
             const extensionList = postTransfersBody.extensionList.extension;
             expect(extensionList).toBeTruthy();
@@ -220,9 +220,9 @@ describe('outboundModel', () => {
             expect(extensionList[0]).toEqual({ key: 'tkey1', value: 'tvalue1' });
             expect(extensionList[1]).toEqual({ key: 'tkey2', value: 'tvalue2' });
 
-            expect(destFspId).toBe(quoteResponse.headers['fspiop-source']);
+            expect(destFspId).toBe(quoteResponse.data.headers['fspiop-source']);
             expect(model.data.to.fspId).toBe(payeeParty.body.party.partyIdInfo.fspId);
-            expect(quoteResponse.headers['fspiop-source']).not.toBe(model.data.to.fspId);
+            expect(quoteResponse.data.headers['fspiop-source']).not.toBe(model.data.to.fspId);
 
             // simulate a callback with the transfer fulfilment
             emitTransferFulfilCacheMessage(cache, postTransfersBody.transferId, transferFulfil);
@@ -280,15 +280,15 @@ describe('outboundModel', () => {
         MojaloopRequests.__postTransfers = jest.fn((postTransfersBody, destFspId) => {
             //ensure that the `MojaloopRequests.postTransfers` method has been called with the correct arguments
             // set as the destination FSPID, picked up from the header's value `fspiop-source`
-            expect(model.data.quoteResponseSource).toBe(quoteResponse.headers['fspiop-source']);
+            expect(model.data.quoteResponseSource).toBe(quoteResponse.data.headers['fspiop-source']);
             const extensionList = postTransfersBody.extensionList.extension;
             expect(extensionList).toBeTruthy();
             expect(extensionList.length).toBe(2);
             expect(extensionList[0]).toEqual({ key: 'tkey1', value: 'tvalue1' });
             expect(extensionList[1]).toEqual({ key: 'tkey2', value: 'tvalue2' });
-            expect(destFspId).toBe(quoteResponse.headers['fspiop-source']);
+            expect(destFspId).toBe(quoteResponse.data.headers['fspiop-source']);
             expect(model.data.to.fspId).toBe(payeeParty.body.party.partyIdInfo.fspId);
-            expect(quoteResponse.headers['fspiop-source']).not.toBe(model.data.to.fspId);
+            expect(quoteResponse.data.headers['fspiop-source']).not.toBe(model.data.to.fspId);
             // simulate a callback with the transfer fulfilment
             emitTransferFulfilCacheMessage(cache, postTransfersBody.transferId, pb);
             return Promise.resolve(dummyRequestsModuleResponse);
@@ -310,7 +310,7 @@ describe('outboundModel', () => {
         expect(MojaloopRequests.__patchTransfers.mock.calls[0][0]).toEqual(model.data.transferId);
         expect(MojaloopRequests.__patchTransfers.mock.calls[0][1].transferState).toEqual('COMMITTED');
         expect(MojaloopRequests.__patchTransfers.mock.calls[0][1].completedTimestamp).not.toBeUndefined();
-        expect(MojaloopRequests.__patchTransfers.mock.calls[0][2]).toEqual(quoteResponse.headers['fspiop-source']);
+        expect(MojaloopRequests.__patchTransfers.mock.calls[0][2]).toEqual(quoteResponse.data.headers['fspiop-source']);
 
 
         // check we stopped at payeeResolved state
@@ -329,12 +329,12 @@ describe('outboundModel', () => {
 
         // change the the transfer amount and currency in the quote response
         // so it is different to the initial request
-        quoteResponse.data.transferAmount = {
+        quoteResponse.data.body.transferAmount = {
             currency: 'XYZ',
             amount: '9876543210'
         };
 
-        expect(quoteResponse.data.transferAmount).not.toEqual({
+        expect(quoteResponse.data.body.transferAmount).not.toEqual({
             amount: transferRequest.amount,
             currency: transferRequest.currency
         });
@@ -356,7 +356,7 @@ describe('outboundModel', () => {
         MojaloopRequests.__postTransfers = jest.fn((postTransfersBody, destFspId) => {
             //ensure that the `MojaloopRequests.postTransfers` method has been called with the correct arguments
             // set as the destination FSPID, picked up from the header's value `fspiop-source`
-            expect(model.data.quoteResponseSource).toBe(quoteResponse.headers['fspiop-source']);
+            expect(model.data.quoteResponseSource).toBe(quoteResponse.data.headers['fspiop-source']);
 
             const extensionList = postTransfersBody.extensionList.extension;
             expect(extensionList).toBeTruthy();
@@ -364,11 +364,11 @@ describe('outboundModel', () => {
             expect(extensionList[0]).toEqual({ key: 'tkey1', value: 'tvalue1' });
             expect(extensionList[1]).toEqual({ key: 'tkey2', value: 'tvalue2' });
 
-            expect(destFspId).toBe(quoteResponse.headers['fspiop-source']);
+            expect(destFspId).toBe(quoteResponse.data.headers['fspiop-source']);
             expect(model.data.to.fspId).toBe(payeeParty.body.party.partyIdInfo.fspId);
-            expect(quoteResponse.headers['fspiop-source']).not.toBe(model.data.to.fspId);
+            expect(quoteResponse.data.headers['fspiop-source']).not.toBe(model.data.to.fspId);
 
-            expect(postTransfersBody.amount).toEqual(quoteResponse.data.transferAmount);
+            expect(postTransfersBody.amount).toEqual(quoteResponse.data.body.transferAmount);
 
             // simulate a callback with the transfer fulfilment
             emitTransferFulfilCacheMessage(cache, postTransfersBody.transferId, transferFulfil);
@@ -1189,7 +1189,7 @@ describe('outboundModel', () => {
         MojaloopRequests.__postTransfers = jest.fn((postTransfersBody) => {
             //ensure that the `MojaloopRequests.postTransfers` method has been called with the correct arguments
             // set as the destination FSPID, picked up from the header's value `fspiop-source`
-            expect(model.data.quoteResponseSource).toBe(quoteResponse.headers['fspiop-source']);
+            expect(model.data.quoteResponseSource).toBe(quoteResponse.data.headers['fspiop-source']);
             expect(MojaloopRequests.__postTransfers).toHaveBeenCalledTimes(1);
             const payeeFsp = MojaloopRequests.__postTransfers.mock.calls[0][0].payeeFsp;
             expect(payeeFsp).toEqual(payeeParty.body.party.partyIdInfo.fspId);
@@ -1241,10 +1241,10 @@ describe('outboundModel', () => {
         MojaloopRequests.__postTransfers = jest.fn((postTransfersBody) => {
             //ensure that the `MojaloopRequests.postTransfers` method has been called with the correct arguments
             // set as the destination FSPID, picked up from the header's value `fspiop-source`
-            expect(model.data.quoteResponseSource).toBe(quoteResponse.headers['fspiop-source']);
+            expect(model.data.quoteResponseSource).toBe(quoteResponse.data.headers['fspiop-source']);
             expect(MojaloopRequests.__postTransfers).toHaveBeenCalledTimes(1);
             const payeeFsp = MojaloopRequests.__postTransfers.mock.calls[0][0].payeeFsp;
-            expect(payeeFsp).toEqual(quoteResponse.headers['fspiop-source']);
+            expect(payeeFsp).toEqual(quoteResponse.data.headers['fspiop-source']);
 
             // simulate a callback with the transfer fulfilment
             emitTransferFulfilCacheMessage(cache, postTransfersBody.transferId, transferFulfil);

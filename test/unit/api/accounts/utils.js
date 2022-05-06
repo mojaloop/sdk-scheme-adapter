@@ -48,7 +48,6 @@ function createPostAccountsTester({ reqInbound, reqOutbound, apiSpecsOutbound })
             });
 
         const res = await reqOutbound.post('/accounts').send(postAccountsBody);
-        console.log(res)
         const {body} = res;
         expect(res.statusCode).toEqual(responseCode);
 

@@ -221,7 +221,6 @@ class AccountsModel {
     }
 
     _buildClientResponse(response) {
-        console.log(response)
         return response.body.partyList.map(party => ({
             idType: party.partyId.partyIdType,
             idValue: party.partyId.partyIdentifier,

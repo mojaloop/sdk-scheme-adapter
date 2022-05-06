@@ -520,10 +520,11 @@ class OutboundTransfersModel {
                     }
 
                     this.data.quoteResponse = {
-                        headers: message.headers,
-                        body: message.data
+                        headers: message.data.headers,
+                        body: message.data.body
                     };
                     this._logger.push({ quoteResponse: this.data.quoteResponse.body }).log('Quote response received');
+
                     this.data.quoteResponseSource = this.data.quoteResponse.headers['fspiop-source'];
 
                     return resolve(quote);
