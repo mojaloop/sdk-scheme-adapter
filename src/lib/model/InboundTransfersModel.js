@@ -321,9 +321,9 @@ class InboundTransfersModel {
             // retrieve our quote data
             if (this._allowDifferentTransferTransactionId) {
                 const transactionId = this._ilp.getTransactionObject(prepareRequest.ilpPacket).transactionId;
-                this.data = await this._cache.get(`transferModel_in_${transactionId}`);
+                this.data = await this.load(transactionId);
             } else {
-                this.data = await this._cache.get(`transferModel_in_${prepareRequest.transferId}`);
+                this.data = await this.load(prepareRequest.transferId);
             }
 
             const quote = this.data.quote;
@@ -773,7 +773,7 @@ class InboundTransfersModel {
     async sendNotificationToPayee(body, transferId) {
         try {
             // load any cached state for this transfer e.g. quote request/response etc...
-            this.data = await this._cache.get(`transferModel_in_${transferId}`);
+            this.data = await this.load(transferId);
 
             // if we didnt have anything cached, start from scratch
             if(!this.data) {
@@ -856,6 +856,22 @@ class InboundTransfersModel {
         }
         catch(err) {
             this._logger.push({ err }).log('Error saving transfer model');
+            throw err;
+        }
+    }
+
+    /**
+     * Loads a transfer model from cache for resumption of the transfer process
+     *
+     * @param transferId {string} - UUID transferId of the model to load from cache
+     */
+    async load(transferId) {
+        try {
+            const data = await this._cache.get(`transferModel_in_${transferId}`);
+            return data;
+        }
+        catch(err) {
+            this._logger.push({ err }).log('Error loading transfer model');
             throw err;
         }
     }

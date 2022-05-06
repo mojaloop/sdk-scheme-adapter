@@ -114,7 +114,7 @@ describe('Outbound Accounts API', () => {
                 postAccountsErrorTimeoutResponse);
         });
 
-        test.only('should return mojaloop error response', () => {
+        test('should return mojaloop error response', () => {
             const putBodyFn = () => ({
                 errorInformation: {
                     errorCode: '3204',
