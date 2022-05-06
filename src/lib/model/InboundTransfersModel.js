@@ -329,8 +329,9 @@ class InboundTransfersModel {
             const quote = this.data.quote;
 
             if(!this.data || !quote) {
-                // NOTE If you are using the adapter in as an old "mojaloop connector" it absolutely requires a
-                // previous quote before allowing a transfer to proceed.
+                // If using the sdk-scheme-adapter in place of the deprecated `mojaloop-connector`
+                // make sure this is false. Scenarios that use `mojaloop-connector`
+                // absolutely requires a previous quote before allowing a transfer to proceed.
                 // This is a different to the a typical mojaloop sdk-scheme-adapter setup which allows this as an option.
 
                 // Check whether to allow transfers without a previous quote.
