@@ -321,9 +321,9 @@ class InboundTransfersModel {
             // retrieve our quote data
             if (this._allowDifferentTransferTransactionId) {
                 const transactionId = this._ilp.getTransactionObject(prepareRequest.ilpPacket).transactionId;
-                this.data = await this.load(transactionId);
+                this.data = await this._load(transactionId);
             } else {
-                this.data = await this.load(prepareRequest.transferId);
+                this.data = await this._load(prepareRequest.transferId);
             }
 
             const quote = this.data.quote;
@@ -773,7 +773,7 @@ class InboundTransfersModel {
     async sendNotificationToPayee(body, transferId) {
         try {
             // load any cached state for this transfer e.g. quote request/response etc...
-            this.data = await this.load(transferId);
+            this.data = await this._load(transferId);
 
             // if we didnt have anything cached, start from scratch
             if(!this.data) {
@@ -865,7 +865,7 @@ class InboundTransfersModel {
      *
      * @param transferId {string} - UUID transferId of the model to load from cache
      */
-    async load(transferId) {
+    async _load(transferId) {
         try {
             const data = await this._cache.get(`transferModel_in_${transferId}`);
             return data;
