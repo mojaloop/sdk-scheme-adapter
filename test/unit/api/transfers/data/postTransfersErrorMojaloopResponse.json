@@ -2,6 +2,7 @@
   "message": "Got an error response resolving party: {\n  errorInformation: { errorCode: '3204', errorDescription: 'Party not found' }\n}",
   "statusCode": "3204",
   "transferState": {
+    "direction": "OUTBOUND",
     "amount": "100",
     "amountType": "SEND",
     "currency": "USD",
@@ -10,6 +11,14 @@
       "displayName": "John Doe",
       "idType": "MSISDN",
       "idValue": "123456789"
+    },
+    "getPartiesResponse": {
+      "body": {
+        "errorInformation": {
+          "errorCode": "3204",
+          "errorDescription": "Party not found"
+        }
+      }
     },
     "homeTransactionId": "123ABC",
     "lastError": {

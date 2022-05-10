@@ -1002,6 +1002,12 @@ components:
           $ref: '#/components/schemas/extensionListEmptiable'
         transferRequestExtensions:
           $ref: '#/components/schemas/extensionListEmptiable'
+        skipPartyLookup:
+          description: >-
+            Set to true if supplying an FSPID for the payee party and no party
+            resolution is needed. This may be useful is a previous party
+            resolution has been performed.
+          type: boolean
     CorrelationId:
       title: CorrelationId
       type: string
@@ -1273,8 +1279,24 @@ components:
           $ref: '#/components/schemas/transferStatus'
         quoteId:
           $ref: '#/components/schemas/CorrelationId'
+        getPartiesResponse:
+          type: object
+          required:
+            - body
+          properties:
+            body:
+              type: object
+            headers:
+              type: object
         quoteResponse:
-          $ref: '#/components/schemas/QuotesIDPutResponse'
+          type: object
+          required:
+            - body
+          properties:
+            body:
+              $ref: '#/components/schemas/QuotesIDPutResponse'
+            headers:
+              type: object
         quoteResponseSource:
           type: string
           description: >
@@ -1283,7 +1305,14 @@ components:
             account in the case of a FOREX transfer. i.e. it may be a FOREX
             gateway.
         fulfil:
-          $ref: '#/components/schemas/TransfersIDPutResponse'
+          type: object
+          required:
+            - body
+          properties:
+            body:
+              $ref: '#/components/schemas/TransfersIDPutResponse'
+            headers:
+              type: object
         lastError:
           description: >
             Object representing the last error to occur during a transfer
@@ -1291,6 +1320,12 @@ components:
             entity in the scheme or an object representing other types of error
             e.g. exceptions that may occur inside the scheme adapter.
           $ref: '#/components/schemas/transferError'
+        skipPartyLookup:
+          description: >-
+            Set to true if supplying an FSPID for the payee party and no party
+            resolution is needed. This may be useful is a previous party
+            resolution has been performed.
+          type: boolean
     errorResponse:
       type: object
       properties:
@@ -1321,7 +1356,14 @@ components:
         currentState:
           $ref: '#/components/schemas/transferStatus'
         fulfil:
-          $ref: '#/components/schemas/TransfersIDPutResponse'
+          type: object
+          required:
+            - body
+          properties:
+            body:
+              $ref: '#/components/schemas/TransfersIDPutResponse'
+            headers:
+              type: object
     transferContinuationAcceptParty:
       type: object
       required:
@@ -1993,6 +2035,15 @@ components:
           $ref: '#/components/schemas/accountsCreationState'
         lastError:
           $ref: '#/components/schemas/transferError'
+        postAccountsResponse:
+          type: object
+          required:
+            - body
+          properties:
+            body:
+              type: object
+            headers:
+              type: object
     errorAccountsResponse:
       allOf:
         - $ref: '#/components/schemas/errorResponse'

@@ -36,7 +36,7 @@ function createPostAccountsTester({ reqInbound, reqOutbound, apiSpecsOutbound })
             return reqInbound.put(putUrl)
                 .send(putBody)
                 .set('Date', new Date().toISOString())
-                .set('content-type', 'application/vnd.interoperability.participants+json;version=1.0')
+                .set('content-type', 'application/vnd.interoperability.participants+json;version=1.1')
                 .set('fspiop-source', 'mojaloop-sdk')
                 .expect(200);
         };
@@ -50,6 +50,20 @@ function createPostAccountsTester({ reqInbound, reqOutbound, apiSpecsOutbound })
         const res = await reqOutbound.post('/accounts').send(postAccountsBody);
         const {body} = res;
         expect(res.statusCode).toEqual(responseCode);
+
+        // remove elements of the response we do not want/need to compare for correctness.
+        // timestamps on requests/responses for example will be set by the HTTP framework
+        // and we dont want to compare against static values.
+        if (body.executionState) {
+            if(body.executionState.postAccountsResponse) {
+                delete body.executionState.postAccountsResponse.headers;
+            }
+        }
+
+        if(body.postAccountsResponse) {
+            delete body.postAccountsResponse.headers;
+        }
+
         expect(body).toEqual(responseBody);
         const responseValidator = new OpenAPIResponseValidator(apiSpecsOutbound.paths['/accounts'].post);
         const err = responseValidator.validateResponse(responseCode, body);

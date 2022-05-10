@@ -1,14 +1,14 @@
 {
   "inbound": {
-    "port": 4000,
-    "tls": {
-        "mutualTLS": { "enabled": false },
-        "creds": {
-            "ca": null,
-            "cert": null,
-            "key": null
-        }
-    }
+      "port": 4000,
+      "tls": {
+          "mutualTLS": { "enabled": false },
+          "creds": {
+              "ca": null,
+              "cert": null,
+              "key": null
+          }
+      }
   },
   "outbound": {
       "port": 4001,

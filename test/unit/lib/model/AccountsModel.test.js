@@ -51,14 +51,17 @@ describe('AccountsModel', () => {
             const response = {
                 type: 'accountsCreationSuccessfulResponse',
                 data: {
-                    partyList: request.partyList.map(party => ({
-                        partyId: party,
-                        // errorInformation: null
-                    })),
-                    currency: request.currency,
+                    body: {
+                        partyList: request.partyList.map(party => ({
+                            partyId: party,
+                            // errorInformation: null
+                        })),
+                        currency: request.currency,
+                    },
+                    headers: {}
                 },
             };
-            cache.publish(`ac_${request.requestId}`, JSON.stringify(response));
+            cache.publish(`ac_${request.requestId}`, response);
             return Promise.resolve();
         });
 

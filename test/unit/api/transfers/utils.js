@@ -35,7 +35,7 @@ function createGetTransfersTester({ reqInbound, reqOutbound, apiSpecsOutbound })
 
             return reqInbound.put(putUrl)
                 .send(putBody)
-                .set('content-type', 'application/vnd.interoperability.transfers+json;version=1.0')
+                .set('content-type', 'application/vnd.interoperability.transfers+json;version=1.1')
                 .set('Date', new Date().toISOString())
                 .set('fspiop-source', 'mojaloop-sdk')
                 .expect(200);
@@ -50,9 +50,49 @@ function createGetTransfersTester({ reqInbound, reqOutbound, apiSpecsOutbound })
         const res = await reqOutbound.get(`/transfers/${TRANSFER_ID}`);
         const {body} = res;
         expect(res.statusCode).toEqual(responseCode);
+
+        // remove elements of the response we do not want/need to compare for correctness.
+        // timestamps on requests/responses for example will be set by the HTTP framework
+        // and we dont want to compare against static values.
         delete body.initiatedTimestamp;
         if (body.transferState) {
             delete body.transferState.initiatedTimestamp;
+            if(body.transferState.quoteResponse) {
+                delete body.transferState.quoteResponse.headers;
+            }
+            if(body.transferState.getPartiesResponse) {
+                delete body.transferState.getPartiesResponse.headers;
+            }
+            if(body.transferState.fulfil) {
+                delete body.transferState.fulfil.headers;
+            }
+            if(body.transferState.quoteRequest) {
+                delete body.transferState.quoteRequest;
+            }
+            if(body.transferState.getPartiesRequest) {
+                delete body.transferState.getPartiesRequest;
+            }
+            if(body.transferState.prepare) {
+                delete body.transferState.prepare;
+            }
+        }
+        if(body.quoteResponse) {
+            delete body.quoteResponse.headers;
+        }
+        if(body.getPartiesResponse) {
+            delete body.getPartiesResponse.headers;
+        }
+        if(body.fulfil) {
+            delete body.fulfil.headers;
+        }
+        if(body.quoteRequest) {
+            delete body.quoteRequest;
+        }
+        if(body.getPartiesRequest) {
+            delete body.getPartiesRequest;
+        }
+        if(body.prepare) {
+            delete body.prepare;
         }
         expect(body).toEqual(responseBody);
         const responseValidator = new OpenAPIResponseValidator(apiSpecsOutbound.paths['/transfers/{transferId}'].get);
@@ -108,17 +148,17 @@ function createPostTransfersTester(
             if (urlPath.startsWith('/parties/')) {
                 putBody = await Promise.resolve(bodyFn.parties.put());
                 putUrl = urlPath;
-                contentType = 'application/vnd.interoperability.parties+json;version=1.0';
+                contentType = 'application/vnd.interoperability.parties+json;version=1.1';
             } else if (urlPath === '/quotes') {
                 expect(body).toEqual(bodyFn.quotes.post(body));
                 putBody = await Promise.resolve(bodyFn.quotes.put(body));
                 putUrl = `/quotes/${body.quoteId}`;
-                contentType = 'application/vnd.interoperability.quotes+json;version=1.0';
+                contentType = 'application/vnd.interoperability.quotes+json;version=1.1';
             } else if (urlPath === '/transfers') {
                 expect(body).toEqual(bodyFn.transfers.post(body));
                 putBody = await Promise.resolve(bodyFn.transfers.put(body));
                 putUrl = `/transfers/${body.transferId}`;
-                contentType = 'application/vnd.interoperability.transfers+json;version=1.0';
+                contentType = 'application/vnd.interoperability.transfers+json;version=1.1';
             } else {
                 throw new Error(`Unexpected url ${urlPath}`);
             }
@@ -162,10 +202,51 @@ function createPostTransfersTester(
 
         const res = await reqOutbound.post('/transfers').send(postTransfersSimpleBody);
         const {body} = res;
+        console.log(body)
         expect(res.statusCode).toEqual(responseCode);
+
+        // remove elements of the response we do not want/need to compare for correctness.
+        // timestamps on requests/responses for example will be set by the HTTP framework
+        // and we dont want to compare against static values.
         delete body.initiatedTimestamp;
         if (body.transferState) {
             delete body.transferState.initiatedTimestamp;
+            if(body.transferState.quoteResponse) {
+                delete body.transferState.quoteResponse.headers;
+            }
+            if(body.transferState.getPartiesResponse) {
+                delete body.transferState.getPartiesResponse.headers;
+            }
+            if(body.transferState.fulfil) {
+                delete body.transferState.fulfil.headers;
+            }
+            if(body.transferState.quoteRequest) {
+                delete body.transferState.quoteRequest;
+            }
+            if(body.transferState.getPartiesRequest) {
+                delete body.transferState.getPartiesRequest;
+            }
+            if(body.transferState.prepare) {
+                delete body.transferState.prepare;
+            }
+        }
+        if(body.quoteResponse) {
+            delete body.quoteResponse.headers;
+        }
+        if(body.getPartiesResponse) {
+            delete body.getPartiesResponse.headers;
+        }
+        if(body.fulfil) {
+            delete body.fulfil.headers;
+        }
+        if(body.quoteRequest) {
+            delete body.quoteRequest;
+        }
+        if(body.getPartiesRequest) {
+            delete body.getPartiesRequest;
+        }
+        if(body.prepare) {
+            delete body.prepare;
         }
         expect(body).toEqual(responseBody);
         const responseValidator = new OpenAPIResponseValidator(apiSpecsOutbound.paths['/transfers'].post);

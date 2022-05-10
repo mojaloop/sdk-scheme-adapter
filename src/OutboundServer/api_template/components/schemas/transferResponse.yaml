@@ -39,8 +39,24 @@ properties:
   quoteId:
     $ref: >-
       ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml
+  getPartiesResponse:
+    type: object
+    required:
+      - body
+    properties:
+      body:
+        type: object
+      headers:
+        type: object
   quoteResponse:
-    $ref: ./quote.yaml
+    type: object
+    required:
+      - body
+    properties:
+      body:
+        $ref: './quote.yaml'
+      headers:
+        type: object
   quoteResponseSource:
     type: string
     description: >
@@ -48,7 +64,14 @@ properties:
       same as the FSPID of the entity which owns the end user account in the
       case of a FOREX transfer. i.e. it may be a FOREX gateway.
   fulfil:
-    $ref: ./transferFulfilment.yaml
+      type: object
+      required:
+        - body
+      properties:
+        body:
+          $ref: ./transferFulfilment.yaml
+        headers:
+          type: object
   lastError:
     description: >
       Object representing the last error to occur during a transfer process.
@@ -56,3 +79,6 @@ properties:
       scheme or an object representing other types of error e.g. exceptions that
       may occur inside the scheme adapter.
     $ref: ./transferError.yaml
+  skipPartyLookup:
+    description: Set to true if supplying an FSPID for the payee party and no party resolution is needed. This may be useful is a previous party resolution has been performed.
+    type: boolean

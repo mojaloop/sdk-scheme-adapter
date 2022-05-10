@@ -27,7 +27,7 @@ const payeeParty = require('./data/payeeParty');
 const transactionRequestResponseTemplate = require('./data/transactionRequestResponse');
 
 const genPartyId = (party) => {
-    const { partyIdType, partyIdentifier, partySubIdOrType } = party.party.partyIdInfo;
+    const { partyIdType, partyIdentifier, partySubIdOrType } = party.body.party.partyIdInfo;
     return PartiesModel.channelName({
         type: partyIdType,
         id: partyIdentifier,

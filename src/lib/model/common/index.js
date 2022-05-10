@@ -9,10 +9,11 @@
  **************************************************************************/
 
 'use strict';
-const BackendError = require('./BackendError');
+const { BackendError, TransferStateEnum } = require('./BackendError');
 const PersistentStateMachine = require('./PersistentStateMachine');
 
 module.exports = {
     BackendError,
+    TransferStateEnum,
     PersistentStateMachine
 };

@@ -10,6 +10,7 @@
 
 'use strict';
 
+const util = require('util');
 
 const {
     BackendRequests,
@@ -21,6 +22,7 @@ const {
     Errors,
 } = require('@mojaloop/sdk-standard-components');
 const shared = require('./lib/shared');
+const { TransferStateEnum } = require('./common');
 
 /**
  *  Models the operations required for performing inbound transfers
@@ -68,6 +70,12 @@ class InboundTransfersModel {
             secret: config.ilpSecret,
             logger: this._logger,
         });
+    }
+
+    updateStateWithError(err) {
+        this.data.lastError = err;
+        this.data.currentState = TransferStateEnum.ERROR_OCCURRED;
+        return this._save();
     }
 
     /**
@@ -162,7 +170,32 @@ class InboundTransfersModel {
      * Asks the backend for a response to an incoming quote request and makes a callback to the originator with
      * the result
      */
-    async quoteRequest(quoteRequest, sourceFspId) {
+    async quoteRequest(request, sourceFspId) {
+        const quoteRequest = request.body;
+
+        // keep track of our state.
+        // note that instances of this model typically only live as long as it takes to
+        // handle an incoming request and send a response asynchronously, but we hold onto
+        // some state across async ops
+
+        this.data = {
+            // transferId: this follows the slightly dodgy assumption that transferId will be same as this transactionId.
+            // so far this has held in moja implementations but may not always be the case. regardless, future FSPIOP API
+            // versions MUST deal with this cleanly so we can expect to eliminate this assumption at some point.
+            transferId: quoteRequest.transactionId,
+            direction: 'INBOUND',
+            quoteRequest: {
+                headers: request.headers,
+                body: request.body
+            },
+            currentState: TransferStateEnum.QUOTE_REQUEST_RECEIVED,
+            initiatedTimestamp: new Date().toISOString(),
+        };
+
+        // persist the transfer record in the cache. if we crash after this at least we will
+        // have a record of the request in the cache.
+        await this._save();
+
         try {
             const internalForm = shared.mojaloopQuoteRequestToInternal(quoteRequest);
 
@@ -189,19 +222,24 @@ class InboundTransfersModel {
             mojaloopResponse.condition = condition;
 
             // now store the fulfilment and the quote data against the quoteId in our cache
-            await this._cache.set(`quote_${quoteRequest.transactionId}`, {
+            this.data.quote = {
                 request: quoteRequest,
                 internalRequest: internalForm,
                 response: response,
                 mojaloopResponse: mojaloopResponse,
                 fulfilment: fulfilment
-            });
-
-            // now store the quoteResponse data against the quoteId in our cache to be sent as a response to GET /quotes/{ID}
-            await this._cache.set(`quoteResponse_${quoteRequest.quoteId}`, mojaloopResponse);
+            };
+            await this._save();
 
             // make a callback to the source fsp with the quote response
-            return this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId);
+            const res = await this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId);
+            this.data.quoteResponse = {
+                headers: res.originalRequest.headers,
+                body: res.originalRequest.body,
+            };
+            this.data.currentState = TransferStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE;
+            await this._save();
+            return res;
         }
         catch(err) {
             this._logger.push({ err }).log('Error in quoteRequest');
@@ -257,7 +295,7 @@ class InboundTransfersModel {
                 return 'No response from backend';
             }
 
-            // project our internal quote reponse into mojaloop quote response form
+            // project our internal quote response into mojaloop quote response form
             const mojaloopResponse = shared.internalTransactionRequestResponseToMojaloop(response);
 
             // make a callback to the source fsp with the quote response
@@ -277,24 +315,35 @@ class InboundTransfersModel {
      * Validates an incoming transfer prepare request and makes a callback to the originator with
      * the result
      */
-    async prepareTransfer(prepareRequest, sourceFspId) {
+    async prepareTransfer(request, sourceFspId) {
+        const prepareRequest = request.body;
         try {
             // retrieve our quote data
-            let quote;
-
             if (this._allowDifferentTransferTransactionId) {
                 const transactionId = this._ilp.getTransactionObject(prepareRequest.ilpPacket).transactionId;
-                quote = await this._cache.get(`quote_${transactionId}`);
+                this.data = await this._load(transactionId);
             } else {
-                quote = await this._cache.get(`quote_${prepareRequest.transferId}`);
+                this.data = await this._load(prepareRequest.transferId);
             }
 
-            if(!quote) {
+            const quote = this.data.quote;
+
+            if(!this.data || !quote) {
+                // If using the sdk-scheme-adapter in place of the deprecated `mojaloop-connector`
+                // make sure this is false. Scenarios that use `mojaloop-connector`
+                // absolutely requires a previous quote before allowing a transfer to proceed.
+                // This is a different to the a typical mojaloop sdk-scheme-adapter setup which allows this as an option.
+
                 // Check whether to allow transfers without a previous quote.
                 if(!this._allowTransferWithoutQuote) {
                     throw new Error(`Corresponding quote not found for transfer ${prepareRequest.transferId}`);
                 }
             }
+
+            // persist our state so we have a record if we crash during processing the prepare
+            this.data.prepare = request;
+            this.data.currentState = TransferStateEnum.PREPARE_RECEIVED;
+            await this._save();
 
             // Calculate or retrieve fulfilment and condition
             let fulfilment = null;
@@ -313,13 +362,13 @@ class InboundTransfersModel {
                 throw new Error(`ILP condition in transfer prepare for ${prepareRequest.transferId} does not match quote`);
             }
 
-
-            if (quote && this._rejectTransfersOnExpiredQuotes) {
+            if (this._rejectTransfersOnExpiredQuotes) {
                 const now = new Date().toISOString();
                 const expiration = quote.mojaloopResponse.expiration;
                 if (now > expiration) {
                     const error = Errors.MojaloopApiErrorObjectFromCode(Errors.MojaloopApiErrorCodes.QUOTE_EXPIRED);
                     this._logger.error(`Error in prepareTransfer: quote expired for transfer ${prepareRequest.transferId}, system time=${now} > quote time=${expiration}`);
+                    await this.updateStateWithError(error);
                     return this._mojaloopRequests.putTransfersError(prepareRequest.transferId, error, sourceFspId);
                 }
             }
@@ -336,6 +385,7 @@ class InboundTransfersModel {
             }
 
             this._logger.log(`Transfer accepted by backend returning homeTransactionId: ${response.homeTransactionId} for mojaloop transferId: ${prepareRequest.transferId}`);
+            this.data.homeTransactionId = response.homeTransactionId;
 
             // create a  mojaloop transfer fulfil response
             const mojaloopResponse = {
@@ -350,10 +400,16 @@ class InboundTransfersModel {
             };
 
             // make a callback to the source fsp with the transfer fulfilment
-            return this._mojaloopRequests.putTransfers(prepareRequest.transferId, mojaloopResponse,
+            const res = await this._mojaloopRequests.putTransfers(prepareRequest.transferId, mojaloopResponse,
                 sourceFspId);
-        }
-        catch(err) {
+            this.data.fulfil = {
+                headers: res.originalRequest.headers,
+                body: res.originalRequest.body,
+            };
+            this.data.currentState = this._reserveNotification ? TransferStateEnum.RESERVED : TransferStateEnum.COMPLETED;
+            await this._save();
+            return res;
+        } catch(err) {
             this._logger.push({ err }).log('Error in prepareTransfer');
             const mojaloopError = await this._handleError(err);
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
@@ -717,22 +773,108 @@ class InboundTransfersModel {
     */
     async sendNotificationToPayee(body, transferId) {
         try {
-            const res = await this._backendRequests.putTransfersNotification(body, transferId);
+            // load any cached state for this transfer e.g. quote request/response etc...
+            this.data = await this._load(transferId);
+
+            // if we didnt have anything cached, start from scratch
+            if(!this.data) {
+                this.data = {};
+            }
+
+            // tag the final notification body on to the state
+            this.data.finalNotification = body;
+
+            if(body.transferState === 'COMMITTED') {
+                // if the transfer was successful in the switch, set the overall transfer state to COMPLETED
+                this.data.currentState = TransferStateEnum.COMPLETED;
+            }
+            else {
+                // if the final notification has anything other than COMMITTED as the final state, set an error
+                // in the transfer state.
+                this.data.currentState == TransferStateEnum.ERROR_OCCURED;
+                this.data.lastError = 'Final notification state not COMMITTED';
+            }
+
+            await this._save();
+
+            const res = await this._backendRequests.putTransfersNotification(this.data, transferId);
             return res;
         } catch (err) {
-            this._logger.push({ err }).log('Error in sendNotificationToPayee');
+            this._logger.push({ err }).log('Error notifying backend of final transfer state');
         }
     }
 
-    async _handleError(err, mojaloopErrorCode = Errors.MojaloopApiErrorCodes.INTERNAL_SERVER_ERROR) {
+    async _handleError(err) {
+        // by default use a generic server error
+        let mojaloopError = (new Errors.MojaloopFSPIOPError(err, null, null, Errors.MojaloopApiErrorCodes.INTERNAL_SERVER_ERROR)).toApiErrorObject();
         if(err instanceof HTTPResponseError) {
+            // this is an http response error e.g. from calling DFSP backend
             const e = err.getData();
             if(e.res && e.res.data) {
-                mojaloopErrorCode = Errors.MojaloopApiErrorCodeFromCode(`${e.res.data.statusCode}`);
+                // look for a standard mojaloop error that matches the statusCode
+                let mojaloopErrorCode = Errors.MojaloopApiErrorCodeFromCode(`${e.res.data.statusCode}`);
+                let errorDescription = e.res.data.message;
+                if(mojaloopErrorCode) {
+                    // use the standard mojaloop error object
+                    mojaloopError = (new Errors.MojaloopFSPIOPError(err, null, null, mojaloopErrorCode)).toApiErrorObject();
+                    if(errorDescription) {
+                        // if the error has a description, use that instead of the default mojaloop description
+                        // note that the mojaloop API spec allows any string up to 128 utf8 characters to be sent
+                        // in the errorDescription field.
+                        mojaloopError.errorInformation.errorDescription = errorDescription;
+                    }
+                }
+                else {
+                    // this is a custom error, so construct a mojaloop spec body
+                    mojaloopError = {
+                        errorInformation: {
+                            errorCode: e.res.data.statusCode,
+                            errorDescription: e.res.data.message,
+                        }
+                    };
+                }
             }
         }
+        if(this.data) {
+            //we have persisted state so update that with this error
+            this.data.lastError = {
+                originalError: err.stack || util.inspect(err),
+                mojaloopError: mojaloopError,
+            };
+            this.data.currentState = TransferStateEnum.ERROR_OCCURRED;
+            await this._save();
+        }
+        return mojaloopError;
+    }
 
-        return new Errors.MojaloopFSPIOPError(err, null, null, mojaloopErrorCode).toApiErrorObject();
+    /**
+     * Persists the model state to cache for reinstantiation at a later point
+     */
+    async _save() {
+        try {
+            const res = await this._cache.set(`transferModel_in_${this.data.transferId}`, this.data);
+            this._logger.push({ res }).log('Persisted transfer model in cache');
+        }
+        catch(err) {
+            this._logger.push({ err }).log('Error saving transfer model');
+            throw err;
+        }
+    }
+
+    /**
+     * Loads a transfer model from cache for resumption of the transfer process
+     *
+     * @param transferId {string} - UUID transferId of the model to load from cache
+     */
+    async _load(transferId) {
+        try {
+            const data = await this._cache.get(`transferModel_in_${transferId}`);
+            return data;
+        }
+        catch(err) {
+            this._logger.push({ err }).log('Error loading transfer model');
+            throw err;
+        }
     }
 }
 

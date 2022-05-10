@@ -8,6 +8,19 @@
   ],
   "currentState": "COMPLETED",
   "modelId": "00000000-0000-1000-8000-000000000001",
+  "postAccountsResponse": {
+    "body": {
+      "partyList": [
+        {
+          "partyId": {
+            "fspId": "mojaloop-sdk",
+            "partyIdType": "MSISDN",
+            "partyIdentifier": "123456789"
+          }
+        }
+      ]
+    }
+  },
   "response": [
     {
       "error": {
