@@ -40,7 +40,7 @@
       "path": "/parties/{Type}/{ID}",
       "params": {
         "headers": {
-          "Content-Type": "application/vnd.interoperability.parties+json;version=1.0",
+          "Content-Type": "application/vnd.interoperability.parties+json;version=1.1",
           "Date": "Wed, 27 May 2020 11:13:34 GMT",
           "X-Forwarded-For": "sed eiusmod sunt",
           "FSPIOP-Source": "{$config.FSPID}",
@@ -119,7 +119,7 @@
       "path": "/parties/{Type}/{ID}",
       "params": {
         "headers": {
-          "Content-Type": "application/vnd.interoperability.parties+json;version=1.0",
+          "Content-Type": "application/vnd.interoperability.parties+json;version=1.1",
           "Date": "Wed, 27 May 2020 11:13:34 GMT",
           "X-Forwarded-For": "sed eiusmod sunt",
           "FSPIOP-Source": "{$config.FSPID}",
@@ -192,7 +192,7 @@
       "path": "/quotes/{ID}",
       "params": {
         "headers": {
-          "Content-Type": "application/vnd.interoperability.quotes+json;version=1.0",
+          "Content-Type": "application/vnd.interoperability.quotes+json;version=1.1",
           "Date": "Wed, 27 May 2020 11:13:34 GMT",
           "FSPIOP-Source": "{$config.FSPID}",
           "FSPIOP-Destination": "mojaloop-sdk",
@@ -272,7 +272,7 @@
       "path": "/quotes/{ID}",
       "params": {
         "headers": {
-          "Content-Type": "application/vnd.interoperability.quotes+json;version=1.0",
+          "Content-Type": "application/vnd.interoperability.quotes+json;version=1.1",
           "Date": "Wed, 27 May 2020 11:13:34 GMT",
           "FSPIOP-Source": "{$config.FSPID}",
           "FSPIOP-Destination": "mojaloop-sdk",
@@ -357,7 +357,7 @@
       "path": "/transfers/{ID}",
       "params": {
         "headers": {
-          "Content-Type": "application/vnd.interoperability.transfers+json;version=1.0",
+          "Content-Type": "application/vnd.interoperability.transfers+json;version=1.1",
           "Date": "Wed, 27 May 2020 11:13:34 GMT",
           "FSPIOP-Source": "{$config.FSPID}",
           "FSPIOP-Destination": "mojaloop-sdk",
@@ -405,7 +405,7 @@
       "path": "/transfers/{ID}",
       "params": {
         "headers": {
-          "Content-Type": "application/vnd.interoperability.transfers+json;version=1.0",
+          "Content-Type": "application/vnd.interoperability.transfers+json;version=1.1",
           "Date": "Wed, 27 May 2020 11:13:34 GMT",
           "FSPIOP-Source": "{$config.FSPID}",
           "FSPIOP-Destination": "mojaloop-sdk",

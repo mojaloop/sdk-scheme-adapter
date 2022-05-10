@@ -1,15 +1,17 @@
 {
-  "party": {
-    "partyIdInfo": {
-      "partyIdType": "PERSONAL_ID",
-      "partyIdentifier": "123456789",
-      "partySubIdOrType": "PASSPORT",
-      "fspId": "MobileMoney"
-    },
-    "personalInfo": {
-      "complexName": {
-        "firstName": "John",
-        "lastName": "Doe"
+  "body": {
+    "party": {
+      "partyIdInfo": {
+        "partyIdType": "PERSONAL_ID",
+        "partyIdentifier": "123456789",
+        "partySubIdOrType": "PASSPORT",
+        "fspId": "MobileMoney"
+      },
+      "personalInfo": {
+        "complexName": {
+          "firstName": "John",
+          "lastName": "Doe"
+        }
       }
     }
   }

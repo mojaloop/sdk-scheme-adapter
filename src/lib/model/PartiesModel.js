@@ -58,7 +58,7 @@ function argsValidation({ type, id, subId }) {
     }
 }
 
-// generate model 
+// generate model
 const PartiesModel = Async2SyncModel.generate({
     modelName: 'PartiesModel',
     channelNameMethod: channelName,

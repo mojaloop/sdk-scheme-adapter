@@ -8,6 +8,24 @@
   ],
   "currentState": "COMPLETED",
   "modelId": "00000000-0000-1000-8000-000000000001",
+  "postAccountsResponse": {
+    "body": {
+      "currency": "USD",
+      "partyList": [
+        {
+          "errorInformation": {
+            "errorCode": "3204",
+            "errorDescription": "Party not found"
+          },
+          "partyId": {
+            "fspId": "mojaloop-sdk",
+            "partyIdType": "MSISDN",
+            "partyIdentifier": "123456789"
+          }
+        }
+      ]
+    }
+  },
   "response": [
     {
       "error": {

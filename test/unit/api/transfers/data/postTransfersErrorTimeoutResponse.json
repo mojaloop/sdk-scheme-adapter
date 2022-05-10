@@ -5,6 +5,7 @@
     "amount": "100",
     "amountType": "SEND",
     "currency": "USD",
+    "direction": "OUTBOUND",
     "currentState": "ERROR_OCCURRED",
     "from": {
       "displayName": "John Doe",

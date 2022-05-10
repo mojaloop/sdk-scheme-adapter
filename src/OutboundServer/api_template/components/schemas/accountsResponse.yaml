@@ -13,3 +13,12 @@ properties:
     $ref: ./accountsCreationState.yaml
   lastError:
     $ref: ./transferError.yaml
+  postAccountsResponse:
+    type: object
+    required:
+      - body
+    properties:
+      body:
+        type: object
+      headers:
+        type: object

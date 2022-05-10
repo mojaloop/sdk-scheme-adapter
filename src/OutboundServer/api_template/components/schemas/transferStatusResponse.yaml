@@ -10,4 +10,11 @@ properties:
   currentState:
     $ref: ./transferStatus.yaml
   fulfil:
-    $ref: ./transferFulfilment.yaml
+      type: object
+      required:
+        - body
+      properties:
+        body:
+          $ref: ./transferFulfilment.yaml
+        headers:
+          type: object

@@ -3,6 +3,7 @@
   "statusCode": "3208",
   "transferState": {
     "currentState": "ERROR_OCCURRED",
+    "direction": "OUTBOUND",
     "lastError": {
       "httpStatusCode": 500,
       "mojaloopError": {

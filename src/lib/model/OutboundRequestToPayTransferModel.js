@@ -427,8 +427,8 @@ class OutboundRequestToPayTransferModel {
                         return reject(error);
                     }
 
-                    const quoteResponseBody = message.data;
-                    const quoteResponseHeaders = message.headers;
+                    const quoteResponseBody = message.data.body;
+                    const quoteResponseHeaders = message.data.headers;
                     this._logger.push({ quoteResponseBody }).log('Quote response received');
 
                     this.data.quoteResponse = quoteResponseBody;

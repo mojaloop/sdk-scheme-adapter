@@ -633,6 +633,8 @@ export interface components {
       note?: components["schemas"]["Note"];
       quoteRequestExtensions?: components["schemas"]["extensionListEmptiable"];
       transferRequestExtensions?: components["schemas"]["extensionListEmptiable"];
+      /** Set to true if supplying an FSPID for the payee party and no party resolution is needed. This may be useful is a previous party resolution has been performed. */
+      skipPartyLookup?: boolean;
     };
     /** Identifier that correlates all messages of the same sequence. The API data type UUID (Universally Unique Identifier) is a JSON String in canonical format, conforming to [RFC 4122](https://tools.ietf.org/html/rfc4122), that is restricted by a regular expression for interoperability reasons. A UUID is always 36 characters long, 32 hexadecimal symbols and 4 dashes (‘-‘). */
     CorrelationId: string;
@@ -728,12 +730,24 @@ export interface components {
       note?: components["schemas"]["Note"];
       currentState?: components["schemas"]["transferStatus"];
       quoteId?: components["schemas"]["CorrelationId"];
-      quoteResponse?: components["schemas"]["QuotesIDPutResponse"];
+      getPartiesResponse?: {
+        body: { [key: string]: unknown };
+        headers?: { [key: string]: unknown };
+      };
+      quoteResponse?: {
+        body: components["schemas"]["QuotesIDPutResponse"];
+        headers?: { [key: string]: unknown };
+      };
       /** FSPID of the entity that supplied the quote response. This may not be the same as the FSPID of the entity which owns the end user account in the case of a FOREX transfer. i.e. it may be a FOREX gateway. */
       quoteResponseSource?: string;
-      fulfil?: components["schemas"]["TransfersIDPutResponse"];
+      fulfil?: {
+        body: components["schemas"]["TransfersIDPutResponse"];
+        headers?: { [key: string]: unknown };
+      };
       /** Object representing the last error to occur during a transfer process. This may be a Mojaloop API error returned from another entity in the scheme or an object representing other types of error e.g. exceptions that may occur inside the scheme adapter. */
       lastError?: components["schemas"]["transferError"];
+      /** Set to true if supplying an FSPID for the payee party and no party resolution is needed. This may be useful is a previous party resolution has been performed. */
+      skipPartyLookup?: boolean;
     };
     errorResponse: {
       /** Error code as string. */
@@ -747,7 +761,10 @@ export interface components {
     transferStatusResponse: {
       transferId: components["schemas"]["CorrelationId"];
       currentState: components["schemas"]["transferStatus"];
-      fulfil: components["schemas"]["TransfersIDPutResponse"];
+      fulfil: {
+        body: components["schemas"]["TransfersIDPutResponse"];
+        headers?: { [key: string]: unknown };
+      };
     };
     transferContinuationAcceptParty: {
       acceptParty: true;
@@ -1011,6 +1028,10 @@ export interface components {
       response?: components["schemas"]["accountCreationStatus"];
       currentState?: components["schemas"]["accountsCreationState"];
       lastError?: components["schemas"]["transferError"];
+      postAccountsResponse?: {
+        body: { [key: string]: unknown };
+        headers?: { [key: string]: unknown };
+      };
     };
     errorAccountsResponse: components["schemas"]["errorResponse"] & {
       executionState: components["schemas"]["accountsResponse"];

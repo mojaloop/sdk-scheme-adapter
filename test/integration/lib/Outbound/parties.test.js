@@ -13,7 +13,7 @@ describe('/parties', () => {
 
         expect(res.status).toEqual(200);
         expect(res.data.currentState).toEqual('COMPLETED');
-        expect(typeof res.data.party).toEqual('object');
+        expect(typeof res.data.body.party).toEqual('object');
     });
 
     test('get - timeout', (done) => {
