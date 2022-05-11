@@ -2130,6 +2130,9 @@ components:
               description: Information regarding the requested Party.
             headers:
               type: object
+          required:
+            - body
+            - headers
         currentState:
           $ref: '#/components/schemas/async2SyncCurrentState'
       required:
@@ -2271,6 +2274,9 @@ components:
                 - condition
             headers:
               type: object
+          required:
+            - body
+            - headers
         currentState:
           $ref: '#/components/schemas/async2SyncCurrentState'
       required:
@@ -2330,6 +2336,9 @@ components:
               $ref: '#/components/schemas/TransfersIDPutResponse'
             headers:
               type: object
+          required:
+            - body
+            - headers
         currentState:
           $ref: '#/components/schemas/async2SyncCurrentState'
       required:

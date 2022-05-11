@@ -46,6 +46,9 @@ properties:
           - condition
       headers:
         type: object
+    required:
+    - body
+    - headers
   currentState:
     $ref: ../schemas/async2SyncCurrentState.yaml
 required:

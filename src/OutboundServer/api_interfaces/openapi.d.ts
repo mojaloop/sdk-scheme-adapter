@@ -1072,8 +1072,8 @@ export interface components {
     partiesByIdResponse: {
       party: {
         /** Information regarding the requested Party. */
-        body?: components["schemas"]["Party"];
-        headers?: { [key: string]: unknown };
+        body: components["schemas"]["Party"];
+        headers: { [key: string]: unknown };
       };
       currentState: components["schemas"]["async2SyncCurrentState"];
     };
@@ -1113,7 +1113,7 @@ export interface components {
     quotesPostResponse: {
       /** The object sent in the PUT /quotes/{ID} callback. */
       quotes: {
-        body?: {
+        body: {
           transferAmount: components["schemas"]["Money"];
           payeeReceiveAmount?: components["schemas"]["Money"];
           payeeFspFee?: components["schemas"]["Money"];
@@ -1125,7 +1125,7 @@ export interface components {
           condition: components["schemas"]["IlpCondition"];
           extensionList?: components["schemas"]["ExtensionList"];
         };
-        headers?: { [key: string]: unknown };
+        headers: { [key: string]: unknown };
       };
       currentState: components["schemas"]["async2SyncCurrentState"];
     };
@@ -1149,8 +1149,8 @@ export interface components {
     };
     simpleTransfersPostResponse: {
       transfer: {
-        body?: components["schemas"]["TransfersIDPutResponse"];
-        headers?: { [key: string]: unknown };
+        body: components["schemas"]["TransfersIDPutResponse"];
+        headers: { [key: string]: unknown };
       };
       currentState: components["schemas"]["async2SyncCurrentState"];
     };
