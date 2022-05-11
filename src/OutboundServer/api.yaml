@@ -2124,8 +2124,12 @@ components:
       description: 'GET /parties/{Type}/{ID} response object'
       properties:
         party:
-          $ref: '#/components/schemas/Party'
-          description: Information regarding the requested Party.
+          properties:
+            body:
+              $ref: '#/components/schemas/Party'
+              description: Information regarding the requested Party.
+            headers:
+              type: object
         currentState:
           $ref: '#/components/schemas/async2SyncCurrentState'
       required:
@@ -2235,33 +2239,38 @@ components:
           type: object
           description: 'The object sent in the PUT /quotes/{ID} callback.'
           properties:
-            transferAmount:
-              $ref: '#/components/schemas/Money'
-            payeeReceiveAmount:
-              $ref: '#/components/schemas/Money'
-            payeeFspFee:
-              $ref: '#/components/schemas/Money'
-            payeeFspCommission:
-              $ref: '#/components/schemas/Money'
-            expiration:
-              type: string
-              description: >-
-                Date and time until when the quotation is valid and can be
-                honored when used in the subsequent transaction.
-              example: '2016-05-24T08:38:08.699-04:00'
-            geoCode:
-              $ref: '#/components/schemas/GeoCode'
-            ilpPacket:
-              $ref: '#/components/schemas/IlpPacket'
-            condition:
-              $ref: '#/components/schemas/IlpCondition'
-            extensionList:
-              $ref: '#/components/schemas/ExtensionList'
-          required:
-            - transferAmount
-            - expiration
-            - ilpPacket
-            - condition
+            body:
+              type: object
+              properties:
+                transferAmount:
+                  $ref: '#/components/schemas/Money'
+                payeeReceiveAmount:
+                  $ref: '#/components/schemas/Money'
+                payeeFspFee:
+                  $ref: '#/components/schemas/Money'
+                payeeFspCommission:
+                  $ref: '#/components/schemas/Money'
+                expiration:
+                  type: string
+                  description: >-
+                    Date and time until when the quotation is valid and can be
+                    honored when used in the subsequent transaction.
+                  example: '2016-05-24T08:38:08.699-04:00'
+                geoCode:
+                  $ref: '#/components/schemas/GeoCode'
+                ilpPacket:
+                  $ref: '#/components/schemas/IlpPacket'
+                condition:
+                  $ref: '#/components/schemas/IlpCondition'
+                extensionList:
+                  $ref: '#/components/schemas/ExtensionList'
+              required:
+                - transferAmount
+                - expiration
+                - ilpPacket
+                - condition
+            headers:
+              type: object
         currentState:
           $ref: '#/components/schemas/async2SyncCurrentState'
       required:
@@ -2316,7 +2325,11 @@ components:
       type: object
       properties:
         transfer:
-          $ref: '#/components/schemas/TransfersIDPutResponse'
+          properties:
+            body:
+              $ref: '#/components/schemas/TransfersIDPutResponse'
+            headers:
+              type: object
         currentState:
           $ref: '#/components/schemas/async2SyncCurrentState'
       required:

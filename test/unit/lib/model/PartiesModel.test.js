@@ -155,9 +155,12 @@ describe('PartiesModel', () => {
             model.run = jest.fn(() => Promise.resolve());
 
             const message = {
-                party: {
-                    Iam: 'the-body'
-                }
+                body: {
+                    party: {
+                        Iam: 'the-body'
+                    }
+                },
+                headers: {}
             };
 
             const onRequestActionPromise = new Promise((resolve, reject) => {
@@ -175,7 +178,7 @@ describe('PartiesModel', () => {
 
                         // check that this.context.data is updated
                         expect(model.context.data).toEqual({
-                            ...message,
+                            party: { ...message },
                             // current state will be updated by onAfterTransition which isn't called
                             // when manual invocation of transition handler happens
                             currentState: 'start'
@@ -216,9 +219,12 @@ describe('PartiesModel', () => {
             model.run = jest.fn(() => Promise.resolve());
 
             const message = {
-                party: {
-                    Iam: 'the-body'
-                }
+                body: {
+                    party: {
+                        Iam: 'the-body'
+                    }
+                },
+                headers: {}
             };
 
             const onRequestActionPromise = new Promise((resolve, reject) => {

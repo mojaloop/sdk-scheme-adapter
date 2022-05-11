@@ -142,7 +142,10 @@ describe('QuotesModel', () => {
             // mock workflow execution which is tested in separate case
             model.run = jest.fn(() => Promise.resolve());
 
-            const message = { ...putQuotesResponse };
+            const message = {
+                body: { ...putQuotesResponse },
+                headers: {}
+            };
 
             const onRequestActionPromise = new Promise((resolve, reject) => {
                 // manually invoke transition handler
@@ -200,7 +203,10 @@ describe('QuotesModel', () => {
             // mock workflow execution which is tested in separate case
             model.run = jest.fn(() => Promise.resolve());
 
-            const message = { ...putQuotesResponse };
+            const message = {
+                body: { ...putQuotesResponse },
+                headers: {}
+            };
 
             const onRequestActionPromise = new Promise((resolve, reject) => {
                 // manually invoke transition handler

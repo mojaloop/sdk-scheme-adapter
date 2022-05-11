@@ -202,7 +202,7 @@ function createPostTransfersTester(
 
         const res = await reqOutbound.post('/transfers').send(postTransfersSimpleBody);
         const {body} = res;
-        console.log(body)
+
         expect(res.statusCode).toEqual(responseCode);
 
         // remove elements of the response we do not want/need to compare for correctness.
