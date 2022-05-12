@@ -66,7 +66,10 @@ function argsValidation({ type, id, subId }) {
  */
 function reformatMessage(message) {
     return {
-        party: { ...message }
+        party: {
+            body: { ...message.body.party },
+            headers: { ...message.headers }
+        }
     };
 }
 
