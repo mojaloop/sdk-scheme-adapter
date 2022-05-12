@@ -178,7 +178,10 @@ describe('PartiesModel', () => {
 
                         // check that this.context.data is updated
                         expect(model.context.data).toEqual({
-                            party: { ...message },
+                            party: {
+                                body: { ...message.body.party },
+                                headers: { ...message.headers }
+                            },
                             // current state will be updated by onAfterTransition which isn't called
                             // when manual invocation of transition handler happens
                             currentState: 'start'
