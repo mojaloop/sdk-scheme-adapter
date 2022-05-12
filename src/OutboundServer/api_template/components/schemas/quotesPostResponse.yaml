@@ -6,41 +6,49 @@ properties:
     type: object
     description: 'The object sent in the PUT /quotes/{ID} callback.'
     properties:
-      transferAmount:
-        $ref: >-
-          ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Money.yaml
-      payeeReceiveAmount:
-        $ref: >-
-          ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Money.yaml
-      payeeFspFee:
-        $ref: >-
-          ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Money.yaml
-      payeeFspCommission:
-        $ref: >-
-          ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Money.yaml
-      expiration:
-        type: string
-        description: >-
-          Date and time until when the quotation is valid and can be honored when
-          used in the subsequent transaction.
-        example: '2016-05-24T08:38:08.699-04:00'
-      geoCode:
-        $ref: >-
-          ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/GeoCode.yaml
-      ilpPacket:
-        $ref: >-
-          ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/IlpPacket.yaml
-      condition:
-        $ref: >-
-          ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/IlpCondition.yaml
-      extensionList:
-        $ref: >-
-          ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/ExtensionList.yaml
+      body:
+        type: object
+        properties:
+          transferAmount:
+            $ref: >-
+              ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Money.yaml
+          payeeReceiveAmount:
+            $ref: >-
+              ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Money.yaml
+          payeeFspFee:
+            $ref: >-
+              ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Money.yaml
+          payeeFspCommission:
+            $ref: >-
+              ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Money.yaml
+          expiration:
+            type: string
+            description: >-
+              Date and time until when the quotation is valid and can be honored when
+              used in the subsequent transaction.
+            example: '2016-05-24T08:38:08.699-04:00'
+          geoCode:
+            $ref: >-
+              ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/GeoCode.yaml
+          ilpPacket:
+            $ref: >-
+              ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/IlpPacket.yaml
+          condition:
+            $ref: >-
+              ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/IlpCondition.yaml
+          extensionList:
+            $ref: >-
+              ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/ExtensionList.yaml
+        required:
+          - transferAmount
+          - expiration
+          - ilpPacket
+          - condition
+      headers:
+        type: object
     required:
-      - transferAmount
-      - expiration
-      - ilpPacket
-      - condition
+    - body
+    - headers
   currentState:
     $ref: ../schemas/async2SyncCurrentState.yaml
 required:

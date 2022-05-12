@@ -39,6 +39,8 @@ describe('/simpleTransfers', () => {
         expect(res.status).toEqual(200);
         expect(res.data.currentState).toEqual('COMPLETED');
         expect(typeof res.data.transfer).toEqual('object');
+        expect(typeof res.data.transfer.body).toEqual('object');
+        expect(typeof res.data.transfer.headers).toEqual('object');
     });
 
     test('post - timeout', async () => {

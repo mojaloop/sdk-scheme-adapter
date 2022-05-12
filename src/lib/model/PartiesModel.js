@@ -58,12 +58,25 @@ function argsValidation({ type, id, subId }) {
     }
 }
 
+/**
+ * @name reformatMessage
+ * @description reformats message received from PUB/SUB channel, it is optional method, if not specified identify function is used by default
+ * @param {object} message - message received
+ * @returns {object} - reformatted message
+ */
+function reformatMessage(message) {
+    return {
+        party: { ...message }
+    };
+}
+
 // generate model
 const PartiesModel = Async2SyncModel.generate({
     modelName: 'PartiesModel',
     channelNameMethod: channelName,
     requestActionMethod: requestAction,
-    argsValidationMethod: argsValidation
+    argsValidationMethod: argsValidation,
+    reformatMessageMethod: reformatMessage
 });
 
 module.exports = PartiesModel;
