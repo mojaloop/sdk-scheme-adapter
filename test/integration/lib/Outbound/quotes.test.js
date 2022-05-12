@@ -30,6 +30,8 @@ describe('/quotes', () => {
         expect(res.status).toEqual(200);
         expect(res.data.currentState).toEqual('COMPLETED');
         expect(typeof res.data.quotes).toEqual('object');
+        expect(typeof res.data.quotes.body).toEqual('object');
+        expect(typeof res.data.quotes.headers).toEqual('object');
     });
 
     test('post - timeout', (done) => {

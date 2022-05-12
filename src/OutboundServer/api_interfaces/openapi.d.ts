@@ -1070,8 +1070,11 @@ export interface components {
       | "ERROR_OCCURRED";
     /** GET /parties/{Type}/{ID} response object */
     partiesByIdResponse: {
-      /** Information regarding the requested Party. */
-      party: components["schemas"]["Party"];
+      party: {
+        /** Information regarding the requested Party. */
+        body: components["schemas"]["Party"];
+        headers: { [key: string]: unknown };
+      };
       currentState: components["schemas"]["async2SyncCurrentState"];
     };
     /** The object sent in the POST /quotes request. */
@@ -1110,16 +1113,19 @@ export interface components {
     quotesPostResponse: {
       /** The object sent in the PUT /quotes/{ID} callback. */
       quotes: {
-        transferAmount: components["schemas"]["Money"];
-        payeeReceiveAmount?: components["schemas"]["Money"];
-        payeeFspFee?: components["schemas"]["Money"];
-        payeeFspCommission?: components["schemas"]["Money"];
-        /** Date and time until when the quotation is valid and can be honored when used in the subsequent transaction. */
-        expiration: string;
-        geoCode?: components["schemas"]["GeoCode"];
-        ilpPacket: components["schemas"]["IlpPacket"];
-        condition: components["schemas"]["IlpCondition"];
-        extensionList?: components["schemas"]["ExtensionList"];
+        body: {
+          transferAmount: components["schemas"]["Money"];
+          payeeReceiveAmount?: components["schemas"]["Money"];
+          payeeFspFee?: components["schemas"]["Money"];
+          payeeFspCommission?: components["schemas"]["Money"];
+          /** Date and time until when the quotation is valid and can be honored when used in the subsequent transaction. */
+          expiration: string;
+          geoCode?: components["schemas"]["GeoCode"];
+          ilpPacket: components["schemas"]["IlpPacket"];
+          condition: components["schemas"]["IlpCondition"];
+          extensionList?: components["schemas"]["ExtensionList"];
+        };
+        headers: { [key: string]: unknown };
       };
       currentState: components["schemas"]["async2SyncCurrentState"];
     };
@@ -1142,7 +1148,10 @@ export interface components {
       transfersPostRequest: components["schemas"]["TransfersPostRequest"];
     };
     simpleTransfersPostResponse: {
-      transfer: components["schemas"]["TransfersIDPutResponse"];
+      transfer: {
+        body: components["schemas"]["TransfersIDPutResponse"];
+        headers: { [key: string]: unknown };
+      };
       currentState: components["schemas"]["async2SyncCurrentState"];
     };
     errorSimpleTransfersResponse: components["schemas"]["errorResponse"] & {
