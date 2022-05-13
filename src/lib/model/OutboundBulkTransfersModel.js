@@ -150,7 +150,7 @@ class OutboundBulkTransfersModel {
                 try {
                     let error;
                     let message = JSON.parse(msg);
-                    console.log(message)
+
                     if (message.type === 'bulkTransferFulfil') {
                         if (this._rejectExpiredTransferFulfils) {
                             const now = new Date().toISOString();
@@ -287,7 +287,7 @@ class OutboundBulkTransfersModel {
                 try {
                     let error;
                     let message = JSON.parse(msg);
-                    console.log(message)
+
                     if (message.type === 'bulkTransferError') {
                         error = new BackendError(`Got an error response retrieving bulk transfer: ${util.inspect(message.data.body, { depth: Infinity })}`, 500);
                         error.mojaloopError = message.data.body;
