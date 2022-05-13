@@ -267,11 +267,10 @@ class OutboundRequestToPayTransferModel {
             const subId = await this._cache.subscribe(payeeKey, (cn, msg, subId) => {
                 try {
                     let payee = JSON.parse(msg);
-
-                    if(payee.errorInformation) {
+                    if(payee.body && payee.body.errorInformation) {
                         // this is an error response to our GET /parties request
-                        const err = new BackendError(`Got an error response resolving party: ${util.inspect(payee)}`, 500);
-                        err.mojaloopError = payee;
+                        const err = new BackendError(`Got an error response resolving party: ${util.inspect(payee.body)}`, 500);
+                        err.mojaloopError = payee.body;
 
                         // cancel the timeout handler
                         clearTimeout(timeout);
@@ -405,8 +404,8 @@ class OutboundRequestToPayTransferModel {
                             }
                         }
                     } else if (message.type === 'quoteResponseError') {
-                        error = new BackendError(`Got an error response requesting quote: ${util.inspect(message.data)}`, 500);
-                        error.mojaloopError = message.data;
+                        error = new BackendError(`Got an error response requesting quote: ${util.inspect(message.data.body)}`, 500);
+                        error.mojaloopError = message.data.body;
                     }
                     else {
                         this._logger.push({ message }).log(`Ignoring cache notification for quote ${quoteKey}. Unknown message type ${message.type}.`);
@@ -620,8 +619,8 @@ class OutboundRequestToPayTransferModel {
                             }
                         }
                     } else if (message.type === 'transferError') {
-                        error = new BackendError(`Got an error response preparing transfer: ${util.inspect(message.data)}`, 500);
-                        error.mojaloopError = message.data;
+                        error = new BackendError(`Got an error response preparing transfer: ${util.inspect(message.data.body)}`, 500);
+                        error.mojaloopError = message.data.body;
                     } else {
                         this._logger.push({ message }).log(`Ignoring cache notification for transfer ${transferKey}. Uknokwn message type ${message.type}.`);
                         return;
@@ -701,8 +700,8 @@ class OutboundRequestToPayTransferModel {
                     let message = JSON.parse(msg);
 
                     if (message.type === 'transferError') {
-                        error = new BackendError(`Got an error response retrieving transfer: ${util.inspect(message.data)}`, 500);
-                        error.mojaloopError = message.data;
+                        error = new BackendError(`Got an error response retrieving transfer: ${util.inspect(message.data.body)}`, 500);
+                        error.mojaloopError = message.data.body;
                     } else if (message.type !== 'transferFulfil') {
                         this._logger.push({ message }).log(`Ignoring cache notification for transfer ${transferKey}. Uknokwn message type ${message.type}.`);
                         return;
