@@ -207,10 +207,13 @@ describe('OutboundBulkQuotesModel', () => {
         const expectError = {
             type: 'bulkQuoteResponseError',
             data: {
-                errorInformation: {
-                    errorCode: '3205',
-                    errorDescription: 'Bulk quote ID not found'
-                }
+                body: {
+                    errorInformation: {
+                        errorCode: '3205',
+                        errorDescription: 'Bulk quote ID not found'
+                    }
+                },
+                headers: {}
             }
         };
 
@@ -239,7 +242,7 @@ describe('OutboundBulkQuotesModel', () => {
             expect(err.message.replace(/[ \n]/g,'')).toEqual(errMsg.replace(/[ \n]/g,''));
             expect(err.bulkQuoteState).toBeTruthy();
             expect(err.bulkQuoteState.lastError).toBeTruthy();
-            expect(err.bulkQuoteState.lastError.mojaloopError).toEqual(expectError.data);
+            expect(err.bulkQuoteState.lastError.mojaloopError).toEqual(expectError.data.body);
             expect(err.bulkQuoteState.lastError.bulkQuoteState).toBe(undefined);
             return;
         }

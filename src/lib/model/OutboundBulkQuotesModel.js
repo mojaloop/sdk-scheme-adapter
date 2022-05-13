@@ -162,8 +162,8 @@ class OutboundBulkQuotesModel {
                             }
                         }
                     } else if (message.type === 'bulkQuoteResponseError') {
-                        error = new BackendError(`Got an error response requesting bulk quote: ${util.inspect(message.data, { depth: Infinity })}`, 500);
-                        error.mojaloopError = message.data;
+                        error = new BackendError(`Got an error response requesting bulk quote: ${util.inspect(message.data.body, { depth: Infinity })}`, 500);
+                        error.mojaloopError = message.data.body;
                     }
                     else {
                         this._logger.push({ message }).log(`Ignoring cache notification for bulk quote ${bulkQuoteKey}. Unknown message type ${message.type}.`);
@@ -297,8 +297,8 @@ class OutboundBulkQuotesModel {
                     let message = JSON.parse(msg);
 
                     if (message.type === 'bulkQuoteError') {
-                        error = new BackendError(`Got an error response retrieving bulk quote: ${util.inspect(message.data, { depth: Infinity })}`, 500);
-                        error.mojaloopError = message.data;
+                        error = new BackendError(`Got an error response retrieving bulk quote: ${util.inspect(message.data.body, { depth: Infinity })}`, 500);
+                        error.mojaloopError = message.data.body;
                     } else if (message.type !== 'bulkQuoteResponse') {
                         this._logger.push({ message }).log(`Ignoring cache notification for bulk quote ${bulkQuoteKey}. Uknokwn message type ${message.type}.`);
                         return;
