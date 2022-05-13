@@ -1390,10 +1390,13 @@ describe('outboundModel', () => {
         const expectError = {
             type: 'quoteResponseError',
             data: {
-                errorInformation: {
-                    errorCode: '3205',
-                    errorDescription: 'Quote ID not found'
-                }
+                body: {
+                    errorInformation: {
+                        errorCode: '3205',
+                        errorDescription: 'Quote ID not found'
+                    }
+                },
+                headers: {}
             }
         };
 
@@ -1430,7 +1433,7 @@ describe('outboundModel', () => {
             expect(err.message.replace(/[ \n]/g,'')).toEqual(errMsg.replace(/[ \n]/g,''));
             expect(err.transferState).toBeTruthy();
             expect(err.transferState.lastError).toBeTruthy();
-            expect(err.transferState.lastError.mojaloopError).toEqual(expectError.data);
+            expect(err.transferState.lastError.mojaloopError).toEqual(expectError.data.body);
             expect(err.transferState.lastError.transferState).toBe(undefined);
             return;
         }

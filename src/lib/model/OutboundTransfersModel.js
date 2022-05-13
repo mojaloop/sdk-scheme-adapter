@@ -497,8 +497,8 @@ class OutboundTransfersModel {
                             }
                         }
                     } else if (message.type === 'quoteResponseError') {
-                        error = new BackendError(`Got an error response requesting quote: ${util.inspect(message.data, { depth: Infinity })}`, 500);
-                        error.mojaloopError = message.data;
+                        error = new BackendError(`Got an error response requesting quote: ${util.inspect(message.data.body, { depth: Infinity })}`, 500);
+                        error.mojaloopError = message.data.body;
                     }
                     else {
                         this._logger.push({ message }).log(`Ignoring cache notification for quote ${quoteKey}. Unknown message type ${message.type}.`);

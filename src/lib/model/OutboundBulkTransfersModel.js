@@ -161,8 +161,8 @@ class OutboundBulkTransfersModel {
                             }
                         }
                     } else if (message.type === 'bulkTransferError') {
-                        error = new BackendError(`Got an error response preparing bulk transfer: ${util.inspect(message.data, { depth: Infinity })}`, 500);
-                        error.mojaloopError = message.data;
+                        error = new BackendError(`Got an error response preparing bulk transfer: ${util.inspect(message.data.body, { depth: Infinity })}`, 500);
+                        error.mojaloopError = message.data.body;
                     }
                     else {
                         this._logger.push({ message }).log(`Ignoring cache notification for bulk transfer ${bulkTransferKey}. Unknown message type ${message.type}.`);
@@ -289,8 +289,8 @@ class OutboundBulkTransfersModel {
                     let message = JSON.parse(msg);
 
                     if (message.type === 'bulkTransferError') {
-                        error = new BackendError(`Got an error response retrieving bulk transfer: ${util.inspect(message.data, { depth: Infinity })}`, 500);
-                        error.mojaloopError = message.data;
+                        error = new BackendError(`Got an error response retrieving bulk transfer: ${util.inspect(message.data.body, { depth: Infinity })}`, 500);
+                        error.mojaloopError = message.data.body;
                     } else if (message.type !== 'bulkTransferFulfil') {
                         this._logger.push({ message }).log(`Ignoring cache notification for bulk transfer ${bulkTransferKey}. Uknokwn message type ${message.type}.`);
                         return;

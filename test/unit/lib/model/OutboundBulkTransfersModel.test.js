@@ -202,10 +202,13 @@ describe('outboundBulkTransferModel', () => {
         const expectError = {
             type: 'bulkTransferError',
             data: {
-                errorInformation: {
-                    errorCode: '4001',
-                    errorDescription: 'Payer FSP insufficient liquidity'
-                }
+                body: {
+                    errorInformation: {
+                        errorCode: '4001',
+                        errorDescription: 'Payer FSP insufficient liquidity'
+                    }
+                },
+                headers: {}
             }
         };
 
@@ -234,7 +237,7 @@ describe('outboundBulkTransferModel', () => {
             expect(err.message.replace(/[ \n]/g,'')).toEqual(errMsg.replace(/[ \n]/g,''));
             expect(err.bulkTransferState).toBeTruthy();
             expect(err.bulkTransferState.lastError).toBeTruthy();
-            expect(err.bulkTransferState.lastError.mojaloopError).toEqual(expectError.data);
+            expect(err.bulkTransferState.lastError.mojaloopError).toEqual(expectError.data.body);
             expect(err.bulkTransferState.lastError.bulkTransferState).toBe(undefined);
             return;
         }
