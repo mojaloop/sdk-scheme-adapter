@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/thirdparty-api-svc](https://github.com/mojaloop/thirdparty-api-svc)
+### [13.0.3](https://github.com/mojaloop/sdk-scheme-adapter/compare/v13.0.2...v13.0.3) (2022-05-12)
+
+
+### Bug Fixes
+
+* correct party outbound response ([#317](https://github.com/mojaloop/sdk-scheme-adapter/issues/317)) ([752e8b4](https://github.com/mojaloop/sdk-scheme-adapter/commit/752e8b4d315a6e9c3b8ad4ff1b65761c41e3d721))
+
 ### [13.0.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v13.0.1...v13.0.2) (2022-05-12)
 
 
