@@ -504,6 +504,16 @@
       "decision": "ignore",
       "madeAt": 1651249549067,
       "expiresAt": 1653841542147
+    },
+    "1068155|@mojaloop/central-services-shared>shins>markdown-it>sanitize-html": {
+      "decision": "ignore",
+      "madeAt": 1652981366297,
+      "expiresAt": 1655573359219
+    },
+    "1070260|@mojaloop/central-services-shared>shins>markdown-it>sanitize-html": {
+      "decision": "ignore",
+      "madeAt": 1652981367363,
+      "expiresAt": 1655573359219
     }
   },
   "rules": {},
