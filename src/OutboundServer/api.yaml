@@ -172,10 +172,10 @@ paths:
         '500':
           $ref: '#/components/schemas/errorResponse'
   '/bulkTransfers/{bulkTransferId}':
-    patch:
+    put:
       summary: Amends the bulk transfer request
       description: >-
-        The HTTP request `PATCH /bulkTransfers/{bulkTransferId}` is used to amend
+        The HTTP request `PUT /bulkTransfers/{bulkTransferId}` is used to amend
         information regarding a bulk transfer, i.e. when autoAcceptParty or autoAcceptQuote 
         is false then the payer need to provide confirmation to proceed with further processing
         of the request. The `{bulkTransferId}` in the URI should contain the `bulkTransferId` that
@@ -195,7 +195,7 @@ paths:
         '202':
           description: Bulk transfer information successfully amended
         '400':
-           $ref: '#/components/responses/bulkTransferPatchBadRequest'
+           $ref: '#/components/responses/bulkTransferPutBadRequest'
         '500':
           description: An error occurred processing the bulk transfer
           content:
@@ -2696,7 +2696,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/bulkPartyLookupResponse'
-    bulkTransferPatchBadRequest:
+    bulkTransferPutBadRequest:
       description: 'Malformed or missing required body, headers or parameters'
       content:
         application/json:
