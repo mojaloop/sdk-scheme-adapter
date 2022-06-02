@@ -407,8 +407,8 @@
     },
     "1068310|@mojaloop/central-services-shared>widdershins>yargs>yargs-parser": {
       "decision": "ignore",
-      "madeAt": 1649898256486,
-      "expiresAt": 1652490250295
+      "madeAt": 1654208208192,
+      "expiresAt": 1656800189114
     },
     "1067946|ajv": {
       "decision": "ignore",
@@ -422,8 +422,8 @@
     },
     "1070030|@mojaloop/central-services-shared>shins>markdown-it": {
       "decision": "ignore",
-      "madeAt": 1650459472663,
-      "expiresAt": 1653051469252
+      "madeAt": 1654208210848,
+      "expiresAt": 1656800189114
     },
     "1068154|@mojaloop/central-services-shared>shins>sanitize-html": {
       "decision": "ignore",
@@ -432,8 +432,8 @@
     },
     "1068155|@mojaloop/central-services-shared>shins>sanitize-html": {
       "decision": "ignore",
-      "madeAt": 1650459475376,
-      "expiresAt": 1653051469252
+      "madeAt": 1654208203284,
+      "expiresAt": 1656800189114
     },
     "1070245|@mojaloop/central-services-shared>@mojaloop/event-sdk>moment": {
       "decision": "ignore",
@@ -502,8 +502,8 @@
     },
     "1070260|@mojaloop/central-services-shared>shins>sanitize-html": {
       "decision": "ignore",
-      "madeAt": 1651249549067,
-      "expiresAt": 1653841542147
+      "madeAt": 1654208205836,
+      "expiresAt": 1656800189114
     },
     "1068155|@mojaloop/central-services-shared>shins>markdown-it>sanitize-html": {
       "decision": "ignore",
@@ -534,6 +534,26 @@
       "decision": "ignore",
       "madeAt": 1652982827137,
       "expiresAt": 1655574816261
+    },
+    "1067553|@mojaloop/central-services-shared>widdershins>swagger2openapi>better-ajv-errors>jsonpointer": {
+      "decision": "ignore",
+      "madeAt": 1654208197641,
+      "expiresAt": 1656800189114
+    },
+    "1067553|@mojaloop/central-services-shared>widdershins>swagger2openapi>oas-validator>better-ajv-errors>jsonpointer": {
+      "decision": "ignore",
+      "madeAt": 1654208197642,
+      "expiresAt": 1656800189114
+    },
+    "1067946|@mojaloop/central-services-shared>widdershins>swagger2openapi>oas-validator>ajv": {
+      "decision": "ignore",
+      "madeAt": 1654208200360,
+      "expiresAt": 1656800189114
+    },
+    "1070412|@mojaloop/central-services-shared>shins>ejs": {
+      "decision": "ignore",
+      "madeAt": 1654208217831,
+      "expiresAt": 1656800189114
     }
   },
   "rules": {},

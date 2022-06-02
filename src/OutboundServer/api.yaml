@@ -1745,6 +1745,10 @@ components:
           $ref: '#/components/schemas/QuotesIDPutResponse'
         fulfil:
           $ref: '#/components/schemas/TransfersIDPutResponse'
+        quoteRequestExtensions:
+          $ref: '#/components/schemas/ExtensionList'
+        transferRequestExtensions:
+          $ref: '#/components/schemas/ExtensionList'
         lastError:
           description: >
             Object representing the last error to occur during a transfer
@@ -1767,14 +1771,16 @@ components:
             between the Switch and DFSP backend systems.
         bulkExpiration:
           $ref: '#/components/schemas/DateTime'
-        from:
-          $ref: '#/components/schemas/Party'
+        currentState:
+          $ref: '#/components/schemas/bulkTransferStatus'
         individualTransferResults:
           type: array
           maxItems: 1000
           items:
             $ref: '#/components/schemas/individualTransferResult'
           description: List of individual transfer result in a bulk transfer response.
+        extensions:
+          $ref: '#/components/schemas/ExtensionList'
     bulkAcceptPartyErrorResponse:
       allOf:
         - $ref: '#/components/schemas/errorResponse'
@@ -1810,6 +1816,8 @@ components:
       type: string
       enum:
         - ERROR_OCCURRED
+        - WAITING_FOR_PARTY_ACCEPTANCE
+        - WAITING_FOR_QUOTE_ACCEPTANCE
         - COMPLETED
     individualTransferFulfilment:
       type: object
