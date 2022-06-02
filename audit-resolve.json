@@ -452,8 +452,8 @@
     },
     "1070030|widdershins>markdown-it": {
       "decision": "ignore",
-      "madeAt": 1651072088351,
-      "expiresAt": 1653664079920
+      "madeAt": 1654209004788,
+      "expiresAt": 1656800991863
     },
     "1068154|@mojaloop/central-services-shared>@mojaloop/event-sdk>moment>shins>markdown-it>sanitize-html": {
       "decision": "ignore",
@@ -487,18 +487,18 @@
     },
     "1067553|swagger2openapi>better-ajv-errors>jsonpointer": {
       "decision": "ignore",
-      "madeAt": 1651072095680,
-      "expiresAt": 1653664079920
+      "madeAt": 1654209013381,
+      "expiresAt": 1656800991863
     },
     "1067946|swagger2openapi>better-ajv-errors>jsonpointer>oas-validator>ajv": {
       "decision": "ignore",
-      "madeAt": 1651072096735,
-      "expiresAt": 1653664079920
+      "madeAt": 1654209015474,
+      "expiresAt": 1656800991863
     },
     "1068310|widdershins>markdown-it>yargs>yargs-parser": {
       "decision": "ignore",
-      "madeAt": 1651072098082,
-      "expiresAt": 1653664079920
+      "madeAt": 1654209017825,
+      "expiresAt": 1656800991863
     },
     "1070260|@mojaloop/central-services-shared>shins>sanitize-html": {
       "decision": "ignore",
@@ -554,6 +554,31 @@
       "decision": "ignore",
       "madeAt": 1654208217831,
       "expiresAt": 1656800189114
+    },
+    "1070449|@mojaloop/central-services-shared>@mojaloop/event-sdk>grpc>protobufjs": {
+      "decision": "ignore",
+      "madeAt": 1654209002758,
+      "expiresAt": 1656800991863
+    },
+    "1070030|@mojaloop/central-services-shared>@mojaloop/event-sdk>grpc>protobufjs>shins>markdown-it": {
+      "decision": "ignore",
+      "madeAt": 1654209004788,
+      "expiresAt": 1656800991863
+    },
+    "1068155|@mojaloop/central-services-shared>@mojaloop/event-sdk>grpc>protobufjs>shins>markdown-it>sanitize-html": {
+      "decision": "ignore",
+      "madeAt": 1654209006663,
+      "expiresAt": 1656800991863
+    },
+    "1070260|@mojaloop/central-services-shared>@mojaloop/event-sdk>grpc>protobufjs>shins>markdown-it>sanitize-html": {
+      "decision": "ignore",
+      "madeAt": 1654209008676,
+      "expiresAt": 1656800991863
+    },
+    "1070412|ejs": {
+      "decision": "ignore",
+      "madeAt": 1654209011201,
+      "expiresAt": 1656800991863
     }
   },
   "rules": {},
