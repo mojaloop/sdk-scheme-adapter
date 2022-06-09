@@ -1677,7 +1677,7 @@ components:
         - amountType
         - currency
         - amount
-        - transactionType
+        # - transactionType
         # - transferValidStatus
     individualTransferAccept:
       title: IndividualTransfer
