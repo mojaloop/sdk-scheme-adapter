@@ -503,8 +503,11 @@ components:
           type: boolean
           enum:
             - true
-        perTransferFeeLimit:
-          $ref: '#/components/schemas/bulkPerTransferFeeLimit'
+        perTransferFeeLimits:
+          type: array
+          minItems: 0
+          items: 
+            $ref: '#/components/schemas/bulkPerTransferFeeLimit'
     TransactionInitiatorType:
       title: TransactionInitiatorType
       type: string
