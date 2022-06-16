@@ -17,7 +17,7 @@ info:
     the term "FSP" is equal to the term "DFSP".
   license:
     name: 'Apache License Version 2.0, January 2004'
-    url: 'http://www.apache.org/licenses/'
+    url: 'https://github.com/mojaloop/documentation/blob/master/LICENSE.md'
   version: 2.0.0
 paths:
   /:
