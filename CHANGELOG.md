@@ -1,4 +1,15 @@
 # Changelog: [mojaloop/thirdparty-api-svc](https://github.com/mojaloop/thirdparty-api-svc)
+## [15.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v14.0.0...v15.0.0) (2022-06-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* added outbound bulk api (#320)
+
+### Features
+
+* added outbound bulk api ([#320](https://github.com/mojaloop/sdk-scheme-adapter/issues/320)) ([e2e83e9](https://github.com/mojaloop/sdk-scheme-adapter/commit/e2e83e99048a755b49123e91faa3acc03dded029))
+
 ## [14.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v13.0.4...v14.0.0) (2022-05-19)
 
 
