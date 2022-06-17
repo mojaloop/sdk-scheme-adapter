@@ -17,8 +17,8 @@ info:
     the term "FSP" is equal to the term "DFSP".
   license:
     name: 'Apache License Version 2.0, January 2004'
-    url: 'http://www.apache.org/licenses/'
-  version: 1.0.0
+    url: 'https://github.com/mojaloop/documentation/blob/master/LICENSE.md'
+  version: 2.0.0
 paths:
   /:
     get:
@@ -165,33 +165,37 @@ paths:
               $ref: '#/components/schemas/bulkTransferRequest'
         required: true
       responses:
-        '200':
-          $ref: '#/components/responses/bulkTransferSuccess'
+        '202':
+          $ref: '#/components/responses/bulkTransferAccepted'
         '400':
           $ref: '#/components/responses/bulkTransferBadRequest'
         '500':
-          $ref: '#/components/responses/bulkTransferServerError'
-        '504':
-          $ref: '#/components/responses/bulkTransferTimeout'
+          $ref: '#/components/schemas/errorResponse'
   '/bulkTransfers/{bulkTransferId}':
-    get:
-      summary: Retrieves information for a specific bulk transfer
+    put:
+      summary: Amends the bulk transfer request
       description: >-
-        The HTTP request `GET /bulkTransfers/{bulktTransferId}` is used to get
-        information regarding a bulk transfer created or requested earlier. The
-        `{bulkTransferId}` in the URI should contain the `bulkTransferId` that
+        The HTTP request `PUT /bulkTransfers/{bulkTransferId}` is used to amend
+        information regarding a bulk transfer, i.e. when autoAcceptParty or autoAcceptQuote 
+        is false then the payer need to provide confirmation to proceed with further processing
+        of the request. The `{bulkTransferId}` in the URI should contain the `bulkTransferId` that
         was used for the creation of the bulk transfer.
       tags:
         - BulkTransfers
       parameters:
         - $ref: '#/components/parameters/bulkTransferId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/bulkTransferContinuationAcceptParty'
+                - $ref: '#/components/schemas/bulkTransferContinuationAcceptQuote'      
       responses:
-        '200':
-          description: Bulk transfer information successfully retrieved
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/bulkTransferStatusResponse'
+        '202':
+          description: Bulk transfer information successfully amended
+        '400':
+           $ref: '#/components/responses/bulkTransferPutBadRequest'
         '500':
           description: An error occurred processing the bulk transfer
           content:
@@ -470,6 +474,31 @@ paths:
           $ref: '#/components/responses/simpleTransfersServerError'
 components:
   schemas:
+    autoAcceptPartyOption:
+      type: object
+      required:
+        - enabled
+      properties:
+        enabled:
+          type: boolean
+          enum:
+            - false
+            - true
+    autoAcceptQuote:
+      type: object
+      required:
+        - enabled
+      properties:
+        enabled:
+          type: boolean
+          enum:
+            - true
+            - false
+        perTransferFeeLimits:
+          type: array
+          minItems: 0
+          items: 
+            $ref: '#/components/schemas/bulkPerTransferFeeLimit'
     TransactionInitiatorType:
       title: TransactionInitiatorType
       type: string
@@ -724,6 +753,191 @@ components:
         $ref: '#/components/schemas/Extension'
       minItems: 0
       maxItems: 16
+    bulkPartyLookupResponse:
+      description: >-
+        The object sent back to the payer for confirmation of payee parties.
+        It's basically the same object as the original bulk transfer request 
+        with party information is added for all the payees
+      type: object
+      required:
+        - bulkHomeTransactionID
+        - from
+        - individualTransfers
+      properties:
+        bulkHomeTransactionID:
+          type: string
+          description: >-
+            Transaction ID from the DFSP backend, used to reconcile transactions
+            between the Switch and DFSP backend systems.
+        options:
+          $ref: '#/components/schemas/bulkTransferOptions'
+        from:
+          $ref: '#/components/schemas/Party'
+        individualTransfers:
+          description: List of individual transfers in a bulk transfer.
+          type: array
+          minItems: 1
+          maxItems: 1000
+          items:
+            allOf:
+              - $ref: '#/components/schemas/individualTransfer'
+              - type: object
+                required:
+                  - transactionId
+                properties:
+                  transactionId:
+                    $ref: '#/components/schemas/CorrelationId'
+
+        extensions:
+          $ref: '#/components/schemas/ExtensionList'
+        lastError:
+          description: >
+            Object representing the last error to occur during a party discovery process.
+            This may be a Mojaloop API error returned from another entity in the
+            scheme or an object representing other types of error e.g.
+            exceptions that may occur inside the scheme adapter.
+          $ref: '#/components/schemas/partyError'
+    bulkQuoteRequestResponse:
+      description: >-
+        The object sent back to the payer for confirmation of quotes.
+        It's basically the same object as the original bulk transfer request 
+        with quote information added for all the transfers
+      type: object
+      required:
+        - bulkHomeTransactionID
+        - from
+        - individualTransfers
+      properties:
+        bulkHomeTransactionID:
+          type: string
+          description: >-
+            Transaction ID from the DFSP backend, used to reconcile transactions
+            between the Switch and DFSP backend systems.
+        options:
+          $ref: '#/components/schemas/bulkTransferOptions'
+        from:
+          $ref: '#/components/schemas/Party'
+        individualTransfers:
+          description: List of individual transfers in a bulk transfer.
+          type: array
+          minItems: 1
+          maxItems: 1000
+          items:
+            allOf:
+              - $ref: '#/components/schemas/individualTransfer'
+              - type: object
+                required:
+                 - transactionId
+                properties:
+                  transactionId:
+                    $ref: '#/components/schemas/CorrelationId'
+              - type: object
+                required:
+                 - quoteResponse
+                properties:
+                  quoteResponse:
+                    $ref: '#/components/schemas/QuotesIDPutResponse'
+        extensions:
+          $ref: '#/components/schemas/ExtensionList'
+        lastError:
+          description: >
+            Object representing the last error to occur during a party discovery process.
+            This may be a Mojaloop API error returned from another entity in the
+            scheme or an object representing other types of error e.g.
+            exceptions that may occur inside the scheme adapter.
+          $ref: '#/components/schemas/partyError'
+
+    bulkTransferContinuationAcceptParty:
+      description: >-
+        The object sent back as confirmation of payee parties when autoAcceptParty is false.
+      type: object
+      required:
+        - bulkHomeTransactionID
+        - individualTransfers
+      properties:
+        bulkHomeTransactionID:
+          type: string
+          description: >-
+            Transaction ID from the DFSP backend, used to reconcile transactions
+            between the Switch and DFSP backend systems.
+        individualTransfers:
+          description: List of individual transfers in a bulk transfer with accept party information.
+          type: array
+          minItems: 1
+          maxItems: 1000
+          items:
+            allOf:
+              - $ref: '#/components/schemas/individualTransferAccept'
+              - $ref: '#/components/schemas/transferContinuationAcceptParty'
+    bulkTransferContinuationAcceptQuote:
+      description: >-
+        The object sent back as confirmation of quotes when autoAcceptQuotes is false.
+      type: object
+      required:
+        - bulkHomeTransactionID
+        - individualTransfers
+      properties:
+        bulkHomeTransactionID:
+          type: string
+          description: >-
+            Transaction ID from the DFSP backend, used to reconcile transactions
+            between the Switch and DFSP backend systems.
+        individualTransfers:
+          description: List of individual transfers in a bulk transfer.
+          type: array
+          minItems: 1
+          maxItems: 1000
+          items:
+            allOf:
+              - $ref: '#/components/schemas/individualTransferAccept'
+              - $ref: '#/components/schemas/transferContinuationAcceptQuote'
+    bulkTransferOptions:
+      type: object
+      required:
+        - autoAcceptParty
+        - autoAcceptQuote
+        - bulkExpiration
+      properties:
+        onlyValidateParty:
+          description: >-
+            Set to true if only party validation is required. 
+            This means the quotes and transfers will not run. This is useful
+            for only party resolution.
+          type: boolean
+        autoAcceptParty:
+          $ref: '#/components/schemas/autoAcceptPartyOption'
+        autoAcceptQuote:
+          description: >-
+            Set to true if the quote response is accepted without confirmation from the payer.
+            The fees applied by the payee will be acceptable to the payer abiding by the limits
+            set by optional 'perTransferFeeLimits' array.
+          type: object
+          oneOf:
+            - $ref: '#/components/schemas/autoAcceptQuote'
+        skipPartyLookup:
+          description: >-
+            Set to true if supplying an FSPID for the payee party and no party
+            resolution is needed. This may be useful if a previous party
+            resolution has been performed.
+          type: boolean
+        synchronous:
+          description: >-
+            Set to true if the bulkTransfer requests need be handled synchronous.
+            Otherwise the requests will be handled asynchronously, meaning there will 
+            be callbacks whenever the processing is done
+          type: boolean
+        bulkExpiration:
+          $ref: '#/components/schemas/DateTime'
+    bulkPerTransferFeeLimit:
+      type: object
+      required:
+        - currency
+        - amount
+      properties:
+        currency:
+          $ref: '#/components/schemas/Currency'
+        amount:
+          $ref: '#/components/schemas/Amount'
     transferParty:
       type: object
       required:
@@ -1005,7 +1219,7 @@ components:
         skipPartyLookup:
           description: >-
             Set to true if supplying an FSPID for the payee party and no party
-            resolution is needed. This may be useful is a previous party
+            resolution is needed. This may be useful if a previous party
             resolution has been performed.
           type: boolean
     CorrelationId:
@@ -1243,6 +1457,39 @@ components:
             asynchronous Mojaloop API exchange, this property will contain the
             underlying Mojaloop API error object.
           $ref: '#/components/schemas/mojaloopError'
+    validationError:
+      type: object
+      description: >-
+        This object represents an error occurred during the initial validation of individual transfers in bulk
+      properties:
+        httpStatusCode:
+          type: integer
+          description: >-
+            The HTTP status code returned to the caller. This is the same as the
+            actual HTTP status code returned with the response.
+        mojaloopError:
+          description: >-
+            If a transfer process results in an error callback during the
+            asynchronous Mojaloop API exchange, this property will contain the
+            underlying Mojaloop API error object.
+          $ref: '#/components/schemas/mojaloopError'
+    partyError:
+      type: object
+      description: >-
+        This object represents a Mojaloop API error received at any time during
+        the party discovery process
+      properties:
+        httpStatusCode:
+          type: integer
+          description: >-
+            The HTTP status code returned to the caller. This is the same as the
+            actual HTTP status code returned with the response.
+        mojaloopError:
+          description: >-
+            If a transfer process results in an error callback during the
+            asynchronous Mojaloop API exchange, this property will contain the
+            underlying Mojaloop API error object.
+          $ref: '#/components/schemas/mojaloopError'
     transferResponse:
       type: object
       required:
@@ -1323,7 +1570,7 @@ components:
         skipPartyLookup:
           description: >-
             Set to true if supplying an FSPID for the payee party and no party
-            resolution is needed. This may be useful is a previous party
+            resolution is needed. This may be useful if a previous party
             resolution has been performed.
           type: boolean
     errorResponse:
@@ -1388,44 +1635,73 @@ components:
       type: object
       description: Data model for the complex type 'individualTransfer'.
       properties:
-        transferId:
+        homeTransactionId:
           $ref: '#/components/schemas/CorrelationId'
         to:
-          $ref: '#/components/schemas/transferParty'
+          $ref: '#/components/schemas/Party'
+        reference:
+          description: Payer Loan reference
+          type: string
         amountType:
           $ref: '#/components/schemas/AmountType'
         currency:
           $ref: '#/components/schemas/Currency'
         amount:
           $ref: '#/components/schemas/Amount'
-        transactionType:
-          $ref: '#/components/schemas/transactionType'
+        # transactionType:
+        #   $ref: '#/components/schemas/transactionType'
+        # transferValidStatus:
+        #   description: >-
+        #     Set to true when the transfer request is valid
+        #   type: boolean
         note:
           $ref: '#/components/schemas/Note'
-        extensions:
+        quoteRequestExtensions:
           $ref: '#/components/schemas/ExtensionList'
+        transferRequestExtensions:
+          $ref: '#/components/schemas/ExtensionList'
+        lastError:
+          description: >
+            Object representing the error occured during initial validation.
+          $ref: '#/components/schemas/validationError'
       required:
-        - transferId
+        - homeTransactionId
         - to
         - amountType
         - currency
-        - transactionType
+        - amount
+        # - transactionType
+        # - transferValidStatus
+    individualTransferAccept:
+      title: IndividualTransfer
+      type: object
+      description: Data model for the 'individualTransfer' while accepting party or quote.
+      properties:
+        homeTransactionId:
+          $ref: '#/components/schemas/CorrelationId'
+        transactionId:
+          $ref: '#/components/schemas/CorrelationId'          
+      required:
+        - homeTransactionId
+        - transactionId
+
     bulkTransferRequest:
       type: object
       required:
-        - homeTransactionId
+        - bulkHomeTransactionID
+        - options
         - from
         - individualTransfers
       properties:
-        homeTransactionId:
+        bulkHomeTransactionID:
           type: string
           description: >-
             Transaction ID from the DFSP backend, used to reconcile transactions
             between the Switch and DFSP backend systems.
-        bulkTransferId:
-          $ref: '#/components/schemas/CorrelationId'
+        options:
+          $ref: '#/components/schemas/bulkTransferOptions'
         from:
-          $ref: '#/components/schemas/transferParty'
+          $ref: '#/components/schemas/Party'
         individualTransfers:
           description: List of individual transfers in a bulk transfer.
           type: array
@@ -1440,8 +1716,12 @@ components:
       properties:
         transferId:
           $ref: '#/components/schemas/CorrelationId'
+        homeTransactionId:
+          $ref: '#/components/schemas/CorrelationId'
+        transactionId:
+          $ref: '#/components/schemas/CorrelationId'
         to:
-          $ref: '#/components/schemas/transferParty'
+          $ref: '#/components/schemas/Party'
         amountType:
           $ref: '#/components/schemas/AmountType'
         currency:
@@ -1456,15 +1736,12 @@ components:
           $ref: '#/components/schemas/CorrelationId'
         quoteResponse:
           $ref: '#/components/schemas/QuotesIDPutResponse'
-        quoteResponseSource:
-          type: string
-          description: >
-            FSPID of the entity that supplied the quote response. This may not
-            be the same as the FSPID of the entity which owns the end user
-            account in the case of a FOREX transfer. i.e. it may be a FOREX
-            gateway.
         fulfil:
           $ref: '#/components/schemas/TransfersIDPutResponse'
+        quoteRequestExtensions:
+          $ref: '#/components/schemas/ExtensionList'
+        transferRequestExtensions:
+          $ref: '#/components/schemas/ExtensionList'
         lastError:
           description: >
             Object representing the last error to occur during a transfer
@@ -1475,19 +1752,50 @@ components:
     bulkTransferResponse:
       type: object
       required:
+        - bulkHomeTransactionID
         - from
+        - bulkExpiration
         - individualTransferResults
       properties:
-        transferId:
-          $ref: '#/components/schemas/CorrelationId'
-        from:
-          $ref: '#/components/schemas/transferParty'
+        bulkHomeTransactionID:
+          type: string
+          description: >-
+            Transaction ID from the DFSP backend, used to reconcile transactions
+            between the Switch and DFSP backend systems.
+        bulkExpiration:
+          $ref: '#/components/schemas/DateTime'
+        currentState:
+          $ref: '#/components/schemas/bulkTransferStatus'
         individualTransferResults:
           type: array
           maxItems: 1000
           items:
             $ref: '#/components/schemas/individualTransferResult'
           description: List of individual transfer result in a bulk transfer response.
+        extensions:
+          $ref: '#/components/schemas/ExtensionList'
+    bulkAcceptPartyErrorResponse:
+      allOf:
+        - $ref: '#/components/schemas/errorResponse'
+        - type: object
+          required:
+            - bulkTansferState
+          properties:
+            bulkTransferState:
+              allOf:
+                - $ref: '#/components/schemas/bulkTransferContinuationAcceptParty'
+                - $ref: '#/components/schemas/partyError'
+    bulkAcceptQuoteErrorResponse:
+      allOf:
+        - $ref: '#/components/schemas/errorResponse'
+        - type: object
+          required:
+            - bulkTansferState
+          properties:
+            bulkTransferState:
+              allOf:
+                - $ref: '#/components/schemas/bulkTransferContinuationAcceptQuote'
+                - $ref: '#/components/schemas/quoteError'
     bulkTransferErrorResponse:
       allOf:
         - $ref: '#/components/schemas/errorResponse'
@@ -1501,6 +1809,8 @@ components:
       type: string
       enum:
         - ERROR_OCCURRED
+        - WAITING_FOR_PARTY_ACCEPTANCE
+        - WAITING_FOR_QUOTE_ACCEPTANCE
         - COMPLETED
     individualTransferFulfilment:
       type: object
@@ -2379,6 +2689,22 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/bulkTransferResponse'
+    bulkTransferAccepted:
+      description: Bulk transfer accepted successfully
+    bulkPartyLookupResponse:
+      description: Bulk party lookup completed successfully
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/bulkPartyLookupResponse'
+    bulkTransferPutBadRequest:
+      description: 'Malformed or missing required body, headers or parameters'
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: '#/components/schemas/bulkAcceptPartyErrorResponse'
+              - $ref: '#/components/schemas/bulkAcceptQuoteErrorResponse'
     bulkTransferBadRequest:
       description: 'Malformed or missing required body, headers or parameters'
       content:
