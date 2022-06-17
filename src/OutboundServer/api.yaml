@@ -484,25 +484,17 @@ components:
           enum:
             - false
             - true
-    autoAcceptQuoteFalse:
+    autoAcceptQuote:
       type: object
       required:
         - enabled
-      properties:
-        enabled:
-          type: boolean
-          enum:
-            - false
-    autoAcceptQuoteTrue:
-      type: object
-      required:
-        - enabled
-        - perTransferFeeLimit
+        - perTransferFeeLimits
       properties:
         enabled:
           type: boolean
           enum:
             - true
+            - false
         perTransferFeeLimits:
           type: array
           minItems: 0
@@ -922,8 +914,7 @@ components:
             set by optional 'perTransferFeeLimits' array.
           type: object
           oneOf:
-            - $ref: '#/components/schemas/autoAcceptQuoteTrue'
-            - $ref: '#/components/schemas/autoAcceptQuoteFalse'
+            - $ref: '#/components/schemas/autoAcceptQuote'
         skipPartyLookup:
           description: >-
             Set to true if supplying an FSPID for the payee party and no party
