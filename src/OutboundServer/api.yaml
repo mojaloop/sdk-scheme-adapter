@@ -919,7 +919,7 @@ components:
           description: >-
             Set to true if the quote response is accepted without confirmation from the payer.
             The fees applied by the payee will be acceptable to the payer abiding by the limits
-            set by 'perTransferFeeLimits' array.
+            set by optional 'perTransferFeeLimits' array.
           type: object
           oneOf:
             - $ref: '#/components/schemas/autoAcceptQuoteTrue'
