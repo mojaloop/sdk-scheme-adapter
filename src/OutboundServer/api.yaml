@@ -488,7 +488,6 @@ components:
       type: object
       required:
         - enabled
-        - perTransferFeeLimits
       properties:
         enabled:
           type: boolean
