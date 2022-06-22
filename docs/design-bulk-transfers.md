@@ -22,9 +22,29 @@ sequenceDiagram
         SDKCommandHandler->>MojaloopSwitch: Party lookup with mojaloop
         MojaloopSwitch->>SDKCommandHandler: Party callback
         SDKCommandHandler->>SDKCommandHandler: Update the state
-        SDKCommandHandler->>SDKEventHandler: query-party-request-processed
     end
-    Note right of SDKEventHandler: topic-sdk-domain-events
+    SDKCommandHandler->>SDKCommandHandler: check autoAcceptParty
+    alt autoAcceptParty == false
+        SDKCommandHandler->>CoreConnector: PUT /bulktransfers/{bulkTransferId}
+        SDKCommandHandler->>SDKEventHandler: query-party-waiting-for-accept-party
+        Note left of SDKCommandHandler: topic-sdk-domain-events
+
+        CoreConnector->>+SDKOutboundAPI: PUT /bulkTransfers/{bulkTransferId}
+        SDKOutboundAPI->>SDKEventHandler: accept-party-received
+        Note left of SDKEventHandler: topic-sdk-domain-events
+        SDKOutboundAPI->>CoreConnector: Accepted
+        SDKEventHandler->>SDKCommandHandler: publish command: accept-party-received
+        Note left of SDKCommandHandler: topic-sdk-command-events
+        loop for each transfer in bulk
+            SDKCommandHandler->>SDKCommandHandler: Update the state
+        end
+        SDKCommandHandler->>SDKEventHandler: query-party-request-processed
+        Note left of SDKCommandHandler: topic-sdk-domain-events
+
+    else autoAcceptParty == true
+        SDKCommandHandler->>SDKEventHandler: query-party-request-processed
+        Note right of SDKEventHandler: topic-sdk-domain-events
+    end
     SDKEventHandler->>SDKEventHandler: Check the status of the remaining items in the bulk
 
     SDKEventHandler->>SDKCommandHandler: process-bulk-quotes-request
@@ -38,9 +58,30 @@ sequenceDiagram
         SDKCommandHandler->>MojaloopSwitch: Get Quote with mojaloop
         MojaloopSwitch->>SDKCommandHandler: Quote callback
         SDKCommandHandler->>SDKCommandHandler: Update the state
-        SDKCommandHandler->>SDKEventHandler: bulk-transfers-request-processed
     end
-    Note right of SDKEventHandler: topic-sdk-domain-events
+    SDKCommandHandler->>SDKCommandHandler: check autoAcceptQuote
+
+    alt autoAcceptQuote == false
+        SDKCommandHandler->>CoreConnector: PUT /bulktransfers/{bulkTransferId}
+        SDKCommandHandler->>SDKEventHandler: bulk-quotes-request-waiting-for-accept-quote
+        Note left of SDKCommandHandler: topic-sdk-domain-events
+
+        CoreConnector->>+SDKOutboundAPI: PUT /bulkTransfers/{bulkTransferId}
+        SDKOutboundAPI->>SDKEventHandler: accept-quote-received
+        Note left of SDKEventHandler: topic-sdk-domain-events
+        SDKOutboundAPI->>CoreConnector: Accepted
+        SDKEventHandler->>SDKCommandHandler: publish command: accept-quote-received
+        Note left of SDKCommandHandler: topic-sdk-command-events
+        loop for each transfer in bulk per DFSP
+            SDKCommandHandler->>SDKCommandHandler: Update the state
+        end
+        SDKCommandHandler->>SDKEventHandler: bulk-quotes-request-processed
+        Note left of SDKCommandHandler: topic-sdk-domain-events
+    else autoAcceptQuote == true
+        SDKCommandHandler->>SDKEventHandler: bulk-quotes-request-processed
+        Note right of SDKEventHandler: topic-sdk-domain-events
+    end
+
     SDKEventHandler->>SDKEventHandler: Check the status of the remaining items in the bulk
 
     SDKEventHandler->>SDKCommandHandler: process-bulk-transfers-request
@@ -68,6 +109,7 @@ sequenceDiagram
     SDKOutboundAPI->>CoreConnector: Send the callback
     SDKOutboundAPI->>SDKEventHandler: bulk-callback-sent
     Note left of SDKEventHandler: topic-sdk-domain-events
+
 ```
 
 ### References:
