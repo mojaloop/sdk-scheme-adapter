@@ -2,52 +2,72 @@
 
 ```mermaid
 sequenceDiagram
-    CC->>+SDK-outboundAPI: Bulk request
-    SDK-outboundAPI->>topic-sdk-domain-events: publish name: bulk-request-received content: request payload
-    SDK-outboundAPI->>CC: Accepted
-    topic-sdk-domain-events->>SDK-ep: consume bulk-request-received
-    SDK-ep->>topic-sdk-command-events: publish command: process-bulk-request
-    topic-sdk-command-events->>SDK-cp: consume process-bulk-request and update the state
+    participant CoreConnector as Core Connector
+    participant SDKOutboundAPI as SDK Outbound API
+    participant SDKEventHandler as SDK Event Handler
+    participant SDKCommandHandler as SDK Command Handler
+    participant MojaloopSwitch as Mojaloop Switch
+    CoreConnector->>+SDKOutboundAPI: BulkRequest
+    SDKOutboundAPI->>SDKEventHandler: bulk-request-received
+    Note left of SDKEventHandler: topic-sdk-domain-events
+    SDKOutboundAPI->>CoreConnector: Accepted
+    SDKEventHandler->>SDKCommandHandler: publish command: process-bulk-request
+    Note left of SDKCommandHandler: topic-sdk-command-events
+    SDKCommandHandler->>SDKCommandHandler: Update the state
     loop Party Lookup per transfer
-        SDK-cp->>topic-sdk-domain-events: query-party-requested
-        topic-sdk-domain-events->>SDK-ep: consume query-party-requested
-        SDK-ep->>topic-sdk-command-events: publish command: process-query-party-request
-        topic-sdk-command-events->>SDK-cp: consume process-query-party-request
-        SDK-cp->>SDK-cp: Party lookup with mojaloop and update the state
-        SDK-cp->>topic-sdk-domain-events: query-party-request-processed
+        SDKCommandHandler->>SDKEventHandler: query-party-requested
+        Note right of SDKEventHandler: topic-sdk-domain-events
+        SDKEventHandler->>SDKCommandHandler: publish command: process-query-party-request
+        Note left of SDKCommandHandler: topic-sdk-command-events
+        SDKCommandHandler->>MojaloopSwitch: Party lookup with mojaloop
+        MojaloopSwitch->>SDKCommandHandler: Party callback
+        SDKCommandHandler->>SDKCommandHandler: Update the state
+        SDKCommandHandler->>SDKEventHandler: query-party-request-processed
     end
-    topic-sdk-domain-events->>SDK-ep: consume query-party-request-processed (Check the status of the remaining items in the bulk)
+    Note right of SDKEventHandler: topic-sdk-domain-events
+    SDKEventHandler->>SDKEventHandler: Check the status of the remaining items in the bulk
 
-    SDK-ep->>topic-sdk-command-events: process-bulk-quotes-request
-    topic-sdk-command-events->>SDK-cp: process-bulk-quotes-request: Save the state and de-multiplex
+    SDKEventHandler->>SDKCommandHandler: process-bulk-quotes-request
+    Note left of SDKCommandHandler: topic-sdk-command-events
+    SDKCommandHandler->>SDKCommandHandler: Save the state and de-multiplex
     loop Demultiplex per DFSP (into parts with configurable size)
-        SDK-cp->>topic-sdk-domain-events: bulk-quotes-requested
-        topic-sdk-domain-events->>SDK-ep: consume bulk-quotes-requested
-        SDK-ep->>topic-sdk-command-events: publish command: process-bulk-quotes-request
-        topic-sdk-command-events->>SDK-cp: consume process-bulk-quotes-request
-        SDK-cp->>SDK-cp: Get Quote with mojaloop and update the state
-        SDK-cp->>topic-sdk-domain-events: bulk-quotes-request-processed
+        SDKCommandHandler->>SDKEventHandler: bulk-quotes-requested
+        Note right of SDKEventHandler: topic-sdk-domain-events
+        SDKEventHandler->>SDKCommandHandler: process-bulk-quotes-request
+        Note left of SDKCommandHandler: topic-sdk-command-events
+        SDKCommandHandler->>MojaloopSwitch: Get Quote with mojaloop
+        MojaloopSwitch->>SDKCommandHandler: Quote callback
+        SDKCommandHandler->>SDKCommandHandler: Update the state
+        SDKCommandHandler->>SDKEventHandler: bulk-transfers-request-processed
     end
-    topic-sdk-domain-events->>SDK-ep: consume bulk-quotes-request-processed (Check the status of the remaining items in the bulk)
+    Note right of SDKEventHandler: topic-sdk-domain-events
+    SDKEventHandler->>SDKEventHandler: Check the status of the remaining items in the bulk
 
-    SDK-ep->>topic-sdk-command-events: process-bulk-transfers-request
-    topic-sdk-command-events->>SDK-cp: process-bulk-transfers-request: Save the state and de-multiplex
+    SDKEventHandler->>SDKCommandHandler: process-bulk-transfers-request
+    Note left of SDKCommandHandler: topic-sdk-command-events
+    SDKCommandHandler->>SDKCommandHandler: Update the state
     loop Demultiplex per DFSP (into parts with configurable size)
-        SDK-cp->>topic-sdk-domain-events: bulk-transfers-requested
-        topic-sdk-domain-events->>SDK-ep: consume bulk-transfers-requested
-        SDK-ep->>topic-sdk-command-events: publish command: process-bulk-transfers-request
-        topic-sdk-command-events->>SDK-cp: consume process-bulk-transfers-request
-        SDK-cp->>SDK-cp: Get Quote with mojaloop and update the state
-        SDK-cp->>topic-sdk-domain-events: bulk-transfers-request-processed
+        SDKCommandHandler->>SDKEventHandler: bulk-transfers-requested
+        Note right of SDKEventHandler: topic-sdk-domain-events
+        SDKEventHandler->>SDKCommandHandler: process-bulk-transfers-request
+        Note left of SDKCommandHandler: topic-sdk-command-events
+        SDKCommandHandler->>SDKCommandHandler: Update the state
+        SDKCommandHandler->>MojaloopSwitch: Execute Transfers with mojaloop
+        MojaloopSwitch->>SDKCommandHandler: Transfers callback
+        SDKCommandHandler->>SDKCommandHandler: Update the state
+        SDKCommandHandler->>SDKEventHandler: bulk-transfers-request-processed
     end
-    topic-sdk-domain-events->>SDK-ep: consume bulk-transfers-request-processed (Check the status of the remaining items in the bulk)
-    SDK-ep->>topic-sdk-command-events: process-bulk-multiplex
-    topic-sdk-command-events->>SDK-cp: process-bulk-multiplex: Save the state and multiplex
-    SDK-cp->>topic-sdk-domain-events: process-bulk-multiplex-completed
+    Note right of SDKEventHandler: topic-sdk-domain-events
+    SDKEventHandler->>SDKEventHandler: Check the status of the remaining items in the bulk
+    SDKEventHandler->>SDKCommandHandler: process-bulk-multiplex
+    Note left of SDKCommandHandler: topic-sdk-command-events
+    SDKCommandHandler->>SDKCommandHandler: Save the state and multiplex
+    SDKCommandHandler->>SDKOutboundAPI: process-bulk-multiplex-completed
 
-    topic-sdk-domain-events->>SDK-outboundAPI: consume process-bulk-multiplex-completed: Send the callback
-    SDK-outboundAPI->>CC: Callback
-    SDK-outboundAPI->>topic-sdk-domain-events: bulk-callback-sent
+    Note right of SDKOutboundAPI: topic-sdk-domain-events
+    SDKOutboundAPI->>CoreConnector: Send the callback
+    SDKOutboundAPI->>SDKEventHandler: bulk-callback-sent
+    Note left of SDKEventHandler: topic-sdk-domain-events
 ```
 
 ### References:
@@ -55,3 +75,13 @@ sequenceDiagram
 https://mojaloop.github.io/reference-architecture-doc/boundedContexts/accountLookupAndDiscovery/
 
 https://github.com/mojaloop/platform-shared-lib/tree/main/modules/nodejs-kafka-client-lib
+
+
+# Notes
+
+- Define "Update states" clearly
+- AutoAccept use cases
+- Structure of the redis object that we are storing (HSET <bulkID>?)
+- Refer the reference-architecture for the naming and message formats (https://mojaloop.github.io/reference-architecture-doc/boundedContexts/quotingAgreement/)
+- Create a story for transforming sdk-scheme-adapter repo as mono repo for both javascript and typescript
+- 
