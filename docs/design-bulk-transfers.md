@@ -112,7 +112,7 @@ sequenceDiagram
 
 ```
 
-### Outbound Sequence Diagram
+### Inbound Sequence Diagram
 
 ```mermaid
 sequenceDiagram
