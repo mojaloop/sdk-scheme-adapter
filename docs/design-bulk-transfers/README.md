@@ -1,3 +1,7 @@
+### Overview
+
+![Overview](./assets/overview-drawio.png)
+
 ### [Outbound Sequence Diagram](./outbound-sequence.md)
 
 ### [Inbound Sequence Diagram](./inbound-sequence.md)
@@ -9,7 +13,7 @@ https://mojaloop.github.io/reference-architecture-doc/boundedContexts/accountLoo
 https://github.com/mojaloop/platform-shared-lib/tree/main/modules/nodejs-kafka-client-lib
 
 
-# Notes
+### Notes
 
 - Define "Update states" clearly
 - AutoAccept use cases
