@@ -20,4 +20,6 @@ https://github.com/mojaloop/platform-shared-lib/tree/main/modules/nodejs-kafka-c
 - Structure of the redis object that we are storing (HSET <bulkID>?)
 - Refer the reference-architecture for the naming and message formats (https://mojaloop.github.io/reference-architecture-doc/boundedContexts/quotingAgreement/)
 - Create a story for transforming sdk-scheme-adapter repo as mono repo for both javascript and typescript
-- 
+- How to handle timeouts? Using a scheduler that can fire timeout events? Scheduling BC?
+- Outbound mojaloop async requests (Follow the redis pub-sub / implement kafka solution to handle callbacks)
+- Calculate the timeouts for individual transfers based on the bulk timeout.
