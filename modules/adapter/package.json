@@ -20,6 +20,7 @@
     "build:dto:outbound": "openapi-typescript ./src/OutboundServer/api.yaml --output ./src/OutboundServer/api_interfaces/openapi.d.ts",
     "lint": "eslint ./src/",
     "lint:fix": "eslint ./src/ --fix",
+    "start": "node src/index.js",
     "test": "jest --ci --reporters=default --reporters=jest-junit --env=node test/unit/",
     "test:int": "jest --ci --reporters=default --reporters=jest-junit --env=node test/integration",
     "validate:api": "npm run validate:api:in; npm run validate:api:out",
