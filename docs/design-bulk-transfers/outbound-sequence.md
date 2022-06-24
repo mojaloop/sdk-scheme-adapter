@@ -6,151 +6,181 @@ sequenceDiagram
     participant SDKOutboundAPI as SDK Backend API
     participant SDKEventHandler as SDK Event Handler
     participant SDKCommandHandler as SDK Command Handler
-    participant MojaloopSwitch as SDK FSPIOP API
+    participant SDKFspiopApi as SDK FSPIOP API
+    participant MojaloopSwitch as Mojaloop Switch
 
-    CoreConnector->>+SDKOutboundAPI: BulkRequest
+    CoreConnector->>+SDKOutboundAPI: SDKBulkRequest
     SDKOutboundAPI->>SDKOutboundAPI: Scheme Validation
-    SDKOutboundAPI->>SDKEventHandler: BulkRequestReceived
+    SDKOutboundAPI->>SDKOutboundAPI: Process Trace Headers
+    SDKOutboundAPI->>SDKEventHandler: SDKBulkRequestReceived
     Note left of SDKEventHandler: topic-sdk-domain-events
     SDKOutboundAPI->>CoreConnector: Accepted
-    SDKEventHandler->>SDKCommandHandler: ProcessBulkRequest
+    SDKEventHandler->>SDKCommandHandler: ProcessSDKBulkRequest
     Note left of SDKCommandHandler: topic-sdk-command-events
 
-    SDKCommandHandler->>SDKCommandHandler: Update global state "Bulk Request Accepted"
+    SDKCommandHandler->>SDKCommandHandler: Update global state "RECEIVED"
 
-    SDKCommandHandler->>SDKEventHandler: BulkPartyInfoRequested
+    SDKCommandHandler->>SDKEventHandler: SDKBulkPartyInfoRequested
     Note right of SDKEventHandler: topic-sdk-domain-events
-    SDKEventHandler->>SDKCommandHandler: ProcessBulkPartyInfoRequest
+    SDKEventHandler->>SDKCommandHandler: ProcessSDKBulkPartyInfoRequest
     Note left of SDKCommandHandler: topic-sdk-command-events
 
-    SDKCommandHandler->>SDKCommandHandler: Update global state "Bulk Party Lookup Started"
+    SDKCommandHandler->>SDKCommandHandler: Update global state "DISCOVERY_PROCESSING"
 
     SDKCommandHandler->>SDKCommandHandler: Break down the bulk parties to individual party lookups
 
     loop Party Lookup per transfer
-        SDKCommandHandler->>MojaloopSwitch: PartyInfoRequested
-        Note left of MojaloopSwitch: topic-sdk-domain-events
-        SDKCommandHandler->>SDKCommandHandler: Update the individual state
-        MojaloopSwitch->>SDKEventHandler: PartyInfoCallbackReceived
+        SDKCommandHandler->>SDKFspiopApi: PartyInfoRequested
+        Note left of SDKFspiopApi: topic-sdk-domain-events
+        SDKCommandHandler->>SDKCommandHandler: Update the individual state: DISCOVERY_PROCESSING
+        SDKFspiopApi->>SDKFspiopApi: Process outbound Trace Headers
+        SDKFspiopApi->>MojaloopSwitch: GET /parties
+        MojaloopSwitch->>SDKFspiopApi: PUT /parties
+        SDKFspiopApi->>SDKFspiopApi: Process Inbound Trace Headers
+        SDKFspiopApi->>SDKEventHandler: PartyInfoCallbackReceived
         Note right of SDKEventHandler: topic-sdk-domain-events
         SDKEventHandler->>SDKCommandHandler: ProcessPartyInfoCallback
         Note left of SDKCommandHandler: topic-sdk-command-events
-        SDKCommandHandler->>SDKCommandHandler: Update the individual state
+        SDKCommandHandler->>SDKCommandHandler: Update the individual state: DISCOVERY_SUCCESS / DISCOVERY_FAILED
         SDKCommandHandler->>SDKEventHandler: PartyInfoProcessed
         Note right of SDKEventHandler: topic-sdk-domain-events
         SDKEventHandler->>SDKEventHandler: Check the status of the remaining items in the bulk
     end
-    SDKEventHandler->>SDKCommandHandler: ProcessBulkPartyInfoRequestComplete
+    SDKEventHandler->>SDKCommandHandler: ProcessSDKBulkPartyInfoRequestComplete
     Note left of SDKCommandHandler: topic-sdk-command-events
 
-    SDKCommandHandler->>SDKCommandHandler: Update global state "Bulk Party Lookup Completed"
+    SDKCommandHandler->>SDKCommandHandler: Update global state "DISCOVERY_COMPLETED"
     SDKCommandHandler->>SDKCommandHandler: check autoAcceptParty
 
     alt autoAcceptParty == false
-        SDKCommandHandler->>SDKOutboundAPI: BulkAcceptPartyInfoRequested
+        SDKCommandHandler->>SDKOutboundAPI: SDKBulkAcceptPartyInfoRequested
         Note right of SDKOutboundAPI: topic-sdk-domain-events
+        SDKCommandHandler->>SDKCommandHandler: Update global state "DISCOVERY_ACCEPTANCE_PENDING"
+        SDKOutboundAPI->>SDKOutboundAPI: Process outbound Trace Headers
         SDKOutboundAPI->>CoreConnector: PUT /bulktransfers/{bulkTransferId}
-        SDKCommandHandler->>SDKCommandHandler: Update global state "Waiting For Party Acceptance"
         CoreConnector->>+SDKOutboundAPI: PUT /bulkTransfers/{bulkTransferId}
-        SDKOutboundAPI->>SDKEventHandler: BulkAcceptPartyInfoReceived
+        SDKOutboundAPI->>SDKOutboundAPI: Process inbound Trace Headers
+        SDKOutboundAPI->>SDKEventHandler: SDKBulkAcceptPartyInfoReceived
         Note left of SDKEventHandler: topic-sdk-domain-events
         SDKOutboundAPI->>CoreConnector: Accepted
-        SDKEventHandler->>SDKCommandHandler: ProcessAcceptPartyInfo
+        SDKEventHandler->>SDKCommandHandler: ProcessSDKBulkAcceptPartyInfo
         Note left of SDKCommandHandler: topic-sdk-command-events
-        loop for each transfer in bulk
-            SDKCommandHandler->>SDKCommandHandler: Update the individual state with party acceptance information
-        end
-        SDKCommandHandler->>SDKEventHandler: AcceptPartyInfoProcessed
+
+    else autoAcceptParty == true (In future we can make this optional and an external service can handle this)
+        SDKCommandHandler->>SDKEventHandler: SDKBulkAutoAcceptPartyInfoRequested
         Note right of SDKEventHandler: topic-sdk-domain-events
-        SDKEventHandler->>SDKCommandHandler: ProcessBulkQuotesRequest (Only for accepted parties)
+        SDKEventHandler->>SDKEventHandler: Set acceptParty=true for individual items with DISCOVERY_SUCCESS state
+        SDKEventHandler->>SDKCommandHandler: ProcessSDKBulkAcceptPartyInfo
         Note left of SDKCommandHandler: topic-sdk-command-events
-    else autoAcceptParty == true
-      SDKCommandHandler->>SDKEventHandler: BulkPartyInfoRequestProcessed
-      Note right of SDKEventHandler: topic-sdk-domain-events
-      SDKEventHandler->>SDKCommandHandler: ProcessBulkQuotesRequest
-      Note left of SDKCommandHandler: topic-sdk-command-events
     end
 
-    SDKCommandHandler->>SDKCommandHandler: Update global state "Bulk Quotes Request Started"
-    SDKCommandHandler->>SDKCommandHandler: Break down the bulk parties to individual bulk quotes requests per FSP
-    Note over SDKCommandHandler: The quote batches should contain a configurable number of maximum entries. If it exceeds, split them into parts
-    loop BulkQuotes requests per DFSP
-        SDKCommandHandler->>MojaloopSwitch: BulkFSPQuotesRequested
-        Note left of MojaloopSwitch: topic-sdk-domain-events
-        SDKCommandHandler->>SDKCommandHandler: Update the individual state
-        MojaloopSwitch->>SDKEventHandler: BulkFSPQuotesCallbackReceived
-        Note right of SDKEventHandler: topic-sdk-domain-events
-        SDKEventHandler->>SDKCommandHandler: ProcessBulkFSPQuotesCallback
-        Note left of SDKCommandHandler: topic-sdk-command-events
-        SDKCommandHandler->>SDKCommandHandler: Update the individual state
-        SDKCommandHandler->>SDKEventHandler: BulkFSPQuotesProcessed
-        Note right of SDKEventHandler: topic-sdk-domain-events
-        SDKCommandHandler->>SDKCommandHandler: Check the status of the remaining items in the bulk
+    loop for each transfer in bulk
+        SDKCommandHandler->>SDKCommandHandler: Update the individual state: DISCOVERY_ACCEPTED / DISCOVERY_REJECTED
     end
-    SDKEventHandler->>SDKCommandHandler: ProcessBulkQuotesRequestComplete
+    SDKCommandHandler->>SDKCommandHandler: Update global state "DISCOVERY_ACCEPTANCE_COMPLETED"
+    SDKCommandHandler->>SDKEventHandler: SDKBulkAcceptPartyInfoProcessed
+    Note right of SDKEventHandler: topic-sdk-domain-events
+    SDKEventHandler->>SDKCommandHandler: ProcessSDKBulkQuotesRequest (Only for accepted parties)
     Note left of SDKCommandHandler: topic-sdk-command-events
 
-    SDKCommandHandler->>SDKCommandHandler: Update global state "Bulk Quotes Request Completed"
+    SDKCommandHandler->>SDKCommandHandler: Update global state "AGREEMENT_PROCESSING"
+    SDKCommandHandler->>SDKCommandHandler: Break down the bulk quotes to individual bulk quotes requests per FSP
+    Note over SDKCommandHandler: The quote batches should contain a configurable number of maximum entries. If it exceeds, split them into parts
+    loop SDKBulkQuotes requests per DFSP
+        SDKCommandHandler->>SDKFspiopApi: BulkQuotesRequested
+        Note left of SDKFspiopApi: topic-sdk-domain-events
+        SDKCommandHandler->>SDKCommandHandler: Update the batch state: AGREEMENT_PROCESSING
+        SDKFspiopApi->>SDKFspiopApi: Process outbound Trace Headers
+        SDKFspiopApi->>MojaloopSwitch: POST /bulkQuotes
+        MojaloopSwitch->>SDKFspiopApi: PUT /bulkQuotes
+        SDKFspiopApi->>SDKFspiopApi: Process inbound Trace Headers
+        SDKFspiopApi->>SDKEventHandler: BulkQuotesCallbackReceived
+        Note right of SDKEventHandler: topic-sdk-domain-events
+        SDKEventHandler->>SDKCommandHandler: ProcessBulkQuotesCallback
+        Note left of SDKCommandHandler: topic-sdk-command-events
+        SDKCommandHandler->>SDKCommandHandler: Update the batch state: AGREEMENT_SUCCESS / AGREEMENT_FAILED
+        SDKCommandHandler->>SDKEventHandler: BulkQuotesProcessed
+        Note right of SDKEventHandler: topic-sdk-domain-events
+        SDKEventHandler->>SDKEventHandler: Check the status of the remaining items in the bulk
+    end
+    SDKEventHandler->>SDKCommandHandler: ProcessSDKBulkQuotesRequestComplete
+    Note left of SDKCommandHandler: topic-sdk-command-events
+
+    SDKCommandHandler->>SDKCommandHandler: Update global state "AGREEMENT_COMPLETED"
     SDKCommandHandler->>SDKCommandHandler: check autoAcceptQuote
 
     alt autoAcceptQuote == false
-        SDKCommandHandler->>SDKOutboundAPI: BulkAcceptQuoteRequested
+        SDKCommandHandler->>SDKOutboundAPI: SDKBulkAcceptQuoteRequested
         Note right of SDKOutboundAPI: topic-sdk-domain-events
+        SDKCommandHandler->>SDKCommandHandler: Update global state "AGREEMENT_ACCEPTANCE_PENDING"
+        SDKOutboundAPI->>SDKOutboundAPI: Process outbound Trace Headers
         SDKOutboundAPI->>CoreConnector: PUT /bulktransfers/{bulkTransferId}
-        SDKCommandHandler->>SDKCommandHandler: Update global state "Waiting For Quote Acceptance"
         CoreConnector->>+SDKOutboundAPI: PUT /bulkTransfers/{bulkTransferId}
-        SDKOutboundAPI->>SDKEventHandler: BulkAcceptQuoteReceived
+        SDKOutboundAPI->>SDKOutboundAPI: Process inbound Trace Headers
+        SDKOutboundAPI->>SDKEventHandler: SDKBulkAcceptQuoteReceived
         Note left of SDKEventHandler: topic-sdk-domain-events
         SDKOutboundAPI->>CoreConnector: Accepted
-        SDKEventHandler->>SDKCommandHandler: ProcessAcceptQuote
+        SDKEventHandler->>SDKCommandHandler: ProcessSDKBulkAcceptQuote
         Note left of SDKCommandHandler: topic-sdk-command-events
         loop for each transfer in bulk
-            SDKCommandHandler->>SDKCommandHandler: Update the individual state with quote acceptance information
+            SDKCommandHandler->>SDKCommandHandler: Update the batch state: AGREEMENT_ACCEPTED / AGREEMENT_REJECTED
         end
-        SDKCommandHandler->>SDKEventHandler: AcceptQuoteProcessed
+        SDKCommandHandler->>SDKEventHandler: SDKBulkAcceptQuoteProcessed
         Note right of SDKEventHandler: topic-sdk-domain-events
-        SDKEventHandler->>SDKCommandHandler: ProcessBulkTransfersRequest (Only for accepted quotes)
-        Note left of SDKCommandHandler: topic-sdk-command-events
     else autoAcceptQuote == true
-        SDKCommandHandler->>SDKEventHandler: BulkQuotesRequestProcessed
+        SDKCommandHandler->>SDKEventHandler: SDKBulkAutoAcceptQuoteRequested
         Note right of SDKEventHandler: topic-sdk-domain-events
-        SDKEventHandler->>SDKCommandHandler: ProcessBulkTransfersRequest
+        SDKEventHandler->>SDKCommandHandler: ProcessSDKBulkAutoAcceptQuote
         Note left of SDKCommandHandler: topic-sdk-command-events
+        loop for each transfer in bulk
+            SDKCommandHandler->>SDKCommandHandler: Check fee limits
+            SDKCommandHandler->>SDKCommandHandler: Update the batch state: AGREEMENT_ACCEPTED / AGREEMENT_REJECTED
+        end
+        SDKCommandHandler->>SDKEventHandler: SDKBulkAutoAcceptQuoteCompleted
+        Note right of SDKEventHandler: topic-sdk-domain-events
     end
-
-    SDKCommandHandler->>SDKCommandHandler: Update global state "Bulk Transfers Request Started"
-    SDKEventHandler->>SDKCommandHandler: ProcessBulkTransfersRequest
+    SDKEventHandler->>SDKCommandHandler: ProcessSDKBulkTransfersRequest
     Note left of SDKCommandHandler: topic-sdk-command-events
-    SDKCommandHandler->>SDKCommandHandler: Update global state "Bulk Transfers Request Started"
-    SDKCommandHandler->>SDKCommandHandler: De-multiplex to the transfer requests per DFSP
+
+    SDKCommandHandler->>SDKCommandHandler: Update global state "SDKBulk Transfers Request Started"
+    SDKCommandHandler->>SDKCommandHandler: Break down the bulk transfers to individual bulk transfers requests per FSP
     Note over SDKCommandHandler: The transfer batches should contain a configurable number of maximum entries. If it exceeds, split them into parts
-
-    loop BulkTransfers requests per DFSP
+    loop SDKBulkTransfers requests per DFSP
+        SDKCommandHandler->>SDKFspiopApi: BulkTransfersRequested
+        Note left of SDKFspiopApi: topic-sdk-domain-events
         SDKCommandHandler->>SDKCommandHandler: Update the individual state
-        SDKCommandHandler->>SDKEventHandler: BulkFSPTransfersRequested
+        SDKFspiopApi->>SDKFspiopApi: Process outbound Trace Headers
+        SDKFspiopApi->>MojaloopSwitch: POST /bulkTransfers
+        MojaloopSwitch->>SDKFspiopApi: PUT /bulkTransfers
+        SDKFspiopApi->>SDKFspiopApi: Process inbound Trace Headers
+        SDKFspiopApi->>SDKEventHandler: BulkTransfersCallbackReceived
         Note right of SDKEventHandler: topic-sdk-domain-events
-        SDKEventHandler->>SDKCommandHandler: ProcessBulkFSPTransfersRequest
+        SDKEventHandler->>SDKCommandHandler: ProcessBulkTransfersCallback
         Note left of SDKCommandHandler: topic-sdk-command-events
-        SDKCommandHandler->>MojaloopSwitch: Execute Transfers with mojaloop
-        MojaloopSwitch->>SDKCommandHandler: Transfers callback
         SDKCommandHandler->>SDKCommandHandler: Update the individual state
-        SDKCommandHandler->>SDKEventHandler: BulkFSPTransfersProcessed
+        SDKCommandHandler->>SDKEventHandler: BulkTransfersProcessed
         Note right of SDKEventHandler: topic-sdk-domain-events
-        SDKCommandHandler->>SDKCommandHandler: Check the status of the remaining items in the bulk
+        SDKEventHandler->>SDKEventHandler: Check the status of the remaining items in the bulk
     end
-
-    SDKCommandHandler->>SDKEventHandler: BulkTransfersProcessed
-    Note right of SDKEventHandler: topic-sdk-domain-events
-    SDKCommandHandler->>SDKCommandHandler: Update global state "Bulk Transfers Request Completed"
-
-    SDKEventHandler->>SDKCommandHandler: ProcessBulkMultiplex
+    SDKEventHandler->>SDKCommandHandler: ProcessSDKBulkTransfersRequestComplete
     Note left of SDKCommandHandler: topic-sdk-command-events
-    SDKCommandHandler->>SDKCommandHandler: Save the state
+    SDKCommandHandler->>SDKCommandHandler: Update global state "SDKBulk Transfers Request Completed"
+
+    SDKCommandHandler->>SDKEventHandler: SDKBulkTransfersRequestProcessed
+    Note right of SDKEventHandler: topic-sdk-domain-events
+
+    SDKEventHandler->>SDKCommandHandler: ProcessSDKBulkMultiplex
+    Note left of SDKCommandHandler: topic-sdk-command-events
+    SDKCommandHandler->>SDKCommandHandler: Update global state "Multiplexing started"
     SDKCommandHandler->>SDKCommandHandler: Multiplex
-    SDKCommandHandler->>SDKOutboundAPI: BulkMultiplexProcessed
+    SDKCommandHandler->>SDKOutboundAPI: SDKBulkMultiplexProcessed
     Note right of SDKOutboundAPI: topic-sdk-domain-events
+    SDKOutboundAPI->>SDKOutboundAPI: Process outbound Trace Headers
     SDKOutboundAPI->>CoreConnector: Send the callback
-    SDKOutboundAPI->>SDKEventHandler: BulkCallbackSent
+    SDKOutboundAPI->>SDKEventHandler: SDKBulkCallbackSent
     Note left of SDKEventHandler: topic-sdk-domain-events
+    SDKEventHandler->>SDKCommandHandler: ProcessSDKBulkCallbackSent
+    Note left of SDKCommandHandler: topic-sdk-command-events
+    SDKCommandHandler->>SDKCommandHandler: Update global state "Callback sent"
 
 ```
