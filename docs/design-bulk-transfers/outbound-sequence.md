@@ -84,7 +84,7 @@ sequenceDiagram
     Note left of SDKCommandHandler: topic-sdk-command-events
 
     SDKCommandHandler->>SDKCommandHandler: Update global state "AGREEMENT_PROCESSING"
-    SDKCommandHandler->>SDKCommandHandler: Break down the bulk quotes to individual bulk quotes requests per FSP
+    SDKCommandHandler->>SDKCommandHandler: Break down the sdk bulk quotes to individual bulk quotes requests per FSP
     Note over SDKCommandHandler: The quote batches should contain a configurable number of maximum entries. If it exceeds, split them into parts
     loop SDKBulkQuotes requests per DFSP
         SDKCommandHandler->>SDKFspiopApi: BulkQuotesRequested
@@ -139,16 +139,16 @@ sequenceDiagram
         SDKCommandHandler->>SDKEventHandler: SDKBulkAutoAcceptQuoteCompleted
         Note right of SDKEventHandler: topic-sdk-domain-events
     end
-    SDKEventHandler->>SDKCommandHandler: ProcessSDKBulkTransfersRequest
+    SDKEventHandler->>SDKCommandHandler: ProcessSDKBulkTransfersRequest (Only for accepted quotes)
     Note left of SDKCommandHandler: topic-sdk-command-events
 
-    SDKCommandHandler->>SDKCommandHandler: Update global state "SDKBulk Transfers Request Started"
-    SDKCommandHandler->>SDKCommandHandler: Break down the bulk transfers to individual bulk transfers requests per FSP
+    SDKCommandHandler->>SDKCommandHandler: Update global state "TRANSFERS_PROCESSING"
+    SDKCommandHandler->>SDKCommandHandler: Break down the sdk bulk transfers to individual bulk transfers requests per FSP
     Note over SDKCommandHandler: The transfer batches should contain a configurable number of maximum entries. If it exceeds, split them into parts
     loop SDKBulkTransfers requests per DFSP
         SDKCommandHandler->>SDKFspiopApi: BulkTransfersRequested
         Note left of SDKFspiopApi: topic-sdk-domain-events
-        SDKCommandHandler->>SDKCommandHandler: Update the individual state
+        SDKCommandHandler->>SDKCommandHandler: Update the batch state: TRANSFERS_PROCESSING
         SDKFspiopApi->>SDKFspiopApi: Process outbound Trace Headers
         SDKFspiopApi->>MojaloopSwitch: POST /bulkTransfers
         MojaloopSwitch->>SDKFspiopApi: PUT /bulkTransfers
@@ -157,22 +157,22 @@ sequenceDiagram
         Note right of SDKEventHandler: topic-sdk-domain-events
         SDKEventHandler->>SDKCommandHandler: ProcessBulkTransfersCallback
         Note left of SDKCommandHandler: topic-sdk-command-events
-        SDKCommandHandler->>SDKCommandHandler: Update the individual state
+        SDKCommandHandler->>SDKCommandHandler: Update the batch state: TRANSFERS_SUCCESS / TRANSFERS_FAILED
         SDKCommandHandler->>SDKEventHandler: BulkTransfersProcessed
         Note right of SDKEventHandler: topic-sdk-domain-events
         SDKEventHandler->>SDKEventHandler: Check the status of the remaining items in the bulk
     end
     SDKEventHandler->>SDKCommandHandler: ProcessSDKBulkTransfersRequestComplete
     Note left of SDKCommandHandler: topic-sdk-command-events
-    SDKCommandHandler->>SDKCommandHandler: Update global state "SDKBulk Transfers Request Completed"
+    SDKCommandHandler->>SDKCommandHandler: Update global state "TRANSFERS_COMPLETED"
 
     SDKCommandHandler->>SDKEventHandler: SDKBulkTransfersRequestProcessed
     Note right of SDKEventHandler: topic-sdk-domain-events
 
     SDKEventHandler->>SDKCommandHandler: ProcessSDKBulkMultiplex
     Note left of SDKCommandHandler: topic-sdk-command-events
-    SDKCommandHandler->>SDKCommandHandler: Update global state "Multiplexing started"
     SDKCommandHandler->>SDKCommandHandler: Multiplex
+    SDKCommandHandler->>SDKCommandHandler: Update global state "CALLBACK_PROCESSING"
     SDKCommandHandler->>SDKOutboundAPI: SDKBulkMultiplexProcessed
     Note right of SDKOutboundAPI: topic-sdk-domain-events
     SDKOutboundAPI->>SDKOutboundAPI: Process outbound Trace Headers
@@ -181,6 +181,6 @@ sequenceDiagram
     Note left of SDKEventHandler: topic-sdk-domain-events
     SDKEventHandler->>SDKCommandHandler: ProcessSDKBulkCallbackSent
     Note left of SDKCommandHandler: topic-sdk-command-events
-    SDKCommandHandler->>SDKCommandHandler: Update global state "Callback sent"
+    SDKCommandHandler->>SDKCommandHandler: Update global state "CALLBACK_SENT"
 
 ```
