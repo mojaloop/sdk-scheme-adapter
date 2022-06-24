@@ -42,7 +42,7 @@ sequenceDiagram
         SDKEventHandler->>SDKCommandHandler: ProcessPartyInfoCallback
         Note left of SDKCommandHandler: topic-sdk-command-events
         SDKCommandHandler->>SDKCommandHandler: Update the individual state: DISCOVERY_SUCCESS / DISCOVERY_FAILED
-        SDKCommandHandler->>SDKEventHandler: PartyInfoProcessed
+        SDKCommandHandler->>SDKEventHandler: PartyInfoCallbackProcessed
         Note right of SDKEventHandler: topic-sdk-domain-events
         SDKEventHandler->>SDKEventHandler: Check the status of the remaining items in the bulk
     end

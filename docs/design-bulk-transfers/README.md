@@ -2,9 +2,11 @@
 
 ![Overview](./assets/overview-drawio.png)
 
-### [Outbound Sequence Diagram](./outbound-sequence.md)
+### [Outbound Bulk Sequence Diagram](./outbound-sequence.md)
 
-### [Inbound Sequence Diagram](./inbound-sequence.md)
+### [Inbound Bulk Quotes Sequence Diagram](./inbound-bulk-quotes-sequence.md)
+
+### [Inbound Bulk Transfers Sequence Diagram](./inbound-bulk-transfers-sequence.md)
 
 ### References:
 
