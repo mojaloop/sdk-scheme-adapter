@@ -1,5 +1,5 @@
 {
-  "name": "@mojaloop/sdk-scheme-adapter-adapter",
+  "name": "@mojaloop/sdk-scheme-adapter-api-svc",
   "version": "15.0.0",
   "description": "An adapter for connecting to Mojaloop API enabled switches.",
   "main": "src/index.js",
@@ -21,7 +21,7 @@
     "lint": "eslint ./src/",
     "lint:fix": "eslint ./src/ --fix",
     "start": "node src/index.js",
-    "test": "jest --ci --reporters=default --reporters=jest-junit --env=node test/unit/",
+    "test:unit": "jest --ci --reporters=default --reporters=jest-junit --env=node test/unit/",
     "test:int": "jest --ci --reporters=default --reporters=jest-junit --env=node test/integration",
     "validate:api": "npm run validate:api:in; npm run validate:api:out",
     "validate:api:in": "swagger-cli validate ./src/InboundServer/api.yaml",

@@ -1910,9 +1910,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/sdk-scheme-adapter-adapter@workspace:modules/adapter":
+"@mojaloop/sdk-scheme-adapter-api-svc@workspace:modules/api-svc":
   version: 0.0.0-use.local
-  resolution: "@mojaloop/sdk-scheme-adapter-adapter@workspace:modules/adapter"
+  resolution: "@mojaloop/sdk-scheme-adapter-api-svc@workspace:modules/api-svc"
   dependencies:
     "@babel/core": ^7.15.5
     "@babel/preset-env": ^7.15.6
