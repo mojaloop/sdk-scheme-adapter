@@ -761,42 +761,29 @@ components:
       type: object
       required:
         - bulkHomeTransactionID
-        - from
-        - individualTransfers
+        - bulkTransferId
+        - currentState
+        - individualTransferResults
       properties:
         bulkHomeTransactionID:
           type: string
           description: >-
             Transaction ID from the DFSP backend, used to reconcile transactions
             between the Switch and DFSP backend systems.
+        bulkTransferId:
+          $ref: '#/components/schemas/CorrelationId'
+        currentState:
+          $ref: '#/components/schemas/bulkTransferStatus'
         options:
           $ref: '#/components/schemas/bulkTransferOptions'
-        from:
-          $ref: '#/components/schemas/Party'
-        individualTransfers:
-          description: List of individual transfers in a bulk transfer.
+        individualTransferResults:
           type: array
-          minItems: 1
           maxItems: 1000
           items:
-            allOf:
-              - $ref: '#/components/schemas/individualTransfer'
-              - type: object
-                required:
-                  - transactionId
-                properties:
-                  transactionId:
-                    $ref: '#/components/schemas/CorrelationId'
-
+            $ref: '#/components/schemas/individualTransferResult'
+          description: List of individual transfer result in a bulk transfer response.
         extensions:
           $ref: '#/components/schemas/ExtensionList'
-        lastError:
-          description: >
-            Object representing the last error to occur during a party discovery process.
-            This may be a Mojaloop API error returned from another entity in the
-            scheme or an object representing other types of error e.g.
-            exceptions that may occur inside the scheme adapter.
-          $ref: '#/components/schemas/partyError'
     bulkQuoteRequestResponse:
       description: >-
         The object sent back to the payer for confirmation of quotes.
@@ -805,47 +792,29 @@ components:
       type: object
       required:
         - bulkHomeTransactionID
-        - from
-        - individualTransfers
+        - bulkTransferId
+        - currentState
+        - individualTransferResults
       properties:
         bulkHomeTransactionID:
           type: string
           description: >-
             Transaction ID from the DFSP backend, used to reconcile transactions
             between the Switch and DFSP backend systems.
+        bulkTransferId:
+          $ref: '#/components/schemas/CorrelationId'
+        currentState:
+          $ref: '#/components/schemas/bulkTransferStatus'
         options:
           $ref: '#/components/schemas/bulkTransferOptions'
-        from:
-          $ref: '#/components/schemas/Party'
-        individualTransfers:
-          description: List of individual transfers in a bulk transfer.
+        individualTransferResults:
           type: array
-          minItems: 1
           maxItems: 1000
           items:
-            allOf:
-              - $ref: '#/components/schemas/individualTransfer'
-              - type: object
-                required:
-                 - transactionId
-                properties:
-                  transactionId:
-                    $ref: '#/components/schemas/CorrelationId'
-              - type: object
-                required:
-                 - quoteResponse
-                properties:
-                  quoteResponse:
-                    $ref: '#/components/schemas/QuotesIDPutResponse'
+            $ref: '#/components/schemas/individualTransferResult'
+          description: List of individual transfer result in a bulk transfer response.
         extensions:
           $ref: '#/components/schemas/ExtensionList'
-        lastError:
-          description: >
-            Object representing the last error to occur during a party discovery process.
-            This may be a Mojaloop API error returned from another entity in the
-            scheme or an object representing other types of error e.g.
-            exceptions that may occur inside the scheme adapter.
-          $ref: '#/components/schemas/partyError'
 
     bulkTransferContinuationAcceptParty:
       description: >-
@@ -1212,9 +1181,9 @@ components:
           $ref: '#/components/schemas/transactionType'
         note:
           $ref: '#/components/schemas/Note'
-        quoteRequestExtensions:
+        quoteExtensions:
           $ref: '#/components/schemas/extensionListEmptiable'
-        transferRequestExtensions:
+        transferExtensions:
           $ref: '#/components/schemas/extensionListEmptiable'
         skipPartyLookup:
           description: >-
@@ -1656,9 +1625,9 @@ components:
         #   type: boolean
         note:
           $ref: '#/components/schemas/Note'
-        quoteRequestExtensions:
+        quoteExtensions:
           $ref: '#/components/schemas/ExtensionList'
-        transferRequestExtensions:
+        transferExtensions:
           $ref: '#/components/schemas/ExtensionList'
         lastError:
           description: >
@@ -1713,6 +1682,13 @@ components:
           $ref: '#/components/schemas/ExtensionList'
     individualTransferResult:
       type: object
+      required:
+        - homeTransactionId
+        - transactionId
+        - to
+        - amountType
+        - currency
+        - amount
       properties:
         transferId:
           $ref: '#/components/schemas/CorrelationId'
@@ -1728,8 +1704,6 @@ components:
           $ref: '#/components/schemas/Currency'
         amount:
           $ref: '#/components/schemas/Amount'
-        transactionType:
-          $ref: '#/components/schemas/transactionType'
         note:
           $ref: '#/components/schemas/Note'
         quoteId:
@@ -1738,9 +1712,9 @@ components:
           $ref: '#/components/schemas/QuotesIDPutResponse'
         fulfil:
           $ref: '#/components/schemas/TransfersIDPutResponse'
-        quoteRequestExtensions:
+        quoteExtensions:
           $ref: '#/components/schemas/ExtensionList'
-        transferRequestExtensions:
+        transferExtensions:
           $ref: '#/components/schemas/ExtensionList'
         lastError:
           description: >
@@ -1753,8 +1727,8 @@ components:
       type: object
       required:
         - bulkHomeTransactionID
-        - from
-        - bulkExpiration
+        - bulkTransferId
+        - currentState
         - individualTransferResults
       properties:
         bulkHomeTransactionID:
@@ -1762,10 +1736,12 @@ components:
           description: >-
             Transaction ID from the DFSP backend, used to reconcile transactions
             between the Switch and DFSP backend systems.
-        bulkExpiration:
-          $ref: '#/components/schemas/DateTime'
+        bulkTransferId:
+          $ref: '#/components/schemas/CorrelationId'
         currentState:
           $ref: '#/components/schemas/bulkTransferStatus'
+        options:
+          $ref: '#/components/schemas/bulkTransferOptions'
         individualTransferResults:
           type: array
           maxItems: 1000

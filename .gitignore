@@ -6,6 +6,7 @@ junit.xml
 secrets/*.pem
 coverage
 .env
+.yarn/cache
 
 # https://devspace.sh/
 devspace*
