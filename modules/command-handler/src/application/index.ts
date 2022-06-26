@@ -26,5 +26,5 @@
 
  "use strict";
 
-let msg: string = 'Command Handler!';
+const msg = 'Command Handler!';
 console.log(msg);

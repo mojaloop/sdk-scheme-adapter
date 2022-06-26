@@ -26,5 +26,5 @@
 
  "use strict";
 
-let message: string = 'Event Handler!';
+const message = 'Event Handler!';
 console.log(message);

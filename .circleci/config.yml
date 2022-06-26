@@ -211,7 +211,7 @@ jobs:
           command: mkdir -p /lintresults
       - run:
           name: Execute linting
-          command: (npm run lint > /lintresults/results.txt)
+          command: (yarn run lint > /lintresults/results.txt)
       - store_artifacts:
           path: /lintresults
 
