@@ -123,7 +123,7 @@ jobs:
             - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
           name: Execute unit tests
-          command: npm run test
+          command: yarn run test:unit
       - store_test_results:
           path: /home/circleci/project/
       - store_artifacts:
@@ -168,8 +168,8 @@ jobs:
           name: Execute integration tests
           command: |
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            npm ci
-            npm run test:int
+            yarn install --immutable
+            yarn run test:int
       - run:
           name: prepare test/results
           command: |
@@ -193,7 +193,7 @@ jobs:
             - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
           name: Execute unit tests
-          command: npm run build:openapi && npm run validate:api
+          command: yarn run build:openapi && yarn run validate:api
 
   lint:
     executor: default-docker
@@ -231,7 +231,7 @@ jobs:
           command: mkdir -p ./audit/results
       - run:
           name: Check for new npm vulnerabilities
-          command: npm run audit:check --silent -- --json > ./audit/results/auditResults.json
+          command: yarn run audit:check --silent -- --json > ./audit/results/auditResults.json
       - store_artifacts:
           path: ./audit/results
 
@@ -366,7 +366,7 @@ jobs:
             ssh-keyscan github.com >> ~/.ssh/known_hosts
       - run:
           name: Generate changelog and bump package version
-          command: npm run release
+          command: yarn run release
       - run:
           name: Push the release
           command: git push --follow-tags origin ${CIRCLE_BRANCH}
