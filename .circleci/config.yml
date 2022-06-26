@@ -207,6 +207,10 @@ jobs:
           keys:
             - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
+          name: Install Dependencies
+          command: yarn install --immutable
+
+      - run:
           name: Create dir for lint results
           command: mkdir -p /lintresults
       - run:
