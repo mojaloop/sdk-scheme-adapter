@@ -8,7 +8,7 @@ HSET <key> <attribute1> <value1>
 ```
 ### Key:
 ```
-**bulkTransaction_< bulkTransactionId >**
+bulkTransaction_< bulkTransactionId >
 ```
 
 ### Attributes:
@@ -23,7 +23,7 @@ HSET <key> <attribute1> <value1>
   id: transactionId
   request: {}
   state: Individual state
-  batchId: <UUID>
+  batchId: `<UUID>`
   partyRequest: {}
   quotesRequest: {}
   transfersRequest: {}
@@ -44,8 +44,8 @@ HSET <key> <attribute1> <value1>
   status: Individual state
   - AGREEMENT_PROCESSING
   - TRANSFER_PROCESSING
-  bulkQuoteId: <UUID>
-  bulkTransferId: <UUID> (Can be batchId)
+  bulkQuoteId: `<UUID>`
+  bulkTransferId: `<UUID>` (Can be batchId)
 })
 
 - **partyLookupTotalCount**: Total number of party lookup requests
@@ -64,7 +64,6 @@ HSET <key> <attribute1> <value1>
 ### Notes
 - Kafka messages should contain bulkID.
 - To update the global status use the command `HSET bulkTransaction_< bulkTransactionId > status < statusValue >`
-<!-- - To update individual status use `HSET bulkTransfer_< bulkId > partyLookupStatus_< partyLookupID > < statusValue >` -->
 
 
 ## 2. For mapping individual callbacks with individual bulk items
@@ -75,8 +74,8 @@ HSET bulkCorrelationMap <attribute1> <value1>
 ```
 
 ### Attributes:
-- partyLookup_<id_type>_<id_value>(_<subid_type>): "{ bulkTransactionId: <bulkTransactionId>, transactionId: <transactionId> }"
-- bulkQuotes_<bulkQuoteId>: "{ bulkTransactionId: <bulkTransactionId>, batchId: <batchId> }"
-- bulkTransfers_<bulkTransferId>: "{ bulkTransactionId: <bulkTransactionId>, batchId: <batchId>, bulkQuoteId: <bulkQuoteId> }"
-- bulkHomeTransactionId_<bulkHomeTransactionId>: "{ bulkTransactionId: <bulkTransactionId> }"
+- partyLookup_`<id_type>`_`<id_value>`(_`<subid_type>`): "{ bulkTransactionId: `<bulkTransactionId>`, transactionId: `<transactionId>` }"
+- bulkQuotes_`<bulkQuoteId>`: "{ bulkTransactionId: `<bulkTransactionId>`, batchId: `<batchId>` }"
+- bulkTransfers_`<bulkTransferId>`: "{ bulkTransactionId: `<bulkTransactionId>`, batchId: `<batchId>`, bulkQuoteId: `<bulkQuoteId>` }"
+- bulkHomeTransactionId_`<bulkHomeTransactionId>`: "{ bulkTransactionId: `<bulkTransactionId>` }"
 
