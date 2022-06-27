@@ -18,6 +18,7 @@ sequenceDiagram
     SDKEventHandler->>SDKCommandHandler: ProcessSDKBulkRequest
     Note left of SDKCommandHandler: topic-sdk-command-events
 
+    SDKCommandHandler->>SDKCommandHandler: Store initial data into redis
     SDKCommandHandler->>SDKCommandHandler: Update global state "RECEIVED"
 
     SDKCommandHandler->>SDKEventHandler: SDKBulkPartyInfoRequested
@@ -30,6 +31,7 @@ sequenceDiagram
     SDKCommandHandler->>SDKCommandHandler: Break down the bulk parties to individual party lookups
 
     loop Party Lookup per transfer
+        SDKCommandHandler->>SDKCommandHandler: Update the party request
         SDKCommandHandler->>SDKFspiopApi: PartyInfoRequested
         Note left of SDKFspiopApi: topic-sdk-domain-events
         SDKCommandHandler->>SDKCommandHandler: Update the individual state: DISCOVERY_PROCESSING
@@ -42,6 +44,7 @@ sequenceDiagram
         SDKEventHandler->>SDKCommandHandler: ProcessPartyInfoCallback
         Note left of SDKCommandHandler: topic-sdk-command-events
         SDKCommandHandler->>SDKCommandHandler: Update the individual state: DISCOVERY_SUCCESS / DISCOVERY_FAILED
+        SDKCommandHandler->>SDKCommandHandler: Update the party response
         SDKCommandHandler->>SDKEventHandler: PartyInfoCallbackProcessed
         Note right of SDKEventHandler: topic-sdk-domain-events
         SDKEventHandler->>SDKEventHandler: Check the status of the remaining items in the bulk
@@ -99,6 +102,10 @@ sequenceDiagram
         SDKEventHandler->>SDKCommandHandler: ProcessBulkQuotesCallback
         Note left of SDKCommandHandler: topic-sdk-command-events
         SDKCommandHandler->>SDKCommandHandler: Update the batch state: AGREEMENT_SUCCESS / AGREEMENT_FAILED
+        loop through items in batch
+          SDKCommandHandler->>SDKCommandHandler: Update the individual state: AGREEMENT_SUCCESS / AGREEMENT_FAILED
+          SDKCommandHandler->>SDKCommandHandler: Update the quote response
+        end
         SDKCommandHandler->>SDKEventHandler: BulkQuotesProcessed
         Note right of SDKEventHandler: topic-sdk-domain-events
         SDKEventHandler->>SDKEventHandler: Check the status of the remaining items in the bulk
@@ -158,6 +165,10 @@ sequenceDiagram
         SDKEventHandler->>SDKCommandHandler: ProcessBulkTransfersCallback
         Note left of SDKCommandHandler: topic-sdk-command-events
         SDKCommandHandler->>SDKCommandHandler: Update the batch state: TRANSFERS_SUCCESS / TRANSFERS_FAILED
+        loop through items in batch
+          SDKCommandHandler->>SDKCommandHandler: Update the individual state: TRANSFERS_SUCCESS / TRANSFERS_FAILED
+          SDKCommandHandler->>SDKCommandHandler: Update the transfer response
+        end
         SDKCommandHandler->>SDKEventHandler: BulkTransfersProcessed
         Note right of SDKEventHandler: topic-sdk-domain-events
         SDKEventHandler->>SDKEventHandler: Check the status of the remaining items in the bulk
