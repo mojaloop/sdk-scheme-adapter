@@ -7,12 +7,12 @@ items:
   properties:
     idType:
       $ref: >-
-        ../../../../../node_modules/@mojaloop/api-snippets/thirdparty/v1_0/openapi3/components/schemas/PartyIdType.yaml
+        ../../../../../../../node_modules/@mojaloop/api-snippets/thirdparty/v1_0/openapi3/components/schemas/PartyIdType.yaml
     idValue:
       $ref: >-
-        ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartyIdentifier.yaml
+        ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartyIdentifier.yaml
     idSubValue:
       $ref: >-
-        ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartySubIdOrType.yaml
+        ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartySubIdOrType.yaml
     error:
       $ref: ./errorResponse.yaml

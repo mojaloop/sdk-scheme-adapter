@@ -3,10 +3,10 @@ type: object
 properties:
   fspId:
     $ref: >-
-      ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/FspId.yaml
+     ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/FspId.yaml
   transfersPostRequest:
     $ref: >-
-      ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransfersPostRequest.yaml
+     ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransfersPostRequest.yaml
 required:
   - fspId
   - transfersPostRequest

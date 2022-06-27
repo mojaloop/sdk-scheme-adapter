@@ -3,7 +3,7 @@ in: path
 required: true
 schema:
   $ref: >-
-    ../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml
+   ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml
 description: >-
   Identifier of the merchant request to pay transfer to continue as returned in
   the response to a `POST /requestToPayTransfer` request.
