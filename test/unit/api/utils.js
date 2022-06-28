@@ -7,7 +7,7 @@ const Validate = require('~/lib/validate');
 const InboundServer = require('~/InboundServer');
 const OutboundServer = require('~/OutboundServer');
 const { MetricsClient } = require('~/lib/metrics');
-const { Logger } = require('@mojaloop/sdk-standard-components');
+const { Logger, WSO2Auth } = require('@mojaloop/sdk-standard-components');
 const Cache = require('~/lib/cache');
 
 /**
@@ -50,11 +50,19 @@ const createTestServers = async (config) => {
     defConfig.requestProcessingTimeoutSeconds = 2;
     const metricsClient = new MetricsClient();
     metricsClient._prometheusRegister.clear();
-    const serverOutbound = new OutboundServer(defConfig, logger, cache, metricsClient);
+    const wso2 = {
+        auth: new WSO2Auth({
+            ...defConfig.wso2.auth,
+            logger,
+            tlsCreds: defConfig.outbound.tls.mutualTLS.enabled && defConfig.outbound.tls.creds,
+        }),
+        retryWso2AuthFailureTimes: defConfig.wso2.requestAuthFailureRetryTimes,
+    };
+    const serverOutbound = new OutboundServer(defConfig, logger, cache, metricsClient, wso2);
     await serverOutbound.start();
     const reqOutbound = supertest(serverOutbound._server);
 
-    const serverInbound = new InboundServer(defConfig, logger, cache);
+    const serverInbound = new InboundServer(defConfig, logger, cache, wso2);
     await serverInbound.start();
     const reqInbound = supertest(serverInbound._server);
 

@@ -22,10 +22,10 @@
 // It expects new configuration to be supplied as an array of JSON patches. It therefore exposes
 // the current configuration to
 
-const assert = require('assert').strict;
 const ws = require('ws');
 const jsonPatch = require('fast-json-patch');
 const { generateSlug } = require('random-word-slugs');
+const _ = require('lodash');
 
 /**************************************************************************
  * The message protocol messages, verbs, and errors
@@ -163,15 +163,6 @@ class Client extends ws {
         this.close();
     }
 
-    reconfigure({ logger = this._logger, port = 0, appConfig = this._appConfig }) {
-        assert(port === this._socket.remotePort, 'Cannot reconfigure running port');
-        return () => {
-            this._logger = logger;
-            this._appConfig = appConfig;
-            this._logger.log('restarted');
-        };
-    }
-
     // Handle incoming message from the server.
     _handle(data) {
         // TODO: json-schema validation of received message- should be pretty straight-forward
@@ -187,7 +178,13 @@ class Client extends ws {
         switch (msg.msg) {
             case MESSAGE.CONFIGURATION:
                 switch (msg.verb) {
-                    case VERB.NOTIFY:
+                    case VERB.NOTIFY: {
+                        const dup = JSON.parse(JSON.stringify(this._appConfig)); // fast-json-patch explicitly mutates
+                        _.merge(dup, msg.data);
+                        this._logger.push({ oldConf: this._appConfig, newConf: dup }).log('Emitting new configuration');
+                        this.emit(EVENT.RECONFIGURE, dup);
+                        break;
+                    }
                     case VERB.PATCH: {
                         const dup = JSON.parse(JSON.stringify(this._appConfig)); // fast-json-patch explicitly mutates
                         jsonPatch.applyPatch(dup, msg.data);

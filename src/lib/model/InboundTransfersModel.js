@@ -389,9 +389,9 @@ class InboundTransfersModel {
 
             // create a  mojaloop transfer fulfil response
             const mojaloopResponse = {
-                completedTimestamp: new Date(),
-                transferState: this._reserveNotification ? 'RESERVED' : 'COMMITTED',
-                fulfilment: fulfilment,
+                completedTimestamp: response.completedTimestamp || new Date(),
+                transferState: response.transferState || (this._reserveNotification ? TransferStateEnum.RESERVED : TransferStateEnum.COMPLETED),
+                fulfilment: response.fulfilment || fulfilment,
                 ...response.extensionList && {
                     extensionList: {
                         extension: response.extensionList,
@@ -406,7 +406,7 @@ class InboundTransfersModel {
                 headers: res.originalRequest.headers,
                 body: res.originalRequest.body,
             };
-            this.data.currentState = this._reserveNotification ? TransferStateEnum.RESERVED : TransferStateEnum.COMPLETED;
+            this.data.currentState = response.transferState || (this._reserveNotification ? TransferStateEnum.RESERVED : TransferStateEnum.COMPLETED);
             await this._save();
             return res;
         } catch(err) {
@@ -788,10 +788,14 @@ class InboundTransfersModel {
                 // if the transfer was successful in the switch, set the overall transfer state to COMPLETED
                 this.data.currentState = TransferStateEnum.COMPLETED;
             }
+            else if(body.transferState === 'ABORTED') {
+                // if the transfer was ABORTED in the switch, set the overall transfer state to ABORTED
+                this.data.currentState = TransferStateEnum.ABORTED;
+            }            
             else {
                 // if the final notification has anything other than COMMITTED as the final state, set an error
                 // in the transfer state.
-                this.data.currentState == TransferStateEnum.ERROR_OCCURED;
+                this.data.currentState = TransferStateEnum.ERROR_OCCURED;
                 this.data.lastError = 'Final notification state not COMMITTED';
             }
 
@@ -800,7 +804,7 @@ class InboundTransfersModel {
             const res = await this._backendRequests.putTransfersNotification(this.data, transferId);
             return res;
         } catch (err) {
-            this._logger.push({ err }).log('Error notifying backend of final transfer state');
+            this._logger.push({ err }).log(`Error notifying backend of final transfer state equal to: ${body.transferState}`);
         }
     }
 

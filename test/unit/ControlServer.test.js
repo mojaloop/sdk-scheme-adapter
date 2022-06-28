@@ -1,13 +1,8 @@
 
 const ControlServer = require('~/ControlServer');
-const InboundServer = require('~/InboundServer');
-const OutboundServer = require('~/OutboundServer');
-const TestServer = require('~/TestServer');
-const defaultConfig = require('./data/defaultConfig.json');
 const { Logger } = require('@mojaloop/sdk-standard-components');
 
 jest.mock('~/lib/cache');
-const Cache = require('~/lib/cache');
 
 // TODO:
 // - diff against master to determine what else needs testing
@@ -67,60 +62,5 @@ describe('ControlServer', () => {
             const newConfEventData = await newConfigEvent;
             expect(newConfEventData).toEqual(changedConfig);
         });
-
-        it('sends new config to clients when instructed', async () => {
-            const client2 = await ControlServer.Client.Create({
-                address: 'localhost',
-                port: server.address().port,
-                logger
-            });
-            const changedConfig = { ...appConfig, some: 'thing' };
-            await client.send(ControlServer.build.CONFIGURATION.PATCH(appConfig, changedConfig));
-            const restart = server.reconfigure({ appConfig: changedConfig });
-            restart();
-            await server.notifyClientsOfCurrentConfig();
-            const [notification, notification2] =
-                await Promise.all([client.receive(), client2.receive()]);
-            const expected = ControlServer.build.CONFIGURATION.NOTIFY(changedConfig, notification.id);
-            expect(JSON.stringify(notification)).toEqual(expected);
-            expect(JSON.stringify(notification2)).toEqual(expected);
-        });
-    });
-});
-
-describe('Server reconfigure methods', () => {
-    let conf, logger, cache;
-
-    const isPromise = (o) => Promise.resolve(o) === o;
-
-    beforeEach(() => {
-        conf = JSON.parse(JSON.stringify(defaultConfig));
-        logger = new Logger.Logger({ stringify: () => '' });
-        cache = new Cache({ ...conf.cacheConfig, logger: logger.push({ component: 'cache' }) });
-    });
-
-    test('InboundServer reconfigure method returns sync function', async () => {
-        const server = new InboundServer(conf, logger, cache);
-        const res = await server.reconfigure(conf, logger, cache);
-        expect(isPromise(res)).toEqual(false);
-    });
-
-    test('OutboundServer reconfigure method returns sync function', async () => {
-        const server = new OutboundServer(conf, logger, cache);
-        const res = await server.reconfigure(conf, logger, cache);
-        expect(isPromise(res)).toEqual(false);
-    });
-
-    test('TestServer reconfigure method returns sync function', async () => {
-        const server = new TestServer({ logger, cache });
-        const res = await server.reconfigure({ logger, cache });
-        expect(isPromise(res)).toEqual(false);
-    });
-
-    test('ControlServer reconfigure method returns sync function', async () => {
-        const server = new ControlServer.Server({ logger, appConfig: {} });
-        const res = await server.reconfigure({ logger, appConfig: {} });
-        expect(isPromise(res)).toEqual(false);
-        await server.close();
     });
 });
