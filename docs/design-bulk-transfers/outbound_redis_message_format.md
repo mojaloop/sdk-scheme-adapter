@@ -19,7 +19,7 @@ bulkTransaction_< bulkTransactionId >
   extensionList: Bulk Extension List
 }
 
-- **individualtransfers_<transactionId>**: Serialize ({
+- **individualtransfers_< transactionId >**: Serialize ({
   id: transactionId
   request: {}
   state: Individual state
@@ -35,13 +35,13 @@ bulkTransaction_< bulkTransactionId >
   acceptQuotes: bool
 })
 
-- **status**: Global state
+- **state**: Global state
   - RECEIVED
   - DISCOVERY_PROCESSING
 
 - **bulkBatch_< batchId >**: Serialize ({
   id: batchId
-  status: Individual state
+  state: Individual state
   - AGREEMENT_PROCESSING
   - TRANSFER_PROCESSING
   bulkQuoteId: `<UUID>`
@@ -63,7 +63,7 @@ bulkTransaction_< bulkTransactionId >
 
 ### Notes
 - Kafka messages should contain bulkID.
-- To update the global status use the command `HSET bulkTransaction_< bulkTransactionId > status < statusValue >`
+- To update the global state use the command `HSET bulkTransaction_< bulkTransactionId > state < stateValue >`
 
 
 ## 2. For mapping individual callbacks with individual bulk items
@@ -79,3 +79,6 @@ HSET bulkCorrelationMap <attribute1> <value1>
 - bulkTransfers_`<bulkTransferId>`: "{ bulkTransactionId: `<bulkTransactionId>`, batchId: `<batchId>`, bulkQuoteId: `<bulkQuoteId>` }"
 - bulkHomeTransactionId_`<bulkHomeTransactionId>`: "{ bulkTransactionId: `<bulkTransactionId>` }"
 
+
+Notes:
+- We can use `HKEYS` command to fetch all the individual transfer IDs in a bulk to iterate
