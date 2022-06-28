@@ -1,0 +1,12 @@
+type: object
+description: Data model for the 'individualTransfer' while accepting party or quote.
+properties:
+  homeTransactionId:
+    $ref: >-
+     ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml
+  transactionId:
+    $ref: >-
+     ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml
+required:
+  - homeTransactionId
+  - transactionId

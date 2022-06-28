@@ -1,19 +1,23 @@
 type: object
 required:
-  - homeTransactionId
+  - bulkHomeTransactionID
+  - options
   - from
   - individualTransfers
 properties:
-  homeTransactionId:
+  bulkHomeTransactionID:
     type: string
     description: >-
       Transaction ID from the DFSP backend, used to reconcile transactions
       between the Switch and DFSP backend systems.
-  bulkTransferId:
+  bulkTransactionId:
     $ref: >-
      ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml
+  options:
+    $ref: ./bulkTransferOptions.yaml
   from:
-    $ref: ./transferParty.yaml
+    $ref: >-
+     ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Party.yaml
   individualTransfers:
     description: List of individual transfers in a bulk transfer.
     type: array

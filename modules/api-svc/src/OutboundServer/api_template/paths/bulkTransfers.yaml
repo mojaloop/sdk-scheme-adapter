@@ -13,11 +13,9 @@ post:
           $ref: ../components/schemas/bulkTransferRequest.yaml
     required: true
   responses:
-    '200':
-      $ref: ../components/responses/bulkTransferSuccess.yaml
+    '202':
+      $ref: ../components/responses/bulkTransferAccepted.yaml
     '400':
       $ref: ../components/responses/bulkTransferBadRequest.yaml
     '500':
-      $ref: ../components/responses/bulkTransferServerError.yaml
-    '504':
-      $ref: ../components/responses/bulkTransferTimeout.yaml
+      $ref: ../components/responses/errorResponse.yaml

@@ -6,7 +6,7 @@
       properties:
         body:
           $ref: >-
-           ../../../../../../../node_modules/@mojaloop/api-snippets/thirdparty/v1_0/openapi3/components/schemas/Party.yaml
+           ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Party.yaml
           description: Information regarding the requested Party.
         headers:
           type: object

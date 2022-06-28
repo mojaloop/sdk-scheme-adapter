@@ -8,7 +8,7 @@ properties:
       ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransactionInitiatorType.yaml
   idType:
     $ref: >-
-      ../../../../../../../node_modules/@mojaloop/api-snippets/thirdparty/v1_0/openapi3/components/schemas/PartyIdType.yaml
+      ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartyIdType.yaml
   idValue:
     $ref: >-
       ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartyIdentifier.yaml

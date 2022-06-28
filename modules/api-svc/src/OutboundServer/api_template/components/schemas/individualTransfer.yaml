@@ -2,11 +2,15 @@ title: IndividualTransfer
 type: object
 description: Data model for the complex type 'individualTransfer'.
 properties:
-  transferId:
+  homeTransactionId:
     $ref: >-
      ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml
   to:
-    $ref: ./transferParty.yaml
+    $ref: >-
+     ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Party.yaml
+  reference:
+    description: Payer Loan reference
+    type: string
   amountType:
     $ref: >-
      ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/AmountType.yaml
@@ -16,17 +20,20 @@ properties:
   amount:
     $ref: >-
      ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Amount.yaml
-  transactionType:
-    $ref: ./transactionType.yaml
   note:
     $ref: >-
      ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Note.yaml
-  extensions:
+  quoteExtensions:
     $ref: >-
      ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/ExtensionList.yaml
+  transferExtensions:
+    $ref: >-
+     ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/ExtensionList.yaml
+  lastError:
+    $ref: ./transferError.yaml
 required:
-  - transferId
+  - homeTransactionId
   - to
   - amountType
   - currency
-  - transactionType
+  - amount

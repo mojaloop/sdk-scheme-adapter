@@ -106,10 +106,9 @@ export interface paths {
     /** The HTTP request `POST /bulkTransfers` is used to request the movement of funds from payer DFSP to payees' DFSP. */
     post: {
       responses: {
-        200: components["responses"]["bulkTransferSuccess"];
+        202: components["responses"]["bulkTransferAccepted"];
         400: components["responses"]["bulkTransferBadRequest"];
-        500: components["responses"]["bulkTransferServerError"];
-        504: components["responses"]["bulkTransferTimeout"];
+        500: components["responses"]["errorResponse"];
       };
       /** Bulk transfer request body */
       requestBody: {
@@ -119,27 +118,32 @@ export interface paths {
       };
     };
   };
-  "/bulkTransfers/{bulkTransferId}": {
-    /** The HTTP request `GET /bulkTransfers/{bulktTransferId}` is used to get information regarding a bulk transfer created or requested earlier. The `{bulkTransferId}` in the URI should contain the `bulkTransferId` that was used for the creation of the bulk transfer. */
-    get: {
+  "/bulkTransfers/{bulkTransactionId}": {
+    /** The HTTP request `PUT /bulkTransfers/{bulkTransactionId}` is used to amend information regarding a bulk transfer, i.e. when autoAcceptParty or autoAcceptQuote  is false then the payer need to provide confirmation to proceed with further processing of the request. The `{bulkTransactionId}` in the URI should contain the `bulkTransactionId` that was used for the creation of the bulk transfer. */
+    put: {
       parameters: {
         path: {
           /** Identifier of the bulk transfer to continue as returned in the response to a `POST /bulkTransfers` request. */
-          bulkTransferId: components["parameters"]["bulkTransferId"];
+          bulkTransactionId: components["parameters"]["bulkTransactionId"];
         };
       };
       responses: {
-        /** Bulk transfer information successfully retrieved */
-        200: {
-          content: {
-            "application/json": components["schemas"]["bulkTransferStatusResponse"];
-          };
-        };
+        /** Bulk transfer information successfully amended */
+        202: unknown;
+        400: components["responses"]["bulkTransferPutBadRequest"];
         /** An error occurred processing the bulk transfer */
         500: {
           content: {
             "application/json": components["schemas"]["errorResponse"];
           };
+        };
+      };
+      /** Bulk transfer request body */
+      requestBody: {
+        content: {
+          "application/json":
+            | components["schemas"]["bulkTransferContinuationAcceptParty"]
+            | components["schemas"]["bulkTransferContinuationAcceptQuote"];
         };
       };
     };
@@ -344,50 +348,14 @@ export interface components {
     /**
      * PartyIdType
      * @description Below are the allowed values for the enumeration.
-     * - MSISDN - An MSISDN (Mobile Station International Subscriber Directory
-     * Number, that is, the phone number) is used as reference to a participant.
-     * The MSISDN identifier should be in international format according to the
-     * [ITU-T E.164 standard](https://www.itu.int/rec/T-REC-E.164/en).
-     * Optionally, the MSISDN may be prefixed by a single plus sign, indicating the
-     * international prefix.
-     * - EMAIL - An email is used as reference to a
-     * participant. The format of the email should be according to the informational
-     * [RFC 3696](https://tools.ietf.org/html/rfc3696).
-     * - PERSONAL_ID - A personal identifier is used as reference to a participant.
-     * Examples of personal identification are passport number, birth certificate
-     * number, and national registration number. The identifier number is added in
-     * the PartyIdentifier element. The personal identifier type is added in the
-     * PartySubIdOrType element.
-     * - BUSINESS - A specific Business (for example, an organization or a company)
-     * is used as reference to a participant. The BUSINESS identifier can be in any
-     * format. To make a transaction connected to a specific username or bill number
-     * in a Business, the PartySubIdOrType element should be used.
-     * - DEVICE - A specific device (for example, a POS or ATM) ID connected to a
-     * specific business or organization is used as reference to a Party.
-     * For referencing a specific device under a specific business or organization,
-     * use the PartySubIdOrType element.
-     * - ACCOUNT_ID - A bank account number or FSP account ID should be used as
-     * reference to a participant. The ACCOUNT_ID identifier can be in any format,
-     * as formats can greatly differ depending on country and FSP.
-     * - IBAN - A bank account number or FSP account ID is used as reference to a
-     * participant. The IBAN identifier can consist of up to 34 alphanumeric
-     * characters and should be entered without whitespace.
-     * - ALIAS An alias is used as reference to a participant. The alias should be
-     * created in the FSP as an alternative reference to an account owner.
-     * Another example of an alias is a username in the FSP system.
-     * The ALIAS identifier can be in any format. It is also possible to use the
-     * PartySubIdOrType element for identifying an account under an Alias defined
-     * by the PartyIdentifier.
-     * - CONSENT - A Consent represents an agreement between a PISP, a Customer and
-     * a DFSP which allows the PISP permission to perform actions on behalf of the
-     * customer. A Consent has an authoritative source: either the DFSP who issued
-     * the Consent, or an Auth Service which administers the Consent.
-     * - THIRD_PARTY_LINK - A Third Party Link represents an agreement between a PISP,
-     * a DFSP, and a specific Customer's account at the DFSP. The content of the link
-     * is created by the DFSP at the time when it gives permission to the PISP for
-     * specific access to a given account.
-     *
-     * @example PERSONAL_ID
+     * - MSISDN - An MSISDN (Mobile Station International Subscriber Directory Number, that is, the phone number) is used as reference to a participant. The MSISDN identifier should be in international format according to the [ITU-T E.164 standard](https://www.itu.int/rec/T-REC-E.164/en). Optionally, the MSISDN may be prefixed by a single plus sign, indicating the international prefix.
+     * - EMAIL - An email is used as reference to a participant. The format of the email should be according to the informational [RFC 3696](https://tools.ietf.org/html/rfc3696).
+     * - PERSONAL_ID - A personal identifier is used as reference to a participant. Examples of personal identification are passport number, birth certificate number, and national registration number. The identifier number is added in the PartyIdentifier element. The personal identifier type is added in the PartySubIdOrType element.
+     * - BUSINESS - A specific Business (for example, an organization or a company) is used as reference to a participant. The BUSINESS identifier can be in any format. To make a transaction connected to a specific username or bill number in a Business, the PartySubIdOrType element should be used.
+     * - DEVICE - A specific device (for example, a POS or ATM) ID connected to a specific business or organization is used as reference to a Party. For referencing a specific device under a specific business or organization, use the PartySubIdOrType element.
+     * - ACCOUNT_ID - A bank account number or FSP account ID should be used as reference to a participant. The ACCOUNT_ID identifier can be in any format, as formats can greatly differ depending on country and FSP.
+     * - IBAN - A bank account number or FSP account ID is used as reference to a participant. The IBAN identifier can consist of up to 34 alphanumeric characters and should be entered without whitespace.
+     * - ALIAS An alias is used as reference to a participant. The alias should be created in the FSP as an alternative reference to an account owner. Another example of an alias is a username in the FSP system. The ALIAS identifier can be in any format. It is also possible to use the PartySubIdOrType element for identifying an account under an Alias defined by the PartyIdentifier.
      */
     PartyIdType:
       | "MSISDN"
@@ -397,9 +365,7 @@ export interface components {
       | "DEVICE"
       | "ACCOUNT_ID"
       | "IBAN"
-      | "ALIAS"
-      | "CONSENT"
-      | "THIRD_PARTY_LINK";
+      | "ALIAS";
     /**
      * PartyIdentifier
      * @description Identifier of the Party.
@@ -883,50 +849,129 @@ export interface components {
     transferContinuationAcceptQuote: {
       acceptQuote: true | false;
     };
+    autoAcceptPartyOption: {
+      enabled: false | true;
+    };
+    bulkPerTransferFeeLimit: {
+      currency: components["schemas"]["Currency"];
+      amount: components["schemas"]["Amount"];
+    };
+    autoAcceptQuote: {
+      enabled: true | false;
+      perTransferFeeLimits?: components["schemas"]["bulkPerTransferFeeLimit"][];
+    };
+    bulkTransferOptions: {
+      /** @description Set to true if only party validation is required.  This means the quotes and transfers will not run. This is useful for only party resolution. */
+      onlyValidateParty?: boolean;
+      autoAcceptParty: components["schemas"]["autoAcceptPartyOption"];
+      /** @description Set to true if the quote response is accepted without confirmation from the payer. The fees applied by the payee will be acceptable to the payer abiding by the limits set by optional 'perTransferFeeLimits' array. */
+      autoAcceptQuote: components["schemas"]["autoAcceptQuote"];
+      /** @description Set to true if supplying an FSPID for the payee party and no party resolution is needed. This may be useful if a previous party resolution has been performed. */
+      skipPartyLookup?: boolean;
+      /** @description Set to true if the bulkTransfer requests need be handled synchronous. Otherwise the requests will be handled asynchronously, meaning there will  be callbacks whenever the processing is done */
+      synchronous?: boolean;
+      bulkExpiration: components["schemas"]["DateTime"];
+    };
+    /**
+     * PartyIdInfo
+     * @description Data model for the complex type PartyIdInfo. An ExtensionList element has been added to this reqeust in version v1.1
+     */
+    PartyIdInfo: {
+      partyIdType: components["schemas"]["PartyIdType"];
+      partyIdentifier: components["schemas"]["PartyIdentifier"];
+      partySubIdOrType?: components["schemas"]["PartySubIdOrType"];
+      fspId?: components["schemas"]["FspId"];
+      extensionList?: components["schemas"]["ExtensionList"];
+    };
+    /**
+     * PartyName
+     * @description Name of the Party. Could be a real name or a nickname.
+     */
+    PartyName: string;
+    /**
+     * PartyComplexName
+     * @description Data model for the complex type PartyComplexName.
+     */
+    PartyComplexName: {
+      firstName?: components["schemas"]["FirstName"];
+      middleName?: components["schemas"]["MiddleName"];
+      lastName?: components["schemas"]["LastName"];
+    };
+    /**
+     * PartyPersonalInfo
+     * @description Data model for the complex type PartyPersonalInfo.
+     */
+    PartyPersonalInfo: {
+      complexName?: components["schemas"]["PartyComplexName"];
+      dateOfBirth?: components["schemas"]["DateOfBirth"];
+    };
+    /**
+     * Party
+     * @description Data model for the complex type Party.
+     */
+    Party: {
+      partyIdInfo: components["schemas"]["PartyIdInfo"];
+      merchantClassificationCode?: components["schemas"]["MerchantClassificationCode"];
+      name?: components["schemas"]["PartyName"];
+      personalInfo?: components["schemas"]["PartyPersonalInfo"];
+    };
     /**
      * IndividualTransfer
      * @description Data model for the complex type 'individualTransfer'.
      */
     individualTransfer: {
-      transferId: components["schemas"]["CorrelationId"];
-      to: components["schemas"]["transferParty"];
+      homeTransactionId: components["schemas"]["CorrelationId"];
+      to: components["schemas"]["Party"];
+      /** @description Payer Loan reference */
+      reference?: string;
       amountType: components["schemas"]["AmountType"];
       currency: components["schemas"]["Currency"];
-      amount?: components["schemas"]["Amount"];
-      transactionType: components["schemas"]["transactionType"];
+      amount: components["schemas"]["Amount"];
       note?: components["schemas"]["Note"];
-      extensions?: components["schemas"]["ExtensionList"];
+      quoteExtensions?: components["schemas"]["ExtensionList"];
+      transferExtensions?: components["schemas"]["ExtensionList"];
+      lastError?: components["schemas"]["transferError"];
     };
     bulkTransferRequest: {
       /** @description Transaction ID from the DFSP backend, used to reconcile transactions between the Switch and DFSP backend systems. */
-      homeTransactionId: string;
-      bulkTransferId?: components["schemas"]["CorrelationId"];
-      from: components["schemas"]["transferParty"];
+      bulkHomeTransactionID: string;
+      bulkTransactionId?: components["schemas"]["CorrelationId"];
+      options: components["schemas"]["bulkTransferOptions"];
+      from: components["schemas"]["Party"];
       /** @description List of individual transfers in a bulk transfer. */
       individualTransfers: components["schemas"]["individualTransfer"][];
       extensions?: components["schemas"]["ExtensionList"];
     };
+    bulkTransferStatus:
+      | "ERROR_OCCURRED"
+      | "WAITING_FOR_PARTY_ACCEPTANCE"
+      | "WAITING_FOR_QUOTE_ACCEPTANCE"
+      | "COMPLETED";
     individualTransferResult: {
       transferId?: components["schemas"]["CorrelationId"];
-      to?: components["schemas"]["transferParty"];
-      amountType?: components["schemas"]["AmountType"];
-      currency?: components["schemas"]["Currency"];
-      amount?: components["schemas"]["Amount"];
-      transactionType?: components["schemas"]["transactionType"];
+      homeTransactionId: components["schemas"]["CorrelationId"];
+      transactionId: components["schemas"]["CorrelationId"];
+      to: components["schemas"]["Party"];
+      amountType: components["schemas"]["AmountType"];
+      currency: components["schemas"]["Currency"];
+      amount: components["schemas"]["Amount"];
       note?: components["schemas"]["Note"];
       quoteId?: components["schemas"]["CorrelationId"];
       quoteResponse?: components["schemas"]["QuotesIDPutResponse"];
-      /** @description FSPID of the entity that supplied the quote response. This may not be the same as the FSPID of the entity which owns the end user account in the case of a FOREX transfer. i.e. it may be a FOREX gateway. */
-      quoteResponseSource?: string;
       fulfil?: components["schemas"]["TransfersIDPutResponse"];
-      /** @description Object representing the last error to occur during a transfer process. This may be a Mojaloop API error returned from another entity in the scheme or an object representing other types of error e.g. exceptions that may occur inside the scheme adapter. */
+      quoteExtensions?: components["schemas"]["ExtensionList"];
+      transferExtensions?: components["schemas"]["ExtensionList"];
       lastError?: components["schemas"]["transferError"];
     };
     bulkTransferResponse: {
-      transferId?: components["schemas"]["CorrelationId"];
-      from: components["schemas"]["transferParty"];
+      /** @description Transaction ID from the DFSP backend, used to reconcile transactions between the Switch and DFSP backend systems. */
+      bulkHomeTransactionID: string;
+      bulkTransactionId: components["schemas"]["CorrelationId"];
+      currentState: components["schemas"]["bulkTransferStatus"];
+      options?: components["schemas"]["bulkTransferOptions"];
       /** @description List of individual transfer result in a bulk transfer response. */
       individualTransferResults: components["schemas"]["individualTransferResult"][];
+      extensions?: components["schemas"]["ExtensionList"];
     };
     bulkTransferErrorResponse: components["schemas"]["errorResponse"] &
       ({
@@ -934,19 +979,55 @@ export interface components {
       } & {
         bulkTansferState: unknown;
       });
-    bulkTransferStatus: "ERROR_OCCURRED" | "COMPLETED";
-    /** @description A Mojaloop API transfer fulfilment for individual transfers in a bulk transfer */
-    individualTransferFulfilment: {
-      /** @description Fulfilment of the condition specified with the transaction. Mandatory if transfer has completed successfully. */
-      fulfilment?: components["schemas"]["IlpFulfilment"];
-      /** @description Optional extension, specific to deployment. */
-      extensionList?: components["schemas"]["ExtensionList"];
+    /** @description Data model for the 'individualTransfer' while accepting party or quote. */
+    individualTransferAccept: {
+      homeTransactionId: components["schemas"]["CorrelationId"];
+      transactionId: components["schemas"]["CorrelationId"];
     };
-    bulkTransferStatusResponse: {
-      bulkTransferId: components["schemas"]["CorrelationId"];
-      currentState: components["schemas"]["bulkTransferStatus"];
-      fulfils: components["schemas"]["individualTransferFulfilment"][];
+    /** @description The object sent back as confirmation of payee parties when autoAcceptParty is false. */
+    bulkTransferContinuationAcceptParty: {
+      /** @description Transaction ID from the DFSP backend, used to reconcile transactions between the Switch and DFSP backend systems. */
+      bulkHomeTransactionID: string;
+      /** @description List of individual transfers in a bulk transfer with accept party information. */
+      individualTransfers: (components["schemas"]["individualTransferAccept"] &
+        components["schemas"]["transferContinuationAcceptParty"])[];
     };
+    /** @description The object sent back as confirmation of quotes when autoAcceptQuotes is false. */
+    bulkTransferContinuationAcceptQuote: {
+      /** @description Transaction ID from the DFSP backend, used to reconcile transactions between the Switch and DFSP backend systems. */
+      bulkHomeTransactionID: string;
+      /** @description List of individual transfers in a bulk transfer. */
+      individualTransfers: (components["schemas"]["individualTransferAccept"] &
+        components["schemas"]["transferContinuationAcceptQuote"])[];
+    };
+    /** @description This object represents a Mojaloop API error received at any time during the party discovery process */
+    partyError: {
+      /** @description The HTTP status code returned to the caller. This is the same as the actual HTTP status code returned with the response. */
+      httpStatusCode?: number;
+      /** @description If a transfer process results in an error callback during the asynchronous Mojaloop API exchange, this property will contain the underlying Mojaloop API error object. */
+      mojaloopError?: components["schemas"]["mojaloopError"];
+    };
+    bulkAcceptPartyErrorResponse: components["schemas"]["errorResponse"] &
+      ({
+        bulkTransferState?: components["schemas"]["bulkTransferContinuationAcceptParty"] &
+          components["schemas"]["partyError"];
+      } & {
+        bulkTansferState: unknown;
+      });
+    /** @description This object represents a Mojaloop API error received at any time during the quote process */
+    quoteError: {
+      /** @description The HTTP status code returned to the caller. This is the same as the actual HTTP status code returned with the response. */
+      httpStatusCode?: number;
+      /** @description If a quote process results in an error callback during the asynchronous Mojaloop API exchange, this property will contain the underlying Mojaloop API error object. */
+      mojaloopError?: components["schemas"]["mojaloopError"];
+    };
+    bulkAcceptQuoteErrorResponse: components["schemas"]["errorResponse"] &
+      ({
+        bulkTransferState?: components["schemas"]["bulkTransferContinuationAcceptQuote"] &
+          components["schemas"]["quoteError"];
+      } & {
+        bulkTansferState: unknown;
+      });
     /**
      * IndividualQuote
      * @description Data model for the complex type 'individualQuote'.
@@ -969,13 +1050,6 @@ export interface components {
       /** @description List of individual quotes in a bulk quote. */
       individualQuotes: components["schemas"]["individualQuote"][];
       extensions?: components["schemas"]["ExtensionList"];
-    };
-    /** @description This object represents a Mojaloop API error received at any time during the quote process */
-    quoteError: {
-      /** @description The HTTP status code returned to the caller. This is the same as the actual HTTP status code returned with the response. */
-      httpStatusCode?: number;
-      /** @description If a quote process results in an error callback during the asynchronous Mojaloop API exchange, this property will contain the underlying Mojaloop API error object. */
-      mojaloopError?: components["schemas"]["mojaloopError"];
     };
     individualQuoteResult: {
       quoteId?: components["schemas"]["CorrelationId"];
@@ -1179,49 +1253,6 @@ export interface components {
     errorAccountsResponse: components["schemas"]["errorResponse"] & {
       executionState: components["schemas"]["accountsResponse"];
     };
-    /**
-     * PartyIdInfo
-     * @description Data model for the complex type PartyIdInfo.
-     */
-    PartyIdInfo: {
-      partyIdType: components["schemas"]["PartyIdType"];
-      partyIdentifier: components["schemas"]["PartyIdentifier"];
-      partySubIdOrType?: components["schemas"]["PartySubIdOrType"];
-      fspId?: components["schemas"]["FspId"];
-      extensionList?: components["schemas"]["ExtensionList"];
-    };
-    /**
-     * PartyName
-     * @description Name of the Party. Could be a real name or a nickname.
-     */
-    PartyName: string;
-    /**
-     * PartyComplexName
-     * @description Data model for the complex type PartyComplexName.
-     */
-    PartyComplexName: {
-      firstName?: components["schemas"]["FirstName"];
-      middleName?: components["schemas"]["MiddleName"];
-      lastName?: components["schemas"]["LastName"];
-    };
-    /**
-     * PartyPersonalInfo
-     * @description Data model for the complex type PartyPersonalInfo.
-     */
-    PartyPersonalInfo: {
-      complexName?: components["schemas"]["PartyComplexName"];
-      dateOfBirth?: components["schemas"]["DateOfBirth"];
-    };
-    /**
-     * Party
-     * @description Data model for the complex type Party.
-     */
-    Party: {
-      partyIdInfo: components["schemas"]["PartyIdInfo"];
-      merchantClassificationCode?: components["schemas"]["MerchantClassificationCode"];
-      name?: components["schemas"]["PartyName"];
-      personalInfo?: components["schemas"]["PartyPersonalInfo"];
-    };
     async2SyncCurrentState:
       | "WAITING_FOR_ACTION"
       | "COMPLETED"
@@ -1243,49 +1274,18 @@ export interface components {
      * @description The object sent in the POST /quotes request.
      */
     QuotesPostRequest: {
-      /**
-       * @description Common ID between the FSPs for the quote object, decided by the Payer FSP. The ID should be reused for resends of the same quote for a transaction. A new ID should be generated for each new quote for a transaction.
-       * @example b51ec534-ee48-4575-b6a9-ead2955b8069
-       */
       quoteId: components["schemas"]["CorrelationId"];
-      /**
-       * @description Common ID (decided by the Payer FSP) between the FSPs for the future transaction object. The actual transaction will be created as part of a successful transfer process. The ID should be reused for resends of the same quote for a transaction. A new ID should be generated for each new quote for a transaction.
-       * @example a8323bc6-c228-4df2-ae82-e5a997baf899
-       */
       transactionId: components["schemas"]["CorrelationId"];
-      /**
-       * @description Identifies an optional previously-sent transaction request.
-       * @example a8323bc6-c228-4df2-ae82-e5a997baf890
-       */
       transactionRequestId?: components["schemas"]["CorrelationId"];
-      /** @description Information about the Payee in the proposed financial transaction. */
       payee: components["schemas"]["Party"];
-      /** @description Information about the Payer in the proposed financial transaction. */
       payer: components["schemas"]["Party"];
-      /**
-       * @description SEND for send amount, RECEIVE for receive amount.
-       * @example SEND
-       */
       amountType: components["schemas"]["AmountType"];
-      /** @description Depending on amountType - If SEND - The amount the Payer would like to send, that is, the amount that should be withdrawn from the Payer account including any fees. The amount is updated by each participating entity in the transaction. If RECEIVE - The amount the Payee should receive, that is, the amount that should be sent to the receiver exclusive any fees. The amount is not updated by any of the participating entities. */
       amount: components["schemas"]["Money"];
-      /** @description The fees in the transaction. The fees element should be empty if fees should be non-disclosed. The fees element should be non-empty if fees should be disclosed. */
       fees?: components["schemas"]["Money"];
-      /** @description Type of transaction for which the quote is requested. */
       transactionType: components["schemas"]["TransactionType"];
-      /** @description Longitude and Latitude of the initiating Party. Can be used to detect fraud. */
       geoCode?: components["schemas"]["GeoCode"];
-      /**
-       * @description A memo that will be attached to the transaction.
-       * @example Free-text memo.
-       */
       note?: components["schemas"]["Note"];
-      /**
-       * @description Expiration is optional. It can be set to get a quick failure in case the peer FSP takes too long to respond. Also, it may be beneficial for Consumer, Agent, and Merchant to know that their request has a time limit.
-       * @example 2016-05-24T08:38:08.699-04:00
-       */
       expiration?: components["schemas"]["DateTime"];
-      /** @description Optional extension, specific to deployment. */
       extensionList?: components["schemas"]["ExtensionList"];
     };
     /** QuotesPostRequest */
@@ -1379,28 +1379,26 @@ export interface components {
         "application/json": components["schemas"]["errorTransferResponse"];
       };
     };
-    /** Bulk transfer completed successfully */
-    bulkTransferSuccess: {
-      content: {
-        "application/json": components["schemas"]["bulkTransferResponse"];
-      };
-    };
+    /** Bulk transfer accepted successfully */
+    bulkTransferAccepted: unknown;
     /** Malformed or missing required body, headers or parameters */
     bulkTransferBadRequest: {
       content: {
         "application/json": components["schemas"]["bulkTransferErrorResponse"];
       };
     };
-    /** An error occurred processing the bulk transfer */
-    bulkTransferServerError: {
+    /** Internal Server Error */
+    errorResponse: {
       content: {
-        "application/json": components["schemas"]["bulkTransferErrorResponse"];
+        "application/json": components["schemas"]["errorResponse"];
       };
     };
-    /** Timeout occurred processing the bulk transfer */
-    bulkTransferTimeout: {
+    /** Malformed or missing required body, headers or parameters */
+    bulkTransferPutBadRequest: {
       content: {
-        "application/json": components["schemas"]["bulkTransferErrorResponse"];
+        "application/json":
+          | components["schemas"]["bulkAcceptPartyErrorResponse"]
+          | components["schemas"]["bulkAcceptQuoteErrorResponse"];
       };
     };
     /** Bulk quote completed successfully */
@@ -1506,7 +1504,7 @@ export interface components {
     /** @description Identifier of the transfer to continue as returned in the response to a `POST /transfers` request. */
     transferId: components["schemas"]["CorrelationId"];
     /** @description Identifier of the bulk transfer to continue as returned in the response to a `POST /bulkTransfers` request. */
-    bulkTransferId: components["schemas"]["CorrelationId"];
+    bulkTransactionId: components["schemas"]["CorrelationId"];
     /** @description Identifier of the bulk transfer to continue as returned in the response to a `POST /bulkTransfers` request. */
     bulkQuoteId: components["schemas"]["CorrelationId"];
     /** @description Identifier of the merchant request to pay transfer to continue as returned in the response to a `POST /requestToPayTransfer` request. */

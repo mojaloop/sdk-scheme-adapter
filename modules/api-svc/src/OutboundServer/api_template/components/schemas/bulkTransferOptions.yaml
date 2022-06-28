@@ -1,0 +1,37 @@
+type: object
+required:
+  - autoAcceptParty
+  - autoAcceptQuote
+  - bulkExpiration
+properties:
+  onlyValidateParty:
+    description: >-
+      Set to true if only party validation is required. 
+      This means the quotes and transfers will not run. This is useful
+      for only party resolution.
+    type: boolean
+  autoAcceptParty:
+    $ref: ./autoAcceptPartyOption.yaml
+  autoAcceptQuote:
+    description: >-
+      Set to true if the quote response is accepted without confirmation from the payer.
+      The fees applied by the payee will be acceptable to the payer abiding by the limits
+      set by optional 'perTransferFeeLimits' array.
+    type: object
+    oneOf:
+      - $ref: ./autoAcceptQuote.yaml
+  skipPartyLookup:
+    description: >-
+      Set to true if supplying an FSPID for the payee party and no party
+      resolution is needed. This may be useful if a previous party
+      resolution has been performed.
+    type: boolean
+  synchronous:
+    description: >-
+      Set to true if the bulkTransfer requests need be handled synchronous.
+      Otherwise the requests will be handled asynchronously, meaning there will 
+      be callbacks whenever the processing is done
+    type: boolean
+  bulkExpiration:
+    $ref: >-
+     ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/DateTime.yaml

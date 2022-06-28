@@ -17,7 +17,7 @@ info:
     the term "FSP" is equal to the term "DFSP".
   license:
     name: 'Apache License Version 2.0, January 2004'
-    url: 'http://www.apache.org/licenses/'
+    url: 'https://github.com/mojaloop/documentation/blob/master/LICENSE.md'    
   version: 1.0.0
 paths:
   '/':
@@ -28,8 +28,8 @@ paths:
     $ref: 'paths/transfers_transferId.yaml'
   '/bulkTransfers':
     $ref: paths/bulkTransfers.yaml
-  '/bulkTransfers/{bulkTransferId}':
-    $ref: 'paths/bulkTransfers_bulkTransferId.yaml'
+  '/bulkTransfers/{bulkTransactionId}':
+    $ref: 'paths/bulkTransfers_bulkTransactionId.yaml'
   '/bulkQuotes':
     $ref: paths/bulkQuotes.yaml
   '/bulkQuotes/{bulkQuoteId}':
