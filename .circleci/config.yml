@@ -25,8 +25,8 @@ defaults_Dependencies: &defaults_Dependencies |
   apk --no-cache add openssh-client
   apk --no-cache add bash
   apk add --no-cache -t build-dependencies make gcc g++ python3 libtool autoconf automake
-  npm config set unsafe-perm true
-  npm install -g node-gyp
+  yarn config set unsafe-perm true
+  yarn install -g node-gyp
 
 defaults_awsCliDependencies: &defaults_awsCliDependencies |
     apk upgrade --no-cache
@@ -192,7 +192,10 @@ jobs:
           keys:
             - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
-          name: Execute unit tests
+          name: Install Dependencies
+          command: yarn install --immutable
+      - run:
+          name: Validate openapi
           command: yarn run build:openapi && yarn run validate:api
 
   lint:
@@ -231,6 +234,9 @@ jobs:
           keys:
             - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
+          name: Install Dependencies
+          command: yarn install --immutable
+      - run:
           name: Create dir for test results
           command: mkdir -p ./audit/results
       - run:
@@ -253,8 +259,11 @@ jobs:
           keys:
             - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
+          name: Install Dependencies
+          command: yarn install --immutable
+      - run:
           name: Prune non-production packages before running license-scanner
-          command: npm prune --production
+          command: yarn prune --production
       - run:
           name: Run the license-scanner
           command: cd /tmp/license-scanner && pathToRepo=$CIRCLE_WORKING_DIRECTORY make run
