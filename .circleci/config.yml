@@ -122,6 +122,10 @@ jobs:
           keys:
             - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
+          name: Install Dependencies
+          command: yarn install --immutable
+
+      - run:
           name: Execute unit tests
           command: yarn run test:unit
       - store_test_results:
