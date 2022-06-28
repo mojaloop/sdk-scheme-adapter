@@ -1,0 +1,58 @@
+type: object
+required:
+  - requestToPayTransactionId
+  - from
+  - to
+  - amountType
+  - currency
+  - amount
+  - transactionType
+properties:
+  transferId:
+    $ref: >-
+     ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml
+  requestToPayTransactionId:
+    type: string
+    description: >-
+      Transaction ID from the DFSP backend, used to reconcile transactions
+      between the Switch and DFSP backend systems.
+  from:
+    $ref: ./transferParty.yaml
+  to:
+    $ref: ./transferParty.yaml
+  amountType:
+    $ref: >-
+     ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/AmountType.yaml
+  currency:
+    $ref: >-
+     ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml
+  amount:
+    $ref: >-
+     ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Amount.yaml
+  transactionType:
+    $ref: ./transactionType.yaml
+  note:
+    $ref: >-
+     ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Note.yaml
+  currentState:
+    $ref: ./transferStatus.yaml
+  quoteId:
+    $ref: >-
+     ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml
+  quoteResponse:
+    $ref: ./quote.yaml
+  quoteResponseSource:
+    type: string
+    description: >
+      FSPID of the entity that supplied the quote response. This may not be the
+      same as the FSPID of the entity which owns the end user account in the
+      case of a FOREX transfer. i.e. it may be a FOREX gateway.
+  fulfil:
+    $ref: ./transferFulfilment.yaml
+  lastError:
+    description: >
+      Object representing the last error to occur during a transfer process.
+      This may be a Mojaloop API error returned from another entity in the
+      scheme or an object representing other types of error e.g. exceptions that
+      may occur inside the scheme adapter.
+    $ref: ./transferError.yaml

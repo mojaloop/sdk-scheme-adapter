@@ -1,0 +1,18 @@
+title: SimpleTransfersPostResponse
+type: object
+properties:
+  transfer:
+    properties:
+      body:
+        $ref: >-
+         ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransfersIDPutResponse.yaml
+      headers:
+        type: object
+    required:
+      - body
+      - headers
+  currentState:
+    $ref: ../schemas/async2SyncCurrentState.yaml
+required:
+  - transfer
+  - currentState

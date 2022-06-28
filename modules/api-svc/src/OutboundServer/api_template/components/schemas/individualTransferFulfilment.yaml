@@ -1,0 +1,13 @@
+type: object
+description: A Mojaloop API transfer fulfilment for individual transfers in a bulk transfer
+properties:
+  fulfilment:
+    $ref: >-
+     ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/IlpFulfilment.yaml
+    description: >
+      Fulfilment of the condition specified with the transaction. Mandatory if
+      transfer has completed successfully.
+  extensionList:
+    $ref: >-
+     ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/ExtensionList.yaml
+    description: 'Optional extension, specific to deployment.'

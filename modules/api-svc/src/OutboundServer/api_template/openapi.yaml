@@ -1,0 +1,52 @@
+openapi: 3.0.1
+info:
+  title: Mojaloop SDK Outbound Scheme Adapter API
+  description: >
+    Specification for the Mojaloop SDK Scheme Adapter Outbound Transfers API
+
+
+    This API can be used by DFSP backends to simplify the process of sending
+    funds to other parties within a Mojaloop scheme.
+
+
+    Please see other documentation on
+    https://github.com/mojaloop/sdk-scheme-adapter for more information.
+
+
+    **Note on terminology:** The term "Switch" is equal to the term "Hub", and
+    the term "FSP" is equal to the term "DFSP".
+  license:
+    name: 'Apache License Version 2.0, January 2004'
+    url: 'https://github.com/mojaloop/documentation/blob/master/LICENSE.md'    
+  version: 1.0.0
+paths:
+  '/':
+    $ref: health.yaml
+  '/transfers':
+    $ref: paths/transfers.yaml
+  '/transfers/{transferId}':
+    $ref: 'paths/transfers_transferId.yaml'
+  '/bulkTransfers':
+    $ref: paths/bulkTransfers.yaml
+  '/bulkTransfers/{bulkTransactionId}':
+    $ref: 'paths/bulkTransfers_bulkTransactionId.yaml'
+  '/bulkQuotes':
+    $ref: paths/bulkQuotes.yaml
+  '/bulkQuotes/{bulkQuoteId}':
+    $ref: 'paths/bulkQuotes_bulkQuoteId.yaml'
+  '/requestToPay':
+    $ref: paths/requestToPay.yaml
+  '/requestToPayTransfer':
+    $ref: paths/requestToPayTransfer.yaml
+  '/requestToPayTransfer/{requestToPayTransactionId}':
+    $ref: 'paths/requestToPayTransfer_requestToPayTransactionId.yaml'
+  '/accounts':
+    $ref: paths/accounts.yaml
+  '/parties/{Type}/{ID}':
+    $ref: 'paths/parties_Type_ID.yaml'
+  '/parties/{Type}/{ID}/{SubId}':
+    $ref: 'paths/parties_Type_ID_SubId.yaml'
+  '/quotes':
+    $ref: 'paths/quotes.yaml'
+  '/simpleTransfers':
+    $ref: 'paths/simpleTransfers.yaml'

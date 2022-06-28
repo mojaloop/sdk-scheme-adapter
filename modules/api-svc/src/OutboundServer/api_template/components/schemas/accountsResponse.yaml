@@ -1,0 +1,24 @@
+type: object
+required:
+  - accounts
+properties:
+  modelId:
+    $ref: >-
+     ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/CorrelationId.yaml
+  accounts:
+    $ref: ./accountsRequest.yaml
+  response:
+    $ref: ./accountCreationStatus.yaml
+  currentState:
+    $ref: ./accountsCreationState.yaml
+  lastError:
+    $ref: ./transferError.yaml
+  postAccountsResponse:
+    type: object
+    required:
+      - body
+    properties:
+      body:
+        type: object
+      headers:
+        type: object

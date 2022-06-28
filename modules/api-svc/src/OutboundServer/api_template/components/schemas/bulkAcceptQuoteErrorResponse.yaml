@@ -1,0 +1,10 @@
+allOf:
+  - $ref: ./errorResponse.yaml
+  - type: object
+    required:
+      - bulkTansferState
+    properties:
+      bulkTransferState:
+        allOf:
+          - $ref: ./bulkTransferContinuationAcceptQuote.yaml
+          - $ref: ./quoteError.yaml

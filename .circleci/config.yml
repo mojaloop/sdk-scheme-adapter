@@ -25,8 +25,8 @@ defaults_Dependencies: &defaults_Dependencies |
   apk --no-cache add openssh-client
   apk --no-cache add bash
   apk add --no-cache -t build-dependencies make gcc g++ python3 libtool autoconf automake
-  npm config set unsafe-perm true
-  npm install -g node-gyp
+  yarn config set unsafe-perm true
+  yarn global add node-gyp
 
 defaults_awsCliDependencies: &defaults_awsCliDependencies |
     apk upgrade --no-cache
@@ -83,19 +83,29 @@ jobs:
           name: Install general dependencies
           command: *defaults_Dependencies
       - checkout
+      # - run:
+      #     name: Access npm folder as root
+      #     command: cd $(npm root -g)/npm
+      # - run:
+      #     name: Update NPM install (using `npm ci`)
+      #     command: npm ci
+####################################################            
       - run:
-          name: Access npm folder as root
-          command: cd $(npm root -g)/npm
-      - run:
-          name: Update NPM install (using `npm ci`)
-          command: npm ci
+          name: Install Dependencies
+          command: yarn install --immutable
+      - save_cache:
+          name: Save Yarn Package Cache
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+          paths:
+            - .yarn/cache
+            - .yarn/unplugged
+            - node_modules
+
+####################################################            
+
       - run:
           name: Delete build dependencies
           command: apk del build-dependencies
-      - save_cache:
-          key: dependency-cache-v3-{{ checksum "package-lock.json" }}
-          paths:
-            - node_modules
 
   test-unit:
     executor: default-docker
@@ -105,10 +115,15 @@ jobs:
           command: *defaults_Dependencies
       - checkout
       - restore_cache:
-          key: dependency-cache-v3-{{ checksum "package-lock.json" }}
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install Dependencies
+          command: yarn install --immutable
       - run:
           name: Execute unit tests
-          command: npm run test
+          command: yarn run test:unit
       - store_test_results:
           path: /home/circleci/project/
       - store_artifacts:
@@ -125,7 +140,9 @@ jobs:
             chmod +x ~/docker-compose
             sudo mv ~/docker-compose /usr/local/bin/docker-compose
       - restore_cache:
-          key: dependency-cache-v3-{{ checksum "package-lock.json" }}
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
           name: Set up NVM
           command: |
@@ -151,8 +168,8 @@ jobs:
           name: Execute integration tests
           command: |
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            npm ci
-            npm run test:int
+            yarn install --immutable
+            yarn run test:int
       - run:
           name: prepare test/results
           command: |
@@ -171,10 +188,15 @@ jobs:
           command: *defaults_Dependencies
       - checkout
       - restore_cache:
-          key: dependency-cache-v3-{{ checksum "package-lock.json" }}
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
-          name: Execute unit tests
-          command: npm run build:openapi && npm run validate:api
+          name: Install Dependencies
+          command: yarn install --immutable
+      - run:
+          name: Validate openapi
+          command: yarn run build:openapi && yarn run validate:api
 
   lint:
     executor: default-docker
@@ -184,13 +206,19 @@ jobs:
           command: *defaults_Dependencies
       - checkout
       - restore_cache:
-          key: dependency-cache-v3-{{ checksum "package-lock.json" }}
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install Dependencies
+          command: yarn install --immutable
+
       - run:
           name: Create dir for lint results
           command: mkdir -p /lintresults
       - run:
           name: Execute linting
-          command: (npm run lint > /lintresults/results.txt)
+          command: (yarn run lint > /lintresults/results.txt)
       - store_artifacts:
           path: /lintresults
 
@@ -202,13 +230,18 @@ jobs:
           command: *defaults_Dependencies
       - checkout
       - restore_cache:
-          key: dependency-cache-v3-{{ checksum "package-lock.json" }}
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install Dependencies
+          command: yarn install --immutable
       - run:
           name: Create dir for test results
           command: mkdir -p ./audit/results
       - run:
           name: Check for new npm vulnerabilities
-          command: npm run audit:check --silent -- --json > ./audit/results/auditResults.json
+          command: yarn run audit:check --silent -- --json > ./audit/results/auditResults.json
       - store_artifacts:
           path: ./audit/results
 
@@ -222,10 +255,15 @@ jobs:
       - run:
           <<: *defaults_license_scanner
       - restore_cache:
-          key: dependency-cache-v3-{{ checksum "package-lock.json" }}
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install Dependencies
+          command: yarn install --immutable
       - run:
           name: Prune non-production packages before running license-scanner
-          command: npm prune --production
+          command: yarn prune --production
       - run:
           name: Run the license-scanner
           command: cd /tmp/license-scanner && pathToRepo=$CIRCLE_WORKING_DIRECTORY make run
@@ -324,7 +362,9 @@ jobs:
           command: *defaults_Dependencies
       - checkout
       - restore_cache:
-          key: dependency-cache-v3-{{ checksum "package-lock.json" }}
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
           name: Configure git
           command: |
@@ -339,7 +379,7 @@ jobs:
             ssh-keyscan github.com >> ~/.ssh/known_hosts
       - run:
           name: Generate changelog and bump package version
-          command: npm run release
+          command: yarn run release
       - run:
           name: Push the release
           command: git push --follow-tags origin ${CIRCLE_BRANCH}
@@ -413,7 +453,9 @@ jobs:
           name: Install general dependencies
           command: *defaults_Dependencies
       - restore_cache:
-          key: dependency-cache-v3-{{ checksum "package-lock.json" }}
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
           name: setup environment vars for LATEST release
           command: |

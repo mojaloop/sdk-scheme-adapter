@@ -1,0 +1,40 @@
+type: object
+required:
+  - idType
+  - idValue
+properties:
+  type:
+    $ref: >-
+      ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/TransactionInitiatorType.yaml
+  idType:
+    $ref: >-
+      ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartyIdType.yaml
+  idValue:
+    $ref: >-
+      ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartyIdentifier.yaml
+  idSubValue:
+    $ref: >-
+      ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartySubIdOrType.yaml
+  displayName:
+    $ref: >-
+      ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Name.yaml
+  firstName:
+    $ref: >-
+      ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/FirstName.yaml
+  middleName:
+    $ref: >-
+     ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/MiddleName.yaml
+  lastName:
+    $ref: >-
+     ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/LastName.yaml
+  dateOfBirth:
+    $ref: >-
+     ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/DateOfBirth.yaml
+  merchantClassificationCode:
+    $ref: >-
+     ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/MerchantClassificationCode.yaml
+  fspId:
+    $ref: >-
+     ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/FspId.yaml
+  extensionList:
+    $ref: ./extensionListEmptiable.yaml

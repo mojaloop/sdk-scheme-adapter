@@ -1,0 +1,20 @@
+type: array
+items:
+  type: object
+  required:
+    - idType
+    - idValue
+    - currency
+  properties:
+    idType:
+      $ref: >-
+        ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartyIdType.yaml
+    idValue:
+      $ref: >-
+        ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartyIdentifier.yaml
+    idSubValue:
+      $ref: >-
+        ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/PartySubIdOrType.yaml
+    currency:
+      $ref: >-
+       ../../../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/Currency.yaml
