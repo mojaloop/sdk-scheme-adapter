@@ -17,7 +17,6 @@ jest.mock('dotenv', () => ({
 const promClient = require('prom-client');
 const defaultConfig = require('./data/defaultConfig.json');
 const { Logger } = require('@mojaloop/sdk-standard-components');
-const { MetricsClient } = require('~/lib/metrics');
 
 const TestControlServer = require('./ControlServer');
 
@@ -33,24 +32,6 @@ const index = require('~/index.js');
 describe('index.js', () => {
     beforeEach(() => {
         promClient.register.clear();
-    });
-
-    test('WSO2 error events in OutboundServer propagate to top-level server', () => {
-        const logger = new Logger.Logger({ stringify: () => '' });
-        const svr = new index.Server(defaultConfig, logger);
-        const cb = jest.fn();
-        svr.on('error', cb);
-        svr.outboundServer._api._wso2.auth.emit('error', 'msg');
-        expect(cb).toHaveBeenCalledTimes(1);
-    });
-
-    test('WSO2 error events in InboundServer propagate to top-level server', () => {
-        const logger = new Logger.Logger({ stringify: () => '' });
-        const svr = new index.Server(defaultConfig, logger);
-        const cb = jest.fn();
-        svr.on('error', cb);
-        svr.inboundServer._api._wso2.auth.emit('error', 'msg');
-        expect(cb).toHaveBeenCalledTimes(1);
     });
 
     test('Exports expected modules', () => {
@@ -77,6 +58,7 @@ describe('Server', () => {
         conf.control.port = conf.control.mgmtAPIWsPort;
         controlServer = new TestControlServer.Server({ logger, appConfig: conf });
         server = new index.Server(conf, logger);
+        server.restart = jest.fn();
         await server.start();
     });
 
@@ -95,53 +77,13 @@ describe('Server', () => {
         });
 
         it('reconfigures and restarts constituent servers when triggered by control client', async () => {
-            const [restartInbound, restartOutbound, restartControl, restartOAuthTest, restartTest] =
-                 Array.from({ length: 5 }).map(() => jest.fn());
-            server.inboundServer.reconfigure = jest.fn(() => restartInbound);
-            server.outboundServer.reconfigure = jest.fn(() => restartOutbound);
-            server.testServer.reconfigure = jest.fn(() => restartTest);
-            server.oauthTestServer.reconfigure = jest.fn(() => restartOAuthTest);
-            server.controlClient.reconfigure = jest.fn(() => restartControl);
-
             await controlServer.broadcastConfigChange(newConf);
 
             // We wait for the servers to get restarted
             await new Promise((wait) => setTimeout(wait, 1000));
 
-            expect(server.inboundServer.reconfigure).toHaveBeenCalledTimes(1);
-            expect(server.inboundServer.reconfigure).toHaveBeenCalledWith(
-                newConf, expect.any(Logger.Logger), expect.any(index.Cache)
-            );
-            expect(server.outboundServer.reconfigure).toHaveBeenCalledTimes(1);
-            const metricsClient = new MetricsClient();
-            expect(server.outboundServer.reconfigure).toHaveBeenCalledWith(
-                newConf, expect.any(Logger.Logger), expect.any(index.Cache), metricsClient
-            );
-            expect(server.controlClient.reconfigure).toHaveBeenCalledTimes(1);
-            expect(server.controlClient.reconfigure).toHaveBeenCalledWith({
-                logger: expect.any(Logger.Logger),
-                port: newConf.control.port,
-                appConfig: newConf
-            });
-            expect(server.testServer.reconfigure).toHaveBeenCalledTimes(1);
-            expect(server.testServer.reconfigure).toHaveBeenCalledWith({
-                logger: expect.any(Logger.Logger),
-                cache: expect.any(index.Cache),
-                port: newConf.test.port
-            });
-            expect(server.oauthTestServer.reconfigure).toHaveBeenCalledTimes(1);
-            expect(server.oauthTestServer.reconfigure).toHaveBeenCalledWith({
-                logger: expect.any(Logger.Logger),
-                clientKey: newConf.oauthTestServer.clientKey,
-                clientSecret: newConf.oauthTestServer.clientSecret,
-                port: newConf.oauthTestServer.listenPort,
-            });
-
-            expect(restartInbound).toHaveBeenCalledTimes(1);
-            expect(restartOutbound).toHaveBeenCalledTimes(1);
-            expect(restartTest).toHaveBeenCalledTimes(1);
-            expect(restartOAuthTest).toHaveBeenCalledTimes(1);
-            expect(restartControl).toHaveBeenCalledTimes(1);
+            expect(server.restart).toHaveBeenCalledTimes(1);
+            expect(server.restart).toHaveBeenCalledWith(newConf);
         });
     });
 });

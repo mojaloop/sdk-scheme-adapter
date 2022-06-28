@@ -28,6 +28,8 @@ const getTransfersMojaloopResponse = require('./data/getTransfersMojaloopRespons
 const getBulkTransfersBackendResponse = require('./data/getBulkTransfersBackendResponse');
 const getBulkTransfersMojaloopResponse = require('./data/getBulkTransfersMojaloopResponse');
 const notificationToPayee = require('./data/notificationToPayee');
+const notificationAbortedToPayee = require('./data/notificationAbortedToPayee');
+const notificationReservedToPayee = require('./data/notificationReservedToPayee');
 
 describe('inboundModel', () => {
     let config;
@@ -759,6 +761,51 @@ describe('inboundModel', () => {
             expect(call[0]).toEqual(expectedRequest);
             expect(call[1]).toEqual(transferId);
         });
+        
+        test('sends ABORTED notification to fsp backend', async () => {
+            BackendRequests.__putTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({}));
+            const notif = JSON.parse(JSON.stringify(notificationAbortedToPayee));
+
+            const expectedRequest = {
+                currentState: 'ABORTED',
+                finalNotification: notif.data,
+            };
+
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+            });
+
+            await model.sendNotificationToPayee(notif.data, transferId);
+            expect(BackendRequests.__putTransfersNotification).toHaveBeenCalledTimes(1);
+            const call = BackendRequests.__putTransfersNotification.mock.calls[0];
+            expect(call[0]).toEqual(expectedRequest);
+            expect(call[1]).toEqual(transferId);
+        });
+        
+        test('sends RESERVED notification to fsp backend', async () => {
+            BackendRequests.__putTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({}));
+            const notif = JSON.parse(JSON.stringify(notificationReservedToPayee));
+
+            const expectedRequest = {
+                finalNotification: notif.data,
+                lastError: 'Final notification state not COMMITTED',
+            };
+
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+            });
+
+            await model.sendNotificationToPayee(notif.data, transferId);
+            expect(BackendRequests.__putTransfersNotification).toHaveBeenCalledTimes(1);
+            const call = BackendRequests.__putTransfersNotification.mock.calls[0];
+            expect(call[0]).toEqual(expectedRequest);
+            expect(call[1]).toEqual(transferId);
+        });         
+        
     });
 
     describe('error handling:', () => {

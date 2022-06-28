@@ -832,6 +832,17 @@ components:
         homeTransactionId:
           type: string
           description: Transaction ID from the DFSP backend, used to reconcile transactions between the Switch and DFSP backend systems.
+        fulfilment:
+          $ref: '#/components/schemas/IlpFulfilment'
+          description: Fulfilment from the DFSP backend, used for testing purposes to inject an invalid fulfilment via a rule.
+        transferState:
+          $ref: '#/components/schemas/transferState'
+          description: Transfer state from the DFSP backend, used for testing purposes to inject an desired transfer state via a rule.
+          example: ABORTED
+        completedTimestamp:
+          $ref: '#/components/schemas/timestamp'
+          description: Completed timestamp from the DFSP backend, used for testing purposes to inject a given completed timestamp via a rule.
+          example: "2020-05-19T08:38:08.699-04:00"          
 
     transferDetailsResponse:
       type: object

@@ -54,7 +54,6 @@
     "port": 6379
   },
   "enableTestFeatures": false,
-  "testingDisableWSO2AuthStart": true,
   "oauthTestServer": {
     "enabled": false,
     "listenPort": 6000
