@@ -77,7 +77,7 @@ describe('Server', () => {
         });
 
         it('reconfigures and restarts constituent servers when triggered by control client', async () => {
-            await controlServer.broadcastConfigChange(newConf);
+            controlServer.broadcastConfigChange(newConf);
 
             // We wait for the servers to get restarted
             await new Promise((wait) => setTimeout(wait, 1000));

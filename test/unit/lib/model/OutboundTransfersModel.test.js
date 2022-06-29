@@ -1526,7 +1526,7 @@ describe('outboundModel', () => {
         testTlsServer(false));
 
     test('Outbound transfers model should record metrics', async () => {
-        const metrics = metricsClient._prometheusRegister.metrics();
+        const metrics = await metricsClient._prometheusRegister.metrics();
         expect(metrics).toBeTruthy();
 
         expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_outbound_party_lookup_request_count'));
