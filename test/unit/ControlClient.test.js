@@ -61,7 +61,7 @@ describe('ControlAgent', () => {
             const newConfigEvent = new Promise(
                 (resolve) => client.on(ControlAgent.EVENT.RECONFIGURE, resolve)
             );
-            await server.broadcastConfigChange(changedConfig);
+            server.broadcastConfigChange(changedConfig);
             const newConfEventData = await newConfigEvent;
             expect(newConfEventData).toEqual(changedConfig);
         });

@@ -213,7 +213,11 @@ class Server extends ws.Server {
 
     // Close the server then wait for all the client sockets to close
     async stop() {
-        await new Promise(this.close.bind(this));
+        const closing = new Promise(resolve => this.close(resolve));
+        for (const client of this.clients) {
+            client.terminate();
+        }
+        await closing;
         this._logger.log('Control server shutdown complete');
     }
 

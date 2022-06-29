@@ -83,7 +83,11 @@ class WsServer extends ws.Server {
 
     // Close the server then wait for all the client sockets to close
     async stop() {
-        await new Promise(resolve => this.close(resolve));
+        const closing = new Promise(resolve => this.close(resolve));
+        for (const client of this.clients) {
+            client.terminate();
+        }
+        await closing;
         // If we don't wait for all clients to close before shutting down, the socket close
         // handlers will be called after we return from this function, resulting in behaviour
         // occurring after the server tells the user it has shutdown.
@@ -200,7 +204,7 @@ class TestServer {
     async stop() {
         if (this._wsapi) {
             this._logger.log('Shutting down websocket server');
-            this._wsapi.stop();
+            await this._wsapi.stop();
             this._wsapi = null;
         }
         if (this._server) {
