@@ -4,119 +4,129 @@
 sequenceDiagram
     participant MojaloopSwitch as Mojaloop Switch
     participant SDKFspiopApi as SDK FSPIOP API
-    participant SDKEventHandler as SDK Event Handler
-    participant SDKCommandHandler as SDK Command Handler
+    participant SDKInboundEventHandler as SDK Inbound Event Handler
+    participant SDKInboundCommandHandler as SDK Inbound Command Handler
     participant SDKBackendApi as SDK Backend API
     participant CoreConnector as Core Connector Payee
 
     MojaloopSwitch->>+SDKFspiopApi: POST /bulkTransfers
     SDKFspiopApi->>SDKFspiopApi: Process Trace Headers
-    SDKFspiopApi->>SDKEventHandler: BulkTransfersRequestReceived
-    Note left of SDKEventHandler: topic-sdk-in-domain-events
-    SDKFspiopApi->>MojaloopSwitch: Accepted
-    SDKEventHandler->>SDKCommandHandler: ProcessBulkTransfersRequest
-    Note left of SDKCommandHandler: topic-sdk-in-command-events
-    SDKCommandHandler->>SDKCommandHandler: Update the bulk state: RECEIVED
-    SDKCommandHandler->>SDKCommandHandler: Check if bulkQuotes supported by payee
+    SDKFspiopApi->>SDKInboundEventHandler: InboundBulkTransfersRequestReceived
+    Note left of SDKInboundEventHandler: topic-sdk-inbound-domain-events
+    SDKFspiopApi-->>MojaloopSwitch: Accepted
+    SDKInboundEventHandler->>SDKInboundCommandHandler: ProcessInboundBulkTransfersRequest
+    Note left of SDKInboundCommandHandler: topic-sdk-inbound-command-events
+    SDKInboundCommandHandler->>SDKInboundCommandHandler: Update the bulk state: RECEIVED
+    SDKInboundCommandHandler->>SDKInboundCommandHandler: Check if bulkQuotes supported by payee
 
     alt Bulk transfers supported
-        SDKCommandHandler->>SDKBackendApi: SDKBulkTransfersRequested
-        Note left of SDKBackendApi: topic-sdk-in-domain-events
-        SDKCommandHandler->>SDKCommandHandler: Update the bulk state: PROCESSING
+        SDKInboundCommandHandler->>SDKBackendApi: SDKBulkTransfersRequested
+        Note left of SDKBackendApi: topic-sdk-inbound-domain-events
+        SDKInboundCommandHandler->>SDKInboundCommandHandler: Update the bulk state: PROCESSING
         SDKBackendApi->>SDKBackendApi: Process outbound Trace Headers
         SDKBackendApi->>CoreConnector: POST /bulkTransfers
+        CoreConnector-->>SDKBackendApi: Accepted
         CoreConnector->>SDKBackendApi: PUT /bulkTransfers
         SDKBackendApi->>SDKBackendApi: Process inbound Trace Headers
-        SDKBackendApi->>SDKEventHandler: SDKBulkTransfersCallbackReceived
-        Note right of SDKEventHandler: topic-sdk-in-domain-events
+        SDKBackendApi->>SDKInboundEventHandler: SDKBulkTransfersCallbackReceived
+        Note right of SDKInboundEventHandler: topic-sdk-inbound-domain-events
+        SDKBackendApi-->>CoreConnector: Accepted
     else Bulk transfers NOT supported
         loop for each transfer in bulk
-            SDKCommandHandler->>SDKBackendApi: TransferRequested
-            Note left of SDKBackendApi: topic-sdk-in-domain-events
-            SDKCommandHandler->>SDKCommandHandler: Update the individual state: TRANSFERS_PROCESSING
+            SDKInboundCommandHandler->>SDKBackendApi: TransferRequested
+            Note left of SDKBackendApi: topic-sdk-inbound-domain-events
+            SDKInboundCommandHandler->>SDKInboundCommandHandler: Update the individual state: TRANSFERS_PROCESSING
             SDKBackendApi->>SDKBackendApi: Process outbound Trace Headers
             SDKBackendApi->>CoreConnector: POST /transfers
+            CoreConnector-->>SDKBackendApi: Accepted
             CoreConnector->>SDKBackendApi: PUT /transfers
             SDKBackendApi->>SDKBackendApi: Process Inbound Trace Headers
-            SDKBackendApi->>SDKEventHandler: TransfersCallbackReceived
-            Note right of SDKEventHandler: topic-sdk-in-domain-events
-            SDKEventHandler->>SDKCommandHandler: ProcessTransfersCallback
-            Note left of SDKCommandHandler: topic-sdk-command-events
-            SDKCommandHandler->>SDKCommandHandler: Update the individual state: TRANSFERS_SUCCESS / TRANSFERS_FAILED
-            SDKCommandHandler->>SDKEventHandler: TransfersCallbackProcessed
-            Note right of SDKEventHandler: topic-sdk-domain-events
-            SDKEventHandler->>SDKEventHandler: Check the status of the remaining items in the bulk
+            SDKBackendApi->>SDKInboundEventHandler: TransfersCallbackReceived
+            Note right of SDKInboundEventHandler: topic-sdk-inbound-domain-events
+            SDKBackendApi-->>CoreConnector: Accepted
+            SDKInboundEventHandler->>SDKInboundCommandHandler: ProcessTransfersCallback
+            Note left of SDKInboundCommandHandler: topic-sdk-command-events
+            SDKInboundCommandHandler->>SDKInboundCommandHandler: Update the individual state: TRANSFERS_SUCCESS / TRANSFERS_FAILED
+            SDKInboundCommandHandler->>SDKInboundEventHandler: TransfersCallbackProcessed
+            Note right of SDKInboundEventHandler: topic-sdk-domain-events
+            SDKInboundEventHandler->>SDKInboundEventHandler: Check the status of the remaining items in the bulk
         end
     end
-    SDKEventHandler->>SDKCommandHandler: ProcessBulkTransfersRequestComplete
-    Note left of SDKCommandHandler: topic-sdk-in-command-events
-    SDKCommandHandler->>SDKCommandHandler: Update the bulk state: COMPLETED?
-    SDKCommandHandler->>SDKFspiopApi: BulkTransfersRequestProcessed
-    Note right of SDKFspiopApi: topic-sdk-in-domain-events
+    SDKInboundEventHandler->>SDKInboundCommandHandler: ProcessInboundBulkTransfersRequestComplete
+    Note left of SDKInboundCommandHandler: topic-sdk-inbound-command-events
+    SDKInboundCommandHandler->>SDKInboundCommandHandler: Update the bulk state: COMPLETED?
+    SDKInboundCommandHandler->>SDKFspiopApi: InboundBulkTransfersRequestProcessed
+    Note right of SDKFspiopApi: topic-sdk-inbound-domain-events
+    SDKInboundCommandHandler->>SDKInboundCommandHandler: Update the bulk state: RESPONSE_PROCESSING
     SDKFspiopApi->>SDKFspiopApi: Process Outbound Trace Headers
     SDKFspiopApi->>MojaloopSwitch: PUT /bulkTransfers/{bulkTransferId}
-    MojaloopSwitch->>SDKFspiopApi: SYNC RESP
-    SDKFspiopApi->>SDKEventHandler: BulkTransfersCallbackSent
-    Note left of SDKEventHandler: topic-sdk-domain-events
-    SDKEventHandler->>SDKCommandHandler: ProcessBulkTransfersCallbackSent
-    Note left of SDKCommandHandler: topic-sdk-command-events
-    SDKCommandHandler->>SDKCommandHandler: Update bulk state "CALLBACK_SENT"
+    MojaloopSwitch-->>SDKFspiopApi: Accepted
+    SDKFspiopApi->>SDKInboundEventHandler: InboundBulkTransfersResponseSent
+    Note left of SDKInboundEventHandler: topic-sdk-domain-events
+    SDKInboundEventHandler->>SDKInboundCommandHandler: ProcessInboundBulkTransfersResponseSent
+    Note left of SDKInboundCommandHandler: topic-sdk-inbound-command-events
+    SDKInboundCommandHandler->>SDKInboundCommandHandler: Update bulk state "RESPONSE_SENT"
 
 
     MojaloopSwitch->>MojaloopSwitch: Check bulkStatus
 
     alt bulkStatus == 'ACCEPTED'
         MojaloopSwitch->>+SDKFspiopApi: PATCH /bulkTransfers/{bulkTransferId}
+        SDKFspiopApi-->>MojaloopSwitch: Accepted
         SDKFspiopApi->>SDKFspiopApi: Process Trace Headers
-        SDKFspiopApi->>SDKEventHandler: BulkTransfersPatchRequestReceived
-        Note left of SDKEventHandler: topic-sdk-in-domain-events
-        SDKFspiopApi->>MojaloopSwitch: Accepted
-        SDKEventHandler->>SDKCommandHandler: ProcessBulkTransfersPatchRequest
-        Note left of SDKCommandHandler: topic-sdk-in-command-events
-        SDKCommandHandler->>SDKCommandHandler: Update the bulk state: PATCH_RECEIVED
-        SDKCommandHandler->>SDKCommandHandler: Check if bulkTransfers supported by payee
+        SDKFspiopApi->>SDKInboundEventHandler: InboundBulkTransfersPatchRequestReceived
+        Note left of SDKInboundEventHandler: topic-sdk-inbound-domain-events
+        SDKFspiopApi-->>MojaloopSwitch: Accepted
+        SDKInboundEventHandler->>SDKInboundCommandHandler: ProcessInboundBulkTransfersPatchRequest
+        Note left of SDKInboundCommandHandler: topic-sdk-inbound-command-events
+        SDKInboundCommandHandler->>SDKInboundCommandHandler: Update the bulk state: PATCH_RECEIVED
+        SDKInboundCommandHandler->>SDKInboundCommandHandler: Check if bulkTransfers supported by payee
         alt Bulk transfers supported
-            SDKCommandHandler->>SDKBackendApi: SDKBulkTransfersPatchRequested
-            Note left of SDKBackendApi: topic-sdk-in-domain-events
-            SDKCommandHandler->>SDKCommandHandler: Update the bulk state: PATCH_PROCESSING
+            SDKInboundCommandHandler->>SDKBackendApi: SDKBulkTransfersPatchRequested
+            Note left of SDKBackendApi: topic-sdk-inbound-domain-events
+            SDKInboundCommandHandler->>SDKInboundCommandHandler: Update the bulk state: PATCH_PROCESSING
             SDKBackendApi->>SDKBackendApi: Process outbound Trace Headers
             SDKBackendApi->>CoreConnector: PATCH /bulkTransfers/{bulkTransferId}
+            CoreConnector-->>SDKBackendApi: Accepted
             CoreConnector->>SDKBackendApi: Response to Patch /bulkTransfers
             SDKBackendApi->>SDKBackendApi: Process inbound Trace Headers
-            SDKBackendApi->>SDKEventHandler: SDKBulkTransfersPatchCallbackReceived
-            Note right of SDKEventHandler: topic-sdk-in-domain-events
+            SDKBackendApi->>SDKInboundEventHandler: SDKBulkTransfersPatchCallbackReceived
+            Note right of SDKInboundEventHandler: topic-sdk-inbound-domain-events
+            SDKBackendApi-->>CoreConnector: Accepted
         else Bulk transfers NOT supported
             loop for each transfer in bulk
-              SDKCommandHandler->>SDKBackendApi: TransfersPatchRequested
-              Note left of SDKBackendApi: topic-sdk-in-domain-events
-              SDKCommandHandler->>SDKCommandHandler: Update the individual state: TRANSFERS_PATCH_PROCESSING
+              SDKInboundCommandHandler->>SDKBackendApi: TransfersPatchRequested
+              Note left of SDKBackendApi: topic-sdk-inbound-domain-events
+              SDKInboundCommandHandler->>SDKInboundCommandHandler: Update the individual state: TRANSFERS_PATCH_PROCESSING
               SDKBackendApi->>SDKBackendApi: Process outbound Trace Headers
               SDKBackendApi->>CoreConnector: PATCH /transfers/{transferId}
-              CoreConnector->>SDKBackendApi: Response to PATCH /transfers
+              CoreConnector-->>SDKBackendApi: Accepted
               SDKBackendApi->>SDKBackendApi: Process Inbound Trace Headers
-              SDKBackendApi->>SDKEventHandler: TransfersPatchCallbackReceived
-              Note right of SDKEventHandler: topic-sdk-in-domain-events
-              SDKEventHandler->>SDKCommandHandler: ProcessTransfersPatchCallback
-              Note left of SDKCommandHandler: topic-sdk-command-events
-              SDKCommandHandler->>SDKCommandHandler: Update the individual state: TRANSFERS_PATCH_SUCCESS / TRANSFERS_PATCH_FAILED
-              SDKCommandHandler->>SDKEventHandler: TransfersPatchCallbackProcessed
-              Note right of SDKEventHandler: topic-sdk-domain-events
-              SDKEventHandler->>SDKEventHandler: Check the status of the remaining items in the bulk
+              SDKBackendApi->>SDKInboundEventHandler: TransfersPatchCallbackReceived
+              Note right of SDKInboundEventHandler: topic-sdk-inbound-domain-events
+              SDKBackendApi-->>CoreConnector: Accepted
+              SDKInboundEventHandler->>SDKInboundCommandHandler: ProcessTransfersPatchCallback
+              Note left of SDKInboundCommandHandler: topic-sdk-command-events
+              SDKInboundCommandHandler->>SDKInboundCommandHandler: Update the individual state: TRANSFERS_PATCH_SUCCESS / TRANSFERS_PATCH_FAILED
+              SDKInboundCommandHandler->>SDKInboundEventHandler: TransfersPatchCallbackProcessed
+              Note right of SDKInboundEventHandler: topic-sdk-domain-events
+              SDKInboundEventHandler->>SDKInboundEventHandler: Check the status of the remaining items in the bulk
             end
         end
 
-        SDKEventHandler->>SDKCommandHandler: ProcessBulkTransfersPatchRequestComplete
-        Note left of SDKCommandHandler: topic-sdk-in-command-events
-        SDKCommandHandler->>SDKCommandHandler: Update the bulk state: COMPLETED
-        SDKCommandHandler->>SDKFspiopApi: BulkTransfersPatchRequestProcessed
-        Note right of SDKFspiopApi: topic-sdk-in-domain-events
+        SDKInboundEventHandler->>SDKInboundCommandHandler: ProcessInboundBulkTransfersPatchRequestComplete
+        Note left of SDKInboundCommandHandler: topic-sdk-inbound-command-events
+        SDKInboundCommandHandler->>SDKInboundCommandHandler: Update the bulk state: COMPLETED
+        SDKInboundCommandHandler->>SDKFspiopApi: InboundBulkTransfersPatchRequestProcessed
+        Note right of SDKFspiopApi: topic-sdk-inbound-domain-events
+        SDKInboundCommandHandler->>SDKInboundCommandHandler: Update the bulk state: RESPONSE_PROCESSING
         SDKFspiopApi->>SDKFspiopApi: Process Outbound Trace Headers
         SDKFspiopApi->>MojaloopSwitch: PUT /bulkTransfers/{bulkTransferId}
-        MojaloopSwitch->>SDKFspiopApi: SYNC RESP
-        SDKFspiopApi->>SDKEventHandler: BulkTransfersPatchCallbackSent
-        Note left of SDKEventHandler: topic-sdk-domain-events
-        SDKEventHandler->>SDKCommandHandler: ProcessBulkTransfersPatchCallbackSent
-        Note left of SDKCommandHandler: topic-sdk-command-events
-        SDKCommandHandler->>SDKCommandHandler: Update bulk state "PATCH_CALLBACK_SENT"
+        MojaloopSwitch-->>SDKFspiopApi: Accepted
+        SDKFspiopApi->>SDKInboundEventHandler: InboundBulkTransfersPatchResponseSent
+        Note left of SDKInboundEventHandler: topic-sdk-inbound-domain-events
+        SDKInboundEventHandler->>SDKInboundCommandHandler: ProcessInboundBulkTransfersPatchResponseSent
+        Note left of SDKInboundCommandHandler: topic-sdk-inbound-command-events
+        SDKInboundCommandHandler->>SDKInboundCommandHandler: Update bulk state "PATCH_RESPONSE_SENT"
     end
 ```

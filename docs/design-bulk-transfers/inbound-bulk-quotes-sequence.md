@@ -4,62 +4,67 @@
 sequenceDiagram
     participant MojaloopSwitch as Mojaloop Switch
     participant SDKFspiopApi as SDK FSPIOP API
-    participant SDKEventHandler as SDK Event Handler
-    participant SDKCommandHandler as SDK Command Handler
+    participant SDKInboundEventHandler as SDK Inbound Event Handler
+    participant SDKInboundCommandHandler as SDK Inbound Command Handler
     participant SDKBackendApi as SDK Backend API
     participant CoreConnector as Core Connector Payee
    
     MojaloopSwitch->>+SDKFspiopApi: POST /bulkquotes
     SDKFspiopApi->>SDKFspiopApi: Process Trace Headers
-    SDKFspiopApi->>SDKEventHandler: BulkQuotesRequestReceived
-    Note left of SDKEventHandler: topic-sdk-in-domain-events
-    SDKFspiopApi->>MojaloopSwitch: Accepted
-    SDKEventHandler->>SDKCommandHandler: ProcessBulkQuotesRequest
-    Note left of SDKCommandHandler: topic-sdk-in-command-events
-    SDKCommandHandler->>SDKCommandHandler: Update the bulk state: RECEIVED
-    SDKCommandHandler->>SDKCommandHandler: Check if bulkQuotes supported by payee
+    SDKFspiopApi->>SDKInboundEventHandler: InboundBulkQuotesRequestReceived
+    Note left of SDKInboundEventHandler: topic-sdk-inbound-domain-events
+    SDKFspiopApi-->>MojaloopSwitch: Accepted
+    SDKInboundEventHandler->>SDKInboundCommandHandler: ProcessInboundBulkQuotesRequest
+    Note left of SDKInboundCommandHandler: topic-sdk-inbound-command-events
+    SDKInboundCommandHandler->>SDKInboundCommandHandler: Update the bulk state: RECEIVED
+    SDKInboundCommandHandler->>SDKInboundCommandHandler: Check if bulkQuotes supported by payee
 
     alt Bulk quotes supported
-        SDKCommandHandler->>SDKBackendApi: SDKBulkQuotesRequested
-        Note left of SDKBackendApi: topic-sdk-in-domain-events
-        SDKCommandHandler->>SDKCommandHandler: Update the bulk state: PROCESSING
+        SDKInboundCommandHandler->>SDKBackendApi: SDKBulkQuotesRequested
+        Note left of SDKBackendApi: topic-sdk-inbound-domain-events
+        SDKInboundCommandHandler->>SDKInboundCommandHandler: Update the bulk state: PROCESSING
         SDKBackendApi->>SDKBackendApi: Process outbound Trace Headers
         SDKBackendApi->>CoreConnector: POST /bulkQuotes
+        CoreConnector-->>SDKBackendApi: Accepted
         CoreConnector->>SDKBackendApi: PUT /bulkQuotes
         SDKBackendApi->>SDKBackendApi: Process inbound Trace Headers
-        SDKBackendApi->>SDKEventHandler: SDKBulkQuotesCallbackReceived
-        Note right of SDKEventHandler: topic-sdk-in-domain-events
+        SDKBackendApi->>SDKInboundEventHandler: SDKBulkQuotesCallbackReceived
+        Note right of SDKInboundEventHandler: topic-sdk-inbound-domain-events
+        SDKBackendApi-->>CoreConnector: Accepted
     else Bulk quotes NOT supported
         loop for each transfer in bulk
-            SDKCommandHandler->>SDKBackendApi: QuoteRequested
-            Note left of SDKBackendApi: topic-sdk-in-domain-events
-            SDKCommandHandler->>SDKCommandHandler: Update the individual state: QUOTES_PROCESSING
+            SDKInboundCommandHandler->>SDKBackendApi: QuoteRequested
+            Note left of SDKBackendApi: topic-sdk-inbound-domain-events
+            SDKInboundCommandHandler->>SDKInboundCommandHandler: Update the individual state: QUOTES_PROCESSING
             SDKBackendApi->>SDKBackendApi: Process outbound Trace Headers
             SDKBackendApi->>CoreConnector: POST /quotes
+            CoreConnector-->>SDKBackendApi: Accepted
             CoreConnector->>SDKBackendApi: PUT /quotes
             SDKBackendApi->>SDKBackendApi: Process Inbound Trace Headers
-            SDKBackendApi->>SDKEventHandler: QuotesCallbackReceived
-            Note right of SDKEventHandler: topic-sdk-in-domain-events
-            SDKEventHandler->>SDKCommandHandler: ProcessQuotesCallback
-            Note left of SDKCommandHandler: topic-sdk-command-events
-            SDKCommandHandler->>SDKCommandHandler: Update the individual state: QUOTES_SUCCESS / QUOTES_FAILED
-            SDKCommandHandler->>SDKEventHandler: QuotesCallbackProcessed
-            Note right of SDKEventHandler: topic-sdk-domain-events
-            SDKEventHandler->>SDKEventHandler: Check the status of the remaining items in the bulk
+            SDKBackendApi->>SDKInboundEventHandler: QuotesCallbackReceived
+            Note right of SDKInboundEventHandler: topic-sdk-inbound-domain-events
+            SDKBackendApi-->>CoreConnector: Accepted
+            SDKInboundEventHandler->>SDKInboundCommandHandler: ProcessQuotesCallback
+            Note left of SDKInboundCommandHandler: topic-sdk-inbound-command-events
+            SDKInboundCommandHandler->>SDKInboundCommandHandler: Update the individual state: QUOTES_SUCCESS / QUOTES_FAILED
+            SDKInboundCommandHandler->>SDKInboundEventHandler: QuotesCallbackProcessed
+            Note right of SDKInboundEventHandler: topic-sdk-inbound-domain-events
+            SDKInboundEventHandler->>SDKInboundEventHandler: Check the status of the remaining items in the bulk
         end
     end
-    SDKEventHandler->>SDKCommandHandler: ProcessBulkQuotesRequestComplete
-    Note left of SDKCommandHandler: topic-sdk-in-command-events
-    SDKCommandHandler->>SDKCommandHandler: Update the bulk state: COMPLETED
-    SDKCommandHandler->>SDKFspiopApi: BulkQuotesRequestProcessed
-    Note right of SDKFspiopApi: topic-sdk-in-domain-events
+    SDKInboundEventHandler->>SDKInboundCommandHandler: ProcessInboundBulkQuotesRequestComplete
+    Note left of SDKInboundCommandHandler: topic-sdk-inbound-command-events
+    SDKInboundCommandHandler->>SDKInboundCommandHandler: Update the bulk state: COMPLETED
+    SDKInboundCommandHandler->>SDKFspiopApi: InboundBulkQuotesRequestProcessed
+    Note right of SDKFspiopApi: topic-sdk-inbound-domain-events
+    SDKInboundCommandHandler->>SDKInboundCommandHandler: Update the bulk state: RESPONSE_PROCESSING
     SDKFspiopApi->>SDKFspiopApi: Process Outbound Trace Headers
-    SDKFspiopApi->>MojaloopSwitch: PUT /bulkQuotes/{bulkTransferId}
-    MojaloopSwitch->>SDKFspiopApi: SYNC RESP
-    SDKFspiopApi->>SDKEventHandler: BulkQuotesCallbackSent
-    Note left of SDKEventHandler: topic-sdk-domain-events
-    SDKEventHandler->>SDKCommandHandler: ProcessBulkQuotesCallbackSent
-    Note left of SDKCommandHandler: topic-sdk-command-events
-    SDKCommandHandler->>SDKCommandHandler: Update bulk state "CALLBACK_SENT"
+    SDKFspiopApi->>MojaloopSwitch: PUT /bulkQuotes/{bulkQuoteId}
+    MojaloopSwitch-->>SDKFspiopApi: Accepted
+    SDKFspiopApi->>SDKInboundEventHandler: InboundBulkQuotesReponseSent
+    Note left of SDKInboundEventHandler: topic-sdk-inbound-domain-events
+    SDKInboundEventHandler->>SDKInboundCommandHandler: ProcessInboundBulkQuotesReponseSent
+    Note left of SDKInboundCommandHandler: topic-sdk-inbound-command-events
+    SDKInboundCommandHandler->>SDKInboundCommandHandler: Update bulk state "RESPONSE_SENT"
 
 ```
