@@ -30,6 +30,9 @@ class InboundApi extends EventEmitter {
         this._cache = cache;
 
         if (conf.validateInboundJws) {
+            // peerJWSKey is a special config option specifically for Payment Manager for Mojaloop
+            // that is populated by a management api.
+            // This map supersedes local keys that would be loaded in by jwsVerificationKeysDirectory.
             this._jwsVerificationKeys = conf.pm4mlEnabled ? conf.peerJWSKeys : InboundApi._GetJwsKeys(conf.jwsVerificationKeysDirectory);
         }
         this._api = InboundApi._SetupApi({
