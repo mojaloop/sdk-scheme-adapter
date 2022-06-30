@@ -38,12 +38,10 @@ sequenceDiagram
             SDKInboundCommandHandler->>SDKInboundCommandHandler: Update the individual state: TRANSFERS_PROCESSING
             SDKBackendApi->>SDKBackendApi: Process outbound Trace Headers
             SDKBackendApi->>CoreConnector: POST /transfers
-            CoreConnector-->>SDKBackendApi: Accepted
-            CoreConnector->>SDKBackendApi: PUT /transfers
+            CoreConnector-->>SDKBackendApi: Synchronous Response
             SDKBackendApi->>SDKBackendApi: Process Inbound Trace Headers
             SDKBackendApi->>SDKInboundEventHandler: TransfersCallbackReceived
             Note right of SDKInboundEventHandler: topic-sdk-inbound-domain-events
-            SDKBackendApi-->>CoreConnector: Accepted
             SDKInboundEventHandler->>SDKInboundCommandHandler: ProcessTransfersCallback
             Note left of SDKInboundCommandHandler: topic-sdk-command-events
             SDKInboundCommandHandler->>SDKInboundCommandHandler: Update the individual state: TRANSFERS_SUCCESS / TRANSFERS_FAILED

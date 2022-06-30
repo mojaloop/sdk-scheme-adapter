@@ -38,16 +38,14 @@ sequenceDiagram
             SDKInboundCommandHandler->>SDKInboundCommandHandler: Update the individual state: QUOTES_PROCESSING
             SDKBackendApi->>SDKBackendApi: Process outbound Trace Headers
             SDKBackendApi->>CoreConnector: POST /quotes
-            CoreConnector-->>SDKBackendApi: Accepted
-            CoreConnector->>SDKBackendApi: PUT /quotes
+            CoreConnector-->>SDKBackendApi: Synchronous response
             SDKBackendApi->>SDKBackendApi: Process Inbound Trace Headers
-            SDKBackendApi->>SDKInboundEventHandler: QuotesCallbackReceived
+            SDKBackendApi->>SDKInboundEventHandler: QuotesResponseReceived
             Note right of SDKInboundEventHandler: topic-sdk-inbound-domain-events
-            SDKBackendApi-->>CoreConnector: Accepted
-            SDKInboundEventHandler->>SDKInboundCommandHandler: ProcessQuotesCallback
+            SDKInboundEventHandler->>SDKInboundCommandHandler: ProcessQuotesResponse
             Note left of SDKInboundCommandHandler: topic-sdk-inbound-command-events
             SDKInboundCommandHandler->>SDKInboundCommandHandler: Update the individual state: QUOTES_SUCCESS / QUOTES_FAILED
-            SDKInboundCommandHandler->>SDKInboundEventHandler: QuotesCallbackProcessed
+            SDKInboundCommandHandler->>SDKInboundEventHandler: QuotesResponseProcessed
             Note right of SDKInboundEventHandler: topic-sdk-inbound-domain-events
             SDKInboundEventHandler->>SDKInboundEventHandler: Check the status of the remaining items in the bulk
         end
