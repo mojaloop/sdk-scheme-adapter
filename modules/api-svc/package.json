@@ -11,7 +11,7 @@
     "~": "src"
   },
   "scripts": {
-    "audit:resolve": "SHELL=sh resolve-audit --production",
+    "audit:resolve": "yarn yarn-audit-fix",
     "audit:check": "yarn npm audit",
     "build": "yarn run build:openapi; yarn run build:dto:outbound",
     "build:openapi": "yarn run build:openapi:inbound && yarn run build:openapi:outbound",
