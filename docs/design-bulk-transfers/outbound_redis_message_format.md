@@ -1,4 +1,4 @@
-# Redis message formats
+# Redis message format for outbound bulk transfer
 
 ## 1. States (Global and individual)
 
@@ -8,7 +8,7 @@ HSET <key> <attribute1> <value1>
 ```
 ### Key:
 ```
-bulkTransaction_< bulkTransactionId >
+outboundBulkTransaction_< bulkTransactionId >
 ```
 
 ### Attributes:
@@ -19,7 +19,7 @@ bulkTransaction_< bulkTransactionId >
   extensionList: Bulk Extension List
 }
 
-- **individualtransfers_< transactionId >**: Serialize ({
+- **individualItem_< transactionId >**: Serialize ({
   id: transactionId
   request: {}
   state: Individual state
@@ -70,7 +70,7 @@ bulkTransaction_< bulkTransactionId >
 
 ### Command:
 ```
-HSET bulkCorrelationMap <attribute1> <value1>
+HSET outboundBulkCorrelationMap <attribute1> <value1>
 ```
 
 ### Attributes:
