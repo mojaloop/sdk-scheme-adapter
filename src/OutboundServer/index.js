@@ -16,7 +16,6 @@ const yaml = require('js-yaml');
 const fs = require('fs');
 const path = require('path');
 const EventEmitter = require('events');
-const cors = require('@koa/cors');
 
 const Validate = require('../lib/validate');
 const router = require('../lib/router');
