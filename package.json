@@ -34,10 +34,7 @@
     "test:coverage": "yarn workspaces foreach --parallel -v run test:coverage",
     "test:coverage-check": "yarn workspaces foreach --parallel -v run test:coverage-check",
     "test:integration": "yarn workspaces foreach --parallel -v run test:integration",
-    "audit:check1": "yarn npm audit --all",
-    "audit:check": "yarn workspaces foreach --parallel -v run audit:check",
-    "audit:resolve": "yarn workspaces foreach --parallel -v run audit:resolve",
-    "audit:resolve1": "npx yarn-audit-fix",
+    "audit:check": "yarn dlx audit-ci@^6 --config ./audit-ci.jsonc",
     "dep:check": "yarn workspaces foreach --parallel -v run dep:check",
     "dep:update": "yarn workspaces foreach --parallel -v run dep:update"
   },

@@ -36,7 +36,6 @@
         "test:integration": "jest --passWithNoTests --testMatch '**/test/integration/**/*.test.ts'",
         "test:coverage": "jest --passWithNoTests --coverage --testMatch '**/test/unit/**/*.test.ts'",
         "test:coverage-check": "jest --coverage --testMatch '**/test/unit/**/*.test.ts'",
-        "audit:check": "yarn npm audit",
         "dep:check": "ncu -e 2",
         "dep:update": "ncu -u"
     },
