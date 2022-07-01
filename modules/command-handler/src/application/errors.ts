@@ -31,39 +31,39 @@
  "use strict";
 
  // Invalid Errors
- export class InvalidBulkTransferEntityIdTypeError extends Error {}
- export class InvalidBulkTransferEntityHomeTransactionIDTypeError extends Error {}
- export class InvalidBulkTransferEntityRequestTypeError extends Error {}
- export class InvalidBulkTransferEntityIndividualTransfersTypeError extends Error {}
- export class InvalidBulkTransferEntityStatusTypeError extends Error {}
- export class InvalidBulkTransferEntityBulkBatchTypeError extends Error {}
- export class InvalidBulkTransferEntityPartyLookupTotalCountTypeError extends Error {}
- export class InvalidBulkTransferEntityPartyLookupSuccessCountTypeError extends Error {}
- export class InvalidBulkTransferEntityPartyLookupFailedCountTypeError extends Error {}
- export class InvalidBulkTransferEntityBulkQuotesTotalCountTypeError extends Error {}
- export class InvalidBulkTransferEntityBulkQuotesSuccessCountTypeError extends Error {}
- export class InvalidBulkTransferEntityBulkQuotesFailCountTypeError extends Error {}
- export class InvalidBulkTransferEntityBulkTransfersTotalCountTypeError extends Error {}
- export class InvalidBulkTransferEntityBulkTransfersSuccessCountTypeError extends Error {}
- export class InvalidBulkTransferEntityBulkTransfersFailCountTypeError extends Error {}
+ export class InvalidBulkTransactionEntityIdTypeError extends Error {}
+ export class InvalidBulkTransactionEntityHomeTransactionIDTypeError extends Error {}
+ export class InvalidBulkTransactionEntityRequestTypeError extends Error {}
+ export class InvalidBulkTransactionEntityIndividualTransferTypeError extends Error {}
+ export class InvalidBulkTransactionEntityStatusTypeError extends Error {}
+ export class InvalidBulkTransactionEntityBulkBatchTypeError extends Error {}
+ export class InvalidBulkTransactionEntityPartyLookupTotalCountTypeError extends Error {}
+ export class InvalidBulkTransactionEntityPartyLookupSuccessCountTypeError extends Error {}
+ export class InvalidBulkTransactionEntityPartyLookupFailedCountTypeError extends Error {}
+ export class InvalidBulkTransactionEntityBulkQuotesTotalCountTypeError extends Error {}
+ export class InvalidBulkTransactionEntityBulkQuotesSuccessCountTypeError extends Error {}
+ export class InvalidBulkTransactionEntityBulkQuotesFailCountTypeError extends Error {}
+ export class InvalidBulkTransactionEntityBulkTransferTotalCountTypeError extends Error {}
+ export class InvalidBulkTransactionEntityBulkTransferSuccessCountTypeError extends Error {}
+ export class InvalidBulkTransactionEntityBulkTransferFailCountTypeError extends Error {}
 
  // Repo.
  export class UnableToInitRepoError extends Error {}
 
  // Item already exists.
- export class BulkTransferEntityAlreadyExistsError extends Error {}
+ export class BulkTransactionEntityAlreadyExistsError extends Error {}
  // No such item.
- export class NoSuchBulkTransferEntityError extends Error {}
+ export class NoSuchBulkTransactionEntityError extends Error {}
  // Stores.
- export class UnableToStoreBulkTransferEntityError extends Error {}
+ export class UnableToStoreBulkTransactionEntityError extends Error {}
  // Gets.
- export class UnableToGetBulkTransferEntityError extends Error {}
- export class UnableToGetBulkTransferEntitiesError extends Error {}
+ export class UnableToGetBulkTransactionEntityError extends Error {}
+ export class UnableToGetBulkTransactionEntitiesError extends Error {}
  // Updates.
- export class UnableToUpdateBulkTransferEntityError extends Error {}
+ export class UnableToUpdateBulkTransactionEntityError extends Error {}
  // Deletes.
- export class UnableToDeleteBulkTransferEntityError extends Error {}
- export class UnableToDeleteBulkTransferEntitiesError extends Error {}
+ export class UnableToDeleteBulkTransactionEntityError extends Error {}
+ export class UnableToDeleteBulkTransactionEntitiesError extends Error {}
  
  // Others
  

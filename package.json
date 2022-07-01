@@ -57,5 +57,8 @@
   "packageManager": "yarn@3.2.0",
   "engines": {
     "yarn": "3.2.0"
+  },
+  "dependencies": {
+    "tslib": "^2.4.0"
   }
 }

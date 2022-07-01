@@ -33,12 +33,12 @@
  import {ILogger} from "@mojaloop/logging-bc-public-types-lib";
  import * as uuid from "uuid";
  import {
-    BulkTransferEntityAlreadyExistsError,
-     InvalidBulkTransferEntityIdTypeError,
-     NoSuchBulkTransferEntityError,
+    BulkTransactionEntityAlreadyExistsError,
+     InvalidBulkTransactionEntityIdTypeError,
+     NoSuchBulkTransactionEntityError,
  } from "./errors";
- import {IBulkTransferEntityRepo} from "./infrastructure-interfaces/irepo";
- import {BulkTransferEntity, BulkTransferRequest, BulkBatch} from "./types";
+ import {IBulkTransactionEntityRepo} from "./infrastructure-interfaces/irepo";
+ import {BulkTransactionEntity, BulkTransferRequest, BulkBatch} from "./types";
  
  export class Aggregate {
      // Properties received through the constructor.
@@ -68,13 +68,21 @@
 	}
 
      // TODO: Add update
- 
-     //BulkTransferEntity
-     async createBulkTransferEntity(BulkTransferEntity: BulkTransferEntity): Promise<string> { // TODO: BulkTransferEntity or IBulkTransferEntity?
+
+     //TODO: Additional
+     //1. split into inboud and outbound aggregates
+     //2. Add functions that correspond to cmds like ProcessSDKOutboundBulkRequest(pass kafka message), 
+     //3. We need xxxMessage in addition to the xxxEntity with the domain event
+     //message...add all the fields entity needs 
+     //4. there will be domain event messages and command event messages
+     //5. ProcessSDKOutboundBulkRequestCmdEvt
+
+     //BulkTransactionEntity
+     async createBulkTransactionEntity(bulkTransactionEntity: BulkTransactionEntity): Promise<string> {
          // To facilitate the creation of BulkTransferEntity, undefined/null ids are accepted and converted to empty strings
          // (so that random UUIds are generated when storing the accounts).
-         if (BulkTransferEntity.id === undefined || BulkTransferEntity.id === null) { // TODO.
-            BulkTransferEntity.id = "";
+         if (bulkTransactionEntity.id === undefined || bulkTransactionEntity.id === null) { // TODO.
+            bulkTransactionEntity.id = "";
          }
          // TODO.
          // To facilitate the creation of BulkTransferEntity, undefined/null balances are accepted and automatically calculated
@@ -82,61 +90,61 @@
          /*if (account.balance === undefined || account.balance === null) { // TODO.
              account.balance = account.creditBalance - account.debitBalance;
          }*/
-         BulkTransferEntity.validatebulkTransferEntity(BulkTransferEntity);
+         bulkTransactionEntity.validatebulkTransactionEntity(bulkTransactionEntity);
          try {
-             if (BulkTransferEntity.id === "") {
+             if (bulkTransactionEntity.id === "") {
                  do {
-                    BulkTransferEntity.id = uuid.v4();
-                 } while (await this.repo.BulkTransferEntityExists(BulkTransferEntity.id));
+                    bulkTransactionEntity.id = uuid.v4();
+                 } while (await this.repo.BulkTransactionEntityExists(bulkTransactionEntity.id));
              }
-             await this.repo.storeBulkTransferEntity(BulkTransferEntity);
+             await this.repo.storeBulkTransferEntity(bulkTransactionEntity);
          } catch (e: unknown) { // TODO.
-             if (!(e instanceof BulkTransferEntityAlreadyExistsError)) {
+             if (!(e instanceof BulkTransactionEntityAlreadyExistsError)) {
                  this.logger.error(e);
              }
              throw e;
          }
-         return BulkTransferEntity.id;
+         return bulkTransactionEntity.id;
      }
  
-     async getBulkTransferEntity(BulkTransferEntityId: string): Promise<BulkTransferEntity | null> { // TODO: BulkTransferEntity or IBulkTransferEntity?
-         if (typeof BulkTransferEntityId !== "string") { // TODO.
-             throw new InvalidBulkTransferEntityIdTypeError();
+     async getBulkTransactionEntity(bulkTransactionEntityId: string): Promise<BulkTransactionEntity | null> {
+         if (typeof bulkTransactionEntityId !== "string") { // TODO.
+             throw new InvalidBulkTransactionEntityIdTypeError();
          }
          try {
-             return await this.repo.getBulkTransferEntity(BulkTransferEntityId);
+             return await this.repo.getBulkTransactionEntity(bulkTransactionEntityId);
          } catch (e: unknown) { // TODO.
              this.logger.error(e);
              throw e;
          }
      }
  
-     async getBulkTransferEntries(): Promise<BulkTransferEntity[]> { // TODO: BulkTransferEntity or IBulkTransferEntity?
+     async getBulkTransactionEntries(): Promise<BulkTransactionEntity[]> {
          try {
-             return await this.repo.getBulkTransferEntries();
+             return await this.repo.getBulkTransactionEntries();
          } catch (e: unknown) { // TODO.
              this.logger.error(e);
              throw e;
          }
      }
  
-     async deleteBulkTransferEntity(BulkTransferEntityId: string): Promise<void> {
-         if (typeof BulkTransferEntityId !== "string") { // TODO.
-             throw new InvalidBulkTransferEntityIdTypeError();
+     async deleteBulkTransactionEntity(bulkTransactionEntityId: string): Promise<void> {
+         if (typeof bulkTransactionEntityId !== "string") { // TODO.
+             throw new InvalidBulkTransactionEntityIdTypeError();
          }
          try {
-             await this.repo.deleteBulkTransferEntity(BulkTransferEntityId);
+             await this.repo.deleteBulkTransactionEntity(bulkTransactionEntityId);
          } catch (e: unknown) { // TODO.
-             if (!(e instanceof NoSuchBulkTransferEntityError)) {
+             if (!(e instanceof NoSuchBulkTransactionEntityError)) {
                  this.logger.error(e);
              }
              throw e;
          }
      }
  
-     async deleteBulkTransferEntries(): Promise<void> {
+     async deleteBulkTransactionEntries(): Promise<void> {
          try {
-             await this.repo.deleteBulkTransferEntries();
+             await this.repo.deleteBulkTransactionEntries();
          } catch (e: unknown) {
              this.logger.error(e);
              throw e;
@@ -144,11 +152,12 @@
      }
 
      //BulkTransferRequest
-     async createBulkTransferRequest(BulkTransferRequest: BulkTransferRequest): Promise<string> { // TODO: BulkTransferRequest or BulkTransferRequest?
+     //TODO: Do we need to add an id to BulkTransferRequest?
+     async createBulkTransferRequest(bulkTransferRequest: BulkTransferRequest): Promise<string> {
         // To facilitate the creation of BulkTransferRequest, undefined/null ids are accepted and converted to empty strings
         // (so that random UUIds are generated when storing the accounts).
-        if (BulkTransferRequest.id === undefined || BulkTransferRequest.id === null) { // TODO.
-            BulkTransferRequest.id = "";
+        if (bulkTransferRequest.id === undefined || bulkTransferRequest.id === null) { // TODO.
+            bulkTransferRequest.id = "";
         }
         // TODO.
         // To facilitate the creation of BulkTransferRequest, undefined/null balances are accepted and automatically calculated
@@ -156,24 +165,23 @@
         /*if (account.balance === undefined || account.balance === null) { // TODO.
             account.balance = account.creditBalance - account.debitBalance;
         }*/
-        BulkTransferRequest.validateBulkTransferRequest(BulkTransferRequest);
         try {
-            if (BulkTransferRequest.id === "") {
+            if (bulkTransferRequest.id === "") {
                 do {
-                    BulkTransferRequest.id = uuid.v4();
-                } while (await this.repo.BulkTransferRequest(BulkTransferRequest.id));
+                    bulkTransferRequest.id = uuid.v4();
+                } while (await this.repo.BulkTransferRequest(bulkTransferRequest.id));
             }
-            await this.repo.storeBulkTransferRequest(BulkTransferRequest);
+            await this.repo.storeBulkTransferRequest(bulkTransferRequest);
         } catch (e: unknown) { // TODO.
-            if (!(e instanceof BulkTransferRequest)) {
+            if (!(e instanceof bulkTransferRequest)) {
                 this.logger.error(e);
             }
             throw e;
         }
-        return BulkTransferRequest.id;
+        return bulkTransferRequest.id;
     }
 
-    async getBulkTransferRequest(BulkTransferRequestId: string): Promise<BulkTransferRequest | null> { // TODO: BulkTransferRequest or BulkTransferRequest?
+    async getBulkTransferRequest(BulkTransferRequestId: string): Promise<BulkTransferRequest | null> {
         if (typeof BulkTransferRequestId !== "string") { // TODO.
             throw new InvalidBulkTransferRequestIdTypeError();
         }
@@ -185,7 +193,7 @@
         }
     }
 
-    async getBulkTransferRequests(): Promise<BulkTransferRequest[]> { // TODO: BulkTransferRequest or BulkTransferRequest?
+    async getBulkTransferRequests(): Promise<BulkTransferRequest[]> {
         try {
             return await this.repo.getBulkTransferRequests();
         } catch (e: unknown) { // TODO.
@@ -218,7 +226,7 @@
     }
 
      //IndividualTransfers
-     async createIndividualTransfers(IndividualTransfers: IndividualTransfers): Promise<string> { // TODO: IndividualTransfers or IndividualTransfers?
+     async createIndividualTransfers(IndividualTransfers: IndividualTransfers): Promise<string> {
         // To facilitate the creation of IndividualTransfers, undefined/null ids are accepted and converted to empty strings
         // (so that random UUIds are generated when storing the accounts).
         if (IndividualTransfers.id === undefined || IndividualTransfers.id === null) { // TODO.
@@ -230,7 +238,6 @@
         /*if (account.balance === undefined || account.balance === null) { // TODO.
             account.balance = account.creditBalance - account.debitBalance;
         }*/
-        IndividualTransfers.validateIndividualTransfers(IndividualTransfers);
         try {
             if (IndividualTransfers.id === "") {
                 do {
@@ -292,11 +299,11 @@
     }
 
      //BulkBatch
-     async createBulkBatch(BulkBatch: BulkBatch): Promise<string> {
+     async createBulkBatch(bulkBatch: BulkBatch): Promise<string> {
         // To facilitate the creation of BulkBatch, undefined/null ids are accepted and converted to empty strings
         // (so that random UUIds are generated when storing the accounts).
-        if (BulkBatch.id === undefined || BulkBatch.id === null) { // TODO.
-            BulkBatch.id = "";
+        if (bulkBatch.id === undefined || bulkBatch.id === null) { // TODO.
+            bulkBatch.id = "";
         }
         // TODO.
         // To facilitate the creation of BulkBatch, undefined/null balances are accepted and automatically calculated
@@ -304,21 +311,20 @@
         /*if (account.balance === undefined || account.balance === null) { // TODO.
             account.balance = account.creditBalance - account.debitBalance;
         }*/
-        BulkBatch.validateBulkBatch(BulkBatch);
         try {
-            if (BulkBatch.id === "") {
+            if (bulkBatch.id === "") {
                 do {
-                    BulkBatch.id = uuid.v4();
-                } while (await this.repo.BulkBatchExists(BulkBatch.id));
+                    bulkBatch.id = uuid.v4();
+                } while (await this.repo.BulkBatchExists(bulkBatch.id));
             }
-            await this.repo.storeBulkBatch(BulkBatch);
+            await this.repo.storeBulkBatch(bulkBatch);
         } catch (e: unknown) { // TODO.
             if (!(e instanceof BulkBatchAlreadyExistsError)) {
                 this.logger.error(e);
             }
             throw e;
         }
-        return BulkBatch.id;
+        return bulkBatch.id;
     }
 
     async getBulkBatch(BulkBatchId: string): Promise<BulkBatch | null> {

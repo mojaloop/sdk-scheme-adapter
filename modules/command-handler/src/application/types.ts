@@ -45,13 +45,14 @@ import {
     IMerchantClassificationCode,
     IPartyName,
     IPersonalInfo,
-    IIdType,
+    IdType,
     IFspId,
     IExtensionList,
     IPartyComplexName,
     IDateShort,
-    IBulkTransferEntity  // TODO: TBD mbp-638
-} from "@mojaloop/sdk-scheme-adapater-private-types";
+    IBulkPerTransferFeeLimit,
+    IBulkTransactionEntity  // TODO: TBD mbp-638
+} from "@mojaloop/sdk-scheme-adapter-public-types-lib";
 import {
     InvalidBulkTransferEntityIdTypeError,
     InvalidBulkTransferEntityHomeTransactionIDTypeError,
@@ -63,19 +64,21 @@ import {
     InvalidBulkTransferEntityPartyLookupSuccessCountTypeError,
     InvalidBulkTransferEntityPartyLookupFailedCountTypeError,
     InvalidBulkTransferEntityBulkQuotesTotalCountTypeError,
+    InvalidBulkTransferEntityBulkQuotesSuccessCountTypeError,
     InvalidBulkTransferEntityBulkQuotesFailCountTypeError,
     InvalidBulkTransferEntityBulkTransfersTotalCountTypeError,
     InvalidBulkTransferEntityBulkTransfersSuccessCountTypeError,
     InvalidBulkTransferEntityBulkTransfersFailCountTypeError
 } from "./errors";
 
-export class BulkTransferEntity implements IBulkTransferEntity {
+// const t = new BulkTransferEntity({id: "", bulkHomeTransactionID:""});
+export class BulkTransactionEntity implements IBulkTransactionEntity {
     id: string;
     bulkHomeTransactionID: string | null;
-    request: BulkTransferRequest;
-    individualtransfers: IndividualTransfers;
-    status: BulkTransferStatus;
-    bulkBatch: BulkBatch;
+    request: IBulkTransferRequest;
+    individualtransfers: IIndividualTransfers;
+    status: IBulkTransferStatus;
+    bulkBatch: IBulkBatch;
     partyLookupTotalCount: number;
     partyLookupSuccessCount: number;
     partyLookupFailedCount: number;
@@ -86,232 +89,157 @@ export class BulkTransferEntity implements IBulkTransferEntity {
     bulkTransfersSuccessCount: number;
     bulkTransfersFailedCount: number;
 
+    // JODO: update all constructors to receive the interface...so it is defined as a type
     constructor(
-        id: string,
-        bulkHomeTransactionID: string | null,
-        request: BulkTransferRequest,
-        individualtransfers: IndividualTransfers,
-        status: BulkTransferStatus,
-        bulkBatch: BulkBatch,
-        partyLookupTotalCount: number,
-        partyLookupSuccessCount: number,
-        partyLookupFailedCount: number,
-        bulkQuotesTotalCount: number,
-        bulkQuotesSuccessCount: number,
-        bulkQuotesFailedCount: number,
-        bulkTransfersTotalCount: number,
-        bulkTransfersSuccessCount: number,
-        bulkTransfersFailedCount: number
+        bulkTransactionEntity: IBulkTransactionEntity
     ) {
-        this.id = id;
-        this.bulkHomeTransactionID = bulkHomeTransactionID;
-        this.request = request;
-        this.individualtransfers = individualtransfers;
-        this.status = status;
-        this.bulkBatch = bulkBatch;
-        this.partyLookupTotalCount = partyLookupTotalCount;
-        this.partyLookupSuccessCount = partyLookupSuccessCount;
-        this.partyLookupFailedCount = partyLookupFailedCount;
-        this.bulkQuotesTotalCount = bulkQuotesTotalCount;
-        this.bulkQuotesSuccessCount = bulkQuotesSuccessCount;
-        this.bulkQuotesFailedCount = bulkQuotesFailedCount;
-        this.bulkTransfersTotalCount = bulkTransfersTotalCount;
-        this.bulkTransfersSuccessCount = bulkTransfersSuccessCount;
-        this.bulkTransfersFailedCount = bulkTransfersFailedCount;
+        this.id = bulkTransactionEntity.id;
+        this.bulkHomeTransactionID = bulkTransactionEntity.bulkHomeTransactionID;
+        this.request = bulkTransactionEntity.request;
+        this.individualtransfers = bulkTransactionEntity.individualtransfers;
+        this.status = bulkTransactionEntity.status;
+        this.bulkBatch = bulkTransactionEntity.bulkBatch;
+        this.partyLookupTotalCount = bulkTransactionEntity.partyLookupTotalCount;
+        this.partyLookupSuccessCount = bulkTransactionEntity.partyLookupSuccessCount;
+        this.partyLookupFailedCount = bulkTransactionEntity.partyLookupFailedCount;
+        this.bulkQuotesTotalCount = bulkTransactionEntity.bulkQuotesTotalCount;
+        this.bulkQuotesSuccessCount = bulkTransactionEntity.bulkQuotesSuccessCount;
+        this.bulkQuotesFailedCount = bulkTransactionEntity.bulkQuotesFailedCount;
+        this.bulkTransfersTotalCount = bulkTransactionEntity.bulkTransfersTotalCount;
+        this.bulkTransfersSuccessCount = bulkTransactionEntity.bulkTransfersSuccessCount;
+        this.bulkTransfersFailedCount = bulkTransactionEntity.bulkTransfersFailedCount;
     }
 
-    static validatebulkTransferEntity(bulkTransferEntity: IBulkTransferEntity): void { // TODO: BulkTransferEntity or IBulkTransferEntity?
+    static validatebulkTransactionEntity(bulkTransactionEntity: IBulkTransactionEntity): void {
         // id.
-        if (typeof bulkTransferEntity.id !== "string") {
-            throw new InvalidAccountIdTypeError();
+        if (typeof bulkTransactionEntity.id !== "string") {
+            throw new InvalidBulkTransferEntityIdTypeError();
         }
         // bulkHomeTransactionID.
-        if (typeof bulkTransferEntity.bulkHomeTransactionID !== "string"
-            && bulkTransferEntity.bulkHomeTransactionID !== null) {
-            throw new InvalidExtIdTypeError();
+        if (typeof bulkTransactionEntity.bulkHomeTransactionID !== "string"
+            && bulkTransactionEntity.bulkHomeTransactionID !== null) {
+            throw new InvalidBulkTransferEntityHomeTransactionIDTypeError();
         }
         // request.
-        if (typeof bulkTransferEntity.request !== "string") {
-            throw new InvalidAccountTypeTypeError();
-        }
-        if (!(bulkTransferEntity.request in AccountType)) {
-            throw new InvalidAccountTypeError();
+        if (typeof bulkTransactionEntity.request !== "string") {
+            throw new InvalidBulkTransferEntityRequestTypeError();
         }
         // individualtransfers.
-        if (typeof bulkTransferEntity.individualtransfers !== "string") {
-            throw new InvalidCurrencyTypeError();
+        if (typeof bulkTransactionEntity.individualtransfers !== "string") {
+            throw new InvalidBulkTransferEntityIndividualTransfersTypeError();
         }
         // status.
-        if (typeof bulkTransferEntity.status !== "string") {
-            throw new InvalidAccountStateTypeError();
+        if (typeof bulkTransactionEntity.status !== "string") {
+            throw new InvalidBulkTransferEntityStatusTypeError();
         }
-        if (!(bulkTransferEntity.status in AccountState)) {
-            throw new InvalidAccountStateError();
+        if (!(bulkTransactionEntity.status in IBulkTransferStatus)) {
+            throw new InvalidBulkTransferEntityStatusTypeError();
         }
         // bulkBatch.
-        if (typeof bulkTransferEntity.bulkBatch !== "number") { // TODO: bigint.
-            throw new InvalidCreditBalanceTypeError();
+        if (typeof bulkTransactionEntity.bulkBatch !== "number") { // TODO: bigint.
+            throw new InvalidBulkTransferEntityBulkBatchTypeError();
         }
         // partyLookupTotalCount.
-        if (typeof bulkTransferEntity.partyLookupTotalCount !== "number") { // TODO: bigint.
-            throw new InvalidDebitBalanceTypeError();
+        if (typeof bulkTransactionEntity.partyLookupTotalCount !== "number") { // TODO: bigint.
+            throw new InvalidBulkTransferEntityPartyLookupTotalCountTypeError();
         }
-        if (bulkTransferEntity.partyLookupTotalCount < 0) {
-            throw new InvalidDebitBalanceError();
+        if (bulkTransactionEntity.partyLookupTotalCount < 0) {
+            throw new InvalidBulkTransferEntityPartyLookupTotalCountTypeError();
         }
         // partyLookupSuccessCount.
-        if (typeof bulkTransferEntity.partyLookupSuccessCount !== "number") { // TODO: bigint.
-            throw new InvalidDebitBalanceTypeError();
+        if (typeof bulkTransactionEntity.partyLookupSuccessCount !== "number") { // TODO: bigint.
+            throw new InvalidBulkTransferEntityPartyLookupSuccessCountTypeError();
         }
-        if (bulkTransferEntity.partyLookupSuccessCount < 0) {
-            throw new InvalidDebitBalanceError();
+        if (bulkTransactionEntity.partyLookupSuccessCount < 0) {
+            throw new InvalidBulkTransferEntityPartyLookupSuccessCountTypeError();
         }
         // partyLookupFailedCount.
-        if (typeof bulkTransferEntity.partyLookupFailedCount !== "number") { // TODO: bigint.
-            throw new InvalidDebitBalanceTypeError();
+        if (typeof bulkTransactionEntity.partyLookupFailedCount !== "number") { // TODO: bigint.
+            throw new InvalidBulkTransferEntityPartyLookupFailedCountTypeError();
         }
-        if (bulkTransferEntity.partyLookupFailedCount < 0) {
-            throw new InvalidDebitBalanceError();
+        if (bulkTransactionEntity.partyLookupFailedCount < 0) {
+            throw new InvalidBulkTransferEntityPartyLookupFailedCountTypeError();
         }
         // bulkQuotesTotalCount.
-        if (typeof bulkTransferEntity.bulkQuotesTotalCount !== "number") { // TODO: bigint.
-            throw new InvalidDebitBalanceTypeError();
+        if (typeof bulkTransactionEntity.bulkQuotesTotalCount !== "number") { // TODO: bigint.
+            throw new InvalidBulkTransferEntityBulkQuotesTotalCountTypeError();
         }
-        if (bulkTransferEntity.bulkQuotesTotalCount < 0) {
-            throw new InvalidDebitBalanceError();
+        if (bulkTransactionEntity.bulkQuotesTotalCount < 0) {
+            throw new InvalidBulkTransferEntityBulkQuotesTotalCountTypeError();
         }
         // bulkQuotesSuccessCount.
-        if (typeof bulkTransferEntity.bulkQuotesSuccessCount !== "number") { // TODO: bigint.
-            throw new InvalidDebitBalanceTypeError();
+        if (typeof bulkTransactionEntity.bulkQuotesSuccessCount !== "number") { // TODO: bigint.
+            throw new InvalidBulkTransferEntityBulkQuotesSuccessCountTypeError();
         }
-        if (bulkTransferEntity.bulkQuotesSuccessCount < 0) {
-            throw new InvalidDebitBalanceError();
+        if (bulkTransactionEntity.bulkQuotesSuccessCount < 0) {
+            throw new InvalidBulkTransferEntityBulkQuotesSuccessCountTypeError();
         }
         // bulkQuotesFailedCount.
-        if (typeof bulkTransferEntity.bulkQuotesFailedCount !== "number") { // TODO: bigint.
-            throw new InvalidDebitBalanceTypeError();
+        if (typeof bulkTransactionEntity.bulkQuotesFailedCount !== "number") { // TODO: bigint.
+            throw new InvalidBulkTransferEntityBulkQuotesFailCountTypeError();
         }
-        if (bulkTransferEntity.bulkQuotesFailedCount < 0) {
-            throw new InvalidDebitBalanceError();
+        if (bulkTransactionEntity.bulkQuotesFailedCount < 0) {
+            throw new InvalidBulkTransferEntityBulkQuotesFailCountTypeError();
         }
         // bulkTransfersTotalCount.
-        if (typeof bulkTransferEntity.bulkTransfersTotalCount !== "number") { // TODO: bigint.
-            throw new InvalidDebitBalanceTypeError();
+        if (typeof bulkTransactionEntity.bulkTransfersTotalCount !== "number") { // TODO: bigint.
+            throw new InvalidBulkTransferEntityBulkTransfersTotalCountTypeError();
         }
-        if (bulkTransferEntity.bulkTransfersTotalCount < 0) {
-            throw new InvalidDebitBalanceError();
+        if (bulkTransactionEntity.bulkTransfersTotalCount < 0) {
+            throw new InvalidBulkTransferEntityBulkTransfersTotalCountTypeError();
         }
         // bulkTransfersSuccessCount.
-        if (typeof bulkTransferEntity.bulkTransfersSuccessCount !== "number") { // TODO: bigint.
-            throw new InvalidDebitBalanceTypeError();
+        if (typeof bulkTransactionEntity.bulkTransfersSuccessCount !== "number") { // TODO: bigint.
+            throw new InvalidBulkTransferEntityBulkTransfersSuccessCountTypeError();
         }
-        if (bulkTransferEntity.bulkTransfersSuccessCount < 0) {
-            throw new InvalidDebitBalanceError();
+        if (bulkTransactionEntity.bulkTransfersSuccessCount < 0) {
+            throw new InvalidBulkTransferEntityBulkTransfersSuccessCountTypeError();
         }
         // bulkTransfersFailedCount.
-        if (typeof bulkTransferEntity.bulkTransfersFailedCount !== "number") { // TODO: bigint.
-            throw new InvalidDebitBalanceTypeError();
+        if (typeof bulkTransactionEntity.bulkTransfersFailedCount !== "number") { // TODO: bigint.
+            throw new InvalidBulkTransferEntityBulkTransfersFailCountTypeError();
         }
-        if (bulkTransferEntity.bulkTransfersFailedCount < 0) {
-            throw new InvalidDebitBalanceError();
+        if (bulkTransactionEntity.bulkTransfersFailedCount < 0) {
+            throw new InvalidBulkTransferEntityBulkTransfersFailCountTypeError();
         }
 
     }
 }
- }
 
 export class BulkTransferRequest implements IBulkTransferRequest {
-    options: BulkTransferOptions;
-    extensionList: BulkExtensionList;
+    options: IBulkTransferOptions;
+    extensionList: IBulkExtensionList;
 
     constructor(
-        options: BulkTransferOptions,
-        extensionList: BulkExtensionList
+        bulkTransferRequest: IBulkTransferRequest
     ) {
-        this.options = options;
-        this.extensionList = extensionList;
+        this.options = bulkTransferRequest.options;
+        this.extensionList = bulkTransferRequest.extensionList;
     }
 
-    static validateBulkTransferRequest(bulkTransferRequest: IBulkTransferRequest): void {
-        // options.
-        if (typeof bulkTransferRequest.options !== "string") {
-            throw new InvalidAccountIdTypeError();
-        }
-        // extensionList.
-        if (typeof bulkTransferRequest.extensionList !== "string"
-            && bulkTransferRequest.extensionList !== null) {
-            throw new InvalidExtIdTypeError();
-        }
-    }
 }
 
 export class IndividualTransfers implements IIndividualTransfers {
     id: string;
-    request: BulkTransferRequest;
-    status: BulkTransferStatus;
+    request: IBulkTransferRequest;
+    status: IBulkTransferStatus;
     batchId: string;
-    partyRequest: PartyRequest; // TODO verify
-    partyResponse: PartyRequest; // TODO Define Party Response...once we have identified what it should be
+    partyRequest: IPartyRequest; // TODO verify
+    partyResponse: IPartyRequest; // TODO Define Party Response...once we have identified what it should be
     acceptParty: boolean;
     acceptQuote: boolean;
 
     constructor(
-        id: string,
-        request: IBulkTransferRequest,
-        status: BulkTransferStatus,
-        batchId: string,
-        partyRequest: PartyRequest,
-        partyResponse: PartyRequest,
-        acceptParty: boolean,
-        acceptQuote: boolean
+        individualTransfers: IIndividualTransfers
     ) {
-        this.id = id;
-        this.request = request;
-        this.status = status;
-        this.batchId = batchId;
-        this.partyRequest = partyRequest; // TODO verify
-        this.partyResponse = partyResponse; // TODO Define Party Response...once we have identified what it should be
-        this.acceptParty = acceptParty;
-        this.acceptQuote = acceptQuote;
-    }
-
-    static validateIndividualTransfers(individualTransfers: IIndividualTransfers): void {
-        // id.
-        if (typeof individualTransfers.id !== "string") {
-            throw new InvalidAccountIdTypeError();
-        }
-        // request.
-        if (typeof individualTransfers.request !== "string"
-            && individualTransfers.request !== null) {
-            throw new InvalidExtIdTypeError();
-        }
-        // status.
-        if (typeof individualTransfers.status !== "string") {
-            throw new InvalidAccountStateTypeError();
-        }
-        if (!(individualTransfers.status in AccountState)) {
-            throw new InvalidAccountStateError();
-        }
-        // batchId.
-        if (typeof individualTransfers.batchId !== "string") {
-            throw new InvalidAccountTypeTypeError();
-        }
-        // partyRequest.
-        if (typeof individualTransfers.partyRequest !== "string") {
-            throw new InvalidAccountTypeTypeError();
-        }
-        // partyResponse.
-        if (typeof individualTransfers.partyResponse !== "string") {
-            throw new InvalidAccountTypeTypeError();
-        }
-        // acceptParty.
-        if (typeof individualTransfers.acceptParty !== "string") {
-            throw new InvalidAccountTypeTypeError();
-        }
-        // acceptQuote.
-        if (typeof individualTransfers.acceptQuote !== "string") {
-            throw new InvalidAccountTypeTypeError();
-        }
+        this.id = individualTransfers.id;
+        this.request = individualTransfers.request;
+        this.status = individualTransfers.status;
+        this.batchId = individualTransfers.batchId;
+        this.partyRequest = individualTransfers.partyRequest; // TODO verify
+        this.partyResponse = individualTransfers.partyResponse; // TODO Define Party Response...once we have identified what it should be
+        this.acceptParty = individualTransfers.acceptParty;
+        this.acceptQuote = individualTransfers.acceptQuote;
     }
 }
 
@@ -323,117 +251,49 @@ export class BulkTransferStatus implements IBulkTransferStatus {
     ) {
         this.status = status;
     }
-
-    static validateBulkTransferStatus(bulkTransferStatus: IBulkTransferStatus): void {
-        // status.
-        if (typeof bulkTransferStatus.status !== "string") {
-            throw new InvalidAccountIdTypeError();
-        }
-    }
 }
 
 export class BulkBatch implements IBulkBatch {
     id: string;
-    status: BulkTransferStatus;
+    status: IBulkTransferStatus;
     bulkQuoteId: string;
     bulkTransferId: string;
 
     constructor(
-        id: string,
-        status: BulkTransferStatus,
-        bulkQuoteId: string,
-        bulkTransferId: string
+        bulkBatch: IBulkBatch
     ) {
-        this.id = id;
-        this.status = status;
-        this.bulkQuoteId = bulkQuoteId;
-        this.bulkTransferId = bulkTransferId;
-    }
-
-    static validateBulkBatch(bulkBatch: IBulkBatch): void {
-        // id.
-        if (typeof bulkBatch.id !== "string") {
-            throw new InvalidAccountIdTypeError();
-        }
-        // status.
-        if (typeof bulkBatch.status !== "string"
-            && bulkBatch.extId !== null) {
-            throw new InvalidExtIdTypeError();
-        }
-        // bulkQuoteId.
-        if (typeof bulkBatch.bulkQuoteId !== "string") {
-            throw new InvalidAccountStateTypeError();
-        }
-        if (!(bulkBatch.bulkQuoteId in AccountState)) {
-            throw new InvalidAccountStateError();
-        }
-        // bulkTransferId.
-        if (typeof bulkBatch.bulkTransferId !== "string") {
-            throw new InvalidAccountTypeTypeError();
-        }
+        this.id = bulkBatch.id;
+        this.status = bulkBatch.status;
+        this.bulkQuoteId = bulkBatch.bulkQuoteId;
+        this.bulkTransferId = bulkBatch.bulkTransferId;
     }
 }
 
 export class BulkTransferOptions implements IBulkTransferOptions {
     onlyValidateParty: boolean;
-    autoAcceptParty: AutoAcceptPartyOption;
-    autoAcceptQuote: AutoAcceptQuoteOption;
+    autoAcceptParty: IAutoAcceptPartyOption;
+    autoAcceptQuote: IAutoAcceptQuoteOption;
     skipPartyLookup: boolean;
     synchronous: boolean;
 
     constructor(
-        onlyValidateParty: boolean,
-        autoAcceptParty: AutoAcceptPartyOption,
-        autoAcceptQuote: AutoAcceptQuoteOption,
-        skipPartyLookup: boolean,
-        synchronous: boolean
+        bulkTransferOptions: IBulkTransferOptions
     ) {
-        this.onlyValidateParty = onlyValidateParty;
-        this.autoAcceptParty = autoAcceptParty;
-        this.autoAcceptQuote = autoAcceptQuote;
-        this.skipPartyLookup = skipPartyLookup;
-        this.synchronous = synchronous;
-    }
-
-    static validateBulkTransferOptions(bulkTransferOptions: IBulkTransferOptions): void {
-        // onlyValidateParty.
-        if (typeof bulkTransferOptions.onlyValidateParty !== "string") {
-            throw new InvalidAccountIdTypeError();
-        }
-        // autoAcceptParty.
-        if (typeof bulkTransferOptions.autoAcceptParty !== "string"
-            && bulkBbulkTransferOptionsatch.autoAcceptParty !== null) {
-            throw new InvalidExtIdTypeError();
-        }
-        // autoAcceptQuote.
-        if (typeof bulkTransferOptions.autoAcceptQuote !== "string") {
-            throw new InvalidAccountStateTypeError();
-        }
-        // skipPartyLookup.
-        if (!(bulkTransferOptions.skipPartyLookup in AccountState)) {
-            throw new InvalidAccountStateError();
-        }
-        // synchronous.
-        if (typeof bulkTransferOptions.synchronous !== "string") {
-            throw new InvalidAccountTypeTypeError();
-        }
+        this.onlyValidateParty = bulkTransferOptions.onlyValidateParty;
+        this.autoAcceptParty = bulkTransferOptions.autoAcceptParty;
+        this.autoAcceptQuote = bulkTransferOptions.autoAcceptQuote;
+        this.skipPartyLookup = bulkTransferOptions.skipPartyLookup;
+        this.synchronous = bulkTransferOptions.synchronous;
     }
 }
 
 export class BulkExtensionList implements IBulkExtensionList {
-    items: Array<ExtensionItem>;
+    items: Array<IExtensionItem>;
 
     constructor(
-        items: Array<ExtensionItem>
+        items: Array<IExtensionItem>
     ) {
         this.items = items;
-    }
-
-    static validateBulkExtensionList(bulkExtensionList: IBulkExtensionList): void {
-        // items.
-        if (typeof bulkExtensionList.items !== "string") {
-            throw new InvalidAccountIdTypeError();
-        }
     }
 }
 
@@ -442,64 +302,26 @@ export class ExtensionItem implements IExtensionItem {
     value: string;
 
     constructor(
-        key: string,
-        value: string
+        extensionItem: IExtensionItem
     ) {
-        this.key = key;
-        this.value = value;
-    }
-
-    static validateExtensionItem(extensionItem: IExtensionItem): void {
-        // key.
-        if (typeof extensionItem.key !== "string") {
-            throw new InvalidAccountIdTypeError();
-        }
-        // value.
-        if (typeof extensionItem.value !== "string") {
-            throw new InvalidAccountIdTypeError();
-        }
+        this.key = extensionItem.key;
+        this.value = extensionItem.value;
     }
 }
 
 export class PartyRequest implements IPartyRequest {
-    partyIdInfo: PartyIdInfo;
-    merchantClassificationCode: MerchantClassificationCode;
-    name: PartyName;
-    personalInfo: PersonalInfo;
+    partyIdInfo: IPartyIdInfo;
+    merchantClassificationCode: IMerchantClassificationCode;
+    name: IPartyName;
+    personalInfo: IPersonalInfo;
 
     constructor(
-        partyIdInfo: PartyIdInfo,
-        merchantClassificationCode: MerchantClassificationCode,
-        name: PartyName,
-        personalInfo: PersonalInfo
+        partyRequest: IPartyRequest
     ) {
-        this.partyIdInfo = partyIdInfo;
-        this.merchantClassificationCode = merchantClassificationCode;
-        this.name = name;
-        this.personalInfo = personalInfo;
-    }
-
-    static validatePartyRequest(partyRequest: IPartyRequest): void {
-        // partyIdInfo.
-        if (typeof partyRequest.partyIdInfo !== "string") {
-            throw new InvalidAccountIdTypeError();
-        }
-        // merchantClassificationCode.
-        if (typeof partyRequest.merchantClassificationCode !== "string"
-            && partyRequest.merchantClassificationCode !== null) {
-            throw new InvalidExtIdTypeError();
-        }
-        // name.
-        if (typeof partyRequest.name !== "string") {
-            throw new InvalidAccountStateTypeError();
-        }
-        if (!(partyRequest.name in AccountState)) {
-            throw new InvalidAccountStateError();
-        }
-        // personalInfo.
-        if (typeof partyRequest.personalInfo !== "string") {
-            throw new InvalidAccountTypeTypeError();
-        }
+        this.partyIdInfo = partyRequest.partyIdInfo;
+        this.merchantClassificationCode = partyRequest.merchantClassificationCode;
+        this.name = partyRequest.name;
+        this.personalInfo = partyRequest.personalInfo;
     }
 }
 
@@ -511,82 +333,35 @@ export class AutoAcceptPartyOption implements IAutoAcceptPartyOption {
     ) {
         this.enabled = enabled;
     }
-
-    static validateAutoAcceptPartyOption(autoAcceptPartyOption: IAutoAcceptPartyOption): void {
-        // enabled.
-        if (typeof autoAcceptPartyOption.enabled !== "string") {
-            throw new InvalidAccountIdTypeError();
-        }
-    }
 }
 
 export class AutoAcceptQuoteOption implements IAutoAcceptQuoteOption {
     enabled: boolean;
-    perTransferFeeLimits: BulkPerTransferFeeLimit;
+    perTransferFeeLimits: IBulkPerTransferFeeLimit;
 
     constructor(
-        enabled: boolean,
-        perTransferFeeLimits: BulkPerTransferFeeLimit;
+        autoAcceptQuoteOption: IAutoAcceptQuoteOption
     ) {
-        this.enabled = enabled;
-        this.perTransferFeeLimits = perTransferFeeLimits;
-    }
-
-    static validateAutoAcceptQuoteOption(autoAcceptQuoteOption: IAutoAcceptQuoteOption): void {
-        // enabled.
-        if (typeof autoAutoAcceptQuoteOption.enabled !== "string") {
-            throw new InvalidAccountIdTypeError();
-        }
-        // perTransferFeeLimits.
-        if (typeof autoAutoAcceptQuoteOption.perTransferFeeLimits !== "string") {
-            throw new InvalidAccountIdTypeError();
-        }
+        this.enabled = autoAcceptQuoteOption.enabled;
+        this.perTransferFeeLimits = autoAcceptQuoteOption.perTransferFeeLimits;
     }
 }
 
 export class PartyIdInfo implements IPartyIdInfo {
-    partyIdType: IdType;
+    partyIdType: IIdType;
     partyIdentifier: string;
     partySubIdOrType: string;
-    fspId: FspId;
-    extensionList: ExtensionList;
+    fspId: IFspId;
+    extensionList: IExtensionList;
 
     constructor(
-        partyIdType: IdType,
-        partyIdentifier: string,
-        partySubIdOrType: string,
-        fspId: FspId,
-        extensionList: ExtensionList
+        partyIdInfo: IPartyIdInfo
     ) {
-        this.partyIdType = partyIdType;
-        this.partyIdentifier = partyIdentifier;
-        this.partySubIdOrType = partySubIdOrType;
-        this.fspId = fspId;
-        this.extensionList = extensionList;
-    }
-
-    static validatePartyRequest(partyRequest: IPartyRequest): void {
-        // partyIdType.
-        if (typeof partyRequest.partyIdType !== "string") {
-            throw new InvalidAccountIdTypeError();
-        }
-        // partyIdentifier.
-        if (typeof partyRequest.partyIdentifier !== "string"
-            && partyRequest.extId !== null) {
-            throw new InvalidExtIdTypeError();
-        }
-        // partySubIdOrType.
-        if (typeof partyRequest.partySubIdOrType !== "string") {
-            throw new InvalidAccountStateTypeError();
-        }
-        // fspId.
-        if (!(partyRequest.fspId in AccountState)) {
-            throw new InvalidAccountStateError();
-        }
-        // extensionList.
-        if (typeof partyRequest.extensionList !== "string") {
-            throw new InvalidAccountTypeTypeError();
-        }
+        this.partyIdType = partyIdInfo.partyIdType;
+        this.partyIdentifier = partyIdInfo.partyIdentifier;
+        this.partySubIdOrType = partyIdInfo.partySubIdOrType;
+        this.fspId = partyIdInfo.fspId;
+        this.extensionList = partyIdInfo.extensionList;
     }
 }
 
@@ -598,13 +373,6 @@ export class MerchantClassificationCode implements IMerchantClassificationCode {
     ) {
         this.merchantClassificationCode = merchantClassificationCode;
     }
-
-    static validateMerchantClassificationCode(merchantClassificationCode: IMerchantClassificationCode): void {
-        // merchantClassificationCode.
-        if (typeof merchantClassificationCode.merchantClassificationCode !== "string") {
-            throw new InvalidAccountIdTypeError();
-        }
-    }
 }
 
 export class PartyName implements IPartyName {
@@ -615,102 +383,51 @@ export class PartyName implements IPartyName {
     ) {
         this.partyName = partyName;
     }
-
-    static validatePartyName(partyName: IPartyName): void {
-        // partyName.
-        if (typeof partyName.partyName !== "string") {
-            throw new InvalidAccountIdTypeError();
-        }
-    }
 }
 
 export class PersonalInfo implements IPersonalInfo {
-    complexName: PartyComplexName;
-    dateOfBirth: DateShort;
+    complexName: IPartyComplexName;
+    dateOfBirth: IDateShort;
 
     constructor(
-        complexName: PartyComplexName,
-        dateOfBirth: DateShort
+        personalInfo: IPersonalInfo
     ) {
-        this.complexName = complexName;
-        this.dateOfBirth = dateOfBirth;
-    }
-
-    static validatePersonalInfo(personalInfo: IPersonalInfo): void {
-        // complexName.
-        if (typeof personalInfo.complexName !== "string") {
-            throw new InvalidAccountIdTypeError();
-        }
-        // dateOfBirth.        
-        if (typeof personalInfo.dateOfBirth !== "string") {
-            throw new InvalidAccountIdTypeError();
-        }
+        this.complexName = personalInfo.complexName;
+        this.dateOfBirth = personalInfo.dateOfBirth;
     }
 }
 
 export class PartyComplexName implements IPartyComplexName {
-    firstName: PartyName;
-    middleName: PartyName;
-    lastName: PartyName;
+    firstName: IPartyName;
+    middleName: IPartyName;
+    lastName: IPartyName;
 
     constructor(
-        firstName: PartyName,
-        middleName: PartyName,
-        lastName: PartyName
+        partyComplexName: IPartyComplexName
     ) {
-        this.firstName = firstName;
-        this.middleName = middleName;
-        this.lastName = lastName;
-    }
-
-    static validatePartyComplexName(partyComplexName: IPartyComplexName): void {
-        // firstName.
-        if (typeof partyComplexName.firstName !== "string") {
-            throw new InvalidAccountIdTypeError();
-        }
-        // firstName.        
-        if (typeof partyComplexName.middleName !== "string") {
-            throw new InvalidAccountIdTypeError();
-        }
-        // lastName.        
-        if (typeof partyComplexName.lastName !== "string") {
-            throw new InvalidAccountIdTypeError();
-        }
+        this.firstName = partyComplexName.firstName;
+        this.middleName = partyComplexName.middleName;
+        this.lastName = partyComplexName.lastName;
     }
 }
 
 export class ExtensionList implements IExtensionList {
-    items: Array<ExtensionItem>;
+    items: Array<IExtensionItem>;
 
     constructor(
-        items: Array<ExtensionItem>
+        items: Array<IExtensionItem>
     ) {
         this.items = items;
     }
-
-    static validateExtensionList(extensionList: IExtensionList): void {
-        // items.
-        if (typeof extensionList.items !== "string") {
-            throw new InvalidAccountIdTypeError();
-        }
-    }
 }
 
-
-export class IdType implements IIdType {
+export class IdType implements IdType {
     idType: string;
 
     constructor(
         idType: string
     ) {
         this.idType = idType;
-    }
-
-    static validateIdType(idType: IIdType): void {
-        // idType.
-        if (typeof idType.idType !== "string") {
-            throw new InvalidIdTypeTypeError();
-        }
     }
 }
 
@@ -722,13 +439,6 @@ export class FspId implements IFspId {
     ) {
         this.fspId = fspId;
     }
-
-    static validateFspId(fspId: IFspId): void {
-        // fspId.
-        if (typeof fspId.fspId !== "string") {
-            throw new InvalidFspIdTypeError();
-        }
-    }
 }
 
 export class DateShort implements IDateShort {
@@ -738,12 +448,5 @@ export class DateShort implements IDateShort {
         dateShort: string
     ) {
         this.dateShort = dateShort;
-    }
-
-    static validateDateShort(dateShort: IDateShort): void {
-        // dateShort.
-        if (typeof dateShort.dateShort !== "string") {
-            throw new InvalidDateShortTypeError();
-        }
     }
 }

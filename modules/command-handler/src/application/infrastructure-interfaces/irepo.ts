@@ -30,37 +30,37 @@
 
 "use strict";
 
-import {IBulkTransferEntity, BulkTransferRequest, IndividualTransfers, BulkBatch} from "@mojaloop/sdk-scheme-adapter-private-types"; // TODO: mbp-638
+import {IBulkTransactionEntity, IBulkTransferRequest, IIndividualTransfers, IBulkBatch} from "@mojaloop/sdk-scheme-adapter-public-types-lib"; // TODO: mbp-638
 
-export interface IBulkTransferEntityRepo {
+export interface IBulkTransactionEntityRepo {
 	init(): Promise<void>;
 	destroy(): Promise<void>;
-	// BulkTransferEntity
-	bulkTransferEntityExists(bulkTransferEntityId: string): Promise<boolean>;
-	storeBulkTransferEntity(bulkTransferEntity: IBulkTransferEntity): Promise<void>;
-	getBulkTransferEntity(bulkTransferEntityId: string): Promise<IBulkTransferEntity | null>;
-	updateBulkTransferEntity(bulkTransferEntity: IBulkTransferEntity): Promise<void>; // TODO: return value;
-	deleteBulkTransferEntity(bulkTransferEntityId: string): Promise<void>;
-	deleteBulkTransferEntities(): Promise<void>;
+	// BulkTransactionEntity
+	bulkTransactionEntityExists(bulkTransactionEntityId: string): Promise<boolean>;
+	storeBulkTransactionEntity(bulkTransactionEntity: IBulkTransactionEntity): Promise<void>;
+	getBulkTransactionEntity(bulkTransactionEntityId: string): Promise<IBulkTransactionEntity | null>;
+	updateBulkTransactionEntity(bulkTransactionEntity: IBulkTransactionEntity): Promise<void>; // TODO: return value;
+	deleteBulkTransactionEntity(bulkTransactionEntityId: string): Promise<void>;
+	deleteBulkTransactionEntities(): Promise<void>;
 	// BulkTransferRequest
 	bulkTransferRequestExists(bulkTransferRequestId: string): Promise<boolean>;
-	storeBulkTransferRequest(bulkTransferRequest: BulkTransferRequest): Promise<void>;
-	getBulkTransferRequest(bulkTransferRequestId: string): Promise<IBulkTransferEntity | null>;
-	updateBulkTransferRequest(bulkTransferRequest: BulkTransferRequest): Promise<void>; // TODO: return value;
+	storeBulkTransferRequest(bulkTransferRequest: IBulkTransferRequest): Promise<void>;
+	getBulkTransferRequest(bulkTransferRequestId: string): Promise<IBulkTransferRequest | null>;
+	updateBulkTransferRequest(bulkTransferRequest: IBulkTransferRequest): Promise<void>; // TODO: return value;
 	deleteBulkTransferRequest(bulkTransferRequestId: string): Promise<void>;
 	deleteBulkTransferRequests(): Promise<void>;
 	// IndividualTransfers
 	individualTransfersExists(individualTransfersId: string): Promise<boolean>;
-	storeIndividualTransfers(individualTransfers: IndividualTransfers): Promise<void>;
-	getIndividualTransfers(individualTransfersId: string): Promise<IBulkTransferEntity | null>;
-	updateIndividualTransfers(individualTransfers: IndividualTransfers): Promise<void>; // TODO: return value;
+	storeIndividualTransfers(individualTransfers: IIndividualTransfers): Promise<void>;
+	getIndividualTransfers(individualTransfersId: string): Promise<IIndividualTransfers | null>;
+	updateIndividualTransfers(individualTransfers: IIndividualTransfers): Promise<void>; // TODO: return value;
 	deleteIndividualTransfers(individualTransfersId: string): Promise<void>;
 	deleteMultipleIndividualTransfers(): Promise<void>;
 	// BulkBatch
-	bulkBatchExists(individualTransfersId: string): Promise<boolean>;
-	storeBulkBatch(bulkBatch: BulkBatch): Promise<void>;
-	getBulkBatch(individualTransfersId: string): Promise<IBulkTransferEntity | null>;
-	updateBulkBatch(bulkBatch: BulkBatch): Promise<void>; // TODO: return value;
-	deleteBulkBatch(individualTransfersId: string): Promise<void>;
+	bulkBatchExists(bulkBatchId: string): Promise<boolean>;
+	storeBulkBatch(bulkBatch: IBulkBatch): Promise<void>;
+	getBulkBatch(bulkBatchId: string): Promise<IBulkBatch | null>;
+	updateBulkBatch(bulkBatch: IBulkBatch): Promise<void>; // TODO: return value;
+	deleteBulkBatch(bulkBatchId: string): Promise<void>;
 	deleteBulkBatches(): Promise<void>;		
 }
