@@ -65,8 +65,7 @@ describe('inboundModel', () => {
             }));
 
             cache = new Cache({
-                host: 'dummycachehost',
-                port: 1234,
+                cacheUrl: 'redis://dummy:1234',
                 logger,
             });
             await cache.connect();
@@ -134,8 +133,7 @@ describe('inboundModel', () => {
             BackendRequests.__postBulkQuotes = jest.fn().mockReturnValue(Promise.resolve(mockArgs.internalBulkQuoteResponse));
 
             cache = new Cache({
-                host: 'dummycachehost',
-                port: 1234,
+                cacheUrl: 'redis://dummy:1234',
                 logger,
             });
             await cache.connect();
@@ -191,8 +189,7 @@ describe('inboundModel', () => {
             BackendRequests.__postTransactionRequests = jest.fn().mockReturnValue(Promise.resolve(mockTxnReqArgs.internalTransactionRequestResponse));
 
             cache = new Cache({
-                host: 'dummycachehost',
-                port: 1234,
+                cacheUrl: 'redis://dummy:1234',
                 logger,
             });
             await cache.connect();
@@ -228,8 +225,7 @@ describe('inboundModel', () => {
             BackendRequests.__getOTP = jest.fn().mockReturnValue(Promise.resolve(mockArgs.internalGetOTPResponse));
 
             cache = new Cache({
-                host: 'dummycachehost',
-                port: 1234,
+                cacheUrl: 'redis://dummy:1234',
                 logger,
             });
             await cache.connect();
@@ -270,8 +266,7 @@ describe('inboundModel', () => {
             }));
 
             cache = new Cache({
-                host: 'dummycachehost',
-                port: 1234,
+                cacheUrl: 'redis://dummy:1234',
                 logger,
             });
             await cache.connect();
@@ -549,8 +544,7 @@ describe('inboundModel', () => {
             BackendRequests.__postBulkTransfers = jest.fn().mockReturnValue(Promise.resolve({}));
 
             cache = new Cache({
-                host: 'dummycachehost',
-                port: 1234,
+                cacheUrl: 'redis://dummy:1234',
                 logger,
             });
             await cache.connect();
@@ -729,8 +723,7 @@ describe('inboundModel', () => {
 
         beforeEach(async () => {
             cache = new Cache({
-                host: 'dummycachehost',
-                port: 1234,
+                cacheUrl: 'redis://dummy:1234',
                 logger,
             });
             await cache.connect();
@@ -761,7 +754,7 @@ describe('inboundModel', () => {
             expect(call[0]).toEqual(expectedRequest);
             expect(call[1]).toEqual(transferId);
         });
-        
+
         test('sends ABORTED notification to fsp backend', async () => {
             BackendRequests.__putTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({}));
             const notif = JSON.parse(JSON.stringify(notificationAbortedToPayee));
@@ -783,7 +776,7 @@ describe('inboundModel', () => {
             expect(call[0]).toEqual(expectedRequest);
             expect(call[1]).toEqual(transferId);
         });
-        
+
         test('sends RESERVED notification to fsp backend', async () => {
             BackendRequests.__putTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({}));
             const notif = JSON.parse(JSON.stringify(notificationReservedToPayee));
@@ -804,16 +797,15 @@ describe('inboundModel', () => {
             const call = BackendRequests.__putTransfersNotification.mock.calls[0];
             expect(call[0]).toEqual(expectedRequest);
             expect(call[1]).toEqual(transferId);
-        });         
-        
+        });
+
     });
 
     describe('error handling:', () => {
         let cache;
         beforeEach(async () => {
             cache = new Cache({
-                host: 'dummycachehost',
-                port: 1234,
+                cacheUrl: 'redis://dummy:1234',
                 logger,
             });
             await cache.connect();

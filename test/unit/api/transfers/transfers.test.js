@@ -42,7 +42,7 @@ describe('Outbound Transfers API', () => {
 
     beforeAll(async () => {
         validatorsInfo = await createValidators();
-        redisClient = redis.createClient();
+        redisClient = redis.createClient({ cacheUrl: 'redis://dummy:1234' });
     });
 
     beforeEach(async () => {
