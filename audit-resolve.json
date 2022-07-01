@@ -10,15 +10,15 @@
     },
     "1070412|@mojaloop/central-services-shared>@mojaloop/event-sdk>grpc>protobufjs>shins>ejs": {
       "decision": "ignore",
-      "madeAt": 1656678992376
+      "madeAt": 1656679958470
     },
     "1070412|ejs": {
       "decision": "ignore",
-      "madeAt": 1656678992376
+      "madeAt": 1656679958471
     },
     "1070030|@mojaloop/central-services-shared>@mojaloop/event-sdk>grpc>protobufjs>shins>ejs>markdown-it": {
       "decision": "ignore",
-      "madeAt": 1656678994778
+      "madeAt": 1656679961621
     },
     "1070030|widdershins>markdown-it": {
       "decision": "ignore",
@@ -26,11 +26,11 @@
     },
     "1068155|@mojaloop/central-services-shared>@mojaloop/event-sdk>grpc>protobufjs>shins>ejs>markdown-it>sanitize-html": {
       "decision": "ignore",
-      "madeAt": 1656678996760
+      "madeAt": 1656679964361
     },
     "1070260|@mojaloop/central-services-shared>@mojaloop/event-sdk>grpc>protobufjs>shins>ejs>markdown-it>sanitize-html": {
       "decision": "ignore",
-      "madeAt": 1656678998753
+      "madeAt": 1656679966871
     },
     "1067553|@mojaloop/central-services-shared>@mojaloop/event-sdk>grpc>protobufjs>shins>ejs>markdown-it>sanitize-html>widdershins>swagger2openapi>better-ajv-errors>jsonpointer": {
       "decision": "ignore",
@@ -63,6 +63,22 @@
     "1068310|widdershins>markdown-it>swagger2openapi>better-ajv-errors>jsonpointer>oas-validator>ajv>yargs>yargs-parser": {
       "decision": "ignore",
       "madeAt": 1656679007475
+    },
+    "1070412|shins>ejs": {
+      "decision": "ignore",
+      "madeAt": 1656679958471
+    },
+    "1070030|shins>ejs>markdown-it": {
+      "decision": "ignore",
+      "madeAt": 1656679961621
+    },
+    "1068155|shins>ejs>markdown-it>sanitize-html": {
+      "decision": "ignore",
+      "madeAt": 1656679964361
+    },
+    "1070260|shins>ejs>markdown-it>sanitize-html": {
+      "decision": "ignore",
+      "madeAt": 1656679966871
     }
   },
   "rules": {},
