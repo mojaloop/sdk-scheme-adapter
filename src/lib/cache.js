@@ -101,7 +101,7 @@ class Cache {
         this._logger
             .push({ 'notify-keyspace-events': mode })
             .log('Configuring Redis to emit keyevent events');
-        this._client.config('SET', 'notify-keyspace-events', mode);
+        await this._client.configSet('notify-keyspace-events', mode);
     }
 
     async disconnect() {
