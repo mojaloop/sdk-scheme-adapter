@@ -117,9 +117,9 @@ jobs:
       #     name: Install Dependencies for api-svc
       #     command: yarn install --immutable
       #     working_directory: /home/circleci/project/modules/api-svc
-      - run:
-          name: Install Dependencies
-          command: yarn install --immutable
+      # - run:
+      #     name: Install Dependencies
+      #     command: yarn install --immutable
       - run:
           name: Execute unit tests
           command: yarn run test:unit
