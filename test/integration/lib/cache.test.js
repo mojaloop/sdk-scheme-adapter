@@ -37,8 +37,7 @@ const { Logger } = require('@mojaloop/sdk-standard-components');
 const env = require('../testEnv');
 
 const defaultCacheConfig = {
-    host: env.redis.host,
-    port: env.redis.port,
+    cacheUrl: env.redisUrl,
     logger: null
 };
 

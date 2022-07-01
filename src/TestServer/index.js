@@ -11,7 +11,6 @@
 const Koa = require('koa');
 const ws = require('ws');
 
-const assert = require('assert').strict;
 const http = require('http');
 const yaml = require('js-yaml');
 const fs = require('fs').promises;
@@ -84,7 +83,11 @@ class WsServer extends ws.Server {
 
     // Close the server then wait for all the client sockets to close
     async stop() {
-        await new Promise(resolve => this.close(resolve));
+        const closing = new Promise(resolve => this.close(resolve));
+        for (const client of this.clients) {
+            client.terminate();
+        }
+        await closing;
         // If we don't wait for all clients to close before shutting down, the socket close
         // handlers will be called after we return from this function, resulting in behaviour
         // occurring after the server tells the user it has shutdown.
@@ -201,7 +204,7 @@ class TestServer {
     async stop() {
         if (this._wsapi) {
             this._logger.log('Shutting down websocket server');
-            this._wsapi.stop();
+            await this._wsapi.stop();
             this._wsapi = null;
         }
         if (this._server) {
@@ -210,36 +213,6 @@ class TestServer {
             this._server = null;
         }
         this._logger.log('Test server shutdown complete');
-    }
-
-    async reconfigure({ port, logger, cache }) {
-        assert(port === this._port, 'Cannot reconfigure running port');
-        const newApi = new TestApi(logger, cache, this._validator);
-        const newWsApi = new WsServer(logger.push({ component: 'websocket-server' }), cache);
-        await newWsApi.start();
-
-        return () => {
-            const oldWsApi = this._wsapi;
-            this._logger = logger;
-            this._cache = cache;
-            this._wsapi = newWsApi;
-            this._api = newApi;
-            this._server.removeAllListeners('upgrade');
-            this._server.on('upgrade', (req, socket, head) => {
-                this._wsapi.handleUpgrade(req, socket, head, (ws) =>
-                    this._wsapi.emit('connection', ws, req));
-            });
-            this._server.removeAllListeners('request');
-            this._server.on('request', newApi.callback());
-            // TODO: we can't guarantee client implementations. Therefore we can't guarantee
-            // reconnect logic/behaviour. Therefore instead of closing all websocket client
-            // connections as we do below, we should replace handlers.
-            oldWsApi.stop().catch((err) => {
-                this._logger.push({ err }).log('Error stopping websocket server during reconfigure');
-            });
-
-            this._logger.log('restarted');
-        };
     }
 }
 

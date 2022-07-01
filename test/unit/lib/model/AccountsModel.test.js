@@ -93,10 +93,9 @@ describe('AccountsModel', () => {
 
     beforeEach(async () => {
         cache = new Cache({
-            host: 'dummycachehost',
-            port: 1234,
-            logger,
-        });
+                cacheUrl: 'redis://dummy:1234',
+                logger,
+            });
         await cache.connect();
     });
 
