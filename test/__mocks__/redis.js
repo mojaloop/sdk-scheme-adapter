@@ -70,7 +70,7 @@ class RedisClient extends redisMock.RedisClient {
         return promisify(super.smembers.bind(this))(...args);
     }
 
-    config() {}
+    configSet() {}
 }
 
 module.exports = {
