@@ -264,9 +264,6 @@ jobs:
       #     name: Install Dependencies
       #     command: yarn install --immutable
       - run:
-          name: Prune non-production packages before running license-scanner
-          command: yarn prune --production
-      - run:
           name: Run the license-scanner
           command: cd /tmp/license-scanner && pathToRepo=$CIRCLE_WORKING_DIRECTORY make run
       - store_artifacts:
