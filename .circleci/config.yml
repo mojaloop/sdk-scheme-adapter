@@ -210,8 +210,11 @@ jobs:
             - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
           name: Install Dependencies
-          command: yarn install --immutable
-
+          command: yarn install
+      - run:
+          name: Install Dependencies for api-svc
+          command: yarn install
+          working_directory: /home/circleci/project/modules/api-svc
       - run:
           name: Create dir for lint results
           command: mkdir -p /lintresults
