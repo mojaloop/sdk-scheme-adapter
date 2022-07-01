@@ -2478,6 +2478,42 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mojaloop/logging-bc-client-lib@npm:^0.0.10":
+  version: 0.0.10
+  resolution: "@mojaloop/logging-bc-client-lib@npm:0.0.10"
+  dependencies:
+    "@mojaloop/logging-bc-public-types-lib": 0.0.3
+    "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": ^0.0.8
+    winston: ^3.3.3
+  checksum: e9318a32a6bec26d4e3413ed8f8055b4b1e4b45ff48a0c597a2b64f27c38bc13f911fab81b19373151307ef75323817f629ceb943409037bd8257f8d75fc3c6f
+  languageName: node
+  linkType: hard
+
+"@mojaloop/logging-bc-public-types-lib@npm:0.0.3, @mojaloop/logging-bc-public-types-lib@npm:^0.0.3":
+  version: 0.0.3
+  resolution: "@mojaloop/logging-bc-public-types-lib@npm:0.0.3"
+  checksum: 5de3ffb12423eaa0da2126e0460d9da17ee6f7cad0e05572db1e78ffda51652f7d879c704119fa7edbd9dc613c700d384105b0aaade3b6ebca4bd00c3ec43a75
+  languageName: node
+  linkType: hard
+
+"@mojaloop/platform-shared-lib-messaging-types-lib@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "@mojaloop/platform-shared-lib-messaging-types-lib@npm:0.0.1"
+  checksum: 844cad7a9a76e5aa5c76228ecd61415ecf0c37717bf46c8d6489a8e0b66b5f8716aa1d260d09612a2960fbdc133322105f002ad6021116f4be8e584ba585f3c9
+  languageName: node
+  linkType: hard
+
+"@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:^0.0.8":
+  version: 0.0.8
+  resolution: "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:0.0.8"
+  dependencies:
+    "@mojaloop/logging-bc-public-types-lib": ^0.0.3
+    "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.0.1
+    node-rdkafka: ^2.12.0
+  checksum: de6a08ecd3a4ebe45d8d8262120a7e4196003beb40aed98d800f1dc128454b386c4343af31fa3812283bdae391ba280890289e914e462ea0bc94c228ae0c97a8
+  languageName: node
+  linkType: hard
+
 "@mojaloop/sdk-scheme-adapter-api-svc@workspace:modules/api-svc":
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-api-svc@workspace:modules/api-svc"
@@ -2554,10 +2590,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mojaloop/sdk-scheme-adapter-event-handler@workspace:modules/event-handler":
+"@mojaloop/sdk-scheme-adapter-event-handler@workspace:modules/outbound-event-handler":
   version: 0.0.0-use.local
-  resolution: "@mojaloop/sdk-scheme-adapter-event-handler@workspace:modules/event-handler"
+  resolution: "@mojaloop/sdk-scheme-adapter-event-handler@workspace:modules/outbound-event-handler"
   dependencies:
+    "@mojaloop/logging-bc-client-lib": ^0.0.10
+    "@mojaloop/logging-bc-public-types-lib": ^0.0.3
+    "@mojaloop/sdk-scheme-adapter-private-types-lib": "workspace:^"
     "@types/jest": ^27.0.3
     "@types/node": ^16.11.9
     "@types/node-cache": ^4.2.5
@@ -2572,10 +2611,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mojaloop/sdk-scheme-adapter-private-types@workspace:modules/private-types-lib":
+"@mojaloop/sdk-scheme-adapter-private-types-lib@workspace:^, @mojaloop/sdk-scheme-adapter-private-types-lib@workspace:modules/private-types-lib":
   version: 0.0.0-use.local
-  resolution: "@mojaloop/sdk-scheme-adapter-private-types@workspace:modules/private-types-lib"
+  resolution: "@mojaloop/sdk-scheme-adapter-private-types-lib@workspace:modules/private-types-lib"
   dependencies:
+    "@mojaloop/logging-bc-public-types-lib": ^0.0.3
     "@types/node": ^17.0.41
     eslint: ^8.17.0
     husky: ^8.0.1
@@ -4192,6 +4232,15 @@ __metadata:
   version: 2.2.0
   resolution: "binary-extensions@npm:2.2.0"
   checksum: ccd267956c58d2315f5d3ea6757cf09863c5fc703e50fbeb13a7dc849b812ef76e3cf9ca8f35a0c48498776a7478d7b4a0418e1e2b8cb9cb9731f2922aaad7f8
+  languageName: node
+  linkType: hard
+
+"bindings@npm:^1.3.1":
+  version: 1.5.0
+  resolution: "bindings@npm:1.5.0"
+  dependencies:
+    file-uri-to-path: 1.0.0
+  checksum: 65b6b48095717c2e6105a021a7da4ea435aa8d3d3cd085cb9e85bcb6e5773cf318c4745c3f7c504412855940b585bdf9b918236612a1c7a7942491de176f1ae7
   languageName: node
   linkType: hard
 
@@ -6720,6 +6769,13 @@ __metadata:
   dependencies:
     flat-cache: ^3.0.4
   checksum: f49701feaa6314c8127c3c2f6173cfefff17612f5ed2daaafc6da13b5c91fd43e3b2a58fd0d63f9f94478a501b167615931e7200e31485e320f74a33885a9c74
+  languageName: node
+  linkType: hard
+
+"file-uri-to-path@npm:1.0.0":
+  version: 1.0.0
+  resolution: "file-uri-to-path@npm:1.0.0"
+  checksum: b648580bdd893a008c92c7ecc96c3ee57a5e7b6c4c18a9a09b44fb5d36d79146f8e442578bc0e173dc027adf3987e254ba1dfd6e3ec998b7c282873010502144
   languageName: node
   linkType: hard
 
@@ -10635,7 +10691,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nan@npm:^2.13.2":
+"nan@npm:^2.13.2, nan@npm:^2.14.0":
   version: 2.16.0
   resolution: "nan@npm:2.16.0"
   dependencies:
@@ -10767,6 +10823,17 @@ __metadata:
   version: 0.4.0
   resolution: "node-int64@npm:0.4.0"
   checksum: d0b30b1ee6d961851c60d5eaa745d30b5c95d94bc0e74b81e5292f7c42a49e3af87f1eb9e89f59456f80645d679202537de751b7d72e9e40ceea40c5e449057e
+  languageName: node
+  linkType: hard
+
+"node-rdkafka@npm:^2.12.0":
+  version: 2.13.0
+  resolution: "node-rdkafka@npm:2.13.0"
+  dependencies:
+    bindings: ^1.3.1
+    nan: ^2.14.0
+    node-gyp: latest
+  checksum: 4c1b67bc6df2942ed8eebdd0b2a6e27a056106fc835ba6bf6db8b4c82f1298302f2f33ae92e7ba25013f105657622043c14a0678dbeb6c66849a58bc76eaa845
   languageName: node
   linkType: hard
 
@@ -14802,6 +14869,24 @@ __metadata:
     triple-beam: ^1.3.0
     winston-transport: ^4.5.0
   checksum: f1f1a860d2fa228b50880b20aaa6cc121085907791fe0d814ff9c062640f6b65da321726322094e7667eb63088b3bb67e7b4e219d998f29efcc6f583185a1cd3
+  languageName: node
+  linkType: hard
+
+"winston@npm:^3.3.3":
+  version: 3.8.1
+  resolution: "winston@npm:3.8.1"
+  dependencies:
+    "@dabh/diagnostics": ^2.0.2
+    async: ^3.2.3
+    is-stream: ^2.0.0
+    logform: ^2.4.0
+    one-time: ^1.0.0
+    readable-stream: ^3.4.0
+    safe-stable-stringify: ^2.3.1
+    stack-trace: 0.0.x
+    triple-beam: ^1.3.0
+    winston-transport: ^4.5.0
+  checksum: 14637222a4239f1ee7e629dbbf0c65161abe95eeb7acd275caf210c5d47d93254fdb007291ea75b5e241d4bb6dd3c29d000bd04ae5420a347711ae7cd0b2da88
   languageName: node
   linkType: hard
 

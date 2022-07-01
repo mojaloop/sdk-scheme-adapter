@@ -41,6 +41,7 @@
         "dep:update": "ncu -u"
     },
     "devDependencies": {
+        "@mojaloop/logging-bc-public-types-lib": "^0.0.3",
         "@types/jest": "^27.0.3",
         "@types/node": "^16.11.9",
         "@types/node-cache": "^4.2.5",
@@ -52,5 +53,9 @@
         "npm-check-updates": "^12.5.11",
         "ts-jest": "^27.0.7",
         "typescript": "^4.6.4"
+    },
+    "dependencies": {
+        "@mojaloop/logging-bc-client-lib": "^0.0.10",
+        "@mojaloop/sdk-scheme-adapter-private-types-lib": "0.1.0"
     }
 }

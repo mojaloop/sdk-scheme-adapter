@@ -21,14 +21,27 @@
 
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
- * Modusbox
- - Shashikant Hirugade <shashikant.hirugade@modusbox.com>
- - Juan Correa <juancorrea@modusbox.com>
+
+ * Coil
+ - Donovan Changfoot <donovan.changfoot@coil.com>
+
+ * Crosslake
+ - Pedro Sousa Barreto <pedrob@crosslaketech.com>
+
+ * ModusBox
+ - Miguel de Barros <miguel.debarros@modusbox.com>
+ - Roman Pietrzak <roman.pietrzak@modusbox.com>
 
  --------------
- ******/
+******/
 
-"use strict";
+'use strict'
 
-export * from "./types";
-export * from "./infra";
+import { BaseEntity } from './base_entity'
+import { BaseEntityState } from './base_entity_state'
+
+export type IEntityFactory<E extends BaseEntity<S>, S extends BaseEntityState> = {
+  create: () => E
+  createFromState: (initialState: S) => E // optional initial id
+  createWithId: (initialId: string) => E
+}

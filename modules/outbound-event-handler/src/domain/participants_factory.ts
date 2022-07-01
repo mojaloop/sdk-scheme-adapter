@@ -21,14 +21,48 @@
 
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
- * Modusbox
- - Shashikant Hirugade <shashikant.hirugade@modusbox.com>
- - Juan Correa <juancorrea@modusbox.com>
+
+ * Coil
+ - Donovan Changfoot <donovan.changfoot@coil.com>
+
+ * Crosslake
+ - Pedro Sousa Barreto <pedrob@crosslaketech.com>
+
+ * ModusBox
+ - Miguel de Barros <miguel.debarros@modusbox.com>
+ - Roman Pietrzak <roman.pietrzak@modusbox.com>
 
  --------------
- ******/
+******/
 
-"use strict";
+'use strict'
 
-export * from "./types";
-export * from "./infra";
+import { IEntityFactory } from '@mojaloop-poc/lib-domain'
+import { ParticipantEntity, ParticipantState } from './participant_entity'
+
+export class ParticipantsFactory implements IEntityFactory<ParticipantEntity, ParticipantState> {
+  // singleton
+  private static _instance: ParticipantsFactory
+  static GetInstance (): ParticipantsFactory {
+    if (this._instance == null) { this._instance = new ParticipantsFactory() }
+
+    return this._instance
+  }
+
+  private constructor () {}
+
+  create (): ParticipantEntity {
+    return ParticipantEntity.CreateInstance(new ParticipantState())
+  }
+
+  createFromState (initialState: ParticipantState): ParticipantEntity {
+    return ParticipantEntity.CreateInstance(initialState)
+  }
+
+  createWithId (initialId: string): ParticipantEntity {
+    const initialState: ParticipantState = new ParticipantState()
+    initialState.id = initialId
+
+    return ParticipantEntity.CreateInstance(initialState)
+  }
+}

@@ -21,14 +21,44 @@
 
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
- * Modusbox
- - Shashikant Hirugade <shashikant.hirugade@modusbox.com>
- - Juan Correa <juancorrea@modusbox.com>
+
+ * Coil
+ - Donovan Changfoot <donovan.changfoot@coil.com>
+
+ * Crosslake
+ - Pedro Sousa Barreto <pedrob@crosslaketech.com>
+
+ * ModusBox
+ - Miguel de Barros <miguel.debarros@modusbox.com>
+ - Roman Pietrzak <roman.pietrzak@modusbox.com>
 
  --------------
- ******/
+******/
 
-"use strict";
+'use strict'
 
-export * from "./types";
-export * from "./infra";
+import { BaseEntityState } from './base_entity_state'
+// import { ParticipantState } from '../../participants/domain/participant_entity'
+
+export abstract class BaseEntity <S extends BaseEntityState> {
+  protected _state: S
+
+  // id is a property of state data, not behaviour
+  get id (): string {
+    return this._state.id
+  }
+
+  get version (): number {
+    return this._state.version
+  }
+
+  protected constructor (initialState: S) {
+    this._state = initialState
+  };
+
+  // required so we can export/persist the state and still forbid direct state changes
+  exportState (): S {
+    const clone: S = Object.assign({}, this._state)
+    return clone
+  }
+}

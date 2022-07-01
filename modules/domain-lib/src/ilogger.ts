@@ -21,14 +21,36 @@
 
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
- * Modusbox
- - Shashikant Hirugade <shashikant.hirugade@modusbox.com>
- - Juan Correa <juancorrea@modusbox.com>
+
+ * Coil
+ - Donovan Changfoot <donovan.changfoot@coil.com>
+
+ * Crosslake
+ - Pedro Sousa Barreto <pedrob@crosslaketech.com>
+
+ * ModusBox
+ - Miguel de Barros <miguel.debarros@modusbox.com>
+ - Roman Pietrzak <roman.pietrzak@modusbox.com>
 
  --------------
- ******/
+******/
 
-"use strict";
+'use strict'
 
-export * from "./types";
-export * from "./infra";
+export type ILogger = {
+  // trace(...anything);
+
+  // methods to check debug level
+  isDebugEnabled: () => boolean
+  isInfoEnabled: () => boolean
+  isWarnEnabled: () => boolean
+  isErrorEnabled: () => boolean
+  isFatalEnabled: () => boolean
+
+  // methods to handle logging per level
+  debug: (message?: any, ...optionalParams: any[]) => void
+  info: (message?: any, ...optionalParams: any[]) => void
+  warn: (message?: any, ...optionalParams: any[]) => void
+  error: (message?: any, ...optionalParams: any[]) => void
+  fatal: (message?: any, ...optionalParams: any[]) => void
+}

@@ -21,14 +21,53 @@
 
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
- * Modusbox
- - Shashikant Hirugade <shashikant.hirugade@modusbox.com>
- - Juan Correa <juancorrea@modusbox.com>
+
+ * Coil
+ - Donovan Changfoot <donovan.changfoot@coil.com>
+
+ * Crosslake
+ - Pedro Sousa Barreto <pedrob@crosslaketech.com>
+
+ * ModusBox
+ - Miguel de Barros <miguel.debarros@modusbox.com>
+ - Roman Pietrzak <roman.pietrzak@modusbox.com>
 
  --------------
- ******/
+******/
 
-"use strict";
+'use strict'
 
-export * from "./types";
-export * from "./infra";
+// import * as kafka from 'kafka-node'
+import { ConsoleLogger } from '@mojaloop-poc/lib-utilities'
+import { ILogger, IMessage, IMessagePublisher } from '@mojaloop/sdk-scheme-adapter-domain-lib'
+import { KafkajsProducer, KafkaJsProducerOptions } from './kafkajs_producer'
+
+export class KafkajsMessagePublisher implements IMessagePublisher {
+  private readonly _producer: KafkajsProducer
+  protected _logger: ILogger
+
+  constructor (options: KafkaJsProducerOptions, logger?: ILogger) {
+    this._logger = logger ?? new ConsoleLogger()
+    this._producer = new KafkajsProducer(options, this._logger)
+  }
+
+  get envName (): string {
+    return this._producer.envName
+  }
+
+  async init (): Promise<void> {
+    return await this._producer.init()
+  }
+
+  async destroy (): Promise<void> {
+    return await this._producer.destroy()
+  }
+
+  async publish (message: IMessage): Promise<void> {
+    return await this._producer.send(message)
+  }
+
+  async publishMany (messages: IMessage[]): Promise<void> {
+    return await this._producer.send(messages)
+  }
+}

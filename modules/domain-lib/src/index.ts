@@ -21,14 +21,34 @@
 
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
- * Modusbox
- - Shashikant Hirugade <shashikant.hirugade@modusbox.com>
- - Juan Correa <juancorrea@modusbox.com>
+
+ * Coil
+ - Donovan Changfoot <donovan.changfoot@coil.com>
+
+ * Crosslake
+ - Pedro Sousa Barreto <pedrob@crosslaketech.com>
+
+ * ModusBox
+ - Miguel de Barros <miguel.debarros@modusbox.com>
+ - Roman Pietrzak <roman.pietrzak@modusbox.com>
 
  --------------
- ******/
+******/
 
-"use strict";
+'use strict'
 
-export * from "./types";
-export * from "./infra";
+// Exports for Domain
+
+export * from './base_aggregate'
+export * from './base_entity'
+export * from './base_entity_state'
+export * from './entity_factory'
+export * from './ientity_state_repository'
+export * from './imessage_publisher'
+export * from './messages'
+export * from './ilogger'
+export * from './base_es_aggregate'
+export * from './ientity_es_state_repository'
+export * from './ientity_duplicate_repository'
+export * from './imessage_fetcher'
+export * from './imessage_offset_repository'

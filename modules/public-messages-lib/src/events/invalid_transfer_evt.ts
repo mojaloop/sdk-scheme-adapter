@@ -21,14 +21,45 @@
 
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
- * Modusbox
- - Shashikant Hirugade <shashikant.hirugade@modusbox.com>
- - Juan Correa <juancorrea@modusbox.com>
+
+ * Coil
+ - Donovan Changfoot <donovan.changfoot@coil.com>
+
+ * Crosslake
+ - Pedro Sousa Barreto <pedrob@crosslaketech.com>
+
+ * ModusBox
+ - Miguel de Barros <miguel.debarros@modusbox.com>
+ - Roman Pietrzak <roman.pietrzak@modusbox.com>
 
  --------------
- ******/
+******/
 
-"use strict";
+'use strict'
 
-export * from "./types";
-export * from "./infra";
+import { DomainEventMsg } from '@mojaloop/sdk-scheme-adapter-domain-lib'
+import { TransfersTopics } from '../enums'
+
+export type InvalidTransferEvtPayload = {
+  transferId: string
+  reason?: string
+}
+
+export class InvalidTransferEvt extends DomainEventMsg {
+  aggregateId: string
+  aggregateName: string = 'Transfers'
+  msgKey: string
+  msgTopic: string = TransfersTopics.DomainEvents
+
+  payload: InvalidTransferEvtPayload
+
+  constructor (payload: InvalidTransferEvtPayload) {
+    super()
+
+    this.aggregateId = this.msgKey = payload.transferId
+
+    this.payload = payload
+  }
+
+  validatePayload (): void { }
+}

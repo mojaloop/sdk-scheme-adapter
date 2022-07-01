@@ -21,14 +21,37 @@
 
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
- * Modusbox
- - Shashikant Hirugade <shashikant.hirugade@modusbox.com>
- - Juan Correa <juancorrea@modusbox.com>
+k
+ * Coil
+ - Donovan Changfoot <donovan.changfoot@coil.com>
+
+ * Crosslake
+ - Pedro Sousa Barreto <pedrob@crosslaketech.com>
+
+ * ModusBox
+ - Miguel de Barros <miguel.debarros@modusbox.com>
+ - Roman Pietrzak <roman.pietrzak@modusbox.com>
 
  --------------
- ******/
+******/
 
-"use strict";
+'use strict'
 
-export * from "./types";
-export * from "./infra";
+import { CommandMsg } from '@mojaloop-poc/lib-domain'
+import { ParticipantsTopics } from '@mojaloop-poc/lib-public-messages'
+
+export class SnapshotOperatorExecuteCmd extends CommandMsg {
+  aggregateId: string
+  aggregateName: string = 'ParticipantsOperator'
+  msgKey: string
+  msgTopic: string = ParticipantsTopics.SnapshotOperatorCommands
+
+  payload: null
+
+  constructor () {
+    super()
+    this.aggregateId = this.msgKey = 'FixedSnapshotOperatorExecuteCmdKey'
+  }
+
+  validatePayload (): void { }
+}

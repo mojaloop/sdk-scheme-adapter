@@ -1,3 +1,4 @@
+
 /*****
  License
  --------------
@@ -21,14 +22,44 @@
 
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
- * Modusbox
- - Shashikant Hirugade <shashikant.hirugade@modusbox.com>
- - Juan Correa <juancorrea@modusbox.com>
+
+ * Coil
+ - Donovan Changfoot <donovan.changfoot@coil.com>
+
+ * Crosslake
+ - Pedro Sousa Barreto <pedrob@crosslaketech.com>
+
+ * ModusBox
+ - Miguel de Barros <miguel.debarros@modusbox.com>
+ - Roman Pietrzak <roman.pietrzak@modusbox.com>
 
  --------------
- ******/
+******/
 
-"use strict";
+'use strict'
 
-export * from "./types";
-export * from "./infra";
+import { IDomainMessage } from '@mojaloop/sdk-scheme-adapter-domain-lib'
+import { EventEmitter } from 'events'
+
+export type Options<tClientOptions> = {
+  client: tClientOptions
+  topics: string | string[]
+}
+
+export interface iMessageConsumer {
+  init: (handlerCallback: (message: IDomainMessage) => Promise<void>, msgNames: string[] | null) => void
+  destroy: (forceCommit: boolean) => Promise<void>
+  connect: () => void
+  pause: () => void
+  resume: () => void
+  disconnect: () => void
+}
+
+export abstract class MessageConsumer extends EventEmitter implements iMessageConsumer {
+  abstract init (handlerCallback: (message: IDomainMessage) => Promise<void>, msgNames: string[] | null): void
+  abstract destroy (forceCommit: boolean): Promise<void>
+  abstract connect (): void
+  abstract pause (): void
+  abstract resume (): void
+  abstract disconnect (): void
+}

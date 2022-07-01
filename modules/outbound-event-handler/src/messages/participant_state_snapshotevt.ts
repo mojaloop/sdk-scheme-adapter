@@ -21,14 +21,47 @@
 
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
- * Modusbox
- - Shashikant Hirugade <shashikant.hirugade@modusbox.com>
- - Juan Correa <juancorrea@modusbox.com>
+
+ * Coil
+ - Donovan Changfoot <donovan.changfoot@coil.com>
+
+ * Crosslake
+ - Pedro Sousa Barreto <pedrob@crosslaketech.com>
+
+ * ModusBox
+ - Miguel de Barros <miguel.debarros@modusbox.com>
+ - Roman Pietrzak <roman.pietrzak@modusbox.com>
 
  --------------
  ******/
 
-"use strict";
+'use strict'
 
-export * from "./types";
-export * from "./infra";
+import { StateSnapshotMsg } from '@mojaloop-poc/lib-domain'
+import { ParticipantsTopics } from '@mojaloop-poc/lib-public-messages'
+import { ParticipantState } from '../domain/participant_entity'
+
+/*
+NOTE: to facilitate we can directly use the state of the participant,
+      it is exactly the same and we don't have any secret fields
+*/
+
+export class ParticipantStateSnapshotEvt extends StateSnapshotMsg {
+  msgKey: string // usually the id of the aggregate (used for partitioning)
+  msgTopic: string = ParticipantsTopics.SnapshotEvents
+
+  aggregateId: string
+  aggregateName: string = 'Participants'
+
+  payload: ParticipantState
+
+  constructor (payload: ParticipantState) {
+    super()
+
+    this.aggregateId = this.msgKey = payload.id
+
+    this.payload = payload
+  }
+
+  validatePayload (): void { }
+}

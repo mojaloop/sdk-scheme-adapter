@@ -21,14 +21,45 @@
 
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
- * Modusbox
- - Shashikant Hirugade <shashikant.hirugade@modusbox.com>
- - Juan Correa <juancorrea@modusbox.com>
+
+ * Coil
+ - Donovan Changfoot <donovan.changfoot@coil.com>
+
+ * Crosslake
+ - Pedro Sousa Barreto <pedrob@crosslaketech.com>
+
+ * ModusBox
+ - Miguel de Barros <miguel.debarros@modusbox.com>
+ - Roman Pietrzak <roman.pietrzak@modusbox.com>
 
  --------------
- ******/
+******/
 
-"use strict";
+'use strict'
 
-export * from "./types";
-export * from "./infra";
+import { IDomainMessage, IMessage } from '@mojaloop/sdk-scheme-adapter-domain-lib'
+import { EventEmitter } from 'events'
+
+export type Options<tClientOptions> = {
+  client: tClientOptions
+}
+
+export interface iMessageProducer {
+  init: (handlerCallback: (message: IDomainMessage) => void) => void
+  destroy: (forceCommit: boolean) => Promise<void>
+  connect: () => void
+  pause: () => void
+  resume: () => void
+  disconnect: () => void
+  send: (kafkaMsg: IMessage | IMessage[] | any) => Promise<void>
+}
+
+export abstract class MessageProducer extends EventEmitter implements iMessageProducer {
+  abstract init (handlerCallback: (message: IDomainMessage) => void): void
+  abstract destroy (forceCommit: boolean): Promise<void>
+  abstract connect (): void
+  abstract pause (): void
+  abstract resume (): void
+  abstract disconnect (): void
+  abstract send (kafkaMsg: IMessage | IMessage[] | any): Promise<void>
+}

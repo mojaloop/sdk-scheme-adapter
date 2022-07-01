@@ -21,14 +21,51 @@
 
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
- * Modusbox
- - Shashikant Hirugade <shashikant.hirugade@modusbox.com>
- - Juan Correa <juancorrea@modusbox.com>
+
+ * Coil
+ - Donovan Changfoot <donovan.changfoot@coil.com>
+
+ * Crosslake
+ - Pedro Sousa Barreto <pedrob@crosslaketech.com>
+
+ * ModusBox
+ - Miguel de Barros <miguel.debarros@modusbox.com>
+ - Roman Pietrzak <roman.pietrzak@modusbox.com>
 
  --------------
- ******/
+******/
 
-"use strict";
+'use strict'
 
-export * from "./types";
-export * from "./infra";
+import { DomainEventMsg } from '@mojaloop/sdk-scheme-adapter-domain-lib'
+import { ParticipantsTopics, CurrencyTypes } from '../enums'
+import { ParticipantEndpoint } from '../types'
+
+export type PayeeFundsCommittedEvtPayload = {
+  transferId: string
+  payeeId: string
+  currency: CurrencyTypes
+  currentPosition: string
+  // TODO: In future these end-points should be emitted to the Notification Handler, and not included as part of this event
+  payerEndPoints: ParticipantEndpoint[]
+  payeeEndPoints: ParticipantEndpoint[]
+}
+
+export class PayeeFundsCommittedEvt extends DomainEventMsg {
+  aggregateId: string
+  aggregateName: string = 'Participants'
+  msgKey: string
+  msgTopic: string = ParticipantsTopics.DomainEvents
+
+  payload: PayeeFundsCommittedEvtPayload
+
+  constructor (payload: PayeeFundsCommittedEvtPayload) {
+    super()
+
+    this.aggregateId = this.msgKey = payload.transferId
+
+    this.payload = payload
+  }
+
+  validatePayload (): void { }
+}

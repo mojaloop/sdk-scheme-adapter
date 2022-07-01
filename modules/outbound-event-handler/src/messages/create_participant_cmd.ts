@@ -21,14 +21,52 @@
 
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
- * Modusbox
- - Shashikant Hirugade <shashikant.hirugade@modusbox.com>
- - Juan Correa <juancorrea@modusbox.com>
+
+ * Coil
+ - Donovan Changfoot <donovan.changfoot@coil.com>
+
+ * Crosslake
+ - Pedro Sousa Barreto <pedrob@crosslaketech.com>
+
+ * ModusBox
+ - Miguel de Barros <miguel.debarros@modusbox.com>
+ - Roman Pietrzak <roman.pietrzak@modusbox.com>
 
  --------------
- ******/
+******/
 
-"use strict";
+'use strict'
 
-export * from "./types";
-export * from "./infra";
+import { CommandMsg, MessageTypes } from '@mojaloop-poc/lib-domain'
+import { ParticipantsTopics, ParticipantAccount, ParticipantEndpoint } from '@mojaloop-poc/lib-public-messages'
+
+export type CreateParticipantCmdPayload = {
+  participant: {
+    id: string
+    name: string
+    accounts: ParticipantAccount[]
+    endpoints: ParticipantEndpoint[]
+    partition: number | null
+  }
+}
+
+export class CreateParticipantCmd extends CommandMsg {
+  msgType: MessageTypes
+  msgKey: string // usually the id of the aggregate (used for partitioning)
+  msgTopic: string = ParticipantsTopics.Commands
+
+  aggregateId: string
+  aggregateName: string = 'Participants'
+
+  payload: CreateParticipantCmdPayload
+
+  constructor (payload: CreateParticipantCmdPayload) {
+    super()
+
+    this.aggregateId = this.msgKey = payload?.participant?.id
+
+    this.payload = payload
+  }
+
+  validatePayload (): void { }
+}

@@ -21,14 +21,50 @@
 
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
- * Modusbox
- - Shashikant Hirugade <shashikant.hirugade@modusbox.com>
- - Juan Correa <juancorrea@modusbox.com>
+
+ * Coil
+ - Donovan Changfoot <donovan.changfoot@coil.com>
+
+ * Crosslake
+ - Pedro Sousa Barreto <pedrob@crosslaketech.com>
+
+ * ModusBox
+ - Miguel de Barros <miguel.debarros@modusbox.com>
+ - Roman Pietrzak <roman.pietrzak@modusbox.com>
 
  --------------
  ******/
 
-"use strict";
+'use strict'
 
-export * from "./types";
-export * from "./infra";
+import { StateEventMsg } from '@mojaloop-poc/lib-domain'
+import { CurrencyTypes, ParticipantsTopics } from '@mojaloop-poc/lib-public-messages'
+
+export type ParticipantPositionChangedStateEvtPayload = {
+  participant: {
+    id: string
+    currency: CurrencyTypes
+    currentPosition: string
+    partition: number | null
+  }
+}
+
+export class ParticipantPositionChangedStateEvt extends StateEventMsg {
+  msgKey: string // usually the id of the aggregate (used for partitioning)
+  msgTopic: string = ParticipantsTopics.StateEvents
+
+  aggregateId: string
+  aggregateName: string = 'Participants'
+
+  payload: ParticipantPositionChangedStateEvtPayload
+
+  constructor (payload: ParticipantPositionChangedStateEvtPayload) {
+    super()
+
+    this.aggregateId = this.msgKey = payload?.participant?.id
+    this.payload = payload
+    this.msgPartition = payload?.participant?.partition
+  }
+
+  validatePayload (): void { }
+}

@@ -19,6 +19,7 @@
     "build": "tsc"
   },
   "devDependencies": {
+    "@mojaloop/logging-bc-public-types-lib": "^0.0.3",
     "@types/node": "^17.0.41",
     "eslint": "^8.17.0",
     "husky": "^8.0.1",

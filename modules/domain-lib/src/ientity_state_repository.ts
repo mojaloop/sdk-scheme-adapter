@@ -21,14 +21,31 @@
 
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
- * Modusbox
- - Shashikant Hirugade <shashikant.hirugade@modusbox.com>
- - Juan Correa <juancorrea@modusbox.com>
+
+ * Coil
+ - Donovan Changfoot <donovan.changfoot@coil.com>
+
+ * Crosslake
+ - Pedro Sousa Barreto <pedrob@crosslaketech.com>
+
+ * ModusBox
+ - Miguel de Barros <miguel.debarros@modusbox.com>
+ - Roman Pietrzak <roman.pietrzak@modusbox.com>
 
  --------------
- ******/
+******/
 
-"use strict";
+'use strict'
 
-export * from "./types";
-export * from "./infra";
+// import { BaseEntity } from './base_entity'
+import { BaseEntityState } from './base_entity_state'
+
+export type IEntityStateRepository<S extends BaseEntityState> = {
+  init: () => Promise<void>
+  destroy: () => Promise<void>
+  canCall: () => boolean // for circuit breaker
+
+  load: (id: string) => Promise<S | null>
+  store: (entityState: S) => Promise<void>
+  remove: (id: string) => Promise<void>
+}

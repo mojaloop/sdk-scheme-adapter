@@ -21,14 +21,37 @@
 
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
- * Modusbox
- - Shashikant Hirugade <shashikant.hirugade@modusbox.com>
- - Juan Correa <juancorrea@modusbox.com>
+
+ * Coil
+ - Donovan Changfoot <donovan.changfoot@coil.com>
+
+ * Crosslake
+ - Pedro Sousa Barreto <pedrob@crosslaketech.com>
+
+ * ModusBox
+ - Miguel de Barros <miguel.debarros@modusbox.com>
+ - Roman Pietrzak <roman.pietrzak@modusbox.com>
 
  --------------
- ******/
+******/
 
-"use strict";
+'use strict'
 
-export * from "./types";
-export * from "./infra";
+// Exports for Public Messages
+export * from './enums'
+export * from './types/index'
+export * from './events/duplicate_participant_evt'
+export * from './events/duplicate_transfer_evt'
+export * from './events/invalid_participant_evt'
+export * from './events/invalid_transfer_evt'
+export * from './events/netcap_limit_exceeded_evt'
+export * from './events/participant_created_evt'
+export * from './events/payee_funds_committed_evt'
+export * from './events/payer_funds_reserved_evt'
+export * from './events/transfer_fulfil_accepted_evt'
+export * from './events/transfer_fulfil_requested_evt'
+export * from './events/transfer_fulfilled_evt'
+export * from './events/transfer_not_found_evt'
+export * from './events/transfer_prepare_accepted_evt'
+export * from './events/transfer_prepare_requested_evt'
+export * from './events/transfer_prepared_evt'

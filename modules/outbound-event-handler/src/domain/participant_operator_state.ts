@@ -21,14 +21,36 @@
 
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
- * Modusbox
- - Shashikant Hirugade <shashikant.hirugade@modusbox.com>
- - Juan Correa <juancorrea@modusbox.com>
+
+ * Coil
+ - Donovan Changfoot <donovan.changfoot@coil.com>
+
+ * Crosslake
+ - Pedro Sousa Barreto <pedrob@crosslaketech.com>
+
+ * ModusBox
+ - Miguel de Barros <miguel.debarros@modusbox.com>
+ - Roman Pietrzak <roman.pietrzak@modusbox.com>
 
  --------------
  ******/
 
-"use strict";
+'use strict'
 
-export * from "./types";
-export * from "./infra";
+export class ParticipantSnapshotState {
+  participantId: string
+  // when this number reaches zero a new snapshot should be created, this avoids loosing count on restarts,
+  // as it always sends a snapshot command on restart
+  stateEventsToNextSnapshot: number = 0
+  // timestamp of last snapshot
+  lastSnapshotTs: number = 0
+  constructor (id: string, stateEventsToNextSnapshot: number) {
+    this.participantId = id
+    this.stateEventsToNextSnapshot = stateEventsToNextSnapshot
+  }
+}
+
+export class ParticipantSnapshotOperatorState {
+  lastOnTimerTs: number = 0
+  participantSnapshotStates: ParticipantSnapshotState[] = []
+}

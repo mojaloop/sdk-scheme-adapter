@@ -21,14 +21,53 @@
 
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
- * Modusbox
- - Shashikant Hirugade <shashikant.hirugade@modusbox.com>
- - Juan Correa <juancorrea@modusbox.com>
+
+ * Coil
+ - Donovan Changfoot <donovan.changfoot@coil.com>
+
+ * Crosslake
+ - Pedro Sousa Barreto <pedrob@crosslaketech.com>
+
+ * ModusBox
+ - Miguel de Barros <miguel.debarros@modusbox.com>
+ - Roman Pietrzak <roman.pietrzak@modusbox.com>
 
  --------------
  ******/
 
-"use strict";
+'use strict'
 
-export * from "./types";
-export * from "./infra";
+import { StateEventMsg } from '@mojaloop-poc/lib-domain'
+import { ParticipantsTopics } from '@mojaloop-poc/lib-public-messages'
+import { ParticipantAccountState, ParticipantEndpointState } from '../domain/participant_entity'
+
+export type ParticipantCreatedStateEvtPayload = {
+  participant: {
+    id: string
+    name: string
+    accounts: ParticipantAccountState[]
+    endpoints: ParticipantEndpointState[]
+    partition: number | null
+  }
+}
+
+export class ParticipantCreatedStateEvt extends StateEventMsg {
+  msgKey: string // usually the id of the aggregate (used for partitioning)
+  msgTopic: string = ParticipantsTopics.StateEvents
+
+  aggregateId: string
+  aggregateName: string = 'Participants'
+
+  payload: ParticipantCreatedStateEvtPayload
+
+  constructor (payload: ParticipantCreatedStateEvtPayload) {
+    super()
+
+    this.aggregateId = this.msgKey = payload?.participant?.id
+
+    this.payload = payload
+    this.msgPartition = payload?.participant?.partition
+  }
+
+  validatePayload (): void { }
+}

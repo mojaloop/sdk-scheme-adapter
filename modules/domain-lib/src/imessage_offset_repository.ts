@@ -21,14 +21,35 @@
 
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
- * Modusbox
- - Shashikant Hirugade <shashikant.hirugade@modusbox.com>
- - Juan Correa <juancorrea@modusbox.com>
+
+ * Coil
+ - Donovan Changfoot <donovan.changfoot@coil.com>
+
+ * Crosslake
+ - Pedro Sousa Barreto <pedrob@crosslaketech.com>
+
+ * ModusBox
+ - Miguel de Barros <miguel.debarros@modusbox.com>
+ - Roman Pietrzak <roman.pietrzak@modusbox.com>
 
  --------------
- ******/
+******/
 
-"use strict";
+'use strict'
 
-export * from "./types";
-export * from "./infra";
+export type TEventStoreMessageOffset = {
+  aggregateId: string
+  topic: string
+  partition: number
+  offset: number
+}
+
+export interface IMessageOffsetRepo{
+  init: () => Promise<void>
+  destroy: () => Promise<void>
+  canCall: () => boolean // for circuit breaker
+
+  load: (aggregateId: string) => Promise<TEventStoreMessageOffset | null>
+  store: (offset: TEventStoreMessageOffset) => Promise<void>
+  remove: (aggregateId: string) => Promise<void>
+}
