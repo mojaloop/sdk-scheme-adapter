@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
-  "version": "0.0.2",
+  "version": "15.0.0",
   "description": "mojaloop sdk-scheme-adapter",
   "license": "Apache-2.0",
   "homepage": "https://github.com/mojaloop/sdk-scheme-adapter",
@@ -34,7 +34,7 @@
     "test:coverage": "yarn workspaces foreach --parallel -v run test:coverage",
     "test:coverage-check": "yarn workspaces foreach --parallel -v run test:coverage-check",
     "test:integration": "yarn workspaces foreach --parallel -v run test:integration",
-    "audit:check": "yarn workspaces foreach --parallel -v run audit:check",
+    "audit:check": "yarn dlx audit-ci@^6 --config ./audit-ci.jsonc",
     "dep:check": "yarn workspaces foreach --parallel -v run dep:check",
     "dep:update": "yarn workspaces foreach --parallel -v run dep:update"
   },
@@ -49,7 +49,8 @@
     "jest": "^27.3.1",
     "npm-check-updates": "^12.5.11",
     "ts-jest": "^27.0.7",
-    "typescript": "^4.6.4"
+    "typescript": "^4.6.4",
+    "yarn-audit-fix": "^9.3.2"
   },
   "workspaces": [
     "modules/*"

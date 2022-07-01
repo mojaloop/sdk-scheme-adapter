@@ -11,8 +11,6 @@
     "~": "src"
   },
   "scripts": {
-    "audit:resolve": "SHELL=sh resolve-audit --production",
-    "audit:check": "yarn npm audit",
     "build": "yarn run build:openapi; yarn run build:dto:outbound",
     "build:openapi": "yarn run build:openapi:inbound && yarn run build:openapi:outbound",
     "build:openapi:inbound": "openapi bundle --output ./src/InboundServer/api.yaml --ext yaml ./src/InboundServer/api_template.yaml",
