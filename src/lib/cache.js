@@ -219,7 +219,7 @@ class Cache {
             // This is required here in the advent of a disconnect/reconnect event. Redis client will re-subscribe all subscriptions, but previously enabledTestFeatures will be lost.
             // Handling this on the on subscribe event will ensure its always configured.
             if (this._config.enableTestFeatures) {
-                // this.setTestMode(true);
+                this.setTestMode(true);
             }
         });
 
