@@ -163,8 +163,7 @@ describe('outboundModel', () => {
             }
         }));
         cache = new Cache({
-            host: 'dummycachehost',
-            port: 1234,
+            cacheUrl: 'redis://dummy:1234',
             logger,
         });
         await cache.connect();

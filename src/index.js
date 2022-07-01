@@ -50,7 +50,7 @@ class Server extends EventEmitter {
         this.conf = conf;
         this.logger = logger;
         this.cache = new Cache({
-            ...conf.cacheConfig,
+            cacheUrl: conf.cacheUrl,
             logger: this.logger.push(LOG_ID.CACHE),
             enableTestFeatures: conf.enableTestFeatures,
         });
@@ -159,13 +159,13 @@ class Server extends EventEmitter {
         }
 
         let oldCache;
-        const updateCache = !_.isEqual(this.conf.cacheConfig, newConf.cacheConfig)
+        const updateCache = !_.isEqual(this.conf.cacheUrl, newConf.cacheUrl)
           || !_.isEqual(this.conf.enableTestFeatures, newConf.enableTestFeatures);
         if (updateCache) {
             oldCache = this.cache;
             await this.cache.disconnect();
             this.cache = new Cache({
-                ...newConf.cacheConfig,
+                cacheUrl: newConf.cacheUrl,
                 logger: this.logger.push(LOG_ID.CACHE),
                 enableTestFeatures: newConf.enableTestFeatures,
             });

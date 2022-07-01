@@ -83,8 +83,7 @@ describe('outboundBulkTransferModel', () => {
         MojaloopRequests.__postBulkTransfers = jest.fn(() => Promise.resolve());
 
         cache = new Cache({
-            host: 'dummycachehost',
-            port: 1234,
+            cacheUrl: 'redis://dummy:1234',
             logger,
         });
         await cache.connect();

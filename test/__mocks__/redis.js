@@ -1,53 +1,78 @@
 /**************************************************************************
- *  (C) Copyright ModusBox Inc. 2019 - All rights reserved.               *
+ *  (C) Copyright ModusBox Inc. 2020 - All rights reserved.               *
  *                                                                        *
  *  This file is made available under the terms of the license agreement  *
  *  specified in the corresponding source code repository.                *
  *                                                                        *
  *  ORIGINAL AUTHOR:                                                      *
- *       James Bush - james.bush@modusbox.com                             *
+ *       Yevhen Kyriukha - yevhen.kyriukha@modusbox.com                   *
  **************************************************************************/
 
-'use strict';
-
 const redisMock = require('redis-mock');
+const { promisify } = require('util');
 
-// redis-mock currently ignores callback argument, the following class fix this
+const { EventEmitter } = require('events');
+
+const events = {};
+
+// redis-mock currently ignores callback arguments, the following class fixes that
 class RedisClient extends redisMock.RedisClient {
-    constructor(options, stream, redisMock) {
-        super(options, stream, redisMock);
+    constructor(opts) {
+        super(opts);
+        events[opts.cacheUrl] = events[opts.cacheUrl] || new EventEmitter();
+        this.events = events[opts.cacheUrl];
     }
 
-    _executeCallback(...args) {
-        if (typeof args[args.length - 1] === 'function') {
-            const callback = args[args.length - 1];
-            const argList = Array.prototype.slice.call(args, 0, args.length - 1);
-            callback(null, argList);
-        }
+    async subscribe(...args) {
+        this.events.on(...args);
+        // return promisify(super.subscribe.bind(this))(...args);
     }
 
-    config(...args) {
-        this._executeCallback(...args);
+    async unsubscribe(channel) {
+        this.events.removeAllListeners(channel);
     }
 
-    subscribe(...args) {
-        super.subscribe(...args);
-        this._executeCallback(...args);
-    }
-
-    publish(...args) {
-        super.publish(...args);
-        this._executeCallback(...args);
+    async publish(...args) {
+        process.nextTick(() => this.events.emit(...args));
     }
 
     set(...args) {
-        super.set(...args);
-        this._executeCallback(...args);
+        return promisify(super.set.bind(this))(...args);
     }
+
+    get(...args) {
+        return promisify(super.get.bind(this))(...args);
+    }
+
+    keys(...args) {
+        return promisify(super.keys.bind(this))(...args);
+    }
+
+    end() {
+        this.events.removeAllListeners();
+    }
+
+    connect() {}
+
+    async disconnect() {
+        return this.end();
+    }
+
+    async quit() {
+        return this.end();
+    }
+
+    sAdd(...args) {
+        return promisify(super.sadd.bind(this))(...args);
+    }
+
+    sMembers(...args) {
+        return promisify(super.smembers.bind(this))(...args);
+    }
+
+    config() {}
 }
 
-
-
 module.exports = {
-    createClient: (options = {host: 'localhost', port: 6380}, stream, redisMock) => new RedisClient(options, stream, redisMock),
+    createClient: (opts) => new RedisClient(opts),
 };

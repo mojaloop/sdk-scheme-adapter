@@ -10,7 +10,6 @@
 
 'use strict';
 
-const util = require('util');
 const redis = require('redis');
 
 const CONN_ST = {
@@ -27,11 +26,12 @@ class Cache {
     constructor(config) {
         this._config = config;
 
-        if(!config.host || !config.port || !config.logger) {
-            throw new Error('Cache config requires host, port and logger properties');
+        if(!config.cacheUrl || !config.logger) {
+            throw new Error('Cache config requires cacheUrl and logger properties');
         }
 
         this._logger = config.logger;
+        this._url = config.cacheUrl;
 
         // a redis connection to handle get, set and publish operations
         this._client = null;
@@ -78,9 +78,6 @@ class Cache {
         this._inProgressConnection = Promise.all([this._getClient(), this._getClient()]);
         [this._client, this._subscriptionClient] = await this._inProgressConnection;
 
-        // hook up our sub message handler
-        this._subscriptionClient.on('message', this._onMessage.bind(this));
-
         if (this._config.enableTestFeatures) {
             this.setTestMode(true);
         }
@@ -124,8 +121,8 @@ class Cache {
         }
         this._connectionState = CONN_ST.DISCONNECTING;
         this._inProgressDisconnection = Promise.all([
-            new Promise(resolve => this._client.quit(resolve)),
-            new Promise(resolve => this._subscriptionClient.quit(resolve))
+            this._client.quit(),
+            this._subscriptionClient.quit()
         ]);
         this._client = null;
         this._subscriptionClient = null;
@@ -143,30 +140,36 @@ class Cache {
       * @returns {Promise} - Promise that resolves with an integer callback Id to submit in unsubscribe request
       */
     async subscribe(channel, callback) {
-        return new Promise((resolve, reject) => {
-            this._subscriptionClient.subscribe(channel, (err) => {
-                if(err) {
-                    this._logger.log(`Error subscribing to channel ${channel}: ${err.stack || util.inspect(err)}`);
-                    return reject(err);
+        // get an id for this callback
+        const id = this._callbackId++;
+
+        if(!this._callbacks[channel]) {
+        // if this is the first subscriber for this channel we init the hashmap
+            this._callbacks[channel] = { [id]: callback };
+            await this._subscriptionClient.subscribe(channel, (msg) => {
+                // we have some callbacks to make
+                for (const [id, cb] of Object.entries(this._callbacks[channel])) {
+                    this._logger.log(`Cache message received on channel ${channel}. Making callback with id ${id}`);
+
+                    // call the callback with the channel name, message and callbackId...
+                    // ...(which is useful for unsubscribe)
+                    try {
+                        cb(channel, msg, id);
+                    } catch (err) {
+                        this._logger
+                            .push({ callbackId: id, err })
+                            .log('Unhandled error in cache subscription handler');
+                    }
                 }
-
-                this._logger.log(`Subscribed to cache pub/sub channel ${channel}`);
-
-                if(!this._callbacks[channel]) {
-                    // if this is the first subscriber for this channel we init the hashmap
-                    this._callbacks[channel] = {};
-                }
-
-                // get an id for this callback
-                const id = this._callbackId++;
-
-                // store the callback against the channel/id
-                this._callbacks[channel][id] = callback;
-
-                // return the id we gave the callback
-                return resolve(id);
             });
-        });
+        } else {
+            this._callbacks[channel][id] = callback;
+        }
+
+        // store the callback against the channel/id
+        this._logger.log(`Subscribed to cache pub/sub channel ${channel}`);
+
+        return id;
     }
 
 
@@ -177,49 +180,22 @@ class Cache {
       * @param callbackId {integer} - id of the callback to remove
       */
     async unsubscribe(channel, callbackId) {
-        return new Promise((resolve, reject) => {
-            if(this._callbacks[channel] && this._callbacks[channel][callbackId]) {
-                delete this._callbacks[channel][callbackId];
-                this._logger.log(`Cache unsubscribed callbackId ${callbackId} from channel ${channel}`);
+        if(this._callbacks[channel] && this._callbacks[channel][callbackId]) {
+            delete this._callbacks[channel][callbackId];
+            this._logger.log(`Cache unsubscribed callbackId ${callbackId} from channel ${channel}`);
 
-                if(Object.keys(this._callbacks[channel]).length < 1) {
-                    //no more callbacks for this channel
-                    delete this._callbacks[channel];
-                }
-
-                return resolve();
+            if(Object.keys(this._callbacks[channel]).length < 1) {
+                //no more callbacks for this channel
+                delete this._callbacks[channel];
+                await this._subscriptionClient.unsubscribe(channel);
             }
-
+        } else {
             // we should not be asked to unsubscribe from a subscription we do not have. Raise this as a promise
             // rejection so it can be spotted. It may indiate a logic bug somewhere else
             this._logger.log(`Cache not subscribed to channel ${channel} for callbackId ${callbackId}`);
-            return reject(new Error(`Channel ${channel} does not have a callback with id ${callbackId} subscribed`));
-        });
-    }
-
-
-    /**
-      * Handler for published messages
-      */
-    async _onMessage(channel, msg) {
-        if(this._callbacks[channel]) {
-            // we have some callbacks to make
-            Object.keys(this._callbacks[channel]).forEach(k => {
-                this._logger.log(`Cache message received on channel ${channel}. Making callback with id ${k}`);
-
-                // call the callback with the channel name, message and callbackId...
-                // ...(which is useful for unsubscribe)
-                try {
-                    this._callbacks[channel][k](channel, msg, k);
-                } catch (err) {
-                    this._logger
-                        .push({ callbackId: k, err })
-                        .log('Unhandled error in cache subscription handler');
-                }
-            });
+            throw new Error(`Channel ${channel} does not have a callback with id ${callbackId} subscribed`);
         }
     }
-
 
     /**
       * Returns a new redis client
@@ -227,38 +203,36 @@ class Cache {
       * @returns {object} - a connected REDIS client
       * */
     async _getClient() {
-        return new Promise((resolve, reject) => {
-            const client = redis.createClient(this._config);
+        const client = redis.createClient({ url: this._url });
 
-            client.on('error', (err) => {
-                this._logger.push({ err }).log('Error from REDIS client getting subscriber');
-                return reject(err);
-            });
-
-            client.on('reconnecting', (err) => {
-                this._logger.push({ err }).log('REDIS client Reconnecting');
-                return reject(err);
-            });
-
-            client.on('subscribe', (channel, count) => {
-                this._logger.push({ channel, count }).log('REDIS client subscribe');
-                // On a subscribe event, ensure that testFeatures are enabled.
-                // This is required here in the advent of a disconnect/reconnect event. Redis client will re-subscribe all subscriptions, but previously enabledTestFeatures will be lost.
-                // Handling this on the on subscribe event will ensure its always configured.
-                if (this._config.enableTestFeatures) {
-                    this.setTestMode(true);
-                }
-            });
-
-            client.on('connect', () => {
-                this._logger.log(`REDIS client connected at: ${this._config.host}:${this._config.port}`);
-            });
-
-            client.on('ready', () => {
-                this._logger.log(`Connected to REDIS at: ${this._config.host}:${this._config.port}`);
-                return resolve(client);
-            });
+        client.on('error', (err) => {
+            this._logger.push({ err }).log('Error from REDIS client getting subscriber');
         });
+
+        client.on('reconnecting', (err) => {
+            this._logger.push({ err }).log('REDIS client Reconnecting');
+        });
+
+        client.on('subscribe', (channel, count) => {
+            this._logger.push({ channel, count }).log('REDIS client subscribe');
+            // On a subscribe event, ensure that testFeatures are enabled.
+            // This is required here in the advent of a disconnect/reconnect event. Redis client will re-subscribe all subscriptions, but previously enabledTestFeatures will be lost.
+            // Handling this on the on subscribe event will ensure its always configured.
+            if (this._config.enableTestFeatures) {
+                // this.setTestMode(true);
+            }
+        });
+
+        client.on('connect', () => {
+            this._logger.log(`REDIS client connected at: ${this._url}`);
+        });
+
+        client.on('ready', () => {
+            this._logger.log(`Connected to REDIS at: ${this._url}`);
+        });
+        await client.connect();
+
+        return client;
     }
 
 
@@ -270,23 +244,11 @@ class Cache {
       * @returns {Promise} - Promise that will resolve with redis replies or reject with an error
       */
     async publish(channelName, value) {
-        return new Promise((resolve, reject) => {
-            if(typeof(value) !== 'string') {
-                // ALWAYS publish string values
-                value = JSON.stringify(value);
-            }
-
-            // note that we publish on the non-SUBSCRIBE connection
-            this._client.publish(channelName, value, (err, replies) => {
-                if(err) {
-                    this._logger.push({ channelName, err }).log(`Error publishing to channel ${channelName}`);
-                    return reject(err);
-                }
-
-                this._logger.push({ channelName, value }).log(`Published to channel ${channelName}`);
-                return resolve(replies);
-            });
-        });
+        if(typeof(value) !== 'string') {
+            // ALWAYS publish string values
+            value = JSON.stringify(value);
+        }
+        await this._client.publish(channelName, value);
     }
 
 
@@ -297,22 +259,11 @@ class Cache {
       * @param value {stirng} - cache value
       */
     async set(key, value) {
-        return new Promise((resolve, reject) => {
-            //if we are given an object, turn it into a string
-            if(typeof(value) !== 'string') {
-                value = JSON.stringify(value);
-            }
-
-            this._client.set(key, value, (err, replies) => {
-                if(err) {
-                    this._logger.push({ key, value, err }).log(`Error setting cache key: ${key}`);
-                    return reject(err);
-                }
-
-                this._logger.push({ key, value, replies }).log(`Set cache key: ${key}`);
-                return resolve(replies);
-            });
-        });
+        //if we are given an object, turn it into a string
+        if(typeof(value) !== 'string') {
+            value = JSON.stringify(value);
+        }
+        await this._client.set(key, value);
     }
 
     /**
@@ -322,22 +273,11 @@ class Cache {
       * @param value {string} - cache value
       */
     async add(key, value) {
-        return new Promise((resolve, reject) => {
-            //if we are given an object, turn it into a string
-            if(typeof(value) !== 'string') {
-                value = JSON.stringify(value);
-            }
-
-            this._client.sadd(key, value, (err, replies) => {
-                if(err) {
-                    this._logger.push({ key, value, err }).log(`Error setting cache key: ${key}`);
-                    return reject(err);
-                }
-
-                this._logger.push({ key, value, replies }).log(`Add cache key: ${key}`);
-                return resolve(replies);
-            });
-        });
+        //if we are given an object, turn it into a string
+        if(typeof(value) !== 'string') {
+            value = JSON.stringify(value);
+        }
+        await this._client.sAdd(key, value);
     }
 
     /**
@@ -346,28 +286,7 @@ class Cache {
       * @param key {string} - cache key
       */
     async members(key) {
-        return new Promise((resolve, reject) => {
-            this._client.smembers(key, (err, value) => {
-                if(err) {
-                    this._logger.push({ key, err }).log(`Error getting cache key: ${key}`);
-                    return reject(err);
-                }
-
-                this._logger.push({ key, value }).log(`Got cache key: ${key}`);
-
-                if(typeof(value) === 'string') {
-                    try {
-                        value = JSON.parse(value);
-                    }
-                    catch(err) {
-                        this._logger.push({ err }).log('Error parsing JSON cache value');
-                        return reject(err);
-                    }
-                }
-
-                return resolve(value);
-            });
-        });
+        return this._client.sMembers(key);
     }
 
     /**
@@ -376,28 +295,16 @@ class Cache {
       * @param key {string} - cache key
       */
     async get(key) {
-        return new Promise((resolve, reject) => {
-            this._client.get(key, (err, value) => {
-                if(err) {
-                    this._logger.push({ key, err }).log(`Error getting cache key: ${key}`);
-                    return reject(err);
-                }
-
-                this._logger.push({ key, value }).log(`Got cache key: ${key}`);
-
-                if(typeof(value) === 'string') {
-                    try {
-                        value = JSON.parse(value);
-                    }
-                    catch(err) {
-                        this._logger.push({ err }).log('Error parsing JSON cache value');
-                        return reject(err);
-                    }
-                }
-
-                return resolve(value);
-            });
-        });
+        let value = await this._client.get(key);
+        if(typeof(value) === 'string') {
+            try {
+                value = JSON.parse(value);
+            }
+            catch(err) {
+                this._logger.push({ err }).log('Error parsing JSON cache value');
+            }
+        }
+        return value;
     }
 }
 

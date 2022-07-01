@@ -49,10 +49,7 @@
   "jwsSignPutParties": false,
   "jwsSigningKey": "/jwsSigningKey.key",
   "jwsVerificationKeysDirectory": null,
-  "cacheConfig": {
-    "host": "localhost",
-    "port": 6379
-  },
+  "cacheUrl": "redis://localhost:6379",
   "enableTestFeatures": false,
   "oauthTestServer": {
     "enabled": false,
