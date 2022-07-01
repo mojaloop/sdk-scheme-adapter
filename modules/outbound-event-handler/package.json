@@ -56,6 +56,6 @@
     },
     "dependencies": {
         "@mojaloop/logging-bc-client-lib": "^0.0.10",
-        "@mojaloop/sdk-scheme-adapter-private-types-lib": "0.1.0"
+        "@mojaloop/sdk-scheme-adapter-private-types-lib": "workspace:*"
     }
 }
