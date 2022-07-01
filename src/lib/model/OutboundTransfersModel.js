@@ -163,7 +163,7 @@ class OutboundTransfersModel {
         if(!this.data.hasOwnProperty('direction')) {
             this.data.direction = 'OUTBOUND';
         }
-        if(this.data.skipPartyLookup && typeof(this.data.to.fspId) === undefined) {
+        if(this.data.skipPartyLookup && !this.data.to.fspId) {
             throw new Error('fspId of to party must be specific id when skipPartyLookup is truthy');
         }
 

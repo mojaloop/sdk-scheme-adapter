@@ -35,7 +35,7 @@ describe('Outbound Accounts API', () => {
 
     beforeAll(async () => {
         validatorsInfo = await createValidators();
-        redisClient = redis.createClient();
+        redisClient = redis.createClient(defaultConfig);
     });
 
     beforeEach(async () => {
@@ -52,7 +52,7 @@ describe('Outbound Accounts API', () => {
     });
 
     afterAll(async () => {
-        redisClient.end();
+        // redisClient.end();
     });
 
     describe('POST /accounts', () => {
