@@ -190,9 +190,9 @@ jobs:
           name: Restore Yarn Package Cache
           keys:
             - yarn-packages-{{ checksum "yarn.lock" }}
-      # - run:
-      #     name: Install Dependencies
-      #     command: yarn install --immutable
+      - run:
+          name: Install Dependencies
+          command: yarn install --immutable
       - run:
           name: Validate openapi
           command: yarn run build:openapi && yarn run validate:api
