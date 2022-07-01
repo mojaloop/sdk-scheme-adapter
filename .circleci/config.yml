@@ -97,7 +97,7 @@ jobs:
             - .yarn/cache
             - .yarn/unplugged
             - node_modules
-            - modules/api-svc/node_modules
+            # - modules/api-svc/node_modules
       - run:
           name: Delete build dependencies
           command: apk del build-dependencies
@@ -209,12 +209,12 @@ jobs:
           keys:
             - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
-          name: Install Dependencies
-          command: yarn install
-      - run:
           name: Install Dependencies for api-svc
           command: yarn install
           working_directory: /home/circleci/project/modules/api-svc
+      - run:
+          name: Install Dependencies
+          command: yarn install
       - run:
           name: Create dir for lint results
           command: mkdir -p /lintresults
