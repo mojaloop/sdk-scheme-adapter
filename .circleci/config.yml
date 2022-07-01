@@ -85,7 +85,7 @@ jobs:
       - checkout
       - run:
           name: Install Dependencies for api-svc
-          command: yarn install --immutable
+          command: yarn install
           working_directory: /home/circleci/project/modules/api-svc
       - run:
           name: Install Dependencies
