@@ -23,6 +23,8 @@ const router = require('../lib/router');
 const handlers = require('./handlers');
 const middlewares = require('./middlewares');
 
+const logExcludePaths = ['/'];
+
 class InboundApi extends EventEmitter {
     constructor(conf, logger, cache, validator, wso2) {
         super({ captureExceptions: true });
@@ -99,7 +101,7 @@ class InboundApi extends EventEmitter {
             api.use(middlewares.createJwsValidator(logger, jwsVerificationKeys, jwsExclusions));
         }
 
-        api.use(middlewares.applyState({ cache, wso2, conf }));
+        api.use(middlewares.applyState({ cache, wso2, conf, logExcludePaths }));
         api.use(middlewares.createLogger(logger));
         api.use(middlewares.createRequestValidator(validator));
         api.use(middlewares.assignFspiopIdentifier());
@@ -133,7 +135,7 @@ class InboundServer extends EventEmitter {
     constructor(conf, logger, cache, wso2) {
         super({ captureExceptions: true });
         this._conf = conf;
-        this._validator = new Validate();
+        this._validator = new Validate({ logExcludePaths });
         this._logger = logger;
         this._api = new InboundApi(
             conf,
