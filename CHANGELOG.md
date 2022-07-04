@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/thirdparty-api-svc](https://github.com/mojaloop/thirdparty-api-svc)
+### [17.0.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v17.0.0...v17.0.1) (2022-07-04)
+
+
+### Bug Fixes
+
+* creating inbound server ([#329](https://github.com/mojaloop/sdk-scheme-adapter/issues/329)) ([962420f](https://github.com/mojaloop/sdk-scheme-adapter/commit/962420f6fed02722c5a9aeee6c108b6fbc9f021d))
+
 ## [17.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v15.0.1...v17.0.0) (2022-07-04)
 
 
