@@ -125,6 +125,13 @@ const transformApiDoc = apiDoc => ({
 });
 
 class Validator {
+    /**
+   * @param {{logExcludePaths: string[]}} [opts]
+   */
+
+    constructor(opts) {
+        this.logExcludePaths = opts?.logExcludePaths || [];
+    }
     // apiDoc
     //   POJO representing apiDoc API spec. Example:
     //   const v = new Validator(require('./apiDoc.json'));
@@ -163,7 +170,9 @@ class Validator {
         }
         result.params = Object.assign({}, ...path.match(result.matcher.regex).slice(1).map((m, i) => ({ [result.matcher.params[i]]: m})));
 
-        logger.push({ path, result }).log('Matched path');
+        if (!this.logExcludePaths.includes(path)) {
+            logger.push({path, result}).log('Matched path');
+        }
         return result;
     }
 

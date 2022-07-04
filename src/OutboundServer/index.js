@@ -23,6 +23,7 @@ const handlers = require('./handlers');
 const middlewares = require('./middlewares');
 
 const endpointRegex = /\/.*/g;
+const logExcludePaths = ['/'];
 
 class OutboundApi extends EventEmitter {
     constructor(conf, logger, cache, validator, metricsClient, wso2) {
@@ -36,7 +37,7 @@ class OutboundApi extends EventEmitter {
         this._api.use(middlewares.createErrorHandler(this._logger));
         this._api.use(middlewares.createRequestIdGenerator());
         this._api.use(koaBody()); // outbound always expects application/json
-        this._api.use(middlewares.applyState({ cache, wso2, conf, metricsClient }));
+        this._api.use(middlewares.applyState({ cache, wso2, conf, metricsClient, logExcludePaths }));
         this._api.use(middlewares.createLogger(this._logger));
 
         //Note that we strip off any path on peerEndpoint config after the origin.
@@ -69,7 +70,7 @@ class OutboundApi extends EventEmitter {
 class OutboundServer extends EventEmitter {
     constructor(conf, logger, cache, metricsClient, wso2) {
         super({ captureExceptions: true });
-        this._validator = new Validate();
+        this._validator = new Validate({ logExcludePaths });
         this._conf = conf;
         this._logger = logger;
         this._server = null;
