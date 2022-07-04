@@ -78,7 +78,6 @@ class Server extends EventEmitter {
             this.conf,
             this.logger.push(LOG_ID.INBOUND),
             this.cache,
-            this.metricsClient,
             this.wso2,
         );
         this.inboundServer.on('error', (...args) => {
@@ -195,7 +194,6 @@ class Server extends EventEmitter {
                 newConf,
                 this.logger.push(LOG_ID.INBOUND),
                 this.cache,
-                this.metricsClient,
                 this.wso2,
             );
             this.inboundServer.on('error', (...args) => {
