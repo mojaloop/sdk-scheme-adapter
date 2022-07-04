@@ -1,4 +1,21 @@
 # Changelog: [mojaloop/thirdparty-api-svc](https://github.com/mojaloop/thirdparty-api-svc)
+## [17.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v15.0.1...v17.0.0) (2022-07-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* add dummy pr to major version bump due to unsquashed title (#327)
+
+### Features
+
+* suppress health check logs ([#328](https://github.com/mojaloop/sdk-scheme-adapter/issues/328)) ([64fadde](https://github.com/mojaloop/sdk-scheme-adapter/commit/64faddea8307aa0c19d56466d0afe8f8208c4d66))
+
+
+### Chore
+
+* add dummy pr to major version bump due to unsquashed title ([#327](https://github.com/mojaloop/sdk-scheme-adapter/issues/327)) ([ff0f29b](https://github.com/mojaloop/sdk-scheme-adapter/commit/ff0f29b7ce560565ee21cf6ae84118e1b391b5b5))
+* **release:** 16.0.0 [skip ci] ([0071c65](https://github.com/mojaloop/sdk-scheme-adapter/commit/0071c65c3665239d0a482e76498f9eec5c288043))
+
 ## [16.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v15.0.1...v16.0.0) (2022-07-01)
 
 
