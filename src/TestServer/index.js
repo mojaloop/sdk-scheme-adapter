@@ -21,6 +21,8 @@ const router = require('../lib/router');
 const handlers = require('./handlers');
 const middlewares = require('../InboundServer/middlewares');
 
+const logExcludePaths = ['/'];
+
 const getWsIp = (req) => [
     req.socket.remoteAddress,
     ...(
@@ -36,7 +38,7 @@ class TestApi {
 
         this._api.use(middlewares.createErrorHandler(logger));
         this._api.use(middlewares.createRequestIdGenerator());
-        this._api.use(middlewares.applyState({ cache }));
+        this._api.use(middlewares.applyState({ cache, logExcludePaths }));
         this._api.use(middlewares.createLogger(logger));
 
         this._api.use(middlewares.createRequestValidator(validator));
@@ -174,7 +176,7 @@ class TestServer {
     constructor({ port, logger, cache }) {
         this._port = port;
         this._logger = logger;
-        this._validator = new Validate();
+        this._validator = new Validate({ logExcludePaths });
         this._api = new TestApi(this._logger.push({ component: 'api' }), this._validator, cache);
         this._server = http.createServer(this._api.callback());
         // TODO: why does this appear to need to be called after creating this._server (try reorder
