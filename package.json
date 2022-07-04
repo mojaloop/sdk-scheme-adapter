@@ -11,8 +11,8 @@
     "~": "src"
   },
   "scripts": {
-    "audit:resolve": "SHELL=sh resolve-audit --production",
-    "audit:check": "SHELL=sh check-audit --production",
+    "audit:resolve": "resolve-audit --production",
+    "audit:check": "check-audit --production",
     "build": "npm run build:openapi; npm run build:dto:outbound",
     "build:openapi": "npm run build:openapi:inbound && npm run build:openapi:outbound",
     "build:openapi:inbound": "openapi bundle --output ./src/InboundServer/api.yaml --ext yaml ./src/InboundServer/api_template.yaml",
@@ -57,7 +57,7 @@
   "dependencies": {
     "@koa/cors": "^3.1.0",
     "@mojaloop/central-services-shared": "17.0.2",
-    "@mojaloop/sdk-standard-components": "^17.0.4",
+    "@mojaloop/sdk-standard-components": "^17.1.0",
     "ajv": "8.11.0",
     "axios": "^0.27.2",
     "co-body": "^6.1.0",
@@ -88,7 +88,7 @@
     "@redocly/openapi-cli": "^1.0.0-beta.59",
     "@types/jest": "^28.1.4",
     "babel-jest": "^28.1.2",
-    "eslint": "^8.18.0",
+    "eslint": "^8.19.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.24.2",
     "eslint-plugin-jest": "^26.5.3",
@@ -96,12 +96,12 @@
     "jest-junit": "^14.0.0",
     "nock": "^13.2.8",
     "npm-audit-resolver": "^3.0.0-0",
-    "npm-check-updates": "^15.0.1",
+    "npm-check-updates": "^15.0.2",
     "openapi-response-validator": "^12.0.0",
     "openapi-typescript": "^5.4.0",
     "redis-mock": "^0.56.3",
     "standard-version": "^9.3.1",
-    "supertest": "^6.1.6",
+    "supertest": "^6.2.4",
     "swagger-cli": "^4.0.4"
   }
 }
