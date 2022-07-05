@@ -1,0 +1,73 @@
+{
+  "name": "@mojaloop/sdk-scheme-adapter-utilities-lib",
+  "version": "0.1.0",
+  "description": "sdk scheme adapter utilities library",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/mojaloop/poc-architecture",
+  "bugs": {
+    "url": "https://github.com/mojaloop/<repo-name>/issues#readme"
+  },
+  "author": "Pedro Sousa Barreto <pedrob@crosslaketech.com>",
+  "contributors": [
+    "Miguel de Barros <miguel.debarros@modusbox.com>",
+    "Donovan Changfoot <donovan.changfoot@coil.com>",
+    "Roman Pietrzak <roman.pietrzak@modusbox.com>"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "pre-commit": [
+    "dep:check",
+    "build",
+    "lint",
+    "test:unit"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rm -Rf dist",
+    "pretest": "npm run build",
+    "standard": "npm run lint",
+    "lint": "npm run build && npx eslint ./src",
+    "lint:fix": "npm run build && npx eslint ./src --fix",
+    "test:unit": "jest --passWithNoTests --testMatch '**/test/unit/**/*.test.ts'",
+    "test:coverage": "jest --passWithNoTests --coverage --coverageThreshold='{}' --testMatch '**/test/unit/**/*.test.ts'",
+    "test:coverage-check": "jest --coverage --testMatch '**/test/unit/**/*.test.ts'",
+    "audit:resolve": "SHELL=sh resolve-audit",
+    "audit:check": "SHELL=sh check-audit",
+    "dep:check": "npx ncu -e 2",
+    "dep:update": "npx ncu -u"
+  },
+  "dependencies": {
+    "@mojaloop/central-services-logger": "^10.6.0",
+    "@mojaloop/sdk-scheme-adapter-domain-lib": "^0.1.0",
+    "base64url": "^3.0.1",
+    "prom-client": "^13.0.0"
+  },
+  "devDependencies": {
+    "@types/kafka-node": "^3.0.0",
+    "@types/node": "^14.14.20",
+    "@types/redis": "^2.8.28",
+    "@types/uuid": "^8.3.0",
+    "@typescript-eslint/eslint-plugin": "^4.12.0",
+    "eslint": "^7.17.0",
+    "eslint-config-prettier": "^7.1.0",
+    "eslint-config-standard-with-typescript": "^19.0.1",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^5.0.0",
+    "faucet": "0.0.1",
+    "jest": "^26.6.3",
+    "jest-junit": "^12.0.0",
+    "npm-audit-resolver": "^2.2.1",
+    "npm-check-updates": "^10.2.5",
+    "nyc": "^15.1.0",
+    "pre-commit": "^1.2.2",
+    "ts-jest": "^26.4.4",
+    "typedoc": "^0.20.13",
+    "typescript": "^4.1.3"
+  }
+}

@@ -37,8 +37,8 @@
 
 'use strict'
 
-import { StateSnapshotMsg } from '@mojaloop-poc/lib-domain'
-import { ParticipantsTopics } from '@mojaloop-poc/lib-public-messages'
+import { StateSnapshotMsg } from '@mojaloop/sdk-scheme-adapter-domain-lib'
+import { ParticipantsTopics } from '@mojaloop/sdk-scheme-adapter-public-messages-lib'
 import { ParticipantState } from '../domain/participant_entity'
 
 /*

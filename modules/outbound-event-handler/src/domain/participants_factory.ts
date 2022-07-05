@@ -37,7 +37,7 @@
 
 'use strict'
 
-import { IEntityFactory } from '@mojaloop-poc/lib-domain'
+import { IEntityFactory } from '@mojaloop/sdk-scheme-adapter-domain-lib'
 import { ParticipantEntity, ParticipantState } from './participant_entity'
 
 export class ParticipantsFactory implements IEntityFactory<ParticipantEntity, ParticipantState> {

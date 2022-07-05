@@ -37,8 +37,8 @@
 
 'use strict'
 
-import { StateEventMsg } from '@mojaloop-poc/lib-domain'
-import { ParticipantsTopics } from '@mojaloop-poc/lib-public-messages'
+import { StateEventMsg } from '@mojaloop/sdk-scheme-adapter-domain-lib'
+import { ParticipantsTopics } from '@mojaloop/sdk-scheme-adapter-public-messages-lib'
 import { ParticipantAccountState, ParticipantEndpointState } from '../domain/participant_entity'
 
 export type ParticipantCreatedStateEvtPayload = {

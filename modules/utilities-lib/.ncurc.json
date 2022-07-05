@@ -1,0 +1,7 @@
+{
+  "reject": [
+    "@mojaloop/sdk-scheme-adapter-domain-lib",
+    "@mojaloop/sdk-scheme-adapter-infrastructure-lib",
+    "@mojaloop/sdk-scheme-adapter-utilities-lib"
+  ]
+}

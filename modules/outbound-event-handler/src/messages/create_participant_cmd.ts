@@ -37,8 +37,8 @@
 
 'use strict'
 
-import { CommandMsg, MessageTypes } from '@mojaloop-poc/lib-domain'
-import { ParticipantsTopics, ParticipantAccount, ParticipantEndpoint } from '@mojaloop-poc/lib-public-messages'
+import { CommandMsg, MessageTypes } from '@mojaloop/sdk-scheme-adapter-domain-lib'
+import { ParticipantsTopics, ParticipantAccount, ParticipantEndpoint } from '@mojaloop/sdk-scheme-adapter-public-messages-lib'
 
 export type CreateParticipantCmdPayload = {
   participant: {

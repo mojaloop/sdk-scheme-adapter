@@ -31,6 +31,7 @@
  * ModusBox
  - Miguel de Barros <miguel.debarros@modusbox.com>
  - Roman Pietrzak <roman.pietrzak@modusbox.com>
+ - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
 
  --------------
 ******/
@@ -41,10 +42,8 @@ import { v4 as uuidv4 } from 'uuid'
 // base stuff, can be used for other messaging objects like logging or tracing
 
 export enum MessageTypes{
-  'STATE_EVENT' =0, // for private event-sourcing events
-  'STATE_SNAPSHOT', // for private event-sourcing snapshot events
   'DOMAIN_EVENT', // public domain events
-  'COMMAND', // commands
+  'COMMAND_EVENT', // commands
 }
 
 export type TTraceInfo = {

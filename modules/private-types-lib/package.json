@@ -16,7 +16,8 @@
     "/dist"
   ],
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "test:unit": "jest --passWithNoTests --testMatch '**/test/unit/**/*.test.ts'"
   },
   "devDependencies": {
     "@mojaloop/logging-bc-public-types-lib": "^0.0.3",

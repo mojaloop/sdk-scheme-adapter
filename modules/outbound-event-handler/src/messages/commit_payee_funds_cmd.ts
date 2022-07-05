@@ -37,8 +37,8 @@
 
 'use strict'
 
-import { CommandMsg } from '@mojaloop-poc/lib-domain'
-import { ParticipantsTopics, CurrencyTypes } from '@mojaloop-poc/lib-public-messages'
+import { CommandMsg } from '@mojaloop/sdk-scheme-adapter-domain-lib'
+import { ParticipantsTopics, CurrencyTypes } from '@mojaloop/sdk-scheme-adapter-public-messages-lib'
 
 export type CommitPayeeFundsCmdPayload = {
   payerId: string

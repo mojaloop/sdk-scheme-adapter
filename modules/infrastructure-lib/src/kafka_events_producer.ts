@@ -1,13 +1,12 @@
+
+
 /*****
  License
  --------------
  Copyright © 2017 Bill & Melinda Gates Foundation
  The Mojaloop files are made available by the Bill & Melinda Gates Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
-
  http://www.apache.org/licenses/LICENSE-2.0
-
  Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
-
  Contributors
  --------------
  This is the official list (alphabetical ordering) of the Mojaloop project contributors for this file.
@@ -18,56 +17,38 @@
  Gates Foundation organization for an example). Those individuals should have
  their names indented and be marked with a '-'. Email address can be added
  optionally within square brackets <email>.
-
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
-
- * Coil
- - Donovan Changfoot <donovan.changfoot@coil.com>
-
- * Crosslake
- - Pedro Sousa Barreto <pedrob@crosslaketech.com>
-
- * ModusBox
- - Miguel de Barros <miguel.debarros@modusbox.com>
- - Roman Pietrzak <roman.pietrzak@modusbox.com>
-
+ * Modusbox
+ - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
  --------------
-******/
+ ******/
 
-'use strict'
+"use strict";
 
-// import * as kafka from 'kafka-node'
-import { ConsoleLogger } from '@mojaloop-poc/lib-utilities'
-import { ILogger, IMessage, IMessagePublisher } from '@mojaloop/sdk-scheme-adapter-domain-lib'
-import { KafkaGenericProducer, KafkaGenericProducerOptions } from './kafka_generic_producer'
+import { MLKafkaProducer, MLKafkaProducerOptions } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib'
+import { IMessage } from "@mojaloop/platform-shared-lib-messaging-types-lib";
+import { IEventsProducer } from '@mojaloop/sdk-scheme-adapter-private-types-lib'
+import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 
-export class KafkaMessagePublisher implements IMessagePublisher {
-  private readonly _producer: KafkaGenericProducer
-  protected _logger: ILogger
+export class KafkaEventsProducer implements IEventsProducer {
+    private _kafkaProducer: MLKafkaProducer;
+    private _logger: ILogger;
+    private _handler: (message: IMessage) => Promise<void>
 
-  constructor (options: KafkaGenericProducerOptions, logger?: ILogger) {
-    this._logger = logger ?? new ConsoleLogger()
-    this._producer = new KafkaGenericProducer(options, this._logger)
-  }
+    constructor(producerOptions: MLKafkaProducerOptions, logger: ILogger) {
+        this._logger = logger;
+        this._kafkaProducer = new MLKafkaProducer(producerOptions, this._logger);
+    }
+    async init(): Promise<void> {
+        await this._kafkaProducer.connect()
+    }
 
-  get envName (): string {
-    return this._producer.envName
-  }
+    async send(message: IMessage): Promise<void> {        
+        await this._kafkaProducer.send(message)
+    }
 
-  async init (): Promise<void> {
-    return await this._producer.init()
-  }
-
-  async destroy (): Promise<void> {
-    return await this._producer.destroy()
-  }
-
-  async publish (message: IMessage): Promise<void> {
-    return await this._producer.send(message)
-  }
-
-  async publishMany (messages: IMessage[]): Promise<void> {
-    return await this._producer.send(messages)
-  }
+    async destroy(): Promise<void> {
+        await this._kafkaProducer.destroy();
+    }
 }

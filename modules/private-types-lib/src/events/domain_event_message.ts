@@ -3,11 +3,8 @@
  --------------
  Copyright © 2017 Bill & Melinda Gates Foundation
  The Mojaloop files are made available by the Bill & Melinda Gates Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
-
  http://www.apache.org/licenses/LICENSE-2.0
-
  Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
-
  Contributors
  --------------
  This is the official list (alphabetical ordering) of the Mojaloop project contributors for this file.
@@ -18,56 +15,36 @@
  Gates Foundation organization for an example). Those individuals should have
  their names indented and be marked with a '-'. Email address can be added
  optionally within square brackets <email>.
-
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
-
- * Coil
- - Donovan Changfoot <donovan.changfoot@coil.com>
-
- * Crosslake
- - Pedro Sousa Barreto <pedrob@crosslaketech.com>
-
- * ModusBox
- - Miguel de Barros <miguel.debarros@modusbox.com>
- - Roman Pietrzak <roman.pietrzak@modusbox.com>
-
+ * Modusbox
+ - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
  --------------
-******/
+ ******/
 
 'use strict'
 
-// import * as kafka from 'kafka-node'
-import { ConsoleLogger } from '@mojaloop-poc/lib-utilities'
-import { ILogger, IMessage, IMessagePublisher } from '@mojaloop/sdk-scheme-adapter-domain-lib'
-import { KafkajsProducer, KafkaJsProducerOptions } from './kafkajs_producer'
+import { IMessage } from "@mojaloop/platform-shared-lib-messaging-types-lib";
+import { IEventMessageData, EventMessageType, BaseEventMessage } from './base_event_message';
 
-export class KafkajsMessagePublisher implements IMessagePublisher {
-  private readonly _producer: KafkajsProducer
-  protected _logger: ILogger
+export class DomainEventMessage extends BaseEventMessage {
 
-  constructor (options: KafkaJsProducerOptions, logger?: ILogger) {
-    this._logger = logger ?? new ConsoleLogger()
-    this._producer = new KafkajsProducer(options, this._logger)
+  constructor (data: IEventMessageData) {
+    super(data);
   }
 
-  get envName (): string {
-    return this._producer.envName
+  static createFromIMessage(message: IMessage): DomainEventMessage {
+    return <DomainEventMessage>super.createFromIMessage(message)
   }
 
-  async init (): Promise<void> {
-    return await this._producer.init()
+  // Overriding the parent method and perform additional validations
+  protected static _validateMessage (obj: any): void {
+    super._validateMessage(obj);
+    // Additional validation here
+    if (obj.value.eventMessageType !== EventMessageType.DOMAIN_EVENT) {
+      throw(new Error('.value.eventMessageName is not equal to DOMAIN_EVENT'))
+    }
   }
 
-  async destroy (): Promise<void> {
-    return await this._producer.destroy()
-  }
-
-  async publish (message: IMessage): Promise<void> {
-    return await this._producer.send(message)
-  }
-
-  async publishMany (messages: IMessage[]): Promise<void> {
-    return await this._producer.send(messages)
-  }
 }
+

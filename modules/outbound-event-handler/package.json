@@ -27,6 +27,7 @@
         "service": "tsc && node dist/application/index.js",
         "build": "tsc",
         "watch": "tsc -w",
+        "dev": "nodemon",
         "clean": "rm -Rf dist",
         "pretest": "yarn run build",
         "standard": "yarn run lint",
@@ -42,6 +43,7 @@
     },
     "devDependencies": {
         "@mojaloop/logging-bc-public-types-lib": "^0.0.3",
+        "@mojaloop/sdk-scheme-adapter-private-types-lib": "workspace:^",
         "@types/jest": "^27.0.3",
         "@types/node": "^16.11.9",
         "@types/node-cache": "^4.2.5",
@@ -50,12 +52,20 @@
         "eslint": "^8.14.0",
         "husky": "^7.0.4",
         "jest": "^27.3.1",
+        "nodemon": "^2.0.18",
         "npm-check-updates": "^12.5.11",
         "ts-jest": "^27.0.7",
+        "ts-node": "^10.8.2",
         "typescript": "^4.6.4"
     },
     "dependencies": {
-        "@mojaloop/logging-bc-client-lib": "^0.0.10",
-        "@mojaloop/sdk-scheme-adapter-private-types-lib": "workspace:*"
+        "@mojaloop/logging-bc-client-lib": "^0.0.10"
+    },
+    "nodemonConfig": {
+        "watch": [
+            "src/**/*.ts"
+        ],
+        "ext": "ts",
+        "exec": "ts-node src/application/index.ts"
     }
 }

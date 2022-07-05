@@ -39,7 +39,7 @@
 
 import { ParticipantState } from '../domain/participant_entity'
 import { IParticipantRepo } from '../domain/participant_repo'
-import { ParticipantAccountTypes } from '../../../libPublicMessages/dist/enums'
+import { ParticipantAccountTypes } from '@mojaloop/sdk-scheme-adapter-public-messages-lib'
 
 // export class InMemoryParticipantStateRepo implements IEntityStateRepository<ParticipantState> {
 export class InMemoryParticipantStateRepo implements IParticipantRepo {

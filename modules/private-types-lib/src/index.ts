@@ -32,3 +32,4 @@
 
 export * from "./types";
 export * from "./infra";
+export * from "./events";

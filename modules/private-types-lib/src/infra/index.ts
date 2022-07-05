@@ -50,3 +50,5 @@ export enum RdKafkaCommitMode {
 
 
 export * from "./irun_handler";
+export * from "./iEventsConsumer";
+export * from "./iEventsProducer";

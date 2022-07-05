@@ -37,8 +37,8 @@
 
 'use strict'
 
-import { BaseEntityState, BaseEntity } from '@mojaloop-poc/lib-domain'
-import { CurrencyTypes, AccountLimitTypes, ParticipantAccountTypes } from '@mojaloop-poc/lib-public-messages'
+import { BaseEntityState, BaseEntity } from '@mojaloop/sdk-scheme-adapter-domain-lib'
+import { CurrencyTypes, AccountLimitTypes, ParticipantAccountTypes } from '@mojaloop/sdk-scheme-adapter-public-messages-lib'
 import { BigNumber } from 'bignumber.js'
 
 export class InvalidAccountError extends Error {}
@@ -147,7 +147,7 @@ export class ParticipantEntity extends BaseEntity<ParticipantState> {
   private canReserveFunds (currency: CurrencyTypes, amount: string): boolean {
     const incomingAmount = new BigNumber(amount)
 
-    if (incomingAmount.isNaN() || incomingAmount.isLessThanOrEqualTo(0)) { return false }
+    if (incomingAmount.isNaN() || incomingAmount.lessThanOrEqualTo(0)) { return false }
     const accountState = this.getAccount(ParticipantAccountTypes.POSITION, currency)
     if (accountState == null) throw new InvalidAccountError(`Unable to 'canReserveFunds' - Unknown account '${currency}' for Account '${this.id}'`)
     const limitValue = this.getLimitFromAccount(accountState, AccountLimitTypes.NET_DEBIT_CAP)?.value
@@ -156,7 +156,7 @@ export class ParticipantEntity extends BaseEntity<ParticipantState> {
     const currentLimit = new BigNumber(limitValue)
     if (currentPosition.isNaN()) { return false }
     const result = currentPosition.plus(incomingAmount)
-    return result.isLessThan(currentLimit)
+    return result.lessThan(currentLimit)
   }
 
   commitFunds (currency: CurrencyTypes, amount: string): void {

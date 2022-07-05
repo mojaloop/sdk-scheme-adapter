@@ -37,8 +37,8 @@
 
 'use strict'
 
-import { StateEventMsg } from '@mojaloop-poc/lib-domain'
-import { CurrencyTypes, ParticipantsTopics } from '@mojaloop-poc/lib-public-messages'
+import { StateEventMsg } from '@mojaloop/sdk-scheme-adapter-domain-lib'
+import { CurrencyTypes, ParticipantsTopics } from '@mojaloop/sdk-scheme-adapter-public-messages-lib'
 
 export type ParticipantPositionChangedStateEvtPayload = {
   participant: {

@@ -37,8 +37,8 @@
 
 'use strict'
 
-import { IEntityStateRepository } from '@mojaloop-poc/lib-domain'
-import { ParticipantAccountTypes } from '@mojaloop-poc/lib-public-messages'
+import { IEntityStateRepository } from '@mojaloop/sdk-scheme-adapter-domain-lib'
+import { ParticipantAccountTypes } from '@mojaloop/sdk-scheme-adapter-public-messages-lib'
 import { ParticipantState } from './participant_entity'
 
 export type IParticipantRepo = {

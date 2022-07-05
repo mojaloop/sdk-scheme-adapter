@@ -38,12 +38,12 @@
 
 'use strict'
 
-import { BaseEventSourcingAggregate, IMessagePublisher, ILogger, TCommandResult, IESourcingStateRepository, IEntityDuplicateRepository, StateSnapshotMsg } from '@mojaloop-poc/lib-domain'
+import { BaseEventSourcingAggregate, IMessagePublisher, ILogger, TCommandResult, IESourcingStateRepository, IEntityDuplicateRepository, StateSnapshotMsg } from '@mojaloop/sdk-scheme-adapter-domain-lib'
 import { ParticipantEntity, ParticipantState, InvalidAccountError, InvalidLimitError, NetDebitCapLimitExceededError, ParticipantEndpointState, ParticipantAccountState, ParticipantLimitState } from './participant_entity'
 import { ParticipantsFactory } from './participants_factory'
 import { ReservePayerFundsCmd } from '../messages/reserve_payer_funds_cmd'
 import { CreateParticipantCmd } from '../messages/create_participant_cmd'
-import { DuplicateParticipantDetectedEvt, InvalidParticipantEvt, PayerFundsReservedEvt, ParticipantCreatedEvt, NetCapLimitExceededEvt, PayeeFundsCommittedEvt, ParticipantAccountTypes, PayerFundsReservedEvtPayload, ParticipantEndpoint } from '@mojaloop-poc/lib-public-messages'
+import { DuplicateParticipantDetectedEvt, InvalidParticipantEvt, PayerFundsReservedEvt, ParticipantCreatedEvt, NetCapLimitExceededEvt, PayeeFundsCommittedEvt, ParticipantAccountTypes, PayerFundsReservedEvtPayload, ParticipantEndpoint } from '@mojaloop/sdk-scheme-adapter-public-messages-lib'
 import { IParticipantRepo } from './participant_repo'
 import { CommitPayeeFundsCmd } from '../messages/commit_payee_funds_cmd'
 import { ParticipantCreatedStateEvtPayload, ParticipantCreatedStateEvt } from '../messages/participant_created_stateevt'
@@ -260,7 +260,7 @@ export class ParticpantsAgg extends BaseEventSourcingAggregate<ParticipantEntity
       const stateEvt: ParticipantPositionChangedStateEvt = new ParticipantPositionChangedStateEvt(stateEvtPayload)
 
       return { success: true, stateEvent: stateEvt }
-    } catch (err) {
+    } catch (err: any) {
       switch (err.constructor) {
         case InvalidAccountError:
         case InvalidLimitError: {
@@ -360,7 +360,7 @@ export class ParticpantsAgg extends BaseEventSourcingAggregate<ParticipantEntity
       const stateEvt: ParticipantPositionChangedStateEvt = new ParticipantPositionChangedStateEvt(stateEvtPayload)
 
       return { success: true, stateEvent: stateEvt }
-    } catch (err) {
+    } catch (err: any) {
       switch (err.constructor) {
         case InvalidAccountError:
         case InvalidLimitError: {

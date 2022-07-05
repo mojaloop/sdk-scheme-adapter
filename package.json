@@ -59,6 +59,7 @@
     "yarn": "3.2.0"
   },
   "dependencies": {
+    "nodemon": "^2.0.18",
     "tslib": "^2.4.0"
   }
 }

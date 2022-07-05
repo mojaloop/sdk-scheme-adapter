@@ -38,10 +38,9 @@
 
 'use strict'
 
-import { ILogger } from '@mojaloop/sdk-scheme-adapter-domain-lib'
-import { IMetricsFactory } from '@mojaloop-poc/lib-utilities'
+import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 
 export interface IRunHandler {
-  start: (appConfig: any, logger: ILogger, metrics: IMetricsFactory) => Promise<void>
+  start: (appConfig: any, logger: ILogger) => Promise<void>
   destroy: () => Promise<void>
 }
