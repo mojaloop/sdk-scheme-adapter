@@ -54,6 +54,11 @@
       "decision": "ignore",
       "madeAt": 1657188203603,
       "expiresAt": 1659780190646
+    },
+    "1080969|@mojaloop/central-services-shared>@mojaloop/event-sdk>grpc>protobufjs>moment": {
+      "decision": "ignore",
+      "madeAt": 1657217280998,
+      "expiresAt": 1659809259103
     }
   },
   "rules": {},
