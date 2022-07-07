@@ -23,7 +23,6 @@ services:
     depends_on:
       - redis
     command: sh -c "/tmp/wait4/wait4.js sdk-scheme-adapter && npm run start"
-    # command: sh -c "/tmp/wait4/wait4.js sdk-scheme-adapter && sleep 999999"
     volumes:
       - ./docker/wait4:/tmp/wait4
       - ./secrets:/opt/app/secrets
