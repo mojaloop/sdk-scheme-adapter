@@ -11,6 +11,7 @@
     "~": "src"
   },
   "scripts": {
+    "start": "node src/index.js",
     "audit:resolve": "npx resolve-audit --production",
     "audit:check": "npx check-audit --production",
     "build": "npm run build:openapi; npm run build:dto:outbound",

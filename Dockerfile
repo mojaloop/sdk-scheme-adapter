@@ -4,7 +4,7 @@ RUN apk add --no-cache git python3 build-base
 
 EXPOSE 3000
 
-WORKDIR /src
+WORKDIR /opt/app
 
 # This is super-ugly, but it means we don't have to re-run npm install every time any of the source
 # files change- only when any dependencies change- which is a superior developer experience when
@@ -12,7 +12,12 @@ WORKDIR /src
 COPY ./package.json .
 COPY ./package-lock.json .
 RUN npm ci --only=production
+
+COPY src /opt/app/src
+
 FROM node:16.15.0-alpine
+WORKDIR /opt/app
+
 
 ARG BUILD_DATE
 ARG VCS_URL
@@ -32,8 +37,6 @@ LABEL org.label-schema.version=$VERSION
 RUN adduser -D ml-user 
 USER ml-user
 
-COPY --from=builder /src/ /src
-COPY ./src ./src
-COPY ./secrets /
+COPY --chown=ml-user --from=builder /opt/app .
 
-CMD ["node", "src/index.js"]
+CMD ["npm", "run", "start"]
