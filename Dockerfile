@@ -28,6 +28,10 @@ LABEL org.label-schema.vcs-ref=$VCS_REF
 LABEL org.label-schema.url="https://mojaloop.io/"
 LABEL org.label-schema.version=$VERSION
 
+# Create a non-root user: ml-user
+RUN adduser -D ml-user 
+USER ml-user
+
 COPY --from=builder /src/ /src
 COPY ./src ./src
 COPY ./secrets /
