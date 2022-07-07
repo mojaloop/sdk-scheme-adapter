@@ -17,10 +17,7 @@ const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const shared = require('./lib/shared');
 const { BackendError } = require('./common');
 
-const stateEnum = {
-    'ERROR_OCCURRED': 'ERROR_OCCURRED',
-    'COMPLETED': 'COMPLETED',
-};
+const { SDKStateEnum } = require('./common');
 
 
 /**
@@ -381,16 +378,16 @@ class OutboundBulkQuotesModel {
 
         switch(this.data.currentState) {
             case 'succeeded':
-                resp.currentState = stateEnum.COMPLETED;
+                resp.currentState = SDKStateEnum.COMPLETED;
                 break;
 
             case 'errored':
-                resp.currentState = stateEnum.ERROR_OCCURRED;
+                resp.currentState = SDKStateEnum.ERROR_OCCURRED;
                 break;
 
             default:
                 this._logger.log(`Bulk quote model response being returned from an unexpected state: ${this.data.currentState}. Returning ERROR_OCCURRED state`);
-                resp.currentState = stateEnum.ERROR_OCCURRED;
+                resp.currentState = SDKStateEnum.ERROR_OCCURRED;
                 break;
         }
 

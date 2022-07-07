@@ -10,17 +10,6 @@
 
 'use strict';
 
-const TransferStateEnum = {
-    'WAITING_FOR_PARTY_ACCEPTANCE': 'WAITING_FOR_PARTY_ACCEPTANCE',
-    'QUOTE_REQUEST_RECEIVED': 'QUOTE_REQUEST_RECEIVED',
-    'WAITING_FOR_QUOTE_ACCEPTANCE': 'WAITING_FOR_QUOTE_ACCEPTANCE',
-    'PREPARE_RECEIVED': 'PREPARE_RECEIVED',
-    'ERROR_OCCURRED': 'ERROR_OCCURRED',
-    'COMPLETED': 'COMPLETED',
-    'ABORTED': 'ABORTED',
-    'RESERVED': 'RESERVED',
-};
-
 class BackendError extends Error {
     constructor(msg, httpStatusCode) {
         super(msg);
@@ -45,6 +34,5 @@ class BackendError extends Error {
 
 
 module.exports = {
-    BackendError,
-    TransferStateEnum,
+    BackendError
 };

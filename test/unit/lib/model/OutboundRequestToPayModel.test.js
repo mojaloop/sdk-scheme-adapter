@@ -20,6 +20,7 @@ const PartiesModel = require('~/lib/model').PartiesModel;
 
 const { MojaloopRequests, Logger } = require('@mojaloop/sdk-standard-components');
 const StateMachine = require('javascript-state-machine');
+const { SDKStateEnum } = require('../../../../src/lib/model/common');
 
 const defaultConfig = require('./data/defaultConfig');
 const requestToPayRequest = require('./data/requestToPayRequest');
@@ -124,7 +125,7 @@ describe('outboundModel', () => {
         expect(MojaloopRequests.__postTransactionRequests).toHaveBeenCalledTimes(1);
 
         // check we stopped at payeeResolved state
-        expect(result.currentState).toBe('COMPLETED');
+        expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
         expect(result.requestToPayState).toBe('RECEIVED');
         expect(StateMachine.__instance.state).toBe('succeeded');
     });
@@ -157,7 +158,7 @@ describe('outboundModel', () => {
         const result = await resultPromise;
 
         // check we stopped at payeeResolved state
-        expect(result.currentState).toBe('WAITING_FOR_PARTY_ACCEPTANCE');
+        expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_PARTY_ACCEPTANCE);
         expect(StateMachine.__instance.state).toBe('payeeResolved');
     });
 

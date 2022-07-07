@@ -12,6 +12,7 @@
 const util = require('util');
 
 const PSM = require('./common').PersistentStateMachine;
+const { SDKStateEnum } = require('./common');
 const MojaloopRequests = require('@mojaloop/sdk-standard-components').MojaloopRequests;
 const deferredJob = require('./lib').deferredJob;
 
@@ -123,9 +124,9 @@ function generate({
     }
 
     const mapCurrentState = {
-        start: 'WAITING_FOR_ACTION',
-        succeeded: 'COMPLETED',
-        errored: 'ERROR_OCCURRED'
+        start: SDKStateEnum.WAITING_FOR_ACTION,
+        succeeded: SDKStateEnum.COMPLETED,
+        errored: SDKStateEnum.ERROR_OCCURRED
     };
 
     /**

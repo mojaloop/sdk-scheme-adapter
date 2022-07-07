@@ -18,13 +18,7 @@ const shared = require('./lib/shared');
 const { BackendError } = require('./common');
 const PartiesModel = require('./PartiesModel');
 
-const requestToPayTransferStateEnum = {
-    'WAITING_FOR_QUOTE_ACCEPTANCE': 'WAITING_FOR_QUOTE_ACCEPTANCE',
-    'WAITING_FOR_OTP_ACCEPTANCE': 'WAITING_FOR_OTP_ACCEPTANCE',
-    'ERROR_OCCURRED': 'ERROR_OCCURRED',
-    'COMPLETED': 'COMPLETED',
-};
-
+const { SDKStateEnum } = require('./common');
 
 /**
  *  Models the state machine and operations required for performing an outbound transfer
@@ -826,24 +820,24 @@ class OutboundRequestToPayTransferModel {
 
         switch(this.data.currentState) {
             case 'quoteReceived':
-                resp.currentState = requestToPayTransferStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE;
+                resp.currentState = SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE;
                 break;
 
             case 'otpReceived':
-                resp.currentState = requestToPayTransferStateEnum.WAITING_FOR_OTP_ACCEPTANCE;
+                resp.currentState = SDKStateEnum.WAITING_FOR_OTP_ACCEPTANCE;
                 break;
 
             case 'succeeded':
-                resp.currentState = requestToPayTransferStateEnum.COMPLETED;
+                resp.currentState = SDKStateEnum.COMPLETED;
                 break;
 
             case 'errored':
-                resp.currentState = requestToPayTransferStateEnum.ERROR_OCCURRED;
+                resp.currentState = SDKStateEnum.ERROR_OCCURRED;
                 break;
 
             default:
                 this._logger.log(`Transfer model response being returned from an unexpected state: ${this.data.currentState}. Returning ERROR_OCCURRED state`);
-                resp.currentState = requestToPayTransferStateEnum.ERROR_OCCURRED;
+                resp.currentState = SDKStateEnum.ERROR_OCCURRED;
                 break;
         }
 

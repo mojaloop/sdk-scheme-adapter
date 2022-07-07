@@ -2,6 +2,7 @@
 
 const axios = require('axios');
 const env = require('../../testEnv');
+const { SDKStateEnum } = require('../../../../src/lib/model/common');
 
 jest.dontMock('redis');
 
@@ -12,7 +13,7 @@ describe('/parties', () => {
         const res = await axios.get(getPartiesURI);
 
         expect(res.status).toEqual(200);
-        expect(res.data.currentState).toEqual('COMPLETED');
+        expect(res.data.currentState).toEqual(SDKStateEnum.COMPLETED);
         expect(typeof res.data.party).toEqual('object');
         expect(typeof res.data.party.body).toEqual('object');
         expect(typeof res.data.party.headers).toEqual('object');
