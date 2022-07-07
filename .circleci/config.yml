@@ -257,7 +257,6 @@ jobs:
   license-scan:
     executor: default-machine
     steps:
-      - checkout
       - attach_workspace:
           at: /tmp
       - run:
@@ -267,9 +266,10 @@ jobs:
           <<: *defaults_license_scanner
       - run:
           name: Run the license-scanner
-          command: cd /tmp/license-scanner && mode=docker dockerImages=mojaloop/$CIRCLE_PROJECT_REPONAME:local make run
+          command: cd /tmp/license-scanner && mode=docker dockerImages=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG make run
       - store_artifacts:
           path: /tmp/license-scanner/results
+          prefix: licenses
 
   image-scan:
     executor: anchore/anchore_engine
