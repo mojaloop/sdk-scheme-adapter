@@ -96,7 +96,7 @@
     "jest": "^28.1.2",
     "jest-junit": "^14.0.0",
     "nock": "^13.2.8",
-    "npm-audit-resolver": "^3.0.0-0",
+    "npm-audit-resolver": "^3.0.0-7",
     "npm-check-updates": "^15.2.0",
     "openapi-response-validator": "^12.0.0",
     "openapi-typescript": "^5.4.0",
