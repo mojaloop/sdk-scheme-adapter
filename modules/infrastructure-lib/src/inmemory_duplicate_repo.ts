@@ -36,7 +36,7 @@
 ******/
 'use strict'
 
-import { IEntityDuplicateRepository } from '@mojaloop/sdk-scheme-adapter-domain-lib'
+import { IEntityDuplicateRepository } from '@mojaloop/sdk-scheme-adapter-public-types-lib'
 
 export class InMemoryTransferDuplicateRepo implements IEntityDuplicateRepository {
   private readonly _inMemorySet: Set<string> = new Set<string>()

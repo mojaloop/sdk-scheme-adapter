@@ -37,7 +37,7 @@
 'use strict'
 
 import * as redis from 'redis'
-import { ILogger, IMessageOffsetRepo, TEventStoreMessageOffset } from '@mojaloop/sdk-scheme-adapter-domain-lib'
+import { ILogger, IMessageOffsetRepo, TEventStoreMessageOffset } from '@mojaloop/sdk-scheme-adapter-public-types-lib'
 // @ts-expect-error
 import RedisClustr = require('redis-clustr')
 

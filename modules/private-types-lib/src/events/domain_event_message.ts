@@ -27,14 +27,24 @@
 import { IMessage } from "@mojaloop/platform-shared-lib-messaging-types-lib";
 import { IEventMessageData, EventMessageType, BaseEventMessage } from './base_event_message';
 
+export interface IDomainEventMessageData extends Omit<IEventMessageData, 'type'>{}
+
 export class DomainEventMessage extends BaseEventMessage {
 
-  constructor (data: IEventMessageData) {
-    super(data);
+  constructor (data: IDomainEventMessageData) {
+    super({
+      ...data,
+      type: EventMessageType.DOMAIN_EVENT
+    });
   }
 
   static createFromIMessage(message: IMessage): DomainEventMessage {
-    return <DomainEventMessage>super.createFromIMessage(message)
+    // Validate message
+    this._validateMessage(message);
+    // Prepare Data
+    const {type, ...data} = super._prepareDataFromIMessage(message)
+    
+    return new DomainEventMessage(data)
   }
 
   // Overriding the parent method and perform additional validations
@@ -47,4 +57,3 @@ export class DomainEventMessage extends BaseEventMessage {
   }
 
 }
-

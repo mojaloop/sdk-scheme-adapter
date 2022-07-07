@@ -1,0 +1,22 @@
+{
+    "parser": "@typescript-eslint/parser",
+    "plugins": [ "@typescript-eslint" ],
+    "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+    "rules": {
+      "semi": ["warn"]
+    },
+    "parserOptions": {
+      "sourceType": "module", // Allows for the use of imports
+      "project": "./tsconfig.json"
+    },
+    "ignorePatterns": [ "**/*.d.ts", "**/*.js.map" ],
+    "overrides": [
+      {
+        // Disable some rules that we abuse in unit tests.
+        "files": [ "test/**/*.ts" ],
+        "rules": {
+          "@typescript-eslint/explicit-function-return-type": "off"
+        }
+      }
+    ]
+}

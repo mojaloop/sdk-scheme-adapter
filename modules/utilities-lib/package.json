@@ -42,7 +42,6 @@
   },
   "dependencies": {
     "@mojaloop/central-services-logger": "^10.6.0",
-    "@mojaloop/sdk-scheme-adapter-domain-lib": "^0.1.0",
     "base64url": "^3.0.1",
     "prom-client": "^13.0.0"
   },

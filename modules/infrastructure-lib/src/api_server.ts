@@ -40,7 +40,7 @@
 
 import { fastify as Fastify, FastifyInstance, RouteShorthandOptions } from 'fastify'
 import { Server, IncomingMessage, ServerResponse } from 'http'
-import { ILogger } from '@mojaloop/sdk-scheme-adapter-domain-lib'
+import { ILogger } from '@mojaloop/sdk-scheme-adapter-public-types-lib'
 
 export type TApiServerOptions = {
   host: string

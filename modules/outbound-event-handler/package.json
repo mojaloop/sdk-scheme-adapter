@@ -44,6 +44,7 @@
     "devDependencies": {
         "@mojaloop/logging-bc-public-types-lib": "^0.0.3",
         "@mojaloop/sdk-scheme-adapter-private-types-lib": "workspace:^",
+        "@mojaloop/sdk-scheme-adapter-public-types-lib": "workspace:^",
         "@types/jest": "^27.0.3",
         "@types/node": "^16.11.9",
         "@types/node-cache": "^4.2.5",

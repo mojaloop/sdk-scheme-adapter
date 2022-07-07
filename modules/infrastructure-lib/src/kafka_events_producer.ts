@@ -44,7 +44,7 @@ export class KafkaEventsProducer implements IEventsProducer {
         await this._kafkaProducer.connect()
     }
 
-    async send(message: IMessage): Promise<void> {        
+    async send (message: IMessage): Promise<void> {        
         await this._kafkaProducer.send(message)
     }
 

@@ -1,5 +1,5 @@
 import { KafkaMessagePublisher } from '../../src/kafka_message_publisher'
-import { IMessage, MessageTypes } from '@mojaloop/sdk-scheme-adapter-domain-lib'
+import { IMessage, MessageTypes } from '@mojaloop/sdk-scheme-adapter-public-types-lib'
 
 describe('Kafka Message Publisher', () => {
 

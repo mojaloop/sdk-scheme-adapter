@@ -26,5 +26,16 @@
     "npm-check-updates": "^13.1.2",
     "ts-jest": "^28.0.4",
     "typescript": "^4.7.3"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "src/**/*.ts"
+    ],
+    "ext": "ts",
+    "exec": "ts-node src/entities/sdk_bulk_request.ts"
+  },
+  "dependencies": {
+    "@mojaloop/api-snippets": "^14.0.0",
+    "ts-node": "^10.8.2"
   }
 }

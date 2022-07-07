@@ -41,14 +41,14 @@ export class KafkaDomainEventsConsumer extends KafkaEventsConsumer {
     const consumerOptions: MLKafkaConsumerOptions = {
       // TODO: Parameterize this
       kafkaBrokerList: 'localhost:9092',
-      kafkaGroupId: 'domain_events_consumer_group_' + Date.now(),
+      kafkaGroupId: 'domain_events_consumer_group',
       outputType: MLKafkaConsumerOutputType.Json
     }
     const superHandlerFn = async (message: IMessage) => {
       // Construct domain event message from IMessage
-      const domainEventMessageObj = new DomainEventMessage(message);
+      const domainEventMessageObj = DomainEventMessage.createFromIMessage(message);
       // Call handler function with domain event message
-      await handlerFn(domainEventMessageObj)
+      await handlerFn(domainEventMessageObj);
     }
     super(consumerOptions, CONSUME_TOPICS, superHandlerFn ,logger);
   }

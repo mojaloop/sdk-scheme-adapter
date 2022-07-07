@@ -26,7 +26,6 @@ import { EventMessageType, DomainEventMessage } from "../../../src/events";
 
 const sampleDomainEventMessageData: any = {
   key: 'sample-key1',
-  type: EventMessageType.DOMAIN_EVENT,
   name: 'some-event-name-here',
   content: null,
   timestamp: Date.now(),
@@ -48,24 +47,26 @@ const sampleIMessage: any = {
 describe ('DomainEventMessage', () => {
   describe("Positive scenarios", () => {
     it("should create a domain event message object from event message data", () => {
-      const domainEventObj = new DomainEventMessage(sampleDomainEventMessageData);
-      expect(domainEventObj).not.toBeUndefined();
-      expect(domainEventObj.getKey()).toEqual(sampleDomainEventMessageData.key)
-      expect(domainEventObj.getTimeStamp()).toEqual(sampleDomainEventMessageData.timestamp)
-      expect(domainEventObj.getType()).toEqual(sampleDomainEventMessageData.type)
+      const eventObj = new DomainEventMessage(sampleDomainEventMessageData);
+      expect(eventObj).not.toBeUndefined();
+      expect(eventObj.getKey()).toEqual(sampleDomainEventMessageData.key)
+      expect(eventObj.getTimeStamp()).toEqual(sampleDomainEventMessageData.timestamp)
+      expect(eventObj.getType()).toEqual(EventMessageType.DOMAIN_EVENT)
+      expect(eventObj).toBeInstanceOf(DomainEventMessage)
     });
     it("should create a domain event message object from imessage object", () => {
-      const domainEventObj = DomainEventMessage.createFromIMessage(sampleIMessage);
-      expect(domainEventObj).not.toBeUndefined();
-      expect(domainEventObj.getKey()).toEqual(sampleIMessage.key)
-      expect(domainEventObj.getTimeStamp()).toEqual(sampleIMessage.timestamp)
-      expect(domainEventObj.getType()).toEqual(sampleIMessage.value.eventMessageType)
+      const eventObj = DomainEventMessage.createFromIMessage(sampleIMessage);
+      expect(eventObj).not.toBeUndefined();
+      expect(eventObj.getKey()).toEqual(sampleIMessage.key)
+      expect(eventObj.getTimeStamp()).toEqual(sampleIMessage.timestamp)
+      expect(eventObj.getType()).toEqual(sampleIMessage.value.eventMessageType)
+      expect(eventObj).toBeInstanceOf(DomainEventMessage)
     });
     it("should create a domain event message object from event message data and generate iMessage", () => {
-      const domainEventObj = new DomainEventMessage(sampleDomainEventMessageData);
-      expect(domainEventObj).not.toBeUndefined();
-      expect(domainEventObj.getKey()).toEqual(sampleDomainEventMessageData.key)
-      const iMessage = domainEventObj.toIMessage('some-supplied-topic');
+      const eventObj = new DomainEventMessage(sampleDomainEventMessageData);
+      expect(eventObj).not.toBeUndefined();
+      expect(eventObj.getKey()).toEqual(sampleDomainEventMessageData.key)
+      const iMessage = eventObj.toIMessage('some-supplied-topic');
       expect(iMessage.key).toEqual(sampleDomainEventMessageData.key)
       expect(iMessage.timestamp).toEqual(sampleDomainEventMessageData.timestamp)
       expect(iMessage.topic).toEqual('some-supplied-topic')

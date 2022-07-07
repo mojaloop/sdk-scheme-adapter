@@ -26,5 +26,6 @@
 
 export * from "./base_event_message";
 export * from "./domain_event_message";
-// export * from "./command_event_message";
+export * from "./outbound_domain_event_message";
+export * from "./command_event_message";
 

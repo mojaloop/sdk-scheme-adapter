@@ -30,24 +30,11 @@
 
 "use strict";
 
-export enum KafkaInfraTypes {
-  NODE_KAFKA = 'node-kafka',
-  NODE_KAFKA_STREAM = 'node-kafka-stream',
-  KAFKAJS = 'kafkajs',
-  NODE_RDKAFKA = 'node-rdkafka'
-}
-
 export enum RedisDuplicateInfraTypes {
   REDIS = 'redis',
   REDIS_SHARDED = 'redis-sharded',
   MEMORY = 'memory'
 }
-
-export enum RdKafkaCommitMode {
-  RDKAFKA_COMMIT_NO_WAIT = 'no-wait',
-  RDKAFKA_COMMIT_MSG_SYNC = 'commit-msg-sync'
-}
-
 
 export * from "./irun_handler";
 export * from "./iEventsConsumer";

@@ -37,13 +37,6 @@
 
 'use strict'
 
-export enum KafkaInfraTypes {
-  NODE_KAFKA = 'node-kafka',
-  NODE_KAFKA_STREAM = 'node-kafka-stream',
-  KAFKAJS = 'kafkajs',
-  NODE_RDKAFKA = 'node-rdkafka'
-}
-
 export enum RedisDuplicateInfraTypes {
   REDIS = 'redis',
   REDIS_SHARDED = 'redis-sharded',
@@ -55,11 +48,10 @@ export * from './kafka_events_consumer'
 export * from './kafka_domain_events_consumer'
 export * from './kafka_events_producer'
 export * from './kafka_domain_events_producer'
-export * from './imessage_consumer'
 export * from './irun_handler'
 export * from './api_server'
 export * from './inmemory_duplicate_repo'
 export * from './redis_duplicate_repo'
 export * from './redis_duplicate_sharded_repo'
 export * from './redis_messageoffset_repo'
-export * from './eventsourcing_repo'
+

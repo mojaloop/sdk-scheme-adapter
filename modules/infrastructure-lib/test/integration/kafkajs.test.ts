@@ -1,7 +1,7 @@
 import { KafkaJsConsumerOptions, KafkaJsConsumer } from '../../src/kafkajs_consumer'
 import { KafkaJsProducerOptions, KafkajsProducer } from '../../src/kafkajs_producer'
-import { SimpleLogger } from '@mojaloop/sdk-scheme-adapter-domain-lib/test/unit/utilities/simple_logger'
-import { IMessage, MessageTypes, IDomainMessage } from '@mojaloop/sdk-scheme-adapter-domain-lib'
+import { SimpleLogger } from '@mojaloop/sdk-scheme-adapter-public-types-lib/test/unit/utilities/simple_logger'
+import { IMessage, MessageTypes, IDomainMessage } from '@mojaloop/sdk-scheme-adapter-public-types-lib'
 
 describe('Kafkajs Consumer and Publisher', () => {
   const kafkajsPublisherConfig: KafkaJsProducerOptions = {

@@ -25,16 +25,30 @@
 'use strict'
 
 import { IMessage } from "@mojaloop/platform-shared-lib-messaging-types-lib";
-import { EventMessageType, BaseEventMessage } from './base_event_message';
+import { IEventMessageData, EventMessageType, BaseEventMessage } from './base_event_message';
+
+export interface ICommandEventMessageData extends Omit<IEventMessageData, 'type'>{}
 
 export class CommandEventMessage extends BaseEventMessage {
 
-  constructor (message: IMessage) {
-    super(message);
+  constructor (data: ICommandEventMessageData) {
+    super({
+      ...data,
+      type: EventMessageType.COMMAND_EVENT
+    });
+  }
+
+  static createFromIMessage(message: IMessage): CommandEventMessage {
+    // Validate message
+    this._validateMessage(message);
+    // Prepare Data
+    const {type, ...data} = super._prepareDataFromIMessage(message)
+    
+    return new CommandEventMessage(data)
   }
 
   // Overriding the parent method and perform additional validations
-  protected _validateMessage (obj: any): void {
+  protected static _validateMessage (obj: any): void {
     super._validateMessage(obj);
     // Additional validation here
     if (obj.value.eventMessageType !== EventMessageType.COMMAND_EVENT) {
@@ -43,4 +57,4 @@ export class CommandEventMessage extends BaseEventMessage {
   }
 
 }
-
+ 

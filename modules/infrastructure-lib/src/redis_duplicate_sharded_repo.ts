@@ -37,7 +37,7 @@
 'use strict'
 
 // import * as redis from 'redis'
-import { ILogger, IEntityDuplicateRepository } from '@mojaloop/sdk-scheme-adapter-domain-lib'
+import { ILogger, IEntityDuplicateRepository } from '@mojaloop/sdk-scheme-adapter-public-types-lib'
 import * as redis from 'redis'
 // @ts-expect-error
 import RedisClustr = require('redis-clustr')

@@ -59,6 +59,9 @@ export class BaseEventMessage {
     this._data = data
   }
 
+  getData (): IEventMessageData {
+    return this._data;
+  }
   getKey (): string | Buffer | null {
     return this._data.key;
   }
@@ -81,8 +84,15 @@ export class BaseEventMessage {
   static createFromIMessage (message: IMessage): BaseEventMessage {
     // Validate message
     this._validateMessage(message);
+    // Prepare Data
+    const data = this._prepareDataFromIMessage(message)
+    
+    return new BaseEventMessage(data)
+  }
+
+  protected static _prepareDataFromIMessage (message: IMessage): IEventMessageData {
     const eventMessageValue: IEventMessageValue = <IEventMessageValue>message.value
-    const data = {
+    const data: IEventMessageData = {
       key: message.key,
       type: eventMessageValue.eventMessageType,
       name: eventMessageValue.eventMessageName,
@@ -90,7 +100,7 @@ export class BaseEventMessage {
       timestamp: message.timestamp,
       headers: message.headers
     }
-    return new BaseEventMessage(data)
+    return data
   }
 
   toIMessage (topic: string): IMessage {

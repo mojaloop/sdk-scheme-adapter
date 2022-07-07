@@ -43,7 +43,6 @@
   },
   "dependencies": {
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "^0.0.8",
-    "@mojaloop/sdk-scheme-adapter-domain-lib": "^0.1.0",
     "@types/async": "^3.2.5",
     "@types/jest": "^26.0.20",
     "@types/lodash": "^4.14.167",
