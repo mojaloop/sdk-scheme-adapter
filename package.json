@@ -11,8 +11,8 @@
     "~": "src"
   },
   "scripts": {
-    "audit:resolve": "resolve-audit --production",
-    "audit:check": "check-audit --production",
+    "audit:resolve": "npx resolve-audit --production",
+    "audit:check": "npx check-audit --production",
     "build": "npm run build:openapi; npm run build:dto:outbound",
     "build:openapi": "npm run build:openapi:inbound && npm run build:openapi:outbound",
     "build:openapi:inbound": "openapi bundle --output ./src/InboundServer/api.yaml --ext yaml ./src/InboundServer/api_template.yaml",
