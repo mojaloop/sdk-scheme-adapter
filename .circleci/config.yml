@@ -860,7 +860,7 @@ workflows:
             - validate-openapi
           filters:
             tags:
-              only: /v[0-9]+(\.[0-9]+)*/
+              only: /v[0-9]+(\.[0-9]+)*\-snapshot+((\.[0-9]+)?)/
             branches:
               ignore:
                 - /.*/
@@ -879,7 +879,7 @@ workflows:
             - validate-openapi
           filters:
             tags:
-              only: /.*/
+              only: /v[0-9]+(\.[0-9]+)*/
             branches:
               ignore:
                 - /.*/
