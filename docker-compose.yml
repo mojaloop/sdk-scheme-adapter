@@ -22,9 +22,11 @@ services:
       - "4002:4002"
     depends_on:
       - redis
-    command: sh -c "/wait4/wait4.js sdk-scheme-adapter; node src/index.js"
+    command: sh -c "/tmp/wait4/wait4.js sdk-scheme-adapter && npm run start"
+    # command: sh -c "/tmp/wait4/wait4.js sdk-scheme-adapter && sleep 999999"
     volumes:
-      - ./docker/wait4:/wait4
+      - ./docker/wait4:/tmp/wait4
+      - ./secrets:/opt/app/secrets
 
   ml-testing-toolkit:
     networks:
