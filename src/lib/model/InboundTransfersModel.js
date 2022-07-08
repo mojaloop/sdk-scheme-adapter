@@ -651,7 +651,7 @@ class InboundTransfersModel {
             if (individualTransferErrors.length) {
                 // TODO: Verify and align with actual schema for bulk transfers error endpoint
                 const mojaloopErrorResponse = {
-                    bulkTransferState: 'REJECTED',
+                    bulkTransferState: FSPIOPBulkTransferStateEnum.REJECTED,
                     // eslint-disable-next-line no-unused-vars
                     individualTransferResults: individualTransferErrors.map(({ transferId, transferError }) => ({
                         transferId,
@@ -681,7 +681,7 @@ class InboundTransfersModel {
             // create a  mojaloop transfer fulfil response
             const mojaloopResponse = {
                 completedTimestamp: new Date(),
-                bulkTransferState: FSPIOPBulkTransferStateEnum.COMMITTED,
+                bulkTransferState: FSPIOPBulkTransferStateEnum.COMPLETED,
             };
 
             if (response.individualTransferResults && response.individualTransferResults.length) {
