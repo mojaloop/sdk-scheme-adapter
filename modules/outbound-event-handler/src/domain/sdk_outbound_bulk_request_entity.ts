@@ -49,7 +49,7 @@ import { CurrencyTypes, AccountLimitTypes, ParticipantAccountTypes } from '@moja
 //   value: string
 // }
 
-export class SDKBulkRequestState extends BaseEntityState {
+export class SDKOutboundBulkRequestState extends BaseEntityState {
   id: string
   name: string
   accounts: ParticipantAccountState[]
@@ -57,7 +57,7 @@ export class SDKBulkRequestState extends BaseEntityState {
   partition: number | null
 }
 
-export class SDKBulkRequestEntity extends BaseEntity<SDKBulkRequestState> {
+export class SDKOutboundBulkRequestEntity extends BaseEntity<SDKOutboundBulkRequestState> {
   get id (): string {
     return this._state.id
   }

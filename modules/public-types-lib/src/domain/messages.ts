@@ -176,20 +176,10 @@ export abstract class DomainMsg implements IDomainMessage {
   abstract validatePayload (): void
 }
 
-export abstract class StateEventMsg extends DomainMsg {
-  msgType: MessageTypes = MessageTypes.STATE_EVENT
-}
-
-export abstract class StateSnapshotMsg extends DomainMsg {
-  msgType: MessageTypes = MessageTypes.STATE_SNAPSHOT
-  lastEventOffset: number // offset of the last event that was considered for the snapshot
-  eventsPartition: number // partition from the events
-}
-
 export abstract class DomainEventMsg extends DomainMsg {
   msgType: MessageTypes = MessageTypes.DOMAIN_EVENT
 }
 
 export abstract class CommandMsg extends DomainMsg {
-  msgType: MessageTypes = MessageTypes.COMMAND
+  msgType: MessageTypes = MessageTypes.COMMAND_EVENT
 }

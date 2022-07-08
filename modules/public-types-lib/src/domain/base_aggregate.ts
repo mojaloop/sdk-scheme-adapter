@@ -39,7 +39,7 @@
 
 import { BaseEntity } from './base_entity'
 import { BaseEntityState } from './base_entity_state'
-import { CommandMsg, DomainEventMsg, DomainMsg, IDomainMessage, StateEventMsg } from './messages'
+import { CommandMsg, DomainEventMsg, DomainMsg, IDomainMessage } from './messages'
 import { IMessagePublisher } from './imessage_publisher'
 import { IEntityStateRepository } from './ientity_state_repository'
 import { IEntityFactory } from './entity_factory'
@@ -136,10 +136,6 @@ export abstract class BaseAggregate<E extends BaseEntity<S>, S extends BaseEntit
 
   protected recordDomainEvent (domainEvent: DomainEventMsg): void {
     this._uncommittedEvents.push(domainEvent)
-  }
-
-  protected recordStateEvent (stateEvent: StateEventMsg): void {
-    this._uncommittedEvents.push(stateEvent)
   }
 
   protected async commit (): Promise<void> {

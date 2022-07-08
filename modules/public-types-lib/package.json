@@ -16,7 +16,8 @@
     "/dist"
   ],
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "test:unit": "jest --passWithNoTests --testMatch '**/test/unit/**/*.test.ts'"
   },
   "devDependencies": {
     "@types/node": "^17.0.41",
@@ -32,10 +33,10 @@
       "src/**/*.ts"
     ],
     "ext": "ts",
-    "exec": "ts-node src/entities/sdk_bulk_request.ts"
+    "exec": "ts-node src/entities/sdk_outbound_bulk_request_entity.ts"
   },
   "dependencies": {
-    "@mojaloop/api-snippets": "^14.0.0",
+    "ajv": "^8.11.0",
     "ts-node": "^10.8.2"
   }
 }

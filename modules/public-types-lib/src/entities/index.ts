@@ -29,4 +29,4 @@
 
  "use strict";
  
-export * from "./sdk_bulk_request";
+export * from "./sdk_outbound_bulk_request_entity";
