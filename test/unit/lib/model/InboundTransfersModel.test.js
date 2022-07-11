@@ -31,6 +31,10 @@ const notificationToPayee = require('./data/notificationToPayee');
 const notificationAbortedToPayee = require('./data/notificationAbortedToPayee');
 const notificationReservedToPayee = require('./data/notificationReservedToPayee');
 
+const { SDKStateEnum } = require('../../../../src/lib/model/common');
+const FSPIOPTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.TransferState;
+const FSPIOPBulkTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.BulkTransferState;
+
 describe('inboundModel', () => {
     let config;
     let mockArgs;
@@ -324,7 +328,7 @@ describe('inboundModel', () => {
             const call = MojaloopRequests.__putTransfers.mock.calls[0];
             expect(call[0]).toEqual(TRANSFER_ID);
             expect(call[1]).toEqual(getTransfersMojaloopResponse);
-            expect(call[1].transferState).toEqual('COMMITTED');
+            expect(call[1].transferState).toEqual(FSPIOPTransferStateEnum.COMMITTED);
         });
 
         test('getTransfer should not return fulfillment from payer', async () => {
@@ -345,7 +349,7 @@ describe('inboundModel', () => {
             const call = MojaloopRequests.__putTransfers.mock.calls[0];
             expect(call[0]).toEqual(TRANSFER_ID);
             expect(call[1]).toEqual({...getTransfersMojaloopResponse, fulfilment: undefined});
-            expect(call[1].transferState).toEqual('COMMITTED');
+            expect(call[1].transferState).toEqual(FSPIOPTransferStateEnum.COMMITTED);
         });
 
         test('getTransfer should return not found error', async () => {
@@ -601,7 +605,7 @@ describe('inboundModel', () => {
             const call = MojaloopRequests.__putBulkTransfers.mock.calls[0];
             expect(call[0]).toEqual(BULK_TRANSFER_ID);
             expect(call[1]).toEqual(getBulkTransfersMojaloopResponse);
-            expect(call[1].bulkTransferState).toEqual('COMMITTED');
+            expect(call[1].bulkTransferState).toEqual(FSPIOPBulkTransferStateEnum.COMPLETED);
         });
 
         test('getBulkTransfer should not return fulfillment from payer', async () => {
@@ -621,7 +625,7 @@ describe('inboundModel', () => {
 
             const call = MojaloopRequests.__putBulkTransfers.mock.calls[0];
             expect(call[0]).toEqual(BULK_TRANSFER_ID);
-            expect(call[1].bulkTransferState).toEqual('COMMITTED');
+            expect(call[1].bulkTransferState).toEqual(FSPIOPBulkTransferStateEnum.COMPLETED);
             const expectedResponse = {...getBulkTransfersMojaloopResponse};
             expectedResponse.individualTransferResults[0].fulfilment = undefined;
             expect(call[1]).toMatchObject(expectedResponse);
@@ -738,7 +742,7 @@ describe('inboundModel', () => {
             const notif = JSON.parse(JSON.stringify(notificationToPayee));
 
             const expectedRequest = {
-                currentState: 'COMPLETED',
+                currentState: SDKStateEnum.COMPLETED,
                 finalNotification: notif.data,
             };
 
@@ -760,7 +764,7 @@ describe('inboundModel', () => {
             const notif = JSON.parse(JSON.stringify(notificationAbortedToPayee));
 
             const expectedRequest = {
-                currentState: 'ABORTED',
+                currentState: SDKStateEnum.ABORTED,
                 finalNotification: notif.data,
             };
 

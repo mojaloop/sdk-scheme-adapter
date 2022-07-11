@@ -15,7 +15,8 @@ const { uuid } = require('uuidv4');
 const StateMachine = require('javascript-state-machine');
 const { Ilp, MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const shared = require('./lib/shared');
-const { BackendError, TransferStateEnum } = require('./common');
+const { BackendError, SDKStateEnum } = require('./common');
+const FSPIOPTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.TransferState;
 const PartiesModel = require('./PartiesModel');
 
 /**
@@ -685,7 +686,7 @@ class OutboundTransfersModel {
                     if(this._checkIlp && !this._ilp.validateFulfil(fulfil.body.fulfilment, this.data.quoteResponse.body.condition)) {
                         throw new Error('Invalid fulfilment received from peer DFSP.');
                     }
-                    if(this._sendFinalNotificationIfRequested && fulfil.body.transferState === 'RESERVED') {
+                    if(this._sendFinalNotificationIfRequested && fulfil.body.transferState === FSPIOPTransferStateEnum.RESERVED) {
                         // we need to send a PATCH notification back to say we have committed the transfer.
                         // Note that this is normally a switch only responsibility but the capability is
                         // implemented here to support testing use cases where the mojaloop-connector is
@@ -695,7 +696,7 @@ class OutboundTransfersModel {
                         // we will use the current server time as committed timestamp.
                         const patchNotification = {
                             completedTimestamp: (new Date()).toISOString(),
-                            transferState: 'COMMITTED',
+                            transferState: FSPIOPTransferStateEnum.COMMITTED,
                         };
                         const res = this._requests.patchTransfers(this.data.transferId,
                             patchNotification, this.data.quoteResponseSource);
@@ -885,28 +886,28 @@ class OutboundTransfersModel {
 
         switch(this.data.currentState) {
             case 'payeeResolved':
-                resp.currentState = TransferStateEnum.WAITING_FOR_PARTY_ACCEPTANCE;
+                resp.currentState = SDKStateEnum.WAITING_FOR_PARTY_ACCEPTANCE;
                 break;
 
             case 'quoteReceived':
-                resp.currentState = TransferStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE;
+                resp.currentState = SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE;
                 break;
 
             case 'succeeded':
-                resp.currentState = TransferStateEnum.COMPLETED;
+                resp.currentState = SDKStateEnum.COMPLETED;
                 break;
 
             case 'aborted':
-                resp.currentState = TransferStateEnum.ABORTED;
+                resp.currentState = SDKStateEnum.ABORTED;
                 break;
 
             case 'errored':
-                resp.currentState = TransferStateEnum.ERROR_OCCURRED;
+                resp.currentState = SDKStateEnum.ERROR_OCCURRED;
                 break;
 
             default:
                 this._logger.log(`Transfer model response being returned from an unexpected state: ${this.data.currentState}. Returning ERROR_OCCURRED state`);
-                resp.currentState = TransferStateEnum.ERROR_OCCURRED;
+                resp.currentState = SDKStateEnum.ERROR_OCCURRED;
                 break;
         }
 
