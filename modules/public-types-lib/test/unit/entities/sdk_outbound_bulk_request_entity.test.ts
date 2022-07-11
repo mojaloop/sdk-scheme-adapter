@@ -22,7 +22,7 @@
  --------------
  ******/
 
-import { SDKOutboundBulkRequestEntity, SDKOutboundBulkRequestState } from '../../../src/entities'
+import { SDKOutboundBulkRequestEntity } from '../../../src/entities'
 
 const sampleSDKOutboundBulkRequest: any = {
   bulkHomeTransactionID: "string",
@@ -60,7 +60,7 @@ const sampleSDKOutboundBulkRequest: any = {
         ]
       }
     },
-    merchantClassificationCode: "string",
+    merchantClassificationCode: "1234",
     name: "string",
     personalInfo: {
       complexName: {
@@ -89,7 +89,7 @@ const sampleSDKOutboundBulkRequest: any = {
             ]
           }
         },
-        merchantClassificationCode: "string",
+        merchantClassificationCode: "1234",
         name: "string",
         personalInfo: {
           complexName: {
@@ -150,69 +150,33 @@ const sampleSDKOutboundBulkRequest: any = {
   }
 }
 
-// const sampleIMessage: any = {
-//   key: 'sample-key1',
-//   value: {
-//     eventMessageType: EventMessageType.DOMAIN_EVENT,
-//     eventMessageName: 'some-event-name-here',
-//     eventMessageContent: null
-//   },
-//   topic: 'sample-topic',
-//   timestamp: Date.now(),
-//   headers: []
-// }
-
 describe ('SDKOutboundBulkRequestEntity', () => {
   describe("Positive scenarios", () => {
     it("should create a object instance", () => {
       const entityObj = SDKOutboundBulkRequestEntity.CreateFromRequest(sampleSDKOutboundBulkRequest);
-      console.log(entityObj)
       expect(entityObj).not.toBeUndefined();
-      // expect(() => { new SDKOutboundBulkRequestEntity(sampleSDKOutboundBulkRequestState) }).toThrowError()
-      // expect(eventObj.getKey()).toEqual(sampleDomainEventMessageData.key)
-      // expect(eventObj.getTimeStamp()).toEqual(sampleDomainEventMessageData.timestamp)
-      // expect(eventObj.getType()).toEqual(EventMessageType.DOMAIN_EVENT)
-      // expect(eventObj).toBeInstanceOf(DomainEventMessage)
+      expect(entityObj).toHaveProperty('id')
+      expect(entityObj.id).toEqual(sampleSDKOutboundBulkRequest.bulkTransactionId)
+      expect(entityObj.request).toMatchObject(sampleSDKOutboundBulkRequest)
     });
-    // it("should create a domain event message object from imessage object", () => {
-    //   const eventObj = DomainEventMessage.createFromIMessage(sampleIMessage);
-    //   expect(eventObj).not.toBeUndefined();
-    //   expect(eventObj.getKey()).toEqual(sampleIMessage.key)
-    //   expect(eventObj.getTimeStamp()).toEqual(sampleIMessage.timestamp)
-    //   expect(eventObj.getType()).toEqual(sampleIMessage.value.eventMessageType)
-    //   expect(eventObj).toBeInstanceOf(DomainEventMessage)
-    // });
-    // it("should create a domain event message object from event message data and generate iMessage", () => {
-    //   const eventObj = new DomainEventMessage(sampleDomainEventMessageData);
-    //   expect(eventObj).not.toBeUndefined();
-    //   expect(eventObj.getKey()).toEqual(sampleDomainEventMessageData.key)
-    //   const iMessage = eventObj.toIMessage('some-supplied-topic');
-    //   expect(iMessage.key).toEqual(sampleDomainEventMessageData.key)
-    //   expect(iMessage.timestamp).toEqual(sampleDomainEventMessageData.timestamp)
-    //   expect(iMessage.topic).toEqual('some-supplied-topic')
-    //   expect(iMessage.value).toHaveProperty('eventMessageType')
-    //   expect(iMessage.value).toHaveProperty('eventMessageName')
-    // });
+    it("should create a object with a new bulkTransactionId if not passed", () => {
+      const entityObj = SDKOutboundBulkRequestEntity.CreateFromRequest({ ...sampleSDKOutboundBulkRequest, bulkTransactionId: undefined});
+      expect(entityObj).not.toBeUndefined();
+      expect(entityObj).toHaveProperty('id')
+      expect(entityObj.request).toHaveProperty('bulkTransactionId')
+      expect(entityObj.id).toEqual(entityObj.request.bulkTransactionId)
+    });
   });
-  // describe("Negative scenarios", () => {
-  //   it("should throw an error if the .key is null", () => {
-  //     expect(() => { DomainEventMessage.createFromIMessage({ ...sampleIMessage, key: null}) }).toThrowError()
-  //   });
-  //   it("should throw an error if the .value is null", () => {
-  //     expect(() => { DomainEventMessage.createFromIMessage({ ...sampleIMessage, value: null}) }).toThrowError()
-  //   });
-  //   it("should throw an error if the .value is not object", () => {
-  //     expect(() => { DomainEventMessage.createFromIMessage({ ...sampleIMessage, value: 'some-string'}) }).toThrowError()
-  //   });
-  //   it("should throw an error if the .value.eventMessageType doesn't exist", () => {
-  //     expect(() => { DomainEventMessage.createFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventMessageType: null}}) }).toThrowError()
-  //   });
-  //   it("should throw an error if the .value.eventMessageName doesn't exist", () => {
-  //     expect(() => { DomainEventMessage.createFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventMessageName: null}}) }).toThrowError()
-  //   });
-  //   it("should throw an error if the .value.eventMessageType is not DOMAIN_EVENT", () => {
-  //     expect(() => { DomainEventMessage.createFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventMessageType: EventMessageType.COMMAND_EVENT}}) }).toThrowError()
-  //   });
-  // });
+  describe("Negative scenarios", () => {
+    it("should throw an error if the .bulkHomeTransactionID is undefined", () => {
+      expect(() => { SDKOutboundBulkRequestEntity.CreateFromRequest({ ...sampleSDKOutboundBulkRequest, bulkHomeTransactionID: undefined}) }).toThrowError()
+    });
+    it("should throw an error if the .bulkTransactionId is not in proper format", () => {
+      expect(() => { SDKOutboundBulkRequestEntity.CreateFromRequest({ ...sampleSDKOutboundBulkRequest, bulkTransactionId: 123}) }).toThrowError()
+    });
+    it("should throw an error if the .from is undefined", () => {
+      expect(() => { SDKOutboundBulkRequestEntity.CreateFromRequest({ ...sampleSDKOutboundBulkRequest, from: undefined}) }).toThrowError()
+    });
+  });
 
 })

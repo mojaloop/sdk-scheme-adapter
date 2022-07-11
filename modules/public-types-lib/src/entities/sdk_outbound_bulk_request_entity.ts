@@ -28,20 +28,30 @@ import { BaseEntityState, BaseEntity } from '../domain'
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets'
 import { randomUUID } from 'crypto'
 import Ajv from 'ajv'
+import { ErrorObject } from 'ajv'
 const ajv = new Ajv({
-  validateSchema: false
+  strict:false,
+  allErrors: false
+  // validateSchema: false
 })
+// ajv.addKeyword({
+//   keyword: 'example'
+// })
 
 
-// export class InvalidAccountError extends Error {}
-// export class InvalidLimitError extends Error {}
-// export class NetDebitCapLimitExceededError extends Error {}
+export class ValidationError extends Error {
+  private _errors: ErrorObject[] = []
+  constructor(errors: ErrorObject[]) {
+    const errorMessage = errors.map(error => `${error.schemaPath} ${error.message}`).join(',')
+    super(`Validation Errors: ${errorMessage}`)
+    this._errors = errors
+  }
+  get errors() { return this._errors }
+}
 
 export interface SDKOutboundBulkRequestState extends BaseEntityState {
   request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferRequest
 }
-
-// export interface SDKOutboundBulkRequestState extends BaseEntityState, SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferRequest {}
 
 export class SDKOutboundBulkRequestEntity extends BaseEntity<SDKOutboundBulkRequestState> {
 
@@ -68,6 +78,10 @@ export class SDKOutboundBulkRequestEntity extends BaseEntity<SDKOutboundBulkRequ
   /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */
   constructor (initialState: SDKOutboundBulkRequestState) {
     SDKOutboundBulkRequestEntity._validateRequest(initialState.request)
+    // Modify request to add bulkTransactionId if undefined
+    if (initialState.request.bulkTransactionId === undefined) {
+      initialState.request.bulkTransactionId = initialState.id
+    }
     super(initialState)
   }
 
@@ -90,7 +104,10 @@ export class SDKOutboundBulkRequestEntity extends BaseEntity<SDKOutboundBulkRequ
   private static _validateRequest (request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferRequest): void {
     let requestSchema = SDKSchemeAdapter.Outbound.V2_0_0.Schemas.bulkTransferRequest
     const validate = ajv.compile(requestSchema)
-    validate(request)
+    const validationResult = validate(request)
+    if(!validationResult) {
+      throw new ValidationError(validate.errors || [])
+    }
   }
 
 }
