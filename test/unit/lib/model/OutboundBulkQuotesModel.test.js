@@ -20,6 +20,8 @@ const Model = require('~/lib/model').OutboundBulkQuotesModel;
 const { MojaloopRequests, Logger } = require('@mojaloop/sdk-standard-components');
 const StateMachine = require('javascript-state-machine');
 
+const { SDKStateEnum } = require('../../../../src/lib/model/common');
+
 const defaultConfig = require('./data/defaultConfig');
 const bulkQuoteRequest = require('./data/bulkQuoteRequest');
 const bulkQuoteResponseTemplate = require('./data/bulkQuoteResponse');
@@ -74,7 +76,7 @@ describe('OutboundBulkQuotesModel', () => {
             await expect(model.run()).rejects.toThrowError(expectError);
         } else {
             const result = await model.run();
-            await expect(result.currentState).toBe('COMPLETED');
+            await expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
         }
     }
 
@@ -139,7 +141,7 @@ describe('OutboundBulkQuotesModel', () => {
         expect(MojaloopRequests.__getBulkQuotes).toHaveBeenCalledTimes(1);
 
         // check we stopped at succeeded state
-        expect(result.currentState).toBe('COMPLETED');
+        expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
         expect(StateMachine.__instance.state).toBe('succeeded');
     });
 
@@ -174,7 +176,7 @@ describe('OutboundBulkQuotesModel', () => {
         expect(MojaloopRequests.__postBulkQuotes).toHaveBeenCalledTimes(1);
 
         // check we stopped at 'succeeded' state
-        expect(result.currentState).toBe('COMPLETED');
+        expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
         expect(StateMachine.__instance.state).toBe('succeeded');
     });
 

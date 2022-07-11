@@ -12,7 +12,7 @@
       }
     ]
   },
-  "bulkTransferState": "COMMITTED",
+  "bulkTransferState": "COMPLETED",
   "individualTransferResults": [
       {
         "transferId": "fake-transfer-id",

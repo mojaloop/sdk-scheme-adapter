@@ -19,6 +19,7 @@ const { AccountsModel } = require('~/lib/model');
 
 const StateMachine = require('javascript-state-machine');
 const { MojaloopRequests, Logger } = require('@mojaloop/sdk-standard-components');
+const { SDKStateEnum } = require('../../../../src/lib/model/common');
 
 const defaultConfig = require('./data/defaultConfig');
 const transferRequest = require('./data/transferRequest');
@@ -83,7 +84,7 @@ describe('AccountsModel', () => {
             (Math.floor(count / MAX_ITEMS_PER_REQUEST) + ((count % MAX_ITEMS_PER_REQUEST) ? 1 : 0));
         expect(MojaloopRequests.__postParticipants).toHaveBeenCalledTimes(expectedRequestsCount);
 
-        expect(result.currentState).toBe('COMPLETED');
+        expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
         expect(StateMachine.__instance.state).toBe('succeeded');
     }
 
