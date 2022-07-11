@@ -24,36 +24,33 @@
 
 'use strict'
 
-import { IMessage } from "@mojaloop/platform-shared-lib-messaging-types-lib";
-import { IEventMessageData, EventMessageType, BaseEventMessage } from './base_event_message';
+import { CommandEventMessage } from './command_event_message';
+import { IMessage, IMessageHeader } from "@mojaloop/platform-shared-lib-messaging-types-lib";
+import { SDKOutboundBulkRequestEntity } from "@mojaloop/sdk-scheme-adapter-public-types-lib";
 
-export interface IDomainEventMessageData extends Omit<IEventMessageData, 'type'>{}
+export enum OutboundCommandEventMessageName {
+  'ProcessSDKOutboundBulkRequest' = 'ProcessSDKOutboundBulkRequest',
+  'ProcessSDKOutboundBulkPartyInfoRequest' = 'ProcessSDKOutboundBulkPartyInfoRequest',
+  'ProcessPartyInfoCallback' = 'ProcessPartyInfoCallback',
+  'ProcessSDKOutboundBulkPartyInfoRequestComplete' = 'ProcessSDKOutboundBulkPartyInfoRequestComplete',
+  'ProcessSDKOutboundBulkAcceptPartyInfo' = 'ProcessSDKOutboundBulkAcceptPartyInfo',
+}
 
-export class DomainEventMessage extends BaseEventMessage {
 
-  constructor (data: IDomainEventMessageData) {
+export interface IProcessSDKOutboundBulkRequestMessageData {
+  sdkOutboundBulkRequestEntity: SDKOutboundBulkRequestEntity;
+  timestamp: number | null;
+  headers: IMessageHeader[] | null;
+}
+
+export class ProcessSDKOutboundBulkRequestMessage extends CommandEventMessage {
+  constructor (data: IProcessSDKOutboundBulkRequestMessageData) {
     super({
-      ...data,
-      type: EventMessageType.DOMAIN_EVENT
+      key: data.sdkOutboundBulkRequestEntity?.id,
+      content: data.sdkOutboundBulkRequestEntity,
+      timestamp: data.timestamp,
+      headers: data.headers,
+      name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkRequest
     });
   }
-
-  static CreateFromIMessage(message: IMessage): DomainEventMessage {
-    // Validate message
-    this._validateMessage(message);
-    // Prepare Data
-    const {type, ...data} = super._prepareDataFromIMessage(message)
-    
-    return new DomainEventMessage(data)
-  }
-
-  // Overriding the parent method and perform additional validations
-  protected static _validateMessage (obj: any): void {
-    super._validateMessage(obj);
-    // Additional validation here
-    if (obj.value.eventMessageType !== EventMessageType.DOMAIN_EVENT) {
-      throw(new Error('.value.eventMessageName is not equal to DOMAIN_EVENT'))
-    }
-  }
-
 }

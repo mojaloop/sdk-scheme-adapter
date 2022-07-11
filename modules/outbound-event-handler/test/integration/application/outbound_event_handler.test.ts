@@ -39,9 +39,129 @@ const sampleDomainEventMessageData: IDomainEventMessageData = {
   key: 'sample-key1',
   name: OutboundDomainEventMessageName.SDKOutboundBulkRequestReceived,
   content: {
-    id: '123784627836457823',
-    options: {},
-    individualTransfers: []
+    bulkHomeTransactionID: "string",
+    bulkTransactionId: "b51ec534-ee48-4575-b6a9-ead2955b8069",
+    options: {
+      onlyValidateParty: true,
+      autoAcceptParty: {
+        enabled: false
+      },
+      autoAcceptQuote: {
+        enabled: true,
+        perTransferFeeLimits: [
+          {
+            currency: "AED",
+            amount: "123.45"
+          }
+        ]
+      },
+      skipPartyLookup: true,
+      synchronous: true,
+      bulkExpiration: "2016-05-24T08:38:08.699-04:00"
+    },
+    from: {
+      partyIdInfo: {
+        partyIdType: "MSISDN",
+        partyIdentifier: "16135551212",
+        partySubIdOrType: "string",
+        fspId: "string",
+        extensionList: {
+          extension: [
+            {
+              key: "string",
+              value: "string"
+            }
+          ]
+        }
+      },
+      merchantClassificationCode: "1234",
+      name: "string",
+      personalInfo: {
+        complexName: {
+          firstName: "Henrik",
+          middleName: "Johannes",
+          lastName: "Karlsson"
+        },
+        dateOfBirth: "1966-06-16"
+      }
+    },
+    individualTransfers: [
+      {
+        homeTransactionId: "b51ec534-ee48-4575-b6a9-ead2955b8069",
+        to: {
+          partyIdInfo: {
+            partyIdType: "MSISDN",
+            partyIdentifier: "16135551212",
+            partySubIdOrType: "string",
+            fspId: "string",
+            extensionList: {
+              extension: [
+                {
+                  key: "string",
+                  value: "string"
+                }
+              ]
+            }
+          },
+          merchantClassificationCode: "1234",
+          name: "string",
+          personalInfo: {
+            complexName: {
+              firstName: "Henrik",
+              middleName: "Johannes",
+              lastName: "Karlsson"
+            },
+            dateOfBirth: "1966-06-16"
+          }
+        },
+        reference: "string",
+        amountType: "RECEIVE",
+        currency: "AED",
+        amount: "123.45",
+        note: "Note sent to Payee.",
+        quoteExtensions: {
+          extension: [
+            {
+              key: "string",
+              value: "string"
+            }
+          ]
+        },
+        transferExtensions: {
+          extension: [
+            {
+              key: "string",
+              value: "string"
+            }
+          ]
+        },
+        lastError: {
+          httpStatusCode: 0,
+          mojaloopError: {
+            errorInformation: {
+              errorCode: "5100",
+              errorDescription: "string",
+              extensionList: {
+                extension: [
+                  {
+                    key: "string",
+                    value: "string"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    extensions: {
+      extension: [
+        {
+          key: "string",
+          value: "string"
+        }
+      ]
+    }
   },
   timestamp: Date.now(),
   headers: []

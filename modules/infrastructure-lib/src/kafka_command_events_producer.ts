@@ -1,3 +1,5 @@
+
+
 /*****
  License
  --------------
@@ -22,38 +24,33 @@
  --------------
  ******/
 
-'use strict'
+"use strict";
 
+import { MLKafkaProducerOptions } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib'
+import { KafkaEventsProducer } from "./kafka_events_producer";
+import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
+import { CommandEventMessage }  from '@mojaloop/sdk-scheme-adapter-private-types-lib'
 import { IMessage } from "@mojaloop/platform-shared-lib-messaging-types-lib";
-import { IEventMessageData, EventMessageType, BaseEventMessage } from './base_event_message';
 
-export interface IDomainEventMessageData extends Omit<IEventMessageData, 'type'>{}
+// TODO: Parameterize this
+const PUBLISH_TOPIC = 'topic-sdk-outbound-command-events'
 
-export class DomainEventMessage extends BaseEventMessage {
 
-  constructor (data: IDomainEventMessageData) {
-    super({
-      ...data,
-      type: EventMessageType.DOMAIN_EVENT
-    });
-  }
+export class KafkaCommandEventsProducer extends KafkaEventsProducer {
 
-  static CreateFromIMessage(message: IMessage): DomainEventMessage {
-    // Validate message
-    this._validateMessage(message);
-    // Prepare Data
-    const {type, ...data} = super._prepareDataFromIMessage(message)
-    
-    return new DomainEventMessage(data)
-  }
-
-  // Overriding the parent method and perform additional validations
-  protected static _validateMessage (obj: any): void {
-    super._validateMessage(obj);
-    // Additional validation here
-    if (obj.value.eventMessageType !== EventMessageType.DOMAIN_EVENT) {
-      throw(new Error('.value.eventMessageName is not equal to DOMAIN_EVENT'))
+  constructor(logger: ILogger) {
+    const producerOptions: MLKafkaProducerOptions = {
+      // TODO: Parameterize this
+      kafkaBrokerList: 'localhost:9092',
+      producerClientId: 'command_events_producer_client_id_' + Date.now(),
+      skipAcknowledgements: true
     }
+    super(producerOptions ,logger);
+  }
+
+  sendCommandMessage (commandEventMessage: CommandEventMessage) {
+    const message: IMessage = commandEventMessage.toIMessage(PUBLISH_TOPIC);
+    super.send(message);
   }
 
 }

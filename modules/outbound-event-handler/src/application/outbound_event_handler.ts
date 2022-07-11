@@ -26,8 +26,8 @@
 // import { v4 as uuidv4 } from 'uuid'
 // import {InMemoryTransferStateRepo} from "../infrastructure/inmemory_transfer_repo";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
-import { IRunHandler, KafkaDomainEventsConsumer } from '@mojaloop/sdk-scheme-adapter-infra-lib'
-import { IEventsConsumer, DomainEventMessage, OutboundDomainEventMessageName } from '@mojaloop/sdk-scheme-adapter-private-types-lib';
+import { IRunHandler, KafkaDomainEventsConsumer, KafkaCommandEventsProducer } from '@mojaloop/sdk-scheme-adapter-infra-lib'
+import { IEventsConsumer, DomainEventMessage, CommandEventMessage, OutboundDomainEventMessageName, ICommandEventMessageData, ProcessSDKOutboundBulkRequestMessage, IProcessSDKOutboundBulkRequestMessageData } from '@mojaloop/sdk-scheme-adapter-private-types-lib';
 import { SDKOutboundBulkRequestReceivedMessage } from '@mojaloop/sdk-scheme-adapter-private-types-lib';
 
 // import { InvalidOutboundEvtError } from './errors'
@@ -40,6 +40,7 @@ import { Crypto } from '@mojaloop/sdk-scheme-adapter-utilities-lib'
 export class OutboundEventHandler implements IRunHandler {
   private _logger: ILogger
   private _consumer: IEventsConsumer
+  private _commandProducer: KafkaCommandEventsProducer
   private _clientId: string
   // private _readSideRepo: MongoDbReadsideTransferRepo
   private _histooutboundEvtHandlerMetric: any
@@ -65,10 +66,14 @@ export class OutboundEventHandler implements IRunHandler {
     /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
     await this._consumer.init() // we're interested in all stateEvents
     await this._consumer.start()
+
+    this._commandProducer = new KafkaCommandEventsProducer(logger)
+    await this._commandProducer.init()
   }
 
   async destroy (): Promise<void> {
     await this._consumer.destroy()
+    await this._commandProducer.destroy()
     // await this._readSideRepo.destroy()
   }
 
@@ -77,10 +82,22 @@ export class OutboundEventHandler implements IRunHandler {
     console.log(message)
     switch (message.getName()) {
       case OutboundDomainEventMessageName.SDKOutboundBulkRequestReceived: {
-        // TODO: Change the static function names to start with capital
-        const sdkOutboundBulkRequestReceivedMessage = SDKOutboundBulkRequestReceivedMessage.createFromDomainEventMessage(message)
-        console.log(sdkOutboundBulkRequestReceivedMessage.getBulkTransactionEntity())
+        const sdkOutboundBulkRequestReceivedMessage = SDKOutboundBulkRequestReceivedMessage.CreateFromDomainEventMessage(message)
         // TODO: Construct and publish the command message
+        try {
+          const sdkOutboundBulkRequestEntity = sdkOutboundBulkRequestReceivedMessage.createSDKOutboundBulkRequestEntity()
+          const _processSDKOutboundBulkRequestMessageData: IProcessSDKOutboundBulkRequestMessageData = {
+            sdkOutboundBulkRequestEntity,
+            timestamp: Date.now(),
+            headers: []
+          }
+          const processSDKOutboundBulkRequestMessage = new ProcessSDKOutboundBulkRequestMessage(_processSDKOutboundBulkRequestMessageData)
+          this._commandProducer.sendCommandMessage(processSDKOutboundBulkRequestMessage)
+          this._logger.isInfoEnabled() && this._logger.info(`outboundEvtHandler - Sent command event ${processSDKOutboundBulkRequestMessage.getName()}`);
+          console.log(processSDKOutboundBulkRequestMessage);
+        } catch(err: any) {
+          this._logger.isInfoEnabled() && this._logger.info(`outboundEvtHandler - Failed to create SDKOutboundBulkRequestEntity. ${err.message}`)
+        }
         break;
       }
       default: {

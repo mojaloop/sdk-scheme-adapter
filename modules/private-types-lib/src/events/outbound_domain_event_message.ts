@@ -26,6 +26,7 @@
 
 import { IDomainEventMessageData, DomainEventMessage } from './domain_event_message';
 import { IMessage, IMessageHeader } from "@mojaloop/platform-shared-lib-messaging-types-lib";
+import { SDKOutboundBulkRequestEntity } from "@mojaloop/sdk-scheme-adapter-public-types-lib";
 
 export enum OutboundDomainEventMessageName {
   'SDKOutboundBulkRequestReceived' = 'SDKOutboundBulkRequestReceived',
@@ -40,7 +41,7 @@ export enum OutboundDomainEventMessageName {
 }
 
 export interface ISDKOutboundBulkRequestReceivedMessageData {
-  bulkRequest: any; //TODO: change this to an entity
+  bulkRequest: any;
   timestamp: number | null;
   headers: IMessageHeader[] | null;
 }
@@ -48,8 +49,8 @@ export interface ISDKOutboundBulkRequestReceivedMessageData {
 export class SDKOutboundBulkRequestReceivedMessage extends DomainEventMessage {
 
   constructor (data: ISDKOutboundBulkRequestReceivedMessageData) {
-    // TODO: Validate the bulkRequest here
-    SDKOutboundBulkRequestReceivedMessage.validateRequest(data.bulkRequest);
+    // // Calling Sample validation function
+    // SDKOutboundBulkRequestReceivedMessage.validateRequest(data.bulkRequest);
     super({
       key: data.bulkRequest?.id,
       content: data.bulkRequest,
@@ -59,12 +60,11 @@ export class SDKOutboundBulkRequestReceivedMessage extends DomainEventMessage {
     });
   }
 
-  getBulkTransactionEntity(): any {
-    // TODO: Crate entity here from content
-    return super.getContent();
+  createSDKOutboundBulkRequestEntity(): SDKOutboundBulkRequestEntity {
+    return SDKOutboundBulkRequestEntity.CreateFromRequest(super.getContent())
   }
   
-  static createFromDomainEventMessage(message: DomainEventMessage): SDKOutboundBulkRequestReceivedMessage {
+  static CreateFromDomainEventMessage(message: DomainEventMessage): SDKOutboundBulkRequestReceivedMessage {
     // Prepare Data
     const data = {
       bulkRequest: message.getContent(),
@@ -74,12 +74,11 @@ export class SDKOutboundBulkRequestReceivedMessage extends DomainEventMessage {
     return new SDKOutboundBulkRequestReceivedMessage(data)
   }
 
-  // TODO: move this function to proper location
-  // TODO: refine the validation logic
-  private static validateRequest (obj: any): void {
-    if(!obj.hasOwnProperty('id')) {
-      throw(new Error('.id is not defined'))
-    }
-  }
+  // // Sample validation function
+  // private static validateRequest (obj: any): void {
+  //   if(!obj.hasOwnProperty('id')) {
+  //     throw(new Error('.id is not defined'))
+  //   }
+  // }
 
 }
