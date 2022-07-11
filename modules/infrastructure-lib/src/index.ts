@@ -46,6 +46,7 @@ export enum RedisDuplicateInfraTypes {
 // Exports for Infrastructure
 export * from './kafka_events_consumer'
 export * from './kafka_domain_events_consumer'
+export * from './kafka_command_events_consumer'
 export * from './kafka_events_producer'
 export * from './kafka_domain_events_producer'
 export * from './kafka_command_events_producer'

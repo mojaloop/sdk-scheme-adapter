@@ -63,7 +63,7 @@ export class SDKOutboundBulkRequestEntity extends BaseEntity<SDKOutboundBulkRequ
     return this._state.request
   }
 
-  static CreateFromRequest (request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferRequest): SDKOutboundBulkRequestEntity {
+  static CreateFromRequest (request: any): SDKOutboundBulkRequestEntity {
     SDKOutboundBulkRequestEntity._validateRequest(request)
     const initialState: SDKOutboundBulkRequestState = {
       id: request?.bulkTransactionId || randomUUID(),

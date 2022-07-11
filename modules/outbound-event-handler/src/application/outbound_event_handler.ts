@@ -23,39 +23,27 @@
  ******/
 
 'use strict'
-// import { v4 as uuidv4 } from 'uuid'
-// import {InMemoryTransferStateRepo} from "../infrastructure/inmemory_transfer_repo";
+
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 import { IRunHandler, KafkaDomainEventsConsumer, KafkaCommandEventsProducer } from '@mojaloop/sdk-scheme-adapter-infra-lib'
 import { IEventsConsumer, DomainEventMessage, CommandEventMessage, OutboundDomainEventMessageName, ICommandEventMessageData, ProcessSDKOutboundBulkRequestMessage, IProcessSDKOutboundBulkRequestMessageData } from '@mojaloop/sdk-scheme-adapter-private-types-lib';
 import { SDKOutboundBulkRequestReceivedMessage } from '@mojaloop/sdk-scheme-adapter-private-types-lib';
+import { SDKOutboundBulkRequestState } from "@mojaloop/sdk-scheme-adapter-public-types-lib";
 
 // import { InvalidOutboundEvtError } from './errors'
 import { Crypto } from '@mojaloop/sdk-scheme-adapter-utilities-lib'
-// import { TransferPreparedStateEvt, TransferPreparedStateEvtPayload } from '../messages/transfer_prepared_stateevt'
-// import { TransferFulfiledStateEvt, TransferFulfiledStateEvtPayload } from '../messages/transfer_fulfiled_stateevt'
-// import { TransferStateChangedStateEvt, TransferStateChangedStateEvtPayload } from '../messages/transfer_state_changed_stateevt'
-// import { TransferInternalStates } from '../domain/transfer_entity'
+
 
 export class OutboundEventHandler implements IRunHandler {
   private _logger: ILogger
   private _consumer: IEventsConsumer
   private _commandProducer: KafkaCommandEventsProducer
   private _clientId: string
-  // private _readSideRepo: MongoDbReadsideTransferRepo
-  private _histooutboundEvtHandlerMetric: any
-  private _histoTransferStateStoreTimeMetric: any
 
   async start (appConfig: any, logger: ILogger): Promise<void> {
     this._logger = logger
     this._logger.isInfoEnabled() && this._logger.info(`outboundEvtHandler::start - appConfig=${JSON.stringify(appConfig)}`)
     this._clientId = `outboundEvtHandler-${appConfig.kafka.consumer as string}-${Crypto.randomBytes(8)}`
-
-    // this._logger.isInfoEnabled() && this._logger.info(`outboundEvtHandler - Creating repo of type ${MongoDbReadsideTransferRepo.constructor.name}`)
-    // this._readSideRepo = new MongoDbReadsideTransferRepo(appConfig.readside_store.uri, logger)
-    // await this._readSideRepo.init()
-
-    // this._logger.isInfoEnabled() && this._logger.info(`outboundEvtHandler - Created repo of type ${this._readSideRepo.constructor.name}`)
 
     this._logger.isInfoEnabled() && this._logger.info(`outboundEvtHandler - Creating ${appConfig.kafka.consumer as string}...`)
 
@@ -74,7 +62,6 @@ export class OutboundEventHandler implements IRunHandler {
   async destroy (): Promise<void> {
     await this._consumer.destroy()
     await this._commandProducer.destroy()
-    // await this._readSideRepo.destroy()
   }
 
   async _messageHandler (message: DomainEventMessage): Promise<void> {
@@ -83,11 +70,11 @@ export class OutboundEventHandler implements IRunHandler {
     switch (message.getName()) {
       case OutboundDomainEventMessageName.SDKOutboundBulkRequestReceived: {
         const sdkOutboundBulkRequestReceivedMessage = SDKOutboundBulkRequestReceivedMessage.CreateFromDomainEventMessage(message)
-        // TODO: Construct and publish the command message
         try {
           const sdkOutboundBulkRequestEntity = sdkOutboundBulkRequestReceivedMessage.createSDKOutboundBulkRequestEntity()
+          const sdkOutboundBulkRequestState: SDKOutboundBulkRequestState = sdkOutboundBulkRequestEntity.exportState()
           const _processSDKOutboundBulkRequestMessageData: IProcessSDKOutboundBulkRequestMessageData = {
-            sdkOutboundBulkRequestEntity,
+            sdkOutboundBulkRequestState,
             timestamp: Date.now(),
             headers: []
           }
@@ -105,100 +92,6 @@ export class OutboundEventHandler implements IRunHandler {
         return;
       }
     }
-    // try {
-    //   this._logger.isInfoEnabled() && this._logger.info(`outboundEvtHandler - persisting state event event - ${message?.msgName}:${message?.msgKey}:${message?.msgId} - Start`)
-
-      // switch (message.msgName) {
-      //   case TransferPreparedStateEvt.name: {
-      //     const evt = TransferPreparedStateEvt.fromIDomainMessage(message)
-      //     if (evt == null) throw new InvalidTransferEvtError(`TransferPreparedStateEvt is unable to persist state event - ${message.msgName} is Invalid - ${message?.msgName}:${message?.msgKey}:${message?.msgId}`)
-      //     await this._handleTransferPreparedStateEvt(evt)
-      //     break
-      //   }
-      //   case TransferFulfiledStateEvt.name: {
-      //     const evt = TransferFulfiledStateEvt.fromIDomainMessage(message)
-      //     if (evt == null) throw new InvalidTransferEvtError(`TransferFulfiledStateEvt is unable to persist state event - ${message.msgName} is Invalid - ${message?.msgName}:${message?.msgKey}:${message?.msgId}`)
-      //     await this._handleTransferFulfiledStateEvt(evt)
-      //     break
-      //   }
-      //   case TransferStateChangedStateEvt.name: {
-      //     const evt = TransferStateChangedStateEvt.fromIDomainMessage(message)
-      //     if (evt == null) throw new InvalidTransferEvtError(`TransferStateChangedStateEvt is unable to persist state event - ${message.msgName} is Invalid - ${message?.msgName}:${message?.msgKey}:${message?.msgId}`)
-      //     await this._handleTransferStateChangedStateEvt(evt)
-      //     break
-      //   }
-      //   default: {
-      //     this._logger.isDebugEnabled() && this._logger.debug(`outboundEvtHandler - ${message?.msgName}:${message?.msgKey}:${message?.msgId} - Skipping unknown event`)
-      //     histTimer({ success: 'true', evtname })
-      //     return
-      //   }
-      // }
-
-    //   this._logger.isInfoEnabled() && this._logger.info(`outboundEvtHandler - persisted state event - ${message?.msgName}:${message?.msgKey}:${message?.msgId} - Result: true`)
-    // } catch (err: any) {
-    //   this._logger.isErrorEnabled() && this._logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err), 2))
-    //   const errMsg: string = err?.message?.toString()
-    //   this._logger.isWarnEnabled() && this._logger.warn(`outboundEvtHandler - persisting state event - ${message?.msgName}:${message?.msgKey}:${message?.msgId} - Error: ${errMsg}`)
-    // }
   }
 
-  // private async _handleTransferPreparedStateEvt (evt: TransferPreparedStateEvt): Promise<void> {
-  //   const payload: TransferPreparedStateEvtPayload = evt.payload
-
-  //   // we don't care if one exists already, the read side has no logic and asks no questions
-
-  //   const success: boolean = await this._readSideRepo.insertTransferState({
-  //     id: payload.transfer.id,
-  //     created_at: evt.msgTimestamp,
-  //     updated_at: evt.msgTimestamp,
-  //     version: 1, // NOTE we're not doing versions yet
-
-  //     amount: payload.transfer.amount,
-  //     currency: payload.transfer.currency,
-  //     transferInternalState: TransferInternalStates.RECEIVED_PREPARE,
-  //     payerId: payload.transfer.payerId,
-  //     payeeId: payload.transfer.payeeId,
-  //     expiration: payload.transfer.expiration,
-  //     condition: payload.transfer.condition,
-  //     prepare: payload.transfer.prepare,
-  //     fulfilment: payload.transfer.fulfilment,
-  //     completedTimestamp: '',
-  //     fulfil: payload.transfer.fulfil,
-  //     reject: payload.transfer.reject
-  //   })
-
-  //   if (!success) {
-  //     throw new InvalidTransferEvtError(`_handleTransferPreparedStateEvt is unable to persist state event - Transfer '${evt.msgKey}' is Invalid - ${evt.msgName}:${evt.msgKey}:${evt.msgId}`)
-  //   }
-  // }
-
-  // private async _handleTransferFulfiledStateEvt (evt: TransferFulfiledStateEvt): Promise<void> {
-  //   const payload: TransferFulfiledStateEvtPayload = evt.payload
-
-  //   // we don't care if one exists already, the read side has no logic and asks no questions
-  //   const success: boolean = await this._readSideRepo.updateFulfil({
-  //     transfer: {
-  //       id: payload.transfer.id,
-  //       fulfilment: payload.transfer.fulfilment,
-  //       completedTimestamp: payload.transfer.completedTimestamp,
-  //       fulfil: payload.transfer.fulfil,
-  //       transferInternalState: TransferInternalStates.RECEIVED_FULFIL
-  //     }
-  //   })
-
-  //   if (!success) {
-  //     throw new InvalidTransferEvtError(`_handleTransferFulfiledStateEvt is unable to persist state event - Transfer '${evt.msgKey}' is Invalid - ${evt.msgName}:${evt.msgKey}:${evt.msgId}`)
-  //   }
-  // }
-
-  // private async _handleTransferStateChangedStateEvt (evt: TransferStateChangedStateEvt): Promise<void> {
-  //   const payload: TransferStateChangedStateEvtPayload = evt.payload
-
-  //   // we don't care if one exists already, the read side has no logic and asks no questions
-  //   const success: boolean = await this._readSideRepo.updateState(payload)
-
-  //   if (!success) {
-  //     throw new InvalidTransferEvtError(`_handleTransferStateChangedStateEvt is unable to persist state event - Transfer '${evt.msgKey}' is Invalid - ${evt.msgName}:${evt.msgKey}:${evt.msgId}`)
-  //   }
-  // }
 }
