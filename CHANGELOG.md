@@ -1,4 +1,12 @@
 # Changelog: [mojaloop/thirdparty-api-svc](https://github.com/mojaloop/thirdparty-api-svc)
+### [18.0.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v18.0.0...v18.0.1) (2022-07-12)
+
+
+### Chore
+
+* added .npmignore so that the test folder is not included when publishing packages ([#332](https://github.com/mojaloop/sdk-scheme-adapter/issues/332)) ([602b3ab](https://github.com/mojaloop/sdk-scheme-adapter/commit/602b3abfe861123623768e2a1c3497063ce4b909))
+* uodated deps ([#333](https://github.com/mojaloop/sdk-scheme-adapter/issues/333)) ([7f9e027](https://github.com/mojaloop/sdk-scheme-adapter/commit/7f9e0277ff760ad22ab29dc3abee20322030d7dc))
+
 ## [18.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v17.0.1...v18.0.0) (2022-07-11)
 
 
