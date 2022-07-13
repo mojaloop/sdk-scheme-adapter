@@ -29,4 +29,5 @@ import { BulkTransactionState } from './bulk_transaction_entity'
 
 export type IBulkTransactionEntityRepo = {
   getAllAttributes: (id: string) => Promise<string[]>
+  addAdditionalAttribute: (id: string, name: string, value: any) => Promise<void>
 } & IEntityStateRepository<BulkTransactionState>

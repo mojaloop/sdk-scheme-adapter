@@ -30,7 +30,8 @@ import { SDKSchemeAdapter } from '@mojaloop/api-snippets'
 // import { randomUUID } from 'crypto'
 import Ajv from 'ajv'
 import { BulkTransactionEntity, BulkTransactionState } from './bulk_transaction_entity'
-import { IndividualTransferState } from './individual_transfer_entity'
+import { IndividualTransferState, IndividualTransferEntity } from './individual_transfer_entity'
+import { IBulkTransactionEntityRepo } from "./bulk_transaction_entity_repo";
 
 const ajv = new Ajv({
   strict:false,
@@ -38,7 +39,6 @@ const ajv = new Ajv({
 })
 
 export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, BulkTransactionState> {
-  private _individualTransfers: Array<IndividualTransferState>;
   private _partyLookupTotalCount?: number;
   private _partyLookupSuccessCount?: number;
   private _partyLookupFailedCount?: number;
@@ -58,7 +58,8 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
   static CreateFromRequest (request: any, entityStateRepo: IEntityStateRepository<BulkTransactionState>, logger: ILogger): BulkTransactionAgg {
     // Create root entity
     const bulkTransactionEntity = BulkTransactionEntity.CreateFromRequest(request)
-    return new BulkTransactionAgg(bulkTransactionEntity, entityStateRepo, logger)
+    const agg = new BulkTransactionAgg(bulkTransactionEntity, entityStateRepo, logger)
+    return agg
   }
 
   static async CreateFromRepo (id: string, entityStateRepo: IEntityStateRepository<BulkTransactionState>, logger: ILogger): Promise<BulkTransactionAgg> {
@@ -78,13 +79,16 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
     }
   }
 
+  async addIndividualTransferEntity (entity: IndividualTransferEntity) : Promise<void> {
+    (<IBulkTransactionEntityRepo>this._entity_state_repo).addAdditionalAttribute(this._rootEntity.id, 'individualItem_' + entity.id, entity.exportState())
+  }
+
   async destroy () : Promise<void> {
     if(this._rootEntity) {
       // Cleanup repo
       await this._entity_state_repo.remove(this._rootEntity.id)
       // Cleanup properties
-      this._rootEntity = null
-      this._individualTransfers = []
+      // this._rootEntity = null
       this._partyLookupTotalCount = undefined
       this._partyLookupSuccessCount = undefined
       this._partyLookupFailedCount = undefined

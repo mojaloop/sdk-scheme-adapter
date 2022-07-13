@@ -45,7 +45,7 @@ import { ILogger } from './ilogger'
 export abstract class BaseAggregate<E extends BaseEntity<S>, S extends BaseEntityState> {
   protected _logger: ILogger
 
-  protected _rootEntity: E | null
+  protected _rootEntity: E
 
   protected _entity_state_repo: IEntityStateRepository<S>
 
@@ -93,6 +93,6 @@ export abstract class BaseAggregate<E extends BaseEntity<S>, S extends BaseEntit
   // }
 
   private _resetState (): void {
-    this._rootEntity = null
+    // this._rootEntity = null
   }
 }

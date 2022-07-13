@@ -31,6 +31,7 @@ import { Crypto } from '@mojaloop/sdk-scheme-adapter-utilities-lib'
 import { BulkTransactionEntity } from '../domain/bulk_transaction_entity'
 import { BulkTransactionAgg } from '../domain/bulk_transaction_agg'
 import { IBulkTransactionEntityRepo } from '../domain/bulk_transaction_entity_repo'
+import { IndividualTransferEntity } from '../domain/individual_transfer_entity'
 // import { RedisBulkTransactionStateRepo } from '../infrastructure/redis_bulk_transaction_repo'
 import { RedisHSetBulkTransactionStateRepo } from '../infrastructure/redis_hset_bulk_transaction_repo'
 
@@ -82,6 +83,7 @@ export class OutboundEventHandler implements IRunHandler {
     console.log(message)
     switch (message.getName()) {
       case OutboundCommandEventMessageName.ProcessSDKOutboundBulkRequest: {
+        // TODO: Duplicate check here?
         const processSDKOutboundBulkRequestMessage = ProcessSDKOutboundBulkRequestMessage.CreateFromCommandEventMessage(message)
         try {
           const sdkOutboundBulkRequestEntity = processSDKOutboundBulkRequestMessage.createSDKOutboundBulkRequestEntity()
@@ -96,6 +98,13 @@ export class OutboundEventHandler implements IRunHandler {
           const bulkTransactionAgg = BulkTransactionAgg.CreateFromRequest(sdkOutboundBulkRequestEntity.request, this._bulkTransactionEntityStateRepo, this._logger)
           this._logger.isInfoEnabled() && this._logger.info(`outboundCmdHandler - Created BulkTransactionAggregate ${bulkTransactionAgg}`);
           await bulkTransactionAgg.store()
+          // Add Individual transfer entities to aggregate
+          if (sdkOutboundBulkRequestEntity.request.individualTransfers && Array.isArray(sdkOutboundBulkRequestEntity.request.individualTransfers) && sdkOutboundBulkRequestEntity.request.individualTransfers.length > 0) {
+            for (const individualTransfer of sdkOutboundBulkRequestEntity.request.individualTransfers){
+              const individualTransferEntity = IndividualTransferEntity.CreateFromRequest(individualTransfer)
+              bulkTransactionAgg.addIndividualTransferEntity(individualTransferEntity)
+            }
+          }
           // const bulkTransactionAggTest = await BulkTransactionAgg.CreateFromRepo(sdkOutboundBulkRequestEntity.id, this._bulkTransactionEntityStateRepo, this._logger)
         } catch(err: any) {
           this._logger.isInfoEnabled() && this._logger.info(`outboundCmdHandler - Failed to create BulkTransactionAggregate. ${err.message}`)

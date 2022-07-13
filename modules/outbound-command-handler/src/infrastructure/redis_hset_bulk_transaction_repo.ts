@@ -141,6 +141,19 @@ export class RedisHSetBulkTransactionStateRepo implements IBulkTransactionEntity
     }
   }
 
+  async addAdditionalAttribute (id: string, name: string, value: any): Promise<void> {
+    if (!this.canCall()) {
+      throw(new Error('Repository not ready'))
+    }
+    const key: string = this.keyWithPrefix(id)
+    try {
+      await this._redisClient.hSet(key, name, JSON.stringify(value))
+    } catch(err) {
+      this._logger.isErrorEnabled() && this._logger.error(err, `Error storing additional attribute named ${name} to redis for key: ${key}`)
+      throw(err)
+    }
+  }
+
   private keyWithPrefix (key: string): string {
     return this.keyPrefix + key
   }
