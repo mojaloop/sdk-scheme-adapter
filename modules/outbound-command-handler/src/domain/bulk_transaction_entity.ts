@@ -24,54 +24,74 @@
 
 'use strict'
 
-import { BaseEntityState, BaseEntity } from '../domain'
-import { AjvValidationError } from '../errors'
+import { BaseEntityState, BaseEntity, AjvValidationError } from '@mojaloop/sdk-scheme-adapter-public-types-lib'
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets'
 import { randomUUID } from 'crypto'
 import Ajv from 'ajv'
-import { ErrorObject } from 'ajv'
+import { IndividualTransferState } from './individual_transfer_entity'
+
+
 const ajv = new Ajv({
   strict:false,
   allErrors: false
-  // validateSchema: false
 })
-// ajv.addKeyword({
-//   keyword: 'example'
-// })
 
-export interface SDKOutboundBulkRequestState extends BaseEntityState {
-  request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferRequest
+
+export interface IBulkTransferRequest {
+  options: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferOptions;
+  extensions: SDKSchemeAdapter.Outbound.V2_0_0.Types.ExtensionList;
+}
+// TODO: Refine this
+export enum BulkTransactionInternalState {
+  RECEIVED = "RECEIVED",
+  DISCOVERY_PROCESSING = "DISCOVERY_PROCESSING",
+  AGREEMENT_PROCESSING = "AGREEMENT_PROCESSING",
+  TRANSFER_PROCESSING = "TRANSFER_PROCESSING"
 }
 
-export class SDKOutboundBulkRequestEntity extends BaseEntity<SDKOutboundBulkRequestState> {
+export interface BulkTransactionState extends BaseEntityState {
+  // request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferRequest
+  bulkTransactionId: string;
+  bulkHomeTransactionID: string | null;
+  request: IBulkTransferRequest;
+  state: BulkTransactionInternalState;
+}
+
+export class BulkTransactionEntity extends BaseEntity<BulkTransactionState> {
 
   get id (): string {
     return this._state.id
   }
 
-  get request (): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferRequest {
+  get bulkHomeTransactionID (): string | null {
+    return this._state.bulkHomeTransactionID
+  }
+
+  get request (): IBulkTransferRequest {
     return this._state.request
   }
 
-  static CreateFromRequest (request: any): SDKOutboundBulkRequestEntity {
-    SDKOutboundBulkRequestEntity._validateRequest(request)
-    const initialState: SDKOutboundBulkRequestState = {
-      id: request?.bulkTransactionId || randomUUID(),
-      request,
+  static CreateFromRequest (request: any): BulkTransactionEntity {
+    BulkTransactionEntity._validateRequest(request)
+    const bulkTransactionId = request?.bulkTransactionId || randomUUID()
+    const initialState: BulkTransactionState = {
+      id: bulkTransactionId,
+      bulkTransactionId,
+      bulkHomeTransactionID: request?.bulkHomeTransactionID,
+      request: {
+        options: request?.options,
+        extensions: request?.extensions
+      },
+      state: BulkTransactionInternalState.RECEIVED,
       created_at: Date.now(),
       updated_at: Date.now(),
       version: 1
     }
-    return new SDKOutboundBulkRequestEntity(initialState)
+    return new BulkTransactionEntity(initialState)
   }
 
   /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */
-  constructor (initialState: SDKOutboundBulkRequestState) {
-    SDKOutboundBulkRequestEntity._validateRequest(initialState.request)
-    // Modify request to add bulkTransactionId if undefined
-    if (initialState.request.bulkTransactionId === undefined) {
-      initialState.request.bulkTransactionId = initialState.id
-    }
+  constructor (initialState: BulkTransactionState) {
     super(initialState)
   }
 

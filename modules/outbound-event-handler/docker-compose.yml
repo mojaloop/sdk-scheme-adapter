@@ -28,6 +28,13 @@ services:
     depends_on:
       - zookeeper
 
+  redis:
+    container_name: redis
+    image: "redis:5.0.4-alpine"
+    ports:
+      - "6379:6379"
+    restart: always
+
 # volumes:
 #   zookeeper_data:
 #     driver: local

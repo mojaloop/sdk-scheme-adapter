@@ -27,16 +27,19 @@
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 import { IRunHandler, KafkaCommandEventsConsumer, KafkaDomainEventsProducer } from '@mojaloop/sdk-scheme-adapter-infra-lib'
 import { CommandEventMessage, OutboundCommandEventMessageName, ICommandEventMessageData, ProcessSDKOutboundBulkRequestMessage, IProcessSDKOutboundBulkRequestMessageData } from '@mojaloop/sdk-scheme-adapter-private-types-lib';
-
-// import { InvalidOutboundEvtError } from './errors'
 import { Crypto } from '@mojaloop/sdk-scheme-adapter-utilities-lib'
+import { BulkTransactionEntity } from '../domain/bulk_transaction_entity'
+import { BulkTransactionAgg } from '../domain/bulk_transaction_agg'
+import { IBulkTransactionEntityRepo } from '../domain/bulk_transaction_entity_repo'
+import { RedisBulkTransactionStateRepo } from '../infrastructure/redis_bulk_transaction_repo'
+
 
 export class OutboundEventHandler implements IRunHandler {
   private _logger: ILogger
   private _consumer: KafkaCommandEventsConsumer
   private _domainProducer: KafkaDomainEventsProducer
   private _clientId: string
-  // private _readSideRepo: MongoDbReadsideTransferRepo
+  private _bulkTransactionEntityStateRepo: IBulkTransactionEntityRepo
 
   async start (appConfig: any, logger: ILogger): Promise<void> {
     this._logger = logger
@@ -52,21 +55,27 @@ export class OutboundEventHandler implements IRunHandler {
     this._logger.isInfoEnabled() && this._logger.info(`outboundCmdHandler - Creating ${appConfig.kafka.consumer as string}...`)
 
     this._consumer = new KafkaCommandEventsConsumer(this._messageHandler.bind(this), logger)
-
     logger.isInfoEnabled() && logger.info(`outboundCmdHandler - Created kafkaConsumer of type ${this._consumer.constructor.name}`)
-
     /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
     await this._consumer.init() // we're interested in all stateEvents
     await this._consumer.start()
 
     this._domainProducer = new KafkaDomainEventsProducer(logger)
+    logger.isInfoEnabled() && logger.info(`outboundCmdHandler - Created kafkaProducer of type ${this._domainProducer.constructor.name}`)
     await this._domainProducer.init()
+
+    // TODO: Parameterize redis config
+    this._bulkTransactionEntityStateRepo = new RedisBulkTransactionStateRepo('redis://localhost:6379', false, this._logger)
+    logger.isInfoEnabled() && logger.info(`outboundCmdHandler - Created BulkTransactionStateRepo of type ${this._bulkTransactionEntityStateRepo.constructor.name}`)
+    await this._bulkTransactionEntityStateRepo.init()
+
+
   }
 
   async destroy (): Promise<void> {
     await this._consumer.destroy()
     await this._domainProducer.destroy()
-    // await this._readSideRepo.destroy()
+    await this._bulkTransactionEntityStateRepo.destroy()
   }
 
   async _messageHandler (message: CommandEventMessage): Promise<void> {
@@ -78,9 +87,18 @@ export class OutboundEventHandler implements IRunHandler {
         try {
           const sdkOutboundBulkRequestEntity = processSDKOutboundBulkRequestMessage.createSDKOutboundBulkRequestEntity()
           this._logger.isInfoEnabled() && this._logger.info(`outboundCmdHandler - Got SDKOutboundBulkRequestEntity ${sdkOutboundBulkRequestEntity}`);
-          console.log(sdkOutboundBulkRequestEntity.exportState());
+          // console.log(sdkOutboundBulkRequestEntity.exportState());
+          // const bulkTransactionEntity = BulkTransactionEntity.CreateFromRequest(sdkOutboundBulkRequestEntity.request)
+          // this._logger.isInfoEnabled() && this._logger.info(`outboundCmdHandler - Created BulkTransactionEntity ${bulkTransactionEntity}`);
+          // console.log(bulkTransactionEntity.exportState());
+
+          // Create aggregate
+          // const bulkTransactionAgg = new BulkTransactionAgg(bulkTransactionEntity, this._bulkTransactionEntityStateRepo, this._logger)
+          const bulkTransactionAgg = BulkTransactionAgg.CreateFromRequest(sdkOutboundBulkRequestEntity.request, this._bulkTransactionEntityStateRepo, this._logger)
+          this._logger.isInfoEnabled() && this._logger.info(`outboundCmdHandler - Created BulkTransactionAggregate ${bulkTransactionAgg}`);
+          bulkTransactionAgg.store()
         } catch(err: any) {
-          this._logger.isInfoEnabled() && this._logger.info(`outboundCmdHandler - Failed to create SDKOutboundBulkRequestEntity. ${err.message}`)
+          this._logger.isInfoEnabled() && this._logger.info(`outboundCmdHandler - Failed to create BulkTransactionAggregate. ${err.message}`)
         }
         break;
       }

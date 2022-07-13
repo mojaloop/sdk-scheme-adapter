@@ -22,15 +22,11 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Modusbox
- - Shashikant Hirugade <shashikant.hirugade@modusbox.com>
- - Juan Correa <juancorrea@modusbox.com>
+ - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
 
  --------------
  ******/
 
-"use strict";
-
-export * from "./entities";
-export * from "./events";
-export * from "./domain";
-export * from "./errors";
+ "use strict";
+ 
+export * from "./validation-errors";

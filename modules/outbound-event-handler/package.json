@@ -24,6 +24,7 @@
     ],
     "scripts": {
         "start": "yarn run service",
+        "start:dev": "ts-node src/application/index.ts",
         "service": "tsc && node dist/application/index.js",
         "build": "tsc",
         "watch": "tsc -w",

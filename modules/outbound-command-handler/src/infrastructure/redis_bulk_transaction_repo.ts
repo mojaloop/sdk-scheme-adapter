@@ -3,11 +3,8 @@
  --------------
  Copyright © 2017 Bill & Melinda Gates Foundation
  The Mojaloop files are made available by the Bill & Melinda Gates Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
-
  http://www.apache.org/licenses/LICENSE-2.0
-
  Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
-
  Contributors
  --------------
  This is the official list (alphabetical ordering) of the Mojaloop project contributors for this file.
@@ -18,32 +15,23 @@
  Gates Foundation organization for an example). Those individuals should have
  their names indented and be marked with a '-'. Email address can be added
  optionally within square brackets <email>.
-
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
-
- * Coil
- - Donovan Changfoot <donovan.changfoot@coil.com>
-
- * Crosslake
- - Pedro Sousa Barreto <pedrob@crosslaketech.com>
-
- * ModusBox
- - Miguel de Barros <miguel.debarros@modusbox.com>
- - Roman Pietrzak <roman.pietrzak@modusbox.com>
-
+ * Modusbox
+ - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
  --------------
-******/
+ ******/
 
 'use strict'
 
 import * as redis from 'redis'
 import { ILogger } from '@mojaloop/sdk-scheme-adapter-public-types-lib'
-import { ParticipantSnapshotOperatorState } from '../domain/participant_operator_state'
+import { BulkTransactionState } from '../domain/bulk_transaction_entity'
+import { IBulkTransactionEntityRepo } from '../domain/bulk_transaction_entity_repo'
 // @ts-expect-error
 import RedisClustr = require('redis-clustr')
 
-export class RedisParticipantOperatorStateRepo {
+export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo {
   protected _redisClient!: redis.RedisClient
   protected _redisClustered: boolean
   private readonly _redisConnStr: string
@@ -51,7 +39,7 @@ export class RedisParticipantOperatorStateRepo {
   private readonly _redisConnClusterPort: number
   private readonly _logger: ILogger
   private _initialized: boolean = false
-  private readonly _key: string = 'participantOperatorState'
+  private readonly keyPrefix: string = 'bulkTransaction_'
 
   constructor (connStr: string, clusteredRedis: boolean, logger: ILogger) {
     this._redisConnStr = connStr
@@ -98,53 +86,104 @@ export class RedisParticipantOperatorStateRepo {
     return this._initialized // for now, no circuit breaker exists
   }
 
-  async load (): Promise<ParticipantSnapshotOperatorState|null> {
+  async load (id: string): Promise<BulkTransactionState|null> {
     return await new Promise((resolve, reject) => {
       if (!this.canCall()) return reject(new Error('Repository not ready'))
 
-      this._redisClient.get(this._key, (err: Error | null, result: string | null) => {
+      const key: string = this.keyWithPrefix(id)
+
+      this._redisClient.get(key, (err: Error | null, result: string | null) => {
         if (err != null) {
-          this._logger.isErrorEnabled() && this._logger.error(err, 'Error fetching ParticipantSnapshotOperatorState from redis - key: ' + this._key)
+          this._logger.isErrorEnabled() && this._logger.error(err, 'Error fetching entity state from redis - for key: ' + key)
           return reject(err)
         }
         if (result == null) {
-          this._logger.isDebugEnabled() && this._logger.debug('ParticipantSnapshotOperatorState not found in redis - key: ' + this._key)
+          this._logger.isDebugEnabled() && this._logger.debug('Entity state not found in redis - for key: ' + key)
           return resolve(null)
         }
         try {
-          const state: ParticipantSnapshotOperatorState = JSON.parse(result)
+          const state: BulkTransactionState = JSON.parse(result)
           return resolve(state)
         } catch (err) {
-          this._logger.isErrorEnabled() && this._logger.error(err, 'Error parsing ParticipantSnapshotOperatorState from redis - key: ' + this._key)
+          this._logger.isErrorEnabled() && this._logger.error(err, 'Error parsing entity state from redis - for key: ' + key)
           return reject(err)
         }
       })
     })
   }
 
-  async store (state: ParticipantSnapshotOperatorState): Promise<void> {
+  async remove (id: string): Promise<void> {
     return await new Promise((resolve, reject) => {
       if (!this.canCall()) return reject(new Error('Repository not ready'))
 
+      const key: string = this.keyWithPrefix(id)
+
+      this._redisClient.del(key, (err?: Error|null, result?: number) => {
+        if (err != null) {
+          this._logger.isErrorEnabled() && this._logger.error(err, 'Error removing entity state from redis - for key: ' + key)
+          return reject(err)
+        }
+        if (result !== 1) {
+          this._logger.isDebugEnabled() && this._logger.debug('Entity state not found in redis - for key: ' + key)
+          return resolve()
+        }
+
+        return resolve()
+      })
+    })
+  }
+
+  async store (entityState: BulkTransactionState): Promise<void> {
+    return await new Promise((resolve, reject) => {
+      if (!this.canCall()) return reject(new Error('Repository not ready'))
+
+      const key: string = this.keyWithPrefix(entityState.id)
       let stringValue: string
       try {
-        stringValue = JSON.stringify(state)
+        stringValue = JSON.stringify(entityState)
       } catch (err) {
-        this._logger.isErrorEnabled() && this._logger.error(err, 'Error parsing ParticipantSnapshotOperatorState JSON - key: ' + this._key)
+        this._logger.isErrorEnabled() && this._logger.error(err, 'Error parsing entity state JSON - for key: ' + key)
         return reject(err)
       }
 
-      this._redisClient.set(this._key, stringValue, (err: Error | null, reply: string) => {
+      this._redisClient.set(key, stringValue, (err: Error | null, reply: string) => {
         if (err != null) {
-          this._logger.isErrorEnabled() && this._logger.error(err, 'Error storing ParticipantSnapshotOperatorState to redis - key: ' + this._key)
+          this._logger.isErrorEnabled() && this._logger.error(err, 'Error storing entity state to redis - for key: ' + key)
           return reject(err)
         }
         if (reply !== 'OK') {
-          this._logger.isErrorEnabled() && this._logger.error('Unsuccessful attempt to store the ParticipantSnapshotOperatorState in redis - key: ' + this._key)
+          this._logger.isErrorEnabled() && this._logger.error('Unsuccessful attempt to store the entity state in redis - for key: ' + key)
           return reject(err)
         }
         return resolve()
       })
     })
   }
+
+  async getAllAttributes (): Promise<string[]> {
+    /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
+    return await new Promise(async (resolve, reject) => {
+      this._logger.isDebugEnabled() && this._logger.debug('RedisBulkTransactionStateRepo::getAll() - start')
+
+      if (!this.canCall()) return reject(new Error('Repository not ready'))
+      this._redisClient.keys(this.keyPrefix + '*', (err: Error | null, result: string[]) => {
+        if (err != null) {
+          this._logger.isErrorEnabled() && this._logger.error(err, `Error retrieving all keys with prefix: ${this.keyPrefix}`)
+          return reject(err)
+        }
+        this._logger.isDebugEnabled() && this._logger.debug(`RedisBulkTransactionStateRepo::getAll() - got back, ${result.length} results'`)
+        const results: string[] = []
+        result.forEach((val: string) => {
+          results.push(val.replace(this.keyPrefix, ''))
+        })
+
+        return resolve(result)
+      })
+    })
+  }
+
+  private keyWithPrefix (key: string): string {
+    return this.keyPrefix + key
+  }
+
 }

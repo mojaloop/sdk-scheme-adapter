@@ -24,75 +24,76 @@
 
 'use strict'
 
-import { BaseEntityState, BaseEntity } from '../domain'
-import { AjvValidationError } from '../errors'
-import { SDKSchemeAdapter } from '@mojaloop/api-snippets'
+import { BaseEntityState, BaseEntity, AjvValidationError } from '@mojaloop/sdk-scheme-adapter-public-types-lib'
+import { SDKSchemeAdapter, v1_1 as FSPIOP } from '@mojaloop/api-snippets'
 import { randomUUID } from 'crypto'
 import Ajv from 'ajv'
-import { ErrorObject } from 'ajv'
 const ajv = new Ajv({
   strict:false,
   allErrors: false
-  // validateSchema: false
 })
-// ajv.addKeyword({
-//   keyword: 'example'
-// })
 
-export interface SDKOutboundBulkRequestState extends BaseEntityState {
-  request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferRequest
+ // TODO: check name and status enums.
+ export enum IndividualTransferInternalState {
+  RECEIVED = "RECEIVED",
+  DISCOVERY_PROCESSING = "DISCOVERY_PROCESSING",
+  AGREEMENT_PROCESSING = "AGREEMENT_PROCESSING",
+  TRANSFER_PROCESSING = "TRANSFER_PROCESSING"
 }
 
-export class SDKOutboundBulkRequestEntity extends BaseEntity<SDKOutboundBulkRequestState> {
+// TODO: Standardize the following
+export interface IHttpRequest {
+  method: string;
+  path: string;
+  headers: any;
+  body: any;
+}
+
+export interface IPartyRequest extends IHttpRequest {}
+
+export interface IndividualTransferState extends BaseEntityState {
+  id: string;
+  request: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransfer;
+  state: IndividualTransferInternalState;
+  batchId?: string;
+  partyRequest?: IPartyRequest; // TODO: This should be defined in public repo extending a http request interface similar to (http request or axios request object)
+  partyResponse?: FSPIOP.Schemas.PartyResult
+  acceptParty?: boolean;
+  acceptQuote?: boolean;
+  lastError?: any; // TODO: Define a format for this
+}
+
+export class IndividualTransferEntity extends BaseEntity<IndividualTransferState> {
 
   get id (): string {
     return this._state.id
   }
 
-  get request (): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferRequest {
+  get request (): SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransfer {
     return this._state.request
   }
 
-  static CreateFromRequest (request: any): SDKOutboundBulkRequestEntity {
-    SDKOutboundBulkRequestEntity._validateRequest(request)
-    const initialState: SDKOutboundBulkRequestState = {
-      id: request?.bulkTransactionId || randomUUID(),
+  static CreateFromRequest (request: any): IndividualTransferEntity {
+    // IndividualTransferEntity._validateRequest(request)
+    const initialState: IndividualTransferState = {
+      id: randomUUID(),
       request,
+      state: IndividualTransferInternalState.RECEIVED,
       created_at: Date.now(),
       updated_at: Date.now(),
       version: 1
     }
-    return new SDKOutboundBulkRequestEntity(initialState)
+    return new IndividualTransferEntity(initialState)
   }
 
   /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */
-  constructor (initialState: SDKOutboundBulkRequestState) {
-    SDKOutboundBulkRequestEntity._validateRequest(initialState.request)
-    // Modify request to add bulkTransactionId if undefined
-    if (initialState.request.bulkTransactionId === undefined) {
-      initialState.request.bulkTransactionId = initialState.id
-    }
+  constructor (initialState: IndividualTransferState) {
+    IndividualTransferEntity._validateRequest(initialState.request)
     super(initialState)
   }
 
-  isAutoAcceptPartyEnabled (): boolean {
-    return this._state.request.options.autoAcceptParty.enabled
-  }
-
-  isAutoAcceptQuoteEnabled (): boolean {
-    return this._state.request.options.autoAcceptQuote.enabled
-  }
-
-  getAutoAcceptQuotePerTransferFeeLimits (): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkPerTransferFeeLimit[] | undefined {
-    return this._state.request.options.autoAcceptQuote.perTransferFeeLimits
-  }
-
-  getBulkExpiration (): string {
-    return this._state.request.options.bulkExpiration
-  }
-
-  private static _validateRequest (request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferRequest): void {
-    let requestSchema = SDKSchemeAdapter.Outbound.V2_0_0.Schemas.bulkTransferRequest
+  private static _validateRequest (request: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransfer): void {
+    let requestSchema = SDKSchemeAdapter.Outbound.V2_0_0.Schemas.individualTransfer
     const validate = ajv.compile(requestSchema)
     const validationResult = validate(request)
     if(!validationResult) {
