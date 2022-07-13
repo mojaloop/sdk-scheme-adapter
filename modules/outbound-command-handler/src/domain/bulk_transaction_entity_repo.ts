@@ -28,5 +28,5 @@ import { IEntityStateRepository } from '@mojaloop/sdk-scheme-adapter-public-type
 import { BulkTransactionState } from './bulk_transaction_entity'
 
 export type IBulkTransactionEntityRepo = {
-  getAllAttributes: () => Promise<string[]>
+  getAllAttributes: (id: string) => Promise<string[]>
 } & IEntityStateRepository<BulkTransactionState>

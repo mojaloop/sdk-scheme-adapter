@@ -31,7 +31,8 @@ import { Crypto } from '@mojaloop/sdk-scheme-adapter-utilities-lib'
 import { BulkTransactionEntity } from '../domain/bulk_transaction_entity'
 import { BulkTransactionAgg } from '../domain/bulk_transaction_agg'
 import { IBulkTransactionEntityRepo } from '../domain/bulk_transaction_entity_repo'
-import { RedisBulkTransactionStateRepo } from '../infrastructure/redis_bulk_transaction_repo'
+// import { RedisBulkTransactionStateRepo } from '../infrastructure/redis_bulk_transaction_repo'
+import { RedisHSetBulkTransactionStateRepo } from '../infrastructure/redis_hset_bulk_transaction_repo'
 
 
 export class OutboundEventHandler implements IRunHandler {
@@ -65,11 +66,9 @@ export class OutboundEventHandler implements IRunHandler {
     await this._domainProducer.init()
 
     // TODO: Parameterize redis config
-    this._bulkTransactionEntityStateRepo = new RedisBulkTransactionStateRepo('redis://localhost:6379', false, this._logger)
+    this._bulkTransactionEntityStateRepo = new RedisHSetBulkTransactionStateRepo('redis://localhost:6379', false, this._logger)
     logger.isInfoEnabled() && logger.info(`outboundCmdHandler - Created BulkTransactionStateRepo of type ${this._bulkTransactionEntityStateRepo.constructor.name}`)
     await this._bulkTransactionEntityStateRepo.init()
-
-
   }
 
   async destroy (): Promise<void> {
@@ -96,7 +95,8 @@ export class OutboundEventHandler implements IRunHandler {
           // const bulkTransactionAgg = new BulkTransactionAgg(bulkTransactionEntity, this._bulkTransactionEntityStateRepo, this._logger)
           const bulkTransactionAgg = BulkTransactionAgg.CreateFromRequest(sdkOutboundBulkRequestEntity.request, this._bulkTransactionEntityStateRepo, this._logger)
           this._logger.isInfoEnabled() && this._logger.info(`outboundCmdHandler - Created BulkTransactionAggregate ${bulkTransactionAgg}`);
-          bulkTransactionAgg.store()
+          await bulkTransactionAgg.store()
+          // const bulkTransactionAggTest = await BulkTransactionAgg.CreateFromRepo(sdkOutboundBulkRequestEntity.id, this._bulkTransactionEntityStateRepo, this._logger)
         } catch(err: any) {
           this._logger.isInfoEnabled() && this._logger.info(`outboundCmdHandler - Failed to create BulkTransactionAggregate. ${err.message}`)
         }

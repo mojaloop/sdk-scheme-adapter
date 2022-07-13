@@ -36,11 +36,6 @@ const ajv = new Ajv({
   allErrors: false
 })
 
-
-export interface IBulkTransferRequest {
-  options: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferOptions;
-  extensions: SDKSchemeAdapter.Outbound.V2_0_0.Types.ExtensionList;
-}
 // TODO: Refine this
 export enum BulkTransactionInternalState {
   RECEIVED = "RECEIVED",
@@ -50,10 +45,10 @@ export enum BulkTransactionInternalState {
 }
 
 export interface BulkTransactionState extends BaseEntityState {
-  // request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferRequest
   bulkTransactionId: string;
   bulkHomeTransactionID: string | null;
-  request: IBulkTransferRequest;
+  options: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferOptions;
+  extensions: SDKSchemeAdapter.Outbound.V2_0_0.Types.ExtensionList;
   state: BulkTransactionInternalState;
 }
 
@@ -67,10 +62,6 @@ export class BulkTransactionEntity extends BaseEntity<BulkTransactionState> {
     return this._state.bulkHomeTransactionID
   }
 
-  get request (): IBulkTransferRequest {
-    return this._state.request
-  }
-
   static CreateFromRequest (request: any): BulkTransactionEntity {
     BulkTransactionEntity._validateRequest(request)
     const bulkTransactionId = request?.bulkTransactionId || randomUUID()
@@ -78,10 +69,8 @@ export class BulkTransactionEntity extends BaseEntity<BulkTransactionState> {
       id: bulkTransactionId,
       bulkTransactionId,
       bulkHomeTransactionID: request?.bulkHomeTransactionID,
-      request: {
-        options: request?.options,
-        extensions: request?.extensions
-      },
+      options: request?.options,
+      extensions: request?.extensions,
       state: BulkTransactionInternalState.RECEIVED,
       created_at: Date.now(),
       updated_at: Date.now(),
@@ -95,21 +84,21 @@ export class BulkTransactionEntity extends BaseEntity<BulkTransactionState> {
     super(initialState)
   }
 
-  isAutoAcceptPartyEnabled (): boolean {
-    return this._state.request.options.autoAcceptParty.enabled
-  }
+  // isAutoAcceptPartyEnabled (): boolean {
+  //   return this._state.options.autoAcceptParty.enabled
+  // }
 
-  isAutoAcceptQuoteEnabled (): boolean {
-    return this._state.request.options.autoAcceptQuote.enabled
-  }
+  // isAutoAcceptQuoteEnabled (): boolean {
+  //   return this._state.options.autoAcceptQuote.enabled
+  // }
 
-  getAutoAcceptQuotePerTransferFeeLimits (): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkPerTransferFeeLimit[] | undefined {
-    return this._state.request.options.autoAcceptQuote.perTransferFeeLimits
-  }
+  // getAutoAcceptQuotePerTransferFeeLimits (): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkPerTransferFeeLimit[] | undefined {
+  //   return this._state.options.autoAcceptQuote.perTransferFeeLimits
+  // }
 
-  getBulkExpiration (): string {
-    return this._state.request.options.bulkExpiration
-  }
+  // getBulkExpiration (): string {
+  //   return this._state.options.bulkExpiration
+  // }
 
   private static _validateRequest (request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferRequest): void {
     let requestSchema = SDKSchemeAdapter.Outbound.V2_0_0.Schemas.bulkTransferRequest

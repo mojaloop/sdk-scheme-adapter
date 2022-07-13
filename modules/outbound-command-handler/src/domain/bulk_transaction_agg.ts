@@ -58,13 +58,36 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
   static CreateFromRequest (request: any, entityStateRepo: IEntityStateRepository<BulkTransactionState>, logger: ILogger): BulkTransactionAgg {
     // Create root entity
     const bulkTransactionEntity = BulkTransactionEntity.CreateFromRequest(request)
-    // const initialState: SDKOutboundBulkRequestState = {
-    //   id: request?.bulkTransactionId || randomUUID(),
-    //   request,
-    //   created_at: Date.now(),
-    //   updated_at: Date.now(),
-    //   version: 1
-    // }
     return new BulkTransactionAgg(bulkTransactionEntity, entityStateRepo, logger)
+  }
+
+  static async CreateFromRepo (id: string, entityStateRepo: IEntityStateRepository<BulkTransactionState>, logger: ILogger): Promise<BulkTransactionAgg> {
+    // Get the root entity state from repo
+    let state: BulkTransactionState | null
+    try {
+      state = await entityStateRepo.load(id)
+    } catch(err) {
+      throw new Error(`Aggregate data is not found in repo`)
+    }
+    if (state) {
+      // Create root entity
+      const bulkTransactionEntity = new BulkTransactionEntity(state)
+      return new BulkTransactionAgg(bulkTransactionEntity, entityStateRepo, logger)
+    } else {
+      throw new Error(`Aggregate data is not found in repo`)
+    }
+  }
+
+  async destroy () : Promise<void> {
+    if(this._rootEntity) {
+      // Cleanup repo
+      await this._entity_state_repo.remove(this._rootEntity.id)
+      // Cleanup properties
+      this._rootEntity = null
+      this._individualTransfers = []
+      this._partyLookupTotalCount = undefined
+      this._partyLookupSuccessCount = undefined
+      this._partyLookupFailedCount = undefined
+    }
   }
 }

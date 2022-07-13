@@ -63,7 +63,6 @@ export abstract class BaseAggregate<E extends BaseEntity<S>, S extends BaseEntit
       throw new Error(`Aggregate doesn't have a valid state to store the state`)
     }
     this._logger.isInfoEnabled() && this._logger.info(`Aggregate state persisted to repository`)
-
   }
 
   // protected create (id?: string): void {

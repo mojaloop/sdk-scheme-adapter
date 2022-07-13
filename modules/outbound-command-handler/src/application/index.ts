@@ -55,7 +55,12 @@ import { OutboundEventHandler } from './outbound_event_handler'
 
     // start outboundEventHandler
     const outboundEventHandler: IRunHandler = new OutboundEventHandler()
-    await outboundEventHandler.start(appConfig, logger)
+    try {
+      await outboundEventHandler.start(appConfig, logger)
+    } catch(err: any) {
+      logger.isErrorEnabled() && logger.error(err, 'Error starting outbound event handler: ' + err.message)
+      await outboundEventHandler.destroy()
+    }
 
     // lets clean up all consumers here
     /* eslint-disable-next-line @typescript-eslint/no-misused-promises */

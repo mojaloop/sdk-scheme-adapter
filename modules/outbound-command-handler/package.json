@@ -61,7 +61,8 @@
     "typescript": "^4.6.4"
   },
   "dependencies": {
-    "@mojaloop/logging-bc-client-lib": "^0.0.10"
+    "@mojaloop/logging-bc-client-lib": "^0.0.10",
+    "redis": "^4.2.0"
   },
   "nodemonConfig": {
     "watch": [
