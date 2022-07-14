@@ -37,17 +37,9 @@
 
 'use strict'
 
-export enum RedisDuplicateInfraTypes {
-  REDIS = 'redis',
-  REDIS_SHARDED = 'redis-sharded',
-  MEMORY = 'memory'
-}
+// Exports for Domain
 
-// Exports for Infrastructure
-export * from './kafka_events_consumer'
-export * from './kafka_domain_events_consumer'
-export * from './kafka_command_events_consumer'
-export * from './kafka_events_producer'
-export * from './kafka_domain_events_producer'
-export * from './kafka_command_events_producer'
-export * from './irun_handler'
+export * from './base_aggregate'
+export * from './base_entity'
+export * from './base_entity_state'
+export * from './ientity_state_repository'

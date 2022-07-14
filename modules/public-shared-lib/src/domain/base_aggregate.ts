@@ -31,23 +31,39 @@
  * ModusBox
  - Miguel de Barros <miguel.debarros@modusbox.com>
  - Roman Pietrzak <roman.pietrzak@modusbox.com>
+ - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
 
  --------------
 ******/
 
 'use strict'
 
-export enum RedisDuplicateInfraTypes {
-  REDIS = 'redis',
-  REDIS_SHARDED = 'redis-sharded',
-  MEMORY = 'memory'
-}
+import { BaseEntity } from './base_entity'
+import { BaseEntityState } from './base_entity_state'
+import { IEntityStateRepository } from './ientity_state_repository'
+import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 
-// Exports for Infrastructure
-export * from './kafka_events_consumer'
-export * from './kafka_domain_events_consumer'
-export * from './kafka_command_events_consumer'
-export * from './kafka_events_producer'
-export * from './kafka_domain_events_producer'
-export * from './kafka_command_events_producer'
-export * from './irun_handler'
+export abstract class BaseAggregate<E extends BaseEntity<S>, S extends BaseEntityState> {
+  protected _logger: ILogger
+
+  protected _rootEntity: E
+
+  protected _entity_state_repo: IEntityStateRepository<S>
+
+  constructor (rootEntity: E, entityStateRepo: IEntityStateRepository<S>, logger: ILogger) {
+    this._logger = logger
+
+    this._rootEntity = rootEntity
+    this._entity_state_repo = entityStateRepo
+  }
+
+  async store (): Promise<void> {
+    if (this._rootEntity != null) {
+      await this._entity_state_repo.store(this._rootEntity.exportState())
+    } else {
+      throw new Error(`Aggregate doesn't have a valid state to store the state`)
+    }
+    this._logger.isInfoEnabled() && this._logger.info(`Aggregate state persisted to repository`)
+  }
+
+}

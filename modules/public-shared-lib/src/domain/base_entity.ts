@@ -37,17 +37,27 @@
 
 'use strict'
 
-export enum RedisDuplicateInfraTypes {
-  REDIS = 'redis',
-  REDIS_SHARDED = 'redis-sharded',
-  MEMORY = 'memory'
-}
+import { BaseEntityState } from './base_entity_state'
 
-// Exports for Infrastructure
-export * from './kafka_events_consumer'
-export * from './kafka_domain_events_consumer'
-export * from './kafka_command_events_consumer'
-export * from './kafka_events_producer'
-export * from './kafka_domain_events_producer'
-export * from './kafka_command_events_producer'
-export * from './irun_handler'
+export abstract class BaseEntity <S extends BaseEntityState> {
+  protected _state: S
+
+  // id is a property of state data, not behaviour
+  get id (): string {
+    return this._state.id
+  }
+
+  get version (): number {
+    return this._state.version
+  }
+
+  protected constructor (initialState: S) {
+    this._state = initialState
+  };
+
+  // required so we can export/persist the state and still forbid direct state changes
+  exportState (): S {
+    const clone: S = Object.assign({}, this._state)
+    return clone
+  }
+}

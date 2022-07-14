@@ -1,7 +1,7 @@
 {
-    "name": "@mojaloop/sdk-scheme-adapter-test-api-svc",
+    "name": "@mojaloop/sdk-scheme-adapter-domain-event-handler",
     "version": "0.0.1",
-    "description": "mojaloop sdk scheme adapter test API service",
+    "description": "mojaloop sdk scheme adapter domain event handler",
     "license": "Apache-2.0",
     "homepage": "https://github.com/mojaloop/sdk-scheme-adapter/",
     "private": true,
@@ -9,7 +9,7 @@
         "url": "https://github.com/mojaloop/sdk-scheme-adapter/issues#readme"
     },
     "contributors": [
-        "Vijay Kumar Guthi <vijaya.guthi@modusbox.com>"
+        "Shashikant Hirugade <shashikant.hirugade@modusbox.com>"
     ],
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -24,8 +24,8 @@
     ],
     "scripts": {
         "start": "yarn run service",
-        "start:dev": "ts-node src/index.ts",
-        "service": "tsc && node dist/index.js",
+        "start:dev": "ts-node src/application/index.ts",
+        "service": "tsc && node dist/application/index.js",
         "build": "tsc",
         "watch": "tsc -w",
         "dev": "nodemon",
@@ -46,17 +46,11 @@
         "@mojaloop/logging-bc-public-types-lib": "^0.0.3",
         "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^",
         "@mojaloop/sdk-scheme-adapter-public-shared-lib": "workspace:^",
-        "@types/convict": "^6.1.1",
-        "@types/express": "^4.17.13",
         "@types/jest": "^27.0.3",
         "@types/node": "^16.11.9",
         "@types/node-cache": "^4.2.5",
-        "@types/supertest": "^2.0.12",
-        "@types/swagger-ui-express": "^4.1.3",
-        "@types/yamljs": "^0.2.31",
         "@typescript-eslint/eslint-plugin": "^5.22.0",
         "@typescript-eslint/parser": "^5.22.0",
-        "copyfiles": "^2.4.1",
         "eslint": "^8.14.0",
         "husky": "^7.0.4",
         "jest": "^27.3.1",
@@ -67,20 +61,13 @@
         "typescript": "^4.6.4"
     },
     "dependencies": {
-        "@mojaloop/logging-bc-client-lib": "^0.0.10",
-        "ajv": "^8.11.0",
-        "convict": "^6.2.3",
-        "express": "^4.18.1",
-        "openapi-backend": "^5.3.0",
-        "redis": "^4.2.0",
-        "swagger-ui-express": "^4.4.0",
-        "yamljs": "^0.3.0"
+        "@mojaloop/logging-bc-client-lib": "^0.0.10"
     },
     "nodemonConfig": {
         "watch": [
             "src/**/*.ts"
         ],
         "ext": "ts",
-        "exec": "ts-node src/index.ts"
+        "exec": "ts-node src/application/index.ts"
     }
 }

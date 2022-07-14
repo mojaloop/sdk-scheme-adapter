@@ -1,7 +1,7 @@
 import { KafkaGenericProducer } from '../../src/kafka_generic_producer'
 import { KafkaGenericConsumer, KafkaGenericConsumerOptions, EnumOffset } from '../../src/kafka_generic_consumer'
-import { SimpleLogger } from '@mojaloop/sdk-scheme-adapter-public-types-lib/test/unit/utilities/simple_logger'
-import { IMessage, MessageTypes, IDomainMessage } from '@mojaloop/sdk-scheme-adapter-public-types-lib'
+import { SimpleLogger } from '@mojaloop/sdk-scheme-adapter-public-shared-lib/test/unit/utilities/simple_logger'
+import { IMessage, MessageTypes, IDomainMessage } from '@mojaloop/sdk-scheme-adapter-public-shared-lib'
 
 describe('Kafka Generic Producer and Consumer', () => {
   const kafkaGenericProducerOptions = {

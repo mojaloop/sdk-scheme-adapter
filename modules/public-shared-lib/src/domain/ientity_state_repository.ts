@@ -37,17 +37,14 @@
 
 'use strict'
 
-export enum RedisDuplicateInfraTypes {
-  REDIS = 'redis',
-  REDIS_SHARDED = 'redis-sharded',
-  MEMORY = 'memory'
-}
+import { BaseEntityState } from './base_entity_state'
 
-// Exports for Infrastructure
-export * from './kafka_events_consumer'
-export * from './kafka_domain_events_consumer'
-export * from './kafka_command_events_consumer'
-export * from './kafka_events_producer'
-export * from './kafka_domain_events_producer'
-export * from './kafka_command_events_producer'
-export * from './irun_handler'
+export type IEntityStateRepository<S extends BaseEntityState> = {
+  init: () => Promise<void>
+  destroy: () => Promise<void>
+  canCall: () => boolean // for circuit breaker
+
+  load: (id: string) => Promise<S | null>
+  store: (entityState: S) => Promise<void>
+  remove: (id: string) => Promise<void>
+}

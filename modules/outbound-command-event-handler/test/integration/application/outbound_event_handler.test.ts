@@ -1,13 +1,12 @@
+
+
 /*****
  License
  --------------
  Copyright © 2017 Bill & Melinda Gates Foundation
  The Mojaloop files are made available by the Bill & Melinda Gates Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
-
  http://www.apache.org/licenses/LICENSE-2.0
-
  Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
-
  Contributors
  --------------
  This is the official list (alphabetical ordering) of the Mojaloop project contributors for this file.
@@ -18,36 +17,49 @@
  Gates Foundation organization for an example). Those individuals should have
  their names indented and be marked with a '-'. Email address can be added
  optionally within square brackets <email>.
-
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
-
- * Coil
- - Donovan Changfoot <donovan.changfoot@coil.com>
-
- * Crosslake
- - Pedro Sousa Barreto <pedrob@crosslaketech.com>
-
- * ModusBox
- - Miguel de Barros <miguel.debarros@modusbox.com>
- - Roman Pietrzak <roman.pietrzak@modusbox.com>
-
+ * Modusbox
+ - Shashikant Hirugade <shashikant.hirugade@modusbox.com>
+ - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
  --------------
-******/
+ ******/
 
 'use strict'
 
-export enum RedisDuplicateInfraTypes {
-  REDIS = 'redis',
-  REDIS_SHARDED = 'redis-sharded',
-  MEMORY = 'memory'
+import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
+import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
+
+import { DomainEventMessage, EventMessageType, OutboundDomainEventMessageName, IDomainEventMessageData } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+import { KafkaDomainEventsProducer } from '@mojaloop/sdk-scheme-adapter-infra-lib'
+
+const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
+const producer = new KafkaDomainEventsProducer(logger)
+
+const sampleDomainEventMessageData: IDomainEventMessageData = {
+  key: 'sample-key1',
+  name: OutboundDomainEventMessageName.SDKOutboundBulkRequestReceived,
+  content: {
+    id: '123784627836457823',
+    options: {},
+    individualTransfers: []
+  },
+  timestamp: Date.now(),
+  headers: []
 }
 
-// Exports for Infrastructure
-export * from './kafka_events_consumer'
-export * from './kafka_domain_events_consumer'
-export * from './kafka_command_events_consumer'
-export * from './kafka_events_producer'
-export * from './kafka_domain_events_producer'
-export * from './kafka_command_events_producer'
-export * from './irun_handler'
+describe('First domain event', () => {
+  beforeEach(async () => {
+    await producer.init();
+  });
+
+  afterEach(async () => {
+    await producer.destroy();
+  });
+
+  test('should publish a domain event', async () => {
+    const domainEventObj = new DomainEventMessage(sampleDomainEventMessageData);
+    await producer.sendDomainMessage(domainEventObj);
+    await expect(true)
+  })
+})

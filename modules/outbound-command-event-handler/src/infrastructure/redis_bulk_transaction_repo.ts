@@ -26,10 +26,12 @@
 
 import * as redis from 'redis'
 import { ILogger } from '@mojaloop/sdk-scheme-adapter-public-shared-lib'
+import { BulkTransactionState } from '../domain/bulk_transaction_entity'
+import { IBulkTransactionEntityRepo } from '../types/bulk_transaction_entity_repo'
 // @ts-expect-error
 import RedisClustr = require('redis-clustr')
 
-export class RedisBulkTransactionsRepo {
+export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo {
   protected _redisClient!: redis.RedisClientType
   protected _redisClustered: boolean
   private readonly _redisConnStr: string
@@ -76,7 +78,7 @@ export class RedisBulkTransactionsRepo {
     return this._initialized // for now, no circuit breaker exists
   }
 
-  async getState (id: string): Promise<any> {
+  async load (id: string): Promise<BulkTransactionState> {
     if (!this.canCall()) {
       throw(new Error('Repository not ready'))
     }
@@ -95,67 +97,62 @@ export class RedisBulkTransactionsRepo {
     }
   }
 
-  async getIndividualTransferIds (id: string): Promise<string[]> {
+  async remove (id: string): Promise<void> {
+    if (!this.canCall()) {
+      throw(new Error('Repository not ready'))
+    }
+    const key: string = this.keyWithPrefix(id)
+    try {
+      await this._redisClient.del(key)
+    } catch(err) {
+      this._logger.isErrorEnabled() && this._logger.error(err, 'Error removing entity state from redis - for key: ' + key)
+      throw(err)
+    }
+  }
+
+  async store (entityState: BulkTransactionState): Promise<void> {
+    if (!this.canCall()) {
+      throw(new Error('Repository not ready'))
+    }
+    const key: string = this.keyWithPrefix(entityState.id)
+    try {
+      await this._redisClient
+        .multi()
+        .hSet(key, 'id', entityState.id || '')
+        .hSet(key, 'bulkTransactionEntityState', JSON.stringify(entityState))
+        .exec()
+    } catch(err) {
+      this._logger.isErrorEnabled() && this._logger.error(err, 'Error storing entity state to redis - for key: ' + key)
+      throw(err)
+    }
+  }
+
+  async getAllAttributes (id: string): Promise<string[]> {
     if (!this.canCall()) {
       throw(new Error('Repository not ready'))
     }
     const key: string = this.keyWithPrefix(id)
     try {
       const allAttributes = await this._redisClient.hKeys(key)
-      return allAttributes.filter(attr => attr.startsWith('individualItem_')).map(attr => attr.replace('individualItem_', ''))
+      return allAttributes
     } catch(err) {
       this._logger.isErrorEnabled() && this._logger.error(err, 'Error getting attributes from redis - for key: ' + key)
       throw(err)
     }
   }
 
-  
-  async getIndividualTransferState (bulkId: string, individualId: string): Promise<any> {
+  async addAdditionalAttribute (id: string, name: string, value: any): Promise<void> {
     if (!this.canCall()) {
       throw(new Error('Repository not ready'))
     }
-    const key: string = this.keyWithPrefix(bulkId)
+    const key: string = this.keyWithPrefix(id)
     try {
-      const individualTransferStateStr = await this._redisClient.hGet(key, 'individualItem_' + individualId)
-      if (individualTransferStateStr) {
-        return JSON.parse(individualTransferStateStr)
-      } else {
-        this._logger.isErrorEnabled() && this._logger.error('Error loading entity state from redis - for key: ' + key)
-        throw(new Error('Error loading entity state from redis'))
-      }
+      await this._redisClient.hSet(key, name, JSON.stringify(value))
     } catch(err) {
-      this._logger.isErrorEnabled() && this._logger.error(err, 'Error loading entity state from redis - for key: ' + key)
+      this._logger.isErrorEnabled() && this._logger.error(err, `Error storing additional attribute named ${name} to redis for key: ${key}`)
       throw(err)
     }
   }
-
-  // Warning: consider KEYS as a command that should only be used in production environments with extreme care. It may ruin performance when it is executed against large databases. This command is intended for debugging.
-  async getAllBulkTransactionIds (): Promise<string[]> {
-    if (!this.canCall()) {
-      throw(new Error('Repository not ready'))
-    }
-    try {
-      // return  await this._redisClient.keys(this.keyPrefix)
-      const allKeys =  await this._redisClient.keys('*')
-      return allKeys.map(key => key.replace(this.keyPrefix, ''))
-    } catch(err) {
-      this._logger.isErrorEnabled() && this._logger.error(err, 'Error getting all bulk transactions from redis')
-      throw(err)
-    }
-  }
-
-  // async addAdditionalAttribute (id: string, name: string, value: any): Promise<void> {
-  //   if (!this.canCall()) {
-  //     throw(new Error('Repository not ready'))
-  //   }
-  //   const key: string = this.keyWithPrefix(id)
-  //   try {
-  //     await this._redisClient.hSet(key, name, JSON.stringify(value))
-  //   } catch(err) {
-  //     this._logger.isErrorEnabled() && this._logger.error(err, `Error storing additional attribute named ${name} to redis for key: ${key}`)
-  //     throw(err)
-  //   }
-  // }
 
   private keyWithPrefix (key: string): string {
     return this.keyPrefix + key

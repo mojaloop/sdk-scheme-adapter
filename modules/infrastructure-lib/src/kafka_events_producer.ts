@@ -28,7 +28,7 @@
 
 import { MLKafkaProducer, MLKafkaProducerOptions } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib'
 import { IMessage } from "@mojaloop/platform-shared-lib-messaging-types-lib";
-import { IEventsProducer } from '@mojaloop/sdk-scheme-adapter-private-types-lib'
+import { IEventsProducer } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 
 export class KafkaEventsProducer implements IEventsProducer {

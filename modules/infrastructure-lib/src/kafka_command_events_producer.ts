@@ -29,7 +29,7 @@
 import { MLKafkaProducerOptions } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib'
 import { KafkaEventsProducer } from "./kafka_events_producer";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
-import { CommandEventMessage }  from '@mojaloop/sdk-scheme-adapter-private-types-lib'
+import { CommandEventMessage }  from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 import { IMessage } from "@mojaloop/platform-shared-lib-messaging-types-lib";
 
 // TODO: Parameterize this

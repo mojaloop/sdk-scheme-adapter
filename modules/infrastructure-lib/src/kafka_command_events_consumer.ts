@@ -27,7 +27,7 @@
 import { MLKafkaConsumerOptions, MLKafkaConsumerOutputType } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib'
 import { KafkaEventsConsumer } from "./kafka_events_consumer";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
-import { CommandEventMessage }  from '@mojaloop/sdk-scheme-adapter-private-types-lib'
+import { CommandEventMessage }  from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 import { IMessage } from "@mojaloop/platform-shared-lib-messaging-types-lib";
 
 // TODO: Parameterize this
