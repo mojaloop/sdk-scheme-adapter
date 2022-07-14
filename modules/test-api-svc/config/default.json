@@ -1,0 +1,7 @@
+{
+    "PORT": 8000,
+    "REDIS": {
+      "CONNECTION_URL": "redis://localhost:6379",
+      "CLUSTERED_REDIS": false
+    }
+}
