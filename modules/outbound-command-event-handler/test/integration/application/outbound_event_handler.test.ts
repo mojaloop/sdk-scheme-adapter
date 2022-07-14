@@ -31,7 +31,7 @@ import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 
 import { DomainEventMessage, EventMessageType, OutboundDomainEventMessageName, IDomainEventMessageData } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
-import { KafkaDomainEventsProducer } from '@mojaloop/sdk-scheme-adapter-infra-lib'
+import { KafkaDomainEventsProducer } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 
 const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
 const producer = new KafkaDomainEventsProducer(logger)

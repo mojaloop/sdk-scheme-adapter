@@ -23,7 +23,7 @@
  ******/
 
 'use strict'
-import { KafkaCommandEventsProducer } from '@mojaloop/sdk-scheme-adapter-infra-lib'
+import { KafkaCommandEventsProducer } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 
 export type IDomainEventHandlerOptions = {
   commandProducer: KafkaCommandEventsProducer

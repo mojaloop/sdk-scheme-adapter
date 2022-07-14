@@ -21,21 +21,26 @@
 
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
- * Modusbox
- - Shashikant Hirugade <shashikant.hirugade@modusbox.com>
- - Juan Correa <juancorrea@modusbox.com>
+
+ * Coil
+ - Donovan Changfoot <donovan.changfoot@coil.com>
+
+ * Crosslake
+ - Pedro Sousa Barreto <pedrob@crosslaketech.com>
+
+ * ModusBox
+ - Miguel de Barros <miguel.debarros@modusbox.com>
+ - Roman Pietrzak <roman.pietrzak@modusbox.com>
 
  --------------
- ******/
+******/
 
-"use strict";
+'use strict'
 
-export enum RedisDuplicateInfraTypes {
-  REDIS = 'redis',
-  REDIS_SHARDED = 'redis-sharded',
-  MEMORY = 'memory'
-}
-
-export * from "./irun_handler";
-export * from "./iEventsConsumer";
-export * from "./iEventsProducer";
+// Exports for Infrastructure
+export * from './kafka_events_consumer'
+export * from './kafka_domain_events_consumer'
+export * from './kafka_command_events_consumer'
+export * from './kafka_events_producer'
+export * from './kafka_domain_events_producer'
+export * from './kafka_command_events_producer'

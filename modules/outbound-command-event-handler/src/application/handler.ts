@@ -25,9 +25,14 @@
 'use strict'
 
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
-import { IRunHandler, KafkaCommandEventsConsumer, KafkaDomainEventsProducer } from '@mojaloop/sdk-scheme-adapter-infra-lib'
-import { CommandEventMessage, OutboundCommandEventMessageName, ICommandEventMessageData, ProcessSDKOutboundBulkRequestMessage, IProcessSDKOutboundBulkRequestMessageData } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-import { Crypto } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+import {
+  IRunHandler,
+  KafkaCommandEventsConsumer,
+  KafkaDomainEventsProducer,
+  CommandEventMessage,
+  OutboundCommandEventMessageName,
+  Crypto
+} from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 import { RedisBulkTransactionStateRepo } from '../infrastructure'
 import { handleProcessSDKOutboundBulkRequest } from './handlers'
 import { IBulkTransactionEntityRepo, ICommandEventHandlerOptions } from '../types'

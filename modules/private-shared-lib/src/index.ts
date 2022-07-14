@@ -24,6 +24,7 @@
  * Modusbox
  - Shashikant Hirugade <shashikant.hirugade@modusbox.com>
  - Juan Correa <juancorrea@modusbox.com>
+ - Vijaya Kumar Guthi <vijaya.guthi@modusbox.com>
 
  --------------
  ******/
@@ -31,6 +32,6 @@
 "use strict";
 
 export * from "./types";
-export * from "./infra";
 export * from "./events";
+export * from "./infra";
 export * from "./utils";

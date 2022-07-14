@@ -25,7 +25,7 @@
 'use strict'
 
 import * as redis from 'redis'
-import { ILogger } from '@mojaloop/sdk-scheme-adapter-public-shared-lib'
+import { ILogger } from "@mojaloop/logging-bc-public-types-lib"
 import { BulkTransactionState } from '../domain/bulk_transaction_entity'
 import { IBulkTransactionEntityRepo } from '../types/bulk_transaction_entity_repo'
 // @ts-expect-error

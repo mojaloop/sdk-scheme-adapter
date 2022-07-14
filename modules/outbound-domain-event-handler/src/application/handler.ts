@@ -25,14 +25,17 @@
 'use strict'
 
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
-import { IRunHandler, KafkaDomainEventsConsumer, KafkaCommandEventsProducer } from '@mojaloop/sdk-scheme-adapter-infra-lib'
-import { IEventsConsumer, DomainEventMessage, OutboundDomainEventMessageName } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import {
+  IRunHandler,
+  KafkaDomainEventsConsumer,
+  KafkaCommandEventsProducer,
+  IEventsConsumer,
+  DomainEventMessage,
+  OutboundDomainEventMessageName,
+  Crypto
+} from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 import { IDomainEventHandlerOptions } from '../types'
 import { handleSDKOutboundBulkRequestReceived } from './handlers'
-
-// import { InvalidOutboundEvtError } from './errors'
-import { Crypto } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
-
 
 export class OutboundEventHandler implements IRunHandler {
   private _logger: ILogger

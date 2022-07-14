@@ -1,4 +1,3 @@
-
 /*****
  License
  --------------
@@ -22,25 +21,15 @@
 
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
-
- * Coil
- - Donovan Changfoot <donovan.changfoot@coil.com>
-
- * Crosslake
- - Pedro Sousa Barreto <pedrob@crosslaketech.com>
-
- * ModusBox
- - Miguel de Barros <miguel.debarros@modusbox.com>
- - Roman Pietrzak <roman.pietrzak@modusbox.com>
+ * Modusbox
+ - Shashikant Hirugade <shashikant.hirugade@modusbox.com>
+ - Juan Correa <juancorrea@modusbox.com>
+ - Vijaya Kumar Guthi <vijaya.guthi@modusbox.com>
 
  --------------
-******/
+ ******/
 
 'use strict'
 
-import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
+export * from './infra'
 
-export interface IRunHandler {
-  start: (appConfig: any, logger: ILogger) => Promise<void>
-  destroy: () => Promise<void>
-}

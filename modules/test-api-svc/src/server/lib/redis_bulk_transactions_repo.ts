@@ -25,7 +25,7 @@
 'use strict'
 
 import * as redis from 'redis'
-import { ILogger } from '@mojaloop/sdk-scheme-adapter-public-shared-lib'
+import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 // @ts-expect-error
 import RedisClustr = require('redis-clustr')
 
@@ -143,19 +143,6 @@ export class RedisBulkTransactionsRepo {
       throw(err)
     }
   }
-
-  // async addAdditionalAttribute (id: string, name: string, value: any): Promise<void> {
-  //   if (!this.canCall()) {
-  //     throw(new Error('Repository not ready'))
-  //   }
-  //   const key: string = this.keyWithPrefix(id)
-  //   try {
-  //     await this._redisClient.hSet(key, name, JSON.stringify(value))
-  //   } catch(err) {
-  //     this._logger.isErrorEnabled() && this._logger.error(err, `Error storing additional attribute named ${name} to redis for key: ${key}`)
-  //     throw(err)
-  //   }
-  // }
 
   private keyWithPrefix (key: string): string {
     return this.keyPrefix + key
