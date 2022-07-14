@@ -58,7 +58,18 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
   static CreateFromRequest (request: any, entityStateRepo: IEntityStateRepository<BulkTransactionState>, logger: ILogger): BulkTransactionAgg {
     // Create root entity
     const bulkTransactionEntity = BulkTransactionEntity.CreateFromRequest(request)
+    // Create the aggregate
     const agg = new BulkTransactionAgg(bulkTransactionEntity, entityStateRepo, logger)
+    // Persist in the rep
+    agg.store()
+    // Create individualTransfer entities
+    if (request.individualTransfers && Array.isArray(request.individualTransfers) && request.individualTransfers.length > 0) {
+      for (const individualTransfer of request.individualTransfers) {
+        const individualTransferEntity = IndividualTransferEntity.CreateFromRequest(individualTransfer)
+        agg.addIndividualTransferEntity(individualTransferEntity)
+      }
+    }
+    // Return the aggregate
     return agg
   }
 
@@ -73,7 +84,10 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
     if (state) {
       // Create root entity
       const bulkTransactionEntity = new BulkTransactionEntity(state)
-      return new BulkTransactionAgg(bulkTransactionEntity, entityStateRepo, logger)
+      // Create the aggregate
+      const agg = new BulkTransactionAgg(bulkTransactionEntity, entityStateRepo, logger)
+      // Return the aggregate
+      return agg
     } else {
       throw new Error(`Aggregate data is not found in repo`)
     }

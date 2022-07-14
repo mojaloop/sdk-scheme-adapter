@@ -88,23 +88,11 @@ export class OutboundEventHandler implements IRunHandler {
         try {
           const sdkOutboundBulkRequestEntity = processSDKOutboundBulkRequestMessage.createSDKOutboundBulkRequestEntity()
           this._logger.isInfoEnabled() && this._logger.info(`outboundCmdHandler - Got SDKOutboundBulkRequestEntity ${sdkOutboundBulkRequestEntity}`);
-          // console.log(sdkOutboundBulkRequestEntity.exportState());
-          // const bulkTransactionEntity = BulkTransactionEntity.CreateFromRequest(sdkOutboundBulkRequestEntity.request)
-          // this._logger.isInfoEnabled() && this._logger.info(`outboundCmdHandler - Created BulkTransactionEntity ${bulkTransactionEntity}`);
-          // console.log(bulkTransactionEntity.exportState());
 
           // Create aggregate
-          // const bulkTransactionAgg = new BulkTransactionAgg(bulkTransactionEntity, this._bulkTransactionEntityStateRepo, this._logger)
           const bulkTransactionAgg = BulkTransactionAgg.CreateFromRequest(sdkOutboundBulkRequestEntity.request, this._bulkTransactionEntityStateRepo, this._logger)
           this._logger.isInfoEnabled() && this._logger.info(`outboundCmdHandler - Created BulkTransactionAggregate ${bulkTransactionAgg}`);
-          await bulkTransactionAgg.store()
-          // Add Individual transfer entities to aggregate
-          if (sdkOutboundBulkRequestEntity.request.individualTransfers && Array.isArray(sdkOutboundBulkRequestEntity.request.individualTransfers) && sdkOutboundBulkRequestEntity.request.individualTransfers.length > 0) {
-            for (const individualTransfer of sdkOutboundBulkRequestEntity.request.individualTransfers){
-              const individualTransferEntity = IndividualTransferEntity.CreateFromRequest(individualTransfer)
-              bulkTransactionAgg.addIndividualTransferEntity(individualTransferEntity)
-            }
-          }
+
           // const bulkTransactionAggTest = await BulkTransactionAgg.CreateFromRepo(sdkOutboundBulkRequestEntity.id, this._bulkTransactionEntityStateRepo, this._logger)
         } catch(err: any) {
           this._logger.isInfoEnabled() && this._logger.info(`outboundCmdHandler - Failed to create BulkTransactionAggregate. ${err.message}`)
