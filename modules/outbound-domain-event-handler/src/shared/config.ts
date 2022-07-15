@@ -16,7 +16,7 @@
  ******************************************************************************/
 
 import { IKafkaEventConsumerOptions, IKafkaEventProducerOptions } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-import { LogLevel } from "@mojaloop/logging-bc-public-types-lib";
+import { LogLevel } from '@mojaloop/logging-bc-public-types-lib';
 import Convict from 'convict';
 import path from 'path';
 
@@ -34,57 +34,57 @@ export interface ServiceConfig {
 const config = Convict({
     LOG_LEVEL: {
         doc: 'Log level',
-        format: ['trace','debug','info','warn','error','fatal'],
+        format: ['trace', 'debug', 'info', 'warn', 'error', 'fatal'],
         default: 'info',
         env: 'LOG_LEVEL',
     },
     KAFKA: {
-      DOMAIN_EVENT_CONSUMER: {
-        brokerList: {
-          doc: 'brokerList',
-          format: String,
-          default: 'localhost:9092',
-          env: 'DOMAIN_EVENT_CONSUMER_BROKER_LIST',
+        DOMAIN_EVENT_CONSUMER: {
+            brokerList: {
+                doc: 'brokerList',
+                format: String,
+                default: 'localhost:9092',
+                env: 'DOMAIN_EVENT_CONSUMER_BROKER_LIST',
+            },
+            groupId: {
+                doc: 'groupId',
+                format: String,
+                default: 'domain_events_consumer_group',
+                env: 'DOMAIN_EVENT_CONSUMER_GROUP_ID',
+            },
+            clientId: {
+                doc: 'clientId',
+                format: String,
+                default: 'domain_events_consumer_client_id',
+                env: 'DOMAIN_EVENT_CONSUMER_CLIENT_ID',
+            },
+            topics: {
+                doc: 'topics',
+                format: Array,
+                default: ['topic-sdk-outbound-domain-events'],
+                env: 'DOMAIN_EVENT_CONSUMER_TOPICS',
+            },
         },
-        groupId: {
-          doc: 'groupId',
-          format: String,
-          default: 'domain_events_consumer_group',
-          env: 'DOMAIN_EVENT_CONSUMER_GROUP_ID',
+        COMMAND_EVENT_PRODUCER: {
+            brokerList: {
+                doc: 'brokerList',
+                format: String,
+                default: 'localhost:9092',
+                env: 'COMMAND_EVENT_PRODUCER_BROKER_LIST',
+            },
+            clientId: {
+                doc: 'clientId',
+                format: String,
+                default: 'command_events_producer_client_id',
+                env: 'COMMAND_EVENT_PRODUCER_CLIENT_ID',
+            },
+            topic: {
+                doc: 'topic',
+                format: Array,
+                default: 'topic-sdk-outbound-command-events',
+                env: 'COMMAND_EVENT_PRODUCER_TOPIC',
+            },
         },
-        clientId: {
-          doc: 'clientId',
-          format: String,
-          default: 'domain_events_consumer_client_id',
-          env: 'DOMAIN_EVENT_CONSUMER_CLIENT_ID',
-        },
-        topics: {
-          doc: 'topics',
-          format: Array,
-          default: ['topic-sdk-outbound-domain-events'],
-          env: 'DOMAIN_EVENT_CONSUMER_TOPICS',
-        }
-      },
-      COMMAND_EVENT_PRODUCER: {
-        brokerList: {
-          doc: 'brokerList',
-          format: String,
-          default: 'localhost:9092',
-          env: 'COMMAND_EVENT_PRODUCER_BROKER_LIST',
-        },
-        clientId: {
-          doc: 'clientId',
-          format: String,
-          default: 'command_events_producer_client_id',
-          env: 'COMMAND_EVENT_PRODUCER_CLIENT_ID',
-        },
-        topic: {
-          doc: 'topic',
-          format: Array,
-          default: 'topic-sdk-outbound-command-events',
-          env: 'COMMAND_EVENT_PRODUCER_TOPIC',
-        }
-      }
     },
 });
 

@@ -22,29 +22,36 @@
  --------------
  ******/
 
-'use strict'
+'use strict';
 
-import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
+import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import { DomainEventMessage, IProcessSDKOutboundBulkRequestMessageData, ProcessSDKOutboundBulkRequestMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-import { IDomainEventHandlerOptions } from '../../types'
+import { IDomainEventHandlerOptions } from '../../types';
 import { SDKOutboundBulkRequestReceivedMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-import { SDKOutboundBulkRequestState } from "@mojaloop/sdk-scheme-adapter-public-shared-lib";
+import { SDKOutboundBulkRequestState } from '@mojaloop/sdk-scheme-adapter-public-shared-lib';
 
-export async function handleSDKOutboundBulkRequestReceived (message: DomainEventMessage, options: IDomainEventHandlerOptions, logger: ILogger): Promise<void> {
-  const sdkOutboundBulkRequestReceivedMessage = SDKOutboundBulkRequestReceivedMessage.CreateFromDomainEventMessage(message)
-  try {
-    const sdkOutboundBulkRequestEntity = sdkOutboundBulkRequestReceivedMessage.createSDKOutboundBulkRequestEntity()
-    const sdkOutboundBulkRequestState: SDKOutboundBulkRequestState = sdkOutboundBulkRequestEntity.exportState()
-    const _processSDKOutboundBulkRequestMessageData: IProcessSDKOutboundBulkRequestMessageData = {
-      sdkOutboundBulkRequestState,
-      timestamp: Date.now(),
-      headers: []
+export async function handleSDKOutboundBulkRequestReceived(
+    message: DomainEventMessage,
+    options: IDomainEventHandlerOptions,
+    logger: ILogger,
+): Promise<void> {
+    const sdkOutboundBulkRequestReceivedMessage
+        = SDKOutboundBulkRequestReceivedMessage.CreateFromDomainEventMessage(message);
+    try {
+        const sdkOutboundBulkRequestEntity = sdkOutboundBulkRequestReceivedMessage.createSDKOutboundBulkRequestEntity();
+        const sdkOutboundBulkRequestState: SDKOutboundBulkRequestState = sdkOutboundBulkRequestEntity.exportState();
+        const processSDKOutboundBulkRequestMessageData: IProcessSDKOutboundBulkRequestMessageData = {
+            sdkOutboundBulkRequestState,
+            timestamp: Date.now(),
+            headers: [],
+        };
+        const processSDKOutboundBulkRequestMessage
+            = new ProcessSDKOutboundBulkRequestMessage(processSDKOutboundBulkRequestMessageData);
+        options.commandProducer.sendCommandMessage(processSDKOutboundBulkRequestMessage);
+        logger.info(`Sent command event ${processSDKOutboundBulkRequestMessage.getName()}`);
+        console.log(processSDKOutboundBulkRequestMessage);
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    } catch (err: any) {
+        logger.info(`Failed to create SDKOutboundBulkRequestEntity. ${err.message}`);
     }
-    const processSDKOutboundBulkRequestMessage = new ProcessSDKOutboundBulkRequestMessage(_processSDKOutboundBulkRequestMessageData)
-    options.commandProducer.sendCommandMessage(processSDKOutboundBulkRequestMessage)
-    logger.isInfoEnabled() && logger.info(`outboundEvtHandler - Sent command event ${processSDKOutboundBulkRequestMessage.getName()}`);
-    console.log(processSDKOutboundBulkRequestMessage);
-  } catch(err: any) {
-    logger.isInfoEnabled() && logger.info(`outboundEvtHandler - Failed to create SDKOutboundBulkRequestEntity. ${err.message}`)
-  }
 }

@@ -22,4 +22,4 @@
  --------------
  ******/
 
- export * from "./sdk-outbound-bulk-request-received";
+export * from './sdk-outbound-bulk-request-received';

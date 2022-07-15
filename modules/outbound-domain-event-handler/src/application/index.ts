@@ -25,14 +25,14 @@
  --------------
  ******/
 
-'use strict'
+'use strict';
 
-import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
-import { ILogger, LogLevel } from "@mojaloop/logging-bc-public-types-lib";
+import { DefaultLogger } from '@mojaloop/logging-bc-client-lib';
+import { ILogger, LogLevel } from '@mojaloop/logging-bc-public-types-lib';
 
-import { IRunHandler, BC_CONFIG } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
-import { OutboundEventHandler } from './handler'
-import Config from '../shared/config'
+import { IRunHandler, BC_CONFIG } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { OutboundEventHandler } from './handler';
+import Config from '../shared/config';
 
 (async () => {
 
@@ -40,21 +40,21 @@ import Config from '../shared/config'
     const logger: ILogger = new DefaultLogger(BC_CONFIG.bcName, 'domain-event-handler', '0.0.1', <LogLevel>Config.get('LOG_LEVEL'));
 
     // start outboundEventHandler
-    const outboundEventHandler: IRunHandler = new OutboundEventHandler()
-    await outboundEventHandler.start(Config, logger)
+    const outboundEventHandler: IRunHandler = new OutboundEventHandler();
+    await outboundEventHandler.start(Config, logger);
 
     // lets clean up all consumers here
     /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
     const killProcess = async (): Promise<void> => {
-      logger.info('Exiting process...')
-      logger.info('Destroying handlers...')
-      logger.info('\tDestroying outboundEventHandler handler...')
+        logger.info('Exiting process...');
+        logger.info('Destroying handlers...');
+        logger.info('\tDestroying outboundEventHandler handler...');
 
-      await outboundEventHandler.destroy()
+        await outboundEventHandler.destroy();
 
-      logger.info('Exit complete!')
-      process.exit(0)
-    }
+        logger.info('Exit complete!');
+        process.exit(0);
+    };
     /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
-    process.on('SIGINT', killProcess)
-  })();
+    process.on('SIGINT', killProcess);
+})();

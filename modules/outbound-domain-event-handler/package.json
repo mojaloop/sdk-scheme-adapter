@@ -37,9 +37,6 @@
         "dep:update": "ncu -u"
     },
     "devDependencies": {
-        "@mojaloop/logging-bc-public-types-lib": "^0.0.3",
-        "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^",
-        "@mojaloop/sdk-scheme-adapter-public-shared-lib": "workspace:^",
         "@types/convict": "^6.1.1",
         "@types/jest": "^27.0.3",
         "@types/node": "^16.11.9",
@@ -56,6 +53,9 @@
     },
     "dependencies": {
         "@mojaloop/logging-bc-client-lib": "^0.0.10",
+        "@mojaloop/logging-bc-public-types-lib": "^0.0.3",
+        "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^",
+        "@mojaloop/sdk-scheme-adapter-public-shared-lib": "workspace:^",
         "convict": "^6.2.3"
     },
     "nodemonConfig": {

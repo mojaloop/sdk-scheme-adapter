@@ -22,4 +22,4 @@
  --------------
  ******/
 
- export * from "./domain_event_handler_options";
+export * from './domain_event_handler_options';

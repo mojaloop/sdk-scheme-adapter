@@ -22,74 +22,77 @@
  --------------
  ******/
 
-'use strict'
+'use strict';
 
-import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
+import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import {
-  IRunHandler,
-  KafkaDomainEventConsumer,
-  KafkaCommandEventProducer,
-  IEventConsumer,
-  DomainEventMessage,
-  OutboundDomainEventMessageName,
-  Crypto,
-  IKafkaEventConsumerOptions,
-  IKafkaEventProducerOptions
-} from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
-import { IDomainEventHandlerOptions } from '../types'
-import { handleSDKOutboundBulkRequestReceived } from './handlers'
+    IRunHandler,
+    KafkaDomainEventConsumer,
+    KafkaCommandEventProducer,
+    IEventConsumer,
+    DomainEventMessage,
+    OutboundDomainEventMessageName,
+    IKafkaEventConsumerOptions,
+    IKafkaEventProducerOptions,
+} from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { IDomainEventHandlerOptions } from '../types';
+import { handleSDKOutboundBulkRequestReceived } from './handlers';
 
 export class OutboundEventHandler implements IRunHandler {
-  private _logger: ILogger
-  private _consumer: IEventConsumer
-  private _commandProducer: KafkaCommandEventProducer
-  private _clientId: string
-  private _domainEventHandlerOptions: IDomainEventHandlerOptions
+    private _logger: ILogger;
 
+    private _consumer: IEventConsumer;
 
-  async start (appConfig: any, logger: ILogger): Promise<void> {
-    this._logger = logger
-    this._logger.info('start')
+    private _commandProducer: KafkaCommandEventProducer;
 
-    const consumerOptions: IKafkaEventConsumerOptions = appConfig.get('KAFKA.DOMAIN_EVENT_CONSUMER')
+    private _clientId: string;
 
-    this._consumer = new KafkaDomainEventConsumer(this._messageHandler.bind(this), consumerOptions, logger)
+    private _domainEventHandlerOptions: IDomainEventHandlerOptions;
 
-    logger.info(`Created kafkaConsumer of type ${this._consumer.constructor.name}`)
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    async start(appConfig: any, logger: ILogger): Promise<void> {
+        this._logger = logger;
+        this._logger.info('start');
 
-    /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
-    await this._consumer.init()
-    await this._consumer.start()
+        const consumerOptions: IKafkaEventConsumerOptions = appConfig.get('KAFKA.DOMAIN_EVENT_CONSUMER');
 
-    const producerOptions: IKafkaEventProducerOptions = appConfig.get('KAFKA.COMMAND_EVENT_PRODUCER')
+        this._consumer = new KafkaDomainEventConsumer(this._messageHandler.bind(this), consumerOptions, logger);
 
-    this._commandProducer = new KafkaCommandEventProducer(producerOptions, logger)
-    await this._commandProducer.init()
+        logger.info(`Created kafkaConsumer of type ${this._consumer.constructor.name}`);
 
-    // Create options for handlers
-    this._domainEventHandlerOptions = {
-      commandProducer: this._commandProducer
+        /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
+        await this._consumer.init();
+        await this._consumer.start();
+
+        const producerOptions: IKafkaEventProducerOptions = appConfig.get('KAFKA.COMMAND_EVENT_PRODUCER');
+
+        this._commandProducer = new KafkaCommandEventProducer(producerOptions, logger);
+        await this._commandProducer.init();
+
+        // Create options for handlers
+        this._domainEventHandlerOptions = {
+            commandProducer: this._commandProducer,
+        };
     }
-  }
 
-  async destroy (): Promise<void> {
-    await this._consumer.destroy()
-    await this._commandProducer.destroy()
-  }
-
-  async _messageHandler (message: DomainEventMessage): Promise<void> {
-    this._logger.info(`Got domain event message: ${message.getName()}`)
-    console.log(message)
-    switch (message.getName()) {
-      case OutboundDomainEventMessageName.SDKOutboundBulkRequestReceived: {
-        handleSDKOutboundBulkRequestReceived(message, this._domainEventHandlerOptions, this._logger)
-        break;
-      }
-      default: {
-        this._logger.debug(`${message?.getName()}:${message?.getKey()} - Skipping unknown domain event`);
-        return;
-      }
+    async destroy(): Promise<void> {
+        await this._consumer.destroy();
+        await this._commandProducer.destroy();
     }
-  }
+
+    async _messageHandler(message: DomainEventMessage): Promise<void> {
+        this._logger.info(`Got domain event message: ${message.getName()}`);
+        console.log(message);
+        switch (message.getName()) {
+            case OutboundDomainEventMessageName.SDKOutboundBulkRequestReceived: {
+                handleSDKOutboundBulkRequestReceived(message, this._domainEventHandlerOptions, this._logger);
+                break;
+            }
+            default: {
+                this._logger.debug(`${message?.getName()}:${message?.getKey()} - Skipping unknown domain event`);
+                return;
+            }
+        }
+    }
 
 }
