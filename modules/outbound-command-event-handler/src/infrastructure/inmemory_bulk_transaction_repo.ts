@@ -22,114 +22,119 @@
  --------------
  ******/
 
-'use strict'
+'use strict';
 
-import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
-import { BulkTransactionState } from '../domain/bulk_transaction_entity'
-import { IBulkTransactionEntityRepo } from '../types/bulk_transaction_entity_repo'
+import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
+import { BulkTransactionState } from '../domain/bulk_transaction_entity';
+import { IBulkTransactionEntityRepo } from '../types/bulk_transaction_entity_repo';
 
 export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityRepo {
-  private _data: any
-  private readonly _logger: ILogger
-  private _initialized: boolean = false
-  private readonly keyPrefix: string = 'outboundBulkTransaction_'
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    private _data: any;
 
-  constructor (logger: ILogger) {
-    this._logger = logger
-  }
+    private readonly _logger: ILogger;
 
-  async init (): Promise<void> {
-    this._data = {}
-    this._initialized = true
-  }
+    private _initialized = false;
 
-  async destroy (): Promise<void> {
-    if (this._initialized) { this._data = undefined }
-    return await Promise.resolve()
-  }
+    private readonly keyPrefix: string = 'outboundBulkTransaction_';
 
-  canCall (): boolean {
-    return this._initialized // for now, no circuit breaker exists
-  }
-
-  async load (id: string): Promise<BulkTransactionState> {
-    if (!this.canCall()) {
-      throw(new Error('Repository not ready'))
+    constructor(logger: ILogger) {
+        this._logger = logger;
     }
-    const key: string = this.keyWithPrefix(id)
-    try {
 
-      const bulkTransactionEntityStateStr = this._data[key]['bulkTransactionEntityState']
-      if (bulkTransactionEntityStateStr) {
-        return JSON.parse(bulkTransactionEntityStateStr)
-      } else {
-        this._logger.isErrorEnabled() && this._logger.error('Error loading entity state from memory - for key: ' + key)
-        throw(new Error('Error loading entity state from memory'))
-      }
-    } catch(err) {
-      this._logger.isErrorEnabled() && this._logger.error(err, 'Error loading entity state from memory - for key: ' + key)
-      throw(err)
+    async init(): Promise<void> {
+        this._data = {};
+        this._initialized = true;
     }
-  }
 
-  async remove (id: string): Promise<void> {
-    if (!this.canCall()) {
-      throw(new Error('Repository not ready'))
+    async destroy(): Promise<void> {
+        if(this._initialized) { this._data = undefined; }
+        return Promise.resolve();
     }
-    const key: string = this.keyWithPrefix(id)
-    try {
-      delete this._data[key]
-    } catch(err) {
-      this._logger.isErrorEnabled() && this._logger.error(err, 'Error removing entity state from memory - for key: ' + key)
-      throw(err)
-    }
-  }
 
-  async store (entityState: BulkTransactionState): Promise<void> {
-    if (!this.canCall()) {
-      throw(new Error('Repository not ready'))
+    canCall(): boolean {
+        return this._initialized; // for now, no circuit breaker exists
     }
-    const key: string = this.keyWithPrefix(entityState.id)
-    try {
-      this._data[key] = {
-        id: entityState.id || '',
-        bulkTransactionEntityState: JSON.stringify(entityState)
-      }
-    } catch(err) {
-      this._logger.isErrorEnabled() && this._logger.error(err, 'Error storing entity state to memory - for key: ' + key)
-      throw(err)
-    }
-  }
 
-  async getAllAttributes (id: string): Promise<string[]> {
-    if (!this.canCall()) {
-      throw(new Error('Repository not ready'))
-    }
-    const key: string = this.keyWithPrefix(id)
-    try {
-      const allAttributes = Object.keys(this._data[key])
-      return allAttributes
-    } catch(err) {
-      this._logger.isErrorEnabled() && this._logger.error(err, 'Error getting attributes from memory - for key: ' + key)
-      throw(err)
-    }
-  }
+    async load(id: string): Promise<BulkTransactionState> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(id);
+        try {
 
-  async addAdditionalAttribute (id: string, name: string, value: any): Promise<void> {
-    if (!this.canCall()) {
-      throw(new Error('Repository not ready'))
+            const bulkTransactionEntityStateStr = this._data[key].bulkTransactionEntityState;
+            if(bulkTransactionEntityStateStr) {
+                return JSON.parse(bulkTransactionEntityStateStr);
+            } else {
+                this._logger.error('Error loading entity state from memory - for key: ' + key);
+                throw (new Error('Error loading entity state from memory'));
+            }
+        } catch (err) {
+            this._logger.error(err, 'Error loading entity state from memory - for key: ' + key);
+            throw (err);
+        }
     }
-    const key: string = this.keyWithPrefix(id)
-    try {
-      this._data[key][name] = JSON.stringify(value)
-    } catch(err) {
-      this._logger.isErrorEnabled() && this._logger.error(err, `Error storing additional attribute named ${name} to memory for key: ${key}`)
-      throw(err)
-    }
-  }
 
-  private keyWithPrefix (key: string): string {
-    return this.keyPrefix + key
-  }
+    async remove(id: string): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(id);
+        try {
+            delete this._data[key];
+        } catch (err) {
+            this._logger.error(err, 'Error removing entity state from memory - for key: ' + key);
+            throw (err);
+        }
+    }
+
+    async store(entityState: BulkTransactionState): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(entityState.id);
+        try {
+            this._data[key] = {
+                id: entityState.id || '',
+                bulkTransactionEntityState: JSON.stringify(entityState),
+            };
+        } catch (err) {
+            this._logger.error(err, 'Error storing entity state to memory - for key: ' + key);
+            throw (err);
+        }
+    }
+
+    async getAllAttributes(id: string): Promise<string[]> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(id);
+        try {
+            const allAttributes = Object.keys(this._data[key]);
+            return allAttributes;
+        } catch (err) {
+            this._logger.error(err, 'Error getting attributes from memory - for key: ' + key);
+            throw (err);
+        }
+    }
+
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    async addAdditionalAttribute(id: string, name: string, value: any): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(id);
+        try {
+            this._data[key][name] = JSON.stringify(value);
+        } catch (err) {
+            this._logger.error(err, `Error storing additional attribute named ${name} to memory for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    private keyWithPrefix(key: string): string {
+        return this.keyPrefix + key;
+    }
 
 }

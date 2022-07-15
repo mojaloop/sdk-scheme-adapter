@@ -22,140 +22,129 @@
  --------------
  ******/
 
-'use strict'
+'use strict';
 
-import * as redis from 'redis'
-import { ILogger } from "@mojaloop/logging-bc-public-types-lib"
-import { BulkTransactionState } from '../domain/bulk_transaction_entity'
-import { IBulkTransactionEntityRepo } from '../types/bulk_transaction_entity_repo'
-// @ts-expect-error
-import RedisClustr = require('redis-clustr')
+import * as redis from 'redis';
+import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
+import { BulkTransactionState } from '../domain/bulk_transaction_entity';
+import { IBulkTransactionEntityRepo } from '../types/bulk_transaction_entity_repo';
 
 export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo {
-  protected _redisClient!: redis.RedisClientType
-  protected _redisClustered: boolean
-  private readonly _redisConnStr: string
-  private readonly _redisConnClusterHost: string
-  private readonly _redisConnClusterPort: number
-  private readonly _logger: ILogger
-  private _initialized: boolean = false
-  private readonly keyPrefix: string = 'outboundBulkTransaction_'
+    protected _redisClient!: redis.RedisClientType;
 
-  constructor (connStr: string, clusteredRedis: boolean, logger: ILogger) {
-    this._redisConnStr = connStr
-    this._logger = logger
-    this._redisClustered = clusteredRedis
+    private readonly _redisConnStr: string;
 
-    const splited = connStr.split('//')[1]
-    this._redisConnClusterHost = splited.split(':')[0]
-    this._redisConnClusterPort = Number.parseInt(splited.split(':')[1])
-  }
+    private readonly _logger: ILogger;
 
-  async init (): Promise<void> {
-    if (this._redisClustered) {
-      this._redisClient = new RedisClustr({
-        servers: [{ host: this._redisConnClusterHost, port: this._redisConnClusterPort }]
-      })
-    } else {
-      this._redisClient = redis.createClient({ url: this._redisConnStr })
-    }
-    this._redisClient.on('error', (err) => {
-      this._logger.isErrorEnabled() && this._logger.error(err, 'Error connecting to redis server: ' + err.message)
-      if(!this._initialized) {
-        throw(err)
-      }
-    })
-    await this._redisClient.connect()
-    this._initialized = true
-  }
+    private _initialized = false;
 
-  async destroy (): Promise<void> {
-    if (this._initialized) { this._redisClient.quit() }
-    return await Promise.resolve()
-  }
+    private readonly keyPrefix: string = 'outboundBulkTransaction_';
 
-  canCall (): boolean {
-    return this._initialized // for now, no circuit breaker exists
-  }
+    constructor(connStr: string, logger: ILogger) {
+        this._redisConnStr = connStr;
+        this._logger = logger;
+    }
 
-  async load (id: string): Promise<BulkTransactionState> {
-    if (!this.canCall()) {
-      throw(new Error('Repository not ready'))
+    async init(): Promise<void> {
+        this._redisClient = redis.createClient({ url: this._redisConnStr });
+        this._redisClient.on('error', err => {
+            this._logger.error(err, 'Error connecting to redis server: ' + err.message);
+            if(!this._initialized) {
+                throw (err);
+            }
+        });
+        await this._redisClient.connect();
+        this._initialized = true;
     }
-    const key: string = this.keyWithPrefix(id)
-    try {
-      const bulkTransactionEntityStateStr = await this._redisClient.hGet(key, 'bulkTransactionEntityState')
-      if (bulkTransactionEntityStateStr) {
-        return JSON.parse(bulkTransactionEntityStateStr)
-      } else {
-        this._logger.isErrorEnabled() && this._logger.error('Error loading entity state from redis - for key: ' + key)
-        throw(new Error('Error loading entity state from redis'))
-      }
-    } catch(err) {
-      this._logger.isErrorEnabled() && this._logger.error(err, 'Error loading entity state from redis - for key: ' + key)
-      throw(err)
-    }
-  }
 
-  async remove (id: string): Promise<void> {
-    if (!this.canCall()) {
-      throw(new Error('Repository not ready'))
+    async destroy(): Promise<void> {
+        if(this._initialized) { this._redisClient.quit(); }
+        return Promise.resolve();
     }
-    const key: string = this.keyWithPrefix(id)
-    try {
-      await this._redisClient.del(key)
-    } catch(err) {
-      this._logger.isErrorEnabled() && this._logger.error(err, 'Error removing entity state from redis - for key: ' + key)
-      throw(err)
-    }
-  }
 
-  async store (entityState: BulkTransactionState): Promise<void> {
-    if (!this.canCall()) {
-      throw(new Error('Repository not ready'))
+    canCall(): boolean {
+        return this._initialized; // for now, no circuit breaker exists
     }
-    const key: string = this.keyWithPrefix(entityState.id)
-    try {
-      await this._redisClient
-        .multi()
-        .hSet(key, 'id', entityState.id || '')
-        .hSet(key, 'bulkTransactionEntityState', JSON.stringify(entityState))
-        .exec()
-    } catch(err) {
-      this._logger.isErrorEnabled() && this._logger.error(err, 'Error storing entity state to redis - for key: ' + key)
-      throw(err)
-    }
-  }
 
-  async getAllAttributes (id: string): Promise<string[]> {
-    if (!this.canCall()) {
-      throw(new Error('Repository not ready'))
+    async load(id: string): Promise<BulkTransactionState> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(id);
+        try {
+            const bulkTransactionEntityStateStr = await this._redisClient.hGet(key, 'bulkTransactionEntityState');
+            if(bulkTransactionEntityStateStr) {
+                return JSON.parse(bulkTransactionEntityStateStr);
+            } else {
+                this._logger.error('Error loading entity state from redis - for key: ' + key);
+                throw (new Error('Error loading entity state from redis'));
+            }
+        } catch (err) {
+            this._logger.error(err, 'Error loading entity state from redis - for key: ' + key);
+            throw (err);
+        }
     }
-    const key: string = this.keyWithPrefix(id)
-    try {
-      const allAttributes = await this._redisClient.hKeys(key)
-      return allAttributes
-    } catch(err) {
-      this._logger.isErrorEnabled() && this._logger.error(err, 'Error getting attributes from redis - for key: ' + key)
-      throw(err)
-    }
-  }
 
-  async addAdditionalAttribute (id: string, name: string, value: any): Promise<void> {
-    if (!this.canCall()) {
-      throw(new Error('Repository not ready'))
+    async remove(id: string): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(id);
+        try {
+            await this._redisClient.del(key);
+        } catch (err) {
+            this._logger.error(err, 'Error removing entity state from redis - for key: ' + key);
+            throw (err);
+        }
     }
-    const key: string = this.keyWithPrefix(id)
-    try {
-      await this._redisClient.hSet(key, name, JSON.stringify(value))
-    } catch(err) {
-      this._logger.isErrorEnabled() && this._logger.error(err, `Error storing additional attribute named ${name} to redis for key: ${key}`)
-      throw(err)
-    }
-  }
 
-  private keyWithPrefix (key: string): string {
-    return this.keyPrefix + key
-  }
+    async store(entityState: BulkTransactionState): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(entityState.id);
+        try {
+            await this._redisClient
+                .multi()
+                .hSet(key, 'id', entityState.id || '')
+                .hSet(key, 'bulkTransactionEntityState', JSON.stringify(entityState))
+                .exec();
+        } catch (err) {
+            this._logger.error(err, 'Error storing entity state to redis - for key: ' + key);
+            throw (err);
+        }
+    }
+
+    async getAllAttributes(id: string): Promise<string[]> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(id);
+        try {
+            const allAttributes = await this._redisClient.hKeys(key);
+            return allAttributes;
+        } catch (err) {
+            this._logger.error(err, 'Error getting attributes from redis - for key: ' + key);
+            throw (err);
+        }
+    }
+
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    async addAdditionalAttribute(id: string, name: string, value: any): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(id);
+        try {
+            await this._redisClient.hSet(key, name, JSON.stringify(value));
+        } catch (err) {
+            this._logger.error(err, `Error storing additional attribute named ${name} to redis for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    private keyWithPrefix(key: string): string {
+        return this.keyPrefix + key;
+    }
 
 }

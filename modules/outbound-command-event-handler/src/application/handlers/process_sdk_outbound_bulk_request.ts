@@ -22,27 +22,36 @@
  --------------
  ******/
 
-'use strict'
+'use strict';
 
-import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
+import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import { CommandEventMessage, ProcessSDKOutboundBulkRequestMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-import { BulkTransactionAgg } from '../../domain/bulk_transaction_agg'
-import { ICommandEventHandlerOptions } from '../../types'
+import { BulkTransactionAgg } from '../../domain/bulk_transaction_agg';
+import { ICommandEventHandlerOptions } from '../../types';
 
+export async function handleProcessSDKOutboundBulkRequest(
+    message: CommandEventMessage,
+    options: ICommandEventHandlerOptions,
+    logger: ILogger,
+): Promise<void> {
+    // TODO: Duplicate check here?
+    const processSDKOutboundBulkRequestMessage = 
+      ProcessSDKOutboundBulkRequestMessage.CreateFromCommandEventMessage(message);
+    try {
+        const sdkOutboundBulkRequestEntity = processSDKOutboundBulkRequestMessage.createSDKOutboundBulkRequestEntity();
+        logger.info(`Got SDKOutboundBulkRequestEntity ${sdkOutboundBulkRequestEntity}`);
 
-export async function handleProcessSDKOutboundBulkRequest (message: CommandEventMessage, options: ICommandEventHandlerOptions, logger: ILogger): Promise<void> {
-  // TODO: Duplicate check here?
-  const processSDKOutboundBulkRequestMessage = ProcessSDKOutboundBulkRequestMessage.CreateFromCommandEventMessage(message)
-  try {
-    const sdkOutboundBulkRequestEntity = processSDKOutboundBulkRequestMessage.createSDKOutboundBulkRequestEntity()
-    logger.isInfoEnabled() && logger.info(`outboundCmdHandler - Got SDKOutboundBulkRequestEntity ${sdkOutboundBulkRequestEntity}`);
-
-    // Create aggregate
-    const bulkTransactionAgg = BulkTransactionAgg.CreateFromRequest(sdkOutboundBulkRequestEntity.request, options.bulkTransactionEntityRepo, logger)
-    logger.isInfoEnabled() && logger.info(`outboundCmdHandler - Created BulkTransactionAggregate ${bulkTransactionAgg}`);
+        // Create aggregate
+        const bulkTransactionAgg = BulkTransactionAgg.CreateFromRequest(
+            sdkOutboundBulkRequestEntity.request,
+            options.bulkTransactionEntityRepo,
+            logger,
+        );
+        logger.info(`Created BulkTransactionAggregate ${bulkTransactionAgg}`);
 
     // const bulkTransactionAggTest = await BulkTransactionAgg.CreateFromRepo(sdkOutboundBulkRequestEntity.id, options.bulkTransactionEntityRepo, logger)
-  } catch(err: any) {
-    logger.isInfoEnabled() && logger.info(`outboundCmdHandler - Failed to create BulkTransactionAggregate. ${err.message}`)
-  }
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    } catch (err: any) {
+        logger.info(`Failed to create BulkTransactionAggregate. ${err.message}`);
+    }
 }

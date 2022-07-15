@@ -22,83 +22,87 @@
  --------------
  ******/
 
-'use strict'
+'use strict';
 
-import { BaseEntityState, BaseEntity, AjvValidationError } from '@mojaloop/sdk-scheme-adapter-public-shared-lib'
-import { SDKSchemeAdapter, v1_1 as FSPIOP } from '@mojaloop/api-snippets'
-import { randomUUID } from 'crypto'
-import Ajv from 'ajv'
+import { BaseEntityState, BaseEntity, AjvValidationError } from '@mojaloop/sdk-scheme-adapter-public-shared-lib';
+import { SDKSchemeAdapter, v1_1 as FSPIOP } from '@mojaloop/api-snippets';
+import { randomUUID } from 'crypto';
+import Ajv from 'ajv';
 const ajv = new Ajv({
-  strict:false,
-  allErrors: false
-})
+    strict:false,
+    allErrors: false,
+});
 
- // TODO: check name and status enums.
- export enum IndividualTransferInternalState {
-  RECEIVED = "RECEIVED",
-  DISCOVERY_PROCESSING = "DISCOVERY_PROCESSING",
-  AGREEMENT_PROCESSING = "AGREEMENT_PROCESSING",
-  TRANSFER_PROCESSING = "TRANSFER_PROCESSING"
+// TODO: check name and status enums.
+export enum IndividualTransferInternalState {
+    RECEIVED = 'RECEIVED',
+    DISCOVERY_PROCESSING = 'DISCOVERY_PROCESSING',
+    AGREEMENT_PROCESSING = 'AGREEMENT_PROCESSING',
+    TRANSFER_PROCESSING = 'TRANSFER_PROCESSING',
 }
 
 // TODO: Standardize the following
 export interface IHttpRequest {
-  method: string;
-  path: string;
-  headers: any;
-  body: any;
+    method: string;
+    path: string;
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    headers: any;
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    body: any;
 }
 
-export interface IPartyRequest extends IHttpRequest {}
+export type IPartyRequest = IHttpRequest;
 
 export interface IndividualTransferState extends BaseEntityState {
-  id: string;
-  request: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransfer;
-  state: IndividualTransferInternalState;
-  batchId?: string;
-  partyRequest?: IPartyRequest; // TODO: This should be defined in public repo extending a http request interface similar to (http request or axios request object)
-  partyResponse?: FSPIOP.Schemas.PartyResult
-  acceptParty?: boolean;
-  acceptQuote?: boolean;
-  lastError?: any; // TODO: Define a format for this
+    id: string;
+    request: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransfer;
+    state: IndividualTransferInternalState;
+    batchId?: string;
+    partyRequest?: IPartyRequest; // TODO: This should be defined in public repo extending a http request interface similar to (http request or axios request object)
+    partyResponse?: FSPIOP.Schemas.PartyResult
+    acceptParty?: boolean;
+    acceptQuote?: boolean;
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    lastError?: any; // TODO: Define a format for this
 }
 
 export class IndividualTransferEntity extends BaseEntity<IndividualTransferState> {
 
-  get id (): string {
-    return this._state.id
-  }
+    get id(): string {
+        return this._state.id;
+    }
 
-  get request (): SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransfer {
-    return this._state.request
-  }
+    get request(): SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransfer {
+        return this._state.request;
+    }
 
-  static CreateFromRequest (request: any): IndividualTransferEntity {
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    static CreateFromRequest(request: any): IndividualTransferEntity {
     // IndividualTransferEntity._validateRequest(request)
-    const initialState: IndividualTransferState = {
-      id: randomUUID(),
-      request,
-      state: IndividualTransferInternalState.RECEIVED,
-      created_at: Date.now(),
-      updated_at: Date.now(),
-      version: 1
+        const initialState: IndividualTransferState = {
+            id: randomUUID(),
+            request,
+            state: IndividualTransferInternalState.RECEIVED,
+            created_at: Date.now(),
+            updated_at: Date.now(),
+            version: 1,
+        };
+        return new IndividualTransferEntity(initialState);
     }
-    return new IndividualTransferEntity(initialState)
-  }
 
-  /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */
-  constructor (initialState: IndividualTransferState) {
-    IndividualTransferEntity._validateRequest(initialState.request)
-    super(initialState)
-  }
-
-  private static _validateRequest (request: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransfer): void {
-    let requestSchema = SDKSchemeAdapter.Outbound.V2_0_0.Schemas.individualTransfer
-    const validate = ajv.compile(requestSchema)
-    const validationResult = validate(request)
-    if(!validationResult) {
-      throw new AjvValidationError(validate.errors || [])
+    /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */
+    constructor(initialState: IndividualTransferState) {
+        IndividualTransferEntity._validateRequest(initialState.request);
+        super(initialState);
     }
-  }
+
+    private static _validateRequest(request: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransfer): void {
+        const requestSchema = SDKSchemeAdapter.Outbound.V2_0_0.Schemas.individualTransfer;
+        const validate = ajv.compile(requestSchema);
+        const validationResult = validate(request);
+        if(!validationResult) {
+            throw new AjvValidationError(validate.errors || []);
+        }
+    }
 
 }

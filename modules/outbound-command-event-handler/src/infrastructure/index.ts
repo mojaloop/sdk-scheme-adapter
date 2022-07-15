@@ -22,5 +22,5 @@
  --------------
  ******/
 
- export * from "./redis_bulk_transaction_repo";
- export * from "./inmemory_bulk_transaction_repo";
+export * from './redis_bulk_transaction_repo';
+export * from './inmemory_bulk_transaction_repo';

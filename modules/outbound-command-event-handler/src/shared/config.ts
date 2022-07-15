@@ -15,8 +15,15 @@
  *  limitations under the License                                             *
  ******************************************************************************/
 
+import { IKafkaEventConsumerOptions, IKafkaEventProducerOptions } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { LogLevel } from '@mojaloop/logging-bc-public-types-lib';
 import Convict from 'convict';
 import path from 'path';
+
+export interface KafkaConfig {
+    COMMAND_EVENT_CONSUMER: IKafkaEventConsumerOptions;
+    DOMAIN_EVENT_PRODUCER: IKafkaEventProducerOptions;
+}
 
 export interface RedisConfig {
     CONNECTION_URL: string
@@ -24,17 +31,36 @@ export interface RedisConfig {
 
 // interface to represent service configuration
 export interface ServiceConfig {
-    PORT: number
+    LOG_LEVEL: LogLevel
+    API_SERVER: {
+        ENABLED: boolean
+        PORT: number
+    }
     REDIS: RedisConfig
+    KAFKA: KafkaConfig
 }
 
 // Declare configuration schema, default values and bindings to environment variables
-const config = Convict<ServiceConfig>({
-    PORT: {
-        doc: 'The port of the API server.',
-        format: 'port',
-        default: 8000,
-        env: 'PORT',
+const config = Convict({
+    LOG_LEVEL: {
+        doc: 'Log level',
+        format: ['trace', 'debug', 'info', 'warn', 'error', 'fatal'],
+        default: 'info',
+        env: 'LOG_LEVEL',
+    },
+    API_SERVER: {
+        ENABLED: {
+            doc: 'Whether to enable API server or not',
+            format: 'Boolean',
+            default: false,
+            env: 'API_SERVER_ENABLED',
+        },    
+        PORT: {
+            doc: 'The port of the API server.',
+            format: 'port',
+            default: 8000,
+            env: 'API_SERVER_PORT',
+        },    
     },
     REDIS: {
         CONNECTION_URL: {
@@ -44,10 +70,58 @@ const config = Convict<ServiceConfig>({
             env: 'REDIS_CONNECTION_URL',
         },
     },
+    KAFKA: {
+        COMMAND_EVENT_CONSUMER: {
+            brokerList: {
+                doc: 'brokerList',
+                format: String,
+                default: 'localhost:9092',
+                env: 'COMMAND_EVENT_CONSUMER_BROKER_LIST',
+            },
+            groupId: {
+                doc: 'groupId',
+                format: String,
+                default: 'command_events_consumer_group',
+                env: 'COMMAND_EVENT_CONSUMER_GROUP_ID',
+            },
+            clientId: {
+                doc: 'clientId',
+                format: String,
+                default: 'command_events_consumer_client_id',
+                env: 'COMMAND_EVENT_CONSUMER_CLIENT_ID',
+            },
+            topics: {
+                doc: 'topics',
+                format: Array,
+                default: ['topic-sdk-outbound-command-events'],
+                env: 'COMMAND_EVENT_CONSUMER_TOPICS',
+            },
+        },
+        DOMAIN_EVENT_PRODUCER: {
+            brokerList: {
+                doc: 'brokerList',
+                format: String,
+                default: 'localhost:9092',
+                env: 'DOMAIN_EVENT_PRODUCER_BROKER_LIST',
+            },
+            clientId: {
+                doc: 'clientId',
+                format: String,
+                default: 'domain_events_producer_client_id',
+                env: 'DOMAIN_EVENT_PRODUCER_CLIENT_ID',
+            },
+            topic: {
+                doc: 'topic',
+                format: Array,
+                default: 'topic-sdk-outbound-domain-events',
+                env: 'DOMAIN_EVENT_PRODUCER_TOPIC',
+            },
+        },
+    },
 });
 
 // Load configuration
-config.loadFile(path.join(__dirname, '/../../config/default.json'));
+config.loadFile<ServiceConfig>(path.join(__dirname, '/../../config/default.json'));
 
 // Perform configuration validation
 config.validate({ allowed: 'strict' });

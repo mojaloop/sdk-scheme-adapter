@@ -22,12 +22,13 @@
  --------------
  ******/
 
-'use strict'
+'use strict';
 
-import { IEntityStateRepository } from '@mojaloop/sdk-scheme-adapter-public-shared-lib'
-import { BulkTransactionState } from '../domain/bulk_transaction_entity'
+import { IEntityStateRepository } from '@mojaloop/sdk-scheme-adapter-public-shared-lib';
+import { BulkTransactionState } from '../domain/bulk_transaction_entity';
 
 export type IBulkTransactionEntityRepo = {
-  getAllAttributes: (id: string) => Promise<string[]>
-  addAdditionalAttribute: (id: string, name: string, value: any) => Promise<void>
-} & IEntityStateRepository<BulkTransactionState>
+    getAllAttributes: (id: string) => Promise<string[]>
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    addAdditionalAttribute: (id: string, name: string, value: any) => Promise<void>
+} & IEntityStateRepository<BulkTransactionState>;

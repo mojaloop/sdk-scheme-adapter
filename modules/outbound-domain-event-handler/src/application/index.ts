@@ -35,13 +35,17 @@ import { OutboundEventHandler } from './handler';
 import Config from '../shared/config';
 
 (async () => {
-
     // Instantiate logger
     const logger: ILogger = new DefaultLogger(BC_CONFIG.bcName, 'domain-event-handler', '0.0.1', <LogLevel>Config.get('LOG_LEVEL'));
 
     // start outboundEventHandler
     const outboundEventHandler: IRunHandler = new OutboundEventHandler();
-    await outboundEventHandler.start(Config, logger);
+    try {
+      await outboundEventHandler.start(Config, logger);
+    } catch(err: any) {
+      logger.error(err, 'Error starting outbound event handler: ' + err.message)
+      await outboundEventHandler.destroy()
+    }
 
     // lets clean up all consumers here
     /* eslint-disable-next-line @typescript-eslint/no-misused-promises */

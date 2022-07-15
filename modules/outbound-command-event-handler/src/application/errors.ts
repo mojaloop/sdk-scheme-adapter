@@ -35,7 +35,7 @@
  --------------
 ******/
 
-'use strict'
+'use strict';
 
 export class InvalidOutboundEvtError extends Error {}
 export class InvalidOutboundCmdError extends Error {}

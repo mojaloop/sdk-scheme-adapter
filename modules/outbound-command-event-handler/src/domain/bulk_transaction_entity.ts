@@ -22,91 +22,90 @@
  --------------
  ******/
 
-'use strict'
+'use strict';
 
-import { BaseEntityState, BaseEntity, AjvValidationError } from '@mojaloop/sdk-scheme-adapter-public-shared-lib'
-import { SDKSchemeAdapter } from '@mojaloop/api-snippets'
-import { randomUUID } from 'crypto'
-import Ajv from 'ajv'
-import { IndividualTransferState } from './individual_transfer_entity'
-
+import { BaseEntityState, BaseEntity, AjvValidationError } from '@mojaloop/sdk-scheme-adapter-public-shared-lib';
+import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
+import { randomUUID } from 'crypto';
+import Ajv from 'ajv';
 
 const ajv = new Ajv({
-  strict:false,
-  allErrors: false
-})
+    strict:false,
+    allErrors: false,
+});
 
 // TODO: Refine this
 export enum BulkTransactionInternalState {
-  RECEIVED = "RECEIVED",
-  DISCOVERY_PROCESSING = "DISCOVERY_PROCESSING",
-  AGREEMENT_PROCESSING = "AGREEMENT_PROCESSING",
-  TRANSFER_PROCESSING = "TRANSFER_PROCESSING"
+    RECEIVED = 'RECEIVED',
+    DISCOVERY_PROCESSING = 'DISCOVERY_PROCESSING',
+    AGREEMENT_PROCESSING = 'AGREEMENT_PROCESSING',
+    TRANSFER_PROCESSING = 'TRANSFER_PROCESSING',
 }
 
 export interface BulkTransactionState extends BaseEntityState {
-  bulkTransactionId: string;
-  bulkHomeTransactionID: string | null;
-  options: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferOptions;
-  extensions: SDKSchemeAdapter.Outbound.V2_0_0.Types.ExtensionList;
-  state: BulkTransactionInternalState;
+    bulkTransactionId: string;
+    bulkHomeTransactionID: string | null;
+    options: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferOptions;
+    extensions: SDKSchemeAdapter.Outbound.V2_0_0.Types.ExtensionList;
+    state: BulkTransactionInternalState;
 }
 
 export class BulkTransactionEntity extends BaseEntity<BulkTransactionState> {
 
-  get id (): string {
-    return this._state.id
-  }
-
-  get bulkHomeTransactionID (): string | null {
-    return this._state.bulkHomeTransactionID
-  }
-
-  static CreateFromRequest (request: any): BulkTransactionEntity {
-    BulkTransactionEntity._validateRequest(request)
-    const bulkTransactionId = request?.bulkTransactionId || randomUUID()
-    const initialState: BulkTransactionState = {
-      id: bulkTransactionId,
-      bulkTransactionId,
-      bulkHomeTransactionID: request?.bulkHomeTransactionID,
-      options: request?.options,
-      extensions: request?.extensions,
-      state: BulkTransactionInternalState.RECEIVED,
-      created_at: Date.now(),
-      updated_at: Date.now(),
-      version: 1
+    get id(): string {
+        return this._state.id;
     }
-    return new BulkTransactionEntity(initialState)
-  }
 
-  /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */
-  constructor (initialState: BulkTransactionState) {
-    super(initialState)
-  }
-
-  // isAutoAcceptPartyEnabled (): boolean {
-  //   return this._state.options.autoAcceptParty.enabled
-  // }
-
-  // isAutoAcceptQuoteEnabled (): boolean {
-  //   return this._state.options.autoAcceptQuote.enabled
-  // }
-
-  // getAutoAcceptQuotePerTransferFeeLimits (): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkPerTransferFeeLimit[] | undefined {
-  //   return this._state.options.autoAcceptQuote.perTransferFeeLimits
-  // }
-
-  // getBulkExpiration (): string {
-  //   return this._state.options.bulkExpiration
-  // }
-
-  private static _validateRequest (request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferRequest): void {
-    let requestSchema = SDKSchemeAdapter.Outbound.V2_0_0.Schemas.bulkTransferRequest
-    const validate = ajv.compile(requestSchema)
-    const validationResult = validate(request)
-    if(!validationResult) {
-      throw new AjvValidationError(validate.errors || [])
+    get bulkHomeTransactionID(): string | null {
+        return this._state.bulkHomeTransactionID;
     }
-  }
+
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    static CreateFromRequest(request: any): BulkTransactionEntity {
+        BulkTransactionEntity._validateRequest(request);
+        const bulkTransactionId = request?.bulkTransactionId || randomUUID();
+        const initialState: BulkTransactionState = {
+            id: bulkTransactionId,
+            bulkTransactionId,
+            bulkHomeTransactionID: request?.bulkHomeTransactionID,
+            options: request?.options,
+            extensions: request?.extensions,
+            state: BulkTransactionInternalState.RECEIVED,
+            created_at: Date.now(),
+            updated_at: Date.now(),
+            version: 1,
+        };
+        return new BulkTransactionEntity(initialState);
+    }
+
+    /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */
+    constructor(initialState: BulkTransactionState) {
+        super(initialState);
+    }
+
+    // isAutoAcceptPartyEnabled (): boolean {
+    //   return this._state.options.autoAcceptParty.enabled
+    // }
+
+    // isAutoAcceptQuoteEnabled (): boolean {
+    //   return this._state.options.autoAcceptQuote.enabled
+    // }
+
+    // getAutoAcceptQuotePerTransferFeeLimits (): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkPerTransferFeeLimit[] | undefined {
+    //   return this._state.options.autoAcceptQuote.perTransferFeeLimits
+    // }
+
+    // getBulkExpiration (): string {
+    //   return this._state.options.bulkExpiration
+    // }
+
+    private static _validateRequest(request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferRequest): void {
+        const requestSchema = SDKSchemeAdapter.Outbound.V2_0_0.Schemas.bulkTransferRequest;
+        const validate = ajv.compile(requestSchema);
+        const validationResult = validate(request);
+        if(!validationResult) {
+            throw new AjvValidationError(validate.errors || []);
+        }
+    }
 
 }

@@ -22,102 +22,81 @@
  --------------
  ******/
 
-'use strict'
+'use strict';
 
-import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
+import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import {
-  IRunHandler,
-  KafkaCommandEventConsumer,
-  KafkaDomainEventProducer,
-  CommandEventMessage,
-  OutboundCommandEventMessageName,
-  Crypto
-} from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
-import { RedisBulkTransactionStateRepo } from '../infrastructure'
-import { handleProcessSDKOutboundBulkRequest } from './handlers'
-import { IBulkTransactionEntityRepo, ICommandEventHandlerOptions } from '../types'
+    IRunHandler,
+    KafkaCommandEventConsumer,
+    KafkaDomainEventProducer,
+    CommandEventMessage,
+    OutboundCommandEventMessageName,
+    IKafkaEventConsumerOptions,
+    IKafkaEventProducerOptions,
+} from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { RedisBulkTransactionStateRepo } from '../infrastructure';
+import { handleProcessSDKOutboundBulkRequest } from './handlers';
+import { IBulkTransactionEntityRepo, ICommandEventHandlerOptions } from '../types';
 
 
 export class OutboundEventHandler implements IRunHandler {
-  private _logger: ILogger
-  private _consumer: KafkaCommandEventConsumer
-  private _domainProducer: KafkaDomainEventProducer
-  private _clientId: string
-  private _bulkTransactionEntityStateRepo: IBulkTransactionEntityRepo
-  private _commandEventHandlerOptions: ICommandEventHandlerOptions
+    private _logger: ILogger;
 
-  async start (appConfig: any, logger: ILogger): Promise<void> {
-    this._logger = logger
-    this._logger.isInfoEnabled() && this._logger.info(`outboundCmdHandler::start - appConfig=${JSON.stringify(appConfig)}`)
-    this._clientId = `outboundCmdHandler-${appConfig.kafka.consumer as string}-${Crypto.randomBytes(8)}`
+    private _consumer: KafkaCommandEventConsumer;
 
-    // this._logger.isInfoEnabled() && this._logger.info(`outboundCmdHandler - Creating repo of type ${MongoDbReadsideTransferRepo.constructor.name}`)
-    // this._readSideRepo = new MongoDbReadsideTransferRepo(appConfig.readside_store.uri, logger)
-    // await this._readSideRepo.init()
+    private _domainProducer: KafkaDomainEventProducer;
 
-    // this._logger.isInfoEnabled() && this._logger.info(`outboundCmdHandler - Created repo of type ${this._readSideRepo.constructor.name}`)
+    private _bulkTransactionEntityStateRepo: IBulkTransactionEntityRepo;
 
-    this._logger.isInfoEnabled() && this._logger.info(`outboundCmdHandler - Creating ${appConfig.kafka.consumer as string}...`)
+    private _commandEventHandlerOptions: ICommandEventHandlerOptions;
 
-    const consumerOptions: MLKafkaConsumerOptions = {
-      // TODO: Parameterize this
-      kafkaBrokerList: 'localhost:9092',
-      kafkaGroupId: 'command_events_consumer_group',
-      outputType: MLKafkaConsumerOutputType.Json,
-    };
-    // TODO: Parameterize this
-    const consume_topics = ['topic-sdk-outbound-command-events'];
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    async start(appConfig: any, logger: ILogger): Promise<void> {
+        this._logger = logger;
+        this._logger.info('start');
 
-    this._consumer = new KafkaCommandEventConsumer(this._messageHandler.bind(this), consumerOptions, consume_topics, logger)
-    logger.isInfoEnabled() && logger.info(`outboundCmdHandler - Created kafkaConsumer of type ${this._consumer.constructor.name}`)
-    /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
-    await this._consumer.init() // we're interested in all stateEvents
-    await this._consumer.start()
+        const consumerOptions: IKafkaEventConsumerOptions = appConfig.get('KAFKA.COMMAND_EVENT_CONSUMER');
+        this._consumer = new KafkaCommandEventConsumer(this._messageHandler.bind(this), consumerOptions, logger);
+        logger.info(`Created kafkaConsumer of type ${this._consumer.constructor.name}`);
+  
+        /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
+        await this._consumer.init();
+        await this._consumer.start();
 
-    const producerOptions: MLKafkaProducerOptions = {
-      // TODO: Parameterize this
-      kafkaBrokerList: 'localhost:9092',
-      producerClientId: 'domain_events_producer_client_id_' + Date.now(),
-      skipAcknowledgements: true,
-    };
-    // TODO: Parameterize this
-    const PUBLISH_TOPIC = 'topic-sdk-outbound-domain-events';
+        const producerOptions: IKafkaEventProducerOptions = appConfig.get('KAFKA.DOMAIN_EVENT_PRODUCER');
+        this._domainProducer = new KafkaDomainEventProducer(producerOptions, logger);
+        logger.info(`Created kafkaProducer of type ${this._domainProducer.constructor.name}`);
+        await this._domainProducer.init();
 
-    this._domainProducer = new KafkaDomainEventProducer(logger)
-    logger.isInfoEnabled() && logger.info(`outboundCmdHandler - Created kafkaProducer of type ${this._domainProducer.constructor.name}`)
-    await this._domainProducer.init()
+        this._bulkTransactionEntityStateRepo = new RedisBulkTransactionStateRepo(appConfig.get('REDIS.CONNECTION_URL'), this._logger);
+        logger.info(`Created BulkTransactionStateRepo of type ${this._bulkTransactionEntityStateRepo.constructor.name}`);
+        await this._bulkTransactionEntityStateRepo.init();
 
-    // TODO: Parameterize redis config
-    this._bulkTransactionEntityStateRepo = new RedisBulkTransactionStateRepo('redis://localhost:6379', false, this._logger)
-    logger.isInfoEnabled() && logger.info(`outboundCmdHandler - Created BulkTransactionStateRepo of type ${this._bulkTransactionEntityStateRepo.constructor.name}`)
-    await this._bulkTransactionEntityStateRepo.init()
-
-    // Create options for handlers
-    this._commandEventHandlerOptions = {
-      bulkTransactionEntityRepo: this._bulkTransactionEntityStateRepo,
-      domainProducer: this._domainProducer
+        // Create options for handlers
+        this._commandEventHandlerOptions = {
+            bulkTransactionEntityRepo: this._bulkTransactionEntityStateRepo,
+            domainProducer: this._domainProducer,
+        };
     }
-  }
 
-  async destroy (): Promise<void> {
-    await this._consumer.destroy()
-    await this._domainProducer.destroy()
-    await this._bulkTransactionEntityStateRepo.destroy()
-  }
-
-  async _messageHandler (message: CommandEventMessage): Promise<void> {
-    this._logger.isInfoEnabled() && this._logger.info(`outboundCmdHandler - ${message.getName()}`)
-    console.log(message)
-    switch (message.getName()) {
-      case OutboundCommandEventMessageName.ProcessSDKOutboundBulkRequest: {
-        handleProcessSDKOutboundBulkRequest(message, this._commandEventHandlerOptions, this._logger)
-        break;
-      }
-      default: {
-        this._logger.isDebugEnabled() && this._logger.debug(`outboundCmdHandler - ${message?.getName()}:${message?.getKey()} - Skipping unknown outbound domain event`);
-        return;
-      }
+    async destroy(): Promise<void> {
+        await this._consumer.destroy();
+        await this._domainProducer.destroy();
+        await this._bulkTransactionEntityStateRepo.destroy();
     }
-  }
+
+    async _messageHandler(message: CommandEventMessage): Promise<void> {
+        this._logger.info(`${message.getName()}`);
+        console.log(message);
+        switch (message.getName()) {
+            case OutboundCommandEventMessageName.ProcessSDKOutboundBulkRequest: {
+                handleProcessSDKOutboundBulkRequest(message, this._commandEventHandlerOptions, this._logger);
+                break;
+            }
+            default: {
+                this._logger.debug(`${message?.getName()}:${message?.getKey()} - Skipping unknown outbound domain event`);
+                return;
+            }
+        }
+    }
 }
- 

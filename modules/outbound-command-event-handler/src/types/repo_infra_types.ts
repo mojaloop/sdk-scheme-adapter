@@ -35,9 +35,9 @@
  --------------
 ******/
 
-'use strict'
+'use strict';
 
 export enum RepoInfraTypes {
-  REDIS = 'redis',
-  MEMORY = 'memory'
+    REDIS = 'redis',
+    MEMORY = 'memory',
 }
