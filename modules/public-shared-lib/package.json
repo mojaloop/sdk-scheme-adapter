@@ -36,6 +36,7 @@
     "exec": "ts-node src/entities/sdk_outbound_bulk_request_entity.ts"
   },
   "dependencies": {
+    "@mojaloop/api-snippets": "^14.1.0",
     "ajv": "^8.11.0",
     "ts-node": "^10.8.2"
   }

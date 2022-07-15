@@ -60,7 +60,7 @@
     "typescript": "^4.6.4"
   },
   "dependencies": {
-    "@mojaloop/api-snippets": "^14.0.0",
+    "@mojaloop/api-snippets": "^14.1.0",
     "@mojaloop/logging-bc-client-lib": "^0.0.10",
     "redis": "^4.2.0"
   },

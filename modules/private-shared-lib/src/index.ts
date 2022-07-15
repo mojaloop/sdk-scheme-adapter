@@ -24,7 +24,7 @@
  * Modusbox
  - Shashikant Hirugade <shashikant.hirugade@modusbox.com>
  - Juan Correa <juancorrea@modusbox.com>
- - Vijaya Kumar Guthi <vijaya.guthi@modusbox.com>
+ - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
 
  --------------
  ******/

@@ -10,7 +10,8 @@
   },
   "contributors": [
     "Miguel de Barros <miguel.debarros@modusbox.com>",
-    "Shashikant Hirugade <shashikant.hirugade@modusbox.com>"
+    "Shashikant Hirugade <shashikant.hirugade@modusbox.com>",
+    "Vijay Kumar Guthi <vijaya.guthi@modusbox.com>"
   ],
   "scripts": {
     "prepare": "husky install",
