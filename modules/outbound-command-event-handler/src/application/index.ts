@@ -32,11 +32,12 @@ import { ILogger, LogLevel } from '@mojaloop/logging-bc-public-types-lib';
 
 import { IRunHandler, BC_CONFIG } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { OutboundEventHandler } from './handler';
+import ApiServer from '../api-server';
 import Config from '../shared/config';
 
 (async () => {
     // Instantiate logger
-    const logger: ILogger = new DefaultLogger(BC_CONFIG.bcName, 'domain-event-handler', '0.0.1', <LogLevel>Config.get('LOG_LEVEL'));
+    const logger: ILogger = new DefaultLogger(BC_CONFIG.bcName, 'command-event-handler', '0.0.1', <LogLevel>Config.get('LOG_LEVEL'));
 
     // start outboundEventHandler
     const outboundEventHandler: IRunHandler = new OutboundEventHandler();
@@ -48,6 +49,12 @@ import Config from '../shared/config';
         await outboundEventHandler.destroy();
     }
 
+    // API Server
+    const apiServerEnabled = Config.get('API_SERVER.ENABLED');
+    if (apiServerEnabled) {
+      logger.info('Starting API Server...');
+      ApiServer.startServer(Config.get('API_SERVER.PORT'));
+    }
     // lets clean up all consumers here
     /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
     const killProcess = async (): Promise<void> => {

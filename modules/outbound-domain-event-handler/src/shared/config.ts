@@ -80,7 +80,7 @@ const config = Convict({
             },
             topic: {
                 doc: 'topic',
-                format: Array,
+                format: String,
                 default: 'topic-sdk-outbound-command-events',
                 env: 'COMMAND_EVENT_PRODUCER_TOPIC',
             },

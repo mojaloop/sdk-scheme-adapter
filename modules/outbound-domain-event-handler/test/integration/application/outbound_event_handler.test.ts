@@ -29,11 +29,18 @@
 import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 
-import { DomainEventMessage, EventMessageType, OutboundDomainEventMessageName, IDomainEventMessageData } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
-import { KafkaDomainEventProducer } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+import { DomainEventMessage, OutboundDomainEventMessageName, IDomainEventMessageData } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+import { KafkaDomainEventProducer, IKafkaEventProducerOptions } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 
 const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
-const producer = new KafkaDomainEventProducer(logger)
+
+const producerOptions: IKafkaEventProducerOptions = {
+    brokerList: 'localhost:9092',
+    clientId: 'test-integration_client_id',
+    topic: 'topic-sdk-outbound-domain-events'
+}
+
+const producer = new KafkaDomainEventProducer(producerOptions, logger)
 
 const sampleDomainEventMessageData: IDomainEventMessageData = {
   key: 'sample-key1',

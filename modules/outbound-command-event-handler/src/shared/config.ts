@@ -112,7 +112,7 @@ const config = Convict({
             },
             topic: {
                 doc: 'topic',
-                format: Array,
+                format: String,
                 default: 'topic-sdk-outbound-domain-events',
                 env: 'DOMAIN_EVENT_PRODUCER_TOPIC',
             },
