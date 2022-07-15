@@ -22,13 +22,11 @@
  --------------
  ******/
 
-import axios from 'axios';
 import { Health } from '../models';
-import Config from '../../shared/config';
 
 export class HealthService {
     public async getHealth(): Promise<Health> {
-        let status: 'OK' | 'ERROR' = 'OK';
+        const status: 'OK' | 'ERROR' = 'OK';
         const errors: string[] = [];
         return {
             status,

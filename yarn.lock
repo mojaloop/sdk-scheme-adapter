@@ -2484,6 +2484,7 @@ __metadata:
     npm-check-updates: ^12.5.11
     openapi-backend: ^5.3.0
     redis: ^4.2.0
+    redis-clustr: ^1.7.0
     swagger-ui-express: ^4.4.0
     ts-jest: ^27.0.7
     ts-node: ^10.8.2
@@ -4897,7 +4898,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cluster-key-slot@npm:1.1.0":
+"cluster-key-slot@npm:1.1.0, cluster-key-slot@npm:^1.0.5":
   version: 1.1.0
   resolution: "cluster-key-slot@npm:1.1.0"
   checksum: fc953c75209b1ef9088081bab4e40a0b2586491c974ab93460569c014515ca5a2e31c043f185285e177007162fc353d07836d98f570c171dbe055775430e495b
@@ -5796,7 +5797,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"denque@npm:^1.5.0":
+"denque@npm:^1.1.0, denque@npm:^1.5.0":
   version: 1.5.1
   resolution: "denque@npm:1.5.1"
   checksum: 4375ad19d5cea99f90effa82a8cecdaa10f4eb261fbcd7e47cd753ff2737f037aac8f7f4e031cc77f3966314c491c86a0d3b20c128aeee57f791b4662c45108e
@@ -6041,6 +6042,13 @@ __metadata:
     find-up: ^3.0.0
     minimatch: ^3.0.4
   checksum: 67589446765ddc25539f414b7649442a649f047343030342f309ba69172beb916b9e54feb7d552db422111265f9e93344f31b5697e8e6c81ffc13d33c0d910a0
+  languageName: node
+  linkType: hard
+
+"double-ended-queue@npm:^2.1.0-0":
+  version: 2.1.0-0
+  resolution: "double-ended-queue@npm:2.1.0-0"
+  checksum: 3030cf9dcf6f8e7d8cb6ae5b7304890445d7c32233a614e400ba7b378086ad76f5822d0e501afd5ffe0af1de4bcb842fa23d4c79174d54f6566399435fafc271
   languageName: node
   linkType: hard
 
@@ -12922,7 +12930,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"redis-commands@npm:^1.7.0":
+"redis-clustr@npm:^1.7.0":
+  version: 1.7.0
+  resolution: "redis-clustr@npm:1.7.0"
+  dependencies:
+    cluster-key-slot: ^1.0.5
+    denque: ^1.1.0
+    redis: ^2.6.0
+  checksum: 1aeeb7802c7d484aaf4962b254a94a58a67a79bfb59b0b11cf460087f8edf7f0d24559367fdc61a5138bb44f511445f6845d1cae6feb16f191f43c5ef652560e
+  languageName: node
+  linkType: hard
+
+"redis-commands@npm:^1.2.0, redis-commands@npm:^1.7.0":
   version: 1.7.0
   resolution: "redis-commands@npm:1.7.0"
   checksum: d1ff7fbcb5e54768c77f731f1d49679d2a62c3899522c28addb4e2e5813aea8bcac3f22519d71d330224c3f2937f935dfc3d8dc65e90db0f5fe22dc2c1515aa7
@@ -12943,12 +12962,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"redis-parser@npm:^2.6.0":
+  version: 2.6.0
+  resolution: "redis-parser@npm:2.6.0"
+  checksum: 8d4936875e39d56a951e0bbb6653b4da1f7fdd727552c89561c3c78e7ffeb9c3e8820a78454e939b74d1ba20996d62ac179b4fc39d07340d10f8d52740399422
+  languageName: node
+  linkType: hard
+
 "redis-parser@npm:^3.0.0":
   version: 3.0.0
   resolution: "redis-parser@npm:3.0.0"
   dependencies:
     redis-errors: ^1.0.0
   checksum: 89290ae530332f2ae37577647fa18208d10308a1a6ba750b9d9a093e7398f5e5253f19855b64c98757f7129cccce958e4af2573fdc33bad41405f87f1943459a
+  languageName: node
+  linkType: hard
+
+"redis@npm:^2.6.0":
+  version: 2.8.0
+  resolution: "redis@npm:2.8.0"
+  dependencies:
+    double-ended-queue: ^2.1.0-0
+    redis-commands: ^1.2.0
+    redis-parser: ^2.6.0
+  checksum: e44dc50a9a92ede2c95b3166482a4b04373853fdbb72ab138e834b868a3cd446798742fc0f85de2d5e442f9c86f58e1250637ea71af3ad5527478d05ef430079
   languageName: node
   linkType: hard
 

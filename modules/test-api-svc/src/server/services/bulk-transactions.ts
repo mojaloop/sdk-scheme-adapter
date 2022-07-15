@@ -23,42 +23,42 @@
  ******/
 
 import { BulkTransaction } from '../models';
-import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
-import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
-import { RedisBulkTransactionsRepo } from '../lib/redis_bulk_transactions_repo'
+import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
+import { DefaultLogger } from '@mojaloop/logging-bc-client-lib';
+import { RedisBulkTransactionsRepo } from '../lib/redis_bulk_transactions_repo';
 import Config from '../../shared/config';
 
 // Start API server
-const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
+const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); // TODO: parameterize the names here
 
 export class BulkTransactionsService {
 
-  // Get the bulkTransactions
-  public async getAll(id?: string): Promise<Array<BulkTransaction>> {
-    const bulkTransactions: Array<BulkTransaction> = [];
-    // TODO: Parameterize redis config
-    const repo = new RedisBulkTransactionsRepo(Config.get('REDIS.CONNECTION_URL'), Config.get('REDIS.CLUSTERED_REDIS'), logger)
-    await repo.init()
-    const allBulkIds= await repo.getAllBulkTransactionIds()
-    for (const bulkId of allBulkIds) {
-      const bulkState = await repo.getState(bulkId)
-      const individualTransfers = []
-      const allIndividualTransferIds = await repo.getIndividualTransferIds(bulkId)
-      for (const individualTransferId of allIndividualTransferIds) {
-        const individualTransferState = await repo.getIndividualTransferState(bulkId, individualTransferId)
-        individualTransfers.push({
-          id: individualTransferId,
-          state: individualTransferState.state
-        })
-      }
-      bulkTransactions.push({
-        id: bulkState.id,
-        state: bulkState.state,
-        individualTransfers
-      })
+    // Get the bulkTransactions
+    public async getAll(id?: string): Promise<Array<BulkTransaction>> {
+        const bulkTransactions: Array<BulkTransaction> = [];
+        // TODO: Parameterize redis config
+        const repo = new RedisBulkTransactionsRepo(Config.get('REDIS.CONNECTION_URL'), logger);
+        await repo.init();
+        const allBulkIds = await repo.getAllBulkTransactionIds();
+        for(const bulkId of allBulkIds) {
+            const bulkState = await repo.getState(bulkId);
+            const individualTransfers = [];
+            const allIndividualTransferIds = await repo.getIndividualTransferIds(bulkId);
+            for(const individualTransferId of allIndividualTransferIds) {
+                const individualTransferState = await repo.getIndividualTransferState(bulkId, individualTransferId);
+                individualTransfers.push({
+                    id: individualTransferId,
+                    state: individualTransferState.state,
+                });
+            }
+            bulkTransactions.push({
+                id: bulkState.id,
+                state: bulkState.state,
+                individualTransfers,
+            });
+        }
+        await repo.destroy();
+        return bulkTransactions;
     }
-    await repo.destroy()
-    return bulkTransactions;
-  }
 
 }

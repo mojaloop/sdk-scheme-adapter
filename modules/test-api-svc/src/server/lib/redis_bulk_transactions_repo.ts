@@ -22,130 +22,119 @@
  --------------
  ******/
 
-'use strict'
+'use strict';
 
-import * as redis from 'redis'
-import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
-// @ts-expect-error
-import RedisClustr = require('redis-clustr')
+import * as redis from 'redis';
+import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 
 export class RedisBulkTransactionsRepo {
-  protected _redisClient!: redis.RedisClientType
-  protected _redisClustered: boolean
-  private readonly _redisConnStr: string
-  private readonly _redisConnClusterHost: string
-  private readonly _redisConnClusterPort: number
-  private readonly _logger: ILogger
-  private _initialized: boolean = false
-  private readonly keyPrefix: string = 'outboundBulkTransaction_'
+    protected _redisClient!: redis.RedisClientType;
 
-  constructor (connStr: string, clusteredRedis: boolean, logger: ILogger) {
-    this._redisConnStr = connStr
-    this._logger = logger
-    this._redisClustered = clusteredRedis
+    private readonly _redisConnStr: string;
 
-    const splited = connStr.split('//')[1]
-    this._redisConnClusterHost = splited.split(':')[0]
-    this._redisConnClusterPort = Number.parseInt(splited.split(':')[1])
-  }
+    private readonly _logger: ILogger;
 
-  async init (): Promise<void> {
-    if (this._redisClustered) {
-      this._redisClient = new RedisClustr({
-        servers: [{ host: this._redisConnClusterHost, port: this._redisConnClusterPort }]
-      })
-    } else {
-      this._redisClient = redis.createClient({ url: this._redisConnStr })
+    private _initialized = false;
+
+    private readonly keyPrefix: string = 'outboundBulkTransaction_';
+
+    constructor(connStr: string, logger: ILogger) {
+        this._redisConnStr = connStr;
+        this._logger = logger;
     }
-    this._redisClient.on('error', (err) => {
-      this._logger.isErrorEnabled() && this._logger.error(err, 'Error connecting to redis server: ' + err.message)
-      if(!this._initialized) {
-        throw(err)
-      }
-    })
-    await this._redisClient.connect()
-    this._initialized = true
-  }
 
-  async destroy (): Promise<void> {
-    if (this._initialized) { this._redisClient.quit() }
-    return await Promise.resolve()
-  }
+    async init(): Promise<void> {
+        this._redisClient = redis.createClient({ url: this._redisConnStr });
+        this._redisClient.on('error', err => {
+            this._logger.error(err, 'Error connecting to redis server: ' + err.message);
+            if(!this._initialized) {
+                throw (err);
+            }
+        });
+        await this._redisClient.connect();
+        this._initialized = true;
+    }
 
-  canCall (): boolean {
-    return this._initialized // for now, no circuit breaker exists
-  }
+    async destroy(): Promise<void> {
+        if(this._initialized) { this._redisClient.quit(); }
+        return Promise.resolve();
+    }
 
-  async getState (id: string): Promise<any> {
-    if (!this.canCall()) {
-      throw(new Error('Repository not ready'))
+    canCall(): boolean {
+        return this._initialized; // for now, no circuit breaker exists
     }
-    const key: string = this.keyWithPrefix(id)
-    try {
-      const bulkTransactionEntityStateStr = await this._redisClient.hGet(key, 'bulkTransactionEntityState')
-      if (bulkTransactionEntityStateStr) {
-        return JSON.parse(bulkTransactionEntityStateStr)
-      } else {
-        this._logger.isErrorEnabled() && this._logger.error('Error loading entity state from redis - for key: ' + key)
-        throw(new Error('Error loading entity state from redis'))
-      }
-    } catch(err) {
-      this._logger.isErrorEnabled() && this._logger.error(err, 'Error loading entity state from redis - for key: ' + key)
-      throw(err)
-    }
-  }
 
-  async getIndividualTransferIds (id: string): Promise<string[]> {
-    if (!this.canCall()) {
-      throw(new Error('Repository not ready'))
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    async getState(id: string): Promise<any> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(id);
+        try {
+            const bulkTransactionEntityStateStr = await this._redisClient.hGet(key, 'bulkTransactionEntityState');
+            if(bulkTransactionEntityStateStr) {
+                return JSON.parse(bulkTransactionEntityStateStr);
+            } else {
+                this._logger.error('Error loading entity state from redis - for key: ' + key);
+                throw (new Error('Error loading entity state from redis'));
+            }
+        } catch (err) {
+            this._logger.error(err, 'Error loading entity state from redis - for key: ' + key);
+            throw (err);
+        }
     }
-    const key: string = this.keyWithPrefix(id)
-    try {
-      const allAttributes = await this._redisClient.hKeys(key)
-      return allAttributes.filter(attr => attr.startsWith('individualItem_')).map(attr => attr.replace('individualItem_', ''))
-    } catch(err) {
-      this._logger.isErrorEnabled() && this._logger.error(err, 'Error getting attributes from redis - for key: ' + key)
-      throw(err)
-    }
-  }
 
-  
-  async getIndividualTransferState (bulkId: string, individualId: string): Promise<any> {
-    if (!this.canCall()) {
-      throw(new Error('Repository not ready'))
+    async getIndividualTransferIds(id: string): Promise<string[]> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(id);
+        try {
+            const allAttributes = await this._redisClient.hKeys(key);
+            return allAttributes.filter(attr => attr.startsWith('individualItem_')).map(attr => attr.replace('individualItem_', ''));
+        } catch (err) {
+            this._logger.error(err, 'Error getting attributes from redis - for key: ' + key);
+            throw (err);
+        }
     }
-    const key: string = this.keyWithPrefix(bulkId)
-    try {
-      const individualTransferStateStr = await this._redisClient.hGet(key, 'individualItem_' + individualId)
-      if (individualTransferStateStr) {
-        return JSON.parse(individualTransferStateStr)
-      } else {
-        this._logger.isErrorEnabled() && this._logger.error('Error loading entity state from redis - for key: ' + key)
-        throw(new Error('Error loading entity state from redis'))
-      }
-    } catch(err) {
-      this._logger.isErrorEnabled() && this._logger.error(err, 'Error loading entity state from redis - for key: ' + key)
-      throw(err)
-    }
-  }
 
-  // Warning: consider KEYS as a command that should only be used in production environments with extreme care. It may ruin performance when it is executed against large databases. This command is intended for debugging.
-  async getAllBulkTransactionIds (): Promise<string[]> {
-    if (!this.canCall()) {
-      throw(new Error('Repository not ready'))
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    async getIndividualTransferState(bulkId: string, individualId: string): Promise<any> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            const individualTransferStateStr = await this._redisClient.hGet(key, 'individualItem_' + individualId);
+            if(individualTransferStateStr) {
+                return JSON.parse(individualTransferStateStr);
+            } else {
+                this._logger.error('Error loading entity state from redis - for key: ' + key);
+                throw (new Error('Error loading entity state from redis'));
+            }
+        } catch (err) {
+            this._logger.error(err, 'Error loading entity state from redis - for key: ' + key);
+            throw (err);
+        }
     }
-    try {
-      // return  await this._redisClient.keys(this.keyPrefix)
-      const allKeys =  await this._redisClient.keys('*')
-      return allKeys.map(key => key.replace(this.keyPrefix, ''))
-    } catch(err) {
-      this._logger.isErrorEnabled() && this._logger.error(err, 'Error getting all bulk transactions from redis')
-      throw(err)
-    }
-  }
 
-  private keyWithPrefix (key: string): string {
-    return this.keyPrefix + key
-  }
+    // Warning: consider KEYS as a command that should only be used in production environments with extreme care. It may ruin performance when it is executed against large databases. This command is intended for debugging.
+    async getAllBulkTransactionIds(): Promise<string[]> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        try {
+            // return  await this._redisClient.keys(this.keyPrefix)
+            const allKeys =  await this._redisClient.keys('*');
+            return allKeys.map(key => key.replace(this.keyPrefix, ''));
+        } catch (err) {
+            this._logger.error(err, 'Error getting all bulk transactions from redis');
+            throw (err);
+        }
+    }
+
+    private keyWithPrefix(key: string): string {
+        return this.keyPrefix + key;
+    }
 
 }

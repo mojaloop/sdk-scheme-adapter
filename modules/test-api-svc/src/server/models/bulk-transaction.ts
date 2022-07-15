@@ -23,8 +23,8 @@
  ******/
 
 export interface IndividualTransferState {
-  id: string;
-  state: string;
+    id: string;
+    state: string;
 }
 export interface BulkTransaction {
     id: number;

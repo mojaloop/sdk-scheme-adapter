@@ -19,8 +19,7 @@ import Convict from 'convict';
 import path from 'path';
 
 export interface RedisConfig {
-  CONNECTION_URL: string
-  CLUSTERED_REDIS: boolean
+    CONNECTION_URL: string
 }
 
 // interface to represent service configuration
@@ -38,19 +37,13 @@ const config = Convict<ServiceConfig>({
         env: 'PORT',
     },
     REDIS: {
-      CONNECTION_URL: {
-        doc: 'The connection string of the redis server.',
-        format: '*',
-        default: 'redis://localhost:6379',
-        env: 'REDIS_CONNECTION_URL',
-      },
-      CLUSTERED_REDIS: {
-        doc: 'Whether redis server is clustered or not',
-        format: 'Boolean',
-        default: false,
-        env: 'REDIS_CLUSTERED_REDIS',
-      },
-    }
+        CONNECTION_URL: {
+            doc: 'The connection string of the redis server.',
+            format: '*',
+            default: 'redis://localhost:6379',
+            env: 'REDIS_CONNECTION_URL',
+        },
+    },
 });
 
 // Load configuration
