@@ -1,5 +1,3 @@
-
-
 /*****
  License
  --------------
@@ -24,33 +22,12 @@
  --------------
  ******/
 
-'use strict';
-
-import { MLKafkaProducerOptions } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib';
-import { KafkaEventsProducer } from './kafka_events_producer';
-import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { CommandEventMessage }  from '../events';
-import { IMessage } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-
-// TODO: Parameterize this
-const PUBLISH_TOPIC = 'topic-sdk-outbound-command-events';
-
-
-export class KafkaCommandEventsProducer extends KafkaEventsProducer {
-
-    constructor(logger: ILogger) {
-        const producerOptions: MLKafkaProducerOptions = {
-            // TODO: Parameterize this
-            kafkaBrokerList: 'localhost:9092',
-            producerClientId: 'command_events_producer_client_id_' + Date.now(),
-            skipAcknowledgements: true,
-        };
-        super(producerOptions, logger);
-    }
-
-    sendCommandMessage(commandEventMessage: CommandEventMessage) {
-        const message: IMessage = commandEventMessage.toIMessage(PUBLISH_TOPIC);
-        super.send(message);
-    }
-
+export interface IndividualTransferState {
+    id: string;
+    state: string;
+}
+export interface BulkTransaction {
+    id: number;
+    state: string;
+    individualTransfers: Array<IndividualTransferState>;
 }

@@ -22,9 +22,15 @@
  --------------
  ******/
 
-'use strict'
-import { KafkaCommandEventProducer } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+import { Health } from '../models';
 
-export type IDomainEventHandlerOptions = {
-  commandProducer: KafkaCommandEventProducer
+export class HealthService {
+    public async getHealth(): Promise<Health> {
+        const status: 'OK' | 'ERROR' = 'OK';
+        const errors: string[] = [];
+        return {
+            status,
+            errors,
+        };
+    }
 }

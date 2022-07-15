@@ -28,45 +28,31 @@
 'use strict'
 
 import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
-import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
+import { ILogger, LogLevel } from "@mojaloop/logging-bc-public-types-lib";
 
-import { IRunHandler } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+import { IRunHandler, BC_CONFIG } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 import { OutboundEventHandler } from './handler'
+import Config from '../shared/config'
 
 (async () => {
-    // # setup application config
-    // TODO: Use configuration library from typescript-template repo here
-    const appConfig = {
-      kafka: {
-        host: (process.env.KAFKA_HOST != null) ? process.env.KAFKA_HOST : 'localhost:9092',
-        autocommit: (process.env.KAFKA_AUTO_COMMIT === 'true'),
-        autoCommitInterval: (process.env.KAFKA_AUTO_COMMIT_INTERVAL != null && !isNaN(Number(process.env.KAFKA_AUTO_COMMIT_INTERVAL)) && process.env.KAFKA_AUTO_COMMIT_INTERVAL?.trim()?.length > 0) ? Number.parseInt(process.env.KAFKA_AUTO_COMMIT_INTERVAL) : null,
-        autoCommitThreshold: (process.env.KAFKA_AUTO_COMMIT_THRESHOLD != null && !isNaN(Number(process.env.KAFKA_AUTO_COMMIT_THRESHOLD)) && process.env.KAFKA_AUTO_COMMIT_THRESHOLD?.trim()?.length > 0) ? Number.parseInt(process.env.KAFKA_AUTO_COMMIT_THRESHOLD) : null,
-        gzipCompression: (process.env.KAFKA_PRODUCER_GZIP === 'true'),
-        fetchMinBytes: (process.env.KAFKA_FETCH_MIN_BYTES != null && !isNaN(Number(process.env.KAFKA_FETCH_MIN_BYTES)) && process.env.KAFKA_FETCH_MIN_BYTES?.trim()?.length > 0) ? Number.parseInt(process.env.KAFKA_FETCH_MIN_BYTES) : 1,
-        fetchWaitMaxMs: (process.env.KAFKA_FETCH_WAIT_MAX_MS != null && !isNaN(Number(process.env.KAFKA_FETCH_WAIT_MAX_MS)) && process.env.KAFKA_FETCH_WAIT_MAX_MS?.trim()?.length > 0) ? Number.parseInt(process.env.KAFKA_FETCH_WAIT_MAX_MS) : 100
-      }
-    }
 
     // Instantiate logger
-    const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
-
-    logger.isDebugEnabled() && logger.debug(`appConfig=${JSON.stringify(appConfig)}`)
+    const logger: ILogger = new DefaultLogger(BC_CONFIG.bcName, 'domain-event-handler', '0.0.1', <LogLevel>Config.get('LOG_LEVEL'));
 
     // start outboundEventHandler
     const outboundEventHandler: IRunHandler = new OutboundEventHandler()
-    await outboundEventHandler.start(appConfig, logger)
+    await outboundEventHandler.start(Config, logger)
 
     // lets clean up all consumers here
     /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
     const killProcess = async (): Promise<void> => {
-      logger.isInfoEnabled() && logger.info('Exiting process...')
-      logger.isInfoEnabled() && logger.info('Destroying handlers...')
-      logger.isInfoEnabled() && logger.info('\tDestroying outboundEventHandler handler...')
+      logger.info('Exiting process...')
+      logger.info('Destroying handlers...')
+      logger.info('\tDestroying outboundEventHandler handler...')
 
       await outboundEventHandler.destroy()
 
-      logger.isInfoEnabled() && logger.info('Exit complete!')
+      logger.info('Exit complete!')
       process.exit(0)
     }
     /* eslint-disable-next-line @typescript-eslint/no-misused-promises */

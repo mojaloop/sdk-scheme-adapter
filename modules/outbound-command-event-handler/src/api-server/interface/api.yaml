@@ -1,0 +1,80 @@
+components:
+  examples: {}
+  headers: {}
+  parameters: {}
+  requestBodies: {}
+  responses: {}
+  schemas:
+    Health:
+      properties:
+        status:
+          type: string
+          enum:
+            - OK
+            - ERROR
+        errors:
+          items:
+            type: string
+          type: array
+      required:
+        - status
+      type: object
+      additionalProperties: false
+    BulkTransactionsState:
+      properties:
+        id:
+          type: string
+        state:
+          type: string
+        individualTransfers:
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              state:
+                type: string
+          type: array
+      type: object
+      additionalProperties: false
+info:
+  title: '@mojaloop/sdk-scheme-adapter-test-api-svc'
+  version: 0.0.1
+  description: Test API for sdk-scheme-adapter
+openapi: 3.0.0
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+      security: []
+      parameters: []
+  /bulkTransactionsState:
+    get:
+      operationId: getBulkTransactionsState
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/BulkTransactionsState'
+                type: array
+      security: []
+      parameters:
+        - in: query
+          name: id
+          description: Bulk Transaction ID
+          required: false
+          schema:
+            type: string
+
+servers:
+  - url: /

@@ -26,31 +26,32 @@
 
 'use strict';
 
-import { MLKafkaProducerOptions } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib';
-import { KafkaEventsProducer } from './kafka_events_producer';
-import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { DomainEventMessage }  from '../events';
+import { MLKafkaProducer, MLKafkaProducerOptions } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib';
 import { IMessage } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+import { IEventProducer } from '../types';
+import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 
-// TODO: Parameterize this
-const PUBLISH_TOPIC = 'topic-sdk-outbound-domain-events';
+export class KafkaEventProducer implements IEventProducer {
+    private _kafkaProducer: MLKafkaProducer;
 
+    private _logger: ILogger;
 
-export class KafkaDomainEventsProducer extends KafkaEventsProducer {
+    private _handler: (message: IMessage) => Promise<void>;
 
-    constructor(logger: ILogger) {
-        const producerOptions: MLKafkaProducerOptions = {
-            // TODO: Parameterize this
-            kafkaBrokerList: 'localhost:9092',
-            producerClientId: 'domain_events_producer_client_id_' + Date.now(),
-            skipAcknowledgements: true,
-        };
-        super(producerOptions, logger);
+    constructor(producerOptions: MLKafkaProducerOptions, logger: ILogger) {
+        this._logger = logger;
+        this._kafkaProducer = new MLKafkaProducer(producerOptions, this._logger);
     }
 
-    sendDomainMessage(domainEventMessage: DomainEventMessage) {
-        const message: IMessage = domainEventMessage.toIMessage(PUBLISH_TOPIC);
-        super.send(message);
+    async init(): Promise<void> {
+        await this._kafkaProducer.connect();
     }
 
+    async send(message: IMessage): Promise<void> {        
+        await this._kafkaProducer.send(message);
+    }
+
+    async destroy(): Promise<void> {
+        await this._kafkaProducer.destroy();
+    }
 }

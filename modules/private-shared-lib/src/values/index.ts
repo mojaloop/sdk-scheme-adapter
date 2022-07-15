@@ -22,9 +22,8 @@
  --------------
  ******/
 
-'use strict'
-import { KafkaCommandEventProducer } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+'use strict';
 
-export type IDomainEventHandlerOptions = {
-  commandProducer: KafkaCommandEventProducer
+export const BC_CONFIG = {
+  bcName: 'SDK-Scheme-Adapter'
 }

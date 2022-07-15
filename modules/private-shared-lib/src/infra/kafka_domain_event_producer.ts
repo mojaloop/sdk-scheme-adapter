@@ -1,3 +1,5 @@
+
+
 /*****
  License
  --------------
@@ -22,9 +24,34 @@
  --------------
  ******/
 
-'use strict'
-import { KafkaCommandEventProducer } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+'use strict';
 
-export type IDomainEventHandlerOptions = {
-  commandProducer: KafkaCommandEventProducer
+import { MLKafkaProducerOptions } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib';
+import { KafkaEventProducer } from './kafka_event_producer';
+import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
+import { DomainEventMessage }  from '../events';
+import { IMessage } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+import { IKafkaEventProducerOptions } from '../types';
+
+export class KafkaDomainEventProducer extends KafkaEventProducer {
+    private _topic: string;
+
+    constructor(
+        producerOptions: IKafkaEventProducerOptions,
+        logger: ILogger,
+    ) {
+        const mlProducerOptions: MLKafkaProducerOptions = {
+            kafkaBrokerList: producerOptions.brokerList,
+            producerClientId: producerOptions.clientId,
+            skipAcknowledgements: true,
+        };
+        super(mlProducerOptions, logger);
+        this._topic = producerOptions.topic;
+    }
+
+    sendDomainMessage(domainEventMessage: DomainEventMessage) {
+        const message: IMessage = domainEventMessage.toIMessage(this._topic);
+        super.send(message);
+    }
+
 }

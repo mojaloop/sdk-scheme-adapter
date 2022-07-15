@@ -31,5 +31,7 @@
 'use strict';
 
 export * from './irun_handler';
-export * from './iEventsConsumer';
-export * from './iEventsProducer';
+export * from './ievent-consumer';
+export * from './ievent-producer';
+export * from './ikafka_event_consumer_options';
+export * from './ikafka_event_producer_options';

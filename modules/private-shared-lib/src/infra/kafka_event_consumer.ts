@@ -1,3 +1,5 @@
+
+
 /*****
  License
  --------------
@@ -22,9 +24,45 @@
  --------------
  ******/
 
-'use strict'
-import { KafkaCommandEventProducer } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+'use strict';
 
-export type IDomainEventHandlerOptions = {
-  commandProducer: KafkaCommandEventProducer
+import { MLKafkaConsumer, MLKafkaConsumerOptions } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib';
+import { IMessage } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+import { IEventConsumer } from '../types';
+import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
+
+export class KafkaEventConsumer implements IEventConsumer {
+    private _kafkaConsumer: MLKafkaConsumer;
+
+    private _kafkaTopics: string[];
+
+    private _logger: ILogger;
+
+    private _handler: (message: IMessage) => Promise<void>;
+
+    constructor(
+        consumerOptions: MLKafkaConsumerOptions,
+        kafkaTopics: string[],
+        handlerFn: (message: IMessage) => Promise<void>,
+        logger: ILogger,
+    ) {
+        this._logger = logger;
+        this._kafkaTopics = kafkaTopics;
+        this._handler = handlerFn;
+        this._kafkaConsumer = new MLKafkaConsumer(consumerOptions, this._logger);
+    }
+
+    async init(): Promise<void> {
+        this._kafkaConsumer.setCallbackFn(this._handler);
+        this._kafkaConsumer.setTopics(this._kafkaTopics);
+        await this._kafkaConsumer.connect();
+    }
+
+    async start(): Promise<void> {        
+        await this._kafkaConsumer.start();
+    }
+
+    async destroy(): Promise<void> {
+        await this._kafkaConsumer.destroy(false);
+    }
 }

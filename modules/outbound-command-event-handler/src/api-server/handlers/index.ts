@@ -22,9 +22,9 @@
  --------------
  ******/
 
-'use strict'
-import { KafkaCommandEventProducer } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
-
-export type IDomainEventHandlerOptions = {
-  commandProducer: KafkaCommandEventProducer
-}
+import getBulkTransactionsHandlers from './bulk-transactions';
+import getHealthHandlers from './health';
+export default {
+    ...getBulkTransactionsHandlers,
+    ...getHealthHandlers,
+};

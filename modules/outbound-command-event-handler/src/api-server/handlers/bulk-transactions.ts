@@ -22,33 +22,19 @@
  --------------
  ******/
 
-'use strict';
+import { Context, Document } from 'openapi-backend';
+import Express from 'express';
+// import { BulkTransaction } from '../models';
+import { BulkTransactionsService } from '../services/bulk-transactions';
 
-import { MLKafkaConsumerOptions, MLKafkaConsumerOutputType } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib';
-import { KafkaEventsConsumer } from './kafka_events_consumer';
-import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { CommandEventMessage }  from '../events';
-import { IMessage } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-
-// TODO: Parameterize this
-const CONSUME_TOPICS = ['topic-sdk-outbound-command-events'];
-
-export class KafkaCommandEventsConsumer extends KafkaEventsConsumer {
-
-    constructor(handlerFn: (commandEventMessage: CommandEventMessage) => Promise<void>, logger: ILogger) {
-        const consumerOptions: MLKafkaConsumerOptions = {
-            // TODO: Parameterize this
-            kafkaBrokerList: 'localhost:9092',
-            kafkaGroupId: 'command_events_consumer_group',
-            outputType: MLKafkaConsumerOutputType.Json,
-        };
-        const superHandlerFn = async (message: IMessage) => {
-            // Construct command event message from IMessage
-            const commandEventMessageObj = CommandEventMessage.CreateFromIMessage(message);
-            // Call handler function with command event message
-            await handlerFn(commandEventMessageObj);
-        };
-        super(consumerOptions, CONSUME_TOPICS, superHandlerFn, logger);
-    }
-
-}
+export default {
+    getBulkTransactionsState: async (c: Context<Document>, _req: Express.Request, res: Express.Response) => {
+        if(c.request.query?.id) {
+            const transactions = await new BulkTransactionsService().getAll(c.request.query.id + '');
+            return res.status(200).json(transactions);
+        } else {
+            const transactions = await new BulkTransactionsService().getAll();
+            return res.status(200).json(transactions);
+        }
+    },
+};

@@ -27,8 +27,8 @@
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 import {
   IRunHandler,
-  KafkaCommandEventsConsumer,
-  KafkaDomainEventsProducer,
+  KafkaCommandEventConsumer,
+  KafkaDomainEventProducer,
   CommandEventMessage,
   OutboundCommandEventMessageName,
   Crypto
@@ -40,8 +40,8 @@ import { IBulkTransactionEntityRepo, ICommandEventHandlerOptions } from '../type
 
 export class OutboundEventHandler implements IRunHandler {
   private _logger: ILogger
-  private _consumer: KafkaCommandEventsConsumer
-  private _domainProducer: KafkaDomainEventsProducer
+  private _consumer: KafkaCommandEventConsumer
+  private _domainProducer: KafkaDomainEventProducer
   private _clientId: string
   private _bulkTransactionEntityStateRepo: IBulkTransactionEntityRepo
   private _commandEventHandlerOptions: ICommandEventHandlerOptions
@@ -59,13 +59,31 @@ export class OutboundEventHandler implements IRunHandler {
 
     this._logger.isInfoEnabled() && this._logger.info(`outboundCmdHandler - Creating ${appConfig.kafka.consumer as string}...`)
 
-    this._consumer = new KafkaCommandEventsConsumer(this._messageHandler.bind(this), logger)
+    const consumerOptions: MLKafkaConsumerOptions = {
+      // TODO: Parameterize this
+      kafkaBrokerList: 'localhost:9092',
+      kafkaGroupId: 'command_events_consumer_group',
+      outputType: MLKafkaConsumerOutputType.Json,
+    };
+    // TODO: Parameterize this
+    const consume_topics = ['topic-sdk-outbound-command-events'];
+
+    this._consumer = new KafkaCommandEventConsumer(this._messageHandler.bind(this), consumerOptions, consume_topics, logger)
     logger.isInfoEnabled() && logger.info(`outboundCmdHandler - Created kafkaConsumer of type ${this._consumer.constructor.name}`)
     /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
     await this._consumer.init() // we're interested in all stateEvents
     await this._consumer.start()
 
-    this._domainProducer = new KafkaDomainEventsProducer(logger)
+    const producerOptions: MLKafkaProducerOptions = {
+      // TODO: Parameterize this
+      kafkaBrokerList: 'localhost:9092',
+      producerClientId: 'domain_events_producer_client_id_' + Date.now(),
+      skipAcknowledgements: true,
+    };
+    // TODO: Parameterize this
+    const PUBLISH_TOPIC = 'topic-sdk-outbound-domain-events';
+
+    this._domainProducer = new KafkaDomainEventProducer(logger)
     logger.isInfoEnabled() && logger.info(`outboundCmdHandler - Created kafkaProducer of type ${this._domainProducer.constructor.name}`)
     await this._domainProducer.init()
 

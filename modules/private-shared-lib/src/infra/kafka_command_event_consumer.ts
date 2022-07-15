@@ -1,5 +1,3 @@
-
-
 /*****
  License
  --------------
@@ -26,32 +24,32 @@
 
 'use strict';
 
-import { MLKafkaProducer, MLKafkaProducerOptions } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib';
-import { IMessage } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { IEventsProducer } from '../types';
+import { MLKafkaConsumerOptions, MLKafkaConsumerOutputType } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib';
+import { KafkaEventConsumer } from './kafka_event_consumer';
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
+import { CommandEventMessage }  from '../events';
+import { IMessage } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+import { IKafkaEventConsumerOptions } from '../types';
 
-export class KafkaEventsProducer implements IEventsProducer {
-    private _kafkaProducer: MLKafkaProducer;
+export class KafkaCommandEventConsumer extends KafkaEventConsumer {
 
-    private _logger: ILogger;
-
-    private _handler: (message: IMessage) => Promise<void>;
-
-    constructor(producerOptions: MLKafkaProducerOptions, logger: ILogger) {
-        this._logger = logger;
-        this._kafkaProducer = new MLKafkaProducer(producerOptions, this._logger);
+    constructor(handlerFn: (
+        commandEventMessage: CommandEventMessage) => Promise<void>,
+    consumerOptions: IKafkaEventConsumerOptions,
+    logger: ILogger,
+    ) {
+        const superHandlerFn = async (message: IMessage) => {
+            // Construct command event message from IMessage
+            const commandEventMessageObj = CommandEventMessage.CreateFromIMessage(message);
+            // Call handler function with command event message
+            await handlerFn(commandEventMessageObj);
+        };
+        const mlConsumerOptions: MLKafkaConsumerOptions = {
+            kafkaBrokerList: consumerOptions.brokerList,
+            kafkaGroupId: consumerOptions.groupId,
+            outputType: MLKafkaConsumerOutputType.Json,
+        };
+        super(mlConsumerOptions, consumerOptions.topics, superHandlerFn, logger);
     }
 
-    async init(): Promise<void> {
-        await this._kafkaProducer.connect();
-    }
-
-    async send(message: IMessage): Promise<void> {        
-        await this._kafkaProducer.send(message);
-    }
-
-    async destroy(): Promise<void> {
-        await this._kafkaProducer.destroy();
-    }
 }

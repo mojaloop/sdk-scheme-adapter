@@ -23,10 +23,10 @@
  ******/
 
 'use strict'
-import { KafkaDomainEventsProducer } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+import { KafkaDomainEventProducer } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 import { IBulkTransactionEntityRepo }  from './bulk_transaction_entity_repo'
 
 export type ICommandEventHandlerOptions = {
   bulkTransactionEntityRepo: IBulkTransactionEntityRepo
-  domainProducer: KafkaDomainEventsProducer
+  domainProducer: KafkaDomainEventProducer
 }

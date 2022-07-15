@@ -1,0 +1,8 @@
+{
+  "REDIS": {
+    "CONNECTION_URL": "redis://localhost:6379"
+  },
+  "API_SERVER":{
+    "PORT": 8000
+  }
+}

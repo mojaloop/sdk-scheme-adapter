@@ -27,40 +27,43 @@
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 import {
   IRunHandler,
-  KafkaDomainEventsConsumer,
-  KafkaCommandEventsProducer,
-  IEventsConsumer,
+  KafkaDomainEventConsumer,
+  KafkaCommandEventProducer,
+  IEventConsumer,
   DomainEventMessage,
   OutboundDomainEventMessageName,
-  Crypto
+  Crypto,
+  IKafkaEventConsumerOptions,
+  IKafkaEventProducerOptions
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 import { IDomainEventHandlerOptions } from '../types'
 import { handleSDKOutboundBulkRequestReceived } from './handlers'
 
 export class OutboundEventHandler implements IRunHandler {
   private _logger: ILogger
-  private _consumer: IEventsConsumer
-  private _commandProducer: KafkaCommandEventsProducer
+  private _consumer: IEventConsumer
+  private _commandProducer: KafkaCommandEventProducer
   private _clientId: string
   private _domainEventHandlerOptions: IDomainEventHandlerOptions
 
 
   async start (appConfig: any, logger: ILogger): Promise<void> {
     this._logger = logger
-    this._logger.isInfoEnabled() && this._logger.info(`outboundEvtHandler::start - appConfig=${JSON.stringify(appConfig)}`)
-    this._clientId = `outboundEvtHandler-${appConfig.kafka.consumer as string}-${Crypto.randomBytes(8)}`
+    this._logger.info('start')
 
-    this._logger.isInfoEnabled() && this._logger.info(`outboundEvtHandler - Creating ${appConfig.kafka.consumer as string}...`)
+    const consumerOptions: IKafkaEventConsumerOptions = appConfig.get('KAFKA.DOMAIN_EVENT_CONSUMER')
 
-    this._consumer = new KafkaDomainEventsConsumer(this._messageHandler.bind(this), logger)
+    this._consumer = new KafkaDomainEventConsumer(this._messageHandler.bind(this), consumerOptions, logger)
 
-    logger.isInfoEnabled() && logger.info(`outboundEvtHandler - Created kafkaConsumer of type ${this._consumer.constructor.name}`)
+    logger.info(`Created kafkaConsumer of type ${this._consumer.constructor.name}`)
 
     /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
-    await this._consumer.init() // we're interested in all stateEvents
+    await this._consumer.init()
     await this._consumer.start()
 
-    this._commandProducer = new KafkaCommandEventsProducer(logger)
+    const producerOptions: IKafkaEventProducerOptions = appConfig.get('KAFKA.COMMAND_EVENT_PRODUCER')
+
+    this._commandProducer = new KafkaCommandEventProducer(producerOptions, logger)
     await this._commandProducer.init()
 
     // Create options for handlers
@@ -75,7 +78,7 @@ export class OutboundEventHandler implements IRunHandler {
   }
 
   async _messageHandler (message: DomainEventMessage): Promise<void> {
-    this._logger.isInfoEnabled() && this._logger.info(`outboundEvtHandler - ${message.getName()}`)
+    this._logger.info(`Got domain event message: ${message.getName()}`)
     console.log(message)
     switch (message.getName()) {
       case OutboundDomainEventMessageName.SDKOutboundBulkRequestReceived: {
@@ -83,7 +86,7 @@ export class OutboundEventHandler implements IRunHandler {
         break;
       }
       default: {
-        this._logger.isDebugEnabled() && this._logger.debug(`outboundEvtHandler - ${message?.getName()}:${message?.getKey()} - Skipping unknown outbound domain event`);
+        this._logger.debug(`${message?.getName()}:${message?.getKey()} - Skipping unknown domain event`);
         return;
       }
     }
