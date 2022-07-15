@@ -22,63 +22,63 @@
  --------------
  ******/
 
-'use strict'
+'use strict';
 
-import { IDomainEventMessageData, DomainEventMessage } from './domain_event_message';
-import { IMessage, IMessageHeader } from "@mojaloop/platform-shared-lib-messaging-types-lib";
-import { SDKOutboundBulkRequestEntity } from "@mojaloop/sdk-scheme-adapter-public-shared-lib";
+import { DomainEventMessage } from './domain_event_message';
+import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+import { SDKOutboundBulkRequestEntity } from '@mojaloop/sdk-scheme-adapter-public-shared-lib';
 
 export enum OutboundDomainEventMessageName {
-  'SDKOutboundBulkRequestReceived' = 'SDKOutboundBulkRequestReceived',
-  'SDKOutboundBulkPartyInfoRequested' = 'SDKOutboundBulkPartyInfoRequested',
-  'SDKOutboundBulkAcceptPartyInfoRequested' = 'SDKOutboundBulkAcceptPartyInfoRequested',
-  'SDKOutboundBulkAcceptPartyInfoReceived' = 'SDKOutboundBulkAcceptPartyInfoReceived',
-  'SDKOutboundBulkAutoAcceptPartyInfoRequested' = 'SDKOutboundBulkAutoAcceptPartyInfoRequested',
-  'SDKOutboundBulkAcceptPartyInfoProcessed' = 'SDKOutboundBulkAcceptPartyInfoProcessed',
-  'PartyInfoRequested' = 'PartyInfoRequested', //includes info for SDK for making a party call
-  'PartyInfoCallbackReceived' = 'PartyInfoCallbackReceived',
-  'PartyInfoCallbackProcessed' = 'PartyInfoCallbackProcessed',
+    'SDKOutboundBulkRequestReceived' = 'SDKOutboundBulkRequestReceived',
+    'SDKOutboundBulkPartyInfoRequested' = 'SDKOutboundBulkPartyInfoRequested',
+    'SDKOutboundBulkAcceptPartyInfoRequested' = 'SDKOutboundBulkAcceptPartyInfoRequested',
+    'SDKOutboundBulkAcceptPartyInfoReceived' = 'SDKOutboundBulkAcceptPartyInfoReceived',
+    'SDKOutboundBulkAutoAcceptPartyInfoRequested' = 'SDKOutboundBulkAutoAcceptPartyInfoRequested',
+    'SDKOutboundBulkAcceptPartyInfoProcessed' = 'SDKOutboundBulkAcceptPartyInfoProcessed',
+    'PartyInfoRequested' = 'PartyInfoRequested', // includes info for SDK for making a party call
+    'PartyInfoCallbackReceived' = 'PartyInfoCallbackReceived',
+    'PartyInfoCallbackProcessed' = 'PartyInfoCallbackProcessed',
 }
 
 export interface ISDKOutboundBulkRequestReceivedMessageData {
-  bulkRequest: any;
-  timestamp: number | null;
-  headers: IMessageHeader[] | null;
+    bulkRequest: any;
+    timestamp: number | null;
+    headers: IMessageHeader[] | null;
 }
 
 export class SDKOutboundBulkRequestReceivedMessage extends DomainEventMessage {
 
-  constructor (data: ISDKOutboundBulkRequestReceivedMessageData) {
+    constructor(data: ISDKOutboundBulkRequestReceivedMessageData) {
     // // Calling Sample validation function
     // SDKOutboundBulkRequestReceivedMessage.validateRequest(data.bulkRequest);
-    super({
-      key: data.bulkRequest?.id,
-      content: data.bulkRequest,
-      timestamp: data.timestamp,
-      headers: data.headers,
-      name: OutboundDomainEventMessageName.SDKOutboundBulkRequestReceived
-    });
-  }
-
-  createSDKOutboundBulkRequestEntity(): SDKOutboundBulkRequestEntity {
-    return SDKOutboundBulkRequestEntity.CreateFromRequest(super.getContent())
-  }
-  
-  static CreateFromDomainEventMessage(message: DomainEventMessage): SDKOutboundBulkRequestReceivedMessage {
-    // Prepare Data
-    const data = {
-      bulkRequest: message.getContent(),
-      timestamp: message.getTimeStamp(),
-      headers: message.getHeaders()
+        super({
+            key: data.bulkRequest?.id,
+            content: data.bulkRequest,
+            timestamp: data.timestamp,
+            headers: data.headers,
+            name: OutboundDomainEventMessageName.SDKOutboundBulkRequestReceived,
+        });
     }
-    return new SDKOutboundBulkRequestReceivedMessage(data)
-  }
 
-  // // Sample validation function
-  // private static validateRequest (obj: any): void {
-  //   if(!obj.hasOwnProperty('id')) {
-  //     throw(new Error('.id is not defined'))
-  //   }
-  // }
+    createSDKOutboundBulkRequestEntity(): SDKOutboundBulkRequestEntity {
+        return SDKOutboundBulkRequestEntity.CreateFromRequest(super.getContent());
+    }
+  
+    static CreateFromDomainEventMessage(message: DomainEventMessage): SDKOutboundBulkRequestReceivedMessage {
+    // Prepare Data
+        const data = {
+            bulkRequest: message.getContent(),
+            timestamp: message.getTimeStamp(),
+            headers: message.getHeaders(),
+        };
+        return new SDKOutboundBulkRequestReceivedMessage(data);
+    }
+
+    // // Sample validation function
+    // private static validateRequest (obj: any): void {
+    //   if(!obj.hasOwnProperty('id')) {
+    //     throw(new Error('.id is not defined'))
+    //   }
+    // }
 
 }

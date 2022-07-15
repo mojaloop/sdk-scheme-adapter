@@ -22,51 +22,51 @@
  --------------
  ******/
 
-'use strict'
+'use strict';
 
 import { CommandEventMessage } from './command_event_message';
-import { IMessage, IMessageHeader } from "@mojaloop/platform-shared-lib-messaging-types-lib";
-import { SDKOutboundBulkRequestEntity, SDKOutboundBulkRequestState } from "@mojaloop/sdk-scheme-adapter-public-shared-lib";
+import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+import { SDKOutboundBulkRequestEntity, SDKOutboundBulkRequestState } from '@mojaloop/sdk-scheme-adapter-public-shared-lib';
 
 export enum OutboundCommandEventMessageName {
-  'ProcessSDKOutboundBulkRequest' = 'ProcessSDKOutboundBulkRequest',
-  'ProcessSDKOutboundBulkPartyInfoRequest' = 'ProcessSDKOutboundBulkPartyInfoRequest',
-  'ProcessPartyInfoCallback' = 'ProcessPartyInfoCallback',
-  'ProcessSDKOutboundBulkPartyInfoRequestComplete' = 'ProcessSDKOutboundBulkPartyInfoRequestComplete',
-  'ProcessSDKOutboundBulkAcceptPartyInfo' = 'ProcessSDKOutboundBulkAcceptPartyInfo',
+    'ProcessSDKOutboundBulkRequest' = 'ProcessSDKOutboundBulkRequest',
+    'ProcessSDKOutboundBulkPartyInfoRequest' = 'ProcessSDKOutboundBulkPartyInfoRequest',
+    'ProcessPartyInfoCallback' = 'ProcessPartyInfoCallback',
+    'ProcessSDKOutboundBulkPartyInfoRequestComplete' = 'ProcessSDKOutboundBulkPartyInfoRequestComplete',
+    'ProcessSDKOutboundBulkAcceptPartyInfo' = 'ProcessSDKOutboundBulkAcceptPartyInfo',
 }
 
 
 export interface IProcessSDKOutboundBulkRequestMessageData {
-  sdkOutboundBulkRequestState: SDKOutboundBulkRequestState;
-  timestamp: number | null;
-  headers: IMessageHeader[] | null;
+    sdkOutboundBulkRequestState: SDKOutboundBulkRequestState;
+    timestamp: number | null;
+    headers: IMessageHeader[] | null;
 }
 
 export class ProcessSDKOutboundBulkRequestMessage extends CommandEventMessage {
-  constructor (data: IProcessSDKOutboundBulkRequestMessageData) {
-    super({
-      key: data.sdkOutboundBulkRequestState?.id,
-      content: data.sdkOutboundBulkRequestState,
-      timestamp: data.timestamp,
-      headers: data.headers,
-      name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkRequest
-    });
-  }
+    constructor(data: IProcessSDKOutboundBulkRequestMessageData) {
+        super({
+            key: data.sdkOutboundBulkRequestState?.id,
+            content: data.sdkOutboundBulkRequestState,
+            timestamp: data.timestamp,
+            headers: data.headers,
+            name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkRequest,
+        });
+    }
     
-  static CreateFromCommandEventMessage(message: CommandEventMessage): ProcessSDKOutboundBulkRequestMessage {
-    if ((message.getContent() === null || typeof message.getContent() !== 'object')) {
-      throw new Error('Content is in unknown format')
+    static CreateFromCommandEventMessage(message: CommandEventMessage): ProcessSDKOutboundBulkRequestMessage {
+        if((message.getContent() === null || typeof message.getContent() !== 'object')) {
+            throw new Error('Content is in unknown format');
+        }
+        const data: IProcessSDKOutboundBulkRequestMessageData = {
+            sdkOutboundBulkRequestState: <SDKOutboundBulkRequestState>message.getContent(),
+            timestamp: message.getTimeStamp(),
+            headers: message.getHeaders(),
+        };
+        return new ProcessSDKOutboundBulkRequestMessage(data);
     }
-    const data: IProcessSDKOutboundBulkRequestMessageData = {
-      sdkOutboundBulkRequestState: <SDKOutboundBulkRequestState>message.getContent(),
-      timestamp: message.getTimeStamp(),
-      headers: message.getHeaders()
-    }
-    return new ProcessSDKOutboundBulkRequestMessage(data)
-  }
 
-  createSDKOutboundBulkRequestEntity(): SDKOutboundBulkRequestEntity {
-    return new SDKOutboundBulkRequestEntity(<SDKOutboundBulkRequestState>super.getContent())
-  }
+    createSDKOutboundBulkRequestEntity(): SDKOutboundBulkRequestEntity {
+        return new SDKOutboundBulkRequestEntity(<SDKOutboundBulkRequestState> super.getContent());
+    }
 }

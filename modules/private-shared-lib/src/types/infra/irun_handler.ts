@@ -36,11 +36,11 @@
  --------------
 ******/
 
-'use strict'
+'use strict';
 
-import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
+import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 
 export interface IRunHandler {
-  start: (appConfig: any, logger: ILogger) => Promise<void>
-  destroy: () => Promise<void>
+    start: (appConfig: any, logger: ILogger) => Promise<void>
+    destroy: () => Promise<void>
 }

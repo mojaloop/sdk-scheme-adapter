@@ -24,28 +24,31 @@
  --------------
  ******/
 
-"use strict";
+'use strict';
 
-import { MLKafkaProducer, MLKafkaProducerOptions } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib'
-import { IMessage } from "@mojaloop/platform-shared-lib-messaging-types-lib";
-import { IEventsProducer } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
-import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
+import { MLKafkaProducer, MLKafkaProducerOptions } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib';
+import { IMessage } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+import { IEventsProducer } from '../types';
+import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 
 export class KafkaEventsProducer implements IEventsProducer {
     private _kafkaProducer: MLKafkaProducer;
+
     private _logger: ILogger;
-    private _handler: (message: IMessage) => Promise<void>
+
+    private _handler: (message: IMessage) => Promise<void>;
 
     constructor(producerOptions: MLKafkaProducerOptions, logger: ILogger) {
         this._logger = logger;
         this._kafkaProducer = new MLKafkaProducer(producerOptions, this._logger);
     }
+
     async init(): Promise<void> {
-        await this._kafkaProducer.connect()
+        await this._kafkaProducer.connect();
     }
 
-    async send (message: IMessage): Promise<void> {        
-        await this._kafkaProducer.send(message)
+    async send(message: IMessage): Promise<void> {        
+        await this._kafkaProducer.send(message);
     }
 
     async destroy(): Promise<void> {

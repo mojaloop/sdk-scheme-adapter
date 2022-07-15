@@ -35,9 +35,9 @@
  --------------
 ******/
 
-'use strict'
+'use strict';
 
 // Exports for Utilities
-export * from './crypto'
-export * from './timeutils'
-export * from './enum_utils'
+export * from './crypto';
+export * from './timeutils';
+export * from './enum_utils';

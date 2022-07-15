@@ -22,11 +22,10 @@
  --------------
  ******/
 
-"use strict";
+'use strict';
 
-export * from "./base_event_message";
-export * from "./domain_event_message";
-export * from "./outbound_domain_event_message";
-export * from "./command_event_message";
-export * from "./outbound_command_event_message";
-
+export * from './base_event_message';
+export * from './domain_event_message';
+export * from './outbound_domain_event_message';
+export * from './command_event_message';
+export * from './outbound_command_event_message';

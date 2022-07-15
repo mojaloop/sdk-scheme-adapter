@@ -23,5 +23,5 @@
  ******/
 
 export const getEnumValues = (inputEnum: object) : any[] => {
-  return Object.values(inputEnum).filter(value => typeof value === 'string')
-}
+    return Object.values(inputEnum).filter(value => typeof value === 'string');
+};

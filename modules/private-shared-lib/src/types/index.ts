@@ -29,7 +29,6 @@
  --------------
  ******/
 
-'use strict'
+'use strict';
 
-export * from './infra'
-
+export * from './infra';

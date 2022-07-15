@@ -35,12 +35,12 @@
  --------------
 ******/
 
-'use strict'
+'use strict';
 
-import * as crypto from 'crypto'
+import * as crypto from 'crypto';
 
 export const Crypto = {
-  randomBytes (byteSize: number, encoding: BufferEncoding = 'hex'): string {
-    return crypto.randomBytes(byteSize).toString(encoding)
-  }
-}
+    randomBytes(byteSize: number, encoding: BufferEncoding = 'hex'): string {
+        return crypto.randomBytes(byteSize).toString(encoding);
+    },
+};

@@ -22,14 +22,14 @@
  --------------
  ******/
 
-'use strict'
+'use strict';
 // import { v4 as uuidv4 } from 'uuid'
-import { IMessage, IMessageHeader } from "@mojaloop/platform-shared-lib-messaging-types-lib";
-import { getEnumValues } from "@mojaloop/sdk-scheme-adapter-private-shared-lib";
+import { IMessage, IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+import { getEnumValues } from '../utils';
 
 export enum EventMessageType {
-  'DOMAIN_EVENT' = 'DOMAIN_EVENT', // public domain events
-  'COMMAND_EVENT' = 'COMMAND_EVENT' // commands
+    'DOMAIN_EVENT' = 'DOMAIN_EVENT', // public domain events
+    'COMMAND_EVENT' = 'COMMAND_EVENT', // commands
 }
 
 // export type TTraceInfo = {
@@ -38,115 +38,120 @@ export enum EventMessageType {
 // }
 
 export interface IEventMessageValue {
-  eventMessageType: EventMessageType;
-  eventMessageName: string;
-  eventMessageContent: Buffer | string | object | null;
+    eventMessageType: EventMessageType;
+    eventMessageName: string;
+    eventMessageContent: Buffer | string | object | null;
 }
 
 export interface IEventMessageData {
-  key: Buffer | string | null;
-  type: EventMessageType;
-  name: string;
-  content: Buffer | string | object | null;
-  timestamp: number | null;
-  headers: IMessageHeader[] | null;
+    key: Buffer | string | null;
+    type: EventMessageType;
+    name: string;
+    content: Buffer | string | object | null;
+    timestamp: number | null;
+    headers: IMessageHeader[] | null;
 }
 
 export class BaseEventMessage {
-  private _data: IEventMessageData
+    private _data: IEventMessageData;
 
-  constructor (data: IEventMessageData) {
-    this._data = data
-  }
+    constructor(data: IEventMessageData) {
+        this._data = data;
+    }
 
-  getData (): IEventMessageData {
-    return this._data;
-  }
-  getKey (): string | Buffer | null {
-    return this._data.key;
-  }
-  getType (): EventMessageType {
-    return this._data.type;
-  }
-  getName (): string {
-    return this._data.name;
-  }
-  getContent (): Buffer | string | object | null {
-    return this._data.content;
-  }
-  getTimeStamp (): number | null {
-    return this._data.timestamp;
-  }
-  getHeaders (): IMessageHeader[] | null {
-    return this._data.headers;
-  }
+    getData(): IEventMessageData {
+        return this._data;
+    }
 
-  static CreateFromIMessage (message: IMessage): BaseEventMessage {
+    getKey(): string | Buffer | null {
+        return this._data.key;
+    }
+
+    getType(): EventMessageType {
+        return this._data.type;
+    }
+
+    getName(): string {
+        return this._data.name;
+    }
+
+    getContent(): Buffer | string | object | null {
+        return this._data.content;
+    }
+
+    getTimeStamp(): number | null {
+        return this._data.timestamp;
+    }
+
+    getHeaders(): IMessageHeader[] | null {
+        return this._data.headers;
+    }
+
+    static CreateFromIMessage(message: IMessage): BaseEventMessage {
     // Validate message
-    this._validateMessage(message);
-    // Prepare Data
-    const data = this._prepareDataFromIMessage(message)
+        this._validateMessage(message);
+        // Prepare Data
+        const data = this._prepareDataFromIMessage(message);
     
-    return new BaseEventMessage(data)
-  }
-
-  protected static _prepareDataFromIMessage (message: IMessage): IEventMessageData {
-    const eventMessageValue: IEventMessageValue = <IEventMessageValue>message.value
-    const data: IEventMessageData = {
-      key: message.key,
-      type: eventMessageValue.eventMessageType,
-      name: eventMessageValue.eventMessageName,
-      content: eventMessageValue.eventMessageContent,
-      timestamp: message.timestamp,
-      headers: message.headers
+        return new BaseEventMessage(data);
     }
-    return data
-  }
 
-  toIMessage (topic: string): IMessage {
-    const eventMessageValue: IEventMessageValue = {
-      eventMessageType: this._data.type,
-      eventMessageName: this._data.name,
-      eventMessageContent: this._data.content
+    protected static _prepareDataFromIMessage(message: IMessage): IEventMessageData {
+        const eventMessageValue: IEventMessageValue = <IEventMessageValue>message.value;
+        const data: IEventMessageData = {
+            key: message.key,
+            type: eventMessageValue.eventMessageType,
+            name: eventMessageValue.eventMessageName,
+            content: eventMessageValue.eventMessageContent,
+            timestamp: message.timestamp,
+            headers: message.headers,
+        };
+        return data;
     }
-    const message: IMessage = {
-      value: eventMessageValue,
-      topic,
-      key: this._data.key,
-      timestamp: this._data.timestamp,
-      headers: this._data.headers
+
+    toIMessage(topic: string): IMessage {
+        const eventMessageValue: IEventMessageValue = {
+            eventMessageType: this._data.type,
+            eventMessageName: this._data.name,
+            eventMessageContent: this._data.content,
+        };
+        const message: IMessage = {
+            value: eventMessageValue,
+            topic,
+            key: this._data.key,
+            timestamp: this._data.timestamp,
+            headers: this._data.headers,
+        };
+        return message;
     }
-    return message;
-  }
 
 
-
-  protected static _validateMessage (obj: any): void {
-    if (obj.key === null || obj.key === undefined) {
-      throw(new Error('.key is null or undefined'))
-    }
-    if (
-      obj.value === null || 
+    protected static _validateMessage(obj: any): void {
+        if(obj.key === null || obj.key === undefined) {
+            throw (new Error('.key is null or undefined'));
+        }
+        if(
+            obj.value === null || 
       obj.value === undefined || 
       typeof obj.value !== 'object' || 
       Buffer.isBuffer(obj.value)
-      ) {
-      throw(new Error('.value is null or undefined or not an object'))
+        ) {
+            throw (new Error('.value is null or undefined or not an object'));
+        }
+        if( !obj.value.hasOwnProperty('eventMessageType')) {
+            throw (new Error('.value.eventMessageType is null or undefined'));
+        }
+        if(typeof obj.value.eventMessageType !== 'string') {
+            throw (new Error('.value.eventMessageType is not string'));
+        }
+        if(!(obj.value.eventMessageType in EventMessageType)) {
+            throw (new Error(`.value.eventMessageType is not in the list of allowed values ${getEnumValues(EventMessageType)}`));
+        }
+        if( !obj.value.hasOwnProperty('eventMessageName')) {
+            throw (new Error('.value.eventMessageName is null or undefined'));
+        }
+        if(typeof obj.value.eventMessageName !== 'string') {
+            throw (new Error('.value.eventMessageName is not string'));
+        }
     }
-    if ( !obj.value.hasOwnProperty('eventMessageType')) {
-      throw(new Error('.value.eventMessageType is null or undefined'))
-    }
-    if (typeof obj.value.eventMessageType !== 'string') {
-      throw(new Error('.value.eventMessageType is not string'))
-    }
-    if (!(obj.value.eventMessageType in EventMessageType)) {
-      throw(new Error(`.value.eventMessageType is not in the list of allowed values ${getEnumValues(EventMessageType)}`))
-    }
-    if ( !obj.value.hasOwnProperty('eventMessageName')) {
-      throw(new Error('.value.eventMessageName is null or undefined'))
-    }
-    if (typeof obj.value.eventMessageName !== 'string') {
-      throw(new Error('.value.eventMessageName is not string'))
-    }
-  }
 }

@@ -22,38 +22,39 @@
  --------------
  ******/
 
-'use strict'
+'use strict';
 
-import { IMessage } from "@mojaloop/platform-shared-lib-messaging-types-lib";
+import { IMessage } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 import { IEventMessageData, EventMessageType, BaseEventMessage } from './base_event_message';
 
-export interface IDomainEventMessageData extends Omit<IEventMessageData, 'type'>{}
+export type IDomainEventMessageData = Omit<IEventMessageData, 'type'>;
 
 export class DomainEventMessage extends BaseEventMessage {
 
-  constructor (data: IDomainEventMessageData) {
-    super({
-      ...data,
-      type: EventMessageType.DOMAIN_EVENT
-    });
-  }
-
-  static CreateFromIMessage(message: IMessage): DomainEventMessage {
-    // Validate message
-    this._validateMessage(message);
-    // Prepare Data
-    const {type, ...data} = super._prepareDataFromIMessage(message)
-    
-    return new DomainEventMessage(data)
-  }
-
-  // Overriding the parent method and perform additional validations
-  protected static _validateMessage (obj: any): void {
-    super._validateMessage(obj);
-    // Additional validation here
-    if (obj.value.eventMessageType !== EventMessageType.DOMAIN_EVENT) {
-      throw(new Error('.value.eventMessageName is not equal to DOMAIN_EVENT'))
+    constructor(data: IDomainEventMessageData) {
+        super({
+            ...data,
+            type: EventMessageType.DOMAIN_EVENT,
+        });
     }
-  }
+
+    static CreateFromIMessage(message: IMessage): DomainEventMessage {
+    // Validate message
+        this._validateMessage(message);
+        // Prepare Data
+        /* eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars */
+        const { type, ...data } = super._prepareDataFromIMessage(message);
+    
+        return new DomainEventMessage(data);
+    }
+
+    // Overriding the parent method and perform additional validations
+    protected static _validateMessage(obj: any): void {
+        super._validateMessage(obj);
+        // Additional validation here
+        if(obj.value.eventMessageType !== EventMessageType.DOMAIN_EVENT) {
+            throw (new Error('.value.eventMessageName is not equal to DOMAIN_EVENT'));
+        }
+    }
 
 }

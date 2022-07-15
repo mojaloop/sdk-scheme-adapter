@@ -36,10 +36,10 @@
  --------------
 ******/
 
-'use strict'
+'use strict';
 
 export interface IEventsConsumer {
-  init: () => Promise<void>
-  start: () => Promise<void>
-  destroy: () => Promise<void>
+    init: () => Promise<void>
+    start: () => Promise<void>
+    destroy: () => Promise<void>
 }

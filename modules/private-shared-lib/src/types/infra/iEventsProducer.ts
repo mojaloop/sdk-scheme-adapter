@@ -36,12 +36,12 @@
  --------------
 ******/
 
-'use strict'
+'use strict';
 
-import { IMessage } from "@mojaloop/platform-shared-lib-messaging-types-lib";
+import { IMessage } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 
 export interface IEventsProducer {
-  init: () => Promise<void>
-  send: (message: IMessage) => Promise<void>
-  destroy: () => Promise<void>
+    init: () => Promise<void>
+    send: (message: IMessage) => Promise<void>
+    destroy: () => Promise<void>
 }

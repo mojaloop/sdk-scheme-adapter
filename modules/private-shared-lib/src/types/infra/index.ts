@@ -28,8 +28,8 @@
  --------------
  ******/
 
-"use strict";
+'use strict';
 
-export * from "./irun_handler";
-export * from "./iEventsConsumer";
-export * from "./iEventsProducer";
+export * from './irun_handler';
+export * from './iEventsConsumer';
+export * from './iEventsProducer';

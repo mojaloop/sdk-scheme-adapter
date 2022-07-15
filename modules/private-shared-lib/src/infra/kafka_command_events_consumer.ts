@@ -22,33 +22,33 @@
  --------------
  ******/
 
-"use strict";
+'use strict';
 
-import { MLKafkaConsumerOptions, MLKafkaConsumerOutputType } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib'
-import { KafkaEventsConsumer } from "./kafka_events_consumer";
-import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
-import { CommandEventMessage }  from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
-import { IMessage } from "@mojaloop/platform-shared-lib-messaging-types-lib";
+import { MLKafkaConsumerOptions, MLKafkaConsumerOutputType } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib';
+import { KafkaEventsConsumer } from './kafka_events_consumer';
+import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
+import { CommandEventMessage }  from '../events';
+import { IMessage } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 
 // TODO: Parameterize this
-const CONSUME_TOPICS = ['topic-sdk-outbound-command-events']
+const CONSUME_TOPICS = ['topic-sdk-outbound-command-events'];
 
 export class KafkaCommandEventsConsumer extends KafkaEventsConsumer {
 
-  constructor(handlerFn: (commandEventMessage: CommandEventMessage) => Promise<void>, logger: ILogger) {
-    const consumerOptions: MLKafkaConsumerOptions = {
-      // TODO: Parameterize this
-      kafkaBrokerList: 'localhost:9092',
-      kafkaGroupId: 'command_events_consumer_group',
-      outputType: MLKafkaConsumerOutputType.Json
+    constructor(handlerFn: (commandEventMessage: CommandEventMessage) => Promise<void>, logger: ILogger) {
+        const consumerOptions: MLKafkaConsumerOptions = {
+            // TODO: Parameterize this
+            kafkaBrokerList: 'localhost:9092',
+            kafkaGroupId: 'command_events_consumer_group',
+            outputType: MLKafkaConsumerOutputType.Json,
+        };
+        const superHandlerFn = async (message: IMessage) => {
+            // Construct command event message from IMessage
+            const commandEventMessageObj = CommandEventMessage.CreateFromIMessage(message);
+            // Call handler function with command event message
+            await handlerFn(commandEventMessageObj);
+        };
+        super(consumerOptions, CONSUME_TOPICS, superHandlerFn, logger);
     }
-    const superHandlerFn = async (message: IMessage) => {
-      // Construct command event message from IMessage
-      const commandEventMessageObj = CommandEventMessage.CreateFromIMessage(message);
-      // Call handler function with command event message
-      await handlerFn(commandEventMessageObj);
-    }
-    super(consumerOptions, CONSUME_TOPICS, superHandlerFn ,logger);
-  }
 
 }

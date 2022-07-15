@@ -29,9 +29,9 @@
  --------------
  ******/
 
-"use strict";
+'use strict';
 
-export * from "./types";
-export * from "./events";
-export * from "./infra";
-export * from "./utils";
+export * from './types';
+export * from './events';
+export * from './infra';
+export * from './utils';
