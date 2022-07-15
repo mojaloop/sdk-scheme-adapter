@@ -13,8 +13,10 @@
     "Shashikant Hirugade <shashikant.hirugade@modusbox.com>",
     "Vijay Kumar Guthi <vijaya.guthi@modusbox.com>"
   ],
+  "pre-commit": [
+    "lint"
+  ],
   "scripts": {
-    "prepare": "husky install",
     "start": "yarn workspaces foreach --parallel -v run start",
     "start:api-svc": "yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run start",
     "start:event-handler": "yarn workspace @mojaloop/sdk-scheme-adapter-event-handler run start",
@@ -46,7 +48,6 @@
     "@typescript-eslint/eslint-plugin": "^5.22.0",
     "@typescript-eslint/parser": "^5.22.0",
     "eslint": "^8.14.0",
-    "husky": "^7.0.4",
     "jest": "^27.3.1",
     "npm-check-updates": "^12.5.11",
     "ts-jest": "^27.0.7",
@@ -62,6 +63,7 @@
   },
   "dependencies": {
     "nodemon": "^2.0.18",
+    "pre-commit": "^1.2.2",
     "tslib": "^2.4.0"
   }
 }
