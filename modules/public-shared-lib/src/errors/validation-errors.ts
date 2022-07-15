@@ -22,16 +22,18 @@
  --------------
  ******/
 
-'use strict'
+'use strict';
 
-import { ErrorObject } from 'ajv'
+import { ErrorObject } from 'ajv';
 
 export class AjvValidationError extends Error {
-  private _errors: ErrorObject[] = []
-  constructor(errors: ErrorObject[]) {
-    const errorMessage = errors.map(error => `${error.schemaPath} ${error.message}`).join(',')
-    super(`Validation Errors: ${errorMessage}`)
-    this._errors = errors
-  }
-  get errors() { return this._errors }
+    private _errors: ErrorObject[] = [];
+
+    constructor(errors: ErrorObject[]) {
+        const errorMessage = errors.map(error => `${error.schemaPath} ${error.message}`).join(',');
+        super(`Validation Errors: ${errorMessage}`);
+        this._errors = errors;
+    }
+
+    get errors() { return this._errors; }
 }

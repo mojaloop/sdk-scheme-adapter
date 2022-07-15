@@ -22,82 +22,83 @@
  --------------
  ******/
 
-'use strict'
+'use strict';
 
-import { BaseEntityState, BaseEntity } from '../domain'
-import { AjvValidationError } from '../errors'
-import { SDKSchemeAdapter } from '@mojaloop/api-snippets'
-import { randomUUID } from 'crypto'
-import Ajv from 'ajv'
+import { BaseEntityState, BaseEntity } from '../domain';
+import { AjvValidationError } from '../errors';
+import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
+import { randomUUID } from 'crypto';
+import Ajv from 'ajv';
 
 const ajv = new Ajv({
-  strict:false,
-  allErrors: false
-  // validateSchema: false
-})
+    strict:false,
+    allErrors: false,
+    // validateSchema: false
+});
 // ajv.addKeyword({
 //   keyword: 'example'
 // })
 
 export interface SDKOutboundBulkRequestState extends BaseEntityState {
-  request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferRequest
+    request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferRequest
 }
 
 export class SDKOutboundBulkRequestEntity extends BaseEntity<SDKOutboundBulkRequestState> {
 
-  get id (): string {
-    return this._state.id
-  }
-
-  get request (): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferRequest {
-    return this._state.request
-  }
-
-  static CreateFromRequest (request: any): SDKOutboundBulkRequestEntity {
-    SDKOutboundBulkRequestEntity._validateRequest(request)
-    const initialState: SDKOutboundBulkRequestState = {
-      id: request?.bulkTransactionId || randomUUID(),
-      request,
-      created_at: Date.now(),
-      updated_at: Date.now(),
-      version: 1
+    get id(): string {
+        return this._state.id;
     }
-    return new SDKOutboundBulkRequestEntity(initialState)
-  }
 
-  /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */
-  constructor (initialState: SDKOutboundBulkRequestState) {
-    SDKOutboundBulkRequestEntity._validateRequest(initialState.request)
-    // Modify request to add bulkTransactionId if undefined
-    if (initialState.request.bulkTransactionId === undefined) {
-      initialState.request.bulkTransactionId = initialState.id
+    get request(): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferRequest {
+        return this._state.request;
     }
-    super(initialState)
-  }
 
-  isAutoAcceptPartyEnabled (): boolean {
-    return this._state.request.options.autoAcceptParty.enabled
-  }
-
-  isAutoAcceptQuoteEnabled (): boolean {
-    return this._state.request.options.autoAcceptQuote.enabled
-  }
-
-  getAutoAcceptQuotePerTransferFeeLimits (): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkPerTransferFeeLimit[] | undefined {
-    return this._state.request.options.autoAcceptQuote.perTransferFeeLimits
-  }
-
-  getBulkExpiration (): string {
-    return this._state.request.options.bulkExpiration
-  }
-
-  private static _validateRequest (request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferRequest): void {
-    let requestSchema = SDKSchemeAdapter.Outbound.V2_0_0.Schemas.bulkTransferRequest
-    const validate = ajv.compile(requestSchema)
-    const validationResult = validate(request)
-    if(!validationResult) {
-      throw new AjvValidationError(validate.errors || [])
+    static CreateFromRequest(request: any): SDKOutboundBulkRequestEntity {
+        SDKOutboundBulkRequestEntity._validateRequest(request);
+        const initialState: SDKOutboundBulkRequestState = {
+            id: request?.bulkTransactionId || randomUUID(),
+            request,
+            created_at: Date.now(),
+            updated_at: Date.now(),
+            version: 1,
+        };
+        return new SDKOutboundBulkRequestEntity(initialState);
     }
-  }
+
+    /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */
+    constructor(initialState: SDKOutboundBulkRequestState) {
+        SDKOutboundBulkRequestEntity._validateRequest(initialState.request);
+        // Modify request to add bulkTransactionId if undefined
+        if(initialState.request.bulkTransactionId === undefined) {
+            initialState.request.bulkTransactionId = initialState.id;
+        }
+        super(initialState);
+    }
+
+    isAutoAcceptPartyEnabled(): boolean {
+        return this._state.request.options.autoAcceptParty.enabled;
+    }
+
+    isAutoAcceptQuoteEnabled(): boolean {
+        return this._state.request.options.autoAcceptQuote.enabled;
+    }
+
+    getAutoAcceptQuotePerTransferFeeLimits()
+    : SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkPerTransferFeeLimit[] | undefined {
+        return this._state.request.options.autoAcceptQuote.perTransferFeeLimits;
+    }
+
+    getBulkExpiration(): string {
+        return this._state.request.options.bulkExpiration;
+    }
+
+    private static _validateRequest(request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferRequest): void {
+        const requestSchema = SDKSchemeAdapter.Outbound.V2_0_0.Schemas.bulkTransferRequest;
+        const validate = ajv.compile(requestSchema);
+        const validationResult = validate(request);
+        if(!validationResult) {
+            throw new AjvValidationError(validate.errors || []);
+        }
+    }
 
 }

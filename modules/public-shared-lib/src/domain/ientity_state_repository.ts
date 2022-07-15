@@ -35,16 +35,16 @@
  --------------
 ******/
 
-'use strict'
+'use strict';
 
-import { BaseEntityState } from './base_entity_state'
+import { BaseEntityState } from './base_entity_state';
 
 export type IEntityStateRepository<S extends BaseEntityState> = {
-  init: () => Promise<void>
-  destroy: () => Promise<void>
-  canCall: () => boolean // for circuit breaker
+    init: () => Promise<void>
+    destroy: () => Promise<void>
+    canCall: () => boolean // for circuit breaker
 
-  load: (id: string) => Promise<S | null>
-  store: (entityState: S) => Promise<void>
-  remove: (id: string) => Promise<void>
-}
+    load: (id: string) => Promise<S | null>
+    store: (entityState: S) => Promise<void>
+    remove: (id: string) => Promise<void>
+};

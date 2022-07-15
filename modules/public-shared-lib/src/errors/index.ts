@@ -27,6 +27,6 @@
  --------------
  ******/
 
- "use strict";
+'use strict';
  
-export * from "./validation-errors";
+export * from './validation-errors';

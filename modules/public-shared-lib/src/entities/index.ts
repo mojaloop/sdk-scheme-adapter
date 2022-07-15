@@ -27,6 +27,6 @@
  --------------
  ******/
 
- "use strict";
+'use strict';
  
-export * from "./sdk_outbound_bulk_request_entity";
+export * from './sdk_outbound_bulk_request_entity';

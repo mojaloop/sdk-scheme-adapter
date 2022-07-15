@@ -28,9 +28,9 @@
  --------------
  ******/
 
-"use strict";
+'use strict';
 
-export * from "./entities";
-export * from "./events";
-export * from "./domain";
-export * from "./errors";
+export * from './entities';
+export * from './events';
+export * from './domain';
+export * from './errors';

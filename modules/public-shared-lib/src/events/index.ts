@@ -29,9 +29,9 @@
  --------------
  ******/
 
- "use strict";
+'use strict';
  
- export interface IProcessSDKOutboundBulkRequestCmdEvt {
-     currency: string;
-     amount: string;
- }
+export interface IProcessSDKOutboundBulkRequestCmdEvt {
+    currency: string;
+    amount: string;
+}

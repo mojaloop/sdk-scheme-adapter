@@ -2433,6 +2433,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter-public-shared-lib@workspace:modules/public-shared-lib"
   dependencies:
     "@mojaloop/api-snippets": ^14.1.0
+    "@mojaloop/logging-bc-public-types-lib": ^0.0.3
     "@types/node": ^17.0.41
     ajv: ^8.11.0
     eslint: ^8.17.0
@@ -2441,6 +2442,7 @@ __metadata:
     ts-jest: ^28.0.4
     ts-node: ^10.8.2
     typescript: ^4.7.3
+    uuid: ^8.3.2
   languageName: unknown
   linkType: soft
 
@@ -2490,6 +2492,8 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^5.22.0
     "@typescript-eslint/parser": ^5.22.0
     eslint: ^8.14.0
+    eslint-config-airbnb-typescript: ^17.0.0
+    eslint-plugin-import: latest
     jest: ^27.3.1
     nodemon: ^2.0.18
     npm-check-updates: ^12.5.11
@@ -6337,6 +6341,35 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eslint-config-airbnb-base@npm:^15.0.0":
+  version: 15.0.0
+  resolution: "eslint-config-airbnb-base@npm:15.0.0"
+  dependencies:
+    confusing-browser-globals: ^1.0.10
+    object.assign: ^4.1.2
+    object.entries: ^1.1.5
+    semver: ^6.3.0
+  peerDependencies:
+    eslint: ^7.32.0 || ^8.2.0
+    eslint-plugin-import: ^2.25.2
+  checksum: 38626bad2ce2859fccac86b30cd2b86c9b7d8d71d458331860861dc05290a5b198bded2f4fb89efcb9046ec48f8ab4c4fb00365ba8916f27b172671da28b93ea
+  languageName: node
+  linkType: hard
+
+"eslint-config-airbnb-typescript@npm:^17.0.0":
+  version: 17.0.0
+  resolution: "eslint-config-airbnb-typescript@npm:17.0.0"
+  dependencies:
+    eslint-config-airbnb-base: ^15.0.0
+  peerDependencies:
+    "@typescript-eslint/eslint-plugin": ^5.13.0
+    "@typescript-eslint/parser": ^5.0.0
+    eslint: ^7.32.0 || ^8.2.0
+    eslint-plugin-import: ^2.25.3
+  checksum: e598ae7bcc3629bbc847a749f8c1ad69e6ef111335b60d88bde91d1bb335077b06688868257fe2fcc95c3687a0d6e3e1f91e0534cc633f5a118239e52bb05a54
+  languageName: node
+  linkType: hard
+
 "eslint-import-resolver-node@npm:^0.3.6":
   version: 0.3.6
   resolution: "eslint-import-resolver-node@npm:0.3.6"
@@ -6357,7 +6390,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-import@npm:^2.24.2":
+"eslint-plugin-import@npm:^2.24.2, eslint-plugin-import@npm:latest":
   version: 2.26.0
   resolution: "eslint-plugin-import@npm:2.26.0"
   dependencies:
@@ -11578,7 +11611,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"object.entries@npm:^1.1.2":
+"object.entries@npm:^1.1.2, object.entries@npm:^1.1.5":
   version: 1.1.5
   resolution: "object.entries@npm:1.1.5"
   dependencies:

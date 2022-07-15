@@ -17,7 +17,13 @@
   ],
   "scripts": {
     "build": "tsc",
-    "test:unit": "jest --passWithNoTests --testMatch '**/test/unit/**/*.test.ts'"
+    "test:unit": "jest --passWithNoTests --testMatch '**/test/unit/**/*.test.ts'",
+    "lint": "eslint --ext .js,.ts src --color",
+    "lint:fix": "npm run lint -- --fix",
+    "audit:resolve": "SHELL=sh resolve-audit --production",
+    "audit:check": "yarn npm audit",
+    "dep:check": "ncu -e 2",
+    "dep:update": "ncu -u"
   },
   "devDependencies": {
     "@types/node": "^17.0.41",
@@ -36,7 +42,9 @@
   },
   "dependencies": {
     "@mojaloop/api-snippets": "^14.1.0",
+    "@mojaloop/logging-bc-public-types-lib": "^0.0.3",
     "ajv": "^8.11.0",
-    "ts-node": "^10.8.2"
+    "ts-node": "^10.8.2",
+    "uuid": "^8.3.2"
   }
 }

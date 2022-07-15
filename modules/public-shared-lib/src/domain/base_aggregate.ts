@@ -36,34 +36,34 @@
  --------------
 ******/
 
-'use strict'
+'use strict';
 
-import { BaseEntity } from './base_entity'
-import { BaseEntityState } from './base_entity_state'
-import { IEntityStateRepository } from './ientity_state_repository'
-import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
+import { BaseEntity } from './base_entity';
+import { BaseEntityState } from './base_entity_state';
+import { IEntityStateRepository } from './ientity_state_repository';
+import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 
 export abstract class BaseAggregate<E extends BaseEntity<S>, S extends BaseEntityState> {
-  protected _logger: ILogger
+    protected _logger: ILogger;
 
-  protected _rootEntity: E
+    protected _rootEntity: E;
 
-  protected _entity_state_repo: IEntityStateRepository<S>
+    protected _entity_state_repo: IEntityStateRepository<S>;
 
-  constructor (rootEntity: E, entityStateRepo: IEntityStateRepository<S>, logger: ILogger) {
-    this._logger = logger
+    constructor(rootEntity: E, entityStateRepo: IEntityStateRepository<S>, logger: ILogger) {
+        this._logger = logger;
 
-    this._rootEntity = rootEntity
-    this._entity_state_repo = entityStateRepo
-  }
-
-  async store (): Promise<void> {
-    if (this._rootEntity != null) {
-      await this._entity_state_repo.store(this._rootEntity.exportState())
-    } else {
-      throw new Error(`Aggregate doesn't have a valid state to store the state`)
+        this._rootEntity = rootEntity;
+        this._entity_state_repo = entityStateRepo;
     }
-    this._logger.isInfoEnabled() && this._logger.info(`Aggregate state persisted to repository`)
-  }
+
+    async store(): Promise<void> {
+        if(this._rootEntity != null) {
+            await this._entity_state_repo.store(this._rootEntity.exportState());
+        } else {
+            throw new Error('Aggregate doesn\'t have a valid state to store the state');
+        }
+        this._logger.info('Aggregate state persisted to repository');
+    }
 
 }
