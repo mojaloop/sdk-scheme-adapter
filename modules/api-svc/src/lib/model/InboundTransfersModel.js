@@ -22,7 +22,9 @@ const {
     Errors,
 } = require('@mojaloop/sdk-standard-components');
 const shared = require('./lib/shared');
-const { TransferStateEnum } = require('./common');
+const { SDKStateEnum } = require('./common');
+const FSPIOPTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.TransferState;
+const FSPIOPBulkTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.BulkTransferState;
 
 /**
  *  Models the operations required for performing inbound transfers
@@ -74,7 +76,7 @@ class InboundTransfersModel {
 
     updateStateWithError(err) {
         this.data.lastError = err;
-        this.data.currentState = TransferStateEnum.ERROR_OCCURRED;
+        this.data.currentState = SDKStateEnum.ERROR_OCCURRED;
         return this._save();
     }
 
@@ -188,7 +190,7 @@ class InboundTransfersModel {
                 headers: request.headers,
                 body: request.body
             },
-            currentState: TransferStateEnum.QUOTE_REQUEST_RECEIVED,
+            currentState: SDKStateEnum.QUOTE_REQUEST_RECEIVED,
             initiatedTimestamp: new Date().toISOString(),
         };
 
@@ -237,7 +239,7 @@ class InboundTransfersModel {
                 headers: res.originalRequest.headers,
                 body: res.originalRequest.body,
             };
-            this.data.currentState = TransferStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE;
+            this.data.currentState = SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE;
             await this._save();
             return res;
         }
@@ -342,7 +344,7 @@ class InboundTransfersModel {
 
             // persist our state so we have a record if we crash during processing the prepare
             this.data.prepare = request;
-            this.data.currentState = TransferStateEnum.PREPARE_RECEIVED;
+            this.data.currentState = SDKStateEnum.PREPARE_RECEIVED;
             await this._save();
 
             // Calculate or retrieve fulfilment and condition
@@ -389,9 +391,9 @@ class InboundTransfersModel {
 
             // create a  mojaloop transfer fulfil response
             const mojaloopResponse = {
-                completedTimestamp: new Date(),
-                transferState: this._reserveNotification ? 'RESERVED' : 'COMMITTED',
-                fulfilment: fulfilment,
+                completedTimestamp: response.completedTimestamp || new Date(),
+                transferState: response.transferState || (this._reserveNotification ? FSPIOPTransferStateEnum.RESERVED : FSPIOPTransferStateEnum.COMMITTED),
+                fulfilment: response.fulfilment || fulfilment,
                 ...response.extensionList && {
                     extensionList: {
                         extension: response.extensionList,
@@ -406,7 +408,7 @@ class InboundTransfersModel {
                 headers: res.originalRequest.headers,
                 body: res.originalRequest.body,
             };
-            this.data.currentState = this._reserveNotification ? TransferStateEnum.RESERVED : TransferStateEnum.COMPLETED;
+            this.data.currentState = response.transferState || (this._reserveNotification ? SDKStateEnum.RESERVED : SDKStateEnum.COMPLETED);
             await this._save();
             return res;
         } catch(err) {
@@ -649,7 +651,7 @@ class InboundTransfersModel {
             if (individualTransferErrors.length) {
                 // TODO: Verify and align with actual schema for bulk transfers error endpoint
                 const mojaloopErrorResponse = {
-                    bulkTransferState: 'REJECTED',
+                    bulkTransferState: FSPIOPBulkTransferStateEnum.REJECTED,
                     // eslint-disable-next-line no-unused-vars
                     individualTransferResults: individualTransferErrors.map(({ transferId, transferError }) => ({
                         transferId,
@@ -679,7 +681,7 @@ class InboundTransfersModel {
             // create a  mojaloop transfer fulfil response
             const mojaloopResponse = {
                 completedTimestamp: new Date(),
-                bulkTransferState: 'COMMITTED',
+                bulkTransferState: FSPIOPBulkTransferStateEnum.COMPLETED,
             };
 
             if (response.individualTransferResults && response.individualTransferResults.length) {
@@ -784,14 +786,18 @@ class InboundTransfersModel {
             // tag the final notification body on to the state
             this.data.finalNotification = body;
 
-            if(body.transferState === 'COMMITTED') {
+            if(body.transferState === FSPIOPTransferStateEnum.COMMITTED) {
                 // if the transfer was successful in the switch, set the overall transfer state to COMPLETED
-                this.data.currentState = TransferStateEnum.COMPLETED;
+                this.data.currentState = SDKStateEnum.COMPLETED;
             }
+            else if(body.transferState === FSPIOPTransferStateEnum.ABORTED) {
+                // if the transfer was ABORTED in the switch, set the overall transfer state to ABORTED
+                this.data.currentState = SDKStateEnum.ABORTED;
+            }            
             else {
                 // if the final notification has anything other than COMMITTED as the final state, set an error
                 // in the transfer state.
-                this.data.currentState == TransferStateEnum.ERROR_OCCURED;
+                this.data.currentState = SDKStateEnum.ERROR_OCCURED;
                 this.data.lastError = 'Final notification state not COMMITTED';
             }
 
@@ -800,7 +806,7 @@ class InboundTransfersModel {
             const res = await this._backendRequests.putTransfersNotification(this.data, transferId);
             return res;
         } catch (err) {
-            this._logger.push({ err }).log('Error notifying backend of final transfer state');
+            this._logger.push({ err }).log(`Error notifying backend of final transfer state equal to: ${body.transferState}`);
         }
     }
 
@@ -841,7 +847,7 @@ class InboundTransfersModel {
                 originalError: err.stack || util.inspect(err),
                 mojaloopError: mojaloopError,
             };
-            this.data.currentState = TransferStateEnum.ERROR_OCCURRED;
+            this.data.currentState = SDKStateEnum.ERROR_OCCURRED;
             await this._save();
         }
         return mojaloopError;

@@ -28,6 +28,12 @@ const getTransfersMojaloopResponse = require('./data/getTransfersMojaloopRespons
 const getBulkTransfersBackendResponse = require('./data/getBulkTransfersBackendResponse');
 const getBulkTransfersMojaloopResponse = require('./data/getBulkTransfersMojaloopResponse');
 const notificationToPayee = require('./data/notificationToPayee');
+const notificationAbortedToPayee = require('./data/notificationAbortedToPayee');
+const notificationReservedToPayee = require('./data/notificationReservedToPayee');
+
+const { SDKStateEnum } = require('../../../../src/lib/model/common');
+const FSPIOPTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.TransferState;
+const FSPIOPBulkTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.BulkTransferState;
 
 describe('inboundModel', () => {
     let config;
@@ -63,8 +69,7 @@ describe('inboundModel', () => {
             }));
 
             cache = new Cache({
-                host: 'dummycachehost',
-                port: 1234,
+                cacheUrl: 'redis://dummy:1234',
                 logger,
             });
             await cache.connect();
@@ -132,8 +137,7 @@ describe('inboundModel', () => {
             BackendRequests.__postBulkQuotes = jest.fn().mockReturnValue(Promise.resolve(mockArgs.internalBulkQuoteResponse));
 
             cache = new Cache({
-                host: 'dummycachehost',
-                port: 1234,
+                cacheUrl: 'redis://dummy:1234',
                 logger,
             });
             await cache.connect();
@@ -189,8 +193,7 @@ describe('inboundModel', () => {
             BackendRequests.__postTransactionRequests = jest.fn().mockReturnValue(Promise.resolve(mockTxnReqArgs.internalTransactionRequestResponse));
 
             cache = new Cache({
-                host: 'dummycachehost',
-                port: 1234,
+                cacheUrl: 'redis://dummy:1234',
                 logger,
             });
             await cache.connect();
@@ -226,8 +229,7 @@ describe('inboundModel', () => {
             BackendRequests.__getOTP = jest.fn().mockReturnValue(Promise.resolve(mockArgs.internalGetOTPResponse));
 
             cache = new Cache({
-                host: 'dummycachehost',
-                port: 1234,
+                cacheUrl: 'redis://dummy:1234',
                 logger,
             });
             await cache.connect();
@@ -268,8 +270,7 @@ describe('inboundModel', () => {
             }));
 
             cache = new Cache({
-                host: 'dummycachehost',
-                port: 1234,
+                cacheUrl: 'redis://dummy:1234',
                 logger,
             });
             await cache.connect();
@@ -327,7 +328,7 @@ describe('inboundModel', () => {
             const call = MojaloopRequests.__putTransfers.mock.calls[0];
             expect(call[0]).toEqual(TRANSFER_ID);
             expect(call[1]).toEqual(getTransfersMojaloopResponse);
-            expect(call[1].transferState).toEqual('COMMITTED');
+            expect(call[1].transferState).toEqual(FSPIOPTransferStateEnum.COMMITTED);
         });
 
         test('getTransfer should not return fulfillment from payer', async () => {
@@ -348,7 +349,7 @@ describe('inboundModel', () => {
             const call = MojaloopRequests.__putTransfers.mock.calls[0];
             expect(call[0]).toEqual(TRANSFER_ID);
             expect(call[1]).toEqual({...getTransfersMojaloopResponse, fulfilment: undefined});
-            expect(call[1].transferState).toEqual('COMMITTED');
+            expect(call[1].transferState).toEqual(FSPIOPTransferStateEnum.COMMITTED);
         });
 
         test('getTransfer should return not found error', async () => {
@@ -547,8 +548,7 @@ describe('inboundModel', () => {
             BackendRequests.__postBulkTransfers = jest.fn().mockReturnValue(Promise.resolve({}));
 
             cache = new Cache({
-                host: 'dummycachehost',
-                port: 1234,
+                cacheUrl: 'redis://dummy:1234',
                 logger,
             });
             await cache.connect();
@@ -605,7 +605,7 @@ describe('inboundModel', () => {
             const call = MojaloopRequests.__putBulkTransfers.mock.calls[0];
             expect(call[0]).toEqual(BULK_TRANSFER_ID);
             expect(call[1]).toEqual(getBulkTransfersMojaloopResponse);
-            expect(call[1].bulkTransferState).toEqual('COMMITTED');
+            expect(call[1].bulkTransferState).toEqual(FSPIOPBulkTransferStateEnum.COMPLETED);
         });
 
         test('getBulkTransfer should not return fulfillment from payer', async () => {
@@ -625,7 +625,7 @@ describe('inboundModel', () => {
 
             const call = MojaloopRequests.__putBulkTransfers.mock.calls[0];
             expect(call[0]).toEqual(BULK_TRANSFER_ID);
-            expect(call[1].bulkTransferState).toEqual('COMMITTED');
+            expect(call[1].bulkTransferState).toEqual(FSPIOPBulkTransferStateEnum.COMPLETED);
             const expectedResponse = {...getBulkTransfersMojaloopResponse};
             expectedResponse.individualTransferResults[0].fulfilment = undefined;
             expect(call[1]).toMatchObject(expectedResponse);
@@ -727,8 +727,7 @@ describe('inboundModel', () => {
 
         beforeEach(async () => {
             cache = new Cache({
-                host: 'dummycachehost',
-                port: 1234,
+                cacheUrl: 'redis://dummy:1234',
                 logger,
             });
             await cache.connect();
@@ -743,7 +742,7 @@ describe('inboundModel', () => {
             const notif = JSON.parse(JSON.stringify(notificationToPayee));
 
             const expectedRequest = {
-                currentState: 'COMPLETED',
+                currentState: SDKStateEnum.COMPLETED,
                 finalNotification: notif.data,
             };
 
@@ -759,14 +758,58 @@ describe('inboundModel', () => {
             expect(call[0]).toEqual(expectedRequest);
             expect(call[1]).toEqual(transferId);
         });
+
+        test('sends ABORTED notification to fsp backend', async () => {
+            BackendRequests.__putTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({}));
+            const notif = JSON.parse(JSON.stringify(notificationAbortedToPayee));
+
+            const expectedRequest = {
+                currentState: SDKStateEnum.ABORTED,
+                finalNotification: notif.data,
+            };
+
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+            });
+
+            await model.sendNotificationToPayee(notif.data, transferId);
+            expect(BackendRequests.__putTransfersNotification).toHaveBeenCalledTimes(1);
+            const call = BackendRequests.__putTransfersNotification.mock.calls[0];
+            expect(call[0]).toEqual(expectedRequest);
+            expect(call[1]).toEqual(transferId);
+        });
+
+        test('sends RESERVED notification to fsp backend', async () => {
+            BackendRequests.__putTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({}));
+            const notif = JSON.parse(JSON.stringify(notificationReservedToPayee));
+
+            const expectedRequest = {
+                finalNotification: notif.data,
+                lastError: 'Final notification state not COMMITTED',
+            };
+
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+            });
+
+            await model.sendNotificationToPayee(notif.data, transferId);
+            expect(BackendRequests.__putTransfersNotification).toHaveBeenCalledTimes(1);
+            const call = BackendRequests.__putTransfersNotification.mock.calls[0];
+            expect(call[0]).toEqual(expectedRequest);
+            expect(call[1]).toEqual(transferId);
+        });
+
     });
 
     describe('error handling:', () => {
         let cache;
         beforeEach(async () => {
             cache = new Cache({
-                host: 'dummycachehost',
-                port: 1234,
+                cacheUrl: 'redis://dummy:1234',
                 logger,
             });
             await cache.connect();

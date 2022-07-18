@@ -353,13 +353,17 @@ const createLogger = (logger) => async (ctx, next) => {
         path: ctx.path,
         method: ctx.method
     }});
-    ctx.state.logger.push({ body: ctx.request.body }).log('Request received');
+    if (!ctx.state.logExcludePaths.includes(ctx.path)) {
+        ctx.state.logger.push({body: ctx.request.body}).log('Request received');
+    }
     try {
         await next();
     } catch (err) {
         ctx.state.logger.push(err).log('Error');
     }
-    await ctx.state.logger.log('Request processed');
+    if (!ctx.state.logExcludePaths.includes(ctx.path)) {
+        await ctx.state.logger.log('Request processed');
+    }
 };
 
 
@@ -369,10 +373,14 @@ const createLogger = (logger) => async (ctx, next) => {
  * @return {Function}
  */
 const createRequestValidator = (validator) => async (ctx, next) => {
-    ctx.state.logger.log('Validating request');
+    if (!ctx.state.logExcludePaths.includes(ctx.path)) {
+        ctx.state.logger.log('Validating request');
+    }
     try {
         ctx.state.path = validator.validateRequest(ctx, ctx.state.logger);
-        ctx.state.logger.log('Request passed validation');
+        if (!ctx.state.logExcludePaths.includes(ctx.path)) {
+            ctx.state.logger.log('Request passed validation');
+        }
         await next();
     } catch (err) {
         ctx.state.logger.push({ err }).log('Request failed validation.');

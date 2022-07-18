@@ -22,11 +22,11 @@
 // It expects new configuration to be supplied as an array of JSON patches. It therefore exposes
 // the current configuration to
 
-const assert = require('assert').strict;
 
 const ws = require('ws');
 const jsonPatch = require('fast-json-patch');
 const { generateSlug } = require('random-word-slugs');
+const _ = require('lodash');
 
 
 /**************************************************************************
@@ -213,21 +213,14 @@ class Server extends ws.Server {
 
     // Close the server then wait for all the client sockets to close
     async stop() {
-        await new Promise(this.close.bind(this));
+        const closing = new Promise(resolve => this.close(resolve));
+        for (const client of this.clients) {
+            client.terminate();
+        }
+        await closing;
         this._logger.log('Control server shutdown complete');
     }
 
-    reconfigure({ logger = this._logger, port = 0, appConfig = this._appConfig }) {
-        assert(port === this._port, 'Cannot reconfigure running port');
-        return () => {
-            const reconfigureClientLogger =
-                ({ logger: clientLogger }) => clientLogger.configure(logger);
-            this._clientData.values(reconfigureClientLogger);
-            this._logger = logger;
-            this._appConfig = appConfig;
-            this._logger.log('restarted');
-        };
-    }
 
     async notifyClientsOfCurrentConfig() {
         const updateConfMsg = build.CONFIGURATION.NOTIFY(this._appConfig);
@@ -261,6 +254,13 @@ class Server extends ws.Server {
                         case VERB.READ:
                             client.send(build.CONFIGURATION.NOTIFY(this._appConfig, msg.id));
                             break;
+                        case VERB.NOTIFY: {
+                            const dup = JSON.parse(JSON.stringify(this._appConfig)); // fast-json-patch explicitly mutates
+                            _.merge(dup, msg.data);
+                            this._logger.push({ oldConf: this._appConfig, newConf: dup }).log('Emitting new configuration');
+                            this.emit(EVENT.RECONFIGURE, dup);
+                            break;
+                        }
                         case VERB.PATCH: {
                             // TODO: validate the incoming patch? Or assume clients have used the
                             // client library?
