@@ -109,12 +109,13 @@ jobs:
           name: Install general dependencies
           command: *defaults_Dependencies
       - checkout
+      ## TODO: figure out why jest is not installed
       # - restore_cache:
       #     name: Restore Yarn Package Cache
       #     keys:
       #       - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
-          name: Update dependencies
+          name: Install Yarn dependencies
           command: yarn install
       - run:
           name: Execute unit tests
@@ -145,6 +146,10 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             nvm install v16.14
             nvm alias default v16.14
+      - run:
+          name: Change to api-svc module
+          command: |
+            cd modules/api-svc
       - run:
           name: Start docker-compose
           command: |
