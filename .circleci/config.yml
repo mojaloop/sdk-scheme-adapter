@@ -114,6 +114,9 @@ jobs:
           keys:
             - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
+          name: Update dependencies
+          command: yarn install
+      - run:
           name: Execute unit tests
           command: yarn run test:unit
       - store_test_results:
