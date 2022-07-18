@@ -125,6 +125,7 @@ jobs:
       - store_artifacts:
           path: /home/circleci/project/junit.xml
 
+  ## TODO: Fix Integration tests
   test-integration:
     executor: default-machine
     steps:
@@ -146,10 +147,6 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             nvm install v16.14
             nvm alias default v16.14
-      - run:
-          name: Change to api-svc module
-          command: |
-            cd modules/api-svc
       - run:
           name: Start docker-compose
           command: |
