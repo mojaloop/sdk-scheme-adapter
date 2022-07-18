@@ -40,8 +40,11 @@ import { handleSDKOutboundBulkRequestReceived } from './handlers';
 
 export class OutboundEventHandler implements IRunHandler {
     private _logger: ILogger;
+
     private _consumer: IEventConsumer;
+
     private _commandProducer: KafkaCommandEventProducer;
+
     private _domainEventHandlerOptions: IDomainEventHandlerOptions;
 
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
@@ -59,7 +62,7 @@ export class OutboundEventHandler implements IRunHandler {
 
         const producerOptions: IKafkaEventProducerOptions = appConfig.get('KAFKA.COMMAND_EVENT_PRODUCER');
         this._commandProducer = new KafkaCommandEventProducer(producerOptions, logger);
-        logger.info(`Created kafkaProducer of type ${this._commandProducer.constructor.name}`)
+        logger.info(`Created kafkaProducer of type ${this._commandProducer.constructor.name}`);
         await this._commandProducer.init();
 
         // Create options for handlers

@@ -51,9 +51,9 @@ import Config from '../shared/config';
 
     // API Server
     const apiServerEnabled = Config.get('API_SERVER.ENABLED');
-    if (apiServerEnabled) {
-      logger.info('Starting API Server...');
-      ApiServer.startServer(Config.get('API_SERVER.PORT'));
+    if(apiServerEnabled) {
+        logger.info('Starting API Server...');
+        ApiServer.startServer(Config.get('API_SERVER.PORT'));
     }
     // lets clean up all consumers here
     /* eslint-disable-next-line @typescript-eslint/no-misused-promises */

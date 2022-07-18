@@ -83,13 +83,10 @@ jobs:
           name: Install general dependencies
           command: *defaults_Dependencies
       - checkout
-      # - run:
-      #     name: Access npm folder as root
-      #     command: cd $(npm root -g)/npm
-      # - run:
-      #     name: Update NPM install (using `npm ci`)
-      #     command: npm ci
-####################################################            
+      - run:
+          name: Install Dependencies for api-svc
+          command: yarn install
+          working_directory: /home/circleci/project/modules/api-svc
       - run:
           name: Install Dependencies
           command: yarn install --immutable
@@ -100,9 +97,7 @@ jobs:
             - .yarn/cache
             - .yarn/unplugged
             - node_modules
-
-####################################################            
-
+            # - modules/api-svc/node_modules
       - run:
           name: Delete build dependencies
           command: apk del build-dependencies
@@ -118,9 +113,6 @@ jobs:
           name: Restore Yarn Package Cache
           keys:
             - yarn-packages-{{ checksum "yarn.lock" }}
-      - run:
-          name: Install Dependencies
-          command: yarn install --immutable
       - run:
           name: Execute unit tests
           command: yarn run test:unit
@@ -192,9 +184,6 @@ jobs:
           keys:
             - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
-          name: Install Dependencies
-          command: yarn install --immutable
-      - run:
           name: Validate openapi
           command: yarn run build:openapi && yarn run validate:api
 
@@ -205,14 +194,13 @@ jobs:
           name: Install general dependencies
           command: *defaults_Dependencies
       - checkout
-      - restore_cache:
-          name: Restore Yarn Package Cache
-          keys:
-            - yarn-packages-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install Dependencies for api-svc
+          command: yarn install
+          working_directory: /home/circleci/project/modules/api-svc
       - run:
           name: Install Dependencies
-          command: yarn install --immutable
-
+          command: yarn install
       - run:
           name: Create dir for lint results
           command: mkdir -p /lintresults
@@ -234,14 +222,11 @@ jobs:
           keys:
             - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
-          name: Install Dependencies
-          command: yarn install --immutable
-      - run:
           name: Create dir for test results
           command: mkdir -p ./audit/results
       - run:
           name: Check for new npm vulnerabilities
-          command: yarn run audit:check --silent -- --json > ./audit/results/auditResults.json
+          command: yarn run audit:check > ./audit/results/auditResults.json
       - store_artifacts:
           path: ./audit/results
 
@@ -258,12 +243,6 @@ jobs:
           name: Restore Yarn Package Cache
           keys:
             - yarn-packages-{{ checksum "yarn.lock" }}
-      - run:
-          name: Install Dependencies
-          command: yarn install --immutable
-      - run:
-          name: Prune non-production packages before running license-scanner
-          command: yarn prune --production
       - run:
           name: Run the license-scanner
           command: cd /tmp/license-scanner && pathToRepo=$CIRCLE_WORKING_DIRECTORY make run

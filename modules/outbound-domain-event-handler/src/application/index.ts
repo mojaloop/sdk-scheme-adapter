@@ -41,10 +41,11 @@ import Config from '../shared/config';
     // start outboundEventHandler
     const outboundEventHandler: IRunHandler = new OutboundEventHandler();
     try {
-      await outboundEventHandler.start(Config, logger);
-    } catch(err: any) {
-      logger.error(err, 'Error starting outbound event handler: ' + err.message)
-      await outboundEventHandler.destroy()
+        await outboundEventHandler.start(Config, logger);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+        logger.error(err, 'Error starting outbound event handler: ' + err.message);
+        await outboundEventHandler.destroy();
     }
 
     // lets clean up all consumers here
