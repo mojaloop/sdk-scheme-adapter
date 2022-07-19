@@ -19,6 +19,7 @@ const Model = require('~/lib/model').OutboundBulkTransfersModel;
 
 const { MojaloopRequests, Logger } = require('@mojaloop/sdk-standard-components');
 const StateMachine = require('javascript-state-machine');
+const { SDKStateEnum } = require('../../../../src/lib/model/common');
 
 const defaultConfig = require('./data/defaultConfig');
 const bulkTransferRequest = require('./data/bulkTransferRequest');
@@ -70,7 +71,7 @@ describe('outboundBulkTransferModel', () => {
             await expect(model.run()).rejects.toThrowError(expectError);
         } else {
             const result = await model.run();
-            await expect(result.currentState).toBe('COMPLETED');
+            await expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
         }
     }
 
@@ -83,8 +84,7 @@ describe('outboundBulkTransferModel', () => {
         MojaloopRequests.__postBulkTransfers = jest.fn(() => Promise.resolve());
 
         cache = new Cache({
-            host: 'dummycachehost',
-            port: 1234,
+            cacheUrl: 'redis://dummy:1234',
             logger,
         });
         await cache.connect();
@@ -137,7 +137,7 @@ describe('outboundBulkTransferModel', () => {
         expect(MojaloopRequests.__postBulkTransfers).toHaveBeenCalledTimes(1);
 
         // check we stopped at succeeded state
-        expect(result.currentState).toBe('COMPLETED');
+        expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
         expect(StateMachine.__instance.state).toBe('succeeded');
     });
 
@@ -169,7 +169,7 @@ describe('outboundBulkTransferModel', () => {
         expect(MojaloopRequests.__getBulkTransfers).toHaveBeenCalledTimes(1);
 
         // check we stopped at succeeded state
-        expect(result.currentState).toBe('COMPLETED');
+        expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
         expect(StateMachine.__instance.state).toBe('succeeded');
     });
 

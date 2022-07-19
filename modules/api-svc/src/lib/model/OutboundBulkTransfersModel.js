@@ -16,10 +16,7 @@ const StateMachine = require('javascript-state-machine');
 const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const { BackendError } = require('./common');
 
-const stateEnum = {
-    'ERROR_OCCURRED': 'ERROR_OCCURRED',
-    'COMPLETED': 'COMPLETED',
-};
+const { SDKStateEnum } = require('./common');
 
 /**
  *  Models the state machine and operations required for performing an outbound bulk transfer
@@ -373,16 +370,16 @@ class OutboundBulkTransfersModel {
 
         switch(this.data.currentState) {
             case 'succeeded':
-                resp.currentState = stateEnum.COMPLETED;
+                resp.currentState = SDKStateEnum.COMPLETED;
                 break;
 
             case 'errored':
-                resp.currentState = stateEnum.ERROR_OCCURRED;
+                resp.currentState = SDKStateEnum.ERROR_OCCURRED;
                 break;
 
             default:
                 this._logger.log(`Bulk transfer model response being returned from an unexpected state: ${this.data.currentState}. Returning ERROR_OCCURRED state`);
-                resp.currentState = stateEnum.ERROR_OCCURRED;
+                resp.currentState = SDKStateEnum.ERROR_OCCURRED;
                 break;
         }
 

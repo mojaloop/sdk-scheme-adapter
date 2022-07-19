@@ -21,7 +21,9 @@ module.exports = (handlerMap) => async (ctx, next) => {
         ctx.response.body = { statusCode: 404, message: 'Not found' };
     }
     else {
-        ctx.state.logger.push({ handler }).log('Found handler');
+        if (!ctx.state.logExcludePaths.includes(ctx.path)) {
+            ctx.state.logger.push({handler}).log('Found handler');
+        }
         await handler(ctx);
     }
     await next();

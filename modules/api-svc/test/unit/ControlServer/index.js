@@ -139,7 +139,11 @@ class Server extends ws.Server {
 
     // Close the server then wait for all the client sockets to close
     async stop() {
-        await new Promise(this.close.bind(this));
+        const closing = new Promise(resolve => this.close(resolve));
+        for (const client of this.clients) {
+            client.terminate();
+        }
+        await closing;
         this._logger.log('Control server shutdown complete');
     }
 
@@ -186,9 +190,7 @@ class Server extends ws.Server {
      * from other modules.
      */
     registerInternalEvents() {
-        ControlServerEventEmitter.on(INTERNAL_EVENTS.SERVER.BROADCAST_CONFIG_CHANGE, (params) => {
-            this.broadcastConfigChange(params);
-        });
+        ControlServerEventEmitter.on(INTERNAL_EVENTS.SERVER.BROADCAST_CONFIG_CHANGE, (params) => this.broadcastConfigChange(params));
     }
 
     /**
@@ -196,28 +198,22 @@ class Server extends ws.Server {
      *
      * @param {object} params Updated configuration
      */
-    async broadcastConfigChange(updatedConfig) {
+    broadcastConfigChange(updatedConfig) {
         const updateConfMsg = build.CONFIGURATION.PATCH({}, updatedConfig, generateSlug(4));
-        const errorLogger = (socket, message) => (err) =>
-            this._logger
-                .push({ message, ip: this._clientData.get(socket).ip, err })
-                .log('Error sending JWS keys notification to client');
-        return await this.broadcast(updateConfMsg, errorLogger);
+        this.broadcast(updateConfMsg);
     }
 
     /**
-    * Broadcasts a protocol message to all connected clients.
-    *
-    * @param {string} msg
-    * @param {object} errorLogger
-    */
-    async broadcast(msg, errorLogger) {
-        const sendToAllClients = (msg, errorLogger) => Promise.all(
-            [...this.clients.values()].map((socket) =>
-                (new Promise((resolve) => socket.send(msg, resolve))).catch(errorLogger(socket, msg))
-            )
-        );
-        return await sendToAllClients(msg, errorLogger);
+   * Broadcasts a protocol message to all connected clients.
+   *
+   * @param {string} msg
+   */
+    broadcast(msg) {
+        this.clients.forEach((client) => {
+            if (client.readyState === ws.WebSocket.OPEN) {
+                client.send(msg);
+            }
+        });
     }
 }
 

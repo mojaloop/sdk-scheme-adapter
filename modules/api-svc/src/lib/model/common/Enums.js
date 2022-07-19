@@ -1,3 +1,4 @@
+
 /**************************************************************************
  *  (C) Copyright ModusBox Inc. 2019 - All rights reserved.               *
  *                                                                        *
@@ -5,16 +6,25 @@
  *  specified in the corresponding source code repository.                *
  *                                                                        *
  *  ORIGINAL AUTHOR:                                                      *
- *       Paweł Marzec - pawel.marzec@modusbox.com                         *
+ *       Yevhen Kyriukha - yevhen.kyriukha@modusbox.com                   *
  **************************************************************************/
 
 'use strict';
-const { SDKStateEnum } = require('./Enums');
-const { BackendError } = require('./BackendError');
-const PersistentStateMachine = require('./PersistentStateMachine');
+
+// NOTE: Stick all common SDK ENUMS here. SDKStateEnum is the first attempt at consolidating and cleaning up ENUMS in the SDK.
+
+const SDKStateEnum = {
+    WAITING_FOR_ACTION: 'WAITING_FOR_ACTION',
+    WAITING_FOR_PARTY_ACCEPTANCE: 'WAITING_FOR_PARTY_ACCEPTANCE',
+    QUOTE_REQUEST_RECEIVED: 'QUOTE_REQUEST_RECEIVED',
+    WAITING_FOR_QUOTE_ACCEPTANCE: 'WAITING_FOR_QUOTE_ACCEPTANCE',
+    PREPARE_RECEIVED: 'PREPARE_RECEIVED',
+    ERROR_OCCURRED: 'ERROR_OCCURRED',
+    COMPLETED: 'COMPLETED',
+    ABORTED: 'ABORTED',
+    RESERVED: 'RESERVED',
+};
 
 module.exports = {
-    BackendError,
     SDKStateEnum,
-    PersistentStateMachine
 };

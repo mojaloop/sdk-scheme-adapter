@@ -22,6 +22,8 @@ const mockArguments = require('./data/mockArguments');
 const mockTransactionRequestData = require('./data/mockTransactionRequest');
 const { Logger } = require('@mojaloop/sdk-standard-components');
 
+const FSPIOPTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.TransferState;
+
 describe('Inbound API handlers:', () => {
     let mockArgs;
     let mockTransactionRequest;
@@ -549,7 +551,7 @@ describe('Inbound API handlers:', () => {
 
                     },
                     body: {
-                        transferState: 'COMMITTED',
+                        transferState: FSPIOPTransferStateEnum.COMMITTED,
                         completedTimestamp: '2020-08-18T09:39:33.552Z'
                     }
                 },

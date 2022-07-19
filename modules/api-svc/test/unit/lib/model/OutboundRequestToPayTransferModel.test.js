@@ -19,6 +19,7 @@ const Model = require('~/lib/model').OutboundRequestToPayTransferModel;
 
 const { MojaloopRequests, Logger } = require('@mojaloop/sdk-standard-components');
 const StateMachine = require('javascript-state-machine');
+const { SDKStateEnum } = require('../../../../src/lib/model/common');
 
 const defaultConfig = require('./data/defaultConfig');
 const requestToPayTransferRequest = require('./data/requestToPayTransferRequest');
@@ -71,10 +72,9 @@ describe('outboundRequestToPayTransferModel', () => {
         MojaloopRequests.__postTransfers = jest.fn(() => Promise.resolve());
 
         cache = new Cache({
-            host: 'dummycachehost',
-            port: 1234,
-            logger,
-        });
+                cacheUrl: 'redis://dummy:1234',
+                logger,
+            });
         await cache.connect();
     });
 
@@ -155,7 +155,7 @@ describe('outboundRequestToPayTransferModel', () => {
         expect(MojaloopRequests.__postTransfers).toHaveBeenCalledTimes(1);
 
         // check we stopped at payeeResolved state
-        expect(result.currentState).toBe('COMPLETED');
+        expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
         expect(StateMachine.__instance.state).toBe('succeeded');
     });
 
@@ -184,7 +184,7 @@ describe('outboundRequestToPayTransferModel', () => {
     //     let result = await resultPromise;
 
     //     // check we stopped at quoteReceived state
-    //     expect(result.currentState).toBe('WAITING_FOR_QUOTE_ACCEPTANCE');
+    //     expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE);
     //     expect(StateMachine.__instance.state).toBe('quoteReceived');
 
     //     const requestToPayTransactionId = requestToPayTransferRequest.requestToPayTransactionId;
@@ -236,7 +236,7 @@ describe('outboundRequestToPayTransferModel', () => {
     //     result = await resultPromise;
 
     //     // check we stopped at quoteReceived state
-    //     expect(result.currentState).toBe('COMPLETED');
+    //     expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
     //     expect(StateMachine.__instance.state).toBe('succeeded');
 
     // });

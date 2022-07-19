@@ -131,10 +131,8 @@ class MetricsServer {
 
         result.use(koaBody());
         result.use(async ctx => {
-            this._logger.log('Metrics request received');
-
             ctx.response.set('Content-Type', this._prometheusRegister.contentType);
-            ctx.response.body = this._prometheusRegister.metrics();
+            ctx.response.body = await this._prometheusRegister.metrics();
         });
 
         return result;

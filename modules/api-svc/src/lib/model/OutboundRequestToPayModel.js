@@ -17,12 +17,7 @@ const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const { BackendError } = require('./common');
 const PartiesModel = require('./PartiesModel');
 
-const transferStateEnum = {
-    'WAITING_FOR_PARTY_ACCEPTANCE': 'WAITING_FOR_PARTY_ACCEPTANCE',
-    'WAITING_FOR_QUOTE_ACCEPTANCE': 'WAITING_FOR_QUOTE_ACCEPTANCE',
-    'ERROR_OCCURRED': 'ERROR_OCCURRED',
-    'COMPLETED': 'COMPLETED',
-};
+const { SDKStateEnum } = require('./common');
 
 class OutboundRequestToPayModel {
 
@@ -480,20 +475,20 @@ class OutboundRequestToPayModel {
 
         switch(this.data.currentState) {
             case 'payeeResolved':
-                resp.currentState = transferStateEnum.WAITING_FOR_PARTY_ACCEPTANCE;
+                resp.currentState = SDKStateEnum.WAITING_FOR_PARTY_ACCEPTANCE;
                 break;
 
             case 'succeeded':
-                resp.currentState = transferStateEnum.COMPLETED;
+                resp.currentState = SDKStateEnum.COMPLETED;
                 break;
 
             case 'errored':
-                resp.currentState = transferStateEnum.ERROR_OCCURRED;
+                resp.currentState = SDKStateEnum.ERROR_OCCURRED;
                 break;
 
             default:
                 this._logger.log(`Transaction Request model response being returned from an unexpected state: ${this.data.currentState}. Returning ERROR_OCCURRED state`);
-                resp.currentState = transferStateEnum.ERROR_OCCURRED;
+                resp.currentState = SDKStateEnum.ERROR_OCCURRED;
                 break;
         }
 

@@ -37,7 +37,7 @@
     "test:coverage": "yarn workspaces foreach --parallel -v run test:coverage",
     "test:coverage-check": "yarn workspaces foreach --parallel -v run test:coverage-check",
     "test:integration": "yarn workspaces foreach --parallel -v run test:integration",
-    "audit:check": "yarn dlx audit-ci@^6 --config ./audit-ci.jsonc",
+    "audit:check": "yarn dlx audit-ci --config ./audit-ci.jsonc",
     "dep:check": "yarn workspaces foreach --parallel -v run dep:check",
     "dep:update": "yarn workspaces foreach --parallel -v run dep:update"
   },
@@ -47,6 +47,7 @@
     "@types/node-cache": "^4.2.5",
     "@typescript-eslint/eslint-plugin": "^5.22.0",
     "@typescript-eslint/parser": "^5.22.0",
+    "audit-ci": "^6.3.0",
     "eslint": "^8.14.0",
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-plugin-import": "latest",

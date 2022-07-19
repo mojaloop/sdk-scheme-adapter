@@ -1,14 +1,9 @@
 
 const ControlAgent = require('~/ControlAgent');
 const TestControlServer = require('./ControlServer');
-const InboundServer = require('~/InboundServer');
-const OutboundServer = require('~/OutboundServer');
-const TestServer = require('~/TestServer');
-const defaultConfig = require('./data/defaultConfig.json');
 const { Logger } = require('@mojaloop/sdk-standard-components');
 
 jest.mock('~/lib/cache');
-const Cache = require('~/lib/cache');
 
 // TODO:
 // - diff against master to determine what else needs testing
@@ -66,48 +61,9 @@ describe('ControlAgent', () => {
             const newConfigEvent = new Promise(
                 (resolve) => client.on(ControlAgent.EVENT.RECONFIGURE, resolve)
             );
-            await server.broadcastConfigChange(changedConfig);
+            server.broadcastConfigChange(changedConfig);
             const newConfEventData = await newConfigEvent;
             expect(newConfEventData).toEqual(changedConfig);
         });
-    });
-});
-
-describe('Server reconfigure methods', () => {
-    let conf, logger, cache;
-
-    const isPromise = (o) => Promise.resolve(o) === o;
-
-    beforeEach(() => {
-        conf = JSON.parse(JSON.stringify(defaultConfig));
-        logger = new Logger.Logger({ stringify: () => '' });
-        cache = new Cache({ ...conf.cacheConfig, logger: logger.push({ component: 'cache' }) });
-    });
-
-    test('InboundServer reconfigure method returns sync function', async () => {
-        const server = new InboundServer(conf, logger, cache);
-        const res = await server.reconfigure(conf, logger, cache);
-        expect(isPromise(res)).toEqual(false);
-    });
-
-    test('OutboundServer reconfigure method returns sync function', async () => {
-        const server = new OutboundServer(conf, logger, cache);
-        const res = await server.reconfigure(conf, logger, cache);
-        expect(isPromise(res)).toEqual(false);
-    });
-
-    test('TestServer reconfigure method returns sync function', async () => {
-        const server = new TestServer({ logger, cache });
-        const res = await server.reconfigure({ logger, cache });
-        expect(isPromise(res)).toEqual(false);
-    });
-
-    test('ControlClient reconfigure method returns sync function', async () => {
-        const server = new TestControlServer.Server({ logger, appConfig: { ...conf, control: { port: 4005 }}});
-        const client = await ControlAgent.Client.Create({ port: 4005, logger, appConfig: {} });
-        const res = await client.reconfigure({ logger, port: 4005, appConfig: {} });
-        expect(isPromise(res)).toEqual(false);
-        await client.close();
-        await server.close();
     });
 });

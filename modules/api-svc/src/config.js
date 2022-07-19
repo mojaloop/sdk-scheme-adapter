@@ -129,10 +129,7 @@ module.exports = {
     jwsSignPutParties: env.get('JWS_SIGN_PUT_PARTIES').default('false').asBool(),
     jwsSigningKey: env.get('JWS_SIGNING_KEY_PATH').asFileContent(),
     jwsVerificationKeysDirectory: env.get('JWS_VERIFICATION_KEYS_DIRECTORY').asString(),
-    cacheConfig: {
-        host: env.get('CACHE_HOST').required().asString(),
-        port: env.get('CACHE_PORT').required().asPortNumber(),
-    },
+    cacheUrl: env.get('CACHE_URL').default('redis://redis:6379').asUrlString(),
     enableTestFeatures: env.get('ENABLE_TEST_FEATURES').default('false').asBool(),
     oauthTestServer: {
         enabled: env.get('ENABLE_OAUTH_TOKEN_ENDPOINT').default('false').asBool(),

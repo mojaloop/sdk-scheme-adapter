@@ -16,6 +16,7 @@ jest.mock('@mojaloop/sdk-standard-components');
 const { uuid } = require('uuidv4');
 const Model = require('~/lib/model').TransfersModel;
 const PSM = require('~/lib/model/common').PersistentStateMachine;
+const { SDKStateEnum } = require('~/lib/model/common');
 const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const defaultConfig = require('./data/defaultConfig');
 const mockLogger = require('../../mockLogger');
@@ -386,7 +387,7 @@ describe('TransfersModel', () => {
                 expect(model.context.data.currentState).toEqual('errored');
                 expect(err.requestActionState).toEqual( {
                     ...data,
-                    currentState: 'ERROR_OCCURRED',
+                    currentState: SDKStateEnum.ERROR_OCCURRED,
                 });
             }
         });

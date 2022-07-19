@@ -16,10 +16,7 @@ const StateMachine = require('javascript-state-machine');
 const { MojaloopRequests, Errors } = require('@mojaloop/sdk-standard-components');
 const { BackendError } = require('./common');
 
-const stateEnum = {
-    'ERROR_OCCURRED': 'ERROR_OCCURRED',
-    'COMPLETED': 'COMPLETED',
-};
+const { SDKStateEnum } = require('./common');
 
 
 /**
@@ -283,11 +280,11 @@ class AccountsModel {
 
         switch(this._data.currentState) {
             case 'succeeded':
-                resp.currentState = stateEnum.COMPLETED;
+                resp.currentState = SDKStateEnum.COMPLETED;
                 break;
 
             case 'errored':
-                resp.currentState = stateEnum.ERROR_OCCURRED;
+                resp.currentState = SDKStateEnum.ERROR_OCCURRED;
                 break;
 
             default:
@@ -295,7 +292,7 @@ class AccountsModel {
                     `Account model response being returned from an unexpected state: ${this._data.currentState}. ` +
                     'Returning ERROR_OCCURRED state'
                 );
-                resp.currentState = stateEnum.ERROR_OCCURRED;
+                resp.currentState = SDKStateEnum.ERROR_OCCURRED;
                 break;
         }
         return resp;

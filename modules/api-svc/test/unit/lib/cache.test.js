@@ -18,9 +18,8 @@ const { Logger } = require('@mojaloop/sdk-standard-components');
 const createCache = async() => {
     const logger = new Logger.Logger({ context: { app: 'model-unit-tests-cache' }, stringify: () => '' });
     const cache = new Cache({
-        host: 'dummyhost',
-        port: 1234,
-        logger,
+      cacheUrl: 'redis://dummy:1234',
+      logger,
     });
     await cache.connect();
     return cache;
@@ -75,11 +74,11 @@ describe('Cache', () => {
                 expect(cbId1).toBe(0);
 
                 // now we have subscribed, inject a message.
-                cache.publish(chan1, msg1);
+                return cache.publish(chan1, msg1);
             });
         });
 
-        // create a second promise that only gets resoled if the second subscription gets the
+        // create a second promise that only gets resolved if the second subscription gets the
         // correct message
         const cb2Promise = new Promise((resolve) => {
             const mockCb2 = jest.fn((cn, msg) => {
@@ -99,7 +98,7 @@ describe('Cache', () => {
                 expect(cbId2).toBe(1);
 
                 // now we have subscribed, inject a message.
-                cache.publish(chan2, msg2);
+                return cache.publish(chan2, msg2);
             });
         });
 

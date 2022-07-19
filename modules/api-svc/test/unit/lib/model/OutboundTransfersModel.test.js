@@ -28,6 +28,9 @@ const payeeParty = require('./data/payeeParty');
 const quoteResponseTemplate = require('./data/quoteResponse');
 const transferFulfil = require('./data/transferFulfil');
 
+const { SDKStateEnum } = require('../../../../src/lib/model/common');
+const FSPIOPTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.TransferState;
+
 const genPartyId = (party) => {
     const { partyIdType, partyIdentifier, partySubIdOrType } = party.body.party.partyIdInfo;
     return PartiesModel.channelName({
@@ -134,7 +137,7 @@ describe('outboundModel', () => {
             await expect(model.run()).rejects.toThrowError(expectError);
         } else {
             const result = await model.run();
-            await expect(result.currentState).toBe('COMPLETED');
+            await expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
         }
     }
 
@@ -163,8 +166,7 @@ describe('outboundModel', () => {
             }
         }));
         cache = new Cache({
-            host: 'dummycachehost',
-            port: 1234,
+            cacheUrl: 'redis://dummy:1234',
             logger,
         });
         await cache.connect();
@@ -251,7 +253,7 @@ describe('outboundModel', () => {
         expect(MojaloopRequests.__patchTransfers).toHaveBeenCalledTimes(0);
 
         // check we stopped at payeeResolved state
-        expect(result.currentState).toBe('COMPLETED');
+        expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
         expect(StateMachine.__instance.state).toBe('succeeded');
     });
 
@@ -276,7 +278,7 @@ describe('outboundModel', () => {
             return Promise.resolve(dummyRequestsModuleResponse);
         });
         const pb = JSON.parse(JSON.stringify(transferFulfil));
-        pb.data.body.transferState = 'RESERVED';
+        pb.data.body.transferState = FSPIOPTransferStateEnum.RESERVED;
         MojaloopRequests.__postTransfers = jest.fn((postTransfersBody, destFspId) => {
             //ensure that the `MojaloopRequests.postTransfers` method has been called with the correct arguments
             // set as the destination FSPID, picked up from the header's value `fspiop-source`
@@ -308,13 +310,13 @@ describe('outboundModel', () => {
         expect(MojaloopRequests.__postTransfers).toHaveBeenCalledTimes(1);
         expect(MojaloopRequests.__patchTransfers).toHaveBeenCalledTimes(1);
         expect(MojaloopRequests.__patchTransfers.mock.calls[0][0]).toEqual(model.data.transferId);
-        expect(MojaloopRequests.__patchTransfers.mock.calls[0][1].transferState).toEqual('COMMITTED');
+        expect(MojaloopRequests.__patchTransfers.mock.calls[0][1].transferState).toEqual(FSPIOPTransferStateEnum.COMMITTED);
         expect(MojaloopRequests.__patchTransfers.mock.calls[0][1].completedTimestamp).not.toBeUndefined();
         expect(MojaloopRequests.__patchTransfers.mock.calls[0][2]).toEqual(quoteResponse.data.headers['fspiop-source']);
 
 
         // check we stopped at payeeResolved state
-        expect(result.currentState).toBe('COMPLETED');
+        expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
         expect(StateMachine.__instance.state).toBe('succeeded');
     });
 
@@ -397,7 +399,7 @@ describe('outboundModel', () => {
         expect(MojaloopRequests.__patchTransfers).toHaveBeenCalledTimes(0);
 
         // check we stopped at payeeResolved state
-        expect(result.currentState).toBe('COMPLETED');
+        expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
         expect(StateMachine.__instance.state).toBe('succeeded');
     });
 
@@ -430,7 +432,7 @@ describe('outboundModel', () => {
         expect(MojaloopRequests.__getTransfers).toHaveBeenCalledTimes(1);
 
         // check we stopped at payeeResolved state
-        expect(result.currentState).toBe('COMPLETED');
+        expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
         expect(StateMachine.__instance.state).toBe('succeeded');
     });
 
@@ -459,7 +461,7 @@ describe('outboundModel', () => {
         const result = await resultPromise;
 
         // check we stopped at payeeResolved state
-        expect(result.currentState).toBe('WAITING_FOR_PARTY_ACCEPTANCE');
+        expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_PARTY_ACCEPTANCE);
         expect(StateMachine.__instance.state).toBe('payeeResolved');
     });
 
@@ -491,7 +493,7 @@ describe('outboundModel', () => {
         const result = await resultPromise;
 
         // check we stopped at payeeResolved state
-        expect(result.currentState).toBe('WAITING_FOR_PARTY_ACCEPTANCE');
+        expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_PARTY_ACCEPTANCE);
         expect(StateMachine.__instance.state).toBe('payeeResolved');
 
         // check getParties mojaloop requests method was called with the correct arguments
@@ -522,7 +524,7 @@ describe('outboundModel', () => {
         // wait for the model to reach a terminal state
         const result = await resultPromise;
         // check we stopped at payeeResolved state
-        expect(result.currentState).toBe('WAITING_FOR_PARTY_ACCEPTANCE');
+        expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_PARTY_ACCEPTANCE);
         expect(StateMachine.__instance.state).toBe('payeeResolved');
         expect(result.to[0].fspId).toEqual('FirstFspId');
         expect(result.to[1].fspId).toEqual('SecondFspId');
@@ -553,7 +555,7 @@ describe('outboundModel', () => {
         let result = await resultPromise;
 
         // check we stopped at payeeResolved state
-        expect(result.currentState).toBe('WAITING_FOR_PARTY_ACCEPTANCE');
+        expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_PARTY_ACCEPTANCE);
         expect(StateMachine.__instance.state).toBe('payeeResolved');
 
         const transferId = result.transferId;
@@ -580,7 +582,7 @@ describe('outboundModel', () => {
         result = await resultPromise;
 
         // check we stopped at payeeResolved state
-        expect(result.currentState).toBe('WAITING_FOR_QUOTE_ACCEPTANCE');
+        expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE);
         expect(StateMachine.__instance.state).toBe('quoteReceived');
     });
 
@@ -614,7 +616,7 @@ describe('outboundModel', () => {
         let result = await resultPromise;
 
         // check we stopped at payeeResolved state
-        expect(result.currentState).toBe('WAITING_FOR_PARTY_ACCEPTANCE');
+        expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_PARTY_ACCEPTANCE);
         expect(StateMachine.__instance.state).toBe('payeeResolved');
 
         expect(result.amount).toEqual(initialAmount);
@@ -649,7 +651,7 @@ describe('outboundModel', () => {
         result = await resultPromise;
 
         // check we stopped at quoteReceived state
-        expect(result.currentState).toBe('WAITING_FOR_QUOTE_ACCEPTANCE');
+        expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE);
         expect(StateMachine.__instance.state).toBe('quoteReceived');
 
         // check the accept party key got merged to the state
@@ -693,7 +695,7 @@ describe('outboundModel', () => {
         let result = await resultPromise;
 
         // check we stopped at payeeResolved state
-        expect(result.currentState).toBe('WAITING_FOR_PARTY_ACCEPTANCE');
+        expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_PARTY_ACCEPTANCE);
         expect(StateMachine.__instance.state).toBe('payeeResolved');
 
         expect(result.amount).toEqual(initialAmount);
@@ -743,7 +745,7 @@ describe('outboundModel', () => {
         result = await resultPromise;
 
         // check we stopped at quoteReceived state
-        expect(result.currentState).toBe('WAITING_FOR_QUOTE_ACCEPTANCE');
+        expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE);
         expect(StateMachine.__instance.state).toBe('quoteReceived');
 
         // check the accept party key got merged to the state
@@ -786,7 +788,7 @@ describe('outboundModel', () => {
         let result = await resultPromise;
 
         // check we stopped at payeeResolved state
-        expect(result.currentState).toBe('WAITING_FOR_PARTY_ACCEPTANCE');
+        expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_PARTY_ACCEPTANCE);
         expect(StateMachine.__instance.state).toBe('payeeResolved');
 
         expect(result.amount).toEqual(initialAmount);
@@ -822,7 +824,7 @@ describe('outboundModel', () => {
         result = await resultPromise;
 
         // check we stopped at quoteReceived state
-        expect(result.currentState).toBe('WAITING_FOR_QUOTE_ACCEPTANCE');
+        expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE);
         expect(StateMachine.__instance.state).toBe('quoteReceived');
 
         // check the accept party key got merged to the state
@@ -869,7 +871,7 @@ describe('outboundModel', () => {
         let result = await resultPromise;
 
         // check we stopped at quoteReceived state
-        expect(result.currentState).toBe('WAITING_FOR_QUOTE_ACCEPTANCE');
+        expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE);
         expect(StateMachine.__instance.state).toBe('quoteReceived');
     });
 
@@ -898,7 +900,7 @@ describe('outboundModel', () => {
         let result = await resultPromise;
 
         // check we stopped at payeeResolved state
-        expect(result.currentState).toBe('WAITING_FOR_PARTY_ACCEPTANCE');
+        expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_PARTY_ACCEPTANCE);
         expect(StateMachine.__instance.state).toBe('payeeResolved');
 
         const transferId = result.transferId;
@@ -920,7 +922,7 @@ describe('outboundModel', () => {
         result = await model.run({ resume: { acceptParty: false } });
 
         // check we stopped at quoteReceived state
-        expect(result.currentState).toBe('ABORTED');
+        expect(result.currentState).toBe(SDKStateEnum.ABORTED);
         expect(result.abortedReason).toBe('Payee rejected by backend');
         expect(StateMachine.__instance.state).toBe('aborted');
     });
@@ -950,7 +952,7 @@ describe('outboundModel', () => {
         let result = await resultPromise;
 
         // check we stopped at payeeResolved state
-        expect(result.currentState).toBe('WAITING_FOR_PARTY_ACCEPTANCE');
+        expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_PARTY_ACCEPTANCE);
         expect(StateMachine.__instance.state).toBe('payeeResolved');
 
         const transferId = result.transferId;
@@ -978,13 +980,13 @@ describe('outboundModel', () => {
         result = await resultPromise;
 
         // check we stopped at payeeResolved state
-        expect(result.currentState).toBe('WAITING_FOR_QUOTE_ACCEPTANCE');
+        expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE);
         expect(StateMachine.__instance.state).toBe('quoteReceived');
 
         // now run the model again. this should trigger abort as the quote was not accepted
         result = await model.run({ acceptQuote: false });
 
-        expect(result.currentState).toBe('ABORTED');
+        expect(result.currentState).toBe(SDKStateEnum.ABORTED);
         expect(result.abortedReason).toBe('Quote rejected by backend');
         expect(StateMachine.__instance.state).toBe('aborted');
     });
@@ -1040,7 +1042,7 @@ describe('outboundModel', () => {
         let result = await resultPromise;
 
         // check we stopped at payeeResolved state
-        expect(result.currentState).toBe('WAITING_FOR_PARTY_ACCEPTANCE');
+        expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_PARTY_ACCEPTANCE);
         expect(StateMachine.__instance.state).toBe('payeeResolved');
 
         const transferId = result.transferId;
@@ -1068,20 +1070,20 @@ describe('outboundModel', () => {
         result = await resultPromise;
 
         // check we stopped at payeeResolved state
-        expect(result.currentState).toBe('WAITING_FOR_QUOTE_ACCEPTANCE');
+        expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE);
         expect(StateMachine.__instance.state).toBe('quoteReceived');
 
         // now run the model again. this should trigger abort as the quote was not accepted
         result = await model.run({ acceptQuote: false });
 
-        expect(result.currentState).toBe('ABORTED');
+        expect(result.currentState).toBe(SDKStateEnum.ABORTED);
         expect(result.abortedReason).toBe('Quote rejected by backend');
         expect(StateMachine.__instance.state).toBe('aborted');
 
         // now run the model again. this should get the same result as previous one
         result = await model.run({ acceptQuote: false });
 
-        expect(result.currentState).toBe('ABORTED');
+        expect(result.currentState).toBe(SDKStateEnum.ABORTED);
         expect(result.abortedReason).toBe('Quote rejected by backend');
         expect(StateMachine.__instance.state).toBe('aborted');
     });
@@ -1111,7 +1113,7 @@ describe('outboundModel', () => {
         let result = await resultPromise;
 
         // check we stopped at payeeResolved state
-        expect(result.currentState).toBe('WAITING_FOR_PARTY_ACCEPTANCE');
+        expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_PARTY_ACCEPTANCE);
         expect(StateMachine.__instance.state).toBe('payeeResolved');
 
         const transferId = result.transferId;
@@ -1139,7 +1141,7 @@ describe('outboundModel', () => {
         result = await resultPromise;
 
         // check we stopped at quoteReceived state
-        expect(result.currentState).toBe('WAITING_FOR_QUOTE_ACCEPTANCE');
+        expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE);
         expect(StateMachine.__instance.state).toBe('quoteReceived');
 
         // load a new model from the saved state
@@ -1165,7 +1167,7 @@ describe('outboundModel', () => {
         result = await resultPromise;
 
         // check we stopped at quoteReceived state
-        expect(result.currentState).toBe('COMPLETED');
+        expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
         expect(StateMachine.__instance.state).toBe('succeeded');
     });
 
@@ -1217,7 +1219,7 @@ describe('outboundModel', () => {
         const result = await resultPromise;
 
         // check we stopped at payeeResolved state
-        expect(result.currentState).toBe('COMPLETED');
+        expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
         expect(StateMachine.__instance.state).toBe('succeeded');
     });
 
@@ -1269,7 +1271,7 @@ describe('outboundModel', () => {
         const result = await resultPromise;
 
         // check we stopped at payeeResolved state
-        expect(result.currentState).toBe('COMPLETED');
+        expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
         expect(StateMachine.__instance.state).toBe('succeeded');
     });
 
@@ -1526,7 +1528,7 @@ describe('outboundModel', () => {
         testTlsServer(false));
 
     test('Outbound transfers model should record metrics', async () => {
-        const metrics = metricsClient._prometheusRegister.metrics();
+        const metrics = await metricsClient._prometheusRegister.metrics();
         expect(metrics).toBeTruthy();
 
         expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_outbound_party_lookup_request_count'));
@@ -1570,7 +1572,7 @@ describe('outboundModel', () => {
         let result = await resultPromise;
 
         // check we stopped at quoteReceived state
-        expect(result.currentState).toBe('WAITING_FOR_QUOTE_ACCEPTANCE');
+        expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE);
         expect(StateMachine.__instance.state).toBe('quoteReceived');
     });
 
