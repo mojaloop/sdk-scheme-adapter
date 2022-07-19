@@ -1,4 +1,61 @@
-# Changelog: [mojaloop/thirdparty-api-svc](https://github.com/mojaloop/thirdparty-api-svc)
+# Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [18.0.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v18.0.0...v18.0.1) (2022-07-12)
+
+
+### Chore
+
+* added .npmignore so that the test folder is not included when publishing packages ([#332](https://github.com/mojaloop/sdk-scheme-adapter/issues/332)) ([602b3ab](https://github.com/mojaloop/sdk-scheme-adapter/commit/602b3abfe861123623768e2a1c3497063ce4b909))
+* uodated deps ([#333](https://github.com/mojaloop/sdk-scheme-adapter/issues/333)) ([7f9e027](https://github.com/mojaloop/sdk-scheme-adapter/commit/7f9e0277ff760ad22ab29dc3abee20322030d7dc))
+
+## [18.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v17.0.1...v18.0.0) (2022-07-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* **mojaloop/#2811:** docker image now uses `/opt/app` instead of the root folder which will impact config mounts, and the secrets folder is no longer included in the docker image which aligns with best practices. Both these changes should NOT be a breaking change but I have marked them as such to make this change more obvious.
+
+### Bug Fixes
+
+* **mojaloop/#2811:** sdk-scheme-adapter sending incorrect transferState on a PUT transfers Callback ([#331](https://github.com/mojaloop/sdk-scheme-adapter/issues/331)) ([f7e450c](https://github.com/mojaloop/sdk-scheme-adapter/commit/f7e450cc2568f70f6c9abbb39d9c2186787c31b7)), closes [mojaloop/#2811](https://github.com/mojaloop/sdk-scheme-adapter/issues/2811) [mojaloop/#2811](https://github.com/mojaloop/sdk-scheme-adapter/issues/2811) [mojaloop/#2816](https://github.com/mojaloop/sdk-scheme-adapter/issues/2816)
+* updated dependencies ([6500476](https://github.com/mojaloop/sdk-scheme-adapter/commit/650047699ce7679d21a08daa1fb3cf2956b0e514))
+
+### [17.0.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v17.0.0...v17.0.1) (2022-07-04)
+
+
+### Bug Fixes
+
+* creating inbound server ([#329](https://github.com/mojaloop/sdk-scheme-adapter/issues/329)) ([962420f](https://github.com/mojaloop/sdk-scheme-adapter/commit/962420f6fed02722c5a9aeee6c108b6fbc9f021d))
+
+## [17.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v15.0.1...v17.0.0) (2022-07-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* add dummy pr to major version bump due to unsquashed title (#327)
+
+### Features
+
+* suppress health check logs ([#328](https://github.com/mojaloop/sdk-scheme-adapter/issues/328)) ([64fadde](https://github.com/mojaloop/sdk-scheme-adapter/commit/64faddea8307aa0c19d56466d0afe8f8208c4d66))
+
+
+### Chore
+
+* add dummy pr to major version bump due to unsquashed title ([#327](https://github.com/mojaloop/sdk-scheme-adapter/issues/327)) ([ff0f29b](https://github.com/mojaloop/sdk-scheme-adapter/commit/ff0f29b7ce560565ee21cf6ae84118e1b391b5b5))
+* **release:** 16.0.0 [skip ci] ([0071c65](https://github.com/mojaloop/sdk-scheme-adapter/commit/0071c65c3665239d0a482e76498f9eec5c288043))
+
+## [16.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v15.0.1...v16.0.0) (2022-07-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* add dummy pr to major version bump due to unsquashed title (#327)
+
+### Chore
+
+* add dummy pr to major version bump due to unsquashed title ([#327](https://github.com/mojaloop/sdk-scheme-adapter/issues/327)) ([ff0f29b](https://github.com/mojaloop/sdk-scheme-adapter/commit/ff0f29b7ce560565ee21cf6ae84118e1b391b5b5))
+
+### [15.0.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v15.0.0...v15.0.1) (2022-07-01)
+
 ## [15.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v14.0.0...v15.0.0) (2022-06-17)
 
 

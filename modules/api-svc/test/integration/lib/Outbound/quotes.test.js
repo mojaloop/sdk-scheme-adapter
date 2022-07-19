@@ -4,6 +4,8 @@ const axios = require('axios');
 const { uuid } = require('uuidv4');
 const env = require('../../testEnv');
 const quotesPostRequest = require('./data/quotesPostRequest.json');
+const { SDKStateEnum } = require('../../../../src/lib/model/common');
+
 
 jest.dontMock('redis');
 
@@ -28,7 +30,7 @@ describe('/quotes', () => {
         });
 
         expect(res.status).toEqual(200);
-        expect(res.data.currentState).toEqual('COMPLETED');
+        expect(res.data.currentState).toEqual(SDKStateEnum.COMPLETED);
         expect(typeof res.data.quotes).toEqual('object');
         expect(typeof res.data.quotes.body).toEqual('object');
         expect(typeof res.data.quotes.headers).toEqual('object');

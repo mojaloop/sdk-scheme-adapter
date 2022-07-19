@@ -16,9 +16,6 @@ const yaml = require('js-yaml');
 const fs = require('fs');
 const path = require('path');
 const EventEmitter = require('events');
-const cors = require('@koa/cors');
-
-const { WSO2Auth } = require('@mojaloop/sdk-standard-components');
 
 const Validate = require('../lib/validate');
 const router = require('../lib/router');
@@ -26,9 +23,10 @@ const handlers = require('./handlers');
 const middlewares = require('./middlewares');
 
 const endpointRegex = /\/.*/g;
+const logExcludePaths = ['/'];
 
 class OutboundApi extends EventEmitter {
-    constructor(conf, logger, cache, validator, metricsClient) {
+    constructor(conf, logger, cache, validator, metricsClient, wso2) {
         super({ captureExceptions: true });
         this._logger = logger;
         this._api = new Koa();
@@ -36,26 +34,10 @@ class OutboundApi extends EventEmitter {
         this._cache = cache;
         this._metricsClient = metricsClient;
 
-        this._wso2 = {
-            auth: new WSO2Auth({
-                ...this._conf.wso2.auth,
-                logger: this._logger,
-                tlsCreds: this._conf.outbound.tls.mutualTLS.enabled && this._conf.outbound.tls.creds,
-            }),
-            retryWso2AuthFailureTimes: conf.wso2.requestAuthFailureRetryTimes,
-        };
-        this._wso2.auth.on('error', (msg) => {
-            this.emit('error', 'WSO2 auth error in OutboundApi', msg);
-        });
-
-        // use CORS
-        // https://github.com/koajs/cors
-        this._api.use(cors());
-
         this._api.use(middlewares.createErrorHandler(this._logger));
         this._api.use(middlewares.createRequestIdGenerator());
         this._api.use(koaBody()); // outbound always expects application/json
-        this._api.use(middlewares.applyState({ cache, wso2: this._wso2, conf, metricsClient }));
+        this._api.use(middlewares.applyState({ cache, wso2, conf, metricsClient, logExcludePaths }));
         this._api.use(middlewares.createLogger(this._logger));
 
         //Note that we strip off any path on peerEndpoint config after the origin.
@@ -67,7 +49,7 @@ class OutboundApi extends EventEmitter {
                 peerEndpoint: conf.peerEndpoint.replace(endpointRegex, ''),
                 proxyConfig: conf.proxyConfig,
                 logger: this._logger,
-                wso2Auth: this._wso2.auth,
+                wso2Auth: wso2.auth,
                 tls: conf.outbound.tls,
             }));
         }
@@ -76,15 +58,9 @@ class OutboundApi extends EventEmitter {
         this._api.use(router(handlers));
     }
 
-    async start() {
-        if (!this._conf.testingDisableWSO2AuthStart) {
-            await this._wso2.auth.start();
-        }
-    }
+    start() {}
 
-    async stop() {
-        this._wso2.auth.stop();
-    }
+    stop() {}
 
     callback() {
         return this._api.callback();
@@ -92,9 +68,9 @@ class OutboundApi extends EventEmitter {
 }
 
 class OutboundServer extends EventEmitter {
-    constructor(conf, logger, cache, metricsClient) {
+    constructor(conf, logger, cache, metricsClient, wso2) {
         super({ captureExceptions: true });
-        this._validator = new Validate();
+        this._validator = new Validate({ logExcludePaths });
         this._conf = conf;
         this._logger = logger;
         this._server = null;
@@ -103,7 +79,8 @@ class OutboundServer extends EventEmitter {
             this._logger.push({ component: 'api' }),
             cache,
             this._validator,
-            metricsClient
+            metricsClient,
+            wso2,
         );
         this._api.on('error', (...args) => {
             this.emit('error', ...args);
@@ -121,30 +98,11 @@ class OutboundServer extends EventEmitter {
     }
 
     async stop() {
-        if (this._server) {
+        if (this._server.listening) {
             await new Promise(resolve => this._server.close(resolve));
-            this._server = null;
         }
-        if (this._api) {
-            await this._api.stop();
-            this._api = null;
-        }
-        this._logger.log('Shut down complete');
-    }
-
-    async reconfigure(conf, logger, cache, metricsClient) {
-        const newApi = new OutboundApi(conf, logger, cache, this._validator, metricsClient);
-        await newApi.start();
-        return () => {
-            this._logger = logger;
-            this._cache = cache;
-            this._server.removeAllListeners('request');
-            this._server.on('request', newApi.callback());
-            this._api.stop();
-            this._api = newApi;
-            this._conf = conf;
-            this._logger.log('restarted');
-        };
+        await this._api.stop();
+        this._logger.log('outbound shut down complete');
     }
 }
 
