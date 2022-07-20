@@ -4,202 +4,202 @@
 sequenceDiagram
     participant CoreConnector as Core Connector
     participant SDKOutboundAPI as SDK Backend API
-    participant SDKOutboundEventHandler as SDK Outbound Event Handler
-    participant SDKOutboundCommandHandler as SDK Outbound Command Handler
+    participant SDKOutboundDomainEventHandler as SDK Outbound Domain Event Handler
+    participant SDKOutboundCommandEventHandler as SDK Outbound Command Event Handler
     participant SDKFspiopApi as SDK FSPIOP API
     participant MojaloopSwitch as Mojaloop Switch
 
     CoreConnector->>+SDKOutboundAPI: SDKBulkRequest
     SDKOutboundAPI->>SDKOutboundAPI: Scheme Validation
     SDKOutboundAPI->>SDKOutboundAPI: Process Trace Headers
-    SDKOutboundAPI->>SDKOutboundEventHandler: SDKOutboundBulkRequestReceived
-    Note left of SDKOutboundEventHandler: topic-sdk-outbound-domain-events
+    SDKOutboundAPI->>SDKOutboundDomainEventHandler: SDKOutboundBulkRequestReceived
+    Note left of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
     SDKOutboundAPI->>CoreConnector: Accepted
-    SDKOutboundEventHandler->>SDKOutboundCommandHandler: ProcessSDKOutboundBulkRequest
-    Note left of SDKOutboundCommandHandler: topic-sdk-outbound-command-events
+    SDKOutboundDomainEventHandler->>SDKOutboundCommandEventHandler: ProcessSDKOutboundBulkRequest
+    Note left of SDKOutboundCommandEventHandler: topic-sdk-outbound-command-events
 
-    SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Store initial data into redis (Generate UUIDs and map to persistent model, break the JSON into smaller parts)
-    SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Update global state "RECEIVED"
+    SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Store initial data into redis (Generate UUIDs and map to persistent model, break the JSON into smaller parts)
+    SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "RECEIVED"
 
-    SDKOutboundCommandHandler->>SDKOutboundEventHandler: SDKOutboundBulkPartyInfoRequested
-    Note right of SDKOutboundEventHandler: topic-sdk-outbound-domain-events
-    SDKOutboundEventHandler->>SDKOutboundCommandHandler: ProcessSDKOutboundBulkPartyInfoRequest
-    Note left of SDKOutboundCommandHandler: topic-sdk-outbound-command-events
+    SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: SDKOutboundBulkPartyInfoRequested
+    Note right of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
+    SDKOutboundDomainEventHandler->>SDKOutboundCommandEventHandler: ProcessSDKOutboundBulkPartyInfoRequest
+    Note left of SDKOutboundCommandEventHandler: topic-sdk-outbound-command-events
 
-    SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Update global state "DISCOVERY_PROCESSING"
+    SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "DISCOVERY_PROCESSING"
 
 
     loop Party Lookup per transfer
-        SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Read individual attributes, if the party info already exists then change the individual state to DISCOVERY_SUCCESS else publish the individual event and update the state to DISCOVERY_RECEIVED
-        SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Update the party request
-        SDKOutboundCommandHandler->>SDKFspiopApi: PartyInfoRequested (includes info for SDK for making a party call)
+        SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Read individual attributes, if the party info already exists then change the individual state to DISCOVERY_SUCCESS else publish the individual event and update the state to DISCOVERY_RECEIVED
+        SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the party request
+        SDKOutboundCommandEventHandler->>SDKFspiopApi: PartyInfoRequested (includes info for SDK for making a party call)
         Note left of SDKFspiopApi: topic-sdk-outbound-domain-events
-        SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Set individual state: DISCOVERY_PROCESSING
+        SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Set individual state: DISCOVERY_PROCESSING
         SDKFspiopApi->>SDKFspiopApi: Process outbound Trace Headers
         SDKFspiopApi->>MojaloopSwitch: GET /parties
         MojaloopSwitch->>SDKFspiopApi: PUT /parties
         SDKFspiopApi->>SDKFspiopApi: Process Inbound Trace Headers
-        SDKFspiopApi->>SDKOutboundEventHandler: PartyInfoCallbackReceived
-        Note right of SDKOutboundEventHandler: topic-sdk-outbound-domain-events
-        SDKOutboundEventHandler->>SDKOutboundCommandHandler: ProcessPartyInfoCallback
-        Note left of SDKOutboundCommandHandler: topic-sdk-outbound-command-events
-        SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Update the individual state: DISCOVERY_SUCCESS / DISCOVERY_FAILED
-        SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Update the party response
-        SDKOutboundCommandHandler->>SDKOutboundEventHandler: PartyInfoCallbackProcessed
-        Note right of SDKOutboundEventHandler: topic-sdk-outbound-domain-events
-        SDKOutboundEventHandler->>SDKOutboundEventHandler: Check the status of the remaining items in the bulk
+        SDKFspiopApi->>SDKOutboundDomainEventHandler: PartyInfoCallbackReceived
+        Note right of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
+        SDKOutboundDomainEventHandler->>SDKOutboundCommandEventHandler: ProcessPartyInfoCallback
+        Note left of SDKOutboundCommandEventHandler: topic-sdk-outbound-command-events
+        SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the individual state: DISCOVERY_SUCCESS / DISCOVERY_FAILED
+        SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the party response
+        SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: PartyInfoCallbackProcessed
+        Note right of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
+        SDKOutboundDomainEventHandler->>SDKOutboundDomainEventHandler: Check the status of the remaining items in the bulk
     end
-    SDKOutboundEventHandler->>SDKOutboundCommandHandler: ProcessSDKOutboundBulkPartyInfoRequestComplete
-    Note left of SDKOutboundCommandHandler: topic-sdk-outbound-command-events
+    SDKOutboundDomainEventHandler->>SDKOutboundCommandEventHandler: ProcessSDKOutboundBulkPartyInfoRequestComplete
+    Note left of SDKOutboundCommandEventHandler: topic-sdk-outbound-command-events
 
-    SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Update global state "DISCOVERY_COMPLETED"
-    SDKOutboundCommandHandler->>SDKOutboundCommandHandler: check optiions.autoAcceptParty in redis
+    SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "DISCOVERY_COMPLETED"
+    SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: check optiions.autoAcceptParty in redis
 
     alt autoAcceptParty == false
-        SDKOutboundCommandHandler->>SDKOutboundAPI: SDKOutboundBulkAcceptPartyInfoRequested
+        SDKOutboundCommandEventHandler->>SDKOutboundAPI: SDKOutboundBulkAcceptPartyInfoRequested
         Note right of SDKOutboundAPI: topic-sdk-outbound-domain-events
-        SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Update global state "DISCOVERY_ACCEPTANCE_PENDING"
+        SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "DISCOVERY_ACCEPTANCE_PENDING"
         SDKOutboundAPI->>SDKOutboundAPI: Process outbound Trace Headers
         SDKOutboundAPI->>CoreConnector: PUT /bulktransfers/{bulkTransferId}
         CoreConnector-->>SDKOutboundAPI: Accepted
         CoreConnector->>+SDKOutboundAPI: PUT /bulkTransfers/{bulkTransferId}
         SDKOutboundAPI->>SDKOutboundAPI: Process inbound Trace Headers
-        SDKOutboundAPI->>SDKOutboundEventHandler: SDKOutboundBulkAcceptPartyInfoReceived
-        Note left of SDKOutboundEventHandler: topic-sdk-outbound-domain-events
+        SDKOutboundAPI->>SDKOutboundDomainEventHandler: SDKOutboundBulkAcceptPartyInfoReceived
+        Note left of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
         SDKOutboundAPI-->>CoreConnector: Accepted
-        SDKOutboundEventHandler->>SDKOutboundCommandHandler: ProcessSDKOutboundBulkAcceptPartyInfo
-        Note left of SDKOutboundCommandHandler: topic-sdk-outbound-command-events
+        SDKOutboundDomainEventHandler->>SDKOutboundCommandEventHandler: ProcessSDKOutboundBulkAcceptPartyInfo
+        Note left of SDKOutboundCommandEventHandler: topic-sdk-outbound-command-events
 
     else autoAcceptParty == true (In future we can make this optional and an external service can handle this)
-        SDKOutboundCommandHandler->>SDKOutboundEventHandler: SDKOutboundBulkAutoAcceptPartyInfoRequested
-        Note right of SDKOutboundEventHandler: topic-sdk-outbound-domain-events
-        SDKOutboundEventHandler->>SDKOutboundEventHandler: Create SDKOutboundBulkAcceptPartyInfo with acceptParty=true for individual items with DISCOVERY_SUCCESS state
-        SDKOutboundEventHandler->>SDKOutboundCommandHandler: ProcessSDKOutboundBulkAcceptPartyInfo
-        Note left of SDKOutboundCommandHandler: topic-sdk-outbound-command-events
+        SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: SDKOutboundBulkAutoAcceptPartyInfoRequested
+        Note right of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
+        SDKOutboundDomainEventHandler->>SDKOutboundDomainEventHandler: Create SDKOutboundBulkAcceptPartyInfo with acceptParty=true for individual items with DISCOVERY_SUCCESS state
+        SDKOutboundDomainEventHandler->>SDKOutboundCommandEventHandler: ProcessSDKOutboundBulkAcceptPartyInfo
+        Note left of SDKOutboundCommandEventHandler: topic-sdk-outbound-command-events
     end
 
     loop for each transfer in bulk
-        SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Update the individual state: DISCOVERY_ACCEPTED / DISCOVERY_REJECTED
+        SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the individual state: DISCOVERY_ACCEPTED / DISCOVERY_REJECTED
     end
-    SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Update global state "DISCOVERY_ACCEPTANCE_COMPLETED"
-    SDKOutboundCommandHandler->>SDKOutboundEventHandler: SDKOutboundBulkAcceptPartyInfoProcessed
-    Note right of SDKOutboundEventHandler: topic-sdk-outbound-domain-events
-    SDKOutboundEventHandler->>SDKOutboundCommandHandler: ProcessSDKOutboundBulkQuotesRequest
-    Note left of SDKOutboundCommandHandler: topic-sdk-outbound-command-events
+    SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "DISCOVERY_ACCEPTANCE_COMPLETED"
+    SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: SDKOutboundBulkAcceptPartyInfoProcessed
+    Note right of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
+    SDKOutboundDomainEventHandler->>SDKOutboundCommandEventHandler: ProcessSDKOutboundBulkQuotesRequest
+    Note left of SDKOutboundCommandEventHandler: topic-sdk-outbound-command-events
 
-    SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Update global state "AGREEMENT_PROCESSING"
-    SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Create bulkQuotes batches from individual items with DISCOVERY_ACCEPTED state per FSP and maxEntryConfigPerBatch
+    SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "AGREEMENT_PROCESSING"
+    SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Create bulkQuotes batches from individual items with DISCOVERY_ACCEPTED state per FSP and maxEntryConfigPerBatch
     loop BulkQuotes requests per batch
-        SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Update bulkQuotes request
-        SDKOutboundCommandHandler->>SDKFspiopApi: BulkQuotesRequested
+        SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update bulkQuotes request
+        SDKOutboundCommandEventHandler->>SDKFspiopApi: BulkQuotesRequested
         Note left of SDKFspiopApi: topic-sdk-outbound-domain-events
-        SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Update the batch state: AGREEMENT_PROCESSING
+        SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the batch state: AGREEMENT_PROCESSING
         SDKFspiopApi->>SDKFspiopApi: Process outbound Trace Headers
         SDKFspiopApi->>MojaloopSwitch: POST /bulkQuotes
         MojaloopSwitch-->>SDKFspiopApi: Accepted
         MojaloopSwitch->>SDKFspiopApi: PUT /bulkQuotes
         SDKFspiopApi->>SDKFspiopApi: Process inbound Trace Headers
-        SDKFspiopApi->>SDKOutboundEventHandler: BulkQuotesCallbackReceived
-        Note right of SDKOutboundEventHandler: topic-sdk-outbound-domain-events
+        SDKFspiopApi->>SDKOutboundDomainEventHandler: BulkQuotesCallbackReceived
+        Note right of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
         SDKFspiopApi-->>MojaloopSwitch: Accepted
-        SDKOutboundEventHandler->>SDKOutboundCommandHandler: ProcessBulkQuotesCallback
-        Note left of SDKOutboundCommandHandler: topic-sdk-outbound-command-events
-        SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Update the batch state: AGREEMENT_SUCCESS / AGREEMENT_FAILED
+        SDKOutboundDomainEventHandler->>SDKOutboundCommandEventHandler: ProcessBulkQuotesCallback
+        Note left of SDKOutboundCommandEventHandler: topic-sdk-outbound-command-events
+        SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the batch state: AGREEMENT_COMPLETED / AGREEMENT_FAILED
         loop through items in batch
-          SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Update the individual state: AGREEMENT_SUCCESS / AGREEMENT_FAILED
-          SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Update the quote response
+          SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the individual state: AGREEMENT_SUCCESS / AGREEMENT_FAILED
+          SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the quote response
         end
-        SDKOutboundCommandHandler->>SDKOutboundEventHandler: BulkQuotesProcessed
-        Note right of SDKOutboundEventHandler: topic-sdk-outbound-domain-events
-        SDKOutboundEventHandler->>SDKOutboundEventHandler: Check the status of the remaining items in the bulk
+        SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: BulkQuotesProcessed
+        Note right of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
+        SDKOutboundDomainEventHandler->>SDKOutboundDomainEventHandler: Check the status of the remaining items in the bulk
     end
-    SDKOutboundEventHandler->>SDKOutboundCommandHandler: ProcessSDKOutboundBulkQuotesRequestComplete
-    Note left of SDKOutboundCommandHandler: topic-sdk-outbound-command-events
+    SDKOutboundDomainEventHandler->>SDKOutboundCommandEventHandler: ProcessSDKOutboundBulkQuotesRequestComplete
+    Note left of SDKOutboundCommandEventHandler: topic-sdk-outbound-command-events
 
-    SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Update global state "AGREEMENT_COMPLETED"
-    SDKOutboundCommandHandler->>SDKOutboundCommandHandler: check autoAcceptQuote
+    SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "AGREEMENT_COMPLETED"
+    SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: check autoAcceptQuote
 
     alt autoAcceptQuote == false
-        SDKOutboundCommandHandler->>SDKOutboundAPI: SDKOutboundBulkAcceptQuoteRequested
+        SDKOutboundCommandEventHandler->>SDKOutboundAPI: SDKOutboundBulkAcceptQuoteRequested
         Note right of SDKOutboundAPI: topic-sdk-outbound-domain-events
-        SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Update global state "AGREEMENT_ACCEPTANCE_PENDING"
+        SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "AGREEMENT_ACCEPTANCE_PENDING"
         SDKOutboundAPI->>SDKOutboundAPI: Process outbound Trace Headers
         SDKOutboundAPI->>CoreConnector: PUT /bulktransfers/{bulkTransferId}
         CoreConnector-->>SDKOutboundAPI: Accepted
 
         CoreConnector->>+SDKOutboundAPI: PUT /bulkTransfers/{bulkTransferId}
         SDKOutboundAPI->>SDKOutboundAPI: Process inbound Trace Headers
-        SDKOutboundAPI->>SDKOutboundEventHandler: SDKOutboundBulkAcceptQuoteReceived
-        Note left of SDKOutboundEventHandler: topic-sdk-outbound-domain-events
+        SDKOutboundAPI->>SDKOutboundDomainEventHandler: SDKOutboundBulkAcceptQuoteReceived
+        Note left of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
         SDKOutboundAPI-->>CoreConnector: Accepted
-        SDKOutboundEventHandler->>SDKOutboundCommandHandler: ProcessSDKOutboundBulkAcceptQuote
-        Note left of SDKOutboundCommandHandler: topic-sdk-outbound-command-events
+        SDKOutboundDomainEventHandler->>SDKOutboundCommandEventHandler: ProcessSDKOutboundBulkAcceptQuote
+        Note left of SDKOutboundCommandEventHandler: topic-sdk-outbound-command-events
         loop for each individual transfer in bulk
-            SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Update the individual state: AGREEMENT_ACCEPTED / AGREEMENT_REJECTED
+            SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the individual state: AGREEMENT_ACCEPTED / AGREEMENT_REJECTED
         end
-        SDKOutboundCommandHandler->>SDKOutboundEventHandler: SDKOutboundBulkAcceptQuoteProcessed
-        Note right of SDKOutboundEventHandler: topic-sdk-outbound-domain-events
+        SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: SDKOutboundBulkAcceptQuoteProcessed
+        Note right of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
     else autoAcceptQuote == true
-        SDKOutboundCommandHandler->>SDKOutboundEventHandler: SDKOutboundBulkAutoAcceptQuoteRequested
-        Note right of SDKOutboundEventHandler: topic-sdk-outbound-domain-events
-        SDKOutboundEventHandler->>SDKOutboundCommandHandler: ProcessSDKOutboundBulkAutoAcceptQuote
-        Note left of SDKOutboundCommandHandler: topic-sdk-outbound-command-events
+        SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: SDKOutboundBulkAutoAcceptQuoteRequested
+        Note right of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
+        SDKOutboundDomainEventHandler->>SDKOutboundCommandEventHandler: ProcessSDKOutboundBulkAutoAcceptQuote
+        Note left of SDKOutboundCommandEventHandler: topic-sdk-outbound-command-events
         loop for each individual transfer in bulk
-            SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Check fee limits
-            SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Update the individual state: AGREEMENT_ACCEPTED / AGREEMENT_REJECTED
+            SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Check fee limits
+            SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the individual state: AGREEMENT_ACCEPTED / AGREEMENT_REJECTED
         end
-        SDKOutboundCommandHandler->>SDKOutboundEventHandler: SDKOutboundBulkAutoAcceptQuoteCompleted
-        Note right of SDKOutboundEventHandler: topic-sdk-outbound-domain-events
+        SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: SDKOutboundBulkAutoAcceptQuoteCompleted
+        Note right of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
     end
-    SDKOutboundEventHandler->>SDKOutboundCommandHandler: ProcessSDKOutboundBulkTransfersRequest
-    Note left of SDKOutboundCommandHandler: topic-sdk-outbound-command-events
+    SDKOutboundDomainEventHandler->>SDKOutboundCommandEventHandler: ProcessSDKOutboundBulkTransfersRequest
+    Note left of SDKOutboundCommandEventHandler: topic-sdk-outbound-command-events
 
-    SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Update global state "TRANSFERS_PROCESSING"
+    SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "TRANSFERS_PROCESSING"
 
     loop BulkTransfers requests per each batch and include only items with AGREEMENT_ACCEPTED
-        SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Update the request
-        SDKOutboundCommandHandler->>SDKFspiopApi: BulkTransfersRequested
+        SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the request
+        SDKOutboundCommandEventHandler->>SDKFspiopApi: BulkTransfersRequested
         Note left of SDKFspiopApi: topic-sdk-outbound-domain-events
-        SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Update the batch state: TRANSFERS_PROCESSING
+        SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the batch state: TRANSFERS_PROCESSING
         SDKFspiopApi->>SDKFspiopApi: Process outbound Trace Headers
         SDKFspiopApi->>MojaloopSwitch: POST /bulkTransfers
         MojaloopSwitch-->>SDKFspiopApi: Accepted
         MojaloopSwitch->>SDKFspiopApi: PUT /bulkTransfers
         SDKFspiopApi->>SDKFspiopApi: Process inbound Trace Headers
-        SDKFspiopApi->>SDKOutboundEventHandler: BulkTransfersCallbackReceived
-        Note right of SDKOutboundEventHandler: topic-sdk-outbound-domain-events
+        SDKFspiopApi->>SDKOutboundDomainEventHandler: BulkTransfersCallbackReceived
+        Note right of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
         SDKFspiopApi-->>MojaloopSwitch: Accepted
-        SDKOutboundEventHandler->>SDKOutboundCommandHandler: ProcessBulkTransfersCallback
-        Note left of SDKOutboundCommandHandler: topic-sdk-outbound-command-events
-        SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Update the batch state: TRANSFERS_SUCCESS / TRANSFERS_FAILED
+        SDKOutboundDomainEventHandler->>SDKOutboundCommandEventHandler: ProcessBulkTransfersCallback
+        Note left of SDKOutboundCommandEventHandler: topic-sdk-outbound-command-events
+        SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the batch state: TRANSFERS_COMPLETED / TRANSFERS_FAILED
         loop through items in batch
-          SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Update the individual state: TRANSFERS_SUCCESS / TRANSFERS_FAILED
-          SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Update the transfer response
+          SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the individual state: TRANSFERS_SUCCESS / TRANSFERS_FAILED
+          SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the transfer response
         end
-        SDKOutboundCommandHandler->>SDKOutboundEventHandler: BulkTransfersProcessed
-        Note right of SDKOutboundEventHandler: topic-sdk-outbound-domain-events
-        SDKOutboundEventHandler->>SDKOutboundEventHandler: Check the status of the remaining items in the bulk
+        SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: BulkTransfersProcessed
+        Note right of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
+        SDKOutboundDomainEventHandler->>SDKOutboundDomainEventHandler: Check the status of the remaining items in the bulk
     end
-    SDKOutboundEventHandler->>SDKOutboundCommandHandler: ProcessSDKOutboundBulkTransfersRequestComplete
-    Note left of SDKOutboundCommandHandler: topic-sdk-outbound-command-events
-    SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Update global state "TRANSFERS_COMPLETED"
+    SDKOutboundDomainEventHandler->>SDKOutboundCommandEventHandler: ProcessSDKOutboundBulkTransfersRequestComplete
+    Note left of SDKOutboundCommandEventHandler: topic-sdk-outbound-command-events
+    SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "TRANSFERS_COMPLETED"
 
-    SDKOutboundCommandHandler->>SDKOutboundEventHandler: SDKOutboundBulkTransfersRequestProcessed
-    Note right of SDKOutboundEventHandler: topic-sdk-outbound-domain-events
+    SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: SDKOutboundBulkTransfersRequestProcessed
+    Note right of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
 
-    SDKOutboundEventHandler->>SDKOutboundCommandHandler: PrepareSDKOutboundBulkResponse
-    Note left of SDKOutboundCommandHandler: topic-sdk-outbound-command-events
-    SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Build response from redis state
-    SDKOutboundCommandHandler->>SDKOutboundAPI: SDKOutboundBulkResponsePrepared
+    SDKOutboundDomainEventHandler->>SDKOutboundCommandEventHandler: PrepareSDKOutboundBulkResponse
+    Note left of SDKOutboundCommandEventHandler: topic-sdk-outbound-command-events
+    SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Build response from redis state
+    SDKOutboundCommandEventHandler->>SDKOutboundAPI: SDKOutboundBulkResponsePrepared
     Note right of SDKOutboundAPI: topic-sdk-outbound-domain-events
-    SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Update global state "RESPONSE_PROCESSING"
+    SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "RESPONSE_PROCESSING"
     SDKOutboundAPI->>SDKOutboundAPI: Process outbound Trace Headers
     SDKOutboundAPI->>CoreConnector: Send the response as callback
     CoreConnector-->>SDKOutboundAPI: Accepted
-    SDKOutboundAPI->>SDKOutboundEventHandler: SDKOutboundBulkResponseSent
-    Note left of SDKOutboundEventHandler: topic-sdk-outbound-domain-events
-    SDKOutboundEventHandler->>SDKOutboundCommandHandler: ProcessSDKOutboundBulkResponseSent
-    Note left of SDKOutboundCommandHandler: topic-sdk-outbound-command-events
-    SDKOutboundCommandHandler->>SDKOutboundCommandHandler: Update global state "RESPONSE_SENT"
+    SDKOutboundAPI->>SDKOutboundDomainEventHandler: SDKOutboundBulkResponseSent
+    Note left of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
+    SDKOutboundDomainEventHandler->>SDKOutboundCommandEventHandler: ProcessSDKOutboundBulkResponseSent
+    Note left of SDKOutboundCommandEventHandler: topic-sdk-outbound-command-events
+    SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "RESPONSE_SENT"
 
 ```
