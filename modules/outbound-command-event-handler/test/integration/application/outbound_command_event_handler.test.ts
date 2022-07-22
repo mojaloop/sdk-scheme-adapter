@@ -57,9 +57,15 @@ describe('First domain event', () => {
     await producer.destroy();
   });
 
-  test('should publish a domain event', async () => {
-    const domainEventObj = new DomainEventMessage(sampleDomainEventMessageData);
-    await producer.sendDomainMessage(domainEventObj);
-    await expect(true)
+  test('Inbound event ProcessSDKOutboundBulkRequest should publish outbound SDKOutboundBulkPartyInfoRequested event. Global state should be RECEIVED.', async () => {
+    //TODO add asserts
+
+    //TODO question: In sequence diagram it says, break json into smaller parts. What does it mean by smaller parts
+  })
+
+  test('Inbound event ProcessSDKOutboundBulkPartyInfoRequest should update global state to DISCOVERY_PROCESSING.', async () => {
+    //TODO add asserts
+
+    
   })
 })
