@@ -63,9 +63,28 @@ describe('First domain event', () => {
     //TODO question: In sequence diagram it says, break json into smaller parts. What does it mean by smaller parts
   })
 
-  test('Inbound event ProcessSDKOutboundBulkPartyInfoRequest should update global state to DISCOVERY_PROCESSING. Party info does not already exist for none of the individual transfers. So PartyInfoRequested event should be published for each individual transfer.', async () => {
+  test('Inbound event ProcessSDKOutboundBulkPartyInfoRequest should update global state to DISCOVERY_PROCESSING. Party info does not already exist for none of the individual transfers. So PartyInfoRequested event should be published for each individual transfer. State for individual transfer should be updated to DISCOVERY_PROCESSING.', async () => {
     //TODO add asserts
 
     
   })
+
+  test('Inbound event ProcessSDKOutboundBulkPartyInfoRequest should update global state to DISCOVERY_PROCESSING. Party info exists for individual transfers. PartyInfoRequested event should not be published for each individual transfer. State for individual transfer should be updated to DISCOVERY_SUCCESS.', async () => {
+    //TODO add asserts
+
+    
+  })
+
+  test('Inbound event ProcessPartyInfoCallback should update the state for successful party lookups to DISCOVERY_SUCCESS', async () => {
+    //TODO add asserts
+
+    
+  })
+
+  test('Inbound event ProcessPartyInfoCallback should update the state for successful party lookups to DISCOVERY_FAILED', async () => {
+    //TODO add asserts
+
+    
+  })
+
 })
