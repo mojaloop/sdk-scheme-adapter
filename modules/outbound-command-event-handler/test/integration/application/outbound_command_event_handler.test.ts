@@ -22,6 +22,7 @@
  * Modusbox
  - Shashikant Hirugade <shashikant.hirugade@modusbox.com>
  - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
+ - Sridevi Miriyala <sridevi.miriyala@modusbox.com
  --------------
  ******/
 
@@ -75,13 +76,57 @@ describe('First domain event', () => {
     
   })
 
-  test('Inbound event ProcessPartyInfoCallback should update the state for successful party lookups to DISCOVERY_SUCCESS', async () => {
+  test('Inbound event ProcessPartyInfoCallback should update the state for individual successful party lookups to DISCOVERY_SUCCESS', async () => {
     //TODO add asserts
 
     
   })
 
-  test('Inbound event ProcessPartyInfoCallback should update the state for successful party lookups to DISCOVERY_FAILED', async () => {
+  test('Inbound event ProcessPartyInfoCallback should update the state for individual failed party lookups to DISCOVERY_FAILED', async () => {
+    //TODO add asserts
+
+    
+  })
+
+  test('Inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete should update the global state to DISCOVERY_COMPLETED', async () => {
+    //TODO add asserts
+
+    
+  })
+
+  test('Inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete should publish event SDKOutboundBulkAcceptpartyInfoRequested and update the global state to DISCOVERY_ACCEPTANCE_PENDING if autoAcceptParty is false', async () => {
+    //TODO add asserts
+
+    
+  })
+
+  test('Inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete should publish event SDKOutboundBulkAutoAcceptpartyInfoRequested if autoAcceptParty is true', async () => {
+    //TODO add asserts
+
+    
+  })
+
+  test('Inbound event ProcessSDKOutboundBulkAcceptPartyInfo should loop through individual transfer in the bulk request and update the individual transfer state to DISCOVERY_ACCEPTED or DISCOVERY_REJECTED based on the value in the incoming event, update the overall global state to DISCOVERY_ACCEPTANCE_COMPLETED and publish event SDKOutboundBulkAcceptPartyInfoProcessed', async () => {
+    //TODO add asserts
+
+    
+  })
+
+  test('Inbound event ProcessSDKOutboundBulkAcceptPartyInfo should loop through individual transfer in the bulk request and update the individual transfer state to DISCOVERY_ACCEPTED or DISCOVERY_REJECTED based on the value in the incoming event', async () => {
+    //TODO add asserts
+
+    
+  })
+
+  // Tests for Quotes Processing
+
+  test('Inbound event ProcessSDKOutboundBulkQuotesRequest should update the global state to AGREEMENT_PROCESSING, create batches based on FSP that has DISCOVERY_ACCEPTED state and also has config maxEntryConfigPerBatch and publish BulkQuotesRequested per each batch updating its state to AGREEMENT_PROCESSING.', async () => {
+    //TODO add asserts
+
+    
+  })
+
+  test('Inbound event ProcessBulkQuotesCallback for success requests should update the individual batch state to AGREEMENT_PROCESSING, create batches based on FSP that has DISCOVERY_ACCEPTED state and also has config maxEntryConfigPerBatch and publish BulkQuotesRequested per each batch updating its state to AGREEMENT_PROCESSING.', async () => {
     //TODO add asserts
 
     
