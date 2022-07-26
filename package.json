@@ -81,7 +81,7 @@
     "random-word-slugs": "^0.1.6",
     "redis": "^4.2.0",
     "uuidv4": "^6.2.13",
-    "ws": "^8.8.0"
+    "ws": "^7.5.5"
   },
   "devDependencies": {
     "@babel/core": "^7.18.6",
