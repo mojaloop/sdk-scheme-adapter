@@ -1,4 +1,16 @@
 # Changelog: [mojaloop/thirdparty-api-svc](https://github.com/mojaloop/thirdparty-api-svc)
+### [18.0.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v18.0.1...v18.0.2) (2022-07-27)
+
+
+### Bug Fixes
+
+* ws-connection-issue ([#339](https://github.com/mojaloop/sdk-scheme-adapter/issues/339)) ([e29e158](https://github.com/mojaloop/sdk-scheme-adapter/commit/e29e158807d1c758e18418752339b8b10d42377b))
+
+
+### Chore
+
+* updates to readme for header badges [skip ci] ([#334](https://github.com/mojaloop/sdk-scheme-adapter/issues/334)) ([415bb33](https://github.com/mojaloop/sdk-scheme-adapter/commit/415bb3380a17cfd35841095bb9b2f399e969f5c6))
+
 ### [18.0.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v18.0.0...v18.0.1) (2022-07-12)
 
 
