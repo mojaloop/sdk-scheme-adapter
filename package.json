@@ -56,6 +56,7 @@
     "@koa/cors": "^3.3.0",
     "@mojaloop/central-services-shared": "17.0.2",
     "@mojaloop/sdk-standard-components": "^17.1.1",
+    "@mojaloop/api-snippets": "^14.2.0",
     "ajv": "8.11.0",
     "axios": "^0.27.2",
     "co-body": "^6.1.0",
@@ -82,7 +83,6 @@
   "devDependencies": {
     "@babel/core": "^7.18.9",
     "@babel/preset-env": "^7.18.9",
-    "@mojaloop/api-snippets": "^14.2.0",
     "@redocly/openapi-cli": "^1.0.0-beta.94",
     "@types/jest": "^28.1.6",
     "audit-ci": "^6.3.0",
