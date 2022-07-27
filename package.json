@@ -12,8 +12,7 @@
   },
   "scripts": {
     "start": "node src/index.js",
-    "audit:resolve": "npx resolve-audit --production",
-    "audit:check": "npx check-audit --production",
+    "audit:check": "npx audit-ci --config ./audit-ci.jsonc",
     "build": "npm run build:openapi",
     "build:openapi": "npm run build:openapi:inbound",
     "build:openapi:inbound": "openapi bundle --output ./src/InboundServer/api.yaml --ext yaml ./src/InboundServer/api_template.yaml",
@@ -86,6 +85,7 @@
     "@mojaloop/api-snippets": "^14.2.0",
     "@redocly/openapi-cli": "^1.0.0-beta.94",
     "@types/jest": "^28.1.6",
+    "audit-ci": "^6.3.0",
     "babel-jest": "^28.1.3",
     "eslint": "^8.20.0",
     "eslint-config-airbnb-base": "^15.0.0",
