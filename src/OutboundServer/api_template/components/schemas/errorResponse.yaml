@@ -1,8 +1,0 @@
-type: object
-properties:
-  statusCode:
-    type: string
-    description: Error code as string.
-  message:
-    type: string
-    description: Error message text.

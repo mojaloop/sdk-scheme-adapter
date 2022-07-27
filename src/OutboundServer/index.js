@@ -90,7 +90,7 @@ class OutboundServer extends EventEmitter {
 
     async start() {
         await this._api.start();
-        const specPath = path.join(__dirname, 'api.yaml');
+        const specPath = path.join(path.dirname(require.resolve('@mojaloop/api-snippets')), '../docs/sdk-scheme-adapter-outbound-v2_0_0-openapi3-snippets.yaml');
         const apiSpecs = yaml.load(fs.readFileSync(specPath));
         await this._validator.initialise(apiSpecs);
         await new Promise((resolve) => this._server.listen(this._conf.outbound.port, resolve));
