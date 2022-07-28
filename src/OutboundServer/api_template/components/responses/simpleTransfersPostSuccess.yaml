@@ -1,5 +1,0 @@
-description: sync response from POST /simpleTransfers
-content:
-  application/json:
-    schema:
-      $ref: ../schemas/simpleTransfersPostResponse.yaml
