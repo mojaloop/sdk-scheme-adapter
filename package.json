@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
-  "version": "18.0.1",
+  "version": "18.0.2",
   "description": "An adapter for connecting to Mojaloop API enabled switches.",
   "main": "src/index.js",
   "types": "src/index.d.ts",
@@ -78,7 +78,7 @@
     "random-word-slugs": "^0.1.6",
     "redis": "^4.2.0",
     "uuidv4": "^6.2.13",
-    "ws": "^8.8.1"
+    "ws": "^7.5.5"
   },
   "devDependencies": {
     "@babel/core": "^7.18.9",
