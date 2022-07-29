@@ -66,13 +66,28 @@ describe("First domain event", () => {
   test("When inbound command event ProcessSDKOutboundBulkRequest is received \
         Then outbound event SDKOutboundBulkPartyInfoRequested should be published \
         And Then Global state should be updated to RECEIVED.", async () => {
-    //TODO add asserts
-    //TODO question: In sequence diagram it says, break json into smaller parts. What does it mean by smaller parts
-    const inboundCommandEvent = getInboundCommandEvent()
+    
+    const inboundBulkRequestOptions = {
+      count: 1,
+      sender: {
+        idType: 'MSISDN',
+        id: 5719891907,
 
-    const outboundEvent = getOutboundKafkaEvent()
-    const outboundEventHeaders = outboundEvent.getHeaders()
-    const outboundEventMessage = outboundEvent.getData()
+      },
+      receivers: [{
+        receiver: {
+          idType: 'MSISDN',
+          to: 5719891908,
+          currency: 'USD',
+          amount: 10
+        }
+      }]
+    }
+    const inboundCommandEvent = getInboundCommandEvent(inboundBulkRequestOptions)
+    submitInboundCommandEvent(inboundCommandEvent,'ProcessSDKOutboundBulkRequest')
+    const outboundEvents = getOutboundKafkaEvents()
+    const outboundEventHeaders = outboundEvent[0].getHeaders()
+    const outboundEventMessage = outboundEvent[0].getData()
     expect(outboundEventMessage.name).toBe('SDKOutboundBulkPartyInfoRequested')
 
     const redisData = getGlobalDataFromRedis('bulkTransactionId')
@@ -80,18 +95,61 @@ describe("First domain event", () => {
 
   });
 
-  test("When inbound event ProcessSDKOutboundBulkPartyInfoRequest is received\
-        And When Party info does not already exist for none of the individual transfers. \
+  test("Given Party info does not already exist for none of the individual transfers. \
+        When inbound command event ProcessSDKOutboundBulkPartyInfoRequest is received\
         Then the global state should be updated to DISCOVERY_PROCESSING \
         And Then PartyInfoRequested kafka event should be published for each individual transfer. \
         And Then State for individual transfer should be updated to DISCOVERY_PROCESSING.", async () => {
-    //TODO add asserts
+    
+    const inboundBulkRequestOptions = {
+      count: 1,
+      sender: {
+        idType: 'MSISDN',
+        id: 5719891907,
+
+      },
+      receivers: [
+        {
+          idType: 'MSISDN',
+          to: 5719891908,
+          currency: 'USD',
+          amount: 10
+        },
+        {
+          idType: 'MSISDN',
+          to: 5719891909,
+          currency: 'USD',
+          amount: 20
+        }
+      ]
+    }
+    const inboundCommandEvent = getInboundCommandEvent(inboundBulkRequestOptions,'ProcessSDKOutboundBulkPartyInfoRequest')
+    submitInboundCommandEvent(inboundCommandEvent)
+    const redisData = getGlobalDataFromRedis('bulkTransactionId')
+    expect(redisData.state).toBe('DISCOVERY_PROCESSING')
+
+    const outboundEvents = getOutboundKafkaEvents()
+    expect(outboundEvents.size()).toBe(2)
+    
+    const outboundEvent1Headers = outboundEvent[0].getHeaders()
+    const outboundEvent1Message = outboundEvent[0].getData()
+    expect(outboundEvent1Message.receiverId).toBe(5719891908)
+    expect(outboundEvent1Message.name).toBe('PartyInfoRequested')
+    const redis1Data = getDataFromRedis(outboundEvent1Message.transferId)
+    expect(redis1Data.state).toBe('DISCOVERY_PROCESSING')
+    
+    const outboundEvent2Headers = outboundEvent[1].getHeaders()
+    const outboundEvent2Message = outboundEvent[1].getData()
+    expect(outboundEvent2Message.receiverId).toBe(5719891909)
+    expect(outboundEvent2Message.name).toBe('PartyInfoRequested')
+    const redis2Data = getDataFromRedis(outboundEvent2Message.transferId)
+    expect(redis2Data.state).toBe('DISCOVERY_PROCESSING')
+
   });
 
-  test("When inbound event ProcessSDKOutboundBulkPartyInfoRequest is received \
-        And When Party info exists for individual transfers. \
+  test("Given Party info exists for individual transfers. \
+        When inbound command event ProcessSDKOutboundBulkPartyInfoRequest is received \
         Then the global state should be updated to DISCOVERY_PROCESSING. \
-        
         PartyInfoRequested event should not be published for each individual transfer. \
         State for individual transfer should be updated to DISCOVERY_SUCCESS.", async () => {
     //TODO add asserts
