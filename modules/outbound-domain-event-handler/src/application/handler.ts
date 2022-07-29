@@ -72,8 +72,8 @@ export class OutboundEventHandler implements IRunHandler {
     }
 
     async destroy(): Promise<void> {
-        await this._consumer.destroy();
-        await this._commandProducer.destroy();
+        await this._consumer?.destroy();
+        await this._commandProducer?.destroy();
     }
 
     async _messageHandler(message: DomainEventMessage): Promise<void> {

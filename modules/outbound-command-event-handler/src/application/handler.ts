@@ -80,9 +80,9 @@ export class OutboundEventHandler implements IRunHandler {
     }
 
     async destroy(): Promise<void> {
-        await this._consumer.destroy();
-        await this._domainProducer.destroy();
-        await this._bulkTransactionEntityStateRepo.destroy();
+        await this._consumer?.destroy();
+        await this._domainProducer?.destroy();
+        await this._bulkTransactionEntityStateRepo?.destroy();
     }
 
     async _messageHandler(message: CommandEventMessage): Promise<void> {
