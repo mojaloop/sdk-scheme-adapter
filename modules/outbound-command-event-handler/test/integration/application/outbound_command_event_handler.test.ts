@@ -65,7 +65,7 @@ describe("First domain event", () => {
 
   test("When inbound command event ProcessSDKOutboundBulkRequest is received \
         Then outbound event SDKOutboundBulkPartyInfoRequested should be published \
-        And Then Global state should be updated to RECEIVED.", async () => {
+          And Global state should be updated to RECEIVED.", async () => {
 
     const inboundBulkRequestOptions = {
       count: 1,
@@ -180,14 +180,36 @@ describe("First domain event", () => {
     expect(redis1Data.state).toBe('DISCOVERY_SUCCESS')
   });
 
-  test("When inbound command event ProcessPartyInfoCallback is received \
-        Then the state for individual successful party lookups should be updated to DISCOVERY_SUCCESS", async () => {
-    //TODO add asserts
+  test("Given party lookup was successful \
+        When inbound command event ProcessPartyInfoCallback is received \
+        Then the state for individual successful party lookups should be updated to DISCOVERY_SUCCESS \
+        And outbound event PartyInfoCallbackProcessed event should be published", async () => {
+    
+    const inboundCommandEvent = getInboundCommandEvent(inboundBulkRequestOptions)
+    submitInboundCommandEvent(inboundCommandEvent, 'ProcessPartyInfoCallback')
+
+    const outboundEvents = getOutboundKafkaEvents()
+    expect(outboundEvents.size()).toBe(1)
+    expect(outboundEvents[0].name).toBe('PartyInfoCallbackProcessed')
+    
+    const redis1Data = getDataFromRedis(inboundCommandEvent.data.individualTransfers[0].transferId)
+    expect(redis1Data.state).toBe('DISCOVERY_SUCCESS')
   });
 
-  test("When inbound event ProcessPartyInfoCallback is received\
-        Then state for individual failed party lookups should be updated to DISCOVERY_FAILED", async () => {
-    //TODO add asserts
+  test("Given party lookup was a failure \
+        When inbound event ProcessPartyInfoCallback is received\
+        Then state for individual failed party lookups should be updated to DISCOVERY_FAILED \
+        And outbound event PartyInfoCallbackProcessed event should be published", async () => {
+    
+    const inboundCommandEvent = getInboundCommandEvent(inboundBulkRequestOptions)
+    submitInboundCommandEvent(inboundCommandEvent, 'ProcessPartyInfoCallback')
+
+    const outboundEvents = getOutboundKafkaEvents()
+    expect(outboundEvents.size()).toBe(1)
+    expect(outboundEvents[0].name).toBe('PartyInfoCallbackProcessed')
+    
+    const redis1Data = getDataFromRedis(inboundCommandEvent.data.individualTransfers[0].transferId)
+    expect(redis1Data.state).toBe('DISCOVERY_FAILED')
   });
 
   test("When inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
@@ -213,23 +235,35 @@ describe("First domain event", () => {
 
   test("Given inbound command event ProcessSDKOutboundBulkAcceptPartyInfo is received \
         Then the logic should loop through individual transfer in the bulk request \
-        And Then update the individual transfer state to DISCOVERY_ACCEPTED or DISCOVERY_REJECTED based on the value in the incoming event \
-        And Then update the overall global state to DISCOVERY_ACCEPTANCE_COMPLETED \
-        And Then outbound event SDKOutboundBulkAcceptPartyInfoProcessed should be published", async () => {
+          And update the individual transfer state to DISCOVERY_ACCEPTED or DISCOVERY_REJECTED based on the value in the incoming event \
+          And update the overall global state to DISCOVERY_ACCEPTANCE_COMPLETED \
+          And outbound event SDKOutboundBulkAcceptPartyInfoProcessed should be published", async () => {
     //TODO add asserts
   });
 
-  test("Inbound event ProcessSDKOutboundBulkAcceptPartyInfo should loop through individual transfer in the bulk request and update the individual transfer state to DISCOVERY_ACCEPTED or DISCOVERY_REJECTED based on the value in the incoming event", async () => {
+  test("Given Inbound command event ProcessSDKOutboundBulkAcceptPartyInfo \
+        Then the logic should loop through individual transfer in the bulk request \
+          And update the individual transfer state to DISCOVERY_ACCEPTED or DISCOVERY_REJECTED based on the value in the incoming event", async () => {
     //TODO add asserts
   });
 
   // TESTS FOR QUOTE PROCESSING
 
-  test("Inbound event ProcessSDKOutboundBulkQuotesRequest should update the global state to AGREEMENT_PROCESSING, create batches based on FSP that has DISCOVERY_ACCEPTED state and also has config maxEntryConfigPerBatch and publish BulkQuotesRequested per each batch updating its state to AGREEMENT_PROCESSING.", async () => {
+  test("When Inbound command event ProcessSDKOutboundBulkQuotesRequest is received\
+        Then the logic should update the global state to AGREEMENT_PROCESSING, \
+          And create batches based on FSP that has DISCOVERY_ACCEPTED state \
+          And also has config maxEntryConfigPerBatch \
+          And publish BulkQuotesRequested per each batch \
+          And update the state of each batch to AGREEMENT_PROCESSING.", async () => {
     //TODO add asserts
   });
 
-  test("Inbound event ProcessBulkQuotesCallback for success requests should update the individual batch state to AGREEMENT_PROCESSING, create batches based on FSP that has DISCOVERY_ACCEPTED state and also has config maxEntryConfigPerBatch and publish BulkQuotesRequested per each batch updating its state to AGREEMENT_PROCESSING.", async () => {
+  test("Given Inbound command event ProcessBulkQuotesCallback for success requests \
+         Then the logic should update the individual batch state to AGREEMENT_PROCESSING, \
+          And create batches based on FSP that has DISCOVERY_ACCEPTED state \
+         And also has config maxEntryConfigPerBatch \
+         And publish BulkQuotesRequested per each batch \
+         And update the state of each batch to AGREEMENT_PROCESSING.", async () => {
     //TODO add asserts
   });
 });
