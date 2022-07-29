@@ -74,14 +74,14 @@ describe("First domain event", () => {
         id: 5719891907,
 
       },
-      receivers: [{
-        receiver: {
+      receivers: [
+        {
           idType: 'MSISDN',
           to: 5719891908,
           currency: 'USD',
           amount: 10
         }
-      }]
+      ]
     }
     const inboundCommandEvent = getInboundCommandEvent(inboundBulkRequestOptions)
     submitInboundCommandEvent(inboundCommandEvent, 'ProcessSDKOutboundBulkRequest')
@@ -90,7 +90,7 @@ describe("First domain event", () => {
     const outboundEventMessage = outboundEvent[0].getData()
     expect(outboundEventMessage.name).toBe('SDKOutboundBulkPartyInfoRequested')
 
-    const redisData = getGlobalDataFromRedis('bulkTransactionId')
+    const redisData = getDataFromRedis('bulkTransactionId')
     expect(redisData.status).toBe('RECEIVED')
 
   });
