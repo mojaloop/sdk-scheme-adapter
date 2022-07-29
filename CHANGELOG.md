@@ -1,4 +1,15 @@
 # Changelog: [mojaloop/thirdparty-api-svc](https://github.com/mojaloop/thirdparty-api-svc)
+## [19.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v18.0.2...v19.0.0) (2022-07-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* use updated outbound OpenAPI specification from api-snippets (#340)
+
+### Features
+
+* use updated outbound OpenAPI specification from api-snippets ([#340](https://github.com/mojaloop/sdk-scheme-adapter/issues/340)) ([92eb491](https://github.com/mojaloop/sdk-scheme-adapter/commit/92eb4918fcbebc4532ebd1434aa7c565822e15bd))
+
 ### [18.0.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v18.0.1...v18.0.2) (2022-07-27)
 
 
