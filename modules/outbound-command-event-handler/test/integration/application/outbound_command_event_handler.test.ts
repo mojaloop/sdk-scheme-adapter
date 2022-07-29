@@ -1,5 +1,3 @@
-
-
 /*****
  License
  --------------
@@ -26,30 +24,35 @@
  --------------
  ******/
 
-'use strict'
+"use strict";
 
 import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 
-import { DomainEventMessage, EventMessageType, OutboundDomainEventMessageName, IDomainEventMessageData } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
-import { KafkaDomainEventProducer } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+import {
+  DomainEventMessage,
+  EventMessageType,
+  OutboundDomainEventMessageName,
+  IDomainEventMessageData,
+} from "@mojaloop/sdk-scheme-adapter-private-shared-lib";
+import { KafkaDomainEventProducer } from "@mojaloop/sdk-scheme-adapter-private-shared-lib";
 
-const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
-const producer = new KafkaDomainEventProducer(logger)
+const logger: ILogger = new DefaultLogger("bc", "appName", "appVersion"); //TODO: parameterize the names here
+const producer = new KafkaDomainEventProducer(logger);
 
 const sampleDomainEventMessageData: IDomainEventMessageData = {
-  key: 'sample-key1',
+  key: "sample-key1",
   name: OutboundDomainEventMessageName.SDKOutboundBulkRequestReceived,
   content: {
-    id: '123784627836457823',
+    id: "123784627836457823",
     options: {},
-    individualTransfers: []
+    individualTransfers: [],
   },
   timestamp: Date.now(),
-  headers: []
-}
+  headers: [],
+};
 
-describe('First domain event', () => {
+describe("First domain event", () => {
   beforeEach(async () => {
     await producer.init();
   });
@@ -60,88 +63,90 @@ describe('First domain event', () => {
 
   // TESTS FOR PARTY LOOKUP
 
-  test('Inbound event ProcessSDKOutboundBulkRequest should publish outbound SDKOutboundBulkPartyInfoRequested event. Global state should be RECEIVED.', async () => {
+  test("When inbound command event ProcessSDKOutboundBulkRequest is received \
+        Then outbound event SDKOutboundBulkPartyInfoRequested should be published \
+        And Then Global state should be updated to RECEIVED.", async () => {
     //TODO add asserts
-
     //TODO question: In sequence diagram it says, break json into smaller parts. What does it mean by smaller parts
-  })
+    const inboundCommandEvent = getInboundCommandEvent()
 
-  test('Inbound event ProcessSDKOutboundBulkPartyInfoRequest \
-        should update global state to DISCOVERY_PROCESSING \
-        and Party info does not already exist for none of the individual transfers. \
-        So PartyInfoRequested kafka event should be published for each individual transfer. \
-        State for individual transfer should be updated to DISCOVERY_PROCESSING.', async () => {
+    const outboundEvent = getOutboundKafkaEvent()
+    const outboundEventHeaders = outboundEvent.getHeaders()
+    const outboundEventMessage = outboundEvent.getData()
+    expect(outboundEventMessage.name).toBe('SDKOutboundBulkPartyInfoRequested')
+
+    const redisData = getGlobalDataFromRedis('bulkTransactionId')
+    expect(redisData.status).toBe('RECEIVED')
+
+  });
+
+  test("When inbound event ProcessSDKOutboundBulkPartyInfoRequest is received\
+        And When Party info does not already exist for none of the individual transfers. \
+        Then the global state should be updated to DISCOVERY_PROCESSING \
+        And Then PartyInfoRequested kafka event should be published for each individual transfer. \
+        And Then State for individual transfer should be updated to DISCOVERY_PROCESSING.", async () => {
     //TODO add asserts
+  });
 
-
-  })
-
-  test('Inbound event ProcessSDKOutboundBulkPartyInfoRequest \
-        should update global state to DISCOVERY_PROCESSING. \
-        Party info exists for individual transfers. \
+  test("When inbound event ProcessSDKOutboundBulkPartyInfoRequest is received \
+        And When Party info exists for individual transfers. \
+        Then the global state should be updated to DISCOVERY_PROCESSING. \
+        
         PartyInfoRequested event should not be published for each individual transfer. \
-        State for individual transfer should be updated to DISCOVERY_SUCCESS.', async () => {
+        State for individual transfer should be updated to DISCOVERY_SUCCESS.", async () => {
+    //TODO add asserts
+  });
+
+  test("When inbound event ProcessPartyInfoCallback is received \
+        Then the state for individual successful party lookups should be updated to DISCOVERY_SUCCESS", async () => {
+    //TODO add asserts
+  });
+
+  test("When inbound event ProcessPartyInfoCallback is received\
+        Then state for individual failed party lookups should be updated to DISCOVERY_FAILED", async () => {
+    //TODO add asserts
+  });
+
+  test("When inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
+        Then the global state should be updated to DISCOVERY_COMPLETED", async () => {
+    //TODO add asserts
+  });
+
+  test("Given autoAcceptParty setting is set to false \
+        When inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
+        Then outbound event SDKOutboundBulkAcceptpartyInfoRequested should be published \
+        And Then global state should be updated to DISCOVERY_ACCEPTANCE_PENDING", async () => {
     //TODO add asserts
 
 
-  })
 
-  test('Inbound event ProcessPartyInfoCallback \
-        should update the state for individual successful party lookups to DISCOVERY_SUCCESS', async () => {
+  });
+
+  test("Given autoAcceptParty setting is set to true \
+        When Inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
+        Then outbound event SDKOutboundBulkAutoAcceptpartyInfoRequested should be published.", async () => {
     //TODO add asserts
+  });
 
-
-  })
-
-  test('Inbound event ProcessPartyInfoCallback \
-        should update the state for individual failed party lookups to DISCOVERY_FAILED', async () => {
+  test("Given inbound command event ProcessSDKOutboundBulkAcceptPartyInfo is received \
+        Then the logic should loop through individual transfer in the bulk request \
+        And Then update the individual transfer state to DISCOVERY_ACCEPTED or DISCOVERY_REJECTED based on the value in the incoming event \
+        And Then update the overall global state to DISCOVERY_ACCEPTANCE_COMPLETED \
+        And Then outbound event SDKOutboundBulkAcceptPartyInfoProcessed should be published", async () => {
     //TODO add asserts
+  });
 
-
-  })
-
-  test('Inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete should update the global state to DISCOVERY_COMPLETED', async () => {
+  test("Inbound event ProcessSDKOutboundBulkAcceptPartyInfo should loop through individual transfer in the bulk request and update the individual transfer state to DISCOVERY_ACCEPTED or DISCOVERY_REJECTED based on the value in the incoming event", async () => {
     //TODO add asserts
-
-
-  })
-
-  test('Inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete should publish event SDKOutboundBulkAcceptpartyInfoRequested and update the global state to DISCOVERY_ACCEPTANCE_PENDING if autoAcceptParty is false', async () => {
-    //TODO add asserts
-
-
-  })
-
-  test('Inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete should publish event SDKOutboundBulkAutoAcceptpartyInfoRequested if autoAcceptParty is true', async () => {
-    //TODO add asserts
-
-
-  })
-
-  test('Inbound event ProcessSDKOutboundBulkAcceptPartyInfo should loop through individual transfer in the bulk request and update the individual transfer state to DISCOVERY_ACCEPTED or DISCOVERY_REJECTED based on the value in the incoming event, update the overall global state to DISCOVERY_ACCEPTANCE_COMPLETED and publish event SDKOutboundBulkAcceptPartyInfoProcessed', async () => {
-    //TODO add asserts
-
-
-  })
-
-  test('Inbound event ProcessSDKOutboundBulkAcceptPartyInfo should loop through individual transfer in the bulk request and update the individual transfer state to DISCOVERY_ACCEPTED or DISCOVERY_REJECTED based on the value in the incoming event', async () => {
-    //TODO add asserts
-
-
-  })
+  });
 
   // TESTS FOR QUOTE PROCESSING
 
-  test('Inbound event ProcessSDKOutboundBulkQuotesRequest should update the global state to AGREEMENT_PROCESSING, create batches based on FSP that has DISCOVERY_ACCEPTED state and also has config maxEntryConfigPerBatch and publish BulkQuotesRequested per each batch updating its state to AGREEMENT_PROCESSING.', async () => {
+  test("Inbound event ProcessSDKOutboundBulkQuotesRequest should update the global state to AGREEMENT_PROCESSING, create batches based on FSP that has DISCOVERY_ACCEPTED state and also has config maxEntryConfigPerBatch and publish BulkQuotesRequested per each batch updating its state to AGREEMENT_PROCESSING.", async () => {
     //TODO add asserts
+  });
 
-
-  })
-
-  test('Inbound event ProcessBulkQuotesCallback for success requests should update the individual batch state to AGREEMENT_PROCESSING, create batches based on FSP that has DISCOVERY_ACCEPTED state and also has config maxEntryConfigPerBatch and publish BulkQuotesRequested per each batch updating its state to AGREEMENT_PROCESSING.', async () => {
+  test("Inbound event ProcessBulkQuotesCallback for success requests should update the individual batch state to AGREEMENT_PROCESSING, create batches based on FSP that has DISCOVERY_ACCEPTED state and also has config maxEntryConfigPerBatch and publish BulkQuotesRequested per each batch updating its state to AGREEMENT_PROCESSING.", async () => {
     //TODO add asserts
-
-
-  })
-
-})
+  });
+});
