@@ -238,6 +238,7 @@ docker-compose up
 
 - Run application
 ```
+nvm use
 yarn install
 yarn run build
 export API_SERVER_ENABLED=true
