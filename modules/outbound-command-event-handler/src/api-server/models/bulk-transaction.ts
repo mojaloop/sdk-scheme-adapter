@@ -27,7 +27,7 @@ export interface IndividualTransferState {
     state: string;
 }
 export interface BulkTransaction {
-    id: number;
+    id: string;
     state: string;
     individualTransfers: Array<IndividualTransferState>;
 }

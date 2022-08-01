@@ -34,10 +34,12 @@ import {
     IKafkaEventConsumerOptions,
     IKafkaEventProducerOptions,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-import { RedisBulkTransactionStateRepo } from '../infrastructure';
 import { handleProcessSDKOutboundBulkRequest } from './handlers';
 import { IBulkTransactionEntityRepo, ICommandEventHandlerOptions } from '../types';
 
+export interface IOutboundEventHandlerOptions {
+  bulkTransactionEntityRepo: IBulkTransactionEntityRepo
+}
 
 export class OutboundEventHandler implements IRunHandler {
     private _logger: ILogger;
@@ -49,6 +51,11 @@ export class OutboundEventHandler implements IRunHandler {
     private _bulkTransactionEntityStateRepo: IBulkTransactionEntityRepo;
 
     private _commandEventHandlerOptions: ICommandEventHandlerOptions;
+
+    /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */
+    constructor(options: IOutboundEventHandlerOptions) {
+        this._bulkTransactionEntityStateRepo = options.bulkTransactionEntityRepo
+    }
 
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     async start(appConfig: any, logger: ILogger): Promise<void> {
@@ -68,10 +75,6 @@ export class OutboundEventHandler implements IRunHandler {
         logger.info(`Created kafkaProducer of type ${this._domainProducer.constructor.name}`);
         await this._domainProducer.init();
 
-        this._bulkTransactionEntityStateRepo = new RedisBulkTransactionStateRepo(appConfig.get('REDIS.CONNECTION_URL'), this._logger);
-        logger.info(`Created BulkTransactionStateRepo of type ${this._bulkTransactionEntityStateRepo.constructor.name}`);
-        await this._bulkTransactionEntityStateRepo.init();
-
         // Create options for handlers
         this._commandEventHandlerOptions = {
             bulkTransactionEntityRepo: this._bulkTransactionEntityStateRepo,
@@ -82,7 +85,6 @@ export class OutboundEventHandler implements IRunHandler {
     async destroy(): Promise<void> {
         await this._consumer?.destroy();
         await this._domainProducer?.destroy();
-        await this._bulkTransactionEntityStateRepo?.destroy();
     }
 
     async _messageHandler(message: CommandEventMessage): Promise<void> {
