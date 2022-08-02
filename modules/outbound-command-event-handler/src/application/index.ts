@@ -31,16 +31,28 @@ import { DefaultLogger } from '@mojaloop/logging-bc-client-lib';
 import { ILogger, LogLevel } from '@mojaloop/logging-bc-public-types-lib';
 
 import { IRunHandler, BC_CONFIG } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-import { OutboundEventHandler } from './handler';
-import ApiServer from '../api-server';
+import { IOutboundEventHandlerOptions, OutboundEventHandler } from './handler';
+import { IOutboundCommandEventHandlerAPIServerOptions, OutboundCommandEventHandlerAPIServer } from '../api-server';
 import Config from '../shared/config';
+import { IRedisBulkTransactionStateRepoOptions, RedisBulkTransactionStateRepo } from '../infrastructure';
 
 (async () => {
     // Instantiate logger
     const logger: ILogger = new DefaultLogger(BC_CONFIG.bcName, 'command-event-handler', '0.0.1', <LogLevel>Config.get('LOG_LEVEL'));
 
+    // Create bulk transaction entity repo
+    const bulkTransactionEntityRepoOptions: IRedisBulkTransactionStateRepoOptions = {
+        connStr: Config.get('REDIS.CONNECTION_URL')
+    }
+    const bulkTransactionEntityRepo = new RedisBulkTransactionStateRepo(bulkTransactionEntityRepoOptions, logger);
+    logger.info(`Created BulkTransactionStateRepo of type ${bulkTransactionEntityRepo.constructor.name}`);
+    await bulkTransactionEntityRepo.init();
+
     // start outboundEventHandler
-    const outboundEventHandler: IRunHandler = new OutboundEventHandler();
+    const outboundEventHanlerOptions: IOutboundEventHandlerOptions = {
+      bulkTransactionEntityRepo
+    }
+    const outboundEventHandler: IRunHandler = new OutboundEventHandler(outboundEventHanlerOptions);
     try {
         await outboundEventHandler.start(Config, logger);
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
@@ -50,10 +62,13 @@ import Config from '../shared/config';
     }
 
     // API Server
-    const apiServerEnabled = Config.get('API_SERVER.ENABLED');
-    if(apiServerEnabled) {
+    const outboundCommandEventHandlerAPIServerOptions: IOutboundCommandEventHandlerAPIServerOptions ={
+      port: Config.get('API_SERVER.PORT')
+    }
+    const apiServer = new OutboundCommandEventHandlerAPIServer(outboundCommandEventHandlerAPIServerOptions, logger)
+    if(Config.get('API_SERVER.ENABLED')) {
         logger.info('Starting API Server...');
-        ApiServer.startServer(Config.get('API_SERVER.PORT'));
+        await apiServer.startServer();
     }
     // lets clean up all consumers here
     /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
@@ -63,6 +78,8 @@ import Config from '../shared/config';
         logger.info('\tDestroying outboundEventHandler handler...');
 
         await outboundEventHandler.destroy();
+        await bulkTransactionEntityRepo?.destroy();
+        await apiServer.stopServer();
 
         logger.info('Exit complete!');
         process.exit(0);

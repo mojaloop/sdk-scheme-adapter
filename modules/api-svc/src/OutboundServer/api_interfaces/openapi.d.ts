@@ -343,6 +343,7 @@ export interface components {
      * - BUSINESS - Business is the initiator of the transaction.
      * - DEVICE - Device is the initiator of the transaction.
      * @example CONSUMER
+     * @enum {string}
      */
     TransactionInitiatorType: "CONSUMER" | "AGENT" | "BUSINESS" | "DEVICE";
     /**
@@ -356,6 +357,7 @@ export interface components {
      * - ACCOUNT_ID - A bank account number or FSP account ID should be used as reference to a participant. The ACCOUNT_ID identifier can be in any format, as formats can greatly differ depending on country and FSP.
      * - IBAN - A bank account number or FSP account ID is used as reference to a participant. The IBAN identifier can consist of up to 34 alphanumeric characters and should be entered without whitespace.
      * - ALIAS An alias is used as reference to a participant. The alias should be created in the FSP as an alternative reference to an account owner. Another example of an alias is a username in the FSP system. The ALIAS identifier can be in any format. It is also possible to use the PartySubIdOrType element for identifying an account under an Alias defined by the PartyIdentifier.
+     * @enum {string}
      */
     PartyIdType:
       | "MSISDN"
@@ -459,11 +461,13 @@ export interface components {
      * - SEND - Amount the Payer would like to send, that is, the amount that should be withdrawn from the Payer account including any fees.
      * - RECEIVE - Amount the Payer would like the Payee to receive, that is, the amount that should be sent to the receiver exclusive of any fees.
      * @example RECEIVE
+     * @enum {string}
      */
     AmountType: "SEND" | "RECEIVE";
     /**
      * Currency
      * @description The currency codes defined in [ISO 4217](https://www.iso.org/iso-4217-currency-codes.html) as three-letter alphabetic codes are used as the standard naming representation for currencies.
+     * @enum {string}
      */
     Currency:
       | "AED"
@@ -636,7 +640,10 @@ export interface components {
      * @example 123.45
      */
     Amount: string;
-    /** @description Type of transaction. */
+    /**
+     * @description Type of transaction.
+     * @enum {string}
+     */
     transactionType: "TRANSFER";
     /**
      * Note
@@ -665,6 +672,7 @@ export interface components {
      * @example b51ec534-ee48-4575-b6a9-ead2955b8069
      */
     CorrelationId: string;
+    /** @enum {string} */
     transferStatus:
       | "ERROR_OCCURRED"
       | "WAITING_FOR_PARTY_ACCEPTANCE"
@@ -752,6 +760,7 @@ export interface components {
      * - COMMITTED - Next ledger has successfully performed the transfer.
      * - ABORTED - Next ledger has aborted the transfer due to a rejection or failure to perform the transfer.
      * @example RESERVED
+     * @enum {string}
      */
     TransferState: "RECEIVED" | "RESERVED" | "COMMITTED" | "ABORTED";
     /**
@@ -844,12 +853,15 @@ export interface components {
       };
     };
     transferContinuationAcceptParty: {
+      /** @enum {boolean} */
       acceptParty: true;
     };
     transferContinuationAcceptQuote: {
+      /** @enum {boolean} */
       acceptQuote: true | false;
     };
     autoAcceptPartyOption: {
+      /** @enum {boolean} */
       enabled: false | true;
     };
     bulkPerTransferFeeLimit: {
@@ -857,6 +869,7 @@ export interface components {
       amount: components["schemas"]["Amount"];
     };
     autoAcceptQuote: {
+      /** @enum {boolean} */
       enabled: true | false;
       perTransferFeeLimits?: components["schemas"]["bulkPerTransferFeeLimit"][];
     };
@@ -942,6 +955,7 @@ export interface components {
       individualTransfers: components["schemas"]["individualTransfer"][];
       extensions?: components["schemas"]["ExtensionList"];
     };
+    /** @enum {string} */
     bulkTransferStatus:
       | "ERROR_OCCURRED"
       | "WAITING_FOR_PARTY_ACCEPTANCE"
@@ -1076,6 +1090,7 @@ export interface components {
       } & {
         bulkTansferState: unknown;
       });
+    /** @enum {string} */
     bulkQuoteStatus: "ERROR_OCCURRED" | "COMPLETED";
     bulkQuoteStatusResponse: {
       bulkQuoteId: components["schemas"]["CorrelationId"];
@@ -1091,6 +1106,7 @@ export interface components {
      * - PAYMENT - Usually used for performing a transaction from a Consumer to a Merchant or Organization, but could also be for a B2B (Business to Business) payment. The transaction could be online for a purchase in an Internet store, in a physical store where both the Consumer and Business User are present, a bill payment, a donation, and so on.
      * - REFUND - Used for performing a refund of transaction.
      * @example DEPOSIT
+     * @enum {string}
      */
     TransactionScenario:
       | "DEPOSIT"
@@ -1110,6 +1126,7 @@ export interface components {
      * - PAYER - Sender of funds is initiating the transaction. The account to send from is either owned by the Payer or is connected to the Payer in some way.
      * - PAYEE - Recipient of the funds is initiating the transaction by sending a transaction request. The Payer must approve the transaction, either automatically by a pre-generated OTP or by pre-approval of the Payee, or by manually approving in his or her own Device.
      * @example PAYEE
+     * @enum {string}
      */
     TransactionInitiator: "PAYER" | "PAYEE";
     /**
@@ -1163,6 +1180,7 @@ export interface components {
      * - QRCODE - QR code used as One Time Password.
      * - U2F - U2F is a new addition isolated to Thirdparty stream.
      * @example OTP
+     * @enum {string}
      */
     AuthenticationType: "OTP" | "QRCODE" | "U2F";
     /**
@@ -1173,6 +1191,7 @@ export interface components {
      * - ACCEPTED - Payer has approved the transaction.
      * - REJECTED - Payer has rejected the transaction.
      * @example RECEIVED
+     * @enum {string}
      */
     TransactionRequestState: "RECEIVED" | "PENDING" | "ACCEPTED" | "REJECTED";
     requestToPayResponse: {
@@ -1224,6 +1243,7 @@ export interface components {
       lastError?: components["schemas"]["transferError"];
     };
     transferContinuationAcceptOTP: {
+      /** @enum {boolean} */
       acceptOTP: true | false;
     };
     accountsRequest: {
@@ -1238,6 +1258,7 @@ export interface components {
       idSubValue?: components["schemas"]["PartySubIdOrType"];
       error?: components["schemas"]["errorResponse"];
     }[];
+    /** @enum {string} */
     accountsCreationState: "ERROR_OCCURRED" | "COMPLETED";
     accountsResponse: {
       modelId?: components["schemas"]["CorrelationId"];
@@ -1253,6 +1274,7 @@ export interface components {
     errorAccountsResponse: components["schemas"]["errorResponse"] & {
       executionState: components["schemas"]["accountsResponse"];
     };
+    /** @enum {string} */
     async2SyncCurrentState:
       | "WAITING_FOR_ACTION"
       | "COMPLETED"

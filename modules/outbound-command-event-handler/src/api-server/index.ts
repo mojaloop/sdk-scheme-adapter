@@ -22,30 +22,39 @@
  --------------
  ******/
 
+import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import { Server } from 'http';
 import { app } from './app';
 
-let serverInstance: Server;
+export interface IOutboundCommandEventHandlerAPIServerOptions {
+    port: number;
+}
 
-const startServer = async (port: number) : Promise<void> => {
-    return new Promise(resolve => {
-        serverInstance = app.listen(port, () => {
-            console.log('Server is running on port', port);
-            resolve();
+export class OutboundCommandEventHandlerAPIServer {
+    private _logger: ILogger;
+    private _port: number;
+    private _serverInstance: Server;
+
+    constructor(options: IOutboundCommandEventHandlerAPIServerOptions, logger: ILogger) {
+        this._port = options.port;
+        this._logger = logger;
+    }
+
+    async startServer(): Promise<void> {
+      return new Promise(resolve => {
+          this._serverInstance = app.listen(this._port, () => {
+              this._logger.info(`API Server is running on port ${this._port}`);
+              resolve();
+          });
+      });
+    }
+
+    async stopServer() : Promise<void> {
+        return new Promise(resolve => {
+          this._serverInstance.close(() => {
+                this._logger.info(`API Server is stopped`);
+                resolve();
+            });
         });
-    });
-};
-
-const stopServer = async () : Promise<void> => {
-    return new Promise(resolve => {
-        serverInstance.close(() => {
-            console.log('Server is stopped');
-            resolve();
-        });
-    });
-};
-
-export default {
-    startServer,
-    stopServer,
-};
+    };
+}

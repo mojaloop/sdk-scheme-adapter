@@ -29,6 +29,10 @@ import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import { BulkTransactionState } from '../domain/bulk_transaction_entity';
 import { IBulkTransactionEntityRepo } from '../types/bulk_transaction_entity_repo';
 
+export interface IRedisBulkTransactionStateRepoOptions {
+    connStr: string;
+}
+
 export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo {
     protected _redisClient!: redis.RedisClientType;
 
@@ -40,8 +44,8 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
 
     private readonly keyPrefix: string = 'outboundBulkTransaction_';
 
-    constructor(connStr: string, logger: ILogger) {
-        this._redisConnStr = connStr;
+    constructor(options: IRedisBulkTransactionStateRepoOptions, logger: ILogger) {
+        this._redisConnStr = options.connStr;
         this._logger = logger;
     }
 
@@ -130,6 +134,26 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    async getAttribute(id: string, name: string): Promise<any> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(id);
+        try {
+            const individualTransferStateStr = await this._redisClient.hGet(key, name);
+            if(individualTransferStateStr) {
+                return JSON.parse(individualTransferStateStr);
+            } else {
+                this._logger.error('Error loading entity state from redis - for key: ' + key);
+                throw (new Error('Error loading entity state from redis'));
+            }
+        } catch (err) {
+            this._logger.error(err, 'Error loading entity state from redis - for key: ' + key);
+            throw (err);
+        }
+    }
+
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     async addAdditionalAttribute(id: string, name: string, value: any): Promise<void> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
@@ -145,6 +169,21 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
 
     private keyWithPrefix(key: string): string {
         return this.keyPrefix + key;
+    }
+
+    // TODO: Just for development purpose for now, can be removed later
+    // Warning: consider KEYS as a command that should only be used in production environments with extreme care. It may ruin performance when it is executed against large databases. This command is intended for debugging.
+    async getAllIds(): Promise<string[]> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        try {
+            const allKeys =  await this._redisClient.keys(this.keyPrefix + '*');
+            return allKeys.map(key => key.replace(this.keyPrefix, ''));
+        } catch (err) {
+            this._logger.error(err, 'Error getting all bulk transactions from redis');
+            throw (err);
+        }
     }
 
 }

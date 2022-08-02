@@ -25,7 +25,7 @@
 import { BulkTransaction } from '../models';
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import { DefaultLogger } from '@mojaloop/logging-bc-client-lib';
-import { RedisBulkTransactionsRepo } from '../lib/redis_bulk_transactions_repo';
+import { IRedisBulkTransactionStateRepoOptions, RedisBulkTransactionStateRepo } from '../../infrastructure/redis_bulk_transaction_repo';
 import Config from '../../shared/config';
 
 // Start API server
@@ -36,16 +36,21 @@ export class BulkTransactionsService {
     // Get the bulkTransactions
     public async getAll(id?: string): Promise<Array<BulkTransaction>> {
         const bulkTransactions: Array<BulkTransaction> = [];
-        // TODO: Parameterize redis config
-        const repo = new RedisBulkTransactionsRepo(Config.get('REDIS.CONNECTION_URL'), logger);
+        // TODO: Pass the repo object from index file instead of re-initializing here
+        // Create bulk transaction entity repo
+        const bulkTransactionEntityRepoOptions: IRedisBulkTransactionStateRepoOptions = {
+            connStr: Config.get('REDIS.CONNECTION_URL')
+        }
+        const repo = new RedisBulkTransactionStateRepo(bulkTransactionEntityRepoOptions, logger);
         await repo.init();
-        const allBulkIds = await repo.getAllBulkTransactionIds();
+        const allBulkIds = await repo.getAllIds();
         for(const bulkId of allBulkIds) {
-            const bulkState = await repo.getState(bulkId);
+            const bulkState = await repo.load(bulkId);
             const individualTransfers = [];
-            const allIndividualTransferIds = await repo.getIndividualTransferIds(bulkId);
+            const allAttributes = await repo.getAllAttributes(bulkId);
+            const allIndividualTransferIds = allAttributes.filter(attr => attr.startsWith('individualItem_')).map(attr => attr.replace('individualItem_', ''))
             for(const individualTransferId of allIndividualTransferIds) {
-                const individualTransferState = await repo.getIndividualTransferState(bulkId, individualTransferId);
+                const individualTransferState = await repo.getAttribute(bulkId, 'individualItem_' + individualTransferId);
                 individualTransfers.push({
                     id: individualTransferId,
                     state: individualTransferState.state,
