@@ -36,13 +36,13 @@ import { RedisBulkTransactionStateRepo, IRedisBulkTransactionStateRepoOptions } 
 
 const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
 
-const producerOptions: IKafkaEventProducerOptions = {
+const commandEventProducerOptions: IKafkaEventProducerOptions = {
     brokerList: 'localhost:9092',
     clientId: 'test-integration_client_id',
     topic: 'topic-sdk-outbound-command-events'
 }
 
-const consumerOptions: IKafkaEventConsumerOptions = {
+const domainEventConsumerOptions: IKafkaEventConsumerOptions = {
   brokerList: 'localhost:9092',
   clientId: 'test-integration_client_id',
   topics: ['topic-sdk-outbound-domain-events'],
@@ -54,9 +54,9 @@ const bulkTransactionEntityRepoOptions: IRedisBulkTransactionStateRepoOptions = 
   connStr: 'redis://localhost:6379'
 }
 
-const producer = new KafkaCommandEventProducer(producerOptions, logger)
+const producer = new KafkaCommandEventProducer(commandEventProducerOptions, logger)
 var kafkaEvents = []
-const consumer = new KafkaDomainEventConsumer(async (message: DomainEventMessage) => { console.log(message)}, consumerOptions, logger)
+const consumer = new KafkaDomainEventConsumer(async (message: DomainEventMessage) => { console.log(message)}, domainEventConsumerOptions, logger)
 const bulkTransactionEntityRepo = new RedisBulkTransactionStateRepo(bulkTransactionEntityRepoOptions, logger);
 
 describe("Tests for Command Event Handler", () => {
