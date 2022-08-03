@@ -17,7 +17,7 @@
     "lint"
   ],
   "scripts": {
-    "start": "yarn workspaces foreach --parallel -v run start",
+    "start": "yarn workspaces foreach --parallel -i -v run start",
     "start:api-svc": "yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run start",
     "start:event-handler": "yarn workspace @mojaloop/sdk-scheme-adapter-event-handler run start",
     "start:command-handler": "yarn workspace @mojaloop/sdk-scheme-adapter-command-handler run start",
