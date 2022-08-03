@@ -31,6 +31,7 @@ import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 
 import { CommandEventMessage, OutboundCommandEventMessageName, ICommandEventMessageData, DomainEventMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 import { KafkaCommandEventProducer, IKafkaEventProducerOptions, KafkaDomainEventConsumer, IKafkaEventConsumerOptions } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+import { SDKOutboundBulkRequestState } from '@mojaloop/sdk-scheme-adapter-public-shared-lib'
 import { randomUUID } from "crypto";
 import { RedisBulkTransactionStateRepo, IRedisBulkTransactionStateRepoOptions } from '../../../src/infrastructure/redis_bulk_transaction_repo'
 
@@ -81,10 +82,8 @@ describe("Tests for Command Event Handler", () => {
           And Global state should be updated to RECEIVED.", async () => {
 
     const bulkTransactionId = randomUUID();
-    const sampleCommandEventMessageData: ICommandEventMessageData = {
-      key: 'sample-key1',
-      name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkRequest,
-      content: {
+    const content: SDKOutboundBulkRequestState = {
+      request: {
         bulkHomeTransactionID: "string",
         bulkTransactionId: bulkTransactionId,
         options: {
@@ -133,12 +132,21 @@ describe("Tests for Command Event Handler", () => {
           }
         ]
       },
+      created_at: Date.now(),
+      updated_at: Date.now(),
+      version: 1,
+      id: bulkTransactionId
+    }
+    const sampleCommandEventMessageData: ICommandEventMessageData = {
+      key: 'sample-key1',
+      name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkRequest,
+      content,
       timestamp: Date.now(),
       headers: []
     }
     const commandEventObj = new CommandEventMessage(sampleCommandEventMessageData);
     await producer.sendCommandMessage(commandEventObj);
-
+    await new Promise(resolve => setTimeout(resolve, 1000));
     // const outboundEvents = getOutboundKafkaEvents();
     // const outboundEventHeaders = outboundEvent[0].getHeaders();
     // const outboundEventMessage = outboundEvent[0].getData();
