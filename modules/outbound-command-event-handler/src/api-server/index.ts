@@ -32,7 +32,9 @@ export interface IOutboundCommandEventHandlerAPIServerOptions {
 
 export class OutboundCommandEventHandlerAPIServer {
     private _logger: ILogger;
+
     private _port: number;
+
     private _serverInstance: Server;
 
     constructor(options: IOutboundCommandEventHandlerAPIServerOptions, logger: ILogger) {
@@ -41,20 +43,20 @@ export class OutboundCommandEventHandlerAPIServer {
     }
 
     async startServer(): Promise<void> {
-      return new Promise(resolve => {
-          this._serverInstance = app.listen(this._port, () => {
-              this._logger.info(`API Server is running on port ${this._port}`);
-              resolve();
-          });
-      });
+        return new Promise(resolve => {
+            this._serverInstance = app.listen(this._port, () => {
+                this._logger.info(`API Server is running on port ${this._port}`);
+                resolve();
+            });
+        });
     }
 
     async stopServer() : Promise<void> {
         return new Promise(resolve => {
-          this._serverInstance.close(() => {
-                this._logger.info(`API Server is stopped`);
+            this._serverInstance.close(() => {
+                this._logger.info('API Server is stopped');
                 resolve();
             });
         });
-    };
+    }
 }

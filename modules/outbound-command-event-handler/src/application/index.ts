@@ -42,16 +42,16 @@ import { IRedisBulkTransactionStateRepoOptions, RedisBulkTransactionStateRepo } 
 
     // Create bulk transaction entity repo
     const bulkTransactionEntityRepoOptions: IRedisBulkTransactionStateRepoOptions = {
-        connStr: Config.get('REDIS.CONNECTION_URL')
-    }
+        connStr: Config.get('REDIS.CONNECTION_URL'),
+    };
     const bulkTransactionEntityRepo = new RedisBulkTransactionStateRepo(bulkTransactionEntityRepoOptions, logger);
     logger.info(`Created BulkTransactionStateRepo of type ${bulkTransactionEntityRepo.constructor.name}`);
     await bulkTransactionEntityRepo.init();
 
     // start outboundEventHandler
     const outboundEventHanlerOptions: IOutboundEventHandlerOptions = {
-      bulkTransactionEntityRepo
-    }
+        bulkTransactionEntityRepo,
+    };
     const outboundEventHandler: IRunHandler = new OutboundEventHandler(outboundEventHanlerOptions);
     try {
         await outboundEventHandler.start(Config, logger);
@@ -62,10 +62,10 @@ import { IRedisBulkTransactionStateRepoOptions, RedisBulkTransactionStateRepo } 
     }
 
     // API Server
-    const outboundCommandEventHandlerAPIServerOptions: IOutboundCommandEventHandlerAPIServerOptions ={
-      port: Config.get('API_SERVER.PORT')
-    }
-    const apiServer = new OutboundCommandEventHandlerAPIServer(outboundCommandEventHandlerAPIServerOptions, logger)
+    const outboundCommandEventHandlerAPIServerOptions: IOutboundCommandEventHandlerAPIServerOptions = {
+        port: Config.get('API_SERVER.PORT'),
+    };
+    const apiServer = new OutboundCommandEventHandlerAPIServer(outboundCommandEventHandlerAPIServerOptions, logger);
     if(Config.get('API_SERVER.ENABLED')) {
         logger.info('Starting API Server...');
         await apiServer.startServer();

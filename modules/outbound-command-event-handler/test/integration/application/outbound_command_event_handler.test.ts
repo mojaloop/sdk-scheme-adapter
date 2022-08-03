@@ -29,36 +29,49 @@
 import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 
-import {
-  DomainEventMessage,
-  EventMessageType,
-  OutboundDomainEventMessageName,
-  IDomainEventMessageData,
-} from "@mojaloop/sdk-scheme-adapter-private-shared-lib";
-import { KafkaDomainEventProducer } from "@mojaloop/sdk-scheme-adapter-private-shared-lib";
+import { CommandEventMessage, OutboundCommandEventMessageName, ICommandEventMessageData, DomainEventMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+import { KafkaCommandEventProducer, IKafkaEventProducerOptions, KafkaDomainEventConsumer, IKafkaEventConsumerOptions } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+import { randomUUID } from "crypto";
+import { RedisBulkTransactionStateRepo, IRedisBulkTransactionStateRepoOptions } from '../../../src/infrastructure/redis_bulk_transaction_repo'
 
-const logger: ILogger = new DefaultLogger("bc", "appName", "appVersion"); //TODO: parameterize the names here
-const producer = new KafkaDomainEventProducer(logger);
+const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
 
-const sampleDomainEventMessageData: IDomainEventMessageData = {
-  key: "sample-key1",
-  name: OutboundDomainEventMessageName.SDKOutboundBulkRequestReceived,
-  content: {
-    id: "123784627836457823",
-    options: {},
-    individualTransfers: [],
-  },
-  timestamp: Date.now(),
-  headers: [],
-};
+const producerOptions: IKafkaEventProducerOptions = {
+    brokerList: 'localhost:9092',
+    clientId: 'test-integration_client_id',
+    topic: 'topic-sdk-outbound-command-events'
+}
 
-describe("First domain event", () => {
+const consumerOptions: IKafkaEventConsumerOptions = {
+  brokerList: 'localhost:9092',
+  clientId: 'test-integration_client_id',
+  topics: ['topic-sdk-outbound-domain-events'],
+  groupId: "domain-events"
+}
+
+// Create bulk transaction entity repo
+const bulkTransactionEntityRepoOptions: IRedisBulkTransactionStateRepoOptions = {
+  connStr: 'redis://localhost:6379'
+}
+
+const producer = new KafkaCommandEventProducer(producerOptions, logger)
+var kafkaEvents = []
+const consumer = new KafkaDomainEventConsumer(async (message) => { kafkaEvents.push(message)}, consumerOptions, logger)
+const bulkTransactionEntityRepo = new RedisBulkTransactionStateRepo(bulkTransactionEntityRepoOptions, logger);
+
+describe("Tests for Command Event Handler", () => {
+  
   beforeEach(async () => {
     await producer.init();
+    kafkaEvents = [];
+    await consumer.init();
+    await bulkTransactionEntityRepo.init();
   });
 
   afterEach(async () => {
     await producer.destroy();
+    await consumer.destroy();
+    await bulkTransactionEntityRepo.destroy();
   });
 
   // TESTS FOR PARTY LOOKUP
@@ -67,31 +80,72 @@ describe("First domain event", () => {
         Then outbound event SDKOutboundBulkPartyInfoRequested should be published \
           And Global state should be updated to RECEIVED.", async () => {
 
-    const inboundBulkRequestOptions = {
-      count: 1,
-      sender: {
-        idType: 'MSISDN',
-        id: 5719891907,
-
+    const bulkTransactionId = randomUUID();
+    const sampleCommandEventMessageData: ICommandEventMessageData = {
+      key: 'sample-key1',
+      name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkRequest,
+      content: {
+        bulkHomeTransactionID: "string",
+        bulkTransactionId: bulkTransactionId,
+        options: {
+          onlyValidateParty: true,
+          autoAcceptParty: {
+            enabled: false
+          },
+          autoAcceptQuote: {
+            enabled: true,
+          },
+          skipPartyLookup: true,
+          synchronous: true,
+          bulkExpiration: "2016-05-24T08:38:08.699-04:00"
+        },
+        from: {
+          partyIdInfo: {
+            partyIdType: "MSISDN",
+            partyIdentifier: "16135551212",
+            fspId: "string",
+          },
+        },
+        individualTransfers: [
+          {
+            homeTransactionId: randomUUID(),
+            to: {
+              partyIdInfo: {
+                partyIdType: "MSISDN",
+                partyIdentifier: "16135551212",
+              },
+            },
+            amountType: "SEND",
+            currency: "USD",
+            amount: "123.45",
+          },
+          {
+            homeTransactionId: randomUUID(),
+            to: {
+              partyIdInfo: {
+                partyIdType: "MSISDN",
+                partyIdentifier: "16135551212",
+              },
+            },
+            amountType: "SEND",
+            currency: "USD",
+            amount: "456.78",
+          }
+        ]
       },
-      receivers: [
-        {
-          idType: 'MSISDN',
-          to: 5719891908,
-          currency: 'USD',
-          amount: 10
-        }
-      ]
+      timestamp: Date.now(),
+      headers: []
     }
-    const inboundCommandEvent = getInboundCommandEvent(inboundBulkRequestOptions)
-    submitInboundCommandEvent(inboundCommandEvent, 'ProcessSDKOutboundBulkRequest')
-    const outboundEvents = getOutboundKafkaEvents()
-    const outboundEventHeaders = outboundEvent[0].getHeaders()
-    const outboundEventMessage = outboundEvent[0].getData()
-    expect(outboundEventMessage.name).toBe('SDKOutboundBulkPartyInfoRequested')
+    const commandEventObj = new CommandEventMessage(sampleCommandEventMessageData);
+    await producer.sendCommandMessage(commandEventObj);
 
-    const redisData = getDataFromRedis('bulkTransactionId')
-    expect(redisData.status).toBe('RECEIVED')
+    // const outboundEvents = getOutboundKafkaEvents();
+    // const outboundEventHeaders = outboundEvent[0].getHeaders();
+    // const outboundEventMessage = outboundEvent[0].getData();
+    // expect(outboundEventMessage.name).toBe('SDKOutboundBulkPartyInfoRequested')
+
+    const bulkState = await bulkTransactionEntityRepo.load('b51ec534-ee48-4575-b6a9-ead2955b8069')
+    expect(bulkState.state).toBe('RECEIVED')
 
   });
 

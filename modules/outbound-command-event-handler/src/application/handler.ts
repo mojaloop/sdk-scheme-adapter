@@ -38,7 +38,7 @@ import { handleProcessSDKOutboundBulkRequest } from './handlers';
 import { IBulkTransactionEntityRepo, ICommandEventHandlerOptions } from '../types';
 
 export interface IOutboundEventHandlerOptions {
-  bulkTransactionEntityRepo: IBulkTransactionEntityRepo
+    bulkTransactionEntityRepo: IBulkTransactionEntityRepo
 }
 
 export class OutboundEventHandler implements IRunHandler {
@@ -54,7 +54,7 @@ export class OutboundEventHandler implements IRunHandler {
 
     /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */
     constructor(options: IOutboundEventHandlerOptions) {
-        this._bulkTransactionEntityStateRepo = options.bulkTransactionEntityRepo
+        this._bulkTransactionEntityStateRepo = options.bulkTransactionEntityRepo;
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
