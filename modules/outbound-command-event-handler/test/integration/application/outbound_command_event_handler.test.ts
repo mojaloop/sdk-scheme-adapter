@@ -37,34 +37,40 @@ import { RedisBulkTransactionStateRepo, IRedisBulkTransactionStateRepoOptions } 
 
 const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
 
+// Setup for Kafka Producer
 const commandEventProducerOptions: IKafkaEventProducerOptions = {
     brokerList: 'localhost:9092',
     clientId: 'test-integration_client_id',
     topic: 'topic-sdk-outbound-command-events'
 }
+const producer = new KafkaCommandEventProducer(commandEventProducerOptions, logger)
 
+// Setup for Kafka Consumer
 const domainEventConsumerOptions: IKafkaEventConsumerOptions = {
   brokerList: 'localhost:9092',
   clientId: 'test-integration_client_id',
   topics: ['topic-sdk-outbound-domain-events'],
-  groupId: "domain-events"
+  groupId: "domain_events_consumer_client_id"
 }
+var domainEvents: Array<CommandEventMessage> = []
+const _messageHandler = async (message: DomainEventMessage): Promise<void>  => {
+  console.log('Domain Message: ', message);
+  domainEvents.push(message);
+}
+const consumer = new KafkaDomainEventConsumer(_messageHandler.bind(this), domainEventConsumerOptions, logger)
 
-// Create bulk transaction entity repo
+// Setup for Redis access
 const bulkTransactionEntityRepoOptions: IRedisBulkTransactionStateRepoOptions = {
   connStr: 'redis://localhost:6379'
 }
-
-const producer = new KafkaCommandEventProducer(commandEventProducerOptions, logger)
-var kafkaEvents = []
-const consumer = new KafkaDomainEventConsumer(async (message: DomainEventMessage) => { console.log(message)}, domainEventConsumerOptions, logger)
 const bulkTransactionEntityRepo = new RedisBulkTransactionStateRepo(bulkTransactionEntityRepoOptions, logger);
+
 
 describe("Tests for Command Event Handler", () => {
 
   beforeEach(async () => {
     await producer.init();
-    kafkaEvents = [];
+    domainEvents = [];
     await consumer.init();
     await bulkTransactionEntityRepo.init();
   });
@@ -146,14 +152,16 @@ describe("Tests for Command Event Handler", () => {
     }
     const commandEventObj = new CommandEventMessage(sampleCommandEventMessageData);
     await producer.sendCommandMessage(commandEventObj);
+    
     await new Promise(resolve => setTimeout(resolve, 1000));
-    // const outboundEvents = getOutboundKafkaEvents();
-    // const outboundEventHeaders = outboundEvent[0].getHeaders();
-    // const outboundEventMessage = outboundEvent[0].getData();
-    // expect(outboundEventMessage.name).toBe('SDKOutboundBulkPartyInfoRequested')
-
+    // Check the state in Redis
     const bulkState = await bulkTransactionEntityRepo.load(bulkTransactionId);
     expect(bulkState.state).toBe('RECEIVED');
+    //TODO Add more asserts to check data in Redis
+
+    // Check domain events published to kafka
+    // expect(domainEvents[0].getName()).toBe('SDKOutboundBulkPartyInfoRequested')
+    //TODO Add asserts to check data contents of the domain event published to kafka
 
   });
 
