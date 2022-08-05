@@ -34,7 +34,8 @@ import { KafkaCommandEventProducer, IKafkaEventProducerOptions, KafkaDomainEvent
 import { SDKOutboundBulkRequestState } from '@mojaloop/sdk-scheme-adapter-public-shared-lib'
 import { randomUUID } from "crypto";
 import { RedisBulkTransactionStateRepo, IRedisBulkTransactionStateRepoOptions } from '../../../src/infrastructure/redis_bulk_transaction_repo'
-
+import { SDKOutboundBulkRequestEntity } from '../../../../public-shared-lib/src/entities'
+ 
 const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
 
 // Setup for Kafka Producer
@@ -155,9 +156,15 @@ describe("Tests for Command Event Handler", () => {
     
     await new Promise(resolve => setTimeout(resolve, 1000));
     // Check the state in Redis
+    console.log('bulk id: ', bulkTransactionId);
     const bulkState = await bulkTransactionEntityRepo.load(bulkTransactionId);
     expect(bulkState.state).toBe('RECEIVED');
-    //TODO Add more asserts to check data in Redis
+
+    //Check that the state of individual transfers in bulk to be RECEIVED
+    const individualTransfers = (await bulkTransactionEntityRepo.getAllAttributes(bulkTransactionId)).filter((key) => key.includes('individualItem_'))
+    expect(individualTransfers.length).toBe(2);
+    expect((await bulkTransactionEntityRepo.getAttribute(bulkTransactionId, individualTransfers[0])).state).toBe('RECEIVED');
+    expect((await bulkTransactionEntityRepo.getAttribute(bulkTransactionId, individualTransfers[1])).state).toBe('RECEIVED');
 
     // Check domain events published to kafka
     // expect(domainEvents[0].getName()).toBe('SDKOutboundBulkPartyInfoRequested')
