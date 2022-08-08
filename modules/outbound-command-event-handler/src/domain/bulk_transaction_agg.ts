@@ -24,11 +24,21 @@
 
 'use strict';
 
-import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { BaseAggregate, IEntityStateRepository } from '@mojaloop/sdk-scheme-adapter-public-shared-lib';
-import { BulkTransactionEntity, BulkTransactionState } from './bulk_transaction_entity';
-import { IndividualTransferEntity } from './individual_transfer_entity';
-import { IBulkTransactionEntityRepo } from '../types/bulk_transaction_entity_repo';
+import {ILogger} from '@mojaloop/logging-bc-public-types-lib';
+import {BaseAggregate, IEntityStateRepository} from '@mojaloop/sdk-scheme-adapter-public-shared-lib';
+import {BulkTransactionEntity, BulkTransactionInternalState, BulkTransactionState} from './bulk_transaction_entity';
+import {
+    IndividualTransferEntity,
+    IndividualTransferInternalState,
+    IndividualTransferState,
+    IPartyRequest
+} from './individual_transfer_entity';
+import {IBulkTransactionEntityRepo} from '../types';
+import {
+    PartyInfoRequestedMessage
+} from '@mojaloop/sdk-scheme-adapter-private-shared-lib/dist/events/outbound_command_event_message/party_info_requested';
+
+export type CreatePartyRequest = () => IPartyRequest;
 
 export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, BulkTransactionState> {
     // TODO: These counts can be part of bulk transaction entity?
@@ -52,28 +62,23 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
     //     super(bulkTransactionEntity, entityStateRepo, logger);
     // }
 
-    static CreateFromRequest(
+    static async CreateFromRequest(
         /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
         request: any,
         entityStateRepo: IEntityStateRepository<BulkTransactionState>,
         logger: ILogger,
-    ): BulkTransactionAgg {
+    ): Promise<BulkTransactionAgg> {
     // Create root entity
         const bulkTransactionEntity = BulkTransactionEntity.CreateFromRequest(request);
         // Create the aggregate
         const agg = new BulkTransactionAgg(bulkTransactionEntity, entityStateRepo, logger);
         // Persist in the rep
-        agg.store();
+        await agg.store();
         // Create individualTransfer entities
-        if(
-            request.individualTransfers &&
-          Array.isArray(request.individualTransfers) &&
-          request.individualTransfers.length > 0
-        ) {
-            for(const individualTransfer of request.individualTransfers) {
-                const individualTransferEntity = IndividualTransferEntity.CreateFromRequest(individualTransfer);
-                agg.addIndividualTransferEntity(individualTransferEntity);
-            }
+        if(Array.isArray(request?.individualTransfers)) {
+            // TODO: limit the number of concurrently created promises to avoid nodejs high memory consumption
+            await Promise.all(request.individualTransfers.map((individualTransfer: any) =>
+                agg.addIndividualTransferEntity(IndividualTransferEntity.CreateFromRequest(individualTransfer))));
         }
         // Return the aggregate
         return agg;
@@ -103,8 +108,37 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         }
     }
 
+    setTxState(state: BulkTransactionInternalState) {
+        this._rootEntity.setTxState(state);
+    }
+
+    async resolveParties() {
+        const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
+        const allAttributes = await repo.getAllAttributes(this._rootEntity.id);
+        const allIndividualTransferIds = allAttributes.filter(attr => attr.startsWith('individualItem_')).map(attr => attr.replace('individualItem_', ''))
+        for await (const individualTransferId of allIndividualTransferIds) {
+            const individualTransferState: IndividualTransferState = await repo.getAttribute(this._rootEntity.id, 'individualItem_' + individualTransferId);
+            if (individualTransferState.partyResponse) {
+                if (individualTransferState.state !== IndividualTransferInternalState.DISCOVERY_SUCCESS) {
+                    individualTransferState.state = IndividualTransferInternalState.DISCOVERY_SUCCESS;
+                    await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+                        .addAdditionalAttribute(this._rootEntity.id, 'individualItem_' + individualTransferId, individualTransferState);
+                }
+            }
+            if(!individualTransferState.partyRequest) {
+                const msg = new PartyInfoRequestedMessage(individualTransferState);
+                individualTransferState.partyRequest = msg.getContent();
+            }
+            // TODO: send Message
+            individualTransferState.state = IndividualTransferInternalState.DISCOVERY_PROCESSING;
+            await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+                .addAdditionalAttribute(this._rootEntity.id, 'individualItem_' + individualTransferId, individualTransferState);
+            // const transferEntity = new IndividualTransferEntity(individualTransferState);
+        }
+    }
+
     async addIndividualTransferEntity(entity: IndividualTransferEntity) : Promise<void> {
-        (<IBulkTransactionEntityRepo> this._entity_state_repo)
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
             .addAdditionalAttribute(this._rootEntity.id, 'individualItem_' + entity.id, entity.exportState());
     }
 

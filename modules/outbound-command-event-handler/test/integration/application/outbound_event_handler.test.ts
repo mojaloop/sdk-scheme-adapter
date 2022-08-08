@@ -34,7 +34,7 @@ import { DomainEventMessage, EventMessageType, OutboundDomainEventMessageName, I
 import { KafkaDomainEventProducer } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 
 const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
-const producer = new KafkaDomainEventProducer(logger)
+const producer = new KafkaDomainEventProducer(logger);
 
 const sampleDomainEventMessageData: IDomainEventMessageData = {
   key: 'sample-key1',

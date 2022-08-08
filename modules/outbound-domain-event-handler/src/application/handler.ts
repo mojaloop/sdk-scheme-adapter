@@ -72,8 +72,10 @@ export class OutboundEventHandler implements IRunHandler {
     }
 
     async destroy(): Promise<void> {
-        await this._consumer?.destroy();
-        await this._commandProducer?.destroy();
+        await Promise.all([
+            this._consumer?.destroy(),
+            this._commandProducer?.destroy(),
+        ]);
     }
 
     async _messageHandler(message: DomainEventMessage): Promise<void> {
@@ -81,7 +83,7 @@ export class OutboundEventHandler implements IRunHandler {
         console.log(message);
         switch (message.getName()) {
             case OutboundDomainEventMessageName.SDKOutboundBulkRequestReceived: {
-                handleSDKOutboundBulkRequestReceived(message, this._domainEventHandlerOptions, this._logger);
+                await handleSDKOutboundBulkRequestReceived(message, this._domainEventHandlerOptions, this._logger);
                 break;
             }
             default: {

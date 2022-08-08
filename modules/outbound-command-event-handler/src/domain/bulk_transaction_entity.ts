@@ -70,10 +70,10 @@ export class BulkTransactionEntity extends BaseEntity<BulkTransactionState> {
             bulkHomeTransactionID: request?.bulkHomeTransactionID,
             options: request?.options,
             extensions: request?.extensions,
-            state: BulkTransactionInternalState.RECEIVED,
-            created_at: Date.now(),
-            updated_at: Date.now(),
-            version: 1,
+            state: request?.state || BulkTransactionInternalState.RECEIVED,
+            created_at: request?.created_at || Date.now(),
+            updated_at: request?.updated_at || Date.now(),
+            version: request?.version || 1,
         };
         return new BulkTransactionEntity(initialState);
     }
@@ -81,6 +81,10 @@ export class BulkTransactionEntity extends BaseEntity<BulkTransactionState> {
     /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */
     constructor(initialState: BulkTransactionState) {
         super(initialState);
+    }
+
+    setTxState(state: BulkTransactionInternalState) {
+        this._state.state = state;
     }
 
     // isAutoAcceptPartyEnabled (): boolean {

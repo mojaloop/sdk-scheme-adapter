@@ -34,11 +34,14 @@ import {
     IKafkaEventConsumerOptions,
     IKafkaEventProducerOptions,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-import { handleProcessSDKOutboundBulkRequest } from './handlers';
+import {
+    handleProcessSDKOutboundBulkRequest,
+    handleProcessSDKOutboundBulkPartyInfoRequest,
+} from './handlers';
 import { IBulkTransactionEntityRepo, ICommandEventHandlerOptions } from '../types';
 
 export interface IOutboundEventHandlerOptions {
-  bulkTransactionEntityRepo: IBulkTransactionEntityRepo
+    bulkTransactionEntityRepo: IBulkTransactionEntityRepo
 }
 
 export class OutboundEventHandler implements IRunHandler {
@@ -54,7 +57,7 @@ export class OutboundEventHandler implements IRunHandler {
 
     /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */
     constructor(options: IOutboundEventHandlerOptions) {
-        this._bulkTransactionEntityStateRepo = options.bulkTransactionEntityRepo
+        this._bulkTransactionEntityStateRepo = options.bulkTransactionEntityRepo;
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
@@ -65,7 +68,7 @@ export class OutboundEventHandler implements IRunHandler {
         const consumerOptions: IKafkaEventConsumerOptions = appConfig.get('KAFKA.COMMAND_EVENT_CONSUMER');
         this._consumer = new KafkaCommandEventConsumer(this._messageHandler.bind(this), consumerOptions, logger);
         logger.info(`Created kafkaConsumer of type ${this._consumer.constructor.name}`);
-  
+
         /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
         await this._consumer.init();
         await this._consumer.start();
@@ -92,7 +95,19 @@ export class OutboundEventHandler implements IRunHandler {
         console.log(message);
         switch (message.getName()) {
             case OutboundCommandEventMessageName.ProcessSDKOutboundBulkRequest: {
-                handleProcessSDKOutboundBulkRequest(message, this._commandEventHandlerOptions, this._logger);
+                await handleProcessSDKOutboundBulkRequest(message, this._commandEventHandlerOptions, this._logger);
+                break;
+            }
+            case OutboundCommandEventMessageName.ProcessSDKOutboundBulkPartyInfoRequest: {
+                await handleProcessSDKOutboundBulkPartyInfoRequest(message, this._commandEventHandlerOptions, this._logger);
+                break;
+            }
+            case OutboundCommandEventMessageName.ProcessPartyInfoCallback: {
+                // await handleProcessPartyInfoCallback(message, this._commandEventHandlerOptions, this._logger);
+                break;
+            }
+            case OutboundCommandEventMessageName.ProcessSDKOutboundBulkPartyInfoRequestComplete: {
+                // await handleProcessSDKOutboundBulkPartyInfoRequestComplete(message, this._commandEventHandlerOptions, this._logger);
                 break;
             }
             default: {

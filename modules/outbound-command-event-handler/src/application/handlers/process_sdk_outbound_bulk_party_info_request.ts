@@ -18,38 +18,44 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Modusbox
- - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
+ - Yevhen Kyriukha <yevhen.kyriukha@modusbox.com>
  --------------
  ******/
 
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { CommandEventMessage, ProcessSDKOutboundBulkRequestMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import {
+    CommandEventMessage,
+    ProcessSDKOutboundBulkPartyInfoRequestMessage,
+} from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '../../domain/bulk_transaction_agg';
 import { ICommandEventHandlerOptions } from '../../types';
+import { BulkTransactionInternalState } from '../../domain/bulk_transaction_entity';
 
-export async function handleProcessSDKOutboundBulkRequest(
+export async function handleProcessSDKOutboundBulkPartyInfoRequest(
     message: CommandEventMessage,
     options: ICommandEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
-    // TODO: Duplicate check here?
-    const processSDKOutboundBulkRequestMessage =
-      ProcessSDKOutboundBulkRequestMessage.CreateFromCommandEventMessage(message);
+    const processSDKOutboundBulkPartyInfoRequestMessage =
+        ProcessSDKOutboundBulkPartyInfoRequestMessage.CreateFromCommandEventMessage(message);
     try {
-        const sdkOutboundBulkRequestEntity = processSDKOutboundBulkRequestMessage.createSDKOutboundBulkRequestEntity();
+        const sdkOutboundBulkRequestEntity =
+            processSDKOutboundBulkPartyInfoRequestMessage.createSDKOutboundBulkRequestEntity();
         logger.info(`Got SDKOutboundBulkRequestEntity ${sdkOutboundBulkRequestEntity}`);
 
         // Create aggregate
-        const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRequest(
-            sdkOutboundBulkRequestEntity.request,
+        const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRepo(
+            sdkOutboundBulkRequestEntity.id,
             options.bulkTransactionEntityRepo,
             logger,
         );
-        logger.info(`Created BulkTransactionAggregate ${bulkTransactionAgg}`);
 
-    // const bulkTransactionAggTest = await BulkTransactionAgg.CreateFromRepo(sdkOutboundBulkRequestEntity.id, options.bulkTransactionEntityRepo, logger)
+        bulkTransactionAgg.resolveParties();
+
+        bulkTransactionAgg.setTxState(BulkTransactionInternalState.DISCOVERY_PROCESSING);
+        await bulkTransactionAgg.store();
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     } catch (err: any) {
         logger.info(`Failed to create BulkTransactionAggregate. ${err.message}`);

@@ -28,5 +28,6 @@
  ******/
 
 'use strict';
- 
+
 export * from './sdk_outbound_bulk_request_entity';
+export * from './party_info_requested_entity';

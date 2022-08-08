@@ -57,7 +57,6 @@ export abstract class BaseEntity <S extends BaseEntityState> {
 
     // required so we can export/persist the state and still forbid direct state changes
     exportState(): S {
-        const clone: S = Object.assign({}, this._state);
-        return clone;
+        return Object.assign({}, this._state);
     }
 }
