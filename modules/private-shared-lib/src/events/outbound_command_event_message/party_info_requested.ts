@@ -32,13 +32,12 @@ export interface IPartyInfoRequestedMessageData {
     request: PartyInfoRequestedState;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
-    transferId: string;
 }
 
 export class PartyInfoRequestedMessage extends CommandEventMessage {
     constructor(data: IPartyInfoRequestedMessageData) {
         super({
-            key: data.transferId,
+            key: data.request.id,
             content: data.request,
             timestamp: data.timestamp,
             headers: data.headers,

@@ -25,22 +25,21 @@
 'use strict';
 
 import {BaseEntity, BaseEntityState} from '../domain';
-import {AjvValidationError} from '../errors';
-import {SDKSchemeAdapter} from '@mojaloop/api-snippets';
-import {randomUUID} from 'crypto';
-import Ajv from 'ajv';
 
-const ajv = new Ajv({
-    strict:false,
-    allErrors: false,
-    // validateSchema: false
-});
 // ajv.addKeyword({
 //   keyword: 'example'
 // })
 
+export interface IHttpRequest {
+    method: string;
+    path: string;
+    headers: any;
+    body: any;
+}
+
 export interface PartyInfoRequestedState extends BaseEntityState {
-    request: SDKSchemeAdapter.Outbound.V2_0_0.Types.PartyIdInfo
+    // request: SDKSchemeAdapter.Outbound.V2_0_0.Types.Party
+    request: IHttpRequest,
 }
 
 export class PartyInfoRequestedEntity extends BaseEntity<PartyInfoRequestedState> {
@@ -49,12 +48,11 @@ export class PartyInfoRequestedEntity extends BaseEntity<PartyInfoRequestedState
         return this._state.id;
     }
 
-    get request(): SDKSchemeAdapter.Outbound.V2_0_0.Types.PartyIdInfo {
+    get request(): IHttpRequest {
         return this._state.request;
     }
 
     static CreateFromRequest(request: any): PartyInfoRequestedEntity {
-        PartyInfoRequestedEntity._validateRequest(request);
         const initialState: PartyInfoRequestedState = {
             id: request?.transferId,
             request,
@@ -67,16 +65,6 @@ export class PartyInfoRequestedEntity extends BaseEntity<PartyInfoRequestedState
 
     /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */
     constructor(initialState: PartyInfoRequestedState) {
-        PartyInfoRequestedEntity._validateRequest(initialState.request);
         super(initialState);
     }
-
-    private static _validateRequest(request: SDKSchemeAdapter.Outbound.V2_0_0.Types.PartyIdInfo): void {
-        const validate = ajv.compile(SDKSchemeAdapter.Outbound.V2_0_0.Schemas.PartyIdInfo);
-        const validationResult = validate(request);
-        if(!validationResult) {
-            throw new AjvValidationError(validate.errors || []);
-        }
-    }
-
 }

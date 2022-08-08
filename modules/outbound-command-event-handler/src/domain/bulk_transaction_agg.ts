@@ -35,10 +35,8 @@ import {
 } from './individual_transfer_entity';
 import {IBulkTransactionEntityRepo} from '../types';
 import {
-    PartyInfoRequestedMessage
+    PartyInfoRequestedMessage,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib/dist/events/outbound_command_event_message/party_info_requested';
-
-export type CreatePartyRequest = () => IPartyRequest;
 
 export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, BulkTransactionState> {
     // TODO: These counts can be part of bulk transaction entity?
@@ -118,28 +116,41 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         const allIndividualTransferIds = allAttributes.filter(attr => attr.startsWith('individualItem_')).map(attr => attr.replace('individualItem_', ''))
         for await (const individualTransferId of allIndividualTransferIds) {
             const individualTransferState: IndividualTransferState = await repo.getAttribute(this._rootEntity.id, 'individualItem_' + individualTransferId);
-            if (individualTransferState.partyResponse) {
-                if (individualTransferState.state !== IndividualTransferInternalState.DISCOVERY_SUCCESS) {
-                    individualTransferState.state = IndividualTransferInternalState.DISCOVERY_SUCCESS;
-                    await (<IBulkTransactionEntityRepo> this._entity_state_repo)
-                        .addAdditionalAttribute(this._rootEntity.id, 'individualItem_' + individualTransferId, individualTransferState);
-                }
+            const individualTransfer = new IndividualTransferEntity(individualTransferState);
+            if(individualTransfer.payeeResolved) {
+                continue;
+                // if(individualTransfer.transferState() !== IndividualTransferInternalState.DISCOVERY_SUCCESS) {
+                //     individualTransferState.state = IndividualTransferInternalState.DISCOVERY_SUCCESS;
+                //     await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+                //         .setAttribute(this._rootEntity.id, 'individualItem_' + individualTransferId, individualTransferState);
+                // }
             }
-            if(!individualTransferState.partyRequest) {
-                const msg = new PartyInfoRequestedMessage(individualTransferState);
-                individualTransferState.partyRequest = msg.getContent();
-            }
+            // if(!individualTransfer.partyRequest) {
+            const msg = new PartyInfoRequestedMessage({
+                timestamp: Date.now(),
+                headers: [],
+                request: {
+                    id: individualTransfer.id,
+                    request: individualTransfer.payee,
+                    created_at: Date.now(),
+                    updated_at: Date.now(),
+                    version: 1,
+                },
+                transferId: individualTransferId,
+            });
+            // individualTransferState.partyRequest = msg.getContent();
+            // }
             // TODO: send Message
             individualTransferState.state = IndividualTransferInternalState.DISCOVERY_PROCESSING;
             await (<IBulkTransactionEntityRepo> this._entity_state_repo)
-                .addAdditionalAttribute(this._rootEntity.id, 'individualItem_' + individualTransferId, individualTransferState);
+                .setAttribute(this._rootEntity.id, 'individualItem_' + individualTransferId, individualTransferState);
             // const transferEntity = new IndividualTransferEntity(individualTransferState);
         }
     }
 
     async addIndividualTransferEntity(entity: IndividualTransferEntity) : Promise<void> {
         await (<IBulkTransactionEntityRepo> this._entity_state_repo)
-            .addAdditionalAttribute(this._rootEntity.id, 'individualItem_' + entity.id, entity.exportState());
+            .setAttribute(this._rootEntity.id, 'individualItem_' + entity.id, entity.exportState());
     }
 
     async destroy() : Promise<void> {

@@ -31,5 +31,5 @@ export type IBulkTransactionEntityRepo = {
     getAllAttributes: (id: string) => Promise<string[]>
     getAttribute: (id: string, name: string) => Promise<any>
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    addAdditionalAttribute: (id: string, name: string, value: any) => Promise<void>
+    setAttribute: (id: string, name: string, value: any) => Promise<void>
 } & IEntityStateRepository<BulkTransactionState>;

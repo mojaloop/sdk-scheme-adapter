@@ -91,6 +91,18 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         return new IndividualTransferEntity(initialState);
     }
 
+    get payee(): SDKSchemeAdapter.Outbound.V2_0_0.Types.Party {
+        return this._state.request.to;
+    }
+
+    get payeeResolved(): boolean {
+        return !!this._state.partyResponse;
+    }
+
+    get transferState() {
+        return this._state.state;
+    }
+
     /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */
     constructor(initialState: IndividualTransferState) {
         IndividualTransferEntity._validateRequest(initialState.request);
