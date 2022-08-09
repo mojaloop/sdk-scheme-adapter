@@ -37,6 +37,8 @@ import {
 import {
     handleProcessSDKOutboundBulkRequest,
     handleProcessSDKOutboundBulkPartyInfoRequest,
+    handleProcessSDKOutboundBulkPartyInfoRequestComplete,
+    handleProcessPartyInfoCallback,
 } from './handlers';
 import { IBulkTransactionEntityRepo, ICommandEventHandlerOptions } from '../types';
 
@@ -103,11 +105,11 @@ export class OutboundEventHandler implements IRunHandler {
                 break;
             }
             case OutboundCommandEventMessageName.ProcessPartyInfoCallback: {
-                // await handleProcessPartyInfoCallback(message, this._commandEventHandlerOptions, this._logger);
+                await handleProcessPartyInfoCallback(message, this._commandEventHandlerOptions, this._logger);
                 break;
             }
             case OutboundCommandEventMessageName.ProcessSDKOutboundBulkPartyInfoRequestComplete: {
-                // await handleProcessSDKOutboundBulkPartyInfoRequestComplete(message, this._commandEventHandlerOptions, this._logger);
+                await handleProcessSDKOutboundBulkPartyInfoRequestComplete(message, this._commandEventHandlerOptions, this._logger);
                 break;
             }
             default: {

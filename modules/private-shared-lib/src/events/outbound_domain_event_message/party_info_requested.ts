@@ -24,20 +24,24 @@
 
 'use strict';
 
-import { CommandEventMessage } from '../command_event_message';
+import { DomainEventMessage } from '../domain_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { PartyInfoRequestedEntity, PartyInfoRequestedState } from '@mojaloop/sdk-scheme-adapter-public-shared-lib';
+import { IHttpRequest } from '@mojaloop/sdk-scheme-adapter-public-shared-lib';
+
+type IPartyRequest = IHttpRequest;
 
 export interface IPartyInfoRequestedMessageData {
-    request: PartyInfoRequestedState;
+    bulkId: string;
+    transferId: string;
+    request: IPartyRequest;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
 
-export class PartyInfoRequestedMessage extends CommandEventMessage {
+export class PartyInfoRequestedMessage extends DomainEventMessage {
     constructor(data: IPartyInfoRequestedMessageData) {
         super({
-            key: data.request.id,
+            key: `${data.bulkId}_${data.transferId}`,
             content: data.request,
             timestamp: data.timestamp,
             headers: data.headers,
@@ -45,19 +49,24 @@ export class PartyInfoRequestedMessage extends CommandEventMessage {
         });
     }
 
-    static CreateFromCommandEventMessage(message: CommandEventMessage): PartyInfoRequestedMessage {
-        if((message.getContent() === null || typeof message.getContent() !== 'object')) {
-            throw new Error('Content is in unknown format');
-        }
-        const data: IPartyInfoRequestedMessageData = {
-            request: <PartyInfoRequestedState>message.getContent(),
-            timestamp: message.getTimeStamp(),
-            headers: message.getHeaders(),
-        };
-        return new PartyInfoRequestedMessage(data);
+    getBulkId() {
+        return this.getKey().split('_')[0];
     }
 
-    createSDKOutboundBulkRequestEntity(): PartyInfoRequestedEntity {
-        return new PartyInfoRequestedEntity(<PartyInfoRequestedState> super.getContent());
+    getTransferId() {
+        return this.getKey().split('_')[1];
     }
+
+    // For SDK outbound API
+    // static CreateFromDomainEventMessage(message: DomainEventMessage): PartyInfoRequestedMessage {
+    //     if((message.getContent() === null || typeof message.getContent() !== 'object')) {
+    //         throw new Error('Content is in unknown format');
+    //     }
+    //     const data: IPartyInfoRequestedMessageData = {
+    //         request: <PartyInfoRequestedState>message.getContent(),
+    //         timestamp: message.getTimeStamp(),
+    //         headers: message.getHeaders(),
+    //     };
+    //     return new PartyInfoRequestedMessage(data);
+    // }
 }

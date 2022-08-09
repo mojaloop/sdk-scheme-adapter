@@ -28,10 +28,12 @@ import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import {
     CommandEventMessage,
     ProcessSDKOutboundBulkPartyInfoRequestMessage,
+    PartyInfoRequestedMessage,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '../../domain/bulk_transaction_agg';
 import { ICommandEventHandlerOptions } from '../../types';
 import { BulkTransactionInternalState } from '../../domain/bulk_transaction_entity';
+import { IndividualTransferInternalState } from '../../domain/individual_transfer_entity';
 
 export async function handleProcessSDKOutboundBulkPartyInfoRequest(
     message: CommandEventMessage,
@@ -41,21 +43,56 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequest(
     const processSDKOutboundBulkPartyInfoRequestMessage =
         ProcessSDKOutboundBulkPartyInfoRequestMessage.CreateFromCommandEventMessage(message);
     try {
-        const sdkOutboundBulkRequestEntity =
-            processSDKOutboundBulkPartyInfoRequestMessage.createSDKOutboundBulkRequestEntity();
-        logger.info(`Got SDKOutboundBulkRequestEntity ${sdkOutboundBulkRequestEntity}`);
+        logger.info(`Got ProcessSDKOutboundBulkPartyInfoRequestMessage: bulkId=${processSDKOutboundBulkPartyInfoRequestMessage.getKey()}`);
 
         // Create aggregate
         const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRepo(
-            sdkOutboundBulkRequestEntity.id,
+            processSDKOutboundBulkPartyInfoRequestMessage.getKey(),
             options.bulkTransactionEntityRepo,
             logger,
         );
 
-        bulkTransactionAgg.resolveParties();
+        const bulkTx = bulkTransactionAgg.getBulkTransaction();
 
-        bulkTransactionAgg.setTxState(BulkTransactionInternalState.DISCOVERY_PROCESSING);
-        await bulkTransactionAgg.store();
+        bulkTx.setTxState(BulkTransactionInternalState.DISCOVERY_PROCESSING);
+        await bulkTransactionAgg.setTransaction(bulkTx);
+
+        const allIndividualTransferIds = await bulkTransactionAgg.getAllIndividualTransferIds();
+        for await (const individualTransferId of allIndividualTransferIds) {
+            const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
+
+            if(bulkTx.isSkipPartyLookupEnabled()) {
+                if(individualTransfer.isPartyInfoExists) {
+                    individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS);
+                } else {
+                    individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_FAILED);
+                }
+                await bulkTransactionAgg.setIndividualTransferById(individualTransferId, individualTransfer);
+                continue;
+            }
+            const { partyIdInfo } = individualTransfer.request.to;
+            const subId = `/${partyIdInfo.partySubIdOrType}`;
+            const msg = new PartyInfoRequestedMessage({
+                bulkId: bulkTx.id,
+                transferId: individualTransfer.id,
+                timestamp: Date.now(),
+                headers: [],
+                request: {
+                    method: 'GET',
+                    path: `/parties/${partyIdInfo.partyIdType}/${partyIdInfo.partyIdentifier}${subId}`,
+                    headers: [],
+                    body: '',
+                },
+                created_at: Date.now(),
+                updated_at: Date.now(),
+                version: 1,
+            });
+            individualTransfer.setPartyRequest(msg.getContent());
+            individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_PROCESSING);
+            await options.domainProducer.sendDomainMessage(msg);
+            await bulkTransactionAgg.setIndividualTransferById(individualTransferId, individualTransfer);
+        }
+
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     } catch (err: any) {
         logger.info(`Failed to create BulkTransactionAggregate. ${err.message}`);

@@ -26,38 +26,44 @@
 
 import { CommandEventMessage } from '../command_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { SDKOutboundBulkRequestEntity, SDKOutboundBulkRequestState } from '@mojaloop/sdk-scheme-adapter-public-shared-lib';
+import { v1_1 as FSPIOP } from '@mojaloop/api-snippets';
 
-export interface IProcessSDKOutboundBulkPartyInfoRequestMessageData {
-    sdkOutboundBulkRequestState: SDKOutboundBulkRequestState;
+export interface IProcessPartyInfoCallbackMessageData {
+    key: string;
+    partyResult: FSPIOP.Schemas.PartyResult;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
 
-export class ProcessSDKOutboundBulkPartyInfoRequestMessage extends CommandEventMessage {
-    constructor(data: IProcessSDKOutboundBulkPartyInfoRequestMessageData) {
+export class ProcessPartyInfoCallbackMessage extends CommandEventMessage {
+    constructor(data: IProcessPartyInfoCallbackMessageData) {
         super({
-            key: data.sdkOutboundBulkRequestState?.id,
-            content: data.sdkOutboundBulkRequestState,
+            key: data.key,
+            content: data.partyResult,
             timestamp: data.timestamp,
             headers: data.headers,
             name: 'ProcessPartyInfoCallback',
         });
     }
 
-    static CreateFromCommandEventMessage(message: CommandEventMessage): ProcessSDKOutboundBulkPartyInfoRequestMessage {
+    getBulkId() {
+        return this.getKey().split('_')[0];
+    }
+
+    getTransferId() {
+        return this.getKey().split('_')[1];
+    }
+
+    static CreateFromCommandEventMessage(message: CommandEventMessage): ProcessPartyInfoCallbackMessage {
         if((message.getContent() === null || typeof message.getContent() !== 'object')) {
             throw new Error('Content is in unknown format');
         }
-        const data: IProcessSDKOutboundBulkPartyInfoRequestMessageData = {
-            sdkOutboundBulkRequestState: <SDKOutboundBulkRequestState>message.getContent(),
+        const data: IProcessPartyInfoCallbackMessageData = {
+            key: message.getKey(),
+            partyResult: <FSPIOP.Schemas.PartyResult>message.getContent(),
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
         };
-        return new ProcessSDKOutboundBulkPartyInfoRequestMessage(data);
-    }
-
-    createSDKOutboundBulkRequestEntity(): SDKOutboundBulkRequestEntity {
-        return new SDKOutboundBulkRequestEntity(<SDKOutboundBulkRequestState> super.getContent());
+        return new ProcessPartyInfoCallbackMessage(data);
     }
 }

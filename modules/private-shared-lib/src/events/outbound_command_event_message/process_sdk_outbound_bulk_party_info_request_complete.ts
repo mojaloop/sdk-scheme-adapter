@@ -26,38 +26,33 @@
 
 import { CommandEventMessage } from '../command_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { SDKOutboundBulkRequestEntity, SDKOutboundBulkRequestState } from '@mojaloop/sdk-scheme-adapter-public-shared-lib';
 
-export interface IProcessSDKOutboundBulkPartyInfoRequestMessageData {
-    sdkOutboundBulkRequestState: SDKOutboundBulkRequestState;
+export interface IProcessSDKOutboundBulkPartyInfoRequestCompleteMessageData {
+    bulkId: string;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
 
-export class ProcessSDKOutboundBulkPartyInfoRequestMessage extends CommandEventMessage {
-    constructor(data: IProcessSDKOutboundBulkPartyInfoRequestMessageData) {
+export class ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage extends CommandEventMessage {
+    constructor(data: IProcessSDKOutboundBulkPartyInfoRequestCompleteMessageData) {
         super({
-            key: data.sdkOutboundBulkRequestState?.id,
-            content: data.sdkOutboundBulkRequestState,
+            key: data.bulkId,
             timestamp: data.timestamp,
             headers: data.headers,
+            content: null,
             name: 'ProcessSDKOutboundBulkPartyInfoRequestComplete',
         });
     }
 
-    static CreateFromCommandEventMessage(message: CommandEventMessage): ProcessSDKOutboundBulkPartyInfoRequestMessage {
-        if((message.getContent() === null || typeof message.getContent() !== 'object')) {
-            throw new Error('Content is in unknown format');
+    static CreateFromCommandEventMessage(message: CommandEventMessage): ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage {
+        if((message.getKey() === null || typeof message.getKey() !== 'string')) {
+            throw new Error('Bulk id is in unknown format');
         }
-        const data: IProcessSDKOutboundBulkPartyInfoRequestMessageData = {
-            sdkOutboundBulkRequestState: <SDKOutboundBulkRequestState>message.getContent(),
+        const data: IProcessSDKOutboundBulkPartyInfoRequestCompleteMessageData = {
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
+            bulkId: message.getKey(),
         };
-        return new ProcessSDKOutboundBulkPartyInfoRequestMessage(data);
-    }
-
-    createSDKOutboundBulkRequestEntity(): SDKOutboundBulkRequestEntity {
-        return new SDKOutboundBulkRequestEntity(<SDKOutboundBulkRequestState> super.getContent());
+        return new ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage(data);
     }
 }

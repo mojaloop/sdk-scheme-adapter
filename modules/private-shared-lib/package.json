@@ -34,6 +34,7 @@
     "typescript": "^4.7.3"
   },
   "dependencies": {
+    "@mojaloop/api-snippets": "^14.2.2",
     "@mojaloop/logging-bc-public-types-lib": "^0.0.3",
     "@mojaloop/platform-shared-lib-messaging-types-lib": "^0.0.3",
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "^0.0.8",

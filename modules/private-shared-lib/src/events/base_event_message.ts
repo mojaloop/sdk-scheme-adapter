@@ -44,7 +44,7 @@ export interface IEventMessageValue {
 }
 
 export interface IEventMessageData {
-    key: Buffer | string | null;
+    key: string;
     type: EventMessageType;
     name: string;
     content: Buffer | string | object | null;
@@ -63,7 +63,7 @@ export class BaseEventMessage {
         return this._data;
     }
 
-    getKey(): string | Buffer | null {
+    getKey(): string {
         return this._data.key;
     }
 
@@ -92,14 +92,14 @@ export class BaseEventMessage {
         this._validateMessage(message);
         // Prepare Data
         const data = this._prepareDataFromIMessage(message);
-    
+
         return new BaseEventMessage(data);
     }
 
     protected static _prepareDataFromIMessage(message: IMessage): IEventMessageData {
         const eventMessageValue: IEventMessageValue = <IEventMessageValue>message.value;
         const data: IEventMessageData = {
-            key: message.key,
+            key: message.key as string,
             type: eventMessageValue.eventMessageType,
             name: eventMessageValue.eventMessageName,
             content: eventMessageValue.eventMessageContent,
@@ -131,9 +131,9 @@ export class BaseEventMessage {
             throw (new Error('.key is null or undefined'));
         }
         if(
-            obj.value === null || 
-      obj.value === undefined || 
-      typeof obj.value !== 'object' || 
+            obj.value === null ||
+      obj.value === undefined ||
+      typeof obj.value !== 'object' ||
       Buffer.isBuffer(obj.value)
         ) {
             throw (new Error('.value is null or undefined or not an object'));

@@ -18,53 +18,8 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Modusbox
- - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
+ - Yevhen Kyriukha <yevhen.kyriukha@modusbox.com>
  --------------
  ******/
 
-'use strict';
-
-import {BaseEntity, BaseEntityState} from '../domain';
-
-// ajv.addKeyword({
-//   keyword: 'example'
-// })
-
-export interface IHttpRequest {
-    method: string;
-    path: string;
-    headers: any;
-    body: any;
-}
-
-export interface PartyInfoRequestedState extends BaseEntityState {
-    // request: SDKSchemeAdapter.Outbound.V2_0_0.Types.Party
-    request: IHttpRequest,
-}
-
-export class PartyInfoRequestedEntity extends BaseEntity<PartyInfoRequestedState> {
-
-    get id(): string {
-        return this._state.id;
-    }
-
-    get request(): IHttpRequest {
-        return this._state.request;
-    }
-
-    static CreateFromRequest(request: any): PartyInfoRequestedEntity {
-        const initialState: PartyInfoRequestedState = {
-            id: request?.transferId,
-            request,
-            created_at: Date.now(),
-            updated_at: Date.now(),
-            version: 1,
-        };
-        return new PartyInfoRequestedEntity(initialState);
-    }
-
-    /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */
-    constructor(initialState: PartyInfoRequestedState) {
-        super(initialState);
-    }
-}
+export * from './party_info_requested';

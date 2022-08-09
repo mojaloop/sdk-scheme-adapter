@@ -26,10 +26,9 @@
 
 import { CommandEventMessage } from '../command_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { SDKOutboundBulkRequestEntity, SDKOutboundBulkRequestState } from '@mojaloop/sdk-scheme-adapter-public-shared-lib';
 
 export interface IProcessSDKOutboundBulkPartyInfoRequestMessageData {
-    sdkOutboundBulkRequestState: SDKOutboundBulkRequestState;
+    bulkId: string;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
@@ -37,27 +36,23 @@ export interface IProcessSDKOutboundBulkPartyInfoRequestMessageData {
 export class ProcessSDKOutboundBulkPartyInfoRequestMessage extends CommandEventMessage {
     constructor(data: IProcessSDKOutboundBulkPartyInfoRequestMessageData) {
         super({
-            key: data.sdkOutboundBulkRequestState?.id,
-            content: data.sdkOutboundBulkRequestState,
+            key: data.bulkId,
             timestamp: data.timestamp,
             headers: data.headers,
+            content: null,
             name: 'ProcessSDKOutboundBulkPartyInfoRequest',
         });
     }
 
     static CreateFromCommandEventMessage(message: CommandEventMessage): ProcessSDKOutboundBulkPartyInfoRequestMessage {
-        if((message.getContent() === null || typeof message.getContent() !== 'object')) {
-            throw new Error('Content is in unknown format');
+        if((message.getKey() === null || typeof message.getKey() !== 'string')) {
+            throw new Error('Bulk id is in unknown format');
         }
         const data: IProcessSDKOutboundBulkPartyInfoRequestMessageData = {
-            sdkOutboundBulkRequestState: <SDKOutboundBulkRequestState>message.getContent(),
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
+            bulkId: message.getKey(),
         };
         return new ProcessSDKOutboundBulkPartyInfoRequestMessage(data);
-    }
-
-    createSDKOutboundBulkRequestEntity(): SDKOutboundBulkRequestEntity {
-        return new SDKOutboundBulkRequestEntity(<SDKOutboundBulkRequestState> super.getContent());
     }
 }

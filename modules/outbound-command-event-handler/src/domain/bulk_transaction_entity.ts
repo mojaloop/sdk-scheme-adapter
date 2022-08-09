@@ -38,6 +38,7 @@ const ajv = new Ajv({
 export enum BulkTransactionInternalState {
     RECEIVED = 'RECEIVED',
     DISCOVERY_PROCESSING = 'DISCOVERY_PROCESSING',
+    DISCOVERY_COMPLETED = 'DISCOVERY_COMPLETED',
     AGREEMENT_PROCESSING = 'AGREEMENT_PROCESSING',
     TRANSFER_PROCESSING = 'TRANSFER_PROCESSING',
 }
@@ -87,9 +88,13 @@ export class BulkTransactionEntity extends BaseEntity<BulkTransactionState> {
         this._state.state = state;
     }
 
-    // isAutoAcceptPartyEnabled (): boolean {
-    //   return this._state.options.autoAcceptParty.enabled
-    // }
+    isSkipPartyLookupEnabled() {
+        return this._state.options.skipPartyLookup;
+    }
+
+    isAutoAcceptPartyEnabled(): boolean {
+        return this._state.options.autoAcceptParty.enabled;
+    }
 
     // isAutoAcceptQuoteEnabled (): boolean {
     //   return this._state.options.autoAcceptQuote.enabled

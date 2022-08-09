@@ -8,4 +8,5 @@ export enum OutboundCommandEventMessageName {
 
 export * from './process_sdk_outbound_bulk_request';
 export * from './process_sdk_outbound_bulk_party_info_request';
-export * from './party_info_requested';
+export * from './process_sdk_outbound_bulk_party_info_request_complete';
+export * from './process_party_info_callback';
