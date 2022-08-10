@@ -245,7 +245,7 @@ describe("Tests for Command Event Handler", () => {
     const initialBulkRequestCommandEventObj = new CommandEventMessage(initialBulkRequest);
     await producer.sendCommandMessage(initialBulkRequestCommandEventObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
-    
+
     const bulkPartyInfoRequestCommandEventMessageData: ICommandEventMessageData = {
       key: bulkTransactionId,
       name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkPartyInfoRequest,
@@ -265,8 +265,8 @@ describe("Tests for Command Event Handler", () => {
     //Check that the state of individual transfers in bulk to be RECEIVED
     const individualTransfers = (await bulkTransactionEntityRepo.getAllAttributes(bulkTransactionId)).filter((key) => key.includes('individualItem_'))
     expect(individualTransfers.length).toBe(2);
-    expect((await bulkTransactionEntityRepo.getAttribute(bulkTransactionId, individualTransfers[0])).state).toBe('RECEIVED');
-    expect((await bulkTransactionEntityRepo.getAttribute(bulkTransactionId, individualTransfers[1])).state).toBe('RECEIVED');
+    expect((await bulkTransactionEntityRepo.getAttribute(bulkTransactionId, individualTransfers[0])).state).toBe('DISCOVERY_RECEIVED');
+    expect((await bulkTransactionEntityRepo.getAttribute(bulkTransactionId, individualTransfers[1])).state).toBe('DISCOVERY_RECEIVED');
 
     // Check domain events published to kafka
     // expect(domainEvents[0].getName()).toBe('SDKOutboundBulkPartyInfoRequested')
