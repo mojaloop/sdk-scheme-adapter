@@ -1,5 +1,3 @@
-
-
 /*****
  License
  --------------
@@ -20,46 +18,8 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Modusbox
- - Shashikant Hirugade <shashikant.hirugade@modusbox.com>
- - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
+ - Yevhen Kyriukha <yevhen.kyriukha@modusbox.com>
  --------------
  ******/
 
-'use strict'
-
-import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
-import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
-
-import { DomainEventMessage, EventMessageType, OutboundDomainEventMessageName, IDomainEventMessageData } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
-import { KafkaDomainEventProducer } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
-
-const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
-const producer = new KafkaDomainEventProducer(logger);
-
-const sampleDomainEventMessageData: IDomainEventMessageData = {
-  key: 'sample-key1',
-  name: OutboundDomainEventMessageName.SDKOutboundBulkRequestReceived,
-  content: {
-    id: '123784627836457823',
-    options: {},
-    individualTransfers: []
-  },
-  timestamp: Date.now(),
-  headers: []
-}
-
-describe('First domain event', () => {
-  beforeEach(async () => {
-    await producer.init();
-  });
-
-  afterEach(async () => {
-    await producer.destroy();
-  });
-
-  test('should publish a domain event', async () => {
-    const domainEventObj = new DomainEventMessage(sampleDomainEventMessageData);
-    await producer.sendDomainMessage(domainEventObj);
-    await expect(true)
-  })
-})
+export * from './party_info_requested';

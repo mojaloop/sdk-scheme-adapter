@@ -44,7 +44,7 @@ export class DomainEventMessage extends BaseEventMessage {
         // Prepare Data
         /* eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars */
         const { type, ...data } = super._prepareDataFromIMessage(message);
-    
+
         return new DomainEventMessage(data);
     }
 

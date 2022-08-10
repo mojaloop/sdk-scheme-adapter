@@ -24,7 +24,12 @@
 
 'use strict';
 
-import { BaseEntityState, BaseEntity, AjvValidationError } from '@mojaloop/sdk-scheme-adapter-public-shared-lib';
+import {
+    BaseEntityState,
+    BaseEntity,
+    AjvValidationError,
+    IHttpRequest,
+} from '@mojaloop/sdk-scheme-adapter-public-shared-lib';
 import { SDKSchemeAdapter, v1_1 as FSPIOP } from '@mojaloop/api-snippets';
 import { randomUUID } from 'crypto';
 import Ajv from 'ajv';
@@ -37,18 +42,10 @@ const ajv = new Ajv({
 export enum IndividualTransferInternalState {
     RECEIVED = 'RECEIVED',
     DISCOVERY_PROCESSING = 'DISCOVERY_PROCESSING',
+    DISCOVERY_FAILED = 'DISCOVERY_FAILED',
+    DISCOVERY_SUCCESS = 'DISCOVERY_SUCCESS',
     AGREEMENT_PROCESSING = 'AGREEMENT_PROCESSING',
     TRANSFER_PROCESSING = 'TRANSFER_PROCESSING',
-}
-
-// TODO: Standardize the following
-export interface IHttpRequest {
-    method: string;
-    path: string;
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    headers: any;
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    body: any;
 }
 
 export type IPartyRequest = IHttpRequest;
@@ -88,6 +85,35 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
             version: 1,
         };
         return new IndividualTransferEntity(initialState);
+    }
+
+    get payee(): SDKSchemeAdapter.Outbound.V2_0_0.Types.Party {
+        return this._state.request.to;
+    }
+
+    get isPartyInfoExists() {
+        return this._state.request.to.partyIdInfo.fspId;
+    }
+
+    setTransferState(state: IndividualTransferInternalState) {
+        this._state.state = state;
+    }
+
+    setPartyRequest(request: IPartyRequest) {
+        this._state.partyRequest = request;
+    }
+
+    setPartyResponse(request: FSPIOP.Schemas.PartyResult) {
+        this._state.partyResponse = request;
+    }
+
+    // get payeeResolved(): boolean {
+    // //     return !!this._state.partyResponse;
+    // //     return !!this._state.state == IndividualTransferInternalState.DISCOVERY_SUCCESS;
+    // // }
+
+    get transferState() {
+        return this._state.state;
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */

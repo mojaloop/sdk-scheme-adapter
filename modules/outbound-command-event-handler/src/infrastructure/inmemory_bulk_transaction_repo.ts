@@ -119,8 +119,21 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         }
     }
 
+    async getAttribute(id: string, name: string): Promise<string> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(id);
+        try {
+            return this._data[key][name];
+        } catch (err) {
+            this._logger.error(err, 'Error getting attributes from memory - for key: ' + key);
+            throw (err);
+        }
+    }
+
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    async addAdditionalAttribute(id: string, name: string, value: any): Promise<void> {
+    async setAttribute(id: string, name: string, value: any): Promise<void> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }

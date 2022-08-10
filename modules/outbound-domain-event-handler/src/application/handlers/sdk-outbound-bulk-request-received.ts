@@ -47,7 +47,7 @@ export async function handleSDKOutboundBulkRequestReceived(
         };
         const processSDKOutboundBulkRequestMessage
             = new ProcessSDKOutboundBulkRequestMessage(processSDKOutboundBulkRequestMessageData);
-        options.commandProducer.sendCommandMessage(processSDKOutboundBulkRequestMessage);
+        await options.commandProducer.sendCommandMessage(processSDKOutboundBulkRequestMessage);
         logger.info(`Sent command event ${processSDKOutboundBulkRequestMessage.getName()}`);
         console.log(processSDKOutboundBulkRequestMessage);
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */

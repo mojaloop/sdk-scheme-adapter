@@ -59,6 +59,8 @@
     "yarn-audit-fix": "^9.3.2"
   },
   "workspaces": [
+    "modules/private-shared-lib",
+    "modules/public-shared-lib",
     "modules/*"
   ],
   "packageManager": "yarn@3.2.0",

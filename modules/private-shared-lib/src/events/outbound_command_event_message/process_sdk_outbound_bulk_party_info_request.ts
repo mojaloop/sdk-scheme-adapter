@@ -1,5 +1,3 @@
-
-
 /*****
  License
  --------------
@@ -20,46 +18,41 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Modusbox
- - Shashikant Hirugade <shashikant.hirugade@modusbox.com>
- - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
+ - Yevhen Kyriukha <yevhen.kyriukha@modusbox.com>
  --------------
  ******/
 
-'use strict'
+'use strict';
 
-import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
-import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
+import { CommandEventMessage } from '../command_event_message';
+import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 
-import { DomainEventMessage, EventMessageType, OutboundDomainEventMessageName, IDomainEventMessageData } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
-import { KafkaDomainEventProducer } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
-
-const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
-const producer = new KafkaDomainEventProducer(logger);
-
-const sampleDomainEventMessageData: IDomainEventMessageData = {
-  key: 'sample-key1',
-  name: OutboundDomainEventMessageName.SDKOutboundBulkRequestReceived,
-  content: {
-    id: '123784627836457823',
-    options: {},
-    individualTransfers: []
-  },
-  timestamp: Date.now(),
-  headers: []
+export interface IProcessSDKOutboundBulkPartyInfoRequestMessageData {
+    bulkId: string;
+    timestamp: number | null;
+    headers: IMessageHeader[] | null;
 }
 
-describe('First domain event', () => {
-  beforeEach(async () => {
-    await producer.init();
-  });
+export class ProcessSDKOutboundBulkPartyInfoRequestMessage extends CommandEventMessage {
+    constructor(data: IProcessSDKOutboundBulkPartyInfoRequestMessageData) {
+        super({
+            key: data.bulkId,
+            timestamp: data.timestamp,
+            headers: data.headers,
+            content: null,
+            name: 'ProcessSDKOutboundBulkPartyInfoRequest',
+        });
+    }
 
-  afterEach(async () => {
-    await producer.destroy();
-  });
-
-  test('should publish a domain event', async () => {
-    const domainEventObj = new DomainEventMessage(sampleDomainEventMessageData);
-    await producer.sendDomainMessage(domainEventObj);
-    await expect(true)
-  })
-})
+    static CreateFromCommandEventMessage(message: CommandEventMessage): ProcessSDKOutboundBulkPartyInfoRequestMessage {
+        if((message.getKey() === null || typeof message.getKey() !== 'string')) {
+            throw new Error('Bulk id is in unknown format');
+        }
+        const data: IProcessSDKOutboundBulkPartyInfoRequestMessageData = {
+            timestamp: message.getTimeStamp(),
+            headers: message.getHeaders(),
+            bulkId: message.getKey(),
+        };
+        return new ProcessSDKOutboundBulkPartyInfoRequestMessage(data);
+    }
+}

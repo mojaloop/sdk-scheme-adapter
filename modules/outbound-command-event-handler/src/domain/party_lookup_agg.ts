@@ -18,7 +18,7 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Modusbox
- - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
+ - Yevhen Kyriukha <yevhen.kyriukha@modusbox.com>
  --------------
  ******/
 
@@ -26,9 +26,10 @@
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import { BaseAggregate, IEntityStateRepository } from '@mojaloop/sdk-scheme-adapter-public-shared-lib';
-import { BulkTransactionEntity, BulkTransactionState } from './bulk_transaction_entity';
+import { BulkTransactionEntity, BulkTransactionInternalState, BulkTransactionState } from './bulk_transaction_entity';
 import {
     IndividualTransferEntity,
+    IndividualTransferInternalState,
     IndividualTransferState,
 } from './individual_transfer_entity';
 import { IBulkTransactionEntityRepo } from '../types';
