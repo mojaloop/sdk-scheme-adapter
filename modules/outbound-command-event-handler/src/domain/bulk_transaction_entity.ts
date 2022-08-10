@@ -38,6 +38,7 @@ const ajv = new Ajv({
 export enum BulkTransactionInternalState {
     RECEIVED = 'RECEIVED',
     DISCOVERY_PROCESSING = 'DISCOVERY_PROCESSING',
+    DISCOVERY_COMPLETED = 'DISCOVERY_COMPLETED',
     AGREEMENT_PROCESSING = 'AGREEMENT_PROCESSING',
     TRANSFER_PROCESSING = 'TRANSFER_PROCESSING',
 }
@@ -70,10 +71,10 @@ export class BulkTransactionEntity extends BaseEntity<BulkTransactionState> {
             bulkHomeTransactionID: request?.bulkHomeTransactionID,
             options: request?.options,
             extensions: request?.extensions,
-            state: BulkTransactionInternalState.RECEIVED,
-            created_at: Date.now(),
-            updated_at: Date.now(),
-            version: 1,
+            state: request?.state || BulkTransactionInternalState.RECEIVED,
+            created_at: request?.created_at || Date.now(),
+            updated_at: request?.updated_at || Date.now(),
+            version: request?.version || 1,
         };
         return new BulkTransactionEntity(initialState);
     }
@@ -83,9 +84,17 @@ export class BulkTransactionEntity extends BaseEntity<BulkTransactionState> {
         super(initialState);
     }
 
-    // isAutoAcceptPartyEnabled (): boolean {
-    //   return this._state.options.autoAcceptParty.enabled
-    // }
+    setTxState(state: BulkTransactionInternalState) {
+        this._state.state = state;
+    }
+
+    isSkipPartyLookupEnabled() {
+        return this._state.options.skipPartyLookup;
+    }
+
+    isAutoAcceptPartyEnabled(): boolean {
+        return this._state.options.autoAcceptParty.enabled;
+    }
 
     // isAutoAcceptQuoteEnabled (): boolean {
     //   return this._state.options.autoAcceptQuote.enabled

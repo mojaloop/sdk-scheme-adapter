@@ -2495,6 +2495,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mojaloop/api-snippets@npm:^14.2.2":
+  version: 14.2.2
+  resolution: "@mojaloop/api-snippets@npm:14.2.2"
+  dependencies:
+    "@apidevtools/json-schema-ref-parser": ^9.0.9
+    commander: ^9.4.0
+    jest-ts-auto-mock: ^2.1.0
+    js-yaml: ^4.1.0
+    json-refs: ^3.0.15
+    openapi-types: ^12.0.0
+    openapi-typescript: ^5.4.1
+    ts-auto-mock: ^3.6.2
+    ttypescript: ^1.5.13
+  checksum: ef44ccb3e20cdcbc96e012d3736eba08e591c77bb10c97be036b4968a777fcef72fc1ea4b7a8d7c1628edf67b0079d853d28beabdbbe6fd4b48bad4d3390cb08
+  languageName: node
+  linkType: hard
+
 "@mojaloop/central-services-error-handling@npm:^12.0.4":
   version: 12.0.4
   resolution: "@mojaloop/central-services-error-handling@npm:12.0.4"
@@ -2767,6 +2784,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-private-shared-lib@workspace:modules/private-shared-lib"
   dependencies:
+    "@mojaloop/api-snippets": ^14.2.2
     "@mojaloop/logging-bc-public-types-lib": ^0.0.3
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.0.3
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": ^0.0.8
@@ -5484,6 +5502,13 @@ __metadata:
   version: 9.3.0
   resolution: "commander@npm:9.3.0"
   checksum: d421ce66fee25792a1470c69aa8d1b86434bf873a96483aa92c8267f81a6f20c6f7c426f5e82f88ac50a8ec4855d3f2787aebcdef8aa559e1080a2337a95a217
+  languageName: node
+  linkType: hard
+
+"commander@npm:^9.4.0":
+  version: 9.4.0
+  resolution: "commander@npm:9.4.0"
+  checksum: a322de584a6ccd1ea83c24f6a660e52d16ffbe2613fcfbb8d2cc68bc9dec637492456d754fe8bb5b039ad843ed8e04fb0b107e581a75f62cde9e1a0ab1546e09
   languageName: node
   linkType: hard
 

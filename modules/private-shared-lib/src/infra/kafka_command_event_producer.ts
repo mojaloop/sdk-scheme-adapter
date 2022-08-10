@@ -49,9 +49,9 @@ export class KafkaCommandEventProducer extends KafkaEventProducer {
         this._topic = producerOptions.topic;
     }
 
-    sendCommandMessage(commandEventMessage: CommandEventMessage) {
+    async sendCommandMessage(commandEventMessage: CommandEventMessage) {
         const message: IMessage = commandEventMessage.toIMessage(this._topic);
-        super.send(message);
+        await super.send(message);
     }
 
 }

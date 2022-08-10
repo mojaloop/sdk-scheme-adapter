@@ -24,18 +24,9 @@
 
 'use strict';
 
-import { CommandEventMessage } from './command_event_message';
+import { CommandEventMessage } from '../command_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 import { SDKOutboundBulkRequestEntity, SDKOutboundBulkRequestState } from '@mojaloop/sdk-scheme-adapter-public-shared-lib';
-
-export enum OutboundCommandEventMessageName {
-    'ProcessSDKOutboundBulkRequest' = 'ProcessSDKOutboundBulkRequest',
-    'ProcessSDKOutboundBulkPartyInfoRequest' = 'ProcessSDKOutboundBulkPartyInfoRequest',
-    'ProcessPartyInfoCallback' = 'ProcessPartyInfoCallback',
-    'ProcessSDKOutboundBulkPartyInfoRequestComplete' = 'ProcessSDKOutboundBulkPartyInfoRequestComplete',
-    'ProcessSDKOutboundBulkAcceptPartyInfo' = 'ProcessSDKOutboundBulkAcceptPartyInfo',
-}
-
 
 export interface IProcessSDKOutboundBulkRequestMessageData {
     sdkOutboundBulkRequestState: SDKOutboundBulkRequestState;
@@ -50,10 +41,10 @@ export class ProcessSDKOutboundBulkRequestMessage extends CommandEventMessage {
             content: data.sdkOutboundBulkRequestState,
             timestamp: data.timestamp,
             headers: data.headers,
-            name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkRequest,
+            name: 'ProcessSDKOutboundBulkRequest',
         });
     }
-    
+
     static CreateFromCommandEventMessage(message: CommandEventMessage): ProcessSDKOutboundBulkRequestMessage {
         if((message.getContent() === null || typeof message.getContent() !== 'object')) {
             throw new Error('Content is in unknown format');

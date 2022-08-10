@@ -154,7 +154,7 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    async addAdditionalAttribute(id: string, name: string, value: any): Promise<void> {
+    async setAttribute(id: string, name: string, value: any): Promise<void> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
