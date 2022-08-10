@@ -244,71 +244,17 @@ describe("Tests for Command Event Handler", () => {
     }
     const initialBulkRequestCommandEventObj = new CommandEventMessage(initialBulkRequest);
     await producer.sendCommandMessage(initialBulkRequestCommandEventObj);
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
-    const content: SDKOutboundBulkRequestState = {
-      request: {
-        bulkHomeTransactionID: "string",
-        bulkTransactionId: bulkTransactionId,
-        options: {
-          onlyValidateParty: true,
-          autoAcceptParty: {
-            enabled: false
-          },
-          autoAcceptQuote: {
-            enabled: true,
-          },
-          skipPartyLookup: true,
-          synchronous: true,
-          bulkExpiration: "2016-05-24T08:38:08.699-04:00"
-        },
-        from: {
-          partyIdInfo: {
-            partyIdType: "MSISDN",
-            partyIdentifier: "16135551212",
-            fspId: "string",
-          },
-        },
-        individualTransfers: [
-          {
-            homeTransactionId: randomUUID(),
-            to: {
-              partyIdInfo: {
-                partyIdType: "MSISDN",
-                partyIdentifier: "16135551212",
-              },
-            },
-            amountType: "SEND",
-            currency: "USD",
-            amount: "123.45",
-          },
-          {
-            homeTransactionId: randomUUID(),
-            to: {
-              partyIdInfo: {
-                partyIdType: "MSISDN",
-                partyIdentifier: "16135551212",
-              },
-            },
-            amountType: "SEND",
-            currency: "USD",
-            amount: "456.78",
-          }
-        ]
-      },
-      created_at: Date.now(),
-      updated_at: Date.now(),
-      version: 1,
-      id: bulkTransactionId
-    }
-    const sampleCommandEventMessageData: ICommandEventMessageData = {
-      key: 'sample-key1',
+    const bulkPartyInfoRequestCommandEventMessageData: ICommandEventMessageData = {
+      key: bulkTransactionId,
       name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkPartyInfoRequest,
-      content,
+      content: null,
       timestamp: Date.now(),
       headers: []
     }
-    const commandEventObj = new CommandEventMessage(sampleCommandEventMessageData);
-    await producer.sendCommandMessage(commandEventObj);
+    const bulkPartyInfoRequestCommandEventObj = new CommandEventMessage(bulkPartyInfoRequestCommandEventMessageData);
+    await producer.sendCommandMessage(bulkPartyInfoRequestCommandEventObj);
     
     await new Promise(resolve => setTimeout(resolve, 1000));
     // Check the state in Redis
