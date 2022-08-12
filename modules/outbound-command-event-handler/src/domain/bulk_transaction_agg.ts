@@ -101,6 +101,10 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         }
     }
 
+    get bulkId() {
+        return this._rootEntity.id;
+    }
+
     async getAllIndividualTransferIds() {
         const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
         const allAttributes = await repo.getAllAttributes(this._rootEntity.id);
