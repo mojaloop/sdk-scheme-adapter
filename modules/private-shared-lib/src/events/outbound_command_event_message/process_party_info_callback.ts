@@ -27,6 +27,7 @@
 import { CommandEventMessage } from '../command_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 import { v1_1 as FSPIOP } from '@mojaloop/api-snippets';
+import { OutboundCommandEventMessageName } from '.';
 
 export interface IProcessPartyInfoCallbackMessageData {
     key: string;
@@ -42,7 +43,7 @@ export class ProcessPartyInfoCallbackMessage extends CommandEventMessage {
             content: data.partyResult,
             timestamp: data.timestamp,
             headers: data.headers,
-            name: 'ProcessPartyInfoCallback',
+            name: OutboundCommandEventMessageName.ProcessPartyInfoCallback,
         });
     }
 
