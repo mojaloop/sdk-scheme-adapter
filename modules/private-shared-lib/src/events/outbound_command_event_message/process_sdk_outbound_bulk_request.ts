@@ -27,6 +27,7 @@
 import { CommandEventMessage } from '../command_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 import { SDKOutboundBulkRequestEntity, SDKOutboundBulkRequestState } from '@mojaloop/sdk-scheme-adapter-public-shared-lib';
+import { OutboundCommandEventMessageName } from '.';
 
 export interface IProcessSDKOutboundBulkRequestMessageData {
     sdkOutboundBulkRequestState: SDKOutboundBulkRequestState;
@@ -41,7 +42,7 @@ export class ProcessSDKOutboundBulkRequestMessage extends CommandEventMessage {
             content: data.sdkOutboundBulkRequestState,
             timestamp: data.timestamp,
             headers: data.headers,
-            name: 'ProcessSDKOutboundBulkRequest',
+            name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkRequest,
         });
     }
 

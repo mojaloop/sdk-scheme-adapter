@@ -24,21 +24,11 @@
 
 'use strict';
 
-import { DomainEventMessage } from './domain_event_message';
+import { DomainEventMessage } from '../domain_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 import { SDKOutboundBulkRequestEntity } from '@mojaloop/sdk-scheme-adapter-public-shared-lib';
+import { OutboundDomainEventMessageName } from '.';
 
-export enum OutboundDomainEventMessageName {
-    'SDKOutboundBulkRequestReceived' = 'SDKOutboundBulkRequestReceived',
-    'SDKOutboundBulkPartyInfoRequested' = 'SDKOutboundBulkPartyInfoRequested',
-    'SDKOutboundBulkAcceptPartyInfoRequested' = 'SDKOutboundBulkAcceptPartyInfoRequested',
-    'SDKOutboundBulkAcceptPartyInfoReceived' = 'SDKOutboundBulkAcceptPartyInfoReceived',
-    'SDKOutboundBulkAutoAcceptPartyInfoRequested' = 'SDKOutboundBulkAutoAcceptPartyInfoRequested',
-    'SDKOutboundBulkAcceptPartyInfoProcessed' = 'SDKOutboundBulkAcceptPartyInfoProcessed',
-    'PartyInfoRequested' = 'PartyInfoRequested', // includes info for SDK for making a party call
-    'PartyInfoCallbackReceived' = 'PartyInfoCallbackReceived',
-    'PartyInfoCallbackProcessed' = 'PartyInfoCallbackProcessed',
-}
 
 export interface ISDKOutboundBulkRequestReceivedMessageData {
     bulkRequest: any;
@@ -63,7 +53,7 @@ export class SDKOutboundBulkRequestReceivedMessage extends DomainEventMessage {
     createSDKOutboundBulkRequestEntity(): SDKOutboundBulkRequestEntity {
         return SDKOutboundBulkRequestEntity.CreateFromRequest(super.getContent());
     }
-  
+
     static CreateFromDomainEventMessage(message: DomainEventMessage): SDKOutboundBulkRequestReceivedMessage {
     // Prepare Data
         const data = {
