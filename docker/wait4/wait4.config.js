@@ -23,7 +23,7 @@ module.exports = {
         },
         {
           description: 'ml-testing-toolkit',
-          uri: 'ml-testing-toolkit:5000',
+          uri: 'ml-testing-toolkit:4040',
           method: 'ncat'
         }
       ]
