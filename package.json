@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
-  "version": "19.0.1-snapshot.1",
+  "version": "20.0.0-snapshot.1",
   "description": "An adapter for connecting to Mojaloop API enabled switches.",
   "main": "src/index.js",
   "types": "src/index.d.ts",
@@ -55,7 +55,7 @@
   "dependencies": {
     "@koa/cors": "^3.3.0",
     "@mojaloop/api-snippets": "^14.2.2",
-    "@mojaloop/central-services-shared": "17.2.0",
+    "@mojaloop/central-services-shared": "17.2.1",
     "@mojaloop/sdk-standard-components": "^17.1.1",
     "ajv": "8.11.0",
     "axios": "^0.27.2",
