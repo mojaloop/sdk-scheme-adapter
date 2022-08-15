@@ -42,7 +42,7 @@ module.exports = {
           method: 'ncat'
         },
         {
-          uri: 'localhost:5000',
+          uri: 'localhost:4040',
           method: 'ncat'
         },
         {
