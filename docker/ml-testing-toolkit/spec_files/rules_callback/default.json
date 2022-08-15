@@ -48,8 +48,7 @@
           "FSPIOP-Encryption": "magna Excepteur dolore nisi fugiat",
           "FSPIOP-Signature": "nisi",
           "FSPIOP-URI": "veniam reprehenderit anim ut",
-          "FSPIOP-HTTP-Method": "PUT",
-          "Content-Length": ""
+          "FSPIOP-HTTP-Method": "PUT"
         },
         "body": {
           "party": {
@@ -127,8 +126,7 @@
           "FSPIOP-Encryption": "magna Excepteur dolore nisi fugiat",
           "FSPIOP-Signature": "nisi",
           "FSPIOP-URI": "veniam reprehenderit anim ut",
-          "FSPIOP-HTTP-Method": "PUT",
-          "Content-Length": ""
+          "FSPIOP-HTTP-Method": "PUT"
         },
         "body": {
           "party": {
