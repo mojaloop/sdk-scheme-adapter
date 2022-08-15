@@ -25,7 +25,7 @@
 'use strict';
 
 import {ILogger} from '@mojaloop/logging-bc-public-types-lib';
-import {CommandEventMessage, ProcessPartyInfoCallbackMessage} from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import {CommandEventMessage, ProcessPartyInfoCallbackMessage, PartyInfoCallbackProceededMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import {BulkTransactionAgg} from '../../domain/bulk_transaction_agg';
 import {ICommandEventHandlerOptions} from '../../types';
 import {IndividualTransferInternalState} from '../../domain/individual_transfer_entity';
@@ -59,7 +59,13 @@ export async function handleProcessPartyInfoCallback(
         }
         individualTransfer.setPartyResponse(partyResult);
 
-        // TODO: construct and send PartyInfoCallbackProcessed message to domain event handler
+        const msg = new PartyInfoCallbackProceededMessage({
+            key: processPartyInfoCallbackMessage.getKey(),
+            timestamp: Date.now(),
+            headers: [],
+        });
+        await options.domainProducer.sendDomainMessage(msg);
+
         await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     } catch (err: any) {

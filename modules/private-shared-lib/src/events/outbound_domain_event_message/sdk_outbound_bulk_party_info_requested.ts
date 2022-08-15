@@ -22,19 +22,38 @@
  --------------
  ******/
 
-export enum OutboundDomainEventMessageName {
-    'SDKOutboundBulkRequestReceived' = 'SDKOutboundBulkRequestReceived',
-    'SDKOutboundBulkPartyInfoRequested' = 'SDKOutboundBulkPartyInfoRequested',
-    'SDKOutboundBulkAcceptPartyInfoRequested' = 'SDKOutboundBulkAcceptPartyInfoRequested',
-    'SDKOutboundBulkAcceptPartyInfoReceived' = 'SDKOutboundBulkAcceptPartyInfoReceived',
-    'SDKOutboundBulkAutoAcceptPartyInfoRequested' = 'SDKOutboundBulkAutoAcceptPartyInfoRequested',
-    'SDKOutboundBulkAcceptPartyInfoProcessed' = 'SDKOutboundBulkAcceptPartyInfoProcessed',
-    'PartyInfoRequested' = 'PartyInfoRequested', // includes info for SDK for making a party call
-    'PartyInfoCallbackReceived' = 'PartyInfoCallbackReceived',
-    'PartyInfoCallbackProcessed' = 'PartyInfoCallbackProcessed',
+'use strict';
+
+import { DomainEventMessage } from '../domain_event_message';
+import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+import { OutboundDomainEventMessageName } from '.';
+
+export interface ISDKOutboundBulkPartyInfoRequestedMessageData {
+    bulkId: string;
+    timestamp: number | null;
+    headers: IMessageHeader[] | null;
 }
 
-export * from './party_info_requested';
-export * from './sdk_outbound_bulk_request_received';
-export * from './sdk_outbound_bulk_party_info_requested';
-export * from './party_info_callback_proceeded';
+export class SDKOutboundBulkPartyInfoRequestedMessage extends DomainEventMessage {
+    constructor(data: ISDKOutboundBulkPartyInfoRequestedMessageData) {
+        super({
+            key: data.bulkId,
+            timestamp: data.timestamp,
+            headers: data.headers,
+            content: null,
+            name: OutboundDomainEventMessageName.SDKOutboundBulkPartyInfoRequested,
+        });
+    }
+
+    static CreateFromCommandEventMessage(message: DomainEventMessage): SDKOutboundBulkPartyInfoRequestedMessage {
+        if((message.getKey() === null || typeof message.getKey() !== 'string')) {
+            throw new Error('Bulk id is in unknown format');
+        }
+        const data: ISDKOutboundBulkPartyInfoRequestedMessageData = {
+            timestamp: message.getTimeStamp(),
+            headers: message.getHeaders(),
+            bulkId: message.getKey(),
+        };
+        return new SDKOutboundBulkPartyInfoRequestedMessage(data);
+    }
+}
