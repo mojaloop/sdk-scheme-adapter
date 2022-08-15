@@ -72,7 +72,7 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequest(
                 continue;
             }
             const { partyIdInfo } = individualTransfer.request.to;
-            const subId = `/${partyIdInfo.partySubIdOrType}`;
+            const subId = partyIdInfo.partySubIdOrType ? `/${partyIdInfo.partySubIdOrType}` : '';
             const msg = new PartyInfoRequestedMessage({
                 bulkId: bulkTx.id,
                 transferId: individualTransfer.id,
