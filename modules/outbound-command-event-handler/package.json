@@ -62,7 +62,6 @@
     "@mojaloop/logging-bc-client-lib": "^0.0.10",
     "@mojaloop/logging-bc-public-types-lib": "^0.0.3",
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^",
-    "@mojaloop/sdk-scheme-adapter-public-shared-lib": "workspace:^",
     "ajv": "^8.11.0",
     "convict": "^6.2.3",
     "express": "^4.18.1",

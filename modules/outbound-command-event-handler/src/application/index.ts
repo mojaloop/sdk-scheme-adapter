@@ -64,6 +64,7 @@ import { IRedisBulkTransactionStateRepoOptions, RedisBulkTransactionStateRepo } 
     // API Server
     const outboundCommandEventHandlerAPIServerOptions: IOutboundCommandEventHandlerAPIServerOptions = {
         port: Config.get('API_SERVER.PORT'),
+        bulkTransactionEntityRepo,
     };
     const apiServer = new OutboundCommandEventHandlerAPIServer(outboundCommandEventHandlerAPIServerOptions, logger);
     if(Config.get('API_SERVER.ENABLED')) {

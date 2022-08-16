@@ -2726,7 +2726,6 @@ __metadata:
     "@mojaloop/logging-bc-client-lib": ^0.0.10
     "@mojaloop/logging-bc-public-types-lib": ^0.0.3
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
-    "@mojaloop/sdk-scheme-adapter-public-shared-lib": "workspace:^"
     "@types/convict": ^6.1.1
     "@types/express": ^4.17.13
     "@types/jest": ^27.0.3
@@ -2762,7 +2761,6 @@ __metadata:
     "@mojaloop/logging-bc-client-lib": ^0.0.10
     "@mojaloop/logging-bc-public-types-lib": ^0.0.3
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
-    "@mojaloop/sdk-scheme-adapter-public-shared-lib": "workspace:^"
     "@types/convict": ^6.1.1
     "@types/jest": ^27.0.3
     "@types/node": ^16.11.9
@@ -2788,29 +2786,12 @@ __metadata:
     "@mojaloop/logging-bc-public-types-lib": ^0.0.3
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.0.3
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": ^0.0.8
-    "@mojaloop/sdk-scheme-adapter-public-shared-lib": "workspace:^"
-    "@types/node": ^17.0.41
-    eslint: ^8.17.0
-    jest: ^28.1.1
-    npm-check-updates: ^13.1.2
-    ts-jest: ^28.0.4
-    typescript: ^4.7.3
-  languageName: unknown
-  linkType: soft
-
-"@mojaloop/sdk-scheme-adapter-public-shared-lib@workspace:^, @mojaloop/sdk-scheme-adapter-public-shared-lib@workspace:modules/public-shared-lib":
-  version: 0.0.0-use.local
-  resolution: "@mojaloop/sdk-scheme-adapter-public-shared-lib@workspace:modules/public-shared-lib"
-  dependencies:
-    "@mojaloop/api-snippets": ^14.1.0
-    "@mojaloop/logging-bc-public-types-lib": ^0.0.3
     "@types/node": ^17.0.41
     ajv: ^8.11.0
     eslint: ^8.17.0
     jest: ^28.1.1
     npm-check-updates: ^13.1.2
     ts-jest: ^28.0.4
-    ts-node: ^10.8.2
     typescript: ^4.7.3
     uuid: ^8.3.2
   languageName: unknown
@@ -2829,6 +2810,7 @@ __metadata:
     eslint: ^8.14.0
     eslint-config-airbnb-typescript: ^17.0.0
     eslint-plugin-import: latest
+    husky: ^8.0.1
     jest: ^27.3.1
     nodemon: ^2.0.18
     npm-check-updates: ^12.5.11
@@ -8394,6 +8376,15 @@ __metadata:
   dependencies:
     ms: ^2.0.0
   checksum: 9c7a74a2827f9294c009266c82031030eae811ca87b0da3dceb8d6071b9bde22c9f3daef0469c3c533cc67a97d8a167cd9fc0389350e5f415f61a79b171ded16
+  languageName: node
+  linkType: hard
+
+"husky@npm:^8.0.1":
+  version: 8.0.1
+  resolution: "husky@npm:8.0.1"
+  bin:
+    husky: lib/bin.js
+  checksum: 943a73a13d0201318fd30e83d299bb81d866bd245b69e6277804c3b462638dc1921694cb94c2b8c920a4a187060f7d6058d3365152865406352e934c5fff70dc
   languageName: node
   linkType: hard
 

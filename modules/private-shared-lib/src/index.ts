@@ -36,3 +36,7 @@ export * from './events';
 export * from './infra';
 export * from './utils';
 export * from './values';
+export * from './domain';
+export * from './entities';
+export * from './errors';
+export * from './types';

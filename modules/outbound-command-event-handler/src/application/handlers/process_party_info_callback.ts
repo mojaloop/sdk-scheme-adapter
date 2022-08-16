@@ -24,11 +24,11 @@
 
 'use strict';
 
-import {ILogger} from '@mojaloop/logging-bc-public-types-lib';
-import {CommandEventMessage, ProcessPartyInfoCallbackMessage, PartyInfoCallbackProceededMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-import {BulkTransactionAgg} from '../../domain/bulk_transaction_agg';
-import {ICommandEventHandlerOptions} from '../../types';
-import {IndividualTransferInternalState} from '../../domain/individual_transfer_entity';
+import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
+import { CommandEventMessage, ProcessPartyInfoCallbackMessage, PartyInfoCallbackProceededMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { BulkTransactionAgg } from '../../domain/bulk_transaction_agg';
+import { ICommandEventHandlerOptions } from '../../types';
+import { IndividualTransferInternalState } from '../../domain/individual_transfer_entity';
 import { v1_1 as FSPIOP } from '@mojaloop/api-snippets';
 
 type PartyResult = FSPIOP.Schemas.PartyResult;
@@ -50,7 +50,9 @@ export async function handleProcessPartyInfoCallback(
             logger,
         );
 
-        const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(processPartyInfoCallbackMessage.getTransferId());
+        const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(
+            processPartyInfoCallbackMessage.getTransferId(),
+        );
         const partyResult = <PartyResult>processPartyInfoCallbackMessage.getContent();
         if(partyResult.errorInformation) {
             individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_FAILED);

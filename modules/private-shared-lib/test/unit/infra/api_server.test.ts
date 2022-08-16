@@ -1,4 +1,4 @@
-import { SimpleLogger } from '@mojaloop/sdk-scheme-adapter-public-shared-lib/test/unit/utilities/simple_logger'
+import { SimpleLogger } from '@mojaloop/sdk-scheme-adapter-private-shared-lib/test/unit/utilities/simple_logger'
 import axios from 'axios'
 import { ApiServer, TApiServerOptions } from '../../src/index'
 

@@ -54,7 +54,6 @@
         "@mojaloop/logging-bc-client-lib": "^0.0.10",
         "@mojaloop/logging-bc-public-types-lib": "^0.0.3",
         "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^",
-        "@mojaloop/sdk-scheme-adapter-public-shared-lib": "workspace:^",
         "convict": "^6.2.3"
     },
     "nodemonConfig": {

@@ -34,7 +34,7 @@ import { BulkTransactionAgg } from '../../domain/bulk_transaction_agg';
 import { ICommandEventHandlerOptions } from '../../types';
 import { BulkTransactionInternalState } from '../../domain/bulk_transaction_entity';
 import { IndividualTransferInternalState } from '../../domain/individual_transfer_entity';
-import { IHttpRequest } from '@mojaloop/sdk-scheme-adapter-public-shared-lib';
+import { IHttpRequest } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
 export async function handleProcessSDKOutboundBulkPartyInfoRequest(
     message: CommandEventMessage,

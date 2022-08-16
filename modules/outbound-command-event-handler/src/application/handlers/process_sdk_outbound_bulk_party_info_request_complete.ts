@@ -24,11 +24,11 @@
 
 'use strict';
 
-import {ILogger} from '@mojaloop/logging-bc-public-types-lib';
-import {CommandEventMessage, ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage} from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-import {BulkTransactionAgg} from '../../domain/bulk_transaction_agg';
-import {ICommandEventHandlerOptions} from '../../types';
-import {BulkTransactionInternalState} from '../../domain/bulk_transaction_entity';
+import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
+import { CommandEventMessage, ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { BulkTransactionAgg } from '../../domain/bulk_transaction_agg';
+import { ICommandEventHandlerOptions } from '../../types';
+import { BulkTransactionInternalState } from '../../domain/bulk_transaction_entity';
 
 
 export async function handleProcessSDKOutboundBulkPartyInfoRequestComplete(
