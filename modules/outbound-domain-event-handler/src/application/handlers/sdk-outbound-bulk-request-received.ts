@@ -28,7 +28,7 @@ import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import { DomainEventMessage, IProcessSDKOutboundBulkRequestMessageData, ProcessSDKOutboundBulkRequestMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { IDomainEventHandlerOptions } from '../../types';
 import { SDKOutboundBulkRequestReceivedMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-import { SDKOutboundBulkRequestState } from '@mojaloop/sdk-scheme-adapter-public-shared-lib';
+import { SDKOutboundBulkRequestState } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
 export async function handleSDKOutboundBulkRequestReceived(
     message: DomainEventMessage,

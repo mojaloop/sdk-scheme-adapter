@@ -38,6 +38,7 @@
     "@mojaloop/logging-bc-public-types-lib": "^0.0.3",
     "@mojaloop/platform-shared-lib-messaging-types-lib": "^0.0.3",
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "^0.0.8",
-    "@mojaloop/sdk-scheme-adapter-public-shared-lib": "workspace:^"
+    "ajv": "^8.11.0",
+    "uuid": "^8.3.2"
   }
 }

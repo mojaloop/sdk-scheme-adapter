@@ -39,8 +39,8 @@ export class BulkTransactionsService {
         // TODO: Pass the repo object from index file instead of re-initializing here
         // Create bulk transaction entity repo
         const bulkTransactionEntityRepoOptions: IRedisBulkTransactionStateRepoOptions = {
-            connStr: Config.get('REDIS.CONNECTION_URL')
-        }
+            connStr: Config.get('REDIS.CONNECTION_URL'),
+        };
         const repo = new RedisBulkTransactionStateRepo(bulkTransactionEntityRepoOptions, logger);
         await repo.init();
         const allBulkIds = await repo.getAllIds();
@@ -48,7 +48,7 @@ export class BulkTransactionsService {
             const bulkState = await repo.load(bulkId);
             const individualTransfers = [];
             const allAttributes = await repo.getAllAttributes(bulkId);
-            const allIndividualTransferIds = allAttributes.filter(attr => attr.startsWith('individualItem_')).map(attr => attr.replace('individualItem_', ''))
+            const allIndividualTransferIds = allAttributes.filter(attr => attr.startsWith('individualItem_')).map(attr => attr.replace('individualItem_', ''));
             for(const individualTransferId of allIndividualTransferIds) {
                 const individualTransferState = await repo.getAttribute(bulkId, 'individualItem_' + individualTransferId);
                 individualTransfers.push({

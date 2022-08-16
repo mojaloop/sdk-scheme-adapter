@@ -26,7 +26,7 @@
 
 import { DomainEventMessage } from '../domain_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { SDKOutboundBulkRequestEntity } from '@mojaloop/sdk-scheme-adapter-public-shared-lib';
+import { SDKOutboundBulkRequestEntity } from '../../entities';
 import { OutboundDomainEventMessageName } from '.';
 
 

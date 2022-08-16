@@ -24,7 +24,7 @@
 
 'use strict';
 
-import { BaseEntityState, BaseEntity, AjvValidationError } from '@mojaloop/sdk-scheme-adapter-public-shared-lib';
+import { BaseEntityState, BaseEntity, AjvValidationError } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 import { randomUUID } from 'crypto';
 import Ajv from 'ajv';

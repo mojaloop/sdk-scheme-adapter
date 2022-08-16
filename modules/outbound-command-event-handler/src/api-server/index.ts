@@ -24,37 +24,47 @@
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import { Server } from 'http';
-import { app } from './app';
+import { CreateExpressServer } from './app';
+import path from 'path';
+import { IBulkTransactionEntityRepo } from '../types';
+
 
 export interface IOutboundCommandEventHandlerAPIServerOptions {
     port: number;
+    bulkTransactionEntityRepo: IBulkTransactionEntityRepo;
 }
 
 export class OutboundCommandEventHandlerAPIServer {
     private _logger: ILogger;
+
     private _port: number;
+
     private _serverInstance: Server;
 
+    private _options: IOutboundCommandEventHandlerAPIServerOptions;
+
     constructor(options: IOutboundCommandEventHandlerAPIServerOptions, logger: ILogger) {
+        this._options = options;
         this._port = options.port;
         this._logger = logger;
     }
 
     async startServer(): Promise<void> {
-      return new Promise(resolve => {
-          this._serverInstance = app.listen(this._port, () => {
-              this._logger.info(`API Server is running on port ${this._port}`);
-              resolve();
-          });
-      });
+        return new Promise(async resolve => {
+            const app = await CreateExpressServer(path.join(__dirname, './interface/api.yaml'), { bulkTransactionEntityRepo: this._options.bulkTransactionEntityRepo });
+            this._serverInstance = app.listen(this._port, () => {
+                this._logger.info(`API Server is running on port ${this._port}`);
+                resolve();
+            });
+        });
     }
 
     async stopServer() : Promise<void> {
         return new Promise(resolve => {
-          this._serverInstance.close(() => {
-                this._logger.info(`API Server is stopped`);
+            this._serverInstance.close(() => {
+                this._logger.info('API Server is stopped');
                 resolve();
             });
         });
-    };
+    }
 }

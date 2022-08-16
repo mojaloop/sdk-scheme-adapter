@@ -45,7 +45,9 @@ export class ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage extends Comma
         });
     }
 
-    static CreateFromCommandEventMessage(message: CommandEventMessage): ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage {
+    static CreateFromCommandEventMessage(
+        message: CommandEventMessage,
+    ): ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage {
         if((message.getKey() === null || typeof message.getKey() !== 'string')) {
             throw new Error('Bulk id is in unknown format');
         }

@@ -26,7 +26,7 @@
 
 import { CommandEventMessage } from '../command_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { SDKOutboundBulkRequestEntity, SDKOutboundBulkRequestState } from '@mojaloop/sdk-scheme-adapter-public-shared-lib';
+import { SDKOutboundBulkRequestEntity, SDKOutboundBulkRequestState } from '../../entities';
 import { OutboundCommandEventMessageName } from '.';
 
 export interface IProcessSDKOutboundBulkRequestMessageData {

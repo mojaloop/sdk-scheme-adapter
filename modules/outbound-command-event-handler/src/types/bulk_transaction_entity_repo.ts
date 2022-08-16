@@ -24,7 +24,7 @@
 
 'use strict';
 
-import { IEntityStateRepository } from '@mojaloop/sdk-scheme-adapter-public-shared-lib';
+import { IEntityStateRepository } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionState } from '../domain/bulk_transaction_entity';
 
 export type IBulkTransactionEntityRepo = {

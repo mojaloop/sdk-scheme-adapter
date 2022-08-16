@@ -101,15 +101,24 @@ export class OutboundEventHandler implements IRunHandler {
                 break;
             }
             case OutboundCommandEventMessageName.ProcessSDKOutboundBulkPartyInfoRequest: {
-                await handleProcessSDKOutboundBulkPartyInfoRequest(message, this._commandEventHandlerOptions, this._logger);
+                await handleProcessSDKOutboundBulkPartyInfoRequest(
+                    message, this._commandEventHandlerOptions,
+                    this._logger,
+                );
                 break;
             }
             case OutboundCommandEventMessageName.ProcessPartyInfoCallback: {
-                await handleProcessPartyInfoCallback(message, this._commandEventHandlerOptions, this._logger);
+                await handleProcessPartyInfoCallback(
+                    message, this._commandEventHandlerOptions,
+                    this._logger,
+                );
                 break;
             }
             case OutboundCommandEventMessageName.ProcessSDKOutboundBulkPartyInfoRequestComplete: {
-                await handleProcessSDKOutboundBulkPartyInfoRequestComplete(message, this._commandEventHandlerOptions, this._logger);
+                await handleProcessSDKOutboundBulkPartyInfoRequestComplete(
+                    message, this._commandEventHandlerOptions,
+                    this._logger,
+                );
                 break;
             }
             default: {
