@@ -269,12 +269,13 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect((await bulkTransactionEntityRepo.getAttribute(bulkTransactionId, individualTransfers[1])).state).toBe('DISCOVERY_PROCESSING');
 
     // Check domain events published to kafka
-    expect(domainEvents.length).toBe(2);
+    const filteredEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequested');
+    expect(filteredEvents.length).toBe(2);
     // Check the data contents for domain event
-    expect(domainEvents[0].getName()).toBe('PartyInfoRequested');
-    expect(JSON.parse(JSON.stringify(domainEvents[0].getContent())).path).not.toContain('undefined');
-    expect(domainEvents[1].getName()).toBe('PartyInfoRequested');
-    expect(JSON.parse(JSON.stringify(domainEvents[1].getContent())).path).not.toContain('undefined');
+    expect(filteredEvents[0].getName()).toBe('PartyInfoRequested');
+    expect(JSON.parse(JSON.stringify(filteredEvents[0].getContent())).path).not.toContain('undefined');
+    expect(filteredEvents[1].getName()).toBe('PartyInfoRequested');
+    expect(JSON.parse(JSON.stringify(filteredEvents[1].getContent())).path).not.toContain('undefined');
     
 
   });
@@ -312,18 +313,6 @@ describe("Tests for Outbound Command Event Handler", () => {
           },
         },
         individualTransfers: [
-          {
-            homeTransactionId: randomUUID(),
-            to: {
-              partyIdInfo: {
-                partyIdType: "MSISDN",
-                partyIdentifier: "16135551212"
-              },
-            },
-            amountType: "SEND",
-            currency: "USD",
-            amount: "123.45",
-          },
           {
             homeTransactionId: randomUUID(),
             to: {
@@ -373,16 +362,15 @@ describe("Tests for Outbound Command Event Handler", () => {
 
     //Check that the state of individual transfers in bulk to be RECEIVED
     const individualTransfers = (await bulkTransactionEntityRepo.getAllAttributes(bulkTransactionId)).filter((key) => key.includes('individualItem_'))
-    expect(individualTransfers.length).toBe(2);
-    // expect((await bulkTransactionEntityRepo.getAttribute(bulkTransactionId, individualTransfers[0])).state).toBe('DISCOVERY_SUCCESS');
-    // expect((await bulkTransactionEntityRepo.getAttribute(bulkTransactionId, individualTransfers[1])).state).toBe('DISCOVERY_SUCCESS');
-
+    expect(individualTransfers.length).toBe(1);
+    expect((await bulkTransactionEntityRepo.getAttribute(bulkTransactionId, individualTransfers[0])).state).toBe('DISCOVERY_SUCCESS');
+    
     // Check domain events published to kafka
     expect(domainEvents.length).toBe(0)
     //TODO Add asserts to check data contents of the domain event published to kafka
   });
 
-  test.only("4. Given receiving party info does not exist \
+  test("4. Given receiving party info does not exist \
               And receiving party lookup was successful \
             When inbound command event ProcessPartyInfoCallback is received \
             Then the state for individual successful party lookups should be updated to DISCOVERY_SUCCESS \
@@ -459,8 +447,10 @@ describe("Tests for Outbound Command Event Handler", () => {
     // Check the state in Redis
     console.log('bulk id: ', bulkTransactionId);
 
+    const partyInfoRequestedDomainEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequested');
+    
     const processPartyInfoCallbackMessageData: ICommandEventMessageData = {
-      key: bulkTransactionId,
+      key: partyInfoRequestedDomainEvents[0].getKey(),
       name: OutboundCommandEventMessageName.ProcessPartyInfoCallback,
       content: {
         partyId : {
@@ -474,16 +464,19 @@ describe("Tests for Outbound Command Event Handler", () => {
     }
     const processPartyInfoCallbackCommandEvent = new CommandEventMessage(processPartyInfoCallbackMessageData);
     await producer.sendCommandMessage(processPartyInfoCallbackCommandEvent);
-    
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     //Check that the state of individual transfers in bulk to be RECEIVED
     const individualTransfers = (await bulkTransactionEntityRepo.getAllAttributes(bulkTransactionId)).filter((key) => key.includes('individualItem_'))
-    // expect((await bulkTransactionEntityRepo.getAttribute(bulkTransactionId, individualTransfers[0])).state).toBe('DISCOVERY_SUCCESS');
     const individualTransferData = await bulkTransactionEntityRepo.getAttribute(bulkTransactionId, individualTransfers[0]);
     console.log('individualTransferData:', individualTransferData);
+    expect(individualTransferData.state).toBe('DISCOVERY_SUCCESS');
+    expect(individualTransferData.partyResponse.partyId.fspId).toBe('receiverfsp');
+    
 
-    // Check domain events published to kafka
-    expect(domainEvents[0].getName()).toBe('PartyInfoCallbackProcessed')
-    //TODO Add asserts to check data contents of the domain event published to kafka
+    // // Check domain events published to kafka
+    expect(domainEvents[2].getName()).toBe('PartyInfoCallbackProcessed');
+    // //TODO Add asserts to check data contents of the domain event published to kafka
   });
 
   test("5. Given receiving party info does not exist \
@@ -562,8 +555,10 @@ describe("Tests for Outbound Command Event Handler", () => {
     // Check the state in Redis
     console.log('bulk id: ', bulkTransactionId);
 
+    const partyInfoRequestedDomainEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequested');
+
     const processPartyInfoCallbackMessageData: ICommandEventMessageData = {
-      key: bulkTransactionId,
+      key: partyInfoRequestedDomainEvents[0].getKey(),
       name: OutboundCommandEventMessageName.ProcessPartyInfoCallback,
       content: {
         partyId : {
@@ -579,22 +574,23 @@ describe("Tests for Outbound Command Event Handler", () => {
     }
     const processPartyInfoCallbackCommandEvent = new CommandEventMessage(processPartyInfoCallbackMessageData);
     await producer.sendCommandMessage(processPartyInfoCallbackCommandEvent);
-    
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     //Check that the state of individual transfers in bulk to be RECEIVED
     const individualTransfers = (await bulkTransactionEntityRepo.getAllAttributes(bulkTransactionId)).filter((key) => key.includes('individualItem_'))
-    // expect((await bulkTransactionEntityRepo.getAttribute(bulkTransactionId, individualTransfers[0])).state).toBe('DISCOVERY_FAILED');
     const individualTransferData = await bulkTransactionEntityRepo.getAttribute(bulkTransactionId, individualTransfers[0]);
     console.log('individualTransferData:', individualTransferData);
-
-    // Check domain events published to kafka
-    expect(domainEvents[0].getName()).toBe('PartyInfoCallbackProcessed')
-    //TODO Add asserts to check data contents of the domain event published to kafka
+    expect(individualTransferData.state).toBe('DISCOVERY_FAILED');
+    expect(individualTransferData.partyResponse.errorInformation.errorCode).toBe(12345);
+  
+    // // Check domain events published to kafka
+    expect(domainEvents[2].getName()).toBe('PartyInfoCallbackProcessed')
   });
 
   test("6. When inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
         Then the global state should be updated to DISCOVERY_COMPLETED", async () => {
     
-    //Publish initial message so that it is stored internally in redis
+    //Publish this message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
     const initialBulkRequestState: SDKOutboundBulkRequestState = {
       request: {
@@ -668,12 +664,12 @@ describe("Tests for Outbound Command Event Handler", () => {
     
   });
 
-  test("7. Given autoAcceptParty setting is set to false \
+  test.only("7. Given autoAcceptParty setting is set to false \
         When inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
         Then outbound event SDKOutboundBulkAcceptpartyInfoRequested should be published \
         And Then global state should be updated to DISCOVERY_ACCEPTANCE_PENDING", async () => {
     
-    //Publish initial message so that it is stored internally in redis
+    //Publish this message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
     const initialBulkRequestState: SDKOutboundBulkRequestState = {
       request: {
@@ -744,6 +740,9 @@ describe("Tests for Outbound Command Event Handler", () => {
     //Check that the global state of individual transfers in bulk to be RECEIVED
     const bulkState = await bulkTransactionEntityRepo.load(bulkTransactionId);
     expect(bulkState.state).toBe('DISCOVERY_ACCEPTANCE_PENDING');
+
+    // Check domain events published to kafka
+    expect(domainEvents[2].getName()).toBe('SDKOutboundBulkAcceptpartyInfoRequested')
   });
 
   // test("8.Given autoAcceptParty setting is set to true \
