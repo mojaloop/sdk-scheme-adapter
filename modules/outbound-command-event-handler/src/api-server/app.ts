@@ -26,40 +26,54 @@ import Express, { Application } from 'express';
 import OpenAPIBackend from 'openapi-backend';
 import type { Request } from 'openapi-backend';
 import swaggerUi from 'swagger-ui-express';
-import path from 'path';
 import YAML from 'yamljs';
 import Handlers from './handlers';
+import { IBulkTransactionEntityRepo } from '../types';
 
-export const app: Application = Express();
+export interface IAPIServerOptions {
+    bulkTransactionEntityRepo: IBulkTransactionEntityRepo;
+}
 
-const swaggerSpec = YAML.load(path.join(__dirname, './interface/api.yaml'));
-app.use(Express.static('public'));
-app.use(
-    '/docs',
-    swaggerUi.serve,
-    swaggerUi.setup(undefined, {
-        swaggerOptions: {
-            spec: swaggerSpec,
-        },
-    }),
-);
+export const CreateExpressServer = 
+    async (
+        openApiSpecFilePath: string,
+        options: IAPIServerOptions,
+    ): Promise<Application> => {
+        const app: Application = Express();
 
-// API middle-wares
-// To parse Json in the payload
-app.use(Express.json());
+        const swaggerSpec = YAML.load(openApiSpecFilePath);
+        app.use(
+            '/docs',
+            swaggerUi.serve,
+            swaggerUi.setup(undefined, {
+                swaggerOptions: {
+                    spec: swaggerSpec,
+                },
+            }),
+        );
+    
+        // API middle-wares
+        // To parse Json in the payload
+        app.use(Express.json());
 
-// API routes based on the swagger file
-const api = new OpenAPIBackend({
-    definition: path.join(__dirname, './interface/api.yaml'),
-    handlers: {
-        ...Handlers,
-        validationFail: async (c, _req: Express.Request, res: Express.Response) =>
-            res.status(400).json({ err: c.validation.errors }),
-        notFound: async (_c, _req: Express.Request, res: Express.Response) => res.status(404).json({ err: 'not found' }),
-    },
-});
+        // Pass repo to context
+        app.set('bulkTransactionRepo', options.bulkTransactionEntityRepo);
+    
+        // API routes based on the swagger file
+        const api = new OpenAPIBackend({
+            definition: openApiSpecFilePath,
+            handlers: {
+                ...Handlers,
+                validationFail: async (c, _req: Express.Request, res: Express.Response) =>
+                    res.status(400).json({ err: c.validation.errors }),
+                notFound: async (_c, _req: Express.Request, res: Express.Response) => res.status(404).json({ err: 'not found' }),
+            },
+        });
+    
+        api.init();
+    
+        // Passing the openAPI object as express middle-ware
+        app.use((req, res) => api.handleRequest(req as Request, req, res));
 
-api.init();
-
-// Passing the openAPI object as express middle-ware
-app.use((req, res) => api.handleRequest(req as Request, req, res));
+        return app;
+    };

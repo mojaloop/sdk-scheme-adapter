@@ -29,7 +29,7 @@ import {
     BaseEntity,
     AjvValidationError,
     IHttpRequest,
-} from '@mojaloop/sdk-scheme-adapter-public-shared-lib';
+} from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { SDKSchemeAdapter, v1_1 as FSPIOP } from '@mojaloop/api-snippets';
 import { randomUUID } from 'crypto';
 import Ajv from 'ajv';
@@ -48,14 +48,12 @@ export enum IndividualTransferInternalState {
     TRANSFER_PROCESSING = 'TRANSFER_PROCESSING',
 }
 
-export type IPartyRequest = IHttpRequest;
-
 export interface IndividualTransferState extends BaseEntityState {
     id: string;
     request: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransfer;
     state: IndividualTransferInternalState;
     batchId?: string;
-    partyRequest?: IPartyRequest; // TODO: This should be defined in public repo extending a http request interface similar to (http request or axios request object)
+    partyRequest?: IHttpRequest;
     partyResponse?: FSPIOP.Schemas.PartyResult
     acceptParty?: boolean;
     acceptQuote?: boolean;
@@ -99,7 +97,7 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         this._state.state = state;
     }
 
-    setPartyRequest(request: IPartyRequest) {
+    setPartyRequest(request: IHttpRequest) {
         this._state.partyRequest = request;
     }
 

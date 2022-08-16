@@ -26,15 +26,13 @@
 
 import { DomainEventMessage } from '../domain_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { IHttpRequest } from '@mojaloop/sdk-scheme-adapter-public-shared-lib';
+import { IHttpRequest } from '../../types';
 import { OutboundDomainEventMessageName } from '.';
-
-type IPartyRequest = IHttpRequest;
 
 export interface IPartyInfoRequestedMessageData {
     bulkId: string;
     transferId: string;
-    request: IPartyRequest;
+    request: IHttpRequest;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }

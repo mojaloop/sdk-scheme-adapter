@@ -25,7 +25,7 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { BaseAggregate, IEntityStateRepository } from '@mojaloop/sdk-scheme-adapter-public-shared-lib';
+import { BaseAggregate, IEntityStateRepository } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionEntity, BulkTransactionState } from './bulk_transaction_entity';
 import {
     IndividualTransferEntity,
