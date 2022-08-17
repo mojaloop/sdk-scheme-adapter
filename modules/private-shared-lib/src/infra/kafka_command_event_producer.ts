@@ -26,6 +26,8 @@
 
 'use strict';
 
+// TODO: Try to use the generic kafka producer from platform-shared-lib and investigate if there is any value in maintaining these classes here.
+
 import { MLKafkaProducerOptions } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib';
 import { KafkaEventProducer } from './kafka_event_producer';
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
