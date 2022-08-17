@@ -94,8 +94,9 @@ export class OutboundEventHandler implements IRunHandler {
 
     async _messageHandler(message: CommandEventMessage): Promise<void> {
         this._logger.info(`${message.getName()}`);
-        console.log(message);
+        // TODO: Handle error validations here
         switch (message.getName()) {
+            // TODO: Remove the enums and compare with class names
             case OutboundCommandEventMessageName.ProcessSDKOutboundBulkRequest: {
                 await handleProcessSDKOutboundBulkRequest(message, this._commandEventHandlerOptions, this._logger);
                 break;

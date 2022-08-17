@@ -29,6 +29,7 @@ import { BulkTransactionsService } from '../services/bulk-transactions';
 
 export default {
     getBulkTransactionsState: async (c: Context<Document>, req: Express.Request, res: Express.Response) => {
+        // TODO: Should use the aggregate functions instead of a separate service
         const bulkTransactionsService = new BulkTransactionsService(
             req.app.get('bulkTransactionRepo'),
             req.app.get('logger'),

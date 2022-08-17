@@ -28,6 +28,7 @@ import { IEntityStateRepository } from '@mojaloop/sdk-scheme-adapter-private-sha
 import { BulkTransactionState } from '../domain/bulk_transaction_entity';
 
 export type IBulkTransactionEntityRepo = {
+    // TODO: implement specific functions like getIndividual
     getAllAttributes: (id: string) => Promise<string[]>
     getAttribute: (id: string, name: string) => Promise<any>
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */

@@ -80,7 +80,7 @@ export class OutboundEventHandler implements IRunHandler {
 
     async _messageHandler(message: DomainEventMessage): Promise<void> {
         this._logger.info(`Got domain event message: ${message.getName()}`);
-        console.log(message);
+        // TODO: Handle errros validation here
         switch (message.getName()) {
             case OutboundDomainEventMessageName.SDKOutboundBulkRequestReceived: {
                 await handleSDKOutboundBulkRequestReceived(message, this._domainEventHandlerOptions, this._logger);

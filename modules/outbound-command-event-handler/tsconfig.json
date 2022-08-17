@@ -2,7 +2,28 @@
     "extends": "../../tsconfig.json",
     "compilerOptions": {
       "rootDir": "./src",
-      "outDir": "./dist"
+      "outDir": "./dist",
+      "baseUrl": ".",
+      "paths": {
+        "#domain/*": [
+          "src/domain/*"
+        ],
+        "#types": [
+          "src/types"
+        ],
+        "#types/*": [
+          "src/types/*"
+        ],
+        "#shared/*": [
+          "src/shared/*"
+        ],
+        "#infrastructure": [
+          "src/infrastructure"
+        ],
+        "#infrastructure/*": [
+          "src/infrastructure/*"
+        ]
+      }
     },
     "include": [
       "./src"

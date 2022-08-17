@@ -118,7 +118,8 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
             throw (err);
         }
     }
-
+    
+    // TODO: implement specific functions like getIndividualTransfers instead of the generalised function
     async getAllAttributes(id: string): Promise<string[]> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
@@ -132,7 +133,8 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
             throw (err);
         }
     }
-
+    
+    // TODO: implement specific functions like getIndividualTransfer instead of the generalised function
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     async getAttribute(id: string, name: string): Promise<any> {
         if(!this.canCall()) {
@@ -153,6 +155,7 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
         }
     }
 
+    // TODO: implement specific functions like setIndividualTransfer instead of the generalised function
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     async setAttribute(id: string, name: string, value: any): Promise<void> {
         if(!this.canCall()) {
