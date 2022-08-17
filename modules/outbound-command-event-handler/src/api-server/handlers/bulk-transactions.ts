@@ -28,12 +28,16 @@ import Express from 'express';
 import { BulkTransactionsService } from '../services/bulk-transactions';
 
 export default {
-    getBulkTransactionsState: async (c: Context<Document>, _req: Express.Request, res: Express.Response) => {
+    getBulkTransactionsState: async (c: Context<Document>, req: Express.Request, res: Express.Response) => {
+        const bulkTransactionsService = new BulkTransactionsService(
+            req.app.get('bulkTransactionRepo'),
+            req.app.get('logger'),
+        );
         if(c.request.query?.id) {
-            const transactions = await new BulkTransactionsService().getAll(c.request.query.id + '');
+            const transactions = await bulkTransactionsService.getAll(c.request.query.id + '');
             return res.status(200).json(transactions);
         } else {
-            const transactions = await new BulkTransactionsService().getAll();
+            const transactions = await bulkTransactionsService.getAll();
             return res.status(200).json(transactions);
         }
     },

@@ -22,6 +22,8 @@
  --------------
  ******/
 
+
+import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import Express, { Application } from 'express';
 import OpenAPIBackend from 'openapi-backend';
 import type { Request } from 'openapi-backend';
@@ -32,6 +34,7 @@ import { IBulkTransactionEntityRepo } from '../types';
 
 export interface IAPIServerOptions {
     bulkTransactionEntityRepo: IBulkTransactionEntityRepo;
+    logger: ILogger;
 }
 
 export const CreateExpressServer = 
@@ -58,6 +61,7 @@ export const CreateExpressServer =
 
         // Pass repo to context
         app.set('bulkTransactionRepo', options.bulkTransactionEntityRepo);
+        app.set('logger', options.logger);
     
         // API routes based on the swagger file
         const api = new OpenAPIBackend({

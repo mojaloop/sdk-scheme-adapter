@@ -24,33 +24,26 @@
 
 import { BulkTransaction } from '../models';
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { DefaultLogger } from '@mojaloop/logging-bc-client-lib';
-import { IRedisBulkTransactionStateRepoOptions, RedisBulkTransactionStateRepo } from '../../infrastructure/redis_bulk_transaction_repo';
-import Config from '../../shared/config';
-
-// Start API server
-const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); // TODO: parameterize the names here
-
+import { RedisBulkTransactionStateRepo } from '../../infrastructure/redis_bulk_transaction_repo';
 export class BulkTransactionsService {
+
+    private _repo: RedisBulkTransactionStateRepo;
+
+    constructor(repo: RedisBulkTransactionStateRepo, logger: ILogger) {
+        this._repo = repo;
+    }
 
     // Get the bulkTransactions
     public async getAll(id?: string): Promise<Array<BulkTransaction>> {
         const bulkTransactions: Array<BulkTransaction> = [];
-        // TODO: Pass the repo object from index file instead of re-initializing here
-        // Create bulk transaction entity repo
-        const bulkTransactionEntityRepoOptions: IRedisBulkTransactionStateRepoOptions = {
-            connStr: Config.get('REDIS.CONNECTION_URL'),
-        };
-        const repo = new RedisBulkTransactionStateRepo(bulkTransactionEntityRepoOptions, logger);
-        await repo.init();
-        const allBulkIds = await repo.getAllIds();
+        const allBulkIds = await this._repo.getAllIds();
         for(const bulkId of allBulkIds) {
-            const bulkState = await repo.load(bulkId);
+            const bulkState = await this._repo.load(bulkId);
             const individualTransfers = [];
-            const allAttributes = await repo.getAllAttributes(bulkId);
+            const allAttributes = await this._repo.getAllAttributes(bulkId);
             const allIndividualTransferIds = allAttributes.filter(attr => attr.startsWith('individualItem_')).map(attr => attr.replace('individualItem_', ''));
             for(const individualTransferId of allIndividualTransferIds) {
-                const individualTransferState = await repo.getAttribute(bulkId, 'individualItem_' + individualTransferId);
+                const individualTransferState = await this._repo.getAttribute(bulkId, 'individualItem_' + individualTransferId);
                 individualTransfers.push({
                     id: individualTransferId,
                     state: individualTransferState.state,
@@ -62,7 +55,6 @@ export class BulkTransactionsService {
                 individualTransfers,
             });
         }
-        await repo.destroy();
         return bulkTransactions;
     }
 

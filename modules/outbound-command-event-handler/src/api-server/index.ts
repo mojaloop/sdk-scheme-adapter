@@ -51,7 +51,13 @@ export class OutboundCommandEventHandlerAPIServer {
 
     async startServer(): Promise<void> {
         return new Promise(async resolve => {
-            const app = await CreateExpressServer(path.join(__dirname, './interface/api.yaml'), { bulkTransactionEntityRepo: this._options.bulkTransactionEntityRepo });
+            const app = await CreateExpressServer(
+                path.join(__dirname, './interface/api.yaml'),
+                {
+                    bulkTransactionEntityRepo: this._options.bulkTransactionEntityRepo,
+                    logger: this._logger,
+                },
+            );
             this._serverInstance = app.listen(this._port, () => {
                 this._logger.info(`API Server is running on port ${this._port}`);
                 resolve();
