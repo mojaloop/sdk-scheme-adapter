@@ -55,7 +55,7 @@ export class OutboundEventHandler implements IRunHandler {
 
         const consumerOptions: IKafkaEventConsumerOptions = appConfig.get('KAFKA.DOMAIN_EVENT_CONSUMER');
         this._consumer = new KafkaDomainEventConsumer(this._messageHandler.bind(this), consumerOptions, logger);
-        logger.info(`Created kafkaConsumer of type ${this._consumer.constructor.name}`);
+        logger.info(`Created Message Consumer of type ${this._consumer.constructor.name}`);
 
         /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
         await this._consumer.init();
@@ -63,7 +63,7 @@ export class OutboundEventHandler implements IRunHandler {
 
         const producerOptions: IKafkaEventProducerOptions = appConfig.get('KAFKA.COMMAND_EVENT_PRODUCER');
         this._commandProducer = new KafkaCommandEventProducer(producerOptions, logger);
-        logger.info(`Created kafkaProducer of type ${this._commandProducer.constructor.name}`);
+        logger.info(`Created Message Producer of type ${this._commandProducer.constructor.name}`);
         await this._commandProducer.init();
 
         // Create options for handlers

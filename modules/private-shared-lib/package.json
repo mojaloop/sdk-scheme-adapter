@@ -19,9 +19,7 @@
     "build": "tsc",
     "test:unit": "jest --passWithNoTests --testMatch '**/test/unit/**/*.test.ts'",
     "lint": "eslint --ext .js,.ts src --color",
-    "lint:fix": "npm run lint -- --fix",
-    "audit:resolve": "SHELL=sh resolve-audit --production",
-    "audit:check": "yarn npm audit",
+    "lint:fix": "yarn run lint -- --fix",
     "dep:check": "ncu -e 2",
     "dep:update": "ncu -u"
   },

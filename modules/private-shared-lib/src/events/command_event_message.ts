@@ -49,7 +49,7 @@ export class CommandEventMessage extends BaseEventMessage {
     }
 
     // Overriding the parent method and perform additional validations
-    protected static _validateMessage(obj: any): void {
+    protected static _validateMessage(obj: IMessage): void {
         super._validateMessage(obj);
         // Additional validation here
         if(obj.value.eventMessageType !== EventMessageType.COMMAND_EVENT) {

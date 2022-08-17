@@ -126,7 +126,7 @@ export class BaseEventMessage {
     }
 
 
-    protected static _validateMessage(obj: any): void {
+    protected static _validateMessage(obj: IMessage): void {
         if(obj.key === null || obj.key === undefined) {
             throw (new Error('.key is null or undefined'));
         }

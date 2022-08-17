@@ -37,7 +37,7 @@
     "test:coverage": "yarn workspaces foreach --parallel -v run test:coverage",
     "test:coverage-check": "yarn workspaces foreach --parallel -v run test:coverage-check",
     "test:integration": "yarn workspaces foreach --parallel -v run test:integration",
-    "audit:check": "yarn dlx audit-ci --config ./audit-ci.jsonc",
+    "audit:check": "yarn dlx audit-ci --config ./audit-ci.jsonc && yarn workspaces foreach --parallel -v run audit:check",
     "dep:check": "yarn workspaces foreach --parallel -v run dep:check",
     "dep:update": "yarn workspaces foreach --parallel -v run dep:update"
   },

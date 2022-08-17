@@ -12,8 +12,6 @@
   },
   "scripts": {
     "start": "node src/index.js",
-    "audit:resolve": "echo 'TBD'",
-    "audit:check": "echo 'TBD'",
     "build": "yarn run build:openapi && yarn run build:dto:outbound",
     "build:openapi": "yarn run build:openapi:inbound && yarn run build:openapi:outbound",
     "build:openapi:inbound": "openapi bundle --output ./src/InboundServer/api.yaml --ext yaml ./src/InboundServer/api_template.yaml",
