@@ -2478,23 +2478,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/api-snippets@npm:^14.0.0, @mojaloop/api-snippets@npm:^14.1.0":
-  version: 14.1.0
-  resolution: "@mojaloop/api-snippets@npm:14.1.0"
-  dependencies:
-    "@apidevtools/json-schema-ref-parser": ^9.0.9
-    commander: ^9.3.0
-    jest-ts-auto-mock: ^2.1.0
-    js-yaml: ^4.1.0
-    json-refs: ^3.0.15
-    openapi-types: ^12.0.0
-    openapi-typescript: ^5.4.1
-    ts-auto-mock: ^3.6.2
-    ttypescript: ^1.5.13
-  checksum: e1b5efbff328b9614dfc1f77723616c33c73ae54460e02cb808de41253f2456c08c2b3e88f9847fa95f5e699c2846efb7624d32b018765a45ba97f7ee2fac739
-  languageName: node
-  linkType: hard
-
 "@mojaloop/api-snippets@npm:^14.2.2":
   version: 14.2.2
   resolution: "@mojaloop/api-snippets@npm:14.2.2"
@@ -2669,7 +2652,7 @@ __metadata:
     "@babel/core": ^7.18.6
     "@babel/preset-env": ^7.18.6
     "@koa/cors": ^3.3.0
-    "@mojaloop/api-snippets": ^14.0.0
+    "@mojaloop/api-snippets": ^14.2.2
     "@mojaloop/central-services-error-handling": ^12.0.4
     "@mojaloop/central-services-logger": ^11.0.1
     "@mojaloop/central-services-metrics": ^12.0.5
@@ -2722,7 +2705,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-command-event-handler@workspace:modules/outbound-command-event-handler"
   dependencies:
-    "@mojaloop/api-snippets": ^14.1.0
+    "@mojaloop/api-snippets": ^14.2.2
     "@mojaloop/logging-bc-client-lib": ^0.0.10
     "@mojaloop/logging-bc-public-types-lib": ^0.0.3
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"

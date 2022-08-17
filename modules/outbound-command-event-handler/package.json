@@ -58,7 +58,7 @@
     "typescript": "^4.6.4"
   },
   "dependencies": {
-    "@mojaloop/api-snippets": "^14.1.0",
+    "@mojaloop/api-snippets": "^14.2.2",
     "@mojaloop/logging-bc-client-lib": "^0.0.10",
     "@mojaloop/logging-bc-public-types-lib": "^0.0.3",
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^",

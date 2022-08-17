@@ -28,7 +28,6 @@ import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import { DomainEventMessage, IProcessSDKOutboundBulkRequestMessageData, ProcessSDKOutboundBulkRequestMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { IDomainEventHandlerOptions } from '../../types';
 import { SDKOutboundBulkRequestReceivedMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-import { SDKOutboundBulkRequestState } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
 export async function handleSDKOutboundBulkRequestReceived(
     message: DomainEventMessage,
@@ -38,10 +37,8 @@ export async function handleSDKOutboundBulkRequestReceived(
     const sdkOutboundBulkRequestReceivedMessage
         = SDKOutboundBulkRequestReceivedMessage.CreateFromDomainEventMessage(message);
     try {
-        const sdkOutboundBulkRequestEntity = sdkOutboundBulkRequestReceivedMessage.createSDKOutboundBulkRequestEntity();
-        const sdkOutboundBulkRequestState: SDKOutboundBulkRequestState = sdkOutboundBulkRequestEntity.exportState();
         const processSDKOutboundBulkRequestMessageData: IProcessSDKOutboundBulkRequestMessageData = {
-            sdkOutboundBulkRequestState,
+            bulkRequest: sdkOutboundBulkRequestReceivedMessage.getBulkRequest(),
             timestamp: Date.now(),
             headers: [],
         };

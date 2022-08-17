@@ -26,11 +26,12 @@
 
 import { CommandEventMessage } from '../command_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { SDKOutboundBulkRequestEntity, SDKOutboundBulkRequestState } from '../../entities';
+import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 import { OutboundCommandEventMessageName } from '.';
+import { randomUUID } from 'crypto';
 
 export interface IProcessSDKOutboundBulkRequestMessageData {
-    sdkOutboundBulkRequestState: SDKOutboundBulkRequestState;
+    bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
@@ -38,8 +39,8 @@ export interface IProcessSDKOutboundBulkRequestMessageData {
 export class ProcessSDKOutboundBulkRequestMessage extends CommandEventMessage {
     constructor(data: IProcessSDKOutboundBulkRequestMessageData) {
         super({
-            key: data.sdkOutboundBulkRequestState?.id,
-            content: data.sdkOutboundBulkRequestState,
+            key: data.bulkRequest.bulkTransactionId || randomUUID(),
+            content: data.bulkRequest,
             timestamp: data.timestamp,
             headers: data.headers,
             name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkRequest,
@@ -51,14 +52,15 @@ export class ProcessSDKOutboundBulkRequestMessage extends CommandEventMessage {
             throw new Error('Content is in unknown format');
         }
         const data: IProcessSDKOutboundBulkRequestMessageData = {
-            sdkOutboundBulkRequestState: <SDKOutboundBulkRequestState>message.getContent(),
+            bulkRequest: message.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest,
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
         };
         return new ProcessSDKOutboundBulkRequestMessage(data);
     }
 
-    createSDKOutboundBulkRequestEntity(): SDKOutboundBulkRequestEntity {
-        return new SDKOutboundBulkRequestEntity(<SDKOutboundBulkRequestState> super.getContent());
+    getBulkRequest (): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest {
+        return this.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest
     }
+
 }

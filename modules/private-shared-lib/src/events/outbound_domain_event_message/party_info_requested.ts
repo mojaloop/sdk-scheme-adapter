@@ -26,13 +26,13 @@
 
 import { DomainEventMessage } from '../domain_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { IHttpRequest } from '../../types';
 import { OutboundDomainEventMessageName } from '.';
 
 export interface IPartyInfoRequestedMessageData {
     bulkId: string;
     transferId: string;
-    request: IHttpRequest;
+    // TODO: FSPIOP in api-snippets should export the `PartiesByTypeAndID` schema and refer that in the following line
+    request: any;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }

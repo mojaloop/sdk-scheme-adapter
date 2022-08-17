@@ -27,8 +27,7 @@
 import {
     BaseEntityState,
     BaseEntity,
-    AjvValidationError,
-    IHttpRequest,
+    SchemaValidationError,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { SDKSchemeAdapter, v1_1 as FSPIOP } from '@mojaloop/api-snippets';
 import { randomUUID } from 'crypto';
@@ -50,10 +49,11 @@ export enum IndividualTransferInternalState {
 
 export interface IndividualTransferState extends BaseEntityState {
     id: string;
-    request: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransfer;
+    request: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransaction;
     state: IndividualTransferInternalState;
     batchId?: string;
-    partyRequest?: IHttpRequest;
+    // TODO: FSPIOP in api-snippets should export the `PartiesByTypeAndID` schema and refer that in the following line
+    partyRequest?: any;
     partyResponse?: FSPIOP.Schemas.PartyResult
     acceptParty?: boolean;
     acceptQuote?: boolean;
@@ -67,12 +67,12 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         return this._state.id;
     }
 
-    get request(): SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransfer {
+    get request(): SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransaction {
         return this._state.request;
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    static CreateFromRequest(request: any): IndividualTransferEntity {
+    static CreateFromRequest(request: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransaction): IndividualTransferEntity {
     // IndividualTransferEntity._validateRequest(request)
         const initialState: IndividualTransferState = {
             id: randomUUID(),
@@ -97,7 +97,8 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         this._state.state = state;
     }
 
-    setPartyRequest(request: IHttpRequest) {
+    // TODO: FSPIOP in api-snippets should export the `PartiesByTypeAndID` schema and refer that in the following line
+    setPartyRequest(request: any) {
         this._state.partyRequest = request;
     }
 
@@ -120,12 +121,12 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         super(initialState);
     }
 
-    private static _validateRequest(request: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransfer): void {
+    private static _validateRequest(request: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransaction): void {
         const requestSchema = SDKSchemeAdapter.Outbound.V2_0_0.Schemas.individualTransfer;
         const validate = ajv.compile(requestSchema);
         const validationResult = validate(request);
         if(!validationResult) {
-            throw new AjvValidationError(validate.errors || []);
+            throw new SchemaValidationError(validate.errors || []);
         }
     }
 

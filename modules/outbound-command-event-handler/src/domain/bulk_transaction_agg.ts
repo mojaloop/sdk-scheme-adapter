@@ -31,7 +31,17 @@ import {
     IndividualTransferEntity,
     IndividualTransferState,
 } from './individual_transfer_entity';
-import { IBulkTransactionEntityRepo } from '../types';
+import { IBulkTransactionEntityRepo } from '#types';
+import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
+
+// import { CommandEventMessage, ProcessSDKOutboundBulkRequestMessage, SDKOutboundBulkPartyInfoRequestedMessage, KafkaDomainEventProducer } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+// import { ICommandEventHandlerOptions } from '#types';
+// import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
+
+// export type IBulkTransactionAggOptions = {
+//     bulkTransactionEntityRepo: IBulkTransactionEntityRepo
+//     domainProducer: KafkaDomainEventProducer
+// };
 
 export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, BulkTransactionState> {
     // TODO: These counts can be part of bulk transaction entity?
@@ -56,8 +66,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
     // }
 
     static async CreateFromRequest(
-        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-        request: any,
+        request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest,
         entityStateRepo: IEntityStateRepository<BulkTransactionState>,
         logger: ILogger,
     ): Promise<BulkTransactionAgg> {
@@ -70,7 +79,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         // Create individualTransfer entities
         if(Array.isArray(request?.individualTransfers)) {
             // TODO: limit the number of concurrently created promises to avoid nodejs high memory consumption
-            await Promise.all(request.individualTransfers.map((individualTransfer: any) =>
+            await Promise.all(request.individualTransfers.map((individualTransfer: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransaction) =>
                 agg.addIndividualTransferEntity(IndividualTransferEntity.CreateFromRequest(individualTransfer))));
         }
         // Return the aggregate
@@ -108,6 +117,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
     async getAllIndividualTransferIds() {
         const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
         const allAttributes = await repo.getAllAttributes(this._rootEntity.id);
+        // TODO: implement specific functions like getIndividualTransfers in the repo
         return allAttributes.filter(attr => attr.startsWith('individualItem_')).map(attr => attr.replace('individualItem_', ''));
     }
 
@@ -151,4 +161,49 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
             // this._partyLookupFailedCount = undefined;
         }
     }
+
+
+    // TODO: Add all the remaining handler functions and refactor the entry point
+    
+    // static async handleProcessSDKOutboundBulkRequest(
+    //     message: CommandEventMessage,
+    //     bulkTransactionEntityRepo: IBulkTransactionEntityRepo,
+    //     domainProducer: KafkaDomainEventProducer,
+    //     logger: ILogger,
+    // ): Promise<void> {
+    //     // TODO: Duplicate check here?
+    //     const processSDKOutboundBulkRequestMessage =
+    //       ProcessSDKOutboundBulkRequestMessage.CreateFromCommandEventMessage(message);
+    //     try {
+    //         const sdkOutboundBulkRequestEntity = processSDKOutboundBulkRequestMessage.createSDKOutboundBulkRequestEntity();
+    //         logger.info(`Got SDKOutboundBulkRequestEntity ${sdkOutboundBulkRequestEntity}`);
+    
+    //         // Create aggregate
+    //         const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRequest(
+    //             sdkOutboundBulkRequestEntity.request,
+    //             bulkTransactionEntityRepo,
+    //             logger,
+    //         );
+    //         logger.info(`Created BulkTransactionAggregate ${bulkTransactionAgg}`);
+    
+    //         const msg = new SDKOutboundBulkPartyInfoRequestedMessage({
+    //             bulkId: bulkTransactionAgg.bulkId,
+    //             timestamp: Date.now(),
+    //             headers: [],
+    //         });
+    //         await domainProducer.sendDomainMessage(msg);
+    
+    //     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    //     } catch (err: any) {
+    //         logger.info(`Failed to create BulkTransactionAggregate. ${err.message}`);
+    //     }
+    // }
+
+
+
+
+
+
+
+
 }

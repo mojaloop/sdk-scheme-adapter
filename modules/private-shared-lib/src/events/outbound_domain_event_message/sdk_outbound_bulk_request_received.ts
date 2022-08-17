@@ -26,12 +26,12 @@
 
 import { DomainEventMessage } from '../domain_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { SDKOutboundBulkRequestEntity } from '../../entities';
 import { OutboundDomainEventMessageName } from '.';
-
+import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
+import { randomUUID } from 'crypto';
 
 export interface ISDKOutboundBulkRequestReceivedMessageData {
-    bulkRequest: any;
+    bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
@@ -42,26 +42,27 @@ export class SDKOutboundBulkRequestReceivedMessage extends DomainEventMessage {
     // // Calling Sample validation function
     // SDKOutboundBulkRequestReceivedMessage.validateRequest(data.bulkRequest);
         super({
-            key: data.bulkRequest?.id,
+            key: data.bulkRequest.bulkTransactionId || randomUUID(),
             content: data.bulkRequest,
             timestamp: data.timestamp,
             headers: data.headers,
+            // TODO: Use the classname of the event instead of enum here
             name: OutboundDomainEventMessageName.SDKOutboundBulkRequestReceived,
         });
     }
 
-    createSDKOutboundBulkRequestEntity(): SDKOutboundBulkRequestEntity {
-        return SDKOutboundBulkRequestEntity.CreateFromRequest(super.getContent());
-    }
-
     static CreateFromDomainEventMessage(message: DomainEventMessage): SDKOutboundBulkRequestReceivedMessage {
-    // Prepare Data
+        // Prepare Data
         const data = {
-            bulkRequest: message.getContent(),
+            bulkRequest: message.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest,
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
         };
         return new SDKOutboundBulkRequestReceivedMessage(data);
+    }
+
+    getBulkRequest (): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest {
+        return this.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest
     }
 
     // // Sample validation function

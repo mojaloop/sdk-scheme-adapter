@@ -38,12 +38,11 @@ export async function handleProcessSDKOutboundBulkRequest(
     const processSDKOutboundBulkRequestMessage =
       ProcessSDKOutboundBulkRequestMessage.CreateFromCommandEventMessage(message);
     try {
-        const sdkOutboundBulkRequestEntity = processSDKOutboundBulkRequestMessage.createSDKOutboundBulkRequestEntity();
-        logger.info(`Got SDKOutboundBulkRequestEntity ${sdkOutboundBulkRequestEntity}`);
+        logger.info(`Got Bulk Request ${processSDKOutboundBulkRequestMessage.getBulkRequest()}`);
 
         // Create aggregate
         const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRequest(
-            sdkOutboundBulkRequestEntity.request,
+            processSDKOutboundBulkRequestMessage.getBulkRequest(),
             options.bulkTransactionEntityRepo,
             logger,
         );

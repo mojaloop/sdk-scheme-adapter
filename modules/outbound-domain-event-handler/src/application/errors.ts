@@ -37,5 +37,6 @@
 
 'use strict';
 
+// TODO: this is a place holder for future errors.
 export class InvalidOutboundEvtError extends Error {}
 export class InvalidOutboundCmdError extends Error {}

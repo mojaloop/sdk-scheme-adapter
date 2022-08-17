@@ -32,6 +32,7 @@ import {
     IndividualTransferState,
 } from './individual_transfer_entity';
 import { IBulkTransactionEntityRepo } from '../types';
+import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, BulkTransactionState> {
     // TODO: These counts can be part of bulk transaction entity?
@@ -57,7 +58,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
 
     static async CreateFromRequest(
         /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-        request: any,
+        request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest,
         entityStateRepo: IEntityStateRepository<BulkTransactionState>,
         logger: ILogger,
     ): Promise<BulkTransactionAgg> {

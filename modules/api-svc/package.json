@@ -90,7 +90,7 @@
   "devDependencies": {
     "@babel/core": "^7.18.6",
     "@babel/preset-env": "^7.18.6",
-    "@mojaloop/api-snippets": "^14.0.0",
+    "@mojaloop/api-snippets": "^14.2.2",
     "@redocly/openapi-cli": "^1.0.0-beta.94",
     "@types/jest": "^28.1.4",
     "babel-jest": "^28.1.2",

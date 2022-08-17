@@ -31,9 +31,9 @@ import { KafkaEventProducer } from './kafka_event_producer';
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import { DomainEventMessage }  from '../events';
 import { IMessage } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { IKafkaEventProducerOptions } from '../types';
+import { IDomainEventProducer, IKafkaEventProducerOptions } from '../types';
 
-export class KafkaDomainEventProducer extends KafkaEventProducer {
+export class KafkaDomainEventProducer extends KafkaEventProducer implements IDomainEventProducer {
     private _topic: string;
 
     constructor(
@@ -49,9 +49,9 @@ export class KafkaDomainEventProducer extends KafkaEventProducer {
         this._topic = producerOptions.topic;
     }
 
-    sendDomainMessage(domainEventMessage: DomainEventMessage) {
+    async sendDomainMessage(domainEventMessage: DomainEventMessage) {
         const message: IMessage = domainEventMessage.toIMessage(this._topic);
-        super.send(message);
+        await super.send(message);
     }
 
 }

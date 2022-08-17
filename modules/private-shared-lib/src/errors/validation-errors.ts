@@ -26,7 +26,7 @@
 
 import { ErrorObject } from 'ajv';
 
-export class AjvValidationError extends Error {
+export class SchemaValidationError extends Error {
     private _errors: ErrorObject[] = [];
 
     constructor(errors: ErrorObject[]) {

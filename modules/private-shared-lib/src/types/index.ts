@@ -32,4 +32,3 @@
 'use strict';
 
 export * from './infra';
-export * from './http';

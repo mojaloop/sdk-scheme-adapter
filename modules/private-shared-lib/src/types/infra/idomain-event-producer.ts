@@ -21,12 +21,26 @@
 
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
- * Modusbox
- - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
+
+ * Coil
+ - Donovan Changfoot <donovan.changfoot@coil.com>
+
+ * Crosslake
+ - Pedro Sousa Barreto <pedrob@crosslaketech.com>
+
+ * ModusBox
+ - Miguel de Barros <miguel.debarros@modusbox.com>
+ - Roman Pietrzak <roman.pietrzak@modusbox.com>
 
  --------------
- ******/
+******/
 
 'use strict';
 
-export * from './sdk_outbound_bulk_request_entity';
+import { DomainEventMessage } from '../../events';
+import { IEventProducer } from './ievent-producer';
+
+export interface IDomainEventProducer extends IEventProducer {
+    init: () => Promise<void>
+    sendDomainMessage: (message: DomainEventMessage) => Promise<void>
+}

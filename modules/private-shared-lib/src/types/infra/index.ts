@@ -33,5 +33,7 @@
 export * from './irun_handler';
 export * from './ievent-consumer';
 export * from './ievent-producer';
+export * from './idomain-event-producer';
+export * from './icommand-event-producer';
 export * from './ikafka_event_consumer_options';
 export * from './ikafka_event_producer_options';

@@ -34,7 +34,6 @@ import { BulkTransactionAgg } from '../../domain/bulk_transaction_agg';
 import { ICommandEventHandlerOptions } from '../../types';
 import { BulkTransactionInternalState } from '../../domain/bulk_transaction_entity';
 import { IndividualTransferInternalState } from '../../domain/individual_transfer_entity';
-import { IHttpRequest } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
 export async function handleProcessSDKOutboundBulkPartyInfoRequest(
     message: CommandEventMessage,
@@ -85,7 +84,7 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequest(
                     body: '',
                 },
             });
-            individualTransfer.setPartyRequest(msg.getContent() as IHttpRequest);
+            individualTransfer.setPartyRequest(msg.getContent());
             individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_PROCESSING);
             await options.domainProducer.sendDomainMessage(msg);
             await bulkTransactionAgg.setIndividualTransferById(individualTransferId, individualTransfer);

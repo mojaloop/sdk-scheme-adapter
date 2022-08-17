@@ -33,6 +33,8 @@ import {
     OutboundCommandEventMessageName,
     IKafkaEventConsumerOptions,
     IKafkaEventProducerOptions,
+    IEventConsumer,
+    IDomainEventProducer,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import {
     handleProcessSDKOutboundBulkRequest,
@@ -49,9 +51,9 @@ export interface IOutboundEventHandlerOptions {
 export class OutboundEventHandler implements IRunHandler {
     private _logger: ILogger;
 
-    private _consumer: KafkaCommandEventConsumer;
+    private _consumer: IEventConsumer;
 
-    private _domainProducer: KafkaDomainEventProducer;
+    private _domainProducer: IDomainEventProducer;
 
     private _bulkTransactionEntityStateRepo: IBulkTransactionEntityRepo;
 
