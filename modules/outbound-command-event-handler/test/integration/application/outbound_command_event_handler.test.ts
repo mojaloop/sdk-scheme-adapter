@@ -454,7 +454,7 @@ describe("Tests for Outbound Command Event Handler", () => {
       name: OutboundCommandEventMessageName.ProcessPartyInfoCallback,
       content: {
         partyId : {
-          partyIdType: 'MSISDN',
+          partyIdType: 'MSISDN', 
           partyId: '123456',
           fspId: 'receiverfsp'
         }
