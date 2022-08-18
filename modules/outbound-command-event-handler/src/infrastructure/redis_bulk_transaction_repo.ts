@@ -166,6 +166,20 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
         }
     }
 
+    async isBulkIdExists(bulkId: string): Promise<Boolean> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            const isExists = await this._redisClient.exists(key)
+            return isExists === 1
+        } catch (err) {
+            this._logger.error(err, 'Error getting status from redis - for key: ' + key);
+            throw (err);
+        }
+    }
+
     private keyWithPrefix(key: string): string {
         return this.keyPrefix + key;
     }

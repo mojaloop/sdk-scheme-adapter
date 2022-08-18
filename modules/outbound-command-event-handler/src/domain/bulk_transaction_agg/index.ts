@@ -65,7 +65,16 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         entityStateRepo: IEntityStateRepository<BulkTransactionState>,
         logger: ILogger,
     ): Promise<BulkTransactionAgg> {
-    // Create root entity
+        const repo = entityStateRepo as IBulkTransactionEntityRepo;
+        // Duplicate Check
+        if (request.bulkTransactionId) {
+            const isBulkIdExists = await repo.isBulkIdExists(request.bulkTransactionId)
+            if (isBulkIdExists) {
+                throw new Error('Duplicate: Aggregate already exists in repo');
+            }
+        }
+        
+        // Create root entity
         const bulkTransactionEntity = BulkTransactionEntity.CreateFromRequest(request);
         // Create the aggregate
         const agg = new BulkTransactionAgg(bulkTransactionEntity, entityStateRepo, logger);

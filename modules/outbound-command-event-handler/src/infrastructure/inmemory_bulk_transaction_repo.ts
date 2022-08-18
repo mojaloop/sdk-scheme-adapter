@@ -147,6 +147,19 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         }
     }
 
+    async isBulkIdExists(bulkId: string): Promise<Boolean> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            return this._data.hasOwnProperty(key)
+        } catch (err) {
+            this._logger.error(err, 'Error getting status from memory - for key: ' + key);
+            throw (err);
+        }
+    }
+
     private keyWithPrefix(key: string): string {
         return this.keyPrefix + key;
     }
