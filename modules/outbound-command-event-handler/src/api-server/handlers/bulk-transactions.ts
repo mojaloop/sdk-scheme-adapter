@@ -35,7 +35,7 @@ export default {
             req.app.get('logger'),
         );
         if(c.request.query?.id) {
-            const transactions = await bulkTransactionsService.getAll(c.request.query.id + '');
+            const transactions = await bulkTransactionsService.getAll(c.request.query.id as string);
             return res.status(200).json(transactions);
         } else {
             const transactions = await bulkTransactionsService.getAll();
