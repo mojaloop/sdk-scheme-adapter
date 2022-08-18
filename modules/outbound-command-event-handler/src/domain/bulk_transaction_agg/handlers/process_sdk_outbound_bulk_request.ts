@@ -18,45 +18,41 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Modusbox
- - Yevhen Kyriukha <yevhen.kyriukha@modusbox.com>
+ - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
  --------------
  ******/
 
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { CommandEventMessage, ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-import { BulkTransactionAgg } from '../../domain/bulk_transaction_agg';
-import { ICommandEventHandlerOptions } from '../../types';
-import { BulkTransactionInternalState } from '../../domain/bulk_transaction_entity';
+import { CommandEventMessage, ProcessSDKOutboundBulkRequestMessage, SDKOutboundBulkPartyInfoRequestedMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { BulkTransactionAgg } from '..';
+import { ICommandEventHandlerOptions } from '@module-types';
 
-
-export async function handleProcessSDKOutboundBulkPartyInfoRequestComplete(
-    message: CommandEventMessage,
+export async function handleProcessSDKOutboundBulkRequestMessage(
+    processSDKOutboundBulkRequestMessage: ProcessSDKOutboundBulkRequestMessage,
     options: ICommandEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
-    const processSDKOutboundBulkPartyInfoRequestCompleteMessage =
-        ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage.CreateFromCommandEventMessage(message);
+    // TODO: Duplicate check here?
     try {
-        logger.info(`Got ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage: bulkid=${processSDKOutboundBulkPartyInfoRequestCompleteMessage.getKey()}`);
+        logger.info(`Got Bulk Request ${processSDKOutboundBulkRequestMessage.getBulkRequest()}`);
 
         // Create aggregate
-        const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRepo(
-            processSDKOutboundBulkPartyInfoRequestCompleteMessage.getKey(),
+        const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRequest(
+            processSDKOutboundBulkRequestMessage.getBulkRequest(),
             options.bulkTransactionEntityRepo,
             logger,
         );
+        logger.info(`Created BulkTransactionAggregate ${bulkTransactionAgg}`);
 
-        const bulkTx = bulkTransactionAgg.getBulkTransaction();
+        const msg = new SDKOutboundBulkPartyInfoRequestedMessage({
+            bulkId: bulkTransactionAgg.bulkId,
+            timestamp: Date.now(),
+            headers: [],
+        });
+        await options.domainProducer.sendDomainMessage(msg);
 
-        bulkTx.setTxState(BulkTransactionInternalState.DISCOVERY_COMPLETED);
-
-        if(bulkTx.isAutoAcceptPartyEnabled()) {
-            // TODO: construct and send SDKOutboundBulkAcceptPartyInfoRequested message to domain event handler
-        }
-
-        await bulkTransactionAgg.setTransaction(bulkTx);
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     } catch (err: any) {
         logger.info(`Failed to create BulkTransactionAggregate. ${err.message}`);

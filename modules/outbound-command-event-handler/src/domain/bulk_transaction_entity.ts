@@ -108,7 +108,7 @@ export class BulkTransactionEntity extends BaseEntity<BulkTransactionState> {
     // }
 
     private static _validateRequest(request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest): void {
-        const requestSchema = SDKSchemeAdapter.Outbound.V2_0_0.Schemas.bulkTransferRequest;
+        const requestSchema = SDKSchemeAdapter.Outbound.V2_0_0.Schemas.bulkTransactionRequest;
         const validate = ajv.compile(requestSchema);
         const validationResult = validate(request);
         if(!validationResult) {

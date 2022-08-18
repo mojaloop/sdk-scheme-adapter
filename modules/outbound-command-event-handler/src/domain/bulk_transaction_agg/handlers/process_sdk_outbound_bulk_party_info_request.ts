@@ -30,18 +30,16 @@ import {
     ProcessSDKOutboundBulkPartyInfoRequestMessage,
     PartyInfoRequestedMessage,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-import { BulkTransactionAgg } from '../../domain/bulk_transaction_agg';
-import { ICommandEventHandlerOptions } from '../../types';
-import { BulkTransactionInternalState } from '../../domain/bulk_transaction_entity';
-import { IndividualTransferInternalState } from '../../domain/individual_transfer_entity';
+import { BulkTransactionAgg } from '..';
+import { ICommandEventHandlerOptions } from '@module-types';
+import { BulkTransactionInternalState } from '../..';
+import { IndividualTransferInternalState } from '../..';
 
-export async function handleProcessSDKOutboundBulkPartyInfoRequest(
-    message: CommandEventMessage,
+export async function handleProcessSDKOutboundBulkPartyInfoRequestMessage(
+    processSDKOutboundBulkPartyInfoRequestMessage: ProcessSDKOutboundBulkPartyInfoRequestMessage,
     options: ICommandEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
-    const processSDKOutboundBulkPartyInfoRequestMessage =
-        ProcessSDKOutboundBulkPartyInfoRequestMessage.CreateFromCommandEventMessage(message);
     try {
         logger.info(`Got ProcessSDKOutboundBulkPartyInfoRequestMessage: bulkId=${processSDKOutboundBulkPartyInfoRequestMessage.getKey()}`);
 

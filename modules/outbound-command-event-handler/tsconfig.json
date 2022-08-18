@@ -5,24 +5,10 @@
       "outDir": "./dist",
       "baseUrl": ".",
       "paths": {
-        "#domain/*": [
-          "src/domain/*"
-        ],
-        "#types": [
-          "src/types"
-        ],
-        "#types/*": [
-          "src/types/*"
-        ],
-        "#shared/*": [
-          "src/shared/*"
-        ],
-        "#infrastructure": [
-          "src/infrastructure"
-        ],
-        "#infrastructure/*": [
-          "src/infrastructure/*"
-        ]
+        "@module-domain": [ "./src/domain/index.ts" ],
+        "@module-types": [ "./src/types/index.ts" ],
+        "@module-shared": [ "./src/shared/index.ts" ],
+        "@module-infrastructure": [ "./src/infrastructure/index.ts" ]
       }
     },
     "include": [

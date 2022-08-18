@@ -25,50 +25,36 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { CommandEventMessage, ProcessPartyInfoCallbackMessage, PartyInfoCallbackProceededMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-import { BulkTransactionAgg } from '../../domain/bulk_transaction_agg';
-import { ICommandEventHandlerOptions } from '../../types';
-import { IndividualTransferInternalState } from '../../domain/individual_transfer_entity';
-import { v1_1 as FSPIOP } from '@mojaloop/api-snippets';
+import { CommandEventMessage, ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { BulkTransactionAgg } from '..';
+import { ICommandEventHandlerOptions } from '@module-types';
+import { BulkTransactionInternalState } from '../..';
 
-type PartyResult = FSPIOP.Schemas.PartyResult;
 
-export async function handleProcessPartyInfoCallback(
-    message: CommandEventMessage,
+export async function handleProcessSDKOutboundBulkPartyInfoRequestCompleteMessage(
+    processSDKOutboundBulkPartyInfoRequestCompleteMessage: ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage,
     options: ICommandEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
-    const processPartyInfoCallbackMessage =
-        ProcessPartyInfoCallbackMessage.CreateFromCommandEventMessage(message);
     try {
-        logger.info(`Got ProcessPartyInfoCallbackMessage: id=${processPartyInfoCallbackMessage.getKey()}`);
+        logger.info(`Got ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage: bulkid=${processSDKOutboundBulkPartyInfoRequestCompleteMessage.getKey()}`);
 
         // Create aggregate
         const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRepo(
-            processPartyInfoCallbackMessage.getBulkId(),
+            processSDKOutboundBulkPartyInfoRequestCompleteMessage.getKey(),
             options.bulkTransactionEntityRepo,
             logger,
         );
 
-        const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(
-            processPartyInfoCallbackMessage.getTransferId(),
-        );
-        const partyResult = <PartyResult>processPartyInfoCallbackMessage.getContent();
-        if(partyResult.errorInformation) {
-            individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_FAILED);
-        } else {
-            individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS);
+        const bulkTx = bulkTransactionAgg.getBulkTransaction();
+
+        bulkTx.setTxState(BulkTransactionInternalState.DISCOVERY_COMPLETED);
+
+        if(bulkTx.isAutoAcceptPartyEnabled()) {
+            // TODO: construct and send SDKOutboundBulkAcceptPartyInfoRequested message to domain event handler
         }
-        individualTransfer.setPartyResponse(partyResult);
 
-        const msg = new PartyInfoCallbackProceededMessage({
-            key: processPartyInfoCallbackMessage.getKey(),
-            timestamp: Date.now(),
-            headers: [],
-        });
-        await options.domainProducer.sendDomainMessage(msg);
-
-        await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
+        await bulkTransactionAgg.setTransaction(bulkTx);
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     } catch (err: any) {
         logger.info(`Failed to create BulkTransactionAggregate. ${err.message}`);

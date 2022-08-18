@@ -132,25 +132,26 @@ export class BaseEventMessage {
         }
         if(
             obj.value === null ||
-      obj.value === undefined ||
-      typeof obj.value !== 'object' ||
-      Buffer.isBuffer(obj.value)
+            obj.value === undefined ||
+            typeof obj.value !== 'object' ||
+            Buffer.isBuffer(obj.value)
         ) {
             throw (new Error('.value is null or undefined or not an object'));
         }
-        if( !obj.value.hasOwnProperty('eventMessageType')) {
+        const eventMessageValue = obj.value as IEventMessageValue
+        if( !eventMessageValue.hasOwnProperty('eventMessageType')) {
             throw (new Error('.value.eventMessageType is null or undefined'));
         }
-        if(typeof obj.value.eventMessageType !== 'string') {
+        if(typeof eventMessageValue.eventMessageType !== 'string') {
             throw (new Error('.value.eventMessageType is not string'));
         }
-        if(!(obj.value.eventMessageType in EventMessageType)) {
+        if(!(eventMessageValue.eventMessageType in EventMessageType)) {
             throw (new Error(`.value.eventMessageType is not in the list of allowed values ${getEnumValues(EventMessageType)}`));
         }
-        if( !obj.value.hasOwnProperty('eventMessageName')) {
+        if( !eventMessageValue.hasOwnProperty('eventMessageName')) {
             throw (new Error('.value.eventMessageName is null or undefined'));
         }
-        if(typeof obj.value.eventMessageName !== 'string') {
+        if(typeof eventMessageValue.eventMessageName !== 'string') {
             throw (new Error('.value.eventMessageName is not string'));
         }
     }

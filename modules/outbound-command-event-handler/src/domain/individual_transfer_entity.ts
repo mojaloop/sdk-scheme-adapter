@@ -122,7 +122,7 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
     }
 
     private static _validateRequest(request: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransaction): void {
-        const requestSchema = SDKSchemeAdapter.Outbound.V2_0_0.Schemas.individualTransfer;
+        const requestSchema = SDKSchemeAdapter.Outbound.V2_0_0.Schemas.individualTransaction;
         const validate = ajv.compile(requestSchema);
         const validationResult = validate(request);
         if(!validationResult) {

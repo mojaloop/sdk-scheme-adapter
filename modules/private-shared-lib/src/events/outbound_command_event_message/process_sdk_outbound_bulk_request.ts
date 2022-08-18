@@ -27,7 +27,6 @@
 import { CommandEventMessage } from '../command_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
-import { OutboundCommandEventMessageName } from '.';
 import { randomUUID } from 'crypto';
 
 export interface IProcessSDKOutboundBulkRequestMessageData {
@@ -43,7 +42,7 @@ export class ProcessSDKOutboundBulkRequestMessage extends CommandEventMessage {
             content: data.bulkRequest,
             timestamp: data.timestamp,
             headers: data.headers,
-            name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkRequest,
+            name: ProcessSDKOutboundBulkRequestMessage.name,
         });
     }
 

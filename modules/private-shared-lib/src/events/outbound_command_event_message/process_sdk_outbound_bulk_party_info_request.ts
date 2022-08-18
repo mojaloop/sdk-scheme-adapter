@@ -26,7 +26,6 @@
 
 import { CommandEventMessage } from '../command_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { OutboundCommandEventMessageName } from '.';
 
 export interface IProcessSDKOutboundBulkPartyInfoRequestMessageData {
     bulkId: string;
@@ -41,7 +40,7 @@ export class ProcessSDKOutboundBulkPartyInfoRequestMessage extends CommandEventM
             timestamp: data.timestamp,
             headers: data.headers,
             content: null,
-            name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkPartyInfoRequest,
+            name: ProcessSDKOutboundBulkPartyInfoRequestMessage.name,
         });
     }
 

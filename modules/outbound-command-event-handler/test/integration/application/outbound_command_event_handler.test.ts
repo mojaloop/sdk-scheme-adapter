@@ -27,9 +27,12 @@
 import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 
-import { CommandEventMessage, OutboundCommandEventMessageName, ICommandEventMessageData, DomainEventMessage,
+import { CommandEventMessage, ICommandEventMessageData, DomainEventMessage,
          KafkaCommandEventProducer, IKafkaEventProducerOptions, KafkaDomainEventConsumer, IKafkaEventConsumerOptions, 
-         IProcessSDKOutboundBulkPartyInfoRequestCompleteMessageData } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+         ProcessSDKOutboundBulkRequestMessage,
+         ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage,
+         ProcessSDKOutboundBulkPartyInfoRequestMessage,
+         ProcessPartyInfoCallbackMessage} from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 import { SDKOutboundBulkRequestState } from '@mojaloop/sdk-scheme-adapter-public-shared-lib'
 import { randomUUID } from "crypto";
 import { RedisBulkTransactionStateRepo, IRedisBulkTransactionStateRepoOptions } from '../../../src/infrastructure/redis_bulk_transaction_repo'
@@ -145,7 +148,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     }
     const sampleCommandEventMessageData: ICommandEventMessageData = {
       key: 'sample-key1',
-      name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkRequest,
+      name: ProcessSDKOutboundBulkRequestMessage.name,
       content,
       timestamp: Date.now(),
       headers: []
@@ -237,7 +240,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     }
     const initialBulkRequest: ICommandEventMessageData = {
       key: 'sample-key1',
-      name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkRequest,
+      name: ProcessSDKOutboundBulkRequestMessage.name,
       content: initialBulkRequestState,
       timestamp: Date.now(),
       headers: []
@@ -248,7 +251,7 @@ describe("Tests for Outbound Command Event Handler", () => {
 
     const bulkPartyInfoRequestCommandEventMessageData: ICommandEventMessageData = {
       key: bulkTransactionId,
-      name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkPartyInfoRequest,
+      name: ProcessSDKOutboundBulkPartyInfoRequestMessage.name,
       content: null,
       timestamp: Date.now(),
       headers: []
@@ -335,7 +338,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     }
     const initialBulkRequest: ICommandEventMessageData = {
       key: 'sample-key1',
-      name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkRequest,
+      name: ProcessSDKOutboundBulkRequestMessage.name,
       content: initialBulkRequestState,
       timestamp: Date.now(),
       headers: []
@@ -346,7 +349,7 @@ describe("Tests for Outbound Command Event Handler", () => {
 
     const bulkPartyInfoRequestCommandEventMessageData: ICommandEventMessageData = {
       key: bulkTransactionId,
-      name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkPartyInfoRequest,
+      name: ProcessSDKOutboundBulkPartyInfoRequestMessage.name,
       content: null,
       timestamp: Date.now(),
       headers: []
@@ -424,7 +427,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     }
     const initialBulkRequest: ICommandEventMessageData = {
       key: 'sample-key1',
-      name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkRequest,
+      name: ProcessSDKOutboundBulkRequestMessage.name,
       content: initialBulkRequestState,
       timestamp: Date.now(),
       headers: []
@@ -435,7 +438,7 @@ describe("Tests for Outbound Command Event Handler", () => {
 
     const bulkPartyInfoRequestCommandEventMessageData: ICommandEventMessageData = {
       key: bulkTransactionId,
-      name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkPartyInfoRequest,
+      name: ProcessSDKOutboundBulkPartyInfoRequestMessage.name,
       content: null,
       timestamp: Date.now(),
       headers: []
@@ -451,7 +454,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     
     const processPartyInfoCallbackMessageData: ICommandEventMessageData = {
       key: partyInfoRequestedDomainEvents[0].getKey(),
-      name: OutboundCommandEventMessageName.ProcessPartyInfoCallback,
+      name: ProcessPartyInfoCallbackMessage.name,
       content: {
         partyId : {
           partyIdType: 'MSISDN',
@@ -532,7 +535,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     }
     const initialBulkRequest: ICommandEventMessageData = {
       key: 'sample-key1',
-      name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkRequest,
+      name: ProcessSDKOutboundBulkRequestMessage.name,
       content: initialBulkRequestState,
       timestamp: Date.now(),
       headers: []
@@ -543,7 +546,7 @@ describe("Tests for Outbound Command Event Handler", () => {
 
     const bulkPartyInfoRequestCommandEventMessageData: ICommandEventMessageData = {
       key: bulkTransactionId,
-      name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkPartyInfoRequest,
+      name: ProcessSDKOutboundBulkPartyInfoRequestMessage.name,
       content: null,
       timestamp: Date.now(),
       headers: []
@@ -559,7 +562,7 @@ describe("Tests for Outbound Command Event Handler", () => {
 
     const processPartyInfoCallbackMessageData: ICommandEventMessageData = {
       key: partyInfoRequestedDomainEvents[0].getKey(),
-      name: OutboundCommandEventMessageName.ProcessPartyInfoCallback,
+      name: ProcessPartyInfoCallbackMessage.name,
       content: {
         partyId : {
           partyIdType: 'MSISDN',
@@ -637,7 +640,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     }
     const initialBulkRequest: ICommandEventMessageData = {
       key: 'sample-key1',
-      name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkRequest,
+      name: ProcessSDKOutboundBulkRequestMessage.name,
       content: initialBulkRequestState,
       timestamp: Date.now(),
       headers: []
@@ -649,7 +652,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     // Command event for bulk party info request completed
     const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageData : ICommandEventMessageData = {
       key: bulkTransactionId,
-      name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkPartyInfoRequestComplete,
+      name: ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage.,
       content: null,
       timestamp: Date.now(),
       headers: []
@@ -716,7 +719,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     }
     const initialBulkRequest: ICommandEventMessageData = {
       key: 'sample-key1',
-      name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkRequest,
+      name: ProcessSDKOutboundBulkRequestMessage.name,
       content: initialBulkRequestState,
       timestamp: Date.now(),
       headers: []
@@ -728,7 +731,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     // Command event for bulk party info request completed
     const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageData : ICommandEventMessageData = {
       key: bulkTransactionId,
-      name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkPartyInfoRequestComplete,
+      name: ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage.,
       content: null,
       timestamp: Date.now(),
       headers: []
@@ -796,7 +799,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     }
     const initialBulkRequest: ICommandEventMessageData = {
       key: 'sample-key1',
-      name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkRequest,
+      name: ProcessSDKOutboundBulkRequestMessage.name,
       content: initialBulkRequestState,
       timestamp: Date.now(),
       headers: []
@@ -808,7 +811,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     // Command event for bulk party info request completed
     const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageData : ICommandEventMessageData = {
       key: bulkTransactionId,
-      name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkPartyInfoRequestComplete,
+      name: ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage.,
       content: null,
       timestamp: Date.now(),
       headers: []
@@ -878,7 +881,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     }
     const initialBulkRequest: ICommandEventMessageData = {
       key: 'sample-key1',
-      name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkRequest,
+      name: ProcessSDKOutboundBulkRequestMessage.name,
       content: initialBulkRequestState,
       timestamp: Date.now(),
       headers: []
@@ -890,7 +893,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     // Command event for bulk party info request completed
     const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageData : ICommandEventMessageData = {
       key: bulkTransactionId,
-      name: OutboundCommandEventMessageName.ProcessSDKOutboundBulkPartyInfoRequestComplete,
+      name: ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage.,
       content: null,
       timestamp: Date.now(),
       headers: []

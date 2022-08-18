@@ -23,7 +23,7 @@
     "build": "tsc && yarn run copy-files",
     "watch": "tsc -w",
     "dev": "nodemon",
-    "clean": "rm -Rf dist",
+    "clean:dist": "rm -Rf dist",
     "pretest": "yarn run build",
     "standard": "yarn run lint",
     "lint": "eslint --ext .js,.ts src --color",

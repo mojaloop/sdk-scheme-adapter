@@ -19,29 +19,24 @@
  - Name Surname <name.surname@gatesfoundation.com>
  * Modusbox
  - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
+ - Yevhen Kyriukha <yevhen.kyriukha@modusbox.com>
  --------------
  ******/
 
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { BaseAggregate, IEntityStateRepository } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-import { BulkTransactionEntity, BulkTransactionState } from './bulk_transaction_entity';
+import { BaseAggregate, CommandEventMessage, IEntityStateRepository } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { BulkTransactionEntity, BulkTransactionState } from '../bulk_transaction_entity';
 import {
     IndividualTransferEntity,
     IndividualTransferState,
-} from './individual_transfer_entity';
-import { IBulkTransactionEntityRepo } from '#types';
+} from '../individual_transfer_entity';
+import { IBulkTransactionEntityRepo, ICommandEventHandlerOptions } from '@module-types';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
-// import { CommandEventMessage, ProcessSDKOutboundBulkRequestMessage, SDKOutboundBulkPartyInfoRequestedMessage, KafkaDomainEventProducer } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-// import { ICommandEventHandlerOptions } from '#types';
-// import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
+import CommandEventHandlerFuntions from './handlers';
 
-// export type IBulkTransactionAggOptions = {
-//     bulkTransactionEntityRepo: IBulkTransactionEntityRepo
-//     domainProducer: KafkaDomainEventProducer
-// };
 
 export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, BulkTransactionState> {
     // TODO: These counts can be part of bulk transaction entity?
@@ -131,7 +126,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         await (<IBulkTransactionEntityRepo> this._entity_state_repo)
             .setAttribute(this._rootEntity.id, 'individualItem_' + id, transfer.exportState());
     }
-
+    
     async setTransaction(tx: BulkTransactionEntity): Promise<void> {
         this._rootEntity = tx;
         await this.store();
@@ -163,47 +158,20 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
     }
 
 
-    // TODO: Add all the remaining handler functions and refactor the entry point
-    
-    // static async handleProcessSDKOutboundBulkRequest(
-    //     message: CommandEventMessage,
-    //     bulkTransactionEntityRepo: IBulkTransactionEntityRepo,
-    //     domainProducer: KafkaDomainEventProducer,
-    //     logger: ILogger,
-    // ): Promise<void> {
-    //     // TODO: Duplicate check here?
-    //     const processSDKOutboundBulkRequestMessage =
-    //       ProcessSDKOutboundBulkRequestMessage.CreateFromCommandEventMessage(message);
-    //     try {
-    //         const sdkOutboundBulkRequestEntity = processSDKOutboundBulkRequestMessage.createSDKOutboundBulkRequestEntity();
-    //         logger.info(`Got SDKOutboundBulkRequestEntity ${sdkOutboundBulkRequestEntity}`);
-    
-    //         // Create aggregate
-    //         const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRequest(
-    //             sdkOutboundBulkRequestEntity.request,
-    //             bulkTransactionEntityRepo,
-    //             logger,
-    //         );
-    //         logger.info(`Created BulkTransactionAggregate ${bulkTransactionAgg}`);
-    
-    //         const msg = new SDKOutboundBulkPartyInfoRequestedMessage({
-    //             bulkId: bulkTransactionAgg.bulkId,
-    //             timestamp: Date.now(),
-    //             headers: [],
-    //         });
-    //         await domainProducer.sendDomainMessage(msg);
-    
-    //     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    //     } catch (err: any) {
-    //         logger.info(`Failed to create BulkTransactionAggregate. ${err.message}`);
-    //     }
-    // }
-
-
-
-
-
-
-
+    static async ProcessCommandEvent (
+        message: CommandEventMessage,
+        options: ICommandEventHandlerOptions,
+        logger: ILogger
+    ) {
+        if (!CommandEventHandlerFuntions.hasOwnProperty('handle' + message.constructor.name)) {
+            logger.error(`Handler function for the command event message ${message.constructor.name} is not implemented`)
+            return;
+        }
+        await CommandEventHandlerFuntions['handle' + message.constructor.name](
+            message,
+            options,
+            logger,
+        );
+    }
 
 }

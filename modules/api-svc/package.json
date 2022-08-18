@@ -17,6 +17,7 @@
     "build:openapi:inbound": "openapi bundle --output ./src/InboundServer/api.yaml --ext yaml ./src/InboundServer/api_template.yaml",
     "build:openapi:outbound": "openapi bundle --output ./src/OutboundServer/api.yaml --ext yaml ./src/OutboundServer/api_template/openapi.yaml",
     "build:dto:outbound": "openapi-typescript ./src/OutboundServer/api.yaml --output ./src/OutboundServer/api_interfaces/openapi.d.ts",
+    "clean:dist": "rm -Rf dist",
     "lint": "eslint ./src/",
     "lint:fix": "eslint ./src/ --fix",
     "test": "yarn run test:unit",
