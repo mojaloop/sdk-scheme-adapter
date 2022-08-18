@@ -25,12 +25,12 @@
     "dep:update": "ncu -u"
   },
   "devDependencies": {
-    "@types/node": "^17.0.41",
-    "eslint": "^8.17.0",
-    "jest": "^28.1.1",
-    "npm-check-updates": "^13.1.2",
-    "ts-jest": "^28.0.4",
-    "typescript": "^4.7.3"
+    "@types/node": "^18.7.6",
+    "eslint": "^8.22.0",
+    "jest": "^28.1.3",
+    "npm-check-updates": "^16.0.5",
+    "ts-jest": "^28.0.8",
+    "typescript": "^4.7.4"
   },
   "dependencies": {
     "@mojaloop/api-snippets": "^14.2.2",
