@@ -174,11 +174,12 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         options: ICommandEventHandlerOptions,
         logger: ILogger,
     ) {
-        if(!CommandEventHandlerFuntions.hasOwnProperty('handle' + message.constructor.name)) {
+        const handlerPrefix = 'handle'
+        if(!CommandEventHandlerFuntions.hasOwnProperty(handlerPrefix + message.constructor.name)) {
             logger.error(`Handler function for the command event message ${message.constructor.name} is not implemented`);
             return;
         }
-        await CommandEventHandlerFuntions['handle' + message.constructor.name](
+        await CommandEventHandlerFuntions[handlerPrefix + message.constructor.name](
             message,
             options,
             logger,

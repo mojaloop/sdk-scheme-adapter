@@ -37,6 +37,8 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
     private _initialized = false;
 
     private readonly keyPrefix: string = 'outboundBulkTransaction_';
+    private readonly individualTransferKeyPrefix: string = 'individualItem_';
+
 
     constructor(logger: ILogger) {
         this._logger = logger;
@@ -113,7 +115,7 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         const key: string = this.keyWithPrefix(bulkId);
         try {
             const allAttributes = Object.keys(this._data[key]);
-            const allIndividualTransferIds = allAttributes.filter(attr => attr.startsWith('individualItem_')).map(attr => attr.replace('individualItem_', ''));
+            const allIndividualTransferIds = allAttributes.filter(attr => attr.startsWith(this.individualTransferKeyPrefix)).map(attr => attr.replace(this.individualTransferKeyPrefix, ''));
             return allIndividualTransferIds;
         } catch (err) {
             this._logger.error(err, 'Error getting individual transfers from memory - for key: ' + key);
@@ -127,7 +129,7 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            return this._data[key]['individualItem_' + individualTranferId] as IndividualTransferState;
+            return this._data[key][this.individualTransferKeyPrefix + individualTranferId] as IndividualTransferState;
         } catch (err) {
             this._logger.error(err, 'Error getting individual tranfer from memory - for key: ' + key);
             throw (err);
@@ -144,7 +146,7 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            this._data[key]['individualItem_' + individualTranferId] = JSON.stringify(value);
+            this._data[key][this.individualTransferKeyPrefix + individualTranferId] = JSON.stringify(value);
         } catch (err) {
             this._logger.error(err, `Error storing individual tranfer with ID ${individualTranferId} to memory for key: ${key}`);
             throw (err);
