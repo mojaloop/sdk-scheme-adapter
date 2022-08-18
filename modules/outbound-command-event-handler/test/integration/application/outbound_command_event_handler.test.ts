@@ -35,6 +35,7 @@ import { CommandEventMessage, ICommandEventMessageData, DomainEventMessage,
          ProcessSDKOutboundBulkPartyInfoRequestMessage,
          ProcessPartyInfoCallbackMessage,
          IProcessSDKOutboundBulkRequestMessageData,
+         IProcessSDKOutboundBulkPartyInfoRequestMessageData,
          IProcessSDKOutboundBulkPartyInfoRequestCompleteMessageData} from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 import { randomUUID } from "crypto";
 import { RedisBulkTransactionStateRepo, IRedisBulkTransactionStateRepoOptions } from '../../../src/infrastructure/redis_bulk_transaction_repo'
@@ -326,14 +327,14 @@ describe("Tests for Outbound Command Event Handler", () => {
     await producer.sendCommandMessage(processSDKOutboundBulkRequestMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    const bulkPartyInfoRequestCommandEventMessageData: ICommandEventMessageData = {
+    const bulkPartyInfoRequestCommandEventMessageData: IProcessSDKOutboundBulkPartyInfoRequestMessageData = {
       key: bulkTransactionId,
       name: ProcessSDKOutboundBulkPartyInfoRequestMessage.name,
       content: null,
       timestamp: Date.now(),
       headers: []
     }
-    const bulkPartyInfoRequestCommandEventObj = new CommandEventMessage(bulkPartyInfoRequestCommandEventMessageData);
+    const bulkPartyInfoRequestCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestMessage(bulkPartyInfoRequestCommandEventMessageData);
     await producer.sendCommandMessage(bulkPartyInfoRequestCommandEventObj);
     
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -352,7 +353,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     //TODO Add asserts to check data contents of the domain event published to kafka
   });
 
-  test("4. Given receiving party info does not exist \
+  test.only("4. Given receiving party info does not exist \
               And receiving party lookup was successful \
             When inbound command event ProcessPartyInfoCallback is received \
             Then the state for individual successful party lookups should be updated to DISCOVERY_SUCCESS \
@@ -691,7 +692,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect(domainEvents[2].getName()).toBe('SDKOutboundBulkAcceptpartyInfoRequested')
   });
 
-  test.only("8. Given autoAcceptParty setting is set to true \
+  test("8. Given autoAcceptParty setting is set to true \
                 When Inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
                 Then outbound event SDKOutboundBulkAutoAcceptpartyInfoRequested should be published. \
                   And Then global state should be same as before DISCOVERY_COMPLETED", async () => {
