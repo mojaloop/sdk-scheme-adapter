@@ -26,7 +26,7 @@
 
 import * as redis from 'redis';
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { BulkTransactionState } from '../domain/bulk_transaction_entity';
+import { BulkTransactionState, IndividualTransferState } from '../domain';
 import { IBulkTransactionEntityRepo } from '../types/bulk_transaction_entity_repo';
 
 export interface IRedisBulkTransactionStateRepoOptions {
@@ -119,53 +119,49 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
         }
     }
     
-    // TODO: implement specific functions like getIndividualTransfers instead of the generalised function
-    async getAllAttributes(id: string): Promise<string[]> {
+    async getAllIndividualTransferIds(bulkId: string): Promise<string[]> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
-        const key: string = this.keyWithPrefix(id);
+        const key: string = this.keyWithPrefix(bulkId);
         try {
             const allAttributes = await this._redisClient.hKeys(key);
-            return allAttributes;
+            const allIndividualTransferIds = allAttributes.filter(attr => attr.startsWith('individualItem_')).map(attr => attr.replace('individualItem_', ''));
+            return allIndividualTransferIds;
         } catch (err) {
-            this._logger.error(err, 'Error getting attributes from redis - for key: ' + key);
+            this._logger.error(err, 'Error getting individual transfers from redis - for key: ' + key);
             throw (err);
         }
     }
     
-    // TODO: implement specific functions like getIndividualTransfer instead of the generalised function
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    async getAttribute(id: string, name: string): Promise<any> {
+    async getIndividualTransfer(bulkId: string, individualTranferId: string): Promise<IndividualTransferState> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
-        const key: string = this.keyWithPrefix(id);
+        const key: string = this.keyWithPrefix(bulkId);
         try {
-            const individualTransferStateStr = await this._redisClient.hGet(key, name);
+            const individualTransferStateStr = await this._redisClient.hGet(key, 'individualItem_' + individualTranferId);
             if(individualTransferStateStr) {
-                return JSON.parse(individualTransferStateStr);
+                return JSON.parse(individualTransferStateStr) as IndividualTransferState;
             } else {
-                this._logger.error('Error loading entity state from redis - for key: ' + key);
-                throw (new Error('Error loading entity state from redis'));
+                this._logger.error('Error loading individual trandfer from redis - for key: ' + key);
+                throw (new Error('Error loading individual trandfer from redis'));
             }
         } catch (err) {
-            this._logger.error(err, 'Error loading entity state from redis - for key: ' + key);
+            this._logger.error(err, 'Error loading individual trandfer from redis - for key: ' + key);
             throw (err);
         }
     }
 
-    // TODO: implement specific functions like setIndividualTransfer instead of the generalised function
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    async setAttribute(id: string, name: string, value: any): Promise<void> {
+    async setIndividualTransfer(bulkId: string, individualTranferId: string, value: IndividualTransferState): Promise<void> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
-        const key: string = this.keyWithPrefix(id);
+        const key: string = this.keyWithPrefix(bulkId);
         try {
-            await this._redisClient.hSet(key, name, JSON.stringify(value));
+            await this._redisClient.hSet(key, 'individualItem_' + individualTranferId, JSON.stringify(value));
         } catch (err) {
-            this._logger.error(err, `Error storing additional attribute named ${name} to redis for key: ${key}`);
+            this._logger.error(err, `Error storing individual trandfer with ID ${individualTranferId} to redis for key: ${key}`);
             throw (err);
         }
     }
@@ -176,7 +172,7 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
 
     // TODO: Just for development purpose for now, can be removed later
     // Warning: consider KEYS as a command that should only be used in production environments with extreme care. It may ruin performance when it is executed against large databases. This command is intended for debugging.
-    async getAllIds(): Promise<string[]> {
+    async getAllBulkIds(): Promise<string[]> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
@@ -184,7 +180,7 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
             const allKeys =  await this._redisClient.keys(this.keyPrefix + '*');
             return allKeys.map(key => key.replace(this.keyPrefix, ''));
         } catch (err) {
-            this._logger.error(err, 'Error getting all bulk transactions from redis');
+            this._logger.error(err, 'Error getting all bulk transaction ids from redis');
             throw (err);
         }
     }

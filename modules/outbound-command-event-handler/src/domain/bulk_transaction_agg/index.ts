@@ -111,20 +111,18 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
 
     async getAllIndividualTransferIds() {
         const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
-        const allAttributes = await repo.getAllAttributes(this._rootEntity.id);
-        // TODO: implement specific functions like getIndividualTransfers in the repo
-        return allAttributes.filter(attr => attr.startsWith('individualItem_')).map(attr => attr.replace('individualItem_', ''));
+        return await repo.getAllIndividualTransferIds(this._rootEntity.id);
     }
 
     async getIndividualTransferById(id: string): Promise<IndividualTransferEntity> {
         const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
-        const state: IndividualTransferState = await repo.getAttribute(this._rootEntity.id, 'individualItem_' + id);
+        const state: IndividualTransferState = await repo.getIndividualTransfer(this._rootEntity.id, id);
         return new IndividualTransferEntity(state);
     }
 
     async setIndividualTransferById(id: string, transfer: IndividualTransferEntity): Promise<void> {
         await (<IBulkTransactionEntityRepo> this._entity_state_repo)
-            .setAttribute(this._rootEntity.id, 'individualItem_' + id, transfer.exportState());
+            .setIndividualTransfer(this._rootEntity.id, id, transfer.exportState());
     }
     
     async setTransaction(tx: BulkTransactionEntity): Promise<void> {
@@ -142,7 +140,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
 
     async addIndividualTransferEntity(entity: IndividualTransferEntity) : Promise<void> {
         await (<IBulkTransactionEntityRepo> this._entity_state_repo)
-            .setAttribute(this._rootEntity.id, 'individualItem_' + entity.id, entity.exportState());
+            .setIndividualTransfer(this._rootEntity.id, entity.id, entity.exportState());
     }
 
     async destroy() : Promise<void> {

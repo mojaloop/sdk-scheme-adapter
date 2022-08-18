@@ -162,15 +162,15 @@ describe("Tests for Outbound Command Event Handler", () => {
     const bulkState = await bulkTransactionEntityRepo.load(bulkTransactionId);
     expect(bulkState.state).toBe('RECEIVED');
 
-    //Check that the state of individual transfers in bulk to be RECEIVED
-    const individualTransfers = (await bulkTransactionEntityRepo.getAllAttributes(bulkTransactionId)).filter((key) => key.includes('individualItem_'))
+    // Check that the state of individual transfers in bulk to be RECEIVED
+    const individualTransfers = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
     expect(individualTransfers.length).toBe(2);
-    expect((await bulkTransactionEntityRepo.getAttribute(bulkTransactionId, individualTransfers[0])).state).toBe('RECEIVED');
-    expect((await bulkTransactionEntityRepo.getAttribute(bulkTransactionId, individualTransfers[1])).state).toBe('RECEIVED');
+    expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[0])).state).toBe('RECEIVED');
+    expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[1])).state).toBe('RECEIVED');
 
     // Check domain events published to kafka
     expect(domainEvents[0].getName()).toBe('SDKOutboundBulkPartyInfoRequested')
-    //TODO Add asserts to check data contents of the domain event published to kafka
+    // TODO Add asserts to check data contents of the domain event published to kafka
 
   });
 
@@ -266,10 +266,10 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect(bulkState.state).toBe('DISCOVERY_PROCESSING');
 
     //Check that the state of individual transfers in bulk to be RECEIVED
-    const individualTransfers = (await bulkTransactionEntityRepo.getAllAttributes(bulkTransactionId)).filter((key) => key.includes('individualItem_'))
+    const individualTransfers = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
     expect(individualTransfers.length).toBe(2);
-    expect((await bulkTransactionEntityRepo.getAttribute(bulkTransactionId, individualTransfers[0])).state).toBe('DISCOVERY_PROCESSING');
-    expect((await bulkTransactionEntityRepo.getAttribute(bulkTransactionId, individualTransfers[1])).state).toBe('DISCOVERY_PROCESSING');
+    expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[0])).state).toBe('DISCOVERY_PROCESSING');
+    expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[1])).state).toBe('DISCOVERY_PROCESSING');
 
     // Check domain events published to kafka
     const filteredEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequested');
@@ -364,9 +364,9 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect(bulkState.state).toBe('DISCOVERY_PROCESSING');
 
     //Check that the state of individual transfers in bulk to be RECEIVED
-    const individualTransfers = (await bulkTransactionEntityRepo.getAllAttributes(bulkTransactionId)).filter((key) => key.includes('individualItem_'))
+    const individualTransfers = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
     expect(individualTransfers.length).toBe(1);
-    expect((await bulkTransactionEntityRepo.getAttribute(bulkTransactionId, individualTransfers[0])).state).toBe('DISCOVERY_SUCCESS');
+    expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[0])).state).toBe('DISCOVERY_SUCCESS');
     
     // Check domain events published to kafka
     expect(domainEvents.length).toBe(0)
@@ -470,8 +470,8 @@ describe("Tests for Outbound Command Event Handler", () => {
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     //Check that the state of individual transfers in bulk to be RECEIVED
-    const individualTransfers = (await bulkTransactionEntityRepo.getAllAttributes(bulkTransactionId)).filter((key) => key.includes('individualItem_'))
-    const individualTransferData = await bulkTransactionEntityRepo.getAttribute(bulkTransactionId, individualTransfers[0]);
+    const individualTransfers = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
+    const individualTransferData = await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[0]);
     console.log('individualTransferData:', individualTransferData);
     expect(individualTransferData.state).toBe('DISCOVERY_SUCCESS');
     expect(individualTransferData.partyResponse.partyId.fspId).toBe('receiverfsp');
@@ -580,8 +580,8 @@ describe("Tests for Outbound Command Event Handler", () => {
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     //Check that the state of individual transfers in bulk to be RECEIVED
-    const individualTransfers = (await bulkTransactionEntityRepo.getAllAttributes(bulkTransactionId)).filter((key) => key.includes('individualItem_'))
-    const individualTransferData = await bulkTransactionEntityRepo.getAttribute(bulkTransactionId, individualTransfers[0]);
+    const individualTransfers = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
+    const individualTransferData = await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[0]);
     console.log('individualTransferData:', individualTransferData);
     expect(individualTransferData.state).toBe('DISCOVERY_FAILED');
     expect(individualTransferData.partyResponse.errorInformation.errorCode).toBe(12345);

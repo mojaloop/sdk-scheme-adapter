@@ -25,7 +25,7 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { BulkTransactionState } from '../domain/bulk_transaction_entity';
+import { BulkTransactionState, IndividualTransferState } from '../domain';
 import { IBulkTransactionEntityRepo } from '../types/bulk_transaction_entity_repo';
 
 export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityRepo {
@@ -105,49 +105,64 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         }
     }
 
-    async getAllAttributes(id: string): Promise<string[]> {
+    
+    async getAllIndividualTransferIds(bulkId: string): Promise<string[]> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
-        const key: string = this.keyWithPrefix(id);
+        const key: string = this.keyWithPrefix(bulkId);
         try {
             const allAttributes = Object.keys(this._data[key]);
-            return allAttributes;
+            const allIndividualTransferIds = allAttributes.filter(attr => attr.startsWith('individualItem_')).map(attr => attr.replace('individualItem_', ''));
+            return allIndividualTransferIds;
         } catch (err) {
-            this._logger.error(err, 'Error getting attributes from memory - for key: ' + key);
+            this._logger.error(err, 'Error getting individual transfers from memory - for key: ' + key);
             throw (err);
         }
     }
 
-    async getAttribute(id: string, name: string): Promise<string> {
+    async getIndividualTransfer(bulkId: string, individualTranferId: string): Promise<IndividualTransferState> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
-        const key: string = this.keyWithPrefix(id);
+        const key: string = this.keyWithPrefix(bulkId);
         try {
-            return this._data[key][name];
+            return this._data[key]['individualItem_' + individualTranferId] as IndividualTransferState;
         } catch (err) {
-            this._logger.error(err, 'Error getting attributes from memory - for key: ' + key);
+            this._logger.error(err, 'Error getting individual tranfer from memory - for key: ' + key);
             throw (err);
         }
     }
 
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    async setAttribute(id: string, name: string, value: any): Promise<void> {
+    async setIndividualTransfer(bulkId: string, individualTranferId: string, value: IndividualTransferState): Promise<void> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
-        const key: string = this.keyWithPrefix(id);
+        const key: string = this.keyWithPrefix(bulkId);
         try {
-            this._data[key][name] = JSON.stringify(value);
+            this._data[key]['individualItem_' + individualTranferId] = JSON.stringify(value);
         } catch (err) {
-            this._logger.error(err, `Error storing additional attribute named ${name} to memory for key: ${key}`);
+            this._logger.error(err, `Error storing individual tranfer with ID ${individualTranferId} to memory for key: ${key}`);
             throw (err);
         }
     }
 
     private keyWithPrefix(key: string): string {
         return this.keyPrefix + key;
+    }
+
+    // TODO: Just for development purpose for now, can be removed later
+    async getAllBulkIds(): Promise<string[]> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        try {
+            const allKeys =  Object.keys(this._data).filter(key => key.startsWith(this.keyPrefix));
+            return allKeys.map(key => key.replace(this.keyPrefix, ''));
+        } catch (err) {
+            this._logger.error(err, 'Error getting all bulk transaction ids from memory');
+            throw (err);
+        }
     }
 
 }

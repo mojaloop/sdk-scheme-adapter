@@ -36,14 +36,13 @@ export class BulkTransactionsService {
     // Get the bulkTransactions
     public async getAll(id?: string): Promise<Array<BulkTransaction>> {
         const bulkTransactions: Array<BulkTransaction> = [];
-        const allBulkIds = await this._repo.getAllIds();
+        const allBulkIds = await this._repo.getAllBulkIds();
         for(const bulkId of allBulkIds) {
             const bulkState = await this._repo.load(bulkId);
             const individualTransfers = [];
-            const allAttributes = await this._repo.getAllAttributes(bulkId);
-            const allIndividualTransferIds = allAttributes.filter(attr => attr.startsWith('individualItem_')).map(attr => attr.replace('individualItem_', ''));
+            const allIndividualTransferIds = await this._repo.getAllIndividualTransferIds(bulkId);
             for(const individualTransferId of allIndividualTransferIds) {
-                const individualTransferState = await this._repo.getAttribute(bulkId, 'individualItem_' + individualTransferId);
+                const individualTransferState = await this._repo.getIndividualTransfer(bulkId, individualTransferId);
                 individualTransfers.push({
                     id: individualTransferId,
                     state: individualTransferState.state,
