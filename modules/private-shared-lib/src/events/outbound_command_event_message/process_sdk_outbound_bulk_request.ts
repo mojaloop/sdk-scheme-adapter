@@ -58,8 +58,8 @@ export class ProcessSDKOutboundBulkRequestMessage extends CommandEventMessage {
         return new ProcessSDKOutboundBulkRequestMessage(data);
     }
 
-    getBulkRequest (): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest {
-        return this.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest
+    getBulkRequest(): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest {
+        return this.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest;
     }
 
 }

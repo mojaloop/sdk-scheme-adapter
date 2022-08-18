@@ -32,10 +32,12 @@ import { BulkTransactionInternalState } from '../..';
 
 
 export async function handleProcessSDKOutboundBulkPartyInfoRequestCompleteMessage(
-    processSDKOutboundBulkPartyInfoRequestCompleteMessage: ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage,
+    message: CommandEventMessage,
     options: ICommandEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
+    const processSDKOutboundBulkPartyInfoRequestCompleteMessage = 
+        message as ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage;
     try {
         logger.info(`Got ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage: bulkid=${processSDKOutboundBulkPartyInfoRequestCompleteMessage.getKey()}`);
 

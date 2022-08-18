@@ -19,7 +19,7 @@
     "build": "tsc",
     "test:unit": "jest --passWithNoTests --testMatch '**/test/unit/**/*.test.ts'",
     "lint": "eslint --ext .js,.ts src --color",
-    "lint:fix": "yarn run lint -- --fix",
+    "lint:fix": "eslint --ext .js,.ts src --color --fix",
     "clean:dist": "rm -Rf dist",
     "dep:check": "ncu -e 2",
     "dep:update": "ncu -u"

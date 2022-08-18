@@ -67,9 +67,9 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
     ): Promise<BulkTransactionAgg> {
         const repo = entityStateRepo as IBulkTransactionEntityRepo;
         // Duplicate Check
-        if (request.bulkTransactionId) {
-            const isBulkIdExists = await repo.isBulkIdExists(request.bulkTransactionId)
-            if (isBulkIdExists) {
+        if(request.bulkTransactionId) {
+            const isBulkIdExists = await repo.isBulkIdExists(request.bulkTransactionId);
+            if(isBulkIdExists) {
                 throw new Error('Duplicate: Aggregate already exists in repo');
             }
         }
@@ -83,8 +83,12 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         // Create individualTransfer entities
         if(Array.isArray(request?.individualTransfers)) {
             // TODO: limit the number of concurrently created promises to avoid nodejs high memory consumption
-            await Promise.all(request.individualTransfers.map((individualTransfer: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransaction) =>
-                agg.addIndividualTransferEntity(IndividualTransferEntity.CreateFromRequest(individualTransfer))));
+            await Promise.all(
+                request.individualTransfers.map(
+                    (individualTransfer: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransaction) =>
+                        agg.addIndividualTransferEntity(IndividualTransferEntity.CreateFromRequest(individualTransfer)),
+                ),
+            );
         }
         // Return the aggregate
         return agg;
@@ -120,7 +124,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
 
     async getAllIndividualTransferIds() {
         const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
-        return await repo.getAllIndividualTransferIds(this._rootEntity.id);
+        return repo.getAllIndividualTransferIds(this._rootEntity.id);
     }
 
     async getIndividualTransferById(id: string): Promise<IndividualTransferEntity> {
@@ -165,13 +169,13 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
     }
 
 
-    static async ProcessCommandEvent (
+    static async ProcessCommandEvent(
         message: CommandEventMessage,
         options: ICommandEventHandlerOptions,
-        logger: ILogger
+        logger: ILogger,
     ) {
-        if (!CommandEventHandlerFuntions.hasOwnProperty('handle' + message.constructor.name)) {
-            logger.error(`Handler function for the command event message ${message.constructor.name} is not implemented`)
+        if(!CommandEventHandlerFuntions.hasOwnProperty('handle' + message.constructor.name)) {
+            logger.error(`Handler function for the command event message ${message.constructor.name} is not implemented`);
             return;
         }
         await CommandEventHandlerFuntions['handle' + message.constructor.name](

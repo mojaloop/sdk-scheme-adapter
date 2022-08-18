@@ -27,7 +27,7 @@
     "pretest": "yarn run build",
     "standard": "yarn run lint",
     "lint": "eslint --ext .js,.ts src --color",
-    "lint:fix": "yarn run lint -- --fix",
+    "lint:fix": "eslint --ext .js,.ts src --color --fix",
     "copy-files": "npx copyfiles -u 1 src/**/*.yaml dist/",
     "test:unit": "jest --passWithNoTests --testMatch '**/test/unit/**/*.test.ts'",
     "test:integration": "jest --passWithNoTests --testMatch '**/test/integration/**/*.test.ts'",

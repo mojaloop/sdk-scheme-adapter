@@ -52,7 +52,7 @@ export class CommandEventMessage extends BaseEventMessage {
     protected static _validateMessage(obj: IMessage): void {
         super._validateMessage(obj);
         // Additional validation here
-        const eventMessageValue = obj.value as IEventMessageValue
+        const eventMessageValue = obj.value as IEventMessageValue;
         if(eventMessageValue.eventMessageType !== EventMessageType.COMMAND_EVENT) {
             throw (new Error('.value.eventMessageName is not equal to COMMAND_EVENT'));
         }

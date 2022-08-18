@@ -30,6 +30,10 @@ import { BulkTransactionState, IndividualTransferState } from '../domain';
 export type IBulkTransactionEntityRepo = {
     getAllIndividualTransferIds: (bulkId: string) => Promise<string[]>
     getIndividualTransfer: (bulkId: string, individualTranferId: string) => Promise<IndividualTransferState>
-    setIndividualTransfer: (bulkId: string, individualTranferId: string, value: IndividualTransferState) => Promise<void>
-    isBulkIdExists: (bulkId: string) => Promise<Boolean>
+    setIndividualTransfer: (
+        bulkId: string,
+        individualTranferId: string,
+        value: IndividualTransferState
+    ) => Promise<void>
+    isBulkIdExists: (bulkId: string) => Promise<boolean>
 } & IEntityStateRepository<BulkTransactionState>;

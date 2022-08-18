@@ -134,7 +134,11 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         }
     }
 
-    async setIndividualTransfer(bulkId: string, individualTranferId: string, value: IndividualTransferState): Promise<void> {
+    async setIndividualTransfer(
+        bulkId: string,
+        individualTranferId: string,
+        value: IndividualTransferState,
+    ): Promise<void> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
@@ -147,13 +151,13 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         }
     }
 
-    async isBulkIdExists(bulkId: string): Promise<Boolean> {
+    async isBulkIdExists(bulkId: string): Promise<boolean> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            return this._data.hasOwnProperty(key)
+            return this._data.hasOwnProperty(key);
         } catch (err) {
             this._logger.error(err, 'Error getting status from memory - for key: ' + key);
             throw (err);

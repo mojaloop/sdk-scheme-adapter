@@ -30,11 +30,11 @@ import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
 
 export async function handleProcessSDKOutboundBulkRequestMessage(
-    processSDKOutboundBulkRequestMessage: ProcessSDKOutboundBulkRequestMessage,
+    message: CommandEventMessage,
     options: ICommandEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
-    // TODO: Duplicate check here?
+    const processSDKOutboundBulkRequestMessage = message as ProcessSDKOutboundBulkRequestMessage;
     try {
         logger.info(`Got Bulk Request ${processSDKOutboundBulkRequestMessage.getBulkRequest()}`);
 

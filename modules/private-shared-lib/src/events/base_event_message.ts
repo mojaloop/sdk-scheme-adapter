@@ -138,7 +138,7 @@ export class BaseEventMessage {
         ) {
             throw (new Error('.value is null or undefined or not an object'));
         }
-        const eventMessageValue = obj.value as IEventMessageValue
+        const eventMessageValue = obj.value as IEventMessageValue;
         if( !eventMessageValue.hasOwnProperty('eventMessageType')) {
             throw (new Error('.value.eventMessageType is null or undefined'));
         }

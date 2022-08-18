@@ -61,8 +61,8 @@ export class SDKOutboundBulkRequestReceivedMessage extends DomainEventMessage {
         return new SDKOutboundBulkRequestReceivedMessage(data);
     }
 
-    getBulkRequest (): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest {
-        return this.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest
+    getBulkRequest(): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest {
+        return this.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest;
     }
 
     // // Sample validation function

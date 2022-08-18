@@ -72,7 +72,9 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    static CreateFromRequest(request: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransaction): IndividualTransferEntity {
+    static CreateFromRequest(
+        request: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransaction,
+    ): IndividualTransferEntity {
     // IndividualTransferEntity._validateRequest(request)
         const initialState: IndividualTransferState = {
             id: randomUUID(),

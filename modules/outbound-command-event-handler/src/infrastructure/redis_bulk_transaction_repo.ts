@@ -153,7 +153,11 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
         }
     }
 
-    async setIndividualTransfer(bulkId: string, individualTranferId: string, value: IndividualTransferState): Promise<void> {
+    async setIndividualTransfer(
+        bulkId: string,
+        individualTranferId: string,
+        value: IndividualTransferState,
+    ): Promise<void> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
@@ -166,14 +170,14 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
         }
     }
 
-    async isBulkIdExists(bulkId: string): Promise<Boolean> {
+    async isBulkIdExists(bulkId: string): Promise<boolean> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            const isExists = await this._redisClient.exists(key)
-            return isExists === 1
+            const isExists = await this._redisClient.exists(key);
+            return isExists === 1;
         } catch (err) {
             this._logger.error(err, 'Error getting status from redis - for key: ' + key);
             throw (err);

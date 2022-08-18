@@ -61,7 +61,9 @@ export class BulkTransactionEntity extends BaseEntity<BulkTransactionState> {
         return this._state.bulkHomeTransactionID;
     }
 
-    static CreateFromRequest(request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest): BulkTransactionEntity {
+    static CreateFromRequest(
+        request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest,
+    ): BulkTransactionEntity {
         BulkTransactionEntity._validateRequest(request);
         const bulkTransactionId = request?.bulkTransactionId || randomUUID();
         const initialState: BulkTransactionState = {

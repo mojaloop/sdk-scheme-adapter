@@ -36,10 +36,11 @@ import { BulkTransactionInternalState } from '../..';
 import { IndividualTransferInternalState } from '../..';
 
 export async function handleProcessSDKOutboundBulkPartyInfoRequestMessage(
-    processSDKOutboundBulkPartyInfoRequestMessage: ProcessSDKOutboundBulkPartyInfoRequestMessage,
+    message: CommandEventMessage,
     options: ICommandEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
+    const processSDKOutboundBulkPartyInfoRequestMessage = message as ProcessSDKOutboundBulkPartyInfoRequestMessage;
     try {
         logger.info(`Got ProcessSDKOutboundBulkPartyInfoRequestMessage: bulkId=${processSDKOutboundBulkPartyInfoRequestMessage.getKey()}`);
 

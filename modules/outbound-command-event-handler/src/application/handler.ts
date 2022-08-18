@@ -99,19 +99,31 @@ export class OutboundEventHandler implements IRunHandler {
         // TODO: Handle error validations here
         switch (message.getName()) {
             case ProcessSDKOutboundBulkRequestMessage.name: {
-                BulkTransactionAgg.ProcessCommandEvent(ProcessSDKOutboundBulkRequestMessage.CreateFromCommandEventMessage(message), this._commandEventHandlerOptions, this._logger);
+                BulkTransactionAgg.ProcessCommandEvent(
+                    ProcessSDKOutboundBulkRequestMessage.CreateFromCommandEventMessage(message),
+                    this._commandEventHandlerOptions, this._logger,
+                );
                 break;
             }
             case ProcessSDKOutboundBulkPartyInfoRequestMessage.name: {
-                BulkTransactionAgg.ProcessCommandEvent(ProcessSDKOutboundBulkPartyInfoRequestMessage.CreateFromCommandEventMessage(message), this._commandEventHandlerOptions, this._logger);
+                BulkTransactionAgg.ProcessCommandEvent(
+                    ProcessSDKOutboundBulkPartyInfoRequestMessage.CreateFromCommandEventMessage(message),
+                    this._commandEventHandlerOptions, this._logger,
+                );
                 break;
             }
             case ProcessPartyInfoCallbackMessage.name: {
-                BulkTransactionAgg.ProcessCommandEvent(ProcessPartyInfoCallbackMessage.CreateFromCommandEventMessage(message), this._commandEventHandlerOptions, this._logger);
+                BulkTransactionAgg.ProcessCommandEvent(
+                    ProcessPartyInfoCallbackMessage.CreateFromCommandEventMessage(message),
+                    this._commandEventHandlerOptions, this._logger,
+                );
                 break;
             }
             case ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage.name: {
-                BulkTransactionAgg.ProcessCommandEvent(ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage.CreateFromCommandEventMessage(message), this._commandEventHandlerOptions, this._logger);
+                BulkTransactionAgg.ProcessCommandEvent(
+                    ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage.CreateFromCommandEventMessage(message),
+                    this._commandEventHandlerOptions, this._logger,
+                );
                 break;
             }
             default: {

@@ -34,10 +34,11 @@ import { v1_1 as FSPIOP } from '@mojaloop/api-snippets';
 type PartyResult = FSPIOP.Schemas.PartyResult;
 
 export async function handleProcessPartyInfoCallbackMessage(
-    processPartyInfoCallbackMessage: ProcessPartyInfoCallbackMessage,
+    message: CommandEventMessage,
     options: ICommandEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
+    const processPartyInfoCallbackMessage = message as ProcessPartyInfoCallbackMessage;
     try {
         logger.info(`Got ProcessPartyInfoCallbackMessage: id=${processPartyInfoCallbackMessage.getKey()}`);
 
