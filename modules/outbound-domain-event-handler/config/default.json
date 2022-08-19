@@ -1,0 +1,16 @@
+{
+    "LOG_LEVEL": "info",
+    "KAFKA": {
+      "DOMAIN_EVENT_CONSUMER": {
+        "brokerList": "localhost:9092",
+        "groupId": "domain_events_consumer_group",
+        "clientId": "domain_events_consumer_client_id",
+        "topics": ["topic-sdk-outbound-domain-events"]
+      },
+      "COMMAND_EVENT_PRODUCER": {
+        "brokerList": "localhost:9092",
+        "clientId": "command_events_producer_client_id",
+        "topic": "topic-sdk-outbound-command-events"
+      }
+    }
+}

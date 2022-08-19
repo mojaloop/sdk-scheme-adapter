@@ -10,23 +10,26 @@
   },
   "contributors": [
     "Miguel de Barros <miguel.debarros@modusbox.com>",
-    "Shashikant Hirugade <shashikant.hirugade@modusbox.com>"
+    "Shashikant Hirugade <shashikant.hirugade@modusbox.com>",
+    "Vijay Kumar Guthi <vijaya.guthi@modusbox.com>"
+  ],
+  "pre-commit": [
+    "lint"
   ],
   "scripts": {
-    "prepare": "husky install",
-    "start": "yarn workspaces foreach --parallel -v run start",
+    "start": "yarn workspaces foreach --parallel -i -v run start",
     "start:api-svc": "yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run start",
     "start:event-handler": "yarn workspace @mojaloop/sdk-scheme-adapter-event-handler run start",
     "start:command-handler": "yarn workspace @mojaloop/sdk-scheme-adapter-command-handler run start",
-    "build": "yarn workspaces foreach --parallel -v run build",
+    "build": "yarn workspaces foreach -v --topological-dev run build",
     "build:openapi": "yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run build:openapi",
     "build:openapi:inbound": "yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run build:openapi:inbound",
     "build:openapi:outbound": "yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run build:openapi:outbound",
     "validate:api": "yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run validate:api",
     "watch": "yarn workspaces foreach --parallel -v run watch",
     "clean": "yarn run clean:dist && yarn run clean:npm",
-    "clean:npm": "yarn workspaces foreach --parallel -v run clean",
-    "clean:dist": "yarn workspaces foreach --parallel -v run clean",
+    "clean:npm": "yarn workspaces foreach --parallel -v run clean:npm",
+    "clean:dist": "yarn workspaces foreach --parallel -v run clean:dist",
     "pretest": "echo 'FIX ME'",
     "lint": "yarn workspaces foreach -v run lint",
     "lint:fix": "yarn workspaces foreach -v run lint:fix",
@@ -34,7 +37,7 @@
     "test:coverage": "yarn workspaces foreach --parallel -v run test:coverage",
     "test:coverage-check": "yarn workspaces foreach --parallel -v run test:coverage-check",
     "test:integration": "yarn workspaces foreach --parallel -v run test:integration",
-    "audit:check": "yarn dlx audit-ci --config ./audit-ci.jsonc",
+    "audit:check": "yarn dlx audit-ci --config ./audit-ci.jsonc && yarn workspaces foreach --parallel -v run audit:check",
     "dep:check": "yarn workspaces foreach --parallel -v run dep:check",
     "dep:update": "yarn workspaces foreach --parallel -v run dep:update"
   },
@@ -46,14 +49,19 @@
     "@typescript-eslint/parser": "^5.22.0",
     "audit-ci": "^6.3.0",
     "eslint": "^8.14.0",
-    "husky": "^7.0.4",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-plugin-import": "latest",
+    "husky": "^8.0.1",
     "jest": "^27.3.1",
     "npm-check-updates": "^12.5.11",
     "ts-jest": "^27.0.7",
+    "ts-node": "^10.9.1",
     "typescript": "^4.6.4",
     "yarn-audit-fix": "^9.3.2"
   },
   "workspaces": [
+    "modules/private-shared-lib",
+    "modules/public-shared-lib",
     "modules/*"
   ],
   "packageManager": "yarn@3.2.0",
@@ -61,6 +69,8 @@
     "yarn": "3.2.0"
   },
   "dependencies": {
+    "nodemon": "^2.0.18",
+    "pre-commit": "^1.2.2",
     "tslib": "^2.4.0"
   }
 }

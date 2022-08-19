@@ -10,47 +10,47 @@ services:
     image: "redis:5.0.4-alpine"
     ports:
       - "6379:6379"
-  scheme-adapter:
-    networks:
-        - mojaloop-net
-    build:
-      context: .
-    env_file: ./test/config/integration.env
-    ports:
-      - "4000:4000"
-      - "4001:4001"
-      - "4002:4002"
-    depends_on:
-      - redis
-    command: sh -c "/tmp/wait4/wait4.js sdk-scheme-adapter && npm run start"
-    volumes:
-      - ./docker/wait4:/tmp/wait4
-      - ./secrets:/opt/app/secrets
+  # scheme-adapter:
+  #   networks:
+  #       - mojaloop-net
+  #   build:
+  #     context: .
+  #   env_file: ./test/config/integration.env
+  #   ports:
+  #     - "4000:4000"
+  #     - "4001:4001"
+  #     - "4002:4002"
+  #   depends_on:
+  #     - redis
+  #   command: sh -c "/tmp/wait4/wait4.js sdk-scheme-adapter && npm run start"
+  #   volumes:
+  #     - ./docker/wait4:/tmp/wait4
+  #     - ./secrets:/opt/app/secrets
 
-  ml-testing-toolkit:
-    networks:
-        - mojaloop-net
-    image: mojaloop/ml-testing-toolkit:v11.7.11
-    container_name: ml-testing-toolkit
-    volumes:
-      - "./docker/ml-testing-toolkit/spec_files:/opt/mojaloop-testing-toolkit/spec_files"
-      - "./docker/ml-testing-toolkit/secrets:/opt/mojaloop-testing-toolkit/secrets"
+  # ml-testing-toolkit:
+  #   networks:
+  #       - mojaloop-net
+  #   image: mojaloop/ml-testing-toolkit:v11.7.11
+  #   container_name: ml-testing-toolkit
+  #   volumes:
+  #     - "./docker/ml-testing-toolkit/spec_files:/opt/mojaloop-testing-toolkit/spec_files"
+  #     - "./docker/ml-testing-toolkit/secrets:/opt/mojaloop-testing-toolkit/secrets"
 
-    ports:
-      - "5000:5000"
-      - "5050:5050"
-    environment:
-      - AUTH_ENABLED=FALSE
-    command: npm start
-    depends_on:
-      - mongo
+  #   ports:
+  #     - "5000:5000"
+  #     - "5050:5050"
+  #   environment:
+  #     - AUTH_ENABLED=FALSE
+  #   command: npm start
+  #   depends_on:
+  #     - mongo
 
-  mongo:
-    networks:
-        - mojaloop-net
-    image: mongo
-    ports:
-      - "27018:27017"
+  # mongo:
+  #   networks:
+  #       - mojaloop-net
+  #   image: mongo
+  #   ports:
+  #     - "27018:27017"
   #
   # for local development we want to have ttk-ui
   #
@@ -66,3 +66,30 @@ services:
   #   command:
   #     - sh
   #     - /usr/share/nginx/start.sh
+  zookeeper:
+    networks:
+        - mojaloop-net
+    image: docker.io/bitnami/zookeeper:3.8
+    ports:
+      - 2181:2181
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+
+  kafka:
+    networks:
+        - mojaloop-net
+    image: docker.io/bitnami/kafka:3.2
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+      # KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_LISTENERS: LISTENER_INTERN://kafka:9093,LISTENER_EXTERN://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_INTERN://kafka:9093,LISTENER_EXTERN://127.0.0.1:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_INTERN:PLAINTEXT,LISTENER_EXTERN:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_INTERN
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+    depends_on:
+      - zookeeper

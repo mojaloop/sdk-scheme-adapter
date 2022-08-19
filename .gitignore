@@ -21,3 +21,5 @@ devspace*
 *.log
 *IGNORE*
 **/dist/*
+.DS_Store
+dist
