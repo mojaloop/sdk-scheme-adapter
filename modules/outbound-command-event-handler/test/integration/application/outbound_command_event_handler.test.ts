@@ -237,14 +237,14 @@ describe("Tests for Outbound Command Event Handler", () => {
     await producer.sendCommandMessage(processSDKOutboundBulkRequestMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    const bulkPartyInfoRequestCommandEventMessageData: ICommandEventMessageData = {
+    const bulkPartyInfoRequestCommandEventMessageData: IProcessSDKOutboundBulkPartyInfoRequestMessageData = {
       key: bulkTransactionId,
       name: ProcessSDKOutboundBulkPartyInfoRequestMessage.name,
       content: null,
       timestamp: Date.now(),
       headers: []
     }
-    const bulkPartyInfoRequestCommandEventObj = new CommandEventMessage(bulkPartyInfoRequestCommandEventMessageData);
+    const bulkPartyInfoRequestCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestMessage(bulkPartyInfoRequestCommandEventMessageData);
     await producer.sendCommandMessage(bulkPartyInfoRequestCommandEventObj);
     
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -408,14 +408,14 @@ describe("Tests for Outbound Command Event Handler", () => {
     await producer.sendCommandMessage(processSDKOutboundBulkRequestMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    const bulkPartyInfoRequestCommandEventMessageData: ICommandEventMessageData = {
+    const bulkPartyInfoRequestCommandEventMessageData: IProcessSDKOutboundBulkPartyInfoRequestMessageData = {
       key: bulkTransactionId,
       name: ProcessSDKOutboundBulkPartyInfoRequestMessage.name,
       content: null,
       timestamp: Date.now(),
       headers: []
     }
-    const bulkPartyInfoRequestCommandEventObj = new CommandEventMessage(bulkPartyInfoRequestCommandEventMessageData);
+    const bulkPartyInfoRequestCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestMessage(bulkPartyInfoRequestCommandEventMessageData);
     await producer.sendCommandMessage(bulkPartyInfoRequestCommandEventObj);
     
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -508,14 +508,14 @@ describe("Tests for Outbound Command Event Handler", () => {
     await producer.sendCommandMessage(processSDKOutboundBulkRequestMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    const bulkPartyInfoRequestCommandEventMessageData: ICommandEventMessageData = {
+    const bulkPartyInfoRequestCommandEventMessageData: IProcessSDKOutboundBulkPartyInfoRequestMessageData = {
       key: bulkTransactionId,
       name: ProcessSDKOutboundBulkPartyInfoRequestMessage.name,
       content: null,
       timestamp: Date.now(),
       headers: []
     }
-    const bulkPartyInfoRequestCommandEventObj = new CommandEventMessage(bulkPartyInfoRequestCommandEventMessageData);
+    const bulkPartyInfoRequestCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestMessage(bulkPartyInfoRequestCommandEventMessageData);
     await producer.sendCommandMessage(bulkPartyInfoRequestCommandEventObj);
     
     await new Promise(resolve => setTimeout(resolve, 1000));
