@@ -35,6 +35,7 @@ import { CommandEventMessage, ICommandEventMessageData, DomainEventMessage,
          ProcessSDKOutboundBulkPartyInfoRequestMessage,
          ProcessPartyInfoCallbackMessage,
          IProcessSDKOutboundBulkRequestMessageData,
+         IProcessPartyInfoCallbackMessageData,
          IProcessSDKOutboundBulkPartyInfoRequestMessageData,
          IProcessSDKOutboundBulkPartyInfoRequestCompleteMessageData} from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 import { randomUUID } from "crypto";
@@ -238,9 +239,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     const bulkPartyInfoRequestCommandEventMessageData: IProcessSDKOutboundBulkPartyInfoRequestMessageData = {
-      key: bulkTransactionId,
-      name: ProcessSDKOutboundBulkPartyInfoRequestMessage.name,
-      content: null,
+      bulkId: bulkTransactionId,
       timestamp: Date.now(),
       headers: []
     }
@@ -328,9 +327,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     const bulkPartyInfoRequestCommandEventMessageData: IProcessSDKOutboundBulkPartyInfoRequestMessageData = {
-      key: bulkTransactionId,
-      name: ProcessSDKOutboundBulkPartyInfoRequestMessage.name,
-      content: null,
+      bulkId: bulkTransactionId,
       timestamp: Date.now(),
       headers: []
     }
@@ -353,7 +350,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     //TODO Add asserts to check data contents of the domain event published to kafka
   });
 
-  test.only("4. Given receiving party info does not exist \
+  test("4. Given receiving party info does not exist \
               And receiving party lookup was successful \
             When inbound command event ProcessPartyInfoCallback is received \
             Then the state for individual successful party lookups should be updated to DISCOVERY_SUCCESS \
@@ -409,9 +406,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     const bulkPartyInfoRequestCommandEventMessageData: IProcessSDKOutboundBulkPartyInfoRequestMessageData = {
-      key: bulkTransactionId,
-      name: ProcessSDKOutboundBulkPartyInfoRequestMessage.name,
-      content: null,
+      bulkId: bulkTransactionId,
       timestamp: Date.now(),
       headers: []
     }
@@ -424,21 +419,20 @@ describe("Tests for Outbound Command Event Handler", () => {
 
     const partyInfoRequestedDomainEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequested');
     
-    const processPartyInfoCallbackMessageData: ICommandEventMessageData = {
+    const processPartyInfoCallbackMessageData: IProcessPartyInfoCallbackMessageData = {
       key: partyInfoRequestedDomainEvents[0].getKey(),
-      name: ProcessPartyInfoCallbackMessage.name,
-      content: {
+      partyResult: {
         partyId : {
           partyIdType: 'MSISDN', 
-          partyId: '123456',
+          partyIdentifier: '123456',
           fspId: 'receiverfsp'
         }
       },
       timestamp: Date.now(),
       headers: []
     }
-    const processPartyInfoCallbackCommandEvent = new CommandEventMessage(processPartyInfoCallbackMessageData);
-    await producer.sendCommandMessage(processPartyInfoCallbackCommandEvent);
+    const processPartyInfoCallbackMessageObj = new ProcessPartyInfoCallbackMessage(processPartyInfoCallbackMessageData);
+    await producer.sendCommandMessage(processPartyInfoCallbackMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     //Check that the state of individual transfers in bulk to be RECEIVED
@@ -454,11 +448,11 @@ describe("Tests for Outbound Command Event Handler", () => {
     // //TODO Add asserts to check data contents of the domain event published to kafka
   });
 
-  test("5. Given receiving party info does not exist \
-          And receiving party lookup was not successful \
-        When inbound command event ProcessPartyInfoCallback is received \
-        Then the state for individual successful party lookups should be updated to DISCOVERY_FAILED \
-          And outbound event PartyInfoCallbackProcessed event should be published", async () => {
+  test.only("5. Given receiving party info does not exist \
+                  And receiving party lookup was not successful \
+                When inbound command event ProcessPartyInfoCallback is received \
+                Then the state for individual successful party lookups should be updated to DISCOVERY_FAILED \
+                  And outbound event PartyInfoCallbackProcessed event should be published", async () => {
     
     //Publish this message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
@@ -509,9 +503,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     const bulkPartyInfoRequestCommandEventMessageData: IProcessSDKOutboundBulkPartyInfoRequestMessageData = {
-      key: bulkTransactionId,
-      name: ProcessSDKOutboundBulkPartyInfoRequestMessage.name,
-      content: null,
+      bulkId: bulkTransactionId,
       timestamp: Date.now(),
       headers: []
     }
