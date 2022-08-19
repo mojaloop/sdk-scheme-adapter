@@ -516,23 +516,23 @@ describe("Tests for Outbound Command Event Handler", () => {
 
     const partyInfoRequestedDomainEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequested');
 
-    const processPartyInfoCallbackMessageData: ICommandEventMessageData = {
+    const processPartyInfoCallbackMessageData: IProcessPartyInfoCallbackMessageData = {
       key: partyInfoRequestedDomainEvents[0].getKey(),
-      name: ProcessPartyInfoCallbackMessage.name,
-      content: {
+      partyResult: {
         partyId : {
           partyIdType: 'MSISDN',
-          partyId: '123456'
+          partyIdentifier: '123456'
         },
         errorInformation: {
-          errorCode: 12345
+          errorCode: '12345',
+          errorDescription: 'ID Not Found'
         }
       },
       timestamp: Date.now(),
       headers: []
     }
-    const processPartyInfoCallbackCommandEvent = new CommandEventMessage(processPartyInfoCallbackMessageData);
-    await producer.sendCommandMessage(processPartyInfoCallbackCommandEvent);
+    const processPartyInfoCallbackMessageObj = new ProcessPartyInfoCallbackMessage(processPartyInfoCallbackMessageData);
+    await producer.sendCommandMessage(processPartyInfoCallbackMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     //Check that the state of individual transfers in bulk to be RECEIVED
@@ -540,7 +540,8 @@ describe("Tests for Outbound Command Event Handler", () => {
     const individualTransferData = await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[0]);
     console.log('individualTransferData:', individualTransferData);
     expect(individualTransferData.state).toBe('DISCOVERY_FAILED');
-    expect(individualTransferData.partyResponse?.errorInformation?.errorCode).toBe(12345);
+    expect(individualTransferData.partyResponse?.errorInformation?.errorCode).toBe('12345');
+    expect(individualTransferData.partyResponse?.errorInformation?.errorDescription).toBe('ID Not Found');
   
     // // Check domain events published to kafka
     expect(domainEvents[2].getName()).toBe('PartyInfoCallbackProcessed')
