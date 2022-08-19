@@ -448,11 +448,11 @@ describe("Tests for Outbound Command Event Handler", () => {
     // //TODO Add asserts to check data contents of the domain event published to kafka
   });
 
-  test.only("5. Given receiving party info does not exist \
-                  And receiving party lookup was not successful \
-                When inbound command event ProcessPartyInfoCallback is received \
-                Then the state for individual successful party lookups should be updated to DISCOVERY_FAILED \
-                  And outbound event PartyInfoCallbackProcessed event should be published", async () => {
+  test("5. Given receiving party info does not exist \
+              And receiving party lookup was not successful \
+            When inbound command event ProcessPartyInfoCallback is received \
+            Then the state for individual successful party lookups should be updated to DISCOVERY_FAILED \
+              And outbound event PartyInfoCallbackProcessed event should be published", async () => {
     
     //Publish this message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
@@ -548,7 +548,7 @@ describe("Tests for Outbound Command Event Handler", () => {
   });
 
   test("6. When inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
-        Then the global state should be updated to DISCOVERY_COMPLETED", async () => {
+          Then the global state should be updated to DISCOVERY_COMPLETED", async () => {
     
     //Publish this message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
@@ -614,10 +614,10 @@ describe("Tests for Outbound Command Event Handler", () => {
     
   });
 
-  test("7. Given autoAcceptParty setting is set to false \
-        When inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
-        Then outbound event SDKOutboundBulkAcceptpartyInfoRequested should be published \
-        And Then global state should be updated to DISCOVERY_ACCEPTANCE_PENDING", async () => {
+  test.only("7. Given autoAcceptParty setting is set to false \
+                When inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
+                Then outbound event SDKOutboundBulkAcceptpartyInfoRequested should be published \
+                  And Then global state should be updated to DISCOVERY_ACCEPTANCE_PENDING", async () => {
     
     //Publish this message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
@@ -686,9 +686,9 @@ describe("Tests for Outbound Command Event Handler", () => {
   });
 
   test("8. Given autoAcceptParty setting is set to true \
-                When Inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
-                Then outbound event SDKOutboundBulkAutoAcceptpartyInfoRequested should be published. \
-                  And Then global state should be same as before DISCOVERY_COMPLETED", async () => {
+            When Inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
+            Then outbound event SDKOutboundBulkAutoAcceptpartyInfoRequested should be published. \
+              And Then global state should be same as before DISCOVERY_COMPLETED", async () => {
     //Publish this message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
     const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
