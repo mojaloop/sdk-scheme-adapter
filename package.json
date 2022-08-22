@@ -46,7 +46,7 @@
     "test:coverage-check": "nx affected --parallel --all --target=test:coverage-check",
     "test:coverage-check:all": "nx run-many --parallel --all --target=test:coverage-check",
     "test:integration": "yarn workspaces foreach --parallel -v run test:integration",
-    "audit:check": "yarn dlx audit-ci --config ./audit-ci.jsonc && yarn workspaces foreach --parallel -v run audit:check",
+    "audit:check": "yarn dlx audit-ci --config ./audit-ci.jsonc",
     "dep:check": "nx run-many --parallel --all --target=dep:check",
     "dep:update": "nx run-many --parallel --all --target=dep:update",
     "docker:build": "nx affected --parallel --all --target=docker-build",

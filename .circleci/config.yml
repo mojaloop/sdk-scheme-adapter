@@ -7,12 +7,12 @@ version: 2.1
 # Orbs used in this pipeline
 ###
 orbs:
-  anchore: anchore/anchore-engine@1.6.0
-  slack: circleci/slack@3.4.2
-  pr-tools: mojaloop/pr-tools@0.1.10
-  github-release: h-matsuo/github-release@0.1.3
+  # slack: circleci/slack@3.4.2
+  anchore: anchore/anchore-engine@1.9.0
+  slack: circleci/slack@4.9.3 # Ref: https://github.com/mojaloop/ci-config/tree/master/slack-templates
+  pr-tools: mojaloop/pr-tools@0.1.10 # Ref: https://github.com/mojaloop/ci-config/
+  gh: circleci/github-cli@2.1.0
   nx: nrwl/nx@1.6.0
-
 
 ##
 # defaults
@@ -30,14 +30,7 @@ defaults_Dependencies: &defaults_Dependencies |
   yarn global add node-gyp
 
 defaults_awsCliDependencies: &defaults_awsCliDependencies |
-    apk upgrade --no-cache
-    apk --no-cache add \
-            python3 \
-            py3-pip \
-            groff \
-            less \
-            mailcap
-    pip3 install --upgrade pip awscli==1.14.5 s3cmd==2.0.1 python-magic
+    apk --no-cache add aws-cli
 
 defaults_license_scanner: &defaults_license_scanner
   name: Install and set up license-scanner
@@ -61,6 +54,31 @@ defaults_npm_publish_release: &defaults_npm_publish_release
     source $BASH_ENV
     echo "Publishing tag $RELEASE_TAG"
     yarn publish
+
+defaults_export_version_from_package: &defaults_export_version_from_package
+  name: Format the changelog into the github release body and get release tag
+  command: |
+    git diff --no-indent-heuristic master~1 HEAD CHANGELOG.md | sed -n '/^+[^+]/ s/^+//p' > /tmp/changes
+    echo 'export RELEASE_CHANGES=`cat /tmp/changes`' >> $BASH_ENV
+    echo 'export RELEASE_TAG=`cat package-lock.json | jq -r .version`' >> $BASH_ENV
+
+defaults_configure_git: &defaults_configure_git
+  name: Configure git
+  command: |
+    git config user.email ${GIT_CI_EMAIL}
+    git config user.name ${GIT_CI_USER}
+
+defaults_configure_nvm: &defaults_configure_nvm
+  name: Configure NVM
+  command: |
+    touch $HOME/.profile
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    echo "Installing Node version: $(cat .nvmrc)"
+    nvm install $(cat .nvmrc)
+    nvm alias default $(cat .nvmrc)
+    nvm use $(cat .nvmrc)
 
 defaults_environment: &defaults_environment
   ## TODO: Update this to master/main once its merged into working branch
@@ -97,9 +115,7 @@ jobs:
           command: *defaults_Dependencies
       - checkout
       - run:
-          name: Install Dependencies for api-svc
-          command: yarn install
-          working_directory: /home/circleci/project/modules/api-svc
+          <<: *defaults_configure_nvm
       - run:
           name: Install Dependencies
           command: yarn install --immutable
@@ -110,7 +126,6 @@ jobs:
             - .yarn/cache
             - .yarn/unplugged
             - node_modules
-            # - modules/api-svc/node_modules
       - run:
           name: Delete build dependencies
           command: apk del build-dependencies
@@ -123,6 +138,8 @@ jobs:
           name: Install general dependencies
           command: *defaults_Dependencies
       - checkout
+      - run:
+          <<: *defaults_configure_nvm
       ## TODO: figure out why jest is not installed
       # - restore_cache:
       #     name: Restore Yarn Package Cache
@@ -146,51 +163,51 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install Docker Compose
-          command: |
-            curl -L https://github.com/docker/compose/releases/download/1.28.2/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
-            chmod +x ~/docker-compose
-            sudo mv ~/docker-compose /usr/local/bin/docker-compose
+          <<: *defaults_configure_nvm
+      # - run:
+      #     name: Install Docker Compose
+      #     command: |
+      #       curl -L https://github.com/docker/compose/releases/download/1.28.2/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+      #       chmod +x ~/docker-compose
+      #       sudo mv ~/docker-compose /usr/local/bin/docker-compose
       - restore_cache:
           name: Restore Yarn Package Cache
           keys:
             - yarn-packages-{{ checksum "yarn.lock" }}
-      - run:
-          name: Set up NVM
-          command: |
-            echo ${NVM_DIR}
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm install v16.14
-            nvm alias default v16.14
-      - run:
-          name: Start docker-compose
-          command: |
-            docker-compose pull
-            docker-compose build
-            docker-compose up -d
-      - run:
-          name: Execute Wait4 script
-          command: |
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            chmod +x ./docker/wait4/wait4.js
-            # chmod +x ./docker/wait4/setup_hosts_file.sh
-            # sh -c "./docker/wait4/setup_hosts_file.sh"
-            sh -c "./docker/wait4/wait4.js cicd-integration-tests"
+      # - run:
+      #     name: Start docker-compose
+      #     command: |
+      #       docker-compose pull
+      #       docker-compose build
+      #       docker-compose up -d
+      # - run:
+      #     name: Execute Wait4 script
+      #     command: |
+      #       [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+      #       chmod +x ./docker/wait4/wait4.js
+      #       # chmod +x ./docker/wait4/setup_hosts_file.sh
+      #       # sh -c "./docker/wait4/setup_hosts_file.sh"
+      #       sh -c "./docker/wait4/wait4.js cicd-integration-tests"
+      # - run:
+      #     name: Execute integration tests
+      #     command: |
+      #       [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+      #       yarn install --immutable
+      #       yarn run test:int
       - run:
           name: Execute integration tests
           command: |
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             yarn install --immutable
-            yarn run test:int
-      - run:
-          name: prepare test/results
-          command: |
-            mkdir -p test/results
-            mv junit.xml test/results
-      - store_artifacts:
-          path: ./test/results
-      - store_test_results:
-          path: ./test/results
+            yarn run test:integration
+      # - run:
+      #     name: prepare test/results
+      #     command: |
+      #       mkdir -p test/results
+      #       mv junit.xml test/results
+      # - store_artifacts:
+      #     path: ./test/results
+      # - store_test_results:
+      #     path: ./test/results
 
   validate-openapi:
     executor: default-docker
@@ -200,6 +217,8 @@ jobs:
           name: Install general dependencies
           command: *defaults_Dependencies
       - checkout
+      - run:
+          <<: *defaults_configure_nvm
       - restore_cache:
           name: Restore Yarn Package Cache
           keys:
@@ -217,20 +236,21 @@ jobs:
           command: *defaults_Dependencies
       - checkout
       - run:
-          name: Install Dependencies for api-svc
-          command: yarn install
-          working_directory: /home/circleci/project/modules/api-svc
+          <<: *defaults_configure_nvm
       - run:
           name: Install Dependencies
-          command: yarn install
-      - run:
-          name: Create dir for lint results
-          command: mkdir -p /lintresults
+          command: yarn install --immutable
       - run:
           name: Execute linting
-          command: (yarn run lint > /lintresults/results.txt)
-      - store_artifacts:
-          path: /lintresults
+          command: yarn run lint
+      # - run:
+      #     name: Create dir for lint results
+      #     command: mkdir -p /lintresults
+      # - run:
+      #     name: Execute linting
+      #     command: (yarn run lint > /lintresults/results.txt)
+      # - store_artifacts:
+      #     path: /lintresults
 
   vulnerability-check:
     executor: default-docker
@@ -240,18 +260,19 @@ jobs:
           name: Install general dependencies
           command: *defaults_Dependencies
       - checkout
+      - run:
+          <<: *defaults_configure_nvm
       - restore_cache:
-          name: Restore Yarn Package Cache
-          keys:
-            - yarn-packages-{{ checksum "yarn.lock" }}
+          key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Create dir for test results
           command: mkdir -p ./audit/results
       - run:
           name: Check for new npm vulnerabilities
-          command: yarn run audit:check > ./audit/results/auditResults.json
+          command: npm run audit:check -- -o json > ./audit/results/auditResults.json
       - store_artifacts:
           path: ./audit/results
+          prefix: audit
 
   audit-licenses:
     executor: default-docker
