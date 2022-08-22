@@ -13,33 +13,47 @@
     "Shashikant Hirugade <shashikant.hirugade@modusbox.com>",
     "Vijay Kumar Guthi <vijaya.guthi@modusbox.com>"
   ],
-  "pre-commit": [
-    "lint"
+  "packageManager": "yarn@3.2.0",
+  "engines": {
+    "yarn": "3.2.0"
+  },
+  "workspaces": [
+    "modules/private-shared-lib",
+    "modules/public-shared-lib",
+    "modules/*"
   ],
   "scripts": {
     "start": "yarn workspaces foreach --parallel -i -v run start",
+    "start1": "nx affected --parallel --target=start",
     "start:api-svc": "yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run start",
     "start:event-handler": "yarn workspace @mojaloop/sdk-scheme-adapter-event-handler run start",
     "start:command-handler": "yarn workspace @mojaloop/sdk-scheme-adapter-command-handler run start",
-    "build": "yarn workspaces foreach -v --topological-dev run build",
+    "build": "nx run-many --all --target=build",
+    "build:all": "nx affected --target=build",
     "build:openapi": "yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run build:openapi",
     "build:openapi:inbound": "yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run build:openapi:inbound",
     "build:openapi:outbound": "yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run build:openapi:outbound",
     "validate:api": "yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run validate:api",
-    "watch": "yarn workspaces foreach --parallel -v run watch",
+    "watch": "nx run-many --parallel --all --target=watch",
     "clean": "yarn run clean:dist && yarn run clean:npm",
-    "clean:npm": "yarn workspaces foreach --parallel -v run clean:npm",
-    "clean:dist": "yarn workspaces foreach --parallel -v run clean:dist",
+    "clean:npm": "nx run-many --parallel --all --target=clean:npm",
+    "clean:dist": "nx run-many --parallel --all --target=clean:dist",
     "pretest": "echo 'FIX ME'",
-    "lint": "yarn workspaces foreach -v run lint",
-    "lint:fix": "yarn workspaces foreach -v run lint:fix",
-    "test:unit": "yarn workspaces foreach -v run test:unit",
-    "test:coverage": "yarn workspaces foreach --parallel -v run test:coverage",
-    "test:coverage-check": "yarn workspaces foreach --parallel -v run test:coverage-check",
+    "lint": "nx affected --parallel --all --target=lint",
+    "lint:fix": "yarn run lint -- --fix",
+    "test:unit": "nx affected --parallel --all --target=test:unit",
+    "test:unit:all": "nx run-many --parallel --all --target=test:unit",
+    "test:coverage": "nx affected --parallel --all --target=test:coverage",
+    "test:coverage:all": "nx run-many --parallel --all --target=test:coverage",
+    "test:coverage-check": "nx affected --parallel --all --target=test:coverage-check",
+    "test:coverage-check:all": "nx run-many --parallel --all --target=test:coverage-check",
     "test:integration": "yarn workspaces foreach --parallel -v run test:integration",
     "audit:check": "yarn dlx audit-ci --config ./audit-ci.jsonc && yarn workspaces foreach --parallel -v run audit:check",
-    "dep:check": "yarn workspaces foreach --parallel -v run dep:check",
-    "dep:update": "yarn workspaces foreach --parallel -v run dep:update"
+    "dep:check": "nx run-many --parallel --all --target=dep:check",
+    "dep:update": "nx run-many --parallel --all --target=dep:update",
+    "docker:build": "nx affected --parallel --all --target=docker:build",
+    "docker:publish": "nx affected --parallel --all --target=docker:publish",
+    "npm:publish": "nx affected --parallel --all --target=npm:publish"
   },
   "devDependencies": {
     "@types/jest": "^27.0.3",
@@ -54,23 +68,14 @@
     "husky": "^8.0.1",
     "jest": "^27.3.1",
     "npm-check-updates": "^12.5.11",
+    "nx": "14.5.7",
     "ts-jest": "^27.0.7",
     "ts-node": "^10.9.1",
     "typescript": "^4.6.4",
     "yarn-audit-fix": "^9.3.2"
   },
-  "workspaces": [
-    "modules/private-shared-lib",
-    "modules/public-shared-lib",
-    "modules/*"
-  ],
-  "packageManager": "yarn@3.2.0",
-  "engines": {
-    "yarn": "3.2.0"
-  },
   "dependencies": {
     "nodemon": "^2.0.18",
-    "pre-commit": "^1.2.2",
     "tslib": "^2.4.0"
   }
 }

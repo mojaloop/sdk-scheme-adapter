@@ -10,6 +10,12 @@
   "_moduleAliases": {
     "~": "src"
   },
+  "config": {
+    "test": "test",
+    "image": {
+      "name": "mojaloop/sdk-scheme-adapter"
+    }
+  },
   "scripts": {
     "start": "node src/index.js",
     "build": "yarn run build:openapi && yarn run build:dto:outbound",
@@ -31,7 +37,13 @@
     "dep:check": "npx ncu -e 2",
     "dep:update": "npx ncu -u",
     "release": "standard-version --releaseCommitMessageFormat 'chore(release): {{currentTag}} [skip ci]'",
-    "snapshot": "standard-version --no-verify --skip.changelog --prerelease snapshot --releaseCommitMessageFormat 'chore(snapshot): {{currentTag}}'"
+    "snapshot": "standard-version --no-verify --skip.changelog --prerelease snapshot --releaseCommitMessageFormat 'chore(snapshot): {{currentTag}}'",
+    "docker:build": "docker build -t ${IMAGE_NAME}-api-svc:${IMAGE_TAG} .",
+    "docker:tag": "docker tag ${SRC_IMAGE_NAME}-api-svc:${SRC_IMAGE_TAG} ${TRG_IMAGE_NAME}:${TRG_IMAGE_TAG}",
+    "docker:publish": "docker push ${IMAGE_NAME}-api-svc:${IMAGE_TAG}",
+    "npm:publish": "yarn npm publish --tag $RELEASE_TAG --access public",
+    "env": "env | grep npm_package && echo $npm_package_config_test",
+    "env:test": "echo ${TEST}"
   },
   "author": "Matt Kingston, James Bush, ModusBox Inc.",
   "contributors": [
