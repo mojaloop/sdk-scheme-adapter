@@ -45,7 +45,8 @@
     "test:coverage:all": "nx run-many --parallel --all --target=test:coverage",
     "test:coverage-check": "nx affected --parallel --all --target=test:coverage-check",
     "test:coverage-check:all": "nx run-many --parallel --all --target=test:coverage-check",
-    "test:integration": "yarn workspaces foreach --parallel -v run test:integration",
+    "test:integration": "nx affected --parallel --all --target=test:integration",
+    "test:integration:all": "nx run-many --parallel --all --target=test:integration",
     "audit:check": "yarn dlx audit-ci --config ./audit-ci.jsonc",
     "dep:check": "nx run-many --parallel --all --target=dep:check",
     "dep:update": "nx run-many --parallel --all --target=dep:update",
@@ -53,7 +54,8 @@
     "docker:publish": "nx affected --parallel --all --target=docker-publish",
     "npm:publish": "nx affected --parallel --all --target=npm-publish",
     "release": "nx affected --parallel --all --target=release",
-    "snapshot": "nx affected --parallel --all --target=snapshot"
+    "snapshot": "nx affected --parallel --all --target=snapshot",
+    "wait-4-docker": "node ./scripts/_wait4_all.js"
   },
   "devDependencies": {
     "@types/jest": "^27.0.3",

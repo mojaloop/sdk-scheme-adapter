@@ -178,12 +178,14 @@ jobs:
       #     name: Restore Yarn Package Cache
       #     keys:
       #       - yarn-packages-{{ checksum "yarn.lock" }}
-      # - run:
-      #     name: Start docker-compose
-      #     command: |
-      #       docker-compose pull
-      #       docker-compose build
-      #       docker-compose up -d
+      - run:
+          name: Start docker-compose
+          command: |
+            docker-compose up -d
+      - run:
+          name: Wait 4 Health Services
+          command: |
+            yarn run wait-4-docker
       # - run:
       #     name: Execute Wait4 script
       #     command: |
