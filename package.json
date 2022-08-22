@@ -51,7 +51,9 @@
     "dep:update": "nx run-many --parallel --all --target=dep:update",
     "docker:build": "nx affected --parallel --all --target=docker-build",
     "docker:publish": "nx affected --parallel --all --target=docker-publish",
-    "npm:publish": "nx affected --parallel --all --target=npm-publish"
+    "npm:publish": "nx affected --parallel --all --target=npm-publish",
+    "release": "nx affected --parallel --all --target=release",
+    "snapshot": "nx affected --parallel --all --target=snapshot"
   },
   "devDependencies": {
     "@types/jest": "^27.0.3",
