@@ -179,6 +179,9 @@ jobs:
       #     keys:
       #       - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
+          name: Install Yarn dependencies
+          command: yarn install --immutable
+      - run:
           name: Start docker-compose
           command: |
             docker-compose up -d
@@ -196,9 +199,6 @@ jobs:
       #       [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
       #       yarn install --immutable
       #       yarn run test:int
-      - run:
-          name: Install Yarn dependencies
-          command: yarn install --immutable
       - run:
           name: Wait 4 Health Services
           command: |
@@ -844,4 +844,3 @@ workflows:
             branches:
               ignore:
                 - /.*/
-
