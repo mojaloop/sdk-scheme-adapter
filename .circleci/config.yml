@@ -184,6 +184,7 @@ jobs:
       - run:
           name: Start docker-compose
           command: |
+            docker-compose build
             docker-compose up -d
       # - run:
       #     name: Execute Wait4 script
