@@ -1,0 +1,40 @@
+{
+  "root": "modules/api-svc/",
+  "sourceRoot": "modules/api-svc/src",
+  "projectType": "application",
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*"]
+  },
+  "targets": {
+    "docker-build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "make docker-build IMAGE_SUFFIX=api-svc"
+          }
+        ]
+      }
+    },
+    "docker-tag": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "make docker-tag IMAGE_SUFFIX=api-svc"
+          }
+        ]
+      }
+    },
+    "npm-publish": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "make npm-publish IMAGE_SUFFIX=api-svc"
+          }
+        ]
+      }
+    }
+  }
+}

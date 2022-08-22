@@ -1,0 +1,30 @@
+{
+  "root": "modules/outbound-domain-event-handler/",
+  "sourceRoot": "modules/outbound-domain-event-handler/src",
+  "projectType": "application",
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*"]
+  },
+  "targets": {
+    "docker-build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "make docker-build IMAGE_SUFFIX=dom-evt-svc"
+          }
+        ]
+      }
+    },
+    "docker-tag": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "make docker-tag IMAGE_SUFFIX=dom-evt-svc"
+          }
+        ]
+      }
+    }
+  }
+}

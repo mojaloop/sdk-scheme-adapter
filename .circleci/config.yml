@@ -769,7 +769,28 @@ workflows:
             # - image-scan
           filters:
             tags:
-              only: /.*/
+              only: /v[0-9]+(\.[0-9]+)*/
+            branches:
+              ignore:
+                - /.*/
+
+      - publish-docker-snapshot:
+          context: org-global
+          requires:
+            # - build-local
+            - pr-tools/pr-title-check
+            - validate-openapi
+            - test-unit
+            - vulnerability-check
+            - audit-licenses
+            - test-integration
+            # TODO: fix this
+            # - license-scan
+            # TODO: fix this
+            # - image-scan
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*\-snapshot+((\.[0-9]+)?)/
             branches:
               ignore:
                 - /.*/
@@ -789,7 +810,8 @@ workflows:
             # - image-scan
           filters:
             tags:
-              only: /.*/
+              only: /v[0-9]+(\.[0-9]+)*/
             branches:
               ignore:
                 - /.*/
+

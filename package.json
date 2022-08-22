@@ -18,8 +18,6 @@
     "yarn": "3.2.0"
   },
   "workspaces": [
-    "modules/private-shared-lib",
-    "modules/public-shared-lib",
     "modules/*"
   ],
   "scripts": {
@@ -51,9 +49,9 @@
     "audit:check": "yarn dlx audit-ci --config ./audit-ci.jsonc && yarn workspaces foreach --parallel -v run audit:check",
     "dep:check": "nx run-many --parallel --all --target=dep:check",
     "dep:update": "nx run-many --parallel --all --target=dep:update",
-    "docker:build": "nx affected --parallel --all --target=docker:build",
-    "docker:publish": "nx affected --parallel --all --target=docker:publish",
-    "npm:publish": "nx affected --parallel --all --target=npm:publish"
+    "docker:build": "nx affected --parallel --all --target=docker-build",
+    "docker:publish": "nx affected --parallel --all --target=docker-publish",
+    "npm:publish": "nx affected --parallel --all --target=npm-publish"
   },
   "devDependencies": {
     "@types/jest": "^27.0.3",
