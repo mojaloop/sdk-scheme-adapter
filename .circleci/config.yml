@@ -438,6 +438,89 @@ jobs:
     environment: *defaults_environment
     steps:
       - checkout
+      - run:
+          name: Setup for LATEST release
+          command: |
+            echo "export RELEASE_TAG=$RELEASE_TAG_PROD" >> $BASH_ENV
+            echo "RELEASE_TAG=$RELEASE_TAG_PROD"
+            PACKAGE_VERSION=$(cat package-lock.json | jq -r .version)
+            echo "export PACKAGE_VERSION=${PACKAGE_VERSION}" >> $BASH_ENV
+            echo "PACKAGE_VERSION=${PACKAGE_VERSION}"
+      # - attach_workspace:
+      #     at: /tmp
+      # - run:
+      #     name: Load the pre-built docker image from workspace
+      #     command: docker load -i /tmp/docker-image.tar
+
+      - run:
+          name: Build docker image
+          command: |
+            echo "Building Docker image: local"
+            export IMAGE_NAME=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME
+            echo 'export IMAGE_NAME=`$IMAGE_NAME`' >> $BASH_ENV
+            export IMAGE_TAG=local
+
+            yarn docker:build
+      - run:
+          name: Login to Docker Hub
+          command: docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+      - run:
+          name: Re-tag pre built image
+          command: |
+            export SRC_IMAGE_NAME=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME
+            export SRC_IMAGE_TAG=local
+            export TRG_IMAGE_NAME=$SRC_IMAGE_NAME
+            export TRG_IMAGE_TAG=$RELEASE_TAG
+            echo "Re-tagging ${SRC_IMAGE_NAME}*:${SRC_IMAGE_TAG} image as ${TRG_IMAGE_NAME}*:${TRG_IMAGE_TAG}"
+            yarn docker:tag
+
+            export SRC_IMAGE_NAME=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME
+            export SRC_IMAGE_TAG=$RELEASE_TAG
+            export TRG_IMAGE_NAME=$SRC_IMAGE_NAME
+            export TRG_IMAGE_TAG=$CIRCLE_TAG
+            echo "Re-tagging ${SRC_IMAGE_NAME}*:${SRC_IMAGE_TAG} image as ${TRG_IMAGE_NAME}*:${TRG_IMAGE_TAG}"
+            yarn docker:tag
+      - run:
+          name: Publish Docker image $CIRCLE_TAG & Latest tag to Docker Hub
+          command: |
+            export IMAGE_NAME=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME
+            export IMAGE_TAG=$RELEASE_TAG
+            echo "Publishing ${IMAGE_NAME}*:${IMAGE_TAG} image"
+            yarn docker:publish
+
+            export IMAGE_NAME=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME
+            export IMAGE_TAG=$CIRCLE_TAG
+            echo "Publishing ${IMAGE_NAME}*:${IMAGE_TAG} image"
+            yarn docker:publish
+
+      # - run:
+      #     name: Re-tag pre built image
+      #     command: |
+      #       docker tag $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:latest
+      #       docker tag $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG
+
+      # - run:
+      #     name: Publish Docker image $CIRCLE_TAG & Latest tag to Docker Hub
+      #     command: |
+      #       echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG"
+      #       docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG
+      #       echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:latest"
+      #       docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:latest
+
+  publish-docker-snapshot:
+    executor: default-machine
+    environment: *defaults_environment
+    steps:
+      - checkout
+      - run:
+          name: Setup for SNAPSHOT release
+          command: |
+            echo "export RELEASE_TAG=$RELEASE_TAG_SNAPSHOT" >> $BASH_ENV
+            echo "RELEASE_TAG=$RELEASE_TAG_SNAPSHOT"
+            PACKAGE_VERSION=$(cat package-lock.json | jq -r .version)
+            echo "export PACKAGE_VERSION=${PACKAGE_VERSION}" >> $BASH_ENV
+            echo "PACKAGE_VERSION=${PACKAGE_VERSION}"
 
       # - attach_workspace:
       #     at: /tmp
@@ -486,20 +569,6 @@ jobs:
             export IMAGE_TAG=$CIRCLE_TAG
             echo "Publishing ${IMAGE_NAME}*:${IMAGE_TAG} image"
             yarn docker:publish
-
-      # - run:
-      #     name: Re-tag pre built image
-      #     command: |
-      #       docker tag $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:latest
-      #       docker tag $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG
-
-      # - run:
-      #     name: Publish Docker image $CIRCLE_TAG & Latest tag to Docker Hub
-      #     command: |
-      #       echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG"
-      #       docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG
-      #       echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:latest"
-      #       docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:latest
 
   publish-npm:
     executor: default-docker
