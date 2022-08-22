@@ -7,9 +7,9 @@ version: 2.1
 # Orbs used in this pipeline
 ###
 orbs:
-  # slack: circleci/slack@3.4.2
+  slack: circleci/slack@3.4.2
   anchore: anchore/anchore-engine@1.9.0
-  slack: circleci/slack@4.9.3 # Ref: https://github.com/mojaloop/ci-config/tree/master/slack-templates
+  # slack: circleci/slack@4.9.3 # Ref: https://github.com/mojaloop/ci-config/tree/master/slack-templates
   pr-tools: mojaloop/pr-tools@0.1.10 # Ref: https://github.com/mojaloop/ci-config/
   gh: circleci/github-cli@2.1.0
   nx: nrwl/nx@1.6.0
