@@ -92,13 +92,14 @@ defaults_environment: &defaults_environment
 ##
 executors:
   default-docker:
-    working_directory: /home/circleci/project
+    working_directory: &WORKING_DIR /home/circleci/project
     docker:
-      - image: node:16.15.0-alpine
+      - image: node:16.15.0-alpine # Ref: https://hub.docker.com/_/node?tab=tags&page=1&name=alpine
 
   default-machine:
+    working_directory: *WORKING_DIR
     machine:
-      image: ubuntu-2004:202010-01
+      image: ubuntu-2004:current # Ref: https://circleci.com/developer/machine/image/ubuntu-2004
 
 ##
 # Jobs
@@ -147,7 +148,10 @@ jobs:
       #       - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
           name: Install Yarn dependencies
-          command: yarn install
+          command: yarn install --immutable
+      - run:
+          name: Execute unit tests
+          command: yarn run build
       - run:
           name: Execute unit tests
           command: yarn run test:unit
@@ -170,10 +174,10 @@ jobs:
       #       curl -L https://github.com/docker/compose/releases/download/1.28.2/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
       #       chmod +x ~/docker-compose
       #       sudo mv ~/docker-compose /usr/local/bin/docker-compose
-      - restore_cache:
-          name: Restore Yarn Package Cache
-          keys:
-            - yarn-packages-{{ checksum "yarn.lock" }}
+      # - restore_cache:
+      #     name: Restore Yarn Package Cache
+      #     keys:
+      #       - yarn-packages-{{ checksum "yarn.lock" }}
       # - run:
       #     name: Start docker-compose
       #     command: |
@@ -195,9 +199,14 @@ jobs:
       #       yarn install --immutable
       #       yarn run test:int
       - run:
+          name: Install Yarn dependencies
+          command: yarn install --immutable
+      - run:
+          name: Execute unit tests
+          command: yarn run build
+      - run:
           name: Execute integration tests
           command: |
-            yarn install --immutable
             yarn run test:integration
       # - run:
       #     name: prepare test/results
