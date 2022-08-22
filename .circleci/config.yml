@@ -444,12 +444,10 @@ jobs:
           name: check the release changes
           command: |
             echo "Changes are: ${RELEASE_CHANGES}"
-      - github-release/create:
-          github-token-variable: ${GITHUB_TOKEN}
-          tag: v${RELEASE_TAG}
-          title: v${RELEASE_TAG} Release
-          description: ${RELEASE_CHANGES}
-          file-path: CHANGELOG.md
+      - run:
+          name: Create Release
+          command: |
+            gh release create "v${RELEASE_TAG}" --title "v${RELEASE_TAG} Release" --draft=false --notes "${RELEASE_CHANGES}" ./CHANGELOG.md
       - slack/status:
           webhook: "$SLACK_WEBHOOK_ANNOUNCEMENT"
           success_message: '*"${CIRCLE_PROJECT_REPONAME}"* - Release \`"v${RELEASE_TAG}"\` \nhttps://github.com/mojaloop/"${CIRCLE_PROJECT_REPONAME}"/releases/tag/"v${RELEASE_TAG}"'
