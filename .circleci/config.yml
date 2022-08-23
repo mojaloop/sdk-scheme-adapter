@@ -244,10 +244,14 @@ jobs:
       - checkout
       - run:
           <<: *defaults_configure_nvm
-      - restore_cache:
-          name: Restore Yarn Package Cache
-          keys:
-            - yarn-packages-{{ checksum "yarn.lock" }}
+      ## TODO: Resolve cache issue to replace `Install Dependencies`
+      # - restore_cache:
+      #     name: Restore Yarn Package Cache
+      #     keys:
+      #       - yarn-packages-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install Dependencies
+          command: yarn install --immutable
       - run:
           name: Execute dependency tests
           command: yarn run dep:check
@@ -261,10 +265,14 @@ jobs:
       - checkout
       - run:
           <<: *defaults_configure_nvm
-      - restore_cache:
-          name: Restore Yarn Package Cache
-          keys:
-            - yarn-packages-{{ checksum "yarn.lock" }}
+      ## TODO: Resolve cache issue to replace `Install Dependencies`
+      # - restore_cache:
+      #     name: Restore Yarn Package Cache
+      #     keys:
+      #       - yarn-packages-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install Dependencies
+          command: yarn install --immutable
       - run:
           name: Execute lint tests
           command: yarn run lint
