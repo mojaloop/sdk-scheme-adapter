@@ -24,13 +24,13 @@ services:
     volumes:
       - ./docker/wait4:/tmp/wait4
       - ./secrets:/opt/app/secrets
-    user: root
+    user: root # Set Root so we can install Curl for Healthchecks
     healthcheck:
       test: [
         "CMD" ,
-        "apk", "add", "--no-cache", "curl", # install curl
+        "apk", "add", "--no-cache", "curl", # Install curl
         "&&",
-        "curl", "-f", "http://localhost:4001" # check if api is up
+        "curl", "-f", "http://localhost:4001" # Check if api is up
         ]
       timeout: 20s
       retries: 10
@@ -61,25 +61,26 @@ services:
       - "./docker/ml-testing-toolkit/secrets:/opt/mojaloop-testing-toolkit/secrets"
 
     ports:
-      - "5000"
+      # - "5000:5000" ## NOTE: This port conflicts on MacOS.
       - "5050:5050"
     environment:
       - AUTH_ENABLED=FALSE
     command: npm start
 
-  mojaloop-testing-toolkit-ui:
-    image: mojaloop/ml-testing-toolkit-ui:v11.8.4
-    container_name: ml-testing-toolkit-ui
-    ports:
-      - "6060:6060"
-    networks:
-      - mojaloop-net
-    environment:
-      - API_BASE_URL=http://localhost:5050
-      - AUTH_ENABLED=FALSE
-    command:
-      - sh
-      - /usr/share/nginx/start.sh
+  ## NOTE: Commented out for CI-CD, but can be re-enabled for local test/debugging
+  # mojaloop-testing-toolkit-ui:
+  #   image: mojaloop/ml-testing-toolkit-ui:v11.8.4
+  #   container_name: ml-testing-toolkit-ui
+  #   ports:
+  #     - "6060:6060"
+  #   networks:
+  #     - mojaloop-net
+  #   environment:
+  #     - API_BASE_URL=http://localhost:5050
+  #     - AUTH_ENABLED=FALSE
+  #   command:
+  #     - sh
+  #     - /usr/share/nginx/start.sh
 
   zookeeper:
     networks:

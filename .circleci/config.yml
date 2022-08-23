@@ -7,9 +7,8 @@ version: 2.1
 # Orbs used in this pipeline
 ###
 orbs:
-  slack: circleci/slack@3.4.2
   anchore: anchore/anchore-engine@1.9.0
-  # slack: circleci/slack@4.9.3 # Ref: https://github.com/mojaloop/ci-config/tree/master/slack-templates
+  slack: circleci/slack@4.9.3 # Ref: https://github.com/mojaloop/ci-config/tree/master/slack-templates
   pr-tools: mojaloop/pr-tools@0.1.10 # Ref: https://github.com/mojaloop/ci-config/
   gh: circleci/github-cli@2.1.0
   nx: nrwl/nx@1.6.0
@@ -160,6 +159,24 @@ jobs:
       - store_artifacts:
           path: /home/circleci/project/junit.xml
 
+  build-local:
+    executor: default-machine
+    environment: *defaults_environment
+    steps:
+      - checkout
+      - run:
+          name: Build Docker local image for testing
+          command: |
+            echo "Building Docker image: local"
+            docker build -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local .
+      - run:
+          name: Save docker image to workspace
+          command: docker save -o /tmp/docker-image.tar $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local
+      - persist_to_workspace:
+          root: /tmp
+          paths:
+            - ./docker-image.tar
+
   ## TODO: Fix Integration tests
   test-integration:
     executor: default-machine
@@ -168,38 +185,22 @@ jobs:
       - checkout
       - run:
           <<: *defaults_configure_nvm
-      # - run:
-      #     name: Install Docker Compose
-      #     command: |
-      #       curl -L https://github.com/docker/compose/releases/download/1.28.2/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
-      #       chmod +x ~/docker-compose
-      #       sudo mv ~/docker-compose /usr/local/bin/docker-compose
-      # - restore_cache:
-      #     name: Restore Yarn Package Cache
-      #     keys:
-      #       - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
           name: Install Yarn dependencies
           command: yarn install --immutable
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Load the pre-built docker image from workspace
+          command: docker load -i /tmp/docker-image.tar
+      # - run:
+      #     name: Build docker-compose
+      #     command: |
+      #       docker-compose build
       - run:
           name: Start docker-compose
           command: |
-            docker-compose build
             docker-compose up -d
-      # - run:
-      #     name: Execute Wait4 script
-      #     command: |
-      #       [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-      #       chmod +x ./docker/wait4/wait4.js
-      #       # chmod +x ./docker/wait4/setup_hosts_file.sh
-      #       # sh -c "./docker/wait4/setup_hosts_file.sh"
-      #       sh -c "./docker/wait4/wait4.js cicd-integration-tests"
-      # - run:
-      #     name: Execute integration tests
-      #     command: |
-      #       [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-      #       yarn install --immutable
-      #       yarn run test:int
       - run:
           name: Wait 4 Health Services
           command: |
@@ -211,6 +212,7 @@ jobs:
           name: Execute integration tests
           command: |
             yarn run test:integration
+      ## TODO Capture results
       # - run:
       #     name: prepare test/results
       #     command: |
@@ -305,29 +307,6 @@ jobs:
           command: cd /tmp/license-scanner && pathToRepo=$CIRCLE_WORKING_DIRECTORY make run
       - store_artifacts:
           path: /tmp/license-scanner/results
-
-  # build-local:
-  #   executor: default-machine
-  #   environment: *defaults_environment
-  #   steps:
-  #     - checkout
-  #     - run:
-  #         name: Build Docker local image for testing
-  #         command: |
-  #           echo "Building Docker image: local"
-  #           # docker build -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local .
-  #           export IMAGE_NAME=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME
-  #           echo 'export IMAGE_NAME=`$IMAGE_NAME`' >> $BASH_ENV
-  #           export IMAGE_TAG=local
-
-  #           yarn docker:build
-  #     - run:
-  #         name: Save docker image to workspace
-  #         command: docker save -o /tmp/docker-image.tar $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local
-  #     - persist_to_workspace:
-  #         root: /tmp
-  #         paths:
-  #           - ./docker-image.tar
 
   license-scan:
     executor: default-machine
@@ -437,32 +416,40 @@ jobs:
           name: Install git
           command: |
             sudo apt-get update && sudo apt-get install -y git
+      - gh/install
       - checkout
+      - run:
+          <<: *defaults_configure_git
       - run:
           name: Fetch updated release branch
           command: |
-            git config user.email ${GIT_CI_EMAIL}
-            git config user.name ${GIT_CI_USER}
             git fetch origin
             git checkout origin/${CIRCLE_BRANCH}
       - run:
-          # Note: this is rather imperfect, but will do for now
-          name: Format the changelog into the github release body and get release tag
-          command: |
-            git diff --no-indent-heuristic master~1 HEAD CHANGELOG.md | sed -n '/^+[^+]/ s/^+//p' > /tmp/changes
-            echo 'export RELEASE_CHANGES=`cat /tmp/changes`' >> $BASH_ENV
-            echo 'export RELEASE_TAG=`cat package-lock.json | jq -r .version`' >> $BASH_ENV
+          <<: *defaults_export_version_from_package
       - run:
-          name: check the release changes
+          name: Check the release changes
           command: |
             echo "Changes are: ${RELEASE_CHANGES}"
+      - run:
+          name: Setup Slack config
+          command: |
+            echo "export SLACK_PROJECT_NAME=${CIRCLE_PROJECT_REPONAME}" >> $BASH_ENV
+            echo "export SLACK_RELEASE_TYPE='Github Release'" >> $BASH_ENV
+            echo "export SLACK_RELEASE_TAG=v${RELEASE_TAG}" >> $BASH_ENV
+            echo "export SLACK_RELEASE_URL=https://github.com/mojaloop/${CIRCLE_PROJECT_REPONAME}/releases/tag/v${RELEASE_TAG}" >> $BASH_ENV
+            echo "export SLACK_BUILD_ID=${CIRCLE_BUILD_NUM}" >> $BASH_ENV
+            echo "export SLACK_CI_URL=${CIRCLE_BUILD_URL}" >> $BASH_ENV
       - run:
           name: Create Release
           command: |
             gh release create "v${RELEASE_TAG}" --title "v${RELEASE_TAG} Release" --draft=false --notes "${RELEASE_CHANGES}" ./CHANGELOG.md
-      - slack/status:
-          webhook: "$SLACK_WEBHOOK_ANNOUNCEMENT"
-          success_message: '*"${CIRCLE_PROJECT_REPONAME}"* - Release \`"v${RELEASE_TAG}"\` \nhttps://github.com/mojaloop/"${CIRCLE_PROJECT_REPONAME}"/releases/tag/"v${RELEASE_TAG}"'
+      - slack/notify:
+          event: pass
+          template: SLACK_TEMP_RELEASE_SUCCESS
+      - slack/notify:
+          event: fail
+          template: SLACK_TEMP_RELEASE_FAILURE
 
   publish-docker:
     executor: default-machine
@@ -477,67 +464,50 @@ jobs:
             PACKAGE_VERSION=$(cat package-lock.json | jq -r .version)
             echo "export PACKAGE_VERSION=${PACKAGE_VERSION}" >> $BASH_ENV
             echo "PACKAGE_VERSION=${PACKAGE_VERSION}"
-      # - attach_workspace:
-      #     at: /tmp
-      # - run:
-      #     name: Load the pre-built docker image from workspace
-      #     command: docker load -i /tmp/docker-image.tar
-
       - run:
-          name: Build docker image
+          name: Setup Slack config
           command: |
-            echo "Building Docker image: local"
-            export IMAGE_NAME=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME
-            echo 'export IMAGE_NAME=`$IMAGE_NAME`' >> $BASH_ENV
-            export IMAGE_TAG=local
-
-            yarn docker:build
+            echo "export SLACK_PROJECT_NAME=${CIRCLE_PROJECT_REPONAME}" >> $BASH_ENV
+            echo "export SLACK_RELEASE_TYPE='Docker Release'" >> $BASH_ENV
+            echo "export SLACK_RELEASE_TAG=v${CIRCLE_TAG:1}" >> $BASH_ENV
+            echo "export SLACK_BUILD_ID=${CIRCLE_BUILD_NUM}" >> $BASH_ENV
+            echo "export SLACK_CI_URL=${CIRCLE_BUILD_URL}" >> $BASH_ENV
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Load the pre-built docker image from workspace
+          command: | 
+            docker load -i /tmp/docker-image.tar
       - run:
           name: Login to Docker Hub
           command: docker login -u $DOCKER_USER -p $DOCKER_PASS
-
       - run:
           name: Re-tag pre built image
           command: |
-            export SRC_IMAGE_NAME=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME
-            export SRC_IMAGE_TAG=local
-            export TRG_IMAGE_NAME=$SRC_IMAGE_NAME
-            export TRG_IMAGE_TAG=$RELEASE_TAG
-            echo "Re-tagging ${SRC_IMAGE_NAME}*:${SRC_IMAGE_TAG} image as ${TRG_IMAGE_NAME}*:${TRG_IMAGE_TAG}"
-            yarn docker:tag
-
-            export SRC_IMAGE_NAME=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME
-            export SRC_IMAGE_TAG=$RELEASE_TAG
-            export TRG_IMAGE_NAME=$SRC_IMAGE_NAME
-            export TRG_IMAGE_TAG=$CIRCLE_TAG
-            echo "Re-tagging ${SRC_IMAGE_NAME}*:${SRC_IMAGE_TAG} image as ${TRG_IMAGE_NAME}*:${TRG_IMAGE_TAG}"
-            yarn docker:tag
+            docker tag $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG
       - run:
           name: Publish Docker image $CIRCLE_TAG & Latest tag to Docker Hub
           command: |
-            export IMAGE_NAME=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME
-            export IMAGE_TAG=$RELEASE_TAG
-            echo "Publishing ${IMAGE_NAME}*:${IMAGE_TAG} image"
-            yarn docker:publish
-
-            export IMAGE_NAME=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME
-            export IMAGE_TAG=$CIRCLE_TAG
-            echo "Publishing ${IMAGE_NAME}*:${IMAGE_TAG} image"
-            yarn docker:publish
-
-      # - run:
-      #     name: Re-tag pre built image
-      #     command: |
-      #       docker tag $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:latest
-      #       docker tag $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG
-
-      # - run:
-      #     name: Publish Docker image $CIRCLE_TAG & Latest tag to Docker Hub
-      #     command: |
-      #       echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG"
-      #       docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG
-      #       echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:latest"
-      #       docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:latest
+            echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG"
+            docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG
+            echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG"
+            docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG
+      - run:
+          name: Set Image Digest
+          command: |
+            IMAGE_DIGEST=$(docker inspect $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:v${CIRCLE_TAG:1} | jq '.[0].RepoDigests | .[]')
+            echo "IMAGE_DIGEST=${IMAGE_DIGEST}"
+            echo "export IMAGE_DIGEST=${IMAGE_DIGEST}" >> $BASH_ENV
+      - run:
+          name: Update Slack config
+          command: |
+            echo "export SLACK_RELEASE_URL='https://hub.docker.com/layers/${CIRCLE_PROJECT_REPONAME}/${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}/v${CIRCLE_TAG:1}/images/${IMAGE_DIGEST}?context=explore'" | sed -r "s/${DOCKER_ORG}\/${CIRCLE_PROJECT_REPONAME}@sha256:/sha256-/g" >> $BASH_ENV
+      - slack/notify:
+          event: pass
+          template: SLACK_TEMP_RELEASE_SUCCESS
+      - slack/notify:
+          event: fail
+          template: SLACK_TEMP_RELEASE_FAILURE
 
   publish-docker-snapshot:
     executor: default-machine
@@ -552,75 +522,129 @@ jobs:
             PACKAGE_VERSION=$(cat package-lock.json | jq -r .version)
             echo "export PACKAGE_VERSION=${PACKAGE_VERSION}" >> $BASH_ENV
             echo "PACKAGE_VERSION=${PACKAGE_VERSION}"
-
-      # - attach_workspace:
-      #     at: /tmp
-      # - run:
-      #     name: Load the pre-built docker image from workspace
-      #     command: docker load -i /tmp/docker-image.tar
-
       - run:
-          name: Build docker image
+          name: Setup Slack config
           command: |
-            echo "Building Docker image: local"
-            export IMAGE_NAME=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME
-            echo 'export IMAGE_NAME=`$IMAGE_NAME`' >> $BASH_ENV
-            export IMAGE_TAG=local
-
-            yarn docker:build
+            echo "export SLACK_PROJECT_NAME=${CIRCLE_PROJECT_REPONAME}" >> $BASH_ENV
+            echo "export SLACK_RELEASE_TYPE='Docker Release'" >> $BASH_ENV
+            echo "export SLACK_RELEASE_TAG=v${CIRCLE_TAG:1}" >> $BASH_ENV
+            echo "export SLACK_BUILD_ID=${CIRCLE_BUILD_NUM}" >> $BASH_ENV
+            echo "export SLACK_CI_URL=${CIRCLE_BUILD_URL}" >> $BASH_ENV
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Load the pre-built docker image from workspace
+          command: | 
+            docker load -i /tmp/docker-image.tar
       - run:
           name: Login to Docker Hub
           command: docker login -u $DOCKER_USER -p $DOCKER_PASS
-
       - run:
           name: Re-tag pre built image
           command: |
-            export SRC_IMAGE_NAME=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME
-            export SRC_IMAGE_TAG=local
-            export TRG_IMAGE_NAME=$SRC_IMAGE_NAME
-            export TRG_IMAGE_TAG=latest
-            echo "Re-tagging ${SRC_IMAGE_NAME}*:${SRC_IMAGE_TAG} image as ${TRG_IMAGE_NAME}*:${TRG_IMAGE_TAG}"
-            yarn docker:tag
-
-            export SRC_IMAGE_NAME=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME
-            export SRC_IMAGE_TAG=local
-            export TRG_IMAGE_NAME=$SRC_IMAGE_NAME
-            export TRG_IMAGE_TAG=$CIRCLE_TAG
-            echo "Re-tagging ${SRC_IMAGE_NAME}*:${SRC_IMAGE_TAG} image as ${TRG_IMAGE_NAME}*:${TRG_IMAGE_TAG}"
-            yarn docker:tag
+            docker tag $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG
       - run:
           name: Publish Docker image $CIRCLE_TAG & Latest tag to Docker Hub
           command: |
-            export IMAGE_NAME=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME
-            export IMAGE_TAG=latest
-            echo "Publishing ${IMAGE_NAME}*:${IMAGE_TAG} image"
-            yarn docker:publish
-
-            export IMAGE_NAME=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME
-            export IMAGE_TAG=$CIRCLE_TAG
-            echo "Publishing ${IMAGE_NAME}*:${IMAGE_TAG} image"
-            yarn docker:publish
+            echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG"
+            docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG
+            echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG"
+            docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG
+      - run:
+          name: Set Image Digest
+          command: |
+            IMAGE_DIGEST=$(docker inspect $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:v${CIRCLE_TAG:1} | jq '.[0].RepoDigests | .[]')
+            echo "IMAGE_DIGEST=${IMAGE_DIGEST}"
+            echo "export IMAGE_DIGEST=${IMAGE_DIGEST}" >> $BASH_ENV
+      - run:
+          name: Update Slack config
+          command: |
+            echo "export SLACK_RELEASE_URL='https://hub.docker.com/layers/${CIRCLE_PROJECT_REPONAME}/${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}/v${CIRCLE_TAG:1}/images/${IMAGE_DIGEST}?context=explore'" | sed -r "s/${DOCKER_ORG}\/${CIRCLE_PROJECT_REPONAME}@sha256:/sha256-/g" >> $BASH_ENV
+      - slack/notify:
+          event: pass
+          template: SLACK_TEMP_RELEASE_SUCCESS
+      - slack/notify:
+          event: fail
+          template: SLACK_TEMP_RELEASE_FAILURE
 
   publish-npm:
     executor: default-docker
     environment: *defaults_environment
     steps:
-      - checkout
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
+      - checkout
       - restore_cache:
-          name: Restore Yarn Package Cache
-          keys:
-            - yarn-packages-{{ checksum "yarn.lock" }}
+          key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
       - run:
-          name: setup environment vars for LATEST release
+          name: Setup for LATEST release
           command: |
-            echo 'export RELEASE_TAG=$RELEASE_TAG_PROD' >> $BASH_ENV
+            echo "export RELEASE_TAG=$RELEASE_TAG_PROD" >> $BASH_ENV
+            echo "RELEASE_TAG=$RELEASE_TAG_PROD"
+            PACKAGE_VERSION=$(cat package-lock.json | jq -r .version)
+            echo "export PACKAGE_VERSION=${PACKAGE_VERSION}" >> $BASH_ENV
+            echo "PACKAGE_VERSION=${PACKAGE_VERSION}"
+      - run:
+          name: Setup Slack config
+          command: |
+            echo "export SLACK_PROJECT_NAME=${CIRCLE_PROJECT_REPONAME}" >> $BASH_ENV
+            echo "export SLACK_RELEASE_TYPE='NPM Release'" >> $BASH_ENV
+            echo "export SLACK_RELEASE_TAG=v${CIRCLE_TAG:1}" >> $BASH_ENV
+            echo "export SLACK_RELEASE_URL=https://www.npmjs.com/package/@mojaloop/${CIRCLE_PROJECT_REPONAME}/v/${CIRCLE_TAG:1}" >> $BASH_ENV
+            echo "export SLACK_BUILD_ID=${CIRCLE_BUILD_NUM}" >> $BASH_ENV
+            echo "export SLACK_CI_URL=${CIRCLE_BUILD_URL}" >> $BASH_ENV
       - run:
           <<: *defaults_npm_auth
       - run:
           <<: *defaults_npm_publish_release
+      - slack/notify:
+          event: pass
+          template: SLACK_TEMP_RELEASE_SUCCESS
+      - slack/notify:
+          event: fail
+          template: SLACK_TEMP_RELEASE_FAILURE
+
+  publish-npm-snapshot:
+    executor: default-docker
+    environment: *defaults_environment
+    steps:
+      - run:
+          name: Install general dependencies
+          command: *defaults_Dependencies
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: Setup for SNAPSHOT release
+          command: |
+            echo "export RELEASE_TAG=${RELEASE_TAG_SNAPSHOT}" >> $BASH_ENV
+            echo "RELEASE_TAG=${RELEASE_TAG_SNAPSHOT}"
+            echo "Override package version: ${CIRCLE_TAG:1}"
+            npx standard-version --skip.tag --skip.commit --skip.changelog --release-as ${CIRCLE_TAG:1}
+            PACKAGE_VERSION=$(cat package-lock.json | jq -r .version)
+            echo "export PACKAGE_VERSION=${PACKAGE_VERSION}" >> $BASH_ENV
+            echo "PACKAGE_VERSION=${PACKAGE_VERSION}"
+      - run:
+          name: Setup Slack config
+          command: |
+            echo "export SLACK_PROJECT_NAME=${CIRCLE_PROJECT_REPONAME}" >> $BASH_ENV
+            echo "export SLACK_RELEASE_TYPE='NPM Snapshot'" >> $BASH_ENV
+            echo "export SLACK_RELEASE_TAG=v${CIRCLE_TAG:1}" >> $BASH_ENV
+            echo "export SLACK_RELEASE_URL=https://www.npmjs.com/package/@mojaloop/${CIRCLE_PROJECT_REPONAME}/v/${CIRCLE_TAG:1}" >> $BASH_ENV
+            echo "export SLACK_BUILD_ID=${CIRCLE_BUILD_NUM}" >> $BASH_ENV
+            echo "export SLACK_CI_URL=${CIRCLE_BUILD_URL}" >> $BASH_ENV
+      - run:
+          <<: *defaults_npm_auth
+      - run:
+          <<: *defaults_npm_publish_release
+      - slack/notify:
+          event: pass
+          template: SLACK_TEMP_RELEASE_SUCCESS
+      - slack/notify:
+          event: fail
+          template: SLACK_TEMP_RELEASE_FAILURE
+
 ##
 # Workflows
 #
@@ -678,10 +702,23 @@ workflows:
                 - /feature*/
                 - /bugfix*/
 
+      - build-local:
+          context: org-global
+          requires:
+            - setup
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?/
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
+
       - test-integration:
           context: org-global
           requires:
             - setup
+            - build-local
           filters:
             tags:
               only: /.*/
@@ -713,61 +750,43 @@ workflows:
                 - /feature*/
                 - /bugfix*/
 
-      # - build-local:
-      #     context: org-global
-      #     requires:
-      #       - test-integration
-      #       - validate-openapi
-      #       - test-unit
-      #     filters:
-      #       tags:
-      #         only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?/
-      #       branches:
-      #         ignore:
-      #           - /feature*/
-      #           - /bugfix*/
+      - image-scan:
+          context: org-global
+          requires:
+            - build-local
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?/
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
 
-      # TODO: fix this
-      # - image-scan:
-      #     context: org-global
-      #     requires:
-      #       - build-local
-      #     filters:
-      #       tags:
-      #         only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?/
-      #       branches:
-      #         ignore:
-      #           - /feature*/
-      #           - /bugfix*/
-
-      # TODO: fix this
-      # - license-scan:
-      #     context: org-global
-      #     requires:
-      #       - build-local
-      #     filters:
-      #       tags:
-      #         only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?/
-      #       branches:
-      #         ignore:
-      #           - /feature*/
-      #           - /bugfix*/
+      - license-scan:
+          context: org-global
+          requires:
+            - build-local
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?/
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
 
       # New commits to master release automatically
       - release:
           context: org-global
           requires:
-            # - build-local
+            - build-local
             - pr-tools/pr-title-check
             - validate-openapi
             - test-unit
+            - test-integration
             - vulnerability-check
             - audit-licenses
-            - test-integration
-            # TODO: fix this
-            # - license-scan
-            # TODO: fix this
-            # - image-scan
+            - license-scan
+            - image-scan
           filters:
             branches:
               only:
@@ -787,17 +806,15 @@ workflows:
       - publish-docker:
           context: org-global
           requires:
-            # - build-local
+            - build-local
             - pr-tools/pr-title-check
             - validate-openapi
             - test-unit
+            - test-integration
             - vulnerability-check
             - audit-licenses
-            - test-integration
-            # TODO: fix this
-            # - license-scan
-            # TODO: fix this
-            # - image-scan
+            - license-scan
+            - image-scan
           filters:
             tags:
               only: /v[0-9]+(\.[0-9]+)*/
@@ -808,17 +825,15 @@ workflows:
       - publish-docker-snapshot:
           context: org-global
           requires:
-            # - build-local
+            - build-local
             - pr-tools/pr-title-check
             - validate-openapi
             - test-unit
+            - test-integration
             - vulnerability-check
             - audit-licenses
-            - test-integration
-            # TODO: fix this
-            # - license-scan
-            # TODO: fix this
-            # - image-scan
+            - license-scan
+            - image-scan
           filters:
             tags:
               only: /v[0-9]+(\.[0-9]+)*\-snapshot+((\.[0-9]+)?)/
@@ -832,16 +847,32 @@ workflows:
             - pr-tools/pr-title-check
             - validate-openapi
             - test-unit
+            - test-integration
             - vulnerability-check
             - audit-licenses
-            - test-integration
-            # TODO: fix this
-            # - license-scan
-            # TODO: fix this
-            # - image-scan
+            - license-scan
+            - image-scan
           filters:
             tags:
               only: /v[0-9]+(\.[0-9]+)*/
+            branches:
+              ignore:
+                - /.*/
+
+      - publish-npm-snapshot:
+          context: org-global
+          requires:
+            - pr-tools/pr-title-check
+            - validate-openapi
+            - test-unit
+            - test-integration
+            - vulnerability-check
+            - audit-licenses
+            - license-scan
+            - image-scan
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*\-snapshot+((\.[0-9]+)?)/
             branches:
               ignore:
                 - /.*/
