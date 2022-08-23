@@ -41,7 +41,7 @@ export class SDKOutboundBulkPartyInfoRequestedMessage extends DomainEventMessage
             timestamp: data.timestamp,
             headers: data.headers,
             content: null,
-            name: OutboundDomainEventMessageName.SDKOutboundBulkPartyInfoRequested,
+            name: SDKOutboundBulkPartyInfoRequestedMessage.name,
         });
     }
 

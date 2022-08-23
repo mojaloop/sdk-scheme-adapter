@@ -44,7 +44,7 @@ export class PartyInfoRequestedMessage extends DomainEventMessage {
             content: data.request,
             timestamp: data.timestamp,
             headers: data.headers,
-            name: OutboundDomainEventMessageName.PartyInfoRequested,
+            name: PartyInfoRequestedMessage.name,
         });
     }
 

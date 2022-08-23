@@ -46,8 +46,7 @@ export class SDKOutboundBulkRequestReceivedMessage extends DomainEventMessage {
             content: data.bulkRequest,
             timestamp: data.timestamp,
             headers: data.headers,
-            // TODO: Use the classname of the event instead of enum here
-            name: OutboundDomainEventMessageName.SDKOutboundBulkRequestReceived,
+            name: SDKOutboundBulkRequestReceivedMessage.name,
         });
     }
 

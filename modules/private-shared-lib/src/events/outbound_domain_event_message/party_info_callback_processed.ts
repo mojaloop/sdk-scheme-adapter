@@ -44,7 +44,7 @@ export class PartyInfoCallbackProcessedMessage extends DomainEventMessage {
             content: null,
             timestamp: data.timestamp,
             headers: data.headers,
-            name: OutboundDomainEventMessageName.PartyInfoCallbackProcessed,
+            name: PartyInfoCallbackProcessedMessage.name,
         });
     }
 
