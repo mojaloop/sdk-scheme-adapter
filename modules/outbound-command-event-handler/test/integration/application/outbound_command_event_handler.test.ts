@@ -827,7 +827,7 @@ describe("Tests for Outbound Command Event Handler", () => {
 
   // // TESTS FOR QUOTE PROCESSING
 
-  test.skip("When inbound command event ProcessSDKOutboundBulkQuotesRequest is received\
+  test.skip("10. When inbound command event ProcessSDKOutboundBulkQuotesRequest is received\
         Then the logic should update the global state to AGREEMENT_PROCESSING, \
           And create batches based on FSP that has DISCOVERY_ACCEPTED state \
           And also has config maxEntryConfigPerBatch \
@@ -836,7 +836,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     //TODO add asserts
   });
 
-  test.skip("Given the callback for quote batch is successful \
+  test.skip("11. Given the callback for quote batch is successful \
           And the callback has a combination of success and failed responses for individual quotes \
         When Inbound command event ProcessBulkQuotesCallback is received \
         Then the logic should update the individual batch state to AGREEMENT_COMPLETED, \
@@ -844,6 +844,30 @@ describe("Tests for Outbound Command Event Handler", () => {
           And the individual quote data in redis should be updated with the response \
           And domain event BulkQuotesProcessed should be published", async () => {
     //TODO add asserts
+  });
+
+  test.skip("12. Given acceptAutoQuote setting is false \
+                  When inbound command event ProcessSDKOutboundBulkQuotesRequestComplete is received \
+                  Then the global state should be updated to AGREEMENT_ACCEPTANCE_PENDING \
+                    And domain event SDKOutboundBulkAcceptQuoteRequested is published. ",async () => {
+    
+  });
+
+  test.skip("13. Given autoAcceptQuote setting is false \
+              When inbound command event ProcessSDKOutboundBulkAutoAcceptQuote is received \
+              Then the logic should loop through all the transfers in the bulk transaction \
+              And update the state for each transfer to AGREEMENT_ACCEPTED or AGREEMENT_REJECTED \
+                  depending on the status of each transfer in the bulk transaction \
+              And domain event SDKOutboundBulkAcceptQuoteProcessed is published.",async () => {
+    
+  });
+
+  test.skip("14. Given autoAcceptQuote setting is true \
+              When inbound command event ProcessSDKOutboundBulkAutoAcceptQuote is received \
+              Then the logic should loop through all the transfers in the bulk transaction \
+              And update the state for each transfer to AGREEMENT_ACCEPTED \
+              And domain event SDKOutboundBulkAutoAcceptQuoteProcessed is published.",async () => {
+    
   });
 
 
