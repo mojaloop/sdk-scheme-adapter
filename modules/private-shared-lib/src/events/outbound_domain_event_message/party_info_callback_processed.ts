@@ -27,24 +27,23 @@
 import { DomainEventMessage } from '../domain_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 // import { v1_1 as FSPIOP } from '@mojaloop/api-snippets';
-import { OutboundDomainEventMessageName } from '.';
 
-export interface IPartyInfoCallbackProceededMessageData {
+export interface IPartyInfoCallbackProcessedMessageData {
     key: string;
     // partyResult: FSPIOP.Schemas.PartyResult;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
 
-export class PartyInfoCallbackProceededMessage extends DomainEventMessage {
-    constructor(data: IPartyInfoCallbackProceededMessageData) {
+export class PartyInfoCallbackProcessedMessage extends DomainEventMessage {
+    constructor(data: IPartyInfoCallbackProcessedMessageData) {
         super({
             key: data.key,
             // content: data.partyResult,
             content: null,
             timestamp: data.timestamp,
             headers: data.headers,
-            name: OutboundDomainEventMessageName.PartyInfoCallbackProcessed,
+            name: PartyInfoCallbackProcessedMessage.name,
         });
     }
 
@@ -56,16 +55,16 @@ export class PartyInfoCallbackProceededMessage extends DomainEventMessage {
         return this.getKey().split('_')[1];
     }
 
-    static CreateFromCommandEventMessage(message: DomainEventMessage): PartyInfoCallbackProceededMessage {
+    static CreateFromCommandEventMessage(message: DomainEventMessage): PartyInfoCallbackProcessedMessage {
         if((message.getContent() === null || typeof message.getContent() !== 'object')) {
             throw new Error('Content is in unknown format');
         }
-        const data: IPartyInfoCallbackProceededMessageData = {
+        const data: IPartyInfoCallbackProcessedMessageData = {
             key: message.getKey(),
             // partyResult: <FSPIOP.Schemas.PartyResult>message.getContent(),
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
         };
-        return new PartyInfoCallbackProceededMessage(data);
+        return new PartyInfoCallbackProcessedMessage(data);
     }
 }
