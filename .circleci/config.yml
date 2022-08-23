@@ -245,9 +245,13 @@ jobs:
       - checkout
       - run:
           <<: *defaults_configure_nvm
-      - run:
-          name: Install Dependencies
-          command: yarn install --immutable
+      - restore_cache:
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
+      # - run:
+      #     name: Install Dependencies
+      #     command: yarn install --immutable --focus
       - run:
           name: Execute linting
           command: yarn run lint
