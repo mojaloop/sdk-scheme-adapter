@@ -90,7 +90,7 @@ describe("Tests for Outbound Command Event Handler", () => {
 
   // TESTS FOR PARTY LOOKUP
 
-  test.only("1. When inbound command event ProcessSDKOutboundBulkRequest is received \
+  test("1. When inbound command event ProcessSDKOutboundBulkRequest is received \
         Then outbound event SDKOutboundBulkPartyInfoRequested should be published \
           And Global state should be updated to RECEIVED.", async () => {
 
@@ -170,7 +170,7 @@ describe("Tests for Outbound Command Event Handler", () => {
 
   });
 
-  test.only("2. Given Party info does not already exist for none of the individual transfers. \
+  test("2. Given Party info does not already exist for none of the individual transfers. \
           And Party Lookup is not skipped \
         When inbound command event ProcessSDKOutboundBulkPartyInfoRequest is received\
         Then the global state should be updated to DISCOVERY_PROCESSING \
@@ -270,7 +270,7 @@ describe("Tests for Outbound Command Event Handler", () => {
 
   });
 
-  test("3. Given Party info exists for individual transfers. \
+  test.skip("3. Given Party info exists for individual transfers. \
               And Party Lookup is not skipped \
             When inbound command event ProcessSDKOutboundBulkPartyInfoRequest is received \
             Then the global state should be updated to DISCOVERY_PROCESSING. \
@@ -350,7 +350,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     //TODO Add asserts to check data contents of the domain event published to kafka
   });
 
-  test.only("4. Given receiving party info does not exist \
+  test("4. Given receiving party info does not exist \
               And receiving party lookup was successful \
             When inbound command event ProcessPartyInfoCallback is received \
             Then the state for individual successful party lookups should be updated to DISCOVERY_SUCCESS \
@@ -448,7 +448,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     // //TODO Add asserts to check data contents of the domain event published to kafka
   });
 
-  test.only("5. Given receiving party info does not exist \
+  test("5. Given receiving party info does not exist \
               And receiving party lookup was not successful \
             When inbound command event ProcessPartyInfoCallback is received \
             Then the state for individual successful party lookups should be updated to DISCOVERY_FAILED \
@@ -547,7 +547,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect(domainEvents[2].getName()).toBe('PartyInfoCallbackProcessed')
   });
 
-  test.only("6. When inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
+  test("6. When inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
           Then the global state should be updated to DISCOVERY_COMPLETED", async () => {
     
     //Publish this message so that it is stored internally in redis
@@ -614,7 +614,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     
   });
 
-  test("7. Given autoAcceptParty setting is set to false \
+  test.skip("7. Given autoAcceptParty setting is set to false \
                 When inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
                 Then outbound event SDKOutboundBulkAcceptpartyInfoRequested should be published \
                   And Then global state should be updated to DISCOVERY_ACCEPTANCE_PENDING", async () => {
@@ -685,7 +685,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect(domainEvents[2].getName()).toBe('SDKOutboundBulkAcceptpartyInfoRequested')
   });
 
-  test("8. Given autoAcceptParty setting is set to true \
+  test.skip("8. Given autoAcceptParty setting is set to true \
             When Inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
             Then outbound event SDKOutboundBulkAutoAcceptpartyInfoRequested should be published. \
               And Then global state should be same as before DISCOVERY_COMPLETED", async () => {
@@ -755,7 +755,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect(domainEvents[2].getName()).toBe('SDKOutboundBulkAcceptpartyInfoRequested')
   });
 
-  test("9. When inbound command event ProcessSDKOutboundBulkAcceptPartyInfo is received \
+  test.skip("9. When inbound command event ProcessSDKOutboundBulkAcceptPartyInfo is received \
            Then the logic should loop through individual transfer in the bulk request \
               And update the individual transfer state to DISCOVERY_ACCEPTED or DISCOVERY_REJECTED based on the value in the incoming event \
               And update the overall global state to DISCOVERY_ACCEPTANCE_COMPLETED \
@@ -827,22 +827,24 @@ describe("Tests for Outbound Command Event Handler", () => {
 
   // // TESTS FOR QUOTE PROCESSING
 
-  // test("When inbound command event ProcessSDKOutboundBulkQuotesRequest is received\
-  //       Then the logic should update the global state to AGREEMENT_PROCESSING, \
-  //         And create batches based on FSP that has DISCOVERY_ACCEPTED state \
-  //         And also has config maxEntryConfigPerBatch \
-  //         And publish BulkQuotesRequested per each batch \
-  //         And update the state of each batch to AGREEMENT_PROCESSING.", async () => {
-  //   //TODO add asserts
-  // });
+  test.skip("When inbound command event ProcessSDKOutboundBulkQuotesRequest is received\
+        Then the logic should update the global state to AGREEMENT_PROCESSING, \
+          And create batches based on FSP that has DISCOVERY_ACCEPTED state \
+          And also has config maxEntryConfigPerBatch \
+          And publish BulkQuotesRequested per each batch \
+          And update the state of each batch to AGREEMENT_PROCESSING.", async () => {
+    //TODO add asserts
+  });
 
-  // test("Given the callback for quote batch is successful \
-  //         And the callback has a combination of success and failed responses for individual quotes \
-  //       When Inbound command event ProcessBulkQuotesCallback is received \
-  //       Then the logic should update the individual batch state to AGREEMENT_COMPLETED, \
-  //         And also has config maxEntryConfigPerBatch \
-  //         And publish BulkQuotesRequested per each batch \
-  //         And update the state of each batch to AGREEMENT_PROCESSING.", async () => {
-  //   //TODO add asserts
-  // });
+  test.skip("Given the callback for quote batch is successful \
+          And the callback has a combination of success and failed responses for individual quotes \
+        When Inbound command event ProcessBulkQuotesCallback is received \
+        Then the logic should update the individual batch state to AGREEMENT_COMPLETED, \
+          And for each individual quote in the batch , the state should be upadted to AGREEMENT_SUCCESS or AGREEMENT_FAILED accordingly \
+          And the individual quote data in redis should be updated with the response \
+          And domain event BulkQuotesProcessed should be published", async () => {
+    //TODO add asserts
+  });
+
+
 });
