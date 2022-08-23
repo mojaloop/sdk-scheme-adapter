@@ -420,5 +420,173 @@
     },
     "type": "callback",
     "version": 1
+  },
+  {
+    "ruleId": 7,
+    "priority": 1,
+    "description": "post /bulkQuotes",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 1,
+      "type": "fspiop",
+      "asynchronous": true,
+      "hostnames": [
+        "localhost"
+      ],
+      "specFile": "spec_files/api_definitions/fspiop_1.1/api_spec.yaml",
+      "callbackMapFile": "spec_files/api_definitions/fspiop_1.1/callback_map.json",
+      "responseMapFile": "spec_files/api_definitions/fspiop_1.1/response_map.json",
+      "jsfRefFile": "spec_files/api_definitions/fspiop_1.1/mockRef.json",
+      "triggerTemplatesFolder": "spec_files/api_definitions/fspiop_1.1/trigger_templates"
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/bulkQuotes"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": "put",
+      "path": "/bulkQuotes/{ID}",
+      "params": {
+        "scripts": {
+          "scriptingEngine": "postman"
+        },
+        "body": {
+          "expiration": "3193-12-14T10:44:40.591-11:41",
+          "individualQuoteResults": [
+            {
+              "quoteId": "{$request.body.individualQuotes[0].quoteId}",
+              "condition": "GRzLaTP7DJ9t4P-a_BA0WA9wzzlsugf00-Tn6kESAfM",
+              "payeeFspFee": {
+                "currency": "{$request.body.individualQuotes[0].amount.currency}",
+                "amount": "0"
+              },
+              "ilpPacket": "AQAAAAAAAADIEHByaXZhdGUucGF5ZWVmc3CCAiB7InRyYW5zYWN0aW9uSWQiOiIyZGY3NzRlMi1mMWRiLTRmZjctYTQ5NS0yZGRkMzdhZjdjMmMiLCJxdW90ZUlkIjoiMDNhNjA1NTAtNmYyZi00NTU2LThlMDQtMDcwM2UzOWI4N2ZmIiwicGF5ZWUiOnsicGFydHlJZEluZm8iOnsicGFydHlJZFR5cGUiOiJNU0lTRE4iLCJwYXJ0eUlkZW50aWZpZXIiOiIyNzcxMzgwMzkxMyIsImZzcElkIjoicGF5ZWVmc3AifSwicGVyc29uYWxJbmZvIjp7ImNvbXBsZXhOYW1lIjp7fX19LCJwYXllciI6eyJwYXJ0eUlkSW5mbyI6eyJwYXJ0eUlkVHlwZSI6Ik1TSVNETiIsInBhcnR5SWRlbnRpZmllciI6IjI3NzEzODAzOTExIiwiZnNwSWQiOiJwYXllcmZzcCJ9LCJwZXJzb25hbEluZm8iOnsiY29tcGxleE5hbWUiOnt9fX0sImFtb3VudCI6eyJjdXJyZW5jeSI6IlVTRCIsImFtb3VudCI6IjIwMCJ9LCJ0cmFuc2FjdGlvblR5cGUiOnsic2NlbmFyaW8iOiJERVBPU0lUIiwic3ViU2NlbmFyaW8iOiJERVBPU0lUIiwiaW5pdGlhdG9yIjoiUEFZRVIiLCJpbml0aWF0b3JUeXBlIjoiQ09OU1VNRVIiLCJyZWZ1bmRJbmZvIjp7fX19",
+              "transferAmount": {
+                "currency": "{$request.body.individualQuotes[0].amount.currency}",
+                "amount": "{$request.body.individualQuotes[0].amount.amount}"
+              },
+              "payeeFspCommission": {
+                "currency": "{$request.body.individualQuotes[0].amount.currency}",
+                "amount": "0"
+              },
+              "payeeReceiveAmount": {
+                "currency": "{$request.body.individualQuotes[0].amount.currency}",
+                "amount": "{$request.body.individualQuotes[0].amount.amount}"
+              },
+              "extensionList": {
+                "extension": [
+                  {
+                    "key": "individualExternsionList",
+                    "value": "This is an example for individual extension list"
+                  }
+                ]
+              }
+            }
+          ],
+          "extensionList": {
+            "extension": [
+              {
+                "key": "key",
+                "value": "value"
+              }
+            ]
+          }
+        },
+        "headers": {
+          "Content-Type": "application/vnd.interoperability.bulkQuotes+json;version=1.1",
+          "Date": "{$function.generic.curDate}",
+          "FSPIOP-Source": "{$config.FSPID}"
+        }
+      },
+      "type": "FIXED_CALLBACK"
+    },
+    "type": "callback",
+    "version": 1
+  },
+  {
+    "ruleId": 8,
+    "priority": 1,
+    "description": "post /bulkTransfers",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 1,
+      "type": "fspiop",
+      "asynchronous": true,
+      "hostnames": [
+        "localhost"
+      ],
+      "specFile": "spec_files/api_definitions/fspiop_1.1/api_spec.yaml",
+      "callbackMapFile": "spec_files/api_definitions/fspiop_1.1/callback_map.json",
+      "responseMapFile": "spec_files/api_definitions/fspiop_1.1/response_map.json",
+      "jsfRefFile": "spec_files/api_definitions/fspiop_1.1/mockRef.json",
+      "triggerTemplatesFolder": "spec_files/api_definitions/fspiop_1.1/trigger_templates"
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/bulkTransfers"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": "put",
+      "path": "/bulkTransfers/{ID}",
+      "params": {
+        "scripts": {
+          "scriptingEngine": "postman"
+        },
+        "body": {
+          "completedTimestamp": "2026-05-24T08:38:08.699-04:00",
+          "individualTransferResults": [
+            {
+              "transferId": "b51ec534-ee48-4575-b6a9-ead2955b8069",
+              "fulfilment": "WLctttbu2HvTsa1XWvUoGRcQozHsqeu9Ahl2JW9Bsu8",
+              "extensionList": {
+                "extension": [
+                  {
+                    "key": "individualExtensionList",
+                    "value": "This is an example for individual extension list"
+                  }
+                ]
+              }
+            }
+          ],
+          "bulkTransferState": "RECEIVED",
+          "extensionList": {
+            "extension": [
+              {
+                "key": "key",
+                "value": "value"
+              }
+            ]
+          }
+        },
+        "headers": {
+          "Content-Type": "application/vnd.interoperability.bulkTransfers+json;version=1.1",
+          "Date": "{$function.generic.curDate}",
+          "FSPIOP-Source": "{$config.FSPID}"
+        }
+      },
+      "type": "FIXED_CALLBACK"
+    },
+    "type": "callback",
+    "version": 1
   }
 ]

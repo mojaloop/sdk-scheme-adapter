@@ -15,7 +15,7 @@ const { uuid } = require('uuidv4');
 const StateMachine = require('javascript-state-machine');
 const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const { BackendError } = require('./common');
-
+const shared = require('./lib/shared');
 const { SDKStateEnum } = require('./common');
 
 /**
@@ -148,7 +148,7 @@ class OutboundBulkTransfersModel {
                     let error;
                     let message = JSON.parse(msg);
 
-                    if (message.type === 'bulkTransferFulfil') {
+                    if (message.type === 'bulkTransferResponse') {
                         if (this._rejectExpiredTransferFulfils) {
                             const now = new Date().toISOString();
                             if (now > bulkTransferPrepare.expiration) {
@@ -157,7 +157,7 @@ class OutboundBulkTransfersModel {
                                 this._logger.error(`${msg}: system time=${now} > expiration time=${bulkTransferPrepare.expiration}`);
                             }
                         }
-                    } else if (message.type === 'bulkTransferError') {
+                    } else if (message.type === 'bulkTransferResponseError') {
                         error = new BackendError(`Got an error response preparing bulk transfer: ${util.inspect(message.data.body, { depth: Infinity })}`, 500);
                         error.mojaloopError = message.data.body;
                     }
@@ -181,6 +181,7 @@ class OutboundBulkTransfersModel {
                     }
 
                     const bulkTransferFulfil = message.data;
+                    this.data.bulkTransfersResponse = bulkTransferFulfil.body
                     this._logger.push({ bulkTransferFulfil }).log('Bulk transfer fulfils received');
 
                     return resolve(bulkTransferFulfil);
@@ -366,7 +367,8 @@ class OutboundBulkTransfersModel {
     getResponse() {
         // we want to project some of our internal state into a more useful
         // representation to return to the SDK API consumer
-        let resp = { ...this.data };
+        // let resp = { ...this.data };
+        let resp = shared.mojaloopBulkTransfersResponseToInternal(this.data)
 
         switch(this.data.currentState) {
             case 'succeeded':
