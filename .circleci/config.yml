@@ -725,7 +725,7 @@ workflows:
             - setup
           filters:
             tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?/
+              only: /.*/
             branches:
               ignore:
                 - /feature*/
