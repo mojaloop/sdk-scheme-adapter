@@ -27,7 +27,7 @@ COPY ./modules/outbound-domain-event-handler/package.json ./modules/outbound-dom
 COPY ./modules/private-shared-lib/package.json ./modules/private-shared-lib/package.json
 
 ## Install dependencies
-RUN yarn install --immutable --production
+RUN yarn install --immutable
 
 # Build Run-time image
 FROM node:${NODE_VERSION}
