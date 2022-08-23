@@ -7,11 +7,11 @@ version: 2.1
 # Orbs used in this pipeline
 ###
 orbs:
-  anchore: anchore/anchore-engine@1.9.0
+  anchore: anchore/anchore-engine@1.9.0 # Ref: https://circleci.com/developer/orbs/orb/anchore/anchore-engine
   slack: circleci/slack@4.9.3 # Ref: https://github.com/mojaloop/ci-config/tree/master/slack-templates
   pr-tools: mojaloop/pr-tools@0.1.10 # Ref: https://github.com/mojaloop/ci-config/
-  gh: circleci/github-cli@2.1.0
-  nx: nrwl/nx@1.6.0
+  gh: circleci/github-cli@2.1.0 # Ref: https://github.com/CircleCI-Public/github-cli-orb
+  nx: nrwl/nx@1.6.0 # Ref: https://github.com/nrwl/nx-orb
 
 ##
 # defaults
@@ -41,18 +41,12 @@ defaults_npm_auth: &defaults_npm_auth
   name: Update NPM registry auth token
   command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
 
-# defaults_npm_publish_release: &defaults_npm_publish_release
-#   name: Publish NPM $RELEASE_TAG artifact
-#   command: |
-#     source $BASH_ENV
-#     echo "Publishing tag $RELEASE_TAG"
-#     npm publish --tag $RELEASE_TAG --access public
 defaults_npm_publish_release: &defaults_npm_publish_release
   name: Publish NPM $RELEASE_TAG artifact
   command: |
     source $BASH_ENV
     echo "Publishing tag $RELEASE_TAG"
-    yarn publish
+    npm publish --tag $RELEASE_TAG --access public
 
 defaults_export_version_from_package: &defaults_export_version_from_package
   name: Format the changelog into the github release body and get release tag
@@ -165,9 +159,9 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Build Docker local image for testing
+          name: Build Docker local image
           command: |
-            echo "Building Docker image: local"
+            echo "Building Docker image: $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local"
             docker build -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local .
       - run:
           name: Save docker image to workspace
@@ -177,7 +171,6 @@ jobs:
           paths:
             - ./docker-image.tar
 
-  ## TODO: Fix Integration tests
   test-integration:
     executor: default-machine
     environment: *defaults_environment
@@ -193,6 +186,7 @@ jobs:
       - run:
           name: Load the pre-built docker image from workspace
           command: docker load -i /tmp/docker-image.tar
+      ## This shouldn't be needed as the docker image is pre-built by build-local job
       # - run:
       #     name: Build docker-compose
       #     command: |
@@ -206,10 +200,10 @@ jobs:
           command: |
             yarn run wait-4-docker
       - run:
-          name: Execute unit tests
+          name: Execute Build
           command: yarn run build
       - run:
-          name: Execute integration tests
+          name: Execute Integration Tests
           command: |
             yarn run test:integration
       ## TODO Capture results
@@ -257,6 +251,7 @@ jobs:
       - run:
           name: Execute linting
           command: yarn run lint
+      ## TODO Capture results
       # - run:
       #     name: Create dir for lint results
       #     command: mkdir -p /lintresults
@@ -378,7 +373,7 @@ jobs:
       - anchore/analyze_local_image:
           # Force the older version, version 0.7.0 was just published, and is broken
           anchore_version: v0.6.1
-          image_name: "docker.io/node:16.15.0-alpine $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG"
+          image_name: "docker.io/node:16.15.0-alpine $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local"
           policy_failure: false
           timeout: '500'
           # Note: if the generated policy is invalid, this will fallback to the default policy, which we don't want!
@@ -677,6 +672,7 @@ workflows:
     jobs:
       - pr-tools/pr-title-check:
           context: org-global
+
       - setup:
           context: org-global
           filters:
@@ -771,29 +767,27 @@ workflows:
                 - /feature*/
                 - /bugfix*/
 
-      - image-scan:
-          context: org-global
-          requires:
-            - build-local
-          filters:
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?/
-            branches:
-              ignore:
-                - /feature*/
-                - /bugfix*/
-
       - license-scan:
           context: org-global
           requires:
             - build-local
           filters:
             tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?/
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot(\.[0-9]+)?)?(\-hotfix(\.[0-9]+)?)?(\-perf(\.[0-9]+)?)?/
             branches:
               ignore:
-                - /feature*/
-                - /bugfix*/
+                - /.*/
+
+      - image-scan:
+          context: org-global
+          requires:
+            - build-local
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot(\.[0-9]+)?)?(\-hotfix(\.[0-9]+)?)?(\-perf(\.[0-9]+)?)?/
+            branches:
+              ignore:
+                - /.*/
 
       # New commits to master release automatically
       - release:
