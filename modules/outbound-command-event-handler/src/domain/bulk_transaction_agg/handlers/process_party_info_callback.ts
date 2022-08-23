@@ -25,7 +25,7 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { CommandEventMessage, ProcessPartyInfoCallbackMessage, PartyInfoCallbackProceededMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { CommandEventMessage, ProcessPartyInfoCallbackMessage, PartyInfoCallbackProcessedMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
 import { IndividualTransferInternalState } from '../..';
@@ -60,7 +60,7 @@ export async function handleProcessPartyInfoCallbackMessage(
         }
         individualTransfer.setPartyResponse(partyResult);
 
-        const msg = new PartyInfoCallbackProceededMessage({
+        const msg = new PartyInfoCallbackProcessedMessage({
             key: processPartyInfoCallbackMessage.getKey(),
             timestamp: Date.now(),
             headers: [],
