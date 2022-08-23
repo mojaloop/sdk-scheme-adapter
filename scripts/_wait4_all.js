@@ -10,7 +10,8 @@ const { execSync } = require('child_process')
 // Define the docker-compose containers you want to monitor here
 const expectedContainers = [
   'kafka',
-  'redis'
+  'redis',
+  'sdk-scheme-adapter-api-svc'
 ]
 
 let retries = 40
