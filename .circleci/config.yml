@@ -235,9 +235,8 @@ jobs:
           name: Validate openapi
           command: yarn run build:openapi && yarn run validate:api
 
-  lint:
+  test-dependencies:
     executor: default-docker
-    environment: *defaults_environment
     steps:
       - run:
           name: Install general dependencies
@@ -249,21 +248,26 @@ jobs:
           name: Restore Yarn Package Cache
           keys:
             - yarn-packages-{{ checksum "yarn.lock" }}
-      # - run:
-      #     name: Install Dependencies
-      #     command: yarn install --immutable --focus
       - run:
-          name: Execute linting
+          name: Execute dependency tests
+          command: yarn run dep:check
+
+  test-lint:
+    executor: default-docker
+    steps:
+      - run:
+          name: Install general dependencies
+          command: *defaults_Dependencies
+      - checkout
+      - run:
+          <<: *defaults_configure_nvm
+      - restore_cache:
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
+      - run:
+          name: Execute lint tests
           command: yarn run lint
-      ## TODO Capture results
-      # - run:
-      #     name: Create dir for lint results
-      #     command: mkdir -p /lintresults
-      # - run:
-      #     name: Execute linting
-      #     command: (yarn run lint > /lintresults/results.txt)
-      # - store_artifacts:
-      #     path: /lintresults
 
   vulnerability-check:
     executor: default-docker
@@ -711,7 +715,19 @@ workflows:
                 - /feature*/
                 - /bugfix*/
 
-      - lint:
+      - test-dependencies:
+          context: org-global
+          requires:
+            - setup
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
+
+      - test-lint:
           context: org-global
           requires:
             - setup
@@ -800,6 +816,8 @@ workflows:
             - build-local
             - pr-tools/pr-title-check
             - validate-openapi
+            - test-dependencies
+            - test-lint
             - test-unit
             - test-integration
             - vulnerability-check
@@ -828,6 +846,8 @@ workflows:
             - build-local
             - pr-tools/pr-title-check
             - validate-openapi
+            - test-dependencies
+            - test-lint
             - test-unit
             - test-integration
             - vulnerability-check
@@ -847,6 +867,8 @@ workflows:
             - build-local
             - pr-tools/pr-title-check
             - validate-openapi
+            - test-dependencies
+            - test-lint
             - test-unit
             - test-integration
             - vulnerability-check
@@ -865,6 +887,8 @@ workflows:
           requires:
             - pr-tools/pr-title-check
             - validate-openapi
+            - test-dependencies
+            - test-lint
             - test-unit
             - test-integration
             - vulnerability-check
@@ -883,6 +907,8 @@ workflows:
           requires:
             - pr-tools/pr-title-check
             - validate-openapi
+            - test-dependencies
+            - test-lint
             - test-unit
             - test-integration
             - vulnerability-check
