@@ -286,10 +286,10 @@ class OutboundBulkTransfersModel {
                     let error;
                     let message = JSON.parse(msg);
 
-                    if (message.type === 'bulkTransferError') {
+                    if (message.type === 'bulkTransferResponseError') {
                         error = new BackendError(`Got an error response retrieving bulk transfer: ${util.inspect(message.data.body, { depth: Infinity })}`, 500);
                         error.mojaloopError = message.data.body;
-                    } else if (message.type !== 'bulkTransferFulfil') {
+                    } else if (message.type !== 'bulkTransferResponse') {
                         this._logger.push({ message }).log(`Ignoring cache notification for bulk transfer ${bulkTransferKey}. Uknokwn message type ${message.type}.`);
                         return;
                     }
