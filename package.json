@@ -51,10 +51,10 @@
     "audit:check": "yarn dlx audit-ci --config ./audit-ci.jsonc",
     "dep:check": "yarn ncu -e 2 && nx run-many --parallel --all --target=dep:check",
     "dep:update": "yarn ncu -u && nx run-many --parallel --all --target=dep:update",
-    "release": "yarn run release:all -- --skip.tag --skip.commit && standard-version --commit-all --no-verify --releaseCommitMessageFormat 'chore(release): {{currentTag}} [skip ci]'",
-    "release:all": "nx affected --parallel --all --target=release",
-    "snapshot": "yarn run snapshot:all -- --skip.tag --skip.commit && standard-version --commit-all --no-verify --skip.changelog --prerelease snapshot --releaseCommitMessageFormat 'chore(snapshot): {{currentTag}}'",
-    "snapshot:all": "nx affected --parallel --all --target=snapshot",
+    "release": "yarn run release:modules -- --skip.tag --skip.commit && standard-version --commit-all --no-verify --releaseCommitMessageFormat 'chore(release): {{currentTag}} [skip ci]'",
+    "release:modules": "nx affected --parallel --all --target=release",
+    "snapshot": "yarn run snapshot:modules -- --skip.tag --skip.commit && standard-version --commit-all --no-verify --skip.changelog --prerelease snapshot --releaseCommitMessageFormat 'chore(snapshot): {{currentTag}}'",
+    "snapshot:modules": "nx affected --parallel --all --target=snapshot",
     "wait-4-docker": "node ./scripts/_wait4_all.js"
   },
   "dependencies": {
