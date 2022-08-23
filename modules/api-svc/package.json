@@ -36,7 +36,7 @@
     "updates:update": "yarn run dep:update && yarn install",
     "dep:check": "npx ncu -e 2",
     "dep:update": "npx ncu -u",
-    "release": "standard-version --releaseCommitMessageFormat 'chore(release): {{currentTag}} [skip ci]'",
+    "release": "standard-version --no-verify --releaseCommitMessageFormat 'chore(release): {{currentTag}} [skip ci]'",
     "snapshot": "standard-version --no-verify --skip.changelog --prerelease snapshot --releaseCommitMessageFormat 'chore(snapshot): {{currentTag}}'"
   },
   "author": "Matt Kingston, James Bush, ModusBox Inc.",

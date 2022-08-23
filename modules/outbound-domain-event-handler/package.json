@@ -34,7 +34,7 @@
         "test:coverage-check": "jest --coverage --testMatch '**/test/unit/**/*.test.ts'",
         "dep:check": "ncu -e 2",
         "dep:update": "ncu -u",
-        "release": "standard-version --releaseCommitMessageFormat 'chore(release): {{currentTag}} [skip ci]'",
+        "release": "standard-version --no-verify --releaseCommitMessageFormat 'chore(release): {{currentTag}} [skip ci]'",
         "snapshot": "standard-version --no-verify --skip.changelog --prerelease snapshot --releaseCommitMessageFormat 'chore(snapshot): {{currentTag}}'"
     },
     "dependencies": {
