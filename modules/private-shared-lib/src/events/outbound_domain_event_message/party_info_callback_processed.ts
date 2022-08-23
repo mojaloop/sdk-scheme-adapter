@@ -27,7 +27,6 @@
 import { DomainEventMessage } from '../domain_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 // import { v1_1 as FSPIOP } from '@mojaloop/api-snippets';
-import { OutboundDomainEventMessageName } from '.';
 
 export interface IPartyInfoCallbackProcessedMessageData {
     key: string;
