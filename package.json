@@ -53,9 +53,9 @@
     "docker:build1": "nx affected --parallel --all --target=docker-build",
     "docker:publish1": "nx affected --parallel --all --target=docker-publish",
     "npm:publish": "nx affected --parallel --all --target=npm-publish",
-    "release": "yarn run release:all -- --skip.tag --skip.commit && standard-version --releaseCommitMessageFormat 'chore(release): {{currentTag}} [skip ci]'",
+    "release": "yarn run release:all -- --skip.tag --skip.commit && standard-version --commit-all --releaseCommitMessageFormat 'chore(release): {{currentTag}} [skip ci]'",
     "release:all": "nx affected --parallel --all --target=release",
-    "snapshot": "yarn run snapshot:all -- --skip.tag --skip.commit && standard-version --no-verify --skip.changelog --prerelease snapshot --releaseCommitMessageFormat 'chore(snapshot): {{currentTag}}'",
+    "snapshot": "yarn run snapshot:all -- --skip.tag --skip.commit && standard-version --commit-all --no-verify --skip.changelog --prerelease snapshot --releaseCommitMessageFormat 'chore(snapshot): {{currentTag}}'",
     "snapshot:all": "nx affected --parallel --all --target=snapshot",
     "wait-4-docker": "node ./scripts/_wait4_all.js"
   },
