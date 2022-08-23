@@ -182,7 +182,7 @@ class OutboundBulkQuotesModel {
                     }
 
                     const bulkQuoteResponseBody = message.data;
-                    this.data.bulkQuotesResponse = bulkQuoteResponseBody.body
+                    this.data.bulkQuotesResponse = bulkQuoteResponseBody.body;
                     this._logger.push({ bulkQuoteResponseBody }).log('Bulk quote response received');
 
                     return resolve(bulkQuoteResponseBody);
@@ -376,7 +376,7 @@ class OutboundBulkQuotesModel {
         // we want to project some of our internal state into a more useful
         // representation to return to the SDK API consumer
         // let resp = { ...this.data };
-        let resp = shared.mojaloopBulkQuotesResponseToInternal(this.data)
+        let resp = shared.mojaloopBulkQuotesResponseToInternal(this.data);
 
         switch(this.data.currentState) {
             case 'succeeded':

@@ -485,7 +485,7 @@ const mojaloopBulkPrepareToInternalBulkTransfer = (external, bulkQuotes, ilp) =>
  *
  * @returns {object} - the internal form bulk transfer response
  */
- const mojaloopBulkTransfersResponseToInternal = (external) => {
+const mojaloopBulkTransfersResponseToInternal = (external) => {
     const internal = {
         bulkTransferId: external.bulkTransferId
     };

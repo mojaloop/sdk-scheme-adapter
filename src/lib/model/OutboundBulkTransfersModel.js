@@ -181,7 +181,7 @@ class OutboundBulkTransfersModel {
                     }
 
                     const bulkTransferFulfil = message.data;
-                    this.data.bulkTransfersResponse = bulkTransferFulfil.body
+                    this.data.bulkTransfersResponse = bulkTransferFulfil.body;
                     this._logger.push({ bulkTransferFulfil }).log('Bulk transfer fulfils received');
 
                     return resolve(bulkTransferFulfil);
@@ -368,7 +368,7 @@ class OutboundBulkTransfersModel {
         // we want to project some of our internal state into a more useful
         // representation to return to the SDK API consumer
         // let resp = { ...this.data };
-        let resp = shared.mojaloopBulkTransfersResponseToInternal(this.data)
+        let resp = shared.mojaloopBulkTransfersResponseToInternal(this.data);
 
         switch(this.data.currentState) {
             case 'succeeded':
