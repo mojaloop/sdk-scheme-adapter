@@ -62,7 +62,7 @@
     "url": "git@github.com:mojaloop/sdk-scheme-adapter.git"
   },
   "dependencies": {
-    "@koa/cors": "^3.3.0",
+    "@koa/cors": "^3.4.1",
     "@mojaloop/central-services-error-handling": "^12.0.4",
     "@mojaloop/central-services-logger": "^11.0.1",
     "@mojaloop/central-services-metrics": "^12.0.5",
@@ -85,15 +85,15 @@
     "module-alias": "^2.2.2",
     "oauth2-server": "^4.0.0-dev.2",
     "openapi-jsonschema-parameters": "^12.0.0",
-    "prom-client": "^14.0.1",
+    "prom-client": "^14.1.0",
     "promise-timeout": "^1.3.0",
     "random-word-slugs": "^0.1.6",
-    "redis": "^4.2.0",
+    "redis": "^4.3.0",
     "uuidv4": "^6.2.13",
     "ws": "^8.8.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.18.10",
+    "@babel/core": "^7.18.13",
     "@babel/preset-env": "^7.18.10",
     "@mojaloop/api-snippets": "^14.2.2",
     "@redocly/openapi-cli": "^1.0.0-beta.94",
@@ -102,7 +102,7 @@
     "eslint": "^8.22.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-jest": "^26.8.3",
+    "eslint-plugin-jest": "^26.8.7",
     "jest": "^28.1.3",
     "jest-junit": "^14.0.0",
     "nock": "^13.2.9",
