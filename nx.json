@@ -43,16 +43,6 @@
       "dependsOn": [
         "^build"
       ]
-    },
-    "docker-build-default": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          {
-            "command": "make docker-build-default"
-          }
-        ]
-      }
     }
   },
   "affected": {

@@ -5,16 +5,5 @@
   "namedInputs": {
     "default": ["{projectRoot}/**/*"]
   },
-  "targets": {
-    "npm-publish": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          {
-            "command": "make npm-publish"
-          }
-        ]
-      }
-    }
-  }
+  "targets": {}
 }
