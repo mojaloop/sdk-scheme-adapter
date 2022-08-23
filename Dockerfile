@@ -65,7 +65,12 @@ COPY --chown=ml-user ./modules/ ./modules/
 RUN yarn run build
 
 ## Expose ports
-EXPOSE 3000
+### INBOUND API PORT
+EXPOSE 4000
+### OUTBOUND API PORT
+EXPOSE 4001
+### TEST API PORT
+EXPOSE 4002
 
 ## Set default run command
 CMD ["yarn", "run", "start"]
