@@ -31,13 +31,14 @@ import {
     KafkaCommandEventProducer,
     IEventConsumer,
     DomainEventMessage,
-    OutboundDomainEventMessageName,
     IKafkaEventConsumerOptions,
     IKafkaEventProducerOptions,
     ICommandEventProducer,
+    SDKOutboundBulkRequestReceivedMessage,
+    SDKOutboundBulkPartyInfoRequestedMessage,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { IDomainEventHandlerOptions } from '../types';
-import { handleSDKOutboundBulkRequestReceived } from './handlers';
+import { handleSDKOutboundBulkPartyInfoRequested, handleSDKOutboundBulkRequestReceived } from './handlers';
 
 export class OutboundEventHandler implements IRunHandler {
     private _logger: ILogger;
@@ -81,10 +82,14 @@ export class OutboundEventHandler implements IRunHandler {
 
     async _messageHandler(message: DomainEventMessage): Promise<void> {
         this._logger.info(`Got domain event message: ${message.getName()}`);
-        // TODO: Handle errros validation here
+        // TODO: Handle errors validation here
         switch (message.getName()) {
-            case OutboundDomainEventMessageName.SDKOutboundBulkRequestReceived: {
+            case SDKOutboundBulkRequestReceivedMessage.name: {
                 await handleSDKOutboundBulkRequestReceived(message, this._domainEventHandlerOptions, this._logger);
+                break;
+            }
+            case SDKOutboundBulkPartyInfoRequestedMessage.name: {
+                await handleSDKOutboundBulkPartyInfoRequested(message, this._domainEventHandlerOptions, this._logger);
                 break;
             }
             default: {

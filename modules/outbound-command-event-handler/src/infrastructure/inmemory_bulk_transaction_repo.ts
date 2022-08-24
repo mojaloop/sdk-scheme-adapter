@@ -37,6 +37,7 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
     private _initialized = false;
 
     private readonly keyPrefix: string = 'outboundBulkTransaction_';
+
     private readonly individualTransferKeyPrefix: string = 'individualItem_';
 
 
