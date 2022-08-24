@@ -26,16 +26,14 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { BaseAggregate, CommandEventMessage, IEntityStateRepository } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-import { BulkTransactionEntity, BulkTransactionState } from '../bulk_transaction_entity';
+import { BaseAggregate, IEntityStateRepository } from '../';
+import { BulkTransactionEntity, BulkTransactionState } from '../../domain/bulk_transaction_entity';
 import {
     IndividualTransferEntity,
     IndividualTransferState,
-} from '../individual_transfer_entity';
-import { IBulkTransactionEntityRepo, ICommandEventHandlerOptions } from '@module-types';
+} from '../../domain/individual_transfer_entity';
+import { IBulkTransactionEntityRepo } from '../../types';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
-
-import CommandEventHandlerFuntions from './handlers';
 
 
 export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, BulkTransactionState> {
@@ -73,7 +71,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                 throw new Error('Duplicate: Aggregate already exists in repo');
             }
         }
-        
+
         // Create root entity
         const bulkTransactionEntity = BulkTransactionEntity.CreateFromRequest(request);
         // Create the aggregate
@@ -137,7 +135,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         await (<IBulkTransactionEntityRepo> this._entity_state_repo)
             .setIndividualTransfer(this._rootEntity.id, id, transfer.exportState());
     }
-    
+
     async setTransaction(tx: BulkTransactionEntity): Promise<void> {
         this._rootEntity = tx;
         await this.store();
@@ -167,23 +165,4 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
             // this._partyLookupFailedCount = undefined;
         }
     }
-
-
-    static async ProcessCommandEvent(
-        message: CommandEventMessage,
-        options: ICommandEventHandlerOptions,
-        logger: ILogger,
-    ) {
-        const handlerPrefix = 'handle';
-        if(!CommandEventHandlerFuntions.hasOwnProperty(handlerPrefix + message.constructor.name)) {
-            logger.error(`Handler function for the command event message ${message.constructor.name} is not implemented`);
-            return;
-        }
-        await CommandEventHandlerFuntions[handlerPrefix + message.constructor.name](
-            message,
-            options,
-            logger,
-        );
-    }
-
 }

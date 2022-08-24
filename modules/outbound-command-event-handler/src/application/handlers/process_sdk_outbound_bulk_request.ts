@@ -24,16 +24,35 @@
 
 'use strict';
 
-import { IEntityStateRepository } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-import { BulkTransactionState, IndividualTransferState } from '../domain';
+import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
+import { BulkTransactionAgg, CommandEventMessage, ProcessSDKOutboundBulkRequestMessage, SDKOutboundBulkPartyInfoRequestedMessage, ICommandEventHandlerOptions } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
-export type IBulkTransactionEntityRepo = {
-    getAllIndividualTransferIds: (bulkId: string) => Promise<string[]>
-    getIndividualTransfer: (bulkId: string, individualTranferId: string) => Promise<IndividualTransferState>
-    setIndividualTransfer: (
-        bulkId: string,
-        individualTranferId: string,
-        value: IndividualTransferState
-    ) => Promise<void>
-    isBulkIdExists: (bulkId: string) => Promise<boolean>
-} & IEntityStateRepository<BulkTransactionState>;
+export async function handleProcessSDKOutboundBulkRequestMessage(
+    message: CommandEventMessage,
+    options: ICommandEventHandlerOptions,
+    logger: ILogger,
+): Promise<void> {
+    const processSDKOutboundBulkRequestMessage = message as ProcessSDKOutboundBulkRequestMessage;
+    try {
+        logger.info(`Got Bulk Request ${processSDKOutboundBulkRequestMessage.getBulkRequest()}`);
+
+        // Create aggregate
+        const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRequest(
+            processSDKOutboundBulkRequestMessage.getBulkRequest(),
+            options.bulkTransactionEntityRepo,
+            logger,
+        );
+        logger.info(`Created BulkTransactionAggregate ${bulkTransactionAgg}`);
+
+        const msg = new SDKOutboundBulkPartyInfoRequestedMessage({
+            bulkId: bulkTransactionAgg.bulkId,
+            timestamp: Date.now(),
+            headers: [],
+        });
+        await options.domainProducer.sendDomainMessage(msg);
+
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    } catch (err: any) {
+        logger.info(`Failed to create BulkTransactionAggregate. ${err.message}`);
+    }
+}

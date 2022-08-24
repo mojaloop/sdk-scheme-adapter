@@ -22,6 +22,18 @@
  --------------
  ******/
 
-export * from './bulk_transaction_agg';
-export * from './bulk_transaction_entity';
-export * from './individual_transfer_entity';
+'use strict';
+
+import { IEntityStateRepository } from '../domain';
+import { BulkTransactionState, IndividualTransferState } from '../domain';
+
+export type IBulkTransactionEntityRepo = {
+    getAllIndividualTransferIds: (bulkId: string) => Promise<string[]>
+    getIndividualTransfer: (bulkId: string, individualTranferId: string) => Promise<IndividualTransferState>
+    setIndividualTransfer: (
+        bulkId: string,
+        individualTranferId: string,
+        value: IndividualTransferState
+    ) => Promise<void>
+    isBulkIdExists: (bulkId: string) => Promise<boolean>
+} & IEntityStateRepository<BulkTransactionState>;

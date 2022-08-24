@@ -24,7 +24,7 @@
 
 import { BulkTransaction } from '../models';
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { RedisBulkTransactionStateRepo } from '../../infrastructure/redis_bulk_transaction_repo';
+import { RedisBulkTransactionStateRepo } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 export class BulkTransactionsService {
 
     private _repo: RedisBulkTransactionStateRepo;

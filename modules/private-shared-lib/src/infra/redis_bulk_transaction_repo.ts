@@ -24,13 +24,19 @@
 
 'use strict';
 
+import * as redis from 'redis';
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import { BulkTransactionState, IndividualTransferState } from '../domain';
-import { IBulkTransactionEntityRepo } from '../types/bulk_transaction_entity_repo';
+import { IBulkTransactionEntityRepo } from '../types';
 
-export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityRepo {
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    private _data: any;
+export interface IRedisBulkTransactionStateRepoOptions {
+    connStr: string;
+}
+
+export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo {
+    protected _redisClient!: redis.RedisClientType;
+
+    private readonly _redisConnStr: string;
 
     private readonly _logger: ILogger;
 
@@ -38,20 +44,25 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
 
     private readonly keyPrefix: string = 'outboundBulkTransaction_';
 
-    private readonly individualTransferKeyPrefix: string = 'individualItem_';
-
-
-    constructor(logger: ILogger) {
+    constructor(options: IRedisBulkTransactionStateRepoOptions, logger: ILogger) {
+        this._redisConnStr = options.connStr;
         this._logger = logger;
     }
 
     async init(): Promise<void> {
-        this._data = {};
+        this._redisClient = redis.createClient({ url: this._redisConnStr });
+        this._redisClient.on('error', err => {
+            this._logger.error(err, 'Error connecting to redis server: ' + err.message);
+            if(!this._initialized) {
+                throw (err);
+            }
+        });
+        await this._redisClient.connect();
         this._initialized = true;
     }
 
     async destroy(): Promise<void> {
-        if(this._initialized) { this._data = undefined; }
+        if(this._initialized) { this._redisClient.quit(); }
         return Promise.resolve();
     }
 
@@ -65,16 +76,15 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         }
         const key: string = this.keyWithPrefix(id);
         try {
-
-            const bulkTransactionEntityStateStr = this._data[key].bulkTransactionEntityState;
+            const bulkTransactionEntityStateStr = await this._redisClient.hGet(key, 'bulkTransactionEntityState');
             if(bulkTransactionEntityStateStr) {
                 return JSON.parse(bulkTransactionEntityStateStr);
             } else {
-                this._logger.error('Error loading entity state from memory - for key: ' + key);
-                throw (new Error('Error loading entity state from memory'));
+                this._logger.error('Error loading entity state from redis - for key: ' + key);
+                throw (new Error('Error loading entity state from redis'));
             }
         } catch (err) {
-            this._logger.error(err, 'Error loading entity state from memory - for key: ' + key);
+            this._logger.error(err, 'Error loading entity state from redis - for key: ' + key);
             throw (err);
         }
     }
@@ -85,9 +95,9 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         }
         const key: string = this.keyWithPrefix(id);
         try {
-            delete this._data[key];
+            await this._redisClient.del(key);
         } catch (err) {
-            this._logger.error(err, 'Error removing entity state from memory - for key: ' + key);
+            this._logger.error(err, 'Error removing entity state from redis - for key: ' + key);
             throw (err);
         }
     }
@@ -98,28 +108,28 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         }
         const key: string = this.keyWithPrefix(entityState.id);
         try {
-            this._data[key] = {
-                id: entityState.id || '',
-                bulkTransactionEntityState: JSON.stringify(entityState),
-            };
+            await this._redisClient
+                .multi()
+                .hSet(key, 'id', entityState.id || '')
+                .hSet(key, 'bulkTransactionEntityState', JSON.stringify(entityState))
+                .exec();
         } catch (err) {
-            this._logger.error(err, 'Error storing entity state to memory - for key: ' + key);
+            this._logger.error(err, 'Error storing entity state to redis - for key: ' + key);
             throw (err);
         }
     }
 
-    
     async getAllIndividualTransferIds(bulkId: string): Promise<string[]> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            const allAttributes = Object.keys(this._data[key]);
-            const allIndividualTransferIds = allAttributes.filter(attr => attr.startsWith(this.individualTransferKeyPrefix)).map(attr => attr.replace(this.individualTransferKeyPrefix, ''));
+            const allAttributes = await this._redisClient.hKeys(key);
+            const allIndividualTransferIds = allAttributes.filter(attr => attr.startsWith('individualItem_')).map(attr => attr.replace('individualItem_', ''));
             return allIndividualTransferIds;
         } catch (err) {
-            this._logger.error(err, 'Error getting individual transfers from memory - for key: ' + key);
+            this._logger.error(err, 'Error getting individual transfers from redis - for key: ' + key);
             throw (err);
         }
     }
@@ -130,9 +140,15 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            return this._data[key][this.individualTransferKeyPrefix + individualTranferId] as IndividualTransferState;
+            const individualTransferStateStr = await this._redisClient.hGet(key, 'individualItem_' + individualTranferId);
+            if(individualTransferStateStr) {
+                return JSON.parse(individualTransferStateStr) as IndividualTransferState;
+            } else {
+                this._logger.error('Error loading individual trandfer from redis - for key: ' + key);
+                throw (new Error('Error loading individual trandfer from redis'));
+            }
         } catch (err) {
-            this._logger.error(err, 'Error getting individual tranfer from memory - for key: ' + key);
+            this._logger.error(err, 'Error loading individual trandfer from redis - for key: ' + key);
             throw (err);
         }
     }
@@ -147,9 +163,9 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            this._data[key][this.individualTransferKeyPrefix + individualTranferId] = JSON.stringify(value);
+            await this._redisClient.hSet(key, 'individualItem_' + individualTranferId, JSON.stringify(value));
         } catch (err) {
-            this._logger.error(err, `Error storing individual tranfer with ID ${individualTranferId} to memory for key: ${key}`);
+            this._logger.error(err, `Error storing individual trandfer with ID ${individualTranferId} to redis for key: ${key}`);
             throw (err);
         }
     }
@@ -160,9 +176,10 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            return this._data.hasOwnProperty(key);
+            const isExists = await this._redisClient.exists(key);
+            return isExists === 1;
         } catch (err) {
-            this._logger.error(err, 'Error getting status from memory - for key: ' + key);
+            this._logger.error(err, 'Error getting status from redis - for key: ' + key);
             throw (err);
         }
     }
@@ -172,15 +189,16 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
     }
 
     // TODO: Just for development purpose for now, can be removed later
+    // Warning: consider KEYS as a command that should only be used in production environments with extreme care. It may ruin performance when it is executed against large databases. This command is intended for debugging.
     async getAllBulkIds(): Promise<string[]> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
         try {
-            const allKeys =  Object.keys(this._data).filter(key => key.startsWith(this.keyPrefix));
+            const allKeys =  await this._redisClient.keys(this.keyPrefix + '*');
             return allKeys.map(key => key.replace(this.keyPrefix, ''));
         } catch (err) {
-            this._logger.error(err, 'Error getting all bulk transaction ids from memory');
+            this._logger.error(err, 'Error getting all bulk transaction ids from redis');
             throw (err);
         }
     }

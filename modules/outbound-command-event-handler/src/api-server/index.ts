@@ -26,7 +26,7 @@ import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import { Server } from 'http';
 import { CreateExpressServer } from './app';
 import path from 'path';
-import { IBulkTransactionEntityRepo } from '../types';
+import { IBulkTransactionEntityRepo } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
 
 export interface IOutboundCommandEventHandlerAPIServerOptions {

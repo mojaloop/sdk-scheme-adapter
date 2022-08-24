@@ -22,11 +22,22 @@
  --------------
  ******/
 
-'use strict';
-import { IDomainEventProducer } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-import { IBulkTransactionEntityRepo }  from './bulk_transaction_entity_repo';
+import * as ProcessSDKOutboundBulkRequestHandler from './process_sdk_outbound_bulk_request';
+import * as ProcessSDKOutboundBulkPartyInfoRequestHandler from './process_sdk_outbound_bulk_party_info_request';
+import * as ProcessSDKOutboundBulkPartyInfoRequestCompleteHandler from './process_sdk_outbound_bulk_party_info_request_complete';
+import * as ProcessPartyInfoCallbackHandler from './process_party_info_callback';
+import { CommandEventMessage, ICommandEventHandlerOptions } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 
-export type ICommandEventHandlerOptions = {
-    bulkTransactionEntityRepo: IBulkTransactionEntityRepo
-    domainProducer: IDomainEventProducer
+export default  {
+    ...ProcessSDKOutboundBulkRequestHandler,
+    ...ProcessSDKOutboundBulkPartyInfoRequestHandler,
+    ...ProcessSDKOutboundBulkPartyInfoRequestCompleteHandler,
+    ...ProcessPartyInfoCallbackHandler,
+} as {
+    [key: string]: (
+        message: CommandEventMessage,
+        options: ICommandEventHandlerOptions,
+        logger: ILogger,
+    ) => Promise<void>
 };
