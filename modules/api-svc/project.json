@@ -1,0 +1,9 @@
+{
+  "root": "modules/api-svc/",
+  "sourceRoot": "modules/api-svc/src",
+  "projectType": "application",
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*"]
+  },
+  "targets": {}
+}

@@ -4,4 +4,3 @@
 yarn dep:check
 yarn build
 yarn lint
-yarn test:unit

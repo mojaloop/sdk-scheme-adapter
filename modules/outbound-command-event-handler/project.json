@@ -1,0 +1,9 @@
+{
+  "root": "modules/outbound-command-event-handler/",
+  "sourceRoot": "modules/outbound-command-event-handler/src",
+  "projectType": "application",
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*"]
+  },
+  "targets": {}
+}
