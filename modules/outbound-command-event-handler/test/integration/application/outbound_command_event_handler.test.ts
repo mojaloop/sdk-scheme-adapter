@@ -270,6 +270,7 @@ describe("Tests for Outbound Command Event Handler", () => {
 
   });
 
+  // This test is skipped because of open bug https://github.com/mojaloop/project/issues/2872
   test.skip("3. Given Party info exists for individual transfers. \
               And Party Lookup is not skipped \
             When inbound command event ProcessSDKOutboundBulkPartyInfoRequest is received \
@@ -614,6 +615,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     
   });
 
+  // This test is skipped because of open bug https://github.com/mojaloop/project/issues/2875
   test.skip("7. Given autoAcceptParty setting is set to false \
                 When inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
                 Then outbound event SDKOutboundBulkAcceptpartyInfoRequested should be published \
@@ -685,6 +687,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect(domainEvents[2].getName()).toBe('SDKOutboundBulkAcceptpartyInfoRequested')
   });
 
+  // Functionality for this feature is not completed yet. Waiting on development to be complete
   test.skip("8. Given autoAcceptParty setting is set to true \
             When Inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
             Then outbound event SDKOutboundBulkAutoAcceptpartyInfoRequested should be published. \
@@ -755,6 +758,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect(domainEvents[2].getName()).toBe('SDKOutboundBulkAcceptpartyInfoRequested')
   });
 
+  // Functionality for this feature is not completed yet. Waiting on development to be complete
   test.skip("9. When inbound command event ProcessSDKOutboundBulkAcceptPartyInfo is received \
            Then the logic should loop through individual transfer in the bulk request \
               And update the individual transfer state to DISCOVERY_ACCEPTED or DISCOVERY_REJECTED based on the value in the incoming event \
@@ -827,6 +831,7 @@ describe("Tests for Outbound Command Event Handler", () => {
 
   // // TESTS FOR QUOTE PROCESSING
 
+  // Functionality for this feature is not completed yet. Waiting on development to be complete
   test.skip("10. When inbound command event ProcessSDKOutboundBulkQuotesRequest is received\
         Then the logic should update the global state to AGREEMENT_PROCESSING, \
           And create batches based on FSP that has DISCOVERY_ACCEPTED state \
@@ -836,6 +841,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     //TODO add asserts
   });
 
+  // Functionality for this feature is not completed yet. Waiting on development to be complete
   test.skip("11. Given the callback for quote batch is successful \
           And the callback has a combination of success and failed responses for individual quotes \
         When Inbound command event ProcessBulkQuotesCallback is received \
@@ -846,6 +852,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     //TODO add asserts
   });
 
+  // Functionality for this feature is not completed yet. Waiting on development to be complete
   test.skip("12. Given acceptAutoQuote setting is false \
                   When inbound command event ProcessSDKOutboundBulkQuotesRequestComplete is received \
                   Then the global state should be updated to AGREEMENT_ACCEPTANCE_PENDING \
@@ -853,6 +860,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     
   });
 
+  // Functionality for this feature is not completed yet. Waiting on development to be complete
   test.skip("13. Given autoAcceptQuote setting is false \
               When inbound command event ProcessSDKOutboundBulkAutoAcceptQuote is received \
               Then the logic should loop through all the transfers in the bulk transaction \
@@ -862,6 +870,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     
   });
 
+  // Functionality for this feature is not completed yet. Waiting on development to be complete
   test.skip("14. Given autoAcceptQuote setting is true \
               When inbound command event ProcessSDKOutboundBulkAutoAcceptQuote is received \
               Then the logic should loop through all the transfers in the bulk transaction \
