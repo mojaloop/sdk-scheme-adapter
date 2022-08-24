@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/thirdparty-api-svc](https://github.com/mojaloop/thirdparty-api-svc)
+### [19.0.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v19.0.0...v19.0.1) (2022-08-24)
+
+
+### Bug Fixes
+
+* **mojaloop/2886:** fix bulk-quotes and bulk-transfers functionality ([#344](https://github.com/mojaloop/sdk-scheme-adapter/issues/344)) ([85f308b](https://github.com/mojaloop/sdk-scheme-adapter/commit/85f308be589b41f0c7281c65163d791b8052accf))
+
 ## [19.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v18.0.2...v19.0.0) (2022-07-28)
 
 
