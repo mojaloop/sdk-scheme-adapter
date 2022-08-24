@@ -23,3 +23,4 @@
  ******/
 
 export * from './sdk-outbound-bulk-request-received';
+export * from './sdk-outbound-bulk-party-info-requested';

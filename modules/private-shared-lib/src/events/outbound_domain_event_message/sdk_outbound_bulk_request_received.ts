@@ -26,7 +26,6 @@
 
 import { DomainEventMessage } from '../domain_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { OutboundDomainEventMessageName } from '.';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 import { randomUUID } from 'crypto';
 
@@ -46,8 +45,7 @@ export class SDKOutboundBulkRequestReceivedMessage extends DomainEventMessage {
             content: data.bulkRequest,
             timestamp: data.timestamp,
             headers: data.headers,
-            // TODO: Use the classname of the event instead of enum here
-            name: OutboundDomainEventMessageName.SDKOutboundBulkRequestReceived,
+            name: SDKOutboundBulkRequestReceivedMessage.name,
         });
     }
 

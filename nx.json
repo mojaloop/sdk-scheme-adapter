@@ -1,0 +1,51 @@
+{
+  "extends": "nx/presets/npm.json",
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx/tasks-runners/default",
+      "options": {
+        "cacheableOperations": [
+          "build",
+          "build:openapi",
+          "build:openapi:inbound",
+          "build:openapi:outbound",
+          "build:dto:outbound",
+          "clean:dist",
+          "lint",
+          "lint:fix",
+          "test",
+          "test:unit",
+          "test:int",
+          "validate:api",
+          "validate:api:in",
+          "validate:api:out",
+          "updates:check",
+          "updates:update",
+          "dep:check",
+          "dep:update",
+          "release",
+          "snapshot",
+          "service",
+          "watch",
+          "dev",
+          "pretest",
+          "standard",
+          "copy-files",
+          "test:integration",
+          "test:coverage",
+          "test:coverage-check"
+        ]
+      }
+    }
+  },
+  "targetDefaults": {
+    "build": {
+      "dependsOn": [
+        "^build"
+      ]
+    }
+  },
+  "affected": {
+    "defaultBase": "mvp/bulk-sdk"
+  }
+}

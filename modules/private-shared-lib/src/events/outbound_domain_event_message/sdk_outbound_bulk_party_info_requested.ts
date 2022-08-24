@@ -26,7 +26,6 @@
 
 import { DomainEventMessage } from '../domain_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { OutboundDomainEventMessageName } from '.';
 
 export interface ISDKOutboundBulkPartyInfoRequestedMessageData {
     bulkId: string;
@@ -41,7 +40,7 @@ export class SDKOutboundBulkPartyInfoRequestedMessage extends DomainEventMessage
             timestamp: data.timestamp,
             headers: data.headers,
             content: null,
-            name: OutboundDomainEventMessageName.SDKOutboundBulkPartyInfoRequested,
+            name: SDKOutboundBulkPartyInfoRequestedMessage.name,
         });
     }
 
