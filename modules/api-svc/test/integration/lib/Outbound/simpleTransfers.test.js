@@ -22,20 +22,26 @@ describe('/simpleTransfers', () => {
     test('post - happy flow', async () => {
         const postTransfersURI = `${env.OutboundHostURI}/simpleTransfers`;
         const transferId = uuid();
-        const res = await axios({
-            method: 'POST',
-            url: postTransfersURI,
-            data: {
-                fspId: 'switch',
-                transfersPostRequest: {
-                    ...transfersPostRequest,
-                    transferId
+        let res;
+        try {
+            res = await axios({
+                method: 'POST',
+                url: postTransfersURI,
+                data: {
+                    fspId: 'switch',
+                    transfersPostRequest: {
+                        ...transfersPostRequest,
+                        transferId
+                    }
+                },
+                headers: {
+                    'access-control-allow-origin': '*'
                 }
-            },
-            headers: {
-                'access-control-allow-origin': '*'
-            }
-        });
+            });
+
+        } catch (err) {
+            console.log(err);
+        }
 
         expect(res.status).toEqual(200);
         expect(res.data.currentState).toEqual(SDKStateEnum.COMPLETED);

@@ -1,0 +1,426 @@
+[
+  {
+    "ruleId": 1,
+    "priority": 1,
+    "description": "get /parties/{Type}/{ID}",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "pathParams",
+          "operator": "notEqual",
+          "value": "OPAQUE",
+          "path": "Type"
+        },
+        {
+          "fact": "pathParams",
+          "operator": "equal",
+          "value": "1234567890",
+          "path": "ID"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/parties/{Type}/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "get"
+        }
+      ]
+    },
+    "event": {
+      "method": "put",
+      "path": "/parties/{Type}/{ID}",
+      "params": {
+        "headers": {
+          "Content-Type": "application/vnd.interoperability.parties+json;version=1.1",
+          "Date": "Wed, 27 May 2020 11:13:34 GMT",
+          "X-Forwarded-For": "sed eiusmod sunt",
+          "FSPIOP-Source": "{$config.FSPID}",
+          "FSPIOP-Destination": "mojaloop-sdk",
+          "FSPIOP-Encryption": "magna Excepteur dolore nisi fugiat",
+          "FSPIOP-Signature": "nisi",
+          "FSPIOP-URI": "veniam reprehenderit anim ut",
+          "FSPIOP-HTTP-Method": "PUT",
+          "Content-Length": ""
+        },
+        "body": {
+          "party": {
+            "partyIdInfo": {
+              "partyIdType": "{$request.params.Type}",
+              "partyIdentifier": "{$request.params.ID}",
+              "fspId": "{$config.FSPID}"
+            },
+            "merchantClassificationCode": "4321",
+            "name": "Justin Trudeau",
+            "personalInfo": {
+              "complexName": {
+                "firstName": "Justin",
+                "middleName": "Pierre",
+                "lastName": "Trudeau"
+              },
+              "dateOfBirth": "1980-01-01"
+            }
+          }
+        },
+        "scripts": {},
+        "delay": 0
+      },
+      "type": "FIXED_CALLBACK"
+    },
+    "type": "callback",
+    "version": 1
+  },
+  {
+    "ruleId": 2,
+    "priority": 1,
+    "description": "get /parties/{Type}/{ID}",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "pathParams",
+          "operator": "notEqual",
+          "value": "OPAQUE",
+          "path": "Type"
+        },
+        {
+          "fact": "pathParams",
+          "operator": "equal",
+          "value": "0987654321",
+          "path": "ID"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/parties/{Type}/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "get"
+        }
+      ]
+    },
+    "event": {
+      "method": "put",
+      "path": "/parties/{Type}/{ID}",
+      "params": {
+        "headers": {
+          "Content-Type": "application/vnd.interoperability.parties+json;version=1.1",
+          "Date": "Wed, 27 May 2020 11:13:34 GMT",
+          "X-Forwarded-For": "sed eiusmod sunt",
+          "FSPIOP-Source": "{$config.FSPID}",
+          "FSPIOP-Destination": "mojaloop-sdk",
+          "FSPIOP-Encryption": "magna Excepteur dolore nisi fugiat",
+          "FSPIOP-Signature": "nisi",
+          "FSPIOP-URI": "veniam reprehenderit anim ut",
+          "FSPIOP-HTTP-Method": "PUT",
+          "Content-Length": ""
+        },
+        "body": {
+          "party": {
+            "partyIdInfo": {
+              "partyIdType": "{$request.params.Type}",
+              "partyIdentifier": "{$request.params.ID}",
+              "fspId": "{$config.FSPID}"
+            },
+            "merchantClassificationCode": "4321",
+            "name": "Justin Trudeau",
+            "personalInfo": {
+              "complexName": {
+                "firstName": "Justin",
+                "middleName": "Pierre",
+                "lastName": "Trudeau"
+              },
+              "dateOfBirth": "1980-01-01"
+            }
+          }
+        },
+        "scripts": {},
+        "delay": 60000
+      },
+      "type": "FIXED_CALLBACK"
+    },
+    "type": "callback",
+    "version": 1
+  },
+  {
+    "ruleId": 3,
+    "priority": 1,
+    "description": "post /quotes",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "headers",
+          "operator": "equal",
+          "value": "timeout-fsp-id",
+          "path": "FSPIOP-Destination"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/quotes"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": "put",
+      "path": "/quotes/{ID}",
+      "params": {
+        "headers": {
+          "Content-Type": "application/vnd.interoperability.quotes+json;version=1.1",
+          "Date": "Wed, 27 May 2020 11:13:34 GMT",
+          "FSPIOP-Source": "{$config.FSPID}",
+          "FSPIOP-Destination": "mojaloop-sdk",
+          "X-Forwarded-For": "sed eiusmod sunt"
+        },
+        "body": {
+          "transferAmount": {
+            "currency": "{$request.body.amount.currency}",
+            "amount": "{$request.body.amount.amount}"
+          },
+          "payeeReceiveAmount": {
+            "currency": "USD",
+            "amount": "123.45"
+          },
+          "payeeFspFee": {
+            "currency": "USD",
+            "amount": "1.45"
+          },
+          "payeeFspCommission": {
+            "currency": "USD",
+            "amount": "0"
+          },
+          "expiration": "2016-05-24T08:38:08.699-04:00",
+          "geoCode": {
+            "latitude": "+45.4215",
+            "longitude": "+75.6972"
+          },
+          "ilpPacket": "AYIBgQAAAAAAAASwNGxldmVsb25lLmRmc3AxLm1lci45T2RTOF81MDdqUUZERmZlakgyOVc4bXFmNEpLMHlGTFGCAUBQU0svMS4wCk5vbmNlOiB1SXlweUYzY3pYSXBFdzVVc05TYWh3CkVuY3J5cHRpb246IG5vbmUKUGF5bWVudC1JZDogMTMyMzZhM2ItOGZhOC00MTYzLTg0NDctNGMzZWQzZGE5OGE3CgpDb250ZW50LUxlbmd0aDogMTM1CkNvbnRlbnQtVHlwZTogYXBwbGljYXRpb24vanNvbgpTZW5kZXItSWRlbnRpZmllcjogOTI4MDYzOTEKCiJ7XCJmZWVcIjowLFwidHJhbnNmZXJDb2RlXCI6XCJpbnZvaWNlXCIsXCJkZWJpdE5hbWVcIjpcImFsaWNlIGNvb3BlclwiLFwiY3JlZGl0TmFtZVwiOlwibWVyIGNoYW50XCIsXCJkZWJpdElkZW50aWZpZXJcIjpcIjkyODA2MzkxXCJ9IgA",
+          "condition": "f5sqb7tBTWPd5Y8BDFdMm9BJR_MNI4isf8p8n4D5pHA",
+          "extensionList": {
+            "extension": [
+              {
+                "key": "errorDescription",
+                "value": "This is a more detailed error description"
+              },
+              {
+                "key": "errorDescription",
+                "value": "This is a more detailed error description"
+              }
+            ]
+          }
+        },
+        "scripts": {},
+        "delay": 60000
+      },
+      "type": "FIXED_CALLBACK"
+    },
+    "type": "callback",
+    "version": 1
+  },
+  {
+    "ruleId": 4,
+    "priority": 1,
+    "description": "post /quotes",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/quotes"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": "put",
+      "path": "/quotes/{ID}",
+      "params": {
+        "headers": {
+          "Content-Type": "application/vnd.interoperability.quotes+json;version=1.1",
+          "Date": "Wed, 27 May 2020 11:13:34 GMT",
+          "FSPIOP-Source": "{$config.FSPID}",
+          "FSPIOP-Destination": "mojaloop-sdk",
+          "X-Forwarded-For": "sed eiusmod sunt"
+        },
+        "body": {
+          "transferAmount": {
+            "currency": "{$request.body.amount.currency}",
+            "amount": "{$request.body.amount.amount}"
+          },
+          "payeeReceiveAmount": {
+            "currency": "USD",
+            "amount": "123.45"
+          },
+          "payeeFspFee": {
+            "currency": "USD",
+            "amount": "1.45"
+          },
+          "payeeFspCommission": {
+            "currency": "USD",
+            "amount": "0"
+          },
+          "expiration": "2016-05-24T08:38:08.699-04:00",
+          "geoCode": {
+            "latitude": "+45.4215",
+            "longitude": "+75.6972"
+          },
+          "ilpPacket": "AYIBgQAAAAAAAASwNGxldmVsb25lLmRmc3AxLm1lci45T2RTOF81MDdqUUZERmZlakgyOVc4bXFmNEpLMHlGTFGCAUBQU0svMS4wCk5vbmNlOiB1SXlweUYzY3pYSXBFdzVVc05TYWh3CkVuY3J5cHRpb246IG5vbmUKUGF5bWVudC1JZDogMTMyMzZhM2ItOGZhOC00MTYzLTg0NDctNGMzZWQzZGE5OGE3CgpDb250ZW50LUxlbmd0aDogMTM1CkNvbnRlbnQtVHlwZTogYXBwbGljYXRpb24vanNvbgpTZW5kZXItSWRlbnRpZmllcjogOTI4MDYzOTEKCiJ7XCJmZWVcIjowLFwidHJhbnNmZXJDb2RlXCI6XCJpbnZvaWNlXCIsXCJkZWJpdE5hbWVcIjpcImFsaWNlIGNvb3BlclwiLFwiY3JlZGl0TmFtZVwiOlwibWVyIGNoYW50XCIsXCJkZWJpdElkZW50aWZpZXJcIjpcIjkyODA2MzkxXCJ9IgA",
+          "condition": "f5sqb7tBTWPd5Y8BDFdMm9BJR_MNI4isf8p8n4D5pHA",
+          "extensionList": {
+            "extension": [
+              {
+                "key": "errorDescription",
+                "value": "This is a more detailed error description"
+              },
+              {
+                "key": "errorDescription",
+                "value": "This is a more detailed error description"
+              }
+            ]
+          }
+        },
+        "scripts": {}
+      },
+      "type": "FIXED_CALLBACK"
+    },
+    "type": "callback",
+    "version": 1
+  },
+  {
+    "ruleId": 5,
+    "priority": 1,
+    "description": "post /transfers timeout",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "headers",
+          "operator": "equal",
+          "value": "timeout-fsp-id-transfer",
+          "path": "FSPIOP-Destination"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/transfers"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": "put",
+      "path": "/transfers/{ID}",
+      "params": {
+        "headers": {
+          "Content-Type": "application/vnd.interoperability.transfers+json;version=1.1",
+          "Date": "Wed, 27 May 2020 11:13:34 GMT",
+          "FSPIOP-Source": "{$config.FSPID}",
+          "FSPIOP-Destination": "mojaloop-sdk",
+          "X-Forwarded-For": "sed eiusmod sunt"
+        },
+        "body": {
+          "fulfilment": "WLctttbu2HvTsa1XWvUoGRcQozHsqeu9Ahl2JW9Bsu8",
+          "transferState": "COMMITTED",
+          "completedTimestamp": "2021-05-24T08:38:08.699-04:00"
+        },
+        "scripts": {},
+        "delay": 60000
+      },
+      "type": "FIXED_CALLBACK"
+    },
+    "type": "callback",
+    "version": 1
+  },
+  {
+    "ruleId": 6,
+    "priority": 1,
+    "description": "post /transfers",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/transfers"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": "put",
+      "path": "/transfers/{ID}",
+      "params": {
+        "headers": {
+          "Content-Type": "application/vnd.interoperability.transfers+json;version=1.1",
+          "Date": "Wed, 27 May 2020 11:13:34 GMT",
+          "FSPIOP-Source": "{$config.FSPID}",
+          "FSPIOP-Destination": "mojaloop-sdk",
+          "X-Forwarded-For": "sed eiusmod sunt"
+        },
+        "body": {
+          "fulfilment": "WLctttbu2HvTsa1XWvUoGRcQozHsqeu9Ahl2JW9Bsu8",
+          "transferState": "COMMITTED",
+          "completedTimestamp": "2021-05-24T08:38:08.699-04:00"
+        },
+        "scripts": {}
+      },
+      "type": "FIXED_CALLBACK"
+    },
+    "type": "callback",
+    "version": 1
+  }
+]
