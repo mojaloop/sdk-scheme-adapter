@@ -39,8 +39,11 @@ import {
     PartyInfoCallbackReceivedMessage,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { IDomainEventHandlerOptions } from '../types';
-import { handleSDKOutboundBulkPartyInfoRequested, handleSDKOutboundBulkRequestReceived } from './handlers';
-import { handlePartyInfoCallbackReceived } from './handlers/party-info-callback-received';
+import {
+    handleSDKOutboundBulkPartyInfoRequested,
+    handleSDKOutboundBulkRequestReceived,
+    handlePartyInfoCallbackReceived,
+} from './handlers';
 
 export class OutboundEventHandler implements IRunHandler {
     private _logger: ILogger;
