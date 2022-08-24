@@ -345,6 +345,32 @@ const mojaloopBulkQuotesRequestToInternal = (external) => {
 
     return internal;
 };
+/**
+ * Projects a Mojaloop API spec bulk quote response to internal form
+ *
+ * @returns {object} - the internal form bulk quote response
+ */
+const mojaloopBulkQuotesResponseToInternal = (external) => {
+    const internal = {
+        bulkQuoteId: external.bulkQuoteId
+    };
+
+    if (external.homeTransactionId) {
+        internal.homeTransactionId = external.homeTransactionId;
+    }
+
+    if (external.bulkQuotesResponse?.expiration) {
+        internal.expiration = external.bulkQuotesResponse.expiration;
+    }
+
+    if (external.bulkQuotesResponse?.extensionList) {
+        internal.extensionList = external.bulkQuotesResponse.extensionList;
+    }
+
+    internal.individualQuoteResults = external.bulkQuotesResponse?.individualQuoteResults;
+
+    return internal;
+};
 
 /**
  * Converts an internal bulk quotes response to mojaloop form
@@ -454,6 +480,37 @@ const mojaloopBulkPrepareToInternalBulkTransfer = (external, bulkQuotes, ilp) =>
     return internal;
 };
 
+/**
+ * Projects a Mojaloop API spec bulk transfer response to internal form
+ *
+ * @returns {object} - the internal form bulk transfer response
+ */
+const mojaloopBulkTransfersResponseToInternal = (external) => {
+    const internal = {
+        bulkTransferId: external.bulkTransferId
+    };
+
+    if (external.homeTransactionId) {
+        internal.homeTransactionId = external.homeTransactionId;
+    }
+
+    if (external.bulkTransfersResponse?.bulkTransferState) {
+        internal.bulkTransferState = external.bulkTransfersResponse.bulkTransferState;
+    }
+
+    if (external.bulkTransfersResponse?.completedTimestamp) {
+        internal.completedTimestamp = external.bulkTransfersResponse.completedTimestamp;
+    }
+
+    if (external.bulkTransfersResponse?.extensionList) {
+        internal.extensionList = external.bulkTransfersResponse.extensionList;
+    }
+
+    internal.individualTransferResults = external.bulkTransfersResponse?.individualTransferResults;
+
+    return internal;
+};
+
 module.exports = {
     internalPartyToMojaloopParty,
     internalQuoteResponseToMojaloop,
@@ -464,6 +521,8 @@ module.exports = {
     mojaloopPrepareToInternalTransfer,
     mojaloopTransactionRequestToInternal,
     mojaloopBulkQuotesRequestToInternal,
+    mojaloopBulkQuotesResponseToInternal,
     internalBulkQuotesResponseToMojaloop,
-    mojaloopBulkPrepareToInternalBulkTransfer
+    mojaloopBulkPrepareToInternalBulkTransfer,
+    mojaloopBulkTransfersResponseToInternal
 };

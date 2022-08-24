@@ -735,7 +735,7 @@ const postBulkQuotes = async (ctx) => {
  */
 const putBulkQuotesById = async (ctx) => {
     // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`bulkQuotes_${ctx.state.path.params.ID}`, {
+    await ctx.state.cache.publish(`bulkQuote_${ctx.state.path.params.ID}`, {
         type: 'bulkQuoteResponse',
         data: {
             body: ctx.request.body,
@@ -751,7 +751,7 @@ const putBulkQuotesById = async (ctx) => {
  */
 const putBulkQuotesByIdError = async(ctx) => {
     // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`bulkQuotes_${ctx.state.path.params.ID}`, {
+    await ctx.state.cache.publish(`bulkQuote_${ctx.state.path.params.ID}`, {
         type: 'bulkQuoteResponseError',
         data: {
             body: ctx.request.body,
