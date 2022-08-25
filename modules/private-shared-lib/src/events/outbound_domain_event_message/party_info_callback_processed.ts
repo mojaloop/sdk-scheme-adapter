@@ -36,8 +36,6 @@ export interface IPartyInfoCallbackProcessedMessageData {
 }
 
 export class PartyInfoCallbackProcessedMessage extends DomainEventMessage {
-    static Name = 'PartyInfoCallbackProcessed';
-
     constructor(data: IPartyInfoCallbackProcessedMessageData) {
         super({
             key: data.key,
@@ -45,7 +43,7 @@ export class PartyInfoCallbackProcessedMessage extends DomainEventMessage {
             content: null,
             timestamp: data.timestamp,
             headers: data.headers,
-            name: PartyInfoCallbackProcessedMessage.Name,
+            name: PartyInfoCallbackProcessedMessage.name,
         });
     }
 

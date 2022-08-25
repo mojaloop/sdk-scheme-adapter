@@ -34,15 +34,13 @@ export interface IProcessSDKOutboundBulkPartyInfoRequestMessageData {
 }
 
 export class ProcessSDKOutboundBulkPartyInfoRequestMessage extends CommandEventMessage {
-    static Name = 'ProcessSDKOutboundBulkPartyInfoRequest';
-
     constructor(data: IProcessSDKOutboundBulkPartyInfoRequestMessageData) {
         super({
             key: data.bulkId,
             timestamp: data.timestamp,
             headers: data.headers,
             content: null,
-            name: ProcessSDKOutboundBulkPartyInfoRequestMessage.Name,
+            name: ProcessSDKOutboundBulkPartyInfoRequestMessage.name,
         });
     }
 

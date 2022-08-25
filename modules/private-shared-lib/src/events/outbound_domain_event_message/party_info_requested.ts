@@ -37,15 +37,13 @@ export interface IPartyInfoRequestedMessageData {
 }
 
 export class PartyInfoRequestedMessage extends DomainEventMessage {
-    static Name = 'PartyInfoRequested';
-
     constructor(data: IPartyInfoRequestedMessageData) {
         super({
             key: `${data.bulkId}_${data.transferId}`,
             content: data.request,
             timestamp: data.timestamp,
             headers: data.headers,
-            name: PartyInfoRequestedMessage.Name,
+            name: PartyInfoRequestedMessage.name,
         });
     }
 

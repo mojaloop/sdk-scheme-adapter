@@ -40,15 +40,13 @@ export interface IProcessPartyInfoCallbackMessageData {
 }
 
 export class ProcessPartyInfoCallbackMessage extends CommandEventMessage {
-    static Name = 'ProcessPartyInfoCallback';
-
     constructor(data: IProcessPartyInfoCallbackMessageData) {
         super({
             key: data.key,
             content: data.partyResult,
             timestamp: data.timestamp,
             headers: data.headers,
-            name: ProcessPartyInfoCallbackMessage.Name,
+            name: ProcessPartyInfoCallbackMessage.name,
         });
     }
 

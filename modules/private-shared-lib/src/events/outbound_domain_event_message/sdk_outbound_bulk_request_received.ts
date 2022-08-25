@@ -36,8 +36,6 @@ export interface ISDKOutboundBulkRequestReceivedMessageData {
 }
 
 export class SDKOutboundBulkRequestReceivedMessage extends DomainEventMessage {
-    static Name = 'SDKOutboundBulkRequestReceived';
-
     constructor(data: ISDKOutboundBulkRequestReceivedMessageData) {
     // // Calling Sample validation function
     // SDKOutboundBulkRequestReceivedMessage.validateRequest(data.bulkRequest);
@@ -46,7 +44,7 @@ export class SDKOutboundBulkRequestReceivedMessage extends DomainEventMessage {
             content: data.bulkRequest,
             timestamp: data.timestamp,
             headers: data.headers,
-            name: SDKOutboundBulkRequestReceivedMessage.Name,
+            name: SDKOutboundBulkRequestReceivedMessage.name,
         });
     }
 

@@ -34,15 +34,13 @@ export interface ISDKOutboundBulkAutoAcceptPartyInfoRequestedMessageData {
 }
 
 export class SDKOutboundBulkAutoAcceptPartyInfoRequestedMessage extends DomainEventMessage {
-    static Name = 'SDKOutboundBulkAutoAcceptPartyInfoRequested';
-
     constructor(data: ISDKOutboundBulkAutoAcceptPartyInfoRequestedMessageData) {
         super({
             key: data.bulkId,
             timestamp: data.timestamp,
             headers: data.headers,
             content: null,
-            name: SDKOutboundBulkAutoAcceptPartyInfoRequestedMessage.Name,
+            name: SDKOutboundBulkAutoAcceptPartyInfoRequestedMessage.name,
         });
     }
 
