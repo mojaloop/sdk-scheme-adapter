@@ -39,7 +39,7 @@ import {
     ProcessPartyInfoCallbackMessage,
     ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage,
     IBulkTransactionEntityRepo,
-    ICommandEventHandlerOptions
+    ICommandEventHandlerOptions,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
 import CommandEventHandlerFunctions from './handlers';

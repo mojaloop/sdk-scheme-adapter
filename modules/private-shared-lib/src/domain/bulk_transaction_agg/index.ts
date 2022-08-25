@@ -26,13 +26,15 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { BaseAggregate, IEntityStateRepository } from '../';
-import { BulkTransactionEntity, BulkTransactionState } from '../../domain/bulk_transaction_entity';
 import {
+    BaseAggregate,
+    BulkTransactionEntity,
+    BulkTransactionState,
+    IEntityStateRepository,
     IndividualTransferEntity,
     IndividualTransferState,
-} from '../../domain/individual_transfer_entity';
-import { IBulkTransactionEntityRepo } from '../../types';
+} from '@module-domain';
+import { IBulkTransactionEntityRepo } from '@module-types';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 

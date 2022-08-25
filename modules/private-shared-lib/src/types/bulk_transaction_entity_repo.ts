@@ -24,8 +24,7 @@
 
 'use strict';
 
-import { IEntityStateRepository } from '../domain';
-import { BulkTransactionState, IndividualTransferState } from '../domain';
+import { BulkTransactionState, IEntityStateRepository, IndividualTransferState } from '@module-domain';
 
 export type IBulkTransactionEntityRepo = {
     getAllIndividualTransferIds: (bulkId: string) => Promise<string[]>
