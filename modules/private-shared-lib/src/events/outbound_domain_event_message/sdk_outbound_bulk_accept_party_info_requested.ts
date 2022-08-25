@@ -24,37 +24,37 @@
 
 'use strict';
 
-import { CommandEventMessage } from '../command_event_message';
+import { DomainEventMessage } from '../domain_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 
-export interface IProcessSDKOutboundBulkPartyInfoRequestMessageData {
+export interface ISDKOutboundBulkAcceptPartyInfoRequestedMessageData {
     bulkId: string;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
 
-export class ProcessSDKOutboundBulkPartyInfoRequestMessage extends CommandEventMessage {
-    static Name = 'ProcessSDKOutboundBulkPartyInfoRequest';
+export class SDKOutboundBulkAcceptPartyInfoRequestedMessage extends DomainEventMessage {
+    static Name = 'SDKOutboundBulkAcceptPartyInfoRequested';
 
-    constructor(data: IProcessSDKOutboundBulkPartyInfoRequestMessageData) {
+    constructor(data: ISDKOutboundBulkAcceptPartyInfoRequestedMessageData) {
         super({
             key: data.bulkId,
             timestamp: data.timestamp,
             headers: data.headers,
             content: null,
-            name: ProcessSDKOutboundBulkPartyInfoRequestMessage.Name,
+            name: SDKOutboundBulkAcceptPartyInfoRequestedMessage.Name,
         });
     }
 
-    static CreateFromCommandEventMessage(message: CommandEventMessage): ProcessSDKOutboundBulkPartyInfoRequestMessage {
+    static CreateFromCommandEventMessage(message: DomainEventMessage): SDKOutboundBulkAcceptPartyInfoRequestedMessage {
         if((message.getKey() === null || typeof message.getKey() !== 'string')) {
             throw new Error('Bulk id is in unknown format');
         }
-        const data: IProcessSDKOutboundBulkPartyInfoRequestMessageData = {
+        const data: ISDKOutboundBulkAcceptPartyInfoRequestedMessageData = {
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
             bulkId: message.getKey(),
         };
-        return new ProcessSDKOutboundBulkPartyInfoRequestMessage(data);
+        return new SDKOutboundBulkAcceptPartyInfoRequestedMessage(data);
     }
 }

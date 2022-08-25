@@ -22,19 +22,9 @@
  --------------
  ******/
 
-export enum OutboundDomainEventMessageName {
-    'SDKOutboundBulkRequestReceived' = 'SDKOutboundBulkRequestReceived',
-    'SDKOutboundBulkPartyInfoRequested' = 'SDKOutboundBulkPartyInfoRequested',
-    'SDKOutboundBulkAcceptPartyInfoRequested' = 'SDKOutboundBulkAcceptPartyInfoRequested',
-    'SDKOutboundBulkAcceptPartyInfoReceived' = 'SDKOutboundBulkAcceptPartyInfoReceived',
-    'SDKOutboundBulkAutoAcceptPartyInfoRequested' = 'SDKOutboundBulkAutoAcceptPartyInfoRequested',
-    'SDKOutboundBulkAcceptPartyInfoProcessed' = 'SDKOutboundBulkAcceptPartyInfoProcessed',
-    'PartyInfoRequested' = 'PartyInfoRequested', // includes info for SDK for making a party call
-    'PartyInfoCallbackReceived' = 'PartyInfoCallbackReceived',
-    'PartyInfoCallbackProcessed' = 'PartyInfoCallbackProcessed',
-}
-
 export * from './party_info_requested';
 export * from './sdk_outbound_bulk_request_received';
 export * from './sdk_outbound_bulk_party_info_requested';
+export * from './sdk_outbound_bulk_accept_party_info_requested';
+export * from './sdk_outbound_bulk_auto_accept_party_info_requested';
 export * from './party_info_callback_processed';

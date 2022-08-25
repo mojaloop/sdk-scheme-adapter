@@ -12,11 +12,16 @@ const Cache = require('~/lib/cache');
 
 /**
  * Get OpenAPI spec and Validator for specified server
- * @param serverType String
+ * @param {('OUTBOUND'|'INBOUND')} serverType
  * @return {Promise<{apiSpecs: Object, validator: Validator}>}
  */
 const readApiInfo = async (serverType) => {
-    const specPath = path.join(__dirname, `../../../src/${serverType}/api.yaml`);
+    let specPath;
+    if (serverType === 'OUTBOUND') {
+        specPath = path.join(path.dirname(require.resolve('@mojaloop/api-snippets')), '../docs/sdk-scheme-adapter-outbound-v2_0_0-openapi3-snippets.yaml');
+    } else if (serverType === 'INBOUND') {
+        specPath = path.join(__dirname, '../../../src/InboundServer/api.yaml');
+    }
     const apiSpecs = yaml.load(fs.readFileSync(specPath));
     const validator = new Validate();
     await validator.initialise(apiSpecs);
@@ -24,11 +29,11 @@ const readApiInfo = async (serverType) => {
 };
 
 const createValidators = async () => {
-    const apiInfoOutbound = await readApiInfo('OutboundServer');
+    const apiInfoOutbound = await readApiInfo('OUTBOUND');
     const apiSpecsOutbound = apiInfoOutbound.apiSpecs;
     const requestValidatorOutbound = apiInfoOutbound.validator;
 
-    const apiInfoInbound = await readApiInfo('InboundServer');
+    const apiInfoInbound = await readApiInfo('INBOUND');
     const apiSpecsInbound = apiInfoInbound.apiSpecs;
     const requestValidatorInbound = apiInfoInbound.validator;
     return {

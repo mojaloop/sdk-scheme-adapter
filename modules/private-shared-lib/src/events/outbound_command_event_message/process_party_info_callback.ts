@@ -26,23 +26,29 @@
 
 import { CommandEventMessage } from '../command_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { v1_1 as FSPIOP } from '@mojaloop/api-snippets';
+import { Schemas } from '@mojaloop/api-snippets/lib/fspiop/v1_1';
+
+export interface IPartyResult extends Schemas.PartiesTypeIDPutResponse {
+    errorInformation?: Schemas.ErrorInformation;
+}
 
 export interface IProcessPartyInfoCallbackMessageData {
     key: string;
-    partyResult: FSPIOP.Schemas.PartyResult;
+    partyResult: IPartyResult;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
 
 export class ProcessPartyInfoCallbackMessage extends CommandEventMessage {
+    static Name = 'ProcessPartyInfoCallback';
+
     constructor(data: IProcessPartyInfoCallbackMessageData) {
         super({
             key: data.key,
             content: data.partyResult,
             timestamp: data.timestamp,
             headers: data.headers,
-            name: ProcessPartyInfoCallbackMessage.name,
+            name: ProcessPartyInfoCallbackMessage.Name,
         });
     }
 
@@ -60,7 +66,7 @@ export class ProcessPartyInfoCallbackMessage extends CommandEventMessage {
         }
         const data: IProcessPartyInfoCallbackMessageData = {
             key: message.getKey(),
-            partyResult: <FSPIOP.Schemas.PartyResult>message.getContent(),
+            partyResult: <IPartyResult>message.getContent(),
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
         };

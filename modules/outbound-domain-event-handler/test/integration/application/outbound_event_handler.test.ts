@@ -29,7 +29,7 @@
 import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 
-import { DomainEventMessage, OutboundDomainEventMessageName, IDomainEventMessageData } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+import { DomainEventMessage, SDKOutboundBulkRequestReceivedMessage, IDomainEventMessageData } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 import { KafkaDomainEventProducer, IKafkaEventProducerOptions } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 
 const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
@@ -44,7 +44,7 @@ const producer = new KafkaDomainEventProducer(producerOptions, logger)
 
 const sampleDomainEventMessageData: IDomainEventMessageData = {
   key: 'sample-key1',
-  name: OutboundDomainEventMessageName.SDKOutboundBulkRequestReceived,
+  name: SDKOutboundBulkRequestReceivedMessage.Name,
   content: {
     bulkHomeTransactionID: "string",
     bulkTransactionId: "b51ec534-ee48-4575-b6a9-ead2955b8069",
