@@ -43,6 +43,8 @@ export enum IndividualTransferInternalState {
     DISCOVERY_PROCESSING = 'DISCOVERY_PROCESSING',
     DISCOVERY_FAILED = 'DISCOVERY_FAILED',
     DISCOVERY_SUCCESS = 'DISCOVERY_SUCCESS',
+    DISCOVERY_ACCEPTED = 'DISCOVERY_ACCEPTED',
+    DISCOVERY_REJECTED = 'DISCOVERY_REJECTED',
     AGREEMENT_PROCESSING = 'AGREEMENT_PROCESSING',
     TRANSFER_PROCESSING = 'TRANSFER_PROCESSING',
 }
@@ -69,6 +71,9 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
 
     get request(): SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransaction {
         return this._state.request;
+    }
+    get partyResponse(): FSPIOP.Schemas.PartyResult | undefined {
+        return this._state.partyResponse;
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
@@ -108,6 +113,10 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         this._state.partyResponse = request;
     }
 
+    setAcceptParty(acceptParty: boolean) {
+        this._state.acceptParty = acceptParty
+    }
+
     // get payeeResolved(): boolean {
     // //     return !!this._state.partyResponse;
     // //     return !!this._state.state == IndividualTransferInternalState.DISCOVERY_SUCCESS;
@@ -115,6 +124,9 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
 
     get transferState() {
         return this._state.state;
+    }
+    get toFspId(): string | undefined {
+        return this._state.partyResponse?.partyId?.fspId;
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */

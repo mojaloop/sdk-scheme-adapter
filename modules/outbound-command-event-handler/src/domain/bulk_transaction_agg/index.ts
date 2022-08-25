@@ -36,6 +36,8 @@ import { IBulkTransactionEntityRepo, ICommandEventHandlerOptions } from '@module
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 import CommandEventHandlerFuntions from './handlers';
+import { BulkBatchEntity } from '../bulk_batch_entity';
+import { randomUUID } from 'crypto';
 
 
 export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, BulkTransactionState> {
@@ -154,6 +156,61 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
     async addIndividualTransferEntity(entity: IndividualTransferEntity) : Promise<void> {
         await (<IBulkTransactionEntityRepo> this._entity_state_repo)
             .setIndividualTransfer(this._rootEntity.id, entity.id, entity.exportState());
+    }
+
+    async createBatches() : Promise<void> {
+        // TODO: Condition here to check the global state to be equal to something?
+
+        const batchesPerFsp: {[fspId: string]: string[][]} = {}
+        // Iterate through individual transfers
+        const allIndividualTransferIds = await this.getAllIndividualTransferIds();
+        for await (const individualTransferId of allIndividualTransferIds) {
+            // Create the array of batches per each DFSP with maximum limit from the config containing Ids of individual transfers
+            const individualTransfer = await this.getIndividualTransferById(individualTransferId);
+            if (individualTransfer.transferState === 'DISCOVERY_SUCCESS' && individualTransfer.toFspId) {
+                // If there is any element with fspId
+                if(batchesPerFsp[individualTransfer.toFspId]) {
+                    const batchFspIdArray = batchesPerFsp[individualTransfer.toFspId];
+                    const batchFspLength = batchFspIdArray.length;
+                    const lastElement = batchFspIdArray[batchFspLength - 1];
+                    // If the length reaches maximum value, create new element and insert the id
+                    if (lastElement.length < 10) {
+                        lastElement.push(individualTransfer.id)
+                    } else {
+                        const newElement = [ individualTransfer.id ];
+                        batchFspIdArray.push(newElement)
+                    }
+                } else {
+                    const newElement = [ individualTransfer.id ];
+                    batchesPerFsp[individualTransfer.toFspId] = [];
+                    batchesPerFsp[individualTransfer.toFspId].push(newElement);
+                }
+            }
+        }
+        console.log(batchesPerFsp);
+        // Construct the batches per each element in the array
+        for await (const fspId of Object.keys(batchesPerFsp)) {
+            for await (const individualIdArray of batchesPerFsp[fspId]) {
+                const bulkBatch = BulkBatchEntity.CreateEmptyBatch(this._rootEntity);
+                for await (const individualId of individualIdArray) {
+                    const individualTransfer = await this.getIndividualTransferById(individualId);
+                    
+                    bulkBatch.addIndividualQuote({
+                        quoteId: randomUUID(),
+                        // TODO: Construct to value from individualTransfer.request.to and individualTransfer.partyResponse
+                        to: individualTransfer.request.to,
+                        amountType: individualTransfer.request.amountType,
+                        currency: individualTransfer.request.currency,
+                        amount: individualTransfer.request.amount,
+                        transactionType: 'TRANSFER',
+                        note: individualTransfer.request.note,
+                        extensions: individualTransfer.request.quoteExtensions
+                    })
+                }
+                // TODO:  Add the bulkBatchEntity to aggregator and store here
+                console.log(individualIdArray)
+            }
+        }
     }
 
     async destroy() : Promise<void> {

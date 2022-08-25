@@ -130,7 +130,7 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            return this._data[key][this.individualTransferKeyPrefix + individualTranferId] as IndividualTransferState;
+            return JSON.parse(this._data[key][this.individualTransferKeyPrefix + individualTranferId]) as IndividualTransferState;
         } catch (err) {
             this._logger.error(err, 'Error getting individual tranfer from memory - for key: ' + key);
             throw (err);

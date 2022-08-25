@@ -22,9 +22,57 @@
  --------------
  ******/
 
-export * from './process_sdk_outbound_bulk_request';
-export * from './process_sdk_outbound_bulk_party_info_request';
-export * from './process_sdk_outbound_bulk_party_info_request_complete';
-export * from './process_party_info_callback';
-export * from './process_sdk_outbound_bulk_accept_party_info';
-export * from './process_sdk_outbound_bulk_quotes_request';
+ 'use strict'
+
+import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
+import { randomUUID } from "crypto";
+
+export const BULK_REQUEST: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+    bulkHomeTransactionID: "string",
+    bulkTransactionId: randomUUID(),
+    options: {
+      onlyValidateParty: true,
+      autoAcceptParty: {
+        enabled: false
+      },
+      autoAcceptQuote: {
+        enabled: true,
+      },
+      skipPartyLookup: true,
+      synchronous: true,
+      bulkExpiration: "2016-05-24T08:38:08.699-04:00"
+    },
+    from: {
+      partyIdInfo: {
+        partyIdType: "MSISDN",
+        partyIdentifier: "16135551212",
+        fspId: "string",
+      },
+    },
+    individualTransfers: [
+      {
+        homeTransactionId: randomUUID(),
+        to: {
+          partyIdInfo: {
+            partyIdType: "MSISDN",
+            partyIdentifier: "16135551212",
+          },
+        },
+        amountType: "SEND",
+        currency: "USD",
+        amount: "123.45",
+      },
+      {
+        homeTransactionId: randomUUID(),
+        to: {
+          partyIdInfo: {
+            partyIdType: "MSISDN",
+            partyIdentifier: "16135551212",
+          },
+        },
+        amountType: "SEND",
+        currency: "USD",
+        amount: "456.78",
+      }
+    ]
+  }
