@@ -38,3 +38,4 @@ export * from './party_info_requested';
 export * from './sdk_outbound_bulk_request_received';
 export * from './sdk_outbound_bulk_party_info_requested';
 export * from './party_info_callback_processed';
+export * from './party_info_callback_received';

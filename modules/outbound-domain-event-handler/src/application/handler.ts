@@ -36,9 +36,14 @@ import {
     ICommandEventProducer,
     SDKOutboundBulkRequestReceivedMessage,
     SDKOutboundBulkPartyInfoRequestedMessage,
+    PartyInfoCallbackReceivedMessage,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { IDomainEventHandlerOptions } from '../types';
-import { handleSDKOutboundBulkPartyInfoRequested, handleSDKOutboundBulkRequestReceived } from './handlers';
+import {
+    handleSDKOutboundBulkPartyInfoRequested,
+    handleSDKOutboundBulkRequestReceived,
+    handlePartyInfoCallbackReceived,
+} from './handlers';
 
 export class OutboundEventHandler implements IRunHandler {
     private _logger: ILogger;
@@ -90,6 +95,10 @@ export class OutboundEventHandler implements IRunHandler {
             }
             case SDKOutboundBulkPartyInfoRequestedMessage.name: {
                 await handleSDKOutboundBulkPartyInfoRequested(message, this._domainEventHandlerOptions, this._logger);
+                break;
+            }
+            case PartyInfoCallbackReceivedMessage.name: {
+                await handlePartyInfoCallbackReceived(message, this._domainEventHandlerOptions, this._logger);
                 break;
             }
             default: {
