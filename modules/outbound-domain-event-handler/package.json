@@ -38,18 +38,18 @@
         "snapshot": "standard-version --no-verify --skip.changelog --prerelease snapshot --releaseCommitMessageFormat 'chore(snapshot): {{currentTag}}'"
     },
     "dependencies": {
-        "@mojaloop/logging-bc-client-lib": "^0.1.11",
-        "@mojaloop/logging-bc-public-types-lib": "^0.1.8",
+        "@mojaloop/logging-bc-client-lib": "^0.1.12",
+        "@mojaloop/logging-bc-public-types-lib": "^0.1.9",
         "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^",
         "convict": "^6.2.3"
     },
     "devDependencies": {
         "@types/convict": "^6.1.1",
-        "@types/jest": "^28.1.7",
-        "@types/node": "^18.7.11",
+        "@types/jest": "^28.1.8",
+        "@types/node": "^18.7.13",
         "@types/node-cache": "^4.2.5",
-        "@typescript-eslint/eslint-plugin": "^5.34.0",
-        "@typescript-eslint/parser": "^5.34.0",
+        "@typescript-eslint/eslint-plugin": "^5.35.1",
+        "@typescript-eslint/parser": "^5.35.1",
         "eslint": "^8.22.0",
         "jest": "^28.1.3",
         "nodemon": "^2.0.19",
