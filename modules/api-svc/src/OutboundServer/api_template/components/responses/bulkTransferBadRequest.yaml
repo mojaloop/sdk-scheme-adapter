@@ -1,5 +1,0 @@
-description: 'Malformed or missing required body, headers or parameters'
-content:
-  application/json:
-    schema:
-      $ref: ../schemas/bulkTransferErrorResponse.yaml

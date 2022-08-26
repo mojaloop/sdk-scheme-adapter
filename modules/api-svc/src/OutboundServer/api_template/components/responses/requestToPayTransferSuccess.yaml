@@ -1,5 +1,0 @@
-description: Transfer completed successfully
-content:
-  application/json:
-    schema:
-      $ref: ../schemas/requestToPayTransferResponse.yaml
