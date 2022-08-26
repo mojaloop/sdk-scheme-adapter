@@ -44,7 +44,7 @@ const producer = new KafkaDomainEventProducer(producerOptions, logger)
 
 const sampleDomainEventMessageData: IDomainEventMessageData = {
   key: 'sample-key1',
-  name: SDKOutboundBulkRequestReceivedMessage.Name,
+  name: SDKOutboundBulkRequestReceivedMessage.name,
   content: {
     bulkHomeTransactionID: "string",
     bulkTransactionId: "b51ec534-ee48-4575-b6a9-ead2955b8069",

@@ -22,7 +22,7 @@
  --------------
  ******/
 
-import { EventMessageType, CommandEventMessage } from "../../../src/events";
+import { EventMessageType, CommandEventMessage } from '../../../src';
 
 const sampleCommandEventMessageData: any = {
   key: 'sample-key1',

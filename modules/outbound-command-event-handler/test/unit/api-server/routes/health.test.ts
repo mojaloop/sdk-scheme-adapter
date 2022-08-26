@@ -31,7 +31,7 @@ const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion');
 
 describe("Test the health route without mock service", () => {
     const apiServer = new ApiServer({
-        port: 9999,
+        port: 29999,
         bulkTransactionEntityRepo: {} as IBulkTransactionEntityRepo,
     }, logger);
     let app: Application;
@@ -51,7 +51,7 @@ describe("Test the health route without mock service", () => {
 
 describe("Test the health route with mock service enabled", () => {
     const apiServer = new ApiServer({
-        port: 9999,
+        port: 19999,
         bulkTransactionEntityRepo: {} as IBulkTransactionEntityRepo,
     }, logger);
     let app: Application;

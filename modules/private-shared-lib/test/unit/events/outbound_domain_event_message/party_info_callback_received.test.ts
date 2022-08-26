@@ -54,20 +54,22 @@ describe('PartyInfoCallbackReceivedMessage', () => {
     samplePartyInfoCallbackReceivedMessageData = {
       key,
       partyResult: {
-        partyId: {
-          partyIdType: "MSISDN",
-          partyIdentifier: "16135551212",
-          partySubIdOrType: "string",
-          fspId: "string",
-          extensionList: {
-            extension: [
-              {
-                key: "string",
-                value: "string"
+          party: {
+              partyIdInfo: {
+                  partyIdType: "MSISDN",
+                  partyIdentifier: "16135551212",
+                  partySubIdOrType: "string",
+                  fspId: "string",
+                  extensionList: {
+                      extension: [
+                          {
+                              key: "string",
+                              value: "string"
+                          }
+                      ]
+                  }
               }
-            ]
-          }
-        }
+          },
       },
       timestamp: Date.now(),
       headers: [],

@@ -22,7 +22,7 @@
  --------------
  ******/
 
-import { EventMessageType, DomainEventMessage } from "../../../src/events";
+import { EventMessageType, DomainEventMessage } from '../../../src';
 
 const sampleDomainEventMessageData: any = {
   key: 'sample-key1',
