@@ -38,13 +38,13 @@ export class CommandEventMessage extends BaseEventMessage {
         });
     }
 
-    static CreateFromIMessage(message: IMessage): CommandEventMessage {
+    static createFromIMessage(message: IMessage): CommandEventMessage {
     // Validate message
         this._validateMessage(message);
         // Prepare Data
         /* eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars */
         const { type, ...data } = super._prepareDataFromIMessage(message);
-    
+
         return new CommandEventMessage(data);
     }
 

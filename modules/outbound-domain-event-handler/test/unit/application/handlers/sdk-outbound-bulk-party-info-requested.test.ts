@@ -32,7 +32,7 @@
 
 import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
-import { DomainEventMessage, EventMessageType, IDomainEventMessageData, OutboundDomainEventMessageName, ProcessSDKOutboundBulkPartyInfoRequestMessage } from "@mojaloop/sdk-scheme-adapter-private-shared-lib"
+import { DomainEventMessage, EventMessageType, IDomainEventMessageData, SDKOutboundBulkPartyInfoRequestedMessage, ProcessSDKOutboundBulkPartyInfoRequestMessage } from "@mojaloop/sdk-scheme-adapter-private-shared-lib"
 import { randomUUID } from "crypto";
 import { handleSDKOutboundBulkPartyInfoRequested } from "../../../../src/application/handlers"
 import { IDomainEventHandlerOptions } from "../../../../src/types";
@@ -54,7 +54,7 @@ describe('handleSDKOutboundBulkPartyInfoRequested', () => {
     uuid = randomUUID();
     sampleSDKOutboundBulkPartyInfoRequestedMessage = {
       key: uuid,
-      name: OutboundDomainEventMessageName.SDKOutboundBulkPartyInfoRequested,
+      name: SDKOutboundBulkPartyInfoRequestedMessage.name,
       content: {},
       timestamp: Date.now(),
       headers: [],

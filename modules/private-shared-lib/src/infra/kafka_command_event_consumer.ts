@@ -42,7 +42,7 @@ export class KafkaCommandEventConsumer extends KafkaEventConsumer {
     ) {
         const superHandlerFn = async (message: IMessage) => {
             // Construct command event message from IMessage
-            const commandEventMessageObj = CommandEventMessage.CreateFromIMessage(message);
+            const commandEventMessageObj = CommandEventMessage.createFromIMessage(message);
             // Call handler function with command event message
             await handlerFn(commandEventMessageObj);
         };

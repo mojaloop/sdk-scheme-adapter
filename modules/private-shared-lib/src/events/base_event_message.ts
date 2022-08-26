@@ -87,7 +87,7 @@ export class BaseEventMessage {
         return this._data.headers;
     }
 
-    static CreateFromIMessage(message: IMessage): BaseEventMessage {
+    static createFromIMessage(message: IMessage): BaseEventMessage {
     // Validate message
         this._validateMessage(message);
         // Prepare Data

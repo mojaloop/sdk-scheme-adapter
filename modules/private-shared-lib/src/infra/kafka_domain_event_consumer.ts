@@ -42,7 +42,7 @@ export class KafkaDomainEventConsumer extends KafkaEventConsumer {
     ) {
         const superHandlerFn = async (message: IMessage) => {
             // Construct domain event message from IMessage
-            const domainEventMessageObj = DomainEventMessage.CreateFromIMessage(message);
+            const domainEventMessageObj = DomainEventMessage.createFromIMessage(message);
             // Call handler function with domain event message
             await handlerFn(domainEventMessageObj);
         };

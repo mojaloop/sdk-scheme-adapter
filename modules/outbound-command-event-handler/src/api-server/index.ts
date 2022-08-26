@@ -27,6 +27,7 @@ import { Server } from 'http';
 import { CreateExpressServer } from './app';
 import path from 'path';
 import { IBulkTransactionEntityRepo } from '../types';
+import { Application } from 'express';
 
 
 export interface IOutboundCommandEventHandlerAPIServerOptions {
@@ -49,7 +50,7 @@ export class OutboundCommandEventHandlerAPIServer {
         this._logger = logger;
     }
 
-    async startServer(): Promise<void> {
+    async startServer(): Promise<Application> {
         return new Promise(async resolve => {
             const app = await CreateExpressServer(
                 path.join(__dirname, './interface/api.yaml'),
@@ -60,7 +61,7 @@ export class OutboundCommandEventHandlerAPIServer {
             );
             this._serverInstance = app.listen(this._port, () => {
                 this._logger.info(`API Server is running on port ${this._port}`);
-                resolve();
+                resolve(app);
             });
         });
     }
