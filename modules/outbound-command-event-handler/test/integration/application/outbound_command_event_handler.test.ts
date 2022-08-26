@@ -165,7 +165,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[1])).state).toBe('RECEIVED');
 
     // Check domain events published to kafka
-    expect(domainEvents[0].getName()).toBe('SDKOutboundBulkPartyInfoRequested')
+    expect(domainEvents[0].getName()).toBe('SDKOutboundBulkPartyInfoRequestedMessage')
     // TODO Add asserts to check data contents of the domain event published to kafka
 
   });
@@ -259,12 +259,12 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[1])).state).toBe('DISCOVERY_PROCESSING');
 
     // Check domain events published to kafka
-    const filteredEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequested');
+    const filteredEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequestedMessage');
     expect(filteredEvents.length).toBe(2);
     // Check the data contents for domain event
-    expect(filteredEvents[0].getName()).toBe('PartyInfoRequested');
+    expect(filteredEvents[0].getName()).toBe('PartyInfoRequestedMessage');
     expect(JSON.parse(JSON.stringify(filteredEvents[0].getContent())).path).not.toContain('undefined');
-    expect(filteredEvents[1].getName()).toBe('PartyInfoRequested');
+    expect(filteredEvents[1].getName()).toBe('PartyInfoRequestedMessage');
     expect(JSON.parse(JSON.stringify(filteredEvents[1].getContent())).path).not.toContain('undefined');
 
 
@@ -345,8 +345,9 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect(individualTransfers.length).toBe(1);
     expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[0])).state).toBe('DISCOVERY_SUCCESS');
 
+    const filteredEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequestedMessage');
     // Check domain events published to kafka
-    expect(domainEvents.length).toBe(0)
+    expect(filteredEvents.length).toBe(0)
     //TODO Add asserts to check data contents of the domain event published to kafka
   });
 
@@ -417,7 +418,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     // Check the state in Redis
     console.log('bulk id: ', bulkTransactionId);
 
-    const partyInfoRequestedDomainEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequested');
+    const partyInfoRequestedDomainEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequestedMessage');
 
     const processPartyInfoCallbackMessageData: IProcessPartyInfoCallbackMessageData = {
       key: partyInfoRequestedDomainEvents[0].getKey(),
@@ -446,7 +447,7 @@ describe("Tests for Outbound Command Event Handler", () => {
 
 
     // // Check domain events published to kafka
-    expect(domainEvents[2].getName()).toBe('PartyInfoCallbackProcessed');
+    expect(domainEvents[2].getName()).toBe('PartyInfoCallbackProcessedMessage');
     // //TODO Add asserts to check data contents of the domain event published to kafka
   });
 
@@ -516,7 +517,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     // Check the state in Redis
     console.log('bulk id: ', bulkTransactionId);
 
-    const partyInfoRequestedDomainEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequested');
+    const partyInfoRequestedDomainEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequestedMessage');
 
     const processPartyInfoCallbackMessageData: IProcessPartyInfoCallbackMessageData = {
       key: partyInfoRequestedDomainEvents[0].getKey(),
@@ -548,7 +549,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect(individualTransferData.partyResponse?.errorInformation?.errorDescription).toBe('ID Not Found');
 
     // // Check domain events published to kafka
-    expect(domainEvents[2].getName()).toBe('PartyInfoCallbackProcessed')
+    expect(domainEvents[2].getName()).toBe('PartyInfoCallbackProcessedMessage')
   });
 
   test("6. When inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
@@ -562,7 +563,7 @@ describe("Tests for Outbound Command Event Handler", () => {
         options: {
           onlyValidateParty: true,
           autoAcceptParty: {
-            enabled: false
+            enabled: true
           },
           autoAcceptQuote: {
             enabled: true,
@@ -618,7 +619,7 @@ describe("Tests for Outbound Command Event Handler", () => {
 
   });
 
-  test.only("7. Given autoAcceptParty setting is set to false \
+  test("7. Given autoAcceptParty setting is set to false \
                 When inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
         Then outbound event SDKOutboundBulkAcceptPartyInfoRequested should be published \
                   And Then global state should be updated to DISCOVERY_ACCEPTANCE_PENDING", async () => {
@@ -757,10 +758,11 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect(bulkState.state).toBe('DISCOVERY_COMPLETED');
 
     // Check domain events published to kafka
-    expect(domainEvents[2].getName()).toBe('SDKOutboundBulkAcceptPartyInfoRequested')
+    const hasAcceptPartyEvent = (domainEvents.find((e) => e.getName() === 'SDKOutboundBulkAutoAcceptPartyInfoRequestedMessage'));
+    expect(hasAcceptPartyEvent).toBeTruthy();
   });
 
-  test("9. Given inbound command event ProcessSDKOutboundBulkAcceptPartyInfo is received \
+  test.skip("9. Given inbound command event ProcessSDKOutboundBulkAcceptPartyInfo is received \
         Then the logic should loop through individual transfer in the bulk request \
           And update the individual transfer state to DISCOVERY_ACCEPTED or DISCOVERY_REJECTED based on the value in the incoming event \
           And update the overall global state to DISCOVERY_ACCEPTANCE_COMPLETED \
