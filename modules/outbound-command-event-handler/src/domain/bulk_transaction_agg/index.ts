@@ -31,13 +31,14 @@ import {
     BulkTransactionEntity,
     BulkTransactionState,
     CommandEventMessage,
+    IBulkTransactionEntityRepo,
     ICommandEventHandlerOptions,
     IEntityStateRepository,
     IndividualTransferEntity,
     IndividualTransferState,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-import { IBulkTransactionEntityRepo } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
+
 import CommandEventHandlerFunctions from './handlers';
 
 export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, BulkTransactionState> {
@@ -120,23 +121,6 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         }
     }
 
-    static async ProcessCommandEvent(
-        message: CommandEventMessage,
-        options: ICommandEventHandlerOptions,
-        logger: ILogger,
-    ) {
-        const handlerPrefix = 'handle';
-        if(!CommandEventHandlerFunctions.hasOwnProperty(handlerPrefix + message.constructor.name)) {
-            logger.error(`Handler function for the command event message ${message.constructor.name} is not implemented`);
-            return;
-        }
-        await CommandEventHandlerFunctions[handlerPrefix + message.constructor.name](
-            message,
-            options,
-            logger,
-        );
-    }
-
     get bulkId() {
         return this._rootEntity.id;
     }
@@ -185,5 +169,22 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
             // this._partyLookupSuccessCount = undefined;
             // this._partyLookupFailedCount = undefined;
         }
+    }
+
+    static async ProcessCommandEvent(
+        message: CommandEventMessage,
+        options: ICommandEventHandlerOptions,
+        logger: ILogger,
+    ) {
+        const handlerPrefix = 'handle';
+        if(!CommandEventHandlerFunctions.hasOwnProperty(handlerPrefix + message.constructor.name)) {
+            logger.error(`Handler function for the command event message ${message.constructor.name} is not implemented`);
+            return;
+        }
+        await CommandEventHandlerFunctions[handlerPrefix + message.constructor.name](
+            message,
+            options,
+            logger,
+        );
     }
 }
