@@ -686,7 +686,8 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect(bulkState.state).toBe('DISCOVERY_ACCEPTANCE_PENDING');
 
     // Check domain events published to kafka
-    expect(domainEvents[1].getName()).toBe('SDKOutboundBulkAcceptPartyInfoRequestedMessage')
+    const hasAcceptPartyEvent = (domainEvents.find((e) => e.getName() === 'SDKOutboundBulkAcceptPartyInfoRequestedMessage'));
+    expect(hasAcceptPartyEvent).toBeTruthy();
   });
 
   test("8. Given autoAcceptParty setting is set to true \
