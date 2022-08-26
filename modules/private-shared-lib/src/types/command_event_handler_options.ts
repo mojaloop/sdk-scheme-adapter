@@ -23,7 +23,7 @@
  ******/
 
 'use strict';
-import { IBulkTransactionEntityRepo, IDomainEventProducer } from '@module-types';
+import { IBulkTransactionEntityRepo, IDomainEventProducer } from './';
 
 export type ICommandEventHandlerOptions = {
     bulkTransactionEntityRepo: IBulkTransactionEntityRepo

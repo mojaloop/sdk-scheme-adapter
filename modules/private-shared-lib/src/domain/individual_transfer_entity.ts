@@ -24,7 +24,7 @@
 
 'use strict';
 
-import { BaseEntityState, BaseEntity } from '@module-domain';
+import { BaseEntityState, BaseEntity } from './';
 import { SchemaValidationError } from '@module-errors';
 import { SDKSchemeAdapter, v1_1 as FSPIOP } from '@mojaloop/api-snippets';
 import { randomUUID } from 'crypto';
