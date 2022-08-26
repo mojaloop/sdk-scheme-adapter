@@ -18,41 +18,40 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Modusbox
- - Yevhen Kyriukha <yevhen.kyriukha@modusbox.com>
+ - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
  --------------
  ******/
 
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { BulkTransactionAgg, CommandEventMessage, ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage, ICommandEventHandlerOptions, BulkTransactionInternalState } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { CommandEventMessage, ProcessSDKOutboundBulkRequestMessage, SDKOutboundBulkPartyInfoRequestedMessage, ICommandEventHandlerOptions } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { BulkTransactionAgg } from '@module-domain';
 
-export async function handleProcessSDKOutboundBulkPartyInfoRequestCompleteMessage(
+export async function handleProcessSDKOutboundBulkRequestMessage(
     message: CommandEventMessage,
     options: ICommandEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
-    const processSDKOutboundBulkPartyInfoRequestCompleteMessage =
-        message as ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage;
+    const processSDKOutboundBulkRequestMessage = message as ProcessSDKOutboundBulkRequestMessage;
     try {
-        logger.info(`Got ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage: bulkid=${processSDKOutboundBulkPartyInfoRequestCompleteMessage.getKey()}`);
+        logger.info(`Got Bulk Request ${processSDKOutboundBulkRequestMessage.getBulkRequest()}`);
 
         // Create aggregate
-        const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRepo(
-            processSDKOutboundBulkPartyInfoRequestCompleteMessage.getKey(),
+        const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRequest(
+            processSDKOutboundBulkRequestMessage.getBulkRequest(),
             options.bulkTransactionEntityRepo,
             logger,
         );
+        logger.info(`Created BulkTransactionAggregate ${bulkTransactionAgg}`);
 
-        const bulkTx = bulkTransactionAgg.getBulkTransaction();
+        const msg = new SDKOutboundBulkPartyInfoRequestedMessage({
+            bulkId: bulkTransactionAgg.bulkId,
+            timestamp: Date.now(),
+            headers: [],
+        });
+        await options.domainProducer.sendDomainMessage(msg);
 
-        bulkTx.setTxState(BulkTransactionInternalState.DISCOVERY_COMPLETED);
-
-        if(bulkTx.isAutoAcceptPartyEnabled()) {
-            // TODO: construct and send SDKOutboundBulkAcceptPartyInfoRequested message to domain event handler
-        }
-
-        await bulkTransactionAgg.setTransaction(bulkTx);
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     } catch (err: any) {
         logger.info(`Failed to create BulkTransactionAggregate. ${err.message}`);

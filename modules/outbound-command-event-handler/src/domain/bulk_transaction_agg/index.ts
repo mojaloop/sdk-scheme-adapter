@@ -30,13 +30,15 @@ import {
     BaseAggregate,
     BulkTransactionEntity,
     BulkTransactionState,
+    CommandEventMessage,
+    ICommandEventHandlerOptions,
     IEntityStateRepository,
     IndividualTransferEntity,
     IndividualTransferState,
-} from '@module-domain';
-import { IBulkTransactionEntityRepo } from '@module-types';
+} from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { IBulkTransactionEntityRepo } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
-
+import CommandEventHandlerFunctions from './handlers';
 
 export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, BulkTransactionState> {
     // TODO: These counts can be part of bulk transaction entity?
@@ -116,6 +118,23 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         } else {
             throw new Error('Aggregate data is not found in repo');
         }
+    }
+
+    static async ProcessCommandEvent(
+        message: CommandEventMessage,
+        options: ICommandEventHandlerOptions,
+        logger: ILogger,
+    ) {
+        const handlerPrefix = 'handle';
+        if(!CommandEventHandlerFunctions.hasOwnProperty(handlerPrefix + message.constructor.name)) {
+            logger.error(`Handler function for the command event message ${message.constructor.name} is not implemented`);
+            return;
+        }
+        await CommandEventHandlerFunctions[handlerPrefix + message.constructor.name](
+            message,
+            options,
+            logger,
+        );
     }
 
     get bulkId() {

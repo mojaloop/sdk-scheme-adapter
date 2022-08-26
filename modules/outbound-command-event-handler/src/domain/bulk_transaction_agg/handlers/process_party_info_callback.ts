@@ -25,8 +25,9 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { BulkTransactionAgg, CommandEventMessage, ProcessPartyInfoCallbackMessage, PartyInfoCallbackProcessedMessage, ICommandEventHandlerOptions, IndividualTransferInternalState } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { CommandEventMessage, ProcessPartyInfoCallbackMessage, PartyInfoCallbackProcessedMessage, ICommandEventHandlerOptions, IndividualTransferInternalState } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { v1_1 as FSPIOP } from '@mojaloop/api-snippets';
+import { BulkTransactionAgg } from '@module-domain';
 
 type PartyResult = FSPIOP.Schemas.PartyResult;
 

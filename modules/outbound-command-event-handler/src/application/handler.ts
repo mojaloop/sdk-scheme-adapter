@@ -24,6 +24,7 @@
 
 'use strict';
 
+import { BulkTransactionAgg } from '@module-domain';
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import {
     IRunHandler,
@@ -42,7 +43,6 @@ import {
     ICommandEventHandlerOptions,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
-import CommandEventHandlerFunctions from './handlers';
 
 export interface IOutboundEventHandlerOptions {
     bulkTransactionEntityRepo: IBulkTransactionEntityRepo
@@ -89,23 +89,6 @@ export class OutboundEventHandler implements IRunHandler {
         };
     }
 
-    static async ProcessCommandEvent(
-        message: CommandEventMessage,
-        options: ICommandEventHandlerOptions,
-        logger: ILogger,
-    ) {
-        const handlerPrefix = 'handle';
-        if(!CommandEventHandlerFunctions.hasOwnProperty(handlerPrefix + message.constructor.name)) {
-            logger.error(`Handler function for the command event message ${message.constructor.name} is not implemented`);
-            return;
-        }
-        await CommandEventHandlerFunctions[handlerPrefix + message.constructor.name](
-            message,
-            options,
-            logger,
-        );
-    }
-
     async destroy(): Promise<void> {
         await this._consumer?.destroy();
         await this._domainProducer?.destroy();
@@ -116,28 +99,28 @@ export class OutboundEventHandler implements IRunHandler {
         // TODO: Handle error validations here
         switch (message.getName()) {
             case ProcessSDKOutboundBulkRequestMessage.name: {
-                OutboundEventHandler.ProcessCommandEvent(
+                BulkTransactionAgg.ProcessCommandEvent(
                     ProcessSDKOutboundBulkRequestMessage.CreateFromCommandEventMessage(message),
                     this._commandEventHandlerOptions, this._logger,
                 );
                 break;
             }
             case ProcessSDKOutboundBulkPartyInfoRequestMessage.name: {
-                OutboundEventHandler.ProcessCommandEvent(
+                BulkTransactionAgg.ProcessCommandEvent(
                     ProcessSDKOutboundBulkPartyInfoRequestMessage.CreateFromCommandEventMessage(message),
                     this._commandEventHandlerOptions, this._logger,
                 );
                 break;
             }
             case ProcessPartyInfoCallbackMessage.name: {
-                OutboundEventHandler.ProcessCommandEvent(
+                BulkTransactionAgg.ProcessCommandEvent(
                     ProcessPartyInfoCallbackMessage.CreateFromCommandEventMessage(message),
                     this._commandEventHandlerOptions, this._logger,
                 );
                 break;
             }
             case ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage.name: {
-                OutboundEventHandler.ProcessCommandEvent(
+                BulkTransactionAgg.ProcessCommandEvent(
                     ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage.CreateFromCommandEventMessage(message),
                     this._commandEventHandlerOptions, this._logger,
                 );
