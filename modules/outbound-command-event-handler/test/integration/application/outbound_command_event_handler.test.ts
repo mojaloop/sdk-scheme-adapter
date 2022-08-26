@@ -90,7 +90,7 @@ describe("Tests for Outbound Command Event Handler", () => {
 
   // TESTS FOR PARTY LOOKUP
 
-  test("1. When inbound command event ProcessSDKOutboundBulkRequest is received \
+  test.skip("1. When inbound command event ProcessSDKOutboundBulkRequest is received \
         Then outbound event SDKOutboundBulkPartyInfoRequested should be published \
           And Global state should be updated to RECEIVED.", async () => {
 
@@ -165,12 +165,12 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[1])).state).toBe('RECEIVED');
 
     // Check domain events published to kafka
-    expect(domainEvents[0].getName()).toBe('SDKOutboundBulkPartyInfoRequested')
+    expect(domainEvents[0].getName()).toBe('SDKOutboundBulkPartyInfoRequestedMessage')
     // TODO Add asserts to check data contents of the domain event published to kafka
 
   });
 
-  // This test is skipped because of open bug https://github.com/mojaloop/project/issues/2893
+  // Resolved - Bug 2893
   test.skip("2. Given Party info does not already exist for none of the individual transfers. \
           And Party Lookup is not skipped \
         When inbound command event ProcessSDKOutboundBulkPartyInfoRequest is received\
@@ -260,12 +260,12 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[1])).state).toBe('DISCOVERY_PROCESSING');
 
     // Check domain events published to kafka
-    const filteredEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequested');
+    const filteredEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequestedMessage');
     expect(filteredEvents.length).toBe(2);
     // Check the data contents for domain event
-    expect(filteredEvents[0].getName()).toBe('PartyInfoRequested');
+    expect(filteredEvents[0].getName()).toBe('PartyInfoRequestedMessage');
     expect(JSON.parse(JSON.stringify(filteredEvents[0].getContent())).path).not.toContain('undefined');
-    expect(filteredEvents[1].getName()).toBe('PartyInfoRequested');
+    expect(filteredEvents[1].getName()).toBe('PartyInfoRequestedMessage');
     expect(JSON.parse(JSON.stringify(filteredEvents[1].getContent())).path).not.toContain('undefined');
 
 
@@ -352,8 +352,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     //TODO Add asserts to check data contents of the domain event published to kafka
   });
 
-  // This test is skipped because of open bug https://github.com/mojaloop/project/issues/2893
-  test.skip("4. Given receiving party info does not exist \
+  test("4. Given receiving party info does not exist \
               And receiving party lookup was successful \
             When inbound command event ProcessPartyInfoCallback is received \
             Then the state for individual successful party lookups should be updated to DISCOVERY_SUCCESS \
@@ -420,7 +419,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     // Check the state in Redis
     console.log('bulk id: ', bulkTransactionId);
 
-    const partyInfoRequestedDomainEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequested');
+    const partyInfoRequestedDomainEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequestedMessage');
 
     const processPartyInfoCallbackMessageData: IProcessPartyInfoCallbackMessageData = {
       key: partyInfoRequestedDomainEvents[0].getKey(),
@@ -449,11 +448,11 @@ describe("Tests for Outbound Command Event Handler", () => {
 
 
     // // Check domain events published to kafka
-    expect(domainEvents[2].getName()).toBe('PartyInfoCallbackProcessed');
+    expect(domainEvents[2].getName()).toBe('PartyInfoCallbackProcessedMessage');
     // //TODO Add asserts to check data contents of the domain event published to kafka
   });
 
-  // This test is skipped because of open bug https://github.com/mojaloop/project/issues/2893
+  // Resolved - This test is skipped because of open bug https://github.com/mojaloop/project/issues/2893
   test.skip("5. Given receiving party info does not exist \
               And receiving party lookup was not successful \
             When inbound command event ProcessPartyInfoCallback is received \
@@ -520,7 +519,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     // Check the state in Redis
     console.log('bulk id: ', bulkTransactionId);
 
-    const partyInfoRequestedDomainEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequested');
+    const partyInfoRequestedDomainEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequestedMessage');
 
     const processPartyInfoCallbackMessageData: IProcessPartyInfoCallbackMessageData = {
       key: partyInfoRequestedDomainEvents[0].getKey(),
@@ -552,7 +551,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect(individualTransferData.partyResponse?.errorInformation?.errorDescription).toBe('ID Not Found');
 
     // // Check domain events published to kafka
-    expect(domainEvents[2].getName()).toBe('PartyInfoCallbackProcessed')
+    expect(domainEvents[2].getName()).toBe('PartyInfoCallbackProcessedMessage')
   });
 
   //This test is skipped because of open bug https://github.com/mojaloop/project/issues/2893
@@ -623,8 +622,8 @@ describe("Tests for Outbound Command Event Handler", () => {
 
   });
 
-  // This test is skipped because of open bug https://github.com/mojaloop/project/issues/2875
-  test.skip("7. Given autoAcceptParty setting is set to false \
+  // Resolved - This test is skipped because of open bug https://github.com/mojaloop/project/issues/2875
+  test("7. Given autoAcceptParty setting is set to false \
                 When inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
         Then outbound event SDKOutboundBulkAcceptPartyInfoRequested should be published \
                   And Then global state should be updated to DISCOVERY_ACCEPTANCE_PENDING", async () => {
@@ -692,7 +691,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect(bulkState.state).toBe('DISCOVERY_ACCEPTANCE_PENDING');
 
     // Check domain events published to kafka
-    expect(domainEvents[2].getName()).toBe('SDKOutboundBulkAcceptPartyInfoRequested')
+    expect(domainEvents[1].getName()).toBe('SDKOutboundBulkAcceptPartyInfoRequestedMessage')
   });
 
   // Functionality for this feature is not completed yet. Waiting on development to be complete
@@ -766,7 +765,8 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect(domainEvents[2].getName()).toBe('SDKOutboundBulkAcceptPartyInfoRequested')
   });
 
-  test("9. Given inbound command event ProcessSDKOutboundBulkAcceptPartyInfo is received \
+  // Functionality for this feature is not completed yet. Waiting on development to be complete
+  test.skip("9. Given inbound command event ProcessSDKOutboundBulkAcceptPartyInfo is received \
         Then the logic should loop through individual transfer in the bulk request \
           And update the individual transfer state to DISCOVERY_ACCEPTED or DISCOVERY_REJECTED based on the value in the incoming event \
           And update the overall global state to DISCOVERY_ACCEPTANCE_COMPLETED \
