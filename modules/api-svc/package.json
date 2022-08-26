@@ -18,8 +18,8 @@
   },
   "scripts": {
     "start": "node src/index.js",
-    "build": "yarn run build:openapi && yarn run build:dto:outbound",
-    "build:openapi": "yarn run build:openapi:inbound && yarn run build:openapi:outbound",
+    "build": "yarn run build:openapi",
+    "build:openapi": "yarn run build:openapi:inbound",
     "build:openapi:inbound": "openapi bundle --output ./src/InboundServer/api.yaml --ext yaml ./src/InboundServer/api_template.yaml",
     "clean:dist": "rm -Rf dist",
     "lint": "eslint ./src/",

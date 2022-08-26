@@ -2,11 +2,11 @@
 
 import { DomainEventMessage } from '../domain_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { v1_1 as FSPIOP } from '@mojaloop/api-snippets';
+import { IPartyResult } from '../../types';
 
 export interface IPartyInfoCallbackReceivedMessageData {
     key: string;
-    partyResult: FSPIOP.Schemas.PartyResult;
+    partyResult: IPartyResult;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
@@ -30,8 +30,8 @@ export class PartyInfoCallbackReceivedMessage extends DomainEventMessage {
         return this.getKey().split('_')[1];
     }
 
-    getPartyResult(): FSPIOP.Schemas.PartyResult {
-        return this.getContent() as FSPIOP.Schemas.PartyResult;
+    getPartyResult(): IPartyResult {
+        return this.getContent() as IPartyResult;
     }
 
     static CreateFromDomainEventMessage(message: DomainEventMessage): PartyInfoCallbackReceivedMessage {
@@ -40,7 +40,7 @@ export class PartyInfoCallbackReceivedMessage extends DomainEventMessage {
         }
         const data: IPartyInfoCallbackReceivedMessageData = {
             key: message.getKey(),
-            partyResult: <FSPIOP.Schemas.PartyResult>message.getContent(),
+            partyResult: <IPartyResult>message.getContent(),
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
         };

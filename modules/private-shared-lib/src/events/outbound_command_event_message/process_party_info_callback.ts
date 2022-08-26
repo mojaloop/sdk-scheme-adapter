@@ -26,11 +26,7 @@
 
 import { CommandEventMessage } from '../command_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { Schemas } from '@mojaloop/api-snippets/lib/fspiop/v1_1';
-
-export interface IPartyResult extends Schemas.PartiesTypeIDPutResponse {
-    errorInformation?: Schemas.ErrorInformation;
-}
+import { IPartyResult } from '../../types';
 
 export interface IProcessPartyInfoCallbackMessageData {
     key: string;

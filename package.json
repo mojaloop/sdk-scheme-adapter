@@ -29,7 +29,6 @@
     "build:affected": "nx affected --target=build",
     "build:openapi": "yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run build:openapi",
     "build:openapi:inbound": "yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run build:openapi:inbound",
-    "build:openapi:outbound": "yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run build:openapi:outbound",
     "validate:api": "yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run validate:api",
     "watch": "nx run-many --parallel --all --target=watch",
     "clean": "yarn run clean:dist && yarn run clean:npm",
