@@ -10,16 +10,21 @@ const { MetricsClient } = require('~/lib/metrics');
 const { Logger, WSO2Auth } = require('@mojaloop/sdk-standard-components');
 const Cache = require('~/lib/cache');
 
+const ServerType = {
+    Inbound: 'Inbound',
+    Outbound: 'Outbound',
+};
+
 /**
  * Get OpenAPI spec and Validator for specified server
- * @param {('OUTBOUND'|'INBOUND')} serverType
+ * @param {ServerType} serverType
  * @return {Promise<{apiSpecs: Object, validator: Validator}>}
  */
 const readApiInfo = async (serverType) => {
     let specPath;
-    if (serverType === 'OUTBOUND') {
+    if (serverType === ServerType.Outbound) {
         specPath = path.join(path.dirname(require.resolve('@mojaloop/api-snippets')), '../docs/sdk-scheme-adapter-outbound-v2_0_0-openapi3-snippets.yaml');
-    } else if (serverType === 'INBOUND') {
+    } else if (serverType === ServerType.Inbound) {
         specPath = path.join(__dirname, '../../../src/InboundServer/api.yaml');
     }
     const apiSpecs = yaml.load(fs.readFileSync(specPath));
@@ -29,11 +34,11 @@ const readApiInfo = async (serverType) => {
 };
 
 const createValidators = async () => {
-    const apiInfoOutbound = await readApiInfo('OUTBOUND');
+    const apiInfoOutbound = await readApiInfo(ServerType.Outbound);
     const apiSpecsOutbound = apiInfoOutbound.apiSpecs;
     const requestValidatorOutbound = apiInfoOutbound.validator;
 
-    const apiInfoInbound = await readApiInfo('INBOUND');
+    const apiInfoInbound = await readApiInfo(ServerType.Inbound);
     const apiSpecsInbound = apiInfoInbound.apiSpecs;
     const requestValidatorInbound = apiInfoInbound.validator;
     return {
