@@ -32,7 +32,6 @@ import {
     BulkTransactionState,
     CommandEventMessage,
     IBulkTransactionEntityRepo,
-    ICommandEventHandlerOptions,
     IEntityStateRepository,
     IndividualTransferEntity,
     IndividualTransferState,
@@ -40,6 +39,7 @@ import {
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 import CommandEventHandlerFunctions from './handlers';
+import { ICommandEventHandlerOptions } from '@module-types';
 
 export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, BulkTransactionState> {
     // TODO: These counts can be part of bulk transaction entity?

@@ -23,7 +23,7 @@
  ******/
 
 'use strict';
-import { IBulkTransactionEntityRepo, IDomainEventProducer } from './';
+import { IBulkTransactionEntityRepo, IDomainEventProducer } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
 export type ICommandEventHandlerOptions = {
     bulkTransactionEntityRepo: IBulkTransactionEntityRepo

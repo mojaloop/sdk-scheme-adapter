@@ -23,3 +23,4 @@
  ******/
 
 export * from './repo_infra_types';
+export * from './command_event_handler_options';

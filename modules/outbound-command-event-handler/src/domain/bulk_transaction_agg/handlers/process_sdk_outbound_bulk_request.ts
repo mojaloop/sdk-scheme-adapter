@@ -25,8 +25,9 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { CommandEventMessage, ProcessSDKOutboundBulkRequestMessage, SDKOutboundBulkPartyInfoRequestedMessage, ICommandEventHandlerOptions } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { CommandEventMessage, ProcessSDKOutboundBulkRequestMessage, SDKOutboundBulkPartyInfoRequestedMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '@module-domain';
+import { ICommandEventHandlerOptions } from '@module-types';
 
 export async function handleProcessSDKOutboundBulkRequestMessage(
     message: CommandEventMessage,

@@ -3,6 +3,7 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
+    "baseUrl": ".",
     "paths": {
       "@module-domain": [ "./src/domain/index.ts" ],
       "@module-errors": [ "./src/errors/index.ts" ],

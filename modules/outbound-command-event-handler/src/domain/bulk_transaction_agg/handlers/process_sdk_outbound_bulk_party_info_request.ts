@@ -29,11 +29,11 @@ import {
     CommandEventMessage,
     ProcessSDKOutboundBulkPartyInfoRequestMessage,
     PartyInfoRequestedMessage,
-    ICommandEventHandlerOptions,
     BulkTransactionInternalState,
     IndividualTransferInternalState,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '@module-domain';
+import { ICommandEventHandlerOptions } from '@module-types';
 
 export async function handleProcessSDKOutboundBulkPartyInfoRequestMessage(
     message: CommandEventMessage,

@@ -33,4 +33,3 @@
 
 export * from './infra';
 export * from './bulk_transaction_entity_repo';
-export * from './command_event_handler_options';
