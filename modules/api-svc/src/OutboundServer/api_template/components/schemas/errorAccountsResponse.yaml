@@ -1,8 +1,0 @@
-allOf:
-  - $ref: ./errorResponse.yaml
-  - type: object
-    required:
-      - executionState
-    properties:
-      executionState:
-        $ref: ./accountsResponse.yaml

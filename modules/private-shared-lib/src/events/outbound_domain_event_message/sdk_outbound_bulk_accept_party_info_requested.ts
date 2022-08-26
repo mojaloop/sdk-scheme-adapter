@@ -24,46 +24,35 @@
 
 'use strict';
 
-import { CommandEventMessage } from '../command_event_message';
+import { DomainEventMessage } from '../domain_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { IPartyResult } from '../../types';
 
-export interface IProcessPartyInfoCallbackMessageData {
-    key: string;
-    partyResult: IPartyResult;
+export interface ISDKOutboundBulkAcceptPartyInfoRequestedMessageData {
+    bulkId: string;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
 
-export class ProcessPartyInfoCallbackMessage extends CommandEventMessage {
-    constructor(data: IProcessPartyInfoCallbackMessageData) {
+export class SDKOutboundBulkAcceptPartyInfoRequestedMessage extends DomainEventMessage {
+    constructor(data: ISDKOutboundBulkAcceptPartyInfoRequestedMessageData) {
         super({
-            key: data.key,
-            content: data.partyResult,
+            key: data.bulkId,
             timestamp: data.timestamp,
             headers: data.headers,
-            name: ProcessPartyInfoCallbackMessage.name,
+            content: null,
+            name: SDKOutboundBulkAcceptPartyInfoRequestedMessage.name,
         });
     }
 
-    getBulkId() {
-        return this.getKey().split('_')[0];
-    }
-
-    getTransferId() {
-        return this.getKey().split('_')[1];
-    }
-
-    static CreateFromCommandEventMessage(message: CommandEventMessage): ProcessPartyInfoCallbackMessage {
-        if((message.getContent() === null || typeof message.getContent() !== 'object')) {
-            throw new Error('Content is in unknown format');
+    static CreateFromCommandEventMessage(message: DomainEventMessage): SDKOutboundBulkAcceptPartyInfoRequestedMessage {
+        if((message.getKey() === null || typeof message.getKey() !== 'string')) {
+            throw new Error('Bulk id is in unknown format');
         }
-        const data: IProcessPartyInfoCallbackMessageData = {
-            key: message.getKey(),
-            partyResult: <IPartyResult>message.getContent(),
+        const data: ISDKOutboundBulkAcceptPartyInfoRequestedMessageData = {
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
+            bulkId: message.getKey(),
         };
-        return new ProcessPartyInfoCallbackMessage(data);
+        return new SDKOutboundBulkAcceptPartyInfoRequestedMessage(data);
     }
 }

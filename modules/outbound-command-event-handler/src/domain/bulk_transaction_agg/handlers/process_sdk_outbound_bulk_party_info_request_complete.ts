@@ -25,7 +25,12 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { CommandEventMessage, ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import {
+    CommandEventMessage,
+    ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage,
+    SDKOutboundBulkAcceptPartyInfoRequestedMessage,
+    SDKOutboundBulkAutoAcceptPartyInfoRequestedMessage,
+} from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
 import { BulkTransactionInternalState } from '../..';
@@ -36,7 +41,7 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestCompleteMessag
     options: ICommandEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
-    const processSDKOutboundBulkPartyInfoRequestCompleteMessage = 
+    const processSDKOutboundBulkPartyInfoRequestCompleteMessage =
         message as ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage;
     try {
         logger.info(`Got ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage: bulkid=${processSDKOutboundBulkPartyInfoRequestCompleteMessage.getKey()}`);
@@ -50,10 +55,22 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestCompleteMessag
 
         const bulkTx = bulkTransactionAgg.getBulkTransaction();
 
-        bulkTx.setTxState(BulkTransactionInternalState.DISCOVERY_COMPLETED);
-
         if(bulkTx.isAutoAcceptPartyEnabled()) {
-            // TODO: construct and send SDKOutboundBulkAcceptPartyInfoRequested message to domain event handler
+            bulkTx.setTxState(BulkTransactionInternalState.DISCOVERY_COMPLETED);
+            const msg = new SDKOutboundBulkAutoAcceptPartyInfoRequestedMessage({
+                bulkId: bulkTx.id,
+                timestamp: Date.now(),
+                headers: [],
+            });
+            await options.domainProducer.sendDomainMessage(msg);
+        } else {
+            bulkTx.setTxState(BulkTransactionInternalState.DISCOVERY_ACCEPTANCE_PENDING);
+            const msg = new SDKOutboundBulkAcceptPartyInfoRequestedMessage({
+                bulkId: bulkTx.id,
+                timestamp: Date.now(),
+                headers: [],
+            });
+            await options.domainProducer.sendDomainMessage(msg);
         }
 
         await bulkTransactionAgg.setTransaction(bulkTx);

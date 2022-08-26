@@ -36,7 +36,6 @@ export interface ISDKOutboundBulkRequestReceivedMessageData {
 }
 
 export class SDKOutboundBulkRequestReceivedMessage extends DomainEventMessage {
-
     constructor(data: ISDKOutboundBulkRequestReceivedMessageData) {
     // // Calling Sample validation function
     // SDKOutboundBulkRequestReceivedMessage.validateRequest(data.bulkRequest);

@@ -73,7 +73,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                 throw new Error('Duplicate: Aggregate already exists in repo');
             }
         }
-        
+
         // Create root entity
         const bulkTransactionEntity = BulkTransactionEntity.CreateFromRequest(request);
         // Create the aggregate
@@ -137,7 +137,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         await (<IBulkTransactionEntityRepo> this._entity_state_repo)
             .setIndividualTransfer(this._rootEntity.id, id, transfer.exportState());
     }
-    
+
     async setTransaction(tx: BulkTransactionEntity): Promise<void> {
         this._rootEntity = tx;
         await this.store();

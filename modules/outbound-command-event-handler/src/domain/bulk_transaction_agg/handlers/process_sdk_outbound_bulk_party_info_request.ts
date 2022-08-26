@@ -70,6 +70,13 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestMessage(
                 continue;
             }
             const { partyIdInfo } = individualTransfer.request.to;
+
+            if(partyIdInfo.fspId) {
+                individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS);
+                await bulkTransactionAgg.setIndividualTransferById(individualTransferId, individualTransfer);
+                continue;
+            }
+
             const subId = partyIdInfo.partySubIdOrType ? `/${partyIdInfo.partySubIdOrType}` : '';
             const msg = new PartyInfoRequestedMessage({
                 bulkId: bulkTx.id,

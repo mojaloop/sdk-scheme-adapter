@@ -1,5 +1,0 @@
-description:  PartiesByIdSuccess
-content:
-  application/json:
-    schema:
-      $ref: ../schemas/partiesByIdResponse.yaml
