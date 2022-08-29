@@ -45,8 +45,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
     // private _partyLookupTotalCount?: number;
     // private _partyLookupSuccessCount?: number;
     // private _partyLookupFailedCount?: number;
-    // // NEXT_STORY
-    // private _bulkBatches: Array<BulkBatchState>; // Create bulk batch entity
+    private _bulkBatchCreated: Boolean = false;
     // private _bulkQuotesTotalCount: number;
     // private _bulkQuotesSuccessCount: number;
     // private _bulkQuotesFailedCount: number;
@@ -179,8 +178,14 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
             .setBulkBatch(this._rootEntity.id, id, bulkBatch.exportState());
     }
 
+    isBulkBatchCreated(): Boolean {
+        return this._bulkBatchCreated;
+    }
+
     async createBatches(maxItemsPerBatch: number) : Promise<void> {
-        // TODO: Condition here to check the global state to be equal to something?
+        if (this.isBulkBatchCreated()) {
+            throw(new Error('Bulk batches are already created on this aggregator'));
+        }
 
         const batchesPerFsp: {[fspId: string]: string[][]} = {}
         // Iterate through individual transfers
@@ -238,7 +243,8 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                             transactionType: 'TRANSFER',
                             note: individualTransfer.request.note,
                             extensions: individualTransfer.request.quoteExtensions
-                        })
+                        },
+                        individualTransfer.id)
                         // TODO: Add Transfers to batch here like the quotes above
                     }
                     
@@ -246,6 +252,8 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                 this.addBulkBatchEntity(bulkBatch);
             }
         }
+
+        this._bulkBatchCreated = true;
     }
 
     async destroy() : Promise<void> {

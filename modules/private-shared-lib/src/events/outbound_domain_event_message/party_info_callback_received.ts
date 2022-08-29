@@ -2,11 +2,11 @@
 
 import { DomainEventMessage } from '../domain_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { v1_1 as FSPIOP } from '@mojaloop/api-snippets';
+import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 export interface IPartyInfoCallbackReceivedMessageData {
     key: string;
-    partyResult: FSPIOP.Schemas.PartyResult;
+    partyResult: SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
@@ -30,8 +30,8 @@ export class PartyInfoCallbackReceivedMessage extends DomainEventMessage {
         return this.getKey().split('_')[1];
     }
 
-    getPartyResult(): FSPIOP.Schemas.PartyResult {
-        return this.getContent() as FSPIOP.Schemas.PartyResult;
+    getPartyResult(): SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse {
+        return this.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse;
     }
 
     static CreateFromDomainEventMessage(message: DomainEventMessage): PartyInfoCallbackReceivedMessage {
@@ -40,7 +40,7 @@ export class PartyInfoCallbackReceivedMessage extends DomainEventMessage {
         }
         const data: IPartyInfoCallbackReceivedMessageData = {
             key: message.getKey(),
-            partyResult: <FSPIOP.Schemas.PartyResult>message.getContent(),
+            partyResult: message.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse,
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
         };

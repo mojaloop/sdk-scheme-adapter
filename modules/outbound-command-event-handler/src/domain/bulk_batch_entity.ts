@@ -57,6 +57,8 @@ export interface BulkBatchState extends BaseEntityState {
     bulkQuotesResponse?: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkQuoteResponse;
     bulkTransfersRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferRequest;
     bulkTransfersResponse?: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkQuoteResponse;
+    quoteIdReferenceIdMap: {[quoteId: string]: string};
+    transferIdReferenceIdMap: {[quoteId: string]: string};
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     lastError?: any; // TODO: Define a format for this
 }
@@ -129,6 +131,8 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
                 individualTransfers: [],
                 extensions: bulkTransactionEntity.extensions
             },
+            quoteIdReferenceIdMap: {},
+            transferIdReferenceIdMap: {},
             created_at: Date.now(),
             updated_at: Date.now(),
             version: 1,
@@ -136,12 +140,22 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
         return new BulkBatchEntity(initialState);
     }
 
-    addIndividualQuote(individualQuote: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualQuote) {
+    addIndividualQuote(individualQuote: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualQuote, referenceId: string) {
         this._state.bulkQuotesRequest.individualQuotes.push(individualQuote);
+        this._state.quoteIdReferenceIdMap[individualQuote.quoteId] = referenceId;
     }
 
-    addIndividualTransfer(individualTransfer: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransfer) {
+    addIndividualTransfer(individualTransfer: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransfer, referenceId: string) {
         this._state.bulkTransfersRequest.individualTransfers.push(individualTransfer);
+        this._state.transferIdReferenceIdMap[individualTransfer.transferId] = referenceId;   
+    }
+
+    getReferenceIdForQuoteId(quoteId: string) : string {
+        return this._state.quoteIdReferenceIdMap[quoteId];
+    }
+
+    getReferenceIdForTransferId(transferId: string) : string {
+        return this._state.transferIdReferenceIdMap[transferId];
     }
 
     get state() {
@@ -150,6 +164,10 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
 
     setState(state: BulkBatchInternalState) {
         this._state.state = state;
+    }
+
+    setBulkQuotesResponse(response: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkQuoteResponse) {
+        this._state.bulkQuotesResponse = response;
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */

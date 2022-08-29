@@ -24,41 +24,57 @@
 
 'use strict';
 
-import { DomainEventMessage } from '../domain_event_message';
+import { CommandEventMessage } from '../command_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { v1_1 as FSPIOP } from '@mojaloop/api-snippets';
+import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
-export type ISDKOutboundBulkIndividualBulkQuotesRequestedMessageData = {
-    bulkId: string;
+export interface IProcessBulkQuotesCallbackMessageData {
+    key: string;
     content: {
         batchId: string;
-        request: FSPIOP.Schemas.BulkQuotesPostRequest;
+        bulkQuoteId: string;
+        bulkQuotesResult: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkQuoteResponse;
     };
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
 
-export class SDKOutboundBulkIndividualBulkQuotesRequestedMessage extends DomainEventMessage {
-    constructor(data: ISDKOutboundBulkIndividualBulkQuotesRequestedMessageData) {
+export class ProcessBulkQuotesCallbackMessage extends CommandEventMessage {
+    constructor(data: IProcessBulkQuotesCallbackMessageData) {
         super({
-            key: data.bulkId,
+            key: data.key,
+            content: data.content,
             timestamp: data.timestamp,
             headers: data.headers,
-            content: data.content,
-            name: SDKOutboundBulkIndividualBulkQuotesRequestedMessage.name,
+            name: ProcessBulkQuotesCallbackMessage.name,
         });
     }
 
-    static CreateFromDomainEventMessage(message: DomainEventMessage): SDKOutboundBulkIndividualBulkQuotesRequestedMessage {
-        if((message.getKey() === null || typeof message.getKey() !== 'string')) {
-            throw new Error('Bulk id is in unknown format');
+    static CreateFromCommandEventMessage(message: CommandEventMessage): ProcessBulkQuotesCallbackMessage {
+        if((message.getContent() === null || typeof message.getContent() !== 'object')) {
+            throw new Error('Content is in unknown format');
         }
-        const data: ISDKOutboundBulkIndividualBulkQuotesRequestedMessageData = {
-            bulkId: message.getKey(),
-            content: message.getContent() as ISDKOutboundBulkIndividualBulkQuotesRequestedMessageData['content'],
+        const data: IProcessBulkQuotesCallbackMessageData = {
+            key: message.getKey(),
+            content: message.getContent() as IProcessBulkQuotesCallbackMessageData['content'],
             timestamp: message.getTimeStamp(),
-            headers: message.getHeaders()
+            headers: message.getHeaders(),
         };
-        return new SDKOutboundBulkIndividualBulkQuotesRequestedMessage(data);
+        return new ProcessBulkQuotesCallbackMessage(data);
+    }
+
+    get batchId(): string {
+        const content = this.getContent() as IProcessBulkQuotesCallbackMessageData['content'];
+        return content.batchId;
+    }
+
+    get bulkQuoteId(): string {
+        const content = this.getContent() as IProcessBulkQuotesCallbackMessageData['content'];
+        return content.bulkQuoteId;
+    }
+
+    get bulkQuotesResult(): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkQuoteResponse {
+        const content = this.getContent() as IProcessBulkQuotesCallbackMessageData['content'];
+        return content.bulkQuotesResult;
     }
 }

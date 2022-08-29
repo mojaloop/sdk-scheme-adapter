@@ -50,90 +50,133 @@ describe('BulkTransactionAggregate', () => {
         bulkTransactionEntityRepo.destroy()
     })
 
-    test('BulkTransactionAggregate should be created from request', async () => {
-        // Create aggregate
-        const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRequest(
-            BULK_REQUEST,
-            bulkTransactionEntityRepo,
-            logger,
-        );
-        expect(bulkTransactionAgg.bulkId).not.toBeNull()
-        bulkId = bulkTransactionAgg.bulkId;
-        const bulkTransactionEntity = bulkTransactionAgg.getBulkTransaction()
-        const bulkTransactionEntityState = bulkTransactionEntity.exportState()
-        expect(bulkTransactionEntityState.bulkHomeTransactionID).not.toBeNull()
-        expect(bulkTransactionEntityState.bulkTransactionId).not.toBeNull()
-        const allIndividualTransferIds = await bulkTransactionAgg.getAllIndividualTransferIds()
-        expect(Array.isArray(allIndividualTransferIds)).toBe(true)
-        expect(allIndividualTransferIds.length).toEqual(2)
+    describe('BulkTransactionAggregate creation', () => {
+        let bulkTransactionAgg: BulkTransactionAgg;
+        afterAll(async () => {
+            bulkTransactionAgg.destroy();
+        })
+        test('BulkTransactionAggregate should be created from request', async () => {
+            // Create aggregate
+            bulkTransactionAgg = await BulkTransactionAgg.CreateFromRequest(
+                BULK_REQUEST,
+                bulkTransactionEntityRepo,
+                logger,
+            );
+            expect(bulkTransactionAgg.bulkId).not.toBeNull()
+            bulkId = bulkTransactionAgg.bulkId;
+            const bulkTransactionEntity = bulkTransactionAgg.getBulkTransaction()
+            const bulkTransactionEntityState = bulkTransactionEntity.exportState()
+            expect(bulkTransactionEntityState.bulkHomeTransactionID).not.toBeNull()
+            expect(bulkTransactionEntityState.bulkTransactionId).not.toBeNull()
+            const allIndividualTransferIds = await bulkTransactionAgg.getAllIndividualTransferIds()
+            expect(Array.isArray(allIndividualTransferIds)).toBe(true)
+            expect(allIndividualTransferIds.length).toEqual(2)
+        })
+        test('BulkTransactionAggregate should be created from repository', async () => {
+            // Create aggregate
+            bulkTransactionAgg = await BulkTransactionAgg.CreateFromRepo(
+                bulkId,
+                bulkTransactionEntityRepo,
+                logger,
+            );
+            const bulkTransactionEntity = bulkTransactionAgg.getBulkTransaction()
+            const bulkTransactionEntityState = bulkTransactionEntity.exportState()
+            expect(bulkTransactionEntityState.bulkHomeTransactionID).not.toBeNull()
+            expect(bulkTransactionEntityState.bulkTransactionId).not.toBeNull()
+            const allIndividualTransferIds = await bulkTransactionAgg.getAllIndividualTransferIds()
+            expect(Array.isArray(allIndividualTransferIds)).toBe(true)
+            expect(allIndividualTransferIds.length).toEqual(2)
+        })
     })
-    test('BulkTransactionAggregate should be created from repository', async () => {
-        // Create aggregate
-        const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRepo(
-            bulkId,
-            bulkTransactionEntityRepo,
-            logger,
-        );
-        const bulkTransactionEntity = bulkTransactionAgg.getBulkTransaction()
-        const bulkTransactionEntityState = bulkTransactionEntity.exportState()
-        expect(bulkTransactionEntityState.bulkHomeTransactionID).not.toBeNull()
-        expect(bulkTransactionEntityState.bulkTransactionId).not.toBeNull()
-        const allIndividualTransferIds = await bulkTransactionAgg.getAllIndividualTransferIds()
-        expect(Array.isArray(allIndividualTransferIds)).toBe(true)
-        expect(allIndividualTransferIds.length).toEqual(2)
-    })
-    test('BulkTransactionAggregate should create batches for bulkQuotes and bulkTransfers', async () => {
-        // Create aggregate
-        const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRepo(
-            bulkId,
-            bulkTransactionEntityRepo,
-            logger,
-        );
-        // Simulate party resposnes
-        const partyResponse1: SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse = {
-            party: {
-                body: {
-                    partyIdInfo: {
-                        partyIdType: 'MSISDN',
-                        partyIdentifier: '123',
-                        fspId: 'dfsp1'
-                    }
+    describe('createBatches', () => {
+        let bulkTransactionAgg: BulkTransactionAgg;
+        beforeEach(async () => {
+            // Create aggregate
+            bulkTransactionAgg = await BulkTransactionAgg.CreateFromRequest(
+                BULK_REQUEST,
+                bulkTransactionEntityRepo,
+                logger,
+            );
+            // Simulate party resposnes
+            const partyResponse1: SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse = {
+                party: {
+                    body: {
+                        partyIdInfo: {
+                            partyIdType: 'MSISDN',
+                            partyIdentifier: '123',
+                            fspId: 'dfsp1'
+                        }
+                    },
+                    headers: {}
                 },
-                headers: {}
-            },
-            currentState: 'COMPLETED'
-        }
-        const partyResponse2: SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse = {
-            party: {
-                body: {
-                    partyIdInfo: {
-                        partyIdType: 'MSISDN',
-                        partyIdentifier: '321',
-                        fspId: 'dfsp2'
-                    }
+                currentState: 'COMPLETED'
+            }
+            const partyResponse2: SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse = {
+                party: {
+                    body: {
+                        partyIdInfo: {
+                            partyIdType: 'MSISDN',
+                            partyIdentifier: '321',
+                            fspId: 'dfsp1'
+                        }
+                    },
+                    headers: {}
                 },
-                headers: {}
-            },
-            currentState: 'COMPLETED'
-        }
-        const allIndividualTransferIds = await bulkTransactionAgg.getAllIndividualTransferIds();
-        const individualTransfer1 = await bulkTransactionAgg.getIndividualTransferById(allIndividualTransferIds[0]);
-        individualTransfer1.setPartyResponse(partyResponse1);
-        individualTransfer1.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS);
-        await bulkTransactionAgg.setIndividualTransferById(individualTransfer1.id, individualTransfer1);
-        const individualTransfer2 = await bulkTransactionAgg.getIndividualTransferById(allIndividualTransferIds[1]);
-        individualTransfer2.setPartyResponse(partyResponse1);
-        individualTransfer2.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS);
-        await bulkTransactionAgg.setIndividualTransferById(individualTransfer2.id, individualTransfer2);
-        // console.log(individualTransfer.exportState())
+                currentState: 'COMPLETED'
+            }
+            const allIndividualTransferIds = await bulkTransactionAgg.getAllIndividualTransferIds();
+            const individualTransfer1 = await bulkTransactionAgg.getIndividualTransferById(allIndividualTransferIds[0]);
+            individualTransfer1.setPartyResponse(partyResponse1);
+            individualTransfer1.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS);
+            await bulkTransactionAgg.setIndividualTransferById(individualTransfer1.id, individualTransfer1);
+            const individualTransfer2 = await bulkTransactionAgg.getIndividualTransferById(allIndividualTransferIds[1]);
+            individualTransfer2.setPartyResponse(partyResponse2);
+            individualTransfer2.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS);
+            await bulkTransactionAgg.setIndividualTransferById(individualTransfer2.id, individualTransfer2);
+        })
 
-        // logger.info(`Created BulkTransactionAggregate ${bulkTransactionAgg}`);
-        await bulkTransactionAgg.createBatches(1);
-        const bulkBatchIds = await bulkTransactionAgg.getAllBulkBatchIds()
-        console.log(bulkBatchIds)
-        for await(const bulkBatchId of bulkBatchIds) {
-            const bulkBatchEntity = await bulkTransactionAgg.getBulkBatchEntityById(bulkBatchId)
-            console.log(JSON.stringify(bulkBatchEntity.exportState(), null, 2))
-        }
+        afterEach(async () => {
+            bulkTransactionAgg.destroy();
+        })
+    
+        test('createBatches should create a signle batch for two transfers', async () => {
+            await bulkTransactionAgg.createBatches(10);
+            const bulkBatchIds = await bulkTransactionAgg.getAllBulkBatchIds();
+            expect(bulkBatchIds.length).toEqual(1);
+        })
+        test('createBatches should create two batches for two transfers if the limit is 1', async () => {
+            await bulkTransactionAgg.createBatches(1);
+            const bulkBatchIds = await bulkTransactionAgg.getAllBulkBatchIds();
+            expect(bulkBatchIds.length).toEqual(2);
+        })
+        test('createBatches should create two batches for two transfers if there is a second fsp', async () => {
+            // Add another individual transfer with different dfspId
+            const partyResponse3: SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse = {
+                party: {
+                    body: {
+                        partyIdInfo: {
+                            partyIdType: 'MSISDN',
+                            partyIdentifier: '321',
+                            fspId: 'dfsp2'
+                        }
+                    },
+                    headers: {}
+                },
+                currentState: 'COMPLETED'
+            }
+            const allIndividualTransferIds = await bulkTransactionAgg.getAllIndividualTransferIds();
+            const individualTransfer3 = await bulkTransactionAgg.getIndividualTransferById(allIndividualTransferIds[1]);
+            individualTransfer3.setPartyResponse(partyResponse3);
+            individualTransfer3.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS);
+            await bulkTransactionAgg.setIndividualTransferById(individualTransfer3.id, individualTransfer3);
+
+            await bulkTransactionAgg.createBatches(10);
+            const bulkBatchIds = await bulkTransactionAgg.getAllBulkBatchIds();
+            expect(bulkBatchIds.length).toEqual(2);
+        })
+        test('createBatches should throw error when called second time', async () => {
+            await expect(bulkTransactionAgg.createBatches(10)).resolves.toBeUndefined();
+            await expect(bulkTransactionAgg.createBatches(10)).rejects.toThrowError();
+        })
     })
 })

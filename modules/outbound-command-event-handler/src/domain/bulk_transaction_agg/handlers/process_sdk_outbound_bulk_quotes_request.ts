@@ -69,10 +69,12 @@ export async function handleProcessSDKOutboundBulkQuotesRequestMessage(
                 // TODO: Send domain event BulkQuotesRequested
                 const msg = new BulkQuotesRequestedMessage({
                     bulkId: bulkTx.id,
-                    bulkQuoteId: bulkBatch.bulkQuoteId,
+                    content: {
+                        batchId: bulkBatch.id,
+                        request: bulkBatch.bulkQuotesRequest
+                    },
                     timestamp: Date.now(),
                     headers: [],
-                    request: bulkBatch.bulkQuotesRequest
                 });
                 await options.domainProducer.sendDomainMessage(msg);
                 bulkBatch.setState(BulkBatchInternalState.AGREEMENT_PROCESSING);

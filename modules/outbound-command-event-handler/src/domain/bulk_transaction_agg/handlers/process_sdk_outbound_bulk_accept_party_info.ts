@@ -28,7 +28,7 @@ import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import { CommandEventMessage, ProcessSDKOutboundBulkAcceptPartyInfoMessage, SDKOutboundBulkAcceptPartyInfoProcessedMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
-import { BulkTransactionInternalState, IndividualTransferInternalState } from '@module-domain';
+import { BulkTransactionInternalState, IndividualTransferInternalState } from '../../../domain';
 
 export async function handleProcessSDKOutboundBulkAcceptPartyInfoMessage(
     message: CommandEventMessage,
@@ -36,6 +36,7 @@ export async function handleProcessSDKOutboundBulkAcceptPartyInfoMessage(
     logger: ILogger,
 ): Promise<void> {
     const processSDKOutboundBulkAcceptPartyInfoMessage = message as ProcessSDKOutboundBulkAcceptPartyInfoMessage;
+    // TODO: Add if confidtion here to check autoAcceptParty parameter and alternate flow
     try {
         logger.info(`Got ProcessSDKOutboundBulkAcceptPartyInfoMessage for ID ${processSDKOutboundBulkAcceptPartyInfoMessage.getKey()}`);
 

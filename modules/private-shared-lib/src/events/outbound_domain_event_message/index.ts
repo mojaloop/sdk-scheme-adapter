@@ -40,5 +40,7 @@ export * from './sdk_outbound_bulk_party_info_requested';
 export * from './party_info_callback_processed';
 export * from './sdk_outbound_bulk_accept_party_info_processed';
 export * from './bulk_quotes_requested';
-export * from './sdk_outbound_bulk_individual_bulk_quotes_requested';
 export * from './party_info_callback_received';
+export * from './sdk_outbound_bulk_accept_party_info_received_message';
+export * from './bulk_quotes_callback_received';
+export * from './bulk_quotes_processed';

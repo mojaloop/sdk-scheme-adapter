@@ -28,48 +28,53 @@ import { DomainEventMessage } from '../domain_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
-export type IBulkQuotesRequestedMessageData = {
+export interface IBulkQuotesCallbackReceivedMessageData {
     bulkId: string;
     content: {
         batchId: string;
-        request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkQuoteRequest;
+        bulkQuoteId: string;
+        bulkQuotesResult: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkQuoteResponse;
     };
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
 
-export class BulkQuotesRequestedMessage extends DomainEventMessage {
-    constructor(data: IBulkQuotesRequestedMessageData) {
+export class BulkQuotesCallbackReceivedMessage extends DomainEventMessage {
+    constructor(data: IBulkQuotesCallbackReceivedMessageData) {
         super({
             key: data.bulkId,
+            content: data.content,
             timestamp: data.timestamp,
             headers: data.headers,
-            content: data.content,
-            name: BulkQuotesRequestedMessage.name,
+            name: BulkQuotesCallbackReceivedMessage.name,
         });
     }
 
-    static CreateFromDomainEventMessage(message: DomainEventMessage): BulkQuotesRequestedMessage {
-        if((message.getKey() === null || typeof message.getKey() !== 'string')) {
-            throw new Error('Bulk id is in unknown format');
+    static CreateFromDomainEventMessage(message: DomainEventMessage): BulkQuotesCallbackReceivedMessage {
+        if((message.getContent() === null || typeof message.getContent() !== 'object')) {
+            throw new Error('Content is in unknown format');
         }
-        const data: IBulkQuotesRequestedMessageData = {
+        const data: IBulkQuotesCallbackReceivedMessageData = {
             bulkId: message.getKey(),
-            content: message.getContent() as IBulkQuotesRequestedMessageData['content'],
+            content: message.getContent() as IBulkQuotesCallbackReceivedMessageData['content'],
             timestamp: message.getTimeStamp(),
-            headers: message.getHeaders()
+            headers: message.getHeaders(),
         };
-        return new BulkQuotesRequestedMessage(data);
+        return new BulkQuotesCallbackReceivedMessage(data);
     }
 
     get batchId(): string {
-        const content = this.getContent() as IBulkQuotesRequestedMessageData['content'];
+        const content = this.getContent() as IBulkQuotesCallbackReceivedMessageData['content'];
         return content.batchId;
     }
 
-    get request(): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkQuoteRequest {
-        const content = this.getContent() as IBulkQuotesRequestedMessageData['content'];
-        return content.request;
+    get bulkQuoteId(): string {
+        const content = this.getContent() as IBulkQuotesCallbackReceivedMessageData['content'];
+        return content.bulkQuoteId;
     }
 
+    get bulkQuotesResult(): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkQuoteResponse {
+        const content = this.getContent() as IBulkQuotesCallbackReceivedMessageData['content'];
+        return content.bulkQuotesResult;
+    }
 }
