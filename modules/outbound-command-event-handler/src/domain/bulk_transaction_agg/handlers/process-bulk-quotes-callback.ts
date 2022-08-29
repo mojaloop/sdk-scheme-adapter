@@ -55,11 +55,14 @@ export async function handleProcessBulkQuotesCallbackMessage(
         // if(bulkQuotesResult.currentState && bulkQuotesResult.currentState === 'COMPLETED') {
         if(bulkQuotesResult.individualQuoteResults.length > 0) {
             bulkBatch.setState(BulkBatchInternalState.AGREEMENT_SUCCESS);
+            // TODO: Update the success count here
         } else {
             bulkBatch.setState(BulkBatchInternalState.AGREEMENT_FAILED);
+            // TODO: Update the failed count here
         }
         bulkBatch.setBulkQuotesResponse(bulkQuotesResult);
         await bulkTransactionAgg.setBulkBatchById(bulkBatch.id, bulkBatch);
+        
 
         // Iterate through items in batch and update the individual states
         for await(const quoteResult of bulkQuotesResult.individualQuoteResults) {
@@ -68,6 +71,7 @@ export async function handleProcessBulkQuotesCallbackMessage(
                 const individualTransferId = bulkBatch.getReferenceIdForQuoteId(quoteResult.quoteId);
                 const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
                 individualTransfer.setTransferState(IndividualTransferInternalState.AGREEMENT_SUCCESS);
+                individualTransfer.setQuoteResponse(quoteResult);
                 await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
             }
         }
