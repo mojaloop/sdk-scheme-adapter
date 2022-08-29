@@ -45,7 +45,6 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
     // private _partyLookupTotalCount?: number;
     // private _partyLookupSuccessCount?: number;
     // private _partyLookupFailedCount?: number;
-    private _bulkBatchCreated: Boolean = false;
     // private _bulkQuotesTotalCount: number;
     // private _bulkQuotesSuccessCount: number;
     // private _bulkQuotesFailedCount: number;
@@ -178,12 +177,9 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
             .setBulkBatch(this._rootEntity.id, id, bulkBatch.exportState());
     }
 
-    isBulkBatchCreated(): Boolean {
-        return this._bulkBatchCreated;
-    }
-
     async createBatches(maxItemsPerBatch: number) : Promise<void> {
-        if (this.isBulkBatchCreated()) {
+        const allBulkBatchIds = await this.getAllBulkBatchIds()
+        if (allBulkBatchIds.length > 0) {
             throw(new Error('Bulk batches are already created on this aggregator'));
         }
 
@@ -253,7 +249,6 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
             }
         }
 
-        this._bulkBatchCreated = true;
     }
 
     async destroy() : Promise<void> {
