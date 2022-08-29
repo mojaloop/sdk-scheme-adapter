@@ -54,8 +54,10 @@ export async function handleProcessPartyInfoCallbackMessage(
         const partyResult = <PartyResult>processPartyInfoCallbackMessage.getContent();
         if(partyResult.errorInformation) {
             individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_FAILED);
+            await bulkTransactionAgg.incrementPartyLookupFailedCount(1);
         } else {
             individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS);
+            await bulkTransactionAgg.incrementPartyLookupSuccessCount(1);
         }
         individualTransfer.setPartyResponse(partyResult);
 

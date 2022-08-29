@@ -30,16 +30,28 @@
 import { DefaultLogger } from '@mojaloop/logging-bc-client-lib';
 import { ILogger, LogLevel } from '@mojaloop/logging-bc-public-types-lib';
 
-import { IRunHandler, BC_CONFIG } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-import { OutboundEventHandler } from './handler';
+import { IRunHandler, BC_CONFIG, IRedisBulkTransactionStateRepoOptions, RedisBulkTransactionStateRepo } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { IOutboundEventHandlerOptions, OutboundEventHandler } from './handler';
 import Config from '../shared/config';
 
 (async () => {
     // Instantiate logger
     const logger: ILogger = new DefaultLogger(BC_CONFIG.bcName, 'domain-event-handler', '0.0.1', <LogLevel>Config.get('LOG_LEVEL'));
 
+    // Create bulk transaction entity repo
+    const bulkTransactionEntityRepoOptions: IRedisBulkTransactionStateRepoOptions = {
+        connStr: Config.get('REDIS.CONNECTION_URL'),
+    };
+    const bulkTransactionEntityRepo = new RedisBulkTransactionStateRepo(bulkTransactionEntityRepoOptions, logger);
+    logger.info(`Created BulkTransactionStateRepo of type ${bulkTransactionEntityRepo.constructor.name}`);
+    await bulkTransactionEntityRepo.init();
+
     // start outboundEventHandler
-    const outboundEventHandler: IRunHandler = new OutboundEventHandler();
+    const outboundEventHandlerOptions: IOutboundEventHandlerOptions = {
+        bulkTransactionEntityRepo,
+    };
+    // start outboundEventHandler
+    const outboundEventHandler: IRunHandler = new OutboundEventHandler(outboundEventHandlerOptions);
     try {
         await outboundEventHandler.start(Config, logger);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

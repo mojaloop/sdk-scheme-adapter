@@ -24,15 +24,30 @@
 
 'use strict';
 
-import { BulkTransactionState, IEntityStateRepository, IndividualTransferState } from '@module-domain';
+import { BulkTransactionState, IEntityStateReadOnlyRepository, IEntityStateRepository, IndividualTransferState } from '@module-domain';
 
 export type IBulkTransactionEntityRepo = {
     getAllIndividualTransferIds: (bulkId: string) => Promise<string[]>
-    getIndividualTransfer: (bulkId: string, individualTranferId: string) => Promise<IndividualTransferState>
+    getIndividualTransfer: (bulkId: string, individualTransferId: string) => Promise<IndividualTransferState>
     setIndividualTransfer: (
         bulkId: string,
-        individualTranferId: string,
+        individualTransferId: string,
         value: IndividualTransferState
     ) => Promise<void>
     isBulkIdExists: (bulkId: string) => Promise<boolean>
+    setPartyLookupTotalCount: (bulkId: string, count: number) => Promise<void>
+    getPartyLookupTotalCount: (bulkId: string, count: number) => Promise<string | undefined>
+    incrementPartyLookupSuccessCount: (bulkId: string, increment: number) => Promise<void>
+    getPartyLookupSuccessCount: (bulkId: string) => Promise<string | undefined>
+    incrementPartyLookupFailedCount: (bulkId: string, increment: number) => Promise<void>
+    getPartyLookupFailedCount: (bulkId: string) => Promise<string | undefined>
 } & IEntityStateRepository<BulkTransactionState>;
+
+export type IBulkTransactionEntityReadOnlyRepo = {
+    getAllIndividualTransferIds: (bulkId: string) => Promise<string[]>
+    getIndividualTransfer: (bulkId: string, individualTransferId: string) => Promise<IndividualTransferState>
+    isBulkIdExists: (bulkId: string) => Promise<boolean>
+    getPartyLookupTotalCount: (bulkId: string, count: number) => Promise<string | undefined>
+    getPartyLookupSuccessCount: (bulkId: string) => Promise<string | undefined>
+    getPartyLookupFailedCount: (bulkId: string) => Promise<string | undefined>
+} & IEntityStateReadOnlyRepository<BulkTransactionState>;

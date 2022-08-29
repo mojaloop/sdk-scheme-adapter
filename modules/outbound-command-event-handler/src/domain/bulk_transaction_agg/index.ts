@@ -42,7 +42,6 @@ import CommandEventHandlerFunctions from './handlers';
 import { ICommandEventHandlerOptions } from '@module-types';
 
 export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, BulkTransactionState> {
-    // TODO: These counts can be part of bulk transaction entity?
     // private _partyLookupTotalCount?: number;
     // private _partyLookupSuccessCount?: number;
     // private _partyLookupFailedCount?: number;
@@ -157,6 +156,36 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
     async addIndividualTransferEntity(entity: IndividualTransferEntity) : Promise<void> {
         await (<IBulkTransactionEntityRepo> this._entity_state_repo)
             .setIndividualTransfer(this._rootEntity.id, entity.id, entity.exportState());
+    }
+
+    async setPartyLookupTotalCount(count: number): Promise<void> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .setPartyLookupTotalCount(this._rootEntity.id, count);
+    }
+
+    async getPartyLookupTotalCount(): Promise<any> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .getPartyLookupTotalCount(this._rootEntity.id);
+    }
+
+    async incrementPartyLookupSuccessCount(increment: number): Promise<void> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .incrementPartyLookupSuccessCount(this._rootEntity.id, increment);
+    }
+
+    async getPartyLookupSuccessCount(): Promise<any> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .getPartyLookupSuccessCount(this._rootEntity.id);
+    }
+
+    async incrementPartyLookupFailedCount(count: number): Promise<void> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .incrementPartyLookupFailedCount(this._rootEntity.id, count);
+    }
+
+    async getPartyLookupFailedCount(): Promise<any> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .getPartyLookupFailedCount(this._rootEntity.id);
     }
 
     async destroy() : Promise<void> {

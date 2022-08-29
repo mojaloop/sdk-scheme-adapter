@@ -37,6 +37,7 @@ import {
     SDKOutboundBulkRequestReceivedMessage,
     SDKOutboundBulkPartyInfoRequestedMessage,
     PartyInfoCallbackReceivedMessage,
+    IBulkTransactionEntityReadOnlyRepo,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { IDomainEventHandlerOptions } from '../types';
 import {
@@ -45,6 +46,10 @@ import {
     handlePartyInfoCallbackReceived,
 } from './handlers';
 
+export interface IOutboundEventHandlerOptions {
+    bulkTransactionEntityRepo: IBulkTransactionEntityReadOnlyRepo;
+}
+
 export class OutboundEventHandler implements IRunHandler {
     private _logger: ILogger;
 
@@ -52,7 +57,14 @@ export class OutboundEventHandler implements IRunHandler {
 
     private _commandProducer: ICommandEventProducer;
 
+    private _bulkTransactionEntityStateRepo: IBulkTransactionEntityReadOnlyRepo;
+
     private _domainEventHandlerOptions: IDomainEventHandlerOptions;
+
+    /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */
+    constructor(options: IOutboundEventHandlerOptions) {
+        this._bulkTransactionEntityStateRepo = options.bulkTransactionEntityRepo;
+    }
 
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     async start(appConfig: any, logger: ILogger): Promise<void> {
@@ -75,6 +87,7 @@ export class OutboundEventHandler implements IRunHandler {
         // Create options for handlers
         this._domainEventHandlerOptions = {
             commandProducer: this._commandProducer,
+            bulkTransactionEntityRepo: this._bulkTransactionEntityStateRepo,
         };
     }
 
