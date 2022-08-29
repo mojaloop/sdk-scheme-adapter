@@ -28,12 +28,12 @@ import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import {
     CommandEventMessage,
     ProcessSDKOutboundBulkQuotesRequestMessage,
-    PartyInfoRequestedMessage,
+    BulkQuotesRequestedMessage
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
-import { BulkTransactionInternalState } from '../..';
-import { BulkBatchInternalState } from '../..';
+import { BulkBatchInternalState, BulkTransactionInternalState } from '../..';
+import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 export async function handleProcessSDKOutboundBulkQuotesRequestMessage(
     message: CommandEventMessage,
@@ -56,47 +56,32 @@ export async function handleProcessSDKOutboundBulkQuotesRequestMessage(
         bulkTx.setTxState(BulkTransactionInternalState.AGREEMENT_PROCESSING);
         await bulkTransactionAgg.setTransaction(bulkTx);
 
-        // TODO: Create bulkQuotes batches from individual items with DISCOVERY_ACCEPTED state per FSP and maxEntryConfigPerBatch
-        await bulkTransactionAgg.createBatches();
+        // Create bulkQuotes batches from individual items with DISCOVERY_ACCEPTED state per FSP and maxEntryConfigPerBatch
+        await bulkTransactionAgg.createBatches(options.appConfig.get('MAX_ITEMS_PER_BATCH'));
 
-        // TODO: Iterate through batches
-            // TODO: Update bulkQuotes request
-            // TODO: Send domain event BulkQuotesRequested
-            // TODO: Update the batch state: AGREEMENT_PROCESSING
-
-
-        // const allIndividualTransferIds = await bulkTransactionAgg.getAllIndividualTransferIds();
-        // for await (const individualTransferId of allIndividualTransferIds) {
-        //     const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
-
-        //     if(bulkTx.isSkipPartyLookupEnabled()) {
-        //         if(individualTransfer.isPartyInfoExists) {
-        //             individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS);
-        //         } else {
-        //             individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_FAILED);
-        //         }
-        //         await bulkTransactionAgg.setIndividualTransferById(individualTransferId, individualTransfer);
-        //         continue;
-        //     }
-        //     const { partyIdInfo } = individualTransfer.request.to;
-        //     const subId = partyIdInfo.partySubIdOrType ? `/${partyIdInfo.partySubIdOrType}` : '';
-        //     const msg = new PartyInfoRequestedMessage({
-        //         bulkId: bulkTx.id,
-        //         transferId: individualTransfer.id,
-        //         timestamp: Date.now(),
-        //         headers: [],
-        //         request: {
-        //             method: 'GET',
-        //             path: `/parties/${partyIdInfo.partyIdType}/${partyIdInfo.partyIdentifier}${subId}`,
-        //             headers: [],
-        //             body: '',
-        //         },
-        //     });
-        //     individualTransfer.setPartyRequest(msg.getContent());
-        //     individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_PROCESSING);
-        //     await options.domainProducer.sendDomainMessage(msg);
-        //     await bulkTransactionAgg.setIndividualTransferById(individualTransferId, individualTransfer);
-        // }
+        // Iterate through batches
+        const allBulkBatchIds = await bulkTransactionAgg.getAllBulkBatchIds();
+        for await (const bulkBatchId of allBulkBatchIds) {
+            const bulkBatch = await bulkTransactionAgg.getBulkBatchEntityById(bulkBatchId);
+            try {
+                // Validate the bulkQuotes request schema in the entity before sending the domain event
+                bulkBatch.validateBulkQuotesRequest();
+                // TODO: Send domain event BulkQuotesRequested
+                const msg = new BulkQuotesRequestedMessage({
+                    bulkId: bulkTx.id,
+                    bulkQuoteId: bulkBatch.bulkQuoteId,
+                    timestamp: Date.now(),
+                    headers: [],
+                    request: bulkBatch.bulkQuotesRequest
+                });
+                await options.domainProducer.sendDomainMessage(msg);
+                bulkBatch.setState(BulkBatchInternalState.AGREEMENT_PROCESSING);
+                await bulkTransactionAgg.setBulkBatchById(bulkBatch.id, bulkBatch);
+            } catch(err) {
+                bulkBatch.setState(BulkBatchInternalState.AGREEMENT_FAILED);
+                await bulkTransactionAgg.setBulkBatchById(bulkBatch.id, bulkBatch);
+            }
+        }
 
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     } catch (err: any) {

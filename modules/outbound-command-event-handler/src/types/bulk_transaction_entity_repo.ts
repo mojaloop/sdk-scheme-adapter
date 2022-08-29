@@ -25,7 +25,7 @@
 'use strict';
 
 import { IEntityStateRepository } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-import { BulkTransactionState, IndividualTransferState } from '../domain';
+import { BulkBatchState, BulkTransactionState, IndividualTransferState } from '../domain';
 
 export type IBulkTransactionEntityRepo = {
     getAllIndividualTransferIds: (bulkId: string) => Promise<string[]>
@@ -34,6 +34,13 @@ export type IBulkTransactionEntityRepo = {
         bulkId: string,
         individualTranferId: string,
         value: IndividualTransferState
+    ) => Promise<void>
+    getAllBulkBatchIds: (bulkId: string) => Promise<string[]>
+    getBulkBatch: (bulkId: string, bulkBatchId: string) => Promise<BulkBatchState>
+    setBulkBatch: (
+        bulkId: string,
+        bulkBatchId: string,
+        value: BulkBatchState
     ) => Promise<void>
     isBulkIdExists: (bulkId: string) => Promise<boolean>
 } & IEntityStateRepository<BulkTransactionState>;

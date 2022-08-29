@@ -42,6 +42,7 @@ import { IRedisBulkTransactionStateRepoOptions, RedisBulkTransactionStateRepo } 
     const bulkTransactionEntityRepoOptions: IRedisBulkTransactionStateRepoOptions = {
         connStr: Config.get('REDIS.CONNECTION_URL'),
     };
+
     const bulkTransactionEntityRepo = new RedisBulkTransactionStateRepo(bulkTransactionEntityRepoOptions, logger);
     logger.info(`Created BulkTransactionStateRepo of type ${bulkTransactionEntityRepo.constructor.name}`);
     await bulkTransactionEntityRepo.init();

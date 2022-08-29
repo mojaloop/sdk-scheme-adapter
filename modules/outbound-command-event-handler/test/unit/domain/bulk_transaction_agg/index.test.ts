@@ -29,7 +29,7 @@ import { InMemoryBulkTransactionStateRepo } from '../../../../src/infrastructure
 import { BULK_REQUEST } from '../../data/bulk_transaction_request'
 import { DefaultLogger } from '@mojaloop/logging-bc-client-lib';
 import { ILogger, LogLevel } from '@mojaloop/logging-bc-public-types-lib';
-import { SDKSchemeAdapter, v1_1 as FSPIOP } from '@mojaloop/api-snippets';
+import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 
 const logger: ILogger = new DefaultLogger('SDK-Scheme-Adapter', 'command-event-handler-unit-tests', '0.0.1', LogLevel.INFO);
@@ -67,7 +67,7 @@ describe('BulkTransactionAggregate', () => {
         expect(Array.isArray(allIndividualTransferIds)).toBe(true)
         expect(allIndividualTransferIds.length).toEqual(2)
     })
-    xtest('BulkTransactionAggregate should be created from repository', async () => {
+    test('BulkTransactionAggregate should be created from repository', async () => {
         // Create aggregate
         const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRepo(
             bulkId,
@@ -90,19 +90,31 @@ describe('BulkTransactionAggregate', () => {
             logger,
         );
         // Simulate party resposnes
-        const partyResponse1: FSPIOP.Schemas.PartyResult = {
-            partyId: {
-                partyIdType: 'MSISDN',
-                partyIdentifier: '123',
-                fspId: 'dfsp1'
-            }
+        const partyResponse1: SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse = {
+            party: {
+                body: {
+                    partyIdInfo: {
+                        partyIdType: 'MSISDN',
+                        partyIdentifier: '123',
+                        fspId: 'dfsp1'
+                    }
+                },
+                headers: {}
+            },
+            currentState: 'COMPLETED'
         }
-        const partyResponse2: FSPIOP.Schemas.PartyResult = {
-            partyId: {
-                partyIdType: 'MSISDN',
-                partyIdentifier: '321',
-                fspId: 'dfsp2'
-            }
+        const partyResponse2: SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse = {
+            party: {
+                body: {
+                    partyIdInfo: {
+                        partyIdType: 'MSISDN',
+                        partyIdentifier: '321',
+                        fspId: 'dfsp2'
+                    }
+                },
+                headers: {}
+            },
+            currentState: 'COMPLETED'
         }
         const allIndividualTransferIds = await bulkTransactionAgg.getAllIndividualTransferIds();
         const individualTransfer1 = await bulkTransactionAgg.getIndividualTransferById(allIndividualTransferIds[0]);
@@ -116,43 +128,12 @@ describe('BulkTransactionAggregate', () => {
         // console.log(individualTransfer.exportState())
 
         // logger.info(`Created BulkTransactionAggregate ${bulkTransactionAgg}`);
-        await bulkTransactionAgg.createBatches();
+        await bulkTransactionAgg.createBatches(1);
+        const bulkBatchIds = await bulkTransactionAgg.getAllBulkBatchIds()
+        console.log(bulkBatchIds)
+        for await(const bulkBatchId of bulkBatchIds) {
+            const bulkBatchEntity = await bulkTransactionAgg.getBulkBatchEntityById(bulkBatchId)
+            console.log(JSON.stringify(bulkBatchEntity.exportState(), null, 2))
+        }
     })
 })
-
-
-'use strict';
-
-// import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-// import { CommandEventMessage, ProcessSDKOutboundBulkRequestMessage, SDKOutboundBulkPartyInfoRequestedMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-// import { ICommandEventHandlerOptions } from '@module-types';
-
-// export async function handleProcessSDKOutboundBulkRequestMessage(
-//     message: CommandEventMessage,
-//     options: ICommandEventHandlerOptions,
-//     logger: ILogger,
-// ): Promise<void> {
-//     const processSDKOutboundBulkRequestMessage = message as ProcessSDKOutboundBulkRequestMessage;
-//     try {
-//         logger.info(`Got Bulk Request ${processSDKOutboundBulkRequestMessage.getBulkRequest()}`);
-
-//         // Create aggregate
-//         const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRequest(
-//             processSDKOutboundBulkRequestMessage.getBulkRequest(),
-//             options.bulkTransactionEntityRepo,
-//             logger,
-//         );
-//         logger.info(`Created BulkTransactionAggregate ${bulkTransactionAgg}`);
-
-//         const msg = new SDKOutboundBulkPartyInfoRequestedMessage({
-//             bulkId: bulkTransactionAgg.bulkId,
-//             timestamp: Date.now(),
-//             headers: [],
-//         });
-//         await options.domainProducer.sendDomainMessage(msg);
-
-//     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-//     } catch (err: any) {
-//         logger.info(`Failed to create BulkTransactionAggregate. ${err.message}`);
-//     }
-// }

@@ -29,7 +29,7 @@ import {
     BaseEntity,
     SchemaValidationError,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-import { SDKSchemeAdapter, v1_1 as FSPIOP } from '@mojaloop/api-snippets';
+import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 import { randomUUID } from 'crypto';
 import Ajv from 'ajv';
 const ajv = new Ajv({
@@ -56,7 +56,7 @@ export interface IndividualTransferState extends BaseEntityState {
     batchId?: string;
     // TODO: FSPIOP in api-snippets should export the `PartiesByTypeAndID` schema and refer that in the following line
     partyRequest?: any;
-    partyResponse?: FSPIOP.Schemas.PartyResult
+    partyResponse?: SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse
     acceptParty?: boolean;
     acceptQuote?: boolean;
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
@@ -72,7 +72,7 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
     get request(): SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransaction {
         return this._state.request;
     }
-    get partyResponse(): FSPIOP.Schemas.PartyResult | undefined {
+    get partyResponse(): SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse | undefined {
         return this._state.partyResponse;
     }
 
@@ -109,7 +109,7 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         this._state.partyRequest = request;
     }
 
-    setPartyResponse(request: FSPIOP.Schemas.PartyResult) {
+    setPartyResponse(request: SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse) {
         this._state.partyResponse = request;
     }
 
@@ -126,7 +126,7 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         return this._state.state;
     }
     get toFspId(): string | undefined {
-        return this._state.partyResponse?.partyId?.fspId;
+        return this._state.partyResponse?.party?.body?.partyIdInfo?.fspId;
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */

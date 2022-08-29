@@ -18,7 +18,7 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Modusbox
- - Yevhen Kyriukha <yevhen.kyriukha@modusbox.com>
+ - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
  --------------
  ******/
 
@@ -26,11 +26,11 @@
 
 import { DomainEventMessage } from '../domain_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-// import { v1_1 as FSPIOP } from '@mojaloop/api-snippets';
+// import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 export interface IPartyInfoCallbackProcessedMessageData {
     key: string;
-    // partyResult: FSPIOP.Schemas.PartyResult;
+    // partyResult: SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
@@ -61,7 +61,7 @@ export class PartyInfoCallbackProcessedMessage extends DomainEventMessage {
         }
         const data: IPartyInfoCallbackProcessedMessageData = {
             key: message.getKey(),
-            // partyResult: <FSPIOP.Schemas.PartyResult>message.getContent(),
+            // partyResult: <SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse>message.getContent(),
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
         };

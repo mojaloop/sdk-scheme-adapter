@@ -25,7 +25,7 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { BulkTransactionState, IndividualTransferState } from '../domain';
+import { BulkBatchState, BulkTransactionState, IndividualTransferState } from '../domain';
 import { IBulkTransactionEntityRepo } from '../types/bulk_transaction_entity_repo';
 
 export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityRepo {
@@ -39,6 +39,7 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
     private readonly keyPrefix: string = 'outboundBulkTransaction_';
 
     private readonly individualTransferKeyPrefix: string = 'individualItem_';
+    private readonly bulkBatchKeyPrefix: string = 'bulkBatch_';
 
 
     constructor(logger: ILogger) {
@@ -150,6 +151,51 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
             this._data[key][this.individualTransferKeyPrefix + individualTranferId] = JSON.stringify(value);
         } catch (err) {
             this._logger.error(err, `Error storing individual tranfer with ID ${individualTranferId} to memory for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async getAllBulkBatchIds(bulkId: string): Promise<string[]> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            const allAttributes = Object.keys(this._data[key]);
+            const allBulkBatchIds = allAttributes.filter(attr => attr.startsWith(this.bulkBatchKeyPrefix)).map(attr => attr.replace(this.bulkBatchKeyPrefix, ''));
+            return allBulkBatchIds;
+        } catch (err) {
+            this._logger.error(err, 'Error getting bulk batches from memory - for key: ' + key);
+            throw (err);
+        }
+    }
+
+    async getBulkBatch(bulkId: string, bulkBatchId: string): Promise<BulkBatchState> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            return JSON.parse(this._data[key][this.bulkBatchKeyPrefix + bulkBatchId]) as BulkBatchState;
+        } catch (err) {
+            this._logger.error(err, 'Error getting bulk batch from memory - for key: ' + key);
+            throw (err);
+        }
+    }
+
+    async setBulkBatch(
+        bulkId: string,
+        bulkBatchId: string,
+        value: BulkBatchState,
+    ): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            this._data[key][this.bulkBatchKeyPrefix + bulkBatchId] = JSON.stringify(value);
+        } catch (err) {
+            this._logger.error(err, `Error storing bulk batch with ID ${bulkBatchId} to memory for key: ${key}`);
             throw (err);
         }
     }

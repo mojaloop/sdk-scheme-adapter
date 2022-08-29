@@ -24,25 +24,26 @@
 
 'use strict';
 
-import { CommandEventMessage } from '../command_event_message';
+import { DomainEventMessage } from '../domain_event_message';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
-export interface IProcessPartyInfoCallbackMessageData {
-    key: string;
-    partyResult: SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse;
+export interface IBulkQuotesRequestedMessageData {
+    bulkId: string;
+    bulkQuoteId: string;
+    request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkQuoteRequest;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
 
-export class ProcessPartyInfoCallbackMessage extends CommandEventMessage {
-    constructor(data: IProcessPartyInfoCallbackMessageData) {
+export class BulkQuotesRequestedMessage extends DomainEventMessage {
+    constructor(data: IBulkQuotesRequestedMessageData) {
         super({
-            key: data.key,
-            content: data.partyResult,
+            key: `${data.bulkId}_${data.bulkQuoteId}`,
+            content: data.request,
             timestamp: data.timestamp,
             headers: data.headers,
-            name: ProcessPartyInfoCallbackMessage.name,
+            name: BulkQuotesRequestedMessage.name,
         });
     }
 
@@ -54,16 +55,16 @@ export class ProcessPartyInfoCallbackMessage extends CommandEventMessage {
         return this.getKey().split('_')[1];
     }
 
-    static CreateFromCommandEventMessage(message: CommandEventMessage): ProcessPartyInfoCallbackMessage {
-        if((message.getContent() === null || typeof message.getContent() !== 'object')) {
-            throw new Error('Content is in unknown format');
-        }
-        const data: IProcessPartyInfoCallbackMessageData = {
-            key: message.getKey(),
-            partyResult: <SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse>message.getContent(),
-            timestamp: message.getTimeStamp(),
-            headers: message.getHeaders(),
-        };
-        return new ProcessPartyInfoCallbackMessage(data);
-    }
+    // For SDK outbound API
+    // static CreateFromDomainEventMessage(message: DomainEventMessage): BulkQuotesRequestedMessage {
+    //     if((message.getContent() === null || typeof message.getContent() !== 'object')) {
+    //         throw new Error('Content is in unknown format');
+    //     }
+    //     const data: IBulkQuotesRequestedMessageData = {
+    //         request: <PartyInfoRequestedState>message.getContent(),
+    //         timestamp: message.getTimeStamp(),
+    //         headers: message.getHeaders(),
+    //     };
+    //     return new BulkQuotesRequestedMessage(data);
+    // }
 }

@@ -38,6 +38,7 @@ export interface ServiceConfig {
     }
     REDIS: RedisConfig
     KAFKA: KafkaConfig
+    MAX_ITEMS_PER_BATCH: number
 }
 
 // Declare configuration schema, default values and bindings to environment variables
@@ -118,6 +119,12 @@ const config = Convict({
             },
         },
     },
+    MAX_ITEMS_PER_BATCH: {
+        doc: 'Maximum number of items per batch in bulkQuotes and bulkTransfers requests',
+        format: Number,
+        default: 1000,
+        env: 'MAX_ITEMS_PER_BATCH',
+    }
 });
 
 // Load configuration
@@ -125,5 +132,7 @@ config.loadFile<ServiceConfig>(path.join(__dirname, '/../../config/default.json'
 
 // Perform configuration validation
 config.validate({ allowed: 'strict' });
+
+export interface ICommandEventHandlerConfig extends Convict.Config<ServiceConfig> {};
 
 export default config;

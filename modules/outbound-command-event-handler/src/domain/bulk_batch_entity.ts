@@ -42,6 +42,8 @@ const ajv = new Ajv({
 export enum BulkBatchInternalState {
     CREATED = 'CREATED',
     AGREEMENT_PROCESSING = 'AGREEMENT_PROCESSING',
+    AGREEMENT_SUCCESS = 'AGREEMENT_SUCCESS',
+    AGREEMENT_FAILED = 'AGREEMENT_FAILED',
     TRANSFER_PROCESSING = 'TRANSFER_PROCESSING',
 }
 
@@ -138,17 +140,35 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
         this._state.bulkQuotesRequest.individualQuotes.push(individualQuote);
     }
 
+    addIndividualTransfer(individualTransfer: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransfer) {
+        this._state.bulkTransfersRequest.individualTransfers.push(individualTransfer);
+    }
+
     get state() {
         return this._state.state;
     }
 
+    setState(state: BulkBatchInternalState) {
+        this._state.state = state;
+    }
+
     /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */
     constructor(initialState: BulkBatchState) {
-        BulkBatchEntity._validateBulkQuotesRequest(initialState.bulkQuotesRequest);
-        BulkBatchEntity._validateBulkTransfersRequest(initialState.bulkTransfersRequest);
+        // Commenting the validation in the constuctor to allow creation of bulkQuotes without any individualQuotes items
+        // BulkBatchEntity._validateBulkQuotesRequest(initialState.bulkQuotesRequest);
+        // BulkBatchEntity._validateBulkTransfersRequest(initialState.bulkTransfersRequest);
         super(initialState);
     }
 
+    
+    validateBulkQuotesRequest() {
+        BulkBatchEntity._validateBulkQuotesRequest(this._state.bulkQuotesRequest);
+    }
+
+    validateBulkTransfersRequest() {
+        BulkBatchEntity._validateBulkTransfersRequest(this._state.bulkTransfersRequest);
+    }
+    
     private static _validateBulkQuotesRequest(request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkQuoteRequest): void {
         const requestSchema = SDKSchemeAdapter.Outbound.V2_0_0.Schemas.bulkQuoteRequest;
         const validate = ajv.compile(requestSchema);

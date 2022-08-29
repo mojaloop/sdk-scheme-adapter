@@ -36,7 +36,7 @@ import { IBulkTransactionEntityRepo, ICommandEventHandlerOptions } from '@module
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 import CommandEventHandlerFuntions from './handlers';
-import { BulkBatchEntity } from '../bulk_batch_entity';
+import { BulkBatchEntity, BulkBatchState } from '../bulk_batch_entity';
 import { randomUUID } from 'crypto';
 
 
@@ -149,6 +149,17 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         return this._rootEntity.isSkipPartyLookupEnabled();
     }
 
+    async getAllBulkBatchIds() {
+        const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
+        return repo.getAllBulkBatchIds(this._rootEntity.id);
+    }
+
+    async getBulkBatchEntityById(id: string): Promise<BulkBatchEntity> {
+        const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
+        const state: BulkBatchState = await repo.getBulkBatch(this._rootEntity.id, id);
+        return new BulkBatchEntity(state);
+    }
+
     getBulkTransaction(): BulkTransactionEntity {
         return this._rootEntity;
     }
@@ -158,7 +169,17 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
             .setIndividualTransfer(this._rootEntity.id, entity.id, entity.exportState());
     }
 
-    async createBatches() : Promise<void> {
+    async addBulkBatchEntity(entity: BulkBatchEntity) : Promise<void> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .setBulkBatch(this._rootEntity.id, entity.id, entity.exportState());
+    }
+
+    async setBulkBatchById(id: string, bulkBatch: BulkBatchEntity): Promise<void> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .setBulkBatch(this._rootEntity.id, id, bulkBatch.exportState());
+    }
+
+    async createBatches(maxItemsPerBatch: number) : Promise<void> {
         // TODO: Condition here to check the global state to be equal to something?
 
         const batchesPerFsp: {[fspId: string]: string[][]} = {}
@@ -174,7 +195,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                     const batchFspLength = batchFspIdArray.length;
                     const lastElement = batchFspIdArray[batchFspLength - 1];
                     // If the length reaches maximum value, create new element and insert the id
-                    if (lastElement.length < 10) {
+                    if (lastElement.length < maxItemsPerBatch) {
                         lastElement.push(individualTransfer.id)
                     } else {
                         const newElement = [ individualTransfer.id ];
@@ -187,28 +208,42 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                 }
             }
         }
-        console.log(batchesPerFsp);
+        // console.log(batchesPerFsp);
         // Construct the batches per each element in the array
         for await (const fspId of Object.keys(batchesPerFsp)) {
             for await (const individualIdArray of batchesPerFsp[fspId]) {
                 const bulkBatch = BulkBatchEntity.CreateEmptyBatch(this._rootEntity);
                 for await (const individualId of individualIdArray) {
                     const individualTransfer = await this.getIndividualTransferById(individualId);
+                    if (individualTransfer.partyResponse) {
+                        // Add Quotes to batch
+                        bulkBatch.addIndividualQuote({
+                            quoteId: randomUUID(),
+                            to: {
+                                idType: individualTransfer.partyResponse.party.body.partyIdInfo.partyIdType,
+                                idValue: individualTransfer.partyResponse.party.body.partyIdInfo.partyIdentifier,
+                                idSubValue: individualTransfer.partyResponse.party.body.partyIdInfo.partySubIdOrType,
+                                displayName: individualTransfer.partyResponse.party.body.name,
+                                firstName: individualTransfer.partyResponse.party.body.personalInfo?.complexName?.firstName,
+                                middleName: individualTransfer.partyResponse.party.body.personalInfo?.complexName?.middleName,
+                                lastName: individualTransfer.partyResponse.party.body.personalInfo?.complexName?.lastName,
+                                dateOfBirth: individualTransfer.partyResponse.party.body.personalInfo?.dateOfBirth,
+                                merchantClassificationCode: individualTransfer.partyResponse.party.body.merchantClassificationCode,
+                                fspId: individualTransfer.partyResponse.party.body.partyIdInfo.fspId,
+                                extensionList: individualTransfer.partyResponse.party.body.partyIdInfo.extensionList?.extension,
+                            },
+                            amountType: individualTransfer.request.amountType,
+                            currency: individualTransfer.request.currency,
+                            amount: individualTransfer.request.amount,
+                            transactionType: 'TRANSFER',
+                            note: individualTransfer.request.note,
+                            extensions: individualTransfer.request.quoteExtensions
+                        })
+                        // TODO: Add Transfers to batch here like the quotes above
+                    }
                     
-                    bulkBatch.addIndividualQuote({
-                        quoteId: randomUUID(),
-                        // TODO: Construct to value from individualTransfer.request.to and individualTransfer.partyResponse
-                        to: individualTransfer.request.to,
-                        amountType: individualTransfer.request.amountType,
-                        currency: individualTransfer.request.currency,
-                        amount: individualTransfer.request.amount,
-                        transactionType: 'TRANSFER',
-                        note: individualTransfer.request.note,
-                        extensions: individualTransfer.request.quoteExtensions
-                    })
                 }
-                // TODO:  Add the bulkBatchEntity to aggregator and store here
-                console.log(individualIdArray)
+                this.addBulkBatchEntity(bulkBatch);
             }
         }
     }
