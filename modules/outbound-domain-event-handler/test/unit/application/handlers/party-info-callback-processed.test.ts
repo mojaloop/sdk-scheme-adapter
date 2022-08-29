@@ -54,7 +54,7 @@ describe('handlePartyInfoCallbackReceived', () => {
     bulkTransactionEntityRepo: {
       getPartyLookupTotalCount: jest.fn(),
       getPartyLookupSuccessCount: jest.fn(),
-      getPartyLookupFailureCount: jest.fn(),
+      getPartyLookupFailedCount: jest.fn(),
     }
   } as unknown as IDomainEventHandlerOptions
 
@@ -80,14 +80,14 @@ describe('handlePartyInfoCallbackReceived', () => {
   test('emits a processSDKOutboundBulkPartyInfoRequestComplete message when lookup is complete', async () => {
     domainEventHandlerOptions.bulkTransactionEntityRepo.getPartyLookupTotalCount.mockReturnValueOnce(10)
     domainEventHandlerOptions.bulkTransactionEntityRepo.getPartyLookupSuccessCount.mockReturnValueOnce(5)
-    domainEventHandlerOptions.bulkTransactionEntityRepo.getPartyLookupFailureCount.mockReturnValueOnce(5)
+    domainEventHandlerOptions.bulkTransactionEntityRepo.getPartyLookupFailedCount.mockReturnValueOnce(5)
 
 
     const sampleDomainEventMessageDataObj = new DomainEventMessage(samplePartyInfoCallbackProcessedMessageData);
     await handlePartyInfoCallbackProcessed(sampleDomainEventMessageDataObj, domainEventHandlerOptions, logger)
     expect(domainEventHandlerOptions.bulkTransactionEntityRepo.getPartyLookupTotalCount).toBeCalledWith(bulkId)
     expect(domainEventHandlerOptions.bulkTransactionEntityRepo.getPartyLookupSuccessCount).toBeCalledWith(bulkId)
-    expect(domainEventHandlerOptions.bulkTransactionEntityRepo.getPartyLookupFailureCount).toBeCalledWith(bulkId)
+    expect(domainEventHandlerOptions.bulkTransactionEntityRepo.getPartyLookupFailedCount).toBeCalledWith(bulkId)
     expect(domainEventHandlerOptions.commandProducer.sendCommandMessage)
       .toBeCalledWith(
         expect.objectContaining({
@@ -103,14 +103,14 @@ describe('handlePartyInfoCallbackReceived', () => {
   test('emits no message when lookup is incomplete', async () => {
     domainEventHandlerOptions.bulkTransactionEntityRepo.getPartyLookupTotalCount.mockReturnValueOnce(10)
     domainEventHandlerOptions.bulkTransactionEntityRepo.getPartyLookupSuccessCount.mockReturnValueOnce(4)
-    domainEventHandlerOptions.bulkTransactionEntityRepo.getPartyLookupFailureCount.mockReturnValueOnce(5)
+    domainEventHandlerOptions.bulkTransactionEntityRepo.getPartyLookupFailedCount.mockReturnValueOnce(5)
 
 
     const sampleDomainEventMessageDataObj = new DomainEventMessage(samplePartyInfoCallbackProcessedMessageData);
     await handlePartyInfoCallbackProcessed(sampleDomainEventMessageDataObj, domainEventHandlerOptions, logger)
     expect(domainEventHandlerOptions.bulkTransactionEntityRepo.getPartyLookupTotalCount).toBeCalledWith(bulkId)
     expect(domainEventHandlerOptions.bulkTransactionEntityRepo.getPartyLookupSuccessCount).toBeCalledWith(bulkId)
-    expect(domainEventHandlerOptions.bulkTransactionEntityRepo.getPartyLookupFailureCount).toBeCalledWith(bulkId)
+    expect(domainEventHandlerOptions.bulkTransactionEntityRepo.getPartyLookupFailedCount).toBeCalledWith(bulkId)
     expect(domainEventHandlerOptions.commandProducer.sendCommandMessage)
       .toBeCalledTimes(0)
   })

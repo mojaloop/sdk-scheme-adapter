@@ -44,6 +44,12 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
 
     private readonly keyPrefix: string = 'outboundBulkTransaction_';
 
+    private readonly partyLookupTotalCountAttributeField = 'partyLookupTotalCount';
+
+    private readonly partyLookupSuccessCountAttributeField = 'partyLookupSuccessCount';
+
+    private readonly partyLookupFailedCountAttributeField = 'partyLookupFailedCount';
+
     constructor(options: IRedisBulkTransactionStateRepoOptions, logger: ILogger) {
         this._redisConnStr = options.connStr;
         this._logger = logger;
@@ -179,7 +185,7 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            await this._redisClient.hSet(key, 'partyLookupTotalCount', count);
+            await this._redisClient.hSet(key, this.partyLookupTotalCountAttributeField, count);
         } catch (err) {
             this._logger.error(err, 'Error storing partyLookupTotalCount to redis - for key: ' + key);
             throw (err);
@@ -192,7 +198,7 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            return await this._redisClient.hGet(key, 'partyLookupTotalCount');
+            return await this._redisClient.hGet(key, this.partyLookupTotalCountAttributeField);
         } catch (err) {
             this._logger.error(err, 'Error loading partyLookupTotalCount from redis - for key: ' + key);
             throw (err);
@@ -208,7 +214,7 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            await this._redisClient.hIncrBy(key, 'partyLookupSuccessCount', increment);
+            await this._redisClient.hIncrBy(key, this.partyLookupSuccessCountAttributeField, increment);
         } catch (err) {
             this._logger.error(err, 'Error incrementing partyLookupSuccessCount in redis - for key: ' + key);
             throw (err);
@@ -221,7 +227,7 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            return await this._redisClient.hGet(key, 'partyLookupSuccessCount');
+            return await this._redisClient.hGet(key, this.partyLookupSuccessCountAttributeField);
         } catch (err) {
             this._logger.error(err, 'Error loading partyLookupSuccessCount from redis - for key: ' + key);
             throw (err);
@@ -238,7 +244,7 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            await this._redisClient.hIncrBy(key, 'partyLookupFailedCount', increment);
+            await this._redisClient.hIncrBy(key, this.partyLookupFailedCountAttributeField, increment);
         } catch (err) {
             this._logger.error(err, 'Error incrementing partyLookupFailedCount in redis - for key: ' + key);
             throw (err);
@@ -251,7 +257,7 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            return await this._redisClient.hGet(key, 'partyLookupFailedCount');
+            return await this._redisClient.hGet(key, this.partyLookupFailedCountAttributeField);
         } catch (err) {
             this._logger.error(err, 'Error loading partyLookupFailedCount from redis - for key: ' + key);
             throw (err);

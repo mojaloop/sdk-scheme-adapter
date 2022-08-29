@@ -22,11 +22,11 @@ export async function handlePartyInfoCallbackProcessed(
     const totalSuccessLookups = await (
       <IBulkTransactionEntityReadOnlyRepo> options.bulkTransactionEntityRepo
     ).getPartyLookupSuccessCount(partyInfoCallbackProcessedMessage.getBulkId());
-    const totalFailureLookups = await (
+    const totalFailedLookups = await (
       <IBulkTransactionEntityReadOnlyRepo> options.bulkTransactionEntityRepo
-    ).getPartyLookupFailureCount(partyInfoCallbackProcessedMessage.getBulkId());
+    ).getPartyLookupFailedCount(partyInfoCallbackProcessedMessage.getBulkId());
 
-    if(totalLookups != (totalSuccessLookups + totalFailureLookups))
+    if(totalLookups != (totalSuccessLookups + totalFailedLookups))
         return;
 
     try {
