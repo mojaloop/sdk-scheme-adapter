@@ -64,7 +64,7 @@ describe('handleSDKOutboundBulkPartyInfoRequested', () => {
 
   test('emits a processSDKOutboundBulkPartyInfoRequestMessage message', async () => {
     const sampleDomainEventMessageDataObj = new DomainEventMessage(sampleSDKOutboundBulkPartyInfoRequestedMessage);
-    handleSDKOutboundBulkPartyInfoRequested(sampleDomainEventMessageDataObj, domainEventHandlerOptions, logger)
+    await handleSDKOutboundBulkPartyInfoRequested(sampleDomainEventMessageDataObj, domainEventHandlerOptions, logger)
     expect(domainEventHandlerOptions.commandProducer.sendCommandMessage)
       .toBeCalledWith(
         expect.objectContaining({
