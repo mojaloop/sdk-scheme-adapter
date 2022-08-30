@@ -118,8 +118,6 @@ sequenceDiagram
     SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: SDKOutboundBulkQuotesRequestProcessed
     Note right of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
 
-    SDKOutboundDomainEventHandler->>SDKOutboundCommandEventHandler: ProcessSDKOutboundBulkQuotesRequestComplete (name?)
-    Note left of SDKOutboundCommandEventHandler: topic-sdk-outbound-command-events
     SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: check autoAcceptQuote
 
     alt autoAcceptQuote == false
