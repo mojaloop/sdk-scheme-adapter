@@ -55,7 +55,7 @@ describe ('DomainEventMessage', () => {
       expect(eventObj).toBeInstanceOf(DomainEventMessage)
     });
     it("should create a domain event message object from imessage object", () => {
-      const eventObj = DomainEventMessage.createFromIMessage(sampleIMessage);
+      const eventObj = DomainEventMessage.CreateFromIMessage(sampleIMessage);
       expect(eventObj).not.toBeUndefined();
       expect(eventObj.getKey()).toEqual(sampleIMessage.key)
       expect(eventObj.getTimeStamp()).toEqual(sampleIMessage.timestamp)
@@ -76,22 +76,22 @@ describe ('DomainEventMessage', () => {
   });
   describe("Negative scenarios", () => {
     it("should throw an error if the .key is null", () => {
-      expect(() => { DomainEventMessage.createFromIMessage({ ...sampleIMessage, key: null}) }).toThrowError()
+      expect(() => { DomainEventMessage.CreateFromIMessage({ ...sampleIMessage, key: null}) }).toThrowError()
     });
     it("should throw an error if the .value is null", () => {
-      expect(() => { DomainEventMessage.createFromIMessage({ ...sampleIMessage, value: null}) }).toThrowError()
+      expect(() => { DomainEventMessage.CreateFromIMessage({ ...sampleIMessage, value: null}) }).toThrowError()
     });
     it("should throw an error if the .value is not object", () => {
-      expect(() => { DomainEventMessage.createFromIMessage({ ...sampleIMessage, value: 'some-string'}) }).toThrowError()
+      expect(() => { DomainEventMessage.CreateFromIMessage({ ...sampleIMessage, value: 'some-string'}) }).toThrowError()
     });
     it("should throw an error if the .value.eventMessageType doesn't exist", () => {
-      expect(() => { DomainEventMessage.createFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventMessageType: null}}) }).toThrowError()
+      expect(() => { DomainEventMessage.CreateFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventMessageType: null}}) }).toThrowError()
     });
     it("should throw an error if the .value.eventMessageName doesn't exist", () => {
-      expect(() => { DomainEventMessage.createFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventMessageName: null}}) }).toThrowError()
+      expect(() => { DomainEventMessage.CreateFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventMessageName: null}}) }).toThrowError()
     });
     it("should throw an error if the .value.eventMessageType is not DOMAIN_EVENT", () => {
-      expect(() => { DomainEventMessage.createFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventMessageType: EventMessageType.COMMAND_EVENT}}) }).toThrowError()
+      expect(() => { DomainEventMessage.CreateFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventMessageType: EventMessageType.COMMAND_EVENT}}) }).toThrowError()
     });
   });
 

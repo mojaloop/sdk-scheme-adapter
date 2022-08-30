@@ -38,7 +38,7 @@ export class DomainEventMessage extends BaseEventMessage {
         });
     }
 
-    static createFromIMessage(message: IMessage): DomainEventMessage {
+    static CreateFromIMessage(message: IMessage): DomainEventMessage {
     // Validate message
         this._validateMessage(message);
         // Prepare Data

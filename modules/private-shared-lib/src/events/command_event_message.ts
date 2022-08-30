@@ -38,7 +38,7 @@ export class CommandEventMessage extends BaseEventMessage {
         });
     }
 
-    static createFromIMessage(message: IMessage): CommandEventMessage {
+    static CreateFromIMessage(message: IMessage): CommandEventMessage {
     // Validate message
         this._validateMessage(message);
         // Prepare Data

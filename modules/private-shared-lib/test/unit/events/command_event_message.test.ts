@@ -55,7 +55,7 @@ describe ('CommandEventMessage', () => {
       expect(eventObj).toBeInstanceOf(CommandEventMessage)
     });
     it("should create a command event message object from imessage object", () => {
-      const eventObj = CommandEventMessage.createFromIMessage(sampleIMessage);
+      const eventObj = CommandEventMessage.CreateFromIMessage(sampleIMessage);
       expect(eventObj).not.toBeUndefined();
       expect(eventObj.getKey()).toEqual(sampleIMessage.key)
       expect(eventObj.getTimeStamp()).toEqual(sampleIMessage.timestamp)
@@ -76,22 +76,22 @@ describe ('CommandEventMessage', () => {
   });
   describe("Negative scenarios", () => {
     it("should throw an error if the .key is null", () => {
-      expect(() => { CommandEventMessage.createFromIMessage({ ...sampleIMessage, key: null}) }).toThrowError()
+      expect(() => { CommandEventMessage.CreateFromIMessage({ ...sampleIMessage, key: null}) }).toThrowError()
     });
     it("should throw an error if the .value is null", () => {
-      expect(() => { CommandEventMessage.createFromIMessage({ ...sampleIMessage, value: null}) }).toThrowError()
+      expect(() => { CommandEventMessage.CreateFromIMessage({ ...sampleIMessage, value: null}) }).toThrowError()
     });
     it("should throw an error if the .value is not object", () => {
-      expect(() => { CommandEventMessage.createFromIMessage({ ...sampleIMessage, value: 'some-string'}) }).toThrowError()
+      expect(() => { CommandEventMessage.CreateFromIMessage({ ...sampleIMessage, value: 'some-string'}) }).toThrowError()
     });
     it("should throw an error if the .value.eventMessageType doesn't exist", () => {
-      expect(() => { CommandEventMessage.createFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventMessageType: null}}) }).toThrowError()
+      expect(() => { CommandEventMessage.CreateFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventMessageType: null}}) }).toThrowError()
     });
     it("should throw an error if the .value.eventMessageName doesn't exist", () => {
-      expect(() => { CommandEventMessage.createFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventMessageName: null}}) }).toThrowError()
+      expect(() => { CommandEventMessage.CreateFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventMessageName: null}}) }).toThrowError()
     });
     it("should throw an error if the .value.eventMessageType is not COMMAND_EVENT", () => {
-      expect(() => { CommandEventMessage.createFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventMessageType: EventMessageType.DOMAIN_EVENT}}) }).toThrowError()
+      expect(() => { CommandEventMessage.CreateFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventMessageType: EventMessageType.DOMAIN_EVENT}}) }).toThrowError()
     });
   });
 
