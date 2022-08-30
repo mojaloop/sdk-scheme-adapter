@@ -33,11 +33,11 @@
 import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 import {
-  DomainEventMessage,
-  EventMessageType,
-  IDomainEventMessageData,
-  PartyInfoCallbackReceivedMessage,
-  ProcessPartyInfoCallbackMessage,
+  DomainEvent,
+  EventType,
+  IDomainEventData,
+  PartyInfoCallbackReceivedDmEvt,
+  ProcessPartyInfoCallbackCmdEvt,
 } from "@mojaloop/sdk-scheme-adapter-private-shared-lib"
 import { randomUUID } from "crypto";
 import { handlePartyInfoCallbackReceived } from "../../../../src/application/handlers"
@@ -53,14 +53,14 @@ describe('handlePartyInfoCallbackReceived', () => {
     }
   } as unknown as IDomainEventHandlerOptions
 
-  let samplePartyInfoCallbackReceivedMessageData: IDomainEventMessageData;
+  let samplePartyInfoCallbackReceivedMessageData: IDomainEventData;
   let key: string;
 
   beforeEach(async () => {
     key = `${randomUUID()}_${randomUUID()}`
     samplePartyInfoCallbackReceivedMessageData = {
       key,
-      name: PartyInfoCallbackReceivedMessage.name,
+      name: PartyInfoCallbackReceivedDmEvt.name,
       content: {
           party: {
               partyIdInfo: {
@@ -86,15 +86,15 @@ describe('handlePartyInfoCallbackReceived', () => {
 
 
   test('emits a processPartyInfoCallbackMessage message', async () => {
-    const sampleDomainEventMessageDataObj = new DomainEventMessage(samplePartyInfoCallbackReceivedMessageData);
+    const sampleDomainEventMessageDataObj = new DomainEvent(samplePartyInfoCallbackReceivedMessageData);
     handlePartyInfoCallbackReceived(sampleDomainEventMessageDataObj, domainEventHandlerOptions, logger)
     expect(domainEventHandlerOptions.commandProducer.sendCommandMessage)
       .toBeCalledWith(
         expect.objectContaining({
           _data: expect.objectContaining({
             key,
-            name: ProcessPartyInfoCallbackMessage.name,
-            type: EventMessageType.COMMAND_EVENT
+            name: ProcessPartyInfoCallbackCmdEvt.name,
+            type: EventType.COMMAND_EVENT
           })
         })
     )

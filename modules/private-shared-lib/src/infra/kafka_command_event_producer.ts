@@ -31,7 +31,7 @@
 import { MLKafkaProducerOptions } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib';
 import { KafkaEventProducer } from './kafka_event_producer';
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { CommandEventMessage }  from '../events';
+import { CommandEvent }  from '../events';
 import { IMessage } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 import { ICommandEventProducer, IKafkaEventProducerOptions } from '../types';
 
@@ -51,7 +51,7 @@ export class KafkaCommandEventProducer extends KafkaEventProducer implements ICo
         this._topic = producerOptions.topic;
     }
 
-    async sendCommandMessage(commandEventMessage: CommandEventMessage) {
+    async sendCommandMessage(commandEventMessage: CommandEvent) {
         const message: IMessage = commandEventMessage.toIMessage(this._topic);
         await super.send(message);
     }

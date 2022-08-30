@@ -18,41 +18,55 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Modusbox
- - Yevhen Kyriukha <yevhen.kyriukha@modusbox.com>
+ - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
  --------------
  ******/
 
 'use strict';
 
-import { DomainEventMessage } from '../domain_event_message';
+import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
+import { randomUUID } from 'crypto';
 
-export interface ISDKOutboundBulkAcceptPartyInfoRequestedMessageData {
-    bulkId: string;
+export interface ISDKOutboundBulkRequestReceivedDmEvtData {
+    bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
 
-export class SDKOutboundBulkAcceptPartyInfoRequestedMessage extends DomainEventMessage {
-    constructor(data: ISDKOutboundBulkAcceptPartyInfoRequestedMessageData) {
+export class SDKOutboundBulkRequestReceivedDmEvt extends DomainEvent {
+    constructor(data: ISDKOutboundBulkRequestReceivedDmEvtData) {
+    // // Calling Sample validation function
+    // SDKOutboundBulkRequestReceivedDmEvt.validateRequest(data.bulkRequest);
         super({
-            key: data.bulkId,
+            key: data.bulkRequest.bulkTransactionId || randomUUID(),
+            content: data.bulkRequest,
             timestamp: data.timestamp,
             headers: data.headers,
-            content: null,
-            name: SDKOutboundBulkAcceptPartyInfoRequestedMessage.name,
+            name: SDKOutboundBulkRequestReceivedDmEvt.name,
         });
     }
 
-    static CreateFromCommandEventMessage(message: DomainEventMessage): SDKOutboundBulkAcceptPartyInfoRequestedMessage {
-        if((message.getKey() === null || typeof message.getKey() !== 'string')) {
-            throw new Error('Bulk id is in unknown format');
-        }
-        const data: ISDKOutboundBulkAcceptPartyInfoRequestedMessageData = {
+    static CreateFromDomainEvent(message: DomainEvent): SDKOutboundBulkRequestReceivedDmEvt {
+        // Prepare Data
+        const data = {
+            bulkRequest: message.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest,
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
-            bulkId: message.getKey(),
         };
-        return new SDKOutboundBulkAcceptPartyInfoRequestedMessage(data);
+        return new SDKOutboundBulkRequestReceivedDmEvt(data);
     }
+
+    getBulkRequest(): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest {
+        return this.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest;
+    }
+
+    // // Sample validation function
+    // private static validateRequest (obj: any): void {
+    //   if(!obj.hasOwnProperty('id')) {
+    //     throw(new Error('.id is not defined'))
+    //   }
+    // }
+
 }

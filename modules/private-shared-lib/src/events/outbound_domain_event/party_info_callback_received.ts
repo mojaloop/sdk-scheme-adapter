@@ -1,24 +1,24 @@
 'use strict';
 
-import { DomainEventMessage } from '../domain_event_message';
+import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 import { IPartyResult } from '../../types';
 
-export interface IPartyInfoCallbackReceivedMessageData {
+export interface IPartyInfoCallbackReceivedDmEvtData {
     key: string;
     partyResult: IPartyResult;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
 
-export class PartyInfoCallbackReceivedMessage extends DomainEventMessage {
-    constructor(data: IPartyInfoCallbackReceivedMessageData) {
+export class PartyInfoCallbackReceivedDmEvt extends DomainEvent {
+    constructor(data: IPartyInfoCallbackReceivedDmEvtData) {
         super({
             key: data.key,
             content: data.partyResult,
             timestamp: data.timestamp,
             headers: data.headers,
-            name: PartyInfoCallbackReceivedMessage.name,
+            name: PartyInfoCallbackReceivedDmEvt.name,
         });
     }
 
@@ -34,16 +34,16 @@ export class PartyInfoCallbackReceivedMessage extends DomainEventMessage {
         return this.getContent() as IPartyResult;
     }
 
-    static CreateFromDomainEventMessage(message: DomainEventMessage): PartyInfoCallbackReceivedMessage {
+    static CreateFromDomainEvent(message: DomainEvent): PartyInfoCallbackReceivedDmEvt {
         if((message.getContent() === null || typeof message.getContent() !== 'object')) {
             throw new Error('Content is in unknown format');
         }
-        const data: IPartyInfoCallbackReceivedMessageData = {
+        const data: IPartyInfoCallbackReceivedDmEvtData = {
             key: message.getKey(),
             partyResult: <IPartyResult>message.getContent(),
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
         };
-        return new PartyInfoCallbackReceivedMessage(data);
+        return new PartyInfoCallbackReceivedDmEvt(data);
     }
 }

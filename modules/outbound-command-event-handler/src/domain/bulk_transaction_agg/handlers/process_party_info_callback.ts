@@ -25,19 +25,19 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { CommandEventMessage, ProcessPartyInfoCallbackMessage, PartyInfoCallbackProcessedMessage, IPartyResult } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { CommandEvent, ProcessPartyInfoCallbackCmdEvt, PartyInfoCallbackProcessedDmEvt, IPartyResult } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
 import { IndividualTransferInternalState } from '../..';
 
 export async function handleProcessPartyInfoCallbackMessage(
-    message: CommandEventMessage,
+    message: CommandEvent,
     options: ICommandEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
-    const processPartyInfoCallbackMessage = message as ProcessPartyInfoCallbackMessage;
+    const processPartyInfoCallbackMessage = message as ProcessPartyInfoCallbackCmdEvt;
     try {
-        logger.info(`Got ProcessPartyInfoCallbackMessage: id=${processPartyInfoCallbackMessage.getKey()}`);
+        logger.info(`Got ProcessPartyInfoCallbackCmdEvt: id=${processPartyInfoCallbackMessage.getKey()}`);
 
         // Create aggregate
         const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRepo(
@@ -57,7 +57,7 @@ export async function handleProcessPartyInfoCallbackMessage(
         }
         individualTransfer.setPartyResponse(partyResult);
 
-        const msg = new PartyInfoCallbackProcessedMessage({
+        const msg = new PartyInfoCallbackProcessedDmEvt({
             key: processPartyInfoCallbackMessage.getKey(),
             timestamp: Date.now(),
             headers: [],

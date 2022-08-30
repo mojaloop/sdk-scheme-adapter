@@ -18,41 +18,44 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Modusbox
- - Yevhen Kyriukha <yevhen.kyriukha@modusbox.com>
+ - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
  --------------
  ******/
 
 'use strict';
 
-import { CommandEventMessage } from '../command_event_message';
-import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+import { IMessage } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+import { IEventData, EventType, BaseEvent, IEventValue } from './base_event';
 
-export interface IProcessSDKOutboundBulkPartyInfoRequestMessageData {
-    bulkId: string;
-    timestamp: number | null;
-    headers: IMessageHeader[] | null;
-}
+export type IDomainEventData = Omit<IEventData, 'type'>;
 
-export class ProcessSDKOutboundBulkPartyInfoRequestMessage extends CommandEventMessage {
-    constructor(data: IProcessSDKOutboundBulkPartyInfoRequestMessageData) {
+export class DomainEvent extends BaseEvent {
+
+    constructor(data: IDomainEventData) {
         super({
-            key: data.bulkId,
-            timestamp: data.timestamp,
-            headers: data.headers,
-            content: null,
-            name: ProcessSDKOutboundBulkPartyInfoRequestMessage.name,
+            ...data,
+            type: EventType.DOMAIN_EVENT,
         });
     }
 
-    static CreateFromCommandEventMessage(message: CommandEventMessage): ProcessSDKOutboundBulkPartyInfoRequestMessage {
-        if((message.getKey() === null || typeof message.getKey() !== 'string')) {
-            throw new Error('Bulk id is in unknown format');
-        }
-        const data: IProcessSDKOutboundBulkPartyInfoRequestMessageData = {
-            timestamp: message.getTimeStamp(),
-            headers: message.getHeaders(),
-            bulkId: message.getKey(),
-        };
-        return new ProcessSDKOutboundBulkPartyInfoRequestMessage(data);
+    static CreateFromIMessage(message: IMessage): DomainEvent {
+    // Validate message
+        this._validateMessage(message);
+        // Prepare Data
+        /* eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars */
+        const { type, ...data } = super._prepareDataFromIMessage(message);
+
+        return new DomainEvent(data);
     }
+
+    // Overriding the parent method and perform additional validations
+    protected static _validateMessage(obj: IMessage): void {
+        super._validateMessage(obj);
+        // Additional validation here
+        const eventMessageValue = obj.value as IEventValue;
+        if(eventMessageValue.eventType !== EventType.DOMAIN_EVENT) {
+            throw (new Error('.value.eventName is not equal to DOMAIN_EVENT'));
+        }
+    }
+
 }

@@ -26,7 +26,7 @@ import * as ProcessSDKOutboundBulkRequestHandler from './process_sdk_outbound_bu
 import * as ProcessSDKOutboundBulkPartyInfoRequestHandler from './process_sdk_outbound_bulk_party_info_request';
 import * as ProcessSDKOutboundBulkPartyInfoRequestCompleteHandler from './process_sdk_outbound_bulk_party_info_request_complete';
 import * as ProcessPartyInfoCallbackHandler from './process_party_info_callback';
-import { CommandEventMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { CommandEvent } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { ICommandEventHandlerOptions } from '@module-types';
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 
@@ -37,7 +37,7 @@ export default  {
     ...ProcessPartyInfoCallbackHandler,
 } as {
     [key: string]: (
-        message: CommandEventMessage,
+        message: CommandEvent,
         options: ICommandEventHandlerOptions,
         logger: ILogger,
     ) => Promise<void>

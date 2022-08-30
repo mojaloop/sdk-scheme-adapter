@@ -26,7 +26,7 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { BaseAggregate, CommandEventMessage, IEntityStateRepository } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { BaseAggregate, CommandEvent, IEntityStateRepository } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionEntity, BulkTransactionState } from '../bulk_transaction_entity';
 import {
     IndividualTransferEntity,
@@ -170,7 +170,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
 
 
     static async ProcessCommandEvent(
-        message: CommandEventMessage,
+        message: CommandEvent,
         options: ICommandEventHandlerOptions,
         logger: ILogger,
     ) {

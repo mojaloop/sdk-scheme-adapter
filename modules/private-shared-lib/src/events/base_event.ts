@@ -27,7 +27,7 @@
 import { IMessage, IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 import { getEnumValues } from '../utils';
 
-export enum EventMessageType {
+export enum EventType {
     'DOMAIN_EVENT' = 'DOMAIN_EVENT', // public domain events
     'COMMAND_EVENT' = 'COMMAND_EVENT', // commands
 }
@@ -37,29 +37,29 @@ export enum EventMessageType {
 //   traceState: string
 // }
 
-export interface IEventMessageValue {
-    eventMessageType: EventMessageType;
-    eventMessageName: string;
-    eventMessageContent: Buffer | string | object | null;
+export interface IEventValue {
+    eventType: EventType;
+    eventName: string;
+    eventContent: Buffer | string | object | null;
 }
 
-export interface IEventMessageData {
+export interface IEventData {
     key: string;
-    type: EventMessageType;
+    type: EventType;
     name: string;
     content: Buffer | string | object | null;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
 
-export class BaseEventMessage {
-    private _data: IEventMessageData;
+export class BaseEvent {
+    private _data: IEventData;
 
-    constructor(data: IEventMessageData) {
+    constructor(data: IEventData) {
         this._data = data;
     }
 
-    getData(): IEventMessageData {
+    getData(): IEventData {
         return this._data;
     }
 
@@ -67,7 +67,7 @@ export class BaseEventMessage {
         return this._data.key;
     }
 
-    getType(): EventMessageType {
+    getType(): EventType {
         return this._data.type;
     }
 
@@ -87,22 +87,22 @@ export class BaseEventMessage {
         return this._data.headers;
     }
 
-    static CreateFromIMessage(message: IMessage): BaseEventMessage {
+    static CreateFromIMessage(message: IMessage): BaseEvent {
     // Validate message
         this._validateMessage(message);
         // Prepare Data
         const data = this._prepareDataFromIMessage(message);
 
-        return new BaseEventMessage(data);
+        return new BaseEvent(data);
     }
 
-    protected static _prepareDataFromIMessage(message: IMessage): IEventMessageData {
-        const eventMessageValue: IEventMessageValue = <IEventMessageValue>message.value;
-        const data: IEventMessageData = {
+    protected static _prepareDataFromIMessage(message: IMessage): IEventData {
+        const eventMessageValue: IEventValue = <IEventValue>message.value;
+        const data: IEventData = {
             key: message.key as string,
-            type: eventMessageValue.eventMessageType,
-            name: eventMessageValue.eventMessageName,
-            content: eventMessageValue.eventMessageContent,
+            type: eventMessageValue.eventType,
+            name: eventMessageValue.eventName,
+            content: eventMessageValue.eventContent,
             timestamp: message.timestamp,
             headers: message.headers,
         };
@@ -110,10 +110,10 @@ export class BaseEventMessage {
     }
 
     toIMessage(topic: string): IMessage {
-        const eventMessageValue: IEventMessageValue = {
-            eventMessageType: this._data.type,
-            eventMessageName: this._data.name,
-            eventMessageContent: this._data.content,
+        const eventMessageValue: IEventValue = {
+            eventType: this._data.type,
+            eventName: this._data.name,
+            eventContent: this._data.content,
         };
         const message: IMessage = {
             value: eventMessageValue,
@@ -138,21 +138,21 @@ export class BaseEventMessage {
         ) {
             throw (new Error('.value is null or undefined or not an object'));
         }
-        const eventMessageValue = obj.value as IEventMessageValue;
-        if( !eventMessageValue.hasOwnProperty('eventMessageType')) {
-            throw (new Error('.value.eventMessageType is null or undefined'));
+        const eventMessageValue = obj.value as IEventValue;
+        if( !eventMessageValue.hasOwnProperty('eventType')) {
+            throw (new Error('.value.eventType is null or undefined'));
         }
-        if(typeof eventMessageValue.eventMessageType !== 'string') {
-            throw (new Error('.value.eventMessageType is not string'));
+        if(typeof eventMessageValue.eventType !== 'string') {
+            throw (new Error('.value.eventType is not string'));
         }
-        if(!(eventMessageValue.eventMessageType in EventMessageType)) {
-            throw (new Error(`.value.eventMessageType is not in the list of allowed values ${getEnumValues(EventMessageType)}`));
+        if(!(eventMessageValue.eventType in EventType)) {
+            throw (new Error(`.value.eventType is not in the list of allowed values ${getEnumValues(EventType)}`));
         }
-        if( !eventMessageValue.hasOwnProperty('eventMessageName')) {
-            throw (new Error('.value.eventMessageName is null or undefined'));
+        if( !eventMessageValue.hasOwnProperty('eventName')) {
+            throw (new Error('.value.eventName is null or undefined'));
         }
-        if(typeof eventMessageValue.eventMessageName !== 'string') {
-            throw (new Error('.value.eventMessageName is not string'));
+        if(typeof eventMessageValue.eventName !== 'string') {
+            throw (new Error('.value.eventName is not string'));
         }
     }
 }

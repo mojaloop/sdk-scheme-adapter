@@ -25,25 +25,25 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { DomainEventMessage, IProcessSDKOutboundBulkRequestMessageData, ProcessSDKOutboundBulkRequestMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { DomainEvent, IProcessSDKOutboundBulkRequestCmdEvtData, ProcessSDKOutboundBulkRequestCmdEvt } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { IDomainEventHandlerOptions } from '../../types';
-import { SDKOutboundBulkRequestReceivedMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { SDKOutboundBulkRequestReceivedDmEvt } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
 export async function handleSDKOutboundBulkRequestReceived(
-    message: DomainEventMessage,
+    message: DomainEvent,
     options: IDomainEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
     const sdkOutboundBulkRequestReceivedMessage
-        = SDKOutboundBulkRequestReceivedMessage.CreateFromDomainEventMessage(message);
+        = SDKOutboundBulkRequestReceivedDmEvt.CreateFromDomainEvent(message);
     try {
-        const processSDKOutboundBulkRequestMessageData: IProcessSDKOutboundBulkRequestMessageData = {
+        const processSDKOutboundBulkRequestMessageData: IProcessSDKOutboundBulkRequestCmdEvtData = {
             bulkRequest: sdkOutboundBulkRequestReceivedMessage.getBulkRequest(),
             timestamp: Date.now(),
             headers: [],
         };
         const processSDKOutboundBulkRequestMessage
-            = new ProcessSDKOutboundBulkRequestMessage(processSDKOutboundBulkRequestMessageData);
+            = new ProcessSDKOutboundBulkRequestCmdEvt(processSDKOutboundBulkRequestMessageData);
         await options.commandProducer.sendCommandMessage(processSDKOutboundBulkRequestMessage);
         logger.info(`Sent command event ${processSDKOutboundBulkRequestMessage.getName()}`);
         console.log(processSDKOutboundBulkRequestMessage);

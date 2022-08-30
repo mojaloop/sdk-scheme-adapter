@@ -22,7 +22,7 @@
  --------------
  ******/
 
-import { EventMessageType, CommandEventMessage } from '../../../src';
+import { EventType, CommandEvent } from '../../../src';
 
 const sampleCommandEventMessageData: any = {
   key: 'sample-key1',
@@ -35,63 +35,63 @@ const sampleCommandEventMessageData: any = {
 const sampleIMessage: any = {
   key: 'sample-key1',
   value: {
-    eventMessageType: EventMessageType.COMMAND_EVENT,
-    eventMessageName: 'some-event-name-here',
-    eventMessageContent: null
+    eventType: EventType.COMMAND_EVENT,
+    eventName: 'some-event-name-here',
+    eventContent: null
   },
   topic: 'sample-topic',
   timestamp: Date.now(),
   headers: []
 }
 
-describe ('CommandEventMessage', () => {
+describe ('CommandEvent', () => {
   describe("Positive scenarios", () => {
     it("should create a command event message object from event message data", () => {
-      const eventObj = new CommandEventMessage(sampleCommandEventMessageData);
+      const eventObj = new CommandEvent(sampleCommandEventMessageData);
       expect(eventObj).not.toBeUndefined();
       expect(eventObj.getKey()).toEqual(sampleCommandEventMessageData.key)
       expect(eventObj.getTimeStamp()).toEqual(sampleCommandEventMessageData.timestamp)
-      expect(eventObj.getType()).toEqual(EventMessageType.COMMAND_EVENT)
-      expect(eventObj).toBeInstanceOf(CommandEventMessage)
+      expect(eventObj.getType()).toEqual(EventType.COMMAND_EVENT)
+      expect(eventObj).toBeInstanceOf(CommandEvent)
     });
     it("should create a command event message object from imessage object", () => {
-      const eventObj = CommandEventMessage.CreateFromIMessage(sampleIMessage);
+      const eventObj = CommandEvent.CreateFromIMessage(sampleIMessage);
       expect(eventObj).not.toBeUndefined();
       expect(eventObj.getKey()).toEqual(sampleIMessage.key)
       expect(eventObj.getTimeStamp()).toEqual(sampleIMessage.timestamp)
-      expect(eventObj.getType()).toEqual(sampleIMessage.value.eventMessageType)
-      expect(eventObj).toBeInstanceOf(CommandEventMessage)
+      expect(eventObj.getType()).toEqual(sampleIMessage.value.eventType)
+      expect(eventObj).toBeInstanceOf(CommandEvent)
     });
     it("should create a command event message object from event message data and generate iMessage", () => {
-      const eventObj = new CommandEventMessage(sampleCommandEventMessageData);
+      const eventObj = new CommandEvent(sampleCommandEventMessageData);
       expect(eventObj).not.toBeUndefined();
       expect(eventObj.getKey()).toEqual(sampleCommandEventMessageData.key)
       const iMessage = eventObj.toIMessage('some-supplied-topic');
       expect(iMessage.key).toEqual(sampleCommandEventMessageData.key)
       expect(iMessage.timestamp).toEqual(sampleCommandEventMessageData.timestamp)
       expect(iMessage.topic).toEqual('some-supplied-topic')
-      expect(iMessage.value).toHaveProperty('eventMessageType')
-      expect(iMessage.value).toHaveProperty('eventMessageName')
+      expect(iMessage.value).toHaveProperty('eventType')
+      expect(iMessage.value).toHaveProperty('eventName')
     });
   });
   describe("Negative scenarios", () => {
     it("should throw an error if the .key is null", () => {
-      expect(() => { CommandEventMessage.CreateFromIMessage({ ...sampleIMessage, key: null}) }).toThrowError()
+      expect(() => { CommandEvent.CreateFromIMessage({ ...sampleIMessage, key: null}) }).toThrowError()
     });
     it("should throw an error if the .value is null", () => {
-      expect(() => { CommandEventMessage.CreateFromIMessage({ ...sampleIMessage, value: null}) }).toThrowError()
+      expect(() => { CommandEvent.CreateFromIMessage({ ...sampleIMessage, value: null}) }).toThrowError()
     });
     it("should throw an error if the .value is not object", () => {
-      expect(() => { CommandEventMessage.CreateFromIMessage({ ...sampleIMessage, value: 'some-string'}) }).toThrowError()
+      expect(() => { CommandEvent.CreateFromIMessage({ ...sampleIMessage, value: 'some-string'}) }).toThrowError()
     });
-    it("should throw an error if the .value.eventMessageType doesn't exist", () => {
-      expect(() => { CommandEventMessage.CreateFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventMessageType: null}}) }).toThrowError()
+    it("should throw an error if the .value.eventType doesn't exist", () => {
+      expect(() => { CommandEvent.CreateFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventType: null}}) }).toThrowError()
     });
-    it("should throw an error if the .value.eventMessageName doesn't exist", () => {
-      expect(() => { CommandEventMessage.CreateFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventMessageName: null}}) }).toThrowError()
+    it("should throw an error if the .value.eventName doesn't exist", () => {
+      expect(() => { CommandEvent.CreateFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventName: null}}) }).toThrowError()
     });
-    it("should throw an error if the .value.eventMessageType is not COMMAND_EVENT", () => {
-      expect(() => { CommandEventMessage.CreateFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventMessageType: EventMessageType.DOMAIN_EVENT}}) }).toThrowError()
+    it("should throw an error if the .value.eventType is not COMMAND_EVENT", () => {
+      expect(() => { CommandEvent.CreateFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventType: EventType.DOMAIN_EVENT}}) }).toThrowError()
     });
   });
 

@@ -18,44 +18,41 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Modusbox
- - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
+ - Yevhen Kyriukha <yevhen.kyriukha@modusbox.com>
  --------------
  ******/
 
 'use strict';
 
-import { IMessage } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { IEventMessageData, EventMessageType, BaseEventMessage, IEventMessageValue } from './base_event_message';
+import { CommandEvent } from '../command_event';
+import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 
-export type ICommandEventMessageData = Omit<IEventMessageData, 'type'>;
+export interface IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData {
+    bulkId: string;
+    timestamp: number | null;
+    headers: IMessageHeader[] | null;
+}
 
-export class CommandEventMessage extends BaseEventMessage {
-
-    constructor(data: ICommandEventMessageData) {
+export class ProcessSDKOutboundBulkPartyInfoRequestCmdEvt extends CommandEvent {
+    constructor(data: IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData) {
         super({
-            ...data,
-            type: EventMessageType.COMMAND_EVENT,
+            key: data.bulkId,
+            timestamp: data.timestamp,
+            headers: data.headers,
+            content: null,
+            name: ProcessSDKOutboundBulkPartyInfoRequestCmdEvt.name,
         });
     }
 
-    static CreateFromIMessage(message: IMessage): CommandEventMessage {
-    // Validate message
-        this._validateMessage(message);
-        // Prepare Data
-        /* eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars */
-        const { type, ...data } = super._prepareDataFromIMessage(message);
-
-        return new CommandEventMessage(data);
-    }
-
-    // Overriding the parent method and perform additional validations
-    protected static _validateMessage(obj: IMessage): void {
-        super._validateMessage(obj);
-        // Additional validation here
-        const eventMessageValue = obj.value as IEventMessageValue;
-        if(eventMessageValue.eventMessageType !== EventMessageType.COMMAND_EVENT) {
-            throw (new Error('.value.eventMessageName is not equal to COMMAND_EVENT'));
+    static CreateFromCommandEvent(message: CommandEvent): ProcessSDKOutboundBulkPartyInfoRequestCmdEvt {
+        if((message.getKey() === null || typeof message.getKey() !== 'string')) {
+            throw new Error('Bulk id is in unknown format');
         }
+        const data: IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData = {
+            timestamp: message.getTimeStamp(),
+            headers: message.getHeaders(),
+            bulkId: message.getKey(),
+        };
+        return new ProcessSDKOutboundBulkPartyInfoRequestCmdEvt(data);
     }
-
 }

@@ -37,10 +37,10 @@
 
 'use strict';
 
-import { DomainEventMessage } from '../../events';
+import { DomainEvent } from '../../events';
 import { IEventProducer } from './ievent-producer';
 
 export interface IDomainEventProducer extends IEventProducer {
     init: () => Promise<void>
-    sendDomainMessage: (message: DomainEventMessage) => Promise<void>
+    sendDomainMessage: (message: DomainEvent) => Promise<void>
 }

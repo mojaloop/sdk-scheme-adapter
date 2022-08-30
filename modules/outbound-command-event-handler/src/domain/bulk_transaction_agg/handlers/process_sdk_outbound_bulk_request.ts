@@ -25,16 +25,16 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { CommandEventMessage, ProcessSDKOutboundBulkRequestMessage, SDKOutboundBulkPartyInfoRequestedMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { CommandEvent, ProcessSDKOutboundBulkRequestCmdEvt, SDKOutboundBulkPartyInfoRequestedDmEvt } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
 
 export async function handleProcessSDKOutboundBulkRequestMessage(
-    message: CommandEventMessage,
+    message: CommandEvent,
     options: ICommandEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
-    const processSDKOutboundBulkRequestMessage = message as ProcessSDKOutboundBulkRequestMessage;
+    const processSDKOutboundBulkRequestMessage = message as ProcessSDKOutboundBulkRequestCmdEvt;
     try {
         logger.info(`Got Bulk Request ${processSDKOutboundBulkRequestMessage.getBulkRequest()}`);
 
@@ -46,7 +46,7 @@ export async function handleProcessSDKOutboundBulkRequestMessage(
         );
         logger.info(`Created BulkTransactionAggregate ${bulkTransactionAgg}`);
 
-        const msg = new SDKOutboundBulkPartyInfoRequestedMessage({
+        const msg = new SDKOutboundBulkPartyInfoRequestedDmEvt({
             bulkId: bulkTransactionAgg.bulkId,
             timestamp: Date.now(),
             headers: [],
