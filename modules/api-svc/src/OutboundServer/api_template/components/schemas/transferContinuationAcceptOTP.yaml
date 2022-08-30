@@ -1,9 +1,0 @@
-type: object
-required:
-  - acceptOTP
-properties:
-  acceptOTP:
-    type: boolean
-    enum:
-      - true
-      - false

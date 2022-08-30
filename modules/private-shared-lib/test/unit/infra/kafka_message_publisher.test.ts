@@ -1,4 +1,4 @@
-import { KafkaMessagePublisher } from '../../src/kafka_message_publisher'
+import { KafkaMessagePublisher } from '../../../src/'
 import { IMessage, MessageTypes } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 
 describe('Kafka Message Publisher', () => {
@@ -17,7 +17,7 @@ describe('Kafka Message Publisher', () => {
     publisher = new KafkaMessagePublisher(kafkaGenericProducerOptions);
   })
 
-  test('sends a single message', async () => {    
+  test('sends a single message', async () => {
     const message: IMessage = {
       msgName: 'msgName',
       msgPartition: null,
@@ -31,7 +31,7 @@ describe('Kafka Message Publisher', () => {
       traceInfo: null,
       addTraceInfo: (trace) => {},
       passTraceInfo: (message) => {}
-    };    
+    };
     (publisher as any)._producer.send = jest.fn().mockResolvedValue(undefined)
 
     await publisher.publish(message)

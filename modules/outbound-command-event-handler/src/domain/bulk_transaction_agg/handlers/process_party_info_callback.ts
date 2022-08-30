@@ -25,34 +25,31 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { CommandEventMessage, ProcessPartyInfoCallbackMessage, PartyInfoCallbackProcessedMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { CommandEvent, ProcessPartyInfoCallbackCmdEvt, PartyInfoCallbackProcessedDmEvt, IPartyResult } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
 import { IndividualTransferInternalState } from '../..';
-import { v1_1 as FSPIOP } from '@mojaloop/api-snippets';
 
-type PartyResult = FSPIOP.Schemas.PartyResult;
-
-export async function handleProcessPartyInfoCallbackMessage(
-    message: CommandEventMessage,
+export async function handleProcessPartyInfoCallbackCmdEvt(
+    message: CommandEvent,
     options: ICommandEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
-    const processPartyInfoCallbackMessage = message as ProcessPartyInfoCallbackMessage;
+    const processPartyInfoCallback = message as ProcessPartyInfoCallbackCmdEvt;
     try {
-        logger.info(`Got ProcessPartyInfoCallbackMessage: id=${processPartyInfoCallbackMessage.getKey()}`);
+        logger.info(`Got ProcessPartyInfoCallbackCmdEvt: id=${processPartyInfoCallback.getKey()}`);
 
         // Create aggregate
         const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRepo(
-            processPartyInfoCallbackMessage.getBulkId(),
+            processPartyInfoCallback.getBulkId(),
             options.bulkTransactionEntityRepo,
             logger,
         );
 
         const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(
-            processPartyInfoCallbackMessage.getTransferId(),
+            processPartyInfoCallback.getTransferId(),
         );
-        const partyResult = <PartyResult>processPartyInfoCallbackMessage.getContent();
+        const partyResult = <IPartyResult>processPartyInfoCallback.getContent();
         if(partyResult.errorInformation) {
             individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_FAILED);
         } else {
@@ -60,8 +57,8 @@ export async function handleProcessPartyInfoCallbackMessage(
         }
         individualTransfer.setPartyResponse(partyResult);
 
-        const msg = new PartyInfoCallbackProcessedMessage({
-            key: processPartyInfoCallbackMessage.getKey(),
+        const msg = new PartyInfoCallbackProcessedDmEvt({
+            key: processPartyInfoCallback.getKey(),
             timestamp: Date.now(),
             headers: [],
         });

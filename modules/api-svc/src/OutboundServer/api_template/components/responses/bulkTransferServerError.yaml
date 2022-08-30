@@ -1,5 +1,0 @@
-description: An error occurred processing the bulk transfer
-content:
-  application/json:
-    schema:
-      $ref: ../schemas/bulkTransferErrorResponse.yaml
