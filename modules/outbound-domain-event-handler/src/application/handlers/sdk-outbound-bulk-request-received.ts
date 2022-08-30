@@ -34,16 +34,16 @@ export async function handleSDKOutboundBulkRequestReceived(
     options: IDomainEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
-    const sdkOutboundBulkRequestReceivedMessage
+    const sdkOutboundBulkRequestReceived
         = SDKOutboundBulkRequestReceivedDmEvt.CreateFromDomainEvent(message);
     try {
-        const processSDKOutboundBulkRequestMessageData: IProcessSDKOutboundBulkRequestCmdEvtData = {
-            bulkRequest: sdkOutboundBulkRequestReceivedMessage.getBulkRequest(),
+        const processSDKOutboundBulkRequestCmdEvtData: IProcessSDKOutboundBulkRequestCmdEvtData = {
+            bulkRequest: sdkOutboundBulkRequestReceived.getBulkRequest(),
             timestamp: Date.now(),
             headers: [],
         };
         const processSDKOutboundBulkRequestMessage
-            = new ProcessSDKOutboundBulkRequestCmdEvt(processSDKOutboundBulkRequestMessageData);
+            = new ProcessSDKOutboundBulkRequestCmdEvt(processSDKOutboundBulkRequestCmdEvtData);
         await options.commandProducer.sendCommandMessage(processSDKOutboundBulkRequestMessage);
         logger.info(`Sent command event ${processSDKOutboundBulkRequestMessage.getName()}`);
         console.log(processSDKOutboundBulkRequestMessage);

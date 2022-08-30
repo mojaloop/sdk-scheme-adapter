@@ -36,14 +36,14 @@ export async function handleSDKOutboundBulkPartyInfoRequested(
     options: IDomainEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
-    const sdkOutboundBulkPartyInfoRequestedMessage
+    const sdkOutboundBulkPartyInfoRequested
         = SDKOutboundBulkPartyInfoRequestedDmEvt.CreateFromCommandEvent(message);
 
     try {
         const processSDKOutboundBulkPartyInfoRequestMessageData: IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData = {
-            bulkId: sdkOutboundBulkPartyInfoRequestedMessage.getKey(),
+            bulkId: sdkOutboundBulkPartyInfoRequested.getKey(),
             timestamp: Date.now(),
-            headers: sdkOutboundBulkPartyInfoRequestedMessage.getHeaders(),
+            headers: sdkOutboundBulkPartyInfoRequested.getHeaders(),
         };
 
         const processSDKOutboundBulkPartyInfoRequestMessage

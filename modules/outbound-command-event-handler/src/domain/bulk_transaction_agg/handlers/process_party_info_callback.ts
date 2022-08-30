@@ -35,21 +35,21 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
     options: ICommandEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
-    const processPartyInfoCallbackMessage = message as ProcessPartyInfoCallbackCmdEvt;
+    const processPartyInfoCallback = message as ProcessPartyInfoCallbackCmdEvt;
     try {
-        logger.info(`Got ProcessPartyInfoCallbackCmdEvt: id=${processPartyInfoCallbackMessage.getKey()}`);
+        logger.info(`Got ProcessPartyInfoCallbackCmdEvt: id=${processPartyInfoCallback.getKey()}`);
 
         // Create aggregate
         const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRepo(
-            processPartyInfoCallbackMessage.getBulkId(),
+            processPartyInfoCallback.getBulkId(),
             options.bulkTransactionEntityRepo,
             logger,
         );
 
         const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(
-            processPartyInfoCallbackMessage.getTransferId(),
+            processPartyInfoCallback.getTransferId(),
         );
-        const partyResult = <IPartyResult>processPartyInfoCallbackMessage.getContent();
+        const partyResult = <IPartyResult>processPartyInfoCallback.getContent();
         if(partyResult.errorInformation) {
             individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_FAILED);
         } else {
@@ -58,7 +58,7 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
         individualTransfer.setPartyResponse(partyResult);
 
         const msg = new PartyInfoCallbackProcessedDmEvt({
-            key: processPartyInfoCallbackMessage.getKey(),
+            key: processPartyInfoCallback.getKey(),
             timestamp: Date.now(),
             headers: [],
         });

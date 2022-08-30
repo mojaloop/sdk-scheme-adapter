@@ -34,13 +34,13 @@ export async function handleProcessSDKOutboundBulkRequestCmdEvt(
     options: ICommandEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
-    const processSDKOutboundBulkRequestMessage = message as ProcessSDKOutboundBulkRequestCmdEvt;
+    const processSDKOutboundBulkRequest = message as ProcessSDKOutboundBulkRequestCmdEvt;
     try {
-        logger.info(`Got Bulk Request ${processSDKOutboundBulkRequestMessage.getBulkRequest()}`);
+        logger.info(`Got Bulk Request ${processSDKOutboundBulkRequest.getBulkRequest()}`);
 
         // Create aggregate
         const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRequest(
-            processSDKOutboundBulkRequestMessage.getBulkRequest(),
+            processSDKOutboundBulkRequest.getBulkRequest(),
             options.bulkTransactionEntityRepo,
             logger,
         );

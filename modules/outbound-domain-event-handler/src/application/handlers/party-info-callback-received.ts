@@ -10,14 +10,14 @@ export async function handlePartyInfoCallbackReceived(
     options: IDomainEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
-    const partyInfoCallbackReceivedMessage
+    const partyInfoCallbackReceived
         = PartyInfoCallbackReceivedDmEvt.CreateFromDomainEvent(message);
     try {
         const processPartyInfoCallbackMessageData: IProcessPartyInfoCallbackCmdEvtData = {
-            key: partyInfoCallbackReceivedMessage.getKey(),
-            partyResult: partyInfoCallbackReceivedMessage.getPartyResult(),
+            key: partyInfoCallbackReceived.getKey(),
+            partyResult: partyInfoCallbackReceived.getPartyResult(),
             timestamp: Date.now(),
-            headers: partyInfoCallbackReceivedMessage.getHeaders(),
+            headers: partyInfoCallbackReceived.getHeaders(),
         };
 
         const processPartyInfoCallbackMessage

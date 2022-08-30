@@ -41,14 +41,14 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt
     options: ICommandEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
-    const processSDKOutboundBulkPartyInfoRequestCompleteMessage =
+    const processSDKOutboundBulkPartyInfoRequestComplete =
         message as ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt;
     try {
-        logger.info(`Got ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt: bulkid=${processSDKOutboundBulkPartyInfoRequestCompleteMessage.getKey()}`);
+        logger.info(`Got ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt: bulkid=${processSDKOutboundBulkPartyInfoRequestComplete.getKey()}`);
 
         // Create aggregate
         const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRepo(
-            processSDKOutboundBulkPartyInfoRequestCompleteMessage.getKey(),
+            processSDKOutboundBulkPartyInfoRequestComplete.getKey(),
             options.bulkTransactionEntityRepo,
             logger,
         );
