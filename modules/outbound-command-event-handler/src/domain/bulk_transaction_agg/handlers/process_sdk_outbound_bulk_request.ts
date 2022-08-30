@@ -29,7 +29,7 @@ import { CommandEvent, ProcessSDKOutboundBulkRequestCmdEvt, SDKOutboundBulkParty
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
 
-export async function handleProcessSDKOutboundBulkRequestMessage(
+export async function handleProcessSDKOutboundBulkRequestCmdEvt(
     message: CommandEvent,
     options: ICommandEventHandlerOptions,
     logger: ILogger,

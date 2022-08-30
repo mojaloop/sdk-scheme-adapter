@@ -35,7 +35,7 @@ import { ICommandEventHandlerOptions } from '@module-types';
 import { BulkTransactionInternalState } from '../..';
 import { IndividualTransferInternalState } from '../..';
 
-export async function handleProcessSDKOutboundBulkPartyInfoRequestMessage(
+export async function handleProcessSDKOutboundBulkPartyInfoRequestCmdEvt(
     message: CommandEvent,
     options: ICommandEventHandlerOptions,
     logger: ILogger,

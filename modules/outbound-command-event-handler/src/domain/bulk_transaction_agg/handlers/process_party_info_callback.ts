@@ -30,7 +30,7 @@ import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
 import { IndividualTransferInternalState } from '../..';
 
-export async function handleProcessPartyInfoCallbackMessage(
+export async function handleProcessPartyInfoCallbackCmdEvt(
     message: CommandEvent,
     options: ICommandEventHandlerOptions,
     logger: ILogger,
