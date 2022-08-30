@@ -27,7 +27,7 @@
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import { BaseAggregate, CommandEventMessage, IEntityStateRepository } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-import { BulkTransactionEntity, BulkTransactionState } from '../bulk_transaction_entity';
+import { BulkTransactionEntity, BulkTransactionInternalState, BulkTransactionState } from '../bulk_transaction_entity';
 import {
     IndividualTransferEntity,
     IndividualTransferState,
@@ -90,6 +90,11 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                 ),
             );
         }
+        // Set initial values
+        agg.setBulkQuotesTotalCount(0);
+        agg.setBulkQuotesSuccessCount(0);
+        agg.setBulkQuotesFailedCount(0);
+
         // Return the aggregate
         return agg;
     }
@@ -143,6 +148,11 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         await this.store();
     }
 
+    async setGlobalState(state: BulkTransactionInternalState) : Promise<void> {
+        this._rootEntity.setTxState(state);
+        await this.store();
+    }
+
     isSkipPartyLookupEnabled() {
         return this._rootEntity.isSkipPartyLookupEnabled();
     }
@@ -165,6 +175,41 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
     async addIndividualTransferEntity(entity: IndividualTransferEntity) : Promise<void> {
         await (<IBulkTransactionEntityRepo> this._entity_state_repo)
             .setIndividualTransfer(this._rootEntity.id, entity.id, entity.exportState());
+    }
+
+    async getBulkQuotesTotalCount() {
+        const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
+        return repo.getBulkQuotesTotalCount(this._rootEntity.id);
+    }
+    async setBulkQuotesTotalCount(totalCount: number) : Promise<void> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .setBulkQuotesTotalCount(this._rootEntity.id, totalCount);
+    }
+
+    async getBulkQuotesSuccessCount() {
+        const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
+        return repo.getBulkQuotesSuccessCount(this._rootEntity.id);
+    }    
+    async setBulkQuotesSuccessCount(count: number) : Promise<void> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .setBulkQuotesSuccessCount(this._rootEntity.id, count);
+    }
+    async incrementBulkQuotesSuccessCount() : Promise<void> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .incrementBulkQuotesSuccessCount(this._rootEntity.id);
+    }
+
+    async getBulkQuotesFailedCount() {
+        const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
+        return repo.getBulkQuotesFailedCount(this._rootEntity.id);
+    }
+    async setBulkQuotesFailedCount(count: number) : Promise<void> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .setBulkQuotesFailedCount(this._rootEntity.id, count);
+    }
+    async incrementBulkQuotesFailedCount() : Promise<void> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .incrementBulkQuotesFailedCount(this._rootEntity.id);
     }
 
     async addBulkBatchEntity(entity: BulkBatchEntity) : Promise<void> {
@@ -211,6 +256,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         }
         // console.log(batchesPerFsp);
         // Construct the batches per each element in the array
+        let bulkQuotesTotalCount = 0;
         for await (const fspId of Object.keys(batchesPerFsp)) {
             for await (const individualIdArray of batchesPerFsp[fspId]) {
                 const bulkBatch = BulkBatchEntity.CreateEmptyBatch(this._rootEntity);
@@ -246,8 +292,10 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                     
                 }
                 this.addBulkBatchEntity(bulkBatch);
+                bulkQuotesTotalCount++;
             }
         }
+        await this.setBulkQuotesTotalCount(bulkQuotesTotalCount);
 
     }
 

@@ -43,4 +43,12 @@ export type IBulkTransactionEntityRepo = {
         value: BulkBatchState
     ) => Promise<void>
     isBulkIdExists: (bulkId: string) => Promise<boolean>
+    getBulkQuotesTotalCount: (bulkId: string) => Promise<number>
+    setBulkQuotesTotalCount: (bulkId: string, totalCount: number) => Promise<void>
+    getBulkQuotesSuccessCount: (bulkId: string) => Promise<number>
+    setBulkQuotesSuccessCount: (bulkId: string, count: number) => Promise<void>
+    incrementBulkQuotesSuccessCount: (bulkId: string) => Promise<void>
+    getBulkQuotesFailedCount: (bulkId: string) => Promise<number>
+    setBulkQuotesFailedCount: (bulkId: string, count: number) => Promise<void>
+    incrementBulkQuotesFailedCount: (bulkId: string) => Promise<void>
 } & IEntityStateRepository<BulkTransactionState>;

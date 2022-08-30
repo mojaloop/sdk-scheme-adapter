@@ -45,6 +45,9 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
     private readonly keyPrefix: string = 'outboundBulkTransaction_';
     private readonly individualTransferKeyPrefix: string = 'individualItem_';
     private readonly bulkBatchKeyPrefix: string = 'bulkBatch_';
+    private readonly bulkQuotesTotalCountKey: string = 'bulkQuotesTotalCount';
+    private readonly bulkQuotesSuccessCountKey: string = 'bulkQuotesSuccessCount';
+    private readonly bulkQuotesFailedCountKey: string = 'bulkQuotesFailedCount';
 
     constructor(options: IRedisBulkTransactionStateRepoOptions, logger: ILogger) {
         this._redisConnStr = options.connStr;
@@ -235,6 +238,137 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
             throw (err);
         }
     }
+
+    async getBulkQuotesTotalCount(bulkId: string): Promise<number> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            const count = await this._redisClient.hGet(key, this.bulkQuotesTotalCountKey);
+            if(count)
+            {
+                return Number(count);
+            } else {
+                this._logger.error(`Error loading ${this.bulkQuotesTotalCountKey} from redis - for key: ${key}`);
+                throw(new Error(`Error loading ${this.bulkQuotesTotalCountKey} from redis - for key: ${key}`));
+            }
+        } catch (err) {
+            this._logger.error(err, `Error loading ${this.bulkQuotesTotalCountKey} from redis - for key: ${key}`);
+            throw (err);
+        }
+    }
+    async setBulkQuotesTotalCount(
+        bulkId: string,
+        value: number
+    ): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            await this._redisClient.hSet(key, this.bulkQuotesTotalCountKey, value);
+        } catch (err) {
+            this._logger.error(err, `Error storing attribute ${this.bulkQuotesTotalCountKey} to redis for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async getBulkQuotesSuccessCount(bulkId: string): Promise<number> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            const count = await this._redisClient.hGet(key, this.bulkQuotesSuccessCountKey);
+            if(count)
+            {
+                return Number(count);
+            } else {
+                this._logger.error(`Error loading ${this.bulkQuotesSuccessCountKey} from redis - for key: ${key}`);
+                throw(new Error(`Error loading ${this.bulkQuotesSuccessCountKey} from redis - for key: ${key}`));
+            }
+        } catch (err) {
+            this._logger.error(err, `Error loading ${this.bulkQuotesSuccessCountKey} from redis - for key: ${key}`);
+            throw (err);
+        }
+    }
+    async setBulkQuotesSuccessCount(
+        bulkId: string,
+        value: number
+    ): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            await this._redisClient.hSet(key, this.bulkQuotesSuccessCountKey, value);
+        } catch (err) {
+            this._logger.error(err, `Error storing attribute ${this.bulkQuotesSuccessCountKey} to redis for key: ${key}`);
+            throw (err);
+        }
+    }
+    async incrementBulkQuotesSuccessCount(bulkId: string): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            await this._redisClient.hIncrBy(key, this.bulkQuotesSuccessCountKey, 1);
+        } catch (err) {
+            this._logger.error(err, `Error incrementing attribute ${this.bulkQuotesSuccessCountKey} in redis for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async getBulkQuotesFailedCount(bulkId: string): Promise<number> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            const count = await this._redisClient.hGet(key, this.bulkQuotesFailedCountKey);
+            if(count)
+            {
+                return Number(count);
+            } else {
+                this._logger.error(`Error loading ${this.bulkQuotesFailedCountKey} from redis - for key: ${key}`);
+                throw(new Error(`Error loading ${this.bulkQuotesFailedCountKey} from redis - for key: ${key}`));
+            }
+        } catch (err) {
+            this._logger.error(err, `Error loading ${this.bulkQuotesFailedCountKey} from redis - for key: ${key}`);
+            throw (err);
+        }
+    }
+    async setBulkQuotesFailedCount(
+        bulkId: string,
+        value: number
+    ): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            await this._redisClient.hSet(key, this.bulkQuotesFailedCountKey, value);
+        } catch (err) {
+            this._logger.error(err, `Error storing attribute ${this.bulkQuotesFailedCountKey} to redis for key: ${key}`);
+            throw (err);
+        }
+    }
+    async incrementBulkQuotesFailedCount(bulkId: string): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            await this._redisClient.hIncrBy(key, this.bulkQuotesFailedCountKey, 1);
+        } catch (err) {
+            this._logger.error(err, `Error incrementing attribute ${this.bulkQuotesFailedCountKey} in redis for key: ${key}`);
+            throw (err);
+        }
+    }
+
+
 
     private keyWithPrefix(key: string): string {
         return this.keyPrefix + key;

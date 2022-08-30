@@ -25,10 +25,10 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { CommandEventMessage, BulkQuotesProcessedMessage, ProcessBulkQuotesCallbackMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { CommandEventMessage, BulkQuotesCallbackProcessedMessage, ProcessBulkQuotesCallbackMessage, SDKOutboundBulkQuotesRequestProcessedMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
-import { BulkBatchInternalState, IndividualTransferInternalState } from '../..';
+import { BulkBatchInternalState, BulkTransactionInternalState, IndividualTransferInternalState } from '../..';
 // import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 export async function handleProcessBulkQuotesCallbackMessage(
@@ -55,10 +55,10 @@ export async function handleProcessBulkQuotesCallbackMessage(
         // if(bulkQuotesResult.currentState && bulkQuotesResult.currentState === 'COMPLETED') {
         if(bulkQuotesResult.individualQuoteResults.length > 0) {
             bulkBatch.setState(BulkBatchInternalState.AGREEMENT_SUCCESS);
-            // TODO: Update the success count here
+            bulkTransactionAgg.incrementBulkQuotesSuccessCount();
         } else {
             bulkBatch.setState(BulkBatchInternalState.AGREEMENT_FAILED);
-            // TODO: Update the failed count here
+            bulkTransactionAgg.incrementBulkQuotesFailedCount();
         }
         bulkBatch.setBulkQuotesResponse(bulkQuotesResult);
         await bulkTransactionAgg.setBulkBatchById(bulkBatch.id, bulkBatch);
@@ -66,7 +66,7 @@ export async function handleProcessBulkQuotesCallbackMessage(
 
         // Iterate through items in batch and update the individual states
         for await(const quoteResult of bulkQuotesResult.individualQuoteResults) {
-            // TODO: quoteId should be required feild in the quoteResponse. But it is optional now, so if it is empty we are ignoring the result for now
+            // TODO: quoteId should be required field in the quoteResponse. But it is optional now, so if it is empty we are ignoring the result for now
             if (quoteResult.quoteId) {
                 const individualTransferId = bulkBatch.getReferenceIdForQuoteId(quoteResult.quoteId);
                 const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
@@ -76,8 +76,8 @@ export async function handleProcessBulkQuotesCallbackMessage(
             }
         }
 
-        const msg = new BulkQuotesProcessedMessage({
-            bulkId: processBulkQuotesCallbackMessage.getKey(),
+        const msg = new BulkQuotesCallbackProcessedMessage({
+            bulkId: bulkTransactionAgg.bulkId,
             content: {
                 batchId: bulkBatch.id
             },
@@ -85,6 +85,26 @@ export async function handleProcessBulkQuotesCallbackMessage(
             headers: [],
         });
         await options.domainProducer.sendDomainMessage(msg);
+
+        // Check the status of the remaining items in the bulk
+        const bulkQuotesTotalCount = await bulkTransactionAgg.getBulkQuotesTotalCount();
+        const bulkQuotesSuccessCount = await bulkTransactionAgg.getBulkQuotesSuccessCount();
+        const bulkQuotesFailedCount = await bulkTransactionAgg.getBulkQuotesFailedCount();
+        if (bulkQuotesTotalCount <= (bulkQuotesSuccessCount + bulkQuotesFailedCount)) {
+            // Update global state "AGREEMENT_COMPLETED"
+            bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.AGREEMENT_COMPLETED)
+    
+            // Send the domain message SDKOutboundBulkQuotesRequestProcessed
+            const msg = new SDKOutboundBulkQuotesRequestProcessedMessage({
+                bulkId: bulkTransactionAgg.bulkId,
+                timestamp: Date.now(),
+                headers: [],
+            });
+            await options.domainProducer.sendDomainMessage(msg);
+        }
+
+
+
 
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     } catch (err: any) {
