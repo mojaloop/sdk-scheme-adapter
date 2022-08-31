@@ -24,38 +24,38 @@
 
 'use strict';
 
-import { DomainEventMessage } from '../domain_event_message';
+import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 import { randomUUID } from 'crypto';
 
-export interface ISDKOutboundBulkRequestReceivedMessageData {
+export interface ISDKOutboundBulkRequestReceivedDmEvtData {
     bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
 
-export class SDKOutboundBulkRequestReceivedMessage extends DomainEventMessage {
-    constructor(data: ISDKOutboundBulkRequestReceivedMessageData) {
+export class SDKOutboundBulkRequestReceivedDmEvt extends DomainEvent {
+    constructor(data: ISDKOutboundBulkRequestReceivedDmEvtData) {
     // // Calling Sample validation function
-    // SDKOutboundBulkRequestReceivedMessage.validateRequest(data.bulkRequest);
+    // SDKOutboundBulkRequestReceivedDmEvt.validateRequest(data.bulkRequest);
         super({
             key: data.bulkRequest.bulkTransactionId || randomUUID(),
             content: data.bulkRequest,
             timestamp: data.timestamp,
             headers: data.headers,
-            name: SDKOutboundBulkRequestReceivedMessage.name,
+            name: SDKOutboundBulkRequestReceivedDmEvt.name,
         });
     }
 
-    static CreateFromDomainEventMessage(message: DomainEventMessage): SDKOutboundBulkRequestReceivedMessage {
+    static CreateFromDomainEvent(message: DomainEvent): SDKOutboundBulkRequestReceivedDmEvt {
         // Prepare Data
         const data = {
             bulkRequest: message.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest,
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
         };
-        return new SDKOutboundBulkRequestReceivedMessage(data);
+        return new SDKOutboundBulkRequestReceivedDmEvt(data);
     }
 
     getBulkRequest(): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest {

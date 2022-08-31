@@ -24,25 +24,26 @@
 
 'use strict';
 
-import { CommandEventMessage } from '../command_event_message';
+import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { IPartyResult } from '../../types';
+// import { v1_1 as FSPIOP } from '@mojaloop/api-snippets';
 
-export interface IProcessPartyInfoCallbackMessageData {
+export interface IPartyInfoCallbackProcessedDmEvtData {
     key: string;
-    partyResult: IPartyResult;
+    // partyResult: FSPIOP.Schemas.PartyResult;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
 
-export class ProcessPartyInfoCallbackMessage extends CommandEventMessage {
-    constructor(data: IProcessPartyInfoCallbackMessageData) {
+export class PartyInfoCallbackProcessedDmEvt extends DomainEvent {
+    constructor(data: IPartyInfoCallbackProcessedDmEvtData) {
         super({
             key: data.key,
-            content: data.partyResult,
+            // content: data.partyResult,
+            content: null,
             timestamp: data.timestamp,
             headers: data.headers,
-            name: ProcessPartyInfoCallbackMessage.name,
+            name: PartyInfoCallbackProcessedDmEvt.name,
         });
     }
 
@@ -54,16 +55,16 @@ export class ProcessPartyInfoCallbackMessage extends CommandEventMessage {
         return this.getKey().split('_')[1];
     }
 
-    static CreateFromCommandEventMessage(message: CommandEventMessage): ProcessPartyInfoCallbackMessage {
+    static CreateFromCommandEvent(message: DomainEvent): PartyInfoCallbackProcessedDmEvt {
         if((message.getContent() === null || typeof message.getContent() !== 'object')) {
             throw new Error('Content is in unknown format');
         }
-        const data: IProcessPartyInfoCallbackMessageData = {
+        const data: IPartyInfoCallbackProcessedDmEvtData = {
             key: message.getKey(),
-            partyResult: <IPartyResult>message.getContent(),
+            // partyResult: <FSPIOP.Schemas.PartyResult>message.getContent(),
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
         };
-        return new ProcessPartyInfoCallbackMessage(data);
+        return new PartyInfoCallbackProcessedDmEvt(data);
     }
 }

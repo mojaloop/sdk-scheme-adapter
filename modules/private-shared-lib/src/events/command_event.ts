@@ -25,36 +25,36 @@
 'use strict';
 
 import { IMessage } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { IEventMessageData, EventMessageType, BaseEventMessage, IEventMessageValue } from './base_event_message';
+import { IEventData, EventType, BaseEvent, IEventValue } from './base_event';
 
-export type IDomainEventMessageData = Omit<IEventMessageData, 'type'>;
+export type ICommandEventData = Omit<IEventData, 'type'>;
 
-export class DomainEventMessage extends BaseEventMessage {
+export class CommandEvent extends BaseEvent {
 
-    constructor(data: IDomainEventMessageData) {
+    constructor(data: ICommandEventData) {
         super({
             ...data,
-            type: EventMessageType.DOMAIN_EVENT,
+            type: EventType.COMMAND_EVENT,
         });
     }
 
-    static CreateFromIMessage(message: IMessage): DomainEventMessage {
+    static CreateFromIMessage(message: IMessage): CommandEvent {
     // Validate message
         this._validateMessage(message);
         // Prepare Data
         /* eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars */
         const { type, ...data } = super._prepareDataFromIMessage(message);
 
-        return new DomainEventMessage(data);
+        return new CommandEvent(data);
     }
 
     // Overriding the parent method and perform additional validations
     protected static _validateMessage(obj: IMessage): void {
         super._validateMessage(obj);
         // Additional validation here
-        const eventMessageValue = obj.value as IEventMessageValue;
-        if(eventMessageValue.eventMessageType !== EventMessageType.DOMAIN_EVENT) {
-            throw (new Error('.value.eventMessageName is not equal to DOMAIN_EVENT'));
+        const eventMessageValue = obj.value as IEventValue;
+        if(eventMessageValue.eventType !== EventType.COMMAND_EVENT) {
+            throw (new Error('.value.eventName is not equal to COMMAND_EVENT'));
         }
     }
 

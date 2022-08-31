@@ -26,27 +26,27 @@
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import {
-    CommandEventMessage,
-    ProcessSDKOutboundBulkPartyInfoRequestMessage,
-    PartyInfoRequestedMessage,
+    CommandEvent,
+    ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
+    PartyInfoRequestedDmEvt,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
 import { BulkTransactionInternalState } from '../..';
 import { IndividualTransferInternalState } from '../..';
 
-export async function handleProcessSDKOutboundBulkPartyInfoRequestMessage(
-    message: CommandEventMessage,
+export async function handleProcessSDKOutboundBulkPartyInfoRequestCmdEvt(
+    message: CommandEvent,
     options: ICommandEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
-    const processSDKOutboundBulkPartyInfoRequestMessage = message as ProcessSDKOutboundBulkPartyInfoRequestMessage;
+    const processSDKOutboundBulkPartyInfoRequest = message as ProcessSDKOutboundBulkPartyInfoRequestCmdEvt;
     try {
-        logger.info(`Got ProcessSDKOutboundBulkPartyInfoRequestMessage: bulkId=${processSDKOutboundBulkPartyInfoRequestMessage.getKey()}`);
+        logger.info(`Got ProcessSDKOutboundBulkPartyInfoRequestCmdEvt: bulkId=${processSDKOutboundBulkPartyInfoRequest.getKey()}`);
 
         // Create aggregate
         const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRepo(
-            processSDKOutboundBulkPartyInfoRequestMessage.getKey(),
+            processSDKOutboundBulkPartyInfoRequest.getKey(),
             options.bulkTransactionEntityRepo,
             logger,
         );
@@ -78,7 +78,7 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestMessage(
             }
 
             const subId = partyIdInfo.partySubIdOrType ? `/${partyIdInfo.partySubIdOrType}` : '';
-            const msg = new PartyInfoRequestedMessage({
+            const msg = new PartyInfoRequestedDmEvt({
                 bulkId: bulkTx.id,
                 transferId: individualTransfer.id,
                 timestamp: Date.now(),

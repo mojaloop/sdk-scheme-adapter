@@ -33,17 +33,17 @@
 import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 import {
-  IPartyInfoCallbackReceivedMessageData,
-  PartyInfoCallbackReceivedMessage,
+  IPartyInfoCallbackReceivedDmEvtData,
+  PartyInfoCallbackReceivedDmEvt,
 } from "@mojaloop/sdk-scheme-adapter-private-shared-lib"
 import { randomUUID } from "crypto";
 
-describe('PartyInfoCallbackReceivedMessage', () => {
+describe('PartyInfoCallbackReceivedDmEvt', () => {
   const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion');
 
-  let samplePartyInfoCallbackReceivedMessageData: IPartyInfoCallbackReceivedMessageData;
+  let samplePartyInfoCallbackReceivedMessageData: IPartyInfoCallbackReceivedDmEvtData;
   let key: string;
-  let partyInfoCallbackReceivedMessage: PartyInfoCallbackReceivedMessage;
+  let partyInfoCallbackReceivedMessage: PartyInfoCallbackReceivedDmEvt;
   let bulkId: string;
   let transferId: string;
 
@@ -54,25 +54,27 @@ describe('PartyInfoCallbackReceivedMessage', () => {
     samplePartyInfoCallbackReceivedMessageData = {
       key,
       partyResult: {
-        partyId: {
-          partyIdType: "MSISDN",
-          partyIdentifier: "16135551212",
-          partySubIdOrType: "string",
-          fspId: "string",
-          extensionList: {
-            extension: [
-              {
-                key: "string",
-                value: "string"
+          party: {
+              partyIdInfo: {
+                  partyIdType: "MSISDN",
+                  partyIdentifier: "16135551212",
+                  partySubIdOrType: "string",
+                  fspId: "string",
+                  extensionList: {
+                      extension: [
+                          {
+                              key: "string",
+                              value: "string"
+                          }
+                      ]
+                  }
               }
-            ]
-          }
-        }
+          },
       },
       timestamp: Date.now(),
       headers: [],
     }
-    partyInfoCallbackReceivedMessage = new PartyInfoCallbackReceivedMessage(samplePartyInfoCallbackReceivedMessageData)
+    partyInfoCallbackReceivedMessage = new PartyInfoCallbackReceivedDmEvt(samplePartyInfoCallbackReceivedMessageData)
   })
 
   test('getBulkId', async () => {

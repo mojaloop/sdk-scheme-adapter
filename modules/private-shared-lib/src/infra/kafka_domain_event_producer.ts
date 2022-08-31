@@ -31,7 +31,7 @@
 import { MLKafkaProducerOptions } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib';
 import { KafkaEventProducer } from './kafka_event_producer';
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { DomainEventMessage }  from '../events';
+import { DomainEvent }  from '../events';
 import { IMessage } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 import { IDomainEventProducer, IKafkaEventProducerOptions } from '../types';
 
@@ -51,7 +51,7 @@ export class KafkaDomainEventProducer extends KafkaEventProducer implements IDom
         this._topic = producerOptions.topic;
     }
 
-    async sendDomainMessage(domainEventMessage: DomainEventMessage) {
+    async sendDomainMessage(domainEventMessage: DomainEvent) {
         const message: IMessage = domainEventMessage.toIMessage(this._topic);
         await super.send(message);
     }

@@ -28,6 +28,7 @@ import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
+<<<<<<< HEAD
 import { CommandEventMessage, ICommandEventMessageData, DomainEventMessage,
          KafkaCommandEventProducer, IKafkaEventProducerOptions, KafkaDomainEventConsumer, IKafkaEventConsumerOptions,
          ProcessSDKOutboundBulkRequestMessage,
@@ -38,6 +39,18 @@ import { CommandEventMessage, ICommandEventMessageData, DomainEventMessage,
          IProcessPartyInfoCallbackMessageData,
          IProcessSDKOutboundBulkPartyInfoRequestMessageData,
          IProcessSDKOutboundBulkPartyInfoRequestCompleteMessageData} from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+=======
+import { CommandEvent, ICommandEventData, DomainEvent,
+         KafkaCommandEventProducer, IKafkaEventProducerOptions, KafkaDomainEventConsumer, IKafkaEventConsumerOptions,
+         ProcessSDKOutboundBulkRequestCmdEvt,
+         ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt,
+         ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
+         ProcessPartyInfoCallbackCmdEvt,
+         IProcessSDKOutboundBulkRequestCmdEvtData,
+         IProcessPartyInfoCallbackCmdEvtData,
+         IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData,
+         IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData} from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+>>>>>>> mvp/bulk-sdk
 import { randomUUID } from "crypto";
 import { RedisBulkTransactionStateRepo, IRedisBulkTransactionStateRepoOptions } from '../../../src/infrastructure/redis_bulk_transaction_repo'
 
@@ -58,8 +71,8 @@ const domainEventConsumerOptions: IKafkaEventConsumerOptions = {
   topics: ['topic-sdk-outbound-domain-events'],
   groupId: "domain_events_consumer_client_id"
 }
-var domainEvents: Array<DomainEventMessage> = []
-const _messageHandler = async (message: DomainEventMessage): Promise<void>  => {
+var domainEvents: Array<DomainEvent> = []
+const _messageHandler = async (message: DomainEvent): Promise<void>  => {
   console.log('Domain Message: ', message);
   domainEvents.push(message);
 }
@@ -144,12 +157,12 @@ describe("Tests for Outbound Command Event Handler", () => {
           }
         ]
       }
-    const sampleCommandEventMessageData: IProcessSDKOutboundBulkRequestMessageData = {
+    const sampleCommandEventMessageData: IProcessSDKOutboundBulkRequestCmdEvtData = {
       bulkRequest,
       timestamp: Date.now(),
       headers: []
     }
-    const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestMessage(sampleCommandEventMessageData);
+    const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventMessageData);
     await producer.sendCommandMessage(processSDKOutboundBulkRequestMessageObj);
 
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -165,7 +178,11 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[1])).state).toBe('RECEIVED');
 
     // Check domain events published to kafka
+<<<<<<< HEAD
     expect(domainEvents[0].getName()).toBe('SDKOutboundBulkPartyInfoRequestedMessage')
+=======
+    expect(domainEvents[0].getName()).toBe('SDKOutboundBulkPartyInfoRequestedDmEvt')
+>>>>>>> mvp/bulk-sdk
     // TODO Add asserts to check data contents of the domain event published to kafka
 
   });
@@ -230,21 +247,21 @@ describe("Tests for Outbound Command Event Handler", () => {
       ]
     }
 
-    const sampleCommandEventMessageData: IProcessSDKOutboundBulkRequestMessageData = {
+    const sampleCommandEventMessageData: IProcessSDKOutboundBulkRequestCmdEvtData = {
       bulkRequest,
       timestamp: Date.now(),
       headers: []
     }
-    const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestMessage(sampleCommandEventMessageData);
+    const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventMessageData);
     await producer.sendCommandMessage(processSDKOutboundBulkRequestMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    const bulkPartyInfoRequestCommandEventMessageData: IProcessSDKOutboundBulkPartyInfoRequestMessageData = {
+    const bulkPartyInfoRequestCommandEventMessageData: IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData = {
       bulkId: bulkTransactionId,
       timestamp: Date.now(),
       headers: []
     }
-    const bulkPartyInfoRequestCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestMessage(bulkPartyInfoRequestCommandEventMessageData);
+    const bulkPartyInfoRequestCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCmdEvt(bulkPartyInfoRequestCommandEventMessageData);
     await producer.sendCommandMessage(bulkPartyInfoRequestCommandEventObj);
 
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -260,12 +277,21 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[1])).state).toBe('DISCOVERY_PROCESSING');
 
     // Check domain events published to kafka
+<<<<<<< HEAD
     const filteredEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequestedMessage');
     expect(filteredEvents.length).toBe(2);
     // Check the data contents for domain event
     expect(filteredEvents[0].getName()).toBe('PartyInfoRequestedMessage');
     expect(JSON.parse(JSON.stringify(filteredEvents[0].getContent())).path).not.toContain('undefined');
     expect(filteredEvents[1].getName()).toBe('PartyInfoRequestedMessage');
+=======
+    const filteredEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequestedDmEvt');
+    expect(filteredEvents.length).toBe(2);
+    // Check the data contents for domain event
+    expect(filteredEvents[0].getName()).toBe('PartyInfoRequestedDmEvt');
+    expect(JSON.parse(JSON.stringify(filteredEvents[0].getContent())).path).not.toContain('undefined');
+    expect(filteredEvents[1].getName()).toBe('PartyInfoRequestedDmEvt');
+>>>>>>> mvp/bulk-sdk
     expect(JSON.parse(JSON.stringify(filteredEvents[1].getContent())).path).not.toContain('undefined');
 
 
@@ -319,21 +345,21 @@ describe("Tests for Outbound Command Event Handler", () => {
           }
         ]
     }
-    const sampleCommandEventMessageData: IProcessSDKOutboundBulkRequestMessageData = {
+    const sampleCommandEventMessageData: IProcessSDKOutboundBulkRequestCmdEvtData = {
       bulkRequest,
       timestamp: Date.now(),
       headers: []
     }
-    const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestMessage(sampleCommandEventMessageData);
+    const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventMessageData);
     await producer.sendCommandMessage(processSDKOutboundBulkRequestMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    const bulkPartyInfoRequestCommandEventMessageData: IProcessSDKOutboundBulkPartyInfoRequestMessageData = {
+    const bulkPartyInfoRequestCommandEventMessageData: IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData = {
       bulkId: bulkTransactionId,
       timestamp: Date.now(),
       headers: []
     }
-    const bulkPartyInfoRequestCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestMessage(bulkPartyInfoRequestCommandEventMessageData);
+    const bulkPartyInfoRequestCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCmdEvt(bulkPartyInfoRequestCommandEventMessageData);
     await producer.sendCommandMessage(bulkPartyInfoRequestCommandEventObj);
 
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -347,8 +373,12 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect(individualTransfers.length).toBe(1);
     expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[0])).state).toBe('DISCOVERY_SUCCESS');
 
+<<<<<<< HEAD
+=======
+    const filteredEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequestedDmEvt');
+>>>>>>> mvp/bulk-sdk
     // Check domain events published to kafka
-    expect(domainEvents.length).toBe(0)
+    expect(filteredEvents.length).toBe(0)
     //TODO Add asserts to check data contents of the domain event published to kafka
   });
 
@@ -398,30 +428,36 @@ describe("Tests for Outbound Command Event Handler", () => {
           }
         ]
     }
-    const sampleCommandEventMessageData: IProcessSDKOutboundBulkRequestMessageData = {
+    const sampleCommandEventMessageData: IProcessSDKOutboundBulkRequestCmdEvtData = {
       bulkRequest,
       timestamp: Date.now(),
       headers: []
     }
-    const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestMessage(sampleCommandEventMessageData);
+    const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventMessageData);
     await producer.sendCommandMessage(processSDKOutboundBulkRequestMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    const bulkPartyInfoRequestCommandEventMessageData: IProcessSDKOutboundBulkPartyInfoRequestMessageData = {
+    const bulkPartyInfoRequestCommandEventMessageData: IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData = {
       bulkId: bulkTransactionId,
       timestamp: Date.now(),
       headers: []
     }
-    const bulkPartyInfoRequestCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestMessage(bulkPartyInfoRequestCommandEventMessageData);
+    const bulkPartyInfoRequestCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCmdEvt(bulkPartyInfoRequestCommandEventMessageData);
     await producer.sendCommandMessage(bulkPartyInfoRequestCommandEventObj);
 
     await new Promise(resolve => setTimeout(resolve, 1000));
     // Check the state in Redis
     console.log('bulk id: ', bulkTransactionId);
 
+<<<<<<< HEAD
     const partyInfoRequestedDomainEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequestedMessage');
 
     const processPartyInfoCallbackMessageData: IProcessPartyInfoCallbackMessageData = {
+=======
+    const partyInfoRequestedDomainEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequestedDmEvt');
+
+    const processPartyInfoCallbackMessageData: IProcessPartyInfoCallbackCmdEvtData = {
+>>>>>>> mvp/bulk-sdk
       key: partyInfoRequestedDomainEvents[0].getKey(),
       partyResult: {
           party: {
@@ -435,7 +471,7 @@ describe("Tests for Outbound Command Event Handler", () => {
       timestamp: Date.now(),
       headers: []
     }
-    const processPartyInfoCallbackMessageObj = new ProcessPartyInfoCallbackMessage(processPartyInfoCallbackMessageData);
+    const processPartyInfoCallbackMessageObj = new ProcessPartyInfoCallbackCmdEvt(processPartyInfoCallbackMessageData);
     await producer.sendCommandMessage(processPartyInfoCallbackMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -448,7 +484,11 @@ describe("Tests for Outbound Command Event Handler", () => {
 
 
     // // Check domain events published to kafka
+<<<<<<< HEAD
     expect(domainEvents[2].getName()).toBe('PartyInfoCallbackProcessedMessage');
+=======
+    expect(domainEvents[2].getName()).toBe('PartyInfoCallbackProcessedDmEvt');
+>>>>>>> mvp/bulk-sdk
     // //TODO Add asserts to check data contents of the domain event published to kafka
   });
 
@@ -498,30 +538,34 @@ describe("Tests for Outbound Command Event Handler", () => {
           }
         ]
     }
-    const sampleCommandEventMessageData: IProcessSDKOutboundBulkRequestMessageData = {
+    const sampleCommandEventMessageData: IProcessSDKOutboundBulkRequestCmdEvtData = {
       bulkRequest,
       timestamp: Date.now(),
       headers: []
     }
-    const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestMessage(sampleCommandEventMessageData);
+    const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventMessageData);
     await producer.sendCommandMessage(processSDKOutboundBulkRequestMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    const bulkPartyInfoRequestCommandEventMessageData: IProcessSDKOutboundBulkPartyInfoRequestMessageData = {
+    const bulkPartyInfoRequestCommandEventMessageData: IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData = {
       bulkId: bulkTransactionId,
       timestamp: Date.now(),
       headers: []
     }
-    const bulkPartyInfoRequestCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestMessage(bulkPartyInfoRequestCommandEventMessageData);
+    const bulkPartyInfoRequestCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCmdEvt(bulkPartyInfoRequestCommandEventMessageData);
     await producer.sendCommandMessage(bulkPartyInfoRequestCommandEventObj);
 
     await new Promise(resolve => setTimeout(resolve, 1000));
     // Check the state in Redis
     console.log('bulk id: ', bulkTransactionId);
 
+<<<<<<< HEAD
     const partyInfoRequestedDomainEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequestedMessage');
+=======
+    const partyInfoRequestedDomainEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequestedDmEvt');
+>>>>>>> mvp/bulk-sdk
 
-    const processPartyInfoCallbackMessageData: IProcessPartyInfoCallbackMessageData = {
+    const processPartyInfoCallbackMessageData: IProcessPartyInfoCallbackCmdEvtData = {
       key: partyInfoRequestedDomainEvents[0].getKey(),
         partyResult: {
             party: {
@@ -538,7 +582,7 @@ describe("Tests for Outbound Command Event Handler", () => {
       timestamp: Date.now(),
       headers: []
     }
-    const processPartyInfoCallbackMessageObj = new ProcessPartyInfoCallbackMessage(processPartyInfoCallbackMessageData);
+    const processPartyInfoCallbackMessageObj = new ProcessPartyInfoCallbackCmdEvt(processPartyInfoCallbackMessageData);
     await producer.sendCommandMessage(processPartyInfoCallbackMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -551,7 +595,11 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect(individualTransferData.partyResponse?.errorInformation?.errorDescription).toBe('ID Not Found');
 
     // // Check domain events published to kafka
+<<<<<<< HEAD
     expect(domainEvents[2].getName()).toBe('PartyInfoCallbackProcessedMessage')
+=======
+    expect(domainEvents[2].getName()).toBe('PartyInfoCallbackProcessedDmEvt')
+>>>>>>> mvp/bulk-sdk
   });
 
   //This test is skipped because of open bug https://github.com/mojaloop/project/issues/2893
@@ -566,7 +614,7 @@ describe("Tests for Outbound Command Event Handler", () => {
         options: {
           onlyValidateParty: true,
           autoAcceptParty: {
-            enabled: false
+            enabled: true
           },
           autoAcceptQuote: {
             enabled: true,
@@ -597,22 +645,22 @@ describe("Tests for Outbound Command Event Handler", () => {
           }
         ]
     }
-    const sampleCommandEventMessageData: IProcessSDKOutboundBulkRequestMessageData = {
+    const sampleCommandEventMessageData: IProcessSDKOutboundBulkRequestCmdEvtData = {
       bulkRequest,
       timestamp: Date.now(),
       headers: []
     }
-    const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestMessage(sampleCommandEventMessageData);
+    const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventMessageData);
     await producer.sendCommandMessage(processSDKOutboundBulkRequestMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     // Command event for bulk party info request completed
-    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageData : IProcessSDKOutboundBulkPartyInfoRequestCompleteMessageData = {
+    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageData : IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData = {
       bulkId: bulkTransactionId,
       timestamp: Date.now(),
       headers: []
     }
-    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageObj = new ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageData);
+    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageObj = new ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageData);
     await producer.sendCommandMessage(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -622,7 +670,10 @@ describe("Tests for Outbound Command Event Handler", () => {
 
   });
 
+<<<<<<< HEAD
   // Resolved - This test is skipped because of open bug https://github.com/mojaloop/project/issues/2875
+=======
+>>>>>>> mvp/bulk-sdk
   test("7. Given autoAcceptParty setting is set to false \
                 When inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
         Then outbound event SDKOutboundBulkAcceptPartyInfoRequested should be published \
@@ -667,22 +718,22 @@ describe("Tests for Outbound Command Event Handler", () => {
           }
         ]
     }
-    const sampleCommandEventMessageData: IProcessSDKOutboundBulkRequestMessageData = {
+    const sampleCommandEventMessageData: IProcessSDKOutboundBulkRequestCmdEvtData = {
       bulkRequest,
       timestamp: Date.now(),
       headers: []
     }
-    const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestMessage(sampleCommandEventMessageData);
+    const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventMessageData);
     await producer.sendCommandMessage(processSDKOutboundBulkRequestMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     // Command event for bulk party info request completed
-    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageData : IProcessSDKOutboundBulkPartyInfoRequestCompleteMessageData = {
+    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageData : IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData = {
       bulkId: bulkTransactionId,
       timestamp: Date.now(),
       headers: []
     }
-    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageObj = new ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageData);
+    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageObj = new ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageData);
     await producer.sendCommandMessage(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -691,7 +742,12 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect(bulkState.state).toBe('DISCOVERY_ACCEPTANCE_PENDING');
 
     // Check domain events published to kafka
+<<<<<<< HEAD
     expect(domainEvents[1].getName()).toBe('SDKOutboundBulkAcceptPartyInfoRequestedMessage')
+=======
+    const hasAcceptPartyEvent = (domainEvents.find((e) => e.getName() === 'SDKOutboundBulkAcceptPartyInfoRequestedDmEvt'));
+    expect(hasAcceptPartyEvent).toBeTruthy();
+>>>>>>> mvp/bulk-sdk
   });
 
   // Functionality for this feature is not completed yet. Waiting on development to be complete
@@ -738,22 +794,22 @@ describe("Tests for Outbound Command Event Handler", () => {
           }
         ]
     }
-    const sampleCommandEventMessageData: IProcessSDKOutboundBulkRequestMessageData = {
+    const sampleCommandEventMessageData: IProcessSDKOutboundBulkRequestCmdEvtData = {
       bulkRequest,
       timestamp: Date.now(),
       headers: []
     }
-    const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestMessage(sampleCommandEventMessageData);
+    const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventMessageData);
     await producer.sendCommandMessage(processSDKOutboundBulkRequestMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     // Command event for bulk party info request completed
-    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageData : IProcessSDKOutboundBulkPartyInfoRequestCompleteMessageData = {
+    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageData : IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData = {
       bulkId: bulkTransactionId,
       timestamp: Date.now(),
       headers: []
     }
-    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageObj = new ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageData);
+    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageObj = new ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageData);
     await producer.sendCommandMessage(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -762,16 +818,23 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect(bulkState.state).toBe('DISCOVERY_COMPLETED');
 
     // Check domain events published to kafka
+<<<<<<< HEAD
     expect(domainEvents[2].getName()).toBe('SDKOutboundBulkAcceptPartyInfoRequested')
   });
 
   // Functionality for this feature is not completed yet. Waiting on development to be complete
+=======
+    const hasAcceptPartyEvent = (domainEvents.find((e) => e.getName() === 'SDKOutboundBulkAutoAcceptPartyInfoRequestedDmEvt'));
+    expect(hasAcceptPartyEvent).toBeTruthy();
+  });
+
+>>>>>>> mvp/bulk-sdk
   test.skip("9. Given inbound command event ProcessSDKOutboundBulkAcceptPartyInfo is received \
         Then the logic should loop through individual transfer in the bulk request \
           And update the individual transfer state to DISCOVERY_ACCEPTED or DISCOVERY_REJECTED based on the value in the incoming event \
           And update the overall global state to DISCOVERY_ACCEPTANCE_COMPLETED \
           And outbound event SDKOutboundBulkAcceptPartyInfoProcessed should be published", async () => {
-    
+
       //Publish initial message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
     const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
@@ -811,22 +874,22 @@ describe("Tests for Outbound Command Event Handler", () => {
           }
         ]
     }
-    const sampleCommandEventMessageData: IProcessSDKOutboundBulkRequestMessageData = {
+    const sampleCommandEventMessageData: IProcessSDKOutboundBulkRequestCmdEvtData = {
       bulkRequest,
       timestamp: Date.now(),
       headers: []
     }
-    const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestMessage(sampleCommandEventMessageData);
+    const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventMessageData);
     await producer.sendCommandMessage(processSDKOutboundBulkRequestMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     // Command event for bulk party info request completed
-    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageData : IProcessSDKOutboundBulkPartyInfoRequestCompleteMessageData = {
+    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageData : IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData = {
       bulkId: bulkTransactionId,
       timestamp: Date.now(),
       headers: []
     }
-    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageObj = new ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageData);
+    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageObj = new ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageData);
     await producer.sendCommandMessage(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 

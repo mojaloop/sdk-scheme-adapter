@@ -24,30 +24,30 @@
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import {
-    DomainEventMessage,
-    ProcessSDKOutboundBulkPartyInfoRequestMessage,
-    IProcessSDKOutboundBulkPartyInfoRequestMessageData,
+    DomainEvent,
+    ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
+    IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { IDomainEventHandlerOptions } from '../../types';
-import { SDKOutboundBulkPartyInfoRequestedMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { SDKOutboundBulkPartyInfoRequestedDmEvt } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
 export async function handleSDKOutboundBulkPartyInfoRequested(
-    message: DomainEventMessage,
+    message: DomainEvent,
     options: IDomainEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
-    const sdkOutboundBulkPartyInfoRequestedMessage
-        = SDKOutboundBulkPartyInfoRequestedMessage.CreateFromCommandEventMessage(message);
+    const sdkOutboundBulkPartyInfoRequested
+        = SDKOutboundBulkPartyInfoRequestedDmEvt.CreateFromCommandEvent(message);
 
     try {
-        const processSDKOutboundBulkPartyInfoRequestMessageData: IProcessSDKOutboundBulkPartyInfoRequestMessageData = {
-            bulkId: sdkOutboundBulkPartyInfoRequestedMessage.getKey(),
+        const processSDKOutboundBulkPartyInfoRequestMessageData: IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData = {
+            bulkId: sdkOutboundBulkPartyInfoRequested.getKey(),
             timestamp: Date.now(),
-            headers: sdkOutboundBulkPartyInfoRequestedMessage.getHeaders(),
+            headers: sdkOutboundBulkPartyInfoRequested.getHeaders(),
         };
 
         const processSDKOutboundBulkPartyInfoRequestMessage
-            = new ProcessSDKOutboundBulkPartyInfoRequestMessage(processSDKOutboundBulkPartyInfoRequestMessageData);
+            = new ProcessSDKOutboundBulkPartyInfoRequestCmdEvt(processSDKOutboundBulkPartyInfoRequestMessageData);
 
         await options.commandProducer.sendCommandMessage(processSDKOutboundBulkPartyInfoRequestMessage);
 

@@ -24,35 +24,47 @@
 
 'use strict';
 
-import { DomainEventMessage } from '../domain_event_message';
+import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 
-export interface ISDKOutboundBulkPartyInfoRequestedMessageData {
+export interface IPartyInfoRequestedDmEvtData {
     bulkId: string;
+    transferId: string;
+    // TODO: FSPIOP in api-snippets should export the `PartiesByTypeAndID` schema and refer that in the following line
+    request: any;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
 
-export class SDKOutboundBulkPartyInfoRequestedMessage extends DomainEventMessage {
-    constructor(data: ISDKOutboundBulkPartyInfoRequestedMessageData) {
+export class PartyInfoRequestedDmEvt extends DomainEvent {
+    constructor(data: IPartyInfoRequestedDmEvtData) {
         super({
-            key: data.bulkId,
+            key: `${data.bulkId}_${data.transferId}`,
+            content: data.request,
             timestamp: data.timestamp,
             headers: data.headers,
-            content: null,
-            name: SDKOutboundBulkPartyInfoRequestedMessage.name,
+            name: PartyInfoRequestedDmEvt.name,
         });
     }
 
-    static CreateFromCommandEventMessage(message: DomainEventMessage): SDKOutboundBulkPartyInfoRequestedMessage {
-        if((message.getKey() === null || typeof message.getKey() !== 'string')) {
-            throw new Error('Bulk id is in unknown format');
-        }
-        const data: ISDKOutboundBulkPartyInfoRequestedMessageData = {
-            timestamp: message.getTimeStamp(),
-            headers: message.getHeaders(),
-            bulkId: message.getKey(),
-        };
-        return new SDKOutboundBulkPartyInfoRequestedMessage(data);
+    getBulkId() {
+        return this.getKey().split('_')[0];
     }
+
+    getTransferId() {
+        return this.getKey().split('_')[1];
+    }
+
+    // For SDK outbound API
+    // static CreateFromDomainEvent(message: DomainEvent): PartyInfoRequestedDmEvt {
+    //     if((message.getContent() === null || typeof message.getContent() !== 'object')) {
+    //         throw new Error('Content is in unknown format');
+    //     }
+    //     const data: IPartyInfoRequestedDmEvtData = {
+    //         request: <PartyInfoRequestedState>message.getContent(),
+    //         timestamp: message.getTimeStamp(),
+    //         headers: message.getHeaders(),
+    //     };
+    //     return new PartyInfoRequestedDmEvt(data);
+    // }
 }

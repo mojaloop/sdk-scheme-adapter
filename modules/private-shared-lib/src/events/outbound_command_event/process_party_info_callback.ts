@@ -18,44 +18,52 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Modusbox
- - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
+ - Yevhen Kyriukha <yevhen.kyriukha@modusbox.com>
  --------------
  ******/
 
 'use strict';
 
-import { IMessage } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { IEventMessageData, EventMessageType, BaseEventMessage, IEventMessageValue } from './base_event_message';
+import { CommandEvent } from '../command_event';
+import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+import { IPartyResult } from '../../types';
 
-export type ICommandEventMessageData = Omit<IEventMessageData, 'type'>;
+export interface IProcessPartyInfoCallbackCmdEvtData {
+    key: string;
+    partyResult: IPartyResult;
+    timestamp: number | null;
+    headers: IMessageHeader[] | null;
+}
 
-export class CommandEventMessage extends BaseEventMessage {
-
-    constructor(data: ICommandEventMessageData) {
+export class ProcessPartyInfoCallbackCmdEvt extends CommandEvent {
+    constructor(data: IProcessPartyInfoCallbackCmdEvtData) {
         super({
-            ...data,
-            type: EventMessageType.COMMAND_EVENT,
+            key: data.key,
+            content: data.partyResult,
+            timestamp: data.timestamp,
+            headers: data.headers,
+            name: ProcessPartyInfoCallbackCmdEvt.name,
         });
     }
 
-    static CreateFromIMessage(message: IMessage): CommandEventMessage {
-    // Validate message
-        this._validateMessage(message);
-        // Prepare Data
-        /* eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars */
-        const { type, ...data } = super._prepareDataFromIMessage(message);
-    
-        return new CommandEventMessage(data);
+    getBulkId() {
+        return this.getKey().split('_')[0];
     }
 
-    // Overriding the parent method and perform additional validations
-    protected static _validateMessage(obj: IMessage): void {
-        super._validateMessage(obj);
-        // Additional validation here
-        const eventMessageValue = obj.value as IEventMessageValue;
-        if(eventMessageValue.eventMessageType !== EventMessageType.COMMAND_EVENT) {
-            throw (new Error('.value.eventMessageName is not equal to COMMAND_EVENT'));
+    getTransferId() {
+        return this.getKey().split('_')[1];
+    }
+
+    static CreateFromCommandEvent(message: CommandEvent): ProcessPartyInfoCallbackCmdEvt {
+        if((message.getContent() === null || typeof message.getContent() !== 'object')) {
+            throw new Error('Content is in unknown format');
         }
+        const data: IProcessPartyInfoCallbackCmdEvtData = {
+            key: message.getKey(),
+            partyResult: <IPartyResult>message.getContent(),
+            timestamp: message.getTimeStamp(),
+            headers: message.getHeaders(),
+        };
+        return new ProcessPartyInfoCallbackCmdEvt(data);
     }
-
 }

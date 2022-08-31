@@ -24,47 +24,35 @@
 
 'use strict';
 
-import { DomainEventMessage } from '../domain_event_message';
+import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-// import { v1_1 as FSPIOP } from '@mojaloop/api-snippets';
 
-export interface IPartyInfoCallbackProcessedMessageData {
-    key: string;
-    // partyResult: FSPIOP.Schemas.PartyResult;
+export interface ISDKOutboundBulkPartyInfoRequestedDmEvtData {
+    bulkId: string;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
 
-export class PartyInfoCallbackProcessedMessage extends DomainEventMessage {
-    constructor(data: IPartyInfoCallbackProcessedMessageData) {
+export class SDKOutboundBulkPartyInfoRequestedDmEvt extends DomainEvent {
+    constructor(data: ISDKOutboundBulkPartyInfoRequestedDmEvtData) {
         super({
-            key: data.key,
-            // content: data.partyResult,
-            content: null,
+            key: data.bulkId,
             timestamp: data.timestamp,
             headers: data.headers,
-            name: PartyInfoCallbackProcessedMessage.name,
+            content: null,
+            name: SDKOutboundBulkPartyInfoRequestedDmEvt.name,
         });
     }
 
-    getBulkId() {
-        return this.getKey().split('_')[0];
-    }
-
-    getTransferId() {
-        return this.getKey().split('_')[1];
-    }
-
-    static CreateFromCommandEventMessage(message: DomainEventMessage): PartyInfoCallbackProcessedMessage {
-        if((message.getContent() === null || typeof message.getContent() !== 'object')) {
-            throw new Error('Content is in unknown format');
+    static CreateFromCommandEvent(message: DomainEvent): SDKOutboundBulkPartyInfoRequestedDmEvt {
+        if((message.getKey() === null || typeof message.getKey() !== 'string')) {
+            throw new Error('Bulk id is in unknown format');
         }
-        const data: IPartyInfoCallbackProcessedMessageData = {
-            key: message.getKey(),
-            // partyResult: <FSPIOP.Schemas.PartyResult>message.getContent(),
+        const data: ISDKOutboundBulkPartyInfoRequestedDmEvtData = {
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
+            bulkId: message.getKey(),
         };
-        return new PartyInfoCallbackProcessedMessage(data);
+        return new SDKOutboundBulkPartyInfoRequestedDmEvt(data);
     }
 }

@@ -29,7 +29,7 @@
 import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 
-import { DomainEventMessage, SDKOutboundBulkRequestReceivedMessage, IDomainEventMessageData } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+import { DomainEvent, SDKOutboundBulkRequestReceivedDmEvt, IDomainEventData } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 import { KafkaDomainEventProducer, IKafkaEventProducerOptions } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 
 const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
@@ -42,9 +42,9 @@ const producerOptions: IKafkaEventProducerOptions = {
 
 const producer = new KafkaDomainEventProducer(producerOptions, logger)
 
-const sampleDomainEventMessageData: IDomainEventMessageData = {
+const sampleDomainEventMessageData: IDomainEventData = {
   key: 'sample-key1',
-  name: SDKOutboundBulkRequestReceivedMessage.Name,
+  name: SDKOutboundBulkRequestReceivedDmEvt.name,
   content: {
     bulkHomeTransactionID: "string",
     bulkTransactionId: "b51ec534-ee48-4575-b6a9-ead2955b8069",
@@ -251,7 +251,7 @@ describe('First domain event', () => {
   });
 
   test('should publish a domain event', async () => {
-    const domainEventObj = new DomainEventMessage(sampleDomainEventMessageData);
+    const domainEventObj = new DomainEvent(sampleDomainEventMessageData);
     await producer.sendDomainMessage(domainEventObj);
     await expect(true)
   })
