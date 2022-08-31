@@ -25,29 +25,29 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { DomainEventMessage, IProcessSDKOutboundBulkQuotesRequestMessageData, ProcessSDKOutboundBulkQuotesRequestMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { DomainEvent, IProcessSDKOutboundBulkQuotesRequestCmdEvtData, ProcessSDKOutboundBulkQuotesRequestCmdEvt } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { IDomainEventHandlerOptions } from '../../types';
-import { SDKOutboundBulkAcceptPartyInfoProcessedMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { SDKOutboundBulkAcceptPartyInfoProcessedDmEvt } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
 export async function handleSDKOutboundBulkAcceptPartyInfoProcessed(
-    message: DomainEventMessage,
+    message: DomainEvent,
     options: IDomainEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
     const sDKOutboundBulkAcceptPartyInfoProcessedMessage
-        = SDKOutboundBulkAcceptPartyInfoProcessedMessage.CreateFromDomainEventMessage(message);
+        = SDKOutboundBulkAcceptPartyInfoProcessedDmEvt.CreateFromDomainEvent(message);
     try {
-        const processSDKOutboundBulkQuotesRequestMessageData: IProcessSDKOutboundBulkQuotesRequestMessageData = {
+        const processSDKOutboundBulkQuotesRequestMessageData: IProcessSDKOutboundBulkQuotesRequestCmdEvtData = {
             bulkId: sDKOutboundBulkAcceptPartyInfoProcessedMessage.getKey(),
             timestamp: Date.now(),
             headers: [],
         };
         const processSDKOutboundBulkQuotesRequestMessage
-            = new ProcessSDKOutboundBulkQuotesRequestMessage(processSDKOutboundBulkQuotesRequestMessageData);
+            = new ProcessSDKOutboundBulkQuotesRequestCmdEvt(processSDKOutboundBulkQuotesRequestMessageData);
         await options.commandProducer.sendCommandMessage(processSDKOutboundBulkQuotesRequestMessage);
         logger.info(`Sent command event ${processSDKOutboundBulkQuotesRequestMessage.getName()}`);
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     } catch (err: any) {
-        logger.info(`Failed to send ProcessSDKOutboundBulkQuotesRequestMessage event`);
+        logger.info(`Failed to send ProcessSDKOutboundBulkQuotesRequestCmdEvt event`);
     }
 }

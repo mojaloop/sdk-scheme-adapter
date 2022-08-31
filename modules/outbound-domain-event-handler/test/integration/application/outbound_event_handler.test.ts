@@ -42,7 +42,7 @@ const producerOptions: IKafkaEventProducerOptions = {
 
 const producer = new KafkaDomainEventProducer(producerOptions, logger)
 
-const sampleDomainEventMessageData: IDomainEventData = {
+const sampleDomainEventData: IDomainEventData = {
   key: 'sample-key1',
   name: SDKOutboundBulkRequestReceivedDmEvt.name,
   content: {
@@ -251,7 +251,7 @@ describe('First domain event', () => {
   });
 
   test('should publish a domain event', async () => {
-    const domainEventObj = new DomainEvent(sampleDomainEventMessageData);
+    const domainEventObj = new DomainEvent(sampleDomainEventData);
     await producer.sendDomainMessage(domainEventObj);
     await expect(true)
   })

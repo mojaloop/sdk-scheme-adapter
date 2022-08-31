@@ -24,7 +24,7 @@
 
 'use strict';
 
-import { DomainEventMessage } from '../domain_event_message';
+import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 
 export interface ISDKOutboundBulkQuotesRequestProcessedMessageData {
@@ -33,7 +33,7 @@ export interface ISDKOutboundBulkQuotesRequestProcessedMessageData {
     headers: IMessageHeader[] | null;
 }
 
-export class SDKOutboundBulkQuotesRequestProcessedMessage extends DomainEventMessage {
+export class SDKOutboundBulkQuotesRequestProcessedMessage extends DomainEvent {
     constructor(data: ISDKOutboundBulkQuotesRequestProcessedMessageData) {
         super({
             key: data.bulkId,
@@ -44,7 +44,7 @@ export class SDKOutboundBulkQuotesRequestProcessedMessage extends DomainEventMes
         });
     }
 
-    static CreateFromDomainEventMessage(message: DomainEventMessage): SDKOutboundBulkQuotesRequestProcessedMessage {
+    static CreateFromDomainEvent(message: DomainEvent): SDKOutboundBulkQuotesRequestProcessedMessage {
         if((message.getKey() === null || typeof message.getKey() !== 'string')) {
             throw new Error('Bulk id is in unknown format');
         }

@@ -26,8 +26,8 @@
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import {
-    CommandEventMessage,
-    ProcessSDKOutboundBulkQuotesRequestMessage,
+    CommandEvent,
+    ProcessSDKOutboundBulkQuotesRequestCmdEvt,
     BulkQuotesRequestedMessage
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
@@ -35,14 +35,14 @@ import { ICommandEventHandlerOptions } from '@module-types';
 import { BulkBatchInternalState, BulkTransactionInternalState } from '../..';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
-export async function handleProcessSDKOutboundBulkQuotesRequestMessage(
-    message: CommandEventMessage,
+export async function handleProcessSDKOutboundBulkQuotesRequestCmdEvt(
+    message: CommandEvent,
     options: ICommandEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
-    const processSDKOutboundBulkQuotesRequestMessage = message as ProcessSDKOutboundBulkQuotesRequestMessage;
+    const processSDKOutboundBulkQuotesRequestMessage = message as ProcessSDKOutboundBulkQuotesRequestCmdEvt;
     try {
-        logger.info(`Got ProcessSDKOutboundBulkQuotesRequestMessage: bulkId=${processSDKOutboundBulkQuotesRequestMessage.getKey()}`);
+        logger.info(`Got ProcessSDKOutboundBulkQuotesRequestCmdEvt: bulkId=${processSDKOutboundBulkQuotesRequestMessage.getKey()}`);
 
         // Create aggregate
         const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRepo(

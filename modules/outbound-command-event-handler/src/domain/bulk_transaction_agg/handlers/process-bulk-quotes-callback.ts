@@ -25,20 +25,20 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { CommandEventMessage, BulkQuotesCallbackProcessedMessage, ProcessBulkQuotesCallbackMessage, SDKOutboundBulkQuotesRequestProcessedMessage, SDKOutboundBulkAcceptQuoteRequestedMessage, CoreConnectorBulkAcceptQuoteRequestIndividualTransferResult } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { CommandEvent, BulkQuotesCallbackProcessedMessage, ProcessBulkQuotesCallbackCmdEvt, SDKOutboundBulkQuotesRequestProcessedMessage, SDKOutboundBulkAcceptQuoteRequestedMessage, CoreConnectorBulkAcceptQuoteRequestIndividualTransferResult } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
 import { BulkBatchInternalState, BulkTransactionInternalState, IndividualTransferInternalState } from '../..';
 // import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
-export async function handleProcessBulkQuotesCallbackMessage(
-    message: CommandEventMessage,
+export async function handleProcessBulkQuotesCallbackCmdEvt(
+    message: CommandEvent,
     options: ICommandEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
-    const processBulkQuotesCallbackMessage = message as ProcessBulkQuotesCallbackMessage;
+    const processBulkQuotesCallbackMessage = message as ProcessBulkQuotesCallbackCmdEvt;
     try {
-        logger.info(`Got ProcessBulkQuotesCallbackMessage: id=${processBulkQuotesCallbackMessage.getKey()}`);
+        logger.info(`Got ProcessBulkQuotesCallbackCmdEvt: id=${processBulkQuotesCallbackMessage.getKey()}`);
 
         // Create aggregate
         const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRepo(

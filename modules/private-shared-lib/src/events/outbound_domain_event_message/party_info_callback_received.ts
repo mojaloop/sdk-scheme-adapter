@@ -1,6 +1,6 @@
 'use strict';
 
-import { DomainEventMessage } from '../domain_event_message';
+import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
@@ -11,7 +11,7 @@ export interface IPartyInfoCallbackReceivedMessageData {
     headers: IMessageHeader[] | null;
 }
 
-export class PartyInfoCallbackReceivedMessage extends DomainEventMessage {
+export class PartyInfoCallbackReceivedMessage extends DomainEvent {
     constructor(data: IPartyInfoCallbackReceivedMessageData) {
         super({
             key: data.key,
@@ -34,7 +34,7 @@ export class PartyInfoCallbackReceivedMessage extends DomainEventMessage {
         return this.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse;
     }
 
-    static CreateFromDomainEventMessage(message: DomainEventMessage): PartyInfoCallbackReceivedMessage {
+    static CreateFromDomainEvent(message: DomainEvent): PartyInfoCallbackReceivedMessage {
         if((message.getContent() === null || typeof message.getContent() !== 'object')) {
             throw new Error('Content is in unknown format');
         }

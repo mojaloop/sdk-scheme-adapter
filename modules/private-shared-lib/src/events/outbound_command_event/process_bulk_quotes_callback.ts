@@ -24,42 +24,57 @@
 
 'use strict';
 
-import { DomainEventMessage } from '../domain_event_message';
+import { CommandEvent } from '../command_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
-export interface ISDKOutboundBulkAcceptPartyInfoReceivedMessageData {
-    bulkId: string;
-    bulkTransactionContinuationAcceptParty: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptParty;
+export interface IProcessBulkQuotesCallbackCmdEvtData {
+    key: string;
+    content: {
+        batchId: string;
+        bulkQuoteId: string;
+        bulkQuotesResult: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkQuoteResponse;
+    };
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
 
-export class SDKOutboundBulkAcceptPartyInfoReceivedMessage extends DomainEventMessage {
-
-    constructor(data: ISDKOutboundBulkAcceptPartyInfoReceivedMessageData) {
+export class ProcessBulkQuotesCallbackCmdEvt extends CommandEvent {
+    constructor(data: IProcessBulkQuotesCallbackCmdEvtData) {
         super({
-            key: data.bulkId,
-            content: data.bulkTransactionContinuationAcceptParty,
+            key: data.key,
+            content: data.content,
             timestamp: data.timestamp,
             headers: data.headers,
-            name: SDKOutboundBulkAcceptPartyInfoReceivedMessage.name,
+            name: ProcessBulkQuotesCallbackCmdEvt.name,
         });
     }
 
-    static CreateFromDomainEventMessage(message: DomainEventMessage): SDKOutboundBulkAcceptPartyInfoReceivedMessage {
-        // Prepare Data
-        const data = {
-            bulkId: message.getKey(),
-            bulkTransactionContinuationAcceptParty: message.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptParty,
+    static CreateFromCommandEvent(message: CommandEvent): ProcessBulkQuotesCallbackCmdEvt {
+        if((message.getContent() === null || typeof message.getContent() !== 'object')) {
+            throw new Error('Content is in unknown format');
+        }
+        const data: IProcessBulkQuotesCallbackCmdEvtData = {
+            key: message.getKey(),
+            content: message.getContent() as IProcessBulkQuotesCallbackCmdEvtData['content'],
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
         };
-        return new SDKOutboundBulkAcceptPartyInfoReceivedMessage(data);
+        return new ProcessBulkQuotesCallbackCmdEvt(data);
     }
 
-    getBulkTransactionContinuationAcceptParty(): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptParty {
-        return this.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptParty;
+    get batchId(): string {
+        const content = this.getContent() as IProcessBulkQuotesCallbackCmdEvtData['content'];
+        return content.batchId;
     }
 
+    get bulkQuoteId(): string {
+        const content = this.getContent() as IProcessBulkQuotesCallbackCmdEvtData['content'];
+        return content.bulkQuoteId;
+    }
+
+    get bulkQuotesResult(): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkQuoteResponse {
+        const content = this.getContent() as IProcessBulkQuotesCallbackCmdEvtData['content'];
+        return content.bulkQuotesResult;
+    }
 }

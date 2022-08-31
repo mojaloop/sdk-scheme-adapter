@@ -24,11 +24,11 @@
 
 'use strict';
 
-import { DomainEventMessage } from '../domain_event_message';
+import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
-export interface IBulkQuotesCallbackReceivedMessageData {
+export interface IBulkQuotesCallbackReceivedDmEvtData {
     bulkId: string;
     content: {
         batchId: string;
@@ -39,42 +39,42 @@ export interface IBulkQuotesCallbackReceivedMessageData {
     headers: IMessageHeader[] | null;
 }
 
-export class BulkQuotesCallbackReceivedMessage extends DomainEventMessage {
-    constructor(data: IBulkQuotesCallbackReceivedMessageData) {
+export class BulkQuotesCallbackReceivedDmEvt extends DomainEvent {
+    constructor(data: IBulkQuotesCallbackReceivedDmEvtData) {
         super({
             key: data.bulkId,
             content: data.content,
             timestamp: data.timestamp,
             headers: data.headers,
-            name: BulkQuotesCallbackReceivedMessage.name,
+            name: BulkQuotesCallbackReceivedDmEvt.name,
         });
     }
 
-    static CreateFromDomainEventMessage(message: DomainEventMessage): BulkQuotesCallbackReceivedMessage {
+    static CreateFromDomainEvent(message: DomainEvent): BulkQuotesCallbackReceivedDmEvt {
         if((message.getContent() === null || typeof message.getContent() !== 'object')) {
             throw new Error('Content is in unknown format');
         }
-        const data: IBulkQuotesCallbackReceivedMessageData = {
+        const data: IBulkQuotesCallbackReceivedDmEvtData = {
             bulkId: message.getKey(),
-            content: message.getContent() as IBulkQuotesCallbackReceivedMessageData['content'],
+            content: message.getContent() as IBulkQuotesCallbackReceivedDmEvtData['content'],
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
         };
-        return new BulkQuotesCallbackReceivedMessage(data);
+        return new BulkQuotesCallbackReceivedDmEvt(data);
     }
 
     get batchId(): string {
-        const content = this.getContent() as IBulkQuotesCallbackReceivedMessageData['content'];
+        const content = this.getContent() as IBulkQuotesCallbackReceivedDmEvtData['content'];
         return content.batchId;
     }
 
     get bulkQuoteId(): string {
-        const content = this.getContent() as IBulkQuotesCallbackReceivedMessageData['content'];
+        const content = this.getContent() as IBulkQuotesCallbackReceivedDmEvtData['content'];
         return content.bulkQuoteId;
     }
 
     get bulkQuotesResult(): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkQuoteResponse {
-        const content = this.getContent() as IBulkQuotesCallbackReceivedMessageData['content'];
+        const content = this.getContent() as IBulkQuotesCallbackReceivedDmEvtData['content'];
         return content.bulkQuotesResult;
     }
 }

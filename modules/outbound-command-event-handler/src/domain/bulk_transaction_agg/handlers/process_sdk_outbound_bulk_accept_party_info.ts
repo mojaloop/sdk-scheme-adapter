@@ -25,20 +25,20 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { CommandEventMessage, ProcessSDKOutboundBulkAcceptPartyInfoMessage, SDKOutboundBulkAcceptPartyInfoProcessedMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { CommandEvent, ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt, SDKOutboundBulkAcceptPartyInfoProcessedDmEvt } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
 import { BulkTransactionInternalState, IndividualTransferInternalState } from '../../../domain';
 
-export async function handleProcessSDKOutboundBulkAcceptPartyInfoMessage(
-    message: CommandEventMessage,
+export async function handleProcessSDKOutboundBulkAcceptPartyInfoCmdEvt(
+    message: CommandEvent,
     options: ICommandEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
-    const processSDKOutboundBulkAcceptPartyInfoMessage = message as ProcessSDKOutboundBulkAcceptPartyInfoMessage;
+    const processSDKOutboundBulkAcceptPartyInfoMessage = message as ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt;
     // TODO: Add if confidtion here to check autoAcceptParty parameter and alternate flow
     try {
-        logger.info(`Got ProcessSDKOutboundBulkAcceptPartyInfoMessage for ID ${processSDKOutboundBulkAcceptPartyInfoMessage.getKey()}`);
+        logger.info(`Got ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt for ID ${processSDKOutboundBulkAcceptPartyInfoMessage.getKey()}`);
 
         // Create aggregate
         const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRepo(
@@ -75,7 +75,7 @@ export async function handleProcessSDKOutboundBulkAcceptPartyInfoMessage(
         bulkTx.setTxState(BulkTransactionInternalState.DISCOVERY_ACCEPTANCE_COMPLETED);
         await bulkTransactionAgg.setTransaction(bulkTx);
 
-        const msg = new SDKOutboundBulkAcceptPartyInfoProcessedMessage({
+        const msg = new SDKOutboundBulkAcceptPartyInfoProcessedDmEvt({
             bulkId: bulkTransactionAgg.bulkId,
             timestamp: Date.now(),
             headers: [],

@@ -34,9 +34,9 @@ import {
     IKafkaEventConsumerOptions,
     IKafkaEventProducerOptions,
     ICommandEventProducer,
-    SDKOutboundBulkRequestReceivedMessage,
-    SDKOutboundBulkPartyInfoRequestedMessage,
-    PartyInfoCallbackReceivedMessage,
+    SDKOutboundBulkRequestReceivedDmEvt,
+    SDKOutboundBulkPartyInfoRequestedDmEvt,
+    PartyInfoCallbackReceivedDmEvt,
     SDKOutboundBulkAcceptPartyInfoReceivedDmEvt,
     SDKOutboundBulkAcceptPartyInfoProcessedDmEvt,
     BulkQuotesCallbackReceivedDmEvt,
@@ -107,15 +107,15 @@ export class OutboundEventHandler implements IRunHandler {
                 await handlePartyInfoCallbackReceived(message, this._domainEventHandlerOptions, this._logger);
                 break;
             }
-            case SDKOutboundBulkAcceptPartyInfoReceivedMessage.name: {
+            case SDKOutboundBulkAcceptPartyInfoReceivedDmEvt.name: {
                 await handleSDKOutboundBulkAcceptPartyInfoReceived(message, this._domainEventHandlerOptions, this._logger);
                 break;
             }
-            case SDKOutboundBulkAcceptPartyInfoProcessedMessage.name: {
+            case SDKOutboundBulkAcceptPartyInfoProcessedDmEvt.name: {
                 await handleSDKOutboundBulkAcceptPartyInfoProcessed(message, this._domainEventHandlerOptions, this._logger);
                 break;
             }
-            case BulkQuotesCallbackReceivedMessage.name: {
+            case BulkQuotesCallbackReceivedDmEvt.name: {
                 await handleBulkQuotesCallbackReceived(message, this._domainEventHandlerOptions, this._logger);
                 break;
             }

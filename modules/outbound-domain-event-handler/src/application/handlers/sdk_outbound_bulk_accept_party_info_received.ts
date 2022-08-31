@@ -25,31 +25,31 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { DomainEventMessage, IProcessSDKOutboundBulkAcceptPartyInfoMessageData, ProcessSDKOutboundBulkAcceptPartyInfoMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { DomainEvent, IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData, ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { IDomainEventHandlerOptions } from '../../types';
-import { SDKOutboundBulkAcceptPartyInfoReceivedMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { SDKOutboundBulkAcceptPartyInfoReceivedDmEvt } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
 export async function handleSDKOutboundBulkAcceptPartyInfoReceived(
-    message: DomainEventMessage,
+    message: DomainEvent,
     options: IDomainEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
     const sdkOutboundBulkAcceptPartyInfoReceived
-        = SDKOutboundBulkAcceptPartyInfoReceivedMessage.CreateFromDomainEventMessage(message);
+        = SDKOutboundBulkAcceptPartyInfoReceivedDmEvt.CreateFromDomainEvent(message);
     try {
-        const processSDKOutboundBulkAcceptPartyInfoMessageData: IProcessSDKOutboundBulkAcceptPartyInfoMessageData = {
+        const processSDKOutboundBulkAcceptPartyInfoMessageData: IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData = {
             bulkId: sdkOutboundBulkAcceptPartyInfoReceived.getKey(),
             bulkTransactionContinuationAcceptParty: sdkOutboundBulkAcceptPartyInfoReceived.getBulkTransactionContinuationAcceptParty(),
             timestamp: Date.now(),
             headers: [],
         };
         const processSDKOutboundBulkAcceptPartyInfoMessage
-            = new ProcessSDKOutboundBulkAcceptPartyInfoMessage(processSDKOutboundBulkAcceptPartyInfoMessageData);
+            = new ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt(processSDKOutboundBulkAcceptPartyInfoMessageData);
         await options.commandProducer.sendCommandMessage(processSDKOutboundBulkAcceptPartyInfoMessage);
         logger.info(`Sent command event ${processSDKOutboundBulkAcceptPartyInfoMessage.getName()}`);
         console.log(processSDKOutboundBulkAcceptPartyInfoMessage);
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     } catch (err: any) {
-        logger.info(`Failed to send ProcessSDKOutboundBulkAcceptPartyInfoMessage event`);
+        logger.info(`Failed to send ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt event`);
     }
 }

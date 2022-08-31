@@ -86,8 +86,8 @@ describe('handlePartyInfoCallbackReceived', () => {
 
 
   test('emits a processPartyInfoCallbackMessage message', async () => {
-    const sampleDomainEventMessageDataObj = new DomainEvent(samplePartyInfoCallbackReceivedMessageData);
-    handlePartyInfoCallbackReceived(sampleDomainEventMessageDataObj, domainEventHandlerOptions, logger)
+    const sampleDomainEventDataObj = new DomainEvent(samplePartyInfoCallbackReceivedMessageData);
+    handlePartyInfoCallbackReceived(sampleDomainEventDataObj, domainEventHandlerOptions, logger)
     expect(domainEventHandlerOptions.commandProducer.sendCommandMessage)
       .toBeCalledWith(
         expect.objectContaining({

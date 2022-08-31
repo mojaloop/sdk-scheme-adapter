@@ -24,40 +24,40 @@
 
 'use strict';
 
-import { CommandEventMessage } from '../command_event_message';
+import { CommandEvent } from '../command_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 import { randomUUID } from 'crypto';
 
-export interface IProcessSDKOutboundBulkAcceptPartyInfoMessageData {
+export interface IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData {
     bulkId: string;
     bulkTransactionContinuationAcceptParty: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptParty;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
 
-export class ProcessSDKOutboundBulkAcceptPartyInfoMessage extends CommandEventMessage {
-    constructor(data: IProcessSDKOutboundBulkAcceptPartyInfoMessageData) {
+export class ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt extends CommandEvent {
+    constructor(data: IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData) {
         super({
             key: data.bulkId,
             content: data.bulkTransactionContinuationAcceptParty,
             timestamp: data.timestamp,
             headers: data.headers,
-            name: ProcessSDKOutboundBulkAcceptPartyInfoMessage.name,
+            name: ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt.name,
         });
     }
 
-    static CreateFromCommandEventMessage(message: CommandEventMessage): ProcessSDKOutboundBulkAcceptPartyInfoMessage {
+    static CreateFromCommandEvent(message: CommandEvent): ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt {
         if((message.getContent() === null || typeof message.getContent() !== 'object')) {
             throw new Error('Content is in unknown format');
         }
-        const data: IProcessSDKOutboundBulkAcceptPartyInfoMessageData = {
+        const data: IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData = {
             bulkId: message.getKey(),
             bulkTransactionContinuationAcceptParty: message.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptParty,
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
         };
-        return new ProcessSDKOutboundBulkAcceptPartyInfoMessage(data);
+        return new ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt(data);
     }
 
     getBulkTransactionContinuationAcceptParty(): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptParty {

@@ -127,7 +127,7 @@ export class OutboundEventHandler implements IRunHandler {
             }
             case ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt.name: {
                 BulkTransactionAgg.ProcessCommandEvent(
-                    ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt.CreateFromCommandEventMessage(message),
+                    ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt.CreateFromCommandEvent(message),
                     this._commandEventHandlerOptions,
                     this._logger,
                 );
@@ -135,7 +135,7 @@ export class OutboundEventHandler implements IRunHandler {
             }
             case ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt.name: {
                 BulkTransactionAgg.ProcessCommandEvent(
-                    ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt.CreateFromCommandEventMessage(message),
+                    ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt.CreateFromCommandEvent(message),
                     this._commandEventHandlerOptions,
                     this._logger,
                 );
@@ -143,7 +143,7 @@ export class OutboundEventHandler implements IRunHandler {
             }
             case ProcessSDKOutboundBulkQuotesRequestCmdEvt.name: {
                 BulkTransactionAgg.ProcessCommandEvent(
-                    ProcessSDKOutboundBulkQuotesRequestCmdEvt.CreateFromCommandEventMessage(message),
+                    ProcessSDKOutboundBulkQuotesRequestCmdEvt.CreateFromCommandEvent(message),
                     this._commandEventHandlerOptions,
                     this._logger,
                 );
@@ -151,7 +151,7 @@ export class OutboundEventHandler implements IRunHandler {
             }
             case ProcessBulkQuotesCallbackCmdEvt.name: {
                 BulkTransactionAgg.ProcessCommandEvent(
-                    ProcessBulkQuotesCallbackCmdEvt.CreateFromCommandEventMessage(message),
+                    ProcessBulkQuotesCallbackCmdEvt.CreateFromCommandEvent(message),
                     this._commandEventHandlerOptions,
                     this._logger,
                 );

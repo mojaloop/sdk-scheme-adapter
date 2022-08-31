@@ -30,7 +30,7 @@ import { SDKSchemeAdapter } from "@mojaloop/api-snippets";
 import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 
-import { SDKOutboundBulkAcceptPartyInfoReceivedMessage, ISDKOutboundBulkAcceptPartyInfoReceivedMessageData } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+import { SDKOutboundBulkAcceptPartyInfoReceivedDmEvt, ISDKOutboundBulkAcceptPartyInfoReceivedDmEvtData } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 import { KafkaDomainEventProducer, IKafkaEventProducerOptions } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 import { randomUUID } from "crypto";
 
@@ -138,7 +138,7 @@ describe('SDKOutboundBulkAcceptPartyInfoRequested', () => {
   test('should publish a domain event', async () => {
     const allIndividualTransferIds = await bulkTransactionAgg.getAllIndividualTransferIds();
 
-    const sampleSDKOutboundBulkAcceptPartyInfoReceivedMessageData: ISDKOutboundBulkAcceptPartyInfoReceivedMessageData = {
+    const sampleSDKOutboundBulkAcceptPartyInfoReceivedDmEvtData: ISDKOutboundBulkAcceptPartyInfoReceivedDmEvtData = {
       bulkId: bulkTransactionId,
       bulkTransactionContinuationAcceptParty: {
         bulkHomeTransactionID: "abc123",
@@ -153,7 +153,7 @@ describe('SDKOutboundBulkAcceptPartyInfoRequested', () => {
       timestamp: Date.now(),
       headers: []
     }
-    const domainEventObj = new SDKOutboundBulkAcceptPartyInfoReceivedMessage(sampleSDKOutboundBulkAcceptPartyInfoReceivedMessageData);
+    const domainEventObj = new SDKOutboundBulkAcceptPartyInfoReceivedDmEvt(sampleSDKOutboundBulkAcceptPartyInfoReceivedDmEvtData);
     await producer.sendDomainMessage(domainEventObj);
     await expect(true)
   })
