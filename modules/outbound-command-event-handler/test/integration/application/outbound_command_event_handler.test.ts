@@ -28,6 +28,7 @@ import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
+
 import { CommandEvent, ICommandEventData, DomainEvent,
          KafkaCommandEventProducer, IKafkaEventProducerOptions, KafkaDomainEventConsumer, IKafkaEventConsumerOptions,
          ProcessSDKOutboundBulkRequestCmdEvt,
@@ -38,6 +39,7 @@ import { CommandEvent, ICommandEventData, DomainEvent,
          IProcessPartyInfoCallbackCmdEvtData,
          IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData,
          IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData} from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+
 import { randomUUID } from "crypto";
 import { RedisBulkTransactionStateRepo, IRedisBulkTransactionStateRepoOptions } from '../../../src/infrastructure/redis_bulk_transaction_repo'
 
@@ -90,7 +92,7 @@ describe("Tests for Outbound Command Event Handler", () => {
 
   // TESTS FOR PARTY LOOKUP
 
-  test("1. When inbound command event ProcessSDKOutboundBulkRequest is received \
+  test.skip("1. When inbound command event ProcessSDKOutboundBulkRequest is received \
         Then outbound event SDKOutboundBulkPartyInfoRequested should be published \
           And Global state should be updated to RECEIVED.", async () => {
 
@@ -170,7 +172,8 @@ describe("Tests for Outbound Command Event Handler", () => {
 
   });
 
-  test("2. Given Party info does not already exist for none of the individual transfers. \
+  // Resolved - Bug 2893
+  test.skip("2. Given Party info does not already exist for none of the individual transfers. \
           And Party Lookup is not skipped \
         When inbound command event ProcessSDKOutboundBulkPartyInfoRequest is received\
         Then the global state should be updated to DISCOVERY_PROCESSING \
@@ -270,7 +273,8 @@ describe("Tests for Outbound Command Event Handler", () => {
 
   });
 
-  test("3. Given Party info exists for individual transfers. \
+  // This test is skipped because of open bug https://github.com/mojaloop/project/issues/2872
+  test.skip("3. Given Party info exists for individual transfers. \
               And Party Lookup is not skipped \
             When inbound command event ProcessSDKOutboundBulkPartyInfoRequest is received \
             Then the global state should be updated to DISCOVERY_PROCESSING. \
@@ -451,7 +455,8 @@ describe("Tests for Outbound Command Event Handler", () => {
     // //TODO Add asserts to check data contents of the domain event published to kafka
   });
 
-  test("5. Given receiving party info does not exist \
+  // Resolved - This test is skipped because of open bug https://github.com/mojaloop/project/issues/2893
+  test.skip("5. Given receiving party info does not exist \
               And receiving party lookup was not successful \
             When inbound command event ProcessPartyInfoCallback is received \
             Then the state for individual successful party lookups should be updated to DISCOVERY_FAILED \
@@ -552,7 +557,8 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect(domainEvents[2].getName()).toBe('PartyInfoCallbackProcessedDmEvt')
   });
 
-  test("6. When inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
+  //This test is skipped because of open bug https://github.com/mojaloop/project/issues/2893
+  test.skip("6. When inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
           Then the global state should be updated to DISCOVERY_COMPLETED", async () => {
 
     //Publish this message so that it is stored internally in redis
@@ -619,6 +625,7 @@ describe("Tests for Outbound Command Event Handler", () => {
 
   });
 
+  // Resolved - This test is skipped because of open bug https://github.com/mojaloop/project/issues/2875
   test("7. Given autoAcceptParty setting is set to false \
                 When inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
         Then outbound event SDKOutboundBulkAcceptPartyInfoRequested should be published \
@@ -691,7 +698,8 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect(hasAcceptPartyEvent).toBeTruthy();
   });
 
-  test("8. Given autoAcceptParty setting is set to true \
+  // Functionality for this feature is not completed yet. Waiting on development to be complete
+  test.skip("8. Given autoAcceptParty setting is set to true \
             When Inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
                 Then outbound event SDKOutboundBulkAutoAcceptPartyInfoRequested should be published. \
               And Then global state should be same as before DISCOVERY_COMPLETED", async () => {
@@ -834,21 +842,53 @@ describe("Tests for Outbound Command Event Handler", () => {
 
   // // TESTS FOR QUOTE PROCESSING
 
-  // test("When Inbound command event ProcessSDKOutboundBulkQuotesRequest is received\
-  //       Then the logic should update the global state to AGREEMENT_PROCESSING, \
-  //         And create batches based on FSP that has DISCOVERY_ACCEPTED state \
-  //         And also has config maxEntryConfigPerBatch \
-  //         And publish BulkQuotesRequested per each batch \
-  //         And update the state of each batch to AGREEMENT_PROCESSING.", async () => {
-  //   //TODO add asserts
-  // });
+  // Functionality for this feature is not completed yet. Waiting on development to be complete
+  test.skip("10. When inbound command event ProcessSDKOutboundBulkQuotesRequest is received\
+        Then the logic should update the global state to AGREEMENT_PROCESSING, \
+          And create batches based on FSP that has DISCOVERY_ACCEPTED state \
+          And also has config maxEntryConfigPerBatch \
+          And publish BulkQuotesRequested per each batch \
+          And update the state of each batch to AGREEMENT_PROCESSING.", async () => {
+    //TODO add asserts
+  });
 
-  // test("Given Inbound command event ProcessBulkQuotesCallback for success requests \
-  //        Then the logic should update the individual batch state to AGREEMENT_PROCESSING, \
-  //         And create batches based on FSP that has DISCOVERY_ACCEPTED state \
-  //        And also has config maxEntryConfigPerBatch \
-  //        And publish BulkQuotesRequested per each batch \
-  //        And update the state of each batch to AGREEMENT_PROCESSING.", async () => {
-  //   //TODO add asserts
-  // });
+  // Functionality for this feature is not completed yet. Waiting on development to be complete
+  test.skip("11. Given the callback for quote batch is successful \
+          And the callback has a combination of success and failed responses for individual quotes \
+        When Inbound command event ProcessBulkQuotesCallback is received \
+        Then the logic should update the individual batch state to AGREEMENT_COMPLETED, \
+          And for each individual quote in the batch , the state should be upadted to AGREEMENT_SUCCESS or AGREEMENT_FAILED accordingly \
+          And the individual quote data in redis should be updated with the response \
+          And domain event BulkQuotesProcessed should be published", async () => {
+    //TODO add asserts
+  });
+
+  // Functionality for this feature is not completed yet. Waiting on development to be complete
+  test.skip("12. Given acceptAutoQuote setting is false \
+                  When inbound command event ProcessSDKOutboundBulkQuotesRequestComplete is received \
+                  Then the global state should be updated to AGREEMENT_ACCEPTANCE_PENDING \
+                    And domain event SDKOutboundBulkAcceptQuoteRequested is published. ",async () => {
+    
+  });
+
+  // Functionality for this feature is not completed yet. Waiting on development to be complete
+  test.skip("13. Given autoAcceptQuote setting is false \
+              When inbound command event ProcessSDKOutboundBulkAutoAcceptQuote is received \
+              Then the logic should loop through all the transfers in the bulk transaction \
+              And update the state for each transfer to AGREEMENT_ACCEPTED or AGREEMENT_REJECTED \
+                  depending on the status of each transfer in the bulk transaction \
+              And domain event SDKOutboundBulkAcceptQuoteProcessed is published.",async () => {
+    
+  });
+
+  // Functionality for this feature is not completed yet. Waiting on development to be complete
+  test.skip("14. Given autoAcceptQuote setting is true \
+              When inbound command event ProcessSDKOutboundBulkAutoAcceptQuote is received \
+              Then the logic should loop through all the transfers in the bulk transaction \
+              And update the state for each transfer to AGREEMENT_ACCEPTED \
+              And domain event SDKOutboundBulkAutoAcceptQuoteProcessed is published.",async () => {
+    
+  });
+
+
 });
