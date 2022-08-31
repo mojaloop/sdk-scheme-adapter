@@ -33,35 +33,27 @@
 import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 import {
-  DomainEvent,
-  EventType,
-  IDomainEventData,
+  IPartyInfoCallbackReceivedDmEvtData,
   PartyInfoCallbackReceivedDmEvt,
-  ProcessPartyInfoCallbackCmdEvt,
 } from "@mojaloop/sdk-scheme-adapter-private-shared-lib"
 import { randomUUID } from "crypto";
-import { handlePartyInfoCallbackReceived } from "../../../../src/application/handlers"
-import { IDomainEventHandlerOptions } from "../../../../src/types";
 
-
-describe('handlePartyInfoCallbackReceived', () => {
+describe('PartyInfoCallbackReceivedDmEvt', () => {
   const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion');
-  const domainEventHandlerOptions = {
-    commandProducer: {
-      init: jest.fn(),
-      sendCommandMessage: jest.fn()
-    }
-  } as unknown as IDomainEventHandlerOptions
 
-  let samplePartyInfoCallbackReceivedMessageData: IDomainEventData;
+  let samplePartyInfoCallbackReceivedMessageData: IPartyInfoCallbackReceivedDmEvtData;
   let key: string;
+  let partyInfoCallbackReceivedMessage: PartyInfoCallbackReceivedDmEvt;
+  let bulkId: string;
+  let transferId: string;
 
   beforeEach(async () => {
-    key = `${randomUUID()}_${randomUUID()}`
+    bulkId = randomUUID()
+    transferId = randomUUID()
+    key = `${bulkId}_${transferId}`
     samplePartyInfoCallbackReceivedMessageData = {
       key,
-      name: PartyInfoCallbackReceivedDmEvt.name,
-      content: {
+      partyResult: {
           party: {
               partyIdInfo: {
                   partyIdType: "MSISDN",
@@ -77,26 +69,38 @@ describe('handlePartyInfoCallbackReceived', () => {
                       ]
                   }
               }
-          }
+          },
       },
       timestamp: Date.now(),
       headers: [],
     }
-  });
+    partyInfoCallbackReceivedMessage = new PartyInfoCallbackReceivedDmEvt(samplePartyInfoCallbackReceivedMessageData)
+  })
 
+  test('getBulkId', async () => {
+    expect(partyInfoCallbackReceivedMessage.getBulkId()).toEqual(bulkId)
+  })
 
-  test('emits a processPartyInfoCallbackMessage message', async () => {
-    const sampleDomainEventMessageDataObj = new DomainEvent(samplePartyInfoCallbackReceivedMessageData);
-    handlePartyInfoCallbackReceived(sampleDomainEventMessageDataObj, domainEventHandlerOptions, logger)
-    expect(domainEventHandlerOptions.commandProducer.sendCommandMessage)
-      .toBeCalledWith(
-        expect.objectContaining({
-          _data: expect.objectContaining({
-            key,
-            name: ProcessPartyInfoCallbackCmdEvt.name,
-            type: EventType.COMMAND_EVENT
-          })
-        })
-    )
+  test('getTransferId', async () => {
+    expect(partyInfoCallbackReceivedMessage.getTransferId()).toEqual(transferId)
+  })
+
+  test('getPartyResult', async () => {
+    expect(partyInfoCallbackReceivedMessage.getPartyResult()).toEqual({
+      partyId: {
+        partyIdType: "MSISDN",
+        partyIdentifier: "16135551212",
+        partySubIdOrType: "string",
+        fspId: "string",
+        extensionList: {
+          extension: [
+            {
+              key: "string",
+              value: "string"
+            }
+          ]
+        }
+      }
+    })
   })
 })

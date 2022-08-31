@@ -32,3 +32,4 @@
 'use strict';
 
 export * from './infra';
+export * from './events';

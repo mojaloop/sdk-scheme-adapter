@@ -1,5 +1,3 @@
-
-
 /*****
  License
  --------------
@@ -20,40 +18,43 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Modusbox
- - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
+ - Yevhen Kyriukha <yevhen.kyriukha@modusbox.com>
  --------------
  ******/
 
 'use strict';
 
-// TODO: Try to use the generic kafka producer from platform-shared-lib and investigate if there is any value in maintaining these classes here.
+import { CommandEvent } from '../command_event';
+import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 
-import { MLKafkaProducerOptions } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib';
-import { KafkaEventProducer } from './kafka_event_producer';
-import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { DomainEvent }  from '../events';
-import { IMessage } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { IDomainEventProducer, IKafkaEventProducerOptions } from '../types';
+export interface IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData {
+    bulkId: string;
+    timestamp: number | null;
+    headers: IMessageHeader[] | null;
+}
 
-export class KafkaDomainEventProducer extends KafkaEventProducer implements IDomainEventProducer {
-    private _topic: string;
+export class ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt extends CommandEvent {
+    constructor(data: IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData) {
+        super({
+            key: data.bulkId,
+            timestamp: data.timestamp,
+            headers: data.headers,
+            content: null,
+            name: ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt.name,
+        });
+    }
 
-    constructor(
-        producerOptions: IKafkaEventProducerOptions,
-        logger: ILogger,
-    ) {
-        const mlProducerOptions: MLKafkaProducerOptions = {
-            kafkaBrokerList: producerOptions.brokerList,
-            producerClientId: producerOptions.clientId,
-            skipAcknowledgements: true,
+    static CreateFromCommandEvent(
+        message: CommandEvent,
+    ): ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt {
+        if((message.getKey() === null || typeof message.getKey() !== 'string')) {
+            throw new Error('Bulk id is in unknown format');
+        }
+        const data: IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData = {
+            timestamp: message.getTimeStamp(),
+            headers: message.getHeaders(),
+            bulkId: message.getKey(),
         };
-        super(mlProducerOptions, logger);
-        this._topic = producerOptions.topic;
+        return new ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt(data);
     }
-
-    async sendDomainMessage(domainEventMessage: DomainEvent) {
-        const message: IMessage = domainEventMessage.toIMessage(this._topic);
-        await super.send(message);
-    }
-
 }

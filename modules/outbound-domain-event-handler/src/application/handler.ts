@@ -30,16 +30,16 @@ import {
     KafkaDomainEventConsumer,
     KafkaCommandEventProducer,
     IEventConsumer,
-    DomainEventMessage,
+    DomainEvent,
     IKafkaEventConsumerOptions,
     IKafkaEventProducerOptions,
     ICommandEventProducer,
     SDKOutboundBulkRequestReceivedMessage,
     SDKOutboundBulkPartyInfoRequestedMessage,
     PartyInfoCallbackReceivedMessage,
-    SDKOutboundBulkAcceptPartyInfoReceivedMessage,
-    SDKOutboundBulkAcceptPartyInfoProcessedMessage,
-    BulkQuotesCallbackReceivedMessage,
+    SDKOutboundBulkAcceptPartyInfoReceivedDmEvt,
+    SDKOutboundBulkAcceptPartyInfoProcessedDmEvt,
+    BulkQuotesCallbackReceivedDmEvt,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { IDomainEventHandlerOptions } from '../types';
 import {
@@ -91,19 +91,19 @@ export class OutboundEventHandler implements IRunHandler {
         ]);
     }
 
-    async _messageHandler(message: DomainEventMessage): Promise<void> {
+    async _messageHandler(message: DomainEvent): Promise<void> {
         this._logger.info(`Got domain event message: ${message.getName()}`);
         // TODO: Handle errors validation here
         switch (message.getName()) {
-            case SDKOutboundBulkRequestReceivedMessage.name: {
+            case SDKOutboundBulkRequestReceivedDmEvt.name: {
                 await handleSDKOutboundBulkRequestReceived(message, this._domainEventHandlerOptions, this._logger);
                 break;
             }
-            case SDKOutboundBulkPartyInfoRequestedMessage.name: {
+            case SDKOutboundBulkPartyInfoRequestedDmEvt.name: {
                 await handleSDKOutboundBulkPartyInfoRequested(message, this._domainEventHandlerOptions, this._logger);
                 break;
             }
-            case PartyInfoCallbackReceivedMessage.name: {
+            case PartyInfoCallbackReceivedDmEvt.name: {
                 await handlePartyInfoCallbackReceived(message, this._domainEventHandlerOptions, this._logger);
                 break;
             }

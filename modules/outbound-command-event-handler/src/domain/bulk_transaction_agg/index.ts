@@ -26,7 +26,7 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { BaseAggregate, CommandEventMessage, IEntityStateRepository } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { BaseAggregate, CommandEvent, IEntityStateRepository } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionEntity, BulkTransactionInternalState, BulkTransactionState } from '../bulk_transaction_entity';
 import {
     IndividualTransferEntity,
@@ -73,7 +73,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                 throw new Error('Duplicate: Aggregate already exists in repo');
             }
         }
-        
+
         // Create root entity
         const bulkTransactionEntity = BulkTransactionEntity.CreateFromRequest(request);
         // Create the aggregate
@@ -142,7 +142,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         await (<IBulkTransactionEntityRepo> this._entity_state_repo)
             .setIndividualTransfer(this._rootEntity.id, id, transfer.exportState());
     }
-    
+
     async setTransaction(tx: BulkTransactionEntity): Promise<void> {
         this._rootEntity = tx;
         await this.store();
@@ -316,7 +316,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
 
 
     static async ProcessCommandEvent(
-        message: CommandEventMessage,
+        message: CommandEvent,
         options: ICommandEventHandlerOptions,
         logger: ILogger,
     ) {

@@ -29,18 +29,18 @@ import {
     IRunHandler,
     KafkaCommandEventConsumer,
     KafkaDomainEventProducer,
-    CommandEventMessage,
+    CommandEvent,
     IKafkaEventConsumerOptions,
     IKafkaEventProducerOptions,
     IEventConsumer,
     IDomainEventProducer,
-    ProcessSDKOutboundBulkRequestMessage,
-    ProcessSDKOutboundBulkPartyInfoRequestMessage,
-    ProcessPartyInfoCallbackMessage,
-    ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage,
-    ProcessSDKOutboundBulkAcceptPartyInfoMessage,
-    ProcessSDKOutboundBulkQuotesRequestMessage,
-    ProcessBulkQuotesCallbackMessage,
+    ProcessSDKOutboundBulkRequestCmdEvt,
+    ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
+    ProcessPartyInfoCallbackCmdEvt,
+    ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt,
+    ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt,
+    ProcessSDKOutboundBulkQuotesRequestCmdEvt,
+    ProcessBulkQuotesCallbackCmdEvt,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
 import { IBulkTransactionEntityRepo, ICommandEventHandlerOptions } from '../types';
@@ -99,61 +99,59 @@ export class OutboundEventHandler implements IRunHandler {
         await this._domainProducer?.destroy();
     }
 
-    async _messageHandler(message: CommandEventMessage): Promise<void> {
+    async _messageHandler(message: CommandEvent): Promise<void> {
         this._logger.info(`${message.getName()}`);
         // TODO: Handle error validations here
         switch (message.getName()) {
-            case ProcessSDKOutboundBulkRequestMessage.name: {
-                BulkTransactionAgg.ProcessCommandEvent(
-                    ProcessSDKOutboundBulkRequestMessage.CreateFromCommandEventMessage(message),
+            case ProcessSDKOutboundBulkRequestCmdEvt.name: {
+                await BulkTransactionAgg.ProcessCommandEvent(
+                    ProcessSDKOutboundBulkRequestCmdEvt.CreateFromCommandEvent(message),
+                    this._commandEventHandlerOptions, this._logger,
+                );
+                break;
+            }
+            case ProcessSDKOutboundBulkPartyInfoRequestCmdEvt.name: {
+                await BulkTransactionAgg.ProcessCommandEvent(
+                    ProcessSDKOutboundBulkPartyInfoRequestCmdEvt.CreateFromCommandEvent(message),
                     this._commandEventHandlerOptions,
                     this._logger,
                 );
                 break;
             }
-            case ProcessSDKOutboundBulkPartyInfoRequestMessage.name: {
+            case ProcessPartyInfoCallbackCmdEvt.name: {
+                await BulkTransactionAgg.ProcessCommandEvent(
+                    ProcessPartyInfoCallbackCmdEvt.CreateFromCommandEvent(message),
+                    this._commandEventHandlerOptions, this._logger,
+                );
+                break;
+            }
+            case ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt.name: {
                 BulkTransactionAgg.ProcessCommandEvent(
-                    ProcessSDKOutboundBulkPartyInfoRequestMessage.CreateFromCommandEventMessage(message),
+                    ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt.CreateFromCommandEventMessage(message),
                     this._commandEventHandlerOptions,
                     this._logger,
                 );
                 break;
             }
-            case ProcessPartyInfoCallbackMessage.name: {
+            case ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt.name: {
                 BulkTransactionAgg.ProcessCommandEvent(
-                    ProcessPartyInfoCallbackMessage.CreateFromCommandEventMessage(message),
+                    ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt.CreateFromCommandEventMessage(message),
                     this._commandEventHandlerOptions,
                     this._logger,
                 );
                 break;
             }
-            case ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage.name: {
+            case ProcessSDKOutboundBulkQuotesRequestCmdEvt.name: {
                 BulkTransactionAgg.ProcessCommandEvent(
-                    ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage.CreateFromCommandEventMessage(message),
+                    ProcessSDKOutboundBulkQuotesRequestCmdEvt.CreateFromCommandEventMessage(message),
                     this._commandEventHandlerOptions,
                     this._logger,
                 );
                 break;
             }
-            case ProcessSDKOutboundBulkAcceptPartyInfoMessage.name: {
+            case ProcessBulkQuotesCallbackCmdEvt.name: {
                 BulkTransactionAgg.ProcessCommandEvent(
-                    ProcessSDKOutboundBulkAcceptPartyInfoMessage.CreateFromCommandEventMessage(message),
-                    this._commandEventHandlerOptions,
-                    this._logger,
-                );
-                break;
-            }
-            case ProcessSDKOutboundBulkQuotesRequestMessage.name: {
-                BulkTransactionAgg.ProcessCommandEvent(
-                    ProcessSDKOutboundBulkQuotesRequestMessage.CreateFromCommandEventMessage(message),
-                    this._commandEventHandlerOptions,
-                    this._logger,
-                );
-                break;
-            }
-            case ProcessBulkQuotesCallbackMessage.name: {
-                BulkTransactionAgg.ProcessCommandEvent(
-                    ProcessBulkQuotesCallbackMessage.CreateFromCommandEventMessage(message),
+                    ProcessBulkQuotesCallbackCmdEvt.CreateFromCommandEventMessage(message),
                     this._commandEventHandlerOptions,
                     this._logger,
                 );

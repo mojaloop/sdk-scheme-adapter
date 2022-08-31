@@ -30,7 +30,7 @@ import * as ProcessSDKOutboundBulkAcceptPartyInfoHandler from './process_sdk_out
 import * as ProcessBulkQuotesCallbackHandler from './process-bulk-quotes-callback';
 import * as ProcessSDKOutboundBulkQuotesRequestHandler from './process_sdk_outbound_bulk_quotes_request';
 
-import { CommandEventMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { CommandEvent } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { ICommandEventHandlerOptions } from '@module-types';
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 
@@ -44,7 +44,7 @@ export default  {
     ...ProcessSDKOutboundBulkQuotesRequestHandler
 } as {
     [key: string]: (
-        message: CommandEventMessage,
+        message: CommandEvent,
         options: ICommandEventHandlerOptions,
         logger: ILogger,
     ) => Promise<void>
