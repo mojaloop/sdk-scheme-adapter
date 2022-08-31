@@ -25,7 +25,7 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { CommandEventMessage, BulkQuotesCallbackProcessedMessage, ProcessBulkQuotesCallbackMessage, SDKOutboundBulkQuotesRequestProcessedMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { CommandEventMessage, BulkQuotesCallbackProcessedMessage, ProcessBulkQuotesCallbackMessage, SDKOutboundBulkQuotesRequestProcessedMessage, SDKOutboundBulkAcceptQuoteRequestedMessage, CoreConnectorBulkAcceptQuoteRequestIndividualTransferResult } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
 import { BulkBatchInternalState, BulkTransactionInternalState, IndividualTransferInternalState } from '../..';
@@ -86,13 +86,14 @@ export async function handleProcessBulkQuotesCallbackMessage(
         });
         await options.domainProducer.sendDomainMessage(msg);
 
+        // Progressing to the next step
         // Check the status of the remaining items in the bulk
         const bulkQuotesTotalCount = await bulkTransactionAgg.getBulkQuotesTotalCount();
         const bulkQuotesSuccessCount = await bulkTransactionAgg.getBulkQuotesSuccessCount();
         const bulkQuotesFailedCount = await bulkTransactionAgg.getBulkQuotesFailedCount();
         if (bulkQuotesTotalCount <= (bulkQuotesSuccessCount + bulkQuotesFailedCount)) {
             // Update global state "AGREEMENT_COMPLETED"
-            bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.AGREEMENT_COMPLETED)
+            await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.AGREEMENT_COMPLETED)
     
             // Send the domain message SDKOutboundBulkQuotesRequestProcessed
             const msg = new SDKOutboundBulkQuotesRequestProcessedMessage({
@@ -101,6 +102,44 @@ export async function handleProcessBulkQuotesCallbackMessage(
                 headers: [],
             });
             await options.domainProducer.sendDomainMessage(msg);
+
+            // Progressing to the next step
+            // Check configuration parameter autoAcceptQuote
+            const bulkTransaction = bulkTransactionAgg.getBulkTransaction();
+            if (bulkTransaction.isAutoAcceptQuoteEnabled()) {
+                // autoAcceptQuote is true
+                // TODO: Send domain event SDKOutboundBulkAutoAcceptQuoteRequested
+                // TODO: This alternate path is not covered in the story #2802
+
+            } else {
+                // autoAcceptQuote is false
+                // Send domain event SDKOutboundBulkAcceptQuoteRequested
+                const individualTransferResults: CoreConnectorBulkAcceptQuoteRequestIndividualTransferResult[] = [];
+                const allIndividualTransferIds = await bulkTransactionAgg.getAllIndividualTransferIds();
+                for await(const individualTransferId of allIndividualTransferIds) {
+                    const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
+                    if (individualTransfer.quoteResponse) {
+                        individualTransferResults.push({
+                            homeTransactionId: individualTransfer.request.homeTransactionId,
+                            transactionId: individualTransfer.id,
+                            quoteResponse: individualTransfer.quoteResponse
+                        })
+                    }
+                }
+                const msg = new SDKOutboundBulkAcceptQuoteRequestedMessage({
+                    bulkId: bulkTransactionAgg.bulkId,
+                    bulkAcceptQuoteRequest: {
+                        bulkHomeTransactionID: bulkTransactionAgg.getBulkTransaction().bulkHomeTransactionID,
+                        bulkTransactionId: bulkTransactionAgg.bulkId,
+                        individualTransferResults
+                    },
+                    timestamp: Date.now(),
+                    headers: [],
+                });
+                await options.domainProducer.sendDomainMessage(msg);
+                // Update global state AGREEMENT_ACCEPTANCE_PENDING
+                await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.AGREEMENT_ACCEPTANCE_PENDING)
+            }
         }
 
 

@@ -110,9 +110,9 @@ export class BulkTransactionEntity extends BaseEntity<BulkTransactionState> {
         return this._state.options.autoAcceptParty.enabled;
     }
 
-    // isAutoAcceptQuoteEnabled (): boolean {
-    //   return this._state.options.autoAcceptQuote.enabled
-    // }
+    isAutoAcceptQuoteEnabled (): boolean {
+      return this._state.options.autoAcceptQuote.enabled
+    }
 
     // getAutoAcceptQuotePerTransferFeeLimits (): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkPerTransferFeeLimit[] | undefined {
     //   return this._state.options.autoAcceptQuote.perTransferFeeLimits
