@@ -25,7 +25,7 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { CommandEvent, BulkQuotesCallbackProcessedMessage, ProcessBulkQuotesCallbackCmdEvt, SDKOutboundBulkQuotesRequestProcessedMessage, SDKOutboundBulkAcceptQuoteRequestedMessage, CoreConnectorBulkAcceptQuoteRequestIndividualTransferResult } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { CommandEvent, BulkQuotesCallbackProcessedDmEvt, ProcessBulkQuotesCallbackCmdEvt, SDKOutboundBulkQuotesRequestProcessedDmEvt, SDKOutboundBulkAcceptQuoteRequestedDmEvt, CoreConnectorBulkAcceptQuoteRequestIndividualTransferResult } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
 import { BulkBatchInternalState, BulkTransactionInternalState, IndividualTransferInternalState } from '../..';
@@ -76,7 +76,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
             }
         }
 
-        const msg = new BulkQuotesCallbackProcessedMessage({
+        const msg = new BulkQuotesCallbackProcessedDmEvt({
             bulkId: bulkTransactionAgg.bulkId,
             content: {
                 batchId: bulkBatch.id
@@ -84,7 +84,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
             timestamp: Date.now(),
             headers: [],
         });
-        await options.domainProducer.sendDomainMessage(msg);
+        await options.domainProducer.sendDomainEvent(msg);
 
         // Progressing to the next step
         // Check the status of the remaining items in the bulk
@@ -96,13 +96,13 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
             await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.AGREEMENT_COMPLETED)
     
             // Send the domain message SDKOutboundBulkQuotesRequestProcessed
-            const msg = new SDKOutboundBulkQuotesRequestProcessedMessage({
+            const msg = new SDKOutboundBulkQuotesRequestProcessedDmEvt({
                 bulkId: bulkTransactionAgg.bulkId,
                 timestamp: Date.now(),
                 headers: [],
             });
-            await options.domainProducer.sendDomainMessage(msg);
-            logger.info(`Sent domain event message ${SDKOutboundBulkQuotesRequestProcessedMessage.name}`)
+            await options.domainProducer.sendDomainEvent(msg);
+            logger.info(`Sent domain event message ${SDKOutboundBulkQuotesRequestProcessedDmEvt.name}`)
 
             // Progressing to the next step
             // Check configuration parameter autoAcceptQuote
@@ -129,7 +129,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                         })
                     }
                 }
-                const msg = new SDKOutboundBulkAcceptQuoteRequestedMessage({
+                const msg = new SDKOutboundBulkAcceptQuoteRequestedDmEvt({
                     bulkId: bulkTransactionAgg.bulkId,
                     bulkAcceptQuoteRequest: {
                         bulkHomeTransactionID: bulkTransactionAgg.getBulkTransaction().bulkHomeTransactionID,
@@ -139,7 +139,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                     timestamp: Date.now(),
                     headers: [],
                 });
-                await options.domainProducer.sendDomainMessage(msg);
+                await options.domainProducer.sendDomainEvent(msg);
                 // Update global state AGREEMENT_ACCEPTANCE_PENDING
                 await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.AGREEMENT_ACCEPTANCE_PENDING)
             }

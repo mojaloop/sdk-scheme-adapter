@@ -44,7 +44,7 @@ export async function handleSDKOutboundBulkAcceptPartyInfoProcessed(
         };
         const processSDKOutboundBulkQuotesRequestMessage
             = new ProcessSDKOutboundBulkQuotesRequestCmdEvt(processSDKOutboundBulkQuotesRequestMessageData);
-        await options.commandProducer.sendCommandMessage(processSDKOutboundBulkQuotesRequestMessage);
+        await options.commandProducer.sendCommandEvent(processSDKOutboundBulkQuotesRequestMessage);
         logger.info(`Sent command event ${processSDKOutboundBulkQuotesRequestMessage.getName()}`);
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     } catch (err: any) {

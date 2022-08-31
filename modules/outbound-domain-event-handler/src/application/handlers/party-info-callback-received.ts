@@ -23,7 +23,7 @@ export async function handlePartyInfoCallbackReceived(
         const processPartyInfoCallbackMessage
             = new ProcessPartyInfoCallbackCmdEvt(processPartyInfoCallbackMessageData);
 
-        await options.commandProducer.sendCommandMessage(processPartyInfoCallbackMessage);
+        await options.commandProducer.sendCommandEvent(processPartyInfoCallbackMessage);
 
         logger.info(`Sent command event ${processPartyInfoCallbackMessage.getName()}`);
         console.log(processPartyInfoCallbackMessage);

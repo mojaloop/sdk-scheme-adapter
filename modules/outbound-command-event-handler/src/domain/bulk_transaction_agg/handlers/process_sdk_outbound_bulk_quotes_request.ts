@@ -28,7 +28,7 @@ import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import {
     CommandEvent,
     ProcessSDKOutboundBulkQuotesRequestCmdEvt,
-    BulkQuotesRequestedMessage
+    BulkQuotesRequestedDmEvt
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
@@ -69,7 +69,7 @@ export async function handleProcessSDKOutboundBulkQuotesRequestCmdEvt(
                 // Validate the bulkQuotes request schema in the entity before sending the domain event
                 bulkBatch.validateBulkQuotesRequest();
                 // Send domain event BulkQuotesRequested
-                const msg = new BulkQuotesRequestedMessage({
+                const msg = new BulkQuotesRequestedDmEvt({
                     bulkId: bulkTx.id,
                     content: {
                         batchId: bulkBatch.id,
@@ -78,7 +78,7 @@ export async function handleProcessSDKOutboundBulkQuotesRequestCmdEvt(
                     timestamp: Date.now(),
                     headers: [],
                 });
-                await options.domainProducer.sendDomainMessage(msg);
+                await options.domainProducer.sendDomainEvent(msg);
                 bulkBatch.setState(BulkBatchInternalState.AGREEMENT_PROCESSING);
                 await bulkTransactionAgg.setBulkBatchById(bulkBatch.id, bulkBatch);
             } catch(err) {

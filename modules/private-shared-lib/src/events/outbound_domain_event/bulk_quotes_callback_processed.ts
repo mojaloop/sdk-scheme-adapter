@@ -28,7 +28,7 @@ import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
-export type IBulkQuotesCallbackProcessedMessageData = {
+export type IBulkQuotesCallbackProcessedDmEvtData = {
     bulkId: string;
     content: {
         batchId: string;
@@ -37,32 +37,32 @@ export type IBulkQuotesCallbackProcessedMessageData = {
     headers: IMessageHeader[] | null;
 }
 
-export class BulkQuotesCallbackProcessedMessage extends DomainEvent {
-    constructor(data: IBulkQuotesCallbackProcessedMessageData) {
+export class BulkQuotesCallbackProcessedDmEvt extends DomainEvent {
+    constructor(data: IBulkQuotesCallbackProcessedDmEvtData) {
         super({
             key: data.bulkId,
             timestamp: data.timestamp,
             headers: data.headers,
             content: data.content,
-            name: BulkQuotesCallbackProcessedMessage.name,
+            name: BulkQuotesCallbackProcessedDmEvt.name,
         });
     }
 
-    static CreateFromDomainEvent(message: DomainEvent): BulkQuotesCallbackProcessedMessage {
+    static CreateFromDomainEvent(message: DomainEvent): BulkQuotesCallbackProcessedDmEvt {
         if((message.getKey() === null || typeof message.getKey() !== 'string')) {
             throw new Error('Bulk id is in unknown format');
         }
-        const data: IBulkQuotesCallbackProcessedMessageData = {
+        const data: IBulkQuotesCallbackProcessedDmEvtData = {
             bulkId: message.getKey(),
-            content: message.getContent() as IBulkQuotesCallbackProcessedMessageData['content'],
+            content: message.getContent() as IBulkQuotesCallbackProcessedDmEvtData['content'],
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders()
         };
-        return new BulkQuotesCallbackProcessedMessage(data);
+        return new BulkQuotesCallbackProcessedDmEvt(data);
     }
 
     get batchId(): string {
-        const content = this.getContent() as IBulkQuotesCallbackProcessedMessageData['content'];
+        const content = this.getContent() as IBulkQuotesCallbackProcessedDmEvtData['content'];
         return content.batchId;
     }
 

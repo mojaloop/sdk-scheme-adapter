@@ -45,7 +45,7 @@ export async function handleSDKOutboundBulkAcceptPartyInfoReceived(
         };
         const processSDKOutboundBulkAcceptPartyInfoMessage
             = new ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt(processSDKOutboundBulkAcceptPartyInfoMessageData);
-        await options.commandProducer.sendCommandMessage(processSDKOutboundBulkAcceptPartyInfoMessage);
+        await options.commandProducer.sendCommandEvent(processSDKOutboundBulkAcceptPartyInfoMessage);
         logger.info(`Sent command event ${processSDKOutboundBulkAcceptPartyInfoMessage.getName()}`);
         console.log(processSDKOutboundBulkAcceptPartyInfoMessage);
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */

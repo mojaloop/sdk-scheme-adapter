@@ -49,7 +49,7 @@ export async function handleSDKOutboundBulkPartyInfoRequested(
         const processSDKOutboundBulkPartyInfoRequestMessage
             = new ProcessSDKOutboundBulkPartyInfoRequestCmdEvt(processSDKOutboundBulkPartyInfoRequestMessageData);
 
-        await options.commandProducer.sendCommandMessage(processSDKOutboundBulkPartyInfoRequestMessage);
+        await options.commandProducer.sendCommandEvent(processSDKOutboundBulkPartyInfoRequestMessage);
 
         logger.info(`Sent command event ${processSDKOutboundBulkPartyInfoRequestMessage.getName()}`);
         console.log(processSDKOutboundBulkPartyInfoRequestMessage);

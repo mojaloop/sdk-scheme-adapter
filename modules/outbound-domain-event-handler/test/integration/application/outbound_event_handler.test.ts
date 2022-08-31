@@ -252,7 +252,7 @@ describe('First domain event', () => {
 
   test('should publish a domain event', async () => {
     const domainEventObj = new DomainEvent(sampleDomainEventData);
-    await producer.sendDomainMessage(domainEventObj);
+    await producer.sendDomainEvent(domainEventObj);
     await expect(true)
   })
 })

@@ -31,7 +31,7 @@ import { ICommandEventHandlerOptions } from '@module-types';
 import { IndividualTransferInternalState } from '../..';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
-export async function handleProcessPartyInfoCallbackMessage(
+export async function handleProcessPartyInfoCallbackCmdEvt(
     message: CommandEvent,
     options: ICommandEventHandlerOptions,
     logger: ILogger,
@@ -63,7 +63,7 @@ export async function handleProcessPartyInfoCallbackMessage(
             timestamp: Date.now(),
             headers: [],
         });
-        await options.domainProducer.sendDomainMessage(msg);
+        await options.domainProducer.sendDomainEvent(msg);
 
         await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */

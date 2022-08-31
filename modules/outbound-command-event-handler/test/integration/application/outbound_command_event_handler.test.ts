@@ -150,7 +150,7 @@ describe("Tests for Outbound Command Event Handler", () => {
       headers: []
     }
     const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
-    await producer.sendCommandMessage(processSDKOutboundBulkRequestMessageObj);
+    await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
 
     await new Promise(resolve => setTimeout(resolve, 1000));
     // Check the state in Redis
@@ -235,7 +235,7 @@ describe("Tests for Outbound Command Event Handler", () => {
       headers: []
     }
     const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
-    await producer.sendCommandMessage(processSDKOutboundBulkRequestMessageObj);
+    await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     const bulkPartyInfoRequestCommandEventData: IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData = {
@@ -244,7 +244,7 @@ describe("Tests for Outbound Command Event Handler", () => {
       headers: []
     }
     const bulkPartyInfoRequestCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCmdEvt(bulkPartyInfoRequestCommandEventData);
-    await producer.sendCommandMessage(bulkPartyInfoRequestCommandEventObj);
+    await producer.sendCommandEvent(bulkPartyInfoRequestCommandEventObj);
 
     await new Promise(resolve => setTimeout(resolve, 1000));
     // Check the state in Redis
@@ -323,7 +323,7 @@ describe("Tests for Outbound Command Event Handler", () => {
       headers: []
     }
     const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
-    await producer.sendCommandMessage(processSDKOutboundBulkRequestMessageObj);
+    await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     const bulkPartyInfoRequestCommandEventData: IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData = {
@@ -332,7 +332,7 @@ describe("Tests for Outbound Command Event Handler", () => {
       headers: []
     }
     const bulkPartyInfoRequestCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCmdEvt(bulkPartyInfoRequestCommandEventData);
-    await producer.sendCommandMessage(bulkPartyInfoRequestCommandEventObj);
+    await producer.sendCommandEvent(bulkPartyInfoRequestCommandEventObj);
 
     await new Promise(resolve => setTimeout(resolve, 1000));
     // Check the state in Redis
@@ -403,7 +403,7 @@ describe("Tests for Outbound Command Event Handler", () => {
       headers: []
     }
     const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
-    await producer.sendCommandMessage(processSDKOutboundBulkRequestMessageObj);
+    await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     const bulkPartyInfoRequestCommandEventData: IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData = {
@@ -412,7 +412,7 @@ describe("Tests for Outbound Command Event Handler", () => {
       headers: []
     }
     const bulkPartyInfoRequestCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCmdEvt(bulkPartyInfoRequestCommandEventData);
-    await producer.sendCommandMessage(bulkPartyInfoRequestCommandEventObj);
+    await producer.sendCommandEvent(bulkPartyInfoRequestCommandEventObj);
 
     await new Promise(resolve => setTimeout(resolve, 1000));
     // Check the state in Redis
@@ -435,7 +435,7 @@ describe("Tests for Outbound Command Event Handler", () => {
       headers: []
     }
     const processPartyInfoCallbackMessageObj = new ProcessPartyInfoCallbackCmdEvt(processPartyInfoCallbackMessageData);
-    await producer.sendCommandMessage(processPartyInfoCallbackMessageObj);
+    await producer.sendCommandEvent(processPartyInfoCallbackMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     //Check that the state of individual transfers in bulk to be RECEIVED
@@ -502,7 +502,7 @@ describe("Tests for Outbound Command Event Handler", () => {
       headers: []
     }
     const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
-    await producer.sendCommandMessage(processSDKOutboundBulkRequestMessageObj);
+    await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     const bulkPartyInfoRequestCommandEventData: IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData = {
@@ -511,7 +511,7 @@ describe("Tests for Outbound Command Event Handler", () => {
       headers: []
     }
     const bulkPartyInfoRequestCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCmdEvt(bulkPartyInfoRequestCommandEventData);
-    await producer.sendCommandMessage(bulkPartyInfoRequestCommandEventObj);
+    await producer.sendCommandEvent(bulkPartyInfoRequestCommandEventObj);
 
     await new Promise(resolve => setTimeout(resolve, 1000));
     // Check the state in Redis
@@ -537,7 +537,7 @@ describe("Tests for Outbound Command Event Handler", () => {
       headers: []
     }
     const processPartyInfoCallbackMessageObj = new ProcessPartyInfoCallbackCmdEvt(processPartyInfoCallbackMessageData);
-    await producer.sendCommandMessage(processPartyInfoCallbackMessageObj);
+    await producer.sendCommandEvent(processPartyInfoCallbackMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     //Check that the state of individual transfers in bulk to be RECEIVED
@@ -600,7 +600,7 @@ describe("Tests for Outbound Command Event Handler", () => {
       headers: []
     }
     const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
-    await producer.sendCommandMessage(processSDKOutboundBulkRequestMessageObj);
+    await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     // Command event for bulk party info request completed
@@ -610,7 +610,7 @@ describe("Tests for Outbound Command Event Handler", () => {
       headers: []
     }
     const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData);
-    await producer.sendCommandMessage(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj);
+    await producer.sendCommandEvent(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     //Check that the global state of individual transfers in bulk to be RECEIVED
@@ -669,7 +669,7 @@ describe("Tests for Outbound Command Event Handler", () => {
       headers: []
     }
     const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
-    await producer.sendCommandMessage(processSDKOutboundBulkRequestMessageObj);
+    await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     // Command event for bulk party info request completed
@@ -679,7 +679,7 @@ describe("Tests for Outbound Command Event Handler", () => {
       headers: []
     }
     const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData);
-    await producer.sendCommandMessage(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj);
+    await producer.sendCommandEvent(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     //Check that the global state of individual transfers in bulk to be RECEIVED
@@ -740,7 +740,7 @@ describe("Tests for Outbound Command Event Handler", () => {
       headers: []
     }
     const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
-    await producer.sendCommandMessage(processSDKOutboundBulkRequestMessageObj);
+    await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     // Command event for bulk party info request completed
@@ -750,7 +750,7 @@ describe("Tests for Outbound Command Event Handler", () => {
       headers: []
     }
     const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData);
-    await producer.sendCommandMessage(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj);
+    await producer.sendCommandEvent(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     //Check that the global state of individual transfers in bulk to be RECEIVED
@@ -813,7 +813,7 @@ describe("Tests for Outbound Command Event Handler", () => {
       headers: []
     }
     const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
-    await producer.sendCommandMessage(processSDKOutboundBulkRequestMessageObj);
+    await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     // Command event for bulk party info request completed
@@ -823,7 +823,7 @@ describe("Tests for Outbound Command Event Handler", () => {
       headers: []
     }
     const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData);
-    await producer.sendCommandMessage(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj);
+    await producer.sendCommandEvent(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     //Check that the global state of individual transfers in bulk to be RECEIVED

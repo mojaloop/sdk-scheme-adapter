@@ -42,7 +42,7 @@ export type CoreConnectorBulkAcceptQuoteRequest = {
     individualTransferResults: CoreConnectorBulkAcceptQuoteRequestIndividualTransferResult[];
 }
 
-export type ISDKOutboundBulkAcceptQuoteRequestedMessageData = {
+export type ISDKOutboundBulkAcceptQuoteRequestedDmEvtData = {
     bulkId: string;
     bulkAcceptQuoteRequest: CoreConnectorBulkAcceptQuoteRequest;
     timestamp: number | null;
@@ -50,28 +50,28 @@ export type ISDKOutboundBulkAcceptQuoteRequestedMessageData = {
 }
 
 
-export class SDKOutboundBulkAcceptQuoteRequestedMessage extends DomainEvent {
-    constructor(data: ISDKOutboundBulkAcceptQuoteRequestedMessageData) {
+export class SDKOutboundBulkAcceptQuoteRequestedDmEvt extends DomainEvent {
+    constructor(data: ISDKOutboundBulkAcceptQuoteRequestedDmEvtData) {
         super({
             key: data.bulkId,
             timestamp: data.timestamp,
             headers: data.headers,
             content: data.bulkAcceptQuoteRequest,
-            name: SDKOutboundBulkAcceptQuoteRequestedMessage.name,
+            name: SDKOutboundBulkAcceptQuoteRequestedDmEvt.name,
         });
     }
 
-    static CreateFromDomainEvent(message: DomainEvent): SDKOutboundBulkAcceptQuoteRequestedMessage {
+    static CreateFromDomainEvent(message: DomainEvent): SDKOutboundBulkAcceptQuoteRequestedDmEvt {
         if((message.getKey() === null || typeof message.getKey() !== 'string')) {
             throw new Error('Bulk id is in unknown format');
         }
-        const data: ISDKOutboundBulkAcceptQuoteRequestedMessageData = {
+        const data: ISDKOutboundBulkAcceptQuoteRequestedDmEvtData = {
             bulkId: message.getKey(),
             bulkAcceptQuoteRequest: message.getContent() as CoreConnectorBulkAcceptQuoteRequest,
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders()
         };
-        return new SDKOutboundBulkAcceptQuoteRequestedMessage(data);
+        return new SDKOutboundBulkAcceptQuoteRequestedDmEvt(data);
     }
 
     get batchId(): string {

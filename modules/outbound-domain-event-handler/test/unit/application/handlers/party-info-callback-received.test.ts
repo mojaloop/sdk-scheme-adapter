@@ -49,7 +49,7 @@ describe('handlePartyInfoCallbackReceived', () => {
   const domainEventHandlerOptions = {
     commandProducer: {
       init: jest.fn(),
-      sendCommandMessage: jest.fn()
+      sendCommandEvent: jest.fn()
     }
   } as unknown as IDomainEventHandlerOptions
 
@@ -88,7 +88,7 @@ describe('handlePartyInfoCallbackReceived', () => {
   test('emits a processPartyInfoCallbackMessage message', async () => {
     const sampleDomainEventDataObj = new DomainEvent(samplePartyInfoCallbackReceivedMessageData);
     handlePartyInfoCallbackReceived(sampleDomainEventDataObj, domainEventHandlerOptions, logger)
-    expect(domainEventHandlerOptions.commandProducer.sendCommandMessage)
+    expect(domainEventHandlerOptions.commandProducer.sendCommandEvent)
       .toBeCalledWith(
         expect.objectContaining({
           _data: expect.objectContaining({

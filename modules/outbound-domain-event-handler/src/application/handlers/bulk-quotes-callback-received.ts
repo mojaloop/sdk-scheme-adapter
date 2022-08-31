@@ -27,7 +27,7 @@ export async function handleBulkQuotesCallbackReceived(
         const processBulkQuotesCallbackMessage
             = new ProcessBulkQuotesCallbackCmdEvt(processPartyInfoCallbackMessageData);
 
-        await options.commandProducer.sendCommandMessage(processBulkQuotesCallbackMessage);
+        await options.commandProducer.sendCommandEvent(processBulkQuotesCallbackMessage);
 
         logger.info(`Sent command event ${processBulkQuotesCallbackMessage.getName()}`);
         console.log(processBulkQuotesCallbackMessage);

@@ -154,7 +154,7 @@ describe('SDKOutboundBulkAcceptPartyInfoRequested', () => {
       headers: []
     }
     const domainEventObj = new SDKOutboundBulkAcceptPartyInfoReceivedDmEvt(sampleSDKOutboundBulkAcceptPartyInfoReceivedDmEvtData);
-    await producer.sendDomainMessage(domainEventObj);
+    await producer.sendDomainEvent(domainEventObj);
     await expect(true)
   })
 })

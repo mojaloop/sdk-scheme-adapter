@@ -62,7 +62,7 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt
                 timestamp: Date.now(),
                 headers: [],
             });
-            await options.domainProducer.sendDomainMessage(msg);
+            await options.domainProducer.sendDomainEvent(msg);
         } else {
             bulkTx.setTxState(BulkTransactionInternalState.DISCOVERY_ACCEPTANCE_PENDING);
             const msg = new SDKOutboundBulkAcceptPartyInfoRequestedDmEvt({
@@ -70,7 +70,7 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt
                 timestamp: Date.now(),
                 headers: [],
             });
-            await options.domainProducer.sendDomainMessage(msg);
+            await options.domainProducer.sendDomainEvent(msg);
         }
 
         await bulkTransactionAgg.setTransaction(bulkTx);
