@@ -37,12 +37,18 @@ import {
     SDKOutboundBulkRequestReceivedMessage,
     SDKOutboundBulkPartyInfoRequestedMessage,
     PartyInfoCallbackReceivedMessage,
+    SDKOutboundBulkAcceptPartyInfoReceivedMessage,
+    SDKOutboundBulkAcceptPartyInfoProcessedMessage,
+    BulkQuotesCallbackReceivedMessage,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { IDomainEventHandlerOptions } from '../types';
 import {
     handleSDKOutboundBulkPartyInfoRequested,
     handleSDKOutboundBulkRequestReceived,
     handlePartyInfoCallbackReceived,
+    handleSDKOutboundBulkAcceptPartyInfoReceived,
+    handleSDKOutboundBulkAcceptPartyInfoProcessed,
+    handleBulkQuotesCallbackReceived
 } from './handlers';
 
 export class OutboundEventHandler implements IRunHandler {
@@ -99,6 +105,18 @@ export class OutboundEventHandler implements IRunHandler {
             }
             case PartyInfoCallbackReceivedMessage.name: {
                 await handlePartyInfoCallbackReceived(message, this._domainEventHandlerOptions, this._logger);
+                break;
+            }
+            case SDKOutboundBulkAcceptPartyInfoReceivedMessage.name: {
+                await handleSDKOutboundBulkAcceptPartyInfoReceived(message, this._domainEventHandlerOptions, this._logger);
+                break;
+            }
+            case SDKOutboundBulkAcceptPartyInfoProcessedMessage.name: {
+                await handleSDKOutboundBulkAcceptPartyInfoProcessed(message, this._domainEventHandlerOptions, this._logger);
+                break;
+            }
+            case BulkQuotesCallbackReceivedMessage.name: {
+                await handleBulkQuotesCallbackReceived(message, this._domainEventHandlerOptions, this._logger);
                 break;
             }
             default: {

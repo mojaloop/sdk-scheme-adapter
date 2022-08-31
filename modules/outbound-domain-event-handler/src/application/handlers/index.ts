@@ -25,3 +25,6 @@
 export * from './sdk-outbound-bulk-request-received';
 export * from './sdk-outbound-bulk-party-info-requested';
 export * from './party-info-callback-received';
+export * from './sdk_outbound_bulk_accept_party_info_received';
+export * from './sdk_outbound_bulk_accept_party_info_processed';
+export * from './bulk-quotes-callback-received';

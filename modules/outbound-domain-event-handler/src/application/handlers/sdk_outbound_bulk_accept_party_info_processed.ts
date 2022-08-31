@@ -29,7 +29,7 @@ import { DomainEventMessage, IProcessSDKOutboundBulkQuotesRequestMessageData, Pr
 import { IDomainEventHandlerOptions } from '../../types';
 import { SDKOutboundBulkAcceptPartyInfoProcessedMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
-export async function handleSDKOutboundBulkAcceptPartyInfoProcessedMessage(
+export async function handleSDKOutboundBulkAcceptPartyInfoProcessed(
     message: DomainEventMessage,
     options: IDomainEventHandlerOptions,
     logger: ILogger,

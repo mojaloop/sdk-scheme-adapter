@@ -149,11 +149,11 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
             if(individualTransferStateStr) {
                 return JSON.parse(individualTransferStateStr) as IndividualTransferState;
             } else {
-                this._logger.error('Error loading individual trandfer from redis - for key: ' + key);
-                throw (new Error('Error loading individual trandfer from redis'));
+                this._logger.error('Error loading individual transfer from redis - for key: ' + key);
+                throw (new Error('Error loading individual transfer from redis'));
             }
         } catch (err) {
-            this._logger.error(err, 'Error loading individual trandfer from redis - for key: ' + key);
+            this._logger.error(err, 'Error loading individual transfer from redis - for key: ' + key);
             throw (err);
         }
     }
@@ -170,7 +170,7 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
         try {
             await this._redisClient.hSet(key, this.individualTransferKeyPrefix + individualTranferId, JSON.stringify(value));
         } catch (err) {
-            this._logger.error(err, `Error storing individual trandfer with ID ${individualTranferId} to redis for key: ${key}`);
+            this._logger.error(err, `Error storing individual transfer with ID ${individualTranferId} to redis for key: ${key}`);
             throw (err);
         }
     }

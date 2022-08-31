@@ -57,16 +57,18 @@ export async function handleProcessSDKOutboundBulkQuotesRequestMessage(
         await bulkTransactionAgg.setTransaction(bulkTx);
 
         // Create bulkQuotes batches from individual items with DISCOVERY_ACCEPTED state per FSP and maxEntryConfigPerBatch
+        logger.info(`Creating batches for bulkId=${processSDKOutboundBulkQuotesRequestMessage.getKey()}`);
         await bulkTransactionAgg.createBatches(options.appConfig.get('MAX_ITEMS_PER_BATCH'));
 
         // Iterate through batches
         const allBulkBatchIds = await bulkTransactionAgg.getAllBulkBatchIds();
+        logger.info(`Created ${allBulkBatchIds.length} batches for bulkId=${processSDKOutboundBulkQuotesRequestMessage.getKey()}`);
         for await (const bulkBatchId of allBulkBatchIds) {
             const bulkBatch = await bulkTransactionAgg.getBulkBatchEntityById(bulkBatchId);
             try {
                 // Validate the bulkQuotes request schema in the entity before sending the domain event
                 bulkBatch.validateBulkQuotesRequest();
-                // TODO: Send domain event BulkQuotesRequested
+                // Send domain event BulkQuotesRequested
                 const msg = new BulkQuotesRequestedMessage({
                     bulkId: bulkTx.id,
                     content: {

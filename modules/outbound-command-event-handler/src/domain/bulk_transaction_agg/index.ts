@@ -91,9 +91,9 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
             );
         }
         // Set initial values
-        agg.setBulkQuotesTotalCount(0);
-        agg.setBulkQuotesSuccessCount(0);
-        agg.setBulkQuotesFailedCount(0);
+        await agg.setBulkQuotesTotalCount(0);
+        await agg.setBulkQuotesSuccessCount(0);
+        await agg.setBulkQuotesFailedCount(0);
 
         // Return the aggregate
         return agg;
@@ -150,6 +150,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
 
     async setGlobalState(state: BulkTransactionInternalState) : Promise<void> {
         this._rootEntity.setTxState(state);
+        this._logger.info(`Setting global state of bulk transaction ${this._rootEntity.id} to ${state}`)
         await this.store();
     }
 
@@ -234,7 +235,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         for await (const individualTransferId of allIndividualTransferIds) {
             // Create the array of batches per each DFSP with maximum limit from the config containing Ids of individual transfers
             const individualTransfer = await this.getIndividualTransferById(individualTransferId);
-            if (individualTransfer.transferState === 'DISCOVERY_SUCCESS' && individualTransfer.toFspId) {
+            if (individualTransfer.transferState === 'DISCOVERY_ACCEPTED' && individualTransfer.toFspId) {
                 // If there is any element with fspId
                 if(batchesPerFsp[individualTransfer.toFspId]) {
                     const batchFspIdArray = batchesPerFsp[individualTransfer.toFspId];
@@ -252,6 +253,8 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                     batchesPerFsp[individualTransfer.toFspId] = [];
                     batchesPerFsp[individualTransfer.toFspId].push(newElement);
                 }
+            } else {
+                this._logger.error(`The individual transfer with id ${individualTransfer.id} is not in state DISCOVERY_ACCEPTED or toFspId is not found in the partyResponse`)
             }
         }
         // console.log(batchesPerFsp);

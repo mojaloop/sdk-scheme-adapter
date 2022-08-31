@@ -102,12 +102,15 @@ export async function handleProcessBulkQuotesCallbackMessage(
                 headers: [],
             });
             await options.domainProducer.sendDomainMessage(msg);
+            logger.info(`Sent domain event message ${SDKOutboundBulkQuotesRequestProcessedMessage.name}`)
 
             // Progressing to the next step
             // Check configuration parameter autoAcceptQuote
+            logger.info(`Checking for quote auto acceptance for bulk transaction ${bulkTransactionAgg.bulkId}`)
             const bulkTransaction = bulkTransactionAgg.getBulkTransaction();
             if (bulkTransaction.isAutoAcceptQuoteEnabled()) {
                 // autoAcceptQuote is true
+                logger.error(`AutoAcceptQuote === true is not implemented currently. Bulk transaction id is ${bulkTransactionAgg.bulkId}`)
                 // TODO: Send domain event SDKOutboundBulkAutoAcceptQuoteRequested
                 // TODO: This alternate path is not covered in the story #2802
 

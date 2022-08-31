@@ -38,6 +38,9 @@ import {
     ProcessSDKOutboundBulkPartyInfoRequestMessage,
     ProcessPartyInfoCallbackMessage,
     ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage,
+    ProcessSDKOutboundBulkAcceptPartyInfoMessage,
+    ProcessSDKOutboundBulkQuotesRequestMessage,
+    ProcessBulkQuotesCallbackMessage,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
 import { IBulkTransactionEntityRepo, ICommandEventHandlerOptions } from '../types';
@@ -127,6 +130,30 @@ export class OutboundEventHandler implements IRunHandler {
             case ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage.name: {
                 BulkTransactionAgg.ProcessCommandEvent(
                     ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage.CreateFromCommandEventMessage(message),
+                    this._commandEventHandlerOptions,
+                    this._logger,
+                );
+                break;
+            }
+            case ProcessSDKOutboundBulkAcceptPartyInfoMessage.name: {
+                BulkTransactionAgg.ProcessCommandEvent(
+                    ProcessSDKOutboundBulkAcceptPartyInfoMessage.CreateFromCommandEventMessage(message),
+                    this._commandEventHandlerOptions,
+                    this._logger,
+                );
+                break;
+            }
+            case ProcessSDKOutboundBulkQuotesRequestMessage.name: {
+                BulkTransactionAgg.ProcessCommandEvent(
+                    ProcessSDKOutboundBulkQuotesRequestMessage.CreateFromCommandEventMessage(message),
+                    this._commandEventHandlerOptions,
+                    this._logger,
+                );
+                break;
+            }
+            case ProcessBulkQuotesCallbackMessage.name: {
+                BulkTransactionAgg.ProcessCommandEvent(
+                    ProcessBulkQuotesCallbackMessage.CreateFromCommandEventMessage(message),
                     this._commandEventHandlerOptions,
                     this._logger,
                 );
