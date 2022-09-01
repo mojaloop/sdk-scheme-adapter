@@ -27,7 +27,6 @@
 
 import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-// import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 export interface IPartyInfoCallbackProcessedDmEvtData {
     bulkId: string;

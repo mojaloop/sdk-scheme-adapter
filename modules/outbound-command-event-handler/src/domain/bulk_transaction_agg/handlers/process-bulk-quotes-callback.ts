@@ -29,7 +29,6 @@ import { CommandEvent, BulkQuotesCallbackProcessedDmEvt, ProcessBulkQuotesCallba
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
 import { BulkBatchInternalState, BulkTransactionInternalState, IndividualTransferInternalState } from '../..';
-// import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 export async function handleProcessBulkQuotesCallbackCmdEvt(
     message: CommandEvent,
@@ -76,7 +75,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
             }
         }
 
-        const msg = new BulkQuotesCallbackProcessedDmEvt({
+        const bulkQuotesCallbackProcessedDmEvt = new BulkQuotesCallbackProcessedDmEvt({
             bulkId: bulkTransactionAgg.bulkId,
             content: {
                 batchId: bulkBatch.id
@@ -84,7 +83,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
             timestamp: Date.now(),
             headers: [],
         });
-        await options.domainProducer.sendDomainEvent(msg);
+        await options.domainProducer.sendDomainEvent(bulkQuotesCallbackProcessedDmEvt);
 
         // Progressing to the next step
         // Check the status of the remaining items in the bulk
@@ -96,12 +95,12 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
             await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.AGREEMENT_COMPLETED)
     
             // Send the domain message SDKOutboundBulkQuotesRequestProcessed
-            const msg = new SDKOutboundBulkQuotesRequestProcessedDmEvt({
+            const sdkOutboundBulkQuotesRequestProcessedDmEvt = new SDKOutboundBulkQuotesRequestProcessedDmEvt({
                 bulkId: bulkTransactionAgg.bulkId,
                 timestamp: Date.now(),
                 headers: [],
             });
-            await options.domainProducer.sendDomainEvent(msg);
+            await options.domainProducer.sendDomainEvent(sdkOutboundBulkQuotesRequestProcessedDmEvt);
             logger.info(`Sent domain event message ${SDKOutboundBulkQuotesRequestProcessedDmEvt.name}`)
 
             // Progressing to the next step
@@ -129,7 +128,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                         })
                     }
                 }
-                const msg = new SDKOutboundBulkAcceptQuoteRequestedDmEvt({
+                const sdkOutboundBulkAcceptQuoteRequestedDmEvt = new SDKOutboundBulkAcceptQuoteRequestedDmEvt({
                     bulkId: bulkTransactionAgg.bulkId,
                     bulkAcceptQuoteRequest: {
                         bulkHomeTransactionID: bulkTransactionAgg.getBulkTransaction().bulkHomeTransactionID,
@@ -139,7 +138,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                     timestamp: Date.now(),
                     headers: [],
                 });
-                await options.domainProducer.sendDomainEvent(msg);
+                await options.domainProducer.sendDomainEvent(sdkOutboundBulkAcceptQuoteRequestedDmEvt);
                 // Update global state AGREEMENT_ACCEPTANCE_PENDING
                 await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.AGREEMENT_ACCEPTANCE_PENDING)
             }
