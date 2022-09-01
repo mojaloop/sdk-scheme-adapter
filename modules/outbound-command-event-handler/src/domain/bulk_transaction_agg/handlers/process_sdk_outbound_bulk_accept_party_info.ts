@@ -75,7 +75,7 @@ export async function handleProcessSDKOutboundBulkAcceptPartyInfoCmdEvt(
         bulkTx.setTxState(BulkTransactionInternalState.DISCOVERY_ACCEPTANCE_COMPLETED);
         await bulkTransactionAgg.setTransaction(bulkTx);
 
-        const msg = new SDKOutboundBulkAcceptPartyInfoProcessedDmEvt({
+        const sdkOutboundBulkAcceptPartyInfoProcessedDmEvt = new SDKOutboundBulkAcceptPartyInfoProcessedDmEvt({
             bulkId: bulkTransactionAgg.bulkId,
             timestamp: Date.now(),
             headers: [],
