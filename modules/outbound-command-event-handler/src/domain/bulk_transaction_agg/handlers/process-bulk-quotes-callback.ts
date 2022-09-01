@@ -100,7 +100,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                 timestamp: Date.now(),
                 headers: [],
             });
-            await options.domainProducer.sendDomainEvent(msg);
+            await options.domainProducer.sendDomainEvent(sdkOutboundBulkQuotesRequestProcessedDmEvt);
             logger.info(`Sent domain event message ${SDKOutboundBulkQuotesRequestProcessedDmEvt.name}`)
 
             // Progressing to the next step
