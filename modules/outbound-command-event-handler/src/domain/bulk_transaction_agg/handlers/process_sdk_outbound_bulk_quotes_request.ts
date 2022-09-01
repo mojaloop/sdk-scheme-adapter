@@ -69,7 +69,7 @@ export async function handleProcessSDKOutboundBulkQuotesRequestCmdEvt(
                 // Validate the bulkQuotes request schema in the entity before sending the domain event
                 bulkBatch.validateBulkQuotesRequest();
                 // Send domain event BulkQuotesRequested
-                const msg = new BulkQuotesRequestedDmEvt({
+                const bulkQuotesRequestedDmEvt = new BulkQuotesRequestedDmEvt({
                     bulkId: bulkTx.id,
                     content: {
                         batchId: bulkBatch.id,
@@ -78,7 +78,7 @@ export async function handleProcessSDKOutboundBulkQuotesRequestCmdEvt(
                     timestamp: Date.now(),
                     headers: [],
                 });
-                await options.domainProducer.sendDomainEvent(msg);
+                await options.domainProducer.sendDomainEvent(bulkQuotesRequestedDmEvt);
                 bulkBatch.setState(BulkBatchInternalState.AGREEMENT_PROCESSING);
                 await bulkTransactionAgg.setBulkBatchById(bulkBatch.id, bulkBatch);
             } catch(err) {

@@ -75,12 +75,12 @@ export async function handleProcessSDKOutboundBulkAcceptPartyInfoCmdEvt(
         bulkTx.setTxState(BulkTransactionInternalState.DISCOVERY_ACCEPTANCE_COMPLETED);
         await bulkTransactionAgg.setTransaction(bulkTx);
 
-        const msg = new SDKOutboundBulkAcceptPartyInfoProcessedDmEvt({
+        const sdkOutboundBulkAcceptPartyInfoProcessedDmEvt = new SDKOutboundBulkAcceptPartyInfoProcessedDmEvt({
             bulkId: bulkTransactionAgg.bulkId,
             timestamp: Date.now(),
             headers: [],
         });
-        await options.domainProducer.sendDomainEvent(msg);
+        await options.domainProducer.sendDomainEvent(sdkOutboundBulkAcceptPartyInfoProcessedDmEvt);
 
     } catch (err) {
         logger.info(`Failed to create BulkTransactionAggregate. ${(err as Error).message}`);
