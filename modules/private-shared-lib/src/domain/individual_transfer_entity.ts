@@ -26,7 +26,7 @@
 
 import { BaseEntityState, BaseEntity } from './';
 import { IPartyResult } from '@module-types';
-import { SchemaValidationError } from '@module-errors';
+import { SchemaValidationError } from '../errors';
 import { SDKSchemeAdapter, v1_1 as FSPIOP } from '@mojaloop/api-snippets';
 import { randomUUID } from 'crypto';
 import Ajv from 'ajv';
