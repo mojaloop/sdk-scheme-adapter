@@ -28,6 +28,7 @@ import {
     BaseEntityState,
     BaseEntity,
     SchemaValidationError,
+    IPartyResult,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 import { randomUUID } from 'crypto';
@@ -58,7 +59,7 @@ export interface IndividualTransferState extends BaseEntityState {
     batchId?: string;
     // TODO: FSPIOP in api-snippets should export the `PartiesByTypeAndID` schema and refer that in the following line
     partyRequest?: any;
-    partyResponse?: SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse
+    partyResponse?: IPartyResult
     acceptParty?: boolean;
     acceptQuote?: boolean;
     quoteResponse?: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualQuoteResult;
@@ -78,7 +79,7 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
     get request(): SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransaction {
         return this._state.request;
     }
-    get partyResponse(): SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse | undefined {
+    get partyResponse(): IPartyResult | undefined {
         return this._state.partyResponse;
     }
     get quoteResponse(): SDKSchemeAdapter.Outbound.V2_0_0.Types.individualQuoteResult | undefined {
@@ -121,7 +122,7 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         this._state.partyRequest = request;
     }
 
-    setPartyResponse(response: SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse) {
+    setPartyResponse(response: IPartyResult) {
         this._state.partyResponse = response;
     }
 

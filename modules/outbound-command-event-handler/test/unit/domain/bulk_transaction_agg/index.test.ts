@@ -30,6 +30,7 @@ import { BULK_REQUEST } from '../../data/bulk_transaction_request'
 import { DefaultLogger } from '@mojaloop/logging-bc-client-lib';
 import { ILogger, LogLevel } from '@mojaloop/logging-bc-public-types-lib';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
+import { IPartyResult } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
 
 const logger: ILogger = new DefaultLogger('SDK-Scheme-Adapter', 'command-event-handler-unit-tests', '0.0.1', LogLevel.INFO);
@@ -98,7 +99,7 @@ describe('BulkTransactionAggregate', () => {
                 logger,
             );
             // Simulate party resposnes
-            const partyResponse1: SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse = {
+            const partyResponse1: IPartyResult = {
                 party: {
                     body: {
                         partyIdInfo: {
@@ -111,7 +112,7 @@ describe('BulkTransactionAggregate', () => {
                 },
                 currentState: 'COMPLETED'
             }
-            const partyResponse2: SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse = {
+            const partyResponse2: IPartyResult = {
                 party: {
                     body: {
                         partyIdInfo: {
@@ -151,7 +152,7 @@ describe('BulkTransactionAggregate', () => {
         })
         test('createBatches should create two batches for two transfers if there is a second fsp', async () => {
             // Add another individual transfer with different dfspId
-            const partyResponse3: SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse = {
+            const partyResponse3: IPartyResult = {
                 party: {
                     body: {
                         partyIdInfo: {

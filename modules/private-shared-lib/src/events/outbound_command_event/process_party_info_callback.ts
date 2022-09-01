@@ -26,13 +26,13 @@
 
 import { CommandEvent } from '../command_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
+import { IPartyResult } from '../../types';
 
 export interface IProcessPartyInfoCallbackCmdEvtData {
     bulkId: string;
     content: {
         transferId: string;
-        partyResult: SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse;
+        partyResult: IPartyResult;
     };
     timestamp: number | null;
     headers: IMessageHeader[] | null;

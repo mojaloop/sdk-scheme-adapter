@@ -28,12 +28,13 @@
 import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
+import { IPartyResult } from '../../types';
 
 export interface IPartyInfoCallbackReceivedDmEvtData {
     bulkId: string;
     content: {
         transferId: string;
-        partyResult: SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse;
+        partyResult: IPartyResult;
     };
     timestamp: number | null;
     headers: IMessageHeader[] | null;
@@ -58,7 +59,7 @@ export class PartyInfoCallbackReceivedDmEvt extends DomainEvent {
         return (this.getContent() as IPartyInfoCallbackReceivedDmEvtData['content']).transferId;
     }
 
-    getPartyResult(): SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse {
+    getPartyResult(): IPartyResult {
         return (this.getContent() as IPartyInfoCallbackReceivedDmEvtData['content']).partyResult;
     }
 
