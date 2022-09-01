@@ -78,7 +78,7 @@ export async function handleProcessSDKOutboundBulkQuotesRequestCmdEvt(
                     timestamp: Date.now(),
                     headers: [],
                 });
-                await options.domainProducer.sendDomainEvent(msg);
+                await options.domainProducer.sendDomainEvent(bulkQuotesRequestedDmEvt);
                 bulkBatch.setState(BulkBatchInternalState.AGREEMENT_PROCESSING);
                 await bulkTransactionAgg.setBulkBatchById(bulkBatch.id, bulkBatch);
             } catch(err) {
