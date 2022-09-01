@@ -69,6 +69,8 @@ export interface IndividualTransferState extends BaseEntityState {
 
 export class IndividualTransferEntity extends BaseEntity<IndividualTransferState> {
 
+    private static readonly IndividualTransferStateVersion = 1;
+
     get id(): string {
         return this._state.id;
     }
@@ -97,7 +99,7 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
             state: IndividualTransferInternalState.RECEIVED,
             created_at: Date.now(),
             updated_at: Date.now(),
-            version: 1,
+            version: IndividualTransferEntity.IndividualTransferStateVersion,
         };
         return new IndividualTransferEntity(initialState);
     }

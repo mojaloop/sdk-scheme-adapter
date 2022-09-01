@@ -58,6 +58,8 @@ export interface BulkTransactionState extends BaseEntityState {
 
 export class BulkTransactionEntity extends BaseEntity<BulkTransactionState> {
 
+    private static readonly BulkTransactionStateVersion = 1;
+
     get id(): string {
         return this._state.id;
     }
@@ -89,7 +91,7 @@ export class BulkTransactionEntity extends BaseEntity<BulkTransactionState> {
             state: BulkTransactionInternalState.RECEIVED,
             created_at: Date.now(),
             updated_at: Date.now(),
-            version: 1,
+            version: BulkTransactionEntity.BulkTransactionStateVersion,
         };
         return new BulkTransactionEntity(initialState);
     }

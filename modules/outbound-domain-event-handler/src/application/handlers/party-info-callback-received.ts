@@ -29,8 +29,7 @@ export async function handlePartyInfoCallbackReceived(
         await options.commandProducer.sendCommandEvent(processPartyInfoCallbackMessage);
 
         logger.info(`Sent command event ${processPartyInfoCallbackMessage.getName()}`);
-        console.log(processPartyInfoCallbackMessage);
-    } catch (err: any) {
-        logger.info(`Failed to create SDKOutboundBulkRequestEntity. ${err.message}`);
+    } catch (err) {
+        logger.info(`Failed to create SDKOutboundBulkRequestEntity. ${(err as Error).message}`);
     }
 }

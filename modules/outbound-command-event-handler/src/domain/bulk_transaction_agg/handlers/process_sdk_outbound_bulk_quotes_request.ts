@@ -87,8 +87,7 @@ export async function handleProcessSDKOutboundBulkQuotesRequestCmdEvt(
             }
         }
 
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    } catch (err: any) {
-        logger.info(`Failed to create BulkTransactionAggregate. ${err.message}`);
+    } catch (err) {
+        logger.info(`Failed to create BulkTransactionAggregate. ${(err as Error).message}`);
     }
 }

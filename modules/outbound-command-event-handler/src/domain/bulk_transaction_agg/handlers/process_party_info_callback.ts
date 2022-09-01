@@ -25,7 +25,7 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { CommandEvent, ProcessPartyInfoCallbackCmdEvt, PartyInfoCallbackProcessedDmEvt } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { CommandEvent, ProcessPartyInfoCallbackCmdEvt, PartyInfoCallbackProcessedDmEvt, SDKOutboundTransferState } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
 import { IndividualTransferInternalState } from '../..';
@@ -51,7 +51,7 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
             processPartyInfoCallback.getTransferId(),
         );
         const partyResult = processPartyInfoCallback.getPartyResult();
-        if(partyResult.currentState && partyResult.currentState === 'COMPLETED') {
+        if(partyResult.currentState && partyResult.currentState === SDKOutboundTransferState.COMPLETED) {
             individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS);
         } else {
             individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_FAILED);
@@ -69,8 +69,7 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
         await options.domainProducer.sendDomainEvent(msg);
 
         await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    } catch (err: any) {
-        logger.info(`Failed to create BulkTransactionAggregate. ${err.message}`);
+    } catch (err) {
+        logger.info(`Failed to create BulkTransactionAggregate. ${(err as Error).message}`);
     }
 }

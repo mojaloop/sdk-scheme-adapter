@@ -90,7 +90,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
         const bulkQuotesTotalCount = await bulkTransactionAgg.getBulkQuotesTotalCount();
         const bulkQuotesSuccessCount = await bulkTransactionAgg.getBulkQuotesSuccessCount();
         const bulkQuotesFailedCount = await bulkTransactionAgg.getBulkQuotesFailedCount();
-        if (bulkQuotesTotalCount <= (bulkQuotesSuccessCount + bulkQuotesFailedCount)) {
+        if (bulkQuotesTotalCount === (bulkQuotesSuccessCount + bulkQuotesFailedCount)) {
             // Update global state "AGREEMENT_COMPLETED"
             await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.AGREEMENT_COMPLETED)
     
@@ -144,11 +144,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
             }
         }
 
-
-
-
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    } catch (err: any) {
-        logger.info(`Failed to create BulkTransactionAggregate. ${err.message}`);
+    } catch (err) {
+        logger.info(`Failed to create BulkTransactionAggregate. ${(err as Error).message}`);
     }
 }

@@ -31,7 +31,7 @@ export async function handleBulkQuotesCallbackReceived(
 
         logger.info(`Sent command event ${processBulkQuotesCallbackMessage.getName()}`);
         console.log(processBulkQuotesCallbackMessage);
-    } catch (err: any) {
-        logger.info(`Failed to send command event ProcessBulkQuotesCallbackCmdEvt. ${err.message}`);
+    } catch (err) {
+        logger.info(`Failed to send command event ProcessBulkQuotesCallbackCmdEvt. ${(err as Error).message}`);
     }
 }

@@ -57,13 +57,15 @@ export interface BulkBatchState extends BaseEntityState {
     bulkQuotesResponse?: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkQuoteResponse;
     bulkTransfersRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferRequest;
     bulkTransfersResponse?: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkQuoteResponse;
-    quoteIdReferenceIdMap: {[quoteId: string]: string}; // Key = individual quoteId from request, Value = transactionId representing an individual-transfer
-    transferIdReferenceIdMap: {[transactionId: string]: string}; // Key = individual transactionId from request, Value = ?
+    quoteIdReferenceIdMap: {[quoteId: string]: string}; // Key = individual quoteId from bulkQuotesRequest, Value = transactionId representing an individual transfer from the bulkTransaction
+    transferIdReferenceIdMap: {[transactionId: string]: string}; // Key = individual transferId from bulkTransferRequest, Value = transactionId representing an individual transfer from the bulkTransaction
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     lastError?: any; // TODO: Define a format for this
 }
 
 export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
+
+    private static readonly BulkBatchStateVersion = 1;
 
     get id(): string {
         return this._state.id;
@@ -135,7 +137,7 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
             transferIdReferenceIdMap: {},
             created_at: Date.now(),
             updated_at: Date.now(),
-            version: 1,
+            version: BulkBatchEntity.BulkBatchStateVersion,
         };
         return new BulkBatchEntity(initialState);
     }
@@ -168,14 +170,6 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
 
     setBulkQuotesResponse(response: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkQuoteResponse) {
         this._state.bulkQuotesResponse = response;
-    }
-
-    /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */
-    constructor(initialState: BulkBatchState) {
-        // Commenting the validation in the constuctor to allow creation of bulkQuotes without any individualQuotes items
-        // BulkBatchEntity._validateBulkQuotesRequest(initialState.bulkQuotesRequest);
-        // BulkBatchEntity._validateBulkTransfersRequest(initialState.bulkTransfersRequest);
-        super(initialState);
     }
 
     

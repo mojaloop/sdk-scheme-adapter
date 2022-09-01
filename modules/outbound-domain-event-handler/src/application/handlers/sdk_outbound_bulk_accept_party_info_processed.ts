@@ -46,8 +46,7 @@ export async function handleSDKOutboundBulkAcceptPartyInfoProcessed(
             = new ProcessSDKOutboundBulkQuotesRequestCmdEvt(processSDKOutboundBulkQuotesRequestMessageData);
         await options.commandProducer.sendCommandEvent(processSDKOutboundBulkQuotesRequestMessage);
         logger.info(`Sent command event ${processSDKOutboundBulkQuotesRequestMessage.getName()}`);
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    } catch (err: any) {
+    } catch (err) {
         logger.info(`Failed to send ProcessSDKOutboundBulkQuotesRequestCmdEvt event`);
     }
 }
