@@ -1,6 +1,9 @@
-import { SimpleLogger } from '@mojaloop/sdk-scheme-adapter-private-shared-lib/test/unit/utilities/simple_logger'
+import {DefaultLogger} from '@mojaloop/logging-bc-client-lib';
 import axios from 'axios'
-import { ApiServer, TApiServerOptions } from '../../src/index'
+import { ApiServer, TApiServerOptions } from '../../../src/index'
+import {ILogger} from '@mojaloop/logging-bc-public-types-lib';
+
+const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion');
 
 describe('Api Server', () => {
   let server: ApiServer
@@ -12,7 +15,7 @@ describe('Api Server', () => {
   }
 
   beforeAll(async () => {
-    server = new ApiServer(options, new SimpleLogger())
+    server = new ApiServer(options, logger)
     await server.init()
   })
 

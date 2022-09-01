@@ -37,10 +37,10 @@
 
 'use strict';
 
-import { CommandEventMessage } from '../../events';
+import { CommandEvent } from '../../events';
 import { IEventProducer } from './ievent-producer';
 
 export interface ICommandEventProducer extends IEventProducer {
     init: () => Promise<void>
-    sendCommandMessage: (message: CommandEventMessage) => Promise<void>
+    sendCommandMessage: (message: CommandEvent) => Promise<void>
 }

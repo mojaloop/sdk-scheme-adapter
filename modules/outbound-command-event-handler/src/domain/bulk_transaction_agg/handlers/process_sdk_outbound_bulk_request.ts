@@ -25,28 +25,28 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { CommandEventMessage, ProcessSDKOutboundBulkRequestMessage, SDKOutboundBulkPartyInfoRequestedMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { CommandEvent, ProcessSDKOutboundBulkRequestCmdEvt, SDKOutboundBulkPartyInfoRequestedDmEvt } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '@module-domain';
 import { ICommandEventHandlerOptions } from '@module-types';
 
-export async function handleProcessSDKOutboundBulkRequestMessage(
-    message: CommandEventMessage,
+export async function handleProcessSDKOutboundBulkRequestCmdEvt(
+    message: CommandEvent,
     options: ICommandEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
-    const processSDKOutboundBulkRequestMessage = message as ProcessSDKOutboundBulkRequestMessage;
+    const processSDKOutboundBulkRequest = message as ProcessSDKOutboundBulkRequestCmdEvt;
     try {
-        logger.info(`Got Bulk Request ${processSDKOutboundBulkRequestMessage.getBulkRequest()}`);
+        logger.info(`Got Bulk Request ${processSDKOutboundBulkRequest.getBulkRequest()}`);
 
         // Create aggregate
         const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRequest(
-            processSDKOutboundBulkRequestMessage.getBulkRequest(),
+            processSDKOutboundBulkRequest.getBulkRequest(),
             options.bulkTransactionEntityRepo,
             logger,
         );
         logger.info(`Created BulkTransactionAggregate ${bulkTransactionAgg}`);
 
-        const msg = new SDKOutboundBulkPartyInfoRequestedMessage({
+        const msg = new SDKOutboundBulkPartyInfoRequestedDmEvt({
             bulkId: bulkTransactionAgg.bulkId,
             timestamp: Date.now(),
             headers: [],
