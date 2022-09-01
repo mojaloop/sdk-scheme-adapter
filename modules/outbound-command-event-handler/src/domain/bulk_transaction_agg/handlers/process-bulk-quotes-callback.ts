@@ -138,7 +138,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                     timestamp: Date.now(),
                     headers: [],
                 });
-                await options.domainProducer.sendDomainEvent(msg);
+                await options.domainProducer.sendDomainEvent(sdkOutboundBulkAcceptQuoteRequestedDmEvt);
                 // Update global state AGREEMENT_ACCEPTANCE_PENDING
                 await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.AGREEMENT_ACCEPTANCE_PENDING)
             }
