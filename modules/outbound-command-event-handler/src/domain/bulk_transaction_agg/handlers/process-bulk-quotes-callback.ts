@@ -75,7 +75,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
             }
         }
 
-        const msg = new BulkQuotesCallbackProcessedDmEvt({
+        const bulkQuotesCallbackProcessedDmEvt = new BulkQuotesCallbackProcessedDmEvt({
             bulkId: bulkTransactionAgg.bulkId,
             content: {
                 batchId: bulkBatch.id
