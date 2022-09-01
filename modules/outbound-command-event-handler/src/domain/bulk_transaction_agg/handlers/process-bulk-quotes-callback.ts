@@ -95,7 +95,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
             await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.AGREEMENT_COMPLETED)
     
             // Send the domain message SDKOutboundBulkQuotesRequestProcessed
-            const msg = new SDKOutboundBulkQuotesRequestProcessedDmEvt({
+            const sdkOutboundBulkQuotesRequestProcessedDmEvt = new SDKOutboundBulkQuotesRequestProcessedDmEvt({
                 bulkId: bulkTransactionAgg.bulkId,
                 timestamp: Date.now(),
                 headers: [],
