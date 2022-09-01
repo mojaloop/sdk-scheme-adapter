@@ -29,7 +29,6 @@ import { CommandEvent, BulkQuotesCallbackProcessedDmEvt, ProcessBulkQuotesCallba
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
 import { BulkBatchInternalState, BulkTransactionInternalState, IndividualTransferInternalState } from '../..';
-// import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 export async function handleProcessBulkQuotesCallbackCmdEvt(
     message: CommandEvent,
