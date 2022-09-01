@@ -80,7 +80,7 @@ export async function handleProcessSDKOutboundBulkAcceptPartyInfoCmdEvt(
             timestamp: Date.now(),
             headers: [],
         });
-        await options.domainProducer.sendDomainEvent(msg);
+        await options.domainProducer.sendDomainEvent(sdkOutboundBulkAcceptPartyInfoProcessedDmEvt);
 
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     } catch (err: any) {
