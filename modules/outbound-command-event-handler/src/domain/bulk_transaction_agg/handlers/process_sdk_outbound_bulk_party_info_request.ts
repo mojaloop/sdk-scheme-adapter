@@ -78,7 +78,7 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestCmdEvt(
             }
 
             const subId = partyIdInfo.partySubIdOrType ? `/${partyIdInfo.partySubIdOrType}` : '';
-            const msg = new PartyInfoRequestedDmEvt({
+            const partyInfoRequestedDmEvt = new PartyInfoRequestedDmEvt({
                 bulkId: bulkTx.id,
                 content: {
                     transferId: individualTransfer.id,
