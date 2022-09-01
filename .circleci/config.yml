@@ -205,7 +205,10 @@ jobs:
       - run:
           name: Execute Integration Tests
           command: |
+            yarn run start & echo $! > /run/sdk-scheme-adapter.pid
+            sleep 10
             yarn run test:integration
+            kill $(cat /run/sdk-scheme-adapter.pid)
       ## TODO Capture results
       # - run:
       #     name: prepare test/results
