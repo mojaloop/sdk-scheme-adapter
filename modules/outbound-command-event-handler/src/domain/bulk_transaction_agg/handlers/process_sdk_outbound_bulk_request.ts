@@ -25,7 +25,11 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { CommandEvent, ProcessSDKOutboundBulkRequestCmdEvt, SDKOutboundBulkPartyInfoRequestedDmEvt } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import {
+    CommandEvent,
+    ProcessSDKOutboundBulkRequestCmdEvt,
+    SDKOutboundBulkPartyInfoRequestedDmEvt,
+} from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '@module-domain';
 import { ICommandEventHandlerOptions } from '@module-types';
 

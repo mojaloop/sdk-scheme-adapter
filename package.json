@@ -59,17 +59,17 @@
     "wait-4-docker": "node ./scripts/_wait4_all.js"
   },
   "dependencies": {
-    "nx": "14.5.10",
+    "nx": "14.6.1",
     "tslib": "^2.4.0"
   },
   "devDependencies": {
-    "@types/jest": "^28.1.8",
-    "@types/node": "^18.7.13",
+    "@types/jest": "^29.0.0",
+    "@types/node": "^18.7.14",
     "@types/node-cache": "^4.2.5",
-    "@typescript-eslint/eslint-plugin": "^5.35.1",
-    "@typescript-eslint/parser": "^5.35.1",
+    "@typescript-eslint/eslint-plugin": "^5.36.1",
+    "@typescript-eslint/parser": "^5.36.1",
     "audit-ci": "^6.3.0",
-    "eslint": "^8.22.0",
+    "eslint": "^8.23.0",
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-plugin-import": "latest",
     "husky": "^8.0.1",

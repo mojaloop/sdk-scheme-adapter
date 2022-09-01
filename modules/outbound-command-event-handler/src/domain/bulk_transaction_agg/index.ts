@@ -26,12 +26,12 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { 
-    BaseAggregate, 
+import {
+    BaseAggregate,
     BulkTransactionEntity,
-    BulkTransactionState
-    CommandEvent, 
-    IBulkTransactionEntityRepo
+    BulkTransactionState,
+    CommandEvent,
+    IBulkTransactionEntityRepo,
     IEntityStateRepository,
     IndividualTransferEntity,
     IndividualTransferState,
@@ -178,11 +178,11 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         logger: ILogger,
     ) {
         const handlerPrefix = 'handle';
-        if(!CommandEventHandlerFuntions.hasOwnProperty(handlerPrefix + message.constructor.name)) {
+        if(!CommandEventHandlerFunctions.hasOwnProperty(handlerPrefix + message.constructor.name)) {
             logger.error(`Handler function for the command event message ${message.constructor.name} is not implemented`);
             return;
         }
-        await CommandEventHandlerFuntions[handlerPrefix + message.constructor.name](
+        await CommandEventHandlerFunctions[handlerPrefix + message.constructor.name](
             message,
             options,
             logger,
