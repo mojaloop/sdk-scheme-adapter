@@ -167,6 +167,9 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[0])).state).toBe('RECEIVED');
     expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[1])).state).toBe('RECEIVED');
 
+    // Check number of transfers to be looked up have been saved in Redis
+    expect(await bulkTransactionEntityRepo.getPartyLookupTotalCount(bulkTransactionId)).toEqual(individualTransfers.length)
+
     // Check domain events published to kafka
     expect(domainEvents[0].getName()).toBe('SDKOutboundBulkPartyInfoRequestedDmEvt')
     // TODO Add asserts to check data contents of the domain event published to kafka
@@ -261,6 +264,9 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[0])).state).toBe('DISCOVERY_PROCESSING');
     expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[1])).state).toBe('DISCOVERY_PROCESSING');
 
+    // Check number of transfers to be looked up have been saved in Redis
+    expect(await bulkTransactionEntityRepo.getPartyLookupTotalCount(bulkTransactionId)).toEqual(individualTransfers.length)
+
     // Check domain events published to kafka
     const filteredEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequestedDmEvt');
     expect(filteredEvents.length).toBe(2);
@@ -347,6 +353,9 @@ describe("Tests for Outbound Command Event Handler", () => {
     const individualTransfers = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
     expect(individualTransfers.length).toBe(1);
     expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[0])).state).toBe('DISCOVERY_SUCCESS');
+
+    // Check number of transfers to be looked up have been saved in Redis
+    expect(await bulkTransactionEntityRepo.getPartyLookupTotalCount(bulkTransactionId)).toEqual(individualTransfers.length)
 
     const filteredEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequestedDmEvt');
     // Check domain events published to kafka
@@ -438,6 +447,7 @@ describe("Tests for Outbound Command Event Handler", () => {
       headers: []
     }
     const processPartyInfoCallbackMessageObj = new ProcessPartyInfoCallbackCmdEvt(processPartyInfoCallbackMessageData);
+    const previousPartyLookupSuccessCount = await bulkTransactionEntityRepo.getPartyLookupSuccessCount(bulkTransactionId)
     await producer.sendCommandMessage(processPartyInfoCallbackMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -448,6 +458,12 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect(individualTransferData.state).toBe('DISCOVERY_SUCCESS');
     expect(individualTransferData.partyResponse?.party.partyIdInfo.fspId).toBe('receiverfsp');
 
+    // Check number of transfers to be looked up have been saved in Redis
+    expect(await bulkTransactionEntityRepo.getPartyLookupTotalCount(bulkTransactionId)).toEqual(individualTransfers.length)
+
+    // Check that the party lookup success count has been incremented
+    const followingPartyLookupSuccessCount = await bulkTransactionEntityRepo.getPartyLookupSuccessCount(bulkTransactionId);
+    expect(followingPartyLookupSuccessCount).toBe(Number(previousPartyLookupSuccessCount!) + 1);
 
     // // Check domain events published to kafka
     expect(domainEvents[2].getName()).toBe('PartyInfoCallbackProcessedDmEvt');
@@ -540,6 +556,8 @@ describe("Tests for Outbound Command Event Handler", () => {
       headers: []
     }
     const processPartyInfoCallbackMessageObj = new ProcessPartyInfoCallbackCmdEvt(processPartyInfoCallbackMessageData);
+    const previousPartyLookupFailedCount = await bulkTransactionEntityRepo.getPartyLookupFailedCount(bulkTransactionId)
+
     await producer.sendCommandMessage(processPartyInfoCallbackMessageObj);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -550,6 +568,13 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect(individualTransferData.state).toBe('DISCOVERY_FAILED');
     expect(individualTransferData.partyResponse?.errorInformation?.errorCode).toBe('12345');
     expect(individualTransferData.partyResponse?.errorInformation?.errorDescription).toBe('ID Not Found');
+
+    // Check number of transfers to be looked up have been saved in Redis
+    expect(await bulkTransactionEntityRepo.getPartyLookupTotalCount(bulkTransactionId)).toEqual(individualTransfers.length)
+
+    // Check that the party lookup failed count has been incremented
+    const followingPartyLookupFailedCount = await bulkTransactionEntityRepo.getPartyLookupFailedCount(bulkTransactionId)
+    expect(followingPartyLookupFailedCount).toBe(Number(previousPartyLookupFailedCount!) + 1);
 
     // // Check domain events published to kafka
     expect(domainEvents[2].getName()).toBe('PartyInfoCallbackProcessedDmEvt')
