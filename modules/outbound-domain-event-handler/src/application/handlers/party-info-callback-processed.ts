@@ -1,45 +1,45 @@
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import {
-    DomainEventMessage,
-    IProcessSDKOutboundBulkPartyInfoRequestCompleteMessageData,
-    ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage,
-    PartyInfoCallbackProcessedMessage,
+    DomainEvent,
+    IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData,
+    ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt,
+    PartyInfoCallbackProcessedDmEvt,
     IBulkTransactionEntityReadOnlyRepo,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { IDomainEventHandlerOptions } from '../../types';
 
 export async function handlePartyInfoCallbackProcessed(
-    message: DomainEventMessage,
+    message: DomainEvent,
     options: IDomainEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
-    const partyInfoCallbackProcessedMessage
-        = PartyInfoCallbackProcessedMessage.CreateFromCommandEventMessage(message);
+    const partyInfoCallbackProcessedDmtEvt
+        = PartyInfoCallbackProcessedDmEvt.CreateFromCommandEvent(message);
 
     const totalLookups = await (
       <IBulkTransactionEntityReadOnlyRepo> options.bulkTransactionEntityRepo
-    ).getPartyLookupTotalCount(partyInfoCallbackProcessedMessage.getBulkId());
+    ).getPartyLookupTotalCount(partyInfoCallbackProcessedDmtEvt.getBulkId());
     const totalSuccessLookups = await (
       <IBulkTransactionEntityReadOnlyRepo> options.bulkTransactionEntityRepo
-    ).getPartyLookupSuccessCount(partyInfoCallbackProcessedMessage.getBulkId());
+    ).getPartyLookupSuccessCount(partyInfoCallbackProcessedDmtEvt.getBulkId());
     const totalFailedLookups = await (
       <IBulkTransactionEntityReadOnlyRepo> options.bulkTransactionEntityRepo
-    ).getPartyLookupFailedCount(partyInfoCallbackProcessedMessage.getBulkId());
+    ).getPartyLookupFailedCount(partyInfoCallbackProcessedDmtEvt.getBulkId());
 
     if(totalLookups != (totalSuccessLookups + totalFailedLookups))
         return;
 
     try {
-        const processSDKOutboundBulkPartyInfoRequestCompleteMessageData :
-        IProcessSDKOutboundBulkPartyInfoRequestCompleteMessageData = {
-            bulkId: partyInfoCallbackProcessedMessage.getBulkId(),
+        const processSDKOutboundBulkPartyInfoRequestCompleteData :
+        IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData = {
+            bulkId: partyInfoCallbackProcessedDmtEvt.getBulkId(),
             timestamp: Date.now(),
-            headers: partyInfoCallbackProcessedMessage.getHeaders(),
+            headers: partyInfoCallbackProcessedDmtEvt.getHeaders(),
         };
 
         const processSDKOutboundBulkPartyInfoRequestCompleteMessage
-            = new ProcessSDKOutboundBulkPartyInfoRequestCompleteMessage(
-                processSDKOutboundBulkPartyInfoRequestCompleteMessageData,
+            = new ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt(
+                processSDKOutboundBulkPartyInfoRequestCompleteData,
             );
 
         await options.commandProducer.sendCommandMessage(processSDKOutboundBulkPartyInfoRequestCompleteMessage);

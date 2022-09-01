@@ -37,6 +37,7 @@ import {
     SDKOutboundBulkRequestReceivedDmEvt,
     SDKOutboundBulkPartyInfoRequestedDmEvt,
     PartyInfoCallbackReceivedDmEvt,
+    IBulkTransactionEntityReadOnlyRepo,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { IDomainEventHandlerOptions } from '../types';
 import {
