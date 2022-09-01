@@ -51,7 +51,7 @@ export abstract class BaseEntity <S extends BaseEntityState> {
         return this._state.version;
     }
 
-    protected constructor(initialState: S) {
+    constructor(initialState: S) {
         this._state = initialState;
     }
 

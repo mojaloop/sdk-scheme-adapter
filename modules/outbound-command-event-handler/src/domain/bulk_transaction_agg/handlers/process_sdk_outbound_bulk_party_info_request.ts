@@ -91,7 +91,7 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestCmdEvt(
                 timestamp: Date.now(),
                 headers: [],
             });
-            individualTransfer.setPartyRequest(msg.getContent());
+            individualTransfer.setPartyRequest(partyInfoRequestedDmEvt.getContent());
             individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_PROCESSING);
             await options.domainProducer.sendDomainEvent(partyInfoRequestedDmEvt);
             await bulkTransactionAgg.setIndividualTransferById(individualTransferId, individualTransfer);
