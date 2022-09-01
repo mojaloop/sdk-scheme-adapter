@@ -80,15 +80,16 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestCmdEvt(
             const subId = partyIdInfo.partySubIdOrType ? `/${partyIdInfo.partySubIdOrType}` : '';
             const msg = new PartyInfoRequestedDmEvt({
                 bulkId: bulkTx.id,
-                transferId: individualTransfer.id,
+                content: {
+                    transferId: individualTransfer.id,
+                    request: {
+                        partyIdType: partyIdInfo.partyIdType,
+                        partyIdentifier: partyIdInfo.partyIdentifier,
+                        partySubIdOrType: subId
+                    }
+                },
                 timestamp: Date.now(),
                 headers: [],
-                request: {
-                    method: 'GET',
-                    path: `/parties/${partyIdInfo.partyIdType}/${partyIdInfo.partyIdentifier}${subId}`,
-                    headers: [],
-                    body: '',
-                },
             });
             individualTransfer.setPartyRequest(msg.getContent());
             individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_PROCESSING);

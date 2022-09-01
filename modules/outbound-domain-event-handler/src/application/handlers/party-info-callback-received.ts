@@ -14,8 +14,11 @@ export async function handlePartyInfoCallbackReceived(
         = PartyInfoCallbackReceivedDmEvt.CreateFromDomainEvent(message);
     try {
         const processPartyInfoCallbackMessageData: IProcessPartyInfoCallbackCmdEvtData = {
-            key: partyInfoCallbackReceived.getKey(),
-            partyResult: partyInfoCallbackReceived.getPartyResult(),
+            bulkId: partyInfoCallbackReceived.getKey(),
+            content: {
+                transferId: partyInfoCallbackReceived.getTransferId(),
+                partyResult: partyInfoCallbackReceived.getPartyResult()
+            },
             timestamp: Date.now(),
             headers: partyInfoCallbackReceived.getHeaders(),
         };

@@ -29,7 +29,7 @@ import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-li
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 export interface IProcessBulkQuotesCallbackCmdEvtData {
-    key: string;
+    bulkId: string;
     content: {
         batchId: string;
         bulkQuoteId: string;
@@ -42,7 +42,7 @@ export interface IProcessBulkQuotesCallbackCmdEvtData {
 export class ProcessBulkQuotesCallbackCmdEvt extends CommandEvent {
     constructor(data: IProcessBulkQuotesCallbackCmdEvtData) {
         super({
-            key: data.key,
+            key: data.bulkId,
             content: data.content,
             timestamp: data.timestamp,
             headers: data.headers,
@@ -55,7 +55,7 @@ export class ProcessBulkQuotesCallbackCmdEvt extends CommandEvent {
             throw new Error('Content is in unknown format');
         }
         const data: IProcessBulkQuotesCallbackCmdEvtData = {
-            key: message.getKey(),
+            bulkId: message.getKey(),
             content: message.getContent() as IProcessBulkQuotesCallbackCmdEvtData['content'],
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),

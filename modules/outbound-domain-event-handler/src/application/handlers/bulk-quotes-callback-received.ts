@@ -14,7 +14,7 @@ export async function handleBulkQuotesCallbackReceived(
         = BulkQuotesCallbackReceivedDmEvt.CreateFromDomainEvent(message);
     try {
         const processPartyInfoCallbackMessageData: IProcessBulkQuotesCallbackCmdEvtData = {
-            key: bulkQuotesCallbackReceivedMessage.getKey(),
+            bulkId: bulkQuotesCallbackReceivedMessage.getKey(),
             content: {
                 batchId: bulkQuotesCallbackReceivedMessage.batchId,
                 bulkQuoteId: bulkQuotesCallbackReceivedMessage.bulkQuoteId,

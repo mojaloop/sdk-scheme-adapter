@@ -25,7 +25,7 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { CommandEvent, ProcessPartyInfoCallbackCmdEvt, PartyInfoCallbackProcessedDmEvt, IPartyResult } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { CommandEvent, ProcessPartyInfoCallbackCmdEvt, PartyInfoCallbackProcessedDmEvt } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
 import { IndividualTransferInternalState } from '../..';
@@ -50,7 +50,7 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
         const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(
             processPartyInfoCallback.getTransferId(),
         );
-        const partyResult = processPartyInfoCallback.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse;
+        const partyResult = processPartyInfoCallback.getPartyResult();
         if(partyResult.currentState && partyResult.currentState === 'COMPLETED') {
             individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS);
         } else {
@@ -59,7 +59,10 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
         individualTransfer.setPartyResponse(partyResult);
 
         const msg = new PartyInfoCallbackProcessedDmEvt({
-            key: processPartyInfoCallback.getKey(),
+            bulkId: processPartyInfoCallback.getKey(),
+            content: {
+                transferId: processPartyInfoCallback.getTransferId()
+            },
             timestamp: Date.now(),
             headers: [],
         });

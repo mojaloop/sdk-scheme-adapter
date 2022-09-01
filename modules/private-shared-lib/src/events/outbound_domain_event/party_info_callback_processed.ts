@@ -29,8 +29,10 @@ import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-li
 // import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 export interface IPartyInfoCallbackProcessedDmEvtData {
-    key: string;
-    // partyResult: SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse;
+    bulkId: string;
+    content: {
+        transferId: string;
+    };
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
@@ -38,9 +40,8 @@ export interface IPartyInfoCallbackProcessedDmEvtData {
 export class PartyInfoCallbackProcessedDmEvt extends DomainEvent {
     constructor(data: IPartyInfoCallbackProcessedDmEvtData) {
         super({
-            key: data.key,
-            // content: data.partyResult,
-            content: null,
+            key: data.bulkId,
+            content: data.content,
             timestamp: data.timestamp,
             headers: data.headers,
             name: PartyInfoCallbackProcessedDmEvt.name,
@@ -48,11 +49,11 @@ export class PartyInfoCallbackProcessedDmEvt extends DomainEvent {
     }
 
     getBulkId() {
-        return this.getKey().split('_')[0];
+        return this.getKey();
     }
 
     getTransferId() {
-        return this.getKey().split('_')[1];
+        return (this.getContent() as IPartyInfoCallbackProcessedDmEvtData['content']).transferId;
     }
 
     static CreateFromCommandEvent(message: DomainEvent): PartyInfoCallbackProcessedDmEvt {
@@ -60,8 +61,8 @@ export class PartyInfoCallbackProcessedDmEvt extends DomainEvent {
             throw new Error('Content is in unknown format');
         }
         const data: IPartyInfoCallbackProcessedDmEvtData = {
-            key: message.getKey(),
-            // partyResult: <SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse>message.getContent(),
+            bulkId: message.getKey(),
+            content: message.getContent() as IPartyInfoCallbackProcessedDmEvtData['content'],
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
         };
