@@ -83,7 +83,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
             timestamp: Date.now(),
             headers: [],
         });
-        await options.domainProducer.sendDomainEvent(msg);
+        await options.domainProducer.sendDomainEvent(bulkQuotesCallbackProcessedDmEvt);
 
         // Progressing to the next step
         // Check the status of the remaining items in the bulk
