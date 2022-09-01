@@ -29,20 +29,20 @@
 import { MLKafkaConsumerOptions, MLKafkaConsumerOutputType } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib';
 import { KafkaEventConsumer } from './kafka_event_consumer';
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { DomainEventMessage }  from '../events';
+import { DomainEvent }  from '../events';
 import { IMessage } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 import { IKafkaEventConsumerOptions } from '../types';
 
 export class KafkaDomainEventConsumer extends KafkaEventConsumer {
 
     constructor(
-        handlerFn: (domainEventMessage: DomainEventMessage) => Promise<void>,
+        handlerFn: (domainEventMessage: DomainEvent) => Promise<void>,
         consumerOptions: IKafkaEventConsumerOptions,
         logger: ILogger,
     ) {
         const superHandlerFn = async (message: IMessage) => {
             // Construct domain event message from IMessage
-            const domainEventMessageObj = DomainEventMessage.CreateFromIMessage(message);
+            const domainEventMessageObj = DomainEvent.CreateFromIMessage(message);
             // Call handler function with domain event message
             await handlerFn(domainEventMessageObj);
         };

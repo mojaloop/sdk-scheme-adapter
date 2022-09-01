@@ -1,27 +1,27 @@
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import {
-    DomainEventMessage, IProcessPartyInfoCallbackMessageData, ProcessPartyInfoCallbackMessage,
+    DomainEvent, IProcessPartyInfoCallbackCmdEvtData, ProcessPartyInfoCallbackCmdEvt,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { IDomainEventHandlerOptions } from '../../types';
-import { PartyInfoCallbackReceivedMessage } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { PartyInfoCallbackReceivedDmEvt } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
 export async function handlePartyInfoCallbackReceived(
-    message: DomainEventMessage,
+    message: DomainEvent,
     options: IDomainEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
-    const partyInfoCallbackReceivedMessage
-        = PartyInfoCallbackReceivedMessage.CreateFromDomainEventMessage(message);
+    const partyInfoCallbackReceived
+        = PartyInfoCallbackReceivedDmEvt.CreateFromDomainEvent(message);
     try {
-        const processPartyInfoCallbackMessageData: IProcessPartyInfoCallbackMessageData = {
-            key: partyInfoCallbackReceivedMessage.getKey(),
-            partyResult: partyInfoCallbackReceivedMessage.getPartyResult(),
+        const processPartyInfoCallbackMessageData: IProcessPartyInfoCallbackCmdEvtData = {
+            key: partyInfoCallbackReceived.getKey(),
+            partyResult: partyInfoCallbackReceived.getPartyResult(),
             timestamp: Date.now(),
-            headers: partyInfoCallbackReceivedMessage.getHeaders(),
+            headers: partyInfoCallbackReceived.getHeaders(),
         };
 
         const processPartyInfoCallbackMessage
-            = new ProcessPartyInfoCallbackMessage(processPartyInfoCallbackMessageData);
+            = new ProcessPartyInfoCallbackCmdEvt(processPartyInfoCallbackMessageData);
 
         await options.commandProducer.sendCommandMessage(processPartyInfoCallbackMessage);
 

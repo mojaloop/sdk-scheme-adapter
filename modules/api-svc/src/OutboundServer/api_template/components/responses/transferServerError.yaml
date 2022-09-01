@@ -1,5 +1,0 @@
-description: An error occurred processing the transfer
-content:
-  application/json:
-    schema:
-      $ref: ../schemas/errorTransferResponse.yaml

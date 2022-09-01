@@ -29,20 +29,20 @@
 import { MLKafkaConsumerOptions, MLKafkaConsumerOutputType } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib';
 import { KafkaEventConsumer } from './kafka_event_consumer';
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { CommandEventMessage }  from '../events';
+import { CommandEvent }  from '../events';
 import { IMessage } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 import { IKafkaEventConsumerOptions } from '../types';
 
 export class KafkaCommandEventConsumer extends KafkaEventConsumer {
 
     constructor(handlerFn: (
-        commandEventMessage: CommandEventMessage) => Promise<void>,
+        commandEventMessage: CommandEvent) => Promise<void>,
     consumerOptions: IKafkaEventConsumerOptions,
     logger: ILogger,
     ) {
         const superHandlerFn = async (message: IMessage) => {
             // Construct command event message from IMessage
-            const commandEventMessageObj = CommandEventMessage.CreateFromIMessage(message);
+            const commandEventMessageObj = CommandEvent.CreateFromIMessage(message);
             // Call handler function with command event message
             await handlerFn(commandEventMessageObj);
         };

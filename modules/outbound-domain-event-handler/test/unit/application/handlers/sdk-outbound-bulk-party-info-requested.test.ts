@@ -32,7 +32,7 @@
 
 import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
-import { DomainEventMessage, EventMessageType, IDomainEventMessageData, OutboundDomainEventMessageName, ProcessSDKOutboundBulkPartyInfoRequestMessage } from "@mojaloop/sdk-scheme-adapter-private-shared-lib"
+import { DomainEvent, EventType, IDomainEventData, SDKOutboundBulkPartyInfoRequestedDmEvt, ProcessSDKOutboundBulkPartyInfoRequestCmdEvt } from "@mojaloop/sdk-scheme-adapter-private-shared-lib"
 import { randomUUID } from "crypto";
 import { handleSDKOutboundBulkPartyInfoRequested } from "../../../../src/application/handlers"
 import { IDomainEventHandlerOptions } from "../../../../src/types";
@@ -47,14 +47,14 @@ describe('handleSDKOutboundBulkPartyInfoRequested', () => {
     }
   } as unknown as IDomainEventHandlerOptions
 
-  let sampleSDKOutboundBulkPartyInfoRequestedMessage: IDomainEventMessageData;
+  let sampleSDKOutboundBulkPartyInfoRequestedMessage: IDomainEventData;
   let uuid: string;
 
   beforeEach(async () => {
     uuid = randomUUID();
     sampleSDKOutboundBulkPartyInfoRequestedMessage = {
       key: uuid,
-      name: OutboundDomainEventMessageName.SDKOutboundBulkPartyInfoRequested,
+      name: SDKOutboundBulkPartyInfoRequestedDmEvt.name,
       content: {},
       timestamp: Date.now(),
       headers: [],
@@ -63,15 +63,15 @@ describe('handleSDKOutboundBulkPartyInfoRequested', () => {
 
 
   test('emits a processSDKOutboundBulkPartyInfoRequestMessage message', async () => {
-    const sampleDomainEventMessageDataObj = new DomainEventMessage(sampleSDKOutboundBulkPartyInfoRequestedMessage);
-    await handleSDKOutboundBulkPartyInfoRequested(sampleDomainEventMessageDataObj, domainEventHandlerOptions, logger)
+    const sampleDomainEventMessageDataObj = new DomainEvent(sampleSDKOutboundBulkPartyInfoRequestedMessage);
+    handleSDKOutboundBulkPartyInfoRequested(sampleDomainEventMessageDataObj, domainEventHandlerOptions, logger)
     expect(domainEventHandlerOptions.commandProducer.sendCommandMessage)
       .toBeCalledWith(
         expect.objectContaining({
           _data: expect.objectContaining({
             key: uuid,
-            name: ProcessSDKOutboundBulkPartyInfoRequestMessage.name,
-            type: EventMessageType.COMMAND_EVENT
+            name: ProcessSDKOutboundBulkPartyInfoRequestCmdEvt.name,
+            type: EventType.COMMAND_EVENT
           })
         })
     )

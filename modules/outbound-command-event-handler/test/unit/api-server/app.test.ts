@@ -16,14 +16,31 @@
  ******************************************************************************/
 
 /* Example
- * 
+ *
  * This is an example Jest unit test for express app.
- * 
+ *
  */
 import request from 'supertest';
-import { app } from '../../../src/server/app';
+import { OutboundCommandEventHandlerAPIServer as ApiServer } from '../../../src/api-server';
+import { IBulkTransactionEntityRepo } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
+import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
+import { Application } from 'express';
+
+const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion');
 
 describe("Test the docs endpoints", () => {
+    const apiServer = new ApiServer({
+        port: 9999,
+        bulkTransactionEntityRepo: {} as IBulkTransactionEntityRepo,
+    }, logger);
+    let app: Application;
+    beforeEach(async () => {
+        app = await apiServer.startServer();
+    });
+    afterEach(async () => {
+        await apiServer.stopServer();
+    });
     test("/docs should be redirected to /docs/", async () => {
         const response = await request(app).get("/docs");
         expect(response.statusCode).toBe(301);
@@ -35,10 +52,20 @@ describe("Test the docs endpoints", () => {
         expect(response.statusCode).toBe(200);
         expect(response).toHaveProperty('text');
     });
-
 });
 
 describe("Test the unknown endpoint", () => {
+    const apiServer = new ApiServer({
+        port: 9999,
+        bulkTransactionEntityRepo: {} as IBulkTransactionEntityRepo,
+    }, logger);
+    let app: Application;
+    beforeEach(async () => {
+        app = await apiServer.startServer();
+    });
+    afterEach(async () => {
+        await apiServer.stopServer();
+    });
     test("/someunknown endpoint should throw 404 error", async () => {
         const response = await request(app).get("/someunknown");
         expect(response.statusCode).toBe(404);

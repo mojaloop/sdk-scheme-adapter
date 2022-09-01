@@ -25,6 +25,7 @@
 'use strict';
 
 import { BaseEntityState, BaseEntity } from './';
+import { IPartyResult } from '@module-types';
 import { SchemaValidationError } from '../errors';
 import { SDKSchemeAdapter, v1_1 as FSPIOP } from '@mojaloop/api-snippets';
 import { randomUUID } from 'crypto';
@@ -51,7 +52,7 @@ export interface IndividualTransferState extends BaseEntityState {
     batchId?: string;
     // TODO: FSPIOP in api-snippets should export the `PartiesByTypeAndID` schema and refer that in the following line
     partyRequest?: any;
-    partyResponse?: FSPIOP.Schemas.PartyResult
+    partyResponse?: IPartyResult;
     acceptParty?: boolean;
     acceptQuote?: boolean;
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
@@ -101,7 +102,7 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         this._state.partyRequest = request;
     }
 
-    setPartyResponse(request: FSPIOP.Schemas.PartyResult) {
+    setPartyResponse(request: IPartyResult) {
         this._state.partyResponse = request;
     }
 

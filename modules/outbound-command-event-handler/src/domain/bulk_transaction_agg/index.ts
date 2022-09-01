@@ -30,7 +30,7 @@ import {
     BaseAggregate,
     BulkTransactionEntity,
     BulkTransactionState,
-    CommandEventMessage,
+    CommandEvent,
     IBulkTransactionEntityRepo,
     IEntityStateRepository,
     IndividualTransferEntity,
@@ -200,8 +200,9 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         }
     }
 
+
     static async ProcessCommandEvent(
-        message: CommandEventMessage,
+        message: CommandEvent,
         options: ICommandEventHandlerOptions,
         logger: ILogger,
     ) {
@@ -216,4 +217,5 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
             logger,
         );
     }
+
 }

@@ -18,27 +18,43 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Modusbox
- - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
+ - Yevhen Kyriukha <yevhen.kyriukha@modusbox.com>
  --------------
  ******/
 
-import * as ProcessSDKOutboundBulkRequestHandler from './process_sdk_outbound_bulk_request';
-import * as ProcessSDKOutboundBulkPartyInfoRequestHandler from './process_sdk_outbound_bulk_party_info_request';
-import * as ProcessSDKOutboundBulkPartyInfoRequestCompleteHandler from './process_sdk_outbound_bulk_party_info_request_complete';
-import * as ProcessPartyInfoCallbackHandler from './process_party_info_callback';
-import { CommandEvent } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-import { ICommandEventHandlerOptions } from '@module-types';
-import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
+'use strict';
 
-export default  {
-    ...ProcessSDKOutboundBulkRequestHandler,
-    ...ProcessSDKOutboundBulkPartyInfoRequestHandler,
-    ...ProcessSDKOutboundBulkPartyInfoRequestCompleteHandler,
-    ...ProcessPartyInfoCallbackHandler,
-} as {
-    [key: string]: (
+import { CommandEvent } from '../command_event';
+import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+
+export interface IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData {
+    bulkId: string;
+    timestamp: number | null;
+    headers: IMessageHeader[] | null;
+}
+
+export class ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt extends CommandEvent {
+    constructor(data: IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData) {
+        super({
+            key: data.bulkId,
+            timestamp: data.timestamp,
+            headers: data.headers,
+            content: null,
+            name: ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt.name,
+        });
+    }
+
+    static CreateFromCommandEvent(
         message: CommandEvent,
-        options: ICommandEventHandlerOptions,
-        logger: ILogger,
-    ) => Promise<void>
-};
+    ): ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt {
+        if((message.getKey() === null || typeof message.getKey() !== 'string')) {
+            throw new Error('Bulk id is in unknown format');
+        }
+        const data: IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData = {
+            timestamp: message.getTimeStamp(),
+            headers: message.getHeaders(),
+            bulkId: message.getKey(),
+        };
+        return new ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt(data);
+    }
+}
