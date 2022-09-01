@@ -128,7 +128,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                         })
                     }
                 }
-                const msg = new SDKOutboundBulkAcceptQuoteRequestedDmEvt({
+                const sdkOutboundBulkAcceptQuoteRequestedDmEvt = new SDKOutboundBulkAcceptQuoteRequestedDmEvt({
                     bulkId: bulkTransactionAgg.bulkId,
                     bulkAcceptQuoteRequest: {
                         bulkHomeTransactionID: bulkTransactionAgg.getBulkTransaction().bulkHomeTransactionID,
