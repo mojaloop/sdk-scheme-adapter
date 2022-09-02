@@ -78,14 +78,17 @@ const bulkTransactionEntityRepo = new RedisBulkTransactionStateRepo(bulkTransact
 describe("Tests for Outbound Command Event Handler", () => {
 
   beforeEach(async () => {
-    await producer.init();
     domainEvents = [];
+  });
+
+  beforeAll(async () => {
+    await producer.init();
     await consumer.init();
     await consumer.start();
     await bulkTransactionEntityRepo.init();
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     await producer.destroy();
     await consumer.destroy();
     await bulkTransactionEntityRepo.destroy();
