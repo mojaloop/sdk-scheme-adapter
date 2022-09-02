@@ -419,8 +419,8 @@ describe('First domain event', () => {
             ]
           }
         await bulkTransactionEntityRepo.store(bulkRequest);
-        await bulkTransactionEntityRepo.setPartyLookupTotalCount(bulkTransactionId, 2)
-        await bulkTransactionEntityRepo.incrementPartyLookupSuccessCount(bulkTransactionId, 1)
+        await bulkTransactionEntityRepo.setPartyLookupTotalCount(bulkTransactionId, 2);
+        await bulkTransactionEntityRepo.incrementPartyLookupSuccessCount(bulkTransactionId, 1);
 
         const transferId = randomUUID();
         const key = `${bulkTransactionId}_${transferId}`
