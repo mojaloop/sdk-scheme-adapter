@@ -44,7 +44,7 @@ import { handlePartyInfoCallbackProcessed } from "../../../../src/application/ha
 import { IDomainEventHandlerOptions } from "../../../../src/types";
 
 
-describe('handlePartyInfoCallbackReceived', () => {
+describe('handlePartyInfoCallbackProcessed', () => {
   const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion');
   const domainEventHandlerOptions = {
     commandProducer: {
