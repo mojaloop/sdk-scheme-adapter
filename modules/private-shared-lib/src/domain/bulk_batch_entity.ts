@@ -26,9 +26,11 @@
 
 import {
     BaseEntityState,
-    BaseEntity,
-    SchemaValidationError,
-} from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+    BaseEntity
+} from '.';
+import {
+    SchemaValidationError
+} from '..';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 import { randomUUID } from 'crypto';
 import Ajv from 'ajv';

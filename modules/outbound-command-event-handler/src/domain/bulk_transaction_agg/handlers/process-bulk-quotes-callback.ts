@@ -28,7 +28,7 @@ import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import { CommandEvent, BulkQuotesCallbackProcessedDmEvt, ProcessBulkQuotesCallbackCmdEvt, SDKOutboundBulkQuotesRequestProcessedDmEvt, SDKOutboundBulkAcceptQuoteRequestedDmEvt, CoreConnectorBulkAcceptQuoteRequestIndividualTransferResult } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
-import { BulkBatchInternalState, BulkTransactionInternalState, IndividualTransferInternalState } from '../..';
+import { BulkBatchInternalState, BulkTransactionInternalState, IndividualTransferInternalState } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
 export async function handleProcessBulkQuotesCallbackCmdEvt(
     message: CommandEvent,

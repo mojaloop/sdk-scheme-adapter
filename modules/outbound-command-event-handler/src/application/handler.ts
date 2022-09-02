@@ -46,9 +46,7 @@ import {
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { ICommandEventHandlerOptions } from '@module-types';
 
-import { IBulkTransactionEntityRepo, ICommandEventHandlerOptions } from '../types';
 
-import { BulkTransactionAgg } from '../domain';
 import { ICommandEventHandlerConfig } from 'src/shared/config';
 
 export interface IOutboundEventHandlerOptions {

@@ -32,7 +32,7 @@ import {
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
-import { BulkBatchInternalState, BulkTransactionInternalState } from '../..';
+import { BulkBatchInternalState, BulkTransactionInternalState } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
 export async function handleProcessSDKOutboundBulkQuotesRequestCmdEvt(
     message: CommandEvent,

@@ -29,17 +29,20 @@ import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import {
     BaseAggregate,
     BulkTransactionEntity,
+    BulkTransactionInternalState,
     BulkTransactionState,
     CommandEvent,
     IBulkTransactionEntityRepo,
     IEntityStateRepository,
     IndividualTransferEntity,
     IndividualTransferState,
+    BulkBatchEntity,
+    BulkBatchState
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 import CommandEventHandlerFunctions from './handlers';
-import { ICommandEventHandlerOptions } from '@module-types';import { BulkBatchEntity, BulkBatchState } from '../bulk_batch_entity';
+import { ICommandEventHandlerOptions } from '@module-types';
 import { randomUUID } from 'crypto';
 
 

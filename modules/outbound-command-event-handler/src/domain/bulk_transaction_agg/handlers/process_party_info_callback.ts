@@ -30,7 +30,7 @@ import {
     IndividualTransferInternalState,
     ProcessPartyInfoCallbackCmdEvt,
     PartyInfoCallbackProcessedDmEvt,
-    IPartyResult,
+    SDKOutboundTransferState,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
