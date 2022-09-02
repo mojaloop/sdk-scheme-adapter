@@ -37,7 +37,7 @@ import {
     IndividualTransferEntity,
     IndividualTransferState,
     BulkBatchEntity,
-    BulkBatchState
+    BulkBatchState,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 

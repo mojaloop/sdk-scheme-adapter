@@ -23,4 +23,3 @@
  ******/
 
 export * from './bulk_transaction_agg';
-

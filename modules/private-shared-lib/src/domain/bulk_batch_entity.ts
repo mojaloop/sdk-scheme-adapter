@@ -26,10 +26,10 @@
 
 import {
     BaseEntityState,
-    BaseEntity
+    BaseEntity,
 } from '.';
 import {
-    SchemaValidationError
+    SchemaValidationError,
 } from '..';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 import { randomUUID } from 'crypto';
