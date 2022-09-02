@@ -150,18 +150,18 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
             if(individualTransferStateStr) {
                 return JSON.parse(individualTransferStateStr) as IndividualTransferState;
             } else {
-                this._logger.error('Error loading individual trandfer from redis - for key: ' + key);
-                throw (new Error('Error loading individual trandfer from redis'));
+                this._logger.error('Error loading individual transfer from redis - for key: ' + key);
+                throw (new Error('Error loading individual transfer from redis'));
             }
         } catch (err) {
-            this._logger.error(err, 'Error loading individual trandfer from redis - for key: ' + key);
+            this._logger.error(err, 'Error loading individual transfer from redis - for key: ' + key);
             throw (err);
         }
     }
 
     async setIndividualTransfer(
         bulkId: string,
-        individualTranferId: string,
+        individualTransferId: string,
         value: IndividualTransferState,
     ): Promise<void> {
         if(!this.canCall()) {
@@ -169,7 +169,7 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            await this._redisClient.hSet(key, 'individualItem_' + individualTranferId, JSON.stringify(value));
+            await this._redisClient.hSet(key, 'individualItem_' + individualTransferId, JSON.stringify(value));
         } catch (err) {
             this._logger.error(err, `Error storing individual transfer with ID ${individualTransferId} to redis for key: ${key}`);
             throw (err);
