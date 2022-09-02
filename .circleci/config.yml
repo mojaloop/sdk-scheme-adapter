@@ -205,10 +205,16 @@ jobs:
       - run:
           name: Execute Integration Tests
           command: |
-            yarn run start & echo $! > /tmp/sdk-scheme-adapter.pid
-            sleep 30
-            yarn run test:integration
-            kill $(cat /tmp/sdk-scheme-adapter.pid)
+            run_int_tests() {
+              pushd /home/circleci/project/modules/$1
+              yarn run start & echo $! > /tmp/sdk-scheme-adapter.pid
+              sleep 10
+              yarn run test:integration
+              kill $(cat /tmp/sdk-scheme-adapter.pid)
+              popd
+            }
+            run_int_tests outbound-domain-event-handler
+            run_int_tests outbound-command-event-handler
       ## TODO Capture results
       # - run:
       #     name: prepare test/results
