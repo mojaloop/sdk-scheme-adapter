@@ -30,7 +30,7 @@ import {
     ProcessSDKOutboundBulkRequestCmdEvt,
     SDKOutboundBulkPartyInfoRequestedDmEvt,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-import { BulkTransactionAgg } from '@module-domain';
+import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
 
 export async function handleProcessSDKOutboundBulkRequestCmdEvt(
