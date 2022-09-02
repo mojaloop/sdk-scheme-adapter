@@ -8,7 +8,7 @@ import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 
 const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion');
 
-describe.skip('Api Server', () => {
+describe('Api Server', () => {
   let server: ApiServer
   const options: TApiServerOptions = {
     healthCallback: async () => ({ status: 'ok' }),

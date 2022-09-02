@@ -5,7 +5,7 @@
 import { KafkaMessagePublisher } from '../../../src/'
 import { IMessage, MessageTypes } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 
-describe.skip('Kafka Message Publisher', () => {
+describe('Kafka Message Publisher', () => {
 
   let publisher: KafkaMessagePublisher
 
