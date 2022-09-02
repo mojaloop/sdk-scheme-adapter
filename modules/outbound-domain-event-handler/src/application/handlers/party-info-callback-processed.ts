@@ -13,6 +13,7 @@ export async function handlePartyInfoCallbackProcessed(
     options: IDomainEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
+    console.log('hellooooooooooooooooo');
     const partyInfoCallbackProcessedDmtEvt
         = PartyInfoCallbackProcessedDmEvt.CreateFromCommandEvent(message);
 
@@ -26,6 +27,9 @@ export async function handlePartyInfoCallbackProcessed(
       <IBulkTransactionEntityReadOnlyRepo> options.bulkTransactionEntityRepo
     ).getPartyLookupFailedCount(partyInfoCallbackProcessedDmtEvt.getBulkId());
 
+    console.log(totalLookups);
+    console.log(totalSuccessLookups);
+    console.log(totalFailedLookups);
     if(totalLookups != (totalSuccessLookups + totalFailedLookups))
         return;
 

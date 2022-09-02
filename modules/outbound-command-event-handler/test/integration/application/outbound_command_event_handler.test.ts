@@ -25,7 +25,7 @@
 "use strict";
 
 import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
-import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
+import { ILogger, LogLevel } from "@mojaloop/logging-bc-public-types-lib";
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 import { CommandEvent, ICommandEventData, DomainEvent,
@@ -44,7 +44,7 @@ import { CommandEvent, ICommandEventData, DomainEvent,
 import { randomUUID } from "crypto";
 
 
-const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
+const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion', LogLevel.DEBUG); //TODO: parameterize the names here
 
 // Setup for Kafka Producer
 const commandEventProducerOptions: IKafkaEventProducerOptions = {
