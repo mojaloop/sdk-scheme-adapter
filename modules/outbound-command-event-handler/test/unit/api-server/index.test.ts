@@ -17,9 +17,9 @@
 
 import { Server } from 'http';
 import { OutboundCommandEventHandlerAPIServer as ApiServer } from '../../../src/api-server';
-import {ILogger} from '@mojaloop/logging-bc-public-types-lib';
-import {DefaultLogger} from '@mojaloop/logging-bc-client-lib';
-import {IBulkTransactionEntityRepo} from '../../../src/types';
+import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
+import { DefaultLogger } from '@mojaloop/logging-bc-client-lib';
+import { IBulkTransactionEntityRepo } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
 const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion');
 

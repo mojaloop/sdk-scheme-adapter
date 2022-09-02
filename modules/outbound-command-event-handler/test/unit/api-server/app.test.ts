@@ -22,10 +22,10 @@
  */
 import request from 'supertest';
 import { OutboundCommandEventHandlerAPIServer as ApiServer } from '../../../src/api-server';
-import {IBulkTransactionEntityRepo} from '../../../src/types';
+import { IBulkTransactionEntityRepo } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
-import {ILogger} from '@mojaloop/logging-bc-public-types-lib';
-import {Application} from 'express';
+import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
+import { Application } from 'express';
 
 const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion');
 

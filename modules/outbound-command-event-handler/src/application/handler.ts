@@ -24,6 +24,7 @@
 
 'use strict';
 
+import { BulkTransactionAgg } from '@module-domain';
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import {
     IRunHandler,
@@ -38,11 +39,10 @@ import {
     ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
     ProcessPartyInfoCallbackCmdEvt,
     ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt,
+    IBulkTransactionEntityRepo,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { ICommandEventHandlerOptions } from '@module-types';
 
-import { IBulkTransactionEntityRepo, ICommandEventHandlerOptions } from '../types';
-
-import { BulkTransactionAgg } from '../domain';
 
 export interface IOutboundEventHandlerOptions {
     bulkTransactionEntityRepo: IBulkTransactionEntityRepo

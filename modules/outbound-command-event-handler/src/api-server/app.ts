@@ -30,14 +30,14 @@ import type { Request } from 'openapi-backend';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
 import Handlers from './handlers';
-import { IBulkTransactionEntityRepo } from '../types';
+import { IBulkTransactionEntityRepo } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
 export interface IAPIServerOptions {
     bulkTransactionEntityRepo: IBulkTransactionEntityRepo;
     logger: ILogger;
 }
 
-export const CreateExpressServer = 
+export const CreateExpressServer =
     async (
         openApiSpecFilePath: string,
         options: IAPIServerOptions,
@@ -54,7 +54,7 @@ export const CreateExpressServer =
                 },
             }),
         );
-    
+
         // API middle-wares
         // To parse Json in the payload
         app.use(Express.json());
@@ -62,7 +62,7 @@ export const CreateExpressServer =
         // Pass repo to context
         app.set('bulkTransactionRepo', options.bulkTransactionEntityRepo);
         app.set('logger', options.logger);
-    
+
         // API routes based on the swagger file
         const api = new OpenAPIBackend({
             definition: openApiSpecFilePath,
@@ -73,9 +73,9 @@ export const CreateExpressServer =
                 notFound: async (_c, _req: Express.Request, res: Express.Response) => res.status(404).json({ err: 'not found' }),
             },
         });
-    
+
         api.init();
-    
+
         // Passing the openAPI object as express middle-ware
         app.use((req, res) => api.handleRequest(req as Request, req, res));
 
