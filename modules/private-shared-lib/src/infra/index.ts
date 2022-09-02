@@ -44,3 +44,5 @@ export * from './kafka_command_event_consumer';
 export * from './kafka_event_producer';
 export * from './kafka_domain_event_producer';
 export * from './kafka_command_event_producer';
+export * from './redis_bulk_transaction_repo';
+export * from './inmemory_bulk_transaction_repo';

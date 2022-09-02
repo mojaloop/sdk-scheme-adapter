@@ -26,6 +26,7 @@
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import {
+    BulkTransactionInternalState,
     CommandEvent,
     ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt,
     SDKOutboundBulkAcceptPartyInfoRequestedDmEvt,
@@ -33,7 +34,6 @@ import {
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
-import { BulkTransactionInternalState } from '../..';
 
 
 export async function handleProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt(

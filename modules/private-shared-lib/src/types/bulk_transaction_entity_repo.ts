@@ -24,8 +24,7 @@
 
 'use strict';
 
-import { IEntityStateRepository } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-import { BulkTransactionState, IndividualTransferState } from '../domain';
+import { BulkTransactionState, IEntityStateRepository, IndividualTransferState } from '@module-domain';
 
 export type IBulkTransactionEntityRepo = {
     getAllIndividualTransferIds: (bulkId: string) => Promise<string[]>

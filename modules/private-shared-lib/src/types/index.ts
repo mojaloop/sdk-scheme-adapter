@@ -33,3 +33,4 @@
 
 export * from './infra';
 export * from './events';
+export * from './bulk_transaction_entity_repo';

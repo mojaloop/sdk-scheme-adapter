@@ -25,10 +25,15 @@ export interface KafkaConfig {
     COMMAND_EVENT_PRODUCER: IKafkaEventProducerOptions;
 }
 
+export interface RedisConfig {
+    CONNECTION_URL: string
+}
+
 // interface to represent service configuration
 export interface ServiceConfig {
     LOG_LEVEL: LogLevel
     KAFKA: KafkaConfig
+    REDIS: RedisConfig
 }
 // Declare configuration schema, default values and bindings to environment variables
 const config = Convict({
@@ -37,6 +42,14 @@ const config = Convict({
         format: ['trace', 'debug', 'info', 'warn', 'error', 'fatal'],
         default: 'info',
         env: 'LOG_LEVEL',
+    },
+    REDIS: {
+        CONNECTION_URL: {
+            doc: 'The connection string of the redis server.',
+            format: '*',
+            default: 'redis://localhost:6379',
+            env: 'REDIS_CONNECTION_URL',
+        },
     },
     KAFKA: {
         DOMAIN_EVENT_CONSUMER: {

@@ -43,3 +43,5 @@ export * from './base_aggregate';
 export * from './base_entity';
 export * from './base_entity_state';
 export * from './ientity_state_repository';
+export * from './bulk_transaction_entity';
+export * from './individual_transfer_entity';
