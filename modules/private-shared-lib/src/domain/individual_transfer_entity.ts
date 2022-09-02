@@ -148,7 +148,7 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
     }
 
     get toFspId(): string | undefined {
-        return this._state.partyResponse?.party?.body?.partyIdInfo?.fspId;
+        return this._state.partyResponse?.party?.partyIdInfo?.fspId;
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */

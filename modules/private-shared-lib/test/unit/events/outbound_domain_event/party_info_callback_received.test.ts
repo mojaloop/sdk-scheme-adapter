@@ -55,23 +55,20 @@ describe('PartyInfoCallbackReceivedDmEvt', () => {
         transferId,
         partyResult: {
           party: {
-            body: {
-                partyIdInfo: {
-                    partyIdType: "MSISDN",
-                    partyIdentifier: "16135551212",
-                    partySubIdOrType: "string",
-                    fspId: "string",
-                    extensionList: {
-                        extension: [
-                            {
-                                key: "string",
-                                value: "string"
-                            }
-                        ]
-                    }
+            partyIdInfo: {
+                partyIdType: "MSISDN",
+                partyIdentifier: "16135551212",
+                partySubIdOrType: "string",
+                fspId: "string",
+                extensionList: {
+                    extension: [
+                        {
+                            key: "string",
+                            value: "string"
+                        }
+                    ]
                 }
-            },
-            headers: {}
+            }
           },
           currentState: 'COMPLETED'
         },

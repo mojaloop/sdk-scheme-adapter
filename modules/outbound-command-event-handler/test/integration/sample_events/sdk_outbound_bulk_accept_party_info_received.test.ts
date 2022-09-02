@@ -114,14 +114,11 @@ describe('SDKOutboundBulkAcceptPartyInfoRequested', () => {
     const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(allIndividualTransferIds[0])
     individualTransfer.setPartyResponse({
       party: {
-        body: {
-          partyIdInfo: {
-            partyIdType: 'MSISDN',
-            partyIdentifier: '16135551212',
-            fspId: 'testpayeefsp1'
-          }
-        },
-        headers: {}
+        partyIdInfo: {
+          partyIdType: 'MSISDN',
+          partyIdentifier: '16135551212',
+          fspId: 'testpayeefsp1'
+        }
       },
       currentState: 'COMPLETED'
     })

@@ -101,27 +101,21 @@ describe('BulkTransactionAggregate', () => {
             // Simulate party resposnes
             const partyResponse1: IPartyResult = {
                 party: {
-                    body: {
-                        partyIdInfo: {
-                            partyIdType: 'MSISDN',
-                            partyIdentifier: '123',
-                            fspId: 'dfsp1'
-                        }
-                    },
-                    headers: {}
+                    partyIdInfo: {
+                        partyIdType: 'MSISDN',
+                        partyIdentifier: '123',
+                        fspId: 'dfsp1'
+                    }
                 },
                 currentState: 'COMPLETED'
             }
             const partyResponse2: IPartyResult = {
                 party: {
-                    body: {
-                        partyIdInfo: {
-                            partyIdType: 'MSISDN',
-                            partyIdentifier: '321',
-                            fspId: 'dfsp1'
-                        }
-                    },
-                    headers: {}
+                    partyIdInfo: {
+                        partyIdType: 'MSISDN',
+                        partyIdentifier: '321',
+                        fspId: 'dfsp1'
+                    }
                 },
                 currentState: 'COMPLETED'
             }
@@ -154,14 +148,11 @@ describe('BulkTransactionAggregate', () => {
             // Add another individual transfer with different dfspId
             const partyResponse3: IPartyResult = {
                 party: {
-                    body: {
-                        partyIdInfo: {
-                            partyIdType: 'MSISDN',
-                            partyIdentifier: '321',
-                            fspId: 'dfsp2'
-                        }
-                    },
-                    headers: {}
+                    partyIdInfo: {
+                        partyIdType: 'MSISDN',
+                        partyIdentifier: '321',
+                        fspId: 'dfsp2'
+                    }
                 },
                 currentState: 'COMPLETED'
             }
