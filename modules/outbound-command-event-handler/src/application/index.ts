@@ -28,11 +28,10 @@
 import { DefaultLogger } from '@mojaloop/logging-bc-client-lib';
 import { ILogger, LogLevel } from '@mojaloop/logging-bc-public-types-lib';
 
-import { IRunHandler, BC_CONFIG } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { IRunHandler, BC_CONFIG, IRedisBulkTransactionStateRepoOptions, RedisBulkTransactionStateRepo } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { IOutboundEventHandlerOptions, OutboundEventHandler } from './handler';
 import { IOutboundCommandEventHandlerAPIServerOptions, OutboundCommandEventHandlerAPIServer } from '../api-server';
 import Config from '../shared/config';
-import { IRedisBulkTransactionStateRepoOptions, RedisBulkTransactionStateRepo } from '../infrastructure';
 
 (async () => {
     // Instantiate logger

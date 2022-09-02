@@ -26,17 +26,20 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { BaseAggregate, CommandEvent, IEntityStateRepository } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-import { BulkTransactionEntity, BulkTransactionInternalState, BulkTransactionState } from '../bulk_transaction_entity';
 import {
+    BaseAggregate,
+    BulkTransactionEntity,
+    BulkTransactionState,
+    CommandEvent,
+    IBulkTransactionEntityRepo,
+    IEntityStateRepository,
     IndividualTransferEntity,
     IndividualTransferState,
-} from '../individual_transfer_entity';
-import { IBulkTransactionEntityRepo, ICommandEventHandlerOptions } from '@module-types';
+} from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
-import CommandEventHandlerFuntions from './handlers';
-import { BulkBatchEntity, BulkBatchState } from '../bulk_batch_entity';
+import CommandEventHandlerFunctions from './handlers';
+import { ICommandEventHandlerOptions } from '@module-types';import { BulkBatchEntity, BulkBatchState } from '../bulk_batch_entity';
 import { randomUUID } from 'crypto';
 
 
@@ -326,11 +329,11 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         logger: ILogger,
     ) {
         const handlerPrefix = 'handle';
-        if(!CommandEventHandlerFuntions.hasOwnProperty(handlerPrefix + message.constructor.name)) {
+        if(!CommandEventHandlerFunctions.hasOwnProperty(handlerPrefix + message.constructor.name)) {
             logger.error(`Handler function for the command event message ${message.constructor.name} is not implemented`);
             return;
         }
-        await CommandEventHandlerFuntions[handlerPrefix + message.constructor.name](
+        await CommandEventHandlerFunctions[handlerPrefix + message.constructor.name](
             message,
             options,
             logger,

@@ -37,9 +37,12 @@ import { CommandEvent, ICommandEventData, DomainEvent,
          IProcessSDKOutboundBulkRequestCmdEvtData,
          IProcessPartyInfoCallbackCmdEvtData,
          IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData,
-         IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData} from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+         IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData,
+         RedisBulkTransactionStateRepo,
+         IRedisBulkTransactionStateRepoOptions,
+} from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 import { randomUUID } from "crypto";
-import { RedisBulkTransactionStateRepo, IRedisBulkTransactionStateRepoOptions } from '../../../src/infrastructure/redis_bulk_transaction_repo'
+
 
 const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
 

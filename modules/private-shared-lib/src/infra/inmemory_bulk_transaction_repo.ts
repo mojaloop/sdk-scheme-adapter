@@ -25,8 +25,8 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { BulkBatchState, BulkTransactionState, IndividualTransferState } from '../domain';
-import { IBulkTransactionEntityRepo } from '../types/bulk_transaction_entity_repo';
+import { BulkBatchState, BulkTransactionState, IndividualTransferState } from '@module-domain';
+import { IBulkTransactionEntityRepo } from '@module-types';
 
 export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityRepo {
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
@@ -116,7 +116,7 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         }
     }
 
-    
+
     async getAllIndividualTransferIds(bulkId: string): Promise<string[]> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));

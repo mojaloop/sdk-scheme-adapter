@@ -1,10 +1,19 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-	"rootDir": "./src",
-	"outDir": "./dist"
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "paths": {
+      "@module-domain": [ "./src/domain/index.ts" ],
+      "@module-errors": [ "./src/errors/index.ts" ],
+      "@module-events": [ "./src/events/index.ts" ],
+      "@module-infra": [ "./src/infra/index.ts" ],
+      "@module-types": [ "./src/types/index.ts" ],
+      "@module-utils": [ "./src/utils/index.ts" ]
+    }
   },
   "include": [
-	"./src"
+	  "./src"
   ]
 }

@@ -25,10 +25,15 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { CommandEvent, ProcessPartyInfoCallbackCmdEvt, PartyInfoCallbackProcessedDmEvt, SDKOutboundTransferState } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import {
+    CommandEvent,
+    IndividualTransferInternalState,
+    ProcessPartyInfoCallbackCmdEvt,
+    PartyInfoCallbackProcessedDmEvt,
+    IPartyResult,
+} from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
-import { IndividualTransferInternalState } from '../..';
 
 export async function handleProcessPartyInfoCallbackCmdEvt(
     message: CommandEvent,

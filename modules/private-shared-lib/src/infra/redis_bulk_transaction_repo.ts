@@ -26,8 +26,8 @@
 
 import * as redis from 'redis';
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { BulkBatchState, BulkTransactionState, IndividualTransferState } from '../domain';
-import { IBulkTransactionEntityRepo } from '../types/bulk_transaction_entity_repo';
+import { BulkBatchState, BulkTransactionState, IndividualTransferState } from '@module-domain';
+import { IBulkTransactionEntityRepo } from '@module-types';
 
 export interface IRedisBulkTransactionStateRepoOptions {
     connStr: string;
@@ -128,7 +128,7 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
             throw (err);
         }
     }
-    
+
     async getAllIndividualTransferIds(bulkId: string): Promise<string[]> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
@@ -144,7 +144,7 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
             throw (err);
         }
     }
-    
+
     async getIndividualTransfer(bulkId: string, individualTranferId: string): Promise<IndividualTransferState> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));

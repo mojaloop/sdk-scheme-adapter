@@ -19,10 +19,10 @@ import request from 'supertest';
 import axios from 'axios';
 import { OutboundCommandEventHandlerAPIServer as ApiServer } from '../../../../src/api-server';
 import Config from '../../../../src/shared/config';
-import {ILogger} from '@mojaloop/logging-bc-public-types-lib';
-import {DefaultLogger} from '@mojaloop/logging-bc-client-lib';
-import {IBulkTransactionEntityRepo} from '../../../../src/types';
-import {Application} from 'express';
+import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
+import { DefaultLogger } from '@mojaloop/logging-bc-client-lib';
+import { IBulkTransactionEntityRepo } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { Application } from 'express';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;

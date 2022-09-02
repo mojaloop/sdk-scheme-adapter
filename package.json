@@ -21,12 +21,14 @@
     "modules/*"
   ],
   "scripts": {
-    "start": "nx run-many --output-style=stream --parallel --target=start -i -v",
+    "postinstall": "yarn husky install",
+    "start": "nx run-many --output-style=stream --parallel --target=start",
     "start:api-svc": "yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run start",
     "start:event-handler": "yarn workspace @mojaloop/sdk-scheme-adapter-event-handler run start",
     "start:command-handler": "yarn workspace @mojaloop/sdk-scheme-adapter-command-handler run start",
     "build": "nx run-many --all --target=build",
     "build:affected": "nx affected --target=build",
+    "build:no-cache": "nx run-many --all --target=build --skip-nx-cache",
     "build:openapi": "yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run build:openapi",
     "build:openapi:inbound": "yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run build:openapi:inbound",
     "validate:api": "yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run validate:api",
