@@ -51,19 +51,21 @@ export async function handleProcessSDKOutboundBulkAcceptPartyInfoCmdEvt(
         // Update the individual state: DISCOVERY_ACCEPTED / DISCOVERY_REJECTED
         const bulkTx = bulkTransactionAgg.getBulkTransaction();
 
-        const allIndividualTransfersFromMessage = processSDKOutboundBulkAcceptPartyInfoMessage.getBulkTransactionContinuationAcceptParty().individualTransfers;
+        const allIndividualTransfersFromMessage = 
+            processSDKOutboundBulkAcceptPartyInfoMessage.getBulkTransactionContinuationAcceptParty().individualTransfers;
         for await (const individualTransferFromMessage of allIndividualTransfersFromMessage) {
-            let individualTransfer
+            let individualTransfer;
             try {
                 // TODO: Confirm the field name transactionId in the individualTransfer from the message
-                individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferFromMessage.transactionId);
-            } catch(err1) {
+                individualTransfer =
+                    await bulkTransactionAgg.getIndividualTransferById(individualTransferFromMessage.transactionId);
+            } catch (err1) {
                 logger.warn(`Can not find the individual transfer with id ${individualTransferFromMessage.transactionId} in bulk transaction`);
                 continue;
             }
 
-            individualTransfer.setAcceptParty(individualTransferFromMessage.acceptParty)
-            if (individualTransferFromMessage.acceptParty) {
+            individualTransfer.setAcceptParty(individualTransferFromMessage.acceptParty);
+            if(individualTransferFromMessage.acceptParty) {
                 individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_ACCEPTED);
             } else {
                 individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_REJECTED);

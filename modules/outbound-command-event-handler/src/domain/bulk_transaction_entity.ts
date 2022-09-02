@@ -44,7 +44,7 @@ export enum BulkTransactionInternalState {
     TRANSFER_PROCESSING = 'TRANSFER_PROCESSING',
     DISCOVERY_ACCEPTANCE_COMPLETED = 'DISCOVERY_ACCEPTANCE_COMPLETED',
     AGREEMENT_COMPLETED = 'AGREEMENT_COMPLETED',
-    AGREEMENT_ACCEPTANCE_PENDING = 'AGREEMENT_ACCEPTANCE_PENDING'
+    AGREEMENT_ACCEPTANCE_PENDING = 'AGREEMENT_ACCEPTANCE_PENDING',
 }
 
 export interface BulkTransactionState extends BaseEntityState {
@@ -113,8 +113,8 @@ export class BulkTransactionEntity extends BaseEntity<BulkTransactionState> {
         return this._state.options.autoAcceptParty.enabled;
     }
 
-    isAutoAcceptQuoteEnabled (): boolean {
-      return this._state.options.autoAcceptQuote.enabled
+    isAutoAcceptQuoteEnabled(): boolean {
+        return this._state.options.autoAcceptQuote.enabled;
     }
 
     // getAutoAcceptQuotePerTransferFeeLimits (): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkPerTransferFeeLimit[] | undefined {

@@ -150,7 +150,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
 
     async setGlobalState(state: BulkTransactionInternalState) : Promise<void> {
         this._rootEntity.setTxState(state);
-        this._logger.info(`Setting global state of bulk transaction ${this._rootEntity.id} to ${state}`)
+        this._logger.info(`Setting global state of bulk transaction ${this._rootEntity.id} to ${state}`);
         await this.store();
     }
 
@@ -182,6 +182,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
         return repo.getBulkQuotesTotalCount(this._rootEntity.id);
     }
+
     async setBulkQuotesTotalCount(totalCount: number) : Promise<void> {
         await (<IBulkTransactionEntityRepo> this._entity_state_repo)
             .setBulkQuotesTotalCount(this._rootEntity.id, totalCount);
@@ -190,11 +191,13 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
     async getBulkQuotesSuccessCount() {
         const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
         return repo.getBulkQuotesSuccessCount(this._rootEntity.id);
-    }    
+    }
+    
     async setBulkQuotesSuccessCount(count: number) : Promise<void> {
         await (<IBulkTransactionEntityRepo> this._entity_state_repo)
             .setBulkQuotesSuccessCount(this._rootEntity.id, count);
     }
+
     async incrementBulkQuotesSuccessCount() : Promise<void> {
         await (<IBulkTransactionEntityRepo> this._entity_state_repo)
             .incrementBulkQuotesSuccessCount(this._rootEntity.id);
@@ -204,10 +207,12 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
         return repo.getBulkQuotesFailedCount(this._rootEntity.id);
     }
+
     async setBulkQuotesFailedCount(count: number) : Promise<void> {
         await (<IBulkTransactionEntityRepo> this._entity_state_repo)
             .setBulkQuotesFailedCount(this._rootEntity.id, count);
     }
+
     async incrementBulkQuotesFailedCount() : Promise<void> {
         await (<IBulkTransactionEntityRepo> this._entity_state_repo)
             .incrementBulkQuotesFailedCount(this._rootEntity.id);
@@ -224,29 +229,29 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
     }
 
     async createBatches(maxItemsPerBatch: number) : Promise<void> {
-        const allBulkBatchIds = await this.getAllBulkBatchIds()
-        if (allBulkBatchIds.length > 0) {
-            throw(new Error('Bulk batches are already created on this aggregator'));
+        const allBulkBatchIds = await this.getAllBulkBatchIds();
+        if(allBulkBatchIds.length > 0) {
+            throw (new Error('Bulk batches are already created on this aggregator'));
         }
 
-        const batchesPerFsp: {[fspId: string]: string[][]} = {}
+        const batchesPerFsp: { [fspId: string]: string[][] } = {};
         // Iterate through individual transfers
         const allIndividualTransferIds = await this.getAllIndividualTransferIds();
         for await (const individualTransferId of allIndividualTransferIds) {
             // Create the array of batches per each DFSP with maximum limit from the config containing Ids of individual transfers
             const individualTransfer = await this.getIndividualTransferById(individualTransferId);
-            if (individualTransfer.transferState === 'DISCOVERY_ACCEPTED' && individualTransfer.toFspId) {
+            if(individualTransfer.transferState === 'DISCOVERY_ACCEPTED' && individualTransfer.toFspId) {
                 // If there is any element with fspId
                 if(batchesPerFsp[individualTransfer.toFspId]) {
                     const batchFspIdArray = batchesPerFsp[individualTransfer.toFspId];
                     const batchFspLength = batchFspIdArray.length;
                     const lastElement = batchFspIdArray[batchFspLength - 1];
                     // If the length reaches maximum value, create new element and insert the id
-                    if (lastElement.length < maxItemsPerBatch) {
-                        lastElement.push(individualTransfer.id)
+                    if(lastElement.length < maxItemsPerBatch) {
+                        lastElement.push(individualTransfer.id);
                     } else {
                         const newElement = [ individualTransfer.id ];
-                        batchFspIdArray.push(newElement)
+                        batchFspIdArray.push(newElement);
                     }
                 } else {
                     const newElement = [ individualTransfer.id ];
@@ -254,7 +259,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                     batchesPerFsp[individualTransfer.toFspId].push(newElement);
                 }
             } else {
-                this._logger.error(`The individual transfer with id ${individualTransfer.id} is not in state DISCOVERY_ACCEPTED or toFspId is not found in the partyResponse`)
+                this._logger.error(`The individual transfer with id ${individualTransfer.id} is not in state DISCOVERY_ACCEPTED or toFspId is not found in the partyResponse`);
             }
         }
         // console.log(batchesPerFsp);
@@ -265,7 +270,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                 const bulkBatch = BulkBatchEntity.CreateEmptyBatch(this._rootEntity);
                 for await (const individualId of individualIdArray) {
                     const individualTransfer = await this.getIndividualTransferById(individualId);
-                    if (individualTransfer.partyResponse) {
+                    if(individualTransfer.partyResponse) {
                         // Add Quotes to batch
                         bulkBatch.addIndividualQuote({
                             quoteId: randomUUID(),
@@ -287,15 +292,15 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                             amount: individualTransfer.request.amount,
                             transactionType: 'TRANSFER',
                             note: individualTransfer.request.note,
-                            extensions: individualTransfer.request.quoteExtensions
+                            extensions: individualTransfer.request.quoteExtensions,
                         },
-                        individualTransfer.id)
+                        individualTransfer.id);
                         // TODO: Add Transfers to batch here like the quotes above
                     }
                     
                 }
                 this.addBulkBatchEntity(bulkBatch);
-                bulkQuotesTotalCount++;
+                bulkQuotesTotalCount += 1;
             }
         }
         await this.setBulkQuotesTotalCount(bulkQuotesTotalCount);

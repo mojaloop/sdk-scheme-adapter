@@ -36,7 +36,7 @@ export type IBulkQuotesRequestedDmEvtData = {
     };
     timestamp: number | null;
     headers: IMessageHeader[] | null;
-}
+};
 
 export class BulkQuotesRequestedDmEvt extends DomainEvent {
     constructor(data: IBulkQuotesRequestedDmEvtData) {
@@ -57,7 +57,7 @@ export class BulkQuotesRequestedDmEvt extends DomainEvent {
             bulkId: message.getKey(),
             content: message.getContent() as IBulkQuotesRequestedDmEvtData['content'],
             timestamp: message.getTimeStamp(),
-            headers: message.getHeaders()
+            headers: message.getHeaders(),
         };
         return new BulkQuotesRequestedDmEvt(data);
     }

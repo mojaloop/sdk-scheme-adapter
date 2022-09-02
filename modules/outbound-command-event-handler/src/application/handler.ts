@@ -90,7 +90,7 @@ export class OutboundEventHandler implements IRunHandler {
         this._commandEventHandlerOptions = {
             bulkTransactionEntityRepo: this._bulkTransactionEntityStateRepo,
             domainProducer: this._domainProducer,
-            appConfig
+            appConfig,
         };
     }
 

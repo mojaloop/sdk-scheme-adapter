@@ -85,8 +85,8 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestCmdEvt(
                     request: {
                         partyIdType: partyIdInfo.partyIdType,
                         partyIdentifier: partyIdInfo.partyIdentifier,
-                        partySubIdOrType: subId
-                    }
+                        partySubIdOrType: subId,
+                    },
                 },
                 timestamp: Date.now(),
                 headers: [],

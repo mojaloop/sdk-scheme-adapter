@@ -79,12 +79,15 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
     get request(): SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransaction {
         return this._state.request;
     }
+
     get partyResponse(): IPartyResult | undefined {
         return this._state.partyResponse;
     }
+
     get quoteResponse(): SDKSchemeAdapter.Outbound.V2_0_0.Types.individualQuoteResult | undefined {
         return this._state.quoteResponse;
     }
+
     get transferResponse(): SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransferResult | undefined {
         return this._state.transferResponse;
     }
@@ -135,7 +138,7 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
     }
 
     setAcceptParty(acceptParty: boolean) {
-        this._state.acceptParty = acceptParty
+        this._state.acceptParty = acceptParty;
     }
 
     // get payeeResolved(): boolean {
@@ -146,6 +149,7 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
     get transferState() {
         return this._state.state;
     }
+
     get toFspId(): string | undefined {
         return this._state.partyResponse?.party?.body?.partyIdInfo?.fspId;
     }

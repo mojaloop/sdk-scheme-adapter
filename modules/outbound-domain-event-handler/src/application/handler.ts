@@ -48,7 +48,7 @@ import {
     handlePartyInfoCallbackReceived,
     handleSDKOutboundBulkAcceptPartyInfoReceived,
     handleSDKOutboundBulkAcceptPartyInfoProcessed,
-    handleBulkQuotesCallbackReceived
+    handleBulkQuotesCallbackReceived,
 } from './handlers';
 
 export class OutboundEventHandler implements IRunHandler {

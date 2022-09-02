@@ -41,7 +41,7 @@ export default  {
     ...ProcessPartyInfoCallbackHandler,
     ...ProcessSDKOutboundBulkAcceptPartyInfoHandler,
     ...ProcessBulkQuotesCallbackHandler,
-    ...ProcessSDKOutboundBulkQuotesRequestHandler
+    ...ProcessSDKOutboundBulkQuotesRequestHandler,
 } as {
     [key: string]: (
         message: CommandEvent,

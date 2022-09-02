@@ -32,7 +32,7 @@ export type PartyInfoRequest = {
     partyIdType: SDKSchemeAdapter.Outbound.V2_0_0.Types.PartyIdType;
     partyIdentifier: SDKSchemeAdapter.Outbound.V2_0_0.Types.PartyIdentifier;
     partySubIdOrType?: SDKSchemeAdapter.Outbound.V2_0_0.Types.PartySubIdOrType | undefined;
-}
+};
 export interface IPartyInfoRequestedDmEvtData {
     bulkId: string;
     content: {

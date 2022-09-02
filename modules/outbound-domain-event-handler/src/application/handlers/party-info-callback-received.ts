@@ -17,7 +17,7 @@ export async function handlePartyInfoCallbackReceived(
             bulkId: partyInfoCallbackReceived.getKey(),
             content: {
                 transferId: partyInfoCallbackReceived.getTransferId(),
-                partyResult: partyInfoCallbackReceived.getPartyResult()
+                partyResult: partyInfoCallbackReceived.getPartyResult(),
             },
             timestamp: Date.now(),
             headers: partyInfoCallbackReceived.getHeaders(),

@@ -124,7 +124,7 @@ const config = Convict({
         format: Number,
         default: 1000,
         env: 'MAX_ITEMS_PER_BATCH',
-    }
+    },
 });
 
 // Load configuration
@@ -133,6 +133,6 @@ config.loadFile<ServiceConfig>(path.join(__dirname, '/../../config/default.json'
 // Perform configuration validation
 config.validate({ allowed: 'strict' });
 
-export interface ICommandEventHandlerConfig extends Convict.Config<ServiceConfig> {};
+export type ICommandEventHandlerConfig = Convict.Config<ServiceConfig>;
 
 export default config;

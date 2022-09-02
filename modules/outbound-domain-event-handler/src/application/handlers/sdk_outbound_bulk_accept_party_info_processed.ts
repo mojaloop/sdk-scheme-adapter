@@ -47,6 +47,6 @@ export async function handleSDKOutboundBulkAcceptPartyInfoProcessed(
         await options.commandProducer.sendCommandEvent(processSDKOutboundBulkQuotesRequestMessage);
         logger.info(`Sent command event ${processSDKOutboundBulkQuotesRequestMessage.getName()}`);
     } catch (err) {
-        logger.info(`Failed to send ProcessSDKOutboundBulkQuotesRequestCmdEvt event`);
+        logger.info('Failed to send ProcessSDKOutboundBulkQuotesRequestCmdEvt event');
     }
 }

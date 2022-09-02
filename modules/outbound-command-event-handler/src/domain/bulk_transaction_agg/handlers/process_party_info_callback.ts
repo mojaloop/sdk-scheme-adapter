@@ -29,7 +29,6 @@ import { CommandEvent, ProcessPartyInfoCallbackCmdEvt, PartyInfoCallbackProcesse
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
 import { IndividualTransferInternalState } from '../..';
-import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 export async function handleProcessPartyInfoCallbackCmdEvt(
     message: CommandEvent,
@@ -61,7 +60,7 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
         const msg = new PartyInfoCallbackProcessedDmEvt({
             bulkId: processPartyInfoCallback.getKey(),
             content: {
-                transferId: processPartyInfoCallback.getTransferId()
+                transferId: processPartyInfoCallback.getTransferId(),
             },
             timestamp: Date.now(),
             headers: [],

@@ -34,20 +34,20 @@ export type CoreConnectorBulkAcceptQuoteRequestIndividualTransferResult = {
     homeTransactionId: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransaction['homeTransactionId'];
     transactionId: string;
     quoteResponse: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualQuoteResult;
-}
+};
 
 export type CoreConnectorBulkAcceptQuoteRequest = {
     bulkHomeTransactionID: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest['bulkHomeTransactionID'];
     bulkTransactionId: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest['bulkTransactionId'];
     individualTransferResults: CoreConnectorBulkAcceptQuoteRequestIndividualTransferResult[];
-}
+};
 
 export type ISDKOutboundBulkAcceptQuoteRequestedDmEvtData = {
     bulkId: string;
     bulkAcceptQuoteRequest: CoreConnectorBulkAcceptQuoteRequest;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
-}
+};
 
 
 export class SDKOutboundBulkAcceptQuoteRequestedDmEvt extends DomainEvent {
@@ -69,7 +69,7 @@ export class SDKOutboundBulkAcceptQuoteRequestedDmEvt extends DomainEvent {
             bulkId: message.getKey(),
             bulkAcceptQuoteRequest: message.getContent() as CoreConnectorBulkAcceptQuoteRequest,
             timestamp: message.getTimeStamp(),
-            headers: message.getHeaders()
+            headers: message.getHeaders(),
         };
         return new SDKOutboundBulkAcceptQuoteRequestedDmEvt(data);
     }

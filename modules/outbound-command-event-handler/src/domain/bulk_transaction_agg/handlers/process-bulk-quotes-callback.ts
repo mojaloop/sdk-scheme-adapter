@@ -64,9 +64,9 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
         
 
         // Iterate through items in batch and update the individual states
-        for await(const quoteResult of bulkQuotesResult.individualQuoteResults) {
+        for await (const quoteResult of bulkQuotesResult.individualQuoteResults) {
             // TODO: quoteId should be required field in the quoteResponse. But it is optional now, so if it is empty we are ignoring the result for now
-            if (quoteResult.quoteId) {
+            if(quoteResult.quoteId) {
                 const individualTransferId = bulkBatch.getReferenceIdForQuoteId(quoteResult.quoteId);
                 const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
                 individualTransfer.setTransferState(IndividualTransferInternalState.AGREEMENT_SUCCESS);
@@ -78,7 +78,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
         const bulkQuotesCallbackProcessedDmEvt = new BulkQuotesCallbackProcessedDmEvt({
             bulkId: bulkTransactionAgg.bulkId,
             content: {
-                batchId: bulkBatch.id
+                batchId: bulkBatch.id,
             },
             timestamp: Date.now(),
             headers: [],
@@ -90,9 +90,9 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
         const bulkQuotesTotalCount = await bulkTransactionAgg.getBulkQuotesTotalCount();
         const bulkQuotesSuccessCount = await bulkTransactionAgg.getBulkQuotesSuccessCount();
         const bulkQuotesFailedCount = await bulkTransactionAgg.getBulkQuotesFailedCount();
-        if (bulkQuotesTotalCount === (bulkQuotesSuccessCount + bulkQuotesFailedCount)) {
+        if(bulkQuotesTotalCount === (bulkQuotesSuccessCount + bulkQuotesFailedCount)) {
             // Update global state "AGREEMENT_COMPLETED"
-            await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.AGREEMENT_COMPLETED)
+            await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.AGREEMENT_COMPLETED);
     
             // Send the domain message SDKOutboundBulkQuotesRequestProcessed
             const sdkOutboundBulkQuotesRequestProcessedDmEvt = new SDKOutboundBulkQuotesRequestProcessedDmEvt({
@@ -101,15 +101,15 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                 headers: [],
             });
             await options.domainProducer.sendDomainEvent(sdkOutboundBulkQuotesRequestProcessedDmEvt);
-            logger.info(`Sent domain event message ${SDKOutboundBulkQuotesRequestProcessedDmEvt.name}`)
+            logger.info(`Sent domain event message ${SDKOutboundBulkQuotesRequestProcessedDmEvt.name}`);
 
             // Progressing to the next step
             // Check configuration parameter autoAcceptQuote
-            logger.info(`Checking for quote auto acceptance for bulk transaction ${bulkTransactionAgg.bulkId}`)
+            logger.info(`Checking for quote auto acceptance for bulk transaction ${bulkTransactionAgg.bulkId}`);
             const bulkTransaction = bulkTransactionAgg.getBulkTransaction();
-            if (bulkTransaction.isAutoAcceptQuoteEnabled()) {
+            if(bulkTransaction.isAutoAcceptQuoteEnabled()) {
                 // autoAcceptQuote is true
-                logger.error(`AutoAcceptQuote === true is not implemented currently. Bulk transaction id is ${bulkTransactionAgg.bulkId}`)
+                logger.error(`AutoAcceptQuote === true is not implemented currently. Bulk transaction id is ${bulkTransactionAgg.bulkId}`);
                 // TODO: Send domain event SDKOutboundBulkAutoAcceptQuoteRequested
                 // TODO: This alternate path is not covered in the story #2802
 
@@ -118,14 +118,14 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                 // Send domain event SDKOutboundBulkAcceptQuoteRequested
                 const individualTransferResults: CoreConnectorBulkAcceptQuoteRequestIndividualTransferResult[] = [];
                 const allIndividualTransferIds = await bulkTransactionAgg.getAllIndividualTransferIds();
-                for await(const individualTransferId of allIndividualTransferIds) {
+                for await (const individualTransferId of allIndividualTransferIds) {
                     const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
-                    if (individualTransfer.quoteResponse) {
+                    if(individualTransfer.quoteResponse) {
                         individualTransferResults.push({
                             homeTransactionId: individualTransfer.request.homeTransactionId,
                             transactionId: individualTransfer.id,
-                            quoteResponse: individualTransfer.quoteResponse
-                        })
+                            quoteResponse: individualTransfer.quoteResponse,
+                        });
                     }
                 }
                 const sdkOutboundBulkAcceptQuoteRequestedDmEvt = new SDKOutboundBulkAcceptQuoteRequestedDmEvt({
@@ -133,14 +133,14 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                     bulkAcceptQuoteRequest: {
                         bulkHomeTransactionID: bulkTransactionAgg.getBulkTransaction().bulkHomeTransactionID,
                         bulkTransactionId: bulkTransactionAgg.bulkId,
-                        individualTransferResults
+                        individualTransferResults,
                     },
                     timestamp: Date.now(),
                     headers: [],
                 });
                 await options.domainProducer.sendDomainEvent(sdkOutboundBulkAcceptQuoteRequestedDmEvt);
                 // Update global state AGREEMENT_ACCEPTANCE_PENDING
-                await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.AGREEMENT_ACCEPTANCE_PENDING)
+                await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.AGREEMENT_ACCEPTANCE_PENDING);
             }
         }
 

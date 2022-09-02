@@ -28,12 +28,11 @@ import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import {
     CommandEvent,
     ProcessSDKOutboundBulkQuotesRequestCmdEvt,
-    BulkQuotesRequestedDmEvt
+    BulkQuotesRequestedDmEvt,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
 import { BulkBatchInternalState, BulkTransactionInternalState } from '../..';
-import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 export async function handleProcessSDKOutboundBulkQuotesRequestCmdEvt(
     message: CommandEvent,
@@ -73,7 +72,7 @@ export async function handleProcessSDKOutboundBulkQuotesRequestCmdEvt(
                     bulkId: bulkTx.id,
                     content: {
                         batchId: bulkBatch.id,
-                        request: bulkBatch.bulkQuotesRequest
+                        request: bulkBatch.bulkQuotesRequest,
                     },
                     timestamp: Date.now(),
                     headers: [],
@@ -81,7 +80,7 @@ export async function handleProcessSDKOutboundBulkQuotesRequestCmdEvt(
                 await options.domainProducer.sendDomainEvent(bulkQuotesRequestedDmEvt);
                 bulkBatch.setState(BulkBatchInternalState.AGREEMENT_PROCESSING);
                 await bulkTransactionAgg.setBulkBatchById(bulkBatch.id, bulkBatch);
-            } catch(err) {
+            } catch (err) {
                 bulkBatch.setState(BulkBatchInternalState.AGREEMENT_FAILED);
                 await bulkTransactionAgg.setBulkBatchById(bulkBatch.id, bulkBatch);
             }

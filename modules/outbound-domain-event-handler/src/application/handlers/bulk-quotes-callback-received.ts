@@ -18,7 +18,7 @@ export async function handleBulkQuotesCallbackReceived(
             content: {
                 batchId: bulkQuotesCallbackReceivedMessage.batchId,
                 bulkQuoteId: bulkQuotesCallbackReceivedMessage.bulkQuoteId,
-                bulkQuotesResult: bulkQuotesCallbackReceivedMessage.bulkQuotesResult
+                bulkQuotesResult: bulkQuotesCallbackReceivedMessage.bulkQuotesResult,
             },
             timestamp: Date.now(),
             headers: bulkQuotesCallbackReceivedMessage.getHeaders(),

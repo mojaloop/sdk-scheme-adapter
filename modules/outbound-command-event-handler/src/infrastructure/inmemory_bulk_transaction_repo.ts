@@ -39,9 +39,13 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
     private readonly keyPrefix: string = 'outboundBulkTransaction_';
 
     private readonly individualTransferKeyPrefix: string = 'individualItem_';
+
     private readonly bulkBatchKeyPrefix: string = 'bulkBatch_';
+
     private readonly bulkQuotesTotalCountKey: string = 'bulkQuotesTotalCount';
+
     private readonly bulkQuotesSuccessCountKey: string = 'bulkQuotesSuccessCount';
+
     private readonly bulkQuotesFailedCountKey: string = 'bulkQuotesFailedCount';
 
 
@@ -134,7 +138,8 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            return JSON.parse(this._data[key][this.individualTransferKeyPrefix + individualTranferId]) as IndividualTransferState;
+            const individualTransferStateStr = this._data[key][this.individualTransferKeyPrefix + individualTranferId];
+            return JSON.parse(individualTransferStateStr) as IndividualTransferState;
         } catch (err) {
             this._logger.error(err, 'Error getting individual tranfer from memory - for key: ' + key);
             throw (err);
@@ -223,18 +228,18 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         const key: string = this.keyWithPrefix(bulkId);
         try {
             const count = this._data[key][this.bulkQuotesTotalCountKey];
-            if(count)
-            {
+            if(count) {
                 return Number(count);
             } else {
                 this._logger.error(`Error loading ${this.bulkQuotesTotalCountKey} from memory - for key: ${key}`);
-                throw(new Error(`Error loading ${this.bulkQuotesTotalCountKey} from memory - for key: ${key}`));
+                throw (new Error(`Error loading ${this.bulkQuotesTotalCountKey} from memory - for key: ${key}`));
             }
         } catch (err) {
             this._logger.error(err, `Error loading ${this.bulkQuotesTotalCountKey} from memory - for key: ${key}`);
             throw (err);
         }      
     }
+
     async setBulkQuotesTotalCount(bulkId: string, value: number): Promise<void> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
@@ -255,18 +260,18 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         const key: string = this.keyWithPrefix(bulkId);
         try {
             const count = this._data[key][this.bulkQuotesSuccessCountKey];
-            if(count)
-            {
+            if(count) {
                 return Number(count);
             } else {
                 this._logger.error(`Error loading ${this.bulkQuotesSuccessCountKey} from memory - for key: ${key}`);
-                throw(new Error(`Error loading ${this.bulkQuotesSuccessCountKey} from memory - for key: ${key}`));
+                throw (new Error(`Error loading ${this.bulkQuotesSuccessCountKey} from memory - for key: ${key}`));
             }
         } catch (err) {
             this._logger.error(err, `Error loading ${this.bulkQuotesSuccessCountKey} from memory - for key: ${key}`);
             throw (err);
         }
     }
+
     async setBulkQuotesSuccessCount(bulkId: string, value: number): Promise<void> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
@@ -279,13 +284,14 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
             throw (err);
         }
     }
+
     async incrementBulkQuotesSuccessCount(bulkId: string): Promise<void> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            this._data[key][this.bulkQuotesSuccessCountKey]++;
+            this._data[key][this.bulkQuotesSuccessCountKey] += 1;
         } catch (err) {
             this._logger.error(err, `Error incrementing attribute ${this.bulkQuotesSuccessCountKey} in memory for key: ${key}`);
             throw (err);
@@ -299,18 +305,18 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         const key: string = this.keyWithPrefix(bulkId);
         try {
             const count = this._data[key][this.bulkQuotesFailedCountKey];
-            if(count)
-            {
+            if(count) {
                 return Number(count);
             } else {
                 this._logger.error(`Error loading ${this.bulkQuotesFailedCountKey} from memory - for key: ${key}`);
-                throw(new Error(`Error loading ${this.bulkQuotesFailedCountKey} from memory - for key: ${key}`));
+                throw (new Error(`Error loading ${this.bulkQuotesFailedCountKey} from memory - for key: ${key}`));
             }
         } catch (err) {
             this._logger.error(err, `Error loading ${this.bulkQuotesFailedCountKey} from memory - for key: ${key}`);
             throw (err);
         }
     }
+
     async setBulkQuotesFailedCount(bulkId: string, value: number): Promise<void> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
@@ -323,13 +329,14 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
             throw (err);
         }
     }
+
     async incrementBulkQuotesFailedCount(bulkId: string): Promise<void> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            this._data[key][this.bulkQuotesFailedCountKey]++;
+            this._data[key][this.bulkQuotesFailedCountKey] += 1;
         } catch (err) {
             this._logger.error(err, `Error incrementing attribute ${this.bulkQuotesFailedCountKey} in memory for key: ${key}`);
             throw (err);
