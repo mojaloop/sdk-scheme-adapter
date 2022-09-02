@@ -208,10 +208,11 @@ jobs:
             run_int_tests() {
               pushd /home/circleci/project/modules/$1
               yarn run start & echo $! > /tmp/sdk-scheme-adapter.pid
-              sleep 20
+              sleep 10
               yarn run test:integration
               kill $(cat /tmp/sdk-scheme-adapter.pid)
               popd
+              sleep 10
             }
             run_int_tests outbound-domain-event-handler
             run_int_tests outbound-command-event-handler
