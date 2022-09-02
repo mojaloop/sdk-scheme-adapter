@@ -24,12 +24,12 @@
 
 'use strict'
 
-import { BulkTransactionAgg, IndividualTransferInternalState } from '../../../../src/domain';
-import { InMemoryBulkTransactionStateRepo } from '../../../../src/infrastructure';
+import { BulkTransactionAgg } from '../../../../src/domain';
+import { InMemoryBulkTransactionStateRepo, IndividualTransferInternalState } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BULK_REQUEST } from '../../data/bulk_transaction_request'
 import { DefaultLogger } from '@mojaloop/logging-bc-client-lib';
 import { ILogger, LogLevel } from '@mojaloop/logging-bc-public-types-lib';
-import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
+// import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 import { IPartyResult } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
 
