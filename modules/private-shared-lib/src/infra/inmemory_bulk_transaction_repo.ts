@@ -132,7 +132,7 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         try {
             return this._data[key][this.individualTransferKeyPrefix + individualTransferId] as IndividualTransferState;
         } catch (err) {
-            this._logger.error(err, 'Error getting individual Transfer from memory - for key: ' + key);
+            this._logger.error(err, 'Error getting individual transfer from memory - for key: ' + key);
             throw (err);
         }
     }
