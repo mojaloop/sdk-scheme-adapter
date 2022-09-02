@@ -128,11 +128,11 @@ describe('BulkTransactionAggregate', () => {
             const allIndividualTransferIds = await bulkTransactionAgg.getAllIndividualTransferIds();
             const individualTransfer1 = await bulkTransactionAgg.getIndividualTransferById(allIndividualTransferIds[0]);
             individualTransfer1.setPartyResponse(partyResponse1);
-            individualTransfer1.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS);
+            individualTransfer1.setTransferState(IndividualTransferInternalState.DISCOVERY_ACCEPTED);
             await bulkTransactionAgg.setIndividualTransferById(individualTransfer1.id, individualTransfer1);
             const individualTransfer2 = await bulkTransactionAgg.getIndividualTransferById(allIndividualTransferIds[1]);
             individualTransfer2.setPartyResponse(partyResponse2);
-            individualTransfer2.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS);
+            individualTransfer2.setTransferState(IndividualTransferInternalState.DISCOVERY_ACCEPTED);
             await bulkTransactionAgg.setIndividualTransferById(individualTransfer2.id, individualTransfer2);
         })
 
@@ -140,7 +140,7 @@ describe('BulkTransactionAggregate', () => {
             bulkTransactionAgg.destroy();
         })
     
-        test('createBatches should create a signle batch for two transfers', async () => {
+        test('createBatches should create a single batch for two transfers', async () => {
             await bulkTransactionAgg.createBatches(10);
             const bulkBatchIds = await bulkTransactionAgg.getAllBulkBatchIds();
             expect(bulkBatchIds.length).toEqual(1);
@@ -150,7 +150,7 @@ describe('BulkTransactionAggregate', () => {
             const bulkBatchIds = await bulkTransactionAgg.getAllBulkBatchIds();
             expect(bulkBatchIds.length).toEqual(2);
         })
-        test('createBatches should create two batches for two transfers if there is a second fsp', async () => {
+        test('createBatches should create two batches if there is a second fsp', async () => {
             // Add another individual transfer with different dfspId
             const partyResponse3: IPartyResult = {
                 party: {
@@ -168,7 +168,7 @@ describe('BulkTransactionAggregate', () => {
             const allIndividualTransferIds = await bulkTransactionAgg.getAllIndividualTransferIds();
             const individualTransfer3 = await bulkTransactionAgg.getIndividualTransferById(allIndividualTransferIds[1]);
             individualTransfer3.setPartyResponse(partyResponse3);
-            individualTransfer3.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS);
+            individualTransfer3.setTransferState(IndividualTransferInternalState.DISCOVERY_ACCEPTED);
             await bulkTransactionAgg.setIndividualTransferById(individualTransfer3.id, individualTransfer3);
 
             await bulkTransactionAgg.createBatches(10);
