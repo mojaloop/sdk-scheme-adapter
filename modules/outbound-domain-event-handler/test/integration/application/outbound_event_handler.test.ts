@@ -47,7 +47,7 @@ import { randomUUID } from "crypto";
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 // Extend jest timeout since tests in CI can be slow
-jest.setTimeout(15000);
+jest.setTimeout(20000);
 
 const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
 
@@ -381,7 +381,7 @@ describe('First domain event', () => {
     }
     const message = new PartyInfoCallbackProcessedDmEvt(samplePartyInfoCallbackProcessedDmEvtData);
     await producer.sendDomainMessage(message);
-    await new Promise(resolve => setTimeout(resolve, 10000));
+    await new Promise(resolve => setTimeout(resolve, 15000));
 
     // Check command events published to kafka
     expect(commandEvents[0].getName()).toBe('ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt')
@@ -462,7 +462,7 @@ describe('First domain event', () => {
         }
         const message = new PartyInfoCallbackProcessedDmEvt(samplePartyInfoCallbackProcessedDmEvtData);
         await producer.sendDomainMessage(message);
-        await new Promise(resolve => setTimeout(resolve, 10000));
+        await new Promise(resolve => setTimeout(resolve, 15000));
 
         // Check command events published to kafka
         expect(commandEvents[0]).toBe(undefined)
