@@ -13,7 +13,6 @@ export async function handlePartyInfoCallbackProcessed(
     options: IDomainEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
-    console.log('hellooooooooooooooooo');
     const partyInfoCallbackProcessedDmtEvt
         = PartyInfoCallbackProcessedDmEvt.CreateFromCommandEvent(message);
 
@@ -22,14 +21,11 @@ export async function handlePartyInfoCallbackProcessed(
     ).getPartyLookupTotalCount(partyInfoCallbackProcessedDmtEvt.getBulkId());
     const totalSuccessLookups = await (
       <IBulkTransactionEntityReadOnlyRepo> options.bulkTransactionEntityRepo
-    ).getPartyLookupSuccessCount(partyInfoCallbackProcessedDmtEvt.getBulkId());
+    ).getPartyLookupSuccessCount(partyInfoCallbackProcessedDmtEvt.getBulkId()) | 0;
     const totalFailedLookups = await (
       <IBulkTransactionEntityReadOnlyRepo> options.bulkTransactionEntityRepo
-    ).getPartyLookupFailedCount(partyInfoCallbackProcessedDmtEvt.getBulkId());
+    ).getPartyLookupFailedCount(partyInfoCallbackProcessedDmtEvt.getBulkId()) | 0;
 
-    console.log(totalLookups);
-    console.log(totalSuccessLookups);
-    console.log(totalFailedLookups);
     if(totalLookups != (totalSuccessLookups + totalFailedLookups))
         return;
 

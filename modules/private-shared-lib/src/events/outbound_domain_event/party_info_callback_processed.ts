@@ -26,11 +26,11 @@
 
 import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-// import { v1_1 as FSPIOP } from '@mojaloop/api-snippets';
+import { IPartyResult } from '@module-types';
 
 export interface IPartyInfoCallbackProcessedDmEvtData {
     key: string;
-    // partyResult: FSPIOP.Schemas.PartyResult;
+    partyResult: IPartyResult ;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
@@ -39,8 +39,7 @@ export class PartyInfoCallbackProcessedDmEvt extends DomainEvent {
     constructor(data: IPartyInfoCallbackProcessedDmEvtData) {
         super({
             key: data.key,
-            // content: data.partyResult,
-            content: null,
+            content: data.partyResult,
             timestamp: data.timestamp,
             headers: data.headers,
             name: PartyInfoCallbackProcessedDmEvt.name,
@@ -61,7 +60,7 @@ export class PartyInfoCallbackProcessedDmEvt extends DomainEvent {
         }
         const data: IPartyInfoCallbackProcessedDmEvtData = {
             key: message.getKey(),
-            // partyResult: <FSPIOP.Schemas.PartyResult>message.getContent(),
+            partyResult: <IPartyResult>message.getContent(),
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
         };

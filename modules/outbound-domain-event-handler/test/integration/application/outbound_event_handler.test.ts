@@ -39,9 +39,10 @@ import {
   KafkaCommandEventConsumer,
   CommandEvent,
   IKafkaEventConsumerOptions,
-  BulkTransactionEntity
+  BulkTransactionEntity,
+  IPartyInfoCallbackProcessedDmEvtData
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
-import { KafkaDomainEventProducer, IKafkaEventProducerOptions } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+import { KafkaDomainEventProducer, IKafkaEventProducerOptions, IPartyResult  } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 import { randomUUID } from "crypto";
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
@@ -298,6 +299,7 @@ describe('First domain event', () => {
   test('should publish a domain event', async () => {
     const domainEventObj = new DomainEvent(sampleDomainEventMessageData);
     await producer.sendDomainMessage(domainEventObj);
+    await new Promise(resolve => setTimeout(resolve, 2000));
     await expect(true)
   })
 
@@ -360,22 +362,29 @@ describe('First domain event', () => {
 
     const transferId = randomUUID();
     const key = `${bulkTransactionId}_${transferId}`
-    const samplePartyInfoCallbackProcessedDmEvtData = {
+    const samplePartyInfoCallbackProcessedDmEvtData: IPartyInfoCallbackProcessedDmEvtData = {
       key,
-      name: PartyInfoCallbackProcessedDmEvt.name,
-      content: {},
+      partyResult: {
+        party: {
+          partyIdInfo: {
+              partyIdType: "MSISDN",
+              partyIdentifier: '123456',
+              fspId: 'receiverfsp'
+          }
+        }
+      } as IPartyResult,
       timestamp: Date.now(),
       headers: [],
     }
-    await producer.sendDomainMessage(new PartyInfoCallbackProcessedDmEvt(samplePartyInfoCallbackProcessedDmEvtData));
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    const message = new PartyInfoCallbackProcessedDmEvt(samplePartyInfoCallbackProcessedDmEvtData);
+    await producer.sendDomainMessage(message);
+    await new Promise(resolve => setTimeout(resolve, 2000));
 
     // Check command events published to kafka
-    console.log(commandEvents);
     expect(commandEvents[0].getName()).toBe('ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt')
   })
 
-  test.skip("2. When inbound domain event PartyInfoCallbackProcessed is received \
+  test("2. When inbound domain event PartyInfoCallbackProcessed is received \
        Then outbound event ProcessSDKOutboundBulkPartyInfoRequestComplete should not be published \
        If party lookup on bulk transaction has not finished", async () => {
         const bulkTransactionId = randomUUID();
@@ -434,17 +443,25 @@ describe('First domain event', () => {
 
         const transferId = randomUUID();
         const key = `${bulkTransactionId}_${transferId}`
-        const samplePartyInfoCallbackProcessedDmEvtData = {
+        const samplePartyInfoCallbackProcessedDmEvtData: IPartyInfoCallbackProcessedDmEvtData = {
           key,
-          name: PartyInfoCallbackProcessedDmEvt.name,
-          content: {},
+          partyResult: {
+            party: {
+              partyIdInfo: {
+                  partyIdType: "MSISDN",
+                  partyIdentifier: '123456',
+                  fspId: 'receiverfsp'
+              }
+            }
+          } as IPartyResult,
           timestamp: Date.now(),
           headers: [],
         }
-        await producer.sendDomainMessage(new PartyInfoCallbackProcessedDmEvt(samplePartyInfoCallbackProcessedDmEvtData));
+        const message = new PartyInfoCallbackProcessedDmEvt(samplePartyInfoCallbackProcessedDmEvtData);
+        await producer.sendDomainMessage(message);
+        await new Promise(resolve => setTimeout(resolve, 2000));
 
         // Check command events published to kafka
-        console.log(commandEvents)
-        // expect(commandEvents[0].getName()).toBe('ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt')
+        expect(commandEvents[0]).toBe(undefined)
   })
 })

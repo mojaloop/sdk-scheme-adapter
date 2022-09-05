@@ -34,6 +34,7 @@ import {
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
+import { v1_1 as FSPIOP } from '@mojaloop/api-snippets';
 
 export async function handleProcessPartyInfoCallbackCmdEvt(
     message: CommandEvent,
@@ -66,6 +67,7 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
 
         const msg = new PartyInfoCallbackProcessedDmEvt({
             key: processPartyInfoCallback.getKey(),
+            partyResult: <FSPIOP.Schemas.PartyResult>processPartyInfoCallback.getContent(),
             timestamp: Date.now(),
             headers: [],
         });

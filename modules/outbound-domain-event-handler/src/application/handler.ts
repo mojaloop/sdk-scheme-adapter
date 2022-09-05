@@ -38,12 +38,14 @@ import {
     SDKOutboundBulkPartyInfoRequestedDmEvt,
     PartyInfoCallbackReceivedDmEvt,
     IBulkTransactionEntityReadOnlyRepo,
+    PartyInfoCallbackProcessedDmEvt,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { IDomainEventHandlerOptions } from '../types';
 import {
     handleSDKOutboundBulkPartyInfoRequested,
     handleSDKOutboundBulkRequestReceived,
     handlePartyInfoCallbackReceived,
+    handlePartyInfoCallbackProcessed,
 } from './handlers';
 
 export interface IOutboundEventHandlerOptions {
@@ -112,6 +114,10 @@ export class OutboundEventHandler implements IRunHandler {
             }
             case PartyInfoCallbackReceivedDmEvt.name: {
                 await handlePartyInfoCallbackReceived(message, this._domainEventHandlerOptions, this._logger);
+                break;
+            }
+            case PartyInfoCallbackProcessedDmEvt.name: {
+                await handlePartyInfoCallbackProcessed(message, this._domainEventHandlerOptions, this._logger);
                 break;
             }
             default: {
