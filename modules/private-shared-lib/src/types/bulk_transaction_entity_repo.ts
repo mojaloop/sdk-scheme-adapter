@@ -41,18 +41,20 @@ export type IBulkTransactionEntityRepo = {
     ) => Promise<void>
     isBulkIdExists: (bulkId: string) => Promise<boolean>
     setPartyLookupTotalCount: (bulkId: string, count: number) => Promise<void>
-    getPartyLookupTotalCount: (bulkId: string, count: number) => Promise<string | undefined>
+    getPartyLookupTotalCount: (bulkId: string, count: number) => Promise<number>
     incrementPartyLookupSuccessCount: (bulkId: string, increment: number) => Promise<void>
-    getPartyLookupSuccessCount: (bulkId: string) => Promise<string | undefined>
+    setPartyLookupSuccessCount: (bulkId: string, count: number) => Promise<void>
+    getPartyLookupSuccessCount: (bulkId: string) => Promise<number>
     incrementPartyLookupFailedCount: (bulkId: string, increment: number) => Promise<void>
-    getPartyLookupFailedCount: (bulkId: string) => Promise<string | undefined>
+    setPartyLookupFailedCount: (bulkId: string, count: number) => Promise<void>
+    getPartyLookupFailedCount: (bulkId: string) => Promise<number>
 } & IEntityStateRepository<BulkTransactionState>;
 
 export type IBulkTransactionEntityReadOnlyRepo = {
     getAllIndividualTransferIds: (bulkId: string) => Promise<string[]>
     getIndividualTransfer: (bulkId: string, individualTransferId: string) => Promise<IndividualTransferState>
     isBulkIdExists: (bulkId: string) => Promise<boolean>
-    getPartyLookupTotalCount: (bulkId: string, count: number) => Promise<string | undefined>
-    getPartyLookupSuccessCount: (bulkId: string) => Promise<string | undefined>
-    getPartyLookupFailedCount: (bulkId: string) => Promise<string | undefined>
+    getPartyLookupTotalCount: (bulkId: string, count: number) => Promise<number>
+    getPartyLookupSuccessCount: (bulkId: string) => Promise<number>
+    getPartyLookupFailedCount: (bulkId: string) => Promise<number>
 } & IEntityStateReadOnlyRepository<BulkTransactionState>;

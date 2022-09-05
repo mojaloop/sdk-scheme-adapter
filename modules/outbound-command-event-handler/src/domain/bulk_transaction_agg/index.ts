@@ -163,6 +163,16 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
             .setPartyLookupTotalCount(this._rootEntity.id, count);
     }
 
+    async setPartyLookupSuccessCount(count: number): Promise<void> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .setPartyLookupSuccessCount(this._rootEntity.id, count);
+    }
+
+    async setPartyLookupFailedCount(count: number): Promise<void> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .setPartyLookupFailedCount(this._rootEntity.id, count);
+    }
+
     async getPartyLookupTotalCount(): Promise<any> {
         await (<IBulkTransactionEntityRepo> this._entity_state_repo)
             .getPartyLookupTotalCount(this._rootEntity.id);

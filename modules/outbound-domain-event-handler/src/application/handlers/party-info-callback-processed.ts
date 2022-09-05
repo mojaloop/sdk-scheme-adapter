@@ -21,10 +21,10 @@ export async function handlePartyInfoCallbackProcessed(
     ).getPartyLookupTotalCount(partyInfoCallbackProcessedDmtEvt.getBulkId());
     const totalSuccessLookups = await (
       <IBulkTransactionEntityReadOnlyRepo> options.bulkTransactionEntityRepo
-    ).getPartyLookupSuccessCount(partyInfoCallbackProcessedDmtEvt.getBulkId()) | 0;
+    ).getPartyLookupSuccessCount(partyInfoCallbackProcessedDmtEvt.getBulkId());
     const totalFailedLookups = await (
       <IBulkTransactionEntityReadOnlyRepo> options.bulkTransactionEntityRepo
-    ).getPartyLookupFailedCount(partyInfoCallbackProcessedDmtEvt.getBulkId()) | 0;
+    ).getPartyLookupFailedCount(partyInfoCallbackProcessedDmtEvt.getBulkId());
 
     if(totalLookups != (totalSuccessLookups + totalFailedLookups))
         return;

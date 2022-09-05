@@ -58,6 +58,8 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestCmdEvt(
         await bulkTransactionAgg.setTransaction(bulkTx);
         const allIndividualTransferIds = await bulkTransactionAgg.getAllIndividualTransferIds();
         await bulkTransactionAgg.setPartyLookupTotalCount(allIndividualTransferIds.length);
+        await bulkTransactionAgg.setPartyLookupSuccessCount(0);
+        await bulkTransactionAgg.setPartyLookupFailedCount(0);
 
         for await (const individualTransferId of allIndividualTransferIds) {
             const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);

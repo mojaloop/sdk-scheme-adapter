@@ -170,7 +170,41 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         }
     }
 
-    async getPartyLookupTotalCount(bulkId: string): Promise<string | undefined>  {
+
+    async setPartyLookupSuccessCount(
+        bulkId: string,
+        count: number,
+    ): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            this._data[key].partyLookupTotalCount = JSON.stringify(count);
+        } catch (err) {
+            this._logger.error(err, 'Error storing partyLookupSuccessCount to memory - for key: ' + key);
+            throw (err);
+        }
+    }
+
+
+    async setPartyLookupFailedCount(
+        bulkId: string,
+        count: number,
+    ): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            this._data[key].partyLookupTotalCount = JSON.stringify(count);
+        } catch (err) {
+            this._logger.error(err, 'Error storing partyLookupFailedCount to memory - for key: ' + key);
+            throw (err);
+        }
+    }
+
+    async getPartyLookupTotalCount(bulkId: string): Promise<number> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
@@ -199,7 +233,7 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         }
     }
 
-    async getPartyLookupSuccessCount(bulkId: string): Promise<string | undefined> {
+    async getPartyLookupSuccessCount(bulkId: string): Promise<number> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
@@ -229,7 +263,7 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         }
     }
 
-    async getPartyLookupFailedCount(bulkId: string): Promise<string | undefined>  {
+    async getPartyLookupFailedCount(bulkId: string): Promise<number>  {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
