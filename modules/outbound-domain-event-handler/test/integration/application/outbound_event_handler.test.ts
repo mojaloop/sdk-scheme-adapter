@@ -299,7 +299,7 @@ describe('First domain event', () => {
   test('should publish a domain event', async () => {
     const domainEventObj = new DomainEvent(sampleDomainEventMessageData);
     await producer.sendDomainMessage(domainEventObj);
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 3000));
     await expect(true)
   })
 
@@ -378,7 +378,7 @@ describe('First domain event', () => {
     }
     const message = new PartyInfoCallbackProcessedDmEvt(samplePartyInfoCallbackProcessedDmEvtData);
     await producer.sendDomainMessage(message);
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 3000));
 
     // Check command events published to kafka
     expect(commandEvents[0].getName()).toBe('ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt')
@@ -459,7 +459,7 @@ describe('First domain event', () => {
         }
         const message = new PartyInfoCallbackProcessedDmEvt(samplePartyInfoCallbackProcessedDmEvtData);
         await producer.sendDomainMessage(message);
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise(resolve => setTimeout(resolve, 3000));
 
         // Check command events published to kafka
         expect(commandEvents[0]).toBe(undefined)
