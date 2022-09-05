@@ -58,6 +58,6 @@ export async function handleProcessSDKOutboundBulkRequestCmdEvt(
         await options.domainProducer.sendDomainEvent(msg);
 
     } catch (err) {
-        logger.info(`Failed to create BulkTransactionAggregate. ${(err as Error).message}`);
+        logger.error(`Failed to create BulkTransactionAggregate. ${(err as Error).message}`);
     }
 }

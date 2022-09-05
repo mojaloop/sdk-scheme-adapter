@@ -74,6 +74,6 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
 
         await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
     } catch (err) {
-        logger.info(`Failed to create BulkTransactionAggregate. ${(err as Error).message}`);
+        logger.error(`Failed to create BulkTransactionAggregate. ${(err as Error).message}`);
     }
 }

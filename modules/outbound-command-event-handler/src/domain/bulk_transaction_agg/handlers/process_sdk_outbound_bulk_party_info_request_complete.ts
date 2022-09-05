@@ -75,6 +75,6 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt
 
         await bulkTransactionAgg.setTransaction(bulkTx);
     } catch (err) {
-        logger.info(`Failed to create BulkTransactionAggregate. ${(err as Error).message}`);
+        logger.error(`Failed to create BulkTransactionAggregate. ${(err as Error).message}`);
     }
 }

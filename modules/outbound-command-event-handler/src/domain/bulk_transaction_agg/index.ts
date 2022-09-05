@@ -234,6 +234,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
             .setBulkBatch(this._rootEntity.id, id, bulkBatch.exportState());
     }
 
+    // This function creates batches which contain bulkQuotes and bulkTransfer requests based per each DFSP and with maximum limit passed.
     async createBatches(maxItemsPerBatch: number) : Promise<void> {
         const allBulkBatchIds = await this.getAllBulkBatchIds();
         if(allBulkBatchIds.length > 0) {

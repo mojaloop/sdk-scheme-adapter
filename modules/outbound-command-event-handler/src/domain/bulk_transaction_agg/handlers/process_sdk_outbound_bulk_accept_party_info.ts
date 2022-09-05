@@ -59,7 +59,7 @@ export async function handleProcessSDKOutboundBulkAcceptPartyInfoCmdEvt(
                 // TODO: Confirm the field name transactionId in the individualTransfer from the message
                 individualTransfer =
                     await bulkTransactionAgg.getIndividualTransferById(individualTransferFromMessage.transactionId);
-            } catch (err1) {
+            } catch {
                 logger.warn(`Can not find the individual transfer with id ${individualTransferFromMessage.transactionId} in bulk transaction`);
                 continue;
             }
@@ -85,6 +85,6 @@ export async function handleProcessSDKOutboundBulkAcceptPartyInfoCmdEvt(
         await options.domainProducer.sendDomainEvent(sdkOutboundBulkAcceptPartyInfoProcessedDmEvt);
 
     } catch (err) {
-        logger.info(`Failed to create BulkTransactionAggregate. ${(err as Error).message}`);
+        logger.error(`Failed to create BulkTransactionAggregate. ${(err as Error).message}`);
     }
 }
