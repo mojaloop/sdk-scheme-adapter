@@ -44,10 +44,10 @@ import { CommandEvent, ICommandEventData, DomainEvent,
 import { randomUUID } from "crypto";
 
 // Tests can timeout in a CI pipeline so giving it leeway
-jest.setTimeout(20000)
+jest.setTimeout(30000)
 
 const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
-const messageTimeout = 3000;
+const messageTimeout = 5000;
 
 // Setup for Kafka Producer
 const commandEventProducerOptions: IKafkaEventProducerOptions = {
