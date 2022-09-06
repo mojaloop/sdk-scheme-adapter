@@ -109,14 +109,15 @@ sequenceDiagram
           SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the individual state: AGREEMENT_SUCCESS / AGREEMENT_FAILED
           SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the quote response
         end
-        SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: BulkQuotesProcessed
+        SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: BulkQuotesCallbackProcessed
         Note right of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
-        SDKOutboundDomainEventHandler->>SDKOutboundDomainEventHandler: Check the status of the remaining items in the bulk
+        SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Check the status of the remaining items in the bulk
     end
-    SDKOutboundDomainEventHandler->>SDKOutboundCommandEventHandler: ProcessSDKOutboundBulkQuotesRequestComplete
-    Note left of SDKOutboundCommandEventHandler: topic-sdk-outbound-command-events
 
     SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "AGREEMENT_COMPLETED"
+    SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: SDKOutboundBulkQuotesRequestProcessed
+    Note right of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
+
     SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: check autoAcceptQuote
 
     alt autoAcceptQuote == false

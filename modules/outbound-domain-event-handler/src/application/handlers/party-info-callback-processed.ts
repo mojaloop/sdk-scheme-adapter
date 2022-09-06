@@ -42,7 +42,7 @@ export async function handlePartyInfoCallbackProcessed(
                 processSDKOutboundBulkPartyInfoRequestCompleteData,
             );
 
-        await options.commandProducer.sendCommandMessage(processSDKOutboundBulkPartyInfoRequestCompleteMessage);
+        await options.commandProducer.sendCommandEvent(processSDKOutboundBulkPartyInfoRequestCompleteMessage);
 
         logger.info(`Sent command event ${processSDKOutboundBulkPartyInfoRequestCompleteMessage.getName()}`);
         console.log(processSDKOutboundBulkPartyInfoRequestCompleteMessage);

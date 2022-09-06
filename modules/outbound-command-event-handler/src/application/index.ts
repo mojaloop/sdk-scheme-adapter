@@ -41,6 +41,7 @@ import Config from '../shared/config';
     const bulkTransactionEntityRepoOptions: IRedisBulkTransactionStateRepoOptions = {
         connStr: Config.get('REDIS.CONNECTION_URL'),
     };
+
     const bulkTransactionEntityRepo = new RedisBulkTransactionStateRepo(bulkTransactionEntityRepoOptions, logger);
     logger.info(`Created BulkTransactionStateRepo of type ${bulkTransactionEntityRepo.constructor.name}`);
     await bulkTransactionEntityRepo.init();
@@ -52,9 +53,8 @@ import Config from '../shared/config';
     const outboundEventHandler: IRunHandler = new OutboundEventHandler(outboundEventHanlerOptions);
     try {
         await outboundEventHandler.start(Config, logger);
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    } catch (err: any) {
-        logger.error(err, 'Error starting outbound event handler: ' + err.message);
+    } catch (err) {
+        logger.error(err, 'Error starting outbound event handler: ' + (err as Error).message);
         await outboundEventHandler.destroy();
     }
 

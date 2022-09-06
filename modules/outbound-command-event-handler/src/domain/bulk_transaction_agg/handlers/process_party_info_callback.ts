@@ -31,10 +31,10 @@ import {
     ProcessPartyInfoCallbackCmdEvt,
     PartyInfoCallbackProcessedDmEvt,
     IPartyResult,
+    SDKOutboundTransferState,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
-import { v1_1 as FSPIOP } from '@mojaloop/api-snippets';
 
 export async function handleProcessPartyInfoCallbackCmdEvt(
     message: CommandEvent,
@@ -55,27 +55,28 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
         const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(
             processPartyInfoCallback.getTransferId(),
         );
-        const partyResult = <IPartyResult>processPartyInfoCallback.getContent();
-        if(partyResult.errorInformation) {
-            individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_FAILED);
-            await bulkTransactionAgg.incrementPartyLookupFailedCount(1);
-        } else {
+        const partyResult = <IPartyResult>processPartyInfoCallback.getPartyResult();
+        if(partyResult.currentState && partyResult.currentState === SDKOutboundTransferState.COMPLETED) {
             individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS);
             await bulkTransactionAgg.incrementPartyLookupSuccessCount(1);
+        } else {
+            individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_FAILED);
+            await bulkTransactionAgg.incrementPartyLookupFailedCount(1);
         }
         individualTransfer.setPartyResponse(partyResult);
 
         const msg = new PartyInfoCallbackProcessedDmEvt({
-            key: processPartyInfoCallback.getKey(),
-            partyResult: <FSPIOP.Schemas.PartyResult>processPartyInfoCallback.getContent(),
+            bulkId: processPartyInfoCallback.getKey(),
+            content: {
+                transferId: processPartyInfoCallback.getTransferId(),
+            },
             timestamp: Date.now(),
             headers: [],
         });
-        await options.domainProducer.sendDomainMessage(msg);
+        await options.domainProducer.sendDomainEvent(msg);
 
         await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    } catch (err: any) {
-        logger.info(`Failed to create BulkTransactionAggregate. ${err.message}`);
+    } catch (err) {
+        logger.error(`Failed to create BulkTransactionAggregate. ${(err as Error).message}`);
     }
 }

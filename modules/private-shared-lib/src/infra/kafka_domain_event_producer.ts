@@ -51,7 +51,7 @@ export class KafkaDomainEventProducer extends KafkaEventProducer implements IDom
         this._topic = producerOptions.topic;
     }
 
-    async sendDomainMessage(domainEventMessage: DomainEvent) {
+    async sendDomainEvent(domainEventMessage: DomainEvent) {
         const message: IMessage = domainEventMessage.toIMessage(this._topic);
         await super.send(message);
     }

@@ -26,7 +26,7 @@
 
 import * as redis from 'redis';
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { BulkTransactionState, IndividualTransferState } from '@module-domain';
+import { BulkBatchState, BulkTransactionState, IndividualTransferState } from '@module-domain';
 import { IBulkTransactionEntityRepo } from '@module-types';
 
 export interface IRedisBulkTransactionStateRepoOptions {
@@ -44,11 +44,21 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
 
     private readonly keyPrefix: string = 'outboundBulkTransaction_';
 
-    private readonly partyLookupTotalCountAttributeField = 'partyLookupTotalCount';
+    private readonly individualTransferKeyPrefix: string = 'individualItem_';
 
-    private readonly partyLookupSuccessCountAttributeField = 'partyLookupSuccessCount';
+    private readonly bulkBatchKeyPrefix: string = 'bulkBatch_';
 
-    private readonly partyLookupFailedCountAttributeField = 'partyLookupFailedCount';
+    private readonly bulkQuotesTotalCountKey: string = 'bulkQuotesTotalCount';
+
+    private readonly bulkQuotesSuccessCountKey: string = 'bulkQuotesSuccessCount';
+
+    private readonly bulkQuotesFailedCountKey: string = 'bulkQuotesFailedCount';
+
+    private readonly partyLookupTotalCountKey = 'partyLookupTotalCount';
+
+    private readonly partyLookupSuccessCountKey = 'partyLookupSuccessCount';
+
+    private readonly partyLookupFailedCountKey = 'partyLookupFailedCount';
 
     constructor(options: IRedisBulkTransactionStateRepoOptions, logger: ILogger) {
         this._redisConnStr = options.connStr;
@@ -132,7 +142,8 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
         const key: string = this.keyWithPrefix(bulkId);
         try {
             const allAttributes = await this._redisClient.hKeys(key);
-            const allIndividualTransferIds = allAttributes.filter(attr => attr.startsWith('individualItem_')).map(attr => attr.replace('individualItem_', ''));
+            const allIndividualTransferIds =
+                allAttributes.filter(attr => attr.startsWith(this.individualTransferKeyPrefix)).map(attr => attr.replace(this.individualTransferKeyPrefix, ''));
             return allIndividualTransferIds;
         } catch (err) {
             this._logger.error(err, 'Error getting individual transfers from redis - for key: ' + key);
@@ -140,13 +151,14 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
         }
     }
 
-    async getIndividualTransfer(bulkId: string, individualTranferId: string): Promise<IndividualTransferState> {
+    async getIndividualTransfer(bulkId: string, individualTransferId: string): Promise<IndividualTransferState> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            const individualTransferStateStr = await this._redisClient.hGet(key, 'individualItem_' + individualTranferId);
+            const individualTransferStateStr =
+                await this._redisClient.hGet(key, this.individualTransferKeyPrefix + individualTransferId);
             if(individualTransferStateStr) {
                 return JSON.parse(individualTransferStateStr) as IndividualTransferState;
             } else {
@@ -169,147 +181,64 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            await this._redisClient.hSet(key, 'individualItem_' + individualTransferId, JSON.stringify(value));
+            await this._redisClient.hSet(
+                key,
+                this.individualTransferKeyPrefix + individualTransferId,
+                JSON.stringify(value),
+            );
         } catch (err) {
             this._logger.error(err, `Error storing individual transfer with ID ${individualTransferId} to redis for key: ${key}`);
             throw (err);
         }
     }
 
-    async setPartyLookupTotalCount(
-        bulkId: string,
-        count: number,
-    ): Promise<void> {
+    async getAllBulkBatchIds(bulkId: string): Promise<string[]> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            await this._redisClient.hSet(key, this.partyLookupTotalCountAttributeField, count);
+            const allAttributes = await this._redisClient.hKeys(key);
+            const allBulkBatchIds = allAttributes.filter(attr => attr.startsWith(this.bulkBatchKeyPrefix)).map(attr => attr.replace(this.bulkBatchKeyPrefix, ''));
+            return allBulkBatchIds;
         } catch (err) {
-            this._logger.error(err, `Error storing ${this.partyLookupTotalCountAttributeField} to redis - for key: ${key}`);
+            this._logger.error(err, 'Error getting bulk batches from redis - for key: ' + key);
             throw (err);
         }
     }
 
-    async setPartyLookupSuccessCount(
-        bulkId: string,
-        count: number,
-    ): Promise<void> {
+    async getBulkBatch(bulkId: string, bulkBatchId: string): Promise<BulkBatchState> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            await this._redisClient.hSet(key, this.partyLookupSuccessCountAttributeField, count);
-        } catch (err) {
-            this._logger.error(err, `Error storing ${this.partyLookupSuccessCountAttributeField} to redis - for key: ${key}`);
-            throw (err);
-        }
-    }
-
-    async setPartyLookupFailedCount(
-        bulkId: string,
-        count: number,
-    ): Promise<void> {
-        if(!this.canCall()) {
-            throw (new Error('Repository not ready'));
-        }
-        const key: string = this.keyWithPrefix(bulkId);
-        try {
-            await this._redisClient.hSet(key, this.partyLookupFailedCountAttributeField, count);
-        } catch (err) {
-            this._logger.error(err, `Error storing ${this.partyLookupFailedCountAttributeField} to redis - for key: ${key}`);
-            throw (err);
-        }
-    }
-
-    async getPartyLookupTotalCount(bulkId: string): Promise<number>  {
-        if(!this.canCall()) {
-            throw (new Error('Repository not ready'));
-        }
-        const key: string = this.keyWithPrefix(bulkId);
-        try {
-            const count = await this._redisClient.hGet(key, this.partyLookupTotalCountAttributeField);
-            if(count) {
-                return Number(count);
+            const bulkBatchStateStr = await this._redisClient.hGet(key, this.bulkBatchKeyPrefix + bulkBatchId);
+            if(bulkBatchStateStr) {
+                return JSON.parse(bulkBatchStateStr) as BulkBatchState;
             } else {
-                this._logger.error(`Error loading ${this.partyLookupTotalCountAttributeField} from redis - for key: ${key}`);
-                throw (new Error(`Error loading ${this.partyLookupTotalCountAttributeField} from redis - for key: ${key}`));
+                this._logger.error('Error loading bulk batch from redis - for key: ' + key);
+                throw (new Error('Error loading bulk batch from redis'));
             }
         } catch (err) {
-            this._logger.error(err, `Error loading ${this.partyLookupTotalCountAttributeField} from redis - for key: ${key}`);
+            this._logger.error(err, 'Error loading bulk batch from redis - for key: ' + key);
             throw (err);
         }
     }
 
-    async incrementPartyLookupSuccessCount(
+    async setBulkBatch(
         bulkId: string,
-        increment: number,
+        bulkBatchId: string,
+        value: BulkBatchState,
     ): Promise<void> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            await this._redisClient.hIncrBy(key, this.partyLookupSuccessCountAttributeField, increment);
+            await this._redisClient.hSet(key, this.bulkBatchKeyPrefix + bulkBatchId, JSON.stringify(value));
         } catch (err) {
-            this._logger.error(err, `Error incrementing partyLookupSuccessCount in redis - for key: ${key}`);
-            throw (err);
-        }
-    }
-
-    async getPartyLookupSuccessCount(bulkId: string): Promise<number> {
-        if(!this.canCall()) {
-            throw (new Error('Repository not ready'));
-        }
-        const key: string = this.keyWithPrefix(bulkId);
-        try {
-            const count = await this._redisClient.hGet(key, this.partyLookupSuccessCountAttributeField);
-            if(count) {
-                return Number(count);
-            } else {
-                this._logger.error(`Error loading ${this.partyLookupSuccessCountAttributeField} from redis - for key: ${key}`);
-                throw (new Error(`Error loading ${this.partyLookupSuccessCountAttributeField} from redis - for key: ${key}`));
-            }
-        } catch (err) {
-            this._logger.error(err, `Error loading ${this.partyLookupSuccessCountAttributeField} from redis - for key: ${key}`);
-            throw (err);
-        }
-    }
-
-
-    async incrementPartyLookupFailedCount(
-        bulkId: string,
-        increment: number,
-    ): Promise<void> {
-        if(!this.canCall()) {
-            throw (new Error('Repository not ready'));
-        }
-        const key: string = this.keyWithPrefix(bulkId);
-        try {
-            await this._redisClient.hIncrBy(key, this.partyLookupFailedCountAttributeField, increment);
-        } catch (err) {
-            this._logger.error(err, `Error incrementing ${this.partyLookupFailedCountAttributeField} in redis - for key: ${key}`);
-            throw (err);
-        }
-    }
-
-    async getPartyLookupFailedCount(bulkId: string): Promise<number>  {
-        if(!this.canCall()) {
-            throw (new Error('Repository not ready'));
-        }
-        const key: string = this.keyWithPrefix(bulkId);
-        try {
-            const count = await this._redisClient.hGet(key, this.partyLookupFailedCountAttributeField);
-            if(count) {
-                return Number(count);
-            } else {
-                this._logger.error(`Error loading ${this.partyLookupFailedCountAttributeField} from redis - for key: ${key}`);
-                throw (new Error(`Error loading ${this.partyLookupFailedCountAttributeField} from redis - for key: ${key}`));
-            }
-        } catch (err) {
-            this._logger.error(err, `Error loading ${this.partyLookupFailedCountAttributeField} from redis - for key: ${key}`);
+            this._logger.error(err, `Error storing bulk batch with ID ${bulkBatchId} to redis for key: ${key}`);
             throw (err);
         }
     }
@@ -324,6 +253,275 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
             return isExists === 1;
         } catch (err) {
             this._logger.error(err, 'Error getting status from redis - for key: ' + key);
+            throw (err);
+        }
+    }
+
+    async getBulkQuotesTotalCount(bulkId: string): Promise<number> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            const count = await this._redisClient.hGet(key, this.bulkQuotesTotalCountKey);
+            if(count) {
+                return Number(count);
+            } else {
+                this._logger.error(`Error loading ${this.bulkQuotesTotalCountKey} from redis - for key: ${key}`);
+                throw (new Error(`Error loading ${this.bulkQuotesTotalCountKey} from redis - for key: ${key}`));
+            }
+        } catch (err) {
+            this._logger.error(err, `Error loading ${this.bulkQuotesTotalCountKey} from redis - for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async setBulkQuotesTotalCount(
+        bulkId: string,
+        value: number,
+    ): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            await this._redisClient.hSet(key, this.bulkQuotesTotalCountKey, value);
+        } catch (err) {
+            this._logger.error(err, `Error storing attribute ${this.bulkQuotesTotalCountKey} to redis for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async getBulkQuotesSuccessCount(bulkId: string): Promise<number> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            const count = await this._redisClient.hGet(key, this.bulkQuotesSuccessCountKey);
+            if(count) {
+                return Number(count);
+            } else {
+                this._logger.error(`Error loading ${this.bulkQuotesSuccessCountKey} from redis - for key: ${key}`);
+                throw (new Error(`Error loading ${this.bulkQuotesSuccessCountKey} from redis - for key: ${key}`));
+            }
+        } catch (err) {
+            this._logger.error(err, `Error loading ${this.bulkQuotesSuccessCountKey} from redis - for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async setBulkQuotesSuccessCount(
+        bulkId: string,
+        value: number,
+    ): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            await this._redisClient.hSet(key, this.bulkQuotesSuccessCountKey, value);
+        } catch (err) {
+            this._logger.error(err, `Error storing attribute ${this.bulkQuotesSuccessCountKey} to redis for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async incrementBulkQuotesSuccessCount(bulkId: string): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            await this._redisClient.hIncrBy(key, this.bulkQuotesSuccessCountKey, 1);
+        } catch (err) {
+            this._logger.error(err, `Error incrementing attribute ${this.bulkQuotesSuccessCountKey} in redis for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async getBulkQuotesFailedCount(bulkId: string): Promise<number> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            const count = await this._redisClient.hGet(key, this.bulkQuotesFailedCountKey);
+            if(count) {
+                return Number(count);
+            } else {
+                this._logger.error(`Error loading ${this.bulkQuotesFailedCountKey} from redis - for key: ${key}`);
+                throw (new Error(`Error loading ${this.bulkQuotesFailedCountKey} from redis - for key: ${key}`));
+            }
+        } catch (err) {
+            this._logger.error(err, `Error loading ${this.bulkQuotesFailedCountKey} from redis - for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async setBulkQuotesFailedCount(
+        bulkId: string,
+        value: number,
+    ): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            await this._redisClient.hSet(key, this.bulkQuotesFailedCountKey, value);
+        } catch (err) {
+            this._logger.error(err, `Error storing attribute ${this.bulkQuotesFailedCountKey} to redis for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async incrementBulkQuotesFailedCount(bulkId: string): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            await this._redisClient.hIncrBy(key, this.bulkQuotesFailedCountKey, 1);
+        } catch (err) {
+            this._logger.error(err, `Error incrementing attribute ${this.bulkQuotesFailedCountKey} in redis for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async setPartyLookupTotalCount(
+        bulkId: string,
+        count: number,
+    ): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            await this._redisClient.hSet(key, this.partyLookupTotalCountKey, count);
+        } catch (err) {
+            this._logger.error(err, `Error storing ${this.partyLookupTotalCountKey} to redis - for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async setPartyLookupSuccessCount(
+        bulkId: string,
+        count: number,
+    ): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            await this._redisClient.hSet(key, this.partyLookupSuccessCountKey, count);
+        } catch (err) {
+            this._logger.error(err, `Error storing ${this.partyLookupSuccessCountKey} to redis - for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async setPartyLookupFailedCount(
+        bulkId: string,
+        count: number,
+    ): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            await this._redisClient.hSet(key, this.partyLookupFailedCountKey, count);
+        } catch (err) {
+            this._logger.error(err, `Error storing ${this.partyLookupFailedCountKey} to redis - for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async getPartyLookupTotalCount(bulkId: string): Promise<number>  {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            const count = await this._redisClient.hGet(key, this.partyLookupTotalCountKey);
+            if(count) {
+                return Number(count);
+            } else {
+                this._logger.error(`Error loading ${this.partyLookupTotalCountKey} from redis - for key: ${key}`);
+                throw (new Error(`Error loading ${this.partyLookupTotalCountKey} from redis - for key: ${key}`));
+            }
+        } catch (err) {
+            this._logger.error(err, `Error loading ${this.partyLookupTotalCountKey} from redis - for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async incrementPartyLookupSuccessCount(
+        bulkId: string,
+        increment: number,
+    ): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            await this._redisClient.hIncrBy(key, this.partyLookupSuccessCountKey, increment);
+        } catch (err) {
+            this._logger.error(err, `Error incrementing partyLookupSuccessCount in redis - for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async getPartyLookupSuccessCount(bulkId: string): Promise<number> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            const count = await this._redisClient.hGet(key, this.partyLookupSuccessCountKey);
+            if(count) {
+                return Number(count);
+            } else {
+                this._logger.error(`Error loading ${this.partyLookupSuccessCountKey} from redis - for key: ${key}`);
+                throw (new Error(`Error loading ${this.partyLookupSuccessCountKey} from redis - for key: ${key}`));
+            }
+        } catch (err) {
+            this._logger.error(err, `Error loading ${this.partyLookupSuccessCountKey} from redis - for key: ${key}`);
+            throw (err);
+        }
+    }
+
+
+    async incrementPartyLookupFailedCount(
+        bulkId: string,
+        increment: number,
+    ): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            await this._redisClient.hIncrBy(key, this.partyLookupFailedCountKey, increment);
+        } catch (err) {
+            this._logger.error(err, `Error incrementing ${this.partyLookupFailedCountKey} in redis - for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async getPartyLookupFailedCount(bulkId: string): Promise<number>  {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            const count = await this._redisClient.hGet(key, this.partyLookupFailedCountKey);
+            if(count) {
+                return Number(count);
+            } else {
+                this._logger.error(`Error loading ${this.partyLookupFailedCountKey} from redis - for key: ${key}`);
+                throw (new Error(`Error loading ${this.partyLookupFailedCountKey} from redis - for key: ${key}`));
+            }
+        } catch (err) {
+            this._logger.error(err, `Error loading ${this.partyLookupFailedCountKey} from redis - for key: ${key}`);
             throw (err);
         }
     }

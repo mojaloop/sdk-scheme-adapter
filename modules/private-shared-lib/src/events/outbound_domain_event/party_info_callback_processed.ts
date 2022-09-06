@@ -18,6 +18,7 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Modusbox
+ - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
  - Yevhen Kyriukha <yevhen.kyriukha@modusbox.com>
  --------------
  ******/
@@ -29,8 +30,10 @@ import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-li
 import { IPartyResult } from '@module-types';
 
 export interface IPartyInfoCallbackProcessedDmEvtData {
-    key: string;
-    partyResult: IPartyResult ;
+    bulkId: string;
+    content: {
+        transferId: string;
+    };
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
@@ -38,8 +41,8 @@ export interface IPartyInfoCallbackProcessedDmEvtData {
 export class PartyInfoCallbackProcessedDmEvt extends DomainEvent {
     constructor(data: IPartyInfoCallbackProcessedDmEvtData) {
         super({
-            key: data.key,
-            content: data.partyResult,
+            key: data.bulkId,
+            content: data.content,
             timestamp: data.timestamp,
             headers: data.headers,
             name: PartyInfoCallbackProcessedDmEvt.name,
@@ -47,11 +50,11 @@ export class PartyInfoCallbackProcessedDmEvt extends DomainEvent {
     }
 
     getBulkId() {
-        return this.getKey().split('_')[0];
+        return this.getKey();
     }
 
     getTransferId() {
-        return this.getKey().split('_')[1];
+        return (this.getContent() as IPartyInfoCallbackProcessedDmEvtData['content']).transferId;
     }
 
     static CreateFromCommandEvent(message: DomainEvent): PartyInfoCallbackProcessedDmEvt {
@@ -59,8 +62,8 @@ export class PartyInfoCallbackProcessedDmEvt extends DomainEvent {
             throw new Error('Content is in unknown format');
         }
         const data: IPartyInfoCallbackProcessedDmEvtData = {
-            key: message.getKey(),
-            partyResult: <IPartyResult>message.getContent(),
+            bulkId: message.getKey(),
+            content: message.getContent() as IPartyInfoCallbackProcessedDmEvtData['content'],
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
         };

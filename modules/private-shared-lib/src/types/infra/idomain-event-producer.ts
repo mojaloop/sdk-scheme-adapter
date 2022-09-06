@@ -42,5 +42,5 @@ import { IEventProducer } from './ievent-producer';
 
 export interface IDomainEventProducer extends IEventProducer {
     init: () => Promise<void>
-    sendDomainMessage: (message: DomainEvent) => Promise<void>
+    sendDomainEvent: (message: DomainEvent) => Promise<void>
 }

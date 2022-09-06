@@ -25,7 +25,7 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { BulkTransactionState, IndividualTransferState } from '@module-domain';
+import { BulkBatchState, BulkTransactionState, IndividualTransferState } from '@module-domain';
 import { IBulkTransactionEntityRepo } from '@module-types';
 
 export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityRepo {
@@ -40,6 +40,19 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
 
     private readonly individualTransferKeyPrefix: string = 'individualItem_';
 
+    private readonly bulkBatchKeyPrefix: string = 'bulkBatch_';
+
+    private readonly bulkQuotesTotalCountKey: string = 'bulkQuotesTotalCount';
+
+    private readonly bulkQuotesSuccessCountKey: string = 'bulkQuotesSuccessCount';
+
+    private readonly bulkQuotesFailedCountKey: string = 'bulkQuotesFailedCount';
+
+    private readonly partyLookupTotalCountKey = 'partyLookupTotalCount';
+
+    private readonly partyLookupSuccessCountKey = 'partyLookupSuccessCount';
+
+    private readonly partyLookupFailedCountKey = 'partyLookupFailedCount';
 
     constructor(logger: ILogger) {
         this._logger = logger;
@@ -130,7 +143,8 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            return this._data[key][this.individualTransferKeyPrefix + individualTransferId] as IndividualTransferState;
+            const individualTransferStateStr = this._data[key][this.individualTransferKeyPrefix + individualTransferId];
+            return JSON.parse(individualTransferStateStr) as IndividualTransferState;
         } catch (err) {
             this._logger.error(err, 'Error getting individual transfer from memory - for key: ' + key);
             throw (err);
@@ -149,129 +163,52 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         try {
             this._data[key][this.individualTransferKeyPrefix + individualTransferId] = JSON.stringify(value);
         } catch (err) {
-            this._logger.error(err, `Error storing individual Transfer with ID ${individualTransferId} to memory for key: ${key}`);
+            this._logger.error(err, `Error storing individual transfer with ID ${individualTransferId} to memory for key: ${key}`);
             throw (err);
         }
     }
 
-    async setPartyLookupTotalCount(
+    async getAllBulkBatchIds(bulkId: string): Promise<string[]> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            const allAttributes = Object.keys(this._data[key]);
+            const allBulkBatchIds = allAttributes.filter(attr => attr.startsWith(this.bulkBatchKeyPrefix)).map(attr => attr.replace(this.bulkBatchKeyPrefix, ''));
+            return allBulkBatchIds;
+        } catch (err) {
+            this._logger.error(err, 'Error getting bulk batches from memory - for key: ' + key);
+            throw (err);
+        }
+    }
+
+    async getBulkBatch(bulkId: string, bulkBatchId: string): Promise<BulkBatchState> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            return JSON.parse(this._data[key][this.bulkBatchKeyPrefix + bulkBatchId]) as BulkBatchState;
+        } catch (err) {
+            this._logger.error(err, 'Error getting bulk batch from memory - for key: ' + key);
+            throw (err);
+        }
+    }
+
+    async setBulkBatch(
         bulkId: string,
-        count: number,
+        bulkBatchId: string,
+        value: BulkBatchState,
     ): Promise<void> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            this._data[key].partyLookupTotalCount = JSON.stringify(count);
+            this._data[key][this.bulkBatchKeyPrefix + bulkBatchId] = JSON.stringify(value);
         } catch (err) {
-            this._logger.error(err, 'Error storing partyLookupTotalCount to memory - for key: ' + key);
-            throw (err);
-        }
-    }
-
-
-    async setPartyLookupSuccessCount(
-        bulkId: string,
-        count: number,
-    ): Promise<void> {
-        if(!this.canCall()) {
-            throw (new Error('Repository not ready'));
-        }
-        const key: string = this.keyWithPrefix(bulkId);
-        try {
-            this._data[key].partyLookupTotalCount = JSON.stringify(count);
-        } catch (err) {
-            this._logger.error(err, 'Error storing partyLookupSuccessCount to memory - for key: ' + key);
-            throw (err);
-        }
-    }
-
-
-    async setPartyLookupFailedCount(
-        bulkId: string,
-        count: number,
-    ): Promise<void> {
-        if(!this.canCall()) {
-            throw (new Error('Repository not ready'));
-        }
-        const key: string = this.keyWithPrefix(bulkId);
-        try {
-            this._data[key].partyLookupTotalCount = JSON.stringify(count);
-        } catch (err) {
-            this._logger.error(err, 'Error storing partyLookupFailedCount to memory - for key: ' + key);
-            throw (err);
-        }
-    }
-
-    async getPartyLookupTotalCount(bulkId: string): Promise<number> {
-        if(!this.canCall()) {
-            throw (new Error('Repository not ready'));
-        }
-        const key: string = this.keyWithPrefix(bulkId);
-        try {
-            return this._data[key].partyLookupTotalCount;
-        } catch (err) {
-            this._logger.error(err, 'Error loading partyLookupTotalCount from memory - for key: ' + key);
-            throw (err);
-        }
-    }
-
-    async incrementPartyLookupSuccessCount(
-        bulkId: string,
-        increment: number,
-    ): Promise<void> {
-        if(!this.canCall()) {
-            throw (new Error('Repository not ready'));
-        }
-        const key: string = this.keyWithPrefix(bulkId);
-        try {
-            this._data[key].partyLookupSuccessCount = this._data[key].partyLookupSuccessCount + increment;
-        } catch (err) {
-            this._logger.error(err, 'Error incrementing partyLookupSuccessCount in memory - for key: ' + key);
-            throw (err);
-        }
-    }
-
-    async getPartyLookupSuccessCount(bulkId: string): Promise<number> {
-        if(!this.canCall()) {
-            throw (new Error('Repository not ready'));
-        }
-        const key: string = this.keyWithPrefix(bulkId);
-        try {
-            return this._data[key].partyLookupSuccessCount;
-        } catch (err) {
-            this._logger.error(err, 'Error loading partyLookupSuccessCount from memory - for key: ' + key);
-            throw (err);
-        }
-    }
-
-
-    async incrementPartyLookupFailedCount(
-        bulkId: string,
-        increment: number,
-    ): Promise<void> {
-        if(!this.canCall()) {
-            throw (new Error('Repository not ready'));
-        }
-        const key: string = this.keyWithPrefix(bulkId);
-        try {
-            this._data[key].partyLookupFailedCount = this._data[key].partyLookupFailedCount + increment;
-        } catch (err) {
-            this._logger.error(err, 'Error incrementing partyLookupFailedCount in memory - for key: ' + key);
-            throw (err);
-        }
-    }
-
-    async getPartyLookupFailedCount(bulkId: string): Promise<number>  {
-        if(!this.canCall()) {
-            throw (new Error('Repository not ready'));
-        }
-        const key: string = this.keyWithPrefix(bulkId);
-        try {
-            return this._data[key].partyLookupFailedCount;
-        } catch (err) {
-            this._logger.error(err, 'Error loading partyLookupFailedCount from memory - for key: ' + key);
+            this._logger.error(err, `Error storing bulk batch with ID ${bulkBatchId} to memory for key: ${key}`);
             throw (err);
         }
     }
@@ -285,6 +222,249 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
             return this._data.hasOwnProperty(key);
         } catch (err) {
             this._logger.error(err, 'Error getting status from memory - for key: ' + key);
+            throw (err);
+        }
+    }
+
+    async getBulkQuotesTotalCount(bulkId: string): Promise<number> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            const count = this._data[key][this.bulkQuotesTotalCountKey];
+            if(count) {
+                return Number(count);
+            } else {
+                this._logger.error(`Error loading ${this.bulkQuotesTotalCountKey} from memory - for key: ${key}`);
+                throw (new Error(`Error loading ${this.bulkQuotesTotalCountKey} from memory - for key: ${key}`));
+            }
+        } catch (err) {
+            this._logger.error(err, `Error loading ${this.bulkQuotesTotalCountKey} from memory - for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async setBulkQuotesTotalCount(bulkId: string, value: number): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            this._data[key][this.bulkQuotesTotalCountKey] = value;
+        } catch (err) {
+            this._logger.error(err, `Error storing attribute ${this.bulkQuotesTotalCountKey} to memory for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async getBulkQuotesSuccessCount(bulkId: string): Promise<number> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            const count = this._data[key][this.bulkQuotesSuccessCountKey];
+            if(count) {
+                return Number(count);
+            } else {
+                this._logger.error(`Error loading ${this.bulkQuotesSuccessCountKey} from memory - for key: ${key}`);
+                throw (new Error(`Error loading ${this.bulkQuotesSuccessCountKey} from memory - for key: ${key}`));
+            }
+        } catch (err) {
+            this._logger.error(err, `Error loading ${this.bulkQuotesSuccessCountKey} from memory - for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async setBulkQuotesSuccessCount(bulkId: string, value: number): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            this._data[key][this.bulkQuotesSuccessCountKey] = value;
+        } catch (err) {
+            this._logger.error(err, `Error storing attribute ${this.bulkQuotesSuccessCountKey} to memory for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async incrementBulkQuotesSuccessCount(bulkId: string): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            this._data[key][this.bulkQuotesSuccessCountKey] += 1;
+        } catch (err) {
+            this._logger.error(err, `Error incrementing attribute ${this.bulkQuotesSuccessCountKey} in memory for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async getBulkQuotesFailedCount(bulkId: string): Promise<number> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            const count = this._data[key][this.bulkQuotesFailedCountKey];
+            if(count) {
+                return Number(count);
+            } else {
+                this._logger.error(`Error loading ${this.bulkQuotesFailedCountKey} from memory - for key: ${key}`);
+                throw (new Error(`Error loading ${this.bulkQuotesFailedCountKey} from memory - for key: ${key}`));
+            }
+        } catch (err) {
+            this._logger.error(err, `Error loading ${this.bulkQuotesFailedCountKey} from memory - for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async setBulkQuotesFailedCount(bulkId: string, value: number): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            this._data[key][this.bulkQuotesFailedCountKey] = value;
+        } catch (err) {
+            this._logger.error(err, `Error storing attribute ${this.bulkQuotesFailedCountKey} to memory for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async incrementBulkQuotesFailedCount(bulkId: string): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            this._data[key][this.bulkQuotesFailedCountKey] += 1;
+        } catch (err) {
+            this._logger.error(err, `Error incrementing attribute ${this.bulkQuotesFailedCountKey} in memory for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async setPartyLookupTotalCount(
+        bulkId: string,
+        count: number,
+    ): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            this._data[key][this.partyLookupTotalCountKey] = JSON.stringify(count);
+        } catch (err) {
+            this._logger.error(err, `Error storing ${this.partyLookupTotalCountKey} to memory - for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async setPartyLookupSuccessCount(
+        bulkId: string,
+        count: number,
+    ): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            this._data[key][this.partyLookupSuccessCountKey] = JSON.stringify(count);
+        } catch (err) {
+            this._logger.error(err, `Error storing ${this.partyLookupSuccessCountKey} to memory - for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async setPartyLookupFailedCount(
+        bulkId: string,
+        count: number,
+    ): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            this._data[key][this.partyLookupFailedCountKey] = JSON.stringify(count);
+        } catch (err) {
+            this._logger.error(err, `Error storing ${this.partyLookupFailedCountKey} to memory - for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async getPartyLookupTotalCount(bulkId: string): Promise<number> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            return this._data[key][this.partyLookupTotalCountKey];
+        } catch (err) {
+            this._logger.error(err, `Error loading ${this.partyLookupTotalCountKey} from memory - for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async getPartyLookupSuccessCount(bulkId: string): Promise<number> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            return this._data[key][this.partyLookupSuccessCountKey];
+        } catch (err) {
+            this._logger.error(err, `Error loading ${this.partyLookupSuccessCountKey} from memory - for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async getPartyLookupFailedCount(bulkId: string): Promise<number>  {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            return this._data[key][this.partyLookupFailedCountKey];
+        } catch (err) {
+            this._logger.error(err, `Error loading ${this.partyLookupFailedCountKey} from memory - for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async incrementPartyLookupSuccessCount(
+        bulkId: string,
+        increment: number,
+    ): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            this._data[key][this.partyLookupSuccessCountKey] =
+                this._data[key][this.partyLookupSuccessCountKey] + increment;
+        } catch (err) {
+            this._logger.error(err, `Error incrementing ${this.partyLookupSuccessCountKey} in memory - for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async incrementPartyLookupFailedCount(
+        bulkId: string,
+        increment: number,
+    ): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            this._data[key][this.partyLookupFailedCountKey] =
+                this._data[key][this.partyLookupFailedCountKey] + increment;
+        } catch (err) {
+            this._logger.error(err, `Error incrementing ${this.partyLookupFailedCountKey} in memory - for key: ${key}`);
             throw (err);
         }
     }

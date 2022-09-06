@@ -300,8 +300,8 @@ describe('First domain event', () => {
   });
 
   test('should publish a domain event', async () => {
-    const domainEventObj = new DomainEvent(sampleDomainEventMessageData);
-    await producer.sendDomainMessage(domainEventObj);
+    const domainEventObj = new DomainEvent(sampleDomainEventData);
+    await producer.sendDomainEvent(domainEventObj);
     await new Promise(resolve => setTimeout(resolve, 5000));
     await expect(true)
   })

@@ -29,6 +29,7 @@ import {
     IEntityStateRepository,
     IEntityStateReadOnlyRepository,
     IndividualTransferState,
+    BulkBatchState,
 } from '@module-domain';
 
 export type IBulkTransactionEntityRepo = {
@@ -39,7 +40,22 @@ export type IBulkTransactionEntityRepo = {
         individualTransferId: string,
         value: IndividualTransferState
     ) => Promise<void>
+    getAllBulkBatchIds: (bulkId: string) => Promise<string[]>
+    getBulkBatch: (bulkId: string, bulkBatchId: string) => Promise<BulkBatchState>
+    setBulkBatch: (
+        bulkId: string,
+        bulkBatchId: string,
+        value: BulkBatchState
+    ) => Promise<void>
     isBulkIdExists: (bulkId: string) => Promise<boolean>
+    getBulkQuotesTotalCount: (bulkId: string) => Promise<number>
+    setBulkQuotesTotalCount: (bulkId: string, totalCount: number) => Promise<void>
+    getBulkQuotesSuccessCount: (bulkId: string) => Promise<number>
+    setBulkQuotesSuccessCount: (bulkId: string, count: number) => Promise<void>
+    incrementBulkQuotesSuccessCount: (bulkId: string) => Promise<void>
+    getBulkQuotesFailedCount: (bulkId: string) => Promise<number>
+    setBulkQuotesFailedCount: (bulkId: string, count: number) => Promise<void>
+    incrementBulkQuotesFailedCount: (bulkId: string) => Promise<void>
     setPartyLookupTotalCount: (bulkId: string, count: number) => Promise<void>
     getPartyLookupTotalCount: (bulkId: string, count: number) => Promise<number>
     incrementPartyLookupSuccessCount: (bulkId: string, increment: number) => Promise<void>
@@ -54,6 +70,9 @@ export type IBulkTransactionEntityReadOnlyRepo = {
     getAllIndividualTransferIds: (bulkId: string) => Promise<string[]>
     getIndividualTransfer: (bulkId: string, individualTransferId: string) => Promise<IndividualTransferState>
     isBulkIdExists: (bulkId: string) => Promise<boolean>
+    getBulkQuotesTotalCount: (bulkId: string) => Promise<number>
+    getBulkQuotesSuccessCount: (bulkId: string) => Promise<number>
+    getBulkQuotesFailedCount: (bulkId: string) => Promise<number>
     getPartyLookupTotalCount: (bulkId: string, count: number) => Promise<number>
     getPartyLookupSuccessCount: (bulkId: string) => Promise<number>
     getPartyLookupFailedCount: (bulkId: string) => Promise<number>

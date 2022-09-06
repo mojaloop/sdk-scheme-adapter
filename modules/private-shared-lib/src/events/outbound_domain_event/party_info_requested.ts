@@ -26,12 +26,19 @@
 
 import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
+export type PartyInfoRequest = {
+    partyIdType: SDKSchemeAdapter.Outbound.V2_0_0.Types.PartyIdType;
+    partyIdentifier: SDKSchemeAdapter.Outbound.V2_0_0.Types.PartyIdentifier;
+    partySubIdOrType?: SDKSchemeAdapter.Outbound.V2_0_0.Types.PartySubIdOrType | undefined;
+};
 export interface IPartyInfoRequestedDmEvtData {
     bulkId: string;
-    transferId: string;
-    // TODO: FSPIOP in api-snippets should export the `PartiesByTypeAndID` schema and refer that in the following line
-    request: any;
+    content: {
+        transferId: string;
+        request: PartyInfoRequest;
+    };
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
@@ -39,8 +46,8 @@ export interface IPartyInfoRequestedDmEvtData {
 export class PartyInfoRequestedDmEvt extends DomainEvent {
     constructor(data: IPartyInfoRequestedDmEvtData) {
         super({
-            key: `${data.bulkId}_${data.transferId}`,
-            content: data.request,
+            key: `${data.bulkId}`,
+            content: data.content,
             timestamp: data.timestamp,
             headers: data.headers,
             name: PartyInfoRequestedDmEvt.name,
@@ -48,23 +55,28 @@ export class PartyInfoRequestedDmEvt extends DomainEvent {
     }
 
     getBulkId() {
-        return this.getKey().split('_')[0];
+        return this.getKey();
     }
 
     getTransferId() {
-        return this.getKey().split('_')[1];
+        return (this.getContent() as IPartyInfoRequestedDmEvtData['content']).transferId;
+    }
+
+    getPartyRequest(): PartyInfoRequest {
+        return (this.getContent() as IPartyInfoRequestedDmEvtData['content']).request;
     }
 
     // For SDK outbound API
-    // static CreateFromDomainEvent(message: DomainEvent): PartyInfoRequestedDmEvt {
-    //     if((message.getContent() === null || typeof message.getContent() !== 'object')) {
-    //         throw new Error('Content is in unknown format');
-    //     }
-    //     const data: IPartyInfoRequestedDmEvtData = {
-    //         request: <PartyInfoRequestedState>message.getContent(),
-    //         timestamp: message.getTimeStamp(),
-    //         headers: message.getHeaders(),
-    //     };
-    //     return new PartyInfoRequestedDmEvt(data);
-    // }
+    static CreateFromDomainEvent(message: DomainEvent): PartyInfoRequestedDmEvt {
+        if((message.getContent() === null || typeof message.getContent() !== 'object')) {
+            throw new Error('Content is in unknown format');
+        }
+        const data: IPartyInfoRequestedDmEvtData = {
+            bulkId: message.getKey(),
+            content: message.getContent() as IPartyInfoRequestedDmEvtData['content'],
+            timestamp: message.getTimeStamp(),
+            headers: message.getHeaders(),
+        };
+        return new PartyInfoRequestedDmEvt(data);
+    }
 }

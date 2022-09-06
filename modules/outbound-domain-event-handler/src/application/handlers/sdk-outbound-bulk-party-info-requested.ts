@@ -49,12 +49,11 @@ export async function handleSDKOutboundBulkPartyInfoRequested(
         const processSDKOutboundBulkPartyInfoRequestMessage
             = new ProcessSDKOutboundBulkPartyInfoRequestCmdEvt(processSDKOutboundBulkPartyInfoRequestMessageData);
 
-        await options.commandProducer.sendCommandMessage(processSDKOutboundBulkPartyInfoRequestMessage);
+        await options.commandProducer.sendCommandEvent(processSDKOutboundBulkPartyInfoRequestMessage);
 
         logger.info(`Sent command event ${processSDKOutboundBulkPartyInfoRequestMessage.getName()}`);
         console.log(processSDKOutboundBulkPartyInfoRequestMessage);
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    } catch (err: any) {
-        logger.info(`Failed to create SDKOutboundBulkRequestEntity. ${err.message}`);
+    } catch (err) {
+        logger.info(`Failed to create SDKOutboundBulkRequestEntity. ${(err as Error).message}`);
     }
 }

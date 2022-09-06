@@ -24,7 +24,7 @@
 
 import { EventType, CommandEvent } from '../../../src';
 
-const sampleCommandEventMessageData: any = {
+const sampleCommandEventData: any = {
   key: 'sample-key1',
   name: 'some-event-name-here',
   content: null,
@@ -47,10 +47,10 @@ const sampleIMessage: any = {
 describe ('CommandEvent', () => {
   describe("Positive scenarios", () => {
     it("should create a command event message object from event message data", () => {
-      const eventObj = new CommandEvent(sampleCommandEventMessageData);
+      const eventObj = new CommandEvent(sampleCommandEventData);
       expect(eventObj).not.toBeUndefined();
-      expect(eventObj.getKey()).toEqual(sampleCommandEventMessageData.key)
-      expect(eventObj.getTimeStamp()).toEqual(sampleCommandEventMessageData.timestamp)
+      expect(eventObj.getKey()).toEqual(sampleCommandEventData.key)
+      expect(eventObj.getTimeStamp()).toEqual(sampleCommandEventData.timestamp)
       expect(eventObj.getType()).toEqual(EventType.COMMAND_EVENT)
       expect(eventObj).toBeInstanceOf(CommandEvent)
     });
@@ -63,12 +63,12 @@ describe ('CommandEvent', () => {
       expect(eventObj).toBeInstanceOf(CommandEvent)
     });
     it("should create a command event message object from event message data and generate iMessage", () => {
-      const eventObj = new CommandEvent(sampleCommandEventMessageData);
+      const eventObj = new CommandEvent(sampleCommandEventData);
       expect(eventObj).not.toBeUndefined();
-      expect(eventObj.getKey()).toEqual(sampleCommandEventMessageData.key)
+      expect(eventObj.getKey()).toEqual(sampleCommandEventData.key)
       const iMessage = eventObj.toIMessage('some-supplied-topic');
-      expect(iMessage.key).toEqual(sampleCommandEventMessageData.key)
-      expect(iMessage.timestamp).toEqual(sampleCommandEventMessageData.timestamp)
+      expect(iMessage.key).toEqual(sampleCommandEventData.key)
+      expect(iMessage.timestamp).toEqual(sampleCommandEventData.timestamp)
       expect(iMessage.topic).toEqual('some-supplied-topic')
       expect(iMessage.value).toHaveProperty('eventType')
       expect(iMessage.value).toHaveProperty('eventName')
