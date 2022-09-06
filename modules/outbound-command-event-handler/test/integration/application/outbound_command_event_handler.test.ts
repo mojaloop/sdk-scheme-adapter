@@ -424,10 +424,13 @@ describe("Tests for Outbound Command Event Handler", () => {
 
     const partyInfoRequestedDomainEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequestedDmEvt');
 
+    // Get the randomly generated transferId for the callback
+    const previousIndividualTransfers = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
+
     const processPartyInfoCallbackMessageData: IProcessPartyInfoCallbackCmdEvtData = {
       bulkId: partyInfoRequestedDomainEvents[0].getKey(),
       content: {
-        transferId: randomUUID(),
+        transferId: previousIndividualTransfers[0],
         partyResult: {
           party: {
               partyIdInfo: {
@@ -525,13 +528,16 @@ describe("Tests for Outbound Command Event Handler", () => {
     // Check the state in Redis
     console.log('bulk id: ', bulkTransactionId);
 
+    // Get the randomly generated transferId for the callback
+    const previousIndividualTransfers = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
+
     const partyInfoRequestedDomainEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequestedDmEvt');
     const processPartyInfoCallbackMessageData: IProcessPartyInfoCallbackCmdEvtData = {
       bulkId: partyInfoRequestedDomainEvents[0].getKey(),
       content: {
-        transferId: randomUUID(),
+        transferId: previousIndividualTransfers[0],
         partyResult: {
-          currentState: 'COMPLETED',
+          currentState: 'ERROR_OCCURRED',
           party: {
               partyIdInfo: {
                   partyIdType: 'MSISDN',
