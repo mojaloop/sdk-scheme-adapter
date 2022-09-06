@@ -39,7 +39,6 @@ import {
   SDKOutboundBulkAcceptPartyInfoReceivedDmEvt,
   ISDKOutboundBulkAcceptPartyInfoReceivedDmEvtData
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
-import { KafkaDomainEventProducer, IKafkaEventProducerOptions } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 import { randomUUID } from "crypto";
 
 import { BulkTransactionAgg } from '../../../src/domain'

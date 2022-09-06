@@ -28,8 +28,11 @@ import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
-import { CommandEvent, ICommandEventData, DomainEvent,
-         KafkaCommandEventProducer, IKafkaEventProducerOptions, KafkaDomainEventConsumer, IKafkaEventConsumerOptions,
+import { DomainEvent,
+         KafkaCommandEventProducer,
+         IKafkaEventProducerOptions,
+         KafkaDomainEventConsumer,
+         IKafkaEventConsumerOptions,
          ProcessSDKOutboundBulkRequestCmdEvt,
          ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt,
          ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
