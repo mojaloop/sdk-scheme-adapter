@@ -78,7 +78,7 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
     }
 
     async destroy(): Promise<void> {
-        if(this._initialized) { this._redisClient.quit(); }
+        if(this._initialized) { await this._redisClient.quit(); }
         return Promise.resolve();
     }
 

@@ -2531,7 +2531,7 @@ __metadata:
     babel-jest: ^29.0.2
     co-body: ^6.1.0
     dotenv: ^16.0.2
-    env-var: ^7.2.0
+    env-var: ^7.3.0
     eslint: ^8.23.0
     eslint-config-airbnb-base: ^15.0.0
     eslint-plugin-import: ^2.26.0
@@ -6251,10 +6251,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"env-var@npm:^7.2.0":
-  version: 7.2.0
-  resolution: "env-var@npm:7.2.0"
-  checksum: 4ddafc5c306bf021a2968c0cacce314fb781f9ab5969793d39917a83604ec9a08921317c1475813d2bc025f2901c4383e7194f3cde171a90e4ec004610c6d792
+"env-var@npm:^7.3.0":
+  version: 7.3.0
+  resolution: "env-var@npm:7.3.0"
+  checksum: e62eb12e8fd88d327c1c5c718503273c87fd2f565372cdf0c6997c1b80e3c9fefb23d4e2f137d892f56203379859f0db9f6d9f5406008df654104517e6ef9997
   languageName: node
   linkType: hard
 

@@ -31,11 +31,13 @@ import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 
 import {
-  SDKOutboundBulkAcceptPartyInfoReceivedDmEvt,
-  ISDKOutboundBulkAcceptPartyInfoReceivedDmEvtData,
-  IndividualTransferInternalState,
+  KafkaDomainEventProducer,
+  IKafkaEventProducerOptions,
   RedisBulkTransactionStateRepo,
-  IRedisBulkTransactionStateRepoOptions
+  IRedisBulkTransactionStateRepoOptions,
+  IndividualTransferInternalState,
+  SDKOutboundBulkAcceptPartyInfoReceivedDmEvt,
+  ISDKOutboundBulkAcceptPartyInfoReceivedDmEvtData
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 import { KafkaDomainEventProducer, IKafkaEventProducerOptions } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 import { randomUUID } from "crypto";
@@ -57,6 +59,12 @@ const producer = new KafkaDomainEventProducer(producerOptions, logger)
 const bulkTransactionId = randomUUID();
 const homeTransactionId1 = randomUUID();
 
+// Create bulk transaction entity repo
+const bulkTransactionEntityRepoOptions: IRedisBulkTransactionStateRepoOptions = {
+  connStr: REDIS_CONNECTION_URL,
+};
+
+const bulkTransactionEntityRepo = new RedisBulkTransactionStateRepo(bulkTransactionEntityRepoOptions, logger);
 
 const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
     bulkHomeTransactionID: "abc123",
@@ -100,14 +108,9 @@ describe('SDKOutboundBulkAcceptPartyInfoRequested', () => {
   let bulkTransactionAgg: BulkTransactionAgg;
   beforeAll(async () => {
     await producer.init();
-    // Create bulk transaction entity repo
-    const bulkTransactionEntityRepoOptions: IRedisBulkTransactionStateRepoOptions = {
-        connStr: REDIS_CONNECTION_URL,
-    };
-
-    const bulkTransactionEntityRepo = new RedisBulkTransactionStateRepo(bulkTransactionEntityRepoOptions, logger);
-    logger.info(`Created BulkTransactionStateRepo of type ${bulkTransactionEntityRepo.constructor.name}`);
     await bulkTransactionEntityRepo.init();
+    logger.info(`Created BulkTransactionStateRepo of type ${bulkTransactionEntityRepo.constructor.name}`);
+
     // Create aggregate
     bulkTransactionAgg = await BulkTransactionAgg.CreateFromRequest(
       bulkRequest,
@@ -132,8 +135,7 @@ describe('SDKOutboundBulkAcceptPartyInfoRequested', () => {
   });
 
   afterAll(async () => {
-    // Clear the aggregate from repository
-    // await bulkTransactionAgg.destroy()
+    await bulkTransactionEntityRepo.destroy();
     await producer.destroy();
   });
 

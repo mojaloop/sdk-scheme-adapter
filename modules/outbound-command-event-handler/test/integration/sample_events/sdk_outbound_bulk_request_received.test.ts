@@ -31,10 +31,12 @@ import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 
 import {
-  SDKOutboundBulkRequestReceivedDmEvt,
+  KafkaDomainEventProducer,
+  IKafkaEventProducerOptions,
   ISDKOutboundBulkRequestReceivedDmEvtData,
+  SDKOutboundBulkRequestReceivedDmEvt,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
-import { KafkaDomainEventProducer, IKafkaEventProducerOptions } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+
 import { randomUUID } from "crypto";
 
 import { BulkTransactionAgg } from '../../../src/domain'
