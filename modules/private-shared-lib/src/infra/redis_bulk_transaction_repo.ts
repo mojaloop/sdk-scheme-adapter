@@ -72,7 +72,7 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
     }
 
     async destroy(): Promise<void> {
-        if(this._initialized) { this._redisClient.quit(); }
+        if(this._initialized) { await this._redisClient.quit(); }
         return Promise.resolve();
     }
 
@@ -200,7 +200,7 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
             throw (err);
         }
     }
-    
+
     async getBulkBatch(bulkId: string, bulkBatchId: string): Promise<BulkBatchState> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));

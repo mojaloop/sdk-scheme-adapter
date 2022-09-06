@@ -50,11 +50,14 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
             options.bulkTransactionEntityRepo,
             logger,
         );
+        logger.info('XXXXXXXXXXXXXXXXXXX');
 
+        logger.info(await bulkTransactionAgg.getAllIndividualTransferIds());
         const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(
             processPartyInfoCallback.getTransferId(),
         );
         const partyResult = processPartyInfoCallback.getPartyResult();
+        logger.info(partyResult);
         if(partyResult.currentState && partyResult.currentState === SDKOutboundTransferState.COMPLETED) {
             individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS);
         } else {

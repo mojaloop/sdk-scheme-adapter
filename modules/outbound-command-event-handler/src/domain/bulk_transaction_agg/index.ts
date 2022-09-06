@@ -141,6 +141,8 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
     async getIndividualTransferById(id: string): Promise<IndividualTransferEntity> {
         const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
         const state: IndividualTransferState = await repo.getIndividualTransfer(this._rootEntity.id, id);
+        this._logger.info('bulkId ' + this._rootEntity.id);
+        this._logger.info('transferId ' + id);
         return new IndividualTransferEntity(state);
     }
 
@@ -198,7 +200,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
         return repo.getBulkQuotesSuccessCount(this._rootEntity.id);
     }
-    
+
     async setBulkQuotesSuccessCount(count: number) : Promise<void> {
         await (<IBulkTransactionEntityRepo> this._entity_state_repo)
             .setBulkQuotesSuccessCount(this._rootEntity.id, count);
@@ -304,7 +306,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                         individualTransfer.id);
                         // TODO: Add Transfers to batch here like the quotes above
                     }
-                    
+
                 }
                 this.addBulkBatchEntity(bulkBatch);
                 bulkQuotesTotalCount += 1;
