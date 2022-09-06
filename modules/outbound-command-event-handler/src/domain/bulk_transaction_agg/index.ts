@@ -141,8 +141,6 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
     async getIndividualTransferById(id: string): Promise<IndividualTransferEntity> {
         const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
         const state: IndividualTransferState = await repo.getIndividualTransfer(this._rootEntity.id, id);
-        this._logger.info('bulkId ' + this._rootEntity.id);
-        this._logger.info('transferId ' + id);
         return new IndividualTransferEntity(state);
     }
 
