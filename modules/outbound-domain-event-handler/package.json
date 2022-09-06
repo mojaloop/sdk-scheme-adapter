@@ -29,7 +29,7 @@
         "lint": "eslint --ext .js,.ts src --color",
         "lint:fix": "eslint --ext .js,.ts src --color --fix",
         "test:unit": "jest --passWithNoTests --testMatch '**/test/unit/**/*.test.ts'",
-        "test:integration": "jest --passWithNoTests --testMatch '**/test/integration/**/*.test.ts'",
+        "test:integration": "jest --passWithNoTests --testMatch '**/test/integration/**/*.test.ts' --runInBand",
         "test:coverage": "jest --passWithNoTests --coverage --testMatch '**/test/unit/**/*.test.ts'",
         "test:coverage-check": "jest --coverage --testMatch '**/test/unit/**/*.test.ts'",
         "dep:check": "ncu -e 2",

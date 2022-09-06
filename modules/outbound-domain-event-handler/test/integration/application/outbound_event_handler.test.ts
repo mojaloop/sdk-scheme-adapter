@@ -81,7 +81,7 @@ const bulkTransactionEntityRepoOptions: IRedisBulkTransactionStateRepoOptions = 
 const bulkTransactionEntityRepo = new RedisBulkTransactionStateRepo(bulkTransactionEntityRepoOptions, logger);
 
 
-const sampleDomainEventMessageData: IDomainEventData = {
+const sampleDomainEventData: IDomainEventData = {
   key: 'sample-key1',
   name: SDKOutboundBulkRequestReceivedDmEvt.name,
   content: {
@@ -364,24 +364,16 @@ describe('First domain event', () => {
     await bulkTransactionEntityRepo.incrementPartyLookupSuccessCount(bulkTransactionId, 2);
     await bulkTransactionEntityRepo.setPartyLookupFailedCount(bulkTransactionId, 0);
 
-    const transferId = randomUUID();
-    const key = `${bulkTransactionId}_${transferId}`
     const samplePartyInfoCallbackProcessedDmEvtData: IPartyInfoCallbackProcessedDmEvtData = {
-      key,
-      partyResult: {
-        party: {
-          partyIdInfo: {
-              partyIdType: "MSISDN",
-              partyIdentifier: '123456',
-              fspId: 'receiverfsp'
-          }
-        }
-      } as IPartyResult,
+      bulkId: bulkTransactionId,
+      content: {
+        transferId: randomUUID()
+      },
       timestamp: Date.now(),
       headers: [],
     }
     const message = new PartyInfoCallbackProcessedDmEvt(samplePartyInfoCallbackProcessedDmEvtData);
-    await producer.sendDomainMessage(message);
+    await producer.sendDomainEvent(message);
     await new Promise(resolve => setTimeout(resolve, 15000));
 
     // Check command events published to kafka
@@ -446,24 +438,16 @@ describe('First domain event', () => {
         await bulkTransactionEntityRepo.incrementPartyLookupSuccessCount(bulkTransactionId, 1);
         await bulkTransactionEntityRepo.setPartyLookupFailedCount(bulkTransactionId, 0);
 
-        const transferId = randomUUID();
-        const key = `${bulkTransactionId}_${transferId}`
         const samplePartyInfoCallbackProcessedDmEvtData: IPartyInfoCallbackProcessedDmEvtData = {
-          key,
-          partyResult: {
-            party: {
-              partyIdInfo: {
-                  partyIdType: "MSISDN",
-                  partyIdentifier: '123456',
-                  fspId: 'receiverfsp'
-              }
-            }
-          } as IPartyResult,
+          bulkId: bulkTransactionId,
+          content: {
+            transferId: randomUUID()
+          },
           timestamp: Date.now(),
           headers: [],
         }
         const message = new PartyInfoCallbackProcessedDmEvt(samplePartyInfoCallbackProcessedDmEvtData);
-        await producer.sendDomainMessage(message);
+        await producer.sendDomainEvent(message);
         await new Promise(resolve => setTimeout(resolve, 15000));
 
         // Check command events published to kafka

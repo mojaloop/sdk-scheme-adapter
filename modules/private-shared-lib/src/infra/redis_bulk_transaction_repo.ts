@@ -455,22 +455,6 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
         }
     }
 
-    async incrementPartyLookupSuccessCount(
-        bulkId: string,
-        increment: number,
-    ): Promise<void> {
-        if(!this.canCall()) {
-            throw (new Error('Repository not ready'));
-        }
-        const key: string = this.keyWithPrefix(bulkId);
-        try {
-            await this._redisClient.hIncrBy(key, this.partyLookupSuccessCountKey, increment);
-        } catch (err) {
-            this._logger.error(err, `Error incrementing partyLookupSuccessCount in redis - for key: ${key}`);
-            throw (err);
-        }
-    }
-
     async getPartyLookupSuccessCount(bulkId: string): Promise<number> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
@@ -490,23 +474,6 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
         }
     }
 
-
-    async incrementPartyLookupFailedCount(
-        bulkId: string,
-        increment: number,
-    ): Promise<void> {
-        if(!this.canCall()) {
-            throw (new Error('Repository not ready'));
-        }
-        const key: string = this.keyWithPrefix(bulkId);
-        try {
-            await this._redisClient.hIncrBy(key, this.partyLookupFailedCountKey, increment);
-        } catch (err) {
-            this._logger.error(err, `Error incrementing ${this.partyLookupFailedCountKey} in redis - for key: ${key}`);
-            throw (err);
-        }
-    }
-
     async getPartyLookupFailedCount(bulkId: string): Promise<number>  {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
@@ -522,6 +489,38 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
             }
         } catch (err) {
             this._logger.error(err, `Error loading ${this.partyLookupFailedCountKey} from redis - for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async incrementPartyLookupSuccessCount(
+        bulkId: string,
+        increment: number,
+    ): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            await this._redisClient.hIncrBy(key, this.partyLookupSuccessCountKey, increment);
+        } catch (err) {
+            this._logger.error(err, `Error incrementing partyLookupSuccessCount in redis - for key: ${key}`);
+            throw (err);
+        }
+    }
+
+    async incrementPartyLookupFailedCount(
+        bulkId: string,
+        increment: number,
+    ): Promise<void> {
+        if(!this.canCall()) {
+            throw (new Error('Repository not ready'));
+        }
+        const key: string = this.keyWithPrefix(bulkId);
+        try {
+            await this._redisClient.hIncrBy(key, this.partyLookupFailedCountKey, increment);
+        } catch (err) {
+            this._logger.error(err, `Error incrementing ${this.partyLookupFailedCountKey} in redis - for key: ${key}`);
             throw (err);
         }
     }

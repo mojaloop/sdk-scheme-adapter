@@ -30,12 +30,17 @@ import { SDKSchemeAdapter } from "@mojaloop/api-snippets";
 import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 
-import { SDKOutboundBulkAcceptPartyInfoReceivedDmEvt, ISDKOutboundBulkAcceptPartyInfoReceivedDmEvtData } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+import {
+  SDKOutboundBulkAcceptPartyInfoReceivedDmEvt,
+  ISDKOutboundBulkAcceptPartyInfoReceivedDmEvtData,
+  IndividualTransferInternalState,
+  RedisBulkTransactionStateRepo,
+  IRedisBulkTransactionStateRepoOptions
+} from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 import { KafkaDomainEventProducer, IKafkaEventProducerOptions } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 import { randomUUID } from "crypto";
 
-import { BulkTransactionAgg, IndividualTransferEntity, IndividualTransferInternalState, IndividualTransferState } from '../../../src/domain'
-import { RedisBulkTransactionStateRepo, IRedisBulkTransactionStateRepoOptions } from '../../../src/infrastructure'
+import { BulkTransactionAgg } from '../../../src/domain'
 
 const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
 

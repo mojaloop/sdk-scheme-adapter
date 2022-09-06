@@ -30,7 +30,7 @@
     "lint:fix": "eslint --ext .js,.ts src --color --fix",
     "copy-files": "npx copyfiles -u 1 src/**/*.yaml dist/",
     "test:unit": "jest --passWithNoTests --testMatch '**/test/unit/**/*.test.ts'",
-    "test:integration": "jest --passWithNoTests --testMatch '**/test/integration/**/*.test.ts'",
+    "test:integration": "jest --passWithNoTests --testMatch '**/test/integration/**/*.test.ts' --runInBand",
     "test:coverage": "jest --passWithNoTests --coverage --testMatch '**/test/unit/**/*.test.ts'",
     "test:coverage-check": "jest --coverage --testMatch '**/test/unit/**/*.test.ts'",
     "dep:check": "ncu -e 2",
