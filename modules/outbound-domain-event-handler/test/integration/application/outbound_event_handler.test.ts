@@ -46,10 +46,11 @@ import { KafkaDomainEventProducer, IKafkaEventProducerOptions, IPartyResult  } f
 import { randomUUID } from "crypto";
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
-// Extend jest timeout since tests in CI can be slow
-jest.setTimeout(20000);
+// Tests can timeout in a CI pipeline so giving it leeway
+jest.setTimeout(30000)
 
 const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
+const messageTimeout = 5000;
 
 const domainEventProducerOptions: IKafkaEventProducerOptions = {
     brokerList: 'localhost:9092',
@@ -302,7 +303,7 @@ describe('First domain event', () => {
   test('should publish a domain event', async () => {
     const domainEventObj = new DomainEvent(sampleDomainEventData);
     await producer.sendDomainEvent(domainEventObj);
-    await new Promise(resolve => setTimeout(resolve, 5000));
+    await new Promise(resolve => setTimeout(resolve, messageTimeout));
     await expect(true)
   })
 
@@ -374,7 +375,7 @@ describe('First domain event', () => {
     }
     const message = new PartyInfoCallbackProcessedDmEvt(samplePartyInfoCallbackProcessedDmEvtData);
     await producer.sendDomainEvent(message);
-    await new Promise(resolve => setTimeout(resolve, 15000));
+    await new Promise(resolve => setTimeout(resolve, messageTimeout));
 
     // Check command events published to kafka
     expect(commandEvents[0].getName()).toBe('ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt')
@@ -448,7 +449,7 @@ describe('First domain event', () => {
         }
         const message = new PartyInfoCallbackProcessedDmEvt(samplePartyInfoCallbackProcessedDmEvtData);
         await producer.sendDomainEvent(message);
-        await new Promise(resolve => setTimeout(resolve, 15000));
+        await new Promise(resolve => setTimeout(resolve, messageTimeout));
 
         // Check command events published to kafka
         expect(commandEvents[0]).toBe(undefined)
