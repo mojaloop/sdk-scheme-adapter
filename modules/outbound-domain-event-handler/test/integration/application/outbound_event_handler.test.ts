@@ -50,7 +50,7 @@ import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 jest.setTimeout(30000)
 
 const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
-const messageTimeout = 5000;
+const messageTimeout = 15000;
 
 const domainEventProducerOptions: IKafkaEventProducerOptions = {
     brokerList: 'localhost:9092',
