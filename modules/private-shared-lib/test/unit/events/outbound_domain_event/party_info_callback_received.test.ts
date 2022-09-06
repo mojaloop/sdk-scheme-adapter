@@ -42,34 +42,36 @@ describe('PartyInfoCallbackReceivedDmEvt', () => {
   const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion');
 
   let samplePartyInfoCallbackReceivedMessageData: IPartyInfoCallbackReceivedDmEvtData;
-  let key: string;
-  let partyInfoCallbackReceivedMessage: PartyInfoCallbackReceivedDmEvt;
   let bulkId: string;
+  let partyInfoCallbackReceivedMessage: PartyInfoCallbackReceivedDmEvt;
   let transferId: string;
 
   beforeEach(async () => {
     bulkId = randomUUID()
     transferId = randomUUID()
-    key = `${bulkId}_${transferId}`
     samplePartyInfoCallbackReceivedMessageData = {
-      key,
-      partyResult: {
+      bulkId,
+      content: {
+        transferId,
+        partyResult: {
           party: {
-              partyIdInfo: {
-                  partyIdType: "MSISDN",
-                  partyIdentifier: "16135551212",
-                  partySubIdOrType: "string",
-                  fspId: "string",
-                  extensionList: {
-                      extension: [
-                          {
-                              key: "string",
-                              value: "string"
-                          }
-                      ]
-                  }
-              }
+            partyIdInfo: {
+                partyIdType: "MSISDN",
+                partyIdentifier: "16135551212",
+                partySubIdOrType: "string",
+                fspId: "string",
+                extensionList: {
+                    extension: [
+                        {
+                            key: "string",
+                            value: "string"
+                        }
+                    ]
+                }
+            }
           },
+          currentState: 'COMPLETED'
+        },
       },
       timestamp: Date.now(),
       headers: [],
@@ -86,23 +88,6 @@ describe('PartyInfoCallbackReceivedDmEvt', () => {
   })
 
   test('getPartyResult', async () => {
-    expect(partyInfoCallbackReceivedMessage.getPartyResult()).toEqual({
-      party: {
-        partyIdInfo: {
-          partyIdType: "MSISDN",
-          partyIdentifier: "16135551212",
-          partySubIdOrType: "string",
-          fspId: "string",
-          extensionList: {
-            extension: [
-              {
-                key: "string",
-                value: "string"
-              }
-            ]
-          }
-        }
-      }
-    })
+    expect(partyInfoCallbackReceivedMessage.getPartyResult()).toEqual(samplePartyInfoCallbackReceivedMessageData.content.partyResult)
   })
 })

@@ -14,8 +14,11 @@ export async function handlePartyInfoCallbackReceived(
         = PartyInfoCallbackReceivedDmEvt.CreateFromDomainEvent(message);
     try {
         const processPartyInfoCallbackMessageData: IProcessPartyInfoCallbackCmdEvtData = {
-            key: partyInfoCallbackReceived.getKey(),
-            partyResult: partyInfoCallbackReceived.getPartyResult(),
+            bulkId: partyInfoCallbackReceived.getKey(),
+            content: {
+                transferId: partyInfoCallbackReceived.getTransferId(),
+                partyResult: partyInfoCallbackReceived.getPartyResult(),
+            },
             timestamp: Date.now(),
             headers: partyInfoCallbackReceived.getHeaders(),
         };
@@ -23,11 +26,10 @@ export async function handlePartyInfoCallbackReceived(
         const processPartyInfoCallbackMessage
             = new ProcessPartyInfoCallbackCmdEvt(processPartyInfoCallbackMessageData);
 
-        await options.commandProducer.sendCommandMessage(processPartyInfoCallbackMessage);
+        await options.commandProducer.sendCommandEvent(processPartyInfoCallbackMessage);
 
         logger.info(`Sent command event ${processPartyInfoCallbackMessage.getName()}`);
-        console.log(processPartyInfoCallbackMessage);
-    } catch (err: any) {
-        logger.info(`Failed to create SDKOutboundBulkRequestEntity. ${err.message}`);
+    } catch (err) {
+        logger.info(`Failed to create SDKOutboundBulkRequestEntity. ${(err as Error).message}`);
     }
 }

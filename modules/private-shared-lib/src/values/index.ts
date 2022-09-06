@@ -27,3 +27,5 @@
 export const BC_CONFIG = {
     bcName: 'SDK-Scheme-Adapter',
 };
+
+export * from './enums';

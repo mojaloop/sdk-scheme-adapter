@@ -42,5 +42,5 @@ import { IEventProducer } from './ievent-producer';
 
 export interface ICommandEventProducer extends IEventProducer {
     init: () => Promise<void>
-    sendCommandMessage: (message: CommandEvent) => Promise<void>
+    sendCommandEvent: (message: CommandEvent) => Promise<void>
 }

@@ -79,26 +79,26 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestCmdEvt(
             }
 
             const subId = partyIdInfo.partySubIdOrType ? `/${partyIdInfo.partySubIdOrType}` : '';
-            const msg = new PartyInfoRequestedDmEvt({
+            const partyInfoRequestedDmEvt = new PartyInfoRequestedDmEvt({
                 bulkId: bulkTx.id,
-                transferId: individualTransfer.id,
+                content: {
+                    transferId: individualTransfer.id,
+                    request: {
+                        partyIdType: partyIdInfo.partyIdType,
+                        partyIdentifier: partyIdInfo.partyIdentifier,
+                        partySubIdOrType: subId,
+                    },
+                },
                 timestamp: Date.now(),
                 headers: [],
-                request: {
-                    method: 'GET',
-                    path: `/parties/${partyIdInfo.partyIdType}/${partyIdInfo.partyIdentifier}${subId}`,
-                    headers: [],
-                    body: '',
-                },
             });
-            individualTransfer.setPartyRequest(msg.getContent());
+            individualTransfer.setPartyRequest(partyInfoRequestedDmEvt.getContent());
             individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_PROCESSING);
-            await options.domainProducer.sendDomainMessage(msg);
+            await options.domainProducer.sendDomainEvent(partyInfoRequestedDmEvt);
             await bulkTransactionAgg.setIndividualTransferById(individualTransferId, individualTransfer);
         }
 
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    } catch (err: any) {
-        logger.info(`Failed to create BulkTransactionAggregate. ${err.message}`);
+    } catch (err) {
+        logger.error(`Failed to create BulkTransactionAggregate. ${(err as Error).message}`);
     }
 }

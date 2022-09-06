@@ -24,7 +24,7 @@
 
 import { EventType, DomainEvent } from '../../../src';
 
-const sampleDomainEventMessageData: any = {
+const sampleDomainEventData: any = {
   key: 'sample-key1',
   name: 'some-event-name-here',
   content: null,
@@ -47,10 +47,10 @@ const sampleIMessage: any = {
 describe ('DomainEvent', () => {
   describe("Positive scenarios", () => {
     it("should create a domain event message object from event message data", () => {
-      const eventObj = new DomainEvent(sampleDomainEventMessageData);
+      const eventObj = new DomainEvent(sampleDomainEventData);
       expect(eventObj).not.toBeUndefined();
-      expect(eventObj.getKey()).toEqual(sampleDomainEventMessageData.key)
-      expect(eventObj.getTimeStamp()).toEqual(sampleDomainEventMessageData.timestamp)
+      expect(eventObj.getKey()).toEqual(sampleDomainEventData.key)
+      expect(eventObj.getTimeStamp()).toEqual(sampleDomainEventData.timestamp)
       expect(eventObj.getType()).toEqual(EventType.DOMAIN_EVENT)
       expect(eventObj).toBeInstanceOf(DomainEvent)
     });
@@ -63,12 +63,12 @@ describe ('DomainEvent', () => {
       expect(eventObj).toBeInstanceOf(DomainEvent)
     });
     it("should create a domain event message object from event message data and generate iMessage", () => {
-      const eventObj = new DomainEvent(sampleDomainEventMessageData);
+      const eventObj = new DomainEvent(sampleDomainEventData);
       expect(eventObj).not.toBeUndefined();
-      expect(eventObj.getKey()).toEqual(sampleDomainEventMessageData.key)
+      expect(eventObj.getKey()).toEqual(sampleDomainEventData.key)
       const iMessage = eventObj.toIMessage('some-supplied-topic');
-      expect(iMessage.key).toEqual(sampleDomainEventMessageData.key)
-      expect(iMessage.timestamp).toEqual(sampleDomainEventMessageData.timestamp)
+      expect(iMessage.key).toEqual(sampleDomainEventData.key)
+      expect(iMessage.timestamp).toEqual(sampleDomainEventData.timestamp)
       expect(iMessage.topic).toEqual('some-supplied-topic')
       expect(iMessage.value).toHaveProperty('eventType')
       expect(iMessage.value).toHaveProperty('eventName')

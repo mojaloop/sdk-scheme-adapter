@@ -43,7 +43,7 @@ describe('handleSDKOutboundBulkPartyInfoRequested', () => {
   const domainEventHandlerOptions = {
     commandProducer: {
       init: jest.fn(),
-      sendCommandMessage: jest.fn()
+      sendCommandEvent: jest.fn()
     }
   } as unknown as IDomainEventHandlerOptions
 
@@ -63,9 +63,9 @@ describe('handleSDKOutboundBulkPartyInfoRequested', () => {
 
 
   test('emits a processSDKOutboundBulkPartyInfoRequestMessage message', async () => {
-    const sampleDomainEventMessageDataObj = new DomainEvent(sampleSDKOutboundBulkPartyInfoRequestedMessage);
-    handleSDKOutboundBulkPartyInfoRequested(sampleDomainEventMessageDataObj, domainEventHandlerOptions, logger)
-    expect(domainEventHandlerOptions.commandProducer.sendCommandMessage)
+    const sampleDomainEventDataObj = new DomainEvent(sampleSDKOutboundBulkPartyInfoRequestedMessage);
+    handleSDKOutboundBulkPartyInfoRequested(sampleDomainEventDataObj, domainEventHandlerOptions, logger)
+    expect(domainEventHandlerOptions.commandProducer.sendCommandEvent)
       .toBeCalledWith(
         expect.objectContaining({
           _data: expect.objectContaining({

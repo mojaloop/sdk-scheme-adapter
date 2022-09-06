@@ -26,6 +26,10 @@ import * as ProcessSDKOutboundBulkRequestHandler from './process_sdk_outbound_bu
 import * as ProcessSDKOutboundBulkPartyInfoRequestHandler from './process_sdk_outbound_bulk_party_info_request';
 import * as ProcessSDKOutboundBulkPartyInfoRequestCompleteHandler from './process_sdk_outbound_bulk_party_info_request_complete';
 import * as ProcessPartyInfoCallbackHandler from './process_party_info_callback';
+import * as ProcessSDKOutboundBulkAcceptPartyInfoHandler from './process_sdk_outbound_bulk_accept_party_info';
+import * as ProcessBulkQuotesCallbackHandler from './process-bulk-quotes-callback';
+import * as ProcessSDKOutboundBulkQuotesRequestHandler from './process_sdk_outbound_bulk_quotes_request';
+
 import { CommandEvent } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { ICommandEventHandlerOptions } from '@module-types';
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
@@ -35,6 +39,9 @@ export default  {
     ...ProcessSDKOutboundBulkPartyInfoRequestHandler,
     ...ProcessSDKOutboundBulkPartyInfoRequestCompleteHandler,
     ...ProcessPartyInfoCallbackHandler,
+    ...ProcessSDKOutboundBulkAcceptPartyInfoHandler,
+    ...ProcessBulkQuotesCallbackHandler,
+    ...ProcessSDKOutboundBulkQuotesRequestHandler,
 } as {
     [key: string]: (
         message: CommandEvent,

@@ -24,7 +24,8 @@
 
 'use strict';
 
-import { BulkTransactionState, IEntityStateRepository, IndividualTransferState } from '@module-domain';
+import { IEntityStateRepository } from '..';
+import { BulkBatchState, BulkTransactionState, IndividualTransferState } from '../domain';
 
 export type IBulkTransactionEntityRepo = {
     getAllIndividualTransferIds: (bulkId: string) => Promise<string[]>
@@ -34,5 +35,20 @@ export type IBulkTransactionEntityRepo = {
         individualTranferId: string,
         value: IndividualTransferState
     ) => Promise<void>
+    getAllBulkBatchIds: (bulkId: string) => Promise<string[]>
+    getBulkBatch: (bulkId: string, bulkBatchId: string) => Promise<BulkBatchState>
+    setBulkBatch: (
+        bulkId: string,
+        bulkBatchId: string,
+        value: BulkBatchState
+    ) => Promise<void>
     isBulkIdExists: (bulkId: string) => Promise<boolean>
+    getBulkQuotesTotalCount: (bulkId: string) => Promise<number>
+    setBulkQuotesTotalCount: (bulkId: string, totalCount: number) => Promise<void>
+    getBulkQuotesSuccessCount: (bulkId: string) => Promise<number>
+    setBulkQuotesSuccessCount: (bulkId: string, count: number) => Promise<void>
+    incrementBulkQuotesSuccessCount: (bulkId: string) => Promise<void>
+    getBulkQuotesFailedCount: (bulkId: string) => Promise<number>
+    setBulkQuotesFailedCount: (bulkId: string, count: number) => Promise<void>
+    incrementBulkQuotesFailedCount: (bulkId: string) => Promise<void>
 } & IEntityStateRepository<BulkTransactionState>;

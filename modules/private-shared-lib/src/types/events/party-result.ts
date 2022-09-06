@@ -1,5 +1,6 @@
-import { Schemas } from '@mojaloop/api-snippets/lib/fspiop/v1_1';
-
-export interface IPartyResult extends Schemas.PartiesTypeIDPutResponse {
-    errorInformation?: Schemas.ErrorInformation;
+import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
+export interface IPartyResult {
+    party?: SDKSchemeAdapter.Outbound.V2_0_0.Types.Party;
+    errorInformation?: SDKSchemeAdapter.Outbound.V2_0_0.Types.ErrorInformation;
+    currentState: SDKSchemeAdapter.Outbound.V2_0_0.Types.partiesByIdResponse['currentState'];
 }

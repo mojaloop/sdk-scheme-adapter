@@ -51,7 +51,7 @@ export class KafkaCommandEventProducer extends KafkaEventProducer implements ICo
         this._topic = producerOptions.topic;
     }
 
-    async sendCommandMessage(commandEventMessage: CommandEvent) {
+    async sendCommandEvent(commandEventMessage: CommandEvent) {
         const message: IMessage = commandEventMessage.toIMessage(this._topic);
         await super.send(message);
     }

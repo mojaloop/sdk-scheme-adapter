@@ -29,8 +29,11 @@ import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-li
 import { IPartyResult } from '../../types';
 
 export interface IProcessPartyInfoCallbackCmdEvtData {
-    key: string;
-    partyResult: IPartyResult;
+    bulkId: string;
+    content: {
+        transferId: string;
+        partyResult: IPartyResult;
+    };
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
@@ -38,8 +41,8 @@ export interface IProcessPartyInfoCallbackCmdEvtData {
 export class ProcessPartyInfoCallbackCmdEvt extends CommandEvent {
     constructor(data: IProcessPartyInfoCallbackCmdEvtData) {
         super({
-            key: data.key,
-            content: data.partyResult,
+            key: data.bulkId,
+            content: data.content,
             timestamp: data.timestamp,
             headers: data.headers,
             name: ProcessPartyInfoCallbackCmdEvt.name,
@@ -47,11 +50,15 @@ export class ProcessPartyInfoCallbackCmdEvt extends CommandEvent {
     }
 
     getBulkId() {
-        return this.getKey().split('_')[0];
+        return this.getKey();
     }
 
     getTransferId() {
-        return this.getKey().split('_')[1];
+        return (this.getContent() as IProcessPartyInfoCallbackCmdEvtData['content']).transferId;
+    }
+
+    getPartyResult() {
+        return (this.getContent() as IProcessPartyInfoCallbackCmdEvtData['content']).partyResult;
     }
 
     static CreateFromCommandEvent(message: CommandEvent): ProcessPartyInfoCallbackCmdEvt {
@@ -59,8 +66,8 @@ export class ProcessPartyInfoCallbackCmdEvt extends CommandEvent {
             throw new Error('Content is in unknown format');
         }
         const data: IProcessPartyInfoCallbackCmdEvtData = {
-            key: message.getKey(),
-            partyResult: <IPartyResult>message.getContent(),
+            bulkId: message.getKey(),
+            content: message.getContent() as IProcessPartyInfoCallbackCmdEvtData['content'],
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
         };

@@ -62,7 +62,7 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt
                 timestamp: Date.now(),
                 headers: [],
             });
-            await options.domainProducer.sendDomainMessage(msg);
+            await options.domainProducer.sendDomainEvent(msg);
         } else {
             bulkTx.setTxState(BulkTransactionInternalState.DISCOVERY_ACCEPTANCE_PENDING);
             const msg = new SDKOutboundBulkAcceptPartyInfoRequestedDmEvt({
@@ -70,12 +70,11 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt
                 timestamp: Date.now(),
                 headers: [],
             });
-            await options.domainProducer.sendDomainMessage(msg);
+            await options.domainProducer.sendDomainEvent(msg);
         }
 
         await bulkTransactionAgg.setTransaction(bulkTx);
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    } catch (err: any) {
-        logger.info(`Failed to create BulkTransactionAggregate. ${err.message}`);
+    } catch (err) {
+        logger.error(`Failed to create BulkTransactionAggregate. ${(err as Error).message}`);
     }
 }

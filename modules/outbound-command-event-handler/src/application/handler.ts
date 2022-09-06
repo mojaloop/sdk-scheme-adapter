@@ -39,10 +39,15 @@ import {
     ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
     ProcessPartyInfoCallbackCmdEvt,
     ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt,
+    ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt,
+    ProcessSDKOutboundBulkQuotesRequestCmdEvt,
+    ProcessBulkQuotesCallbackCmdEvt,
     IBulkTransactionEntityRepo,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { ICommandEventHandlerOptions } from '@module-types';
 
+
+import { ICommandEventHandlerConfig } from 'src/shared/config';
 
 export interface IOutboundEventHandlerOptions {
     bulkTransactionEntityRepo: IBulkTransactionEntityRepo
@@ -65,7 +70,7 @@ export class OutboundEventHandler implements IRunHandler {
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    async start(appConfig: any, logger: ILogger): Promise<void> {
+    async start(appConfig: ICommandEventHandlerConfig, logger: ILogger): Promise<void> {
         this._logger = logger;
         this._logger.info('start');
 
@@ -86,6 +91,7 @@ export class OutboundEventHandler implements IRunHandler {
         this._commandEventHandlerOptions = {
             bulkTransactionEntityRepo: this._bulkTransactionEntityStateRepo,
             domainProducer: this._domainProducer,
+            appConfig,
         };
     }
 
@@ -108,7 +114,8 @@ export class OutboundEventHandler implements IRunHandler {
             case ProcessSDKOutboundBulkPartyInfoRequestCmdEvt.name: {
                 await BulkTransactionAgg.ProcessCommandEvent(
                     ProcessSDKOutboundBulkPartyInfoRequestCmdEvt.CreateFromCommandEvent(message),
-                    this._commandEventHandlerOptions, this._logger,
+                    this._commandEventHandlerOptions,
+                    this._logger,
                 );
                 break;
             }
@@ -120,9 +127,34 @@ export class OutboundEventHandler implements IRunHandler {
                 break;
             }
             case ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt.name: {
-                await BulkTransactionAgg.ProcessCommandEvent(
+                BulkTransactionAgg.ProcessCommandEvent(
                     ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt.CreateFromCommandEvent(message),
-                    this._commandEventHandlerOptions, this._logger,
+                    this._commandEventHandlerOptions,
+                    this._logger,
+                );
+                break;
+            }
+            case ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt.name: {
+                BulkTransactionAgg.ProcessCommandEvent(
+                    ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt.CreateFromCommandEvent(message),
+                    this._commandEventHandlerOptions,
+                    this._logger,
+                );
+                break;
+            }
+            case ProcessSDKOutboundBulkQuotesRequestCmdEvt.name: {
+                BulkTransactionAgg.ProcessCommandEvent(
+                    ProcessSDKOutboundBulkQuotesRequestCmdEvt.CreateFromCommandEvent(message),
+                    this._commandEventHandlerOptions,
+                    this._logger,
+                );
+                break;
+            }
+            case ProcessBulkQuotesCallbackCmdEvt.name: {
+                BulkTransactionAgg.ProcessCommandEvent(
+                    ProcessBulkQuotesCallbackCmdEvt.CreateFromCommandEvent(message),
+                    this._commandEventHandlerOptions,
+                    this._logger,
                 );
                 break;
             }
