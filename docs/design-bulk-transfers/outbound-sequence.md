@@ -60,9 +60,9 @@ sequenceDiagram
         Note right of SDKOutboundAPI: topic-sdk-outbound-domain-events
         SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "DISCOVERY_ACCEPTANCE_PENDING"
         SDKOutboundAPI->>SDKOutboundAPI: Process outbound Trace Headers
-        SDKOutboundAPI->>CoreConnector: PUT /bulktransfers/{bulkTransferId}
+        SDKOutboundAPI->>CoreConnector: PUT /bulkTransactions/{bulkTransactionId}
         CoreConnector-->>SDKOutboundAPI: Accepted
-        CoreConnector->>+SDKOutboundAPI: PUT /bulkTransfers/{bulkTransferId}
+        CoreConnector->>+SDKOutboundAPI: PUT /bulkTransactions/{bulkTransactionId}
         SDKOutboundAPI->>SDKOutboundAPI: Process inbound Trace Headers
         SDKOutboundAPI->>SDKOutboundDomainEventHandler: SDKOutboundBulkAcceptPartyInfoReceived
         Note left of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
@@ -125,10 +125,10 @@ sequenceDiagram
         Note right of SDKOutboundAPI: topic-sdk-outbound-domain-events
         SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "AGREEMENT_ACCEPTANCE_PENDING"
         SDKOutboundAPI->>SDKOutboundAPI: Process outbound Trace Headers
-        SDKOutboundAPI->>CoreConnector: PUT /bulktransfers/{bulkTransferId}
+        SDKOutboundAPI->>CoreConnector: PUT /bulkTransactions/{bulkTransactionId}
         CoreConnector-->>SDKOutboundAPI: Accepted
 
-        CoreConnector->>+SDKOutboundAPI: PUT /bulkTransfers/{bulkTransferId}
+        CoreConnector->>+SDKOutboundAPI: PUT /bulkTransactions/{bulkTransactionId}
         SDKOutboundAPI->>SDKOutboundAPI: Process inbound Trace Headers
         SDKOutboundAPI->>SDKOutboundDomainEventHandler: SDKOutboundBulkAcceptQuoteReceived
         Note left of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
