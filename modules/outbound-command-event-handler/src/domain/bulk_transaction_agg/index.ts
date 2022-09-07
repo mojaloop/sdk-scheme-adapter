@@ -47,7 +47,6 @@ import { randomUUID } from 'crypto';
 
 
 export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, BulkTransactionState> {
-    // TODO: These counts can be part of bulk transaction entity?
     // private _partyLookupTotalCount?: number;
     // private _partyLookupSuccessCount?: number;
     // private _partyLookupFailedCount?: number;
@@ -100,6 +99,9 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         await agg.setBulkQuotesTotalCount(0);
         await agg.setBulkQuotesSuccessCount(0);
         await agg.setBulkQuotesFailedCount(0);
+        await agg.setPartyLookupTotalCount(0);
+        await agg.setPartyLookupSuccessCount(0);
+        await agg.setPartyLookupFailedCount(0);
 
         // Return the aggregate
         return agg;
@@ -312,6 +314,46 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         }
         await this.setBulkQuotesTotalCount(bulkQuotesTotalCount);
 
+    }
+
+    async setPartyLookupTotalCount(count: number): Promise<void> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .setPartyLookupTotalCount(this._rootEntity.id, count);
+    }
+
+    async setPartyLookupSuccessCount(count: number): Promise<void> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .setPartyLookupSuccessCount(this._rootEntity.id, count);
+    }
+
+    async setPartyLookupFailedCount(count: number): Promise<void> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .setPartyLookupFailedCount(this._rootEntity.id, count);
+    }
+
+    async getPartyLookupTotalCount(): Promise<any> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .getPartyLookupTotalCount(this._rootEntity.id);
+    }
+
+    async getPartyLookupSuccessCount(): Promise<any> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .getPartyLookupSuccessCount(this._rootEntity.id);
+    }
+
+    async getPartyLookupFailedCount(): Promise<any> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .getPartyLookupFailedCount(this._rootEntity.id);
+    }
+
+    async incrementPartyLookupSuccessCount(increment = 1): Promise<void> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .incrementPartyLookupSuccessCount(this._rootEntity.id, increment);
+    }
+
+    async incrementPartyLookupFailedCount(increment = 1): Promise<void> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .incrementPartyLookupFailedCount(this._rootEntity.id, increment);
     }
 
     async destroy() : Promise<void> {

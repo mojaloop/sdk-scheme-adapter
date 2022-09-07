@@ -29,7 +29,7 @@
         "lint": "eslint --ext .js,.ts src --color",
         "lint:fix": "eslint --ext .js,.ts src --color --fix",
         "test:unit": "jest --passWithNoTests --testMatch '**/test/unit/**/*.test.ts'",
-        "test:integration": "jest --passWithNoTests --testMatch '**/test/integration/**/*.test.ts'",
+        "test:integration": "jest --runInBand --passWithNoTests --testMatch '**/test/integration/**/*.test.ts'",
         "test:coverage": "jest --passWithNoTests --coverage --testMatch '**/test/unit/**/*.test.ts'",
         "test:coverage-check": "jest --coverage --testMatch '**/test/unit/**/*.test.ts'",
         "dep:check": "ncu -e 2",
@@ -38,8 +38,8 @@
         "snapshot": "standard-version --no-verify --skip.changelog --prerelease snapshot --releaseCommitMessageFormat 'chore(snapshot): {{currentTag}}'"
     },
     "dependencies": {
-        "@mojaloop/logging-bc-client-lib": "^0.1.12",
-        "@mojaloop/logging-bc-public-types-lib": "^0.1.9",
+        "@mojaloop/logging-bc-client-lib": "^0.1.13",
+        "@mojaloop/logging-bc-public-types-lib": "^0.1.10",
         "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^",
         "convict": "^6.2.3"
     },

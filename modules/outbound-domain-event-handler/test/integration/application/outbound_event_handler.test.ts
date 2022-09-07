@@ -29,18 +29,55 @@
 import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 
-import { DomainEvent, SDKOutboundBulkRequestReceivedDmEvt, IDomainEventData } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
-import { KafkaDomainEventProducer, IKafkaEventProducerOptions } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+import {
+  DomainEvent,
+  SDKOutboundBulkRequestReceivedDmEvt,
+  IDomainEventData,
+  IRedisBulkTransactionStateRepoOptions,
+  RedisBulkTransactionStateRepo,
+  PartyInfoCallbackProcessedDmEvt,
+  KafkaCommandEventConsumer,
+  CommandEvent,
+  IKafkaEventConsumerOptions,
+  BulkTransactionEntity,
+  IPartyInfoCallbackProcessedDmEvtData
+} from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+import { KafkaDomainEventProducer, IKafkaEventProducerOptions, IPartyResult  } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+import { randomUUID } from "crypto";
+import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
+const messageTimeout = 2000;
 
-const producerOptions: IKafkaEventProducerOptions = {
+const domainEventProducerOptions: IKafkaEventProducerOptions = {
     brokerList: 'localhost:9092',
     clientId: 'test-integration_client_id',
     topic: 'topic-sdk-outbound-domain-events'
 }
+const producer = new KafkaDomainEventProducer(domainEventProducerOptions, logger)
 
-const producer = new KafkaDomainEventProducer(producerOptions, logger)
+
+// Setup for Kafka Consumer
+const commandEventConsumerOptions: IKafkaEventConsumerOptions = {
+  brokerList: 'localhost:9092',
+  clientId: 'test-integration_client_id',
+  topics: ['topic-sdk-outbound-command-events'],
+  groupId: "command_events_consumer_group"
+}
+
+var commandEvents: Array<CommandEvent> = []
+  const _messageHandler = async (message: CommandEvent): Promise<void>  => {
+  console.log('Command Message: ', message);
+  commandEvents.push(message);
+}
+const consumer = new KafkaCommandEventConsumer(_messageHandler.bind(this), commandEventConsumerOptions, logger)
+
+// Setup for Redis access
+const bulkTransactionEntityRepoOptions: IRedisBulkTransactionStateRepoOptions = {
+  connStr: 'redis://localhost:6379'
+}
+const bulkTransactionEntityRepo = new RedisBulkTransactionStateRepo(bulkTransactionEntityRepoOptions, logger);
+
 
 const sampleDomainEventData: IDomainEventData = {
   key: 'sample-key1',
@@ -242,17 +279,176 @@ const sampleDomainEventData: IDomainEventData = {
 }
 
 describe('First domain event', () => {
+
   beforeEach(async () => {
-    await producer.init();
+    commandEvents = [];
   });
 
-  afterEach(async () => {
+  beforeAll(async () => {
+    await producer.init();
+    await consumer.init();
+    await consumer.start();
+    await bulkTransactionEntityRepo.init();
+  });
+
+  afterAll(async () => {
     await producer.destroy();
+    await consumer.destroy();
+    await bulkTransactionEntityRepo.destroy();
   });
 
   test('should publish a domain event', async () => {
     const domainEventObj = new DomainEvent(sampleDomainEventData);
     await producer.sendDomainEvent(domainEventObj);
+    await new Promise(resolve => setTimeout(resolve, messageTimeout));
     await expect(true)
+  })
+
+  test("1. When inbound domain event PartyInfoCallbackProcessed is received \
+        Then outbound event ProcessSDKOutboundBulkPartyInfoRequestComplete should be published \
+        If party lookup on bulk transaction has finished", async () => {
+    const bulkTransactionId = randomUUID();
+    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+        bulkHomeTransactionID: "string",
+        bulkTransactionId: bulkTransactionId,
+        options: {
+          onlyValidateParty: true,
+          autoAcceptParty: {
+            enabled: false
+          },
+          autoAcceptQuote: {
+            enabled: true,
+          },
+          skipPartyLookup: true,
+          synchronous: true,
+          bulkExpiration: "2016-05-24T08:38:08.699-04:00"
+        },
+        from: {
+          partyIdInfo: {
+            partyIdType: "MSISDN",
+            partyIdentifier: "16135551212",
+            fspId: "string",
+          },
+        },
+        individualTransfers: [
+          {
+            homeTransactionId: randomUUID(),
+            to: {
+              partyIdInfo: {
+                partyIdType: "MSISDN",
+                partyIdentifier: "16135551212",
+              },
+            },
+            amountType: "SEND",
+            currency: "USD",
+            amount: "123.45",
+          },
+          {
+            homeTransactionId: randomUUID(),
+            to: {
+              partyIdInfo: {
+                partyIdType: "MSISDN",
+                partyIdentifier: "16135551212",
+              },
+            },
+            amountType: "SEND",
+            currency: "USD",
+            amount: "456.78",
+          }
+        ]
+      }
+    await bulkTransactionEntityRepo.store(BulkTransactionEntity.CreateFromRequest(bulkRequest).exportState());
+    await bulkTransactionEntityRepo.setPartyLookupTotalCount(bulkTransactionId, 2);
+    await bulkTransactionEntityRepo.incrementPartyLookupSuccessCount(bulkTransactionId, 2);
+    await bulkTransactionEntityRepo.setPartyLookupFailedCount(bulkTransactionId, 0);
+
+    const samplePartyInfoCallbackProcessedDmEvtData: IPartyInfoCallbackProcessedDmEvtData = {
+      bulkId: bulkTransactionId,
+      content: {
+        transferId: randomUUID()
+      },
+      timestamp: Date.now(),
+      headers: [],
+    }
+    const message = new PartyInfoCallbackProcessedDmEvt(samplePartyInfoCallbackProcessedDmEvtData);
+    await producer.sendDomainEvent(message);
+    await new Promise(resolve => setTimeout(resolve, messageTimeout));
+
+    // Check command events published to kafka
+    expect(commandEvents[0].getName()).toBe('ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt')
+  })
+
+  test("2. When inbound domain event PartyInfoCallbackProcessed is received \
+       Then outbound event ProcessSDKOutboundBulkPartyInfoRequestComplete should not be published \
+       If party lookup on bulk transaction has not finished", async () => {
+        const bulkTransactionId = randomUUID();
+        const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+            bulkHomeTransactionID: "string",
+            bulkTransactionId: bulkTransactionId,
+            options: {
+              onlyValidateParty: true,
+              autoAcceptParty: {
+                enabled: false
+              },
+              autoAcceptQuote: {
+                enabled: true,
+              },
+              skipPartyLookup: true,
+              synchronous: true,
+              bulkExpiration: "2016-05-24T08:38:08.699-04:00"
+            },
+            from: {
+              partyIdInfo: {
+                partyIdType: "MSISDN",
+                partyIdentifier: "16135551212",
+                fspId: "string",
+              },
+            },
+            individualTransfers: [
+              {
+                homeTransactionId: randomUUID(),
+                to: {
+                  partyIdInfo: {
+                    partyIdType: "MSISDN",
+                    partyIdentifier: "16135551212",
+                  },
+                },
+                amountType: "SEND",
+                currency: "USD",
+                amount: "123.45",
+              },
+              {
+                homeTransactionId: randomUUID(),
+                to: {
+                  partyIdInfo: {
+                    partyIdType: "MSISDN",
+                    partyIdentifier: "16135551212",
+                  },
+                },
+                amountType: "SEND",
+                currency: "USD",
+                amount: "456.78",
+              }
+            ]
+          }
+        await bulkTransactionEntityRepo.store(bulkRequest);
+        await bulkTransactionEntityRepo.setPartyLookupTotalCount(bulkTransactionId, 2);
+        await bulkTransactionEntityRepo.incrementPartyLookupSuccessCount(bulkTransactionId, 1);
+        await bulkTransactionEntityRepo.setPartyLookupFailedCount(bulkTransactionId, 0);
+
+        const samplePartyInfoCallbackProcessedDmEvtData: IPartyInfoCallbackProcessedDmEvtData = {
+          bulkId: bulkTransactionId,
+          content: {
+            transferId: randomUUID()
+          },
+          timestamp: Date.now(),
+          headers: [],
+        }
+        const message = new PartyInfoCallbackProcessedDmEvt(samplePartyInfoCallbackProcessedDmEvtData);
+        await producer.sendDomainEvent(message);
+        await new Promise(resolve => setTimeout(resolve, messageTimeout));
+
+        // Check command events published to kafka
+        expect(commandEvents[0]).toBe(undefined)
   })
 })
