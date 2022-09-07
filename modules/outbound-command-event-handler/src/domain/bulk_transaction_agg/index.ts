@@ -91,7 +91,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
             // TODO: limit the number of concurrently created promises to avoid nodejs high memory consumption
             await Promise.all(
                 request.individualTransfers.map(
-                    (individualTransfer: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransaction) =>
+                    (individualTransfer: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionIndividualTransfer) =>
                         agg.addIndividualTransferEntity(IndividualTransferEntity.CreateFromRequest(individualTransfer)),
                 ),
             );
@@ -198,7 +198,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
         return repo.getBulkQuotesSuccessCount(this._rootEntity.id);
     }
-    
+
     async setBulkQuotesSuccessCount(count: number) : Promise<void> {
         await (<IBulkTransactionEntityRepo> this._entity_state_repo)
             .setBulkQuotesSuccessCount(this._rootEntity.id, count);
@@ -304,7 +304,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                         individualTransfer.id);
                         // TODO: Add Transfers to batch here like the quotes above
                     }
-                    
+
                 }
                 this.addBulkBatchEntity(bulkBatch);
                 bulkQuotesTotalCount += 1;

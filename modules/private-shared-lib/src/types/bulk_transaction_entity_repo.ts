@@ -29,7 +29,7 @@ import { BulkBatchState, BulkTransactionState, IndividualTransferState } from '.
 
 export type IBulkTransactionEntityRepo = {
     getAllIndividualTransferIds: (bulkId: string) => Promise<string[]>
-    getIndividualTransfer: (bulkId: string, individualTranferId: string) => Promise<IndividualTransferState>
+    getIndividualTransfer: (bulkId: string, individualTransferId: string) => Promise<IndividualTransferState>
     setIndividualTransfer: (
         bulkId: string,
         individualTranferId: string,

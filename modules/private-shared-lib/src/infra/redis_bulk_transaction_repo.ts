@@ -145,14 +145,14 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
         }
     }
 
-    async getIndividualTransfer(bulkId: string, individualTranferId: string): Promise<IndividualTransferState> {
+    async getIndividualTransfer(bulkId: string, individualTransferId: string): Promise<IndividualTransferState> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
             const individualTransferStateStr =
-                await this._redisClient.hGet(key, this.individualTransferKeyPrefix + individualTranferId);
+                await this._redisClient.hGet(key, this.individualTransferKeyPrefix + individualTransferId);
             if(individualTransferStateStr) {
                 return JSON.parse(individualTransferStateStr) as IndividualTransferState;
             } else {
@@ -200,7 +200,7 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
             throw (err);
         }
     }
-    
+
     async getBulkBatch(bulkId: string, bulkBatchId: string): Promise<BulkBatchState> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));

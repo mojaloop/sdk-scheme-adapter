@@ -132,13 +132,13 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         }
     }
 
-    async getIndividualTransfer(bulkId: string, individualTranferId: string): Promise<IndividualTransferState> {
+    async getIndividualTransfer(bulkId: string, individualTransferId: string): Promise<IndividualTransferState> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            const individualTransferStateStr = this._data[key][this.individualTransferKeyPrefix + individualTranferId];
+            const individualTransferStateStr = this._data[key][this.individualTransferKeyPrefix + individualTransferId];
             return JSON.parse(individualTransferStateStr) as IndividualTransferState;
         } catch (err) {
             this._logger.error(err, 'Error getting individual tranfer from memory - for key: ' + key);
@@ -237,7 +237,7 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         } catch (err) {
             this._logger.error(err, `Error loading ${this.bulkQuotesTotalCountKey} from memory - for key: ${key}`);
             throw (err);
-        }      
+        }
     }
 
     async setBulkQuotesTotalCount(bulkId: string, value: number): Promise<void> {
