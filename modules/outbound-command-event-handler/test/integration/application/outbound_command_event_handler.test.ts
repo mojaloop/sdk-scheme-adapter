@@ -46,6 +46,9 @@ import { DomainEvent,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 import { randomUUID } from "crypto";
 
+// Tests can timeout in a CI pipeline so giving it leeway
+jest.setTimeout(10000)
+
 const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
 const messageTimeout = 2000;
 
