@@ -24,15 +24,20 @@
 
 'use strict';
 
-import { IEntityStateRepository } from '..';
-import { BulkBatchState, BulkTransactionState, IndividualTransferState } from '../domain';
+import {
+    BulkTransactionState,
+    IEntityStateRepository,
+    IEntityStateReadOnlyRepository,
+    IndividualTransferState,
+    BulkBatchState,
+} from '@module-domain';
 
 export type IBulkTransactionEntityRepo = {
     getAllIndividualTransferIds: (bulkId: string) => Promise<string[]>
     getIndividualTransfer: (bulkId: string, individualTransferId: string) => Promise<IndividualTransferState>
     setIndividualTransfer: (
         bulkId: string,
-        individualTranferId: string,
+        individualTransferId: string,
         value: IndividualTransferState
     ) => Promise<void>
     getAllBulkBatchIds: (bulkId: string) => Promise<string[]>
@@ -51,4 +56,24 @@ export type IBulkTransactionEntityRepo = {
     getBulkQuotesFailedCount: (bulkId: string) => Promise<number>
     setBulkQuotesFailedCount: (bulkId: string, count: number) => Promise<void>
     incrementBulkQuotesFailedCount: (bulkId: string) => Promise<void>
+    setPartyLookupTotalCount: (bulkId: string, count: number) => Promise<void>
+    getPartyLookupTotalCount: (bulkId: string, count: number) => Promise<number>
+    incrementPartyLookupSuccessCount: (bulkId: string, increment: number) => Promise<void>
+    setPartyLookupSuccessCount: (bulkId: string, count: number) => Promise<void>
+    getPartyLookupSuccessCount: (bulkId: string) => Promise<number>
+    incrementPartyLookupFailedCount: (bulkId: string, increment: number) => Promise<void>
+    setPartyLookupFailedCount: (bulkId: string, count: number) => Promise<void>
+    getPartyLookupFailedCount: (bulkId: string) => Promise<number>
 } & IEntityStateRepository<BulkTransactionState>;
+
+export type IBulkTransactionEntityReadOnlyRepo = {
+    getAllIndividualTransferIds: (bulkId: string) => Promise<string[]>
+    getIndividualTransfer: (bulkId: string, individualTransferId: string) => Promise<IndividualTransferState>
+    isBulkIdExists: (bulkId: string) => Promise<boolean>
+    getBulkQuotesTotalCount: (bulkId: string) => Promise<number>
+    getBulkQuotesSuccessCount: (bulkId: string) => Promise<number>
+    getBulkQuotesFailedCount: (bulkId: string) => Promise<number>
+    getPartyLookupTotalCount: (bulkId: string, count: number) => Promise<number>
+    getPartyLookupSuccessCount: (bulkId: string) => Promise<number>
+    getPartyLookupFailedCount: (bulkId: string) => Promise<number>
+} & IEntityStateReadOnlyRepository<BulkTransactionState>;

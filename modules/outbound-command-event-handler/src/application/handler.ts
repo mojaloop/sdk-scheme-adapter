@@ -24,7 +24,7 @@
 
 'use strict';
 
-import { BulkTransactionAgg } from '@module-domain';
+import { BulkTransactionAgg } from '../domain';
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import {
     IRunHandler,

@@ -56,16 +56,19 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestCmdEvt(
 
         bulkTx.setTxState(BulkTransactionInternalState.DISCOVERY_PROCESSING);
         await bulkTransactionAgg.setTransaction(bulkTx);
-
         const allIndividualTransferIds = await bulkTransactionAgg.getAllIndividualTransferIds();
+        await bulkTransactionAgg.setPartyLookupTotalCount(allIndividualTransferIds.length);
+
         for await (const individualTransferId of allIndividualTransferIds) {
             const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
 
             if(bulkTx.isSkipPartyLookupEnabled()) {
                 if(individualTransfer.isPartyInfoExists) {
                     individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS);
+                    await bulkTransactionAgg.incrementPartyLookupSuccessCount();
                 } else {
                     individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_FAILED);
+                    await bulkTransactionAgg.incrementPartyLookupFailedCount();
                 }
                 await bulkTransactionAgg.setIndividualTransferById(individualTransferId, individualTransfer);
                 continue;
