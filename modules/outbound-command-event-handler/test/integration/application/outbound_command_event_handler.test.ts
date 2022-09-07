@@ -22,342 +22,351 @@
  --------------
  ******/
 
-"use strict";
+ "use strict";
 
-import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
-import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
-import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
+ import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
+ import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
+ import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
+ 
+ import {
+   CommandEvent, ICommandEventData, DomainEvent,
+   KafkaCommandEventProducer, IKafkaEventProducerOptions, KafkaDomainEventConsumer, IKafkaEventConsumerOptions,
+   ProcessSDKOutboundBulkRequestCmdEvt,
+   ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt,
+   ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
+   ProcessPartyInfoCallbackCmdEvt,
+   IProcessSDKOutboundBulkRequestCmdEvtData,
+   IProcessPartyInfoCallbackCmdEvtData,
+   IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData,
+   IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData,
+   IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData,
+   ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt,
+   IProcessSDKOutboundBulkQuotesRequestCmdEvtData,
+   ProcessSDKOutboundBulkQuotesRequestCmdEvt,
+   IProcessBulkQuotesCallbackCmdEvtData,
+   ProcessBulkQuotesCallbackCmdEvt,
+   RedisBulkTransactionStateRepo,
+   IRedisBulkTransactionStateRepoOptions,
+   BulkBatchState,
+   BulkBatchInternalState,
+ } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+ import { randomUUID } from "crypto";
+ 
+ // Tests can timeout in a CI pipeline so giving it leeway
+ jest.setTimeout(30000)
 
-import { CommandEvent, ICommandEventData, DomainEvent,
-         KafkaCommandEventProducer, IKafkaEventProducerOptions, KafkaDomainEventConsumer, IKafkaEventConsumerOptions,
-         ProcessSDKOutboundBulkRequestCmdEvt,
-         ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt,
-         ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
-         ProcessPartyInfoCallbackCmdEvt,
-         IProcessSDKOutboundBulkRequestCmdEvtData,
-         IProcessPartyInfoCallbackCmdEvtData,
-         IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData,
-         IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData,
-         RedisBulkTransactionStateRepo,
-         IRedisBulkTransactionStateRepoOptions,
-} from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
-import { randomUUID } from "crypto";
-
-// Tests can timeout in a CI pipeline so giving it leeway
-jest.setTimeout(30000)
-
-const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
-const messageTimeout = 5000;
-
-// Setup for Kafka Producer
-const commandEventProducerOptions: IKafkaEventProducerOptions = {
-    brokerList: 'localhost:9092',
-    clientId: 'test-integration_client_id',
-    topic: 'topic-sdk-outbound-command-events'
-}
-const producer = new KafkaCommandEventProducer(commandEventProducerOptions, logger)
-
-// Setup for Kafka Consumer
-const domainEventConsumerOptions: IKafkaEventConsumerOptions = {
-  brokerList: 'localhost:9092',
-  clientId: 'test-integration_client_id',
-  topics: ['topic-sdk-outbound-domain-events'],
-  groupId: "domain_events_consumer_client_id"
-}
-var domainEvents: Array<DomainEvent> = []
-const _messageHandler = async (message: DomainEvent): Promise<void>  => {
-  console.log('Domain Message: ', message);
-  domainEvents.push(message);
-}
-const consumer = new KafkaDomainEventConsumer(_messageHandler.bind(this), domainEventConsumerOptions, logger)
-
-// Setup for Redis access
-const bulkTransactionEntityRepoOptions: IRedisBulkTransactionStateRepoOptions = {
-  connStr: 'redis://localhost:6379'
-}
-const bulkTransactionEntityRepo = new RedisBulkTransactionStateRepo(bulkTransactionEntityRepoOptions, logger);
-
-
-describe("Tests for Outbound Command Event Handler", () => {
-
-  beforeEach(async () => {
-    domainEvents = [];
-  });
-
-  beforeAll(async () => {
-    await producer.init();
-    await consumer.init();
-    await consumer.start();
-    await bulkTransactionEntityRepo.init();
-  });
-
-  afterAll(async () => {
-    await producer.destroy();
-    await consumer.destroy();
-    await bulkTransactionEntityRepo.destroy();
-  });
-
-  // TESTS FOR PARTY LOOKUP
-  test("1. When inbound command event ProcessSDKOutboundBulkRequest is received \
-        Then outbound event SDKOutboundBulkPartyInfoRequested should be published \
-          And Global state should be updated to RECEIVED.", async () => {
-
-    const bulkTransactionId = randomUUID();
-    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
-        bulkHomeTransactionID: "string",
-        bulkTransactionId: bulkTransactionId,
-        options: {
-          onlyValidateParty: true,
-          autoAcceptParty: {
-            enabled: false
-          },
-          autoAcceptQuote: {
-            enabled: true,
-          },
-          skipPartyLookup: true,
-          synchronous: true,
-          bulkExpiration: "2016-05-24T08:38:08.699-04:00"
-        },
-        from: {
-          partyIdInfo: {
-            partyIdType: "MSISDN",
-            partyIdentifier: "16135551212",
-            fspId: "string",
-          },
-        },
-        individualTransfers: [
-          {
-            homeTransactionId: randomUUID(),
-            to: {
-              partyIdInfo: {
-                partyIdType: "MSISDN",
-                partyIdentifier: "16135551212",
-              },
-            },
-            amountType: "SEND",
-            currency: "USD",
-            amount: "123.45",
-          },
-          {
-            homeTransactionId: randomUUID(),
-            to: {
-              partyIdInfo: {
-                partyIdType: "MSISDN",
-                partyIdentifier: "16135551212",
-              },
-            },
-            amountType: "SEND",
-            currency: "USD",
-            amount: "456.78",
-          }
-        ]
-      }
-    const sampleCommandEventData: IProcessSDKOutboundBulkRequestCmdEvtData = {
-      bulkRequest,
-      timestamp: Date.now(),
-      headers: []
-    }
-    const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
-    await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
-
-    await new Promise(resolve => setTimeout(resolve, messageTimeout));
-    // Check the state in Redis
-    console.log('bulk id: ', bulkTransactionId);
-    const bulkState = await bulkTransactionEntityRepo.load(bulkTransactionId);
-    expect(bulkState.state).toBe('RECEIVED');
-
-    // Check that the state of individual transfers in bulk to be RECEIVED
-    const individualTransfers = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
-    expect(individualTransfers.length).toBe(2);
-    expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[0])).state).toBe('RECEIVED');
-    expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[1])).state).toBe('RECEIVED');
-
-    // Check domain events published to kafka
-    expect(domainEvents[0].getName()).toBe('SDKOutboundBulkPartyInfoRequestedDmEvt')
-    // TODO Add asserts to check data contents of the domain event published to kafka
-
-  });
-
-  test("2. Given Party info does not already exist for none of the individual transfers. \
-          And Party Lookup is not skipped \
-        When inbound command event ProcessSDKOutboundBulkPartyInfoRequest is received\
-        Then the global state should be updated to DISCOVERY_PROCESSING \
-          And PartyInfoRequested kafka event should be published for each individual transfer. \
-          And State for individual transfer should be updated to DISCOVERY_PROCESSING.", async () => {
-
-    //Publish this message so that it is stored internally in redis
-    const bulkTransactionId = randomUUID();
-    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
-      bulkHomeTransactionID: "string",
-      bulkTransactionId: bulkTransactionId,
-      options: {
-        onlyValidateParty: true,
-        autoAcceptParty: {
-          enabled: false
-        },
-        autoAcceptQuote: {
-          enabled: true,
-        },
-        skipPartyLookup: false,
-        synchronous: true,
-        bulkExpiration: "2016-05-24T08:38:08.699-04:00"
-      },
-      from: {
-        partyIdInfo: {
-          partyIdType: "MSISDN",
-          partyIdentifier: "16135551212",
-          fspId: "string",
-        },
-      },
-      individualTransfers: [
-        {
-          homeTransactionId: randomUUID(),
-          to: {
-            partyIdInfo: {
-              partyIdType: "MSISDN",
-              partyIdentifier: "16135551212"
-            },
-          },
-          amountType: "SEND",
-          currency: "USD",
-          amount: "123.45",
-        },
-        {
-          homeTransactionId: randomUUID(),
-          to: {
-            partyIdInfo: {
-              partyIdType: "MSISDN",
-              partyIdentifier: "16135551213"
-            },
-          },
-          amountType: "SEND",
-          currency: "USD",
-          amount: "456.78",
-        }
-      ]
-    }
-
-    const sampleCommandEventData: IProcessSDKOutboundBulkRequestCmdEvtData = {
-      bulkRequest,
-      timestamp: Date.now(),
-      headers: []
-    }
-    const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
-    await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
-    await new Promise(resolve => setTimeout(resolve, messageTimeout));
-
-    const bulkPartyInfoRequestCommandEventData: IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData = {
-      bulkId: bulkTransactionId,
-      timestamp: Date.now(),
-      headers: []
-    }
-    const bulkPartyInfoRequestCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCmdEvt(bulkPartyInfoRequestCommandEventData);
-    await producer.sendCommandEvent(bulkPartyInfoRequestCommandEventObj);
-
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    // Check the state in Redis
-    console.log('bulk id: ', bulkTransactionId);
-    const bulkState = await bulkTransactionEntityRepo.load(bulkTransactionId);
-    expect(bulkState.state).toBe('DISCOVERY_PROCESSING');
-
-    //Check that the state of individual transfers in bulk to be RECEIVED
-    const individualTransfers = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
-    expect(individualTransfers.length).toBe(2);
-    expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[0])).state).toBe('DISCOVERY_PROCESSING');
-    expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[1])).state).toBe('DISCOVERY_PROCESSING');
-
-    // Check domain events published to kafka
-    const filteredEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequestedDmEvt');
-    expect(filteredEvents.length).toBe(2);
-    // Check the data contents for domain event
-    expect(filteredEvents[0].getName()).toBe('PartyInfoRequestedDmEvt');
-    expect(JSON.parse(JSON.stringify(filteredEvents[0].getContent()))).toBeDefined();
-    expect(filteredEvents[1].getName()).toBe('PartyInfoRequestedDmEvt');
-    expect(JSON.parse(JSON.stringify(filteredEvents[1].getContent()))).toBeDefined();
-  });
-
-  test("3. Given Party info exists for individual transfers. \
-              And Party Lookup is not skipped \
-            When inbound command event ProcessSDKOutboundBulkPartyInfoRequest is received \
-            Then the global state should be updated to DISCOVERY_PROCESSING. \
-              And PartyInfoRequested outbound event should not be published for each individual transfer. \
-              And State for individual transfer should be updated to DISCOVERY_SUCCESS.", async () => {
-
-    //Publish this message so that it is stored internally in redis
-    const bulkTransactionId = randomUUID();
-    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
-        bulkHomeTransactionID: "string",
-        bulkTransactionId: bulkTransactionId,
-        options: {
-          onlyValidateParty: true,
-          autoAcceptParty: {
-            enabled: false
-          },
-          autoAcceptQuote: {
-            enabled: true,
-          },
-          skipPartyLookup: false,
-          synchronous: true,
-          bulkExpiration: "2016-05-24T08:38:08.699-04:00"
-        },
-        from: {
-          partyIdInfo: {
-            partyIdType: "MSISDN",
-            partyIdentifier: "16135551212",
-            fspId: "string",
-          },
-        },
-        individualTransfers: [
-          {
-            homeTransactionId: randomUUID(),
-            to: {
-              partyIdInfo: {
-                partyIdType: "MSISDN",
-                partyIdentifier: "16135551212",
-                fspId: "receiverfsp"
-              },
-            },
-            amountType: "SEND",
-            currency: "USD",
-            amount: "456.78",
-          }
-        ]
-    }
-    const sampleCommandEventData: IProcessSDKOutboundBulkRequestCmdEvtData = {
-      bulkRequest,
-      timestamp: Date.now(),
-      headers: []
-    }
-    const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
-    await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
-    await new Promise(resolve => setTimeout(resolve, messageTimeout));
-
-    const bulkPartyInfoRequestCommandEventData: IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData = {
-      bulkId: bulkTransactionId,
-      timestamp: Date.now(),
-      headers: []
-    }
-    const bulkPartyInfoRequestCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCmdEvt(bulkPartyInfoRequestCommandEventData);
-    await producer.sendCommandEvent(bulkPartyInfoRequestCommandEventObj);
-
-    await new Promise(resolve => setTimeout(resolve, messageTimeout));
-    // Check the state in Redis
-    console.log('bulk id: ', bulkTransactionId);
-    const bulkState = await bulkTransactionEntityRepo.load(bulkTransactionId);
-    expect(bulkState.state).toBe('DISCOVERY_PROCESSING');
-
-    //Check that the state of individual transfers in bulk to be RECEIVED
-    const individualTransfers = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
-    expect(individualTransfers.length).toBe(1);
-    expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[0])).state).toBe('DISCOVERY_SUCCESS');
-
-    const filteredEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequestedDmEvt');
-    // Check domain events published to kafka
-    expect(filteredEvents.length).toBe(0)
-    //TODO Add asserts to check data contents of the domain event published to kafka
-  });
-
-  test("4. Given receiving party info does not exist \
+ const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
+ const messageTimeout = 5000;
+ 
+ // Setup for Kafka Producer
+ const commandEventProducerOptions: IKafkaEventProducerOptions = {
+   brokerList: 'localhost:9092',
+   clientId: 'test-integration_client_id',
+   topic: 'topic-sdk-outbound-command-events'
+ }
+ const producer = new KafkaCommandEventProducer(commandEventProducerOptions, logger)
+ 
+ // Setup for Kafka Consumer
+ const domainEventConsumerOptions: IKafkaEventConsumerOptions = {
+   brokerList: 'localhost:9092',
+   clientId: 'test-integration_client_id',
+   topics: ['topic-sdk-outbound-domain-events'],
+   groupId: "domain_events_consumer_client_id"
+ }
+ var domainEvents: Array<DomainEvent> = []
+ const _messageHandler = async (message: DomainEvent): Promise<void> => {
+   console.log('Domain Message: ', message);
+   domainEvents.push(message);
+ }
+ const consumer = new KafkaDomainEventConsumer(_messageHandler.bind(this), domainEventConsumerOptions, logger)
+ 
+ // Setup for Redis access
+ const bulkTransactionEntityRepoOptions: IRedisBulkTransactionStateRepoOptions = {
+   connStr: 'redis://localhost:6379'
+ }
+ const bulkTransactionEntityRepo = new RedisBulkTransactionStateRepo(bulkTransactionEntityRepoOptions, logger);
+ 
+ 
+ describe("Tests for Outbound Command Event Handler", () => {
+ 
+   beforeEach(async () => {
+     domainEvents = [];
+   });
+ 
+   beforeAll(async () => {
+     await producer.init();
+     await consumer.init();
+     await consumer.start();
+     await bulkTransactionEntityRepo.init();
+   });
+ 
+   afterAll(async () => {
+     await producer.destroy();
+     await consumer.destroy();
+     await bulkTransactionEntityRepo.destroy();
+   });
+ 
+   // TESTS FOR PARTY LOOKUP
+   test("1. When inbound command event ProcessSDKOutboundBulkRequest is received \
+         Then outbound event SDKOutboundBulkPartyInfoRequested should be published \
+           And Global state should be updated to RECEIVED.", async () => {
+ 
+     const bulkTransactionId = randomUUID();
+     const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+       bulkHomeTransactionID: "string",
+       bulkTransactionId: bulkTransactionId,
+       options: {
+         onlyValidateParty: true,
+         autoAcceptParty: {
+           enabled: false
+         },
+         autoAcceptQuote: {
+           enabled: true,
+         },
+         skipPartyLookup: true,
+         synchronous: true,
+         bulkExpiration: "2016-05-24T08:38:08.699-04:00"
+       },
+       from: {
+         partyIdInfo: {
+           partyIdType: "MSISDN",
+           partyIdentifier: "16135551212",
+           fspId: "string",
+         },
+       },
+       individualTransfers: [
+         {
+           homeTransactionId: randomUUID(),
+           to: {
+             partyIdInfo: {
+               partyIdType: "MSISDN",
+               partyIdentifier: "16135551212",
+             },
+           },
+           amountType: "SEND",
+           currency: "USD",
+           amount: "123.45",
+         },
+         {
+           homeTransactionId: randomUUID(),
+           to: {
+             partyIdInfo: {
+               partyIdType: "MSISDN",
+               partyIdentifier: "16135551212",
+             },
+           },
+           amountType: "SEND",
+           currency: "USD",
+           amount: "456.78",
+         }
+       ]
+     }
+     const sampleCommandEventData: IProcessSDKOutboundBulkRequestCmdEvtData = {
+       bulkRequest,
+       timestamp: Date.now(),
+       headers: []
+     }
+     const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
+     await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
+ 
+     await new Promise(resolve => setTimeout(resolve, messageTimeout));
+     // Check the state in Redis
+     console.log('bulk id: ', bulkTransactionId);
+     const bulkState = await bulkTransactionEntityRepo.load(bulkTransactionId);
+     expect(bulkState.state).toBe('RECEIVED');
+ 
+     // Check that the state of individual transfers in bulk to be RECEIVED
+     const individualTransfers = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
+     expect(individualTransfers.length).toBe(2);
+     expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[0])).state).toBe('RECEIVED');
+     expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[1])).state).toBe('RECEIVED');
+ 
+     // Check domain events published to kafka
+     expect(domainEvents[0].getName()).toBe('SDKOutboundBulkPartyInfoRequestedDmEvt')
+     // TODO Add asserts to check data contents of the domain event published to kafka
+ 
+   });
+ 
+   test("2. Given Party info does not already exist for none of the individual transfers. \
+           And Party Lookup is not skipped \
+         When inbound command event ProcessSDKOutboundBulkPartyInfoRequest is received\
+         Then the global state should be updated to DISCOVERY_PROCESSING \
+           And PartyInfoRequested kafka event should be published for each individual transfer. \
+           And State for individual transfer should be updated to DISCOVERY_PROCESSING.", async () => {
+ 
+     //Publish this message so that it is stored internally in redis
+     const bulkTransactionId = randomUUID();
+     const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+       bulkHomeTransactionID: "string",
+       bulkTransactionId: bulkTransactionId,
+       options: {
+         onlyValidateParty: true,
+         autoAcceptParty: {
+           enabled: false
+         },
+         autoAcceptQuote: {
+           enabled: true,
+         },
+         skipPartyLookup: false,
+         synchronous: true,
+         bulkExpiration: "2016-05-24T08:38:08.699-04:00"
+       },
+       from: {
+         partyIdInfo: {
+           partyIdType: "MSISDN",
+           partyIdentifier: "16135551212",
+           fspId: "string",
+         },
+       },
+       individualTransfers: [
+         {
+           homeTransactionId: randomUUID(),
+           to: {
+             partyIdInfo: {
+               partyIdType: "MSISDN",
+               partyIdentifier: "16135551212"
+             },
+           },
+           amountType: "SEND",
+           currency: "USD",
+           amount: "123.45",
+         },
+         {
+           homeTransactionId: randomUUID(),
+           to: {
+             partyIdInfo: {
+               partyIdType: "MSISDN",
+               partyIdentifier: "16135551213"
+             },
+           },
+           amountType: "SEND",
+           currency: "USD",
+           amount: "456.78",
+         }
+       ]
+     }
+ 
+     const sampleCommandEventData: IProcessSDKOutboundBulkRequestCmdEvtData = {
+       bulkRequest,
+       timestamp: Date.now(),
+       headers: []
+     }
+     const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
+     await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
+     await new Promise(resolve => setTimeout(resolve, 1000));
+ 
+     const bulkPartyInfoRequestCommandEventData: IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData = {
+       bulkId: bulkTransactionId,
+       timestamp: Date.now(),
+       headers: []
+     }
+     const bulkPartyInfoRequestCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCmdEvt(bulkPartyInfoRequestCommandEventData);
+     await producer.sendCommandEvent(bulkPartyInfoRequestCommandEventObj);
+ 
+     await new Promise(resolve => setTimeout(resolve, 3000));
+     // Check the state in Redis
+     console.log('bulk id: ', bulkTransactionId);
+     const bulkState = await bulkTransactionEntityRepo.load(bulkTransactionId);
+     expect(bulkState.state).toBe('DISCOVERY_PROCESSING');
+ 
+     //Check that the state of individual transfers in bulk to be RECEIVED
+     const individualTransfers = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
+     expect(individualTransfers.length).toBe(2);
+     expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[0])).state).toBe('DISCOVERY_PROCESSING');
+     expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[1])).state).toBe('DISCOVERY_PROCESSING');
+ 
+     // Check domain events published to kafka
+     const filteredEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequestedDmEvt');
+     expect(filteredEvents.length).toBe(2);
+     // Check the data contents for domain event
+     expect(filteredEvents[0].getName()).toBe('PartyInfoRequestedDmEvt');
+     expect(JSON.parse(JSON.stringify(filteredEvents[0].getContent()))).toBeDefined();
+     expect(filteredEvents[1].getName()).toBe('PartyInfoRequestedDmEvt');
+     expect(JSON.parse(JSON.stringify(filteredEvents[1].getContent()))).toBeDefined();
+   });
+ 
+   test("3. Given Party info exists for individual transfers. \
+               And Party Lookup is not skipped \
+             When inbound command event ProcessSDKOutboundBulkPartyInfoRequest is received \
+             Then the global state should be updated to DISCOVERY_PROCESSING. \
+               And PartyInfoRequested outbound event should not be published for each individual transfer. \
+               And State for individual transfer should be updated to DISCOVERY_SUCCESS.", async () => {
+ 
+     //Publish this message so that it is stored internally in redis
+     const bulkTransactionId = randomUUID();
+     const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+       bulkHomeTransactionID: "string",
+       bulkTransactionId: bulkTransactionId,
+       options: {
+         onlyValidateParty: true,
+         autoAcceptParty: {
+           enabled: false
+         },
+         autoAcceptQuote: {
+           enabled: true,
+         },
+         skipPartyLookup: false,
+         synchronous: true,
+         bulkExpiration: "2016-05-24T08:38:08.699-04:00"
+       },
+       from: {
+         partyIdInfo: {
+           partyIdType: "MSISDN",
+           partyIdentifier: "16135551212",
+           fspId: "string",
+         },
+       },
+       individualTransfers: [
+         {
+           homeTransactionId: randomUUID(),
+           to: {
+             partyIdInfo: {
+               partyIdType: "MSISDN",
+               partyIdentifier: "16135551212",
+               fspId: "receiverfsp"
+             },
+           },
+           amountType: "SEND",
+           currency: "USD",
+           amount: "456.78",
+         }
+       ]
+     }
+     const sampleCommandEventData: IProcessSDKOutboundBulkRequestCmdEvtData = {
+       bulkRequest,
+       timestamp: Date.now(),
+       headers: []
+     }
+     const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
+     await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
+     await new Promise(resolve => setTimeout(resolve, 1000));
+ 
+     const bulkPartyInfoRequestCommandEventData: IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData = {
+       bulkId: bulkTransactionId,
+       timestamp: Date.now(),
+       headers: []
+     }
+     const bulkPartyInfoRequestCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCmdEvt(bulkPartyInfoRequestCommandEventData);
+     await producer.sendCommandEvent(bulkPartyInfoRequestCommandEventObj);
+ 
+     await new Promise(resolve => setTimeout(resolve, messageTimeout));
+     // Check the state in Redis
+     console.log('bulk id: ', bulkTransactionId);
+     const bulkState = await bulkTransactionEntityRepo.load(bulkTransactionId);
+     expect(bulkState.state).toBe('DISCOVERY_PROCESSING');
+ 
+     //Check that the state of individual transfers in bulk to be RECEIVED
+     const individualTransfers = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
+     expect(individualTransfers.length).toBe(1);
+     expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[0])).state).toBe('DISCOVERY_SUCCESS');
+ 
+     const filteredEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequestedDmEvt');
+     // Check domain events published to kafka
+     expect(filteredEvents.length).toBe(0)
+     //TODO Add asserts to check data contents of the domain event published to kafka
+   });
+ 
+   test("4. Given receiving party info does not exist \
               And receiving party lookup was successful \
             When inbound command event ProcessPartyInfoCallback is received \
             Then the state for individual successful party lookups should be updated to DISCOVERY_SUCCESS \
@@ -463,411 +472,883 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect(domainEvents[2].getName()).toBe('PartyInfoCallbackProcessedDmEvt');
     // //TODO Add asserts to check data contents of the domain event published to kafka
   });
-
-  test("5. Given receiving party info does not exist \
-              And receiving party lookup was not successful \
-            When inbound command event ProcessPartyInfoCallback is received \
-            Then the state for individual successful party lookups should be updated to DISCOVERY_FAILED \
-              And outbound event PartyInfoCallbackProcessed event should be published", async () => {
-
-    //Publish this message so that it is stored internally in redis
-    const bulkTransactionId = randomUUID();
-    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
-        bulkHomeTransactionID: "string",
-        bulkTransactionId: bulkTransactionId,
-        options: {
-          onlyValidateParty: true,
-          autoAcceptParty: {
-            enabled: false
-          },
-          autoAcceptQuote: {
-            enabled: true,
-          },
-          skipPartyLookup: false,
-          synchronous: true,
-          bulkExpiration: "2016-05-24T08:38:08.699-04:00"
-        },
-        from: {
-          partyIdInfo: {
-            partyIdType: "MSISDN",
-            partyIdentifier: "16135551212",
-            fspId: "string",
-          },
-        },
-        individualTransfers: [
-          {
-            homeTransactionId: randomUUID(),
-            to: {
-              partyIdInfo: {
-                partyIdType: "MSISDN",
-                partyIdentifier: "16135551212"
-              },
-            },
-            amountType: "SEND",
-            currency: "USD",
-            amount: "123.45",
-          }
-        ]
-    }
-    const sampleCommandEventData: IProcessSDKOutboundBulkRequestCmdEvtData = {
-      bulkRequest,
-      timestamp: Date.now(),
-      headers: []
-    }
-    const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
-    await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
-    await new Promise(resolve => setTimeout(resolve, messageTimeout));
-
-    const bulkPartyInfoRequestCommandEventData: IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData = {
-      bulkId: bulkTransactionId,
-      timestamp: Date.now(),
-      headers: []
-    }
-    const bulkPartyInfoRequestCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCmdEvt(bulkPartyInfoRequestCommandEventData);
-    await producer.sendCommandEvent(bulkPartyInfoRequestCommandEventObj);
-
-    await new Promise(resolve => setTimeout(resolve, messageTimeout));
-    // Check the state in Redis
-    console.log('bulk id: ', bulkTransactionId);
-
-    // Get the randomly generated transferId for the callback
-    const previousIndividualTransfers = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
-
-    const partyInfoRequestedDomainEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequestedDmEvt');
-    const processPartyInfoCallbackMessageData: IProcessPartyInfoCallbackCmdEvtData = {
-      bulkId: partyInfoRequestedDomainEvents[0].getKey(),
-      content: {
-        transferId: previousIndividualTransfers[0],
-        partyResult: {
-          currentState: 'ERROR_OCCURRED',
-          party: {
-              partyIdInfo: {
-                  partyIdType: 'MSISDN',
-                  partyIdentifier: '123456'
-              }
-          },
-          errorInformation: {
-              errorCode: '12345',
-              errorDescription: 'ID Not Found'
-          },
-        },
-      },
-      timestamp: Date.now(),
-      headers: []
-    }
-    const processPartyInfoCallbackMessageObj = new ProcessPartyInfoCallbackCmdEvt(processPartyInfoCallbackMessageData);
-    await producer.sendCommandEvent(processPartyInfoCallbackMessageObj);
-    await new Promise(resolve => setTimeout(resolve, messageTimeout));
-
-    //Check that the state of individual transfers in bulk to be RECEIVED
-    const individualTransfers = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
-    const individualTransferData = await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[0]);
-    console.log('individualTransferData:', individualTransferData);
-    expect(individualTransferData.state).toBe('DISCOVERY_FAILED');
-    expect(individualTransferData.partyResponse?.errorInformation?.errorCode).toBe('12345');
-    expect(individualTransferData.partyResponse?.errorInformation?.errorDescription).toBe('ID Not Found');
-
-    // // Check domain events published to kafka
-    expect(domainEvents[2].getName()).toBe('PartyInfoCallbackProcessedDmEvt')
-  });
-
-  test("6. When inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
-          Then the global state should be updated to DISCOVERY_COMPLETED", async () => {
-
-    //Publish this message so that it is stored internally in redis
-    const bulkTransactionId = randomUUID();
-    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
-        bulkHomeTransactionID: "string",
-        bulkTransactionId: bulkTransactionId,
-        options: {
-          onlyValidateParty: true,
-          autoAcceptParty: {
-            enabled: true
-          },
-          autoAcceptQuote: {
-            enabled: true,
-          },
-          skipPartyLookup: false,
-          synchronous: true,
-          bulkExpiration: "2016-05-24T08:38:08.699-04:00"
-        },
-        from: {
-          partyIdInfo: {
-            partyIdType: "MSISDN",
-            partyIdentifier: "16135551212",
-            fspId: "string",
-          },
-        },
-        individualTransfers: [
-          {
-            homeTransactionId: randomUUID(),
-            to: {
-              partyIdInfo: {
-                partyIdType: "MSISDN",
-                partyIdentifier: "16135551212"
-              },
-            },
-            amountType: "SEND",
-            currency: "USD",
-            amount: "123.45",
-          }
-        ]
-    }
-    const sampleCommandEventData: IProcessSDKOutboundBulkRequestCmdEvtData = {
-      bulkRequest,
-      timestamp: Date.now(),
-      headers: []
-    }
-    const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
-    await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
-    await new Promise(resolve => setTimeout(resolve, messageTimeout));
-
-    // Command event for bulk party info request completed
-    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData : IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData = {
-      bulkId: bulkTransactionId,
-      timestamp: Date.now(),
-      headers: []
-    }
-    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData);
-    await producer.sendCommandEvent(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj);
-    await new Promise(resolve => setTimeout(resolve, messageTimeout));
-
-    //Check that the global state of individual transfers in bulk to be RECEIVED
-    const bulkState = await bulkTransactionEntityRepo.load(bulkTransactionId);
-    expect(bulkState.state).toBe('DISCOVERY_COMPLETED');
-
-  });
-
-  test("7. Given autoAcceptParty setting is set to false \
-                When inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
-        Then outbound event SDKOutboundBulkAcceptPartyInfoRequested should be published \
-                  And Then global state should be updated to DISCOVERY_ACCEPTANCE_PENDING", async () => {
-
-    //Publish this message so that it is stored internally in redis
-    const bulkTransactionId = randomUUID();
-    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
-        bulkHomeTransactionID: "string",
-        bulkTransactionId: bulkTransactionId,
-        options: {
-          onlyValidateParty: true,
-          autoAcceptParty: {
-            enabled: false
-          },
-          autoAcceptQuote: {
-            enabled: true,
-          },
-          skipPartyLookup: false,
-          synchronous: true,
-          bulkExpiration: "2016-05-24T08:38:08.699-04:00"
-        },
-        from: {
-          partyIdInfo: {
-            partyIdType: "MSISDN",
-            partyIdentifier: "16135551212",
-            fspId: "string",
-          },
-        },
-        individualTransfers: [
-          {
-            homeTransactionId: randomUUID(),
-            to: {
-              partyIdInfo: {
-                partyIdType: "MSISDN",
-                partyIdentifier: "16135551212"
-              },
-            },
-            amountType: "SEND",
-            currency: "USD",
-            amount: "123.45",
-          }
-        ]
-    }
-    const sampleCommandEventData: IProcessSDKOutboundBulkRequestCmdEvtData = {
-      bulkRequest,
-      timestamp: Date.now(),
-      headers: []
-    }
-    const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
-    await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
-    await new Promise(resolve => setTimeout(resolve, messageTimeout));
-
-    // Command event for bulk party info request completed
-    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData : IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData = {
-      bulkId: bulkTransactionId,
-      timestamp: Date.now(),
-      headers: []
-    }
-    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData);
-    await producer.sendCommandEvent(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj);
-    await new Promise(resolve => setTimeout(resolve, messageTimeout));
-
-    //Check that the global state of individual transfers in bulk to be RECEIVED
-    const bulkState = await bulkTransactionEntityRepo.load(bulkTransactionId);
-    expect(bulkState.state).toBe('DISCOVERY_ACCEPTANCE_PENDING');
-
-    // Check domain events published to kafka
-    const hasAcceptPartyEvent = (domainEvents.find((e) => e.getName() === 'SDKOutboundBulkAcceptPartyInfoRequestedDmEvt'));
-    expect(hasAcceptPartyEvent).toBeTruthy();
-  });
-
-  test("8. Given autoAcceptParty setting is set to true \
-            When Inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
-                Then outbound event SDKOutboundBulkAutoAcceptPartyInfoRequested should be published. \
-              And Then global state should be same as before DISCOVERY_COMPLETED", async () => {
-    //Publish this message so that it is stored internally in redis
-    const bulkTransactionId = randomUUID();
-    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
-        bulkHomeTransactionID: "string",
-        bulkTransactionId: bulkTransactionId,
-        options: {
-          onlyValidateParty: true,
-          autoAcceptParty: {
-            enabled: true
-          },
-          autoAcceptQuote: {
-            enabled: true,
-          },
-          skipPartyLookup: false,
-          synchronous: true,
-          bulkExpiration: "2016-05-24T08:38:08.699-04:00"
-        },
-        from: {
-          partyIdInfo: {
-            partyIdType: "MSISDN",
-            partyIdentifier: "16135551212",
-            fspId: "string",
-          },
-        },
-        individualTransfers: [
-          {
-            homeTransactionId: randomUUID(),
-            to: {
-              partyIdInfo: {
-                partyIdType: "MSISDN",
-                partyIdentifier: "16135551212"
-              },
-            },
-            amountType: "SEND",
-            currency: "USD",
-            amount: "123.45",
-          }
-        ]
-    }
-    const sampleCommandEventData: IProcessSDKOutboundBulkRequestCmdEvtData = {
-      bulkRequest,
-      timestamp: Date.now(),
-      headers: []
-    }
-    const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
-    await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
-    await new Promise(resolve => setTimeout(resolve, messageTimeout));
-
-    // Command event for bulk party info request completed
-    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData : IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData = {
-      bulkId: bulkTransactionId,
-      timestamp: Date.now(),
-      headers: []
-    }
-    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData);
-    await producer.sendCommandEvent(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj);
-    await new Promise(resolve => setTimeout(resolve, messageTimeout));
-
-    //Check that the global state of individual transfers in bulk to be RECEIVED
-    const bulkState = await bulkTransactionEntityRepo.load(bulkTransactionId);
-    expect(bulkState.state).toBe('DISCOVERY_COMPLETED');
-
-    // Check domain events published to kafka
-    const hasAcceptPartyEvent = (domainEvents.find((e) => e.getName() === 'SDKOutboundBulkAutoAcceptPartyInfoRequestedDmEvt'));
-    expect(hasAcceptPartyEvent).toBeTruthy();
-  });
-
-  test.skip("9. Given inbound command event ProcessSDKOutboundBulkAcceptPartyInfo is received \
-        Then the logic should loop through individual transfer in the bulk request \
-          And update the individual transfer state to DISCOVERY_ACCEPTED or DISCOVERY_REJECTED based on the value in the incoming event \
-          And update the overall global state to DISCOVERY_ACCEPTANCE_COMPLETED \
-          And outbound event SDKOutboundBulkAcceptPartyInfoProcessed should be published", async () => {
-
-      //Publish initial message so that it is stored internally in redis
-    const bulkTransactionId = randomUUID();
-    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
-        bulkHomeTransactionID: "string",
-        bulkTransactionId: bulkTransactionId,
-        options: {
-          onlyValidateParty: true,
-          autoAcceptParty: {
-            enabled: false
-          },
-          autoAcceptQuote: {
-            enabled: true,
-          },
-          skipPartyLookup: false,
-          synchronous: true,
-          bulkExpiration: "2016-05-24T08:38:08.699-04:00"
-        },
-        from: {
-          partyIdInfo: {
-            partyIdType: "MSISDN",
-            partyIdentifier: "16135551212",
-            fspId: "string",
-          },
-        },
-        individualTransfers: [
-          {
-            homeTransactionId: randomUUID(),
-            to: {
-              partyIdInfo: {
-                partyIdType: "MSISDN",
-                partyIdentifier: "16135551212"
-              },
-            },
-            amountType: "SEND",
-            currency: "USD",
-            amount: "123.45",
-          }
-        ]
-    }
-    const sampleCommandEventData: IProcessSDKOutboundBulkRequestCmdEvtData = {
-      bulkRequest,
-      timestamp: Date.now(),
-      headers: []
-    }
-    const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
-    await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
-    await new Promise(resolve => setTimeout(resolve, messageTimeout));
-
-    // Command event for bulk party info request completed
-    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData : IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData = {
-      bulkId: bulkTransactionId,
-      timestamp: Date.now(),
-      headers: []
-    }
-    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData);
-    await producer.sendCommandEvent(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj);
-    await new Promise(resolve => setTimeout(resolve, messageTimeout));
-
-    //Check that the global state of individual transfers in bulk to be RECEIVED
-    const bulkState = await bulkTransactionEntityRepo.load(bulkTransactionId);
-    expect(bulkState.state).toBe('DISCOVERY_ACCEPTANCE_COMPLETED');
-
-  });
-
-  // // TESTS FOR QUOTE PROCESSING
-
-  // test("When Inbound command event ProcessSDKOutboundBulkQuotesRequest is received\
-  //       Then the logic should update the global state to AGREEMENT_PROCESSING, \
-  //         And create batches based on FSP that has DISCOVERY_ACCEPTED state \
-  //         And also has config maxEntryConfigPerBatch \
-  //         And publish BulkQuotesRequested per each batch \
-  //         And update the state of each batch to AGREEMENT_PROCESSING.", async () => {
-  //   //TODO add asserts
-  // });
-
-  // test("Given Inbound command event ProcessBulkQuotesCallback for success requests \
-  //        Then the logic should update the individual batch state to AGREEMENT_PROCESSING, \
-  //         And create batches based on FSP that has DISCOVERY_ACCEPTED state \
-  //        And also has config maxEntryConfigPerBatch \
-  //        And publish BulkQuotesRequested per each batch \
-  //        And update the state of each batch to AGREEMENT_PROCESSING.", async () => {
-  //   //TODO add asserts
-  // });
-});
+ 
+   // test("5. Given receiving party info does not exist \
+   //             And receiving party lookup was not successful \
+   //           When inbound command event ProcessPartyInfoCallback is received \
+   //           Then the state for individual successful party lookups should be updated to DISCOVERY_FAILED \
+   //             And outbound event PartyInfoCallbackProcessed event should be published", async () => {
+ 
+   //   //Publish this message so that it is stored internally in redis
+   //   const bulkTransactionId = randomUUID();
+   //   const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+   //       bulkHomeTransactionID: "string",
+   //       bulkTransactionId: bulkTransactionId,
+   //       options: {
+   //         onlyValidateParty: true,
+   //         autoAcceptParty: {
+   //           enabled: false
+   //         },
+   //         autoAcceptQuote: {
+   //           enabled: true,
+   //         },
+   //         skipPartyLookup: false,
+   //         synchronous: true,
+   //         bulkExpiration: "2016-05-24T08:38:08.699-04:00"
+   //       },
+   //       from: {
+   //         partyIdInfo: {
+   //           partyIdType: "MSISDN",
+   //           partyIdentifier: "16135551212",
+   //           fspId: "string",
+   //         },
+   //       },
+   //       individualTransfers: [
+   //         {
+   //           homeTransactionId: randomUUID(),
+   //           to: {
+   //             partyIdInfo: {
+   //               partyIdType: "MSISDN",
+   //               partyIdentifier: "16135551212"
+   //             },
+   //           },
+   //           amountType: "SEND",
+   //           currency: "USD",
+   //           amount: "123.45",
+   //         }
+   //       ]
+   //   }
+   //   const sampleCommandEventData: IProcessSDKOutboundBulkRequestCmdEvtData = {
+   //     bulkRequest,
+   //     timestamp: Date.now(),
+   //     headers: []
+   //   }
+   //   const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
+   //   await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
+   //   await new Promise(resolve => setTimeout(resolve, 1000));
+ 
+   //   const bulkPartyInfoRequestCommandEventData: IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData = {
+   //     bulkId: bulkTransactionId,
+   //     timestamp: Date.now(),
+   //     headers: []
+   //   }
+   //   const bulkPartyInfoRequestCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCmdEvt(bulkPartyInfoRequestCommandEventData);
+   //   await producer.sendCommandEvent(bulkPartyInfoRequestCommandEventObj);
+ 
+   //   await new Promise(resolve => setTimeout(resolve, 1000));
+   //   // Check the state in Redis
+   //   console.log('bulk id: ', bulkTransactionId);
+ 
+   //   const partyInfoRequestedDomainEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequestedDmEvt');
+ 
+   //   const processPartyInfoCallbackMessageData: IProcessPartyInfoCallbackCmdEvtData = {
+   //     bulkId: bulkTransactionId,
+   //     content: {
+   //         transferId: partyInfoRequestedDomainEvents[0].getKey(),
+   //         partyResult: {
+   //           errorInformation: {
+   //             errorCode: '12345',
+   //             errorDescription: 'ID Not Found'
+   //           },
+   //           currentState: 'ERROR_OCCURRED'
+   //         },
+   //     },
+   //     timestamp: Date.now(),
+   //     headers: []
+   //   }
+ 
+   //   const processPartyInfoCallbackMessageObj = new ProcessPartyInfoCallbackCmdEvt(processPartyInfoCallbackMessageData);
+   //   await producer.sendCommandEvent(processPartyInfoCallbackMessageObj);
+   //   await new Promise(resolve => setTimeout(resolve, 1000));
+ 
+   //   //Check that the state of individual transfers in bulk to be RECEIVED
+   //   const individualTransfers = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
+   //   const individualTransferData = await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[0]);
+   //   console.log('individualTransferData:', individualTransferData);
+   //   expect(individualTransferData.state).toBe('DISCOVERY_FAILED');
+   //   expect(individualTransferData.partyResponse?.errorInformation?.errorCode).toBe('12345');
+   //   expect(individualTransferData.partyResponse?.errorInformation?.errorDescription).toBe('ID Not Found');
+ 
+   //   // // Check domain events published to kafka
+   //   expect(domainEvents[2].getName()).toBe('PartyInfoCallbackProcessedDmEvt')
+   // });
+ 
+   test("6. When inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
+           Then the global state should be updated to DISCOVERY_COMPLETED", async () => {
+ 
+     //Publish this message so that it is stored internally in redis
+     const bulkTransactionId = randomUUID();
+     const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+       bulkHomeTransactionID: "string",
+       bulkTransactionId: bulkTransactionId,
+       options: {
+         onlyValidateParty: true,
+         autoAcceptParty: {
+           enabled: true
+         },
+         autoAcceptQuote: {
+           enabled: true,
+         },
+         skipPartyLookup: false,
+         synchronous: true,
+         bulkExpiration: "2016-05-24T08:38:08.699-04:00"
+       },
+       from: {
+         partyIdInfo: {
+           partyIdType: "MSISDN",
+           partyIdentifier: "16135551212",
+           fspId: "string",
+         },
+       },
+       individualTransfers: [
+         {
+           homeTransactionId: randomUUID(),
+           to: {
+             partyIdInfo: {
+               partyIdType: "MSISDN",
+               partyIdentifier: "16135551212"
+             },
+           },
+           amountType: "SEND",
+           currency: "USD",
+           amount: "123.45",
+         }
+       ]
+     }
+     const sampleCommandEventData: IProcessSDKOutboundBulkRequestCmdEvtData = {
+       bulkRequest,
+       timestamp: Date.now(),
+       headers: []
+     }
+     const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
+     await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
+     await new Promise(resolve => setTimeout(resolve, 1000));
+ 
+     // Command event for bulk party info request completed
+     const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData: IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData = {
+       bulkId: bulkTransactionId,
+       timestamp: Date.now(),
+       headers: []
+     }
+     const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData);
+     await producer.sendCommandEvent(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj);
+     await new Promise(resolve => setTimeout(resolve, 1000));
+     // Check the state in Redis
+     console.log('bulk id: ', bulkTransactionId);
+ 
+     // Get the randomly generated transferId for the callback
+     const previousIndividualTransfers = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
+ 
+     const partyInfoRequestedDomainEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequestedDmEvt');
+     const processPartyInfoCallbackMessageData: IProcessPartyInfoCallbackCmdEvtData = {
+       bulkId: bulkTransactionId,
+       content: {
+         transferId: partyInfoRequestedDomainEvents[0].getKey(),
+         partyResult: {
+           party: {
+             partyIdInfo: {
+               partyIdType: 'MSISDN',
+               partyIdentifier: '123456'
+             }
+           },
+           errorInformation: {
+             errorCode: '12345',
+             errorDescription: 'ID Not Found'
+           },
+           currentState:  'ERROR_OCCURRED'
+         },
+       },
+       timestamp: Date.now(),
+       headers: []
+     }
+     const processPartyInfoCallbackMessageObj = new ProcessPartyInfoCallbackCmdEvt(processPartyInfoCallbackMessageData);
+     await producer.sendCommandEvent(processPartyInfoCallbackMessageObj);
+     await new Promise(resolve => setTimeout(resolve, 1000));
+ 
+     //Check that the state of individual transfers in bulk to be RECEIVED
+     const individualTransfers = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
+     const individualTransferData = await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[0]);
+     console.log('individualTransferData:', individualTransferData);
+     expect(individualTransferData.state).toBe('DISCOVERY_FAILED');
+     expect(individualTransferData.partyResponse?.errorInformation?.errorCode).toBe('12345');
+     expect(individualTransferData.partyResponse?.errorInformation?.errorDescription).toBe('ID Not Found');
+ 
+     // // Check domain events published to kafka
+     expect(domainEvents[2].getName()).toBe('PartyInfoCallbackProcessedDmEvt')
+   });
+ 
+   test("7. Given autoAcceptParty setting is set to false \
+                 When inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
+         Then outbound event SDKOutboundBulkAcceptPartyInfoRequested should be published \
+                   And Then global state should be updated to DISCOVERY_ACCEPTANCE_PENDING", async () => {
+ 
+     //Publish this message so that it is stored internally in redis
+     const bulkTransactionId = randomUUID();
+     const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+       bulkHomeTransactionID: "string",
+       bulkTransactionId: bulkTransactionId,
+       options: {
+         onlyValidateParty: true,
+         autoAcceptParty: {
+           enabled: false
+         },
+         autoAcceptQuote: {
+           enabled: true,
+         },
+         skipPartyLookup: false,
+         synchronous: true,
+         bulkExpiration: "2016-05-24T08:38:08.699-04:00"
+       },
+       from: {
+         partyIdInfo: {
+           partyIdType: "MSISDN",
+           partyIdentifier: "16135551212",
+           fspId: "string",
+         },
+       },
+       individualTransfers: [
+         {
+           homeTransactionId: randomUUID(),
+           to: {
+             partyIdInfo: {
+               partyIdType: "MSISDN",
+               partyIdentifier: "16135551212"
+             },
+           },
+           amountType: "SEND",
+           currency: "USD",
+           amount: "123.45",
+         }
+       ]
+     }
+     const sampleCommandEventData: IProcessSDKOutboundBulkRequestCmdEvtData = {
+       bulkRequest,
+       timestamp: Date.now(),
+       headers: []
+     }
+     const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
+     await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
+     await new Promise(resolve => setTimeout(resolve, 1000));
+ 
+     // Command event for bulk party info request completed
+     const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData: IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData = {
+       bulkId: bulkTransactionId,
+       timestamp: Date.now(),
+       headers: []
+     }
+     const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData);
+     await producer.sendCommandEvent(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj);
+     await new Promise(resolve => setTimeout(resolve, 1000));
+ 
+     //Check that the global state of individual transfers in bulk to be RECEIVED
+     const bulkState = await bulkTransactionEntityRepo.load(bulkTransactionId);
+     expect(bulkState.state).toBe('DISCOVERY_ACCEPTANCE_PENDING');
+ 
+     // Check domain events published to kafka
+     const hasAcceptPartyEvent = (domainEvents.find((e) => e.getName() === 'SDKOutboundBulkAcceptPartyInfoRequestedDmEvt'));
+     expect(hasAcceptPartyEvent).toBeTruthy();
+   });
+ 
+   test("8. Given autoAcceptParty setting is set to true \
+             When Inbound event ProcessSDKOutboundBulkPartyInfoRequestComplete is received \
+                 Then outbound event SDKOutboundBulkAutoAcceptPartyInfoRequested should be published. \
+               And Then global state should be same as before DISCOVERY_COMPLETED", async () => {
+     //Publish this message so that it is stored internally in redis
+     const bulkTransactionId = randomUUID();
+     const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+       bulkHomeTransactionID: "string",
+       bulkTransactionId: bulkTransactionId,
+       options: {
+         onlyValidateParty: true,
+         autoAcceptParty: {
+           enabled: true
+         },
+         autoAcceptQuote: {
+           enabled: true,
+         },
+         skipPartyLookup: false,
+         synchronous: true,
+         bulkExpiration: "2016-05-24T08:38:08.699-04:00"
+       },
+       from: {
+         partyIdInfo: {
+           partyIdType: "MSISDN",
+           partyIdentifier: "16135551212",
+           fspId: "string",
+         },
+       },
+       individualTransfers: [
+         {
+           homeTransactionId: randomUUID(),
+           to: {
+             partyIdInfo: {
+               partyIdType: "MSISDN",
+               partyIdentifier: "16135551212"
+             },
+           },
+           amountType: "SEND",
+           currency: "USD",
+           amount: "123.45",
+         }
+       ]
+     }
+     const sampleCommandEventData: IProcessSDKOutboundBulkRequestCmdEvtData = {
+       bulkRequest,
+       timestamp: Date.now(),
+       headers: []
+     }
+     const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
+     await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
+     await new Promise(resolve => setTimeout(resolve, 1000));
+ 
+     // Command event for bulk party info request completed
+     const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData: IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData = {
+       bulkId: bulkTransactionId,
+       timestamp: Date.now(),
+       headers: []
+     }
+     const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData);
+     await producer.sendCommandEvent(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj);
+     await new Promise(resolve => setTimeout(resolve, 1000));
+ 
+     //Check that the global state of individual transfers in bulk to be RECEIVED
+     const bulkState = await bulkTransactionEntityRepo.load(bulkTransactionId);
+     expect(bulkState.state).toBe('DISCOVERY_COMPLETED');
+ 
+     // Check domain events published to kafka
+     const hasAcceptPartyEvent = (domainEvents.find((e) => e.getName() === 'SDKOutboundBulkAutoAcceptPartyInfoRequestedDmEvt'));
+     expect(hasAcceptPartyEvent).toBeTruthy();
+   });
+ 
+   test.only("9. Given inbound command event ProcessSDKOutboundBulkAcceptPartyInfo is received \
+         Then the logic should loop through individual transfer in the bulk request \
+           And update the individual transfer state to DISCOVERY_ACCEPTED or DISCOVERY_REJECTED based on the value in the incoming event \
+           And update the overall global state to DISCOVERY_ACCEPTANCE_COMPLETED \
+           And outbound event SDKOutboundBulkAcceptPartyInfoProcessed should be published", async () => {
+ 
+     //Publish initial message so that it is stored internally in redis
+     const bulkTransactionId = randomUUID();
+     const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+       bulkHomeTransactionID: "string",
+       bulkTransactionId: bulkTransactionId,
+       options: {
+         onlyValidateParty: true,
+         autoAcceptParty: {
+           enabled: false
+         },
+         autoAcceptQuote: {
+           enabled: true,
+         },
+         skipPartyLookup: false,
+         synchronous: true,
+         bulkExpiration: "2016-05-24T08:38:08.699-04:00"
+       },
+       from: {
+         partyIdInfo: {
+           partyIdType: "MSISDN",
+           partyIdentifier: "16135551212",
+           fspId: "string",
+         },
+       },
+       individualTransfers: [
+         {
+           homeTransactionId: randomUUID(),
+           to: {
+             partyIdInfo: {
+               partyIdType: "MSISDN",
+               partyIdentifier: "16135551212"
+             },
+           },
+           amountType: "SEND",
+           currency: "USD",
+           amount: "123.45",
+         },
+         {
+           homeTransactionId: randomUUID(),
+           to: {
+             partyIdInfo: {
+               partyIdType: "MSISDN",
+               partyIdentifier: "16135551213"
+             },
+           },
+           amountType: "SEND",
+           currency: "USD",
+           amount: "678.91",
+         }
+       ]
+     }
+     const sampleCommandEventData: IProcessSDKOutboundBulkRequestCmdEvtData = {
+       bulkRequest,
+       timestamp: Date.now(),
+       headers: []
+     }
+     const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
+     await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
+     await new Promise(resolve => setTimeout(resolve, 1000));
+ 
+     const individualTransferIds = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
+ 
+ 
+     // Command event for bulk party info request completed
+     const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData: IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData = {
+       bulkId: bulkTransactionId,
+       timestamp: Date.now(),
+       headers: []
+     }
+     const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData);
+     await producer.sendCommandEvent(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj);
+     await new Promise(resolve => setTimeout(resolve, 1000));
+ 
+     //Command event for bulk accept party info completed
+     const bulkTransactionContinuationAcceptParty: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptParty = {
+       bulkHomeTransactionID: bulkTransactionId,
+       individualTransfers: [
+         {
+           homeTransactionId: randomUUID(),
+           transactionId: individualTransferIds[0],
+           acceptParty: true
+         },
+         {
+           homeTransactionId: randomUUID(),
+           transactionId: individualTransferIds[1],
+           acceptParty: true
+         }
+       ]
+     }
+     const processSDKOutboundBulkAcceptPartyInfoCmdEvtData: IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData = {
+       bulkId: bulkTransactionId,
+       bulkTransactionContinuationAcceptParty,
+       timestamp: Date.now(),
+       headers: []
+     }
+     const processSDKOutboundBulkAcceptPartyInfoCmdEvt: ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt = new ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt(processSDKOutboundBulkAcceptPartyInfoCmdEvtData);
+     await producer.sendCommandEvent(processSDKOutboundBulkAcceptPartyInfoCmdEvt);
+     await new Promise(resolve => setTimeout(resolve, 1000));
+ 
+     //Check that the global state of individual transfers in bulk to be RECEIVED
+     const bulkState = await bulkTransactionEntityRepo.load(bulkTransactionId);
+     expect(bulkState.state).toBe('DISCOVERY_ACCEPTANCE_COMPLETED');
+ 
+     //Check that the state of individual transfers in bulk to be RECEIVED
+     let individualTransferData = await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransferIds[0]);
+     console.log('individualTransferData:', individualTransferData);
+     expect(individualTransferData.state).toBe('DISCOVERY_ACCEPTED');
+ 
+     individualTransferData = await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransferIds[1]);
+     console.log('individualTransferData:', individualTransferData);
+     expect(individualTransferData.state).toBe('DISCOVERY_REJECTED');
+     
+     // Check domain events published to kafka
+     const hasAcceptPartyEvent = (domainEvents.find((e) => e.getName() === 'SDKOutboundBulkAcceptPartyInfoProcessedDmEvt'));
+     expect(hasAcceptPartyEvent).toBeTruthy();
+ 
+   });
+ 
+   // // TESTS FOR QUOTE PROCESSING
+ 
+   // Functionality for this feature is not completed yet. Waiting on development to be complete
+   test("10. When inbound command event ProcessSDKOutboundBulkQuotesRequest is received\
+         Then the logic should update the global state to AGREEMENT_PROCESSING, \
+           And create batches based on FSP that has DISCOVERY_ACCEPTED state \
+           And also has config maxEntryConfigPerBatch \
+           And publish BulkQuotesRequested per each batch \
+           And update the state of each batch to AGREEMENT_PROCESSING.", async () => {
+ 
+     //Publish initial message so that it is stored internally in redis
+     const bulkTransactionId = randomUUID();
+     const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+       bulkHomeTransactionID: "string",
+       bulkTransactionId: bulkTransactionId,
+       options: {
+         onlyValidateParty: true,
+         autoAcceptParty: {
+           enabled: false
+         },
+         autoAcceptQuote: {
+           enabled: true,
+         },
+         skipPartyLookup: false,
+         synchronous: true,
+         bulkExpiration: "2016-05-24T08:38:08.699-04:00"
+       },
+       from: {
+         partyIdInfo: {
+           partyIdType: "MSISDN",
+           partyIdentifier: "16135551212",
+           fspId: "string",
+         },
+       },
+       individualTransfers: [
+         {
+           homeTransactionId: randomUUID(),
+           to: {
+             partyIdInfo: {
+               partyIdType: "MSISDN",
+               partyIdentifier: "16135551212",
+               fspId: "fsp1"
+             },
+           },
+           amountType: "SEND",
+           currency: "USD",
+           amount: "12.34",
+         },
+         {
+           homeTransactionId: randomUUID(),
+           to: {
+             partyIdInfo: {
+               partyIdType: "MSISDN",
+               partyIdentifier: "16135551213",
+               fspId: "fsp1"
+             },
+           },
+           amountType: "SEND",
+           currency: "USD",
+           amount: "23.45",
+         },
+         {
+           homeTransactionId: randomUUID(),
+           to: {
+             partyIdInfo: {
+               partyIdType: "MSISDN",
+               partyIdentifier: "16135551214",
+               fspId: "fsp2"
+             },
+           },
+           amountType: "SEND",
+           currency: "USD",
+           amount: "34.56",
+         },
+         {
+           homeTransactionId: randomUUID(),
+           to: {
+             partyIdInfo: {
+               partyIdType: "MSISDN",
+               partyIdentifier: "16135551215",
+               fspId: "fsp2"
+             },
+           },
+           amountType: "SEND",
+           currency: "USD",
+           amount: "45.67",
+         }
+       ]
+     }
+     const sampleCommandEventData: IProcessSDKOutboundBulkRequestCmdEvtData = {
+       bulkRequest,
+       timestamp: Date.now(),
+       headers: []
+     }
+     const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
+     await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
+     await new Promise(resolve => setTimeout(resolve, 1000));
+ 
+     const individualTransferIds = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
+ 
+ 
+     // Command event for bulk party info request completed
+     const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData: IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData = {
+       bulkId: bulkTransactionId,
+       timestamp: Date.now(),
+       headers: []
+     }
+     const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData);
+     await producer.sendCommandEvent(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj);
+     await new Promise(resolve => setTimeout(resolve, 1000));
+ 
+     //Command event for bulk accept party info completed
+     const bulkTransactionContinuationAcceptParty: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptParty = {
+       bulkHomeTransactionID: bulkTransactionId,
+       individualTransfers: [
+         {
+           homeTransactionId: randomUUID(),
+           transactionId: individualTransferIds[0],
+           acceptParty: true
+         },
+         {
+           homeTransactionId: randomUUID(),
+           transactionId: individualTransferIds[1],
+           acceptParty: true // This needs to be set to false
+         },
+         {
+           homeTransactionId: randomUUID(),
+           transactionId: individualTransferIds[2],
+           acceptParty: true
+         },
+         {
+           homeTransactionId: randomUUID(),
+           transactionId: individualTransferIds[3],
+           acceptParty: true // This needs to be set to false
+         }
+       ]
+     }
+     const processSDKOutboundBulkAcceptPartyInfoCmdEvtData: IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData = {
+       bulkId: bulkTransactionId,
+       bulkTransactionContinuationAcceptParty,
+       timestamp: Date.now(),
+       headers: []
+     }
+     const processSDKOutboundBulkAcceptPartyInfoCmdEvt: ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt = new ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt(processSDKOutboundBulkAcceptPartyInfoCmdEvtData);
+     await producer.sendCommandEvent(processSDKOutboundBulkAcceptPartyInfoCmdEvt);
+     await new Promise(resolve => setTimeout(resolve, 1000));
+ 
+     //Publish ProcessSDKOutboundBulkQuotesRequestDmEvt 
+     const processSDKOutboundBulkQuotesRequestCmdEvtData: IProcessSDKOutboundBulkQuotesRequestCmdEvtData = {
+       bulkId: bulkTransactionId,
+       timestamp: Date.now(),
+       headers: []
+     }
+     const processSDKOutboundBulkQuotesRequestCmdEvt: ProcessSDKOutboundBulkQuotesRequestCmdEvt = new ProcessSDKOutboundBulkQuotesRequestCmdEvt(processSDKOutboundBulkQuotesRequestCmdEvtData);
+     await producer.sendCommandEvent(processSDKOutboundBulkQuotesRequestCmdEvt);
+     await new Promise(resolve => setTimeout(resolve, 1000));
+ 
+ 
+     //Check that the global state of individual transfers in bulk to be AGREEMENT_PROCESSING
+     const bulkState = await bulkTransactionEntityRepo.load(bulkTransactionId);
+     expect(bulkState.state).toBe('AGREEMENT_PROCESSING');
+ 
+     //Check the state in redis for each batch to be as AGREEMENT_PROCESSING
+     const bulkBatchIds: Array<String> = await bulkTransactionEntityRepo.getAllBulkBatchIds(bulkTransactionId);
+     let batchQuote: BulkBatchState = await bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, bulkBatchIds[0]);
+     expect(batchQuote.state).toBe(BulkBatchInternalState.AGREEMENT_PROCESSING);
+ 
+     // Check BulkQuotesRequestedDmEvt domain events published to kafka
+     let bulkQuotesBatchesArray: Array<DomainEvent> = []
+     bulkQuotesBatchesArray = (domainEvents.filter((e) => e.getName() === 'BulkQuotesRequestedDmEvt'));
+     expect(bulkQuotesBatchesArray.length).toBe(2);
+     
+   });
+ 
+   // skipped because of bug https://github.com/mojaloop/project/issues/2922
+   test.only("11. Given the callback for quote batch is successful \
+           And the callback has a combination of success and failed responses for individual quotes \
+         When Inbound command event ProcessBulkQuotesCallback is received \
+         Then the logic should update the individual batch state to AGREEMENT_COMPLETED, \
+           And for each individual quote in the batch , the state should be upadted to AGREEMENT_SUCCESS or AGREEMENT_FAILED accordingly \
+           And the individual quote data in redis should be updated with the response \
+           And domain event BulkQuotesProcessed should be published", async () => {
+     
+     //Publish initial message so that it is stored internally in redis
+     const bulkTransactionId = randomUUID();
+     const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+       bulkHomeTransactionID: "string",
+       bulkTransactionId: bulkTransactionId,
+       options: {
+         onlyValidateParty: true,
+         autoAcceptParty: {
+           enabled: false
+         },
+         autoAcceptQuote: {
+           enabled: true,
+         },
+         skipPartyLookup: false,
+         synchronous: true,
+         bulkExpiration: "2016-05-24T08:38:08.699-04:00"
+       },
+       from: {
+         partyIdInfo: {
+           partyIdType: "MSISDN",
+           partyIdentifier: "16135551212",
+           fspId: "string",
+         },
+       },
+       individualTransfers: [
+         {
+           homeTransactionId: randomUUID(),
+           to: {
+             partyIdInfo: {
+               partyIdType: "MSISDN",
+               partyIdentifier: "16135551212",
+               fspId: "fsp1"
+             },
+           },
+           amountType: "SEND",
+           currency: "USD",
+           amount: "12.34",
+         },
+         {
+           homeTransactionId: randomUUID(),
+           to: {
+             partyIdInfo: {
+               partyIdType: "MSISDN",
+               partyIdentifier: "16135551213",
+               fspId: "fsp1"
+             },
+           },
+           amountType: "SEND",
+           currency: "USD",
+           amount: "23.45",
+         },
+         {
+           homeTransactionId: randomUUID(),
+           to: {
+             partyIdInfo: {
+               partyIdType: "MSISDN",
+               partyIdentifier: "16135551214",
+               fspId: "fsp2"
+             },
+           },
+           amountType: "SEND",
+           currency: "USD",
+           amount: "34.56",
+         },
+         {
+           homeTransactionId: randomUUID(),
+           to: {
+             partyIdInfo: {
+               partyIdType: "MSISDN",
+               partyIdentifier: "16135551215",
+               fspId: "fsp2"
+             },
+           },
+           amountType: "SEND",
+           currency: "USD",
+           amount: "45.67",
+         }
+       ]
+     }
+     const sampleCommandEventData: IProcessSDKOutboundBulkRequestCmdEvtData = {
+       bulkRequest,
+       timestamp: Date.now(),
+       headers: []
+     }
+     const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
+     await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
+     await new Promise(resolve => setTimeout(resolve, 1000));
+ 
+     const individualTransferIds = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
+ 
+ 
+     // Command event for bulk party info request completed
+     const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData: IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData = {
+       bulkId: bulkTransactionId,
+       timestamp: Date.now(),
+       headers: []
+     }
+     const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData);
+     await producer.sendCommandEvent(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj);
+     await new Promise(resolve => setTimeout(resolve, 1000));
+ 
+     //Command event for bulk accept party info completed
+     const bulkTransactionContinuationAcceptParty: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptParty = {
+       bulkHomeTransactionID: bulkTransactionId,
+       individualTransfers: [
+         {
+           homeTransactionId: randomUUID(),
+           transactionId: individualTransferIds[0],
+           acceptParty: true
+         },
+         {
+           homeTransactionId: randomUUID(),
+           transactionId: individualTransferIds[1],
+           acceptParty: true // This needs to be set to false
+         },
+         {
+           homeTransactionId: randomUUID(),
+           transactionId: individualTransferIds[2],
+           acceptParty: true
+         },
+         {
+           homeTransactionId: randomUUID(),
+           transactionId: individualTransferIds[3],
+           acceptParty: true // This needs to be set to false
+         }
+       ]
+     }
+     const processSDKOutboundBulkAcceptPartyInfoCmdEvtData: IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData = {
+       bulkId: bulkTransactionId,
+       bulkTransactionContinuationAcceptParty,
+       timestamp: Date.now(),
+       headers: []
+     }
+     const processSDKOutboundBulkAcceptPartyInfoCmdEvt: ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt = new ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt(processSDKOutboundBulkAcceptPartyInfoCmdEvtData);
+     await producer.sendCommandEvent(processSDKOutboundBulkAcceptPartyInfoCmdEvt);
+     await new Promise(resolve => setTimeout(resolve, 1000));
+ 
+     //Publish ProcessSDKOutboundBulkQuotesRequestDmEvt domain event
+     const processSDKOutboundBulkQuotesRequestCmdEvtData: IProcessSDKOutboundBulkQuotesRequestCmdEvtData = {
+       bulkId: bulkTransactionId,
+       timestamp: Date.now(),
+       headers: []
+     }
+     const processSDKOutboundBulkQuotesRequestCmdEvt: ProcessSDKOutboundBulkQuotesRequestCmdEvt = new ProcessSDKOutboundBulkQuotesRequestCmdEvt(processSDKOutboundBulkQuotesRequestCmdEvtData);
+     await producer.sendCommandEvent(processSDKOutboundBulkQuotesRequestCmdEvt);
+     await new Promise(resolve => setTimeout(resolve, 1000));
+ 
+     // Publish ProcessBulkQuotesCallback domain event
+     const processBulkQuotesCallbackCmdEvtData: IProcessBulkQuotesCallbackCmdEvtData = {
+       bulkId: bulkTransactionId,
+       content: {
+         batchId: '12',
+         bulkQuoteId: '34',
+         bulkQuotesResult: {
+           bulkQuoteId: '34',
+           currentState: "COMPLETED",
+           individualQuoteResults: {
+             quoteId: "12",
+             transferAmount: {
+               currency: "USD",
+               amount: "10"
+             }
+           }
+         }
+       }
+     }
+     const processBulkQuotesCallbackCmdEvt: ProcessBulkQuotesCallbackCmdEvt = new ProcessBulkQuotesCallbackCmdEvt(processBulkQuotesCallbackCmdEvtData);
+ 
+     //Check that the global state of individual transfers in bulk to be AGREEMENT_PROCESSING
+     const bulkState = await bulkTransactionEntityRepo.load(bulkTransactionId);
+     expect(bulkState.state).toBe('AGREEMENT_PROCESSING');
+ 
+     //Check the state in redis for each batch to be as AGREEMENT_PROCESSING
+     const bulkBatchIds: Array<String> = await bulkTransactionEntityRepo.getAllBulkBatchIds(bulkTransactionId);
+     let batchQuote: BulkBatchState = await bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, bulkBatchIds[0]);
+     expect(batchQuote.state).toBe(BulkBatchInternalState.AGREEMENT_PROCESSING);
+ 
+     // Check BulkQuotesRequestedDmEvt domain events published to kafka
+     let bulkQuotesBatchesArray: Array<DomainEvent> = []
+     bulkQuotesBatchesArray = (domainEvents.filter((e) => e.getName() === 'BulkQuotesRequestedDmEvt'));
+     expect(bulkQuotesBatchesArray.length).toBe(2);
+ 
+   });
+ 
+   // Functionality for this feature is not completed yet. Waiting on development to be complete
+   test("12. Given acceptAutoQuote setting is false \
+                   When inbound command event ProcessSDKOutboundBulkQuotesRequestComplete is received \
+                   Then the global state should be updated to AGREEMENT_ACCEPTANCE_PENDING \
+                     And domain event SDKOutboundBulkAcceptQuoteRequested is published. ", async () => {
+ 
+     //Check that the state of individual transfers in bulk to be RECEIVED
+     let individualTransferData = await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransferIds[0]);
+     console.log('individualTransferData:', individualTransferData);
+     expect(individualTransferData.state).toBe('DISCOVERY_ACCEPTED');
+ 
+     individualTransferData = await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransferIds[1]);
+     console.log('individualTransferData:', individualTransferData);
+     expect(individualTransferData.state).toBe('DISCOVERY_REJECTED');
+     
+     // Check domain events published to kafka
+     const hasAcceptPartyEvent = (domainEvents.find((e) => e.getName() === 'SDKOutboundBulkAcceptPartyInfoProcessedDmEvt'));
+     expect(hasAcceptPartyEvent).toBeTruthy();
+ 
+   });
+ 
+   // Functionality for this feature is not completed yet. Waiting on development to be complete
+   test("13. Given autoAcceptQuote setting is false \
+               When inbound command event ProcessSDKOutboundBulkAutoAcceptQuote is received \
+               Then the logic should loop through all the transfers in the bulk transaction \
+               And update the state for each transfer to AGREEMENT_ACCEPTED or AGREEMENT_REJECTED \
+                   depending on the status of each transfer in the bulk transaction \
+               And domain event SDKOutboundBulkAcceptQuoteProcessed is published.", async () => {
+ 
+   });
+ 
+   // Functionality for this feature is not completed yet. Waiting on development to be complete
+   test("14. Given autoAcceptQuote setting is true \
+               When inbound command event ProcessSDKOutboundBulkAutoAcceptQuote is received \
+               Then the logic should loop through all the transfers in the bulk transaction \
+               And update the state for each transfer to AGREEMENT_ACCEPTED \
+               And domain event SDKOutboundBulkAutoAcceptQuoteProcessed is published.", async () => {
+ 
+   });
+ });
+ 

@@ -103,7 +103,7 @@ const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest
     ]
 }
 
-describe('SDKOutboundBulkAcceptPartyInfoRequested', () => {
+describe.skip('SDKOutboundBulkAcceptPartyInfoRequested', () => {
   let bulkTransactionAgg: BulkTransactionAgg;
   beforeAll(async () => {
     await producer.init();
