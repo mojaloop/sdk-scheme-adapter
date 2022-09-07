@@ -495,7 +495,7 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
 
     async incrementPartyLookupSuccessCount(
         bulkId: string,
-        increment: number,
+        increment = 1,
     ): Promise<void> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
@@ -511,7 +511,7 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
 
     async incrementPartyLookupFailedCount(
         bulkId: string,
-        increment: number,
+        increment = 1,
     ): Promise<void> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));

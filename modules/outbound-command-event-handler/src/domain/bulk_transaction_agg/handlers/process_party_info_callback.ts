@@ -55,13 +55,13 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
         const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(
             processPartyInfoCallback.getTransferId(),
         );
-        const partyResult = <IPartyResult>processPartyInfoCallback.getPartyResult();
+        const partyResult = processPartyInfoCallback.getPartyResult() as IPartyResult;
         if(partyResult.currentState && partyResult.currentState === SDKOutboundTransferState.COMPLETED) {
             individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS);
-            await bulkTransactionAgg.incrementPartyLookupSuccessCount(1);
+            await bulkTransactionAgg.incrementPartyLookupSuccessCount();
         } else {
             individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_FAILED);
-            await bulkTransactionAgg.incrementPartyLookupFailedCount(1);
+            await bulkTransactionAgg.incrementPartyLookupFailedCount();
         }
         individualTransfer.setPartyResponse(partyResult);
 

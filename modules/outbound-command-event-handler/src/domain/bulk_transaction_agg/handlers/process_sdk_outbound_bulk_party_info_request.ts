@@ -65,10 +65,10 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestCmdEvt(
             if(bulkTx.isSkipPartyLookupEnabled()) {
                 if(individualTransfer.isPartyInfoExists) {
                     individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS);
-                    await bulkTransactionAgg.incrementPartyLookupSuccessCount(1);
+                    await bulkTransactionAgg.incrementPartyLookupSuccessCount();
                 } else {
                     individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_FAILED);
-                    await bulkTransactionAgg.incrementPartyLookupFailedCount(1);
+                    await bulkTransactionAgg.incrementPartyLookupFailedCount();
                 }
                 await bulkTransactionAgg.setIndividualTransferById(individualTransferId, individualTransfer);
                 continue;

@@ -47,6 +47,6 @@ export async function handlePartyInfoCallbackProcessed(
         logger.info(`Sent command event ${processSDKOutboundBulkPartyInfoRequestCompleteMessage.getName()}`);
         console.log(processSDKOutboundBulkPartyInfoRequestCompleteMessage);
     } catch (err: any) {
-        logger.info(`Failed to create SDKOutboundBulkRequestEntity. ${err.message}`);
+        logger.error(`Failed to create SDKOutboundBulkRequestEntity. ${err.message}`);
     }
 }
