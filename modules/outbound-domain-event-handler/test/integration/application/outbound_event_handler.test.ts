@@ -47,10 +47,10 @@ import { randomUUID } from "crypto";
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 // Tests can timeout in a CI pipeline so giving it leeway
-jest.setTimeout(45000)
+jest.setTimeout(60000)
 
 const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
-const messageTimeout = 30000;
+const messageTimeout = 45000;
 
 const domainEventProducerOptions: IKafkaEventProducerOptions = {
     brokerList: 'localhost:9092',
