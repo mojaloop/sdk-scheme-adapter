@@ -2453,14 +2453,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/logging-bc-client-lib@npm:^0.1.12":
-  version: 0.1.12
-  resolution: "@mojaloop/logging-bc-client-lib@npm:0.1.12"
+"@mojaloop/logging-bc-client-lib@npm:^0.1.13":
+  version: 0.1.13
+  resolution: "@mojaloop/logging-bc-client-lib@npm:0.1.13"
   dependencies:
     "@mojaloop/logging-bc-public-types-lib": ~0.1.0
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": ^0.0.8
     winston: ^3.3.3
-  checksum: 594a9e2c3754ca7cefc1d9694a178d9c0885b7a856cceff27f6dc42c0920a7e6f46b6db91d8c27c703d37c893821f0af6ddb7a007f506243d028fae074c3507c
+  checksum: 4b3d3f4af1adeb453e118dd88c72fb8fbe5d46683a717fa52ad3dc392172a0cf40ca0d616e147fd465e003f8b11c50e1f3fbcb30b17079423a35c2b89c8e477b
   languageName: node
   linkType: hard
 
@@ -2471,10 +2471,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/logging-bc-public-types-lib@npm:^0.1.9":
-  version: 0.1.9
-  resolution: "@mojaloop/logging-bc-public-types-lib@npm:0.1.9"
-  checksum: 07413b8a9abd3e3a419a07f3d6de6905cf787e01f750544ffb4299fe0942f34609519005eb620b7d34892cdfa37dd953e26b50dd8a232d32b26337eaa81f5284
+"@mojaloop/logging-bc-public-types-lib@npm:^0.1.10":
+  version: 0.1.10
+  resolution: "@mojaloop/logging-bc-public-types-lib@npm:0.1.10"
+  checksum: 8cc0dc62a278c39861d59d6a2c1e4275495b2b19c3ec2e87a5f37a26b466ed3542a10577ef678fd0d628c851f21daa2330404b1c2aa36eab1aaaccdfe5d503f6
   languageName: node
   linkType: hard
 
@@ -2572,8 +2572,8 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-command-event-handler@workspace:modules/outbound-command-event-handler"
   dependencies:
     "@mojaloop/api-snippets": ^14.2.4
-    "@mojaloop/logging-bc-client-lib": ^0.1.12
-    "@mojaloop/logging-bc-public-types-lib": ^0.1.9
+    "@mojaloop/logging-bc-client-lib": ^0.1.13
+    "@mojaloop/logging-bc-public-types-lib": ^0.1.10
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
     "@types/convict": ^6.1.1
     "@types/express": ^4.17.13
@@ -2609,8 +2609,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-domain-event-handler@workspace:modules/outbound-domain-event-handler"
   dependencies:
-    "@mojaloop/logging-bc-client-lib": ^0.1.12
-    "@mojaloop/logging-bc-public-types-lib": ^0.1.9
+    "@mojaloop/logging-bc-client-lib": ^0.1.13
+    "@mojaloop/logging-bc-public-types-lib": ^0.1.10
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
     "@types/convict": ^6.1.1
     "@types/jest": ^29.0.0
@@ -2636,7 +2636,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter-private-shared-lib@workspace:modules/private-shared-lib"
   dependencies:
     "@mojaloop/api-snippets": ^14.2.4
-    "@mojaloop/logging-bc-public-types-lib": ^0.1.9
+    "@mojaloop/logging-bc-public-types-lib": ^0.1.10
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.0.3
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": ^0.0.8
     "@types/node": ^18.7.15
