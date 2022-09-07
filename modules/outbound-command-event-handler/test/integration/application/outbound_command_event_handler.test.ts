@@ -46,11 +46,8 @@ import { DomainEvent,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 import { randomUUID } from "crypto";
 
-// Tests can timeout in a CI pipeline so giving it leeway
-jest.setTimeout(30000)
-
 const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
-const messageTimeout = 5000;
+const messageTimeout = 2000;
 
 // Setup for Kafka Producer
 const commandEventProducerOptions: IKafkaEventProducerOptions = {

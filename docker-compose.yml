@@ -41,7 +41,7 @@ services:
   redis:
     networks:
       - mojaloop-net
-    image: "redis:5.0.4-alpine"
+    image: "redis:6.2.4-alpine"
     container_name: redis
     ports:
       - "6379:6379"

@@ -46,11 +46,8 @@ import { KafkaDomainEventProducer, IKafkaEventProducerOptions, IPartyResult  } f
 import { randomUUID } from "crypto";
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
-// Tests can timeout in a CI pipeline so giving it leeway
-jest.setTimeout(60000)
-
 const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
-const messageTimeout = 45000;
+const messageTimeout = 2000;
 
 const domainEventProducerOptions: IKafkaEventProducerOptions = {
     brokerList: 'localhost:9092',
