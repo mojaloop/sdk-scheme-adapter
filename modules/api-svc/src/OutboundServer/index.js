@@ -21,13 +21,14 @@ const Validate = require('../lib/validate');
 const router = require('../lib/router');
 const handlers = require('./handlers');
 const middlewares = require('./middlewares');
-const { KafkaDomainEventProducer } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
+const { KafkaDomainEventProducer, BC_CONFIG } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
+const { DefaultLogger } = require('@mojaloop/logging-bc-client-lib');
 
 const endpointRegex = /\/.*/g;
 const logExcludePaths = ['/'];
 
 class OutboundApi extends EventEmitter {
-    constructor(conf, logger, cache, validator, metricsClient, wso2, eventProducer) {
+    constructor(conf, logger, cache, validator, metricsClient, wso2, eventProducer, eventLogger) {
         super({ captureExceptions: true });
         this._logger = logger;
         this._api = new Koa();
@@ -38,7 +39,7 @@ class OutboundApi extends EventEmitter {
         this._api.use(middlewares.createErrorHandler(this._logger));
         this._api.use(middlewares.createRequestIdGenerator());
         this._api.use(koaBody()); // outbound always expects application/json
-        this._api.use(middlewares.applyState({ cache, wso2, conf, metricsClient, logExcludePaths, eventProducer }));
+        this._api.use(middlewares.applyState({ cache, wso2, conf, metricsClient, logExcludePaths, eventProducer, eventLogger }));
         this._api.use(middlewares.createLogger(this._logger));
 
         //Note that we strip off any path on peerEndpoint config after the origin.
@@ -76,8 +77,9 @@ class OutboundServer extends EventEmitter {
         this._logger = logger;
         this._server = null;
         if (conf.backendEventHandler.enabled) {
-            this._eventProducer = new KafkaDomainEventProducer(conf.backendEventHandler.domainEventProducer, logger);
-            logger.info(`Created Message Producer of type ${this._eventProducer.constructor.name}`);
+            this._eventLogger = new DefaultLogger(BC_CONFIG.bcName, 'backend-api-handler', '0.0.1', config.logLevel);
+            this._eventProducer = new KafkaDomainEventProducer(conf.backendEventHandler.domainEventProducer, this._eventLogger);
+            this._eventLogger.info(`Created Message Producer of type ${this._eventProducer.constructor.name}`);
         }
         this._api = new OutboundApi(
             conf,
@@ -87,6 +89,7 @@ class OutboundServer extends EventEmitter {
             metricsClient,
             wso2,
             this._eventProducer,
+            this._eventLogger,
         );
         this._api.on('error', (...args) => {
             this.emit('error', ...args);

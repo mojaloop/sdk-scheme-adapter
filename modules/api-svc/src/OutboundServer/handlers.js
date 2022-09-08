@@ -273,7 +273,7 @@ const postBulkTransactions = async (ctx) => {
             timestamp: Date.now(),
         });
         await ctx.state._eventProducer.sendDomainEvent(msg);
-        ctx.state.logger.info(`Sent domain event ${msg.getName()}`);
+        ctx.state.eventLogger.info(`Sent domain event ${msg.getName()}`);
 
         ctx.response.status = 204;
     }
@@ -307,7 +307,7 @@ const putBulkTransactions = async (ctx) => {
 
         if (msg) {
             await ctx.state._eventProducer.sendDomainEvent(msg);
-            ctx.state.logger.info(`Sent domain event ${msg.getName()}`);
+            ctx.state.eventLogger.info(`Sent domain event ${msg.getName()}`);
         }
 
         ctx.response.status = 204;
