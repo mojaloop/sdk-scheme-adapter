@@ -18,6 +18,8 @@ const EventEmitter = require('events');
 const InboundServer = require('./InboundServer');
 const OutboundServer = require('./OutboundServer');
 const OAuthTestServer = require('./OAuthTestServer');
+const { BackendEventHandler } = require('./BackendEventHandler');
+const { FSPIOPEventHandler } = require('./FSPIOPEventHandler');
 const TestServer = require('./TestServer');
 const { MetricsServer, MetricsClient } = require('./lib/metrics');
 const ControlAgent = require('./ControlAgent');
@@ -111,6 +113,20 @@ class Server extends EventEmitter {
                 port: this.conf.test.port,
                 logger: this.logger.push(LOG_ID.TEST),
                 cache: this.cache,
+            });
+        }
+
+        if (this.conf.backendEventHandler.enabled) {
+            this.backendEventHandler = new BackendEventHandler({
+                config: this.conf,
+            });
+        }
+
+        if (this.conf.fspiopEventHandler.enabled) {
+            this.backendEventHandler = new FSPIOPEventHandler({
+                config: this.conf,
+                cache: this.cache,
+                wso2Auth: this.wso2,
             });
         }
     }

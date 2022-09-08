@@ -21,12 +21,13 @@ const Validate = require('../lib/validate');
 const router = require('../lib/router');
 const handlers = require('./handlers');
 const middlewares = require('./middlewares');
+const { KafkaDomainEventProducer } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib/src');
 
 const endpointRegex = /\/.*/g;
 const logExcludePaths = ['/'];
 
 class OutboundApi extends EventEmitter {
-    constructor(conf, logger, cache, validator, metricsClient, wso2) {
+    constructor(conf, logger, cache, validator, metricsClient, wso2, eventProducer) {
         super({ captureExceptions: true });
         this._logger = logger;
         this._api = new Koa();
@@ -37,7 +38,7 @@ class OutboundApi extends EventEmitter {
         this._api.use(middlewares.createErrorHandler(this._logger));
         this._api.use(middlewares.createRequestIdGenerator());
         this._api.use(koaBody()); // outbound always expects application/json
-        this._api.use(middlewares.applyState({ cache, wso2, conf, metricsClient, logExcludePaths }));
+        this._api.use(middlewares.applyState({ cache, wso2, conf, metricsClient, logExcludePaths, eventProducer }));
         this._api.use(middlewares.createLogger(this._logger));
 
         //Note that we strip off any path on peerEndpoint config after the origin.
@@ -74,6 +75,10 @@ class OutboundServer extends EventEmitter {
         this._conf = conf;
         this._logger = logger;
         this._server = null;
+        if (conf.backendEventHandler.enabled) {
+            this._eventProducer = new KafkaDomainEventProducer(conf.backendEventHandler.domainEventProducer, logger);
+            logger.info(`Created Message Producer of type ${this._eventProducer.constructor.name}`);
+        }
         this._api = new OutboundApi(
             conf,
             this._logger.push({ component: 'api' }),
@@ -81,6 +86,7 @@ class OutboundServer extends EventEmitter {
             this._validator,
             metricsClient,
             wso2,
+            this._eventProducer,
         );
         this._api.on('error', (...args) => {
             this.emit('error', ...args);
@@ -89,10 +95,11 @@ class OutboundServer extends EventEmitter {
     }
 
     async start() {
-        await this._api.start();
+        await this._eventProducer?.init();
         const specPath = path.join(path.dirname(require.resolve('@mojaloop/api-snippets')), '../docs/sdk-scheme-adapter-outbound-v2_0_0-openapi3-snippets.yaml');
         const apiSpecs = yaml.load(fs.readFileSync(specPath));
         await this._validator.initialise(apiSpecs);
+        await this._api.start();
         await new Promise((resolve) => this._server.listen(this._conf.outbound.port, resolve));
         this._logger.log(`Serving outbound API on port ${this._conf.outbound.port}`);
     }
@@ -102,6 +109,7 @@ class OutboundServer extends EventEmitter {
             await new Promise(resolve => this._server.close(resolve));
         }
         await this._api.stop();
+        await this._eventProducer?.destroy();
         this._logger.log('outbound shut down complete');
     }
 }

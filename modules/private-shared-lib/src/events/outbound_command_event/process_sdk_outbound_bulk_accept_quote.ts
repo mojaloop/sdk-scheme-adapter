@@ -18,56 +18,50 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Modusbox
- - Yevhen Kyriukha <yevhen.kyriukha@modusbox.com>
+ - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
  --------------
  ******/
 
 'use strict';
 
-import { DomainEvent } from '../domain_event';
+import { CommandEvent } from '../command_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
+import { randomUUID } from 'crypto';
 
-export type CoreConnectorBulkAcceptPartyInfoRequestIndividualTransferResult = {
-    homeTransactionId: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionIndividualTransfer['homeTransactionId'];
-    transactionId: string;
-    to: SDKSchemeAdapter.Outbound.V2_0_0.Types.Party;
-};
-
-export type CoreConnectorBulkAcceptPartyInfoRequest = {
-    bulkHomeTransactionID: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest['bulkHomeTransactionID'];
-    bulkTransactionId: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest['bulkTransactionId'];
-    individualTransferResults: CoreConnectorBulkAcceptPartyInfoRequestIndividualTransferResult[];
-};
-
-export interface ISDKOutboundBulkAcceptPartyInfoRequestedDmEvtData {
+export interface IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData {
     bulkId: string;
-    request: CoreConnectorBulkAcceptPartyInfoRequest;
+    bulkTransactionContinuationAcceptParty: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptParty;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
 
-export class SDKOutboundBulkAcceptPartyInfoRequestedDmEvt extends DomainEvent {
-    constructor(data: ISDKOutboundBulkAcceptPartyInfoRequestedDmEvtData) {
+export class ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt extends CommandEvent {
+    constructor(data: IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData) {
         super({
             key: data.bulkId,
+            content: data.bulkTransactionContinuationAcceptParty,
             timestamp: data.timestamp,
             headers: data.headers,
-            content: data.request,
-            name: SDKOutboundBulkAcceptPartyInfoRequestedDmEvt.name,
+            name: ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt.name,
         });
     }
 
-    static CreateFromDomainEvent(message: DomainEvent): SDKOutboundBulkAcceptPartyInfoRequestedDmEvt {
-        if((message.getKey() === null || typeof message.getKey() !== 'string')) {
-            throw new Error('Bulk id is in unknown format');
+    static CreateFromCommandEvent(message: CommandEvent): ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt {
+        if((message.getContent() === null || typeof message.getContent() !== 'object')) {
+            throw new Error('Content is in unknown format');
         }
-        const data: ISDKOutboundBulkAcceptPartyInfoRequestedDmEvtData = {
+        const data: IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData = {
             bulkId: message.getKey(),
-            request: message.getContent() as CoreConnectorBulkAcceptPartyInfoRequest,
+            bulkTransactionContinuationAcceptParty: message.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptParty,
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
         };
-        return new SDKOutboundBulkAcceptPartyInfoRequestedDmEvt(data);
+        return new ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt(data);
     }
+
+    getBulkTransactionContinuationAcceptParty(): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptParty {
+        return this.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptParty;
+    }
+
 }
