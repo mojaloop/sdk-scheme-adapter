@@ -19,6 +19,7 @@
           "validate:api",
           "validate:api:in",
           "validate:api:out",
+          "validate:api-sequence-diagram",
           "updates:check",
           "updates:update",
           "dep:check",

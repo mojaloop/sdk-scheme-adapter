@@ -2329,9 +2329,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/api-snippets@npm:^14.2.4":
-  version: 14.2.4
-  resolution: "@mojaloop/api-snippets@npm:14.2.4"
+"@mojaloop/api-snippets@npm:^15.0.0":
+  version: 15.0.0
+  resolution: "@mojaloop/api-snippets@npm:15.0.0"
   dependencies:
     "@apidevtools/json-schema-ref-parser": ^9.0.9
     commander: ^9.4.0
@@ -2342,7 +2342,7 @@ __metadata:
     openapi-typescript: ^5.4.1
     ts-auto-mock: ^3.6.2
     ttypescript: ^1.5.13
-  checksum: e4a19037f7a4d040cf8abf8bb7238e0c0ec9f46aa775db1320ff4b88b6e73f2c24f4e9d72d9c6ec199d46af2d495417543ce06321e4975329a2f7de26e0522a9
+  checksum: 18e61795d6a3baf4b6be137b202a061bf76b25ce6564f720bf663fefe6e4c20e4caeb3cac39186368372e7def0da64e6cc69850bbe14e2fe5509ef3a186b1960
   languageName: node
   linkType: hard
 
@@ -2517,7 +2517,7 @@ __metadata:
     "@babel/core": ^7.19.0
     "@babel/preset-env": ^7.19.0
     "@koa/cors": ^3.4.1
-    "@mojaloop/api-snippets": ^14.2.4
+    "@mojaloop/api-snippets": ^15.0.0
     "@mojaloop/central-services-error-handling": ^12.0.4
     "@mojaloop/central-services-logger": ^11.0.1
     "@mojaloop/central-services-metrics": ^12.0.5
@@ -2571,7 +2571,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-command-event-handler@workspace:modules/outbound-command-event-handler"
   dependencies:
-    "@mojaloop/api-snippets": ^14.2.4
+    "@mojaloop/api-snippets": ^15.0.0
     "@mojaloop/logging-bc-client-lib": ^0.1.13
     "@mojaloop/logging-bc-public-types-lib": ^0.1.10
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
@@ -2635,7 +2635,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-private-shared-lib@workspace:modules/private-shared-lib"
   dependencies:
-    "@mojaloop/api-snippets": ^14.2.4
+    "@mojaloop/api-snippets": ^15.0.0
     "@mojaloop/logging-bc-public-types-lib": ^0.1.10
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.0.3
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": ^0.0.8

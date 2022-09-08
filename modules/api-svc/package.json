@@ -19,8 +19,9 @@
   "scripts": {
     "start": "node src/index.js",
     "build": "yarn run build:openapi",
-    "build:openapi": "yarn run build:openapi:inbound",
+    "build:openapi": "yarn run build:openapi:inbound && yarn run build:openapi:dfspInbound",
     "build:openapi:inbound": "openapi bundle --output ./src/InboundServer/api.yaml --ext yaml ./src/InboundServer/api_template.yaml",
+    "build:openapi:dfspInbound": "openapi bundle --output ./docs/dfspInboundApi.yaml --ext yaml ./docs/dfspInboundApi_template.yaml",
     "clean:dist": "rm -Rf dist",
     "lint": "eslint ./src/",
     "lint:fix": "eslint ./src/ --fix",
@@ -60,7 +61,7 @@
   },
   "dependencies": {
     "@koa/cors": "^3.4.1",
-    "@mojaloop/api-snippets": "^14.2.4",
+    "@mojaloop/api-snippets": "^15.0.0",
     "@mojaloop/central-services-error-handling": "^12.0.4",
     "@mojaloop/central-services-logger": "^11.0.1",
     "@mojaloop/central-services-metrics": "^12.0.5",

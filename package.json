@@ -32,6 +32,7 @@
     "build:openapi": "yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run build:openapi",
     "build:openapi:inbound": "yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run build:openapi:inbound",
     "validate:api": "yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run validate:api",
+    "validate:api-sequence-diagram": "node ./scripts/validate-api-sequence-diagram.js",
     "watch": "nx run-many --parallel --all --target=watch",
     "clean": "yarn run clean:dist && yarn run clean:npm",
     "clean:npm": "nx run-many --parallel --all --target=clean:npm",
