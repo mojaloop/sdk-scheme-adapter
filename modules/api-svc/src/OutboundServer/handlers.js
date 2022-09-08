@@ -18,14 +18,13 @@ const {
     AccountsModel,
     OutboundTransfersModel,
     OutboundBulkTransfersModel,
-    OutboundBulkTransactionsModel,
     OutboundRequestToPayTransferModel,
     OutboundRequestToPayModel,
     OutboundBulkQuotesModel,
     PartiesModel,
     QuotesModel,
     TransfersModel
-} = require('../../lib/model');
+} = require('../lib/model');
 const { SDKOutboundBulkRequestReceivedDmEvt, SDKOutboundBulkAcceptPartyInfoReceivedDmEvt, SDKOutboundBulkAcceptQuoteReceivedDmEvt
 } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib/src');
 
@@ -42,10 +41,10 @@ const handleError = (method, err, ctx, stateField) => {
         statusCode: (err.httpStatusCode || 500).toString()
     };
     if(err[stateField]
-    && err[stateField].lastError
-    && err[stateField].lastError.mojaloopError
-    && err[stateField].lastError.mojaloopError.errorInformation
-    && err[stateField].lastError.mojaloopError.errorInformation.errorCode) {
+        && err[stateField].lastError
+        && err[stateField].lastError.mojaloopError
+        && err[stateField].lastError.mojaloopError.errorInformation
+        && err[stateField].lastError.mojaloopError.errorInformation.errorCode) {
 
         // by default we set the statusCode property of the error body to be that of any model state lastError
         // property containing a mojaloop API error structure. This means the caller does not have to inspect
@@ -56,8 +55,8 @@ const handleError = (method, err, ctx, stateField) => {
         // if we have been configured to use an error extensionList item as status code, look for it and use
         // it if it is present...
         if(ctx.state.conf.outboundErrorStatusCodeExtensionKey
-      && errorInformation.extensionList
-      && Array.isArray(errorInformation.extensionList.extension)) {
+            && errorInformation.extensionList
+            && Array.isArray(errorInformation.extensionList.extension)) {
 
             // search the extensionList array for a key that matches what we have been configured to look for...
             // the first one will do - spec is a bit loose on duplicate keys...
@@ -107,7 +106,7 @@ const handleRequestSimpleTransfersInformationError = (method, err, ctx) =>
  */
 const postTransfers = async (ctx) => {
     try {
-    // this requires a multi-stage sequence with the switch.
+        // this requires a multi-stage sequence with the switch.
         let transferRequest = {
             ...ctx.request.body
         };
@@ -173,8 +172,8 @@ const getTransfers = async (ctx) => {
  */
 const putTransfers = async (ctx) => {
     try {
-    // this requires a multi-stage sequence with the switch.
-    // use the transfers model to execute asynchronous stages with the switch
+        // this requires a multi-stage sequence with the switch.
+        // use the transfers model to execute asynchronous stages with the switch
         const model = new OutboundTransfersModel({
             ...ctx.state.conf,
             cache: ctx.state.cache,
@@ -204,7 +203,7 @@ const putTransfers = async (ctx) => {
  */
 const postBulkTransfers = async (ctx) => {
     try {
-    // this requires a multi-stage sequence with the switch.
+        // this requires a multi-stage sequence with the switch.
         let bulkTransferRequest = {
             ...ctx.request.body
         };
@@ -380,7 +379,7 @@ const getBulkQuoteById = async (ctx) => {
  */
 const postRequestToPayTransfer = async (ctx) => {
     try {
-    // this requires a multi-stage sequence with the switch.
+        // this requires a multi-stage sequence with the switch.
         let requestToPayTransferRequest = {
             ...ctx.request.body
         };
@@ -411,8 +410,8 @@ const postRequestToPayTransfer = async (ctx) => {
  */
 const putRequestToPayTransfer = async (ctx) => {
     try {
-    // this requires a multi-stage sequence with the switch.
-    // use the transfers model to execute asynchronous stages with the switch
+        // this requires a multi-stage sequence with the switch.
+        // use the transfers model to execute asynchronous stages with the switch
         const model = new OutboundRequestToPayTransferModel({
             ...ctx.state.conf,
             cache: ctx.state.cache,
@@ -472,7 +471,7 @@ const postAccounts = async (ctx) => {
 
 const postRequestToPay = async (ctx) => {
     try {
-    // this requires a multi-stage sequence with the switch.
+        // this requires a multi-stage sequence with the switch.
         let requestToPayInboundRequest = {
             ...ctx.request.body
         };
@@ -511,7 +510,7 @@ const getPartiesByTypeAndId = async (ctx) => {
     const args = { type, id, subId };
 
     try {
-    // prepare config
+        // prepare config
         const modelConfig = {
             ...ctx.state.conf,
             cache: ctx.state.cache,
@@ -545,7 +544,7 @@ const postQuotes = async (ctx) => {
     const args = { quoteId: quote.quoteId, fspId, quote };
 
     try {
-    // prepare config
+        // prepare config
         const modelConfig = {
             ...ctx.state.conf,
             cache: ctx.state.cache,
@@ -575,7 +574,7 @@ const postSimpleTransfers = async (ctx) => {
     const args = { transferId: transfer.transferId, fspId, transfer };
 
     try {
-    // prepare config
+        // prepare config
         const modelConfig = {
             ...ctx.state.conf,
             cache: ctx.state.cache,
