@@ -37,7 +37,7 @@ const {
 const {
     PartyInfoRequestedDmEvt,
     BulkQuotesRequestedDmEvt,
-} = require('@mojaloop/sdk-scheme-adapter-private-shared-lib/src');
+} = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
 
 class FSPIOPEventHandler {
     constructor({ config, cache, wso2Auth }) {

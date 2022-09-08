@@ -24,7 +24,7 @@
 
 const { PartyInfoRequestedDmEvt } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
 const { PartiesModel } = require('../../lib/model');
-const { PartyInfoCallbackReceivedDmEvt } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib/src');
+const { PartyInfoCallbackReceivedDmEvt } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
 
 module.exports.handleSDKOutboundBulkAcceptPartyInfoRequested = async (
     message,

@@ -21,7 +21,7 @@ const Validate = require('../lib/validate');
 const router = require('../lib/router');
 const handlers = require('./handlers');
 const middlewares = require('./middlewares');
-const { KafkaDomainEventProducer } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib/src');
+const { KafkaDomainEventProducer } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
 
 const endpointRegex = /\/.*/g;
 const logExcludePaths = ['/'];

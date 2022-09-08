@@ -39,7 +39,7 @@ const {
     SDKOutboundBulkAcceptPartyInfoRequestedDmEvt,
     SDKOutboundBulkAcceptQuoteRequestedDmEvt,
     SDKOutboundBulkResponsePreparedDmEvt,
-} = require('@mojaloop/sdk-scheme-adapter-private-shared-lib/src');
+} = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
 const { BackendRequests } = require('../lib/model/lib/requests');
 
 class BackendEventHandler {

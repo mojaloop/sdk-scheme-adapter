@@ -24,7 +24,7 @@
 
 const { BulkQuotesRequestedDmEvt } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
 const { OutboundBulkQuotesModel } = require('../../lib/model');
-const { BulkQuotesCallbackReceivedDmEvt } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib/src');
+const { BulkQuotesCallbackReceivedDmEvt } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
 
 module.exports.handleSDKOutboundBulkAcceptQuoteRequested = async (
     message,

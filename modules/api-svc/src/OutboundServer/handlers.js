@@ -25,8 +25,11 @@ const {
     QuotesModel,
     TransfersModel
 } = require('../lib/model');
-const { SDKOutboundBulkRequestReceivedDmEvt, SDKOutboundBulkAcceptPartyInfoReceivedDmEvt, SDKOutboundBulkAcceptQuoteReceivedDmEvt
-} = require('@mojaloop/sdk-scheme-adapter-private-shared-lib/src');
+const {
+    SDKOutboundBulkRequestReceivedDmEvt,
+    SDKOutboundBulkAcceptPartyInfoReceivedDmEvt,
+    SDKOutboundBulkAcceptQuoteReceivedDmEvt,
+} = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
 
 
 /**
