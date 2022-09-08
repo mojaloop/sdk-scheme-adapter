@@ -77,7 +77,7 @@ class OutboundServer extends EventEmitter {
         this._logger = logger;
         this._server = null;
         if (conf.backendEventHandler.enabled) {
-            this._eventLogger = new DefaultLogger(BC_CONFIG.bcName, 'backend-api-handler', '0.0.1', config.logLevel);
+            this._eventLogger = new DefaultLogger(BC_CONFIG.bcName, 'backend-api-handler', '0.0.1', conf.logLevel);
             this._eventProducer = new KafkaDomainEventProducer(conf.backendEventHandler.domainEventProducer, this._eventLogger);
             this._eventLogger.info(`Created Message Producer of type ${this._eventProducer.constructor.name}`);
         }
