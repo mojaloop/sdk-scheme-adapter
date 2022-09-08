@@ -51,7 +51,7 @@ export enum IndividualTransferInternalState {
 
 export interface IndividualTransferState extends BaseEntityState {
     id: string;
-    request: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransaction;
+    request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionIndividualTransfer;
     state: IndividualTransferInternalState;
     batchId?: string;
     // TODO: FSPIOP in api-snippets should export the `PartiesByTypeAndID` schema and refer that in the following line
@@ -73,7 +73,7 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         return this._state.id;
     }
 
-    get request(): SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransaction {
+    get request(): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionIndividualTransfer {
         return this._state.request;
     }
 
@@ -91,7 +91,7 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
 
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     static CreateFromRequest(
-        request: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransaction,
+        request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionIndividualTransfer,
     ): IndividualTransferEntity {
     // IndividualTransferEntity._validateRequest(request)
         const initialState: IndividualTransferState = {
@@ -157,8 +157,8 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         super(initialState);
     }
 
-    private static _validateRequest(request: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransaction): void {
-        const requestSchema = SDKSchemeAdapter.Outbound.V2_0_0.Schemas.individualTransaction;
+    private static _validateRequest(request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionIndividualTransfer): void {
+        const requestSchema = SDKSchemeAdapter.Outbound.V2_0_0.Schemas.bulkTransactionIndividualTransfer;
         const validate = ajv.compile(requestSchema);
         const validationResult = validate(request);
         if(!validationResult) {

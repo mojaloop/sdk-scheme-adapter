@@ -90,7 +90,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
             // TODO: limit the number of concurrently created promises to avoid nodejs high memory consumption
             await Promise.all(
                 request.individualTransfers.map(
-                    (individualTransfer: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransaction) =>
+                    (individualTransfer: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionIndividualTransfer) =>
                         agg.addIndividualTransferEntity(IndividualTransferEntity.CreateFromRequest(individualTransfer)),
                 ),
             );
