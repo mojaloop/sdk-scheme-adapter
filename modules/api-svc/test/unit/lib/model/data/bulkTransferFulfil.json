@@ -1,5 +1,5 @@
 {
-  "type": "bulkTransferFulfil",
+  "type": "bulkTransferResponse",
   "data": {
     "individualTransferResults": [
       {

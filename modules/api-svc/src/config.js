@@ -98,7 +98,7 @@ module.exports = {
             topics: env.get('BACKEND_EVENT_CONSUMER_TOPICS').default('topic-sdk-outbound-domain-events').asArray(),
         },
         domainEventProducer:{
-            brokerList: env.get('BACKEND_EVENT_CONSUMER_BROKER_LIST').default('localhost:9092').asString(),
+            brokerList: env.get('BACKEND_EVENT_PRODUCER_BROKER_LIST').default('localhost:9092').asString(),
             clientId: env.get('BACKEND_EVENT_PRODUCER_CLIENT_ID').default('backend_producer_client_id').asString(),
             topic: env.get('BACKEND_EVENT_PRODUCER_TOPIC').default('topic-sdk-outbound-domain-events').asString(),
         },
@@ -112,7 +112,7 @@ module.exports = {
             topics: env.get('FSPIOP_EVENT_CONSUMER_TOPICS').default('topic-sdk-outbound-domain-events').asArray(),
         },
         domainEventProducer:{
-            brokerList: env.get('FSPIOP_EVENT_CONSUMER_BROKER_LIST').default('localhost:9092').asString(),
+            brokerList: env.get('FSPIOP_EVENT_PRODUCER_BROKER_LIST').default('localhost:9092').asString(),
             clientId: env.get('FSPIOP_EVENT_PRODUCER_CLIENT_ID').default('fspiop_producer_client_id').asString(),
             topic: env.get('FSPIOP_EVENT_PRODUCER_TOPIC').default('topic-sdk-outbound-domain-events').asString(),
         },
