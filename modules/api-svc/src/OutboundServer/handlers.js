@@ -269,10 +269,10 @@ const postBulkTransactions = async (ctx) => {
     try {
         const msg = new SDKOutboundBulkRequestReceivedDmEvt({
             bulkRequest: ctx.request.body,
-            headers: ctx.request.headers,
+            headers: [ctx.request.headers],
             timestamp: Date.now(),
         });
-        await ctx.state._eventProducer.sendDomainEvent(msg);
+        await ctx.state.eventProducer.sendDomainEvent(msg);
         ctx.state.eventLogger.info(`Sent domain event ${msg.getName()}`);
 
         ctx.response.status = 204;
@@ -293,20 +293,20 @@ const putBulkTransactions = async (ctx) => {
             msg = new SDKOutboundBulkAcceptPartyInfoReceivedDmEvt({
                 bulkId: ctx.state.path.params.bulkTransactionId,
                 bulkTransactionContinuationAcceptParty: ctx.request.body,
-                headers: ctx.request.headers,
+                headers: [ctx.request.headers],
                 timestamp: Date.now(),
             });
         } else if (ctx.request.body.individualTransfers[0]?.hasOwnProperty('acceptQuote')) {
             msg = new SDKOutboundBulkAcceptQuoteReceivedDmEvt({
                 bulkId: ctx.state.path.params.bulkTransactionId,
                 bulkTransactionContinuationAcceptQuote: ctx.request.body,
-                headers: ctx.request.headers,
+                headers: [ctx.request.headers],
                 timestamp: Date.now(),
             });
         }
 
         if (msg) {
-            await ctx.state._eventProducer.sendDomainEvent(msg);
+            await ctx.state.eventProducer.sendDomainEvent(msg);
             ctx.state.eventLogger.info(`Sent domain event ${msg.getName()}`);
         }
 
