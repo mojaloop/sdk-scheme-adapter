@@ -28,46 +28,38 @@ import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
-export type CoreConnectorBulkAcceptPartyInfoRequestIndividualTransferResult = {
-    homeTransactionId: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionIndividualTransfer['homeTransactionId'];
-    transactionId: string;
-    to: SDKSchemeAdapter.Outbound.V2_0_0.Types.Party;
-};
-
-export type CoreConnectorBulkAcceptPartyInfoRequest = {
-    bulkHomeTransactionID: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest['bulkHomeTransactionID'];
-    bulkTransactionId: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest['bulkTransactionId'];
-    individualTransferResults: CoreConnectorBulkAcceptPartyInfoRequestIndividualTransferResult[];
-};
-
-export interface ISDKOutboundBulkAcceptPartyInfoRequestedDmEvtData {
+export interface ISDKOutboundBulkAcceptQuoteReceivedDmEvtData {
     bulkId: string;
-    request: CoreConnectorBulkAcceptPartyInfoRequest;
+    bulkTransactionContinuationAcceptQuote: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptQuote;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
 
-export class SDKOutboundBulkAcceptPartyInfoRequestedDmEvt extends DomainEvent {
-    constructor(data: ISDKOutboundBulkAcceptPartyInfoRequestedDmEvtData) {
+export class SDKOutboundBulkAcceptQuoteReceivedDmEvt extends DomainEvent {
+
+    constructor(data: ISDKOutboundBulkAcceptQuoteReceivedDmEvtData) {
         super({
             key: data.bulkId,
+            content: data.bulkTransactionContinuationAcceptQuote,
             timestamp: data.timestamp,
             headers: data.headers,
-            content: data.request,
-            name: SDKOutboundBulkAcceptPartyInfoRequestedDmEvt.name,
+            name: SDKOutboundBulkAcceptQuoteReceivedDmEvt.name,
         });
     }
 
-    static CreateFromDomainEvent(message: DomainEvent): SDKOutboundBulkAcceptPartyInfoRequestedDmEvt {
-        if((message.getKey() === null || typeof message.getKey() !== 'string')) {
-            throw new Error('Bulk id is in unknown format');
-        }
-        const data: ISDKOutboundBulkAcceptPartyInfoRequestedDmEvtData = {
+    static CreateFromDomainEvent(message: DomainEvent): SDKOutboundBulkAcceptQuoteReceivedDmEvt {
+        // Prepare Data
+        const data = {
             bulkId: message.getKey(),
-            request: message.getContent() as CoreConnectorBulkAcceptPartyInfoRequest,
+            bulkTransactionContinuationAcceptQuote: message.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptQuote,
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
         };
-        return new SDKOutboundBulkAcceptPartyInfoRequestedDmEvt(data);
+        return new SDKOutboundBulkAcceptQuoteReceivedDmEvt(data);
     }
+
+    getBulkTransactionContinuationAcceptParty(): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptQuote {
+        return this.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptQuote;
+    }
+
 }

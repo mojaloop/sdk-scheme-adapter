@@ -148,6 +148,17 @@ class BackendRequests {
     }
 
     /**
+     * Executes a PUT /bulkTransactions/{ID} request
+     *
+     * @returns {object} - JSON response body if one was received
+     */
+
+    async putBulkTransactions(transactionId, body) {
+        const url = `bulkTransactions/${transactionId}`;
+        return this._put(url, body);
+    }
+
+    /**
      * Utility function for building outgoing request headers as required by the mojaloop api spec
      *
      * @returns {object} - headers object for use in requests to mojaloop api endpoints
