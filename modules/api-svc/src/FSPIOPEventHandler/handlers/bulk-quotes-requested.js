@@ -22,19 +22,42 @@
  --------------
  ******/
 
-export * from './party_info_requested';
-export * from './sdk_outbound_bulk_request_received';
-export * from './sdk_outbound_bulk_party_info_requested';
-export * from './sdk_outbound_bulk_accept_party_info_requested';
-export * from './sdk_outbound_bulk_auto_accept_party_info_requested';
-export * from './party_info_callback_processed';
-export * from './sdk_outbound_bulk_accept_party_info_processed';
-export * from './bulk_quotes_requested';
-export * from './party_info_callback_received';
-export * from './sdk_outbound_bulk_accept_party_info_received';
-export * from './bulk_quotes_callback_received';
-export * from './bulk_quotes_callback_processed';
-export * from './sdk_outbound_bulk_quotes_request_processed';
-export * from './sdk_outbound_bulk_accept_quote_requested';
-export * from './sdk_outbound_bulk_accept_quote_received';
-export * from './sdk_outbound_bulk_response_sent';
+const { BulkQuotesRequestedDmEvt } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
+const { OutboundBulkQuotesModel } = require('../../lib/model');
+const { BulkQuotesCallbackReceivedDmEvt } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
+
+module.exports.handleSDKOutboundBulkAcceptQuoteRequested = async (
+    message,
+    options,
+    logger,
+) => {
+    const event = BulkQuotesRequestedDmEvt.CreateFromDomainEvent(message);
+
+    try {
+        // use the bulk quotes model to execute asynchronous request with the switch
+        const model = new OutboundBulkQuotesModel({
+            ...options.config,
+            cache: options.cache,
+            logger: logger,
+            wso2: options.wso2Auth,
+        });
+
+        await model.initialize(event.request);
+        const response = await model.run();
+
+        const bulkQuotesCallbackReceivedDmEvt = new BulkQuotesCallbackReceivedDmEvt({
+            bulkId: event.getKey(),
+            content: {
+                batchId: event.batchId,
+                bulkQuoteId: response.bulkQuoteId,
+                bulkQuotesResult: response,
+            },
+            timestamp: Date.now(),
+            headers: [],
+        });
+        await options.domainProducer.sendDomainEvent(bulkQuotesCallbackReceivedDmEvt);
+    }
+    catch (err) {
+        logger.push({ err }).log('Error in handleSDKOutboundBulkAcceptQuoteRequested');
+    }
+};

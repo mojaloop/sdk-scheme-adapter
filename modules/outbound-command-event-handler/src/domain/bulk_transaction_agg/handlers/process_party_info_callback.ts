@@ -55,7 +55,7 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
         const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(
             processPartyInfoCallback.getTransferId(),
         );
-        const partyResult = processPartyInfoCallback.getPartyResult() as IPartyResult;
+        const partyResult = processPartyInfoCallback.getPartyResult();
         if(partyResult.currentState && partyResult.currentState === SDKOutboundTransferState.COMPLETED) {
             individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS);
             await bulkTransactionAgg.incrementPartyLookupSuccessCount();

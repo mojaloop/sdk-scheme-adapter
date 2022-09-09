@@ -22,19 +22,37 @@
  --------------
  ******/
 
-export * from './party_info_requested';
-export * from './sdk_outbound_bulk_request_received';
-export * from './sdk_outbound_bulk_party_info_requested';
-export * from './sdk_outbound_bulk_accept_party_info_requested';
-export * from './sdk_outbound_bulk_auto_accept_party_info_requested';
-export * from './party_info_callback_processed';
-export * from './sdk_outbound_bulk_accept_party_info_processed';
-export * from './bulk_quotes_requested';
-export * from './party_info_callback_received';
-export * from './sdk_outbound_bulk_accept_party_info_received';
-export * from './bulk_quotes_callback_received';
-export * from './bulk_quotes_callback_processed';
-export * from './sdk_outbound_bulk_quotes_request_processed';
-export * from './sdk_outbound_bulk_accept_quote_requested';
-export * from './sdk_outbound_bulk_accept_quote_received';
-export * from './sdk_outbound_bulk_response_sent';
+'use strict';
+
+import { DomainEvent } from '../domain_event';
+import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+
+export interface ISDKOutboundBulkResponseSentDmEvtData {
+    bulkId: string;
+    timestamp: number | null;
+    headers: IMessageHeader[] | null;
+}
+
+export class SDKOutboundBulkResponseSentDmEvt extends DomainEvent {
+    constructor(data: ISDKOutboundBulkResponseSentDmEvtData) {
+        super({
+            key: data.bulkId,
+            timestamp: data.timestamp,
+            headers: data.headers,
+            content: null,
+            name: SDKOutboundBulkResponseSentDmEvt.name,
+        });
+    }
+
+    static CreateFromDomainEvent(message: DomainEvent): SDKOutboundBulkResponseSentDmEvt {
+        if((message.getKey() === null || typeof message.getKey() !== 'string')) {
+            throw new Error('Bulk id is in unknown format');
+        }
+        const data: ISDKOutboundBulkResponseSentDmEvtData = {
+            bulkId: message.getKey(),
+            timestamp: message.getTimeStamp(),
+            headers: message.getHeaders(),
+        };
+        return new SDKOutboundBulkResponseSentDmEvt(data);
+    }
+}

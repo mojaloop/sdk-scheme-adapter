@@ -1077,6 +1077,96 @@ components:
           description: Number of Extension elements
       required:
         - extension
+    generalError:
+      type: object
+      description: >-
+        This object may represent a number of different error object types and
+        so its properties may vary significantly.
+    IlpFulfilment:
+      title: IlpFulfilment
+      type: string
+      pattern: ^[A-Za-z0-9-_]{43}$
+      maxLength: 48
+      description: Fulfilment that must be attached to the transfer by the Payee.
+      example: WLctttbu2HvTsa1XWvUoGRcQozHsqeu9Ahl2JW9Bsu8
+    ErrorCode:
+      title: ErrorCode
+      type: string
+      pattern: ^[1-9]\d{3}$
+      description: >-
+        The API data type ErrorCode is a JSON String of four characters,
+        consisting of digits only. Negative numbers are not allowed. A leading
+        zero is not allowed. Each error code in the API is a four-digit number,
+        for example, 1234, where the first number (1 in the example) represents
+        the high-level error category, the second number (2 in the example)
+        represents the low-level error category, and the last two numbers (34 in
+        the example) represent the specific error.
+      example: '5100'
+    ErrorDescription:
+      title: ErrorDescription
+      type: string
+      minLength: 1
+      maxLength: 128
+      description: Error description string.
+    ExtensionKey:
+      title: ExtensionKey
+      type: string
+      minLength: 1
+      maxLength: 32
+      description: Extension key.
+    ExtensionValue:
+      title: ExtensionValue
+      type: string
+      minLength: 1
+      maxLength: 128
+      description: Extension value.
+    Extension:
+      title: Extension
+      type: object
+      description: Data model for the complex type Extension.
+      properties:
+        key:
+          $ref: '#/components/schemas/ExtensionKey'
+        value:
+          $ref: '#/components/schemas/ExtensionValue'
+      required:
+        - key
+        - value
+    ExtensionList:
+      title: ExtensionList
+      type: object
+      description: >-
+        Data model for the complex type ExtensionList. An optional list of
+        extensions, specific to deployment.
+      properties:
+        extension:
+          type: array
+          items:
+            $ref: '#/components/schemas/Extension'
+          minItems: 1
+          maxItems: 16
+          description: Number of Extension elements.
+      required:
+        - extension
+    ErrorInformation:
+      title: ErrorInformation
+      type: object
+      description: Data model for the complex type ErrorInformation.
+      properties:
+        errorCode:
+          $ref: '#/components/schemas/ErrorCode'
+        errorDescription:
+          $ref: '#/components/schemas/ErrorDescription'
+        extensionList:
+          $ref: '#/components/schemas/ExtensionList'
+      required:
+        - errorCode
+        - errorDescription
+    mojaloopError:
+      type: object
+      properties:
+        errorInformation:
+          $ref: '#/components/schemas/ErrorInformation'
     transferError:
       type: object
       description: >-
@@ -1094,58 +1184,6 @@ components:
             asynchronous Mojaloop API exchange, this property will contain the
             underlying Mojaloop API error object.
           $ref: '#/components/schemas/mojaloopError'
-    generalError:
-      type: object
-      description: >-
-        This object may represent a number of different error object types and
-        so its properties may vary significantly.
-    mojaloopError:
-      type: object
-      properties:
-        errorInformation:
-          $ref: '#/components/schemas/errorInformation'
-    errorInformation:
-      title: ErrorInformation
-      type: object
-      description: A Mojaloop API error information construct.
-      properties:
-        errorCode:
-          $ref: '#/components/schemas/errorCode'
-          description: Specific error number.
-        errorDescription:
-          $ref: '#/components/schemas/errorDescription'
-          description: Error description string.
-        extensionList:
-          $ref: '#/components/schemas/extensionListComplex'
-          description: Optional list of extensions, specific to deployment.
-      required:
-        - errorCode
-        - errorDescription
-    errorCode:
-      title: ErrorCode
-      type: string
-      pattern: ^[1-9]\d{3}$
-      description: >
-        The API data type errorCode is a JSON String of four characters,
-        consisting of digits only. Negative numbers are not allowed. A leading
-        zero is not allowed. Each error code in the API is a four-digit number,
-        for example, 1234, where the first number (1 in the example) represents
-        the high-level error category, the second number (2 in the example)
-        represents the low-level error category, and the last two numbers (34 in
-        the example) represents the specific error.
-    errorDescription:
-      title: ErrorDescription
-      type: string
-      minLength: 1
-      maxLength: 128
-      description: Error description string.
-    IlpFulfilment:
-      title: IlpFulfilment
-      type: string
-      pattern: ^[A-Za-z0-9-_]{43}$
-      maxLength: 48
-      description: Fulfilment that must be attached to the transfer by the Payee.
-      example: WLctttbu2HvTsa1XWvUoGRcQozHsqeu9Ahl2JW9Bsu8
     CorrelationId:
       title: CorrelationId
       type: string
@@ -1520,46 +1558,6 @@ components:
       minLength: 1
       maxLength: 32
       description: FSP identifier.
-    ExtensionKey:
-      title: ExtensionKey
-      type: string
-      minLength: 1
-      maxLength: 32
-      description: Extension key.
-    ExtensionValue:
-      title: ExtensionValue
-      type: string
-      minLength: 1
-      maxLength: 128
-      description: Extension value.
-    Extension:
-      title: Extension
-      type: object
-      description: Data model for the complex type Extension.
-      properties:
-        key:
-          $ref: '#/components/schemas/ExtensionKey'
-        value:
-          $ref: '#/components/schemas/ExtensionValue'
-      required:
-        - key
-        - value
-    ExtensionList:
-      title: ExtensionList
-      type: object
-      description: >-
-        Data model for the complex type ExtensionList. An optional list of
-        extensions, specific to deployment.
-      properties:
-        extension:
-          type: array
-          items:
-            $ref: '#/components/schemas/Extension'
-          minItems: 1
-          maxItems: 16
-          description: Number of Extension elements.
-      required:
-        - extension
     PartyIdInfo:
       title: PartyIdInfo
       type: object
@@ -1810,61 +1808,6 @@ components:
           $ref: '#/components/schemas/ExtensionList'
       required:
         - transferState
-    ErrorCode:
-      title: ErrorCode
-      type: string
-      pattern: ^[1-9]\d{3}$
-      description: >-
-        The API data type ErrorCode is a JSON String of four characters,
-        consisting of digits only. Negative numbers are not allowed. A leading
-        zero is not allowed. Each error code in the API is a four-digit number,
-        for example, 1234, where the first number (1 in the example) represents
-        the high-level error category, the second number (2 in the example)
-        represents the low-level error category, and the last two numbers (34 in
-        the example) represent the specific error.
-      example: '5100'
-    ErrorDescription:
-      title: ErrorDescription
-      type: string
-      minLength: 1
-      maxLength: 128
-      description: Error description string.
-    ErrorInformation:
-      title: ErrorInformation
-      type: object
-      description: Data model for the complex type ErrorInformation.
-      properties:
-        errorCode:
-          $ref: '#/components/schemas/ErrorCode'
-        errorDescription:
-          $ref: '#/components/schemas/ErrorDescription'
-        extensionList:
-          $ref: '#/components/schemas/ExtensionList'
-      required:
-        - errorCode
-        - errorDescription
-    mojaloopError-2:
-      type: object
-      properties:
-        errorInformation:
-          $ref: '#/components/schemas/ErrorInformation'
-    transferError-2:
-      type: object
-      description: >-
-        This object represents a Mojaloop API error received at any time during
-        the transfer process
-      properties:
-        httpStatusCode:
-          type: integer
-          description: >-
-            The HTTP status code returned to the caller. This is the same as the
-            actual HTTP status code returned with the response.
-        mojaloopError:
-          description: >-
-            If a transfer process results in an error callback during the
-            asynchronous Mojaloop API exchange, this property will contain the
-            underlying Mojaloop API error object.
-          $ref: '#/components/schemas/mojaloopError-2'
     bulkTransactionIndividualTransferResult:
       type: object
       required:
@@ -1905,7 +1848,7 @@ components:
         transferExtensions:
           $ref: '#/components/schemas/ExtensionList'
         lastError:
-          $ref: '#/components/schemas/transferError-2'
+          $ref: '#/components/schemas/transferError'
     bulkTransactionResponse:
       type: object
       required:
