@@ -21,6 +21,7 @@ services:
     depends_on:
       - redis
       - ml-testing-toolkit
+      - kafka
     command: yarn nx run modules-api-svc:start
     volumes:
       - ./docker/wait4:/tmp/wait4

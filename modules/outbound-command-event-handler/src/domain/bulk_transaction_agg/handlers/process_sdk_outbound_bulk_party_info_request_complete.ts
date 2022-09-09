@@ -64,13 +64,31 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt
             });
             await options.domainProducer.sendDomainEvent(msg);
         } else {
-            bulkTx.setTxState(BulkTransactionInternalState.DISCOVERY_ACCEPTANCE_PENDING);
-            const msg = new SDKOutboundBulkAcceptPartyInfoRequestedDmEvt({
-                bulkId: bulkTx.id,
+            const individualTransferResults = [];
+            const allIndividualTransferIds = await bulkTransactionAgg.getAllIndividualTransferIds();
+            for await (const individualTransferId of allIndividualTransferIds) {
+                const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
+                if(individualTransfer.quoteResponse) {
+                    individualTransferResults.push({
+                        homeTransactionId: individualTransfer.request.homeTransactionId,
+                        transactionId: individualTransfer.id,
+                        to: individualTransfer.partyResponse?.party,
+                    });
+                }
+            }
+            const sdkOutboundBulkAcceptPartyInfoRequestedDmEvt = new SDKOutboundBulkAcceptPartyInfoRequestedDmEvt({
+                bulkId: bulkTransactionAgg.bulkId,
+                request: {
+                    bulkHomeTransactionID: bulkTx.bulkHomeTransactionID,
+                    bulkTransactionId: bulkTransactionAgg.bulkId,
+                    individualTransferResults,
+                },
                 timestamp: Date.now(),
                 headers: [],
             });
-            await options.domainProducer.sendDomainEvent(msg);
+            await options.domainProducer.sendDomainEvent(sdkOutboundBulkAcceptPartyInfoRequestedDmEvt);
+
+            bulkTx.setTxState(BulkTransactionInternalState.DISCOVERY_ACCEPTANCE_PENDING);
         }
 
         await bulkTransactionAgg.setTransaction(bulkTx);

@@ -22,19 +22,22 @@
  --------------
  ******/
 
-export * from './party_info_requested';
-export * from './sdk_outbound_bulk_request_received';
-export * from './sdk_outbound_bulk_party_info_requested';
-export * from './sdk_outbound_bulk_accept_party_info_requested';
-export * from './sdk_outbound_bulk_auto_accept_party_info_requested';
-export * from './party_info_callback_processed';
-export * from './sdk_outbound_bulk_accept_party_info_processed';
-export * from './bulk_quotes_requested';
-export * from './party_info_callback_received';
-export * from './sdk_outbound_bulk_accept_party_info_received';
-export * from './bulk_quotes_callback_received';
-export * from './bulk_quotes_callback_processed';
-export * from './sdk_outbound_bulk_quotes_request_processed';
-export * from './sdk_outbound_bulk_accept_quote_requested';
-export * from './sdk_outbound_bulk_accept_quote_received';
-export * from './sdk_outbound_bulk_response_sent';
+const { SDKOutboundBulkAcceptQuoteRequestedDmEvt } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
+const { BulkTransactionState } = require('../types');
+
+module.exports.handleSDKOutboundBulkAcceptQuoteRequested = async (
+    message,
+    options,
+    logger,
+) => {
+    const event = SDKOutboundBulkAcceptQuoteRequestedDmEvt.CreateFromDomainEvent(message);
+
+    try {
+        await options.backendRequests.putBulkTransactions(event.getKey(), {
+            ...event.getContent(),
+            currentState: BulkTransactionState.WAITING_FOR_QUOTE_ACCEPTANCE,
+        });
+    } catch (err) {
+        logger.push({ err }).log('Error in handleSDKOutboundBulkAcceptQuoteRequested');
+    }
+};
