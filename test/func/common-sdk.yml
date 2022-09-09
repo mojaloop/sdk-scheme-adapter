@@ -10,8 +10,7 @@ services:
         - mojaloop-net
     image: mojaloop/sdk-scheme-adapter:local
     build:
-      context: ./
-      dockerfile: ../Dockerfile
+      context: ../../
     # ports:
     #   - "4000:4000"
     #   - "4001:4001"
@@ -40,8 +39,7 @@ services:
         - mojaloop-net
     image: mojaloop/sdk-scheme-adapter:local
     build:
-      context: ./
-      dockerfile: ../Dockerfile
+      context: ../../
     # ports:
     #   - "8000:8000"
     # depends_on:
@@ -66,8 +64,7 @@ services:
         - mojaloop-net
     image: mojaloop/sdk-scheme-adapter:local
     build:
-      context: ./
-      dockerfile: ../Dockerfile
+      context: ../../
     # ports:
     #   - "8000:8000"
     # depends_on:
