@@ -27,7 +27,7 @@ import * as ProcessSDKOutboundBulkPartyInfoRequestHandler from './process_sdk_ou
 import * as ProcessSDKOutboundBulkPartyInfoRequestCompleteHandler from './process_sdk_outbound_bulk_party_info_request_complete';
 import * as ProcessPartyInfoCallbackHandler from './process_party_info_callback';
 import * as ProcessSDKOutboundBulkAcceptPartyInfoHandler from './process_sdk_outbound_bulk_accept_party_info';
-import * as ProcessBulkQuotesCallbackHandler from './process-bulk-quotes-callback';
+import * as ProcessBulkQuotesCallbackHandler from './process_bulk_quotes_callback';
 import * as ProcessSDKOutboundBulkQuotesRequestHandler from './process_sdk_outbound_bulk_quotes_request';
 
 import { CommandEvent } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
