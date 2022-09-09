@@ -107,7 +107,7 @@ describe("Tests for Outbound Command Event Handler", () => {
   });
 
   // TESTS FOR PARTY LOOKUP
-  test("1. When inbound command event ProcessSDKOutboundBulkRequest is received \
+  test.only("1. When inbound command event ProcessSDKOutboundBulkRequest is received \
          Then outbound event SDKOutboundBulkPartyInfoRequested should be published \
            And Global state should be updated to RECEIVED.", async () => {
 
@@ -831,7 +831,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect(hasAcceptPartyEvent).toBeTruthy();
   });
 
-  test.only("9. Given inbound command event ProcessSDKOutboundBulkAcceptPartyInfo is received \
+  test("9. Given inbound command event ProcessSDKOutboundBulkAcceptPartyInfo is received \
          Then the logic should loop through individual transfer in the bulk request \
            And update the individual transfer state to DISCOVERY_ACCEPTED or DISCOVERY_REJECTED based on the value in the incoming event \
            And update the overall global state to DISCOVERY_ACCEPTANCE_COMPLETED \
