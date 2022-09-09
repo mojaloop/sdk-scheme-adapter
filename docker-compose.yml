@@ -55,34 +55,41 @@ services:
 
   ml-testing-toolkit:
     networks:
-      - mojaloop-net
-    image: mojaloop/ml-testing-toolkit:v11.7.11
+        - mojaloop-net
+    image: mojaloop/ml-testing-toolkit:v15.0.0
     container_name: ml-testing-toolkit
     volumes:
-      - "./docker/ml-testing-toolkit/spec_files:/opt/mojaloop-testing-toolkit/spec_files"
-      - "./docker/ml-testing-toolkit/secrets:/opt/mojaloop-testing-toolkit/secrets"
+      - "./docker/ml-testing-toolkit/spec_files:/opt/app/spec_files"
+      - "./docker/ml-testing-toolkit/secrets:/opt/app/secrets"
 
     ports:
-      # - "5000:5000" ## NOTE: This port conflicts on MacOS.
+      - "4040:4040"
       - "5050:5050"
     environment:
       - AUTH_ENABLED=FALSE
     command: npm start
 
-  ## NOTE: Commented out for CI-CD, but can be re-enabled for local test/debugging
-  # mojaloop-testing-toolkit-ui:
-  #   image: mojaloop/ml-testing-toolkit-ui:v11.8.4
-  #   container_name: ml-testing-toolkit-ui
-  #   ports:
-  #     - "6060:6060"
-  #   networks:
-  #     - mojaloop-net
-  #   environment:
-  #     - API_BASE_URL=http://localhost:5050
-  #     - AUTH_ENABLED=FALSE
-  #   command:
-  #     - sh
-  #     - /usr/share/nginx/start.sh
+  mongo:
+    networks:
+        - mojaloop-net
+    image: mongo
+    ports:
+      - "27018:27017"
+  #
+  # for local development we want to have ttk-ui
+  #
+  mojaloop-testing-toolkit-ui:
+    image: mojaloop/ml-testing-toolkit-ui:v15.0.0
+    ports:
+      - "6060:6060"
+    networks:
+      - mojaloop-net
+    environment:
+      - API_BASE_URL=http://localhost:5050
+      - AUTH_ENABLED=FALSE
+    command:
+      - sh
+      - /usr/share/nginx/start.sh
 
   zookeeper:
     networks:
