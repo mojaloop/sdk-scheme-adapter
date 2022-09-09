@@ -37,6 +37,8 @@ import {
     SDKOutboundBulkRequestReceivedDmEvt,
     SDKOutboundBulkPartyInfoRequestedDmEvt,
     PartyInfoCallbackReceivedDmEvt,
+    IBulkTransactionEntityReadOnlyRepo,
+    PartyInfoCallbackProcessedDmEvt,
     SDKOutboundBulkAcceptPartyInfoReceivedDmEvt,
     SDKOutboundBulkAcceptPartyInfoProcessedDmEvt,
     BulkQuotesCallbackReceivedDmEvt,
@@ -49,7 +51,12 @@ import {
     handleSDKOutboundBulkAcceptPartyInfoReceived,
     handleSDKOutboundBulkAcceptPartyInfoProcessed,
     handleBulkQuotesCallbackReceived,
+    handlePartyInfoCallbackProcessed,
 } from './handlers';
+
+export interface IOutboundEventHandlerOptions {
+    bulkTransactionEntityRepo: IBulkTransactionEntityReadOnlyRepo;
+}
 
 export class OutboundEventHandler implements IRunHandler {
     private _logger: ILogger;
@@ -58,7 +65,14 @@ export class OutboundEventHandler implements IRunHandler {
 
     private _commandProducer: ICommandEventProducer;
 
+    private _bulkTransactionEntityStateRepo: IBulkTransactionEntityReadOnlyRepo;
+
     private _domainEventHandlerOptions: IDomainEventHandlerOptions;
+
+    /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */
+    constructor(options: IOutboundEventHandlerOptions) {
+        this._bulkTransactionEntityStateRepo = options.bulkTransactionEntityRepo;
+    }
 
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     async start(appConfig: any, logger: ILogger): Promise<void> {
@@ -81,6 +95,7 @@ export class OutboundEventHandler implements IRunHandler {
         // Create options for handlers
         this._domainEventHandlerOptions = {
             commandProducer: this._commandProducer,
+            bulkTransactionEntityRepo: this._bulkTransactionEntityStateRepo,
         };
     }
 
@@ -117,6 +132,10 @@ export class OutboundEventHandler implements IRunHandler {
             }
             case BulkQuotesCallbackReceivedDmEvt.name: {
                 await handleBulkQuotesCallbackReceived(message, this._domainEventHandlerOptions, this._logger);
+                break;
+            }
+            case PartyInfoCallbackProcessedDmEvt.name: {
+                await handlePartyInfoCallbackProcessed(message, this._domainEventHandlerOptions, this._logger);
                 break;
             }
             default: {

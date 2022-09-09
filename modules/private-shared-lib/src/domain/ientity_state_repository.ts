@@ -48,3 +48,10 @@ export type IEntityStateRepository<S extends BaseEntityState> = {
     store: (entityState: S) => Promise<void>
     remove: (id: string) => Promise<void>
 };
+
+export type IEntityStateReadOnlyRepository<S extends BaseEntityState> = {
+    init: () => Promise<void>
+    canCall: () => boolean // for circuit breaker
+
+    load: (id: string) => Promise<S | null>
+};

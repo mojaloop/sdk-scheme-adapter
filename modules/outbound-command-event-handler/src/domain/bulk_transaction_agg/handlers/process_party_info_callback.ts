@@ -30,6 +30,7 @@ import {
     IndividualTransferInternalState,
     ProcessPartyInfoCallbackCmdEvt,
     PartyInfoCallbackProcessedDmEvt,
+    IPartyResult,
     SDKOutboundTransferState,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
@@ -54,11 +55,13 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
         const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(
             processPartyInfoCallback.getTransferId(),
         );
-        const partyResult = processPartyInfoCallback.getPartyResult();
+        const partyResult = processPartyInfoCallback.getPartyResult() as IPartyResult;
         if(partyResult.currentState && partyResult.currentState === SDKOutboundTransferState.COMPLETED) {
             individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS);
+            await bulkTransactionAgg.incrementPartyLookupSuccessCount();
         } else {
             individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_FAILED);
+            await bulkTransactionAgg.incrementPartyLookupFailedCount();
         }
         individualTransfer.setPartyResponse(partyResult);
 
