@@ -66,5 +66,11 @@
   "logIndent": 2,
   "metrics": {
     "port": 4004
+  },
+  "backendEventHandler": {
+    "enabled": false
+  },
+  "fspiopEventHandler": {
+    "enabled": false
   }
 }

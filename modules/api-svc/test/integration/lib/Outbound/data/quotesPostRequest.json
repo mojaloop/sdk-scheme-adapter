@@ -22,8 +22,7 @@
     "partyIdInfo": {
       "fspId": "sim",
       "partyIdType": "PERSONAL_ID",
-      "partyIdentifier": "987654321",
-      "partySubIdOrType": "PASSPORT"
+      "partyIdentifier": "987654321"
     },
     "personalInfo": {
       "complexName": {

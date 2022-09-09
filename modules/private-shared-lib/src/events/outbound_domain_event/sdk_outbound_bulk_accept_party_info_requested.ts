@@ -26,9 +26,23 @@
 
 import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
+
+export type CoreConnectorBulkAcceptPartyInfoRequestIndividualTransferResult = {
+    homeTransactionId: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionIndividualTransfer['homeTransactionId'];
+    transactionId: string;
+    to: SDKSchemeAdapter.Outbound.V2_0_0.Types.Party;
+};
+
+export type CoreConnectorBulkAcceptPartyInfoRequest = {
+    bulkHomeTransactionID: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest['bulkHomeTransactionID'];
+    bulkTransactionId: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest['bulkTransactionId'];
+    individualTransferResults: CoreConnectorBulkAcceptPartyInfoRequestIndividualTransferResult[];
+};
 
 export interface ISDKOutboundBulkAcceptPartyInfoRequestedDmEvtData {
     bulkId: string;
+    request: CoreConnectorBulkAcceptPartyInfoRequest;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
@@ -39,19 +53,20 @@ export class SDKOutboundBulkAcceptPartyInfoRequestedDmEvt extends DomainEvent {
             key: data.bulkId,
             timestamp: data.timestamp,
             headers: data.headers,
-            content: null,
+            content: data.request,
             name: SDKOutboundBulkAcceptPartyInfoRequestedDmEvt.name,
         });
     }
 
-    static CreateFromCommandEvent(message: DomainEvent): SDKOutboundBulkAcceptPartyInfoRequestedDmEvt {
+    static CreateFromDomainEvent(message: DomainEvent): SDKOutboundBulkAcceptPartyInfoRequestedDmEvt {
         if((message.getKey() === null || typeof message.getKey() !== 'string')) {
             throw new Error('Bulk id is in unknown format');
         }
         const data: ISDKOutboundBulkAcceptPartyInfoRequestedDmEvtData = {
+            bulkId: message.getKey(),
+            request: message.getContent() as CoreConnectorBulkAcceptPartyInfoRequest,
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
-            bulkId: message.getKey(),
         };
         return new SDKOutboundBulkAcceptPartyInfoRequestedDmEvt(data);
     }

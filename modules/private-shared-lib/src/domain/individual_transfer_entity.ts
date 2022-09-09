@@ -25,7 +25,7 @@
 'use strict';
 
 import { BaseEntityState, BaseEntity } from './';
-import { IPartyResult } from '@module-types';
+import { IPartyResult, PartyInfoRequest } from '@module-types';
 import { SchemaValidationError } from '../errors';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 import { randomUUID } from 'crypto';
@@ -54,15 +54,13 @@ export interface IndividualTransferState extends BaseEntityState {
     request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionIndividualTransfer;
     state: IndividualTransferInternalState;
     batchId?: string;
-    // TODO: FSPIOP in api-snippets should export the `PartiesByTypeAndID` schema and refer that in the following line
-    partyRequest?: any;
+    partyRequest?: PartyInfoRequest;
     partyResponse?: IPartyResult
     acceptParty?: boolean;
     acceptQuote?: boolean;
     quoteResponse?: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualQuoteResult;
     transferResponse?: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransferResult;
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    lastError?: any; // TODO: Define a format for this
+    lastError?: SDKSchemeAdapter.Outbound.V2_0_0.Types.transferError;
 }
 
 export class IndividualTransferEntity extends BaseEntity<IndividualTransferState> {
@@ -117,8 +115,7 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         this._state.state = state;
     }
 
-    // TODO: FSPIOP in api-snippets should export the `PartiesByTypeAndID` schema and refer that in the following line
-    setPartyRequest(request: any) {
+    setPartyRequest(request: PartyInfoRequest) {
         this._state.partyRequest = request;
     }
 

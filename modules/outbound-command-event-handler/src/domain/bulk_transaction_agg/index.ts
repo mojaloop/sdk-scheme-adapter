@@ -280,22 +280,23 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                 const bulkBatch = BulkBatchEntity.CreateEmptyBatch(this._rootEntity);
                 for await (const individualId of individualIdArray) {
                     const individualTransfer = await this.getIndividualTransferById(individualId);
-                    if(individualTransfer.partyResponse) {
+                    const party = individualTransfer.partyResponse?.party;
+                    if(party) {
                         // Add Quotes to batch
                         bulkBatch.addIndividualQuote({
                             quoteId: randomUUID(),
                             to: {
-                                idType: individualTransfer.partyResponse.party.partyIdInfo.partyIdType,
-                                idValue: individualTransfer.partyResponse.party.partyIdInfo.partyIdentifier,
-                                idSubValue: individualTransfer.partyResponse.party.partyIdInfo.partySubIdOrType,
-                                displayName: individualTransfer.partyResponse.party.name,
-                                firstName: individualTransfer.partyResponse.party.personalInfo?.complexName?.firstName,
-                                middleName: individualTransfer.partyResponse.party.personalInfo?.complexName?.middleName,
-                                lastName: individualTransfer.partyResponse.party.personalInfo?.complexName?.lastName,
-                                dateOfBirth: individualTransfer.partyResponse.party.personalInfo?.dateOfBirth,
-                                merchantClassificationCode: individualTransfer.partyResponse.party.merchantClassificationCode,
-                                fspId: individualTransfer.partyResponse.party.partyIdInfo.fspId,
-                                extensionList: individualTransfer.partyResponse.party.partyIdInfo.extensionList?.extension,
+                                idType: party.partyIdInfo.partyIdType,
+                                idValue: party.partyIdInfo.partyIdentifier,
+                                idSubValue: party.partyIdInfo.partySubIdOrType,
+                                displayName: party.name,
+                                firstName: party.personalInfo?.complexName?.firstName,
+                                middleName: party.personalInfo?.complexName?.middleName,
+                                lastName: party.personalInfo?.complexName?.lastName,
+                                dateOfBirth: party.personalInfo?.dateOfBirth,
+                                merchantClassificationCode: party.merchantClassificationCode,
+                                fspId: party.partyIdInfo.fspId,
+                                extensionList: party.partyIdInfo.extensionList?.extension,
                             },
                             amountType: individualTransfer.request.amountType,
                             currency: individualTransfer.request.currency,
@@ -309,7 +310,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                     }
 
                 }
-                this.addBulkBatchEntity(bulkBatch);
+                await this.addBulkBatchEntity(bulkBatch);
                 bulkQuotesTotalCount += 1;
             }
         }

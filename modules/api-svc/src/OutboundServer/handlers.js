@@ -25,6 +25,11 @@ const {
     QuotesModel,
     TransfersModel
 } = require('../lib/model');
+const {
+    SDKOutboundBulkRequestReceivedDmEvt,
+    SDKOutboundBulkAcceptPartyInfoReceivedDmEvt,
+    SDKOutboundBulkAcceptQuoteReceivedDmEvt,
+} = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
 
 
 /**
@@ -74,6 +79,9 @@ const handleTransferError = (method, err, ctx) =>
 
 const handleBulkTransferError = (method, err, ctx) =>
     handleError(method, err, ctx, 'bulkTransferState');
+
+const handleBulkTransactionError = (method, err, ctx) =>
+    handleError(method, err, ctx, 'bulkTransactionState');
 
 const handleBulkQuoteError = (method, err, ctx) =>
     handleError(method, err, ctx, 'bulkQuoteState');
@@ -251,6 +259,61 @@ const getBulkTransfers = async (ctx) => {
     }
     catch (err) {
         return handleBulkTransferError('getBulkTransfers', err, ctx);
+    }
+};
+
+/**
+ * Handler for outbound bulk transaction request
+ */
+const postBulkTransactions = async (ctx) => {
+    try {
+        const msg = new SDKOutboundBulkRequestReceivedDmEvt({
+            bulkRequest: ctx.request.body,
+            headers: [ctx.request.headers],
+            timestamp: Date.now(),
+        });
+        await ctx.state.eventProducer.sendDomainEvent(msg);
+        ctx.state.eventLogger.info(`Sent domain event ${msg.getName()}`);
+
+        ctx.response.status = 204;
+    }
+    catch (err) {
+        return handleBulkTransactionError('postBulkTransactions', err, ctx);
+    }
+};
+
+/**
+ * Handler for outbound bulk transfer request
+ */
+const putBulkTransactions = async (ctx) => {
+    try {
+        let msg;
+
+        if (ctx.request.body.individualTransfers[0]?.hasOwnProperty('acceptParty')) {
+            msg = new SDKOutboundBulkAcceptPartyInfoReceivedDmEvt({
+                bulkId: ctx.state.path.params.bulkTransactionId,
+                bulkTransactionContinuationAcceptParty: ctx.request.body,
+                headers: [ctx.request.headers],
+                timestamp: Date.now(),
+            });
+        } else if (ctx.request.body.individualTransfers[0]?.hasOwnProperty('acceptQuote')) {
+            msg = new SDKOutboundBulkAcceptQuoteReceivedDmEvt({
+                bulkId: ctx.state.path.params.bulkTransactionId,
+                bulkTransactionContinuationAcceptQuote: ctx.request.body,
+                headers: [ctx.request.headers],
+                timestamp: Date.now(),
+            });
+        }
+
+        if (msg) {
+            await ctx.state.eventProducer.sendDomainEvent(msg);
+            ctx.state.eventLogger.info(`Sent domain event ${msg.getName()}`);
+        }
+
+        ctx.response.status = 204;
+    }
+    catch (err) {
+        return handleBulkTransactionError('putBulkTransactions', err, ctx);
     }
 };
 
@@ -553,6 +616,12 @@ module.exports = {
     },
     '/bulkTransfers/{bulkTransferId}': {
         get: getBulkTransfers,
+    },
+    '/bulkTransactions': {
+        post: postBulkTransactions
+    },
+    '/bulkTransactions/{bulkTransactionId}': {
+        put: putBulkTransactions,
     },
     '/bulkQuotes': {
         post: postBulkQuotes,

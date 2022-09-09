@@ -11,11 +11,11 @@
 'use strict';
 
 
-const InboundTransfersModel = require('./InboundTransfersModel.js');
-const OutboundTransfersModel = require('./OutboundTransfersModel.js');
+const InboundTransfersModel = require('./InboundTransfersModel');
+const OutboundTransfersModel = require('./OutboundTransfersModel');
 const OutboundBulkQuotesModel = require('./OutboundBulkQuotesModel');
-const OutboundBulkTransfersModel = require('./OutboundBulkTransfersModel.js');
-const OutboundRequestToPayTransferModel = require('./OutboundRequestToPayTransferModel.js');
+const OutboundBulkTransfersModel = require('./OutboundBulkTransfersModel');
+const OutboundRequestToPayTransferModel = require('./OutboundRequestToPayTransferModel');
 const AccountsModel = require('./AccountsModel');
 const ProxyModel = require('./ProxyModel');
 const OutboundRequestToPayModel = require('./OutboundRequestToPayModel');

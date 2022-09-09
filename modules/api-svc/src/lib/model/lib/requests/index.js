@@ -10,10 +10,6 @@
 
 'use strict';
 
-
-const BackendRequests = require('./backendRequests.js');
-
-
 module.exports = {
-    ...BackendRequests,
+    ...require('./backendRequests'),
 };

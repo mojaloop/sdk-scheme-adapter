@@ -62,6 +62,7 @@ module.exports = {
         mgmtAPIWsUrl: env.get('MGMT_API_WS_URL').default('127.0.0.1').asString(),
         mgmtAPIWsPort: env.get('MGMT_API_WS_PORT').default('4005').asPortNumber()
     },
+    logLevel: env.get('LOG_LEVEL').default('info').asEnum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']),
     inbound: {
         port: env.get('INBOUND_LISTEN_PORT').default('4000').asPortNumber(),
         tls: {
@@ -86,6 +87,34 @@ module.exports = {
                 cert: env.get('OUT_CLIENT_CERT_PATH').asFileContent(),
                 key: env.get('OUT_CLIENT_KEY_PATH').asFileContent(),
             },
+        },
+    },
+    backendEventHandler: {
+        enabled: env.get('ENABLE_BACKEND_EVENT_HANDLER').default('true').asBool(),
+        domainEventConsumer: {
+            brokerList: env.get('BACKEND_EVENT_CONSUMER_BROKER_LIST').default('localhost:9092').asString(),
+            groupId: env.get('BACKEND_EVENT_CONSUMER_GROUP_ID').default('domain_events_consumer_group').asString(),
+            clientId: env.get('BACKEND_EVENT_CONSUMER_CLIENT_ID').default('backend_consumer_client_id').asString(),
+            topics: env.get('BACKEND_EVENT_CONSUMER_TOPICS').default('topic-sdk-outbound-domain-events').asArray(),
+        },
+        domainEventProducer:{
+            brokerList: env.get('BACKEND_EVENT_PRODUCER_BROKER_LIST').default('localhost:9092').asString(),
+            clientId: env.get('BACKEND_EVENT_PRODUCER_CLIENT_ID').default('backend_producer_client_id').asString(),
+            topic: env.get('BACKEND_EVENT_PRODUCER_TOPIC').default('topic-sdk-outbound-domain-events').asString(),
+        },
+    },
+    fspiopEventHandler: {
+        enabled: env.get('ENABLE_FSPIOP_EVENT_HANDLER').default('true').asBool(),
+        domainEventConsumer: {
+            brokerList: env.get('FSPIOP_EVENT_CONSUMER_BROKER_LIST').default('localhost:9092').asString(),
+            groupId: env.get('FSPIOP_EVENT_CONSUMER_GROUP_ID').default('domain_events_consumer_group').asString(),
+            clientId: env.get('FSPIOP_EVENT_CONSUMER_CLIENT_ID').default('fspiop_consumer_client_id').asString(),
+            topics: env.get('FSPIOP_EVENT_CONSUMER_TOPICS').default('topic-sdk-outbound-domain-events').asArray(),
+        },
+        domainEventProducer:{
+            brokerList: env.get('FSPIOP_EVENT_PRODUCER_BROKER_LIST').default('localhost:9092').asString(),
+            clientId: env.get('FSPIOP_EVENT_PRODUCER_CLIENT_ID').default('fspiop_producer_client_id').asString(),
+            topic: env.get('FSPIOP_EVENT_PRODUCER_TOPIC').default('topic-sdk-outbound-domain-events').asString(),
         },
     },
     test: {
