@@ -1276,23 +1276,27 @@
  
      // Publish ProcessBulkQuotesCallback domain event
      const processBulkQuotesCallbackCmdEvtData: IProcessBulkQuotesCallbackCmdEvtData = {
-       bulkId: bulkTransactionId,
-       content: {
-         batchId: '12',
-         bulkQuoteId: '34',
-         bulkQuotesResult: {
-           bulkQuoteId: '34',
-           currentState: "COMPLETED",
-           individualQuoteResults: {
-             quoteId: "12",
-             transferAmount: {
-               currency: "USD",
-               amount: "10"
-             }
-           }
-         }
-       }
-     }
+      bulkId: bulkTransactionId,
+      content: {
+        batchId: '12',
+        bulkQuoteId: '34',
+        bulkQuotesResult: {
+          bulkQuoteId: '34',
+          currentState: "COMPLETED",
+          individualQuoteResults: [{
+            quoteId: "12",
+            transferAmount: {
+              currency: "USD",
+              amount: "10"
+            },
+            ilpPacket: "",
+            condition: ""
+          }]
+        }
+      },
+      timestamp: Date.now(),
+      headers: []
+    }
      const processBulkQuotesCallbackCmdEvt: ProcessBulkQuotesCallbackCmdEvt = new ProcessBulkQuotesCallbackCmdEvt(processBulkQuotesCallbackCmdEvtData);
  
      //Check that the global state of individual transfers in bulk to be AGREEMENT_PROCESSING
@@ -1313,9 +1317,9 @@
  
    // Functionality for this feature is not completed yet. Waiting on development to be complete
    test("12. Given acceptAutoQuote setting is false \
-                   When inbound command event ProcessSDKOutboundBulkQuotesRequestComplete is received \
-                   Then the global state should be updated to AGREEMENT_ACCEPTANCE_PENDING \
-                     And domain event SDKOutboundBulkAcceptQuoteRequested is published. ", async () => {
+              When inbound command event ProcessSDKOutboundBulkQuotesRequestComplete is received \
+              Then the global state should be updated to AGREEMENT_ACCEPTANCE_PENDING \
+                And domain event SDKOutboundBulkAcceptQuoteRequested is published. ", async () => {
  
      //Check that the state of individual transfers in bulk to be RECEIVED
      let individualTransferData = await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransferIds[0]);
