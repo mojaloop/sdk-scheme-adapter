@@ -2104,15 +2104,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jest/schemas@npm:^28.0.2":
-  version: 28.0.2
-  resolution: "@jest/schemas@npm:28.0.2"
-  dependencies:
-    "@sinclair/typebox": ^0.23.3
-  checksum: 6a177e97b112c99f377697fe803a34f4489b92cd07949876250c69edc9029c7cbda771fcbb03caebd20ffbcfa89b9c22b4dc9d1e9a7fbc9873185459b48ba780
-  languageName: node
-  linkType: hard
-
 "@jest/schemas@npm:^29.0.0":
   version: 29.0.0
   resolution: "@jest/schemas@npm:29.0.0"
@@ -2496,6 +2487,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:^0.0.9":
+  version: 0.0.9
+  resolution: "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:0.0.9"
+  dependencies:
+    "@mojaloop/logging-bc-public-types-lib": ^0.0.3
+    "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.0.1
+    node-rdkafka: ^2.12.0
+  checksum: ba584f8970c9deec84391aa9f2d37eb978a78a59c1e3db3b0ab7542e9f30978e4cbc400865a827996120904a7abf2d2c93eceefd644656aaf5db35369ab22421
+  languageName: node
+  linkType: hard
+
 "@mojaloop/sdk-scheme-adapter-api-svc@workspace:modules/api-svc":
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-api-svc@workspace:modules/api-svc"
@@ -2624,7 +2626,7 @@ __metadata:
     "@mojaloop/api-snippets": ^15.0.0
     "@mojaloop/logging-bc-public-types-lib": ^0.1.10
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.0.3
-    "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": ^0.0.8
+    "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": ^0.0.9
     "@types/node": ^18.7.16
     ajv: ^8.11.0
     eslint: ^8.23.0
@@ -2656,7 +2658,7 @@ __metadata:
     jest: ^29.0.2
     nodemon: ^2.0.19
     npm-check-updates: ^16.1.0
-    nx: 14.6.5
+    nx: 14.7.3
     replace: ^1.2.1
     standard-version: ^9.5.0
     ts-jest: ^29.0.0
@@ -2785,23 +2787,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nrwl/cli@npm:14.6.5":
-  version: 14.6.5
-  resolution: "@nrwl/cli@npm:14.6.5"
+"@nrwl/cli@npm:14.7.3":
+  version: 14.7.3
+  resolution: "@nrwl/cli@npm:14.7.3"
   dependencies:
-    nx: 14.6.5
-  checksum: 1f4d3648132c9d244f7805b23c78bcae1b0d56f279a2c69d7eb44ab77a92c1e8418d5b40d39e7ae6aaeecacea0a44b17f6bf0aba83db83628c3c1c597fd70068
+    nx: 14.7.3
+  checksum: 5ed3385def1789651b841fad35dcc98744a32f56f61b89be9bafa36a392ac93c24f55db7c8e5c5a95d56e4bb1a4f19ddaf424cdaad73f81938bf4ee5c07924e3
   languageName: node
   linkType: hard
 
-"@nrwl/tao@npm:14.6.5":
-  version: 14.6.5
-  resolution: "@nrwl/tao@npm:14.6.5"
+"@nrwl/tao@npm:14.7.3":
+  version: 14.7.3
+  resolution: "@nrwl/tao@npm:14.7.3"
   dependencies:
-    nx: 14.6.5
+    nx: 14.7.3
   bin:
     tao: index.js
-  checksum: 9833368f1335b810915a3e013ba33333588afba0276b022c7cc44653df943f3dda033471928a0807664314a64d5645a2cc4cdb92f96eb34d026910e4aac8c19d
+  checksum: b5b132399f62489f2012e3076fa9fc7c1fe43d4a0d337b031af887b3d7db465a85dc20d6e67c4b96cf43510aa4962af75209a7219043aa3804f1833c94eb159f
   languageName: node
   linkType: hard
 
@@ -10740,12 +10742,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nx@npm:14.6.5":
-  version: 14.6.5
-  resolution: "nx@npm:14.6.5"
+"nx@npm:14.7.3":
+  version: 14.7.3
+  resolution: "nx@npm:14.7.3"
   dependencies:
-    "@nrwl/cli": 14.6.5
-    "@nrwl/tao": 14.6.5
+    "@nrwl/cli": 14.7.3
+    "@nrwl/tao": 14.7.3
     "@parcel/watcher": 2.0.4
     chalk: 4.1.0
     chokidar: ^3.5.1
@@ -10784,7 +10786,7 @@ __metadata:
       optional: true
   bin:
     nx: bin/nx.js
-  checksum: be84d05bc577b6ab89af1689e5446f38e7f121fa603fbe98be3054b85676a746e5394fc128b5de405e957b380481b72f7afb785268f85041bbb7578532703b39
+  checksum: cc2f0a46b51903f682b8d874d20c3a01e119542b75724f38380c6a7d357ff65f07ec548968ce4a2ae7ba8005cb109fab6c968725240f9f85f89f3c9ae08c1753
   languageName: node
   linkType: hard
 
