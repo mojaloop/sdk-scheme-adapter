@@ -9,7 +9,7 @@ services:
     networks:
         - mojaloop-net
     image: mojaloop/sdk-scheme-adapter:local
-    container_name: sdk-scheme-adapter-api-svc
+    container_name: sdk-scheme-adapter
     build:
       context: ./
       dockerfile: ./Dockerfile
