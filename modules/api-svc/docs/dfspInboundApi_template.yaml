@@ -973,7 +973,7 @@ components:
         currentState:
           $ref: '#/components/schemas/transferStatus'
         lastError:
-          $ref: '#/components/schemas/transferError'
+          $ref: '../../../node_modules/@mojaloop/api-snippets/sdk-scheme-adapter/outbound/v2_0_0/components/schemas/transferError.yaml'
         initiatedTimestamp:
           $ref: '#/components/schemas/timestamp'
         finalNotification:
@@ -1008,66 +1008,9 @@ components:
       required:
         - extension
 
-    transferError:
-      type: object
-      description: This object represents a Mojaloop API error received at any time during the transfer process
-      properties:
-        httpStatusCode:
-          type: integer
-          description: The HTTP status code returned to the caller. This is the same as the actual HTTP status code returned with the response.
-        mojaloopError:
-          description: If a transfer process results in an error callback during the asynchronous Mojaloop API exchange, this property will contain the underlying Mojaloop API error object.
-          $ref: '#/components/schemas/mojaloopError'
-
     generalError:
       type: object
       description: This object may represent a number of different error object types and so its properties may vary significantly.
-
-    mojaloopError:
-      type: object
-      properties:
-        errorInformation:
-          $ref: '#/components/schemas/errorInformation'
-
-    errorInformation:
-      title: ErrorInformation
-      type: object
-      description: A Mojaloop API error information construct.
-      properties:
-        errorCode:
-          $ref: '#/components/schemas/errorCode'
-          description: Specific error number.
-        errorDescription:
-          $ref: '#/components/schemas/errorDescription'
-          description: Error description string.
-        extensionList:
-          $ref: '#/components/schemas/extensionListComplex'
-          description: 'Optional list of extensions, specific to deployment.'
-      required:
-        - errorCode
-        - errorDescription
-
-    errorCode:
-      title: ErrorCode
-      type: string
-      pattern: '^[1-9]\d{3}$'
-      description: >
-        The API data type errorCode is a JSON String of four characters,
-        consisting of digits only. Negative numbers are not allowed. A leading
-        zero is not allowed. Each error code in the API is a four-digit number,
-        for example, 1234, where the first number (1 in the example) represents
-        the high-level error category, the second number (2 in the example)
-        represents the low-level error category, and the last two numbers (34 in
-        the example) represents the specific error.
-
-    errorDescription:
-      title: ErrorDescription
-      type: string
-      minLength: 1
-      maxLength: 128
-      description: Error description string.
-
-
 
   responses:
     '400':
