@@ -1,0 +1,245 @@
+[
+  {
+    "ruleId": 6,
+    "priority": 1,
+    "description": "get /parties/{idType}/{idValue}",
+    "apiVersion": {
+      "minorVersion": 4,
+      "majorVersion": 1,
+      "type": "core_connector",
+      "hostnames": [
+        "ttkpm4mlreceiver-ttk-backend"
+      ],
+      "specFile": "spec_files/api_definitions/payment_manager_1.4/api_spec.yaml",
+      "callbackMapFile": "spec_files/api_definitions/payment_manager_1.4/callback_map.json",
+      "responseMapFile": "spec_files/api_definitions/payment_manager_1.4/response_map.json",
+      "jsfRefFile": "spec_files/api_definitions/payment_manager_1.4/mockRef.json",
+      "triggerTemplatesFolder": "spec_files/api_definitions/payment_manager_1.4/trigger_templates"
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/parties/{idType}/{idValue}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "get"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "idType": "MSISDN",
+          "idValue": "48500002222",
+          "displayName": "string",
+          "firstName": "string",
+          "middleName": "string",
+          "lastName": "string",
+          "dateOfBirth": "1984-01-01",
+          "fspId": "ttkpm4mlreceiver"
+        },
+        "statusCode": "200",
+        "scripts": {
+          "scriptingEngine": "postman"
+        }
+      },
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 7,
+    "priority": 1,
+    "description": "post /quoterequests",
+    "apiVersion": {
+      "minorVersion": 4,
+      "majorVersion": 1,
+      "type": "core_connector",
+      "hostnames": [
+        "ttkpm4mlreceiver-ttk-backend"
+      ],
+      "specFile": "spec_files/api_definitions/payment_manager_1.4/api_spec.yaml",
+      "callbackMapFile": "spec_files/api_definitions/payment_manager_1.4/callback_map.json",
+      "responseMapFile": "spec_files/api_definitions/payment_manager_1.4/response_map.json",
+      "jsfRefFile": "spec_files/api_definitions/payment_manager_1.4/mockRef.json",
+      "triggerTemplatesFolder": "spec_files/api_definitions/payment_manager_1.4/trigger_templates"
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/quoterequests"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "quoteId": "{$request.body.quoteId}",
+          "transactionId": "{$request.body.transactionId}",
+          "transferAmount": "{$request.body.amount}",
+          "transferAmountCurrency": "{$request.body.currency}",
+          "payeeReceiveAmount": "{$request.body.amount}",
+          "payeeReceiveAmountCurrency": "{$request.body.currency}",
+          "payeeFspFeeAmount": "0",
+          "payeeFspFeeAmountCurrency": "{$request.body.currency}",
+          "payeeFspCommissionAmount": "0",
+          "payeeFspCommissionAmountCurrency": "{$request.body.currency}",
+          "expiration": "2025-01-01T00:00:00.000Z"
+        },
+        "statusCode": "200",
+        "scripts": {
+          "scriptingEngine": "postman"
+        }
+      },
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 9,
+    "priority": 1,
+    "description": "post /bulkTransfers",
+    "apiVersion": {
+      "minorVersion": 4,
+      "majorVersion": 1,
+      "type": "core_connector",
+      "hostnames": [
+        "ttkpm4mlreceiver-ttk-backend"
+      ],
+      "specFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/api_spec.yaml",
+      "callbackMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/callback_map.json",
+      "responseMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/response_map.json",
+      "jsfRefFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/mockRef.json",
+      "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/trigger_templates"
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/bulkTransfers"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "bulkTransferId": "{$request.body.bulkTransferId}",
+          "homeTransactionId": "{$request.body.homeTransactionId}",
+          "individualTransferResults": [
+            {
+              "transferId": "{$request.body.individualTransfers[0].transferId}"
+            },
+            {
+              "transferId": "{$request.body.individualTransfers[1].transferId}"
+            }
+          ]
+        },
+        "statusCode": "200",
+        "scripts": {
+          "scriptingEngine": "postman"
+        }
+      },
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 10,
+    "priority": 1,
+    "description": "post /bulkQuotes",
+    "apiVersion": {
+      "minorVersion": 4,
+      "majorVersion": 1,
+      "type": "core_connector",
+      "hostnames": [
+        "ttkpm4mlreceiver-ttk-backend"
+      ],
+      "specFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/api_spec.yaml",
+      "callbackMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/callback_map.json",
+      "responseMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/response_map.json",
+      "jsfRefFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/mockRef.json",
+      "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/trigger_templates"
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/bulkQuotes"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "bulkQuoteId": "{$request.body.bulkQuoteId}",
+          "expiration": "2040-01-01T00:00:00.000Z",
+          "individualQuoteResults": [
+            {
+              "quoteId": "{$request.body.individualQuotes[0].quoteId}",
+              "transferAmount": "{$request.body.individualQuotes[0].amount}",
+              "transferAmountCurrency": "{$request.body.individualQuotes[0].currency}",
+              "payeeReceiveAmount": "{$request.body.individualQuotes[0].amount}",
+              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[0].currency}",
+              "payeeFspFeeAmount": "0",
+              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[0].currency}",
+              "payeeFspCommissionAmount": "0",
+              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[0].currency}"
+            },
+            {
+              "quoteId": "{$request.body.individualQuotes[1].quoteId}",
+              "transferAmount": "{$request.body.individualQuotes[1].amount}",
+              "transferAmountCurrency": "{$request.body.individualQuotes[1].currency}",
+              "payeeReceiveAmount": "{$request.body.individualQuotes[1].amount}",
+              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[1].currency}",
+              "payeeFspFeeAmount": "0",
+              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[1].currency}",
+              "payeeFspCommissionAmount": "0",
+              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[1].currency}"
+            }
+          ]
+        },
+        "statusCode": "200",
+        "scripts": {
+          "scriptingEngine": "postman"
+        }
+      },
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  }
+]
