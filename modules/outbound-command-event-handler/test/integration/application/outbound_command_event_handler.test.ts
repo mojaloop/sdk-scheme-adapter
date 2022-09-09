@@ -1118,7 +1118,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect(bulkState.state).toBe('AGREEMENT_PROCESSING');
 
     //Check the state in redis for each batch to be as AGREEMENT_PROCESSING
-    const bulkBatchIds: Array<String> = await bulkTransactionEntityRepo.getAllBulkBatchIds(bulkTransactionId);
+    const bulkBatchIds: Array<string> = await bulkTransactionEntityRepo.getAllBulkBatchIds(bulkTransactionId);
     let batchQuote: BulkBatchState = await bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, bulkBatchIds[0]);
     expect(batchQuote.state).toBe(BulkBatchInternalState.AGREEMENT_PROCESSING);
 
@@ -1318,10 +1318,12 @@ describe("Tests for Outbound Command Event Handler", () => {
   });
 
   // Functionality for this feature is not completed yet. Waiting on development to be complete
-  test("12. Given acceptAutoQuote setting is false \
-  When inbound command event ProcessSDKOutboundBulkAcceptQuote is received \
-  Then the state for each individual transfer should be updated to AGREEMENT_ACCEPTED or AGREEMENT_REJECTED \
-  And domain event SDKOutboundBulkAcceptQuoteCompleted is published. ", async () => {
+  test("12. Given autoAcceptQuote setting is false \
+       When inbound command event ProcessSDKOutboundBulkAutoAcceptQuote is received \
+       Then the logic should loop through all the transfers in the bulk transaction \
+       And update the state for each transfer to AGREEMENT_ACCEPTED or AGREEMENT_REJECTED \
+           depending on the status of each transfer in the bulk transaction \
+       And domain event SDKOutboundBulkAcceptQuoteProcessed is published.", async () => {
 
     //Publish initial message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
@@ -1416,22 +1418,5 @@ describe("Tests for Outbound Command Event Handler", () => {
 
   });
 
-  // Functionality for this feature is not completed yet. Waiting on development to be complete
-  test("13. Given autoAcceptQuote setting is false \
-       When inbound command event ProcessSDKOutboundBulkAutoAcceptQuote is received \
-       Then the logic should loop through all the transfers in the bulk transaction \
-       And update the state for each transfer to AGREEMENT_ACCEPTED or AGREEMENT_REJECTED \
-           depending on the status of each transfer in the bulk transaction \
-       And domain event SDKOutboundBulkAcceptQuoteProcessed is published.", async () => {
-
-  });
-
-  // Functionality for this feature is not completed yet. Waiting on development to be complete
-  test("14. Given autoAcceptQuote setting is true \
-        When inbound command event ProcessSDKOutboundBulkAutoAcceptQuote is received \
-        Then the logic should loop through all the transfers in the bulk transaction \
-        And update the state for each transfer to AGREEMENT_ACCEPTED \
-        And domain event SDKOutboundBulkAutoAcceptQuoteProcessed is published.", async () => {
-
-  });
+  
 });
