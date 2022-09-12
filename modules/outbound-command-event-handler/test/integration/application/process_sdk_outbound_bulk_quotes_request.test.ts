@@ -193,7 +193,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     // Get the randomly generated transferIds for the callback
     const randomGeneratedTransferIds = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
 
-    // Simulate the domain handler sending the command handler PProcessPartyInfoCallback messages
+    // Simulate the domain handler sending the command handler ProcessPartyInfoCallback messages
     // for each individual transfer
     const processPartyInfoCallbackMessageData1: IProcessPartyInfoCallbackCmdEvtData = {
       bulkId: bulkTransactionId,
@@ -258,7 +258,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     const hasAcceptPartyEvent = (domainEvents.find((e) => e.getName() === 'SDKOutboundBulkAutoAcceptPartyInfoRequestedDmEvt'));
     expect(hasAcceptPartyEvent).toBeTruthy();
 
-    // Command event for bulk party info request completed
+    // Command event for sdk outbound accept bulk party info request
     const processSDKOutboundBulkAcceptPartyInfoCommandEventData : IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData = {
       bulkId: bulkTransactionId,
       bulkTransactionContinuationAcceptParty: {
@@ -300,7 +300,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     const hasSDKOutboundBulkAcceptPartyInfoProcessed = (domainEvents.find((e) => e.getName() === 'SDKOutboundBulkAcceptPartyInfoProcessedDmEvt'));
     expect(hasSDKOutboundBulkAcceptPartyInfoProcessed).toBeTruthy();
 
-    // Simulate domain handler sending command event for bulk party info request completed
+    // Simulate domain handler sending command event for sdk outbound bulk quotes request
     const processSDKOutboundBulkQuotesRequestCommandEventData : IProcessSDKOutboundBulkQuotesRequestCmdEvtData = {
       bulkId: bulkTransactionId,
       timestamp: Date.now(),

@@ -1779,53 +1779,6 @@ paths:
           $ref: '#/components/responses/501'
         '503':
           $ref: '#/components/responses/503'
-  /bulkQuotes:
-    post:
-      description: >-
-        The HTTP request `POST /bulkQuotes` is used to request the creation of a
-        bulk quote for the provided financial transactions in the server.
-      summary: Calculate bulk quote
-      tags:
-        - bulkQuotes
-      operationId: BulkQuotes
-      parameters:
-        - $ref: '#/components/parameters/Accept'
-        - $ref: '#/components/parameters/Content-Length'
-        - $ref: '#/components/parameters/Content-Type'
-        - $ref: '#/components/parameters/Date'
-        - $ref: '#/components/parameters/X-Forwarded-For'
-        - $ref: '#/components/parameters/FSPIOP-Source'
-        - $ref: '#/components/parameters/FSPIOP-Destination'
-        - $ref: '#/components/parameters/FSPIOP-Encryption'
-        - $ref: '#/components/parameters/FSPIOP-Signature'
-        - $ref: '#/components/parameters/FSPIOP-URI'
-        - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
-      requestBody:
-        description: Details of the bulk quote to be created.
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/BulkQuotesPostRequest'
-      responses:
-        '202':
-          $ref: '#/components/responses/202'
-        '400':
-          $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-        '405':
-          $ref: '#/components/responses/405'
-        '406':
-          $ref: '#/components/responses/406'
-        '501':
-          $ref: '#/components/responses/501'
-        '503':
-          $ref: '#/components/responses/503'
   /bulkQuotes/{ID}:
     parameters:
       - $ref: '#/components/parameters/ID'
@@ -3372,62 +3325,6 @@ components:
           $ref: '#/components/schemas/ExtensionList'
       required:
         - transactionState
-    IndividualQuote:
-      title: IndividualQuote
-      type: object
-      description: Data model for the complex type IndividualQuote.
-      properties:
-        quoteId:
-          $ref: '#/components/schemas/CorrelationId'
-        transactionId:
-          $ref: '#/components/schemas/CorrelationId'
-        payee:
-          $ref: '#/components/schemas/Party'
-        amountType:
-          $ref: '#/components/schemas/AmountType'
-        amount:
-          $ref: '#/components/schemas/Money'
-        fees:
-          $ref: '#/components/schemas/Money'
-        transactionType:
-          $ref: '#/components/schemas/TransactionType'
-        note:
-          $ref: '#/components/schemas/Note'
-        extensionList:
-          $ref: '#/components/schemas/ExtensionList'
-      required:
-        - quoteId
-        - transactionId
-        - payee
-        - amountType
-        - amount
-        - transactionType
-    BulkQuotesPostRequest:
-      title: BulkQuotesPostRequest
-      type: object
-      description: The object sent in the POST /bulkQuotes request.
-      properties:
-        bulkQuoteId:
-          $ref: '#/components/schemas/CorrelationId'
-        payer:
-          $ref: '#/components/schemas/Party'
-        geoCode:
-          $ref: '#/components/schemas/GeoCode'
-        expiration:
-          $ref: '#/components/schemas/DateTime'
-        individualQuotes:
-          type: array
-          minItems: 1
-          maxItems: 1000
-          items:
-            $ref: '#/components/schemas/IndividualQuote'
-          description: List of quotes elements.
-        extensionList:
-          $ref: '#/components/schemas/ExtensionList'
-      required:
-        - bulkQuoteId
-        - payer
-        - individualQuotes
     IndividualQuoteResult:
       title: IndividualQuoteResult
       type: object

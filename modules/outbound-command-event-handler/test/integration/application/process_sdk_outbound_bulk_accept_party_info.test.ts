@@ -255,7 +255,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     const hasAcceptPartyEvent = (domainEvents.find((e) => e.getName() === 'SDKOutboundBulkAutoAcceptPartyInfoRequestedDmEvt'));
     expect(hasAcceptPartyEvent).toBeTruthy();
 
-    // Command event for bulk party info request completed
+    // Command event for sdk outbound bulk accept party info request
     const processSDKOutboundBulkAcceptPartyInfoCommandEventData : IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData = {
       bulkId: bulkTransactionId,
       bulkTransactionContinuationAcceptParty: {
