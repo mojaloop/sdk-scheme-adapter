@@ -233,7 +233,7 @@ describe("Tests for Outbound Command Event Handler", () => {
           party: {
               partyIdInfo: {
                   partyIdType: 'MSISDN',
-                  partyIdentifier: '123456',
+                  partyIdentifier: '678999',
                   fspId: 'receiverfsp'
               }
           },
@@ -373,20 +373,24 @@ describe("Tests for Outbound Command Event Handler", () => {
     // Assert that only the accepted parties for receiverfsp|differentfsp made it into a batched bulk quote.
     // Assert that the quote number match the accepted parties
     // Assert the bulk batch state is AGREEMENT_PROCESSING
+    // Assert that the reject party was not added in bulk batch
     const bulkBatchOne = await bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, bulkBatchIds[0]);
 
     expect(bulkBatchOne.state).toEqual(BulkTransactionInternalState.AGREEMENT_PROCESSING);
     expect(bulkBatchOne.bulkQuotesRequest.individualQuotes.length).toEqual(1);
     expect(bulkBatchOne.bulkQuotesRequest.individualQuotes[0].to.fspId).toMatch(/receiverfsp|differentfsp/);
+    expect(bulkBatchOne.bulkQuotesRequest.individualQuotes[0].to.idValue).not.toEqual('678999');
+
 
     // Assert that only the accepted parties for receiverfsp|differentfsp made it into a batched bulk quote
     // Assert that the quote number match the accepted parties.
     // Assert the bulk batch state is AGREEMENT_PROCESSING
+    // Assert that the reject party was not added in bulk batch
     const bulkBatchTwo = await bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, bulkBatchIds[1]);
 
     expect(bulkBatchTwo.state).toEqual(BulkTransactionInternalState.AGREEMENT_PROCESSING);
     expect(bulkBatchTwo.bulkQuotesRequest.individualQuotes.length).toEqual(1);
     expect(bulkBatchTwo.bulkQuotesRequest.individualQuotes[0].to.fspId).toMatch(/receiverfsp|differentfsp/);
-
+    expect(bulkBatchTwo.bulkQuotesRequest.individualQuotes[0].to.idValue).not.toEqual('678999');
   });
 });
