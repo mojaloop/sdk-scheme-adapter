@@ -1,0 +1,125 @@
+version: '3.7'
+networks:
+  mojaloop-net:
+    name: mojaloop-net
+
+services:
+  payer-sdk-api-svc:
+    extends:
+      file: common-sdk.yml
+      service: api-svc
+    env_file: ./config/payer-sdk/api-svc.env
+    ports:
+      - "14000:4000"
+      - "14001:4001"
+      - "14002:4002"
+    depends_on:
+      - payer-redis
+
+  payer-sdk-outbound-command-event-handler:
+    extends:
+      file: common-sdk.yml
+      service: outbound-command-event-handler
+    env_file: ./config/payer-sdk/outbound-command-event-handler.env
+    ports:
+      - "18000:8000"
+    depends_on:
+      - kafka
+      - payer-redis
+
+  payer-sdk-outbound-domain-event-handler:
+    extends:
+      file: common-sdk.yml
+      service: outbound-domain-event-handler
+    env_file: ./config/payer-sdk/outbound-domain-event-handler.env
+    depends_on:
+      - kafka
+      - payer-redis
+
+  payer-redis:
+    extends:
+      file: common-sdk.yml
+      service: redis
+    ports:
+      - "16379:6379"
+
+  payee-sdk-api-svc:
+    extends:
+      file: common-sdk.yml
+      service: api-svc
+    env_file: ./config/payee-sdk/api-svc.env
+    ports:
+      - "24000:4000"
+      - "24001:4001"
+      - "24002:4002"
+    depends_on:
+      - payee-redis
+
+  payee-redis:
+    extends:
+      file: common-sdk.yml
+      service: redis
+    ports:
+      - "26379:6379"
+
+  ml-testing-toolkit:
+    networks:
+        - mojaloop-net
+    image: mojaloop/ml-testing-toolkit:v15.0.0
+    container_name: ml-testing-toolkit
+    volumes:
+      - "./config/ml-testing-toolkit/spec_files:/opt/app/spec_files"
+    ports:
+      - "4040:4040"
+      - "5050:5050"
+    environment:
+      - AUTH_ENABLED=FALSE
+    command: npm start
+
+  mojaloop-testing-toolkit-ui:
+    image: mojaloop/ml-testing-toolkit-ui:v15.0.0
+    ports:
+      - "6060:6060"
+    networks:
+      - mojaloop-net
+    environment:
+      - API_BASE_URL=http://localhost:5050
+      - AUTH_ENABLED=FALSE
+    command:
+      - sh
+      - /usr/share/nginx/start.sh
+
+  zookeeper:
+    networks:
+      - mojaloop-net
+    image: docker.io/bitnami/zookeeper:3.8
+    container_name: zookeeper
+    ports:
+      - 2181:2181
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+
+  kafka:
+    networks:
+      - mojaloop-net
+    image: docker.io/bitnami/kafka:3.2
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+      # KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_LISTENERS: LISTENER_INTERN://kafka:9093,LISTENER_EXTERN://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_INTERN://kafka:9093,LISTENER_EXTERN://127.0.0.1:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_INTERN:PLAINTEXT,LISTENER_EXTERN:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_INTERN
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+    depends_on:
+      - zookeeper
+    healthcheck:
+      test: ["CMD" ,"/opt/bitnami/kafka/bin/kafka-broker-api-versions.sh","--bootstrap-server","kafka:9092"]
+      timeout: 20s
+      retries: 10
+      start_period: 40s
+      interval: 30s
