@@ -30,17 +30,20 @@ import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 import {
   DomainEvent,
-  KafkaCommandEventProducer, IKafkaEventProducerOptions, KafkaDomainEventConsumer, IKafkaEventConsumerOptions,
-  ProcessSDKOutboundBulkRequestCmdEvt,
-  ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt,
-  ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
-  ProcessPartyInfoCallbackCmdEvt,
-  IProcessSDKOutboundBulkRequestCmdEvtData,
+  IKafkaEventConsumerOptions,
+  IKafkaEventProducerOptions,
   IProcessPartyInfoCallbackCmdEvtData,
   IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData,
   IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData,
-  RedisBulkTransactionStateRepo,
+  IProcessSDKOutboundBulkRequestCmdEvtData,
   IRedisBulkTransactionStateRepoOptions,
+  KafkaCommandEventProducer,
+  KafkaDomainEventConsumer,
+  ProcessPartyInfoCallbackCmdEvt,
+  ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
+  ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt,
+  ProcessSDKOutboundBulkRequestCmdEvt,
+  RedisBulkTransactionStateRepo,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
 import { randomUUID } from "crypto";
 
