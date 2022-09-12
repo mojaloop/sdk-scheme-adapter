@@ -27,7 +27,7 @@
     "snapshot": "standard-version --no-verify --skip.changelog --prerelease snapshot --releaseCommitMessageFormat 'chore(snapshot): {{currentTag}}'"
   },
   "dependencies": {
-    "@mojaloop/api-snippets": "^15.0.0",
+    "@mojaloop/api-snippets": "^15.0.1",
     "@mojaloop/logging-bc-public-types-lib": "^0.1.10",
     "@mojaloop/platform-shared-lib-messaging-types-lib": "^0.0.3",
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "^0.0.9",

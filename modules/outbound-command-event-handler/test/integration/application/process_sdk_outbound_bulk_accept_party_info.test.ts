@@ -269,7 +269,6 @@ describe("Tests for Outbound Command Event Handler", () => {
           {
             homeTransactionId: 'string',
             transactionId: randomGeneratedTransferIds[1],
-            // @ts-ignore https://github.com/mojaloop/project/issues/2922 type needs to be updated
             acceptParty: false
           }
         ]
