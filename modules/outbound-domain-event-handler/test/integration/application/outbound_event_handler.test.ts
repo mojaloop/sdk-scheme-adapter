@@ -47,7 +47,8 @@ import { randomUUID } from "crypto";
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
-const messageTimeout = 2000;
+jest.setTimeout(10000);
+const messageTimeout = 4000;
 
 const domainEventProducerOptions: IKafkaEventProducerOptions = {
     brokerList: 'localhost:9092',
