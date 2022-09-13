@@ -25,7 +25,7 @@
 'use strict';
 
 import { BaseEntityState, BaseEntity } from './';
-import { IPartyResult, PartyInfoRequest } from '../types';
+import { IPartyResult, PartyInfoRequest } from '@module-types';
 import { SchemaValidationError } from '../errors';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 import { randomUUID } from 'crypto';

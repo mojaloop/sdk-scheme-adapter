@@ -31,7 +31,6 @@ import {
     IndividualTransferInternalState,
     ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
     PartyInfoRequestedDmEvt,
-    PartyInfoRequest,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
@@ -96,7 +95,7 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestCmdEvt(
                 timestamp: Date.now(),
                 headers: [],
             });
-            individualTransfer.setPartyRequest(partyInfoRequestedDmEvt.getContent() as PartyInfoRequest);
+            individualTransfer.setPartyRequest(partyInfoRequestedDmEvt.getContent());
             individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_PROCESSING);
             await options.domainProducer.sendDomainEvent(partyInfoRequestedDmEvt);
             await bulkTransactionAgg.setIndividualTransferById(individualTransferId, individualTransfer);

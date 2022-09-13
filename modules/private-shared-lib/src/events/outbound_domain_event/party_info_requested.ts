@@ -26,7 +26,7 @@
 
 import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { PartyInfoRequest } from '../../types';
+import { PartyInfoRequest } from '@module-types';
 
 export interface IPartyInfoRequestedDmEvtData {
     bulkId: string;

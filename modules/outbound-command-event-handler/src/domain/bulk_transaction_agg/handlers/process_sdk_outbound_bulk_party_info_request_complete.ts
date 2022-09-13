@@ -31,7 +31,6 @@ import {
     ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt,
     SDKOutboundBulkAcceptPartyInfoRequestedDmEvt,
     SDKOutboundBulkAutoAcceptPartyInfoRequestedDmEvt,
-    CoreConnectorBulkAcceptPartyInfoRequestIndividualTransferResult,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
@@ -82,7 +81,7 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt
                 request: {
                     bulkHomeTransactionID: bulkTx.bulkHomeTransactionID,
                     bulkTransactionId: bulkTransactionAgg.bulkId,
-                    individualTransferResults: individualTransferResults as any as CoreConnectorBulkAcceptPartyInfoRequestIndividualTransferResult[],
+                    individualTransferResults: individualTransferResults,
                 },
                 timestamp: Date.now(),
                 headers: [],

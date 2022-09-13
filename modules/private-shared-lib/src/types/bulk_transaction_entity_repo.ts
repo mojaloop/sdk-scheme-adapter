@@ -30,7 +30,7 @@ import {
     IEntityStateReadOnlyRepository,
     IndividualTransferState,
     BulkBatchState,
-} from '../domain';
+} from '@module-domain';
 
 export type IBulkTransactionEntityRepo = {
     getAllIndividualTransferIds: (bulkId: string) => Promise<string[]>
