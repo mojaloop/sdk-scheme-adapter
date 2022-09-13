@@ -43,10 +43,11 @@ const {
 const { BackendRequests } = require('../lib/model/lib/requests');
 
 class BackendEventHandler {
-    constructor({ config }) {
+    constructor({ config, logger }) {
         this._conf = config;
 
-        this._logger = new DefaultLogger(BC_CONFIG.bcName, 'backend-event-handler', '0.0.1', config.logLevel);
+        this._logger = logger;
+        this._loggerFromLoggingBC = new DefaultLogger(BC_CONFIG.bcName, 'backend-event-handler', '0.0.1', config.logLevel);
 
         this._backendRequests = new BackendRequests({
             logger: this._logger,
@@ -59,13 +60,13 @@ class BackendEventHandler {
         const config = this._conf;
         this._logger.info('start');
 
-        this._consumer = new KafkaDomainEventConsumer(this._messageHandler.bind(this), config.backendEventHandler.domainEventConsumer, this._logger);
+        this._consumer = new KafkaDomainEventConsumer(this._messageHandler.bind(this), config.backendEventHandler.domainEventConsumer, this._loggerFromLoggingBC);
         this._logger.info(`Created Message Consumer of type ${this._consumer.constructor.name}`);
 
         await this._consumer.init();
         await this._consumer.start();
 
-        this._producer = new KafkaDomainEventProducer(config.backendEventHandler.domainEventProducer, this._logger);
+        this._producer = new KafkaDomainEventProducer(config.backendEventHandler.domainEventProducer, this._loggerFromLoggingBC);
         this._logger.info(`Created Message Producer of type ${this._producer.constructor.name}`);
         await this._producer.init();
 

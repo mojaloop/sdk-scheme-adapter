@@ -126,7 +126,7 @@ class Server extends EventEmitter {
         }
 
         if (this.conf.fspiopEventHandler.enabled) {
-            this.backendEventHandler = new FSPIOPEventHandler({
+            this.fspiopEventHandler = new FSPIOPEventHandler({
                 config: this.conf,
                 logger: this.logger.push(LOG_ID.FSPIOP_EVENT_HANDLER),
                 cache: this.cache,

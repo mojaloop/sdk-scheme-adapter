@@ -58,6 +58,6 @@ module.exports.handleBulkQuotesRequestedDmEvt = async (
         await options.producer.sendDomainEvent(bulkQuotesCallbackReceivedDmEvt);
     }
     catch (err) {
-        logger.error(`Error in handleBulkQuotesRequestedDmEvt: ${err.message}`);
+        logger.push({ err }).log('Error in handleBulkQuotesRequestedDmEvt');
     }
 };
