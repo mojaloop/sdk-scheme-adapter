@@ -25,7 +25,7 @@
 const { SDKOutboundBulkAcceptQuoteRequestedDmEvt } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
 const { BulkTransactionState } = require('../types');
 
-module.exports.handleSDKOutboundBulkAcceptQuoteRequested = async (
+module.exports.handleSDKOutboundBulkAcceptQuoteRequestedDmEvt = async (
     message,
     options,
     logger,

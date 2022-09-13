@@ -26,7 +26,7 @@ const { BulkQuotesRequestedDmEvt } = require('@mojaloop/sdk-scheme-adapter-priva
 const { OutboundBulkQuotesModel } = require('../../lib/model');
 const { BulkQuotesCallbackReceivedDmEvt } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
 
-module.exports.handleSDKOutboundBulkAcceptQuoteRequested = async (
+module.exports.handleBulkQuotesRequestedDmEvt = async (
     message,
     options,
     logger,
@@ -55,9 +55,9 @@ module.exports.handleSDKOutboundBulkAcceptQuoteRequested = async (
             timestamp: Date.now(),
             headers: [],
         });
-        await options.domainProducer.sendDomainEvent(bulkQuotesCallbackReceivedDmEvt);
+        await options.producer.sendDomainEvent(bulkQuotesCallbackReceivedDmEvt);
     }
     catch (err) {
-        logger.push({ err }).log('Error in handleSDKOutboundBulkAcceptQuoteRequested');
+        logger.error(`Error in handleBulkQuotesRequestedDmEvt: ${err.message}`);
     }
 };
