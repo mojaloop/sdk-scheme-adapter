@@ -89,8 +89,7 @@ const bulkTransactionEntityRepoOptions: IRedisBulkTransactionStateRepoOptions = 
 }
 const bulkTransactionEntityRepo = new RedisBulkTransactionStateRepo(bulkTransactionEntityRepoOptions, logger);
 
-
-describe("Tests for Outbound Command Event Handler", () => {
+describe("Tests for ProcessSDKOutboundBulkQuotesRequest Event Handler", () => {
 
   beforeEach(async () => {
     domainEvents = [];
@@ -198,10 +197,6 @@ describe("Tests for Outbound Command Event Handler", () => {
     await producer.sendCommandEvent(bulkPartyInfoRequestCommandEventObj);
     await new Promise(resolve => setTimeout(resolve, messageTimeout));
 
-    // Check that the command handler sends 2 messages requesting party info.
-    const partyInfoRequestedDomainEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequestedDmEvt');
-    expect(partyInfoRequestedDomainEvents.length).toEqual(bulkRequest.individualTransfers.length);
-
     // Get the randomly generated transferIds for the callback
     const randomGeneratedTransferIds = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
 
@@ -283,14 +278,6 @@ describe("Tests for Outbound Command Event Handler", () => {
     await producer.sendCommandEvent(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj);
     await new Promise(resolve => setTimeout(resolve, messageTimeout));
 
-    // Check that the global state to be DISCOVERY_COMPLETED
-    const bulkState = await bulkTransactionEntityRepo.load(bulkTransactionId);
-    expect(bulkState.state).toBe('DISCOVERY_COMPLETED');
-
-    // Check domain events published to kafka
-    const hasAcceptPartyEvent = (domainEvents.find((e) => e.getName() === 'SDKOutboundBulkAutoAcceptPartyInfoRequestedDmEvt'));
-    expect(hasAcceptPartyEvent).toBeTruthy();
-
     // Command event for sdk outbound accept bulk party info request
     const processSDKOutboundBulkAcceptPartyInfoCommandEventData : IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData = {
       bulkId: bulkTransactionId,
@@ -322,26 +309,6 @@ describe("Tests for Outbound Command Event Handler", () => {
     );
     await producer.sendCommandEvent(processSDKOutboundBulkAcceptPartyInfoCommandEventObj);
     await new Promise(resolve => setTimeout(resolve, messageTimeout));
-
-    // Check that the global state to be DISCOVERY_ACCEPTANCE_COMPLETED
-    const bulkStateTwo = await bulkTransactionEntityRepo.load(bulkTransactionId);
-    expect(bulkStateTwo.state).toBe(BulkTransactionInternalState.DISCOVERY_ACCEPTANCE_COMPLETED);
-
-    // Check that individual transfer to receiverfsp with acceptPart true have been updated to DISCOVERY_ACCEPTED
-    const afterIndividualTransfer1 = await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId,  randomGeneratedTransferIds[0]);
-    expect(afterIndividualTransfer1.state).toBe(IndividualTransferInternalState.DISCOVERY_ACCEPTED);
-
-    // Check that individual transfer to receiverfsp with acceptParty false have been updated to DISCOVERY_REJECTED
-    const afterIndividualTransfer2 = await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId,  randomGeneratedTransferIds[1]);
-    expect(afterIndividualTransfer2.state).toBe(IndividualTransferInternalState.DISCOVERY_REJECTED);
-
-    // Check that individual transfer to differentfsp with acceptParty true have been updated to DISCOVERY_ACCEPTED
-    const afterIndividualTransfer3 = await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId,  randomGeneratedTransferIds[2]);
-    expect(afterIndividualTransfer3.state).toBe(IndividualTransferInternalState.DISCOVERY_ACCEPTED);
-
-    // Check that command handler sends event to domain handler
-    const hasSDKOutboundBulkAcceptPartyInfoProcessed = (domainEvents.filter((e) => e.getName() === 'SDKOutboundBulkAcceptPartyInfoProcessedDmEvt'));
-    expect(hasSDKOutboundBulkAcceptPartyInfoProcessed).toBeTruthy();
 
     // Simulate domain handler sending command event for sdk outbound bulk quotes request
     const processSDKOutboundBulkQuotesRequestCommandEventData : IProcessSDKOutboundBulkQuotesRequestCmdEvtData = {

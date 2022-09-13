@@ -93,7 +93,7 @@ const bulkTransactionEntityRepoOptions: IRedisBulkTransactionStateRepoOptions = 
 const bulkTransactionEntityRepo = new RedisBulkTransactionStateRepo(bulkTransactionEntityRepoOptions, logger);
 
 
-describe("Tests for Outbound Command Event Handler", () => {
+describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
 
   beforeEach(async () => {
     domainEvents = [];
@@ -118,7 +118,8 @@ describe("Tests for Outbound Command Event Handler", () => {
         Then the logic should update the individual batch state to AGREEMENT_COMPLETED or AGREEMENT_FAILED, \
         And for each individual quote responses in the batch, the state could be AGREEMENT_SUCCESS or AGREEMENT_FAILED accordingly \
         And the individual quote data in redis should be updated with the response \
-        And domain event BulkQuotesCallbackProcessed should be published", async () => {
+        And domain event BulkQuotesCallbackProcessed should be published \
+        And domain event SDKOutboundBulkQuotesRequestProcessed should be published", async () => {
     // Publish this message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
     const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
@@ -214,13 +215,8 @@ describe("Tests for Outbound Command Event Handler", () => {
     await producer.sendCommandEvent(bulkPartyInfoRequestCommandEventObj);
     await new Promise(resolve => setTimeout(resolve, messageTimeout));
 
-    // Check that the command handler sends 2 messages requesting party info.
-    const partyInfoRequestedDomainEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequestedDmEvt');
-    expect(partyInfoRequestedDomainEvents.length).toEqual(bulkRequest.individualTransfers.length);
-
     // Get the randomly generated transferIds for the callback
     const randomGeneratedTransferIds = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
-    console.log(randomGeneratedTransferIds);
 
     // Simulate the domain handler sending the command handler PProcessPartyInfoCallback messages
     // for each individual transfer
@@ -319,14 +315,6 @@ describe("Tests for Outbound Command Event Handler", () => {
     await producer.sendCommandEvent(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj);
     await new Promise(resolve => setTimeout(resolve, messageTimeout));
 
-    // Check that the global state to be DISCOVERY_COMPLETED
-    const bulkState = await bulkTransactionEntityRepo.load(bulkTransactionId);
-    expect(bulkState.state).toBe('DISCOVERY_COMPLETED');
-
-    // Check domain events published to kafka
-    const hasAcceptPartyEvent = (domainEvents.find((e) => e.getName() === 'SDKOutboundBulkAutoAcceptPartyInfoRequestedDmEvt'));
-    expect(hasAcceptPartyEvent).toBeTruthy();
-
     // Command event for bulk accept party info
     const processSDKOutboundBulkAcceptPartyInfoCommandEventData : IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData = {
       bulkId: bulkTransactionId,
@@ -364,27 +352,6 @@ describe("Tests for Outbound Command Event Handler", () => {
     await producer.sendCommandEvent(processSDKOutboundBulkAcceptPartyInfoCommandEventObj);
     await new Promise(resolve => setTimeout(resolve, messageTimeout));
 
-    // Check that the global state to be DISCOVERY_ACCEPTANCE_COMPLETED
-    const bulkStateTwo = await bulkTransactionEntityRepo.load(bulkTransactionId);
-    expect(bulkStateTwo.state).toBe(BulkTransactionInternalState.DISCOVERY_ACCEPTANCE_COMPLETED);
-
-    // Check that individual transfers have been updated to DISCOVERY_ACCEPTED
-    const afterIndividualTransfer1 = await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, randomGeneratedTransferIds[0]);
-    expect(afterIndividualTransfer1.state).toBe(IndividualTransferInternalState.DISCOVERY_ACCEPTED);
-
-    const afterIndividualTransfer2 = await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, randomGeneratedTransferIds[1]);
-    expect(afterIndividualTransfer2.state).toBe(IndividualTransferInternalState.DISCOVERY_ACCEPTED);
-
-    const afterIndividualTransfer3 = await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, randomGeneratedTransferIds[2]);
-    expect(afterIndividualTransfer3.state).toBe(IndividualTransferInternalState.DISCOVERY_ACCEPTED);
-
-    const afterIndividualTransfer4 = await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, randomGeneratedTransferIds[3]);
-    expect(afterIndividualTransfer4.state).toBe(IndividualTransferInternalState.DISCOVERY_ACCEPTED);
-
-    // Check that command handler sends event to domain handler
-    const hasSDKOutboundBulkAcceptPartyInfoProcessed = (domainEvents.find((e) => e.getName() === 'SDKOutboundBulkAcceptPartyInfoProcessedDmEvt'));
-    expect(hasSDKOutboundBulkAcceptPartyInfoProcessed).toBeTruthy();
-
     // Simulate domain handler sending command event for bulk quotes request
     const processSDKOutboundBulkQuotesRequestCommandEventData : IProcessSDKOutboundBulkQuotesRequestCmdEvtData = {
       bulkId: bulkTransactionId,
@@ -396,14 +363,6 @@ describe("Tests for Outbound Command Event Handler", () => {
     );
     await producer.sendCommandEvent(processSDKOutboundBulkQuotesRequestCommandEventObj);
     await new Promise(resolve => setTimeout(resolve, messageTimeout));
-
-    // Check that the global state of bulk to be AGREEMENT_PROCESSING
-    const bulkStateThree = await bulkTransactionEntityRepo.load(bulkTransactionId);
-    expect(bulkStateThree.state).toBe(BulkTransactionInternalState.AGREEMENT_PROCESSING);
-
-    // Check that command handler published BulkQuotesRequested message
-    const hasBulkQuotesRequested = (domainEvents.find((e) => e.getName() === 'BulkQuotesRequestedDmEvt'));
-    expect(hasBulkQuotesRequested).toBeTruthy();
 
     // Check that bulk batches have been created.
     // One should be for receiverfsp and another for differentfsp
@@ -543,8 +502,8 @@ describe("Tests for Outbound Command Event Handler", () => {
 
     // Now that all the bulk batches have reached a final state check the global state
     // Check that the global state of bulk to be AGREEMENT_COMPLETED
-    const bulkStateFour = await bulkTransactionEntityRepo.load(bulkTransactionId);
-    expect(bulkStateFour.state).toBe(BulkTransactionInternalState.AGREEMENT_COMPLETED);
+    const bulkStateAgreementCompleted = await bulkTransactionEntityRepo.load(bulkTransactionId);
+    expect(bulkStateAgreementCompleted.state).toBe(BulkTransactionInternalState.AGREEMENT_COMPLETED);
 
     // Check that command handler published BulkQuotesCallbackProcessed message
     const hasBulkQuotesCallbackProcessed = (domainEvents.find((e) => e.getName() === 'BulkQuotesCallbackProcessedDmEvt'));
@@ -565,6 +524,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     And also splits quotes into batches using maxEntryConfigPerBatch \
     And for each individual quote in the batch, the state should be updated to AGREEMENT_SUCCESS or AGREEMENT_FAILED accordingly \
     And the individual quote data in redis should be updated with the response \
-    And domain event BulkQuotesCallbackProcessed should be published",
+    And domain event BulkQuotesCallbackProcessed should be published \
+    And domain event SDKOutboundBulkQuotesRequestProcessed should be published",
   async () => {});
 });

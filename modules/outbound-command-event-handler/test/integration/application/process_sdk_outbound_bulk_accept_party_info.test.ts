@@ -88,7 +88,7 @@ const bulkTransactionEntityRepoOptions: IRedisBulkTransactionStateRepoOptions = 
 const bulkTransactionEntityRepo = new RedisBulkTransactionStateRepo(bulkTransactionEntityRepoOptions, logger);
 
 
-describe("Tests for Outbound Command Event Handler", () => {
+describe("Tests for ProcessSDKOutboundBulkAcceptPartyInfo Event Handler", () => {
 
   beforeEach(async () => {
     domainEvents = [];
@@ -183,10 +183,6 @@ describe("Tests for Outbound Command Event Handler", () => {
     await producer.sendCommandEvent(bulkPartyInfoRequestCommandEventObj);
     await new Promise(resolve => setTimeout(resolve, messageTimeout));
 
-    // Check that the command handler sends 2 messages requesting party info.
-    const partyInfoRequestedDomainEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequestedDmEvt');
-    expect(partyInfoRequestedDomainEvents.length).toEqual(bulkRequest.individualTransfers.length);
-
     // Get the randomly generated transferIds for the callback
     const randomGeneratedTransferIds = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
 
@@ -246,14 +242,6 @@ describe("Tests for Outbound Command Event Handler", () => {
     );
     await producer.sendCommandEvent(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj);
     await new Promise(resolve => setTimeout(resolve, messageTimeout));
-
-    // Check that the global state to be DISCOVERY_COMPLETED
-    const bulkState = await bulkTransactionEntityRepo.load(bulkTransactionId);
-    expect(bulkState.state).toBe('DISCOVERY_COMPLETED');
-
-    // Check domain events published to kafka
-    const hasAcceptPartyEvent = (domainEvents.find((e) => e.getName() === 'SDKOutboundBulkAutoAcceptPartyInfoRequestedDmEvt'));
-    expect(hasAcceptPartyEvent).toBeTruthy();
 
     // Command event for sdk outbound bulk accept party info request
     const processSDKOutboundBulkAcceptPartyInfoCommandEventData : IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData = {
