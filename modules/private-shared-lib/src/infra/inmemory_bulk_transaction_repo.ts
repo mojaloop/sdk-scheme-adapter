@@ -25,8 +25,8 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { BulkBatchState, BulkTransactionState, IndividualTransferState } from '@module-domain';
-import { IBulkTransactionEntityRepo } from '@module-types';
+import { BulkBatchState, BulkTransactionState, IndividualTransferState } from '../domain';
+import { IBulkTransactionEntityRepo } from '../types';
 
 export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityRepo {
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */

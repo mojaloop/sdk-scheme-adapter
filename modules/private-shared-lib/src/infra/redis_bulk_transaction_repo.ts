@@ -26,8 +26,8 @@
 
 import * as redis from 'redis';
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { BulkBatchState, BulkTransactionState, IndividualTransferState } from '@module-domain';
-import { IBulkTransactionEntityRepo } from '@module-types';
+import { BulkBatchState, BulkTransactionState, IndividualTransferState } from '../domain';
+import { IBulkTransactionEntityRepo } from '../types';
 
 export interface IRedisBulkTransactionStateRepoOptions {
     connStr: string;

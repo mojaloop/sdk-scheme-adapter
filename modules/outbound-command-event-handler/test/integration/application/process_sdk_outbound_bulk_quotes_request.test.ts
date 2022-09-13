@@ -336,11 +336,11 @@ describe("Tests for Outbound Command Event Handler", () => {
     expect(afterIndividualTransfer2.state).toBe(IndividualTransferInternalState.DISCOVERY_REJECTED);
 
     // Check that individual transfer to differentfsp with acceptParty true have been updated to DISCOVERY_ACCEPTED
-    const afterIndividualTransfer3 = await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId,  randomGeneratedTransferIds[1]);
-    expect(afterIndividualTransfer3.state).toBe(IndividualTransferInternalState.DISCOVERY_REJECTED);
+    const afterIndividualTransfer3 = await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId,  randomGeneratedTransferIds[2]);
+    expect(afterIndividualTransfer3.state).toBe(IndividualTransferInternalState.DISCOVERY_ACCEPTED);
 
     // Check that command handler sends event to domain handler
-    const hasSDKOutboundBulkAcceptPartyInfoProcessed = (domainEvents.find((e) => e.getName() === 'SDKOutboundBulkAcceptPartyInfoProcessedDmEvt'));
+    const hasSDKOutboundBulkAcceptPartyInfoProcessed = (domainEvents.filter((e) => e.getName() === 'SDKOutboundBulkAcceptPartyInfoProcessedDmEvt'));
     expect(hasSDKOutboundBulkAcceptPartyInfoProcessed).toBeTruthy();
 
     // Simulate domain handler sending command event for sdk outbound bulk quotes request
