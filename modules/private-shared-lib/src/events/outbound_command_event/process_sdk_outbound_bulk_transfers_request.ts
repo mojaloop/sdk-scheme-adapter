@@ -18,15 +18,40 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Modusbox
- - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
+ - Miguel de Barros <miguel.debarros@modusbox.com>
  --------------
  ******/
 
-export * from './process_sdk_outbound_bulk_request';
-export * from './process_sdk_outbound_bulk_party_info_request';
-export * from './process_sdk_outbound_bulk_party_info_request_complete';
-export * from './process_party_info_callback';
-export * from './process_sdk_outbound_bulk_accept_party_info';
-export * from './process_sdk_outbound_bulk_quotes_request';
-export * from './process_bulk_quotes_callback';
-export * from './process_sdk_outbound_bulk_transfers_request';
+'use strict';
+
+import { CommandEvent } from '../command_event';
+import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+
+export interface IProcessSDKOutboundBulkTransfersRequestCmdEvtData {
+    bulkId: string;
+    timestamp: number | null;
+    headers: IMessageHeader[] | null;
+}
+export class ProcessSDKOutboundBulkTransfersRequestCmdEvt extends CommandEvent {
+    constructor(data: IProcessSDKOutboundBulkTransfersRequestCmdEvtData) {
+        super({
+            key: data.bulkId,
+            timestamp: data.timestamp,
+            headers: data.headers,
+            content: null,
+            name: ProcessSDKOutboundBulkTransfersRequestCmdEvt.name,
+        });
+    }
+
+    static CreateFromCommandEvent(message: CommandEvent): ProcessSDKOutboundBulkTransfersRequestCmdEvt {
+        if((message.getKey() === null || typeof message.getKey() !== 'string')) {
+            throw new Error('Bulk id is in unknown format');
+        }
+        const data: IProcessSDKOutboundBulkTransfersRequestCmdEvtData = {
+            timestamp: message.getTimeStamp(),
+            headers: message.getHeaders(),
+            bulkId: message.getKey(),
+        };
+        return new ProcessSDKOutboundBulkTransfersRequestCmdEvt(data);
+    }
+}
