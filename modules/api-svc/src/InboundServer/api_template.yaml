@@ -61,6 +61,8 @@ paths:
     $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/bulkQuotes_ID_error.yaml'
   '/bulkQuotes/{ID}':
     $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/bulkQuotes_ID.yaml'
+  '/bulkQuotes':
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/bulkQuotes.yaml'
   '/bulkTransfers/{ID}':
     $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/bulkTransfers_ID.yaml'
   '/bulkTransfers':
