@@ -44,7 +44,7 @@ const ajv = new Ajv({
 export enum BulkBatchInternalState {
     CREATED = 'CREATED',
     AGREEMENT_PROCESSING = 'AGREEMENT_PROCESSING',
-    AGREEMENT_SUCCESS = 'AGREEMENT_SUCCESS',
+    AGREEMENT_COMPLETED = 'AGREEMENT_COMPLETED',
     AGREEMENT_FAILED = 'AGREEMENT_FAILED',
     TRANSFER_PROCESSING = 'TRANSFER_PROCESSING',
 }
@@ -95,6 +95,10 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
 
     get bulkTransfersResponse(): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkQuoteResponse | undefined {
         return this._state.bulkTransfersResponse;
+    }
+
+    get quoteIdReferenceIdMap(): { [quoteId: string]: string } {
+        return this._state.quoteIdReferenceIdMap;
     }
 
     private static _convertPartyToFrom(party: SDKSchemeAdapter.Outbound.V2_0_0.Types.Party): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkQuoteRequest['from'] {
@@ -159,7 +163,7 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
         referenceId: string,
     ) {
         this._state.bulkTransfersRequest.individualTransfers.push(individualTransfer);
-        this._state.transferIdReferenceIdMap[individualTransfer.transferId] = referenceId;   
+        this._state.transferIdReferenceIdMap[individualTransfer.transferId] = referenceId;
     }
 
     getReferenceIdForQuoteId(quoteId: string) : string {
@@ -182,7 +186,7 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
         this._state.bulkQuotesResponse = response;
     }
 
-    
+
     validateBulkQuotesRequest() {
         BulkBatchEntity._validateBulkQuotesRequest(this._state.bulkQuotesRequest);
     }
@@ -190,7 +194,7 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
     validateBulkTransfersRequest() {
         BulkBatchEntity._validateBulkTransfersRequest(this._state.bulkTransfersRequest);
     }
-    
+
     private static _validateBulkQuotesRequest(request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkQuoteRequest): void {
         const requestSchema = SDKSchemeAdapter.Outbound.V2_0_0.Schemas.bulkQuoteRequest;
         const validate = ajv.compile(requestSchema);

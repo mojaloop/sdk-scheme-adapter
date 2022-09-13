@@ -116,7 +116,7 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
         And the callback has a combination of success and failed responses for individual quotes \
         When Inbound command event ProcessBulkQuotesCallback is received \
         Then the logic should update the individual batch state to AGREEMENT_COMPLETED or AGREEMENT_FAILED, \
-        And for each individual quote responses in the batch, the state could be AGREEMENT_SUCCESS or AGREEMENT_FAILED accordingly \
+        And for each individual transfers in the batch, the state could be AGREEMENT_SUCCESS or AGREEMENT_FAILED accordingly \
         And the individual quote data in redis should be updated with the response \
         And domain event BulkQuotesCallbackProcessed should be published \
         And domain event SDKOutboundBulkQuotesRequestProcessed should be published", async () => {
@@ -150,48 +150,48 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
           to: {
             partyIdInfo: {
               partyIdType: "MSISDN",
-              partyIdentifier: "16135551212"
+              partyIdentifier: "1"
             },
           },
           amountType: "SEND",
           currency: "USD",
-          amount: "123.45",
+          amount: "1",
         },
         {
           homeTransactionId: randomUUID(),
           to: {
             partyIdInfo: {
               partyIdType: "MSISDN",
-              partyIdentifier: "16135551213"
+              partyIdentifier: "2"
             },
           },
           amountType: "SEND",
           currency: "USD",
-          amount: "456.78",
+          amount: "2",
         },
         {
           homeTransactionId: randomUUID(),
           to: {
             partyIdInfo: {
               partyIdType: "MSISDN",
-              partyIdentifier: "11111111111"
+              partyIdentifier: "3"
             },
           },
           amountType: "SEND",
           currency: "USD",
-          amount: "123.45",
+          amount: "3",
         },
         {
           homeTransactionId: randomUUID(),
           to: {
             partyIdInfo: {
               partyIdType: "MSISDN",
-              partyIdentifier: "222222222222"
+              partyIdentifier: "4"
             },
           },
           amountType: "SEND",
           currency: "USD",
-          amount: "456.78",
+          amount: "4",
         }
       ]
     }
@@ -218,12 +218,19 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
     // Get the randomly generated transferIds for the callback
     const randomGeneratedTransferIds = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
 
+    // These ids are unordered so using the amount to properly determine which is which
+    const amountList: string[] = []
+    amountList.push((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, randomGeneratedTransferIds[0])).request.amount)
+    amountList.push((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, randomGeneratedTransferIds[1])).request.amount)
+    amountList.push((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, randomGeneratedTransferIds[2])).request.amount)
+    amountList.push((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, randomGeneratedTransferIds[3])).request.amount)
+
     // Simulate the domain handler sending the command handler PProcessPartyInfoCallback messages
     // for each individual transfer
     const processPartyInfoCallbackMessageData1: IProcessPartyInfoCallbackCmdEvtData = {
       bulkId: bulkTransactionId,
       content: {
-        transferId: randomGeneratedTransferIds[0],
+        transferId: randomGeneratedTransferIds[amountList.indexOf('1')],
         partyResult: {
           party: {
               partyIdInfo: {
@@ -241,7 +248,7 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
     const processPartyInfoCallbackMessageData2: IProcessPartyInfoCallbackCmdEvtData = {
       bulkId: bulkTransactionId,
       content: {
-        transferId: randomGeneratedTransferIds[1],
+        transferId: randomGeneratedTransferIds[amountList.indexOf('2')],
         partyResult: {
           party: {
               partyIdInfo: {
@@ -259,7 +266,7 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
     const processPartyInfoCallbackMessageData3: IProcessPartyInfoCallbackCmdEvtData = {
       bulkId: bulkTransactionId,
       content: {
-        transferId: randomGeneratedTransferIds[2],
+        transferId: randomGeneratedTransferIds[amountList.indexOf('3')],
         partyResult: {
           party: {
               partyIdInfo: {
@@ -277,7 +284,7 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
     const processPartyInfoCallbackMessageData4: IProcessPartyInfoCallbackCmdEvtData = {
       bulkId: bulkTransactionId,
       content: {
-        transferId: randomGeneratedTransferIds[3],
+        transferId: randomGeneratedTransferIds[amountList.indexOf('4')],
         partyResult: {
           party: {
               partyIdInfo: {
@@ -323,22 +330,22 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
         individualTransfers: [
           {
             homeTransactionId: 'string',
-            transactionId: randomGeneratedTransferIds[0],
+            transactionId: randomGeneratedTransferIds[amountList.indexOf('1')],
             acceptParty: true
           },
           {
             homeTransactionId: 'string',
-            transactionId: randomGeneratedTransferIds[1],
+            transactionId: randomGeneratedTransferIds[amountList.indexOf('2')],
             acceptParty: true
           },
           {
             homeTransactionId: 'string',
-            transactionId: randomGeneratedTransferIds[2],
+            transactionId: randomGeneratedTransferIds[amountList.indexOf('3')],
             acceptParty: true
           },
           {
             homeTransactionId: 'string',
-            transactionId: randomGeneratedTransferIds[3],
+            transactionId: randomGeneratedTransferIds[amountList.indexOf('4')],
             acceptParty: true
           }
         ]
@@ -371,7 +378,22 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
     expect(bulkBatchIds[1]).toBeDefined();
 
     // Get randomly generated quoteId
-    const preBulkBatch = await bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, bulkBatchIds[0]);
+    const bulkBatchOne = await bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, bulkBatchIds[0]);
+    const bulkBatchTwo = await bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, bulkBatchIds[1]);
+
+    // Bulk batch ids may be unordered so check the quotes so we can send
+    // proper callbacks
+    let receiverFspBatch;
+    let differentFspBatch;
+    console.log(bulkBatchOne.bulkQuotesRequest.individualQuotes[0].to.fspId)
+    if (bulkBatchOne.bulkQuotesRequest.individualQuotes[0].to.fspId == 'receiverfsp') {
+      receiverFspBatch = bulkBatchOne
+      differentFspBatch = bulkBatchTwo
+    } else {
+      receiverFspBatch = bulkBatchTwo
+      differentFspBatch = bulkBatchOne
+    }
+
     const bulkQuoteId = randomUUID();
 
     // Simulate the domain handler sending ProcessBulkQuotesCallback to command handler
@@ -379,26 +401,26 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
     const processBulkQuotesCallbackCommandEventDataReceiverFsp : IProcessBulkQuotesCallbackCmdEvtData = {
       bulkId: bulkTransactionId,
       content: {
-        batchId: bulkBatchIds[0],
+        batchId: receiverFspBatch.id,
         bulkQuoteId: bulkQuoteId,
         bulkQuotesResult: {
           bulkQuoteId: bulkQuoteId,
           currentState: 'COMPLETED',
           individualQuoteResults: [
             {
-              quoteId: preBulkBatch.bulkQuotesRequest.individualQuotes[0].quoteId,
+              quoteId: receiverFspBatch.bulkQuotesRequest.individualQuotes[0].quoteId,
               transferAmount: {
                 currency: 'USD',
-                amount: '123.45',
+                amount: '1',
               },
               ilpPacket: 'string',
               condition: 'string'
             },
             {
-              quoteId: preBulkBatch.bulkQuotesRequest.individualQuotes[1].quoteId,
+              quoteId: receiverFspBatch.bulkQuotesRequest.individualQuotes[1].quoteId,
               transferAmount: {
                 currency: 'USD',
-                amount: '456.78',
+                amount: '2',
               },
               ilpPacket: 'string',
               condition: 'string',
@@ -424,24 +446,25 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
     await producer.sendCommandEvent(processBulkQuotesCallbackCommandEventObjReceiverFsp);
     await new Promise(resolve => setTimeout(resolve, messageTimeout));
 
+    const bulkQuoteIdDifferentFsp = randomUUID();
+
     // Simulate the domain handler sending ProcessBulkQuotesCallback to command handler
     // for differentfsp batch with empty results
     // Currently only empty individualQuoteResults result in AGREEMENT_FAILED for bulk batch state
     const processBulkQuotesCallbackCommandEventDataDifferentFsp : IProcessBulkQuotesCallbackCmdEvtData = {
       bulkId: bulkTransactionId,
       content: {
-        batchId: bulkBatchIds[1],
-        bulkQuoteId: bulkQuoteId,
+        batchId: differentFspBatch.id,
+        bulkQuoteId: bulkQuoteIdDifferentFsp,
         bulkQuotesResult: {
-          bulkQuoteId: bulkQuoteId,
-          currentState: 'COMPLETED',
+          bulkQuoteId: bulkQuoteIdDifferentFsp,
+          currentState: 'ERROR_OCCURRED',
           individualQuoteResults: [
-            /*
             {
-              quoteId: preBulkBatch.bulkQuotesRequest.individualQuotes[0].quoteId,
+              quoteId: differentFspBatch.bulkQuotesRequest.individualQuotes[0].quoteId,
               transferAmount: {
                 currency: 'USD',
-                amount: '456.78',
+                amount: '3',
               },
               ilpPacket: 'string',
               condition: 'string',
@@ -456,10 +479,10 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
               }
             },
             {
-              quoteId: preBulkBatch.bulkQuotesRequest.individualQuotes[1].quoteId,
+              quoteId: differentFspBatch.bulkQuotesRequest.individualQuotes[1].quoteId,
               transferAmount: {
                 currency: 'USD',
-                amount: '456.78',
+                amount: '4',
               },
               ilpPacket: 'string',
               condition: 'string',
@@ -472,7 +495,7 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
                   }
                 }
               }
-            }*/
+            }
           ]
         }
       },
@@ -485,20 +508,37 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
     await producer.sendCommandEvent(processBulkQuotesCallbackCommandEventObjDifferentFsp);
     await new Promise(resolve => setTimeout(resolve, messageTimeout));
 
-    // Check that the state of bulk batch for receiverfsp to be AGREEMENT_SUCCESS
-    const postBulkBatchReceiverFsp = await bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, bulkBatchIds[0]);
-    expect(postBulkBatchReceiverFsp.state).toBe(BulkBatchInternalState.AGREEMENT_SUCCESS);
-    console.log(postBulkBatchReceiverFsp);
+    // Check that the state of bulk batch for receiverfsp to be AGREEMENT_COMPLETED
+    const postBulkBatchReceiverFsp = await bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, receiverFspBatch.id);
+    expect(postBulkBatchReceiverFsp.state).toBe(BulkBatchInternalState.AGREEMENT_COMPLETED);
+
     // Check that bulkQuoteResponse state has been updated to COMPLETED
     expect(postBulkBatchReceiverFsp.bulkQuotesResponse!.currentState).toEqual("COMPLETED")
 
+    console.log(postBulkBatchReceiverFsp);
+
     // Check that the state of bulk batch for differentfsp to be AGREEMENT_FAILED
-    const postBulkBatchDifferentFsp = await bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, bulkBatchIds[1]);
+    const postBulkBatchDifferentFsp = await bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, differentFspBatch.id);
     expect(postBulkBatchDifferentFsp.state).toBe(BulkBatchInternalState.AGREEMENT_FAILED);
 
     // Check that bulkQuoteResponse state has been updated to COMPLETED
-    expect(postBulkBatchDifferentFsp.bulkQuotesResponse!.currentState).toEqual("COMPLETED")
+    expect(postBulkBatchDifferentFsp.bulkQuotesResponse!.currentState).toEqual("ERROR_OCCURRED")
+
     console.log(postBulkBatchDifferentFsp);
+
+    // Check the individual transfer state whose quote was successful in a successful bulk quote batch
+    expect((await bulkTransactionEntityRepo.getIndividualTransfer(
+      bulkTransactionId,
+      randomGeneratedTransferIds[amountList.indexOf('1')])).state)
+    .toBe(IndividualTransferInternalState.AGREEMENT_SUCCESS);
+
+
+    // Check the individual transfer state whose quote was errored in a successful bulk quote batch
+    expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, randomGeneratedTransferIds[amountList.indexOf('2')])).state).toBe(IndividualTransferInternalState.AGREEMENT_FAILED);
+
+    // Check the individual transfer state whose quotes were in an errored bulk quote batch
+    expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, randomGeneratedTransferIds[amountList.indexOf('3')])).state).toBe(IndividualTransferInternalState.AGREEMENT_FAILED);
+    expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, randomGeneratedTransferIds[amountList.indexOf('4')])).state).toBe(IndividualTransferInternalState.AGREEMENT_FAILED);
 
     // Now that all the bulk batches have reached a final state check the global state
     // Check that the global state of bulk to be AGREEMENT_COMPLETED
@@ -514,6 +554,17 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
     expect(hasSDKOutboundBulkQuotesRequestProcessed).toBeTruthy();
   });
 
+
+  // Skipping this since there is no timeout logic for the bulk quotes callback handler.
+  test.skip("Given the callback for quote batch is successful \
+    And the callback has a combination of success and failed responses for individual quotes \
+    When Inbound command event ProcessBulkQuotesCallback is not received and the wait timeout expires\
+    Then the logic should update the individual batch state to AGREEMENT_COMPLETED, \
+    And for each individual quote in the batch, the state should be updated to AGREEMENT_SUCCESS or AGREEMENT_FAILED accordingly \
+    And the individual quote data in redis should be updated with the response \
+    And domain event BulkQuotesCallbackProcessed should be published \
+    And domain event SDKOutboundBulkQuotesRequestProcessed should be published",
+  async () => {});
 
   // Skipping this since there is no easy way to programmatically control the
   // maxEntryConfigPerBatch config value atm.
