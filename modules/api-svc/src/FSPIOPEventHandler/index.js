@@ -40,25 +40,27 @@ const {
 } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
 
 class FSPIOPEventHandler {
-    constructor({ config, cache, wso2Auth }) {
+    constructor({ config, logger, cache, wso2Auth }) {
         this._conf = config;
+        this._logger = logger;
         this._cache = cache;
         this._wso2Auth = wso2Auth;
 
-        this._logger = new DefaultLogger(BC_CONFIG.bcName, 'fspiop-event-handler', '0.0.1', config.logLevel);
+        this._loggerFromLoggingBC = new DefaultLogger(BC_CONFIG.bcName, 'fspiop-event-handler', '0.0.1', config.logLevel);
+
     }
 
     async start() {
         const config = this._conf;
         this._logger.info('start');
 
-        this._consumer = new KafkaDomainEventConsumer(this._messageHandler.bind(this), config.fspiopEventHandler.domainEventConsumer, this._logger);
+        this._consumer = new KafkaDomainEventConsumer(this._messageHandler.bind(this), config.fspiopEventHandler.domainEventConsumer, this._loggerFromLoggingBC);
         this._logger.info(`Created Message Consumer of type ${this._consumer.constructor.name}`);
 
         await this._consumer.init();
         await this._consumer.start();
 
-        this._producer = new KafkaDomainEventProducer(config.fspiopEventHandler.domainEventProducer, this._logger);
+        this._producer = new KafkaDomainEventProducer(config.fspiopEventHandler.domainEventProducer, this._loggerFromLoggingBC);
         this._logger.info(`Created Message Producer of type ${this._producer.constructor.name}`);
         await this._producer.init();
 
