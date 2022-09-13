@@ -24,8 +24,10 @@ services:
     ports:
       - "18000:8000"
     depends_on:
-      - kafka
-      - payer-redis
+      payer-redis:
+        condition: service_started
+      init-kafka:
+        condition: service_completed_successfully
 
   payer-sdk-outbound-domain-event-handler:
     extends:
@@ -33,8 +35,10 @@ services:
       service: outbound-domain-event-handler
     env_file: ./config/payer-sdk/outbound-domain-event-handler.env
     depends_on:
-      - kafka
-      - payer-redis
+      payer-redis:
+        condition: service_started
+      init-kafka:
+        condition: service_completed_successfully
 
   payer-redis:
     extends:
@@ -123,3 +127,38 @@ services:
       retries: 10
       start_period: 40s
       interval: 30s
+
+  init-kafka:
+    networks:
+      - mojaloop-net
+    image: docker.io/bitnami/kafka:3.2
+    depends_on:
+      - kafka
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      "
+      # blocks until kafka is reachable
+      kafka-topics.sh --bootstrap-server kafka:9093 --list
+
+      echo -e 'Creating kafka topics'
+      kafka-topics.sh --bootstrap-server kafka:9093 --create --if-not-exists --topic topic-sdk-outbound-command-events --replication-factor 1 --partitions 1
+      kafka-topics.sh --bootstrap-server kafka:9093 --create --if-not-exists --topic topic-sdk-outbound-domain-events --replication-factor 1 --partitions 1
+      
+      echo -e 'Successfully created the following topics:'
+      kafka-topics.sh --bootstrap-server kafka:9093 --list
+      "
+
+  kowl:
+    image: quay.io/cloudhut/kowl:v1.4.0
+    deploy:
+      replicas: 1
+    restart: on-failure
+    ports:
+    - "9080:8080"
+    networks:
+      - mojaloop-net
+    environment:
+      - KAFKA_BROKERS=kafka:9093
+    depends_on:
+      - kafka
+
