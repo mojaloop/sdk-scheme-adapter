@@ -81,7 +81,7 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt
                 request: {
                     bulkHomeTransactionID: bulkTx.bulkHomeTransactionID,
                     bulkTransactionId: bulkTransactionAgg.bulkId,
-                    individualTransferResults: individualTransferResults,
+                    individualTransferResults,
                 },
                 timestamp: Date.now(),
                 headers: [],
