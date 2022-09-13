@@ -529,7 +529,7 @@ describe("Tests for Outbound Command Event Handler", () => {
     // Check that the state of bulk batch for receiverfsp to be AGREEMENT_SUCCESS
     const postBulkBatchReceiverFsp = await bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, bulkBatchIds[0]);
     expect(postBulkBatchReceiverFsp.state).toBe(BulkBatchInternalState.AGREEMENT_SUCCESS);
-
+    console.log(postBulkBatchReceiverFsp);
     // Check that bulkQuoteResponse state has been updated to COMPLETED
     expect(postBulkBatchReceiverFsp.bulkQuotesResponse!.currentState).toEqual("COMPLETED")
 
@@ -539,6 +539,7 @@ describe("Tests for Outbound Command Event Handler", () => {
 
     // Check that bulkQuoteResponse state has been updated to COMPLETED
     expect(postBulkBatchDifferentFsp.bulkQuotesResponse!.currentState).toEqual("COMPLETED")
+    console.log(postBulkBatchDifferentFsp);
 
     // Now that all the bulk batches have reached a final state check the global state
     // Check that the global state of bulk to be AGREEMENT_COMPLETED
@@ -548,6 +549,10 @@ describe("Tests for Outbound Command Event Handler", () => {
     // Check that command handler published BulkQuotesCallbackProcessed message
     const hasBulkQuotesCallbackProcessed = (domainEvents.find((e) => e.getName() === 'BulkQuotesCallbackProcessedDmEvt'));
     expect(hasBulkQuotesCallbackProcessed).toBeTruthy();
+
+    // Check that command handler published SDKOutboundBulkQuotesRequestProcessed message
+    const hasSDKOutboundBulkQuotesRequestProcessed = (domainEvents.find((e) => e.getName() === 'SDKOutboundBulkQuotesRequestProcessedDmEvt'));
+    expect(hasSDKOutboundBulkQuotesRequestProcessed).toBeTruthy();
   });
 
 
