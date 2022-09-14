@@ -274,11 +274,10 @@
       "method": null,
       "path": null,
       "params": {
-        "body": {},
-        "statusCode": "202",
         "scripts": {
           "scriptingEngine": "postman"
-        }
+        },
+        "statusCode": "202"
       },
       "type": "FIXED_RESPONSE"
     },

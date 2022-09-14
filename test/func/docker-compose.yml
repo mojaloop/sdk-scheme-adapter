@@ -81,7 +81,7 @@ services:
       - AUTH_ENABLED=FALSE
     command: npm start
 
-  mojaloop-testing-toolkit-ui:
+  ml-testing-toolkit-ui:
     image: mojaloop/ml-testing-toolkit-ui:v15.0.0
     ports:
       - "6060:6060"
