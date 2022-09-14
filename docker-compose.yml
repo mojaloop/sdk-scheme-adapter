@@ -69,7 +69,6 @@ services:
       - AUTH_ENABLED=FALSE
     command: npm start
 
-
   # For local development we want to have ttk-ui
   #
   mojaloop-testing-toolkit-ui:
