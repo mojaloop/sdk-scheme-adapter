@@ -29,6 +29,7 @@ import {
     CommandEvent,
     ProcessSDKOutboundBulkQuotesRequestCmdEvt,
     BulkQuotesRequestedDmEvt,
+    IndividualTransferInternalState,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
@@ -57,7 +58,10 @@ export async function handleProcessSDKOutboundBulkQuotesRequestCmdEvt(
 
         // Create bulkQuotes batches from individual items with DISCOVERY_ACCEPTED state per FSP and maxEntryConfigPerBatch
         logger.info(`Creating batches for bulkId=${processSDKOutboundBulkQuotesRequestMessage.getKey()}`);
-        await bulkTransactionAgg.createBatches(options.appConfig.get('MAX_ITEMS_PER_BATCH'));
+
+        const populateBulkQuoteBatchesResult = await bulkTransactionAgg.generateBulkQuoteBatches(options.appConfig.get('MAX_ITEMS_PER_BATCH'));
+
+        logger.info(`Created Bulk Quote Batches with response: ${JSON.stringify(populateBulkQuoteBatchesResult, null, 2)}`);
 
         // Iterate through batches
         const allBulkBatchIds = await bulkTransactionAgg.getAllBulkBatchIds();

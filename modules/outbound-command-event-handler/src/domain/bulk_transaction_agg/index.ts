@@ -186,6 +186,27 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
             .setIndividualTransfer(this._rootEntity.id, entity.id, entity.exportState());
     }
 
+    async getBulkTransfersTotalCount() {
+        const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
+        return repo.getBulkTransfersTotalCount(this._rootEntity.id);
+    }
+
+    async setBulkTransfersTotalCount(totalCount: number) : Promise<void> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .setBulkTransfersTotalCount(this._rootEntity.id, totalCount);
+    }
+
+    async getBulkTransfersSuccessCount() {
+        const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
+        return repo.getBulkTransfersSuccessCount(this._rootEntity.id);
+    }
+
+    async setBulkTransfersSuccessCount(count: number) : Promise<void> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .setBulkTransfersSuccessCount(this._rootEntity.id, count);
+    }
+
+
     async getBulkQuotesTotalCount() {
         const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
         return repo.getBulkQuotesTotalCount(this._rootEntity.id);
