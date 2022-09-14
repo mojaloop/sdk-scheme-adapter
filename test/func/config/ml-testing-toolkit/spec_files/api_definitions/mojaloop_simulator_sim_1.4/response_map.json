@@ -51,5 +51,10 @@
         }
       }
     }
+  },
+  "/bulkTransactions/{bulkTransactionId}": {
+    "put": {
+      "response": {}
+    }
   }
 }

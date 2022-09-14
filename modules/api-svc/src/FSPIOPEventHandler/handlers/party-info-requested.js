@@ -26,14 +26,14 @@ const { PartyInfoRequestedDmEvt } = require('@mojaloop/sdk-scheme-adapter-privat
 const { PartiesModel } = require('../../lib/model');
 const { PartyInfoCallbackReceivedDmEvt } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
 
-module.exports.handleSDKOutboundBulkAcceptPartyInfoRequested = async (
+module.exports.handlePartyInfoRequestedDmEvt = async (
     message,
     options,
     logger,
 ) => {
     const event = PartyInfoRequestedDmEvt.CreateFromDomainEvent(message);
     const request = event.getPartyRequest();
-    const args = { type: request.partyIdType, id: request.partyIdentifier, subId: request.partySubIdOrType };
+    const args = { type: request.partyIdType, id: request.partyIdentifier, subId: request.partySubIdOrType || undefined };
 
     try {
         // prepare config
@@ -61,8 +61,8 @@ module.exports.handleSDKOutboundBulkAcceptPartyInfoRequested = async (
             timestamp: Date.now(),
             headers: [],
         });
-        await options.domainProducer.sendDomainEvent(partyInfoCallbackReceivedDmEvt);
+        await options.producer.sendDomainEvent(partyInfoCallbackReceivedDmEvt);
     } catch (err) {
-        logger.push({ err }).log('Error in handleSDKOutboundBulkAcceptPartyInfoRequested');
+        logger.push({ err }).log('Error in handlePartyInfoRequestedDmEvt');
     }
 };

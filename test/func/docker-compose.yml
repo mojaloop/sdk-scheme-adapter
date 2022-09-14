@@ -71,6 +71,7 @@ services:
         - mojaloop-net
     image: mojaloop/ml-testing-toolkit:v15.0.0
     container_name: ml-testing-toolkit
+    user: root
     volumes:
       - "./config/ml-testing-toolkit/spec_files:/opt/app/spec_files"
     ports:
@@ -141,8 +142,10 @@ services:
       kafka-topics.sh --bootstrap-server kafka:9093 --list
 
       echo -e 'Creating kafka topics'
-      kafka-topics.sh --bootstrap-server kafka:9093 --create --if-not-exists --topic topic-sdk-outbound-command-events --replication-factor 1 --partitions 1
-      kafka-topics.sh --bootstrap-server kafka:9093 --create --if-not-exists --topic topic-sdk-outbound-domain-events --replication-factor 1 --partitions 1
+      kafka-topics.sh --bootstrap-server kafka:9093 --create --if-not-exists --topic payer-topic-sdk-outbound-command-events --replication-factor 1 --partitions 1
+      kafka-topics.sh --bootstrap-server kafka:9093 --create --if-not-exists --topic payer-topic-sdk-outbound-domain-events --replication-factor 1 --partitions 1
+      kafka-topics.sh --bootstrap-server kafka:9093 --create --if-not-exists --topic payee-topic-sdk-outbound-command-events --replication-factor 1 --partitions 1
+      kafka-topics.sh --bootstrap-server kafka:9093 --create --if-not-exists --topic payee-topic-sdk-outbound-domain-events --replication-factor 1 --partitions 1
       
       echo -e 'Successfully created the following topics:'
       kafka-topics.sh --bootstrap-server kafka:9093 --list
