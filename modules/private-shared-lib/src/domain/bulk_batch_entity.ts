@@ -97,6 +97,10 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
         return this._state.bulkTransfersResponse;
     }
 
+    get quoteIdReferenceIdMap():{ [quoteId: string]: string } {
+        return this._state.quoteIdReferenceIdMap;
+    }
+
     private static _convertPartyToFrom(party: SDKSchemeAdapter.Outbound.V2_0_0.Types.Party): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkQuoteRequest['from'] {
         return {
             idType: party.partyIdInfo.partyIdType,

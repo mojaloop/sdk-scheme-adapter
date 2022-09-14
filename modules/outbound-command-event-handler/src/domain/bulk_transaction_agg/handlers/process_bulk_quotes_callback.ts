@@ -74,20 +74,16 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                     await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
                 }
             }
-        // If the bulk quote is in any other state update the bulk batch and all individual transfers
+        // If the bulk quote is in any other state, update the bulk batch and all individual transfers
         // to AGREEMENT_FAILED.
-        // TODO: The assumption is, in a bulk quote message response with state `ERROR_OCCURRED` that individualQuoteResults
-        //       returns a non empty array? If not, logic that looks up all individual transfers in a batch will
-        //       be needed.
         } else {
             bulkBatch.setState(BulkBatchInternalState.AGREEMENT_FAILED);
             bulkTransactionAgg.incrementBulkQuotesFailedCount();
 
-            for await (const quoteResult of bulkQuotesResult.individualQuoteResults) {
-                const individualTransferId = bulkBatch.getReferenceIdForQuoteId(quoteResult.quoteId);
+            const individualTransferIds = Object.values(bulkBatch.quoteIdReferenceIdMap);
+            for await (const individualTransferId of individualTransferIds) {
                 const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
                 individualTransfer.setTransferState(IndividualTransferInternalState.AGREEMENT_FAILED);
-                individualTransfer.setQuoteResponse(quoteResult);
                 await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
             }
         }

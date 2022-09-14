@@ -458,44 +458,7 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
         bulkQuotesResult: {
           bulkQuoteId: bulkQuoteIdDifferentFsp,
           currentState: 'ERROR_OCCURRED',
-          individualQuoteResults: [
-            {
-              quoteId: differentFspBatch.bulkQuotesRequest.individualQuotes[0].quoteId,
-              transferAmount: {
-                currency: 'USD',
-                amount: '3',
-              },
-              ilpPacket: 'string',
-              condition: 'string',
-              lastError: {
-                httpStatusCode: 500,
-                mojaloopError: {
-                  errorInformation:{
-                    errorCode: '0000',
-                    errorDescription: 'some-error'
-                  }
-                }
-              }
-            },
-            {
-              quoteId: differentFspBatch.bulkQuotesRequest.individualQuotes[1].quoteId,
-              transferAmount: {
-                currency: 'USD',
-                amount: '4',
-              },
-              ilpPacket: 'string',
-              condition: 'string',
-              lastError: {
-                httpStatusCode: 500,
-                mojaloopError: {
-                  errorInformation:{
-                    errorCode: '0000',
-                    errorDescription: 'some-error'
-                  }
-                }
-              }
-            }
-          ]
+          individualQuoteResults: []
         }
       },
       timestamp: Date.now(),
