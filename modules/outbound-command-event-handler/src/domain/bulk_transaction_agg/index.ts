@@ -38,6 +38,7 @@ import {
     IndividualTransferState,
     BulkBatchEntity,
     BulkBatchState,
+    IndividualTransferInternalState,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
@@ -45,6 +46,7 @@ import CommandEventHandlerFunctions from './handlers';
 import { ICommandEventHandlerOptions } from '@module-types';
 import { randomUUID } from 'crypto';
 
+type BatchMapArray = { [fspId: string]: string[][] };
 
 export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, BulkTransactionState> {
     // private _partyLookupTotalCount?: number;
@@ -257,20 +259,33 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
             .setBulkBatch(this._rootEntity.id, id, bulkBatch.exportState());
     }
 
-    // This function creates batches which contain bulkQuotes and bulkTransfer requests based per each DFSP and with maximum limit passed.
-    async createBatches(maxItemsPerBatch: number) : Promise<void> {
+    // This function creates batch map array requests based per each DFSP and with maximum limit passed optionally filtered by individualTransfers that match the individualTransferInternalStateFilter
+    private async _generateBatchMapArray(
+        maxItemsPerBatch: number,
+        individualTransferInternalStateFilter: IndividualTransferInternalState | null = null,
+    ) : Promise<BatchMapArray> {
         const allBulkBatchIds = await this.getAllBulkBatchIds();
         if(allBulkBatchIds.length > 0) {
             throw (new Error('Bulk batches are already created on this aggregator'));
         }
 
-        const batchesPerFsp: { [fspId: string]: string[][] } = {};
+        const batchesPerFsp: BatchMapArray = {};
+        
         // Iterate through individual transfers
         const allIndividualTransferIds = await this.getAllIndividualTransferIds();
         for await (const individualTransferId of allIndividualTransferIds) {
             // Create the array of batches per each DFSP with maximum limit from the config containing Ids of individual transfers
             const individualTransfer = await this.getIndividualTransferById(individualTransferId);
-            if(individualTransfer.transferState === 'DISCOVERY_ACCEPTED' && individualTransfer.toFspId) {
+
+            // Lets check if a filter is defined, and if it is and does not match the transferState then skip processing this individualTransfer
+            if(
+                individualTransferInternalStateFilter != null &&
+                individualTransfer.transferState !== individualTransferInternalStateFilter
+            ) {
+                continue; // Skip processing
+            }
+
+            if(individualTransfer.toFspId) {
                 // If there is any element with fspId
                 if(batchesPerFsp[individualTransfer.toFspId]) {
                     const batchFspIdArray = batchesPerFsp[individualTransfer.toFspId];
@@ -292,7 +307,17 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                 this._logger.error(`The individual transfer with id ${individualTransfer.id} is not in state DISCOVERY_ACCEPTED or toFspId is not found in the partyResponse`);
             }
         }
-        // console.log(batchesPerFsp);
+
+        return batchesPerFsp;
+    }
+
+    async generateBulkQuoteBatches(maxItemsPerBatch: number,): Promise<{
+        bulkQuotesTotalCount: number,
+    }> {
+
+        const batchesPerFsp = await this._generateBatchMapArray(maxItemsPerBatch, IndividualTransferInternalState.DISCOVERY_ACCEPTED);
+        // to a new populateBulkBatch
+        // console.dir(batchesPerFsp);
         // Construct the batches per each element in the array
         let bulkQuotesTotalCount = 0;
         for await (const fspId of Object.keys(batchesPerFsp)) {
@@ -335,6 +360,10 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
             }
         }
         await this.setBulkQuotesTotalCount(bulkQuotesTotalCount);
+        return {
+            bulkQuotesTotalCount,
+        };
+    }
 
     }
 
