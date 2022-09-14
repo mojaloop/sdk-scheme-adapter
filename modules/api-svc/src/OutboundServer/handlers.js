@@ -275,7 +275,7 @@ const postBulkTransactions = async (ctx) => {
         await ctx.state.eventProducer.sendDomainEvent(msg);
         ctx.state.eventLogger.info(`Sent domain event ${msg.getName()}`);
 
-        ctx.response.status = 204;
+        ctx.response.status = 202;
     }
     catch (err) {
         return handleBulkTransactionError('postBulkTransactions', err, ctx);
