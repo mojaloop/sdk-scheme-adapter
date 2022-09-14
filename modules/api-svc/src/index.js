@@ -36,6 +36,8 @@ const { Logger, WSO2Auth } = require('@mojaloop/sdk-standard-components');
 const LOG_ID = {
     INBOUND:   { app: 'mojaloop-connector-inbound-api' },
     OUTBOUND:  { app: 'mojaloop-connector-outbound-api' },
+    BACKEND_EVENT_HANDLER:  { app: 'backend-event-handler' },
+    FSPIOP_EVENT_HANDLER:  { app: 'fspiop-event-handler' },
     TEST:      { app: 'mojaloop-connector-test-api' },
     OAUTHTEST: { app: 'mojaloop-connector-oauth-test-server' },
     CONTROL:   { app: 'mojaloop-connector-control-client' },
@@ -119,12 +121,14 @@ class Server extends EventEmitter {
         if (this.conf.backendEventHandler.enabled) {
             this.backendEventHandler = new BackendEventHandler({
                 config: this.conf,
+                logger: this.logger.push(LOG_ID.BACKEND_EVENT_HANDLER),
             });
         }
 
         if (this.conf.fspiopEventHandler.enabled) {
-            this.backendEventHandler = new FSPIOPEventHandler({
+            this.fspiopEventHandler = new FSPIOPEventHandler({
                 config: this.conf,
+                logger: this.logger.push(LOG_ID.FSPIOP_EVENT_HANDLER),
                 cache: this.cache,
                 wso2Auth: this.wso2,
             });
@@ -157,6 +161,8 @@ class Server extends EventEmitter {
             this.metricsServer.start(),
             this.testServer?.start(),
             this.oauthTestServer?.start(),
+            this.backendEventHandler?.start(),
+            this.fspiopEventHandler?.start(),
         ]);
     }
 
@@ -294,6 +300,8 @@ class Server extends EventEmitter {
             this.testServer?.stop(),
             this.controlClient?.stop(),
             this.metricsServer.stop(),
+            this.backendEventHandler?.stop(),
+            this.fspiopEventHandler?.stop(),
         ]);
     }
 }
