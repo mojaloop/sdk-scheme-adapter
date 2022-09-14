@@ -1,11 +1,11 @@
 openapi: 3.0.1
 info:
-  title: Mojaloop SDK Inbound Scheme Adapter API
-  description: Mojaloop SDK Inbound Scheme Adapter API - To be implemented by DFSP backend
+  title: Mojaloop Simulator Inbound
+  description: Mojaloop Simulator Inbound - To be implemented by DFSP backend
   license:
     name: Open API for FSP Interoperability (FSPIOP)
     url: http://www.majaloop.io
-  version: 1.0.0
+  version: 1.1.0
 
 paths:
   /:
@@ -406,6 +406,514 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/errorResponse'
+
+  /bulkTransactions/{bulkTransactionId}:
+    put:
+      summary: Callbacks for the bulk transaction request
+      description: >-
+        The HTTP request `PUT /bulkTransactions/{bulkTransactionId}` is used to
+        amend information regarding a bulk transaction, i.e. when
+        autoAcceptParty or autoAcceptQuote  is false then the payer need to
+        provide confirmation to proceed with further processing of the request.
+        The `{bulkTransactionId}` in the URI should contain the
+        `bulkTransactionId` that was used for the creation of the bulk transfer.
+      tags:
+        - BulkTransactions
+      parameters:
+        - name: bulkTransactionId
+          in: path
+          required: true
+          schema:
+            title: CorrelationId
+            type: string
+            pattern: >-
+              ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+            description: >-
+              Identifier that correlates all messages of the same sequence. The
+              API data type UUID (Universally Unique Identifier) is a JSON
+              String in canonical format, conforming to [RFC
+              4122](https://tools.ietf.org/html/rfc4122), that is restricted by
+              a regular expression for interoperability reasons. A UUID is
+              always 36 characters long, 32 hexadecimal symbols and 4 dashes
+              (‘-‘).
+            example: b51ec534-ee48-4575-b6a9-ead2955b8069
+          description: >-
+            Identifier of the bulk transaction to continue as returned in the
+            response to a `POST /bulkTransaction` request.
+      requestBody:
+        description: Bulk transaction request body
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - description: >-
+                    The object sent back as confirmation of payee parties when
+                    autoAcceptParty is false.
+                  type: object
+                  required:
+                    - bulkHomeTransactionID
+                    - individualTransfers
+                  properties:
+                    bulkHomeTransactionID:
+                      type: string
+                      description: >-
+                        Transaction ID from the DFSP backend, used to reconcile
+                        transactions between the Switch and DFSP backend
+                        systems.
+                    individualTransfers:
+                      description: >-
+                        List of individual transfers in a bulk transfer with
+                        accept party information.
+                      type: array
+                      minItems: 1
+                      maxItems: 1000
+                      items:
+                        allOf:
+                          - type: object
+                            description: >-
+                              Data model for the 'individualTransfer' while
+                              accepting party or quote.
+                            properties:
+                              homeTransactionId:
+                                type: string
+                                description: >-
+                                  Transaction ID from the DFSP backend, used to
+                                  reconcile transactions between the Switch and
+                                  DFSP backend systems.
+                              transactionId:
+                                title: CorrelationId
+                                type: string
+                                pattern: >-
+                                  ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                                description: >-
+                                  Identifier that correlates all messages of the
+                                  same sequence. The API data type UUID
+                                  (Universally Unique Identifier) is a JSON
+                                  String in canonical format, conforming to [RFC
+                                  4122](https://tools.ietf.org/html/rfc4122),
+                                  that is restricted by a regular expression for
+                                  interoperability reasons. A UUID is always 36
+                                  characters long, 32 hexadecimal symbols and 4
+                                  dashes (‘-‘).
+                                example: b51ec534-ee48-4575-b6a9-ead2955b8069
+                            required:
+                              - homeTransactionId
+                              - transactionId
+                          - type: object
+                            required:
+                              - acceptParty
+                            properties:
+                              acceptParty:
+                                type: boolean
+                                enum:
+                                  - true
+                - description: >-
+                    The object sent back as confirmation of quotes when
+                    autoAcceptQuotes is false.
+                  type: object
+                  required:
+                    - bulkHomeTransactionID
+                    - individualTransfers
+                  properties:
+                    bulkHomeTransactionID:
+                      type: string
+                      description: >-
+                        Transaction ID from the DFSP backend, used to reconcile
+                        transactions between the Switch and DFSP backend
+                        systems.
+                    individualTransfers:
+                      description: List of individual transfers in a bulk transfer.
+                      type: array
+                      minItems: 1
+                      maxItems: 1000
+                      items:
+                        allOf:
+                          - type: object
+                            description: >-
+                              Data model for the 'individualTransfer' while
+                              accepting party or quote.
+                            properties:
+                              homeTransactionId:
+                                type: string
+                                description: >-
+                                  Transaction ID from the DFSP backend, used to
+                                  reconcile transactions between the Switch and
+                                  DFSP backend systems.
+                              transactionId:
+                                title: CorrelationId
+                                type: string
+                                pattern: >-
+                                  ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                                description: >-
+                                  Identifier that correlates all messages of the
+                                  same sequence. The API data type UUID
+                                  (Universally Unique Identifier) is a JSON
+                                  String in canonical format, conforming to [RFC
+                                  4122](https://tools.ietf.org/html/rfc4122),
+                                  that is restricted by a regular expression for
+                                  interoperability reasons. A UUID is always 36
+                                  characters long, 32 hexadecimal symbols and 4
+                                  dashes (‘-‘).
+                                example: b51ec534-ee48-4575-b6a9-ead2955b8069
+                            required:
+                              - homeTransactionId
+                              - transactionId                            
+                          - type: object
+                            required:
+                              - acceptQuote
+                            properties:
+                              acceptQuote:
+                                type: boolean
+                                enum:
+                                  - true
+                                  - false
+        required: true
+      responses:
+        '202':
+          description: Bulk transaction information successfully amended
+        '400':
+          description: Malformed or missing required body, headers or parameters
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - allOf:
+                      - type: object
+                        properties:
+                          statusCode:
+                            type: string
+                            description: Error code as string.
+                          message:
+                            type: string
+                            description: Error message text.                        
+                      - type: object
+                        required:
+                          - bulkTransferState
+                        properties:
+                          bulkTransferState:
+                            allOf:
+                              - description: >-
+                                  The object sent back as confirmation of payee
+                                  parties when autoAcceptParty is false.
+                                type: object
+                                required:
+                                  - bulkHomeTransactionID
+                                  - individualTransfers                                
+                                properties:
+                                  bulkHomeTransactionID:
+                                    type: string
+                                    description: >-
+                                      Transaction ID from the DFSP backend, used to reconcile
+                                      transactions between the Switch and DFSP backend
+                                      systems.
+                                  individualTransfers:
+                                    description: >-
+                                      List of individual transfers in a bulk transfer with
+                                      accept party information.
+                                    type: array
+                                    minItems: 1
+                                    maxItems: 1000
+                                    items:
+                                      allOf:
+                                        - type: object
+                                          description: >-
+                                            Data model for the 'individualTransfer' while
+                                            accepting party or quote.
+                                          properties:
+                                            homeTransactionId:
+                                              type: string
+                                              description: >-
+                                                Transaction ID from the DFSP backend, used to
+                                                reconcile transactions between the Switch and
+                                                DFSP backend systems.
+                                            transactionId:
+                                              title: CorrelationId
+                                              type: string
+                                              pattern: >-
+                                                ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                                              description: >-
+                                                Identifier that correlates all messages of the
+                                                same sequence. The API data type UUID
+                                                (Universally Unique Identifier) is a JSON
+                                                String in canonical format, conforming to [RFC
+                                                4122](https://tools.ietf.org/html/rfc4122),
+                                                that is restricted by a regular expression for
+                                                interoperability reasons. A UUID is always 36
+                                                characters long, 32 hexadecimal symbols and 4
+                                                dashes (‘-‘).
+                                              example: b51ec534-ee48-4575-b6a9-ead2955b8069
+                                          required:
+                                            - homeTransactionId
+                                            - transactionId
+                                        - type: object
+                                          required:
+                                            - acceptParty
+                                          properties:
+                                            acceptParty:
+                                              type: boolean
+                                              enum:
+                                                - true                                                                     
+                              - type: object
+                                description: >-
+                                  This object represents a Mojaloop API error
+                                  received at any time during the party
+                                  discovery process
+                                properties:
+                                  httpStatusCode:
+                                    type: integer
+                                    description: >-
+                                      The HTTP status code returned to the
+                                      caller. This is the same as the actual
+                                      HTTP status code returned with the
+                                      response.
+                                  mojaloopError:
+                                    description: >-
+                                      If a transfer process results in an error
+                                      callback during the asynchronous Mojaloop
+                                      API exchange, this property will contain
+                                      the underlying Mojaloop API error object.
+                                    type: object
+                                    properties:
+                                      errorInformation:
+                                        title: ErrorInformation
+                                        type: object
+                                        description: Data model for the complex type ErrorInformation.
+                                        properties:
+                                          errorCode:
+                                            title: ErrorCode
+                                            type: string
+                                            pattern: ^[1-9]\d{3}$
+                                            description: >-
+                                              The API data type ErrorCode is a JSON String
+                                              of four characters, consisting of digits only.
+                                              Negative numbers are not allowed. A leading
+                                              zero is not allowed. Each error code in the
+                                              API is a four-digit number, for example, 1234,
+                                              where the first number (1 in the example)
+                                              represents the high-level error category, the
+                                              second number (2 in the example) represents
+                                              the low-level error category, and the last two
+                                              numbers (34 in the example) represent the
+                                              specific error.
+                                            example: '5100'
+                                          errorDescription:
+                                            title: ErrorDescription
+                                            type: string
+                                            minLength: 1
+                                            maxLength: 128
+                                            description: Error description string.
+                                          extensionList:
+                                            title: ExtensionList
+                                            type: object
+                                            description: >-
+                                              Data model for the complex type ExtensionList.
+                                              An optional list of extensions, specific to
+                                              deployment.
+                                            properties:
+                                              extension:
+                                                type: array
+                                                items:
+                                                  title: Extension
+                                                  type: object
+                                                  description: Data model for the complex type Extension.
+                                                  properties:
+                                                    key:
+                                                      title: ExtensionKey
+                                                      type: string
+                                                      minLength: 1
+                                                      maxLength: 32
+                                                      description: Extension key.
+                                                    value:
+                                                      title: ExtensionValue
+                                                      type: string
+                                                      minLength: 1
+                                                      maxLength: 128
+                                                      description: Extension value.
+                                                  required:
+                                                    - key
+                                                    - value
+                                                minItems: 1
+                                                maxItems: 16
+                                                description: Number of Extension elements.                                         
+                                            required:
+                                              - extension
+                                        required:
+                                          - errorCode
+                                          - errorDescription                                    
+                  - allOf:
+                      - type: object
+                        properties:
+                          statusCode:
+                            type: string
+                            description: Error code as string.
+                          message:
+                            type: string
+                            description: Error message text.
+                      - type: object
+                        required:
+                          - bulkTansferState
+                        properties:
+                          bulkTransferState:
+                            allOf:
+                              - description: >-
+                                  The object sent back as confirmation of quotes
+                                  when autoAcceptQuotes is false.
+                                type: object
+                                required:
+                                  - bulkHomeTransactionID
+                                  - individualTransfers                                
+                                properties:
+                                  bulkHomeTransactionID:
+                                    type: string
+                                    description: >-
+                                      Transaction ID from the DFSP backend, used to reconcile
+                                      transactions between the Switch and DFSP backend
+                                      systems.
+                                  individualTransfers:
+                                    description: List of individual transfers in a bulk transfer.
+                                    type: array
+                                    minItems: 1
+                                    maxItems: 1000
+                                    items:
+                                      allOf:
+                                        - type: object
+                                          description: >-
+                                            Data model for the 'individualTransfer' while
+                                            accepting party or quote.
+                                          properties:
+                                            homeTransactionId:
+                                              type: string
+                                              description: >-
+                                                Transaction ID from the DFSP backend, used to
+                                                reconcile transactions between the Switch and
+                                                DFSP backend systems.
+                                            transactionId:
+                                              title: CorrelationId
+                                              type: string
+                                              pattern: >-
+                                                ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                                              description: >-
+                                                Identifier that correlates all messages of the
+                                                same sequence. The API data type UUID
+                                                (Universally Unique Identifier) is a JSON
+                                                String in canonical format, conforming to [RFC
+                                                4122](https://tools.ietf.org/html/rfc4122),
+                                                that is restricted by a regular expression for
+                                                interoperability reasons. A UUID is always 36
+                                                characters long, 32 hexadecimal symbols and 4
+                                                dashes (‘-‘).
+                                              example: b51ec534-ee48-4575-b6a9-ead2955b8069                                          
+                                          required:
+                                            - homeTransactionId
+                                            - transactionId                                          
+                                        - type: object
+                                          required:
+                                            - acceptQuote
+                                          properties:
+                                            acceptQuote:
+                                              type: boolean
+                                              enum:
+                                                - true
+                                                - false
+                              - type: object
+                                description: >-
+                                  This object represents a Mojaloop API error
+                                  received at any time during the quote process
+                                properties:
+                                  httpStatusCode:
+                                    type: integer
+                                    description: >-
+                                      The HTTP status code returned to the
+                                      caller. This is the same as the actual
+                                      HTTP status code returned with the
+                                      response.
+                                  mojaloopError:
+                                    description: >-
+                                      If a quote process results in an error
+                                      callback during the asynchronous Mojaloop
+                                      API exchange, this property will contain
+                                      the underlying Mojaloop API error object.
+                                    type: object
+                                    properties:
+                                      errorInformation:
+                                        title: ErrorInformation
+                                        type: object
+                                        description: Data model for the complex type ErrorInformation.
+                                        properties:
+                                          errorCode:
+                                            title: ErrorCode
+                                            type: string
+                                            pattern: ^[1-9]\d{3}$
+                                            description: >-
+                                              The API data type ErrorCode is a JSON String
+                                              of four characters, consisting of digits only.
+                                              Negative numbers are not allowed. A leading
+                                              zero is not allowed. Each error code in the
+                                              API is a four-digit number, for example, 1234,
+                                              where the first number (1 in the example)
+                                              represents the high-level error category, the
+                                              second number (2 in the example) represents
+                                              the low-level error category, and the last two
+                                              numbers (34 in the example) represent the
+                                              specific error.
+                                            example: '5100'
+                                          errorDescription:
+                                            title: ErrorDescription
+                                            type: string
+                                            minLength: 1
+                                            maxLength: 128
+                                            description: Error description string.
+                                          extensionList:
+                                            title: ExtensionList
+                                            type: object
+                                            description: >-
+                                              Data model for the complex type ExtensionList.
+                                              An optional list of extensions, specific to
+                                              deployment.
+                                            properties:
+                                              extension:
+                                                type: array
+                                                items:
+                                                  title: Extension
+                                                  type: object
+                                                  description: Data model for the complex type Extension.
+                                                  properties:
+                                                    key:
+                                                      title: ExtensionKey
+                                                      type: string
+                                                      minLength: 1
+                                                      maxLength: 32
+                                                      description: Extension key.
+                                                    value:
+                                                      title: ExtensionValue
+                                                      type: string
+                                                      minLength: 1
+                                                      maxLength: 128
+                                                      description: Extension value.                                                  
+                                                  required:
+                                                    - key
+                                                    - value
+                                                minItems: 1
+                                                maxItems: 16
+                                                description: Number of Extension elements.                                     
+                                            required:
+                                              - extension
+                                        required:
+                                          - errorCode
+                                          - errorDescription
+        '500':
+          description: An error occurred processing the bulk transaction
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: string
+                    description: Error code as string.
+                  message:
+                    type: string
+                    description: Error message text.
 
   /bulkTransfers:
     post:
