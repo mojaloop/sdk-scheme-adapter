@@ -149,7 +149,7 @@ describe("Tests for ProcessSDKOutboundBulkQuotesRequest Event Handler", () => {
           },
           amountType: "SEND",
           currency: "USD",
-          amount: "123.45",
+          amount: "1",
         },
         {
           homeTransactionId: randomUUID(),
@@ -161,7 +161,7 @@ describe("Tests for ProcessSDKOutboundBulkQuotesRequest Event Handler", () => {
           },
           amountType: "SEND",
           currency: "USD",
-          amount: "456.78",
+          amount: "2",
         },
         {
           homeTransactionId: randomUUID(),
@@ -173,7 +173,7 @@ describe("Tests for ProcessSDKOutboundBulkQuotesRequest Event Handler", () => {
           },
           amountType: "SEND",
           currency: "USD",
-          amount: "678.99",
+          amount: "3",
         }
       ]
     }
@@ -200,12 +200,19 @@ describe("Tests for ProcessSDKOutboundBulkQuotesRequest Event Handler", () => {
     // Get the randomly generated transferIds for the callback
     const randomGeneratedTransferIds = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
 
+    // The transfer ids are unordered so using the transfer amounts to identify each transfer
+    // so we can reference the proper transferId in subsequent callbacks
+    const amountList: string[] = []
+    amountList.push((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, randomGeneratedTransferIds[0])).request.amount)
+    amountList.push((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, randomGeneratedTransferIds[1])).request.amount)
+    amountList.push((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, randomGeneratedTransferIds[2])).request.amount)
+
     // Simulate the domain handler sending the command handler ProcessPartyInfoCallback messages
     // for each individual transfer
     const processPartyInfoCallbackMessageData1: IProcessPartyInfoCallbackCmdEvtData = {
       bulkId: bulkTransactionId,
       content: {
-        transferId: randomGeneratedTransferIds[0],
+        transferId: randomGeneratedTransferIds[amountList.indexOf('1')],
         partyResult: {
           party: {
               partyIdInfo: {
@@ -223,7 +230,7 @@ describe("Tests for ProcessSDKOutboundBulkQuotesRequest Event Handler", () => {
     const processPartyInfoCallbackMessageData2: IProcessPartyInfoCallbackCmdEvtData = {
       bulkId: bulkTransactionId,
       content: {
-        transferId: randomGeneratedTransferIds[1],
+        transferId: randomGeneratedTransferIds[amountList.indexOf('2')],
         partyResult: {
           party: {
               partyIdInfo: {
@@ -242,7 +249,7 @@ describe("Tests for ProcessSDKOutboundBulkQuotesRequest Event Handler", () => {
     const processPartyInfoCallbackMessageData3: IProcessPartyInfoCallbackCmdEvtData = {
       bulkId: bulkTransactionId,
       content: {
-        transferId: randomGeneratedTransferIds[2],
+        transferId: randomGeneratedTransferIds[amountList.indexOf('3')],
         partyResult: {
           party: {
               partyIdInfo: {
@@ -286,17 +293,17 @@ describe("Tests for ProcessSDKOutboundBulkQuotesRequest Event Handler", () => {
         individualTransfers: [
           {
             homeTransactionId: 'string',
-            transactionId: randomGeneratedTransferIds[0],
+            transactionId: randomGeneratedTransferIds[amountList.indexOf('1')],
             acceptParty: true
           },
           {
             homeTransactionId: 'string',
-            transactionId: randomGeneratedTransferIds[1],
+            transactionId: randomGeneratedTransferIds[amountList.indexOf('2')],
             acceptParty: false
           },
           {
             homeTransactionId: 'string',
-            transactionId: randomGeneratedTransferIds[2],
+            transactionId: randomGeneratedTransferIds[amountList.indexOf('3')],
             acceptParty: true
           }
         ]
@@ -331,33 +338,40 @@ describe("Tests for ProcessSDKOutboundBulkQuotesRequest Event Handler", () => {
     expect(hasBulkQuotesRequested).toBeTruthy();
 
     // Check that bulk batches have been created.
+    // One should be for receiverfsp and another for differentfsp
     const bulkBatchIds = await bulkTransactionEntityRepo.getAllBulkBatchIds(bulkTransactionId);
     expect(bulkBatchIds[0]).toBeDefined();
     expect(bulkBatchIds[1]).toBeDefined();
 
-    // NOTE: The batch ids become unordered somewhere so the id can refer to either fsp's batched bulk quote
+    const bulkBatchOne = await bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, bulkBatchIds[0]);
+    const bulkBatchTwo = await bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, bulkBatchIds[1]);
 
-    // Assert that only the accepted parties for receiverfsp|differentfsp made it into a batched bulk quote.
+    // Bulk batch ids are unordered so check the quotes for the intended fsp
+    // so we can send proper callbacks
+    let receiverFspBatch;
+    let differentFspBatch;
+    if (bulkBatchOne.bulkQuotesRequest.individualQuotes[0].to.fspId == 'receiverfsp') {
+      receiverFspBatch = bulkBatchOne;
+      differentFspBatch = bulkBatchTwo;
+    } else {
+      receiverFspBatch = bulkBatchTwo;
+      differentFspBatch = bulkBatchOne;
+    }
+
     // Assert that the quote number match the accepted parties
     // Assert the bulk batch state is AGREEMENT_PROCESSING
     // Assert that the reject party was not added in bulk batch
-    const bulkBatchOne = await bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, bulkBatchIds[0]);
+    expect(receiverFspBatch.state).toEqual(BulkTransactionInternalState.AGREEMENT_PROCESSING);
+    expect(receiverFspBatch.bulkQuotesRequest.individualQuotes.length).toEqual(1);
+    expect(receiverFspBatch.bulkQuotesRequest.individualQuotes[0].to.fspId).toEqual('receiverfsp');
+    expect(receiverFspBatch.bulkQuotesRequest.individualQuotes[0].to.idValue).not.toEqual('678999');
 
-    expect(bulkBatchOne.state).toEqual(BulkTransactionInternalState.AGREEMENT_PROCESSING);
-    expect(bulkBatchOne.bulkQuotesRequest.individualQuotes.length).toEqual(1);
-    expect(bulkBatchOne.bulkQuotesRequest.individualQuotes[0].to.fspId).toMatch(/receiverfsp|differentfsp/);
-    expect(bulkBatchOne.bulkQuotesRequest.individualQuotes[0].to.idValue).not.toEqual('678999');
-
-
-    // Assert that only the accepted parties for receiverfsp|differentfsp made it into a batched bulk quote
     // Assert that the quote number match the accepted parties.
     // Assert the bulk batch state is AGREEMENT_PROCESSING
     // Assert that the reject party was not added in bulk batch
-    const bulkBatchTwo = await bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, bulkBatchIds[1]);
-
-    expect(bulkBatchTwo.state).toEqual(BulkTransactionInternalState.AGREEMENT_PROCESSING);
-    expect(bulkBatchTwo.bulkQuotesRequest.individualQuotes.length).toEqual(1);
-    expect(bulkBatchTwo.bulkQuotesRequest.individualQuotes[0].to.fspId).toMatch(/receiverfsp|differentfsp/);
-    expect(bulkBatchTwo.bulkQuotesRequest.individualQuotes[0].to.idValue).not.toEqual('678999');
+    expect(differentFspBatch.state).toEqual(BulkTransactionInternalState.AGREEMENT_PROCESSING);
+    expect(differentFspBatch.bulkQuotesRequest.individualQuotes.length).toEqual(1);
+    expect(differentFspBatch.bulkQuotesRequest.individualQuotes[0].to.fspId).toEqual('differentfsp');
+    expect(differentFspBatch.bulkQuotesRequest.individualQuotes[0].to.idValue).not.toEqual('678999');
   });
 });

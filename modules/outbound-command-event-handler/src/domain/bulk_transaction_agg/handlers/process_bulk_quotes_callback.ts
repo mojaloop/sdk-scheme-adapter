@@ -50,14 +50,11 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
             processBulkQuotesCallbackMessage.batchId,
         );
         const bulkQuotesResult = processBulkQuotesCallbackMessage.bulkQuotesResult;
-        // TODO: There is no currentState in the bulkQuotesResult specification, but its there in the response. Need to discuss on this.
-        // if(bulkQuotesResult.currentState && bulkQuotesResult.currentState === 'COMPLETED') {
-        // TODO: bulkQuotesResult.currentState === 'ERROR_OCCURRED' = error out all individual transfers in that bulk batch
-        // TODO: If individual quote result contains an error the individual transfer state should be AGREEMENT_FAILED
 
+        // If individual quote result contains `lastError` the individual transfer state should be AGREEMENT_FAILED.
+        // bulkQuotesResult.currentState === 'ERROR_OCCURRED' necessitates erroring out all individual transfers in that bulk batch.
         if(bulkQuotesResult.currentState &&
-           bulkQuotesResult.currentState === 'COMPLETED' &&
-           bulkQuotesResult.individualQuoteResults.length > 0) {
+           bulkQuotesResult.currentState === 'COMPLETED') {
             bulkBatch.setState(BulkBatchInternalState.AGREEMENT_COMPLETED);
             bulkTransactionAgg.incrementBulkQuotesSuccessCount();
 
@@ -77,6 +74,11 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                     await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
                 }
             }
+        // If the bulk quote is in any other state update the bulk batch and all individual transfers
+        // to AGREEMENT_FAILED.
+        // TODO: The assumption is, in a bulk quote message response with state `ERROR_OCCURRED` that individualQuoteResults
+        //       returns a non empty array? If not, logic that looks up all individual transfers in a batch will
+        //       be needed.
         } else {
             bulkBatch.setState(BulkBatchInternalState.AGREEMENT_FAILED);
             bulkTransactionAgg.incrementBulkQuotesFailedCount();

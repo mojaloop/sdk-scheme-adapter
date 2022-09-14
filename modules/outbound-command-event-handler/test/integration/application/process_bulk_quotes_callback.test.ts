@@ -218,7 +218,8 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
     // Get the randomly generated transferIds for the callback
     const randomGeneratedTransferIds = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
 
-    // These ids are unordered so using the amount to properly determine which is which
+    // The transfer ids are unordered so using the transfer amounts to identify each transfer
+    // so we can reference the proper transferId in subsequent callbacks
     const amountList: string[] = []
     amountList.push((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, randomGeneratedTransferIds[0])).request.amount)
     amountList.push((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, randomGeneratedTransferIds[1])).request.amount)
@@ -377,15 +378,13 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
     expect(bulkBatchIds[0]).toBeDefined();
     expect(bulkBatchIds[1]).toBeDefined();
 
-    // Get randomly generated quoteId
     const bulkBatchOne = await bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, bulkBatchIds[0]);
     const bulkBatchTwo = await bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, bulkBatchIds[1]);
 
-    // Bulk batch ids may be unordered so check the quotes so we can send
-    // proper callbacks
+    // Bulk batch ids are unordered so check the quotes for the intended fsp
+    // so we can send proper callbacks
     let receiverFspBatch;
     let differentFspBatch;
-    console.log(bulkBatchOne.bulkQuotesRequest.individualQuotes[0].to.fspId)
     if (bulkBatchOne.bulkQuotesRequest.individualQuotes[0].to.fspId == 'receiverfsp') {
       receiverFspBatch = bulkBatchOne
       differentFspBatch = bulkBatchTwo
@@ -515,8 +514,6 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
     // Check that bulkQuoteResponse state has been updated to COMPLETED
     expect(postBulkBatchReceiverFsp.bulkQuotesResponse!.currentState).toEqual("COMPLETED")
 
-    console.log(postBulkBatchReceiverFsp);
-
     // Check that the state of bulk batch for differentfsp to be AGREEMENT_FAILED
     const postBulkBatchDifferentFsp = await bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, differentFspBatch.id);
     expect(postBulkBatchDifferentFsp.state).toBe(BulkBatchInternalState.AGREEMENT_FAILED);
@@ -524,21 +521,27 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
     // Check that bulkQuoteResponse state has been updated to COMPLETED
     expect(postBulkBatchDifferentFsp.bulkQuotesResponse!.currentState).toEqual("ERROR_OCCURRED")
 
-    console.log(postBulkBatchDifferentFsp);
-
     // Check the individual transfer state whose quote was successful in a successful bulk quote batch
     expect((await bulkTransactionEntityRepo.getIndividualTransfer(
       bulkTransactionId,
       randomGeneratedTransferIds[amountList.indexOf('1')])).state)
     .toBe(IndividualTransferInternalState.AGREEMENT_SUCCESS);
 
-
     // Check the individual transfer state whose quote was errored in a successful bulk quote batch
-    expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, randomGeneratedTransferIds[amountList.indexOf('2')])).state).toBe(IndividualTransferInternalState.AGREEMENT_FAILED);
+    expect((await bulkTransactionEntityRepo.getIndividualTransfer(
+      bulkTransactionId,
+      randomGeneratedTransferIds[amountList.indexOf('2')])).state)
+    .toBe(IndividualTransferInternalState.AGREEMENT_FAILED);
 
     // Check the individual transfer state whose quotes were in an errored bulk quote batch
-    expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, randomGeneratedTransferIds[amountList.indexOf('3')])).state).toBe(IndividualTransferInternalState.AGREEMENT_FAILED);
-    expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, randomGeneratedTransferIds[amountList.indexOf('4')])).state).toBe(IndividualTransferInternalState.AGREEMENT_FAILED);
+    expect((await bulkTransactionEntityRepo.getIndividualTransfer(
+      bulkTransactionId,
+      randomGeneratedTransferIds[amountList.indexOf('3')])).state)
+    .toBe(IndividualTransferInternalState.AGREEMENT_FAILED);
+    expect((await bulkTransactionEntityRepo.getIndividualTransfer(
+      bulkTransactionId,
+      randomGeneratedTransferIds[amountList.indexOf('4')])).state)
+    .toBe(IndividualTransferInternalState.AGREEMENT_FAILED);
 
     // Now that all the bulk batches have reached a final state check the global state
     // Check that the global state of bulk to be AGREEMENT_COMPLETED
@@ -553,18 +556,6 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
     const hasSDKOutboundBulkQuotesRequestProcessed = (domainEvents.find((e) => e.getName() === 'SDKOutboundBulkQuotesRequestProcessedDmEvt'));
     expect(hasSDKOutboundBulkQuotesRequestProcessed).toBeTruthy();
   });
-
-
-  // Skipping this since there is no timeout logic for the bulk quotes callback handler.
-  test.skip("Given the callback for quote batch is successful \
-    And the callback has a combination of success and failed responses for individual quotes \
-    When Inbound command event ProcessBulkQuotesCallback is not received and the wait timeout expires\
-    Then the logic should update the individual batch state to AGREEMENT_COMPLETED, \
-    And for each individual quote in the batch, the state should be updated to AGREEMENT_SUCCESS or AGREEMENT_FAILED accordingly \
-    And the individual quote data in redis should be updated with the response \
-    And domain event BulkQuotesCallbackProcessed should be published \
-    And domain event SDKOutboundBulkQuotesRequestProcessed should be published",
-  async () => {});
 
   // Skipping this since there is no easy way to programmatically control the
   // maxEntryConfigPerBatch config value atm.

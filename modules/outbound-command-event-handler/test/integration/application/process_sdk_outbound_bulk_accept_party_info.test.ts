@@ -147,7 +147,7 @@ describe("Tests for ProcessSDKOutboundBulkAcceptPartyInfo Event Handler", () => 
             },
             amountType: "SEND",
             currency: "USD",
-            amount: "123.45",
+            amount: "1",
           },
           {
             homeTransactionId: randomUUID(),
@@ -159,7 +159,7 @@ describe("Tests for ProcessSDKOutboundBulkAcceptPartyInfo Event Handler", () => 
             },
             amountType: "SEND",
             currency: "USD",
-            amount: "456.78",
+            amount: "2",
           }
         ]
     }
@@ -186,12 +186,18 @@ describe("Tests for ProcessSDKOutboundBulkAcceptPartyInfo Event Handler", () => 
     // Get the randomly generated transferIds for the callback
     const randomGeneratedTransferIds = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
 
+    // The transfer ids are unordered so using the transfer amounts to identify each transfer
+    // so we can reference the proper transferId in subsequent callbacks
+    const amountList: string[] = []
+    amountList.push((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, randomGeneratedTransferIds[0])).request.amount)
+    amountList.push((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, randomGeneratedTransferIds[1])).request.amount)
+
     // Simulate the domain handler sending the command handler PProcessPartyInfoCallback messages
     // for each individual transfer
     const processPartyInfoCallbackMessageData1: IProcessPartyInfoCallbackCmdEvtData = {
       bulkId: bulkTransactionId,
       content: {
-        transferId: randomGeneratedTransferIds[0],
+        transferId: randomGeneratedTransferIds[amountList.indexOf('1')],
         partyResult: {
           party: {
               partyIdInfo: {
@@ -209,7 +215,7 @@ describe("Tests for ProcessSDKOutboundBulkAcceptPartyInfo Event Handler", () => 
     const processPartyInfoCallbackMessageData2: IProcessPartyInfoCallbackCmdEvtData = {
       bulkId: bulkTransactionId,
       content: {
-        transferId: randomGeneratedTransferIds[1],
+        transferId: randomGeneratedTransferIds[amountList.indexOf('2')],
         partyResult: {
           party: {
               partyIdInfo: {
@@ -251,12 +257,12 @@ describe("Tests for ProcessSDKOutboundBulkAcceptPartyInfo Event Handler", () => 
         individualTransfers: [
           {
             homeTransactionId: 'string',
-            transactionId: randomGeneratedTransferIds[0],
+            transactionId: randomGeneratedTransferIds[amountList.indexOf('1')],
             acceptParty: true
           },
           {
             homeTransactionId: 'string',
-            transactionId: randomGeneratedTransferIds[1],
+            transactionId: randomGeneratedTransferIds[amountList.indexOf('2')],
             acceptParty: false
           }
         ]
@@ -275,11 +281,11 @@ describe("Tests for ProcessSDKOutboundBulkAcceptPartyInfo Event Handler", () => 
     expect(bulkStateTwo.state).toBe(BulkTransactionInternalState.DISCOVERY_ACCEPTANCE_COMPLETED);
 
     // Check that accepted party for individual transfers have been updated to DISCOVERY_ACCEPTED
-    const acceptedIndividualTransfer = await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId,  randomGeneratedTransferIds[0]);
+    const acceptedIndividualTransfer = await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId,  randomGeneratedTransferIds[amountList.indexOf('1')]);
     expect(acceptedIndividualTransfer.state).toBe(IndividualTransferInternalState.DISCOVERY_ACCEPTED);
 
     // Check that rejected party for individual transfers have been updated to DISCOVERY_REJECTED
-    const rejectedIndividualTransfer = await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId,  randomGeneratedTransferIds[1]);
+    const rejectedIndividualTransfer = await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId,  randomGeneratedTransferIds[amountList.indexOf('2')]);
     expect(rejectedIndividualTransfer.state).toBe(IndividualTransferInternalState.DISCOVERY_REJECTED);
 
      // Check that command handler sends event to domain handler
