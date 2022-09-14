@@ -56,13 +56,17 @@ module.exports.handlePartyInfoRequestedDmEvt = async (
             bulkId: event.getKey(),
             content: {
                 transferId: event.getTransferId(),
-                partyResult: response,
+                partyResult: {
+                    party: response.party?.body,
+                    currentState: response.currentState,
+                    errorInformation: response.errorInformation
+                },
             },
             timestamp: Date.now(),
             headers: [],
         });
         await options.producer.sendDomainEvent(partyInfoCallbackReceivedDmEvt);
     } catch (err) {
-        logger.error(`Error in handlePartyInfoRequestedDmEvt: ${err.message}`);
+        logger.push({ err }).log('Error in handlePartyInfoRequestedDmEvt');
     }
 };

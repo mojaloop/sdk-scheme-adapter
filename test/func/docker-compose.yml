@@ -71,6 +71,7 @@ services:
         - mojaloop-net
     image: mojaloop/ml-testing-toolkit:v15.0.0
     container_name: ml-testing-toolkit
+    user: root
     volumes:
       - "./config/ml-testing-toolkit/spec_files:/opt/app/spec_files"
     ports:
@@ -80,7 +81,7 @@ services:
       - AUTH_ENABLED=FALSE
     command: npm start
 
-  mojaloop-testing-toolkit-ui:
+  ml-testing-toolkit-ui:
     image: mojaloop/ml-testing-toolkit-ui:v15.0.0
     ports:
       - "6060:6060"
