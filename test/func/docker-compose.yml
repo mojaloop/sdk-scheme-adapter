@@ -165,3 +165,12 @@ services:
     depends_on:
       - kafka
 
+  insights:
+    image: redislabs/redisinsight
+    ports:
+      - "9001:8001"
+    networks:
+      - mojaloop-net
+    volumes: []
+    restart: on-failure
+
