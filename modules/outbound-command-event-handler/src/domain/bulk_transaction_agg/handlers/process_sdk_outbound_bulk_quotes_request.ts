@@ -59,9 +59,9 @@ export async function handleProcessSDKOutboundBulkQuotesRequestCmdEvt(
         // Create bulkQuotes batches from individual items with DISCOVERY_ACCEPTED state per FSP and maxEntryConfigPerBatch
         logger.info(`Creating batches for bulkId=${processSDKOutboundBulkQuotesRequestMessage.getKey()}`);
 
-        const populateBulkQuoteBatchesResult = await bulkTransactionAgg.generateBulkQuoteBatches(options.appConfig.get('MAX_ITEMS_PER_BATCH'));
+        const generateBulkQuoteBatchesResult = await bulkTransactionAgg.generateBulkQuoteBatches(options.appConfig.get('MAX_ITEMS_PER_BATCH'));
 
-        logger.info(`Created Bulk Quote Batches with response: ${JSON.stringify(populateBulkQuoteBatchesResult, null, 2)}`);
+        logger.info(`Created Bulk Quote Batches with response: ${JSON.stringify(generateBulkQuoteBatchesResult, null, 2)}`);
 
         // Iterate through batches
         const allBulkBatchIds = await bulkTransactionAgg.getAllBulkBatchIds();
