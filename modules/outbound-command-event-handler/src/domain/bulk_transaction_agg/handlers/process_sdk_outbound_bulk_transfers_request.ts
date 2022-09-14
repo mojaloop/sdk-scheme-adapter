@@ -57,7 +57,10 @@ export async function handleProcessSDKOutboundBulkTransfersRequestCmdEvt(
 
         // Create bulkTransfers batches from individual items with AGREEMENT_ACCEPTED state per FSP and maxEntryConfigPerBatch
         logger.info(`Creating batches for bulkId=${processSDKOutboundBulkTransfersRequestMessage.getKey()}`);
-        await bulkTransactionAgg.createBatches(options.appConfig.get('MAX_ITEMS_PER_BATCH'));
+
+        const generateBulkTransferBatchesResults = bulkTransactionAgg.generateBulkTransferBatches();
+
+        logger.info(`Created Bulk Transfers Batches with response: ${JSON.stringify(generateBulkTransferBatchesResults, null, 2)}`);
 
         // Iterate through batches
         const allBulkBatchIds = await bulkTransactionAgg.getAllBulkBatchIds();

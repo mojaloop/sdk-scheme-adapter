@@ -311,11 +311,15 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         return batchesPerFsp;
     }
 
-    async generateBulkQuoteBatches(maxItemsPerBatch: number,): Promise<{
+    async generateBulkQuoteBatches(maxItemsPerBatch: number): Promise<{
         bulkQuotesTotalCount: number,
     }> {
+        // Lets creates batch map array requests based per each DFSP and with maximum limit passed optionally filtered by individualTransfers that match the individualTransferInternalStateFilter
+        const batchesPerFsp = await this._generateBatchMapArray(
+            maxItemsPerBatch,
+            IndividualTransferInternalState.DISCOVERY_ACCEPTED,
+        );
 
-        const batchesPerFsp = await this._generateBatchMapArray(maxItemsPerBatch, IndividualTransferInternalState.DISCOVERY_ACCEPTED);
         // to a new populateBulkBatch
         // console.dir(batchesPerFsp);
         // Construct the batches per each element in the array
@@ -365,6 +369,64 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         };
     }
 
+    // async generateBulkTransferBatches(batchesPerFspIdArray: string[]): Promise<{
+    async generateBulkTransferBatches(): Promise<{
+        bulkTransfersTotalCount: number,
+    } | void> {
+        // Lets fetch the current BulkBatchId Array
+        const batchesPerFspIdArray = await this.getAllBulkBatchIds();
+
+        // to a new populateBulkBatch
+        // console.dir(batchesPerFsp);
+        // Construct the batches per each element in the array
+        let bulkTransfersTotalCount = 0;
+        for await (const bulkBatchId of batchesPerFspIdArray) {
+            const bulkBatch = await this.getBulkBatchEntityById(bulkBatchId);
+            // const individualTransfer = await bulkBatch.state;
+            const individualQuoteResults = bulkBatch.bulkQuotesResponse?.individualQuoteResults;
+
+            if(individualQuoteResults == null) continue; // TODO: how to handle this?
+
+            for await (const individualQuoteResult of individualQuoteResults) {
+                // this.
+                const individualTransferId = bulkBatch.getReferenceIdForQuoteId(individualQuoteResult.quoteId)
+                const individualTransfer = await this.getIndividualTransferById(individualTransferId);
+                const party = individualTransfer.partyResponse?.party;
+                if(party) {
+                    // Add Transfers to batch
+                    bulkBatch.addIndividualTransfer(
+                        {
+                            transferId: randomUUID(),
+                            to: {
+                                idType: party.partyIdInfo.partyIdType,
+                                idValue: party.partyIdInfo.partyIdentifier,
+                                idSubValue: party.partyIdInfo.partySubIdOrType,
+                                displayName: party.name,
+                                firstName: party.personalInfo?.complexName?.firstName,
+                                middleName: party.personalInfo?.complexName?.middleName,
+                                lastName: party.personalInfo?.complexName?.lastName,
+                                dateOfBirth: party.personalInfo?.dateOfBirth,
+                                merchantClassificationCode: party.merchantClassificationCode,
+                                fspId: party.partyIdInfo.fspId,
+                                extensionList: party.partyIdInfo.extensionList?.extension,
+                            },
+                            amountType: individualTransfer.request.amountType,
+                            currency: individualTransfer.request.currency,
+                            amount: individualTransfer.request.amount,
+                            transactionType: 'TRANSFER',
+                            extensions: individualTransfer.request.quoteExtensions,
+                        },
+                        individualTransfer.id,
+                    );
+                }
+                bulkTransfersTotalCount += 1;
+            }
+            await this.setBulkBatchById(bulkBatch.id, bulkBatch);
+            await this.setBulkTransfersTotalCount(bulkTransfersTotalCount);
+        }
+        return {
+            bulkTransfersTotalCount,
+        };
     }
 
     async setPartyLookupTotalCount(count: number): Promise<void> {
@@ -438,3 +500,4 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
     }
 
 }
+
