@@ -389,7 +389,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
 
             for await (const individualQuoteResult of individualQuoteResults) {
                 // this.
-                const individualTransferId = bulkBatch.getReferenceIdForQuoteId(individualQuoteResult.quoteId)
+                const individualTransferId = bulkBatch.getReferenceIdForQuoteId(individualQuoteResult.quoteId);
                 const individualTransfer = await this.getIndividualTransferById(individualTransferId);
                 const party = individualTransfer.partyResponse?.party;
                 if(party) {
