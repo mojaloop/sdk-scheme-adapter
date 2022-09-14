@@ -1,0 +1,90 @@
+{
+  "name": "Bulk Test Cases",
+  "test_cases": [
+    {
+      "id": 1,
+      "name": "Given acceptParty:true, When a bulk transaction is submitted, Then the global state should automatically reach to DISCOVERY_ACCEPTANCE_COMPLETED",
+      "fileInfo": {
+        "path": "p2p.json"
+      },
+      "requests": [
+        {
+          "id": 1,
+          "description": "Send bulkTransactions request",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/bulkTransactions",
+          "path": "/bulkTransactions",
+          "method": "post",
+          "url": "http://payer-sdk-api-svc:4001",
+          "body": {
+            "bulkHomeTransactionID": "{$function.generic.generateUUID}",
+            "bulkTransactionId": "{$function.generic.generateUUID}",
+            "options": {
+              "onlyValidateParty": true,
+              "autoAcceptParty": {
+                "enabled": true
+              },
+              "autoAcceptQuote": {
+                "enabled": true,
+                "perTransferFeeLimits": [
+                  {
+                    "currency": "AED",
+                    "amount": "123.45"
+                  }
+                ]
+              },
+              "skipPartyLookup": false,
+              "synchronous": true,
+              "bulkExpiration": "2016-05-24T08:38:08.699-04:00"
+            },
+            "from": {
+              "partyIdInfo": {
+                "partyIdType": "MSISDN",
+                "partyIdentifier": "16135551212",
+                "fspId": "string"
+              },
+              "merchantClassificationCode": "123",
+              "name": "string",
+              "personalInfo": {
+                "complexName": {
+                  "firstName": "Henrik",
+                  "middleName": "Johannes",
+                  "lastName": "Karlsson"
+                },
+                "dateOfBirth": "1966-06-16"
+              }
+            },
+            "individualTransfers": [
+              {
+                "homeTransactionId": "{$function.generic.generateUUID}",
+                "to": {
+                  "partyIdInfo": {
+                    "partyIdType": "MSISDN",
+                    "partyIdentifier": "48500002222"
+                  },
+                  "merchantClassificationCode": "123"
+                },
+                "reference": "string",
+                "amountType": "SEND",
+                "currency": "USD",
+                "amount": "10",
+                "note": "Note sent to Payee."
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
