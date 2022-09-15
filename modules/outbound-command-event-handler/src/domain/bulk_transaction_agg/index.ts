@@ -413,7 +413,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                         amount: individualTransfer.request.amount,
                         transactionType: 'TRANSFER',
                         extensions: individualTransfer.request.quoteExtensions,
-                    };
+                    }; // TODO: Why do we not have the CONDITION as part of the out-going Transfer Request?
                     this._logger.debug(`Generated Transfers Request ${JSON.stringify(individualBulkTransferRequest, null, 2)} for BulkBatch.bulkQuoteId=${bulkBatch.bulkQuoteId}`);
                     // Add Transfers to batch
                     bulkBatch.addIndividualTransfer(
