@@ -5,7 +5,7 @@
       "id": 1,
       "name": "Happy Path",
       "fileInfo": {
-        "path": "mvp-bulk.json"
+        "path": "ttk-testcases/mvp-bulk.json"
       },
       "requests": [
         {
@@ -75,19 +75,26 @@
               }
             ]
           },
-          "url": "http://payer-sdk-api-svc:4001"
-        }
-      ]
-    },
-    {
-      "id": 2,
-      "name": "PUT /bulkTransactions/{bulkTransactionId}",
-      "fileInfo": {
-        "path": "mvp-bulk.json"
-      },
-      "requests": [
+          "url": "http://payer-sdk-api-svc:4001",
+          "scriptingEngine": "javascript",
+          "scripts": {
+            "preRequest": {
+              "exec": [
+                "await inboundEvent.addListener('acceptPartyCallback', 'put', '/bulkTransactions/{$request.body.bulkTransactionId}')"
+              ]
+            },
+            "postRequest": {
+              "exec": [
+                "const callback = await inboundEvent.getMessage('acceptPartyCallback')",
+                "console.log(callback)",
+                "environment.individualTransferId1 = callback.body.individualTransferResults[0].transactionId",
+                "environment.individualTransferId2 = callback.body.individualTransferResults[1].transactionId"
+              ]
+            }
+          }
+        },
         {
-          "id": 1,
+          "id": 2,
           "description": "put bulk transaction",
           "apiVersion": {
             "minorVersion": 0,
@@ -102,24 +109,24 @@
             "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
           },
           "operationPath": "/bulkTransactions/{bulkTransactionId}",
-          "path": "/bulkTransactions/7dc973d9-2462-47b8-bc37-0514b05efcbf",
+          "path": "/bulkTransactions/{$prev.1.request.body.bulkTransactionId}",
           "method": "put",
           "params": {
-            "bulkTransactionId": "7dc973d9-2462-47b8-bc37-0514b05efcbf"
+            "bulkTransactionId": "{$prev.1.request.body.bulkTransactionId}"
           },
           "url": "http://payer-sdk-api-svc:4001",
           "body": {
-            "bulkHomeTransactionID": "abc123",
+            "bulkHomeTransactionID": "{$prev.1.request.body.bulkHomeTransactionID}",
             "individualTransfers": [
               {
                 "homeTransactionId": "abc456",
-                "transactionId": "a02db19b-344b-4628-a1c2-c0db26db632b",
+                "transactionId": "{$environment.individualTransferId1}",
                 "acceptParty": true
               },
               {
                 "homeTransactionId": "abc789",
-                "transactionId": "3352d5c2-e133-4b9e-abff-efe37f80ad93",
-                "acceptParty": false
+                "transactionId": "{$environment.individualTransferId2}",
+                "acceptParty": true
               }
             ]
           }
