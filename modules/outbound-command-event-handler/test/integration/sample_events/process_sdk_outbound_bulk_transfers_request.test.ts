@@ -204,7 +204,7 @@ describe('processSDKOutboundBulkTransfersRequestCmdEvt', () => {
       ]
     }
     bulkBatch.setBulkQuotesResponse(bulkQuoteResponse);
-    bulkBatch.setState(BulkBatchInternalState.AGREEMENT_SUCCESS);
+    bulkBatch.setState(BulkBatchInternalState.AGREEMENT_COMPLETED);
 
     // Update BulkBatch
     await bulkTransactionAgg.setBulkBatchById(bulkBatch.id, bulkBatch);
