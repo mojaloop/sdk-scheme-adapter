@@ -68,7 +68,7 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt
             const allIndividualTransferIds = await bulkTransactionAgg.getAllIndividualTransferIds();
             for await (const individualTransferId of allIndividualTransferIds) {
                 const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
-                if(individualTransfer.quoteResponse) {
+                if(individualTransfer.partyResponse) {
                     individualTransferResults.push({
                         homeTransactionId: individualTransfer.request.homeTransactionId,
                         transactionId: individualTransfer.id,
