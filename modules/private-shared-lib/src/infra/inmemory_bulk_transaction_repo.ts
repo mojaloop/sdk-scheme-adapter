@@ -19,6 +19,7 @@
  - Name Surname <name.surname@gatesfoundation.com>
  * Modusbox
  - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
+ - Miguel de Barros <miguel.debarros@modusbox.com>
  --------------
  ******/
 

@@ -20,6 +20,7 @@
  * Modusbox
  - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
  - Yevhen Kyriukha <yevhen.kyriukha@modusbox.com>
+ - Miguel de Barros <miguel.debarros@modusbox.com>
  --------------
  ******/
 
