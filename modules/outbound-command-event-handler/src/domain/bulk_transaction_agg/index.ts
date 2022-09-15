@@ -395,7 +395,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                 if(party) {
                     // Generate Transfers request
                     const individualBulkTransferRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransfer = {
-                        transferId: randomUUID(),
+                        transferId: individualTransfer.id,
                         to: {
                             idType: party.partyIdInfo.partyIdType,
                             idValue: party.partyIdInfo.partyIdentifier,
