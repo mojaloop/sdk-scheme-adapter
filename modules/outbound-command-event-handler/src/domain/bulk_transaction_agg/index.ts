@@ -320,8 +320,6 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
             IndividualTransferInternalState.DISCOVERY_ACCEPTED,
         );
 
-        // to a new populateBulkBatch
-        // console.dir(batchesPerFsp);
         // Construct the batches per each element in the array
         let bulkQuotesTotalCount = 0;
         for await (const fspId of Object.keys(batchesPerFsp)) {
@@ -331,8 +329,8 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                     const individualTransfer = await this.getIndividualTransferById(individualId);
                     const party = individualTransfer.partyResponse?.party;
                     if(party) {
-                        // Add Quotes to batch
-                        bulkBatch.addIndividualQuote({
+                        // Generate Quote request
+                        const individualBulkQuoteRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualQuote = {
                             quoteId: randomUUID(),
                             to: {
                                 idType: party.partyIdInfo.partyIdType,
@@ -353,12 +351,16 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                             transactionType: 'TRANSFER',
                             note: individualTransfer.request.note,
                             extensions: individualTransfer.request.quoteExtensions,
-                        },
-                        individualTransfer.id);
-                        // TODO: Add Transfers to batch here like the quotes above
+                        };
+                        this._logger.debug(`Generated Quote Request ${JSON.stringify(individualBulkQuoteRequest, null, 2)} for BulkBatch.bulkQuoteId=${bulkBatch.bulkQuoteId}`);
+                        // Add Quotes to batch
+                        bulkBatch.addIndividualQuote(
+                            individualBulkQuoteRequest,
+                            individualTransfer.id,
+                        );
                     }
-
                 }
+                // TODO: should we not add the bulkQuoteRequest to the BulkTransaction.individualItem and update its status?
                 await this.addBulkBatchEntity(bulkBatch);
                 bulkQuotesTotalCount += 1;
             }
@@ -376,51 +378,53 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         // Lets fetch the current BulkBatchId Array
         const batchesPerFspIdArray = await this.getAllBulkBatchIds();
 
-        // to a new populateBulkBatch
-        // console.dir(batchesPerFsp);
         // Construct the batches per each element in the array
         let bulkTransfersTotalCount = 0;
         for await (const bulkBatchId of batchesPerFspIdArray) {
             const bulkBatch = await this.getBulkBatchEntityById(bulkBatchId);
-            // const individualTransfer = await bulkBatch.state;
+
             const individualQuoteResults = bulkBatch.bulkQuotesResponse?.individualQuoteResults;
 
             if(individualQuoteResults == null) continue; // TODO: how to handle this?
 
             for await (const individualQuoteResult of individualQuoteResults) {
-                // this.
                 const individualTransferId = bulkBatch.getReferenceIdForQuoteId(individualQuoteResult.quoteId);
                 const individualTransfer = await this.getIndividualTransferById(individualTransferId);
                 const party = individualTransfer.partyResponse?.party;
                 if(party) {
+                    // Generate Transfers request
+                    const individualBulkTransferRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransfer = {
+                        transferId: randomUUID(),
+                        to: {
+                            idType: party.partyIdInfo.partyIdType,
+                            idValue: party.partyIdInfo.partyIdentifier,
+                            idSubValue: party.partyIdInfo.partySubIdOrType,
+                            displayName: party.name,
+                            firstName: party.personalInfo?.complexName?.firstName,
+                            middleName: party.personalInfo?.complexName?.middleName,
+                            lastName: party.personalInfo?.complexName?.lastName,
+                            dateOfBirth: party.personalInfo?.dateOfBirth,
+                            merchantClassificationCode: party.merchantClassificationCode,
+                            fspId: party.partyIdInfo.fspId,
+                            extensionList: party.partyIdInfo.extensionList?.extension,
+                        },
+                        amountType: individualTransfer.request.amountType,
+                        currency: individualTransfer.request.currency,
+                        amount: individualTransfer.request.amount,
+                        transactionType: 'TRANSFER',
+                        extensions: individualTransfer.request.quoteExtensions,
+                    };
+                    this._logger.debug(`Generated Transfers Request ${JSON.stringify(individualBulkTransferRequest, null, 2)} for BulkBatch.bulkQuoteId=${bulkBatch.bulkQuoteId}`);
                     // Add Transfers to batch
                     bulkBatch.addIndividualTransfer(
-                        {
-                            transferId: randomUUID(),
-                            to: {
-                                idType: party.partyIdInfo.partyIdType,
-                                idValue: party.partyIdInfo.partyIdentifier,
-                                idSubValue: party.partyIdInfo.partySubIdOrType,
-                                displayName: party.name,
-                                firstName: party.personalInfo?.complexName?.firstName,
-                                middleName: party.personalInfo?.complexName?.middleName,
-                                lastName: party.personalInfo?.complexName?.lastName,
-                                dateOfBirth: party.personalInfo?.dateOfBirth,
-                                merchantClassificationCode: party.merchantClassificationCode,
-                                fspId: party.partyIdInfo.fspId,
-                                extensionList: party.partyIdInfo.extensionList?.extension,
-                            },
-                            amountType: individualTransfer.request.amountType,
-                            currency: individualTransfer.request.currency,
-                            amount: individualTransfer.request.amount,
-                            transactionType: 'TRANSFER',
-                            extensions: individualTransfer.request.quoteExtensions,
-                        },
+                        individualBulkTransferRequest,
                         individualTransfer.id,
                     );
                 }
+                // Add Transfers to batch
                 bulkTransfersTotalCount += 1;
             }
+            // TODO: should we not add the bulkTransfersRequest to the BulkTransaction.individualItem and update its status?
             await this.setBulkBatchById(bulkBatch.id, bulkBatch);
             await this.setBulkTransfersTotalCount(bulkTransfersTotalCount);
         }
