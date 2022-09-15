@@ -26,6 +26,15 @@
 
 'use strict'
 
+// Imports for Test Utils
+import { Timer } from "../../util";
+
+const MESSAGE_TIMEOUT = 2000;
+
+// Tests can timeout in a CI pipeline so giving it leeway
+jest.setTimeout(20000)
+
+// Imports for Tests
 import { SDKSchemeAdapter } from "@mojaloop/api-snippets";
 import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
@@ -46,7 +55,7 @@ import {
 
 import { randomUUID } from "crypto";
 
-import { BulkTransactionAgg } from '../../../src/domain'
+import { BulkTransactionAgg } from '@module-domain'
 
 const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
 
@@ -113,8 +122,6 @@ const bulkTransactionRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransac
       }
     ]
 }
-
-// jest.setTimeout(999999) // Useful for debugging!
 
 describe('processSDKOutboundBulkTransfersRequestCmdEvt', () => {
   // let producerDom: KafkaDomainEventProducer;

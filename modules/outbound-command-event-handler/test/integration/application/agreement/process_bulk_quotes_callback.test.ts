@@ -120,6 +120,8 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
         And the individual quote data in redis should be updated with the response \
         And domain event BulkQuotesCallbackProcessed should be published \
         And domain event SDKOutboundBulkQuotesRequestProcessed should be published", async () => {
+
+    // SETUP
     // Publish this message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
     const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
@@ -395,6 +397,7 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
 
     const bulkQuoteId = randomUUID();
 
+    // ACT
     // Simulate the domain handler sending ProcessBulkQuotesCallback to command handler
     // for receiverfsp batch
     const processBulkQuotesCallbackCommandEventDataReceiverFsp : IProcessBulkQuotesCallbackCmdEvtData = {
@@ -468,6 +471,8 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
       processBulkQuotesCallbackCommandEventDataDifferentFsp
     );
     await producer.sendCommandEvent(processBulkQuotesCallbackCommandEventObjDifferentFsp);
+
+    // ASSERT
     await new Promise(resolve => setTimeout(resolve, messageTimeout));
 
     // Check that the state of bulk batch for receiverfsp to be AGREEMENT_COMPLETED
