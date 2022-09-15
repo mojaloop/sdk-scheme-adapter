@@ -504,4 +504,3 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
     }
 
 }
-

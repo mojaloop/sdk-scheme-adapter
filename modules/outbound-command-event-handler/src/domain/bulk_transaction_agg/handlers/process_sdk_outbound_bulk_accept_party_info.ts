@@ -52,6 +52,7 @@ export async function handleProcessSDKOutboundBulkAcceptPartyInfoCmdEvt(
         const bulkTx = bulkTransactionAgg.getBulkTransaction();
 
         const allIndividualTransfersFromMessage = 
+            // eslint-disable-next-line max-len
             processSDKOutboundBulkAcceptPartyInfoMessage.getBulkTransactionContinuationAcceptParty().individualTransfers;
         for await (const individualTransferFromMessage of allIndividualTransfersFromMessage) {
             let individualTransfer;
