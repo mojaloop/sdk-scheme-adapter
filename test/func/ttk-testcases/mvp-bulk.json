@@ -1,0 +1,82 @@
+{
+  "test_cases": [
+    {
+      "id": 1,
+      "name": "Happy Path",
+      "requests": [
+        {
+          "id": 1,
+          "description": "Post /bulkTransaction",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/bulkTransactions",
+          "path": "/bulkTransactions",
+          "method": "post",
+          "body": {
+            "bulkHomeTransactionID": "abc123",
+            "bulkTransactionId": "{$function.generic.generateUUID}",
+            "options": {
+              "onlyValidateParty": true,
+              "autoAcceptParty": {
+                "enabled": false
+              },
+              "autoAcceptQuote": {
+                "enabled": false
+              },
+              "skipPartyLookup": false,
+              "synchronous": false,
+              "bulkExpiration": "2016-05-24T08:38:08.699-04:00"
+            },
+            "from": {
+              "partyIdInfo": {
+                "partyIdType": "MSISDN",
+                "partyIdentifier": "16135551212",
+                "fspId": "string"
+              }
+            },
+            "individualTransfers": [
+              {
+                "homeTransactionId": "abc1",
+                "to": {
+                  "partyIdInfo": {
+                    "partyIdType": "MSISDN",
+                    "partyIdentifier": "16135551212"
+                  }
+                },
+                "amountType": "SEND",
+                "currency": "USD",
+                "amount": "123.45"
+              },
+              {
+                "homeTransactionId": "abc2",
+                "to": {
+                  "partyIdInfo": {
+                    "partyIdType": "MSISDN",
+                    "partyIdentifier": "123456007"
+                  }
+                },
+                "amountType": "SEND",
+                "currency": "USD",
+                "amount": "456.78"
+              }
+            ]
+          },
+          "url": "http://payer-sdk-api-svc:4001"
+        }
+      ],
+      "fileInfo": {
+        "path": "ttk-testcases/mvp-bulk.json"
+      }
+    }
+  ]
+}

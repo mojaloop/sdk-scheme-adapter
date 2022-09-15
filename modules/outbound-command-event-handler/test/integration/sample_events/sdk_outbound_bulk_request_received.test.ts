@@ -95,7 +95,7 @@ const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest
     ]
 }
 
-describe('SDKOutboundBulkRequestReceivedDmEvt', () => {
+describe.skip('SDKOutboundBulkRequestReceivedDmEvt', () => {
   let bulkTransactionAgg: BulkTransactionAgg;
   beforeAll(async () => {
     await producer.init();
