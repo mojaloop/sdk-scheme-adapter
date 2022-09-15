@@ -65,6 +65,8 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
         }
         individualTransfer.setPartyResponse(partyResult);
 
+        await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
+
         const msg = new PartyInfoCallbackProcessedDmEvt({
             bulkId: processPartyInfoCallback.getKey(),
             content: {
@@ -74,8 +76,6 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
             headers: [],
         });
         await options.domainProducer.sendDomainEvent(msg);
-
-        await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
     } catch (err) {
         logger.error(`Failed to create BulkTransactionAggregate. ${(err as Error).message}`);
     }
