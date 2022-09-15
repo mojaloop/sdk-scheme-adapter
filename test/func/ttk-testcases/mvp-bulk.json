@@ -1,8 +1,12 @@
 {
+  "name": "multi",
   "test_cases": [
     {
       "id": 1,
       "name": "Happy Path",
+      "fileInfo": {
+        "path": "mvp-bulk.json"
+      },
       "requests": [
         {
           "id": 1,
@@ -73,10 +77,54 @@
           },
           "url": "http://payer-sdk-api-svc:4001"
         }
-      ],
+      ]
+    },
+    {
+      "id": 2,
+      "name": "PUT /bulkTransactions/{bulkTransactionId}",
       "fileInfo": {
-        "path": "ttk-testcases/mvp-bulk.json"
-      }
+        "path": "mvp-bulk.json"
+      },
+      "requests": [
+        {
+          "id": 1,
+          "description": "put bulk transaction",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/bulkTransactions/{bulkTransactionId}",
+          "path": "/bulkTransactions/7dc973d9-2462-47b8-bc37-0514b05efcbf",
+          "method": "put",
+          "params": {
+            "bulkTransactionId": "7dc973d9-2462-47b8-bc37-0514b05efcbf"
+          },
+          "url": "http://payer-sdk-api-svc:4001",
+          "body": {
+            "bulkHomeTransactionID": "abc123",
+            "individualTransfers": [
+              {
+                "homeTransactionId": "abc456",
+                "transactionId": "a02db19b-344b-4628-a1c2-c0db26db632b",
+                "acceptParty": true
+              },
+              {
+                "homeTransactionId": "abc789",
+                "transactionId": "3352d5c2-e133-4b9e-abff-efe37f80ad93",
+                "acceptParty": false
+              }
+            ]
+          }
+        }
+      ]
     }
   ]
 }
