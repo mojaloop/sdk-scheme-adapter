@@ -48,9 +48,9 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
 
     private readonly bulkBatchKeyPrefix: string = 'bulkBatch_';
 
-    private readonly bulkTransfersTotalCountKey: string = 'bulkQuotesTotalCount';
+    private readonly bulkTransfersTotalCountKey: string = 'bulkTransfersTotalCount';
 
-    private readonly bulkTransfersSuccessCountKey: string = 'bulkQuotesSuccessCount';
+    private readonly bulkTransfersSuccessCountKey: string = 'bulkTransfersSuccessCount';
 
     private readonly bulkTransfersFailedCountKey: string = 'bulkTransfersFailedCount';
 
@@ -322,14 +322,14 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
     }
 
     async getBulkTransfersTotalCount(bulkId: string): Promise<number> {
-        return this._getCount(this.bulkQuotesTotalCountKey, bulkId);
+        return this._getCount(this.bulkTransfersTotalCountKey, bulkId);
     }
 
     async setBulkTransfersTotalCount(
         bulkId: string,
         value: number,
     ): Promise<void> {
-        return this._setCount(this.bulkQuotesTotalCountKey, bulkId, value);
+        return this._setCount(this.bulkTransfersTotalCountKey, bulkId, value);
     }
 
 
@@ -354,7 +354,7 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
     }
 
     async getBulkQuotesTotalCount(bulkId: string): Promise<number> {
-        return this._getCount(this.bulkTransfersTotalCountKey, bulkId);
+        return this._getCount(this.bulkQuotesTotalCountKey, bulkId);
     }
 
     async setBulkQuotesTotalCount(
