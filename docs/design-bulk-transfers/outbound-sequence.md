@@ -52,7 +52,7 @@ sequenceDiagram
     SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "DISCOVERY_COMPLETED"
 
     SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: SDKOutboundBulkPartyInfoRequestProcessed
-    Note left of SDKOutboundCommandEventHandler: topic-sdk-outbound-command-events
+    Note right of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
 
     SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: check options.autoAcceptParty in redis
 
