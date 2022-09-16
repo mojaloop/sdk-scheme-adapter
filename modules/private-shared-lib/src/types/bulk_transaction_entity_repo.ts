@@ -58,10 +58,10 @@ export type IBulkTransactionEntityRepo = {
     incrementBulkQuotesFailedCount: (bulkId: string) => Promise<void>
     setPartyLookupTotalCount: (bulkId: string, count: number) => Promise<void>
     getPartyLookupTotalCount: (bulkId: string) => Promise<number>
-    incrementPartyLookupSuccessCount: (bulkId: string, increment: number) => Promise<void>
+    incrementPartyLookupSuccessCount: (bulkId: string, increment: number) => Promise<number>
     setPartyLookupSuccessCount: (bulkId: string, count: number) => Promise<void>
     getPartyLookupSuccessCount: (bulkId: string) => Promise<number>
-    incrementPartyLookupFailedCount: (bulkId: string, increment: number) => Promise<void>
+    incrementPartyLookupFailedCount: (bulkId: string, increment: number) => Promise<number>
     setPartyLookupFailedCount: (bulkId: string, count: number) => Promise<void>
     getPartyLookupFailedCount: (bulkId: string) => Promise<number>
 } & IEntityStateRepository<BulkTransactionState>;

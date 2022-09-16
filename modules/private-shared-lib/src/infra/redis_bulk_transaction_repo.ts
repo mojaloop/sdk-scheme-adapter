@@ -496,13 +496,19 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
     async incrementPartyLookupSuccessCount(
         bulkId: string,
         increment = 1,
-    ): Promise<void> {
+    ): Promise<number> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            await this._redisClient.hIncrBy(key, this.partyLookupSuccessCountKey, increment);
+            const newValue = await this._redisClient.hIncrBy(key, this.partyLookupSuccessCountKey, increment);
+            if(newValue) {
+                return Number(newValue);
+            } else {
+                this._logger.error(`Error loading ${this.partyLookupFailedCountKey} from redis - for key: ${key}`);
+                throw (new Error(`Error loading ${this.partyLookupFailedCountKey} from redis - for key: ${key}`));
+            }
         } catch (err) {
             this._logger.error(err, `Error incrementing partyLookupSuccessCount in redis - for key: ${key}`);
             throw (err);
@@ -512,13 +518,19 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
     async incrementPartyLookupFailedCount(
         bulkId: string,
         increment = 1,
-    ): Promise<void> {
+    ): Promise<number> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            await this._redisClient.hIncrBy(key, this.partyLookupFailedCountKey, increment);
+            const newValue = await this._redisClient.hIncrBy(key, this.partyLookupFailedCountKey, increment);
+            if(newValue) {
+                return Number(newValue);
+            } else {
+                this._logger.error(`Error loading ${this.partyLookupFailedCountKey} from redis - for key: ${key}`);
+                throw (new Error(`Error loading ${this.partyLookupFailedCountKey} from redis - for key: ${key}`));
+            }
         } catch (err) {
             this._logger.error(err, `Error incrementing ${this.partyLookupFailedCountKey} in redis - for key: ${key}`);
             throw (err);

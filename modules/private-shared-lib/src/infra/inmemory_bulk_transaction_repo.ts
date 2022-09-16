@@ -438,7 +438,7 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
     async incrementPartyLookupSuccessCount(
         bulkId: string,
         increment: number,
-    ): Promise<void> {
+    ): Promise<number> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
@@ -446,6 +446,7 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         try {
             this._data[key][this.partyLookupSuccessCountKey] =
                 this._data[key][this.partyLookupSuccessCountKey] + increment;
+            return this._data[key][this.partyLookupSuccessCountKey];
         } catch (err) {
             this._logger.error(err, `Error incrementing ${this.partyLookupSuccessCountKey} in memory - for key: ${key}`);
             throw (err);
@@ -455,7 +456,7 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
     async incrementPartyLookupFailedCount(
         bulkId: string,
         increment: number,
-    ): Promise<void> {
+    ): Promise<number> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
@@ -463,6 +464,7 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         try {
             this._data[key][this.partyLookupFailedCountKey] =
                 this._data[key][this.partyLookupFailedCountKey] + increment;
+            return this._data[key][this.partyLookupFailedCountKey];
         } catch (err) {
             this._logger.error(err, `Error incrementing ${this.partyLookupFailedCountKey} in memory - for key: ${key}`);
             throw (err);
