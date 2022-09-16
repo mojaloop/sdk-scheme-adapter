@@ -130,13 +130,13 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
       options: {
         onlyValidateParty: true,
         autoAcceptParty: {
-          enabled: true
+          enabled: false
         },
         autoAcceptQuote: {
-          enabled: true,
+          enabled: false,
         },
         skipPartyLookup: false,
-        synchronous: true,
+        synchronous: false,
         bulkExpiration: "2016-05-24T08:38:08.699-04:00"
       },
       from: {
