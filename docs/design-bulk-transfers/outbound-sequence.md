@@ -2,6 +2,8 @@
 
 ```mermaid
 sequenceDiagram
+    autonumber
+
     participant CoreConnector as Core Connector
     participant SDKOutboundAPI as SDK Backend API
     participant SDKOutboundDomainEventHandler as SDK Outbound Domain Event Handler
@@ -53,7 +55,7 @@ sequenceDiagram
     Note left of SDKOutboundCommandEventHandler: topic-sdk-outbound-command-events
 
     SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "DISCOVERY_COMPLETED"
-    SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: check optiions.autoAcceptParty in redis
+    SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: check options.autoAcceptParty in redis
 
     alt autoAcceptParty == false
         SDKOutboundCommandEventHandler->>SDKOutboundAPI: SDKOutboundBulkAcceptPartyInfoRequested
