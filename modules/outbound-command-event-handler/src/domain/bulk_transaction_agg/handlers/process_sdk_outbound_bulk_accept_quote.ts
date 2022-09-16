@@ -75,8 +75,8 @@ export async function handleProcessSDKOutboundBulkAcceptQuoteCmdEvt(
             await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
         }
 
-        // Update global state "DISCOVERY_ACCEPTANCE_COMPLETED"
-        bulkTx.setTxState(BulkTransactionInternalState.DISCOVERY_ACCEPTANCE_COMPLETED);
+        // Update global state "AGREEMENT_ACCEPTANCE_COMPLETED"
+        bulkTx.setTxState(BulkTransactionInternalState.AGREEMENT_ACCEPTANCE_COMPLETED);
         await bulkTransactionAgg.setTransaction(bulkTx);
 
         const sdkOutboundBulkAcceptQuoteProcessedDmEvt = new SDKOutboundBulkAcceptQuoteProcessedDmEvt({
