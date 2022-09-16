@@ -98,10 +98,8 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
             logger.info(`Sent domain event message ${SDKOutboundBulkPartyInfoRequestProcessedDmEvt.name}`);
 
             // Progressing to the next step
-            // Check configuration parameter autoAcceptQuote
-            // Create aggregate
+            // Check configuration parameter isAutoAcceptPartyEnabled
             const bulkTx = bulkTransactionAgg.getBulkTransaction();
-
             if(bulkTx.isAutoAcceptPartyEnabled()) {
                 const autoAcceptPartyMsg = new SDKOutboundBulkAutoAcceptPartyInfoRequestedDmEvt({
                     bulkId: bulkTx.id,
