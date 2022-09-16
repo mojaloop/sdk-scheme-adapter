@@ -24,44 +24,37 @@
 
 'use strict';
 
-import { CommandEvent } from '../command_event';
+import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
-export interface IProcessSDKOutboundBulkAcceptQuoteCmdEvtData {
+export type ISDKOutboundBulkAcceptQuoteProcessedDmEvtData = {
     bulkId: string;
-    // eslint-disable-next-line max-len
-    bulkTransactionContinuationAcceptQuote: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptQuote;
+    content: null;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
-}
-export class ProcessSDKOutboundBulkAcceptQuoteCmdEvt extends CommandEvent {
-    constructor(data: IProcessSDKOutboundBulkAcceptQuoteCmdEvtData) {
+};
+
+export class SDKOutboundBulkAcceptQuoteProcessedDmEvt extends DomainEvent {
+    constructor(data: ISDKOutboundBulkAcceptQuoteProcessedDmEvtData) {
         super({
             key: data.bulkId,
             timestamp: data.timestamp,
             headers: data.headers,
-            content: data.bulkTransactionContinuationAcceptQuote,
-            name: ProcessSDKOutboundBulkAcceptQuoteCmdEvt.name,
+            content: null,
+            name: SDKOutboundBulkAcceptQuoteProcessedDmEvt.name,
         });
     }
 
-    static CreateFromCommandEvent(message: CommandEvent): ProcessSDKOutboundBulkAcceptQuoteCmdEvt {
+    static CreateFromDomainEvent(message: DomainEvent): SDKOutboundBulkAcceptQuoteProcessedDmEvt {
         if((message.getKey() === null || typeof message.getKey() !== 'string')) {
             throw new Error('Bulk id is in unknown format');
         }
-        const data: IProcessSDKOutboundBulkAcceptQuoteCmdEvtData = {
+        const data: ISDKOutboundBulkAcceptQuoteProcessedDmEvtData = {
             bulkId: message.getKey(),
-            // eslint-disable-next-line max-len
-            bulkTransactionContinuationAcceptQuote: message.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptQuote,
+            content: message.getContent() as ISDKOutboundBulkAcceptQuoteProcessedDmEvtData['content'],
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
         };
-        return new ProcessSDKOutboundBulkAcceptQuoteCmdEvt(data);
-    }
-
-    // eslint-disable-next-line max-len
-    getBulkTransactionContinuationAcceptQuote(): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptQuote {
-        return this.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptQuote;
+        return new SDKOutboundBulkAcceptQuoteProcessedDmEvt(data);
     }
 }
