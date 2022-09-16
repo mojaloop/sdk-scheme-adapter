@@ -153,7 +153,7 @@ sequenceDiagram
             SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the individual state: AGREEMENT_ACCEPTED / AGREEMENT_REJECTED
         end
         SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "AGREEMENT_ACCEPTANCE_COMPLETED"
-        SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: SDKOutboundBulkAutoAcceptQuoteCompleted
+        SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: SDKOutboundBulkAutoAcceptQuoteProcessed
         Note right of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
     end
     SDKOutboundDomainEventHandler->>SDKOutboundCommandEventHandler: ProcessSDKOutboundBulkTransfersRequest
