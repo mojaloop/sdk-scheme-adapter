@@ -47,15 +47,19 @@ sequenceDiagram
         SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the party response
         SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: PartyInfoCallbackProcessed
         Note right of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
-        SDKOutboundDomainEventHandler->>SDKOutboundDomainEventHandler: Check the status of the remaining items in the bulk
+        SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Check the status of the remaining items in the bulk
     end
-    SDKOutboundDomainEventHandler->>SDKOutboundCommandEventHandler: ProcessSDKOutboundBulkPartyInfoRequestComplete
+    SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "DISCOVERY_COMPLETED"
+
+    SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: SDKOutboundBulkPartyInfoRequestProcessed
     Note left of SDKOutboundCommandEventHandler: topic-sdk-outbound-command-events
 
-    SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "DISCOVERY_COMPLETED"
-    SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: check optiions.autoAcceptParty in redis
+    SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: check options.autoAcceptParty in redis
 
     alt autoAcceptParty == false
+        loop for each transfer in bulk
+            SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the individual transfer state with party response data
+        end
         SDKOutboundCommandEventHandler->>SDKOutboundAPI: SDKOutboundBulkAcceptPartyInfoRequested
         Note right of SDKOutboundAPI: topic-sdk-outbound-domain-events
         SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "DISCOVERY_ACCEPTANCE_PENDING"

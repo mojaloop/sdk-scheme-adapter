@@ -41,7 +41,6 @@ import {
   IProcessPartyInfoCallbackCmdEvtData,
   IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData,
   IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData,
-  IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData,
   IProcessSDKOutboundBulkQuotesRequestCmdEvtData,
   IProcessSDKOutboundBulkRequestCmdEvtData,
   IRedisBulkTransactionStateRepoOptions,
@@ -51,7 +50,6 @@ import {
   ProcessPartyInfoCallbackCmdEvt,
   ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt,
   ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
-  ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt,
   ProcessSDKOutboundBulkQuotesRequestCmdEvt,
   ProcessSDKOutboundBulkRequestCmdEvt,
   RedisBulkTransactionStateRepo,
@@ -309,18 +307,6 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
     await producer.sendCommandEvent(processPartyInfoCallbackMessageObjThree);
     const processPartyInfoCallbackMessageObjFour = new ProcessPartyInfoCallbackCmdEvt(processPartyInfoCallbackMessageData4);
     await producer.sendCommandEvent(processPartyInfoCallbackMessageObjFour);
-    await new Promise(resolve => setTimeout(resolve, messageTimeout));
-
-    // Simulate the domain handler sending the command handler ProcessSDKOutboundBulkPartyInfoRequestComplete message
-    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData : IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData = {
-      bulkId: bulkTransactionId,
-      timestamp: Date.now(),
-      headers: []
-    }
-    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt(
-      processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData
-    );
-    await producer.sendCommandEvent(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj);
     await new Promise(resolve => setTimeout(resolve, messageTimeout));
 
     // Command event for bulk accept party info

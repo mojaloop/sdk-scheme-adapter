@@ -30,8 +30,11 @@ import {
     IndividualTransferInternalState,
     ProcessPartyInfoCallbackCmdEvt,
     PartyInfoCallbackProcessedDmEvt,
-    IPartyResult,
     SDKOutboundTransferState,
+    BulkTransactionInternalState,
+    SDKOutboundBulkPartyInfoRequestProcessedDmEvt,
+    SDKOutboundBulkAutoAcceptPartyInfoRequestedDmEvt,
+    SDKOutboundBulkAcceptPartyInfoRequestedDmEvt,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
@@ -74,8 +77,69 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
             headers: [],
         });
         await options.domainProducer.sendDomainEvent(msg);
-
         await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
+
+        // Progressing to the next step
+        // Check the status of the remaining party lookups
+        const partyLookupTotalCount = await bulkTransactionAgg.getPartyLookupTotalCount();
+        const partyLookupSuccessCount = await bulkTransactionAgg.getPartyLookupSuccessCount();
+        const partyLookupFailedCount = await bulkTransactionAgg.getPartyLookupFailedCount();
+        if(partyLookupTotalCount === (partyLookupSuccessCount + partyLookupFailedCount)) {
+            // Update global state "DISCOVERY_COMPLETED"
+            await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.DISCOVERY_COMPLETED);
+
+            // Send the domain message SDKOutboundBulkPartyInfoRequestProcessedDmEvt
+            const sdkOutboundBulkPartyInfoRequestProcessedDmEvt = new SDKOutboundBulkPartyInfoRequestProcessedDmEvt({
+                bulkId: bulkTransactionAgg.bulkId,
+                timestamp: Date.now(),
+                headers: [],
+            });
+            await options.domainProducer.sendDomainEvent(sdkOutboundBulkPartyInfoRequestProcessedDmEvt);
+            logger.info(`Sent domain event message ${SDKOutboundBulkPartyInfoRequestProcessedDmEvt.name}`);
+
+            // Progressing to the next step
+            // Check configuration parameter autoAcceptQuote
+            // Create aggregate
+            const bulkTx = bulkTransactionAgg.getBulkTransaction();
+
+            if(bulkTx.isAutoAcceptPartyEnabled()) {
+                const autoAcceptPartyMsg = new SDKOutboundBulkAutoAcceptPartyInfoRequestedDmEvt({
+                    bulkId: bulkTx.id,
+                    timestamp: Date.now(),
+                    headers: [],
+                });
+                await options.domainProducer.sendDomainEvent(autoAcceptPartyMsg);
+            } else {
+                const individualTransferResults = [];
+                const allIndividualTransferIds = await bulkTransactionAgg.getAllIndividualTransferIds();
+                for await (const individualTransferId of allIndividualTransferIds) {
+                    const individualTransferData = await bulkTransactionAgg
+                        .getIndividualTransferById(individualTransferId);
+                    if(individualTransferData.partyResponse) {
+                        individualTransferResults.push({
+                            homeTransactionId: individualTransferData.request.homeTransactionId,
+                            transactionId: individualTransferData.id,
+                            to: individualTransferData.partyResponse?.party,
+                        });
+                    }
+                }
+                const sdkOutboundBulkAcceptPartyInfoRequestedDmEvt = new SDKOutboundBulkAcceptPartyInfoRequestedDmEvt({
+                    bulkId: bulkTransactionAgg.bulkId,
+                    request: {
+                        bulkHomeTransactionID: bulkTx.bulkHomeTransactionID,
+                        bulkTransactionId: bulkTransactionAgg.bulkId,
+                        individualTransferResults,
+                    },
+                    timestamp: Date.now(),
+                    headers: [],
+                });
+                await options.domainProducer.sendDomainEvent(sdkOutboundBulkAcceptPartyInfoRequestedDmEvt);
+                logger.info(`Sent domain event message ${SDKOutboundBulkAcceptPartyInfoRequestedDmEvt.name}`);
+
+                bulkTx.setTxState(BulkTransactionInternalState.DISCOVERY_ACCEPTANCE_PENDING);
+            }
+            await bulkTransactionAgg.setTransaction(bulkTx);
+        }
     } catch (err) {
         logger.error(`Failed to create BulkTransactionAggregate. ${(err as Error).message}`);
     }

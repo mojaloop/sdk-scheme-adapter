@@ -166,6 +166,10 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         return this._rootEntity.isSkipPartyLookupEnabled();
     }
 
+    isAutoAcceptPartyEnabled() {
+        return this._rootEntity.isAutoAcceptPartyEnabled();
+    }
+
     async getAllBulkBatchIds() {
         const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
         return repo.getAllBulkBatchIds(this._rootEntity.id);
@@ -333,18 +337,18 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
     }
 
     async getPartyLookupTotalCount(): Promise<any> {
-        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
-            .getPartyLookupTotalCount(this._rootEntity.id);
+        const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
+        return repo.getPartyLookupTotalCount(this._rootEntity.id);
     }
 
     async getPartyLookupSuccessCount(): Promise<any> {
-        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
-            .getPartyLookupSuccessCount(this._rootEntity.id);
+        const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
+        return repo.getPartyLookupSuccessCount(this._rootEntity.id);
     }
 
     async getPartyLookupFailedCount(): Promise<any> {
-        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
-            .getPartyLookupFailedCount(this._rootEntity.id);
+        const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
+        return repo.getPartyLookupFailedCount(this._rootEntity.id);
     }
 
     async incrementPartyLookupSuccessCount(increment = 1): Promise<void> {
