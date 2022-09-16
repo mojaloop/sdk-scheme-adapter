@@ -37,7 +37,7 @@ export async function handleProcessSDKOutboundBulkAcceptQuoteCmdEvt(
     logger: ILogger,
 ): Promise<void> {
     const processSDKOutboundBulkAcceptQuoteCmdEvtMessage = message as ProcessSDKOutboundBulkAcceptQuoteCmdEvt;
-    // TODO: Add if confidtion here to check autoAcceptParty parameter and alternate flow
+    // TODO: Add if condition here to check autoAcceptQuotes parameter and alternate flow
     try {
         logger.info(`Got ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt for ID ${processSDKOutboundBulkAcceptQuoteCmdEvtMessage.getKey()}`);
 
