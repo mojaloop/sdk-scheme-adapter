@@ -31,13 +31,15 @@ const {
     SDKOutboundBulkAcceptQuoteReceivedDmEvt,
 } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
 
+const { Enum } = require('@mojaloop/central-services-shared');
+const { ReturnCodes } = Enum.Http;
 
 /**
  * Error handling logic shared by outbound API handlers
  */
 const handleError = (method, err, ctx, stateField) => {
     ctx.state.logger.log(`Error handling ${method}: ${util.inspect(err)}`);
-    ctx.response.status = err.httpStatusCode || 500;
+    ctx.response.status = err.httpStatusCode || ReturnCodes.INTERNALSERVERERRROR.CODE;
     ctx.response.body = {
         message: err.message || 'Unspecified error',
         [stateField]: err[stateField] || {},
@@ -128,7 +130,7 @@ const postTransfers = async (ctx) => {
         const response = await model.run();
 
         // return the result
-        ctx.response.status = 200;
+        ctx.response.status = ReturnCodes.OK.CODE;
         ctx.response.body = response;
     }
     catch(err) {
@@ -161,7 +163,7 @@ const getTransfers = async (ctx) => {
         const response = await model.run();
 
         // return the result
-        ctx.response.status = 200;
+        ctx.response.status = ReturnCodes.OK.CODE;
         ctx.response.body = response;
     }
     catch(err) {
@@ -193,7 +195,7 @@ const putTransfers = async (ctx) => {
         const response = await model.run(ctx.request.body);
 
         // return the result
-        ctx.response.status = 200;
+        ctx.response.status = ReturnCodes.OK.CODE;
         ctx.response.body = response;
     }
     catch(err) {
@@ -223,7 +225,7 @@ const postBulkTransfers = async (ctx) => {
         const response = await model.run();
 
         // return the result
-        ctx.response.status = 200;
+        ctx.response.status = ReturnCodes.OK.CODE;
         ctx.response.body = response;
     }
     catch (err) {
@@ -254,7 +256,7 @@ const getBulkTransfers = async (ctx) => {
         const response = await model.getBulkTransfer();
 
         // return the result
-        ctx.response.status = 200;
+        ctx.response.status = ReturnCodes.OK.CODE;
         ctx.response.body = response;
     }
     catch (err) {
@@ -275,7 +277,7 @@ const postBulkTransactions = async (ctx) => {
         await ctx.state.eventProducer.sendDomainEvent(msg);
         ctx.state.eventLogger.info(`Sent domain event ${msg.getName()}`);
 
-        ctx.response.status = 202;
+        ctx.response.status = ReturnCodes.ACCEPTED.CODE;
     }
     catch (err) {
         return handleBulkTransactionError('postBulkTransactions', err, ctx);
@@ -310,7 +312,7 @@ const putBulkTransactions = async (ctx) => {
             ctx.state.eventLogger.info(`Sent domain event ${msg.getName()}`);
         }
 
-        ctx.response.status = 202;
+        ctx.response.status = ReturnCodes.ACCEPTED.CODE;
     }
     catch (err) {
         return handleBulkTransactionError('putBulkTransactions', err, ctx);
@@ -338,7 +340,7 @@ const postBulkQuotes = async (ctx) => {
         const response = await model.run();
 
         // return the result
-        ctx.response.status = 200;
+        ctx.response.status = ReturnCodes.OK.CODE;
         ctx.response.body = response;
     }
     catch (err) {
@@ -369,7 +371,7 @@ const getBulkQuoteById = async (ctx) => {
         const response = await model.getBulkQuote();
 
         // return the result
-        ctx.response.status = 200;
+        ctx.response.status = ReturnCodes.OK.CODE;
         ctx.response.body = response;
     }
     catch (err) {
@@ -399,7 +401,7 @@ const postRequestToPayTransfer = async (ctx) => {
         await model.initialize(requestToPayTransferRequest);
         const response = await model.run();
         // return the result
-        ctx.response.status = 200;
+        ctx.response.status = ReturnCodes.OK.CODE;
         ctx.response.body = response;
     }
     catch (err) {
@@ -434,7 +436,7 @@ const putRequestToPayTransfer = async (ctx) => {
         }
 
         // return the result
-        ctx.response.status = 200;
+        ctx.response.status = ReturnCodes.OK.CODE;
         ctx.response.body = response;
     }
     catch(err) {
@@ -464,7 +466,7 @@ const postAccounts = async (ctx) => {
         const response = await model.run();
 
         // return the result
-        ctx.response.status = 200;
+        ctx.response.status = ReturnCodes.OK.CODE;
         ctx.response.body = response;
     }
     catch(err) {
@@ -492,7 +494,7 @@ const postRequestToPay = async (ctx) => {
         const response = await model.run();
 
         // return the result
-        ctx.response.status = 200;
+        ctx.response.status = ReturnCodes.OK.CODE;
         ctx.response.body = response;
 
     } catch(err) {
@@ -501,7 +503,7 @@ const postRequestToPay = async (ctx) => {
 };
 
 const healthCheck = async (ctx) => {
-    ctx.response.status = 200;
+    ctx.response.status = ReturnCodes.OK.CODE;
     ctx.response.body = '';
 };
 
@@ -531,9 +533,9 @@ const getPartiesByTypeAndId = async (ctx) => {
 
         // return the result
         if (response.errorInformation) {
-            ctx.response.status = 404;
+            ctx.response.status = ReturnCodes.NOTFOUND.CODE;
         } else {
-            ctx.response.status = 200;
+            ctx.response.status = ReturnCodes.OK.CODE;
         }
         ctx.response.body = response;
     } catch (err) {
@@ -564,7 +566,7 @@ const postQuotes = async (ctx) => {
         const response = await model.run(args);
 
         // return the result
-        ctx.response.status = 200;
+        ctx.response.status = ReturnCodes.OK.CODE;
         ctx.response.body = response;
     } catch (err) {
         return handleRequestQuotesInformationError('postQuotes', err, ctx);
@@ -593,7 +595,7 @@ const postSimpleTransfers = async (ctx) => {
         // run model's workflow
         const response = await model.run(args);
         // return the result
-        ctx.response.status = 200;
+        ctx.response.status = ReturnCodes.OK.CODE;
         ctx.response.body = response;
     } catch (err) {
         return handleRequestSimpleTransfersInformationError('postSimpleTransfers', err, ctx);

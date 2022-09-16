@@ -10,13 +10,15 @@
 
 'use strict';
 
+const { Enum } = require('@mojaloop/central-services-shared');
+const { ReturnCodes } = Enum.Http;
 
 module.exports = (handlerMap) => async (ctx, next) => {
     const handlers = handlerMap[ctx.state.path.pattern];
     const handler = handlers ? handlers[ctx.method.toLowerCase()] : undefined;
     if (!handlers || !handler) {
         ctx.state.logger.log('No handler found');
-        ctx.response.status = 404;
+        ctx.response.status = ReturnCodes.NOTFOUND.CODE;
         // TODO: response content according to API spec. Should probably actually be a 404 here.
         ctx.response.body = { statusCode: 404, message: 'Not found' };
     }
