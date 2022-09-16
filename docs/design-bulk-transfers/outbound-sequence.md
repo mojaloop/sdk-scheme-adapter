@@ -140,6 +140,7 @@ sequenceDiagram
         loop for each individual transfer in bulk
             SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the individual state: AGREEMENT_ACCEPTED / AGREEMENT_REJECTED
         end
+        SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "AGREEMENT_ACCEPTANCE_COMPLETED"
         SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: SDKOutboundBulkAcceptQuoteProcessed
         Note right of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
     else autoAcceptQuote == true
@@ -151,6 +152,7 @@ sequenceDiagram
             SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Check fee limits
             SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the individual state: AGREEMENT_ACCEPTED / AGREEMENT_REJECTED
         end
+        SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "AGREEMENT_ACCEPTANCE_COMPLETED"
         SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: SDKOutboundBulkAutoAcceptQuoteCompleted
         Note right of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
     end
