@@ -57,9 +57,6 @@ sequenceDiagram
     SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: check options.autoAcceptParty in redis
 
     alt autoAcceptParty == false
-        loop for each transfer in bulk
-            SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the individual transfer state with party response data
-        end
         SDKOutboundCommandEventHandler->>SDKOutboundAPI: SDKOutboundBulkAcceptPartyInfoRequested
         Note right of SDKOutboundAPI: topic-sdk-outbound-domain-events
         SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "DISCOVERY_ACCEPTANCE_PENDING"
