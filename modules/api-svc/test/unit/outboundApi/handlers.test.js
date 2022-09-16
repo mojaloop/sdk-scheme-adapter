@@ -18,6 +18,7 @@ const mockRequestToPayTransferError = require('./data/mockRequestToPayTransferEr
 const mockGetPartiesError = require('./data/mockGetPartiesError');
 const transferRequest = require('./data/transferRequest');
 const bulkTransferRequest = require('./data/bulkTransferRequest');
+const bulkTransactionRequest = require('./data/bulkTransactionRequest.json');
 const bulkQuoteRequest = require('./data/bulkQuoteRequest');
 const requestToPayPayload = require('./data/requestToPay');
 const requestToPayTransferRequest = require('./data/requestToPayTransferRequest');
@@ -339,6 +340,121 @@ describe('Outbound API handlers:', () => {
             // property to come from the extensionList item with the corresponding key 'extErrorKey'
             expect(mockContext.response.body.statusCode).toEqual('9999');
             expect(mockContext.response.body.bulkQuoteState).toEqual(mockBulkQuoteError.bulkQuoteState);
+        });
+    });
+
+    describe('POST /bulkTransactions', () => {
+        test('should send SDKOutboundBulkRequestReceivedDmEvt event', async () => {
+            const mockContext = {
+                request: {
+                    body: bulkTransactionRequest,
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    logger: { log: () => {} },
+                    eventLogger: { info: () => {}},
+                    eventProducer: { sendDomainEvent: jest.fn() },
+                }
+            };
+
+            await handlers['/bulkTransactions'].post(mockContext);
+
+            // check response is correct
+            expect(mockContext.response.status).toEqual(202);
+            const arg = mockContext.state.eventProducer.sendDomainEvent.mock.calls[0][0];
+            expect(arg._data.content).toEqual(bulkTransactionRequest);
+            expect(arg._data.name).toEqual('SDKOutboundBulkRequestReceivedDmEvt');
+            expect(arg._data.headers).toEqual([mockContext.request.headers]);
+        });
+    });
+
+    describe('PUT /bulkTransactions', () => {
+        test('should send SDKOutboundBulkAcceptPartyInfoReceivedDmEvt event when transfer has acceptParty', async () => {
+            const body = {
+                bulkHomeTransactionID: 'home-tx-id',
+                individualTransfers: [
+                    {
+                        homeTransactionId: 'home-tx-id-1',
+                        transactionId: 'b51ec534-ee48-4575-b6a9-ead2955b8069',
+                        acceptParty: true,
+                    },
+                ]
+            };
+            const mockContext = {
+                request: {
+                    body,
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    logger: { log: () => {} },
+                    eventLogger: { info: () => {}},
+                    eventProducer: { sendDomainEvent: jest.fn() },
+                    path: {
+                        params: {
+                            bulkTransactionId: 'b51ec534-ee48-4575-b6a9-ead2955b8069',
+                        }
+                    },
+                }
+            };
+
+            await handlers['/bulkTransactions/{bulkTransactionId}'].put(mockContext);
+
+            // check response is correct
+            expect(mockContext.response.status).toEqual(202);
+            const arg = mockContext.state.eventProducer.sendDomainEvent.mock.calls[0][0];
+            expect(arg._data.content).toEqual(body);
+            expect(arg._data.name).toEqual('SDKOutboundBulkAcceptPartyInfoReceivedDmEvt');
+            expect(arg._data.headers).toEqual([mockContext.request.headers]);
+        });
+
+        test('should send SDKOutboundBulkAcceptQuoteReceivedDmEvt event when transfer has acceptQuote', async () => {
+            const body = {
+                bulkHomeTransactionID: 'home-tx-id',
+                individualTransfers: [
+                    {
+                        homeTransactionId: 'home-tx-id-1',
+                        transactionId: 'b51ec534-ee48-4575-b6a9-ead2955b8069',
+                        acceptQuote: true,
+                    },
+                ]
+            };
+            const mockContext = {
+                request: {
+                    body,
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    logger: { log: () => {} },
+                    eventLogger: { info: () => {}},
+                    eventProducer: { sendDomainEvent: jest.fn() },
+                    path: {
+                        params: {
+                            bulkTransactionId: 'b51ec534-ee48-4575-b6a9-ead2955b8069',
+                        }
+                    },
+                }
+            };
+
+            await handlers['/bulkTransactions/{bulkTransactionId}'].put(mockContext);
+
+            // check response is correct
+            expect(mockContext.response.status).toEqual(202);
+            const arg = mockContext.state.eventProducer.sendDomainEvent.mock.calls[0][0];
+            expect(arg._data.content).toEqual(body);
+            expect(arg._data.name).toEqual('SDKOutboundBulkAcceptQuoteReceivedDmEvt');
+            expect(arg._data.headers).toEqual([mockContext.request.headers]);
         });
     });
 
