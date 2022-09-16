@@ -118,7 +118,7 @@ describe("Tests for discovery part in Outbound Command Event Handler", () => {
       options: {
         onlyValidateParty: true,
         autoAcceptParty: {
-          enabled: false
+          enabled: false,
         },
         autoAcceptQuote: {
           enabled: true,
@@ -219,7 +219,7 @@ describe("Tests for discovery part in Outbound Command Event Handler", () => {
     // ASSERT
     // Check that the state of individual transfers in bulk to be RECEIVED
     const individualTransfers = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
-    const individualTransferData = await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[0]);
+    const individualTransferData = await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, randomGeneratedTransferIds[amountList.indexOf('1')]);
     console.log('individualTransferData:', individualTransferData);
     expect(individualTransferData.state).toBe('DISCOVERY_SUCCESS');
     expect(individualTransferData.partyResponse?.party.partyIdInfo.fspId).toBe('receiverfsp');

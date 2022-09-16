@@ -290,13 +290,15 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         }
     }
 
-    async incrementBulkQuotesSuccessCount(bulkId: string): Promise<void> {
+    async incrementBulkQuotesSuccessCount(bulkId: string, increment = 1): Promise<number> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            this._data[key][this.bulkQuotesSuccessCountKey] += 1;
+            this._data[key][this.bulkQuotesSuccessCountKey] =
+                this._data[key][this.bulkQuotesSuccessCountKey] + increment;
+            return this._data[key][this.bulkQuotesSuccessCountKey];
         } catch (err) {
             this._logger.error(err, `Error incrementing attribute ${this.bulkQuotesSuccessCountKey} in memory for key: ${key}`);
             throw (err);
@@ -335,13 +337,15 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         }
     }
 
-    async incrementBulkQuotesFailedCount(bulkId: string): Promise<void> {
+    async incrementBulkQuotesFailedCount(bulkId: string, increment = 1): Promise<number> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            this._data[key][this.bulkQuotesFailedCountKey] += 1;
+            this._data[key][this.bulkQuotesFailedCountKey] =
+                this._data[key][this.bulkQuotesFailedCountKey] + increment;
+            return this._data[key][this.bulkQuotesFailedCountKey];
         } catch (err) {
             this._logger.error(err, `Error incrementing attribute ${this.bulkQuotesFailedCountKey} in memory for key: ${key}`);
             throw (err);

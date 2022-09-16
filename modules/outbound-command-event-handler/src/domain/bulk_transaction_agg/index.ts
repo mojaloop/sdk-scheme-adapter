@@ -210,9 +210,9 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
             .setBulkQuotesSuccessCount(this._rootEntity.id, count);
     }
 
-    async incrementBulkQuotesSuccessCount() : Promise<void> {
-        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
-            .incrementBulkQuotesSuccessCount(this._rootEntity.id);
+    async incrementBulkQuotesSuccessCount(increment = 1) : Promise<void> {
+        const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
+        return repo.incrementBulkQuotesSuccessCount(this._rootEntity.id, increment);
     }
 
     async getBulkQuotesFailedCount() {
@@ -225,9 +225,9 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
             .setBulkQuotesFailedCount(this._rootEntity.id, count);
     }
 
-    async incrementBulkQuotesFailedCount() : Promise<void> {
-        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
-            .incrementBulkQuotesFailedCount(this._rootEntity.id);
+    async incrementBulkQuotesFailedCount(increment = 1) : Promise<any> {
+        const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
+        return repo.incrementBulkQuotesFailedCount(this._rootEntity.id, increment);
     }
 
     async addBulkBatchEntity(entity: BulkBatchEntity) : Promise<void> {

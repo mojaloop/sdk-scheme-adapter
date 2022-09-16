@@ -164,7 +164,7 @@
     }
     const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
     await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, messageTimeout));
 
     const bulkPartyInfoRequestCommandEventData: IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData = {
       bulkId: bulkTransactionId,
@@ -174,7 +174,7 @@
     const bulkPartyInfoRequestCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCmdEvt(bulkPartyInfoRequestCommandEventData);
     await producer.sendCommandEvent(bulkPartyInfoRequestCommandEventObj);
 
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    await new Promise(resolve => setTimeout(resolve, messageTimeout));
     // Check the state in Redis
     console.log('bulk id: ', bulkTransactionId);
     const bulkState = await bulkTransactionEntityRepo.load(bulkTransactionId);
@@ -250,7 +250,7 @@
     }
     const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
     await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, messageTimeout));
 
     const bulkPartyInfoRequestCommandEventData: IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData = {
       bulkId: bulkTransactionId,

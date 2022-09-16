@@ -126,13 +126,13 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
       options: {
         onlyValidateParty: true,
         autoAcceptParty: {
-          enabled: true
+          enabled: true,
         },
         autoAcceptQuote: {
           enabled: true,
         },
         skipPartyLookup: false,
-        synchronous: true,
+        synchronous: false,
         bulkExpiration: "2016-05-24T08:38:08.699-04:00"
       },
       from: {
@@ -380,6 +380,9 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
     }
 
     const bulkQuoteId = randomUUID();
+    const quoteAmountList: string[] = []
+    quoteAmountList.push(receiverFspBatch.bulkQuotesRequest.individualQuotes[0].amount);
+    quoteAmountList.push(receiverFspBatch.bulkQuotesRequest.individualQuotes[1].amount);
 
     // Simulate the domain handler sending ProcessBulkQuotesCallback to command handler
     // for receiverfsp batch
@@ -393,7 +396,7 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
           currentState: 'COMPLETED',
           individualQuoteResults: [
             {
-              quoteId: receiverFspBatch.bulkQuotesRequest.individualQuotes[0].quoteId,
+              quoteId: receiverFspBatch.bulkQuotesRequest.individualQuotes[quoteAmountList.indexOf('1')].quoteId,
               transferAmount: {
                 currency: 'USD',
                 amount: '1',
@@ -402,7 +405,7 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
               condition: 'string'
             },
             {
-              quoteId: receiverFspBatch.bulkQuotesRequest.individualQuotes[1].quoteId,
+              quoteId: receiverFspBatch.bulkQuotesRequest.individualQuotes[quoteAmountList.indexOf('2')].quoteId,
               transferAmount: {
                 currency: 'USD',
                 amount: '2',
@@ -467,7 +470,7 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
     const postBulkBatchDifferentFsp = await bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, differentFspBatch.id);
     expect(postBulkBatchDifferentFsp.state).toBe(BulkBatchInternalState.AGREEMENT_FAILED);
 
-    // Check that bulkQuoteResponse state has been updated to COMPLETED
+    // Check that bulkQuoteResponse state has been updated to ERROR_OCCURRED
     expect(postBulkBatchDifferentFsp.bulkQuotesResponse!.currentState).toEqual("ERROR_OCCURRED")
 
     // Check the individual transfer state whose quote was successful in a successful bulk quote batch

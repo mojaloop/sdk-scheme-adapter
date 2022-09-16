@@ -327,13 +327,19 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
         }
     }
 
-    async incrementBulkQuotesSuccessCount(bulkId: string): Promise<void> {
+    async incrementBulkQuotesSuccessCount(bulkId: string, increment = 1): Promise<number> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            await this._redisClient.hIncrBy(key, this.bulkQuotesSuccessCountKey, 1);
+            const newValue = await this._redisClient.hIncrBy(key, this.bulkQuotesSuccessCountKey, 1);
+            if(newValue) {
+                return Number(newValue);
+            } else {
+                this._logger.error(`Error loading ${this.bulkQuotesSuccessCountKey} from redis - for key: ${key}`);
+                throw (new Error(`Error loading ${this.bulkQuotesSuccessCountKey} from redis - for key: ${key}`));
+            }
         } catch (err) {
             this._logger.error(err, `Error incrementing attribute ${this.bulkQuotesSuccessCountKey} in redis for key: ${key}`);
             throw (err);
@@ -375,13 +381,19 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
         }
     }
 
-    async incrementBulkQuotesFailedCount(bulkId: string): Promise<void> {
+    async incrementBulkQuotesFailedCount(bulkId: string, increment = 1): Promise<number> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            await this._redisClient.hIncrBy(key, this.bulkQuotesFailedCountKey, 1);
+            const newValue = await this._redisClient.hIncrBy(key, this.bulkQuotesFailedCountKey, 1);
+            if(newValue) {
+                return Number(newValue);
+            } else {
+                this._logger.error(`Error loading ${this.bulkQuotesFailedCountKey} from redis - for key: ${key}`);
+                throw (new Error(`Error loading ${this.bulkQuotesFailedCountKey} from redis - for key: ${key}`));
+            }
         } catch (err) {
             this._logger.error(err, `Error incrementing attribute ${this.bulkQuotesFailedCountKey} in redis for key: ${key}`);
             throw (err);
