@@ -6,7 +6,7 @@
     "apiVersion": {
       "minorVersion": 4,
       "majorVersion": 1,
-      "type": "core_connector",
+      "type": "mojaloop_simulator_inbound",
       "hostnames": [
         "ttkpm4mlreceiver-ttk-backend"
       ],
@@ -61,7 +61,7 @@
     "apiVersion": {
       "minorVersion": 4,
       "majorVersion": 1,
-      "type": "core_connector",
+      "type": "mojaloop_simulator_inbound",
       "hostnames": [
         "ttkpm4mlreceiver-ttk-backend"
       ],
@@ -119,7 +119,7 @@
     "apiVersion": {
       "minorVersion": 4,
       "majorVersion": 1,
-      "type": "core_connector",
+      "type": "mojaloop_simulator_inbound",
       "hostnames": [
         "ttkpm4mlreceiver-ttk-backend"
       ],
@@ -176,7 +176,7 @@
     "apiVersion": {
       "minorVersion": 4,
       "majorVersion": 1,
-      "type": "core_connector",
+      "type": "mojaloop_simulator_inbound",
       "hostnames": [
         "ttkpm4mlreceiver-ttk-backend"
       ],
