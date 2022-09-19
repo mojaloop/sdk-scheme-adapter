@@ -40,8 +40,8 @@
   },
   "dependencies": {
     "@mojaloop/api-snippets": "^15.0.1",
-    "@mojaloop/logging-bc-client-lib": "^0.1.13",
-    "@mojaloop/logging-bc-public-types-lib": "^0.1.10",
+    "@mojaloop/logging-bc-client-lib": "^0.1.14",
+    "@mojaloop/logging-bc-public-types-lib": "^0.1.11",
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^",
     "ajv": "^8.11.0",
     "convict": "^6.2.3",
