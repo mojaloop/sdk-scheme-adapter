@@ -13,10 +13,15 @@
 
 'use strict';
 
-const Model = require('../lib/model').InboundTransfersModel;
-const PartiesModel = require('../lib/model').PartiesModel;
-const QuotesModel = require('../lib/model').QuotesModel;
-const TransfersModel = require('../lib/model').TransfersModel;
+const { Enum } = require('@mojaloop/central-services-shared');
+const { ReturnCodes } = Enum.Http;
+
+const {
+    InboundTransfersModel: Model,
+    PartiesModel,
+    QuotesModel,
+    TransfersModel,
+} = require('../lib/model');
 
 /**
  * Handles a GET /authorizations/{id} request
@@ -50,7 +55,7 @@ const getAuthorizationsById = async (ctx) => {
 
     // Note that we will have passed request validation, JWS etc... by this point
     // so it is safe to return 202
-    ctx.response.status = 202;
+    ctx.response.status = ReturnCodes.ACCEPTED.CODE;
     ctx.response.body = '';
 };
 
@@ -87,7 +92,7 @@ const getParticipantsByTypeAndId = async (ctx) => {
 
     // Note that we will have passed request validation, JWS etc... by this point
     // so it is safe to return 202
-    ctx.response.status = 202;
+    ctx.response.status = ReturnCodes.ACCEPTED.CODE;
     ctx.response.body = '';
 };
 
@@ -125,7 +130,7 @@ const getPartiesByTypeAndId = async (ctx) => {
 
     // Note that we will have passed request validation, JWS etc... by this point
     // so it is safe to return 202
-    ctx.response.status = 202;
+    ctx.response.status = ReturnCodes.ACCEPTED.CODE;
     ctx.response.body = '';
 };
 
@@ -135,7 +140,7 @@ const getPartiesByTypeAndId = async (ctx) => {
  */
 const postPartiesByTypeAndId = (ctx) => {
     // creation of parties not supported by SDK
-    ctx.response.status = 501;
+    ctx.response.status = ReturnCodes.NOTIMPLEMEMNTED.CODE;
     ctx.response.body = '';
 };
 
@@ -175,7 +180,7 @@ const postQuotes = async (ctx) => {
 
     // Note that we will have passed request validation, JWS etc... by this point
     // so it is safe to return 202
-    ctx.response.status = 202;
+    ctx.response.status = ReturnCodes.ACCEPTED.CODE;
     ctx.response.body = '';
 };
 
@@ -215,7 +220,7 @@ const postTransfers = async (ctx) => {
 
     // Note that we will have passed request validation, JWS etc... by this point
     // so it is safe to return 202
-    ctx.response.status = 202;
+    ctx.response.status = ReturnCodes.ACCEPTED.CODE;
     ctx.response.body = '';
 };
 
@@ -253,7 +258,7 @@ const getTransfersById = async (ctx) => {
 
     // Note that we will have passed request validation, JWS etc... by this point
     // so it is safe to return 202
-    ctx.response.status = 202;
+    ctx.response.status = ReturnCodes.ACCEPTED.CODE;
     ctx.response.body = '';
 };
 
@@ -289,7 +294,7 @@ const postTransactionRequests = async (ctx) => {
 
     // Note that we will have passed request validation, JWS etc... by this point
     // so it is safe to return 202
-    ctx.response.status = 202;
+    ctx.response.status = ReturnCodes.ACCEPTED.CODE;
     ctx.response.body = '';
 };
 
@@ -310,7 +315,7 @@ const putAuthorizationsById = async (ctx) => {
             headers: ctx.request.headers
         }
     });
-    ctx.response.status = 200;
+    ctx.response.status = ReturnCodes.OK.CODE;
 };
 
 
@@ -327,7 +332,7 @@ const putParticipantsById = async (ctx) => {
         }
     });
 
-    ctx.response.status = 200;
+    ctx.response.status = ReturnCodes.OK.CODE;
 };
 
 
@@ -344,7 +349,7 @@ const putParticipantsByIdError = async (ctx) => {
         }
     });
 
-    ctx.response.status = 200;
+    ctx.response.status = ReturnCodes.OK.CODE;
     ctx.response.body = '';
 };
 
@@ -367,10 +372,10 @@ const putParticipantsByTypeAndId = async (ctx) => {
                 headers: ctx.request.headers
             }
         });
-        ctx.response.status = 200;
+        ctx.response.status = ReturnCodes.OK.CODE;
     } else {
         // SDK does not make participants requests so we should not expect any calls to this method
-        ctx.response.status = 501;
+        ctx.response.status = ReturnCodes.NOTIMPLEMEMNTED.CODE;
         ctx.response.body = '';
     }
 };
@@ -396,7 +401,7 @@ const putParticipantsByTypeAndIdError = async(ctx) => {
         }
     });
 
-    ctx.response.status = 200;
+    ctx.response.status = ReturnCodes.OK.CODE;
     ctx.response.body = '';
 };
 
@@ -424,7 +429,7 @@ const putPartiesByTypeAndId = async (ctx) => {
         }
     });
 
-    ctx.response.status = 200;
+    ctx.response.status = ReturnCodes.OK.CODE;
 };
 
 /**
@@ -455,7 +460,7 @@ const putQuoteById = async (ctx) => {
         }
     });
 
-    ctx.response.status = 200;
+    ctx.response.status = ReturnCodes.OK.CODE;
 };
 
 
@@ -484,7 +489,7 @@ const putQuotesByIdError = async (ctx) => {
         }
     });
 
-    ctx.response.status = 200;
+    ctx.response.status = ReturnCodes.OK.CODE;
     ctx.response.body = '';
 };
 
@@ -521,7 +526,7 @@ const getQuoteById = async (ctx) => {
 
     // Note that we will have passed request validation, JWS etc... by this point
     // so it is safe to return 200
-    ctx.response.status = 200;
+    ctx.response.status = ReturnCodes.OK.CODE;
 
 };
 
@@ -538,7 +543,7 @@ const putTransactionRequestsById = async (ctx) => {
         }
     });
 
-    ctx.response.status = 200;
+    ctx.response.status = ReturnCodes.OK.CODE;
 };
 
 /**
@@ -568,7 +573,7 @@ const putTransfersById = async (ctx) => {
         }
     });
 
-    ctx.response.status = 200;
+    ctx.response.status = ReturnCodes.OK.CODE;
 };
 
 /**
@@ -624,7 +629,7 @@ const putPartiesByTypeAndIdError = async(ctx) => {
         }
     });
 
-    ctx.response.status = 200;
+    ctx.response.status = ReturnCodes.OK.CODE;
     ctx.response.body = '';
 };
 
@@ -655,7 +660,7 @@ const putTransfersByIdError = async (ctx) => {
         }
     });
 
-    ctx.response.status = 200;
+    ctx.response.status = ReturnCodes.OK.CODE;
     ctx.response.body = '';
 };
 
@@ -693,7 +698,7 @@ const getBulkQuotesById = async (ctx) => {
 
     // Note that we will have passed request validation, JWS etc... by this point
     // so it is safe to return 202
-    ctx.response.status = 202;
+    ctx.response.status = ReturnCodes.ACCEPTED.CODE;
     ctx.response.body = '';
 };
 
@@ -726,7 +731,7 @@ const postBulkQuotes = async (ctx) => {
         }
     })();
 
-    ctx.response.status = 202;
+    ctx.response.status = ReturnCodes.ACCEPTED.CODE;
     ctx.response.body = '';
 };
 
@@ -743,7 +748,7 @@ const putBulkQuotesById = async (ctx) => {
         }
     });
 
-    ctx.response.status = 200;
+    ctx.response.status = ReturnCodes.OK.CODE;
 };
 
 /**
@@ -759,7 +764,7 @@ const putBulkQuotesByIdError = async(ctx) => {
         }
     });
 
-    ctx.response.status = 200;
+    ctx.response.status = ReturnCodes.OK.CODE;
     ctx.response.body = '';
 };
 
@@ -797,7 +802,7 @@ const getBulkTransfersById = async (ctx) => {
 
     // Note that we will have passed request validation, JWS etc... by this point
     // so it is safe to return 202
-    ctx.response.status = 202;
+    ctx.response.status = ReturnCodes.ACCEPTED.CODE;
     ctx.response.body = '';
 };
 
@@ -830,7 +835,7 @@ const postBulkTransfers = async (ctx) => {
         }
     })();
 
-    ctx.response.status = 202;
+    ctx.response.status = ReturnCodes.ACCEPTED.CODE;
     ctx.response.body = '';
 };
 
@@ -847,7 +852,7 @@ const putBulkTransfersById = async (ctx) => {
         }
     });
 
-    ctx.response.status = 200;
+    ctx.response.status = ReturnCodes.OK.CODE;
 };
 
 /**
@@ -863,13 +868,13 @@ const putBulkTransfersByIdError = async(ctx) => {
         }
     });
 
-    ctx.response.status = 200;
+    ctx.response.status = ReturnCodes.OK.CODE;
     ctx.response.body = '';
 };
 
 
 const healthCheck = async(ctx) => {
-    ctx.response.status = 200;
+    ctx.response.status = ReturnCodes.OK.CODE;
     ctx.response.body = '';
 };
 
