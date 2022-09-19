@@ -58,7 +58,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
         if(bulkQuotesResult.currentState &&
            bulkQuotesResult.currentState === 'COMPLETED') {
             bulkBatch.setState(BulkBatchInternalState.AGREEMENT_COMPLETED);
-            successCountAfterIncrement = bulkTransactionAgg.incrementBulkQuotesSuccessCount();
+            successCountAfterIncrement = await bulkTransactionAgg.incrementBulkQuotesSuccessCount();
 
             // Iterate through items in batch and update the individual states
             for await (const quoteResult of bulkQuotesResult.individualQuoteResults) {
@@ -80,7 +80,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
         // to AGREEMENT_FAILED.
         } else {
             bulkBatch.setState(BulkBatchInternalState.AGREEMENT_FAILED);
-            failedCountAfterIncrement = bulkTransactionAgg.incrementBulkQuotesFailedCount();
+            failedCountAfterIncrement = await bulkTransactionAgg.incrementBulkQuotesFailedCount();
 
             const individualTransferIds = Object.values(bulkBatch.quoteIdReferenceIdMap);
             for await (const individualTransferId of individualTransferIds) {
