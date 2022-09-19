@@ -208,7 +208,7 @@ jobs:
             run_int_tests() {
               pushd /home/circleci/project/modules/$1
               yarn run start & echo $! > /tmp/sdk-scheme-adapter.pid
-              sleep 10
+              sleep 30
               yarn run test:integration
               kill $(cat /tmp/sdk-scheme-adapter.pid)
               popd
@@ -518,7 +518,7 @@ jobs:
           at: /tmp
       - run:
           name: Load the pre-built docker image from workspace
-          command: | 
+          command: |
             docker load -i /tmp/docker-image.tar
       - run:
           name: Login to Docker Hub
@@ -576,7 +576,7 @@ jobs:
           at: /tmp
       - run:
           name: Load the pre-built docker image from workspace
-          command: | 
+          command: |
             docker load -i /tmp/docker-image.tar
       - run:
           name: Login to Docker Hub
