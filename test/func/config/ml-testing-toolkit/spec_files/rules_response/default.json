@@ -1,5 +1,57 @@
 [
   {
+    "ruleId": 12,
+    "priority": 1,
+    "description": "Error get /parties",
+    "apiVersion": {
+      "minorVersion": 4,
+      "majorVersion": 1,
+      "type": "mojaloop_simulator_inbound",
+      "specFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/api_spec.yaml",
+      "callbackMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/callback_map.json",
+      "responseMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/response_map.json",
+      "jsfRefFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/mockRef.json",
+      "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/trigger_templates"
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "pathParams",
+          "operator": "equal",
+          "value": "123456007",
+          "path": "idValue"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/parties/{idType}/{idValue}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "get"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "statusCode": "4001",
+          "message": "asdf"
+        },
+        "statusCode": "404",
+        "scripts": {
+          "scriptingEngine": "postman"
+        }
+      },
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
     "ruleId": 6,
     "priority": 1,
     "description": "get /parties/{idType}/{idValue}",
