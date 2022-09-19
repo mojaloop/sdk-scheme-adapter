@@ -69,6 +69,7 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
             failedCountAfterIncrement = await bulkTransactionAgg.incrementPartyLookupFailedCount();
         }
         individualTransfer.setPartyResponse(partyResult);
+        await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
 
         const msg = new PartyInfoCallbackProcessedDmEvt({
             bulkId: processPartyInfoCallback.getKey(),
@@ -79,7 +80,6 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
             headers: [],
         });
         await options.domainProducer.sendDomainEvent(msg);
-        await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
 
         // Progressing to the next step
         // Check the status of the remaining party lookups
