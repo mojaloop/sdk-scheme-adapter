@@ -125,6 +125,7 @@
     Then the logic should update the individual batch state to AGREEMENT_COMPLETED or AGREEMENT_FAILED, \
     And for each individual transfers in the batch, the state could be AGREEMENT_SUCCESS or AGREEMENT_FAILED accordingly \
     And the individual quote data in redis should be updated with the response \
+    And the global BulkTransaction state should be AGREEMENT_ACCEPTANCE_PENDING \
     And domain event BulkQuotesCallbackProcessed should be published \
     And domain event SDKOutboundBulkQuotesRequestProcessed should be published", async () => {
       // Publish this message so that it is stored internally in redis
