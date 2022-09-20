@@ -224,7 +224,7 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
     amountList.push((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, randomGeneratedTransferIds[2])).request.amount)
     amountList.push((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, randomGeneratedTransferIds[3])).request.amount)
 
-    // Simulate the domain handler sending the command handler PProcessPartyInfoCallback messages
+    // Simulate the domain handler sending the command handler ProcessPartyInfoCallback messages
     // for each individual transfer
     const processPartyInfoCallbackMessageData1: IProcessPartyInfoCallbackCmdEvtData = {
       bulkId: bulkTransactionId,
