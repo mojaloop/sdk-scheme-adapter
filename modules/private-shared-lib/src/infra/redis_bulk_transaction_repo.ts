@@ -333,7 +333,7 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            const newValue = await this._redisClient.hIncrBy(key, this.bulkQuotesSuccessCountKey, 1);
+            const newValue = await this._redisClient.hIncrBy(key, this.bulkQuotesSuccessCountKey, increment);
             if(newValue) {
                 return Number(newValue);
             } else {
@@ -387,7 +387,7 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            const newValue = await this._redisClient.hIncrBy(key, this.bulkQuotesFailedCountKey, 1);
+            const newValue = await this._redisClient.hIncrBy(key, this.bulkQuotesFailedCountKey, increment);
             if(newValue) {
                 return Number(newValue);
             } else {
