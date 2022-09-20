@@ -67,9 +67,7 @@ function argsValidation({ type, id, subId }) {
 function reformatMessage(message) {
     if (message.body.errorInformation) {
         return {
-            party: {
-                errorInformation: { ...message.body.errorInformation }
-            }
+            errorInformation: { ...message.body.errorInformation }
         };
     } else {
         return {
