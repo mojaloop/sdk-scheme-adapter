@@ -47,7 +47,7 @@ export async function handleProcessSDKOutboundBulkAcceptQuoteCmdEvt(
             options.bulkTransactionEntityRepo,
             logger,
         );
-        logger.info(`Created BulkTransactionAggregate ${bulkTransactionAgg}`);
+        logger.info(`handleProcessSDKOutboundBulkAcceptQuoteCmdEvt - Created BulkTransactionAggregate ${bulkTransactionAgg}`);
 
         // Update the individual state: AGREEMENT_ACCEPTED / AGREEMENT_REJECTED
         const bulkTx = bulkTransactionAgg.getBulkTransaction();
@@ -62,16 +62,26 @@ export async function handleProcessSDKOutboundBulkAcceptQuoteCmdEvt(
                 individualTransfer =
                     await bulkTransactionAgg.getIndividualTransferById(individualTransferFromMessage.transactionId);
             } catch {
-                logger.warn(`Can not find the individual transfer with id ${individualTransferFromMessage.transactionId} in bulk transaction`);
+                logger.warn(`handleProcessSDKOutboundBulkAcceptQuoteCmdEvt - Can not find the individual transfer with id ${individualTransferFromMessage.transactionId} in bulk transaction`);
                 continue;
             }
 
             individualTransfer.setAcceptParty(individualTransferFromMessage.acceptQuote);
-            if(individualTransferFromMessage.acceptQuote) {
+
+            if(
+                individualTransferFromMessage.acceptQuote && 
+                individualTransfer.transferState === IndividualTransferInternalState.AGREEMENT_SUCCESS
+            ) {
                 individualTransfer.setTransferState(IndividualTransferInternalState.AGREEMENT_ACCEPTED);
-            } else {
+            } else if(
+                !individualTransferFromMessage.acceptQuote && 
+                individualTransfer.transferState === IndividualTransferInternalState.AGREEMENT_SUCCESS
+            ) {
                 individualTransfer.setTransferState(IndividualTransferInternalState.AGREEMENT_REJECTED);
+            } else {
+                logger.warn(`handleProcessSDKOutboundBulkAcceptQuoteCmdEvt - individualTransfer.transactionId[${individualTransferFromMessage.transactionId}] is already in a non-processing state: ${individualTransfer.transferState}`);
             }
+
             await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
         }
 
@@ -88,6 +98,6 @@ export async function handleProcessSDKOutboundBulkAcceptQuoteCmdEvt(
         await options.domainProducer.sendDomainEvent(sdkOutboundBulkAcceptQuoteProcessedDmEvt);
 
     } catch (err) {
-        logger.error(`Failed to create BulkTransactionAggregate. ${(err as Error).message}`);
+        logger.error(`handleProcessSDKOutboundBulkAcceptQuoteCmdEvt - Failed to create BulkTransactionAggregate. ${(err as Error).message}`);
     }
 }

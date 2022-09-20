@@ -120,7 +120,7 @@
       autoAcceptParty: false, \
       autoAcceptQuote: false \
     } \
-    and callback for quote batch is successful \
+    And callback for quote batch is successful \
     And the callback has a combination of success and failed responses for individual quotes \
     When Inbound command event ProcessBulkQuotesCallback is received \
     Then the logic should update the individual batch state to AGREEMENT_COMPLETED or AGREEMENT_FAILED, \
