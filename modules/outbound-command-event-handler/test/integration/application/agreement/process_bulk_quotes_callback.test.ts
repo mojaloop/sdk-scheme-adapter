@@ -21,6 +21,7 @@
 
  - Sridevi Miriyala <sridevi.miriyala@modusbox.com>
  - Kevin Leyow <kevin.leyow@modusbox.com>
+ - Miguel de Barros <miguel.debarros@modusbox.com>
  --------------
  ******/
 
