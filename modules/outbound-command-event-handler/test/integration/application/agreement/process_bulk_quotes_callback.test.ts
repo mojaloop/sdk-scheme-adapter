@@ -525,11 +525,11 @@
 
     // TODO: @Sri to investigate as to why this test is passing -
     // Given the BulkTransaction with Options {
-    //  synchronous: true, <-- this is currently supported
+    //  synchronous: true, <-- this is currently unsupported
     //  onlyValidateParty: true,
     //  skipPartyLookup: false,
-    //  autoAcceptParty: true, <-- this is currently supported
-    //  autoAcceptQuote: true <-- this is currently supported
+    //  autoAcceptParty: true, <-- this is currently unsupported
+    //  autoAcceptQuote: true <-- this is currently unsupported
     // }
     test.skip("Given the callback for quote batch is successful \
          And the callback has a combination of success and failed responses for individual quotes \
