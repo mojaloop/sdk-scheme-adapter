@@ -40,3 +40,4 @@ export * from './sdk_outbound_bulk_accept_quote_received';
 export * from './sdk_outbound_bulk_accept_quote_processed';
 export * from './sdk_outbound_bulk_response_sent';
 export * from './bulk_transfers_requested';
+export * from './bulk_transfers_callback_received';

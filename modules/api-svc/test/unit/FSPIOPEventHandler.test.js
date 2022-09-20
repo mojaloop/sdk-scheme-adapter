@@ -5,27 +5,35 @@ const config = require('./data/defaultConfig.json');
 const {
     PartyInfoRequestedDmEvt,
     BulkQuotesRequestedDmEvt,
+    BulkTransfersRequestedDmEvt,
+    KafkaDomainEventConsumer,
+    KafkaDomainEventProducer,
 } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
 
 const {
     OutboundBulkQuotesModel,
     PartiesModel,
+    OutboundBulkTransfersModel,
 } = require('~/lib/model');
-
-const {
-    KafkaDomainEventConsumer,
-    KafkaDomainEventProducer,
-} = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
 
 const logger = new Logger.Logger({ context: { app: 'FSPIOPEventHandler' }, stringify: () => '' });
 
 describe('FSPIOPEventHandler', () => {
-    test('should handle PartyInfoRequestedDmEvt event', async () => {
-        const fspiopEventHandler = new FSPIOPEventHandler({
+    let fspiopEventHandler;
+
+    beforeEach(async () => {
+        fspiopEventHandler = new FSPIOPEventHandler({
             config,
             logger,
         });
         await fspiopEventHandler.start();
+    });
+
+    afterAll(async () => {
+        await fspiopEventHandler.stop();
+    });
+
+    test('should handle PartyInfoRequestedDmEvt event', async () => {
         const request = {
             partyIdType: 'PERSONAL_ID',
             partyIdentifier: '16135551212',
@@ -99,16 +107,9 @@ describe('FSPIOPEventHandler', () => {
                 currentState: 'COMPLETED',
             }
         });
-
-        await fspiopEventHandler.stop();
     });
 
     test('should return error information for PartyInfoRequestedDmEvt event', async () => {
-        const fspiopEventHandler = new FSPIOPEventHandler({
-            config,
-            logger,
-        });
-        await fspiopEventHandler.start();
         const request = {
             partyIdType: 'PERSONAL_ID',
             partyIdentifier: '16135551212',
@@ -180,16 +181,9 @@ describe('FSPIOPEventHandler', () => {
                 },
             },
         });
-
-        await fspiopEventHandler.stop();
     });
 
     test('should handle BulkQuotesRequestedDmEvt event', async () => {
-        const fspiopEventHandler = new FSPIOPEventHandler({
-            config,
-            logger,
-        });
-        await fspiopEventHandler.start();
         const bulkId = 'bulk-tx-test';
         const event = new BulkQuotesRequestedDmEvt({
             bulkId,
@@ -251,8 +245,81 @@ describe('FSPIOPEventHandler', () => {
             bulkQuoteId: bulkQuoteResponse.bulkQuoteId,
             bulkQuotesResult: bulkQuoteResponse,
         });
+    });
 
-        await fspiopEventHandler.stop();
+    test('should handle BulkTransfersRequestedDmEvt event', async () => {
+        const bulkTransfersRequest = {
+            homeTransactionId: 'home-transaction-id',
+            from: {
+                idType: 'MSISDN',
+                idValue: '123456'
+            },
+            individualTransfers: [
+                {
+                    homeTransactionId: 'home-individual-transfer-id',
+                    to: {
+                        partyIdInfo: {
+                            partyIdType: 'MSISDN',
+                            partyIdentifier: '1'
+                        },
+                    },
+                    amountType: 'SEND',
+                    currency: 'USD',
+                    amount: '1'
+                },
+            ]
+        };
+        const bulkTransfersRequestedDmEvt = new BulkTransfersRequestedDmEvt({
+            bulkId: 'bulk-tx-test',
+            headers: [],
+            timestamp: Date.now(),
+            content: {
+                batchId: '61c35bae-77d0-4f7d-b894-be375b838ff6',
+                bulkTransfersRequest,
+            },
+        });
+
+        const bulkTransfersResult = {
+            bulkTransferId: '81c35bae-77d0-4f7d-b894-be375b838ff6',
+            currentState: 'COMPLETED',
+            individualTransferResults: [
+                {
+                    transferId: 'individual-transfer-id',
+                    to: {
+                        partyIdInfo: {
+                            partyIdType: 'MSISDN',
+                            partyIdentifier: '1'
+                        },
+                    },
+                    amountType: 'SEND',
+                    currency: 'USD',
+                    amount: '1'
+                },
+            ]
+        };
+
+        const initializeSpy = jest.spyOn(OutboundBulkTransfersModel.prototype, 'initialize')
+            .mockImplementationOnce(async () => bulkTransfersResult);
+
+        jest.spyOn(OutboundBulkTransfersModel.prototype, 'run')
+            .mockImplementationOnce(async () => bulkTransfersResult);
+
+
+        const handler = KafkaDomainEventConsumer.mock.ctor.mock.calls[0][0];
+        await handler(bulkTransfersRequestedDmEvt);
+
+        // run workflow
+        expect(initializeSpy).toBeCalledWith(bulkTransfersRequestedDmEvt.request);
+
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+
+        const sent = KafkaDomainEventProducer.mock.sendDomainEvent.mock.calls[0][0];
+        expect(sent._data.name).toEqual('BulkTransfersCallbackReceivedDmEvt');
+        expect(sent._data.content).toEqual({
+            batchId: '61c35bae-77d0-4f7d-b894-be375b838ff6',
+            bulkTransferId: '81c35bae-77d0-4f7d-b894-be375b838ff6',
+            bulkTransfersResult
+        });
     });
 });
 
