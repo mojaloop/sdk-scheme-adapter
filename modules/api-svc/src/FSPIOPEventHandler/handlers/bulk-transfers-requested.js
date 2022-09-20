@@ -34,7 +34,7 @@ module.exports.handleBulkTransfersRequestedDmEvt = async (
     const event = BulkTransfersRequestedDmEvt.CreateFromDomainEvent(message);
 
     try {
-        // use the bulk quotes model to execute asynchronous request with the switch
+        // use the bulk transfers model to execute asynchronous request with the switch
         const model = new OutboundBulkTransfersModel({
             ...options.config,
             cache: options.cache,
