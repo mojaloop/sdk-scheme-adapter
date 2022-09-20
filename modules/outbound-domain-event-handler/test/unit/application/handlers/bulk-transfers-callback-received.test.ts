@@ -57,9 +57,8 @@ describe('handleBulkTransfersCallbackReceived', () => {
   let key: string;
 
   beforeEach(async () => {
-    key = `${randomUUID()}_${randomUUID()}`
     sampleBulkTransfersCallbackReceivedMessageData = {
-      key,
+      key: randomUUID(),
       name: BulkTransfersCallbackReceivedDmEvt.name,
       content: {
         batchId: '61c35bae-77d0-4f7d-b894-be375b838ff6',
