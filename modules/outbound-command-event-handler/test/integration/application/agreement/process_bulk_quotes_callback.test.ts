@@ -200,6 +200,7 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
     }
     const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
     await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
+    console.log('xxxxxxxxxxxxxxxxxx')
     await new Promise(resolve => setTimeout(resolve, messageTimeout));
 
     const bulkPartyInfoRequestCommandEventData: IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData = {
