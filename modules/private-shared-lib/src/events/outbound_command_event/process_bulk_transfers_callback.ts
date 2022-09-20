@@ -2,10 +2,15 @@
 
 import { CommandEvent } from '../command_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 export interface IProcessBulkTransfersCallbackCmdEvtData {
     bulkId: string;
-    content: null;
+    content: {
+        batchId: string;
+        bulkTransferId: string;
+        bulkTransfersResult: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferResponse
+    },
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
@@ -15,7 +20,7 @@ export class ProcessBulkTransfersCallbackCmdEvt extends CommandEvent {
             key: data.bulkId,
             timestamp: data.timestamp,
             headers: data.headers,
-            content: null,
+            content: data.content,
             name: ProcessBulkTransfersCallbackCmdEvt.name,
         });
     }
@@ -31,5 +36,20 @@ export class ProcessBulkTransfersCallbackCmdEvt extends CommandEvent {
             bulkId: message.getKey(),
         };
         return new ProcessBulkTransfersCallbackCmdEvt(data);
+    }
+
+    get batchId(): string {
+        const content = this.getContent() as IProcessBulkTransfersCallbackCmdEvtData['content'];
+        return content.batchId;
+    }
+
+    get bulkTransferId(): string {
+        const content = this.getContent() as IProcessBulkTransfersCallbackCmdEvtData['content'];
+        return content.bulkTransferId;
+    }
+
+    get bulkTransfersResult(): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferResponse {
+        const content = this.getContent() as IProcessBulkTransfersCallbackCmdEvtData['content'];
+        return content.bulkTransfersResult;
     }
 }
