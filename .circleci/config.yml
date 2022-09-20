@@ -212,7 +212,7 @@ jobs:
               yarn run test:integration
               kill $(cat /tmp/sdk-scheme-adapter.pid)
               popd
-              sleep 10
+              sleep 30
             }
             run_int_tests outbound-domain-event-handler
             run_int_tests outbound-command-event-handler
