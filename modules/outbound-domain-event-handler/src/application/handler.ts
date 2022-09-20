@@ -42,6 +42,7 @@ import {
     SDKOutboundBulkAcceptPartyInfoReceivedDmEvt,
     SDKOutboundBulkAcceptPartyInfoProcessedDmEvt,
     BulkQuotesCallbackReceivedDmEvt,
+    SDKOutboundBulkAcceptQuoteReceivedDmEvt,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { IDomainEventHandlerOptions } from '../types';
 import {
@@ -52,6 +53,7 @@ import {
     handleSDKOutboundBulkAcceptPartyInfoProcessed,
     handleBulkQuotesCallbackReceived,
     handlePartyInfoCallbackProcessed,
+    handleSDKOutboundBulkAcceptQuoteReceived,
 } from './handlers';
 
 export interface IOutboundEventHandlerOptions {
@@ -137,6 +139,9 @@ export class OutboundEventHandler implements IRunHandler {
             case PartyInfoCallbackProcessedDmEvt.name: {
                 await handlePartyInfoCallbackProcessed(message, this._domainEventHandlerOptions, this._logger);
                 break;
+            }
+            case SDKOutboundBulkAcceptQuoteReceivedDmEvt.name: {
+                await handleSDKOutboundBulkAcceptQuoteReceived(message, this._domainEventHandlerOptions, this._logger);
             }
             default: {
                 this._logger.debug(`${message?.getName()}:${message?.getKey()} - Skipping unknown domain event`);

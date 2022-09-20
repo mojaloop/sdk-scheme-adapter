@@ -44,6 +44,7 @@ import {
     ProcessBulkQuotesCallbackCmdEvt,
     IBulkTransactionEntityRepo,
     ProcessSDKOutboundBulkTransfersRequestCmdEvt,
+    ProcessSDKOutboundBulkAcceptQuoteCmdEvt,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { ICommandEventHandlerOptions } from '@module-types';
 
@@ -102,7 +103,7 @@ export class OutboundEventHandler implements IRunHandler {
     }
 
     async _messageHandler(message: CommandEvent): Promise<void> {
-        this._logger.info(`${message.getName()}`);
+        this._logger.info(`OutboundHandler._messageHandler - Processing ${message.getName()}`);
         // TODO: Handle error validations here
         switch (message.getName()) {
             case ProcessSDKOutboundBulkRequestCmdEvt.name: {
@@ -162,6 +163,14 @@ export class OutboundEventHandler implements IRunHandler {
             case ProcessSDKOutboundBulkTransfersRequestCmdEvt.name: {
                 BulkTransactionAgg.ProcessCommandEvent(
                     ProcessSDKOutboundBulkTransfersRequestCmdEvt.CreateFromCommandEvent(message),
+                    this._commandEventHandlerOptions,
+                    this._logger,
+                );
+                break;
+            }
+            case ProcessSDKOutboundBulkAcceptQuoteCmdEvt.name: {
+                BulkTransactionAgg.ProcessCommandEvent(
+                    ProcessSDKOutboundBulkAcceptQuoteCmdEvt.CreateFromCommandEvent(message),
                     this._commandEventHandlerOptions,
                     this._logger,
                 );
