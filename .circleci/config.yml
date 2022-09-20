@@ -214,8 +214,8 @@ jobs:
               popd
               sleep 30
             }
-            run_int_tests outbound-domain-event-handler
             run_int_tests outbound-command-event-handler
+            run_int_tests outbound-domain-event-handler
       ## TODO Capture results
       # - run:
       #     name: prepare test/results
