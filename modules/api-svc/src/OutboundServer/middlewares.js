@@ -8,7 +8,8 @@
  *       James Bush - james.bush@modusbox.com                             *
  **************************************************************************/
 
-
+const { Enum } = require('@mojaloop/central-services-shared');
+const { ReturnCodes } = Enum.Http;
 const { ProxyModel } = require('../lib/model');
 const { applyState, createErrorHandler, createLogger, createRequestIdGenerator } =
     require('../InboundServer/middlewares');
@@ -31,7 +32,7 @@ const createRequestValidator = (validator) => async (ctx, next) => {
         await next();
     } catch (err) {
         ctx.state.logger.push({ err }).log('Request failed validation.');
-        ctx.response.status = 400;
+        ctx.response.status = ReturnCodes.BADREQUEST.CODE;
         ctx.response.body = {
             message: `${err.dataPath ? err.dataPath + ' ' : ''}${err.message}`,
             statusCode: 400

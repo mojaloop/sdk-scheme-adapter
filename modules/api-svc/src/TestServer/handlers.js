@@ -10,8 +10,11 @@
 
 'use strict';
 
+const { Enum } = require('@mojaloop/central-services-shared');
+const { ReturnCodes } = Enum.Http;
+
 const healthCheck = async(ctx) => {
-    ctx.response.status = 204;
+    ctx.response.status = ReturnCodes.NOCONTENT.CODE;
     ctx.response.body = '';
 };
 
@@ -23,11 +26,11 @@ const healthCheck = async(ctx) => {
 const getRequestById = async(ctx) => {
     try {
         const req = await ctx.state.cache.get(`request_${ctx.state.path.params.ID}`);
-        ctx.response.status = 200;
+        ctx.response.status = ReturnCodes.OK.CODE;
         ctx.response.body = req;
     }
     catch(err) {
-        ctx.status = 500;
+        ctx.status = ReturnCodes.INTERNALSERVERERRROR.CODE;
         ctx.response.body = err;
     }
 };
@@ -40,11 +43,11 @@ const getRequestById = async(ctx) => {
 const getCallbackById = async(ctx) => {
     try {
         const req = await ctx.state.cache.get(`callback_${ctx.state.path.params.ID}`);
-        ctx.response.status = 200;
+        ctx.response.status = ReturnCodes.OK.CODE;
         ctx.response.body = req;
     }
     catch(err) {
-        ctx.status = 500;
+        ctx.status = ReturnCodes.INTERNALSERVERERRROR.CODE;
         ctx.response.body = err;
     }
 };

@@ -10,6 +10,9 @@
 
 const coBody = require('co-body');
 
+const { Enum } = require('@mojaloop/central-services-shared');
+const { ReturnCodes } = Enum.Http;
+
 const { generateSlug } = require('random-word-slugs');
 const { Jws, Errors } = require('@mojaloop/sdk-standard-components');
 const {
@@ -312,7 +315,7 @@ const createJwsValidator = (logger, keys, exclusions) => {
         catch(err) {
             logger.push({ err }).log('Inbound request failed JWS validation');
 
-            ctx.response.status = 400;
+            ctx.response.status = ReturnCodes.BADREQUEST.CODE;
             ctx.response.body = new Errors.MojaloopFSPIOPError(
                 err, err.message, null, Errors.MojaloopApiErrorCodes.INVALID_SIGNATURE
             ).toApiErrorObject();
@@ -385,7 +388,7 @@ const createRequestValidator = (validator) => async (ctx, next) => {
     } catch (err) {
         ctx.state.logger.push({ err }).log('Request failed validation.');
         // send a mojaloop spec error response
-        ctx.response.status = err.httpStatusCode || 400;
+        ctx.response.status = err.httpStatusCode || ReturnCodes.BADREQUEST.CODE;
 
         if(err instanceof Errors.MojaloopFSPIOPError) {
             // this is a specific mojaloop spec error

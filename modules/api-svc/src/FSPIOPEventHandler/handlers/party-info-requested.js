@@ -59,7 +59,9 @@ module.exports.handlePartyInfoRequestedDmEvt = async (
                 partyResult: {
                     party: response.party?.body,
                     currentState: response.currentState,
-                    errorInformation: response.errorInformation
+                    ...(response.errorInformation && {
+                        errorInformation: response.errorInformation,
+                    })
                 },
             },
             timestamp: Date.now(),
