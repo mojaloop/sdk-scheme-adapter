@@ -34,6 +34,6 @@ export async function handleBulkTransfersCallbackReceived(
         logger.info(`Sent command event ${processBulkTransfersCallbackMessage.getName()}`);
         console.log(processBulkTransfersCallbackMessage);
     } catch (err) {
-        logger.info(`Failed to send command event ProcessBulkTransfersCallbackCmdEvt. ${(err as Error).message}`);
+        logger.info(`Failed to send command event ${ProcessBulkTransfersCallbackCmdEvt.name}. ${(err as Error).message}`);
     }
 }
