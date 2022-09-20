@@ -357,11 +357,6 @@
                 "homeTransactionId": "abc456",
                 "transactionId": "{$environment.individualTransferId1}",
                 "acceptParty": true
-              },
-              {
-                "homeTransactionId": "abc789",
-                "transactionId": "{$environment.individualTransferId2}",
-                "acceptParty": true
               }
             ]
           },
@@ -421,6 +416,112 @@
                 "console.log(acceptQuoteCallback)",
                 "",
                 "environment.acceptQuoteCallback = acceptQuoteCallback;"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "When the receiver fsp responds after the timeout elapses, Then the client should receive an timed-out as error message.",
+      "fileInfo": {
+        "path": "mvp-bulk.json"
+      },
+      "requests": [
+        {
+          "id": 1,
+          "description": "Post /bulkTransaction",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/bulkTransactions",
+          "path": "/bulkTransactions",
+          "method": "post",
+          "body": {
+            "bulkHomeTransactionID": "abc123",
+            "bulkTransactionId": "{$function.generic.generateUUID}",
+            "options": {
+              "onlyValidateParty": true,
+              "autoAcceptParty": {
+                "enabled": false
+              },
+              "autoAcceptQuote": {
+                "enabled": false
+              },
+              "skipPartyLookup": false,
+              "synchronous": false,
+              "bulkExpiration": "2016-05-24T08:38:08.699-04:00"
+            },
+            "from": {
+              "partyIdInfo": {
+                "partyIdType": "MSISDN",
+                "partyIdentifier": "16135551212"
+              }
+            },
+            "individualTransfers": [
+              {
+                "homeTransactionId": "abc2",
+                "to": {
+                  "partyIdInfo": {
+                    "partyIdType": "MSISDN",
+                    "partyIdentifier": "23450001"
+                  }
+                },
+                "amountType": "SEND",
+                "currency": "USD",
+                "amount": "456.78"
+              }
+            ]
+          },
+          "url": "http://payer-sdk-api-svc:4001",
+          "scriptingEngine": "javascript",
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Check Return Status Code",
+                "exec": [
+                  "expect(response.status).to.equal(202)",
+                  ""
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Check number of returned transfers",
+                "exec": [
+                  "expect(environment.acceptPartyCallback.body.individualTransferResults.length).to.equal(1)"
+                ]
+              }
+            ]
+          },
+          "scripts": {
+            "preRequest": {
+              "exec": [
+                "await inboundEvent.addListener('acceptPartyCallback', 'put', '/bulkTransactions/{$request.body.bulkTransactionId}')"
+              ]
+            },
+            "postRequest": {
+              "exec": [
+                "const acceptPartyCallback = await inboundEvent.getMessage('acceptPartyCallback')",
+                "console.log(acceptPartyCallback);",
+                "",
+                "environment.bulkTransactionId = acceptPartyCallback.body.bulkTransactionId;",
+                "",
+                "environment.acceptPartyCallback = acceptPartyCallback;",
+                "",
+                "environment.individualTransferId1 = acceptPartyCallback.body.individualTransferResults[0].transactionId;",
+                "",
+                "environment.individualTransferId2 = acceptPartyCallback.body.individualTransferResults[1].transactionId;"
               ]
             }
           }

@@ -52,6 +52,65 @@
     "version": 1
   },
   {
+    "ruleId": 13,
+    "priority": 1,
+    "description": "get /parties/{idType}/{idValue} - Error Case - Timeout",
+    "apiVersion": {
+      "minorVersion": 4,
+      "majorVersion": 1,
+      "type": "mojaloop_simulator_inbound",
+      "specFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/api_spec.yaml",
+      "callbackMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/callback_map.json",
+      "responseMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/response_map.json",
+      "jsfRefFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/mockRef.json",
+      "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/trigger_templates"
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "pathParams",
+          "operator": "equal",
+          "value": "23450001",
+          "path": "idValue"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/parties/{idType}/{idValue}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "get"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "idType": "MSISDN",
+          "idValue": "{$request.params.idValue}",
+          "displayName": "ReceiverFirst ReceiverLast",
+          "firstName": "ReceiverFirst",
+          "middleName": "ReceiverMiddle",
+          "lastName": "ReceiverLast",
+          "dateOfBirth": "1984-01-01",
+          "fspId": "ttkpm4mlreceiver"
+        },
+        "statusCode": "200",
+        "scripts": {
+          "scriptingEngine": "postman"
+        },
+        "delay": 300000
+      },
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
     "ruleId": 6,
     "priority": 1,
     "description": "get /parties/{idType}/{idValue} - Happy Path",
