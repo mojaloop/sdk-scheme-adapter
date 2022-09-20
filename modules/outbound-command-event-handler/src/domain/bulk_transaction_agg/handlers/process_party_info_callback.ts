@@ -61,7 +61,7 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
             processPartyInfoCallback.getTransferId(),
         );
         const partyResult = processPartyInfoCallback.getPartyResult();
-        if(partyResult.currentState && partyResult.currentState === SDKOutboundTransferState.COMPLETED) {
+        if(partyResult.currentState && partyResult.currentState === SDKOutboundTransferState.COMPLETED && !partyResult.errorInformation) {
             individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS);
             successCountAfterIncrement = await bulkTransactionAgg.incrementPartyLookupSuccessCount();
         } else {
