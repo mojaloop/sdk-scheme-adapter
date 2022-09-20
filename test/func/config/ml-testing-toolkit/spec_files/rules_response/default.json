@@ -2,7 +2,7 @@
   {
     "ruleId": 12,
     "priority": 1,
-    "description": "Error get /parties",
+    "description": "get /parties/{idType}/{idValue} - Error Case - ID Not Found",
     "apiVersion": {
       "minorVersion": 4,
       "majorVersion": 1,
@@ -39,7 +39,7 @@
       "params": {
         "body": {
           "statusCode": "4001",
-          "message": "asdf"
+          "message": "ID Not Found"
         },
         "statusCode": "404",
         "scripts": {
@@ -54,7 +54,7 @@
   {
     "ruleId": 6,
     "priority": 1,
-    "description": "get /parties/{idType}/{idValue}",
+    "description": "get /parties/{idType}/{idValue} - Happy Path",
     "apiVersion": {
       "minorVersion": 4,
       "majorVersion": 1,
@@ -88,11 +88,11 @@
       "params": {
         "body": {
           "idType": "MSISDN",
-          "idValue": "48500002222",
-          "displayName": "string",
-          "firstName": "string",
-          "middleName": "string",
-          "lastName": "string",
+          "idValue": "{$request.params.idValue}",
+          "displayName": "ReceiverFirst ReceiverLast",
+          "firstName": "ReceiverFirst",
+          "middleName": "ReceiverMiddle",
+          "lastName": "ReceiverLast",
           "dateOfBirth": "1984-01-01",
           "fspId": "ttkpm4mlreceiver"
         },
@@ -224,7 +224,7 @@
   {
     "ruleId": 10,
     "priority": 1,
-    "description": "post /bulkQuotes",
+    "description": "post /bulkQuotes - Happy Path",
     "apiVersion": {
       "minorVersion": 4,
       "majorVersion": 1,
@@ -270,17 +270,6 @@
               "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[0].currency}",
               "payeeFspCommissionAmount": "0",
               "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[0].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[1].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[1].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[1].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[1].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[1].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[1].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[1].currency}"
             }
           ]
         },
