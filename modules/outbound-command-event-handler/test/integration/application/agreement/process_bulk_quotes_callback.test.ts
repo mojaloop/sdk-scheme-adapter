@@ -128,6 +128,8 @@
     And the global BulkTransaction state should be AGREEMENT_ACCEPTANCE_PENDING \
     And domain event BulkQuotesCallbackProcessed should be published \
     And domain event SDKOutboundBulkQuotesRequestProcessed should be published", async () => {
+      // SETUP
+
       // Publish this message so that it is stored internally in redis
       const bulkTransactionId = randomUUID();
       const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
@@ -444,6 +446,8 @@
       await producer.sendCommandEvent(processBulkQuotesCallbackCommandEventObjReceiverFsp);
       await new Promise(resolve => setTimeout(resolve, messageTimeout));
 
+      // ACT
+
       const bulkQuoteIdDifferentFsp = randomUUID();
 
       // Simulate the domain handler sending ProcessBulkQuotesCallback to command handler
@@ -468,6 +472,8 @@
       );
       await producer.sendCommandEvent(processBulkQuotesCallbackCommandEventObjDifferentFsp);
       await new Promise(resolve => setTimeout(resolve, messageTimeout));
+
+      // ASSERT
 
       // Check that the state of bulk batch for receiverfsp to be AGREEMENT_COMPLETED
       const postBulkBatchReceiverFsp = await bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, receiverFspBatch.id);
