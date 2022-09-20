@@ -134,94 +134,94 @@
       // Publish this message so that it is stored internally in redis
       const bulkTransactionId = randomUUID();
       const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
-      bulkHomeTransactionID: "string",
-      bulkTransactionId: bulkTransactionId,
-      options: {
-        onlyValidateParty: true,
-        autoAcceptParty: {
-          enabled: false,
-        },
-        autoAcceptQuote: {
-          enabled: false,
-        },
-        skipPartyLookup: false,
-        synchronous: false,
-        bulkExpiration: "2016-05-24T08:38:08.699-04:00" // TODO: should this not be generated?
-      },
-      from: {
-        partyIdInfo: {
-          partyIdType: "MSISDN",
-          partyIdentifier: "16135551212",
-          fspId: "string",
-        },
-      },
-      individualTransfers: [
-        {
-          homeTransactionId: randomUUID(),
-          to: {
-            partyIdInfo: {
-              partyIdType: "MSISDN",
-              partyIdentifier: "1"
-            },
+        bulkHomeTransactionID: "string",
+        bulkTransactionId: bulkTransactionId,
+        options: {
+          onlyValidateParty: true,
+          autoAcceptParty: {
+            enabled: false,
           },
-          amountType: "SEND",
-          currency: "USD",
-          amount: "1",
-        },
-        {
-          homeTransactionId: randomUUID(),
-          to: {
-            partyIdInfo: {
-              partyIdType: "MSISDN",
-              partyIdentifier: "2"
-            },
+          autoAcceptQuote: {
+            enabled: false,
           },
-          amountType: "SEND",
-          currency: "USD",
-          amount: "2",
+          skipPartyLookup: false,
+          synchronous: false,
+          bulkExpiration: "2016-05-24T08:38:08.699-04:00" // TODO: should this not be generated?
         },
-        {
-          homeTransactionId: randomUUID(),
-          to: {
-            partyIdInfo: {
-              partyIdType: "MSISDN",
-              partyIdentifier: "3"
-            },
+        from: {
+          partyIdInfo: {
+            partyIdType: "MSISDN",
+            partyIdentifier: "16135551212",
+            fspId: "string",
           },
-          amountType: "SEND",
-          currency: "USD",
-          amount: "3",
         },
-        {
-          homeTransactionId: randomUUID(),
-          to: {
-            partyIdInfo: {
-              partyIdType: "MSISDN",
-              partyIdentifier: "4"
+        individualTransfers: [
+          {
+            homeTransactionId: randomUUID(),
+            to: {
+              partyIdInfo: {
+                partyIdType: "MSISDN",
+                partyIdentifier: "1"
+              },
             },
+            amountType: "SEND",
+            currency: "USD",
+            amount: "1",
           },
-          amountType: "SEND",
-          currency: "USD",
-          amount: "4",
-        }
-      ]
+          {
+            homeTransactionId: randomUUID(),
+            to: {
+              partyIdInfo: {
+                partyIdType: "MSISDN",
+                partyIdentifier: "2"
+              },
+            },
+            amountType: "SEND",
+            currency: "USD",
+            amount: "2",
+          },
+          {
+            homeTransactionId: randomUUID(),
+            to: {
+              partyIdInfo: {
+                partyIdType: "MSISDN",
+                partyIdentifier: "3"
+              },
+            },
+            amountType: "SEND",
+            currency: "USD",
+            amount: "3",
+          },
+          {
+            homeTransactionId: randomUUID(),
+            to: {
+              partyIdInfo: {
+                partyIdType: "MSISDN",
+                partyIdentifier: "4"
+              },
+            },
+            amountType: "SEND",
+            currency: "USD",
+            amount: "4",
+          }
+        ]
       }
       const sampleCommandEventData: IProcessSDKOutboundBulkRequestCmdEvtData = {
-      bulkRequest,
-      timestamp: Date.now(),
-      headers: []
+        bulkRequest,
+        timestamp: Date.now(),
+        headers: []
       }
       const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
       await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
       await new Promise(resolve => setTimeout(resolve, messageTimeout));
 
       const bulkPartyInfoRequestCommandEventData: IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData = {
-      bulkId: bulkTransactionId,
-      timestamp: Date.now(),
-      headers: []
+        bulkId: bulkTransactionId,
+        timestamp: Date.now(),
+        headers: []
       }
       const bulkPartyInfoRequestCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCmdEvt(
-      bulkPartyInfoRequestCommandEventData
+        bulkPartyInfoRequestCommandEventData
       );
       await producer.sendCommandEvent(bulkPartyInfoRequestCommandEventObj);
       await new Promise(resolve => setTimeout(resolve, messageTimeout));
@@ -240,76 +240,76 @@
       // Simulate the domain handler sending the command handler PProcessPartyInfoCallback messages
       // for each individual transfer
       const processPartyInfoCallbackMessageData1: IProcessPartyInfoCallbackCmdEvtData = {
-      bulkId: bulkTransactionId,
-      content: {
-        transferId: randomGeneratedTransferIds[amountList.indexOf('1')],
-        partyResult: {
-          party: {
-              partyIdInfo: {
-                  partyIdType: 'MSISDN',
-                  partyIdentifier: '123456',
-                  fspId: 'receiverfsp'
-              }
+        bulkId: bulkTransactionId,
+        content: {
+          transferId: randomGeneratedTransferIds[amountList.indexOf('1')],
+          partyResult: {
+            party: {
+                partyIdInfo: {
+                    partyIdType: 'MSISDN',
+                    partyIdentifier: '123456',
+                    fspId: 'receiverfsp'
+                }
+            },
+            currentState: 'COMPLETED'
           },
-          currentState: 'COMPLETED'
         },
-      },
-      timestamp: Date.now(),
-      headers: []
+        timestamp: Date.now(),
+        headers: []
       }
       const processPartyInfoCallbackMessageData2: IProcessPartyInfoCallbackCmdEvtData = {
-      bulkId: bulkTransactionId,
-      content: {
-        transferId: randomGeneratedTransferIds[amountList.indexOf('2')],
-        partyResult: {
-          party: {
-              partyIdInfo: {
-                  partyIdType: 'MSISDN',
-                  partyIdentifier: '123456',
-                  fspId: 'receiverfsp'
-              }
+        bulkId: bulkTransactionId,
+        content: {
+          transferId: randomGeneratedTransferIds[amountList.indexOf('2')],
+          partyResult: {
+            party: {
+                partyIdInfo: {
+                    partyIdType: 'MSISDN',
+                    partyIdentifier: '123456',
+                    fspId: 'receiverfsp'
+                }
+            },
+            currentState: 'COMPLETED'
           },
-          currentState: 'COMPLETED'
         },
-      },
-      timestamp: Date.now(),
-      headers: []
+        timestamp: Date.now(),
+        headers: []
       }
       const processPartyInfoCallbackMessageData3: IProcessPartyInfoCallbackCmdEvtData = {
-      bulkId: bulkTransactionId,
-      content: {
-        transferId: randomGeneratedTransferIds[amountList.indexOf('3')],
-        partyResult: {
-          party: {
-              partyIdInfo: {
-                  partyIdType: 'MSISDN',
-                  partyIdentifier: '11111111111',
-                  fspId: 'differentfsp'
-              }
+        bulkId: bulkTransactionId,
+        content: {
+          transferId: randomGeneratedTransferIds[amountList.indexOf('3')],
+          partyResult: {
+            party: {
+                partyIdInfo: {
+                    partyIdType: 'MSISDN',
+                    partyIdentifier: '11111111111',
+                    fspId: 'differentfsp'
+                }
+            },
+            currentState: 'COMPLETED'
           },
-          currentState: 'COMPLETED'
         },
-      },
-      timestamp: Date.now(),
-      headers: []
+        timestamp: Date.now(),
+        headers: []
       }
       const processPartyInfoCallbackMessageData4: IProcessPartyInfoCallbackCmdEvtData = {
-      bulkId: bulkTransactionId,
-      content: {
-        transferId: randomGeneratedTransferIds[amountList.indexOf('4')],
-        partyResult: {
-          party: {
-              partyIdInfo: {
-                  partyIdType: 'MSISDN',
-                  partyIdentifier: '222222222222',
-                  fspId: 'differentfsp'
-              }
+        bulkId: bulkTransactionId,
+        content: {
+          transferId: randomGeneratedTransferIds[amountList.indexOf('4')],
+          partyResult: {
+            party: {
+                partyIdInfo: {
+                    partyIdType: 'MSISDN',
+                    partyIdentifier: '222222222222',
+                    fspId: 'differentfsp'
+                }
+            },
+            currentState: 'COMPLETED'
           },
-          currentState: 'COMPLETED'
         },
-      },
-      timestamp: Date.now(),
-      headers: []
+        timestamp: Date.now(),
+        headers: []
       }
 
       const processPartyInfoCallbackMessageObjOne = new ProcessPartyInfoCallbackCmdEvt(processPartyInfoCallbackMessageData1);
@@ -324,49 +324,49 @@
 
       // Command event for bulk accept party info
       const processSDKOutboundBulkAcceptPartyInfoCommandEventData : IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData = {
-      bulkId: bulkTransactionId,
-      bulkTransactionContinuationAcceptParty: {
-        bulkHomeTransactionID: 'string',
-        individualTransfers: [
-          {
-            homeTransactionId: 'string',
-            transactionId: randomGeneratedTransferIds[amountList.indexOf('1')],
-            acceptParty: true
-          },
-          {
-            homeTransactionId: 'string',
-            transactionId: randomGeneratedTransferIds[amountList.indexOf('2')],
-            acceptParty: true
-          },
-          {
-            homeTransactionId: 'string',
-            transactionId: randomGeneratedTransferIds[amountList.indexOf('3')],
-            acceptParty: true
-          },
-          {
-            homeTransactionId: 'string',
-            transactionId: randomGeneratedTransferIds[amountList.indexOf('4')],
-            acceptParty: true
-          }
-        ]
-      },
-      timestamp: Date.now(),
-      headers: []
+        bulkId: bulkTransactionId,
+        bulkTransactionContinuationAcceptParty: {
+          bulkHomeTransactionID: 'string',
+          individualTransfers: [
+            {
+              homeTransactionId: 'string',
+              transactionId: randomGeneratedTransferIds[amountList.indexOf('1')],
+              acceptParty: true
+            },
+            {
+              homeTransactionId: 'string',
+              transactionId: randomGeneratedTransferIds[amountList.indexOf('2')],
+              acceptParty: true
+            },
+            {
+              homeTransactionId: 'string',
+              transactionId: randomGeneratedTransferIds[amountList.indexOf('3')],
+              acceptParty: true
+            },
+            {
+              homeTransactionId: 'string',
+              transactionId: randomGeneratedTransferIds[amountList.indexOf('4')],
+              acceptParty: true
+            }
+          ]
+        },
+        timestamp: Date.now(),
+        headers: []
       }
       const processSDKOutboundBulkAcceptPartyInfoCommandEventObj = new ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt(
-      processSDKOutboundBulkAcceptPartyInfoCommandEventData
+        processSDKOutboundBulkAcceptPartyInfoCommandEventData
       );
       await producer.sendCommandEvent(processSDKOutboundBulkAcceptPartyInfoCommandEventObj);
       await new Promise(resolve => setTimeout(resolve, messageTimeout));
 
       // Simulate domain handler sending command event for bulk quotes request
       const processSDKOutboundBulkQuotesRequestCommandEventData : IProcessSDKOutboundBulkQuotesRequestCmdEvtData = {
-      bulkId: bulkTransactionId,
-      timestamp: Date.now(),
-      headers: []
+        bulkId: bulkTransactionId,
+        timestamp: Date.now(),
+        headers: []
       }
       const processSDKOutboundBulkQuotesRequestCommandEventObj = new ProcessSDKOutboundBulkQuotesRequestCmdEvt(
-      processSDKOutboundBulkQuotesRequestCommandEventData
+        processSDKOutboundBulkQuotesRequestCommandEventData
       );
       await producer.sendCommandEvent(processSDKOutboundBulkQuotesRequestCommandEventObj);
       await new Promise(resolve => setTimeout(resolve, messageTimeout));
@@ -385,11 +385,11 @@
       let receiverFspBatch;
       let differentFspBatch;
       if (bulkBatchOne.bulkQuotesRequest.individualQuotes[0].to.fspId == 'receiverfsp') {
-      receiverFspBatch = bulkBatchOne
-      differentFspBatch = bulkBatchTwo
+        receiverFspBatch = bulkBatchOne
+        differentFspBatch = bulkBatchTwo
       } else {
-      receiverFspBatch = bulkBatchTwo
-      differentFspBatch = bulkBatchOne
+        receiverFspBatch = bulkBatchTwo
+        differentFspBatch = bulkBatchOne
       }
 
       const bulkQuoteId = randomUUID();
@@ -397,57 +397,57 @@
       quoteAmountList.push(receiverFspBatch.bulkQuotesRequest.individualQuotes[0].amount);
       quoteAmountList.push(receiverFspBatch.bulkQuotesRequest.individualQuotes[1].amount);
 
+      // ACT
+
       // Simulate the domain handler sending ProcessBulkQuotesCallback to command handler
       // for receiverfsp batch
       const processBulkQuotesCallbackCommandEventDataReceiverFsp : IProcessBulkQuotesCallbackCmdEvtData = {
-      bulkId: bulkTransactionId,
-      content: {
-        batchId: receiverFspBatch.id,
-        bulkQuoteId: bulkQuoteId,
-        bulkQuotesResult: {
+        bulkId: bulkTransactionId,
+        content: {
+          batchId: receiverFspBatch.id,
           bulkQuoteId: bulkQuoteId,
-          currentState: 'COMPLETED',
-          individualQuoteResults: [
-            {
-              quoteId: receiverFspBatch.bulkQuotesRequest.individualQuotes[quoteAmountList.indexOf('1')].quoteId,
-              transferAmount: {
-                currency: 'USD',
-                amount: '1',
+          bulkQuotesResult: {
+            bulkQuoteId: bulkQuoteId,
+            currentState: 'COMPLETED',
+            individualQuoteResults: [
+              {
+                quoteId: receiverFspBatch.bulkQuotesRequest.individualQuotes[quoteAmountList.indexOf('1')].quoteId,
+                transferAmount: {
+                  currency: 'USD',
+                  amount: '1',
+                },
+                ilpPacket: 'string',
+                condition: 'string'
               },
-              ilpPacket: 'string',
-              condition: 'string'
-            },
-            {
-              quoteId: receiverFspBatch.bulkQuotesRequest.individualQuotes[quoteAmountList.indexOf('2')].quoteId,
-              transferAmount: {
-                currency: 'USD',
-                amount: '2',
-              },
-              ilpPacket: 'string',
-              condition: 'string',
-              lastError: {
-                httpStatusCode: 500,
-                mojaloopError: {
-                  errorInformation:{
-                    errorCode: '0000',
-                    errorDescription: 'some-error'
+              {
+                quoteId: receiverFspBatch.bulkQuotesRequest.individualQuotes[quoteAmountList.indexOf('2')].quoteId,
+                transferAmount: {
+                  currency: 'USD',
+                  amount: '2',
+                },
+                ilpPacket: 'string',
+                condition: 'string',
+                lastError: {
+                  httpStatusCode: 500,
+                  mojaloopError: {
+                    errorInformation:{
+                      errorCode: '0000',
+                      errorDescription: 'some-error'
+                    }
                   }
                 }
               }
-            }
-          ]
-        }
-      },
-      timestamp: Date.now(),
-      headers: []
+            ]
+          }
+        },
+        timestamp: Date.now(),
+        headers: []
       }
       const processBulkQuotesCallbackCommandEventObjReceiverFsp = new ProcessBulkQuotesCallbackCmdEvt(
-      processBulkQuotesCallbackCommandEventDataReceiverFsp
+        processBulkQuotesCallbackCommandEventDataReceiverFsp
       );
       await producer.sendCommandEvent(processBulkQuotesCallbackCommandEventObjReceiverFsp);
       await new Promise(resolve => setTimeout(resolve, messageTimeout));
-
-      // ACT
 
       const bulkQuoteIdDifferentFsp = randomUUID();
 
@@ -455,21 +455,21 @@
       // for differentfsp batch with empty results
       // Currently only empty individualQuoteResults result in AGREEMENT_FAILED for bulk batch state
       const processBulkQuotesCallbackCommandEventDataDifferentFsp : IProcessBulkQuotesCallbackCmdEvtData = {
-      bulkId: bulkTransactionId,
-      content: {
-        batchId: differentFspBatch.id,
-        bulkQuoteId: bulkQuoteIdDifferentFsp,
-        bulkQuotesResult: {
+        bulkId: bulkTransactionId,
+        content: {
+          batchId: differentFspBatch.id,
           bulkQuoteId: bulkQuoteIdDifferentFsp,
-          currentState: 'ERROR_OCCURRED',
-          individualQuoteResults: []
-        }
-      },
-      timestamp: Date.now(),
-      headers: []
+          bulkQuotesResult: {
+            bulkQuoteId: bulkQuoteIdDifferentFsp,
+            currentState: 'ERROR_OCCURRED',
+            individualQuoteResults: []
+          }
+        },
+        timestamp: Date.now(),
+        headers: []
       }
       const processBulkQuotesCallbackCommandEventObjDifferentFsp = new ProcessBulkQuotesCallbackCmdEvt(
-      processBulkQuotesCallbackCommandEventDataDifferentFsp
+        processBulkQuotesCallbackCommandEventDataDifferentFsp
       );
       await producer.sendCommandEvent(processBulkQuotesCallbackCommandEventObjDifferentFsp);
       await new Promise(resolve => setTimeout(resolve, messageTimeout));
