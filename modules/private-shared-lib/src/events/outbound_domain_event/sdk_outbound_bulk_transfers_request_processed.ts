@@ -3,12 +3,11 @@
 import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 
-export type ISDKOutboundBulkTransfersRequestProcessedDmEvtData = {
+export interface ISDKOutboundBulkTransfersRequestProcessedDmEvtData {
     bulkId: string;
-    content: null;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
-};
+}
 
 export class SDKOutboundBulkTransfersRequestProcessedDmEvt extends DomainEvent {
     constructor(data: ISDKOutboundBulkTransfersRequestProcessedDmEvtData) {
@@ -26,10 +25,9 @@ export class SDKOutboundBulkTransfersRequestProcessedDmEvt extends DomainEvent {
             throw new Error('Bulk id is in unknown format');
         }
         const data: ISDKOutboundBulkTransfersRequestProcessedDmEvtData = {
-            bulkId: message.getKey(),
-            content: message.getContent() as ISDKOutboundBulkTransfersRequestProcessedDmEvtData['content'],
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
+            bulkId: message.getKey(),
         };
         return new SDKOutboundBulkTransfersRequestProcessedDmEvt(data);
     }

@@ -50,6 +50,7 @@ export enum IndividualTransferInternalState {
     AGREEMENT_REJECTED = 'AGREEMENT_REJECTED',
     TRANSFERS_PROCESSING = 'TRANSFERS_PROCESSING',
     TRANSFERS_FAILED = 'TRANSFERS_FAILED',
+    TRANSFERS_SUCCESS = 'TRANSFERS_SUCCESS',
 }
 
 export interface IndividualTransferState extends BaseEntityState {
