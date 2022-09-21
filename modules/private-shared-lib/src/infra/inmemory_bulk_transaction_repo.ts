@@ -278,13 +278,14 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
     private async _incrementCount(
         keyType: string,
         bulkId: string,
-    ): Promise<void> {
+        increment = 1,
+    ): Promise<number> {
         if(!this.canCall()) {
             throw (new Error('Repository not ready'));
         }
         const key: string = this.keyWithPrefix(bulkId);
         try {
-            this._data[key][keyType] += 1;
+            return this._data[key][keyType] += increment;
         } catch (err) {
             this._logger.error(err, `Error incrementing attribute ${keyType} in memory for key: ${key}`);
             throw (err);
@@ -306,13 +307,17 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
     async getBulkTransfersSuccessCount(bulkId: string): Promise<number> {
         return this._getCount(this.bulkTransfersSuccessCountKey, bulkId);
     }
-    
+
     async setBulkTransfersSuccessCount(bulkId: string, value: number): Promise<void> {
         return this._setCount(this.bulkTransfersSuccessCountKey, bulkId, value);
     }
-    
-    async incrementBulkTransfersSuccessCount(bulkId: string): Promise<void> {
-        return this._incrementCount(this.bulkTransfersSuccessCountKey, bulkId);
+
+    async incrementBulkTransfersSuccessCount(bulkId: string, increment = 1): Promise<number> {
+        return this._incrementCount(this.bulkTransfersSuccessCountKey, bulkId, increment);
+    }
+
+    async incrementBulkTransfersFailedCount(bulkId: string, increment = 1): Promise<number> {
+        return this._incrementCount(this.bulkTransfersFailedCountKey, bulkId, increment);
     }
 
     async getBulkTransfersFailedCount(bulkId: string): Promise<number> {
@@ -345,8 +350,8 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         return this._setCount(this.bulkQuotesSuccessCountKey, bulkId, value);
     }
 
-    async incrementBulkQuotesSuccessCount(bulkId: string): Promise<void> {
-        return this._incrementCount(this.bulkQuotesSuccessCountKey, bulkId);
+    async incrementBulkQuotesSuccessCount(bulkId: string, increment = 1): Promise<number> {
+        return this._incrementCount(this.bulkQuotesSuccessCountKey, bulkId, increment);
     }
 
     async getBulkQuotesFailedCount(bulkId: string): Promise<number> {
@@ -360,8 +365,8 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         return this._setCount(this.bulkQuotesFailedCountKey, bulkId, value);
     }
 
-    async incrementBulkQuotesFailedCount(bulkId: string): Promise<void> {
-        return this._incrementCount(this.bulkQuotesFailedCountKey, bulkId);
+    async incrementBulkQuotesFailedCount(bulkId: string, increment = 1): Promise<number> {
+        return this._incrementCount(this.bulkQuotesFailedCountKey, bulkId, increment);
     }
 
     async setPartyLookupTotalCount(
@@ -400,15 +405,15 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
     async incrementPartyLookupSuccessCount(
         bulkId: string,
         increment = 1,
-    ): Promise<void> {
-        return this._incrementCount(this.partyLookupSuccessCountKey, bulkId);
+    ): Promise<number> {
+        return this._incrementCount(this.partyLookupSuccessCountKey, bulkId, increment);
     }
 
     async incrementPartyLookupFailedCount(
         bulkId: string,
         increment = 1,
-    ): Promise<void> {
-        return this._incrementCount(this.partyLookupFailedCountKey, bulkId);
+    ): Promise<number> {
+        return this._incrementCount(this.partyLookupFailedCountKey, bulkId, increment);
     }
 
     private keyWithPrefix(key: string): string {

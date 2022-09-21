@@ -181,12 +181,10 @@ sequenceDiagram
           SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the individual state: TRANSFERS_SUCCESS / TRANSFERS_FAILED
           SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the transfer response
         end
-        SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: BulkTransfersProcessed
+        SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: BulkTransfersCallbackProcessed
         Note right of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
-        SDKOutboundDomainEventHandler->>SDKOutboundDomainEventHandler: Check the status of the remaining items in the bulk
+        SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Check the status of the remaining items in the bulk
     end
-    SDKOutboundDomainEventHandler->>SDKOutboundCommandEventHandler: ProcessSDKOutboundBulkTransfersRequestComplete
-    Note left of SDKOutboundCommandEventHandler: topic-sdk-outbound-command-events
     SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "TRANSFERS_COMPLETED"
 
     SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: SDKOutboundBulkTransfersRequestProcessed

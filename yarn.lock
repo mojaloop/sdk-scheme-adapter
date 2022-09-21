@@ -2531,10 +2531,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/platform-shared-lib-messaging-types-lib@npm:^0.0.3":
-  version: 0.0.3
-  resolution: "@mojaloop/platform-shared-lib-messaging-types-lib@npm:0.0.3"
-  checksum: 818f58167edf4c03629741afdcdf8a860ae60a0d4a06a6b9cc3364c5f28fc098b143fd6dfe2a694fec41bbef22077bb60ade688893b006c84f45af71c8e54143
+"@mojaloop/platform-shared-lib-messaging-types-lib@npm:^0.1.1, @mojaloop/platform-shared-lib-messaging-types-lib@npm:~0.1.0":
+  version: 0.1.1
+  resolution: "@mojaloop/platform-shared-lib-messaging-types-lib@npm:0.1.1"
+  checksum: 495aace8eecb1eb3fddbe0d6ef90a0453ec8c99e4f7c606e94922a3277379f676ed78d52dd4a9a38a6117dd3b1992dc4d3485518545ed4d767421fccce5ef284
   languageName: node
   linkType: hard
 
@@ -2549,14 +2549,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:^0.0.9":
-  version: 0.0.9
-  resolution: "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:0.0.9"
+"@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:0.1.1"
   dependencies:
-    "@mojaloop/logging-bc-public-types-lib": ^0.0.3
-    "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.0.1
-    node-rdkafka: ^2.12.0
-  checksum: ba584f8970c9deec84391aa9f2d37eb978a78a59c1e3db3b0ab7542e9f30978e4cbc400865a827996120904a7abf2d2c93eceefd644656aaf5db35369ab22421
+    "@mojaloop/logging-bc-public-types-lib": ^0.1.11
+    "@mojaloop/platform-shared-lib-messaging-types-lib": ~0.1.0
+    node-rdkafka: ^2.13.0
+  checksum: ea65acdab11ce6ddf1cc71a20f178d444ae8925b45ac3f0b77ef4bcce80de77432d0aca4c3696c7d9124ad6846806eb1c911706a6b18dfb0cc76b1c33c8119ce
   languageName: node
   linkType: hard
 
@@ -2687,8 +2687,8 @@ __metadata:
   dependencies:
     "@mojaloop/api-snippets": ^15.0.1
     "@mojaloop/logging-bc-public-types-lib": ^0.1.11
-    "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.0.3
-    "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": ^0.0.9
+    "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.1.1
+    "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": ^0.1.1
     "@types/node": ^18.7.18
     ajv: ^8.11.0
     eslint: ^8.23.1
@@ -2720,7 +2720,7 @@ __metadata:
     jest: ^29.0.3
     nodemon: ^2.0.20
     npm-check-updates: ^16.2.1
-    nx: 14.7.6
+    nx: 14.7.8
     replace: ^1.2.1
     standard-version: ^9.5.0
     ts-jest: ^29.0.1
@@ -2849,23 +2849,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nrwl/cli@npm:14.7.6":
-  version: 14.7.6
-  resolution: "@nrwl/cli@npm:14.7.6"
+"@nrwl/cli@npm:14.7.8":
+  version: 14.7.8
+  resolution: "@nrwl/cli@npm:14.7.8"
   dependencies:
-    nx: 14.7.6
-  checksum: fd51a4e57c7bce0c803163aed4cbdcb24ce67bc7c4c118e39b8c86bba8f4f9bfad9e1425a3bd90a7221337871946e7e0e285973845ace764711e371d37a0e8dd
+    nx: 14.7.8
+  checksum: adbfde6e46bcabcc3e8593101bbd79b60054a7aa695a91d87d5b2372b5a06f6a9ea68e2be18ca490b4eb930d0f1db1a44f104273b991f3bdbad8fbce63c39e52
   languageName: node
   linkType: hard
 
-"@nrwl/tao@npm:14.7.6":
-  version: 14.7.6
-  resolution: "@nrwl/tao@npm:14.7.6"
+"@nrwl/tao@npm:14.7.8":
+  version: 14.7.8
+  resolution: "@nrwl/tao@npm:14.7.8"
   dependencies:
-    nx: 14.7.6
+    nx: 14.7.8
   bin:
     tao: index.js
-  checksum: a94ad95829f5803c86aa2d6339ca6fb9fe39b98e180e65d55b184a36776cef5bc11e392f34810ba8df276ae2eec9194172960630c0cc2a8224ced014cd3f5cf8
+  checksum: 32c7728cb0023044c8015ad2ea09b36eaa250f1cc71ec4964363f83330027f02f743ad5b39ee39d9aae7ec9df6dfdad3a090cfc5523bc5481c48b39e64048fae
   languageName: node
   linkType: hard
 
@@ -10562,7 +10562,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-rdkafka@npm:^2.12.0":
+"node-rdkafka@npm:^2.12.0, node-rdkafka@npm:^2.13.0":
   version: 2.13.0
   resolution: "node-rdkafka@npm:2.13.0"
   dependencies:
@@ -10873,12 +10873,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nx@npm:14.7.6":
-  version: 14.7.6
-  resolution: "nx@npm:14.7.6"
+"nx@npm:14.7.8":
+  version: 14.7.8
+  resolution: "nx@npm:14.7.8"
   dependencies:
-    "@nrwl/cli": 14.7.6
-    "@nrwl/tao": 14.7.6
+    "@nrwl/cli": 14.7.8
+    "@nrwl/tao": 14.7.8
     "@parcel/watcher": 2.0.4
     chalk: 4.1.0
     chokidar: ^3.5.1
@@ -10917,7 +10917,7 @@ __metadata:
       optional: true
   bin:
     nx: bin/nx.js
-  checksum: 245a8a25b0185c1e0470c15915e8065dbe6ee2938028b5fbb6e2d67c987dc2c3f36fdf43d25ac26c951e403387f56ae4a35169a15d5e3da58c97eb36d3d3bdc9
+  checksum: 8a3e1ced1f236e5c0929bea10dc78b3f3cb7ed7a20efa31630515d4216dc22aa3c811427a0e89cd4af97df79f663e29ad4ebf206325c0c814c18498e03845910
   languageName: node
   linkType: hard
 

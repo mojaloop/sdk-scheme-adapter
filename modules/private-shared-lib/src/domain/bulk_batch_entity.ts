@@ -48,6 +48,7 @@ export enum BulkBatchInternalState {
     AGREEMENT_FAILED = 'AGREEMENT_FAILED',
     TRANSFERS_PROCESSING = 'TRANSFERS_PROCESSING',
     TRANSFERS_FAILED = 'TRANSFERS_FAILED',
+    TRANSFERS_COMPLETED = 'TRANSFERS_COMPLETED',
 }
 
 export interface BulkBatchState extends BaseEntityState {
@@ -59,7 +60,7 @@ export interface BulkBatchState extends BaseEntityState {
     bulkQuotesRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkQuoteRequest;
     bulkQuotesResponse?: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkQuoteResponse;
     bulkTransfersRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferRequest;
-    bulkTransfersResponse?: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkQuoteResponse;
+    bulkTransfersResponse?: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferResponse;
     quoteIdReferenceIdMap: { [quoteId: string]: string }; // Key = individual quoteId from bulkQuotesRequest, Value = transactionId representing an individual transfer from the bulkTransaction
     transferIdReferenceIdMap: { [transactionId: string]: string }; // Key = individual transferId from bulkTransferRequest, Value = transactionId representing an individual transfer from the bulkTransaction
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
@@ -94,12 +95,16 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
         return this._state.bulkTransfersRequest;
     }
 
-    get bulkTransfersResponse(): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkQuoteResponse | undefined {
+    get bulkTransfersResponse(): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferResponse | undefined {
         return this._state.bulkTransfersResponse;
     }
 
-    get quoteIdReferenceIdMap():{ [quoteId: string]: string } {
+    get quoteIdReferenceIdMap(): { [quoteId: string]: string } {
         return this._state.quoteIdReferenceIdMap;
+    }
+
+    get transferIdReferenceIdMap(): { [transactionId: string]: string } {
+        return this._state.transferIdReferenceIdMap;
     }
 
     private static _convertPartyToFrom(party: SDKSchemeAdapter.Outbound.V2_0_0.Types.Party): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkQuoteRequest['from'] {
@@ -187,6 +192,9 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
         this._state.bulkQuotesResponse = response;
     }
 
+    setBulkTransfersResponse(response: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferResponse) {
+        this._state.bulkTransfersResponse = response;
+    }
 
     validateBulkQuotesRequest() {
         BulkBatchEntity._validateBulkQuotesRequest(this._state.bulkQuotesRequest);

@@ -99,6 +99,9 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
             );
         }
         // Set initial values
+        await agg.setBulkTransfersTotalCount(0);
+        await agg.setBulkTransfersSuccessCount(0);
+        await agg.setBulkTransfersFailedCount(0);
         await agg.setBulkQuotesTotalCount(0);
         await agg.setBulkQuotesSuccessCount(0);
         await agg.setBulkQuotesFailedCount(0);
@@ -204,11 +207,30 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         return repo.getBulkTransfersSuccessCount(this._rootEntity.id);
     }
 
+    async getBulkTransfersFailedCount() {
+        const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
+        return repo.getBulkTransfersFailedCount(this._rootEntity.id);
+    }
+
     async setBulkTransfersSuccessCount(count: number) : Promise<void> {
         await (<IBulkTransactionEntityRepo> this._entity_state_repo)
             .setBulkTransfersSuccessCount(this._rootEntity.id, count);
     }
 
+    async setBulkTransfersFailedCount(count: number) : Promise<void> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .setBulkTransfersFailedCount(this._rootEntity.id, count);
+    }
+
+    async incrementBulkTransfersSuccessCount(increment = 1) : Promise<number> {
+        const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
+        return repo.incrementBulkTransfersSuccessCount(this._rootEntity.id, increment);
+    }
+
+    async incrementBulkTransfersFailedCount(increment = 1) : Promise<number> {
+        const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
+        return repo.incrementBulkTransfersFailedCount(this._rootEntity.id, increment);
+    }
 
     async getBulkQuotesTotalCount() {
         const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
@@ -271,7 +293,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         }
 
         const batchesPerFsp: BatchMapArray = {};
-        
+
         // Iterate through individual transfers
         const allIndividualTransferIds = await this.getAllIndividualTransferIds();
         for await (const individualTransferId of allIndividualTransferIds) {
