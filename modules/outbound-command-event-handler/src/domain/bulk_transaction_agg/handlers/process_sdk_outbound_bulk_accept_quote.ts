@@ -47,7 +47,7 @@ export async function handleProcessSDKOutboundBulkAcceptQuoteCmdEvt(
             options.bulkTransactionEntityRepo,
             logger,
         );
-        logger.info(`handleProcessSDKOutboundBulkAcceptQuoteCmdEvt - Created BulkTransactionAggregate ${bulkTransactionAgg}`);
+        logger.info(`Created BulkTransactionAggregate ${bulkTransactionAgg}`);
 
         // Update the individual state: AGREEMENT_ACCEPTED / AGREEMENT_REJECTED
         const bulkTx = bulkTransactionAgg.getBulkTransaction();
@@ -62,7 +62,7 @@ export async function handleProcessSDKOutboundBulkAcceptQuoteCmdEvt(
                 individualTransfer =
                     await bulkTransactionAgg.getIndividualTransferById(individualTransferFromMessage.transactionId);
             } catch {
-                logger.warn(`handleProcessSDKOutboundBulkAcceptQuoteCmdEvt - Can not find the individual transfer with id ${individualTransferFromMessage.transactionId} in bulk transaction`);
+                logger.warn(`Can not find the individual transfer with id ${individualTransferFromMessage.transactionId} in bulk transaction`);
                 continue;
             }
 
@@ -79,7 +79,7 @@ export async function handleProcessSDKOutboundBulkAcceptQuoteCmdEvt(
             ) {
                 individualTransfer.setTransferState(IndividualTransferInternalState.AGREEMENT_REJECTED);
             } else { // handle other cases
-                logger.warn(`handleProcessSDKOutboundBulkAcceptQuoteCmdEvt - individualTransfer.transactionId[${individualTransferFromMessage.transactionId}] is already in a non-processing state: ${individualTransfer.transferState}`);
+                logger.warn(`individualTransfer.transactionId[${individualTransferFromMessage.transactionId}] is already in a non-processing state: ${individualTransfer.transferState}`);
             }
 
             await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
@@ -98,6 +98,6 @@ export async function handleProcessSDKOutboundBulkAcceptQuoteCmdEvt(
         await options.domainProducer.sendDomainEvent(sdkOutboundBulkAcceptQuoteProcessedDmEvt);
 
     } catch (err) {
-        logger.error(`handleProcessSDKOutboundBulkAcceptQuoteCmdEvt - Failed to create BulkTransactionAggregate. ${(err as Error).message}`);
+        logger.error(`Failed to create BulkTransactionAggregate. ${(err as Error).message}`);
     }
 }
