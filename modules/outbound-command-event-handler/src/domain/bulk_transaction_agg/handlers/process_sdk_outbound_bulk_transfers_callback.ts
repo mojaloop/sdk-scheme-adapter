@@ -55,7 +55,7 @@ export async function handleProcessBulkTransfersCallbackCmdEvt(
         bulkTx.setTxState(BulkTransactionInternalState.TRANSFERS_COMPLETED);
         // await bulkTransactionAgg.setTransaction(bulkTx);
 
-        // TODO: Complete implementation
+        // TODO: Complete implementation - below logic is from handleProcessSDKOutboundBulkTransfersRequestCmdEvt
 
         // // Create bulkTransfers batches from individual items with AGREEMENT_ACCEPTED state per FSP and maxEntryConfigPerBatch
         // logger.info(`handleProcessBulkTransfersCallbackCmdEvt - Creating batches for bulkId=${processSDKOutboundBulkTransfersRequestMessage.getKey()}`);
