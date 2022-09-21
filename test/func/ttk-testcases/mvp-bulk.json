@@ -3,7 +3,7 @@
   "test_cases": [
     {
       "id": 1,
-      "name": "Happy Path",
+      "name": "1. Happy Path",
       "fileInfo": {
         "path": "mvp-bulk.json"
       },
@@ -312,7 +312,7 @@
     },
     {
       "id": 2,
-      "name": "When the receiverfsp information already exists in the request in to section, Then party lookup should be skipped and PUT /bulkTxn response should be received",
+      "name": "2. When the receiverfsp information already exists in the request in to section, Then party lookup should be skipped and PUT /bulkTxn response should be received",
       "fileInfo": {
         "path": "mvp-bulk.json"
       },
@@ -601,7 +601,7 @@
     },
     {
       "id": 3,
-      "name": "When the request has a receiver-id that does not exist in receiver fsp, Then the client should receive an ID not found as error message.",
+      "name": "3. When the request has a receiver-id that does not exist in receiver fsp, Then the client should receive an ID not found as error message.",
       "fileInfo": {
         "path": "mvp-bulk.json"
       },
@@ -799,7 +799,7 @@
     },
     {
       "id": 4,
-      "name": "When the receiver fsp responds after the timeout elapses, Then the client should receive an timed-out as error message.",
+      "name": "4. When the receiver fsp responds after the timeout elapses, Then the client should receive an timed-out as error message.",
       "fileInfo": {
         "path": "mvp-bulk.json"
       },
@@ -919,7 +919,7 @@
     },
     {
       "id": 5,
-      "name": "Given there are 2 transfers in the bulk request, When one transfer has a succesful party lookup and the other has a failure, Then the PUT response should have details about both the transfers, And the response to PUT should only have one acceptParty.",
+      "name": "5. Given there are 2 transfers in the bulk request, When one transfer has a succesful party lookup and the other has a failure, Then the PUT response should have details about both the transfers, And the response to PUT should only have one acceptParty.",
       "fileInfo": {
         "path": "mvp-bulk.json"
       },
@@ -1172,7 +1172,7 @@
     },
     {
       "id": 6,
-      "name": "Given there are 2 transfers in the bulk request, When one transfer has a succesful party lookup and the other has a timeout, Then the PUT response should have details about both the transfers, And the response to PUT should only have one acceptParty.",
+      "name": "6. Given there are 2 transfers in the bulk request, When one transfer has a succesful party lookup and the other has a timeout, Then the PUT response should have details about both the transfers, And the response to PUT should only have one acceptParty.",
       "fileInfo": {
         "path": "mvp-bulk.json"
       },
@@ -1332,7 +1332,7 @@
     },
     {
       "id": 7,
-      "name": "Given there are 2 transfers in the bulk request that has the same receiver id, When acceptParty is set to true for both the transfers in PUT request, Then the PUT response should have details about both the transfers for acceptQuote.",
+      "name": "7. Given there are 2 transfers in the bulk request that has the same receiver id, When acceptParty is set to true for both the transfers in PUT request, Then the PUT response should have details about both the transfers for acceptQuote.",
       "fileInfo": {
         "path": "mvp-bulk.json"
       },
@@ -1573,7 +1573,725 @@
     },
     {
       "id": 8,
-      "name": "When there are 3 transfers in the bulk request 2 of which that have the same receiver fsp id and the 3rd one has a different receiver fsp id and acceptParty is true for all the transfers, Then the PUT response should have details of all the 3 transfers for acceptQuote.",
+      "name": "8. Given party lookup is skipped and bulk quotes request is submitted, When receiver fsp errors out while sending bulk quotes reponse, Then the PUT response should have error details about the transfer.",
+      "fileInfo": {
+        "path": "mvp-bulk.json"
+      },
+      "requests": [
+        {
+          "id": 1,
+          "description": "Post /bulkTransaction",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/bulkTransactions",
+          "path": "/bulkTransactions",
+          "method": "post",
+          "body": {
+            "bulkHomeTransactionID": "abc123",
+            "bulkTransactionId": "{$function.generic.generateUUID}",
+            "options": {
+              "onlyValidateParty": true,
+              "autoAcceptParty": {
+                "enabled": false
+              },
+              "autoAcceptQuote": {
+                "enabled": false
+              },
+              "skipPartyLookup": true,
+              "synchronous": false,
+              "bulkExpiration": "2016-05-24T08:38:08.699-04:00"
+            },
+            "from": {
+              "partyIdInfo": {
+                "partyIdType": "MSISDN",
+                "partyIdentifier": "16135551212"
+              }
+            },
+            "individualTransfers": [
+              {
+                "homeTransactionId": "abc1",
+                "to": {
+                  "partyIdInfo": {
+                    "partyIdType": "MSISDN",
+                    "partyIdentifier": "123456789",
+                    "fspId": "bulkquotesreceiversendserror"
+                  }
+                },
+                "amountType": "SEND",
+                "currency": "USD",
+                "amount": "456.78"
+              }
+            ]
+          },
+          "url": "http://payer-sdk-api-svc:4001",
+          "scriptingEngine": "javascript",
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Check Return Status Code",
+                "exec": [
+                  "expect(response.status).to.equal(202)",
+                  ""
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Check number of returned transfers",
+                "exec": [
+                  "expect(environment.acceptPartyCallback.body.individualTransferResults.length).to.equal(1)"
+                ]
+              },
+              {
+                "id": 3,
+                "description": "Check that the response has an error code of 4001",
+                "exec": [
+                  "expect(environment.acceptPartyCallback.body.individualTransferResults[0].lastError.mojaloopError.errorInformation.errorCode).to.equal('4001')"
+                ]
+              },
+              {
+                "id": 4,
+                "description": "Check that the response has an error description of ID Not Found",
+                "exec": [
+                  "expect(environment.acceptPartyCallback.body.individualTransferResults[0].lastError.mojaloopError.errorInformation.description).to.equal('ID Not Found')"
+                ]
+              }
+            ]
+          },
+          "scripts": {
+            "preRequest": {
+              "exec": [
+                "await inboundEvent.addListener('acceptPartyCallback', 'put', '/bulkTransactions/{$request.body.bulkTransactionId}')"
+              ]
+            },
+            "postRequest": {
+              "exec": [
+                "const acceptPartyCallback = await inboundEvent.getMessage('acceptPartyCallback')",
+                "console.log(acceptPartyCallback);",
+                "",
+                "environment.bulkTransactionId = acceptPartyCallback.body.bulkTransactionId;",
+                "",
+                "environment.acceptPartyCallback = acceptPartyCallback;",
+                "",
+                "environment.individualTransferId1 = acceptPartyCallback.body.individualTransferResults[0].transactionId;",
+                "",
+                "environment.individualTransferId2 = acceptPartyCallback.body.individualTransferResults[1].transactionId;"
+              ]
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "put bulk transaction",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/bulkTransactions/{bulkTransactionId}",
+          "path": "/bulkTransactions/{$prev.1.request.body.bulkTransactionId}",
+          "method": "put",
+          "params": {
+            "bulkTransactionId": "{$prev.1.request.body.bulkTransactionId}"
+          },
+          "url": "http://payer-sdk-api-svc:4001",
+          "body": {
+            "bulkHomeTransactionID": "{$prev.1.request.body.bulkHomeTransactionID}",
+            "individualTransfers": [
+              {
+                "homeTransactionId": "abc456",
+                "transactionId": "{$environment.acceptPartyCallback.body.individualTransferResults[0].transactionId}",
+                "acceptParty": true
+              },
+              {
+                "homeTransactionId": "abc456",
+                "transactionId": "{$environment.acceptPartyCallback.body.individualTransferResults[1].transactionId}",
+                "acceptParty": true
+              }
+            ]
+          },
+          "scriptingEngine": "javascript",
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Check Return Status Code",
+                "exec": [
+                  "expect(response.status).to.equal(202)"
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Check number of returned transfers",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults.length).to.equal(2)"
+                ]
+              },
+              {
+                "id": 3,
+                "description": "Check response has quote result for first transfer",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[0].quoteResponse).to.exist;"
+                ]
+              },
+              {
+                "id": 4,
+                "description": "Check response has ilpPacket and condition for first transfer",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[0].quoteResponse.ilpPacket).to.not.be.empty;",
+                  "",
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[0].quoteResponse.condition).to.not.be.empty;"
+                ]
+              },
+              {
+                "id": 5,
+                "description": "Check response has quote result for second transfer",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[1].quoteResponse).to.exist;"
+                ]
+              },
+              {
+                "id": 6,
+                "description": "Check response has ilpPacket and condition for second transfer",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[1].quoteResponse.ilpPacket).to.not.be.empty;",
+                  "",
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[1].quoteResponse.condition).to.not.be.empty;"
+                ]
+              },
+              {
+                "id": 7,
+                "description": "Check state is WAITING_FOR_QUOTE_ACCEPTANCE",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.currentState).to.equal('WAITING_FOR_QUOTE_ACCEPTANCE')"
+                ]
+              }
+            ]
+          },
+          "scripts": {
+            "preRequest": {
+              "exec": [
+                "console.log(environment.bulkTransactionId)",
+                "",
+                "await inboundEvent.addListener('acceptQuoteCallback', 'put', `/bulkTransactions/${environment.bulkTransactionId}`)"
+              ]
+            },
+            "postRequest": {
+              "exec": [
+                "const acceptQuoteCallback = await inboundEvent.getMessage('acceptQuoteCallback')",
+                "",
+                "console.log(acceptQuoteCallback)",
+                "",
+                "environment.acceptQuoteCallback = acceptQuoteCallback;"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "name": "9. Given party lookup is skipped and bulk quotes request is submitted, When receiver fsp sends response after timeout while sending bulk quotes reponse, Then the PUT response should have error details about timeout.",
+      "fileInfo": {
+        "path": "mvp-bulk.json"
+      },
+      "requests": [
+        {
+          "id": 1,
+          "description": "Post /bulkTransaction",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/bulkTransactions",
+          "path": "/bulkTransactions",
+          "method": "post",
+          "body": {
+            "bulkHomeTransactionID": "abc123",
+            "bulkTransactionId": "{$function.generic.generateUUID}",
+            "options": {
+              "onlyValidateParty": true,
+              "autoAcceptParty": {
+                "enabled": false
+              },
+              "autoAcceptQuote": {
+                "enabled": false
+              },
+              "skipPartyLookup": true,
+              "synchronous": false,
+              "bulkExpiration": "2016-05-24T08:38:08.699-04:00"
+            },
+            "from": {
+              "partyIdInfo": {
+                "partyIdType": "MSISDN",
+                "partyIdentifier": "16135551212"
+              }
+            },
+            "individualTransfers": [
+              {
+                "homeTransactionId": "abc1",
+                "to": {
+                  "partyIdInfo": {
+                    "partyIdType": "MSISDN",
+                    "partyIdentifier": "123456789",
+                    "fspId": "bulkquotesreceiversendserror"
+                  }
+                },
+                "amountType": "SEND",
+                "currency": "USD",
+                "amount": "456.78"
+              }
+            ]
+          },
+          "url": "http://payer-sdk-api-svc:4001",
+          "scriptingEngine": "javascript",
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Check Return Status Code",
+                "exec": [
+                  "expect(response.status).to.equal(202)",
+                  ""
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Check number of returned transfers",
+                "exec": [
+                  "expect(environment.acceptPartyCallback.body.individualTransferResults.length).to.equal(1)"
+                ]
+              },
+              {
+                "id": 3,
+                "description": "Check that the response has an error code of 4001",
+                "exec": [
+                  "expect(environment.acceptPartyCallback.body.individualTransferResults[0].lastError.mojaloopError.errorInformation.errorCode).to.equal('4001')"
+                ]
+              },
+              {
+                "id": 4,
+                "description": "Check that the response has an error description of ID Not Found",
+                "exec": [
+                  "expect(environment.acceptPartyCallback.body.individualTransferResults[0].lastError.mojaloopError.errorInformation.description).to.equal('ID Not Found')"
+                ]
+              }
+            ]
+          },
+          "scripts": {
+            "preRequest": {
+              "exec": [
+                "await inboundEvent.addListener('acceptPartyCallback', 'put', '/bulkTransactions/{$request.body.bulkTransactionId}')"
+              ]
+            },
+            "postRequest": {
+              "exec": [
+                "const acceptPartyCallback = await inboundEvent.getMessage('acceptPartyCallback')",
+                "console.log(acceptPartyCallback);",
+                "",
+                "environment.bulkTransactionId = acceptPartyCallback.body.bulkTransactionId;",
+                "",
+                "environment.acceptPartyCallback = acceptPartyCallback;",
+                "",
+                "environment.individualTransferId1 = acceptPartyCallback.body.individualTransferResults[0].transactionId;",
+                "",
+                "environment.individualTransferId2 = acceptPartyCallback.body.individualTransferResults[1].transactionId;"
+              ]
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "put bulk transaction",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/bulkTransactions/{bulkTransactionId}",
+          "path": "/bulkTransactions/{$prev.1.request.body.bulkTransactionId}",
+          "method": "put",
+          "params": {
+            "bulkTransactionId": "{$prev.1.request.body.bulkTransactionId}"
+          },
+          "url": "http://payer-sdk-api-svc:4001",
+          "body": {
+            "bulkHomeTransactionID": "{$prev.1.request.body.bulkHomeTransactionID}",
+            "individualTransfers": [
+              {
+                "homeTransactionId": "abc456",
+                "transactionId": "{$environment.acceptPartyCallback.body.individualTransferResults[0].transactionId}",
+                "acceptParty": true
+              },
+              {
+                "homeTransactionId": "abc456",
+                "transactionId": "{$environment.acceptPartyCallback.body.individualTransferResults[1].transactionId}",
+                "acceptParty": true
+              }
+            ]
+          },
+          "scriptingEngine": "javascript",
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Check Return Status Code",
+                "exec": [
+                  "expect(response.status).to.equal(202)"
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Check number of returned transfers",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults.length).to.equal(2)"
+                ]
+              },
+              {
+                "id": 3,
+                "description": "Check response has quote result for first transfer",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[0].quoteResponse).to.exist;"
+                ]
+              },
+              {
+                "id": 4,
+                "description": "Check response has ilpPacket and condition for first transfer",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[0].quoteResponse.ilpPacket).to.not.be.empty;",
+                  "",
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[0].quoteResponse.condition).to.not.be.empty;"
+                ]
+              },
+              {
+                "id": 5,
+                "description": "Check response has quote result for second transfer",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[1].quoteResponse).to.exist;"
+                ]
+              },
+              {
+                "id": 6,
+                "description": "Check response has ilpPacket and condition for second transfer",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[1].quoteResponse.ilpPacket).to.not.be.empty;",
+                  "",
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[1].quoteResponse.condition).to.not.be.empty;"
+                ]
+              },
+              {
+                "id": 7,
+                "description": "Check state is WAITING_FOR_QUOTE_ACCEPTANCE",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.currentState).to.equal('WAITING_FOR_QUOTE_ACCEPTANCE')"
+                ]
+              }
+            ]
+          },
+          "scripts": {
+            "preRequest": {
+              "exec": [
+                "console.log(environment.bulkTransactionId)",
+                "",
+                "await inboundEvent.addListener('acceptQuoteCallback', 'put', `/bulkTransactions/${environment.bulkTransactionId}`)"
+              ]
+            },
+            "postRequest": {
+              "exec": [
+                "const acceptQuoteCallback = await inboundEvent.getMessage('acceptQuoteCallback')",
+                "",
+                "console.log(acceptQuoteCallback)",
+                "",
+                "environment.acceptQuoteCallback = acceptQuoteCallback;"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "name": "10. Given party lookup is skipped and bulk quotes request having 2 transfers with same receiver fsp id is submitted, When receiver fsp sends response for only transfer out of the 2 while sending bulk quotes reponse, Then the PUT response should have error details about missing transfer.",
+      "fileInfo": {
+        "path": "mvp-bulk.json"
+      },
+      "requests": [
+        {
+          "id": 1,
+          "description": "Post /bulkTransaction",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/bulkTransactions",
+          "path": "/bulkTransactions",
+          "method": "post",
+          "body": {
+            "bulkHomeTransactionID": "abc123",
+            "bulkTransactionId": "{$function.generic.generateUUID}",
+            "options": {
+              "onlyValidateParty": true,
+              "autoAcceptParty": {
+                "enabled": false
+              },
+              "autoAcceptQuote": {
+                "enabled": false
+              },
+              "skipPartyLookup": true,
+              "synchronous": false,
+              "bulkExpiration": "2016-05-24T08:38:08.699-04:00"
+            },
+            "from": {
+              "partyIdInfo": {
+                "partyIdType": "MSISDN",
+                "partyIdentifier": "16135551212"
+              }
+            },
+            "individualTransfers": [
+              {
+                "homeTransactionId": "abc1",
+                "to": {
+                  "partyIdInfo": {
+                    "partyIdType": "MSISDN",
+                    "partyIdentifier": "123456789",
+                    "fspId": "receiverfsphas1id"
+                  }
+                },
+                "amountType": "SEND",
+                "currency": "USD",
+                "amount": "456.78"
+              },
+              {
+                "homeTransactionId": "abc1",
+                "to": {
+                  "partyIdInfo": {
+                    "partyIdType": "MSISDN",
+                    "partyIdentifier": "123456789",
+                    "fspId": "receiverfsphas1id"
+                  }
+                },
+                "amountType": "SEND",
+                "currency": "USD",
+                "amount": "456.78"
+              }
+            ]
+          },
+          "url": "http://payer-sdk-api-svc:4001",
+          "scriptingEngine": "javascript",
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Check Return Status Code",
+                "exec": [
+                  "expect(response.status).to.equal(202)",
+                  ""
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Check number of returned transfers",
+                "exec": [
+                  "expect(environment.acceptPartyCallback.body.individualTransferResults.length).to.equal(1)"
+                ]
+              },
+              {
+                "id": 3,
+                "description": "Check that the response has an error code of 4001",
+                "exec": [
+                  "expect(environment.acceptPartyCallback.body.individualTransferResults[0].lastError.mojaloopError.errorInformation.errorCode).to.equal('4001')"
+                ]
+              },
+              {
+                "id": 4,
+                "description": "Check that the response has an error description of ID Not Found",
+                "exec": [
+                  "expect(environment.acceptPartyCallback.body.individualTransferResults[0].lastError.mojaloopError.errorInformation.description).to.equal('ID Not Found')"
+                ]
+              }
+            ]
+          },
+          "scripts": {
+            "preRequest": {
+              "exec": [
+                "await inboundEvent.addListener('acceptPartyCallback', 'put', '/bulkTransactions/{$request.body.bulkTransactionId}')"
+              ]
+            },
+            "postRequest": {
+              "exec": [
+                "const acceptPartyCallback = await inboundEvent.getMessage('acceptPartyCallback')",
+                "console.log(acceptPartyCallback);",
+                "",
+                "environment.bulkTransactionId = acceptPartyCallback.body.bulkTransactionId;",
+                "",
+                "environment.acceptPartyCallback = acceptPartyCallback;",
+                "",
+                "environment.individualTransferId1 = acceptPartyCallback.body.individualTransferResults[0].transactionId;",
+                "",
+                "environment.individualTransferId2 = acceptPartyCallback.body.individualTransferResults[1].transactionId;"
+              ]
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "put bulk transaction",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/bulkTransactions/{bulkTransactionId}",
+          "path": "/bulkTransactions/{$prev.1.request.body.bulkTransactionId}",
+          "method": "put",
+          "params": {
+            "bulkTransactionId": "{$prev.1.request.body.bulkTransactionId}"
+          },
+          "url": "http://payer-sdk-api-svc:4001",
+          "body": {
+            "bulkHomeTransactionID": "{$prev.1.request.body.bulkHomeTransactionID}",
+            "individualTransfers": [
+              {
+                "homeTransactionId": "abc456",
+                "transactionId": "{$environment.acceptPartyCallback.body.individualTransferResults[0].transactionId}",
+                "acceptParty": true
+              },
+              {
+                "homeTransactionId": "abc456",
+                "transactionId": "{$environment.acceptPartyCallback.body.individualTransferResults[1].transactionId}",
+                "acceptParty": true
+              }
+            ]
+          },
+          "scriptingEngine": "javascript",
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Check Return Status Code",
+                "exec": [
+                  "expect(response.status).to.equal(202)"
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Check number of returned transfers",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults.length).to.equal(2)"
+                ]
+              },
+              {
+                "id": 3,
+                "description": "Check response has quote result for first transfer",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[0].quoteResponse).to.exist;"
+                ]
+              },
+              {
+                "id": 4,
+                "description": "Check response has ilpPacket and condition for first transfer",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[0].quoteResponse.ilpPacket).to.not.be.empty;",
+                  "",
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[0].quoteResponse.condition).to.not.be.empty;"
+                ]
+              },
+              {
+                "id": 5,
+                "description": "Check response has quote result for second transfer",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[1].quoteResponse).to.exist;"
+                ]
+              },
+              {
+                "id": 6,
+                "description": "Check response has ilpPacket and condition for second transfer",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[1].quoteResponse.ilpPacket).to.not.be.empty;",
+                  "",
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[1].quoteResponse.condition).to.not.be.empty;"
+                ]
+              },
+              {
+                "id": 7,
+                "description": "Check state is WAITING_FOR_QUOTE_ACCEPTANCE",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.currentState).to.equal('WAITING_FOR_QUOTE_ACCEPTANCE')"
+                ]
+              }
+            ]
+          },
+          "scripts": {
+            "preRequest": {
+              "exec": [
+                "console.log(environment.bulkTransactionId)",
+                "",
+                "await inboundEvent.addListener('acceptQuoteCallback', 'put', `/bulkTransactions/${environment.bulkTransactionId}`)"
+              ]
+            },
+            "postRequest": {
+              "exec": [
+                "const acceptQuoteCallback = await inboundEvent.getMessage('acceptQuoteCallback')",
+                "",
+                "console.log(acceptQuoteCallback)",
+                "",
+                "environment.acceptQuoteCallback = acceptQuoteCallback;"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "name": "11. When there are 3 transfers in the bulk request 2 of which that have the same receiver fsp id and the 3rd one has a different receiver fsp id and acceptParty is true for all the transfers, Then the PUT response should have details of all the 3 transfers for acceptQuote.",
       "fileInfo": {
         "path": "mvp-bulk.json"
       },
@@ -1826,8 +2544,8 @@
       ]
     },
     {
-      "id": 9,
-      "name": "Given there are 3 transfers in the bulk request 2 of which that have the same receiver fsp id and the 3rd one has a different receiver fsp id, When the receiver with receiverhas1id times out sending the response, Then the PUT response should have details of all the 2 transfers from receiverfsphas2ids.",
+      "id": 12,
+      "name": "12. Given there are 3 transfers in the bulk request 2 of which that have the same receiver fsp id and the 3rd one has a different receiver fsp id, When the receiver with receiverhas1id times out sending the response, Then the PUT response should have details of all the 2 transfers from receiverfsphas2ids.",
       "fileInfo": {
         "path": "mvp-bulk.json"
       },
@@ -2080,8 +2798,8 @@
       ]
     },
     {
-      "id": 10,
-      "name": "Given there are 3 transfers in the bulk request all of which that have the same receiver fsp id, When the receiver fsp sends the response for only 2 transfers in the batch and not the third one, Then the PUT response should have details of all the 3 transfers with an error for the 3rd transfer that did not have any response.",
+      "id": 13,
+      "name": "13. Given there are 3 transfers in the bulk request all of which that have the same receiver fsp id, When the receiver fsp sends the response for only 2 transfers in the batch and not the third one, Then the PUT response should have details of all the 3 transfers with an error for the 3rd transfer that did not have any response.",
       "fileInfo": {
         "path": "mvp-bulk.json"
       },
