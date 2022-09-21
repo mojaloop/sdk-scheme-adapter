@@ -113,35 +113,67 @@ export class OutboundEventHandler implements IRunHandler {
         // TODO: Handle errors validation here
         switch (message.getName()) {
             case SDKOutboundBulkRequestReceivedDmEvt.name: {
-                await handleSDKOutboundBulkRequestReceived(message, this._domainEventHandlerOptions, this._logger);
+                await handleSDKOutboundBulkRequestReceived(
+                    message,
+                    this._domainEventHandlerOptions,
+                    this._logger,
+                );
                 break;
             }
             case SDKOutboundBulkPartyInfoRequestedDmEvt.name: {
-                await handleSDKOutboundBulkPartyInfoRequested(message, this._domainEventHandlerOptions, this._logger);
+                await handleSDKOutboundBulkPartyInfoRequested(
+                    message,
+                    this._domainEventHandlerOptions,
+                    this._logger,
+                );
                 break;
             }
             case PartyInfoCallbackReceivedDmEvt.name: {
-                await handlePartyInfoCallbackReceived(message, this._domainEventHandlerOptions, this._logger);
+                await handlePartyInfoCallbackReceived(
+                    message,
+                    this._domainEventHandlerOptions,
+                    this._logger,
+                );
                 break;
             }
             case SDKOutboundBulkAcceptPartyInfoReceivedDmEvt.name: {
-                await handleSDKOutboundBulkAcceptPartyInfoReceived(message, this._domainEventHandlerOptions, this._logger);
+                await handleSDKOutboundBulkAcceptPartyInfoReceived(
+                    message,
+                    this._domainEventHandlerOptions,
+                    this._logger,
+                );
                 break;
             }
             case SDKOutboundBulkAcceptPartyInfoProcessedDmEvt.name: {
-                await handleSDKOutboundBulkAcceptPartyInfoProcessed(message, this._domainEventHandlerOptions, this._logger);
+                await handleSDKOutboundBulkAcceptPartyInfoProcessed(
+                    message,
+                    this._domainEventHandlerOptions,
+                    this._logger,
+                );
                 break;
             }
             case BulkQuotesCallbackReceivedDmEvt.name: {
-                await handleBulkQuotesCallbackReceived(message, this._domainEventHandlerOptions, this._logger);
+                await handleBulkQuotesCallbackReceived(message,
+                    this._domainEventHandlerOptions,
+                    this._logger,
+                );
                 break;
             }
             case PartyInfoCallbackProcessedDmEvt.name: {
-                await handlePartyInfoCallbackProcessed(message, this._domainEventHandlerOptions, this._logger);
+                await handlePartyInfoCallbackProcessed(
+                    message,
+                    this._domainEventHandlerOptions,
+                    this._logger,
+                );
                 break;
             }
             case SDKOutboundBulkAcceptQuoteReceivedDmEvt.name: {
-                await handleSDKOutboundBulkAcceptQuoteReceived(message, this._domainEventHandlerOptions, this._logger);
+                await handleSDKOutboundBulkAcceptQuoteReceived(
+                    message,
+                    this._domainEventHandlerOptions,
+                    this._logger,
+                );
+                break;
             }
             default: {
                 this._logger.debug(`${message?.getName()}:${message?.getKey()} - Skipping unknown domain event`);
