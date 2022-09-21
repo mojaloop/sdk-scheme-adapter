@@ -139,7 +139,6 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
     // await bulkTransactionEntityRepo.destroy();
   });
 
-  // TODO: This description needs to be re-worded
   test("Given the BulkTransaction with Options { \
           synchronous: false, \
           onlyValidateParty: true, \
@@ -150,7 +149,8 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
         And callback for quote batch is successful \
         And the callback has a combination of success and failed responses for individual quotes \
         When Inbound command event ProcessBulkQuotesCallback is received \
-        Then the logic should update the individual batch state to AGREEMENT_COMPLETED or AGREEMENT_FAILED, \
+        Then the global Bulk Transaction State should be updated to TRANSFERS_PROCESSING \
+        And the individual batch state should be equal to either TRANSFERS_PROCESSING or TRANSFERS_FAILED, \
         And for each individual transfers in the batch, the state AGREEMENT_ACCEPTED or AGREEMENT_REJECTED depending on the acceptQuotes = TRUE/FALSE, \
         And for each individual transfers in an AGREEMENT_FAILED state should not be altered, \
         And the individual quote data in redis should be updated with the response \
@@ -241,8 +241,7 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
     // SETUP / ACT
 
     const result = await processHelper.generate(bulkRequest, {
-      // StopAfterEvent: StopAfterEventEnum.ProcessSDKOutboundBulkTransfersRequestCmdEvt,
-      StopAfterEvent: StopAfterEventEnum.ProcessBulkTransfersCallbackCmdEvt,
+      StopAfterEvent: StopAfterEventEnum.ProcessSDKOutboundBulkTransfersRequestCmdEvt,
       messageTimeout,
     })
 
