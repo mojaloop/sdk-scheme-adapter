@@ -81,6 +81,10 @@ export enum StopAfterEventEnum {
 }
 
 export type IProcessHelperGenerateOptions = {
+  bulkTransactionRequest?: {
+    bulkTransactionId?: string,
+    options: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest['options']
+  },
   StopAfterEvent?: StopAfterEventEnum,
   messageTimeout?: number,
 };
@@ -147,14 +151,99 @@ export class ProcessHelper {
     this.domainEvents.push(message);
   }
 
+  // TODO: This is currently semi-hardcoded to the bulkRequest as per below,
+  //       with no logic to cater for bulkTransactionRequest.options (e.g. autoAccept*, synchronous, etc) configs
+  //       ...
   async generate (
-      bulkTransactionRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest,
       options: IProcessHelperGenerateOptions = {
         messageTimeout: 2000
       }
   ): Promise<GenerateReturn> {
-    const bulkRequest = bulkTransactionRequest;
-    const bulkTransactionId = bulkTransactionRequest.bulkTransactionId;
+    const bulkTransactionId = options?.bulkTransactionRequest?.bulkTransactionId || randomUUID();
+    
+    const defaultBulkTransactionOptions: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest['options'] = {
+      onlyValidateParty: true,
+      autoAcceptParty: {
+        enabled: false
+      },
+      autoAcceptQuote: {
+        enabled: false,
+      },
+      skipPartyLookup: false,
+      synchronous: false,
+      bulkExpiration: "2016-05-24T08:38:08.699-04:00"
+    };
+
+    const bulkTransactionOptions: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest['options'] = {
+      ... defaultBulkTransactionOptions,
+      ... options?.bulkTransactionRequest?.options
+    };
+
+    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+      bulkHomeTransactionID: "string",
+      bulkTransactionId: bulkTransactionId,
+      options: bulkTransactionOptions,
+      from: {
+        partyIdInfo: {
+          partyIdType: "MSISDN",
+          partyIdentifier: "16135551212",
+          fspId: "string",
+        },
+      },
+      individualTransfers: [
+        {
+          homeTransactionId: randomUUID(),
+          to: {
+            partyIdInfo: {
+              partyIdType: "MSISDN",
+              partyIdentifier: "1"
+            },
+          },
+          amountType: "SEND",
+          currency: "USD",
+          amount: "1",
+        },
+        {
+          homeTransactionId: randomUUID(),
+          to: {
+            partyIdInfo: {
+              partyIdType: "MSISDN",
+              partyIdentifier: "2"
+            },
+          },
+          amountType: "SEND",
+          currency: "USD",
+          amount: "2",
+        },
+        {
+          homeTransactionId: randomUUID(),
+          to: {
+            partyIdInfo: {
+              partyIdType: "MSISDN",
+              partyIdentifier: "3"
+            },
+          },
+          amountType: "SEND",
+          currency: "USD",
+          amount: "3",
+        },
+        {
+          homeTransactionId: randomUUID(),
+          to: {
+            partyIdInfo: {
+              partyIdType: "MSISDN",
+              partyIdentifier: "4"
+            },
+          },
+          amountType: "SEND",
+          currency: "USD",
+          amount: "4",
+        }
+      ]
+    }
+
+    this.bulkTransactionRequest = bulkRequest;
+
     const messageTimeout = options.messageTimeout || 2000;
 
     const sampleCommandEventData: IProcessSDKOutboundBulkRequestCmdEvtData = {
