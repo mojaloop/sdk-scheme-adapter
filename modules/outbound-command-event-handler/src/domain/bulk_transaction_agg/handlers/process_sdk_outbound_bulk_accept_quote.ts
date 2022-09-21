@@ -68,17 +68,17 @@ export async function handleProcessSDKOutboundBulkAcceptQuoteCmdEvt(
 
             individualTransfer.setAcceptParty(individualTransferFromMessage.acceptQuote);
 
-            if(
+            if( // handle accept case
                 individualTransferFromMessage.acceptQuote && 
                 individualTransfer.transferState === IndividualTransferInternalState.AGREEMENT_SUCCESS
             ) {
                 individualTransfer.setTransferState(IndividualTransferInternalState.AGREEMENT_ACCEPTED);
-            } else if(
+            } else if( // handle reject case
                 !individualTransferFromMessage.acceptQuote && 
                 individualTransfer.transferState === IndividualTransferInternalState.AGREEMENT_SUCCESS
             ) {
                 individualTransfer.setTransferState(IndividualTransferInternalState.AGREEMENT_REJECTED);
-            } else {
+            } else { // handle other cases
                 logger.warn(`handleProcessSDKOutboundBulkAcceptQuoteCmdEvt - individualTransfer.transactionId[${individualTransferFromMessage.transactionId}] is already in a non-processing state: ${individualTransfer.transferState}`);
             }
 
