@@ -31,16 +31,18 @@ import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 import { SDKSchemeAdapter } from "@mojaloop/api-snippets";
 
 import {
-  BulkTransactionInternalState,
+  BulkBatchState,
+  // BulkTransactionInternalState,
   DomainEvent,
   IBulkTransactionEntityRepo,
   ICommandEventProducer,
   IDomainEventProducer,
   IEventConsumer,
-  IEventProducer,
+  // IEventProducer,
   IKafkaEventConsumerOptions,
   IKafkaEventProducerOptions,
   IProcessBulkQuotesCallbackCmdEvtData,
+  IProcessBulkTransfersCallbackCmdEvtData,
   IProcessPartyInfoCallbackCmdEvtData,
   IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData,
   IProcessSDKOutboundBulkAcceptQuoteCmdEvtData,
@@ -49,11 +51,11 @@ import {
   IProcessSDKOutboundBulkRequestCmdEvtData,
   IProcessSDKOutboundBulkTransfersRequestCmdEvtData,
   IRedisBulkTransactionStateRepoOptions,
-  ISDKOutboundBulkAcceptQuoteReceivedDmEvtData,
   KafkaCommandEventProducer,
   KafkaDomainEventConsumer,
   KafkaDomainEventProducer,
   ProcessBulkQuotesCallbackCmdEvt,
+  ProcessBulkTransfersCallbackCmdEvt,
   ProcessPartyInfoCallbackCmdEvt,
   ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt,
   ProcessSDKOutboundBulkAcceptQuoteCmdEvt,
@@ -62,16 +64,9 @@ import {
   ProcessSDKOutboundBulkRequestCmdEvt,
   ProcessSDKOutboundBulkTransfersRequestCmdEvt,
   RedisBulkTransactionStateRepo,
-  SDKOutboundBulkAcceptQuoteReceivedDmEvt,
 } from "@mojaloop/sdk-scheme-adapter-private-shared-lib"
 import { randomUUID } from "crypto";
 import { Timer } from "./timer";
-
-
-// TODO: Add more supports states to check for stop-points in the generate process
-// export enum StopAtBulkTransactionInternalState {
-//   AGREEMENT_ACCEPTANCE_PENDING = BulkTransactionInternalState.AGREEMENT_ACCEPTANCE_PENDING
-// }
 
 export enum StopAfterEventEnum {
   ProcessSDKOutboundBulkRequestCmdEvt = 'ProcessSDKOutboundBulkRequestCmdEvt',
@@ -82,6 +77,7 @@ export enum StopAfterEventEnum {
   ProcessBulkQuotesCallbackCmdEvt = 'ProcessBulkQuotesCallbackCmdEvt',
   ProcessSDKOutboundBulkAcceptQuoteCmdEvt = 'ProcessSDKOutboundBulkAcceptQuoteCmdEvt',
   ProcessSDKOutboundBulkTransfersRequestCmdEvt = 'ProcessSDKOutboundBulkTransfersRequestCmdEvt',
+  ProcessBulkTransfersCallbackCmdEvt = 'ProcessBulkTransfersCallbackCmdEvt',
 }
 
 export type IProcessHelperGenerateOptions = {
@@ -396,20 +392,35 @@ export class ProcessHelper {
     // expect(bulkBatchIds[0]).toBeDefined();
     // expect(bulkBatchIds[1]).toBeDefined();
 
-    const bulkBatchOne = await this.bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, bulkBatchIds[0]);
-    const bulkBatchTwo = await this.bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, bulkBatchIds[1]);
+    const fetchBulkBatches = async () => {
+      let bulkBatchOne = await this.bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, bulkBatchIds[0]);
+      let bulkBatchTwo = await this.bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, bulkBatchIds[1]);
+
+      // Bulk batch ids are unordered so check the quotes for the intended fsp
+      // so we can send proper callbacks
+      let receiverFspBatch;
+      let differentFspBatch;
+      if (bulkBatchOne.bulkQuotesRequest.individualQuotes[0].to.fspId == 'receiverfsp') {
+        receiverFspBatch = bulkBatchOne
+        differentFspBatch = bulkBatchTwo
+      } else {
+        receiverFspBatch = bulkBatchTwo
+        differentFspBatch = bulkBatchOne
+      }
+      return {
+        receiverFspBatch,
+        differentFspBatch
+      }
+    }
 
     // Bulk batch ids are unordered so check the quotes for the intended fsp
     // so we can send proper callbacks
     let receiverFspBatch;
     let differentFspBatch;
-    if (bulkBatchOne.bulkQuotesRequest.individualQuotes[0].to.fspId == 'receiverfsp') {
-      receiverFspBatch = bulkBatchOne
-      differentFspBatch = bulkBatchTwo
-    } else {
-      receiverFspBatch = bulkBatchTwo
-      differentFspBatch = bulkBatchOne
-    }
+
+    let fetchBulkBatchesResults = await fetchBulkBatches();
+    receiverFspBatch = fetchBulkBatchesResults.receiverFspBatch;
+    differentFspBatch = fetchBulkBatchesResults.differentFspBatch;
 
     const bulkQuoteId = randomUUID();
     const quoteAmountList: string[] = []
@@ -564,6 +575,50 @@ export class ProcessHelper {
 
     if (options.StopAfterEvent === StopAfterEventEnum.ProcessSDKOutboundBulkTransfersRequestCmdEvt) {
       this.logger.warn(`ProcessHelper - Stopping at StopAfterEvent=${StopAfterEventEnum.ProcessSDKOutboundBulkTransfersRequestCmdEvt}`);
+      return {
+        bulkTransactionId,
+        amountList,
+        quoteAmountList,
+        individualTransferIds: randomGeneratedTransferIds,
+        bulkBatchIds,
+        domainEvents: this.domainEvents
+      }
+    };
+
+    // const bulkBatchOneAfterQuotes:BulkBatchState = await this.bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, bulkBatchIds[0]);
+
+    fetchBulkBatchesResults = await fetchBulkBatches();
+    receiverFspBatch = fetchBulkBatchesResults.receiverFspBatch;
+    differentFspBatch = fetchBulkBatchesResults.differentFspBatch;
+
+    const bulkTransferId = randomUUID();
+    const transferAmountList: string[] = []
+    transferAmountList.push(receiverFspBatch.bulkTransfersRequest.individualQuotes[0].amount);
+
+    const processBulkTransfersCallbackCmdEvtData: IProcessBulkTransfersCallbackCmdEvtData = {
+      bulkId: bulkTransactionId,
+      content: {
+        batchId: receiverFspBatch.id,
+        bulkTransferId: bulkTransferId,
+        bulkTransfersResult: {
+          bulkTransferId: "",
+          bulkQuoteId: bulkQuoteIdDifferentFsp,
+          homeTransactionId: undefined,
+          bulkTransferState: undefined,
+          completedTimestamp: undefined,
+          extensionList: undefined,
+          currentState: "COMPLETED",
+          individualTransferResults: []
+        }
+      },
+      timestamp: null,
+      headers: null
+    };
+
+    const processBulkTransfersCallbackCmdEvt = new ProcessBulkTransfersCallbackCmdEvt(processBulkTransfersCallbackCmdEvtData)
+
+    if (options.StopAfterEvent === StopAfterEventEnum.ProcessBulkTransfersCallbackCmdEvt) {
+      this.logger.warn(`ProcessHelper - Stopping at StopAfterEvent=${StopAfterEventEnum.ProcessBulkTransfersCallbackCmdEvt}`);
       return {
         bulkTransactionId,
         amountList,
