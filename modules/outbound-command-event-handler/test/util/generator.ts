@@ -702,7 +702,7 @@ export class ProcessHelper {
               transferId: receiverFspBatch.bulkTransfersRequest.individualTransfers[0].transferId,
               fulfilment: 'fulfilment',
             },
-            {
+            { // TODO: This should not be included since the Quote failed for this request. There is no validation when this is send!
               transferId: receiverFspBatch.bulkTransfersRequest.individualTransfers[1].transferId,
               fulfilment: 'fulfilment',
             }
