@@ -274,16 +274,16 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
       throw Error('Shouldnt be here'); // TODO: Handle this
     }
 
-    // Check that the state of bulk batch for receiverfsp to be AGREEMENT_COMPLETED
+    // Check that the state of bulk batch for receiverfsp to be TRANSFERS_PROCESSING
     const postBulkBatchReceiverFsp = await processHelper.bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, receiverFspBatch.id);
-    expect(postBulkBatchReceiverFsp.state).toBe(BulkBatchInternalState.AGREEMENT_COMPLETED);
+    expect(postBulkBatchReceiverFsp.state).toBe(BulkBatchInternalState.TRANSFERS_PROCESSING);
 
     // Check that bulkQuoteResponse state has been updated to COMPLETED
     expect(postBulkBatchReceiverFsp.bulkQuotesResponse!.currentState).toEqual("COMPLETED")
 
     // Check that the state of bulk batch for differentfsp to be AGREEMENT_FAILED
     const postBulkBatchDifferentFsp = await processHelper.bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, differentFspBatch.id);
-    expect(postBulkBatchDifferentFsp.state).toBe(BulkBatchInternalState.AGREEMENT_FAILED);
+    expect(postBulkBatchDifferentFsp.state).toBe(BulkBatchInternalState.TRANSFERS_FAILED);
 
     // Check that bulkQuoteResponse state has been updated to COMPLETED
     expect(postBulkBatchDifferentFsp.bulkQuotesResponse!.currentState).toEqual("ERROR_OCCURRED")
@@ -319,9 +319,9 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
     .toBe(IndividualTransferInternalState.AGREEMENT_FAILED);
 
     // Now that all the bulk batches have reached a final state check the global state
-    // Check that the global state of bulk to be AGREEMENT_ACCEPTANCE_COMPLETED
+    // Check that the global state of bulk to be TRANSFERS_PROCESSING
     const bulkStateAgreementCompleted = await processHelper.bulkTransactionEntityRepo.load(bulkTransactionId);
-    expect(bulkStateAgreementCompleted.state).toBe(BulkTransactionInternalState.AGREEMENT_ACCEPTANCE_COMPLETED);
+    expect(bulkStateAgreementCompleted.state).toBe(BulkTransactionInternalState.TRANSFERS_PROCESSING);
 
     // Check that command handler published BulkQuotesCallbackProcessed message
     const hasBulkQuotesCallbackProcessed = (processHelper.domainEvents.find((e) => e.getName() === 'BulkQuotesCallbackProcessedDmEvt'));
@@ -332,8 +332,8 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
     expect(hasSDKOutboundBulkQuotesRequestProcessed).toBeTruthy();
 
     // Check that command handler published SDKOutboundBulkAutoAcceptQuoteProcessed message
-    const hasSDKOutboundBulkAutoAcceptQuoteProcessed = (processHelper.domainEvents.find((e) => e.getName() === 'SDKOutboundBulkAutoAcceptQuoteProcessedDmEvt'));
-    expect(hasSDKOutboundBulkAutoAcceptQuoteProcessed).toBeTruthy();
+    const hasSDKOutboundBulkAcceptQuoteProcessedDmEvt = (processHelper.domainEvents.find((e) => e.getName() === 'SDKOutboundBulkAcceptQuoteProcessedDmEvt'));
+    expect(hasSDKOutboundBulkAcceptQuoteProcessedDmEvt).toBeTruthy();
 
     // Check that command handler published hasBulkTransfersRequested message
     const hasBulkTransfersRequested = (processHelper.domainEvents.find((e) => e.getName() === 'BulkTransfersRequestedDmEvt'));

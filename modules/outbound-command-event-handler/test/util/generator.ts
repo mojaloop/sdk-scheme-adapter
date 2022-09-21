@@ -557,8 +557,9 @@ export class ProcessHelper {
       timestamp: Date.now(),
       headers: null
     };
-    const ProcessSDKOutboundBulkTransfersRequest = new ProcessSDKOutboundBulkTransfersRequestCmdEvt(processSDKOutboundBulkTransfersRequestCmdEvtData)
-    
+    const processSDKOutboundBulkTransfersRequestCmdEvt = new ProcessSDKOutboundBulkTransfersRequestCmdEvt(processSDKOutboundBulkTransfersRequestCmdEvtData)
+    await this.commandEventProducer.sendCommandEvent(processSDKOutboundBulkTransfersRequestCmdEvt);
+
     await Timer.wait(messageTimeout);
 
     if (options.StopAfterEvent === StopAfterEventEnum.ProcessSDKOutboundBulkTransfersRequestCmdEvt) {
