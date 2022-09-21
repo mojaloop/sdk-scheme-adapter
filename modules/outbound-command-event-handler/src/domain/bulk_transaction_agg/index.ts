@@ -73,6 +73,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         entityStateRepo: IEntityStateRepository<BulkTransactionState>,
         logger: ILogger,
     ): Promise<BulkTransactionAgg> {
+        const aggLogger = logger.createChild(this.name);
         const repo = entityStateRepo as IBulkTransactionEntityRepo;
         // Duplicate Check
         if(request.bulkTransactionId) {
@@ -85,7 +86,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         // Create root entity
         const bulkTransactionEntity = BulkTransactionEntity.CreateFromRequest(request);
         // Create the aggregate
-        const agg = new BulkTransactionAgg(bulkTransactionEntity, entityStateRepo, logger);
+        const agg = new BulkTransactionAgg(bulkTransactionEntity, entityStateRepo, aggLogger);
         // Persist in the rep
         await agg.store();
         // Create individualTransfer entities
@@ -116,6 +117,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         logger: ILogger,
     ): Promise<BulkTransactionAgg> {
     // Get the root entity state from repo
+        const aggLogger = logger.createChild(this.name);
         let state: BulkTransactionState | null;
         try {
             state = await entityStateRepo.load(id);
@@ -126,7 +128,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
             // Create root entity
             const bulkTransactionEntity = new BulkTransactionEntity(state);
             // Create the aggregate
-            const agg = new BulkTransactionAgg(bulkTransactionEntity, entityStateRepo, logger);
+            const agg = new BulkTransactionAgg(bulkTransactionEntity, entityStateRepo, aggLogger);
             // Return the aggregate
             return agg;
         } else {
@@ -492,16 +494,18 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         options: ICommandEventHandlerOptions,
         logger: ILogger,
     ) {
+        const locallogger = logger.createChild(`${this.name}.ProcessCommandEvent`);
         const handlerPrefix = 'handle';
         if(!CommandEventHandlerFunctions.hasOwnProperty(handlerPrefix + message.constructor.name)) {
-            logger.error(`BulkTransactionAgg.ProcessCommandEvent - Handler function for the command event message ${message.constructor.name} is not implemented`);
+            locallogger.error(`Handler function for the command event message ${message.constructor.name} is not implemented`);
             return;
         }
-        logger.info(`BulkTransactionAgg.ProcessCommandEvent - Calling ${handlerPrefix + message.constructor.name}`);
+        locallogger.info(`Calling ${handlerPrefix + message.constructor.name}`);
+        const commandEventHandlerFunctionsLogger = logger.createChild(`${this.name}.${handlerPrefix}${message.constructor.name}`);
         await CommandEventHandlerFunctions[handlerPrefix + message.constructor.name](
             message,
             options,
-            logger,
+            commandEventHandlerFunctionsLogger,
         );
     }
 

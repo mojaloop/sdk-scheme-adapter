@@ -241,7 +241,8 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
     // SETUP / ACT
 
     const result = await processHelper.generate(bulkRequest, {
-      StopAfterEvent: StopAfterEventEnum.ProcessSDKOutboundBulkTransfersRequestCmdEvt,
+      // StopAfterEvent: StopAfterEventEnum.ProcessSDKOutboundBulkTransfersRequestCmdEvt,
+      StopAfterEvent: StopAfterEventEnum.ProcessBulkTransfersCallbackCmdEvt,
       messageTimeout,
     })
 

@@ -31,6 +31,7 @@ import * as ProcessBulkQuotesCallbackHandler from './process_bulk_quotes_callbac
 import * as ProcessSDKOutboundBulkQuotesRequestHandler from './process_sdk_outbound_bulk_quotes_request';
 import * as ProcessSDKOutboundBulkTransfersRequestHandler from './process_sdk_outbound_bulk_transfers_request';
 import * as ProcessSDKOutboundBulkAcceptQuoteHandler from './process_sdk_outbound_bulk_accept_quote';
+import * as ProcessBulkTransfersCallbackHandler from './process_sdk_outbound_bulk_transfers_callback';
 
 import { CommandEvent } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { ICommandEventHandlerOptions } from '@module-types';
@@ -46,6 +47,7 @@ export default  {
     ...ProcessSDKOutboundBulkQuotesRequestHandler,
     ...ProcessSDKOutboundBulkAcceptQuoteHandler,
     ...ProcessSDKOutboundBulkTransfersRequestHandler,
+    ...ProcessBulkTransfersCallbackHandler,
 } as {
     [key: string]: (
         message: CommandEvent,

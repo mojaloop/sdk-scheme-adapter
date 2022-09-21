@@ -593,7 +593,8 @@ export class ProcessHelper {
 
     const bulkTransferId = randomUUID();
     const transferAmountList: string[] = []
-    transferAmountList.push(receiverFspBatch.bulkTransfersRequest.individualQuotes[0].amount);
+    transferAmountList.push(receiverFspBatch.bulkTransfersRequest.individualTransfers[0].amount);
+    transferAmountList.push(receiverFspBatch.bulkTransfersRequest.individualTransfers[1].amount);
 
     const processBulkTransfersCallbackCmdEvtData: IProcessBulkTransfersCallbackCmdEvtData = {
       bulkId: bulkTransactionId,
@@ -601,21 +602,30 @@ export class ProcessHelper {
         batchId: receiverFspBatch.id,
         bulkTransferId: bulkTransferId,
         bulkTransfersResult: {
-          bulkTransferId: "",
-          bulkQuoteId: bulkQuoteIdDifferentFsp,
-          homeTransactionId: undefined,
-          bulkTransferState: undefined,
-          completedTimestamp: undefined,
-          extensionList: undefined,
+          bulkTransferId: receiverFspBatch.bulkTransfersRequest.bulkTransferId,
+          bulkQuoteId: receiverFspBatch.bulkTransfersRequest.bulkQuoteId,
+          homeTransactionId: receiverFspBatch.bulkTransfersRequest.homeTransactionId,
+          bulkTransferState: 'COMMITTED',
+          completedTimestamp: (new Date()).toISOString(),
           currentState: "COMPLETED",
-          individualTransferResults: []
+          individualTransferResults: [
+            {
+              transferId: receiverFspBatch.bulkTransfersRequest.individualTransfers[0].transferId,
+              fulfilment: 'fulfilment',
+            },
+            {
+              transferId: receiverFspBatch.bulkTransfersRequest.individualTransfers[1].transferId,
+              fulfilment: 'fulfilment',
+            }
+          ]
         }
       },
-      timestamp: null,
+      timestamp: Date.now(),
       headers: null
     };
 
     const processBulkTransfersCallbackCmdEvt = new ProcessBulkTransfersCallbackCmdEvt(processBulkTransfersCallbackCmdEvtData)
+    await this.commandEventProducer.sendCommandEvent(processBulkTransfersCallbackCmdEvt);
 
     if (options.StopAfterEvent === StopAfterEventEnum.ProcessBulkTransfersCallbackCmdEvt) {
       this.logger.warn(`ProcessHelper - Stopping at StopAfterEvent=${StopAfterEventEnum.ProcessBulkTransfersCallbackCmdEvt}`);
