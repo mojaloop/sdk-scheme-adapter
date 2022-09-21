@@ -73,11 +73,6 @@ const domainEventConsumerOptions: IKafkaEventConsumerOptions = {
   topics: ['topic-sdk-outbound-domain-events'],
   groupId: "domain_events_consumer_client_id"
 }
-var domainEvents: Array<DomainEvent> = []
-const _messageHandler = async (message: DomainEvent): Promise<void>  => {
-  console.log('Domain Message: ', message);
-  domainEvents.push(message);
-}
 
 // Setup for Redis access
 const bulkTransactionEntityRepoOptions: IRedisBulkTransactionStateRepoOptions = {
