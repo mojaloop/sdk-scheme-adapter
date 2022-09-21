@@ -203,7 +203,7 @@ describe("Tests for PrepareSDKOutboundBulkResponseCmdEvt Command Event", () => {
     expect((await processHelper.bulkTransactionEntityRepo.getIndividualTransfer(
       bulkTransactionId,
       result?.individualTransferIds[result?.amountList?.indexOf('2')])).state
-    ).toBe(IndividualTransferInternalState.TRANSFERS_SUCCESS);
+    ).toBe(IndividualTransferInternalState.TRANSFERS_FAILED);
 
     // Check the individual transfer state whose quotes were in an errored bulk quote batch
     expect((await processHelper.bulkTransactionEntityRepo.getIndividualTransfer(
