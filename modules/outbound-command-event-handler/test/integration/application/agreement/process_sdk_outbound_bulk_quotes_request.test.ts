@@ -35,11 +35,9 @@ import {
   DomainEvent,
   IKafkaEventConsumerOptions,
   IKafkaEventProducerOptions,
-  IndividualTransferInternalState,
   IProcessPartyInfoCallbackCmdEvtData,
   IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData,
   IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData,
-  IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData,
   IProcessSDKOutboundBulkQuotesRequestCmdEvtData,
   IProcessSDKOutboundBulkRequestCmdEvtData,
   IRedisBulkTransactionStateRepoOptions,
@@ -48,7 +46,6 @@ import {
   ProcessPartyInfoCallbackCmdEvt,
   ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt,
   ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
-  ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt,
   ProcessSDKOutboundBulkQuotesRequestCmdEvt,
   ProcessSDKOutboundBulkRequestCmdEvt,
   RedisBulkTransactionStateRepo,
@@ -116,7 +113,7 @@ describe("Tests for ProcessSDKOutboundBulkQuotesRequest Event Handler", () => {
       And update the state of each batch to AGREEMENT_PROCESSING.", async () => {
     // Publish this message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
-    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+    const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
       bulkHomeTransactionID: "string",
       bulkTransactionId: bulkTransactionId,
       options: {
@@ -271,18 +268,6 @@ describe("Tests for ProcessSDKOutboundBulkQuotesRequest Event Handler", () => {
     await producer.sendCommandEvent(processPartyInfoCallbackMessageObjTwo);
     const processPartyInfoCallbackMessageObjThree = new ProcessPartyInfoCallbackCmdEvt(processPartyInfoCallbackMessageData3);
     await producer.sendCommandEvent(processPartyInfoCallbackMessageObjThree);
-    await new Promise(resolve => setTimeout(resolve, messageTimeout));
-
-    // Simulate the domain handler sending the command handler ProcessSDKOutboundBulkPartyInfoRequestComplete message
-    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData : IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData = {
-      bulkId: bulkTransactionId,
-      timestamp: Date.now(),
-      headers: []
-    }
-    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt(
-      processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData
-    );
-    await producer.sendCommandEvent(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj);
     await new Promise(resolve => setTimeout(resolve, messageTimeout));
 
     // Command event for sdk outbound accept bulk party info request

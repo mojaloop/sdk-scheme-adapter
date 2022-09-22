@@ -27,32 +27,28 @@
  import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
  import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
  import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
- 
+
  import {
    DomainEvent,
    IKafkaEventConsumerOptions,
    IKafkaEventProducerOptions,
-   IProcessPartyInfoCallbackCmdEvtData,
    IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData,
-   IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData,
    IProcessSDKOutboundBulkRequestCmdEvtData,
    IRedisBulkTransactionStateRepoOptions,
    KafkaCommandEventProducer,
    KafkaDomainEventConsumer,
-   ProcessPartyInfoCallbackCmdEvt,
    ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
-   ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt,
    ProcessSDKOutboundBulkRequestCmdEvt,
    RedisBulkTransactionStateRepo,
  } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
  import { randomUUID } from "crypto";
- 
+
  // Tests can timeout in a CI pipeline so giving it leeway
  jest.setTimeout(10000)
- 
+
  const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
  const messageTimeout = 2000;
- 
+
  // Setup for Kafka Producer
  const commandEventProducerOptions: IKafkaEventProducerOptions = {
    brokerList: 'localhost:9092',
@@ -60,7 +56,7 @@
    topic: 'topic-sdk-outbound-command-events'
  }
  const producer = new KafkaCommandEventProducer(commandEventProducerOptions, logger)
- 
+
  // Setup for Kafka Consumer
  const domainEventConsumerOptions: IKafkaEventConsumerOptions = {
    brokerList: 'localhost:9092',
@@ -74,33 +70,33 @@
    domainEvents.push(message);
  }
  const consumer = new KafkaDomainEventConsumer(_messageHandler.bind(this), domainEventConsumerOptions, logger)
- 
+
  // Setup for Redis access
  const bulkTransactionEntityRepoOptions: IRedisBulkTransactionStateRepoOptions = {
    connStr: 'redis://localhost:6379'
  }
  const bulkTransactionEntityRepo = new RedisBulkTransactionStateRepo(bulkTransactionEntityRepoOptions, logger);
- 
- 
+
+
  describe("Tests for discovery part in Outbound Command Event Handler", () => {
- 
+
    beforeEach(async () => {
      domainEvents = [];
    });
- 
+
    beforeAll(async () => {
      await producer.init();
      await consumer.init();
      await consumer.start();
      await bulkTransactionEntityRepo.init();
    });
- 
+
    afterAll(async () => {
      await producer.destroy();
      await consumer.destroy();
      await bulkTransactionEntityRepo.destroy();
    });
- 
+
    // TESTS FOR PARTY LOOKUP
    test("1. Given Party info does not already exist for none of the individual transfers. \
            And Party Lookup is not skipped \
@@ -111,7 +107,7 @@
 
     //Publish this message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
-    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+    const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
       bulkHomeTransactionID: "string",
       bulkTransactionId: bulkTransactionId,
       options: {
@@ -168,7 +164,7 @@
     }
     const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
     await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, messageTimeout));
 
     const bulkPartyInfoRequestCommandEventData: IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData = {
       bulkId: bulkTransactionId,
@@ -178,7 +174,7 @@
     const bulkPartyInfoRequestCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCmdEvt(bulkPartyInfoRequestCommandEventData);
     await producer.sendCommandEvent(bulkPartyInfoRequestCommandEventObj);
 
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    await new Promise(resolve => setTimeout(resolve, messageTimeout));
     // Check the state in Redis
     console.log('bulk id: ', bulkTransactionId);
     const bulkState = await bulkTransactionEntityRepo.load(bulkTransactionId);
@@ -209,7 +205,7 @@
 
     //Publish this message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
-    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+    const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
       bulkHomeTransactionID: "string",
       bulkTransactionId: bulkTransactionId,
       options: {
@@ -254,7 +250,7 @@
     }
     const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
     await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, messageTimeout));
 
     const bulkPartyInfoRequestCommandEventData: IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData = {
       bulkId: bulkTransactionId,

@@ -39,7 +39,6 @@ import {
   IProcessPartyInfoCallbackCmdEvtData,
   IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData,
   IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData,
-  IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData,
   IProcessSDKOutboundBulkRequestCmdEvtData,
   IRedisBulkTransactionStateRepoOptions,
   KafkaCommandEventProducer,
@@ -47,7 +46,6 @@ import {
   ProcessPartyInfoCallbackCmdEvt,
   ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt,
   ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
-  ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt,
   ProcessSDKOutboundBulkRequestCmdEvt,
   RedisBulkTransactionStateRepo,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
@@ -114,7 +112,7 @@ describe("Tests for ProcessSDKOutboundBulkAcceptPartyInfo Event Handler", () => 
         And outbound event SDKOutboundBulkAcceptPartyInfoProcessed should be published", async () => {
     // Publish this message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
-    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+    const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
         bulkHomeTransactionID: "string",
         bulkTransactionId: bulkTransactionId,
         options: {
@@ -235,18 +233,6 @@ describe("Tests for ProcessSDKOutboundBulkAcceptPartyInfo Event Handler", () => 
     await producer.sendCommandEvent(processPartyInfoCallbackMessageObjOne);
     const processPartyInfoCallbackMessageObjTwo = new ProcessPartyInfoCallbackCmdEvt(processPartyInfoCallbackMessageData2);
     await producer.sendCommandEvent(processPartyInfoCallbackMessageObjTwo);
-    await new Promise(resolve => setTimeout(resolve, messageTimeout));
-
-    // Simulate the domain handler sending the command handler ProcessSDKOutboundBulkPartyInfoRequestComplete message
-    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData : IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData = {
-      bulkId: bulkTransactionId,
-      timestamp: Date.now(),
-      headers: []
-    }
-    const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt(
-      processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData
-    );
-    await producer.sendCommandEvent(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj);
     await new Promise(resolve => setTimeout(resolve, messageTimeout));
 
     // Command event for sdk outbound bulk accept party info request

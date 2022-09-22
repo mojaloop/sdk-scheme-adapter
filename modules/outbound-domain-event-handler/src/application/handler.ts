@@ -52,7 +52,6 @@ import {
     handleSDKOutboundBulkAcceptPartyInfoReceived,
     handleSDKOutboundBulkAcceptPartyInfoProcessed,
     handleBulkQuotesCallbackReceived,
-    handlePartyInfoCallbackProcessed,
     handleSDKOutboundBulkAcceptQuoteReceived,
 } from './handlers';
 
@@ -159,14 +158,6 @@ export class OutboundEventHandler implements IRunHandler {
                 );
                 break;
             }
-            case PartyInfoCallbackProcessedDmEvt.name: {
-                await handlePartyInfoCallbackProcessed(
-                    message,
-                    this._domainEventHandlerOptions,
-                    this._logger,
-                );
-                break;
-            }
             case SDKOutboundBulkAcceptQuoteReceivedDmEvt.name: {
                 await handleSDKOutboundBulkAcceptQuoteReceived(
                     message,
@@ -181,5 +172,4 @@ export class OutboundEventHandler implements IRunHandler {
             }
         }
     }
-
 }
