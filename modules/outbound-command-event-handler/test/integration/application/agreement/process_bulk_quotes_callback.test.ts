@@ -58,6 +58,7 @@
    SDKOutboundBulkQuotesRequestProcessedDmEvt,
  } from "@mojaloop/sdk-scheme-adapter-private-shared-lib"
  import { randomUUID } from "crypto";
+import { Timer } from "../../../util/timer";
  
  // Tests can timeout in a CI pipeline so giving it leeway
  jest.setTimeout(30000)
@@ -133,7 +134,7 @@
 
       // Publish this message so that it is stored internally in redis
       const bulkTransactionId = randomUUID();
-      const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+      const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
         bulkHomeTransactionID: "string",
         bulkTransactionId: bulkTransactionId,
         options: {
@@ -213,7 +214,7 @@
       }
       const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
       await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
-      await new Promise(resolve => setTimeout(resolve, messageTimeout));
+      await Timer.wait(messageTimeout);
 
       const bulkPartyInfoRequestCommandEventData: IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData = {
         bulkId: bulkTransactionId,
@@ -224,7 +225,7 @@
         bulkPartyInfoRequestCommandEventData
       );
       await producer.sendCommandEvent(bulkPartyInfoRequestCommandEventObj);
-      await new Promise(resolve => setTimeout(resolve, messageTimeout));
+      await Timer.wait(messageTimeout);
 
       // Get the randomly generated transferIds for the callback
       const randomGeneratedTransferIds = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
@@ -320,7 +321,7 @@
       await producer.sendCommandEvent(processPartyInfoCallbackMessageObjThree);
       const processPartyInfoCallbackMessageObjFour = new ProcessPartyInfoCallbackCmdEvt(processPartyInfoCallbackMessageData4);
       await producer.sendCommandEvent(processPartyInfoCallbackMessageObjFour);
-      await new Promise(resolve => setTimeout(resolve, messageTimeout));
+      await Timer.wait(messageTimeout);
 
       // Command event for bulk accept party info
       const processSDKOutboundBulkAcceptPartyInfoCommandEventData : IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData = {
@@ -357,7 +358,7 @@
         processSDKOutboundBulkAcceptPartyInfoCommandEventData
       );
       await producer.sendCommandEvent(processSDKOutboundBulkAcceptPartyInfoCommandEventObj);
-      await new Promise(resolve => setTimeout(resolve, messageTimeout));
+      await Timer.wait(messageTimeout);
 
       // Simulate domain handler sending command event for bulk quotes request
       const processSDKOutboundBulkQuotesRequestCommandEventData : IProcessSDKOutboundBulkQuotesRequestCmdEvtData = {
@@ -369,7 +370,7 @@
         processSDKOutboundBulkQuotesRequestCommandEventData
       );
       await producer.sendCommandEvent(processSDKOutboundBulkQuotesRequestCommandEventObj);
-      await new Promise(resolve => setTimeout(resolve, messageTimeout));
+      await Timer.wait(messageTimeout);
 
       // Check that bulk batches have been created.
       // One should be for receiverfsp and another for differentfsp
@@ -447,7 +448,7 @@
         processBulkQuotesCallbackCommandEventDataReceiverFsp
       );
       await producer.sendCommandEvent(processBulkQuotesCallbackCommandEventObjReceiverFsp);
-      await new Promise(resolve => setTimeout(resolve, messageTimeout));
+      await Timer.wait(messageTimeout);
 
       const bulkQuoteIdDifferentFsp = randomUUID();
 
@@ -472,7 +473,7 @@
         processBulkQuotesCallbackCommandEventDataDifferentFsp
       );
       await producer.sendCommandEvent(processBulkQuotesCallbackCommandEventObjDifferentFsp);
-      await new Promise(resolve => setTimeout(resolve, messageTimeout));
+      await Timer.wait(messageTimeout);
 
       // ASSERT
 
@@ -549,7 +550,7 @@
          And domain event SDKOutboundBulkQuotesRequestProcessed should be published", async () => {
       // Publish this message so that it is stored internally in redis
       const bulkTransactionId = randomUUID();
-      const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+      const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
         bulkHomeTransactionID: "string",
         bulkTransactionId: bulkTransactionId,
         options: {
@@ -629,7 +630,7 @@
       }
       const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
       await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
-      await new Promise(resolve => setTimeout(resolve, messageTimeout));
+      await Timer.wait(messageTimeout);
   
       const bulkPartyInfoRequestCommandEventData: IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData = {
         bulkId: bulkTransactionId,
@@ -640,7 +641,7 @@
         bulkPartyInfoRequestCommandEventData
       );
       await producer.sendCommandEvent(bulkPartyInfoRequestCommandEventObj);
-      await new Promise(resolve => setTimeout(resolve, messageTimeout));
+      await Timer.wait(messageTimeout);
   
       // Get the randomly generated transferIds for the callback
       const randomGeneratedTransferIds = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
@@ -736,7 +737,7 @@
       await producer.sendCommandEvent(processPartyInfoCallbackMessageObjThree);
       const processPartyInfoCallbackMessageObjFour = new ProcessPartyInfoCallbackCmdEvt(processPartyInfoCallbackMessageData4);
       await producer.sendCommandEvent(processPartyInfoCallbackMessageObjFour);
-      await new Promise(resolve => setTimeout(resolve, messageTimeout));
+      await Timer.wait(messageTimeout);
   
       // Command event for bulk accept party info
       const processSDKOutboundBulkAcceptPartyInfoCommandEventData : IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData = {
@@ -773,7 +774,7 @@
         processSDKOutboundBulkAcceptPartyInfoCommandEventData
       );
       await producer.sendCommandEvent(processSDKOutboundBulkAcceptPartyInfoCommandEventObj);
-      await new Promise(resolve => setTimeout(resolve, messageTimeout));
+      await Timer.wait(messageTimeout);
   
       // Simulate domain handler sending command event for bulk quotes request
       const processSDKOutboundBulkQuotesRequestCommandEventData : IProcessSDKOutboundBulkQuotesRequestCmdEvtData = {
@@ -785,7 +786,7 @@
         processSDKOutboundBulkQuotesRequestCommandEventData
       );
       await producer.sendCommandEvent(processSDKOutboundBulkQuotesRequestCommandEventObj);
-      await new Promise(resolve => setTimeout(resolve, messageTimeout));
+      await Timer.wait(messageTimeout);
   
       // Check that bulk batches have been created.
       // One should be for receiverfsp and another for differentfsp
@@ -861,7 +862,7 @@
         processBulkQuotesCallbackCommandEventDataReceiverFsp
       );
       await producer.sendCommandEvent(processBulkQuotesCallbackCommandEventObjReceiverFsp);
-      await new Promise(resolve => setTimeout(resolve, messageTimeout));
+      await Timer.wait(messageTimeout);
   
       const bulkQuoteIdDifferentFsp = randomUUID();
   
@@ -886,7 +887,7 @@
         processBulkQuotesCallbackCommandEventDataDifferentFsp
       );
       await producer.sendCommandEvent(processBulkQuotesCallbackCommandEventObjDifferentFsp);
-      await new Promise(resolve => setTimeout(resolve, messageTimeout));
+      await Timer.wait(messageTimeout);
   
       // Check that the state of bulk batch for receiverfsp to be AGREEMENT_COMPLETED
       const postBulkBatchReceiverFsp = await bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, receiverFspBatch.id);

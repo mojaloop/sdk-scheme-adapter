@@ -9,7 +9,7 @@ export interface IProcessBulkTransfersCallbackCmdEvtData {
     content: {
         batchId: string;
         bulkTransferId: string;
-        bulkTransfersResult: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferResponse
+        bulkTransfersResult: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransferResponse
     },
     timestamp: number | null;
     headers: IMessageHeader[] | null;
@@ -48,7 +48,7 @@ export class ProcessBulkTransfersCallbackCmdEvt extends CommandEvent {
         return content.bulkTransferId;
     }
 
-    get bulkTransfersResult(): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferResponse {
+    get bulkTransfersResult(): SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransferResponse {
         const content = this.getContent() as IProcessBulkTransfersCallbackCmdEvtData['content'];
         return content.bulkTransfersResult;
     }

@@ -38,6 +38,7 @@
    IDomainEventData,
    BulkTransfersCallbackReceivedDmEvt,
    ProcessBulkTransfersCallbackCmdEvt,
+   IBulkTransfersCallbackReceivedDmEvtData,
  } from "@mojaloop/sdk-scheme-adapter-private-shared-lib"
  import { randomUUID } from "crypto";
  import { handleBulkTransfersCallbackReceived } from "../../../../src/application/handlers"
@@ -53,13 +54,12 @@ describe('handleBulkTransfersCallbackReceived', () => {
     }
   } as unknown as IDomainEventHandlerOptions
 
-  let sampleBulkTransfersCallbackReceivedMessageData: IDomainEventData;
-  let key: string;
+  let sampleBulkTransfersCallbackReceivedMessageData: IBulkTransfersCallbackReceivedDmEvtData;
+  let bulkId: string = randomUUID();
 
   beforeEach(async () => {
     sampleBulkTransfersCallbackReceivedMessageData = {
-      key: randomUUID(),
-      name: BulkTransfersCallbackReceivedDmEvt.name,
+      bulkId,
       content: {
         batchId: '61c35bae-77d0-4f7d-b894-be375b838ff6',
         bulkTransferId: '81c35bae-77d0-4f7d-b894-be375b838ff6',
@@ -69,15 +69,7 @@ describe('handleBulkTransfersCallbackReceived', () => {
           individualTransferResults: [
               {
                   transferId: 'individual-transfer-id',
-                  to: {
-                      partyIdInfo: {
-                          partyIdType: 'MSISDN',
-                          partyIdentifier: '1'
-                      },
-                  },
-                  amountType: 'SEND',
-                  currency: 'USD',
-                  amount: '1'
+                  fulfilment: 'shdsjhdjhsdjs'
               },
           ]
         }
@@ -89,13 +81,13 @@ describe('handleBulkTransfersCallbackReceived', () => {
 
 
   test('emits a ProcessBulkTransfersCallback message', async () => {
-    const sampleDomainEventDataObj = new DomainEvent(sampleBulkTransfersCallbackReceivedMessageData);
+    const sampleDomainEventDataObj = new BulkTransfersCallbackReceivedDmEvt(sampleBulkTransfersCallbackReceivedMessageData);
     handleBulkTransfersCallbackReceived(sampleDomainEventDataObj, domainEventHandlerOptions, logger)
     expect(domainEventHandlerOptions.commandProducer.sendCommandEvent)
       .toBeCalledWith(
         expect.objectContaining({
           _data: expect.objectContaining({
-            key,
+            key: bulkId,
             name: ProcessBulkTransfersCallbackCmdEvt.name,
             type: EventType.COMMAND_EVENT,
             content: sampleBulkTransfersCallbackReceivedMessageData.content
