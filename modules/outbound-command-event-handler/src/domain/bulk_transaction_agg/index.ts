@@ -194,7 +194,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
             .setIndividualTransfer(this._rootEntity.id, entity.id, entity.exportState());
     }
 
-    async getBulkTransfersTotalCount() {
+    async getBulkTransfersTotalCount(): Promise<number> {
         const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
         return repo.getBulkTransfersTotalCount(this._rootEntity.id);
     }
@@ -204,12 +204,12 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
             .setBulkTransfersTotalCount(this._rootEntity.id, totalCount);
     }
 
-    async getBulkTransfersSuccessCount() {
+    async getBulkTransfersSuccessCount(): Promise<number> {
         const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
         return repo.getBulkTransfersSuccessCount(this._rootEntity.id);
     }
 
-    async getBulkTransfersFailedCount() {
+    async getBulkTransfersFailedCount(): Promise<number> {
         const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
         return repo.getBulkTransfersFailedCount(this._rootEntity.id);
     }
@@ -234,7 +234,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         return repo.incrementBulkTransfersFailedCount(this._rootEntity.id, increment);
     }
 
-    async getBulkQuotesTotalCount() {
+    async getBulkQuotesTotalCount(): Promise<number> {
         const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
         return repo.getBulkQuotesTotalCount(this._rootEntity.id);
     }
@@ -244,7 +244,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
             .setBulkQuotesTotalCount(this._rootEntity.id, totalCount);
     }
 
-    async getBulkQuotesSuccessCount() {
+    async getBulkQuotesSuccessCount(): Promise<number> {
         const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
         return repo.getBulkQuotesSuccessCount(this._rootEntity.id);
     }
@@ -259,7 +259,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
             .incrementBulkQuotesSuccessCount(this._rootEntity.id);
     }
 
-    async getBulkQuotesFailedCount() {
+    async getBulkQuotesFailedCount(): Promise<number> {
         const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
         return repo.getBulkQuotesFailedCount(this._rootEntity.id);
     }
@@ -339,6 +339,17 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
     async generateBulkQuoteBatches(maxItemsPerBatch: number): Promise<{
         bulkQuotesTotalCount: number,
     }> {
+        // lets make sure we have not already generated batches
+        let getBulkQuotesTotalCountResult = 0;
+        try {
+            getBulkQuotesTotalCountResult = await this.getBulkQuotesTotalCount();
+        } catch (err) {
+            this._logger.warn(err);
+        }
+
+        if(getBulkQuotesTotalCountResult > 0) {
+            throw new Error(`Unable to ${this.constructor.name}.generateBulkQuoteBatches() as BulkQuotesTotalCount (${getBulkQuotesTotalCountResult}) > 0`);
+        }
         // Lets creates batch map array requests based per each DFSP and with maximum limit passed optionally filtered by individualTransfers that match the individualTransferInternalStateFilter
         const batchesPerFsp = await this._generateBatchMapArray(
             maxItemsPerBatch,
@@ -400,6 +411,17 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
     async generateBulkTransferBatches(): Promise<{
         bulkTransfersTotalCount: number,
     } | void> {
+        // lets make sure we have not already generated batches
+        let getBulkTransfersTotalCountResult = 0;
+        try {
+            getBulkTransfersTotalCountResult = await this.getBulkTransfersTotalCount();
+        } catch (err) {
+            this._logger.warn(err);
+        }
+
+        if(getBulkTransfersTotalCountResult > 0) {
+            throw new Error(`Unable to ${this.constructor.name}.generateBulkTransferBatches() as BulkTransfersTotalCount (${getBulkTransfersTotalCountResult}) > 0`);
+        }
         // Lets fetch the current BulkBatchId Array
         const batchesPerFspIdArray = await this.getAllBulkBatchIds();
 
