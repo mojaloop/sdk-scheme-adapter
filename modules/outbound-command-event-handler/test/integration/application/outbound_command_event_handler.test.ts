@@ -106,7 +106,7 @@ describe("Tests for Outbound Command Event Handler", () => {
           And Global state should be updated to RECEIVED.", async () => {
 
     const bulkTransactionId = randomUUID();
-    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+    const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
         bulkHomeTransactionID: "string",
         bulkTransactionId: bulkTransactionId,
         options: {
@@ -190,7 +190,7 @@ describe("Tests for Outbound Command Event Handler", () => {
 
     //Publish this message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
-    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+    const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
       bulkHomeTransactionID: "string",
       bulkTransactionId: bulkTransactionId,
       options: {
@@ -296,7 +296,7 @@ describe("Tests for Outbound Command Event Handler", () => {
 
     //Publish this message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
-    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+    const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
         bulkHomeTransactionID: "string",
         bulkTransactionId: bulkTransactionId,
         options: {
@@ -384,7 +384,7 @@ describe("Tests for Outbound Command Event Handler", () => {
 
     //Publish this message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
-    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+    const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
         bulkHomeTransactionID: "string",
         bulkTransactionId: bulkTransactionId,
         options: {
@@ -501,7 +501,7 @@ describe("Tests for Outbound Command Event Handler", () => {
 
     //Publish this message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
-    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+    const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
         bulkHomeTransactionID: "string",
         bulkTransactionId: bulkTransactionId,
         options: {
@@ -618,7 +618,7 @@ describe("Tests for Outbound Command Event Handler", () => {
 
     //Publish this message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
-    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+    const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
         bulkHomeTransactionID: "string",
         bulkTransactionId: bulkTransactionId,
         options: {
@@ -687,7 +687,7 @@ describe("Tests for Outbound Command Event Handler", () => {
 
     //Publish this message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
-    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+    const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
         bulkHomeTransactionID: "string",
         bulkTransactionId: bulkTransactionId,
         options: {
@@ -758,7 +758,7 @@ describe("Tests for Outbound Command Event Handler", () => {
               And Then global state should be same as before DISCOVERY_COMPLETED", async () => {
     //Publish this message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
-    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+    const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
         bulkHomeTransactionID: "string",
         bulkTransactionId: bulkTransactionId,
         options: {
@@ -831,7 +831,7 @@ describe("Tests for Outbound Command Event Handler", () => {
 
       //Publish initial message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
-    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+    const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
         bulkHomeTransactionID: "string",
         bulkTransactionId: bulkTransactionId,
         options: {

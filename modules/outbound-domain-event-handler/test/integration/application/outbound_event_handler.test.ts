@@ -308,7 +308,7 @@ describe('First domain event', () => {
         Then outbound event ProcessSDKOutboundBulkPartyInfoRequestComplete should be published \
         If party lookup on bulk transaction has finished", async () => {
     const bulkTransactionId = randomUUID();
-    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+    const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
         bulkHomeTransactionID: "string",
         bulkTransactionId: bulkTransactionId,
         options: {
@@ -382,7 +382,7 @@ describe('First domain event', () => {
        Then outbound event ProcessSDKOutboundBulkPartyInfoRequestComplete should not be published \
        If party lookup on bulk transaction has not finished", async () => {
         const bulkTransactionId = randomUUID();
-        const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+        const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
             bulkHomeTransactionID: "string",
             bulkTransactionId: bulkTransactionId,
             options: {

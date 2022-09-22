@@ -57,7 +57,7 @@ const bulkTransactionId = randomUUID();
 const homeTransactionId1 = randomUUID();
 
 
-const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
     bulkHomeTransactionID: "abc123",
     bulkTransactionId: bulkTransactionId,
     options: {

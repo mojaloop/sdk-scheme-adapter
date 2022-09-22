@@ -30,7 +30,7 @@ import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 import { randomUUID } from 'crypto';
 
 export interface IProcessSDKOutboundBulkRequestCmdEvtData {
-    bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest;
+    bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
@@ -51,15 +51,15 @@ export class ProcessSDKOutboundBulkRequestCmdEvt extends CommandEvent {
             throw new Error('Content is in unknown format');
         }
         const data: IProcessSDKOutboundBulkRequestCmdEvtData = {
-            bulkRequest: message.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest,
+            bulkRequest: message.getContent() as SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest,
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
         };
         return new ProcessSDKOutboundBulkRequestCmdEvt(data);
     }
 
-    getBulkRequest(): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest {
-        return this.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest;
+    getBulkRequest(): SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest {
+        return this.getContent() as SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest;
     }
 
 }
