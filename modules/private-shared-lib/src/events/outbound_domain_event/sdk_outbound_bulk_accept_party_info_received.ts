@@ -30,7 +30,7 @@ import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 export interface ISDKOutboundBulkAcceptPartyInfoReceivedDmEvtData {
     bulkId: string;
-    bulkTransactionContinuationAcceptParty: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptParty;
+    bulkTransactionContinuationAcceptParty: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionContinuationAcceptParty;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
@@ -51,15 +51,15 @@ export class SDKOutboundBulkAcceptPartyInfoReceivedDmEvt extends DomainEvent {
         // Prepare Data
         const data = {
             bulkId: message.getKey(),
-            bulkTransactionContinuationAcceptParty: message.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptParty,
+            bulkTransactionContinuationAcceptParty: message.getContent() as SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionContinuationAcceptParty,
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
         };
         return new SDKOutboundBulkAcceptPartyInfoReceivedDmEvt(data);
     }
 
-    getBulkTransactionContinuationAcceptParty(): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptParty {
-        return this.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptParty;
+    getBulkTransactionContinuationAcceptParty(): SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionContinuationAcceptParty {
+        return this.getContent() as SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionContinuationAcceptParty;
     }
 
 }

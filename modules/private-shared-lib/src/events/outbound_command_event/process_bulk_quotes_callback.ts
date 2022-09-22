@@ -33,7 +33,7 @@ export interface IProcessBulkQuotesCallbackCmdEvtData {
     content: {
         batchId: string;
         bulkQuoteId: string;
-        bulkQuotesResult: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkQuoteResponse;
+        bulkQuotesResult: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteResponse;
     };
     timestamp: number | null;
     headers: IMessageHeader[] | null;
@@ -73,7 +73,7 @@ export class ProcessBulkQuotesCallbackCmdEvt extends CommandEvent {
         return content.bulkQuoteId;
     }
 
-    get bulkQuotesResult(): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkQuoteResponse {
+    get bulkQuotesResult(): SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteResponse {
         const content = this.getContent() as IProcessBulkQuotesCallbackCmdEvtData['content'];
         return content.bulkQuotesResult;
     }
