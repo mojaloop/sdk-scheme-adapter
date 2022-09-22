@@ -51,7 +51,6 @@ import {
     handleSDKOutboundBulkAcceptPartyInfoReceived,
     handleSDKOutboundBulkAcceptPartyInfoProcessed,
     handleBulkQuotesCallbackReceived,
-    handlePartyInfoCallbackProcessed,
 } from './handlers';
 
 export interface IOutboundEventHandlerOptions {
@@ -132,10 +131,6 @@ export class OutboundEventHandler implements IRunHandler {
             }
             case BulkQuotesCallbackReceivedDmEvt.name: {
                 await handleBulkQuotesCallbackReceived(message, this._domainEventHandlerOptions, this._logger);
-                break;
-            }
-            case PartyInfoCallbackProcessedDmEvt.name: {
-                await handlePartyInfoCallbackProcessed(message, this._domainEventHandlerOptions, this._logger);
                 break;
             }
             default: {

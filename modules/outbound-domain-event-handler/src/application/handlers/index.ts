@@ -28,4 +28,3 @@ export * from './party-info-callback-received';
 export * from './sdk_outbound_bulk_accept_party_info_received';
 export * from './sdk_outbound_bulk_accept_party_info_processed';
 export * from './bulk-quotes-callback-received';
-export * from './party-info-callback-processed';

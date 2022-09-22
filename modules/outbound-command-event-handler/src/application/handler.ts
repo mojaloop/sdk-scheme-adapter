@@ -38,7 +38,6 @@ import {
     ProcessSDKOutboundBulkRequestCmdEvt,
     ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
     ProcessPartyInfoCallbackCmdEvt,
-    ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt,
     ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt,
     ProcessSDKOutboundBulkQuotesRequestCmdEvt,
     ProcessBulkQuotesCallbackCmdEvt,
@@ -123,14 +122,6 @@ export class OutboundEventHandler implements IRunHandler {
                 await BulkTransactionAgg.ProcessCommandEvent(
                     ProcessPartyInfoCallbackCmdEvt.CreateFromCommandEvent(message),
                     this._commandEventHandlerOptions, this._logger,
-                );
-                break;
-            }
-            case ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt.name: {
-                BulkTransactionAgg.ProcessCommandEvent(
-                    ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt.CreateFromCommandEvent(message),
-                    this._commandEventHandlerOptions,
-                    this._logger,
                 );
                 break;
             }

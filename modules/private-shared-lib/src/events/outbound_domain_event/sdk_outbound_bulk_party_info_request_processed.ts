@@ -24,37 +24,37 @@
 
 'use strict';
 
-import { CommandEvent } from '../command_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+import { DomainEvent } from '../domain_event';
 
-export interface IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData {
+export interface ISDKOutboundBulkPartyInfoRequestProcessedDmEvtData {
     bulkId: string;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
 
-export class ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt extends CommandEvent {
-    constructor(data: IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData) {
+export class SDKOutboundBulkPartyInfoRequestProcessedDmEvt extends DomainEvent {
+    constructor(data: ISDKOutboundBulkPartyInfoRequestProcessedDmEvtData) {
         super({
             key: data.bulkId,
             timestamp: data.timestamp,
             headers: data.headers,
             content: null,
-            name: ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt.name,
+            name: SDKOutboundBulkPartyInfoRequestProcessedDmEvt.name,
         });
     }
 
-    static CreateFromCommandEvent(
-        message: CommandEvent,
-    ): ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt {
+    static CreateFromDomainEvent(
+        message: DomainEvent,
+    ): SDKOutboundBulkPartyInfoRequestProcessedDmEvt {
         if((message.getKey() === null || typeof message.getKey() !== 'string')) {
             throw new Error('Bulk id is in unknown format');
         }
-        const data: IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData = {
+        const data: ISDKOutboundBulkPartyInfoRequestProcessedDmEvtData = {
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
             bulkId: message.getKey(),
         };
-        return new ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt(data);
+        return new SDKOutboundBulkPartyInfoRequestProcessedDmEvt(data);
     }
 }
