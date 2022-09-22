@@ -29,15 +29,15 @@ const {
     BC_CONFIG,
     KafkaDomainEventConsumer,
     KafkaDomainEventProducer,
+    BulkTransfersRequestedDmEvt,
+    PartyInfoRequestedDmEvt,
+    BulkQuotesRequestedDmEvt,
 } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
 const {
     handlePartyInfoRequestedDmEvt,
     handleBulkQuotesRequestedDmEvt,
+    handleBulkTransfersRequestedDmEvt,
 } = require('./handlers');
-const {
-    PartyInfoRequestedDmEvt,
-    BulkQuotesRequestedDmEvt,
-} = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
 
 class FSPIOPEventHandler {
     constructor({ config, logger, cache, wso2Auth }) {
@@ -92,6 +92,10 @@ class FSPIOPEventHandler {
             }
             case BulkQuotesRequestedDmEvt.name: {
                 await handleBulkQuotesRequestedDmEvt(message, this._domainEventHandlerOptions, this._logger);
+                break;
+            }
+            case BulkTransfersRequestedDmEvt.name: {
+                await handleBulkTransfersRequestedDmEvt(message, this._domainEventHandlerOptions, this._logger);
                 break;
             }
             default: {

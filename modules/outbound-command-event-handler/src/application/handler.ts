@@ -43,6 +43,9 @@ import {
     ProcessSDKOutboundBulkQuotesRequestCmdEvt,
     ProcessBulkQuotesCallbackCmdEvt,
     IBulkTransactionEntityRepo,
+    ProcessSDKOutboundBulkTransfersRequestCmdEvt,
+    ProcessSDKOutboundBulkAcceptQuoteCmdEvt,
+    ProcessBulkTransfersCallbackCmdEvt,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { ICommandEventHandlerOptions } from '@module-types';
 
@@ -71,7 +74,7 @@ export class OutboundEventHandler implements IRunHandler {
 
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     async start(appConfig: ICommandEventHandlerConfig, logger: ILogger): Promise<void> {
-        this._logger = logger;
+        this._logger = logger.createChild(this.constructor.name);
         this._logger.info('start');
 
         const consumerOptions: IKafkaEventConsumerOptions = appConfig.get('KAFKA.COMMAND_EVENT_CONSUMER');
@@ -101,7 +104,7 @@ export class OutboundEventHandler implements IRunHandler {
     }
 
     async _messageHandler(message: CommandEvent): Promise<void> {
-        this._logger.info(`${message.getName()}`);
+        this._logger.info(`OutboundHandler._messageHandler - Processing ${message.getName()}`);
         // TODO: Handle error validations here
         switch (message.getName()) {
             case ProcessSDKOutboundBulkRequestCmdEvt.name: {
@@ -158,8 +161,32 @@ export class OutboundEventHandler implements IRunHandler {
                 );
                 break;
             }
+            case ProcessSDKOutboundBulkTransfersRequestCmdEvt.name: {
+                BulkTransactionAgg.ProcessCommandEvent(
+                    ProcessSDKOutboundBulkTransfersRequestCmdEvt.CreateFromCommandEvent(message),
+                    this._commandEventHandlerOptions,
+                    this._logger,
+                );
+                break;
+            }
+            case ProcessSDKOutboundBulkAcceptQuoteCmdEvt.name: {
+                BulkTransactionAgg.ProcessCommandEvent(
+                    ProcessSDKOutboundBulkAcceptQuoteCmdEvt.CreateFromCommandEvent(message),
+                    this._commandEventHandlerOptions,
+                    this._logger,
+                );
+                break;
+            }
+            case ProcessBulkTransfersCallbackCmdEvt.name: {
+                BulkTransactionAgg.ProcessCommandEvent(
+                    ProcessBulkTransfersCallbackCmdEvt.CreateFromCommandEvent(message),
+                    this._commandEventHandlerOptions,
+                    this._logger,
+                );
+                break;
+            }
             default: {
-                this._logger.debug(`${message?.getName()}:${message?.getKey()} - Skipping unknown outbound domain event`);
+                this._logger.debug(`OutboundHandler._messageHandler - ${message?.getName()}:${message?.getKey()} - Skipping unknown outbound domain event`);
                 return;
             }
         }

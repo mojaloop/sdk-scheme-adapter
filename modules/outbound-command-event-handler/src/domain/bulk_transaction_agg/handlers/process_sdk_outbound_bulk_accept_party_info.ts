@@ -36,7 +36,7 @@ export async function handleProcessSDKOutboundBulkAcceptPartyInfoCmdEvt(
     logger: ILogger,
 ): Promise<void> {
     const processSDKOutboundBulkAcceptPartyInfoMessage = message as ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt;
-    // TODO: Add if confidtion here to check autoAcceptParty parameter and alternate flow
+    // TODO: Add if condition here to check autoAcceptParty parameter and alternate flow
     try {
         logger.info(`Got ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt for ID ${processSDKOutboundBulkAcceptPartyInfoMessage.getKey()}`);
 
@@ -52,6 +52,7 @@ export async function handleProcessSDKOutboundBulkAcceptPartyInfoCmdEvt(
         const bulkTx = bulkTransactionAgg.getBulkTransaction();
 
         const allIndividualTransfersFromMessage = 
+            // eslint-disable-next-line max-len
             processSDKOutboundBulkAcceptPartyInfoMessage.getBulkTransactionContinuationAcceptParty().individualTransfers;
         for await (const individualTransferFromMessage of allIndividualTransfersFromMessage) {
             let individualTransfer;

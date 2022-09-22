@@ -47,7 +47,7 @@ export class OutboundCommandEventHandlerAPIServer {
     constructor(options: IOutboundCommandEventHandlerAPIServerOptions, logger: ILogger) {
         this._options = options;
         this._port = options.port;
-        this._logger = logger;
+        this._logger = logger.createChild(this.constructor.name);
     }
 
     async startServer(): Promise<Application> {

@@ -43,7 +43,7 @@ outboundBulkTransaction_< bulkTransactionId >
   id: batchId
   state: Individual state
   - AGREEMENT_PROCESSING
-  - TRANSFER_PROCESSING
+  - TRANSFERS_PROCESSING
   bulkQuoteId: `<UUID>`
   bulkTransferId: `<UUID>` (Can be batchId)
 })

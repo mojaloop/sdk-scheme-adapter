@@ -19,6 +19,7 @@
  - Name Surname <name.surname@gatesfoundation.com>
  * Modusbox
  - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
+ - Miguel de Barros <miguel.debarros@modusbox.com>
  --------------
  ******/
 
@@ -27,41 +28,41 @@
 import { CommandEvent } from '../command_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
-import { randomUUID } from 'crypto';
 
-export interface IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData {
+export interface IProcessSDKOutboundBulkAcceptQuoteCmdEvtData {
     bulkId: string;
-    bulkTransactionContinuationAcceptParty: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptParty;
+    // eslint-disable-next-line max-len
+    bulkTransactionContinuationAcceptQuote: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptQuote;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
-
-export class ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt extends CommandEvent {
-    constructor(data: IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData) {
+export class ProcessSDKOutboundBulkAcceptQuoteCmdEvt extends CommandEvent {
+    constructor(data: IProcessSDKOutboundBulkAcceptQuoteCmdEvtData) {
         super({
             key: data.bulkId,
-            content: data.bulkTransactionContinuationAcceptParty,
             timestamp: data.timestamp,
             headers: data.headers,
-            name: ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt.name,
+            content: data.bulkTransactionContinuationAcceptQuote,
+            name: ProcessSDKOutboundBulkAcceptQuoteCmdEvt.name,
         });
     }
 
-    static CreateFromCommandEvent(message: CommandEvent): ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt {
-        if((message.getContent() === null || typeof message.getContent() !== 'object')) {
-            throw new Error('Content is in unknown format');
+    static CreateFromCommandEvent(message: CommandEvent): ProcessSDKOutboundBulkAcceptQuoteCmdEvt {
+        if((message.getKey() === null || typeof message.getKey() !== 'string')) {
+            throw new Error('Bulk id is in unknown format');
         }
-        const data: IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData = {
+        const data: IProcessSDKOutboundBulkAcceptQuoteCmdEvtData = {
             bulkId: message.getKey(),
-            bulkTransactionContinuationAcceptParty: message.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptParty,
+            // eslint-disable-next-line max-len
+            bulkTransactionContinuationAcceptQuote: message.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptQuote,
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
         };
-        return new ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt(data);
+        return new ProcessSDKOutboundBulkAcceptQuoteCmdEvt(data);
     }
 
-    getBulkTransactionContinuationAcceptParty(): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptParty {
-        return this.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptParty;
+    // eslint-disable-next-line max-len
+    getBulkTransactionContinuationAcceptQuote(): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptQuote {
+        return this.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptQuote;
     }
-
 }

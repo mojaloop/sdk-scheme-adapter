@@ -26,7 +26,6 @@
 
 import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 export type IBulkQuotesCallbackProcessedDmEvtData = {
     bulkId: string;
@@ -65,5 +64,4 @@ export class BulkQuotesCallbackProcessedDmEvt extends DomainEvent {
         const content = this.getContent() as IBulkQuotesCallbackProcessedDmEvtData['content'];
         return content.batchId;
     }
-
 }

@@ -25,4 +25,5 @@
 module.exports = {
     ...require('./bulk-quotes-requested'),
     ...require('./party-info-requested'),
+    ...require('./bulk-transfers-requested'),
 };
