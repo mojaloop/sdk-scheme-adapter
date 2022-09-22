@@ -18,7 +18,7 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Modusbox
- - Kevin Leyow <kevin.leyow@modusbox.com>
+ - Yevhen Kyriukha <yevhen.kyriukha@modusbox.com>
  --------------
  ******/
 
@@ -26,36 +26,44 @@
 
 import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { BulkTransactionState } from '@module-domain';
+import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
-export interface ISDKOutboundBulkResponsePreparedDmEvtData {
-    bulkResponse: BulkTransactionState;
+type BulkTransactionResponse = SDKSchemeAdapter.V2_0_0.Inbound.Types.bulkTransactionResponse;
+
+export type ISDKOutboundBulkResponsePreparedDmEvtData = {
+    bulkId: string;
+    bulkTransactionResponse: BulkTransactionResponse;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
-}
+};
+
 
 export class SDKOutboundBulkResponsePreparedDmEvt extends DomainEvent {
     constructor(data: ISDKOutboundBulkResponsePreparedDmEvtData) {
         super({
-            key: data.bulkResponse.bulkTransactionId,
-            content: data.bulkResponse,
+            key: data.bulkId,
             timestamp: data.timestamp,
             headers: data.headers,
+            content: data.bulkTransactionResponse,
             name: SDKOutboundBulkResponsePreparedDmEvt.name,
         });
     }
 
     static CreateFromDomainEvent(message: DomainEvent): SDKOutboundBulkResponsePreparedDmEvt {
-        // Prepare Data
-        const data = {
-            bulkResponse: message.getContent() as BulkTransactionState,
+        if((message.getKey() === null || typeof message.getKey() !== 'string')) {
+            throw new Error('Bulk id is in unknown format');
+        }
+        const data: ISDKOutboundBulkResponsePreparedDmEvtData = {
+            bulkId: message.getKey(),
+            bulkTransactionResponse: message.getContent() as BulkTransactionResponse,
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
         };
         return new SDKOutboundBulkResponsePreparedDmEvt(data);
     }
 
-    getBulkResponse(): BulkTransactionState {
-        return this.getContent() as BulkTransactionState;
+    get request(): BulkTransactionResponse {
+        return this.getContent() as BulkTransactionResponse;
     }
+
 }

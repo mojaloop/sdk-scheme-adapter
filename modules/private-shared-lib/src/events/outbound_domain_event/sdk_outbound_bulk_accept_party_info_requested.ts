@@ -29,14 +29,14 @@ import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-li
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 export type CoreConnectorBulkAcceptPartyInfoRequestIndividualTransferResult = {
-    homeTransactionId: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionIndividualTransfer['homeTransactionId'];
+    homeTransactionId: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionIndividualTransfer['homeTransactionId'];
     transactionId: string;
-    to: SDKSchemeAdapter.Outbound.V2_0_0.Types.Party;
+    to: SDKSchemeAdapter.V2_0_0.Outbound.Types.Party;
 };
 
 export type CoreConnectorBulkAcceptPartyInfoRequest = {
-    bulkHomeTransactionID: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest['bulkHomeTransactionID'];
-    bulkTransactionId: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest['bulkTransactionId'];
+    bulkHomeTransactionID: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest['bulkHomeTransactionID'];
+    bulkTransactionId: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest['bulkTransactionId'];
     individualTransferResults: CoreConnectorBulkAcceptPartyInfoRequestIndividualTransferResult[];
 };
 

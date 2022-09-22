@@ -33,7 +33,9 @@ import { SDKSchemeAdapter } from "@mojaloop/api-snippets";
 import {
   BulkBatchInternalState,
   BulkBatchState,
+  BulkQuotesCallbackProcessedDmEvt,
   BulkTransactionInternalState,
+  BulkTransfersRequestedDmEvt,
   DomainEvent,
   IBulkTransactionEntityRepo,
   ICommandEventProducer,
@@ -59,6 +61,9 @@ import {
   ProcessSDKOutboundBulkQuotesRequestCmdEvt,
   ProcessSDKOutboundBulkRequestCmdEvt,
   RedisBulkTransactionStateRepo,
+  SDKOutboundBulkAcceptQuoteProcessedDmEvt,
+  SDKOutboundBulkQuotesRequestProcessedDmEvt,
+  SDKOutboundTransferState,
 } from "@mojaloop/sdk-scheme-adapter-private-shared-lib"
 import { randomUUID } from "crypto";
 import { ProcessHelper, StopAfterEventEnum } from "../../../util/generator";
@@ -77,14 +82,12 @@ const commandEventProducerOptions: IKafkaEventProducerOptions = {
     clientId: 'test-integration_client_id',
     topic: 'topic-sdk-outbound-command-events'
 }
-// const producer = new KafkaCommandEventProducer(commandEventProducerOptions, logger)
 
 const domainEventProducerOptions: IKafkaEventProducerOptions = {
   brokerList: KAFKA_HOST,
   clientId: 'test-integration_client_id',
   topic: 'topic-sdk-outbound-domain-events'
 }
-
 
 // Setup for Kafka Consumer
 const domainEventConsumerOptions: IKafkaEventConsumerOptions = {
@@ -93,25 +96,17 @@ const domainEventConsumerOptions: IKafkaEventConsumerOptions = {
   topics: ['topic-sdk-outbound-domain-events'],
   groupId: "domain_events_consumer_client_id"
 }
-var domainEvents: Array<DomainEvent> = []
-const _messageHandler = async (message: DomainEvent): Promise<void>  => {
-  console.log('Domain Message: ', message);
-  domainEvents.push(message);
-}
-// const consumer = new KafkaDomainEventConsumer(_messageHandler.bind(this), domainEventConsumerOptions, logger)
 
 // Setup for Redis access
 const bulkTransactionEntityRepoOptions: IRedisBulkTransactionStateRepoOptions = {
   connStr: 'redis://localhost:6379'
 }
-// const bulkTransactionEntityRepo = new RedisBulkTransactionStateRepo(bulkTransactionEntityRepoOptions, logger);
 
 let processHelper: ProcessHelper;
 
 describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
 
   beforeEach(async () => {
-    // domainEvents = [];
     processHelper.resetDomainEvents();
   });
 
@@ -126,17 +121,10 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
     );
 
     await processHelper.init();
-    // await producer.init();
-    // await consumer.init();
-    // await consumer.start();
-    // await bulkTransactionEntityRepo.init();
   });
 
   afterAll(async () => {
     await processHelper.destroy();
-    // await producer.destroy();
-    // await consumer.destroy();
-    // await bulkTransactionEntityRepo.destroy();
   });
 
   test("Given the BulkTransaction with Options { \
@@ -148,102 +136,26 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
         } \
         And callback for quote batch is successful \
         And the callback has a combination of success and failed responses for individual quotes \
-        When Inbound command event ProcessBulkQuotesCallback is received \
-        Then the global Bulk Transaction State should be updated to TRANSFERS_PROCESSING \
-        And the individual batch state should be equal to either TRANSFERS_PROCESSING or TRANSFERS_FAILED, \
+        When Inbound command event ProcessSDKOutboundBulkAcceptQuote is received \
+        Then the global Bulk Transaction State should be updated to AGREEMENT_ACCEPTANCE_COMPLETED \
+        And the individual batch state should be equal to either AGREEMENT_COMPLETED or AGREEMENT_FAILED, \
         And for each individual transfers in the batch, the state AGREEMENT_ACCEPTED or AGREEMENT_REJECTED depending on the acceptQuotes = TRUE/FALSE, \
-        And for each individual transfers in an AGREEMENT_FAILED state should not be altered, \
         And the individual quote data in redis should be updated with the response \
         And domain event BulkQuotesCallbackProcessed should be published \
         And domain event SDKOutboundBulkQuotesRequestProcessed should be published \
         And domain event SDKOutboundBulkAutoAcceptQuoteProcessedDmEvt should be published \
         And domain event BulkTransfersRequestedDmEvt should be published \
-        ",
-    async () => {
-
-    // SETUP
-    // Publish this message so that it is stored internally in redis
-    const bulkTransactionId = randomUUID();
-    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
-      bulkHomeTransactionID: "string",
-      bulkTransactionId: bulkTransactionId,
-      options: {
-        onlyValidateParty: true,
-        autoAcceptParty: {
-          enabled: false
-        },
-        autoAcceptQuote: {
-          enabled: false,
-        },
-        skipPartyLookup: false,
-        synchronous: false,
-        bulkExpiration: "2016-05-24T08:38:08.699-04:00"
-      },
-      from: {
-        partyIdInfo: {
-          partyIdType: "MSISDN",
-          partyIdentifier: "16135551212",
-          fspId: "string",
-        },
-      },
-      individualTransfers: [
-        {
-          homeTransactionId: randomUUID(),
-          to: {
-            partyIdInfo: {
-              partyIdType: "MSISDN",
-              partyIdentifier: "1"
-            },
-          },
-          amountType: "SEND",
-          currency: "USD",
-          amount: "1",
-        },
-        {
-          homeTransactionId: randomUUID(),
-          to: {
-            partyIdInfo: {
-              partyIdType: "MSISDN",
-              partyIdentifier: "2"
-            },
-          },
-          amountType: "SEND",
-          currency: "USD",
-          amount: "2",
-        },
-        {
-          homeTransactionId: randomUUID(),
-          to: {
-            partyIdInfo: {
-              partyIdType: "MSISDN",
-              partyIdentifier: "3"
-            },
-          },
-          amountType: "SEND",
-          currency: "USD",
-          amount: "3",
-        },
-        {
-          homeTransactionId: randomUUID(),
-          to: {
-            partyIdInfo: {
-              partyIdType: "MSISDN",
-              partyIdentifier: "4"
-            },
-          },
-          amountType: "SEND",
-          currency: "USD",
-          amount: "4",
-        }
-      ]
-    }
-
-    // SETUP / ACT
-
-    const result = await processHelper.generate(bulkRequest, {
-      StopAfterEvent: StopAfterEventEnum.ProcessSDKOutboundBulkTransfersRequestCmdEvt,
+  ",
+  async () => {
+    // SETUP // ACT
+    const result = await processHelper.generate({
+      StopAfterEvent: StopAfterEventEnum.ProcessSDKOutboundBulkAcceptQuoteCmdEvt,
       messageTimeout,
     })
+
+    // ASSERT
+
+    const bulkTransactionId = processHelper.bulkTransactionRequest.bulkTransactionId;
 
     let bulkBatchOne: BulkBatchState | undefined;
     let bulkBatchTwo: BulkBatchState | undefined;
@@ -274,19 +186,19 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
       throw Error('Shouldnt be here'); // TODO: Handle this
     }
 
-    // Check that the state of bulk batch for receiverfsp to be TRANSFERS_PROCESSING
+    // Check that the state of bulk batch for receiverfsp to be AGREEMENT_COMPLETED
     const postBulkBatchReceiverFsp = await processHelper.bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, receiverFspBatch.id);
-    expect(postBulkBatchReceiverFsp.state).toBe(BulkBatchInternalState.TRANSFERS_PROCESSING);
+    expect(postBulkBatchReceiverFsp.state).toBe(BulkBatchInternalState.AGREEMENT_COMPLETED);
 
     // Check that bulkQuoteResponse state has been updated to COMPLETED
-    expect(postBulkBatchReceiverFsp.bulkQuotesResponse!.currentState).toEqual("COMPLETED")
+    expect(postBulkBatchReceiverFsp.bulkQuotesResponse!.currentState).toEqual(SDKOutboundTransferState.COMPLETED)
 
     // Check that the state of bulk batch for differentfsp to be AGREEMENT_FAILED
     const postBulkBatchDifferentFsp = await processHelper.bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, differentFspBatch.id);
-    expect(postBulkBatchDifferentFsp.state).toBe(BulkBatchInternalState.TRANSFERS_FAILED);
+    expect(postBulkBatchDifferentFsp.state).toBe(BulkBatchInternalState.AGREEMENT_FAILED);
 
-    // Check that bulkQuoteResponse state has been updated to COMPLETED
-    expect(postBulkBatchDifferentFsp.bulkQuotesResponse!.currentState).toEqual("ERROR_OCCURRED")
+    // Check that bulkQuoteResponse state has been updated to ERROR_OCCURRED
+    expect(postBulkBatchDifferentFsp.bulkQuotesResponse!.currentState).toEqual(SDKOutboundTransferState.ERROR_OCCURRED)
 
     if (result?.individualTransferIds === undefined) {
       throw Error('Shouldnt be here'); // TODO: Handle this
@@ -299,45 +211,41 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
     // Check the individual transfer state whose quote was successful in a successful bulk quote batch
     expect((await processHelper.bulkTransactionEntityRepo.getIndividualTransfer(
       bulkTransactionId,
-      result?.individualTransferIds[result?.amountList?.indexOf('1')])).state)
-    .toBe(IndividualTransferInternalState.AGREEMENT_ACCEPTED);
+      result?.individualTransferIds[result?.amountList?.indexOf('1')])).state
+    ).toBe(IndividualTransferInternalState.AGREEMENT_ACCEPTED);
 
     // Check the individual transfer state whose quote was errored in a successful bulk quote batch
     expect((await processHelper.bulkTransactionEntityRepo.getIndividualTransfer(
       bulkTransactionId,
-      result?.individualTransferIds[result?.amountList?.indexOf('2')])).state)
-    .toBe(IndividualTransferInternalState.AGREEMENT_FAILED);
+      result?.individualTransferIds[result?.amountList?.indexOf('2')])).state
+    ).toBe(IndividualTransferInternalState.AGREEMENT_FAILED);
 
     // Check the individual transfer state whose quotes were in an errored bulk quote batch
     expect((await processHelper.bulkTransactionEntityRepo.getIndividualTransfer(
       bulkTransactionId,
-      result?.individualTransferIds[result?.amountList?.indexOf('3')])).state)
-    .toBe(IndividualTransferInternalState.AGREEMENT_FAILED);
+      result?.individualTransferIds[result?.amountList?.indexOf('3')])).state
+    ).toBe(IndividualTransferInternalState.AGREEMENT_FAILED);
+
     expect((await processHelper.bulkTransactionEntityRepo.getIndividualTransfer(
       bulkTransactionId,
-      result?.individualTransferIds[result?.amountList?.indexOf('4')])).state)
-    .toBe(IndividualTransferInternalState.AGREEMENT_FAILED);
+      result?.individualTransferIds[result?.amountList?.indexOf('4')])).state
+    ).toBe(IndividualTransferInternalState.AGREEMENT_FAILED);
 
     // Now that all the bulk batches have reached a final state check the global state
-    // Check that the global state of bulk to be TRANSFERS_PROCESSING
+    // Check that the global state of bulk to be AGREEMENT_ACCEPTANCE_COMPLETED
     const bulkStateAgreementCompleted = await processHelper.bulkTransactionEntityRepo.load(bulkTransactionId);
-    expect(bulkStateAgreementCompleted.state).toBe(BulkTransactionInternalState.TRANSFERS_PROCESSING);
+    expect(bulkStateAgreementCompleted.state).toBe(BulkTransactionInternalState.AGREEMENT_ACCEPTANCE_COMPLETED);
 
     // Check that command handler published BulkQuotesCallbackProcessed message
-    const hasBulkQuotesCallbackProcessed = (processHelper.domainEvents.find((e) => e.getName() === 'BulkQuotesCallbackProcessedDmEvt'));
+    const hasBulkQuotesCallbackProcessed = (processHelper.domainEvents.find((e) => e.getName() === BulkQuotesCallbackProcessedDmEvt.name));
     expect(hasBulkQuotesCallbackProcessed).toBeTruthy();
 
     // Check that command handler published SDKOutboundBulkQuotesRequestProcessed message
-    const hasSDKOutboundBulkQuotesRequestProcessed = (processHelper.domainEvents.find((e) => e.getName() === 'SDKOutboundBulkQuotesRequestProcessedDmEvt'));
+    const hasSDKOutboundBulkQuotesRequestProcessed = (processHelper.domainEvents.find((e) => e.getName() === SDKOutboundBulkQuotesRequestProcessedDmEvt.name));
     expect(hasSDKOutboundBulkQuotesRequestProcessed).toBeTruthy();
 
     // Check that command handler published SDKOutboundBulkAutoAcceptQuoteProcessed message
-    const hasSDKOutboundBulkAcceptQuoteProcessedDmEvt = (processHelper.domainEvents.find((e) => e.getName() === 'SDKOutboundBulkAcceptQuoteProcessedDmEvt'));
+    const hasSDKOutboundBulkAcceptQuoteProcessedDmEvt = (processHelper.domainEvents.find((e) => e.getName() === SDKOutboundBulkAcceptQuoteProcessedDmEvt.name));
     expect(hasSDKOutboundBulkAcceptQuoteProcessedDmEvt).toBeTruthy();
-
-    // Check that command handler published hasBulkTransfersRequested message
-    const hasBulkTransfersRequested = (processHelper.domainEvents.find((e) => e.getName() === 'BulkTransfersRequestedDmEvt'));
-    expect(hasBulkTransfersRequested).toBeTruthy();
   });
-
 });

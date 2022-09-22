@@ -22,7 +22,7 @@
  --------------
  ******/
 
-const { SDKOutboundBulkAcceptQuoteRequestedDmEvt, SDKOutboundBulkResponseSentDmEvt } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
+const { SDKOutboundBulkResponsePreparedDmEvt, SDKOutboundBulkResponseSentDmEvt } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
 const { BulkTransactionState } = require('../types');
 
 module.exports.handleSDKOutboundBulkResponsePreparedDmEvt = async (
@@ -30,7 +30,7 @@ module.exports.handleSDKOutboundBulkResponsePreparedDmEvt = async (
     options,
     logger,
 ) => {
-    const event = SDKOutboundBulkAcceptQuoteRequestedDmEvt.CreateFromDomainEvent(message);
+    const event = SDKOutboundBulkResponsePreparedDmEvt.CreateFromDomainEvent(message);
 
     try {
         await options.backendRequests.putBulkTransactions(event.getKey(), {
@@ -43,7 +43,7 @@ module.exports.handleSDKOutboundBulkResponsePreparedDmEvt = async (
             timestamp: Date.now(),
             headers: [],
         });
-        await options.domainProducer.sendDomainEvent(sdkOutboundBulkResponseSentDmEvt);
+        await options.producer.sendDomainEvent(sdkOutboundBulkResponseSentDmEvt);
     } catch (err) {
         logger.push({ err }).log('Error in handleSDKOutboundBulkResponsePreparedDmEvt');
     }

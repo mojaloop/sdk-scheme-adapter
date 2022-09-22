@@ -31,14 +31,14 @@ import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 // TODO: Current dfspInboundAPI is outdated and its better to add the core connector API to the API snippets library as single source of truth.
 // For now we are defining these types here.
 export type CoreConnectorBulkAcceptQuoteRequestIndividualTransferResult = {
-    homeTransactionId: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionIndividualTransfer['homeTransactionId'];
+    homeTransactionId: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionIndividualTransfer['homeTransactionId'];
     transactionId: string;
-    quoteResponse: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualQuoteResult;
+    quoteResponse: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualQuoteResult;
 };
 
 export type CoreConnectorBulkAcceptQuoteRequest = {
-    bulkHomeTransactionID: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest['bulkHomeTransactionID'];
-    bulkTransactionId: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest['bulkTransactionId'];
+    bulkHomeTransactionID: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest['bulkHomeTransactionID'];
+    bulkTransactionId: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest['bulkTransactionId'];
     individualTransferResults: CoreConnectorBulkAcceptQuoteRequestIndividualTransferResult[];
 };
 
