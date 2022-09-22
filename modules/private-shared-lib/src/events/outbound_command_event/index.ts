@@ -33,5 +33,4 @@ export * from './process_bulk_quotes_callback';
 export * from './process_sdk_outbound_bulk_transfers_request';
 export * from './process_bulk_transfers_callback';
 export * from './prepare_sdk_outbound_bulk_response';
-export * from './prepare_sdk_outbound_bulk_response_sent';
 export * from './process_sdk_outbound_bulk_response_sent';

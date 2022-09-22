@@ -58,6 +58,7 @@ export async function handlePrepareSDKOutboundBulkResponseCmdEvt(
             const individualTransferRequest = individualTransfer.request;
             const individualTransferResponse = individualTransfer.transferResponse;
 
+            // TODO: Investigate how many individual transfers this message can handle.
             const individualTransferResult: SDKSchemeAdapter.V2_0_0.Inbound.Types.bulkTransactionIndividualTransferResult = {
                 transferId: individualTransferResponse?.transferId,
                 homeTransactionId: individualTransferRequest.homeTransactionId,
