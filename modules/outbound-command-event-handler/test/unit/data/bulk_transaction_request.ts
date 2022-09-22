@@ -27,7 +27,7 @@
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 import { randomUUID } from "crypto";
 
-export const BULK_REQUEST: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+export const BULK_REQUEST: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
     bulkHomeTransactionID: "string",
     bulkTransactionId: randomUUID(),
     options: {

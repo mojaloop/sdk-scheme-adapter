@@ -73,6 +73,9 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt
                         homeTransactionId: individualTransfer.request.homeTransactionId,
                         transactionId: individualTransfer.id,
                         to: individualTransfer.partyResponse?.party,
+                        lastError: individualTransfer.partyResponse?.errorInformation && {
+                            mojaloopError: individualTransfer.partyResponse?.errorInformation,
+                        },
                     });
                 }
             }
