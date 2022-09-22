@@ -27,10 +27,10 @@
     "snapshot": "standard-version --no-verify --skip.changelog --prerelease snapshot --releaseCommitMessageFormat 'chore(snapshot): {{currentTag}}'"
   },
   "dependencies": {
-    "@mojaloop/api-snippets": "^15.0.1",
+    "@mojaloop/api-snippets": "^16.0.0",
     "@mojaloop/logging-bc-public-types-lib": "^0.1.11",
-    "@mojaloop/platform-shared-lib-messaging-types-lib": "^0.0.3",
-    "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "^0.0.9",
+    "@mojaloop/platform-shared-lib-messaging-types-lib": "^0.1.1",
+    "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "^0.1.1",
     "ajv": "^8.11.0",
     "redis": "^4.3.1",
     "uuid": "^9.0.0"
