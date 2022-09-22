@@ -1,0 +1,11 @@
+{
+  "inputValues": {
+    "PAYER_SDK_BACKEND_URL": "http://payer-sdk-api-svc:4001",
+    "amount": "100",
+    "currency": "USD",
+    "payeeIdType": "MSISDN",
+    "payeeIdentifier": "48500002222",
+    "payerIdType": "MSISDN",
+    "payerIdentifier": "123456789"
+  }
+}

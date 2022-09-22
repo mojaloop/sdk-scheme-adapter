@@ -27,7 +27,6 @@
 
 import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 import { IPartyResult } from '../../types';
 
 export interface IPartyInfoCallbackReceivedDmEvtData {
@@ -75,4 +74,24 @@ export class PartyInfoCallbackReceivedDmEvt extends DomainEvent {
         };
         return new PartyInfoCallbackReceivedDmEvt(data);
     }
+
+    // TODO: Add validation of events using the sample code below
+    // private static validateContent (content: IPartyInfoCallbackReceivedDmEvtData['content']): void {
+    //   if(!content.hasOwnProperty('transferId')) {
+    //     throw(new Error('.transferId is not defined'))
+    //   }
+    //   if(!content.hasOwnProperty('partyResult')) {
+    //     throw(new Error('.partyResult is not defined'))
+    //   }
+    //   if( content.partyResult.currentState === 'COMPLETED' ) {
+    //       if (content.partyResult.hasOwnProperty('party')) {
+    //         const partySchema = SDKSchemeAdapter.V2_0_0.Outbound.Schemas.Party;
+    //         const validate = ajv.compile(partySchema);
+    //         const validationResult = validate(content.partyResult.party);
+    //         if(!validationResult) {
+    //             throw new SchemaValidationError(validate.errors || []);
+    //         }
+    //     }
+    //   }
+    // }
 }

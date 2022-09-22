@@ -44,7 +44,7 @@ const ajv = new Ajv({
 export enum BulkBatchInternalState {
     CREATED = 'CREATED',
     AGREEMENT_PROCESSING = 'AGREEMENT_PROCESSING',
-    AGREEMENT_SUCCESS = 'AGREEMENT_SUCCESS',
+    AGREEMENT_COMPLETED = 'AGREEMENT_COMPLETED',
     AGREEMENT_FAILED = 'AGREEMENT_FAILED',
     TRANSFER_PROCESSING = 'TRANSFER_PROCESSING',
 }
@@ -93,8 +93,12 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
         return this._state.bulkTransfersRequest;
     }
 
-    get bulkTransfersResponse(): SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteResponse | undefined {
+    get bulkTransfersResponse(): SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransferResponse | undefined {
         return this._state.bulkTransfersResponse;
+    }
+
+    get quoteIdReferenceIdMap():{ [quoteId: string]: string } {
+        return this._state.quoteIdReferenceIdMap;
     }
 
     private static _convertPartyToFrom(party: SDKSchemeAdapter.V2_0_0.Outbound.Types.Party): SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteRequest['from'] {
@@ -159,7 +163,7 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
         referenceId: string,
     ) {
         this._state.bulkTransfersRequest.individualTransfers.push(individualTransfer);
-        this._state.transferIdReferenceIdMap[individualTransfer.transferId] = referenceId;   
+        this._state.transferIdReferenceIdMap[individualTransfer.transferId] = referenceId;
     }
 
     getReferenceIdForQuoteId(quoteId: string) : string {
@@ -182,7 +186,7 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
         this._state.bulkQuotesResponse = response;
     }
 
-    
+
     validateBulkQuotesRequest() {
         BulkBatchEntity._validateBulkQuotesRequest(this._state.bulkQuotesRequest);
     }

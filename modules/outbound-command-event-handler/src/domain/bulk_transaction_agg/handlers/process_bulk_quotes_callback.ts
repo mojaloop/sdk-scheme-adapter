@@ -38,6 +38,8 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
     const processBulkQuotesCallbackMessage = message as ProcessBulkQuotesCallbackCmdEvt;
     try {
         logger.info(`Got ProcessBulkQuotesCallbackCmdEvt: id=${processBulkQuotesCallbackMessage.getKey()}`);
+        let successCountAfterIncrement;
+        let failedCountAfterIncrement;
 
         // Create aggregate
         const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRepo(
@@ -50,30 +52,45 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
             processBulkQuotesCallbackMessage.batchId,
         );
         const bulkQuotesResult = processBulkQuotesCallbackMessage.bulkQuotesResult;
-        // TODO: There is no currentState in the bulkQuotesResult specification, but its there in the response. Need to discuss on this.
-        // if(bulkQuotesResult.currentState && bulkQuotesResult.currentState === 'COMPLETED') {
-        if(bulkQuotesResult.individualQuoteResults.length > 0) {
-            bulkBatch.setState(BulkBatchInternalState.AGREEMENT_SUCCESS);
-            bulkTransactionAgg.incrementBulkQuotesSuccessCount();
+
+        // If individual quote result contains `lastError` the individual transfer state should be AGREEMENT_FAILED.
+        // bulkQuotesResult.currentState === 'ERROR_OCCURRED' necessitates erroring out all individual transfers in that bulk batch.
+        if(bulkQuotesResult.currentState &&
+           bulkQuotesResult.currentState === 'COMPLETED') {
+            bulkBatch.setState(BulkBatchInternalState.AGREEMENT_COMPLETED);
+            successCountAfterIncrement = await bulkTransactionAgg.incrementBulkQuotesSuccessCount();
+
+            // Iterate through items in batch and update the individual states
+            for await (const quoteResult of bulkQuotesResult.individualQuoteResults) {
+                if(quoteResult.quoteId && !quoteResult.lastError) {
+                    const individualTransferId = bulkBatch.getReferenceIdForQuoteId(quoteResult.quoteId);
+                    const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
+                    individualTransfer.setTransferState(IndividualTransferInternalState.AGREEMENT_SUCCESS);
+                    individualTransfer.setQuoteResponse(quoteResult);
+                    await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
+                } else {
+                    const individualTransferId = bulkBatch.getReferenceIdForQuoteId(quoteResult.quoteId);
+                    const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
+                    individualTransfer.setTransferState(IndividualTransferInternalState.AGREEMENT_FAILED);
+                    individualTransfer.setQuoteResponse(quoteResult);
+                    await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
+                }
+            }
+        // If the bulk quote is in any other state, update the bulk batch and all individual transfers
+        // to AGREEMENT_FAILED.
         } else {
             bulkBatch.setState(BulkBatchInternalState.AGREEMENT_FAILED);
-            bulkTransactionAgg.incrementBulkQuotesFailedCount();
-        }
-        bulkBatch.setBulkQuotesResponse(bulkQuotesResult);
-        await bulkTransactionAgg.setBulkBatchById(bulkBatch.id, bulkBatch);
-        
+            failedCountAfterIncrement = await bulkTransactionAgg.incrementBulkQuotesFailedCount();
 
-        // Iterate through items in batch and update the individual states
-        for await (const quoteResult of bulkQuotesResult.individualQuoteResults) {
-            // TODO: quoteId should be required field in the quoteResponse. But it is optional now, so if it is empty we are ignoring the result for now
-            if(quoteResult.quoteId) {
-                const individualTransferId = bulkBatch.getReferenceIdForQuoteId(quoteResult.quoteId);
+            const individualTransferIds = Object.values(bulkBatch.quoteIdReferenceIdMap);
+            for await (const individualTransferId of individualTransferIds) {
                 const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
-                individualTransfer.setTransferState(IndividualTransferInternalState.AGREEMENT_SUCCESS);
-                individualTransfer.setQuoteResponse(quoteResult);
+                individualTransfer.setTransferState(IndividualTransferInternalState.AGREEMENT_FAILED);
                 await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
             }
         }
+        bulkBatch.setBulkQuotesResponse(bulkQuotesResult);
+        await bulkTransactionAgg.setBulkBatchById(bulkBatch.id, bulkBatch);
 
         const bulkQuotesCallbackProcessedDmEvt = new BulkQuotesCallbackProcessedDmEvt({
             bulkId: bulkTransactionAgg.bulkId,
@@ -88,12 +105,12 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
         // Progressing to the next step
         // Check the status of the remaining items in the bulk
         const bulkQuotesTotalCount = await bulkTransactionAgg.getBulkQuotesTotalCount();
-        const bulkQuotesSuccessCount = await bulkTransactionAgg.getBulkQuotesSuccessCount();
-        const bulkQuotesFailedCount = await bulkTransactionAgg.getBulkQuotesFailedCount();
+        const bulkQuotesSuccessCount = successCountAfterIncrement || await bulkTransactionAgg.getBulkQuotesSuccessCount();
+        const bulkQuotesFailedCount = failedCountAfterIncrement || await bulkTransactionAgg.getBulkQuotesFailedCount();
         if(bulkQuotesTotalCount === (bulkQuotesSuccessCount + bulkQuotesFailedCount)) {
             // Update global state "AGREEMENT_COMPLETED"
             await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.AGREEMENT_COMPLETED);
-    
+
             // Send the domain message SDKOutboundBulkQuotesRequestProcessed
             const sdkOutboundBulkQuotesRequestProcessedDmEvt = new SDKOutboundBulkQuotesRequestProcessedDmEvt({
                 bulkId: bulkTransactionAgg.bulkId,

@@ -93,7 +93,7 @@ module.exports = {
         enabled: env.get('ENABLE_BACKEND_EVENT_HANDLER').default('true').asBool(),
         domainEventConsumer: {
             brokerList: env.get('BACKEND_EVENT_CONSUMER_BROKER_LIST').default('localhost:9092').asString(),
-            groupId: env.get('BACKEND_EVENT_CONSUMER_GROUP_ID').default('domain_events_consumer_group').asString(),
+            groupId: env.get('BACKEND_EVENT_CONSUMER_GROUP_ID').default('domain_events_consumer_api_svc_backend_group').asString(),
             clientId: env.get('BACKEND_EVENT_CONSUMER_CLIENT_ID').default('backend_consumer_client_id').asString(),
             topics: env.get('BACKEND_EVENT_CONSUMER_TOPICS').default('topic-sdk-outbound-domain-events').asArray(),
         },
@@ -107,7 +107,7 @@ module.exports = {
         enabled: env.get('ENABLE_FSPIOP_EVENT_HANDLER').default('true').asBool(),
         domainEventConsumer: {
             brokerList: env.get('FSPIOP_EVENT_CONSUMER_BROKER_LIST').default('localhost:9092').asString(),
-            groupId: env.get('FSPIOP_EVENT_CONSUMER_GROUP_ID').default('domain_events_consumer_group').asString(),
+            groupId: env.get('FSPIOP_EVENT_CONSUMER_GROUP_ID').default('domain_events_consumer_api_svc_fspiop_group').asString(),
             clientId: env.get('FSPIOP_EVENT_CONSUMER_CLIENT_ID').default('fspiop_consumer_client_id').asString(),
             topics: env.get('FSPIOP_EVENT_CONSUMER_TOPICS').default('topic-sdk-outbound-domain-events').asArray(),
         },

@@ -150,3 +150,23 @@ services:
       - kafka
     profiles:
       - debug
+
+  init-kafka:
+    networks:
+      - mojaloop-net
+    image: docker.io/bitnami/kafka:3.2
+    depends_on:
+      - kafka
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      "
+      # blocks until kafka is reachable
+      kafka-topics.sh --bootstrap-server kafka:9093 --list
+
+      echo -e 'Creating kafka topics'
+      kafka-topics.sh --bootstrap-server kafka:9093 --create --if-not-exists --topic topic-sdk-outbound-command-events --replication-factor 1 --partitions 1
+      kafka-topics.sh --bootstrap-server kafka:9093 --create --if-not-exists --topic topic-sdk-outbound-domain-events --replication-factor 1 --partitions 1
+
+      echo -e 'Successfully created the following topics:'
+      kafka-topics.sh --bootstrap-server kafka:9093 --list
+      "

@@ -39,3 +39,4 @@ export * from './sdk_outbound_bulk_accept_quote_requested';
 export * from './sdk_outbound_bulk_accept_quote_received';
 export * from './sdk_outbound_bulk_response_sent';
 export * from './sdk_outbound_bulk_response_prepared';
+export * from './sdk_outbound_bulk_party_info_request_processed';

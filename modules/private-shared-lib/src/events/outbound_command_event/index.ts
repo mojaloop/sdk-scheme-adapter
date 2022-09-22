@@ -24,7 +24,6 @@
 
 export * from './process_sdk_outbound_bulk_request';
 export * from './process_sdk_outbound_bulk_party_info_request';
-export * from './process_sdk_outbound_bulk_party_info_request_complete';
 export * from './process_party_info_callback';
 export * from './process_sdk_outbound_bulk_accept_party_info';
 export * from './process_sdk_outbound_bulk_quotes_request';
