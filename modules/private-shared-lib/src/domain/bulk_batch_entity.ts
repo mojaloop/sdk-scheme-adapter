@@ -58,7 +58,7 @@ export interface BulkBatchState extends BaseEntityState {
     bulkQuotesRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteRequest;
     bulkQuotesResponse?: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteResponse;
     bulkTransfersRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransferRequest;
-    bulkTransfersResponse?: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteResponse;
+    bulkTransfersResponse?: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransferResponse;
     quoteIdReferenceIdMap: { [quoteId: string]: string }; // Key = individual quoteId from bulkQuotesRequest, Value = transactionId representing an individual transfer from the bulkTransaction
     transferIdReferenceIdMap: { [transactionId: string]: string }; // Key = individual transferId from bulkTransferRequest, Value = transactionId representing an individual transfer from the bulkTransaction
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
