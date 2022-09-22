@@ -120,6 +120,9 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
                             homeTransactionId: individualTransferData.request.homeTransactionId,
                             transactionId: individualTransferData.id,
                             to: individualTransferData.partyResponse?.party,
+                            lastError: individualTransfer.partyResponse?.errorInformation && {
+                                mojaloopError: individualTransfer.partyResponse?.errorInformation,
+                            },
                         });
                     }
                 }

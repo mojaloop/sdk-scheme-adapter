@@ -112,7 +112,7 @@ describe("Tests for discovery part in Outbound Command Event Handler", () => {
     // SETUP
     // Publish this message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
-    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+    const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
       bulkHomeTransactionID: "string",
       bulkTransactionId: bulkTransactionId,
       options: {
@@ -259,7 +259,7 @@ describe("Tests for discovery part in Outbound Command Event Handler", () => {
     // SETUP
     // Publish this message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
-    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+    const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
       bulkHomeTransactionID: "string",
       bulkTransactionId: bulkTransactionId,
       options: {
@@ -393,7 +393,7 @@ describe("Tests for discovery part in Outbound Command Event Handler", () => {
 
   //   //Publish this message so that it is stored internally in redis
   //   const bulkTransactionId = randomUUID();
-  //   const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+  //   const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
   //       bulkHomeTransactionID: "string",
   //       bulkTransactionId: bulkTransactionId,
   //       options: {

@@ -2,6 +2,7 @@ const { BackendEventHandler } = require('../../src/BackendEventHandler');
 const { BackendRequests } = require('../../src/lib/model/lib/requests');
 const { Logger } = require('@mojaloop/sdk-standard-components');
 const config = require('./data/defaultConfig.json');
+const bulkTransactionResponse = require('./lib/model/data/bulkTransactionResponse.json');
 const {
     SDKOutboundBulkAcceptPartyInfoRequestedDmEvt,
     SDKOutboundBulkAcceptQuoteRequestedDmEvt,
@@ -90,41 +91,31 @@ describe('BackendEventHandler', () => {
         await backendEventHandler.stop();
     });
 
-    // TODO: remove ".skip" when SDKOutboundBulkResponsePreparedDmEvt event type is implemented
-    test.skip('handle SDKOutboundBulkResponsePreparedDmEvt event', async () => {
+    test('handle SDKOutboundBulkResponsePreparedDmEvt event', async () => {
         const backendEventHandler = new BackendEventHandler({
             config,
             logger,
         });
         await backendEventHandler.start();
-        const bulkAcceptQuoteRequest = {
-            bulkHomeTransactionID: 'home-tx-id',
-            individualTransfers: [
-                {
-                    homeTransactionId: 'home-tx-id-1',
-                    transactionId: 'b51ec534-ee48-4575-b6a9-ead2955b8069',
-                },
-            ]
-        };
         const bulkId = 'bulk-tx-test';
         const event = new SDKOutboundBulkResponsePreparedDmEvt({
             bulkId,
             headers: [],
             timestamp: Date.now(),
-            bulkAcceptQuoteRequest,
+            bulkTransactionResponse,
         });
 
         const handler = KafkaDomainEventConsumer.mock.ctor.mock.calls[0][0];
         await handler(event);
 
         expect(putBulkTransactions).toBeCalledWith(bulkId, {
-            ...bulkAcceptQuoteRequest,
+            ...bulkTransactionResponse,
             currentState: 'COMPLETED',
         });
 
         const sent = KafkaDomainEventProducer.mock.sendDomainEvent.mock.calls[0][0];
         expect(sent._data.name).toEqual('SDKOutboundBulkResponseSentDmEvt');
-        expect(sent._data.content).toContain({ bulkTransactionId: bulkId });
+        expect(sent._data.key).toEqual(bulkId);
 
         await backendEventHandler.stop();
     });
