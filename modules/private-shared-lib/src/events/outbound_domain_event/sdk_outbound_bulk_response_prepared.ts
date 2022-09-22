@@ -62,10 +62,6 @@ export class SDKOutboundBulkResponsePreparedDmEvt extends DomainEvent {
         return new SDKOutboundBulkResponsePreparedDmEvt(data);
     }
 
-    get batchId(): string {
-        return this.request.bulkTransactionId;
-    }
-
     get request(): BulkTransactionResponse {
         return this.getContent() as BulkTransactionResponse;
     }
