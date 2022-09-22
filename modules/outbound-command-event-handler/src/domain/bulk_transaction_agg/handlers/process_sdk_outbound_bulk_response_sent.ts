@@ -4,21 +4,21 @@ import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import {
     BulkTransactionInternalState,
     CommandEvent,
-    PrepareSDKOutboundBulkResponseSentCmdEvt,
+    ProcessSDKOutboundBulkResponseSentCmdEvt,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
 
-export async function handlePrepareSDKOutboundBulkResponseSentCmdEvt(
+export async function handleProcessSDKOutboundBulkResponseSentCmdEvt(
     message: CommandEvent,
     options: ICommandEventHandlerOptions,
     logger: ILogger,
 ): Promise<void> {
-    const prepareSDKOutboundBulkResponseSent = message as PrepareSDKOutboundBulkResponseSentCmdEvt;
+    const processSDKOutboundBulkResponseSent = message as ProcessSDKOutboundBulkResponseSentCmdEvt;
     try {
         // Create aggregate
         const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRepo(
-            prepareSDKOutboundBulkResponseSent.getKey(),
+            processSDKOutboundBulkResponseSent.getKey(),
             options.bulkTransactionEntityRepo,
             logger,
         );
