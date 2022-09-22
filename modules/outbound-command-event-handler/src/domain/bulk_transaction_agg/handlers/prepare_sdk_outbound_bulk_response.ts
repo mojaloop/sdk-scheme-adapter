@@ -33,6 +33,7 @@ import {
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
+import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 export async function handlePrepareSDKOutboundBulkResponseCmdEvt(
     message: CommandEvent,
@@ -49,9 +50,35 @@ export async function handlePrepareSDKOutboundBulkResponseCmdEvt(
         );
         logger.info(`Created BulkTransactionAggregate ${bulkTransactionAgg}`);
 
-        const bulkResponse = bulkTransactionAgg.getBulkTransaction();
+        const bulkTransaction = bulkTransactionAgg.getBulkTransaction();
+        const allIndividualTransferIds = await bulkTransactionAgg.getAllIndividualTransferIds();
+        const individualTransferResults = [];
+        for await (const individualTransferId of allIndividualTransferIds) {
+            const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
+            const individualTransferRequest = individualTransfer.request;
+            const individualTransferResponse = individualTransfer.transferResponse;
+
+            const individualTransferResult: SDKSchemeAdapter.V2_0_0.Inbound.Types.bulkTransactionIndividualTransferResult = {
+                transferId: individualTransferResponse?.transferId,
+                homeTransactionId: individualTransferRequest.homeTransactionId,
+                transactionId: individualTransfer.transactionId!,
+                to: individualTransferRequest.to,
+                amountType: individualTransferRequest.amountType,
+                amount: individualTransferRequest.amount,
+                currency: individualTransferRequest.currency,
+            };
+            individualTransferResults.push(individualTransferResult);
+        }
+        const bulkTransactionResponse: SDKSchemeAdapter.V2_0_0.Inbound.Types.bulkTransactionResponse = {
+            bulkHomeTransactionID: bulkTransaction.bulkHomeTransactionID,
+            bulkTransactionId: bulkTransaction.id,
+            currentState: bulkTransaction.state == BulkTransactionInternalState.TRANSFERS_COMPLETED ? 'COMPLETED' : 'ERROR_OCCURRED',
+            options: bulkTransaction.options,
+            individualTransferResults: individualTransferResults,
+        };
         const msg = new SDKOutboundBulkResponsePreparedDmEvt({
-            bulkResponse,
+            bulkId: bulkTransaction.id,
+            bulkTransactionResponse,
             timestamp: Date.now(),
             headers: [],
         });
