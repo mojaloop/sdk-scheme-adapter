@@ -144,8 +144,9 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
                 extensions: bulkTransactionEntity.extensions,
             },
             bulkTransfersRequest: {
-                homeTransactionId: bulkTransactionEntity.bulkHomeTransactionID,
                 bulkTransferId,
+                bulkQuoteId,
+                homeTransactionId: bulkTransactionEntity.bulkHomeTransactionID,
                 from: BulkBatchEntity._convertPartyToFrom(bulkTransactionEntity.from),
                 individualTransfers: [],
                 extensions: bulkTransactionEntity.extensions,
