@@ -24,7 +24,9 @@
 
 const { PartyInfoRequestedDmEvt } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
 const { PartiesModel } = require('../../lib/model');
+const { SDKStateEnum } = require('../../lib/model/common');
 const { PartyInfoCallbackReceivedDmEvt } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
+const { Errors } = require('@mojaloop/sdk-standard-components');
 
 module.exports.handlePartyInfoRequestedDmEvt = async (
     message,
@@ -70,5 +72,22 @@ module.exports.handlePartyInfoRequestedDmEvt = async (
         await options.producer.sendDomainEvent(partyInfoCallbackReceivedDmEvt);
     } catch (err) {
         logger.push({ err }).log('Error in handlePartyInfoRequestedDmEvt');
+        const { code, message } = Errors.MojaloopApiErrorCodes.SERVER_TIMED_OUT;
+        const partyInfoCallbackReceivedDmEvt = new PartyInfoCallbackReceivedDmEvt({
+            bulkId: event.getKey(),
+            content: {
+                transferId: event.getTransferId(),
+                partyResult: {
+                    currentState: SDKStateEnum.ERROR_OCCURRED,
+                    errorInformation: {
+                        errorCode: code,
+                        errorDescription: message
+                    }
+                },
+            },
+            timestamp: Date.now(),
+            headers: [],
+        });
+        await options.producer.sendDomainEvent(partyInfoCallbackReceivedDmEvt);
     }
 };

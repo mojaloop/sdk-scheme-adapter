@@ -24,7 +24,6 @@
 
 import * as ProcessSDKOutboundBulkRequestHandler from './process_sdk_outbound_bulk_request';
 import * as ProcessSDKOutboundBulkPartyInfoRequestHandler from './process_sdk_outbound_bulk_party_info_request';
-import * as ProcessSDKOutboundBulkPartyInfoRequestCompleteHandler from './process_sdk_outbound_bulk_party_info_request_complete';
 import * as ProcessPartyInfoCallbackHandler from './process_party_info_callback';
 import * as ProcessSDKOutboundBulkAcceptPartyInfoHandler from './process_sdk_outbound_bulk_accept_party_info';
 import * as ProcessBulkQuotesCallbackHandler from './process_bulk_quotes_callback';
@@ -40,7 +39,6 @@ import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 export default  {
     ...ProcessSDKOutboundBulkRequestHandler,
     ...ProcessSDKOutboundBulkPartyInfoRequestHandler,
-    ...ProcessSDKOutboundBulkPartyInfoRequestCompleteHandler,
     ...ProcessPartyInfoCallbackHandler,
     ...ProcessSDKOutboundBulkAcceptPartyInfoHandler,
     ...ProcessBulkQuotesCallbackHandler,
