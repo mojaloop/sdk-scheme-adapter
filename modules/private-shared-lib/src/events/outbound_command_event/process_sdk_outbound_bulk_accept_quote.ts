@@ -32,7 +32,7 @@ import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 export interface IProcessSDKOutboundBulkAcceptQuoteCmdEvtData {
     bulkId: string;
     // eslint-disable-next-line max-len
-    bulkTransactionContinuationAcceptQuote: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptQuote;
+    bulkTransactionContinuationAcceptQuote: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionContinuationAcceptQuote;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
@@ -54,7 +54,7 @@ export class ProcessSDKOutboundBulkAcceptQuoteCmdEvt extends CommandEvent {
         const data: IProcessSDKOutboundBulkAcceptQuoteCmdEvtData = {
             bulkId: message.getKey(),
             // eslint-disable-next-line max-len
-            bulkTransactionContinuationAcceptQuote: message.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptQuote,
+            bulkTransactionContinuationAcceptQuote: message.getContent() as SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionContinuationAcceptQuote,
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
         };
@@ -62,7 +62,7 @@ export class ProcessSDKOutboundBulkAcceptQuoteCmdEvt extends CommandEvent {
     }
 
     // eslint-disable-next-line max-len
-    getBulkTransactionContinuationAcceptQuote(): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptQuote {
-        return this.getContent() as SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionContinuationAcceptQuote;
+    getBulkTransactionContinuationAcceptQuote(): SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionContinuationAcceptQuote {
+        return this.getContent() as SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionContinuationAcceptQuote;
     }
 }

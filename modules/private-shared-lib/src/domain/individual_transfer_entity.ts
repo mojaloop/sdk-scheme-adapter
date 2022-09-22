@@ -55,16 +55,16 @@ export enum IndividualTransferInternalState {
 
 export interface IndividualTransferState extends BaseEntityState {
     id: string;
-    request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionIndividualTransfer;
+    request: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionIndividualTransfer;
     state: IndividualTransferInternalState;
     batchId?: string;
     partyRequest?: PartyInfoRequest;
     partyResponse?: IPartyResult
     acceptParty?: boolean;
     acceptQuote?: boolean;
-    quoteResponse?: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualQuoteResult;
-    transferResponse?: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransferResult;
-    lastError?: SDKSchemeAdapter.Outbound.V2_0_0.Types.transferError;
+    quoteResponse?: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualQuoteResult;
+    transferResponse?: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualTransferResult;
+    lastError?: SDKSchemeAdapter.V2_0_0.Outbound.Types.transferError;
 }
 
 export class IndividualTransferEntity extends BaseEntity<IndividualTransferState> {
@@ -75,7 +75,7 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         return this._state.id;
     }
 
-    get request(): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionIndividualTransfer {
+    get request(): SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionIndividualTransfer {
         return this._state.request;
     }
 
@@ -83,17 +83,17 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         return this._state.partyResponse;
     }
 
-    get quoteResponse(): SDKSchemeAdapter.Outbound.V2_0_0.Types.individualQuoteResult | undefined {
+    get quoteResponse(): SDKSchemeAdapter.V2_0_0.Outbound.Types.individualQuoteResult | undefined {
         return this._state.quoteResponse;
     }
 
-    get transferResponse(): SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransferResult | undefined {
+    get transferResponse(): SDKSchemeAdapter.V2_0_0.Outbound.Types.individualTransferResult | undefined {
         return this._state.transferResponse;
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     static CreateFromRequest(
-        request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionIndividualTransfer,
+        request: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionIndividualTransfer,
     ): IndividualTransferEntity {
     // IndividualTransferEntity._validateRequest(request)
         const initialState: IndividualTransferState = {
@@ -107,7 +107,7 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         return new IndividualTransferEntity(initialState);
     }
 
-    get payee(): SDKSchemeAdapter.Outbound.V2_0_0.Types.Party {
+    get payee(): SDKSchemeAdapter.V2_0_0.Outbound.Types.Party {
         return this._state.request.to;
     }
 
@@ -127,11 +127,11 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         this._state.partyResponse = response;
     }
 
-    setQuoteResponse(response: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualQuoteResult) {
+    setQuoteResponse(response: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualQuoteResult) {
         this._state.quoteResponse = response;
     }
 
-    setTransferResponse(response: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransferResult) {
+    setTransferResponse(response: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualTransferResult) {
         this._state.transferResponse = response;
     }
 
@@ -158,8 +158,8 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         super(initialState);
     }
 
-    private static _validateRequest(request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionIndividualTransfer): void {
-        const requestSchema = SDKSchemeAdapter.Outbound.V2_0_0.Schemas.bulkTransactionIndividualTransfer;
+    private static _validateRequest(request: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionIndividualTransfer): void {
+        const requestSchema = SDKSchemeAdapter.V2_0_0.Outbound.Schemas.bulkTransactionIndividualTransfer;
         const validate = ajv.compile(requestSchema);
         const validationResult = validate(request);
         if(!validationResult) {

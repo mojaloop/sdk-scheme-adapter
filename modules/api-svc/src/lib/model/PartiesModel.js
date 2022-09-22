@@ -65,12 +65,18 @@ function argsValidation({ type, id, subId }) {
  * @returns {object} - reformatted message
  */
 function reformatMessage(message) {
-    return {
-        party: {
-            body: { ...message.body.party },
-            headers: { ...message.headers }
-        }
-    };
+    if (message.body.errorInformation) {
+        return {
+            errorInformation: { ...message.body.errorInformation }
+        };
+    } else {
+        return {
+            party: {
+                body: { ...message.body.party },
+                headers: { ...message.headers }
+            }
+        };
+    }
 }
 
 // generate model
