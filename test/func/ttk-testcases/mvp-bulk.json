@@ -39,7 +39,7 @@
               },
               "skipPartyLookup": false,
               "synchronous": false,
-              "bulkExpiration": "2016-05-24T08:38:08.699-04:00"
+              "bulkExpiration": "{$requestVariables.bulkTimeout}"
             },
             "from": {
               "partyIdInfo": {
@@ -121,6 +121,7 @@
           "scripts": {
             "preRequest": {
               "exec": [
+                "requestVariables.bulkTimeout = (new Date(Date.now()+120000)).toISOString()",
                 "await inboundEvent.addListener('acceptPartyCallback', 'put', '/bulkTransactions/{$request.body.bulkTransactionId}')"
               ]
             },
@@ -799,7 +800,7 @@
     },
     {
       "id": 4,
-      "name": "4. When the receiver fsp responds after the timeout elapses, Then the client should receive an timed-out as error message.",
+      "name": "4. When the receiver fsp responds after the timeout elapses, Then the payer fsp should receive an timed-out as error message.",
       "fileInfo": {
         "path": "mvp-bulk.json"
       },
