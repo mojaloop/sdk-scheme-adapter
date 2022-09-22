@@ -32,7 +32,7 @@ export type IBulkTransfersRequestedDmEvtData = {
     bulkId: string;
     content: {
         batchId: string;
-        request: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferRequest;
+        request: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransferRequest;
     };
     timestamp: number | null;
     headers: IMessageHeader[] | null;
@@ -67,7 +67,7 @@ export class BulkTransfersRequestedDmEvt extends DomainEvent {
         return content.batchId;
     }
 
-    get request(): SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransferRequest {
+    get request(): SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransferRequest {
         const content = this.getContent() as IBulkTransfersRequestedDmEvtData['content'];
         return content.request;
     }

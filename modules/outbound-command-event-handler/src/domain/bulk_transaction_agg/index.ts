@@ -366,7 +366,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                     const party = individualTransfer.partyResponse?.party;
                     if(party) {
                         // Generate Quote request
-                        const individualBulkQuoteRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualQuote = {
+                        const individualBulkQuoteRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualQuote = {
                             quoteId: randomUUID(),
                             to: {
                                 idType: party.partyIdInfo.partyIdType,
@@ -440,7 +440,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                 const party = individualTransfer.partyResponse?.party;
                 if(party) {
                     // Generate Transfers request
-                    const individualBulkTransferRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.individualTransfer = {
+                    const individualBulkTransferRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualTransfer = {
                         transferId: individualTransfer.id,
                         to: {
                             idType: party.partyIdInfo.partyIdType,
