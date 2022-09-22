@@ -46,6 +46,7 @@
    RedisBulkTransactionStateRepo,
  } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
  import { randomUUID } from "crypto";
+import { Timer } from "../../../util/timer";
  
  // Tests can timeout in a CI pipeline so giving it leeway
  jest.setTimeout(10000)
@@ -107,7 +108,7 @@
 
     //Publish this message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
-    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+    const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
       bulkHomeTransactionID: "string",
       bulkTransactionId: bulkTransactionId,
       options: {
@@ -151,7 +152,7 @@
     }
     const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
     await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await Timer.wait(messageTimeout);
 
     // Command event for bulk party info request completed
     const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData: IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData = {
@@ -161,7 +162,7 @@
     }
     const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData);
     await producer.sendCommandEvent(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await Timer.wait(messageTimeout);
     // Check the state in Redis
     console.log('bulk id: ', bulkTransactionId);
 
@@ -192,7 +193,7 @@
     }
     const processPartyInfoCallbackMessageObj = new ProcessPartyInfoCallbackCmdEvt(processPartyInfoCallbackMessageData);
     await producer.sendCommandEvent(processPartyInfoCallbackMessageObj);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await Timer.wait(messageTimeout);
 
     //Check that the state of individual transfers in bulk to be RECEIVED
     const individualTransfers = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
@@ -213,7 +214,7 @@
 
     //Publish this message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
-    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+    const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
       bulkHomeTransactionID: "string",
       bulkTransactionId: bulkTransactionId,
       options: {
@@ -257,7 +258,7 @@
     }
     const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
     await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await Timer.wait(messageTimeout);
 
     // Command event for bulk party info request completed
     const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData: IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData = {
@@ -267,7 +268,7 @@
     }
     const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData);
     await producer.sendCommandEvent(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await Timer.wait(messageTimeout);
 
     //Check that the global state of individual transfers in bulk to be RECEIVED
     const bulkState = await bulkTransactionEntityRepo.load(bulkTransactionId);
@@ -284,7 +285,7 @@
                And Then global state should be same as before DISCOVERY_COMPLETED", async () => {
     //Publish this message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
-    const bulkRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+    const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
       bulkHomeTransactionID: "string",
       bulkTransactionId: bulkTransactionId,
       options: {
@@ -328,7 +329,7 @@
     }
     const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
     await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await Timer.wait(messageTimeout);
 
     // Command event for bulk party info request completed
     const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData: IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData = {
@@ -338,7 +339,7 @@
     }
     const processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj = new ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventData);
     await producer.sendCommandEvent(processSDKOutboundBulkPartyInfoRequestCompleteCommandEventObj);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await Timer.wait(messageTimeout);
 
     //Check that the global state of individual transfers in bulk to be RECEIVED
     const bulkState = await bulkTransactionEntityRepo.load(bulkTransactionId);

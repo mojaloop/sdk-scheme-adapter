@@ -85,7 +85,7 @@ const bulkTransactionId = randomUUID();
 const homeTransactionId = randomUUID();
 
 // Initial BulkTransactionRequest
-const bulkTransactionRequest: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkTransactionRequest = {
+const bulkTransactionRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
     bulkHomeTransactionID: homeTransactionId,
     bulkTransactionId: bulkTransactionId,
     options: {
@@ -190,7 +190,7 @@ describe('processSDKOutboundBulkTransfersRequestCmdEvt', () => {
     const individualTransferId = bulkBatch.getReferenceIdForQuoteId(bulkBatch.bulkQuotesRequest.individualQuotes[0].quoteId);
 
     // Lets create a bulkQuoteResult
-    const bulkQuoteResponse: SDKSchemeAdapter.Outbound.V2_0_0.Types.bulkQuoteResponse = {
+    const bulkQuoteResponse: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteResponse = {
       bulkQuoteId: bulkBatch.bulkQuoteId,
       homeTransactionId: bulkTransactionRequest.bulkHomeTransactionID,
       currentState: 'COMPLETED',
