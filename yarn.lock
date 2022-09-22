@@ -2368,9 +2368,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/api-snippets@npm:^15.0.1":
-  version: 15.0.1
-  resolution: "@mojaloop/api-snippets@npm:15.0.1"
+"@mojaloop/api-snippets@npm:^16.0.1":
+  version: 16.0.1
+  resolution: "@mojaloop/api-snippets@npm:16.0.1"
   dependencies:
     "@apidevtools/json-schema-ref-parser": ^9.0.9
     commander: ^9.4.0
@@ -2381,7 +2381,7 @@ __metadata:
     openapi-typescript: ^5.4.1
     ts-auto-mock: ^3.6.2
     ttypescript: ^1.5.13
-  checksum: 85e410ad0f9e66029b57669bab5ce2b8da91568ffe7541a246fd7b87359967f5c1c5b7d2187cb3118a7b8f53ebd98e33bf46cae2a16babe4188f57aaed4fe323
+  checksum: 8f0c86e0ff5ffc4cadc079eda34a39b31175e3339916ddd742d04054810cae9f2609e72d220f376ef5ca5f9a4ac090f964f51666205298b6f4a8c56b077a6e20
   languageName: node
   linkType: hard
 
@@ -2567,7 +2567,7 @@ __metadata:
     "@babel/core": ^7.19.1
     "@babel/preset-env": ^7.19.1
     "@koa/cors": ^3.4.1
-    "@mojaloop/api-snippets": ^15.0.1
+    "@mojaloop/api-snippets": ^16.0.1
     "@mojaloop/central-services-error-handling": ^12.0.4
     "@mojaloop/central-services-logger": ^11.0.1
     "@mojaloop/central-services-metrics": ^12.0.5
@@ -2621,7 +2621,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-command-event-handler@workspace:modules/outbound-command-event-handler"
   dependencies:
-    "@mojaloop/api-snippets": ^15.0.1
+    "@mojaloop/api-snippets": ^16.0.1
     "@mojaloop/logging-bc-client-lib": ^0.1.14
     "@mojaloop/logging-bc-public-types-lib": ^0.1.11
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
@@ -2685,7 +2685,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-private-shared-lib@workspace:modules/private-shared-lib"
   dependencies:
-    "@mojaloop/api-snippets": ^15.0.1
+    "@mojaloop/api-snippets": ^16.0.1
     "@mojaloop/logging-bc-public-types-lib": ^0.1.11
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.1.1
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": ^0.1.1
@@ -2720,7 +2720,7 @@ __metadata:
     jest: ^29.0.3
     nodemon: ^2.0.20
     npm-check-updates: ^16.2.1
-    nx: 14.7.8
+    nx: 14.7.9
     replace: ^1.2.1
     standard-version: ^9.5.0
     ts-jest: ^29.0.1
@@ -2849,23 +2849,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nrwl/cli@npm:14.7.8":
-  version: 14.7.8
-  resolution: "@nrwl/cli@npm:14.7.8"
+"@nrwl/cli@npm:14.7.9":
+  version: 14.7.9
+  resolution: "@nrwl/cli@npm:14.7.9"
   dependencies:
-    nx: 14.7.8
-  checksum: adbfde6e46bcabcc3e8593101bbd79b60054a7aa695a91d87d5b2372b5a06f6a9ea68e2be18ca490b4eb930d0f1db1a44f104273b991f3bdbad8fbce63c39e52
+    nx: 14.7.9
+  checksum: 24b51a246f92cb7630b900cddf2eeb51a9fa881d265067a37fcc89cac33bb6079328564441c81a14f55f864c9515fd18c1c1304e31bf85c5b9d2ee0560f243a0
   languageName: node
   linkType: hard
 
-"@nrwl/tao@npm:14.7.8":
-  version: 14.7.8
-  resolution: "@nrwl/tao@npm:14.7.8"
+"@nrwl/tao@npm:14.7.9":
+  version: 14.7.9
+  resolution: "@nrwl/tao@npm:14.7.9"
   dependencies:
-    nx: 14.7.8
+    nx: 14.7.9
   bin:
     tao: index.js
-  checksum: 32c7728cb0023044c8015ad2ea09b36eaa250f1cc71ec4964363f83330027f02f743ad5b39ee39d9aae7ec9df6dfdad3a090cfc5523bc5481c48b39e64048fae
+  checksum: 82b95b6284f36040135c2219877d6b06975895a121eff5b90c7450caa3e7cecf91124aa35dfcae2a21cced865810689b22dc9631281d93767e991be5aa91a77d
   languageName: node
   linkType: hard
 
@@ -3801,6 +3801,27 @@ __metadata:
   version: 1.1.0
   resolution: "@yarnpkg/lockfile@npm:1.1.0"
   checksum: 05b881b4866a3546861fee756e6d3812776ea47fa6eb7098f983d6d0eefa02e12b66c3fff931574120f196286a7ad4879ce02743c8bb2be36c6a576c7852083a
+  languageName: node
+  linkType: hard
+
+"@yarnpkg/parsers@npm:^3.0.0-rc.18":
+  version: 3.0.0-rc.20
+  resolution: "@yarnpkg/parsers@npm:3.0.0-rc.20"
+  dependencies:
+    js-yaml: ^3.10.0
+    tslib: ^2.4.0
+  checksum: a0dfc2d4d824322ae779363870ad7705b42161ad5e90c992404bf5dc0454a046a6f04144303c9bb047239e480b882b4105272127f2ba080b865180276c46deda
+  languageName: node
+  linkType: hard
+
+"@zkochan/js-yaml@npm:0.0.6":
+  version: 0.0.6
+  resolution: "@zkochan/js-yaml@npm:0.0.6"
+  dependencies:
+    argparse: ^2.0.1
+  bin:
+    js-yaml: bin/js-yaml.js
+  checksum: 51b81597a1d1d79c778b8fae48317eaad78d75223d0b7477ad2b35f47cf63b19504da430bb7a03b326e668b282874242cc123e323e57293be038684cb5e755f8
   languageName: node
   linkType: hard
 
@@ -9220,7 +9241,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-yaml@npm:^3.13.1, js-yaml@npm:^3.14.0":
+"js-yaml@npm:^3.10.0, js-yaml@npm:^3.13.1, js-yaml@npm:^3.14.0":
   version: 3.14.1
   resolution: "js-yaml@npm:3.14.1"
   dependencies:
@@ -9381,10 +9402,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsonc-parser@npm:3.0.0":
-  version: 3.0.0
-  resolution: "jsonc-parser@npm:3.0.0"
-  checksum: 1df2326f1f9688de30c70ff19c5b2a83ba3b89a1036160da79821d1361090775e9db502dc57a67c11b56e1186fc1ed70b887f25c5febf9a3ec4f91435836c99d
+"jsonc-parser@npm:3.2.0":
+  version: 3.2.0
+  resolution: "jsonc-parser@npm:3.2.0"
+  checksum: 946dd9a5f326b745aa326d48a7257e3f4a4b62c5e98ec8e49fa2bdd8d96cef7e6febf1399f5c7016114fd1f68a1c62c6138826d5d90bc650448e3cf0951c53c7
   languageName: node
   linkType: hard
 
@@ -10873,13 +10894,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nx@npm:14.7.8":
-  version: 14.7.8
-  resolution: "nx@npm:14.7.8"
+"nx@npm:14.7.9":
+  version: 14.7.9
+  resolution: "nx@npm:14.7.9"
   dependencies:
-    "@nrwl/cli": 14.7.8
-    "@nrwl/tao": 14.7.8
+    "@nrwl/cli": 14.7.9
+    "@nrwl/tao": 14.7.9
     "@parcel/watcher": 2.0.4
+    "@yarnpkg/lockfile": ^1.1.0
+    "@yarnpkg/parsers": ^3.0.0-rc.18
+    "@zkochan/js-yaml": 0.0.6
     chalk: 4.1.0
     chokidar: ^3.5.1
     cli-cursor: 3.1.0
@@ -10894,12 +10918,13 @@ __metadata:
     glob: 7.1.4
     ignore: ^5.0.4
     js-yaml: 4.1.0
-    jsonc-parser: 3.0.0
+    jsonc-parser: 3.2.0
     minimatch: 3.0.5
     npm-run-path: ^4.0.1
     open: ^8.4.0
     semver: 7.3.4
     string-width: ^4.2.3
+    strong-log-transformer: ^2.1.0
     tar-stream: ~2.2.0
     tmp: ~0.2.1
     tsconfig-paths: ^3.9.0
@@ -10917,7 +10942,7 @@ __metadata:
       optional: true
   bin:
     nx: bin/nx.js
-  checksum: 8a3e1ced1f236e5c0929bea10dc78b3f3cb7ed7a20efa31630515d4216dc22aa3c811427a0e89cd4af97df79f663e29ad4ebf206325c0c814c18498e03845910
+  checksum: e71315b32e75e44e61665d434cd715631bd8a23cf5273dc0c8c10047164f3056b20bacea29054c946f533cf563ec1ff00a87bcf7efeef6bd982dbbfd3d3111df
   languageName: node
   linkType: hard
 
@@ -13352,6 +13377,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"strong-log-transformer@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "strong-log-transformer@npm:2.1.0"
+  dependencies:
+    duplexer: ^0.1.1
+    minimist: ^1.2.0
+    through: ^2.3.4
+  bin:
+    sl-log-transformer: bin/sl-log-transformer.js
+  checksum: abf9a4ac143118f26c3a0771b204b02f5cf4fa80384ae158f25e02bfbff761038accc44a7f65869ccd5a5995a7f2c16b1466b83149644ba6cecd3072a8927297
+  languageName: node
+  linkType: hard
+
 "superagent@npm:^7.1.6":
   version: 7.1.6
   resolution: "superagent@npm:7.1.6"
@@ -13619,7 +13657,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"through@npm:2, through@npm:>=2.2.7 <3, through@npm:^2.3.8, through@npm:~2.3, through@npm:~2.3.1, through@npm:~2.3.4":
+"through@npm:2, through@npm:>=2.2.7 <3, through@npm:^2.3.4, through@npm:^2.3.8, through@npm:~2.3, through@npm:~2.3.1, through@npm:~2.3.4":
   version: 2.3.8
   resolution: "through@npm:2.3.8"
   checksum: a38c3e059853c494af95d50c072b83f8b676a9ba2818dcc5b108ef252230735c54e0185437618596c790bbba8fcdaef5b290405981ffa09dce67b1f1bf190cbd
