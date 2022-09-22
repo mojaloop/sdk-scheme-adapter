@@ -93,7 +93,7 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
         return this._state.bulkTransfersRequest;
     }
 
-    get bulkTransfersResponse(): SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteResponse | undefined {
+    get bulkTransfersResponse(): SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransferResponse | undefined {
         return this._state.bulkTransfersResponse;
     }
 
