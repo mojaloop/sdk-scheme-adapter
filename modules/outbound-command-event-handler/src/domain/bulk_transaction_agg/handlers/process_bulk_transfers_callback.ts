@@ -64,6 +64,7 @@ export async function handleProcessBulkTransfersCallbackCmdEvt(
             bulkTransactionAgg.incrementBulkTransfersSuccessCount();
 
             // Iterate through items in batch and update the individual states
+            // TODO: We need to handle the case where the Quote was not successful!
             for await (const transferResult of bulkTransfersResult.individualTransferResults) {
                 if(transferResult.transferId && !transferResult.lastError) {
                     const individualTransferId = bulkBatch.getReferenceIdForTransferId(transferResult.transferId);

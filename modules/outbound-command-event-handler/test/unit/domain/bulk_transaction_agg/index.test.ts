@@ -39,7 +39,8 @@ const bulkTransactionEntityRepo = new InMemoryBulkTransactionStateRepo(logger);
 
 var bulkId: string;
 
-// import { randomUUID } from "crypto";
+// Tests can timeout in a CI pipeline so giving it leeway
+jest.setTimeout(30000)
 
 describe('BulkTransactionAggregate', () => {
 
@@ -135,15 +136,19 @@ describe('BulkTransactionAggregate', () => {
         })
     
         test('createBatches should create a single batch for two transfers', async () => {
-            await bulkTransactionAgg.createBatches(10);
+            const generateBulkQuoteBatchesResult = await bulkTransactionAgg.generateBulkQuoteBatches(10);
+            expect(generateBulkQuoteBatchesResult.bulkQuotesTotalCount).toEqual(1);
             const bulkBatchIds = await bulkTransactionAgg.getAllBulkBatchIds();
             expect(bulkBatchIds.length).toEqual(1);
         })
+
         test('createBatches should create two batches for two transfers if the limit is 1', async () => {
-            await bulkTransactionAgg.createBatches(1);
+            const generateBulkQuoteBatchesResult = await bulkTransactionAgg.generateBulkQuoteBatches(1);
+            expect(generateBulkQuoteBatchesResult.bulkQuotesTotalCount).toEqual(2);
             const bulkBatchIds = await bulkTransactionAgg.getAllBulkBatchIds();
             expect(bulkBatchIds.length).toEqual(2);
         })
+
         test('createBatches should create two batches if there is a second fsp', async () => {
             // Add another individual transfer with different dfspId
             const partyResponse3: IPartyResult = {
@@ -162,13 +167,19 @@ describe('BulkTransactionAggregate', () => {
             individualTransfer3.setTransferState(IndividualTransferInternalState.DISCOVERY_ACCEPTED);
             await bulkTransactionAgg.setIndividualTransferById(individualTransfer3.id, individualTransfer3);
 
-            await bulkTransactionAgg.createBatches(10);
+            const generateBulkQuoteBatchesResult = await bulkTransactionAgg.generateBulkQuoteBatches(10);
+            expect(generateBulkQuoteBatchesResult.bulkQuotesTotalCount).toEqual(2);
             const bulkBatchIds = await bulkTransactionAgg.getAllBulkBatchIds();
             expect(bulkBatchIds.length).toEqual(2);
         })
         test('createBatches should throw error when called second time', async () => {
-            await expect(bulkTransactionAgg.createBatches(10)).resolves.toBeUndefined();
-            await expect(bulkTransactionAgg.createBatches(10)).rejects.toThrowError();
+            try {
+                await expect(bulkTransactionAgg.generateBulkQuoteBatches(10)).resolves.toBeDefined();
+                await expect(bulkTransactionAgg.generateBulkQuoteBatches(10)).rejects.toThrowError(/BulkQuotesTotalCount/);
+            } catch (err) {
+                console.dir(err);
+                expect(err).toBeUndefined()
+            }
         })
     })
 })
