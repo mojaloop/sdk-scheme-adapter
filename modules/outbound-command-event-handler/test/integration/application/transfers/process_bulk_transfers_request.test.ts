@@ -26,7 +26,6 @@
 
 import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
-import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 import {
   BulkBatchInternalState,
@@ -34,7 +33,6 @@ import {
   BulkQuotesCallbackProcessedDmEvt,
   BulkTransactionInternalState,
   BulkTransfersRequestedDmEvt,
-  DomainEvent,
   IKafkaEventConsumerOptions,
   IKafkaEventProducerOptions,
   IndividualTransferInternalState,
@@ -82,7 +80,7 @@ const bulkTransactionEntityRepoOptions: IRedisBulkTransactionStateRepoOptions = 
 let processHelper: ProcessHelper;
 
 describe("Tests for PrepareSDKOutboundBulkResponseCmdEvt Command Event", () => {
- 
+
   beforeEach(async () => {
     processHelper.resetDomainEvents();
   });
@@ -139,7 +137,7 @@ describe("Tests for PrepareSDKOutboundBulkResponseCmdEvt Command Event", () => {
     let bulkBatchTwo: BulkBatchState | undefined;
     if (result.bulkBatchIds){
       bulkBatchOne = await processHelper.bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, result.bulkBatchIds[0]);
-      bulkBatchTwo = await processHelper.bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, result.bulkBatchIds[1]);  
+      bulkBatchTwo = await processHelper.bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, result.bulkBatchIds[1]);
     } else {
       throw Error('Shouldnt be here'); // TODO: Handle this
     }

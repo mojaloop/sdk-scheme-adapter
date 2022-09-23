@@ -22,92 +22,78 @@
  --------------
  ******/
 
- "use strict";
+"use strict";
 
- import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
- import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
- import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
- 
- import {
-   BulkTransactionInternalState,
-   DomainEvent,
-   IKafkaEventConsumerOptions,
-   IKafkaEventProducerOptions,
-   IndividualTransferInternalState,
-   IProcessPartyInfoCallbackCmdEvtData,
-   IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData,
-   IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData,
-   IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData,
-   IProcessSDKOutboundBulkRequestCmdEvtData,
-   IRedisBulkTransactionStateRepoOptions,
-   KafkaCommandEventProducer,
-   KafkaDomainEventConsumer,
-   ProcessPartyInfoCallbackCmdEvt,
-   ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt,
-   ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
-   ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt,
-   ProcessSDKOutboundBulkRequestCmdEvt,
-   RedisBulkTransactionStateRepo,
- } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
- import { randomUUID } from "crypto";
- 
- // Tests can timeout in a CI pipeline so giving it leeway
- jest.setTimeout(20000)
- 
- const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
- const messageTimeout = 2000;
- 
- // Setup for Kafka Producer
- const commandEventProducerOptions: IKafkaEventProducerOptions = {
-     brokerList: 'localhost:9092',
-     clientId: 'test-integration_client_id',
-     topic: 'topic-sdk-outbound-command-events'
- }
- const producer = new KafkaCommandEventProducer(commandEventProducerOptions, logger)
- 
- // Setup for Kafka Consumer
- const domainEventConsumerOptions: IKafkaEventConsumerOptions = {
-   brokerList: 'localhost:9092',
-   clientId: 'test-integration_client_id',
-   topics: ['topic-sdk-outbound-domain-events'],
-   groupId: "domain_events_consumer_client_id"
- }
- var domainEvents: Array<DomainEvent> = []
- const _messageHandler = async (message: DomainEvent): Promise<void>  => {
-   console.log('Domain Message: ', message);
-   domainEvents.push(message);
- }
- const consumer = new KafkaDomainEventConsumer(_messageHandler.bind(this), domainEventConsumerOptions, logger)
- 
- // Setup for Redis access
- const bulkTransactionEntityRepoOptions: IRedisBulkTransactionStateRepoOptions = {
-   connStr: 'redis://localhost:6379'
- }
- const bulkTransactionEntityRepo = new RedisBulkTransactionStateRepo(bulkTransactionEntityRepoOptions, logger);
- 
- 
- describe("Tests for PrepareSDKOutboundBulkResponseCmdEvt Command Event", () => {
- 
-   beforeEach(async () => {
-     domainEvents = [];
-   });
- 
-   beforeAll(async () => {
-     await producer.init();
-     await consumer.init();
-     await consumer.start();
-     await bulkTransactionEntityRepo.init();
-   });
- 
-   afterAll(async () => {
-     await producer.destroy();
-     await consumer.destroy();
-     await bulkTransactionEntityRepo.destroy();
-   });
- 
-   test("When inbound command event ProcessSDKOutboundBulkResponseSentCmdEvnt is received \
-         Then the global state should be updated to RESPONSE_SENT", async () => {
-     
-     
-   });
- });
+import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
+import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
+
+import {
+  DomainEvent,
+  IKafkaEventConsumerOptions,
+  IKafkaEventProducerOptions,
+  IRedisBulkTransactionStateRepoOptions,
+  KafkaCommandEventProducer,
+  KafkaDomainEventConsumer,
+  RedisBulkTransactionStateRepo,
+} from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+
+// Tests can timeout in a CI pipeline so giving it leeway
+jest.setTimeout(20000)
+
+const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
+const messageTimeout = 2000;
+
+// Setup for Kafka Producer
+const commandEventProducerOptions: IKafkaEventProducerOptions = {
+    brokerList: 'localhost:9092',
+    clientId: 'test-integration_client_id',
+    topic: 'topic-sdk-outbound-command-events'
+}
+const producer = new KafkaCommandEventProducer(commandEventProducerOptions, logger)
+
+// Setup for Kafka Consumer
+const domainEventConsumerOptions: IKafkaEventConsumerOptions = {
+  brokerList: 'localhost:9092',
+  clientId: 'test-integration_client_id',
+  topics: ['topic-sdk-outbound-domain-events'],
+  groupId: "domain_events_consumer_client_id"
+}
+var domainEvents: Array<DomainEvent> = []
+const _messageHandler = async (message: DomainEvent): Promise<void>  => {
+  console.log('Domain Message: ', message);
+  domainEvents.push(message);
+}
+const consumer = new KafkaDomainEventConsumer(_messageHandler.bind(this), domainEventConsumerOptions, logger)
+
+// Setup for Redis access
+const bulkTransactionEntityRepoOptions: IRedisBulkTransactionStateRepoOptions = {
+  connStr: 'redis://localhost:6379'
+}
+const bulkTransactionEntityRepo = new RedisBulkTransactionStateRepo(bulkTransactionEntityRepoOptions, logger);
+
+
+describe("Tests for PrepareSDKOutboundBulkResponseCmdEvt Command Event", () => {
+
+  beforeEach(async () => {
+    domainEvents = [];
+  });
+
+  beforeAll(async () => {
+    await producer.init();
+    await consumer.init();
+    await consumer.start();
+    await bulkTransactionEntityRepo.init();
+  });
+
+  afterAll(async () => {
+    await producer.destroy();
+    await consumer.destroy();
+    await bulkTransactionEntityRepo.destroy();
+  });
+
+  test("When inbound command event ProcessSDKOutboundBulkResponseSentCmdEvnt is received \
+        Then the global state should be updated to RESPONSE_SENT", async () => {
+
+
+  });
+});

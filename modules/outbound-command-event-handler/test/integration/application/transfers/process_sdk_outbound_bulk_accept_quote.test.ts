@@ -35,42 +35,18 @@ import {
   BulkBatchState,
   BulkQuotesCallbackProcessedDmEvt,
   BulkTransactionInternalState,
-  BulkTransfersRequestedDmEvt,
-  DomainEvent,
-  IBulkTransactionEntityRepo,
-  ICommandEventProducer,
-  IEventConsumer,
   IKafkaEventConsumerOptions,
   IKafkaEventProducerOptions,
   IndividualTransferInternalState,
-  IProcessBulkQuotesCallbackCmdEvtData,
-  IProcessPartyInfoCallbackCmdEvtData,
-  IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData,
-  IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData,
-  IProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvtData,
-  IProcessSDKOutboundBulkQuotesRequestCmdEvtData,
-  IProcessSDKOutboundBulkRequestCmdEvtData,
   IRedisBulkTransactionStateRepoOptions,
-  KafkaCommandEventProducer,
-  KafkaDomainEventConsumer,
-  ProcessBulkQuotesCallbackCmdEvt,
-  ProcessPartyInfoCallbackCmdEvt,
-  ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt,
-  ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
-  ProcessSDKOutboundBulkPartyInfoRequestCompleteCmdEvt,
-  ProcessSDKOutboundBulkQuotesRequestCmdEvt,
-  ProcessSDKOutboundBulkRequestCmdEvt,
-  RedisBulkTransactionStateRepo,
   SDKOutboundBulkAcceptQuoteProcessedDmEvt,
   SDKOutboundBulkQuotesRequestProcessedDmEvt,
   SDKOutboundTransferState,
 } from "@mojaloop/sdk-scheme-adapter-private-shared-lib"
-import { randomUUID } from "crypto";
 import { ProcessHelper, StopAfterEventEnum } from "../../../util/generator";
 
 // Tests can timeout in a CI pipeline so giving it leeway
-// jest.setTimeout(30000)
-jest.setTimeout(999999)
+jest.setTimeout(30000)
 
 const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
 const messageTimeout = 2000;
@@ -161,7 +137,7 @@ describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
     let bulkBatchTwo: BulkBatchState | undefined;
     if (result.bulkBatchIds){
       bulkBatchOne = await processHelper.bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, result.bulkBatchIds[0]);
-      bulkBatchTwo = await processHelper.bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, result.bulkBatchIds[1]);  
+      bulkBatchTwo = await processHelper.bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, result.bulkBatchIds[1]);
     } else {
       throw Error('Shouldnt be here'); // TODO: Handle this
     }
