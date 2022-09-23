@@ -78,6 +78,14 @@ export class BulkTransactionEntity extends BaseEntity<BulkTransactionState> {
         return this._state.from;
     }
 
+    get state(): BulkTransactionInternalState {
+        return this._state.state;
+    }
+
+    get options(): SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionOptions {
+        return this._state.options;
+    }
+
     get extensions(): SDKSchemeAdapter.V2_0_0.Outbound.Types.ExtensionList | undefined {
         return this._state.extensions;
     }

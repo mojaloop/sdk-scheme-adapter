@@ -18,7 +18,7 @@
         {
           "fact": "pathParams",
           "operator": "equal",
-          "value": "123456007",
+          "value": "iddoesnotexist",
           "path": "idValue"
         },
         {
@@ -70,7 +70,7 @@
         {
           "fact": "pathParams",
           "operator": "equal",
-          "value": "23450001",
+          "value": "idtimesout",
           "path": "idValue"
         },
         {
@@ -553,9 +553,6 @@
           "individualTransferResults": [
             {
               "transferId": "{$request.body.individualTransfers[0].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[1].transferId}"
             }
           ]
         },

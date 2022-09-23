@@ -8,6 +8,8 @@ services:
     extends:
       file: common-sdk.yml
       service: api-svc
+    networks:
+      - mojaloop-net
     env_file: ./config/payer-sdk/api-svc.env
     ports:
       - "14000:4000"
@@ -23,6 +25,8 @@ services:
     env_file: ./config/payer-sdk/outbound-command-event-handler.env
     ports:
       - "18000:8000"
+    networks:
+      - mojaloop-net
     depends_on:
       payer-redis:
         condition: service_started
@@ -34,6 +38,8 @@ services:
       file: common-sdk.yml
       service: outbound-domain-event-handler
     env_file: ./config/payer-sdk/outbound-domain-event-handler.env
+    networks:
+      - mojaloop-net
     depends_on:
       payer-redis:
         condition: service_started
@@ -44,6 +50,8 @@ services:
     extends:
       file: common-sdk.yml
       service: redis
+    networks:
+      - mojaloop-net
     ports:
       - "16379:6379"
 
@@ -52,6 +60,8 @@ services:
       file: common-sdk.yml
       service: api-svc
     env_file: ./config/payee-sdk/api-svc.env
+    networks:
+      - mojaloop-net
     ports:
       - "24000:4000"
       - "24001:4001"
@@ -63,6 +73,8 @@ services:
     extends:
       file: common-sdk.yml
       service: redis
+    networks:
+      - mojaloop-net
     ports:
       - "26379:6379"
 
@@ -165,7 +177,7 @@ services:
     depends_on:
       - kafka
 
-  insights:
+  redisinsight:
     image: redislabs/redisinsight
     ports:
       - "9001:8001"

@@ -442,6 +442,15 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                 const individualTransferId = bulkBatch.getReferenceIdForQuoteId(individualQuoteResult.quoteId);
                 const individualTransfer = await this.getIndividualTransferById(individualTransferId);
                 const party = individualTransfer.partyResponse?.party;
+                const condition = individualTransfer.quoteResponse?.condition;
+                if(!condition) {
+                    throw new Error(`condition for BulkBatch[${bulkBatchId}].IndividualTransfer[${individualTransferId}] is missing!`);
+                }
+                const ilpPacket = individualTransfer.quoteResponse?.ilpPacket;
+                if(!ilpPacket) {
+                    throw new Error(`ilpPacket for BulkBatch[${bulkBatchId}].IndividualTransfer[${individualTransferId}] is missing!`);
+                }
+
                 if(party) {
                     // Generate Transfers request
                     const individualBulkTransferRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualTransfer = {
@@ -462,9 +471,11 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                         amountType: individualTransfer.request.amountType,
                         currency: individualTransfer.request.currency,
                         amount: individualTransfer.request.amount,
+                        condition,
+                        ilpPacket,
                         transactionType: 'TRANSFER',
                         extensions: individualTransfer.request.quoteExtensions,
-                    }; // TODO: Why do we not have the CONDITION as part of the out-going Transfer Request?
+                    };
                     this._logger.debug(`Generated Transfers Request ${JSON.stringify(individualBulkTransferRequest, null, 2)} for BulkBatch.bulkQuoteId=${bulkBatch.bulkQuoteId}`);
                     // Add Transfers to batch
                     bulkBatch.addIndividualTransfer(
