@@ -168,7 +168,7 @@
   {
     "ruleId": 4,
     "priority": 1,
-    "description": "post /bulkQuotes - receiver fspid has 2 ids",
+    "description": "post /bulkQuotes - bulk quotes receiver responds with 2 quotes results",
     "apiVersion": {
       "minorVersion": 4,
       "majorVersion": 1,
@@ -244,7 +244,7 @@
   {
     "ruleId": 5,
     "priority": 1,
-    "description": "post /bulkQuotes - receiver fspid has 1 id",
+    "description": "post /bulkQuotes - bulk quotes receiver responds with 2 quotes results",
     "apiVersion": {
       "minorVersion": 4,
       "majorVersion": 1,
@@ -515,7 +515,7 @@
   {
     "ruleId": 8,
     "priority": 1,
-    "description": "post /bulkTransfers",
+    "description": "post /bulkTransfers - default path",
     "apiVersion": {
       "minorVersion": 4,
       "majorVersion": 1,
