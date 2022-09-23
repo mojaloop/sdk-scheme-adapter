@@ -43,7 +43,8 @@ export async function handleProcessBulkTransfersCallbackCmdEvt(
     const processBulkTransfersCallbackMessage = message as ProcessBulkTransfersCallbackCmdEvt;
     try {
         logger.info(`Got ProcessBulkTransfersCallbackCmdEvt: id=${processBulkTransfersCallbackMessage.getKey()}`);
-
+        let successCount;
+        let failedCount;
         // Create aggregate
         const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRepo(
             processBulkTransfersCallbackMessage.getKey(),
@@ -61,7 +62,7 @@ export async function handleProcessBulkTransfersCallbackCmdEvt(
         if(bulkTransfersResult.currentState &&
            bulkTransfersResult.currentState === 'COMPLETED') {
             bulkBatch.setState(BulkBatchInternalState.TRANSFERS_COMPLETED);
-            bulkTransactionAgg.incrementBulkTransfersSuccessCount();
+            successCount = await bulkTransactionAgg.incrementBulkTransfersSuccessCount();
 
             // Iterate through items in batch and update the individual states
             // TODO: We need to handle the case where the Quote was not successful!
@@ -84,7 +85,7 @@ export async function handleProcessBulkTransfersCallbackCmdEvt(
         // to TRANSFERS_FAILED.
         } else {
             bulkBatch.setState(BulkBatchInternalState.TRANSFERS_FAILED);
-            bulkTransactionAgg.incrementBulkTransfersFailedCount();
+            failedCount = await bulkTransactionAgg.incrementBulkTransfersFailedCount();
 
             const individualTransferIds = Object.values(bulkBatch.transferIdReferenceIdMap);
             for await (const individualTransferId of individualTransferIds) {
@@ -110,8 +111,8 @@ export async function handleProcessBulkTransfersCallbackCmdEvt(
         // Progressing to the next step
         // Check the status of the remaining items in the bulk
         const bulkTransfersTotalCount = await bulkTransactionAgg.getBulkTransfersTotalCount();
-        const bulkTransfersSuccessCount = await bulkTransactionAgg.getBulkTransfersSuccessCount();
-        const bulkTransfersFailedCount = await bulkTransactionAgg.getBulkTransfersFailedCount();
+        const bulkTransfersSuccessCount = successCount || await bulkTransactionAgg.getBulkTransfersSuccessCount();
+        const bulkTransfersFailedCount = failedCount || await bulkTransactionAgg.getBulkTransfersFailedCount();
         if(bulkTransfersTotalCount === (bulkTransfersSuccessCount + bulkTransfersFailedCount)) {
             // Update global state "TRANSFERS_COMPLETED"
             await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.TRANSFERS_COMPLETED);
