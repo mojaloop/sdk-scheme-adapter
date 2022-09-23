@@ -65,6 +65,7 @@ export interface IndividualTransferState extends BaseEntityState {
     quoteResponse?: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualQuoteResult;
     transferResponse?: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualTransferResult;
     lastError?: SDKSchemeAdapter.V2_0_0.Outbound.Types.transferError;
+    transactionId?: string;
 }
 
 export class IndividualTransferEntity extends BaseEntity<IndividualTransferState> {
@@ -89,6 +90,10 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
 
     get transferResponse(): SDKSchemeAdapter.V2_0_0.Outbound.Types.individualTransferResult | undefined {
         return this._state.transferResponse;
+    }
+
+    get transactionId(): string | undefined {
+        return this._state.transactionId;
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
@@ -137,6 +142,11 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
 
     setAcceptParty(acceptParty: boolean) {
         this._state.acceptParty = acceptParty;
+    }
+
+    // This refers to the bulk batch id.
+    setTransactionId(transactionId: string) {
+        this._state.transactionId = transactionId;
     }
 
     // get payeeResolved(): boolean {

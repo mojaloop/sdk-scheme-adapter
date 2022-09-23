@@ -32,7 +32,13 @@
 
 import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
-import { DomainEvent, EventType, IDomainEventData, SDKOutboundBulkPartyInfoRequestedDmEvt, ProcessSDKOutboundBulkPartyInfoRequestCmdEvt } from "@mojaloop/sdk-scheme-adapter-private-shared-lib"
+import {
+  DomainEvent,
+  EventType,
+  ISDKOutboundBulkPartyInfoRequestedDmEvtData,
+  SDKOutboundBulkPartyInfoRequestedDmEvt,
+  ProcessSDKOutboundBulkPartyInfoRequestCmdEvt
+} from "@mojaloop/sdk-scheme-adapter-private-shared-lib"
 import { randomUUID } from "crypto";
 import { handleSDKOutboundBulkPartyInfoRequested } from "../../../../src/application/handlers"
 import { IDomainEventHandlerOptions } from "../../../../src/types";
@@ -47,15 +53,12 @@ describe('handleSDKOutboundBulkPartyInfoRequested', () => {
     }
   } as unknown as IDomainEventHandlerOptions
 
-  let sampleSDKOutboundBulkPartyInfoRequestedMessage: IDomainEventData;
-  let uuid: string;
+  let sampleSDKOutboundBulkPartyInfoRequestedMessage: ISDKOutboundBulkPartyInfoRequestedDmEvtData;
+  let bulkId: string = randomUUID();
 
   beforeEach(async () => {
-    uuid = randomUUID();
     sampleSDKOutboundBulkPartyInfoRequestedMessage = {
-      key: uuid,
-      name: SDKOutboundBulkPartyInfoRequestedDmEvt.name,
-      content: {},
+      bulkId,
       timestamp: Date.now(),
       headers: [],
     }
@@ -63,13 +66,13 @@ describe('handleSDKOutboundBulkPartyInfoRequested', () => {
 
 
   test('emits a processSDKOutboundBulkPartyInfoRequestMessage message', async () => {
-    const sampleDomainEventDataObj = new DomainEvent(sampleSDKOutboundBulkPartyInfoRequestedMessage);
+    const sampleDomainEventDataObj = new SDKOutboundBulkPartyInfoRequestedDmEvt(sampleSDKOutboundBulkPartyInfoRequestedMessage);
     handleSDKOutboundBulkPartyInfoRequested(sampleDomainEventDataObj, domainEventHandlerOptions, logger)
     expect(domainEventHandlerOptions.commandProducer.sendCommandEvent)
       .toBeCalledWith(
         expect.objectContaining({
           _data: expect.objectContaining({
-            key: uuid,
+            key: bulkId,
             name: ProcessSDKOutboundBulkPartyInfoRequestCmdEvt.name,
             type: EventType.COMMAND_EVENT
           })

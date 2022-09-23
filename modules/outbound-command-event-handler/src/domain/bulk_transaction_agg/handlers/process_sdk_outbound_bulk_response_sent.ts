@@ -24,36 +24,32 @@
 
 'use strict';
 
-import { CommandEvent } from '../command_event';
-import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
+import {
+    BulkTransactionInternalState,
+    CommandEvent,
+    ProcessSDKOutboundBulkResponseSentCmdEvt,
+} from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { BulkTransactionAgg } from '..';
+import { ICommandEventHandlerOptions } from '@module-types';
 
-export interface IProcessSDKOutboundBulkResponseSentCmdEvtData {
-    bulkId: string;
-    content: null;
-    timestamp: number | null;
-    headers: IMessageHeader[] | null;
-}
-export class ProcessSDKOutboundBulkResponseSentCmdEvt extends CommandEvent {
-    constructor(data: IProcessSDKOutboundBulkResponseSentCmdEvtData) {
-        super({
-            key: data.bulkId,
-            timestamp: data.timestamp,
-            headers: data.headers,
-            content: null,
-            name: ProcessSDKOutboundBulkResponseSentCmdEvt.name,
-        });
-    }
+export async function handleProcessSDKOutboundBulkResponseSentCmdEvt(
+    message: CommandEvent,
+    options: ICommandEventHandlerOptions,
+    logger: ILogger,
+): Promise<void> {
+    const processSDKOutboundBulkResponseSent = message as ProcessSDKOutboundBulkResponseSentCmdEvt;
+    try {
+        // Create aggregate
+        const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRepo(
+            processSDKOutboundBulkResponseSent.getKey(),
+            options.bulkTransactionEntityRepo,
+            logger,
+        );
+        logger.info(`Created BulkTransactionAggregate ${bulkTransactionAgg}`);
 
-    static CreateFromCommandEvent(message: CommandEvent): ProcessSDKOutboundBulkResponseSentCmdEvt {
-        if((message.getKey() === null || typeof message.getKey() !== 'string')) {
-            throw new Error('Bulk id is in unknown format');
-        }
-        const data: IProcessSDKOutboundBulkResponseSentCmdEvtData = {
-            timestamp: message.getTimeStamp(),
-            headers: message.getHeaders(),
-            content: message.getContent() as IProcessSDKOutboundBulkResponseSentCmdEvtData['content'],
-            bulkId: message.getKey(),
-        };
-        return new ProcessSDKOutboundBulkResponseSentCmdEvt(data);
+        bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.RESPONSE_SENT);
+    } catch (err) {
+        logger.error(`Failed to create BulkTransactionAggregate. ${(err as Error).message}`);
     }
 }

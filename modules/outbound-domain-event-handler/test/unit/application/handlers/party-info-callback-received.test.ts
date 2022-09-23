@@ -36,6 +36,7 @@ import {
   DomainEvent,
   EventType,
   IDomainEventData,
+  IPartyInfoCallbackReceivedDmEvtData,
   PartyInfoCallbackReceivedDmEvt,
   ProcessPartyInfoCallbackCmdEvt,
 } from "@mojaloop/sdk-scheme-adapter-private-shared-lib"
@@ -53,31 +54,33 @@ describe('handlePartyInfoCallbackReceived', () => {
     }
   } as unknown as IDomainEventHandlerOptions
 
-  let samplePartyInfoCallbackReceivedMessageData: IDomainEventData;
-  let key: string;
+  let samplePartyInfoCallbackReceivedMessageData: IPartyInfoCallbackReceivedDmEvtData;
+  let bulkId: string = randomUUID();
 
   beforeEach(async () => {
-    key = `${randomUUID()}_${randomUUID()}`
     samplePartyInfoCallbackReceivedMessageData = {
-      key,
-      name: PartyInfoCallbackReceivedDmEvt.name,
+      bulkId,
       content: {
+        transferId: randomUUID(),
+        partyResult: {
+          currentState: "COMPLETED",
           party: {
-              partyIdInfo: {
-                  partyIdType: "MSISDN",
-                  partyIdentifier: "16135551212",
-                  partySubIdOrType: "string",
-                  fspId: "string",
-                  extensionList: {
-                      extension: [
-                          {
-                              key: "string",
-                              value: "string"
-                          }
-                      ]
-                  }
+            partyIdInfo: {
+              partyIdType: "MSISDN",
+              partyIdentifier: "16135551212",
+              partySubIdOrType: "string",
+              fspId: "string",
+              extensionList: {
+                  extension: [
+                      {
+                          key: "string",
+                          value: "string"
+                      }
+                  ]
               }
+            }
           }
+        }
       },
       timestamp: Date.now(),
       headers: [],
@@ -86,13 +89,13 @@ describe('handlePartyInfoCallbackReceived', () => {
 
 
   test('emits a processPartyInfoCallbackMessage message', async () => {
-    const sampleDomainEventDataObj = new DomainEvent(samplePartyInfoCallbackReceivedMessageData);
+    const sampleDomainEventDataObj = new PartyInfoCallbackReceivedDmEvt(samplePartyInfoCallbackReceivedMessageData);
     handlePartyInfoCallbackReceived(sampleDomainEventDataObj, domainEventHandlerOptions, logger)
     expect(domainEventHandlerOptions.commandProducer.sendCommandEvent)
       .toBeCalledWith(
         expect.objectContaining({
           _data: expect.objectContaining({
-            key,
+            key:bulkId,
             name: ProcessPartyInfoCallbackCmdEvt.name,
             type: EventType.COMMAND_EVENT
           })

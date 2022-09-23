@@ -72,12 +72,14 @@ export async function handleProcessBulkTransfersCallbackCmdEvt(
                     const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
                     individualTransfer.setTransferState(IndividualTransferInternalState.TRANSFERS_SUCCESS);
                     individualTransfer.setTransferResponse(transferResult);
+                    individualTransfer.setTransactionId(bulkBatch.id);
                     await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
                 } else {
                     const individualTransferId = bulkBatch.getReferenceIdForTransferId(transferResult.transferId);
                     const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
                     individualTransfer.setTransferState(IndividualTransferInternalState.TRANSFERS_FAILED);
                     individualTransfer.setTransferResponse(transferResult);
+                    individualTransfer.setTransactionId(bulkBatch.id);
                     await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
                 }
             }
@@ -91,6 +93,7 @@ export async function handleProcessBulkTransfersCallbackCmdEvt(
             for await (const individualTransferId of individualTransferIds) {
                 const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
                 individualTransfer.setTransferState(IndividualTransferInternalState.TRANSFERS_FAILED);
+                individualTransfer.setTransactionId(bulkBatch.id);
                 await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
             }
         }
