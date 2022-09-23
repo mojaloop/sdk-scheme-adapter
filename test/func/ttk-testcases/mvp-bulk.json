@@ -269,21 +269,72 @@
                 "id": 2,
                 "description": "Check number of returned transfers",
                 "exec": [
-                  "expect(requestVariables.transfersCallback.body.individualTransferResults.length).to.equal(1)"
+                  "expect(environment.transfersCallback.body.individualTransferResults.length).to.equal(1)"
                 ]
               },
               {
-                "id": 2,
-                "description": "Check response has quote fulfillment",
+                "id": 3,
+                "description": "Check response MSISDN is same as in the request",
                 "exec": [
-                  "expect(requestVariables.transfersCallback.body.individualTransferResults[0].fulfillment).to.exist;"
+                  "expect(environment.transfersCallback.body.individualTransferResults[0].to.partyIdInfo.partyIdentifier).to.equal('56781234')"
                 ]
               },
               {
                 "id": 4,
-                "description": "Check state is COMPLETED",
+                "description": "Check response has the receiver fspid populated",
                 "exec": [
-                  "expect(requestVariables.transfersCallback.body.currentState).to.equal('COMPLETED')"
+                  "expect(environment.transfersCallback.body.individualTransferResults[0].to.partyIdInfo.fspId).to.not.be.empty"
+                ]
+              },
+              {
+                "id": 5,
+                "description": "Check response receiver first name is ReceiverFirst",
+                "exec": [
+                  "expect(environment.transfersCallback.body.individualTransferResults[0].to.personalInfo.complexName.firstName).to.equal('ReceiverFirst')"
+                ]
+              },
+              {
+                "id": 6,
+                "description": "Check response receiver last name is ReceiverLast",
+                "exec": [
+                  "expect(environment.transfersCallback.body.individualTransferResults[0].to.personalInfo.complexName.lastName).to.equal('ReceiverLast')"
+                ]
+              },
+              {
+                "id": 7,
+                "description": "Check response has quote result",
+                "exec": [
+                  "expect(environment.transfersCallback.body.individualTransferResults[0].quoteResponse).to.exist;"
+                ]
+              },
+              {
+                "id": 8,
+                "description": "Check response has ilpPacket and condition",
+                "exec": [
+                  "expect(environment.transfersCallback.body.individualTransferResults[0].quoteResponse.ilpPacket).to.not.be.empty;",
+                  "",
+                  "expect(environment.transfersCallback.body.individualTransferResults[0].quoteResponse.condition).to.not.be.empty;"
+                ]
+              },
+              {
+                "id": 9,
+                "description": "Check response has  fulfillment",
+                "exec": [
+                  "expect(environment.transfersCallback.body.individualTransferResults[0].fulfil.fulfilment).to.exist;"
+                ]
+              },
+              {
+                "id": 10,
+                "description": "Check response has  COMPLETED state",
+                "exec": [
+                  "expect(environment.transfersCallback.body.individualTransferResults[0].fulfil.transferState).to.equal('COMMITTED');"
+                ]
+              },
+              {
+                "id": 11,
+                "description": "Check overall bulk transaction state is COMPLETED",
+                "exec": [
+                  "expect(environment.transfersCallback.body.currentState).to.equal('COMPLETED')"
                 ]
               }
             ]
@@ -302,7 +353,7 @@
                 "",
                 "console.log(transfersCallback)",
                 "",
-                "requestVariables.transfersCallback = transfersCallback;"
+                "environment.transfersCallback = transfersCallback;"
               ]
             }
           }
