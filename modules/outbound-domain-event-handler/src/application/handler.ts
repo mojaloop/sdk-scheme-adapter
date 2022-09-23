@@ -46,6 +46,7 @@ import {
     SDKOutboundBulkAcceptQuoteProcessedDmEvt,
     BulkTransfersCallbackReceivedDmEvt,
     SDKOutboundBulkTransfersRequestProcessedDmEvt,
+    SDKOutboundBulkResponseSentDmEvt,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { IDomainEventHandlerOptions } from '../types';
 import {
@@ -59,6 +60,7 @@ import {
     handleSDKOutboundBulkAcceptQuoteProcessed,
     handleBulkTransfersCallbackReceived,
 } from './handlers';
+import { handleSDKOutboundBulkResponseSent } from './handlers/sdk_outbound_bulk_response_sent';
 import { handleSDKOutboundBulkTransfersRequestProcessed } from './handlers/sdk_outbound_bulk_transfers_request_processed';
 
 export interface IOutboundEventHandlerOptions {
@@ -190,6 +192,14 @@ export class OutboundEventHandler implements IRunHandler {
             }
             case SDKOutboundBulkTransfersRequestProcessedDmEvt.name: {
                 await handleSDKOutboundBulkTransfersRequestProcessed(
+                    message,
+                    this._domainEventHandlerOptions,
+                    this._logger,
+                );
+                break;
+            }
+            case SDKOutboundBulkResponseSentDmEvt.name:  {
+                await handleSDKOutboundBulkResponseSent(
                     message,
                     this._domainEventHandlerOptions,
                     this._logger,
