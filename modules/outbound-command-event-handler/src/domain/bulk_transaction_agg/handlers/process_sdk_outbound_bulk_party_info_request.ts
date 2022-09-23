@@ -32,6 +32,7 @@ import {
     ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
     PartyInfoRequestedDmEvt,
     PartyInfoCallbackReceivedDmEvt,
+    IPartyResult,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
@@ -64,21 +65,26 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestCmdEvt(
             const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
 
             if(bulkTx.isSkipPartyLookupEnabled()) {
+                let partyResult: IPartyResult;
                 if(individualTransfer.isPartyInfoExists) {
-                    individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS);
-                    await bulkTransactionAgg.incrementPartyLookupSuccessCount();
+                    partyResult = {
+                        party: individualTransfer.payee,
+                        currentState: 'COMPLETED',
+                    };
                 } else {
-                    individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_FAILED);
-                    await bulkTransactionAgg.incrementPartyLookupFailedCount();
+                    partyResult = {
+                        currentState: 'ERROR_OCCURRED',
+                        errorInformation: {
+                            errorCode: '5100',
+                            errorDescription: 'party information was not provided but skipPartyLookup is true',
+                        },
+                    };
                 }
                 const partyInfoCallbackReceivedDmEvt = new PartyInfoCallbackReceivedDmEvt({
                     bulkId: bulkTx.id,
                     content: {
                         transferId: individualTransfer.id,
-                        partyResult: {
-                            party: individualTransfer.payee,
-                            currentState: 'COMPLETED',
-                        },
+                        partyResult,
                     },
                     timestamp: Date.now(),
                     headers: [],
