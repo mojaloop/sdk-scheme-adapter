@@ -29,6 +29,7 @@ import {
     BulkTransactionInternalState,
     CommandEvent,
     ProcessSDKOutboundBulkResponseSentCmdEvt,
+    SDKOutboundBulkResponseSentProcessedDmEvt,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
@@ -49,6 +50,14 @@ export async function handleProcessSDKOutboundBulkResponseSentCmdEvt(
         logger.info(`Created BulkTransactionAggregate ${bulkTransactionAgg}`);
 
         bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.RESPONSE_SENT);
+
+        const sdkOutboundBulkResponseSentProcessedDmEvt = new SDKOutboundBulkResponseSentProcessedDmEvt({
+            bulkId: bulkTransactionAgg.bulkId,
+            timestamp: Date.now(),
+            content: null,
+            headers: [],
+        });
+        await options.domainProducer.sendDomainEvent(sdkOutboundBulkResponseSentProcessedDmEvt);
     } catch (err) {
         logger.error(`Failed to create BulkTransactionAggregate. ${(err as Error).message}`);
     }
