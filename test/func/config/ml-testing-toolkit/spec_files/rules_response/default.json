@@ -553,9 +553,6 @@
           "individualTransferResults": [
             {
               "transferId": "{$request.body.individualTransfers[0].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[1].transferId}"
             }
           ]
         },
