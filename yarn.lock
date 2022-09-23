@@ -2598,7 +2598,7 @@ __metadata:
     lodash: ^4.17.21
     module-alias: ^2.2.2
     nock: ^13.2.9
-    npm-check-updates: ^16.2.1
+    npm-check-updates: ^16.3.2
     oauth2-server: ^4.0.0-dev.2
     openapi-jsonschema-parameters: ^12.0.2
     openapi-response-validator: ^12.0.2
@@ -2629,7 +2629,7 @@ __metadata:
     "@types/convict": ^6.1.1
     "@types/express": ^4.17.14
     "@types/jest": ^29.0.3
-    "@types/node": ^18.7.18
+    "@types/node": ^18.7.19
     "@types/node-cache": ^4.2.5
     "@types/supertest": ^2.0.12
     "@types/swagger-ui-express": ^4.1.3
@@ -2643,7 +2643,7 @@ __metadata:
     express: ^4.18.1
     jest: ^29.0.3
     nodemon: ^2.0.20
-    npm-check-updates: ^16.2.1
+    npm-check-updates: ^16.3.2
     openapi-backend: ^5.5.0
     redis: ^4.3.1
     replace: ^1.2.1
@@ -2666,7 +2666,7 @@ __metadata:
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
     "@types/convict": ^6.1.1
     "@types/jest": ^29.0.3
-    "@types/node": ^18.7.18
+    "@types/node": ^18.7.19
     "@types/node-cache": ^4.2.5
     "@typescript-eslint/eslint-plugin": ^5.38.0
     "@typescript-eslint/parser": ^5.38.0
@@ -2674,7 +2674,7 @@ __metadata:
     eslint: ^8.23.1
     jest: ^29.0.3
     nodemon: ^2.0.20
-    npm-check-updates: ^16.2.1
+    npm-check-updates: ^16.3.2
     replace: ^1.2.1
     standard-version: ^9.5.0
     ts-jest: ^29.0.1
@@ -2691,11 +2691,11 @@ __metadata:
     "@mojaloop/logging-bc-public-types-lib": ^0.1.11
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.1.1
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": ^0.1.1
-    "@types/node": ^18.7.18
+    "@types/node": ^18.7.19
     ajv: ^8.11.0
     eslint: ^8.23.1
     jest: ^29.0.3
-    npm-check-updates: ^16.2.1
+    npm-check-updates: ^16.3.2
     redis: ^4.3.1
     replace: ^1.2.1
     standard-version: ^9.5.0
@@ -2710,7 +2710,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter@workspace:."
   dependencies:
     "@types/jest": ^29.0.3
-    "@types/node": ^18.7.18
+    "@types/node": ^18.7.19
     "@types/node-cache": ^4.2.5
     "@typescript-eslint/eslint-plugin": ^5.38.0
     "@typescript-eslint/parser": ^5.38.0
@@ -2721,8 +2721,8 @@ __metadata:
     husky: ^8.0.1
     jest: ^29.0.3
     nodemon: ^2.0.20
-    npm-check-updates: ^16.2.1
-    nx: 14.7.11
+    npm-check-updates: ^16.3.2
+    nx: 14.7.12
     replace: ^1.2.1
     standard-version: ^9.5.0
     ts-jest: ^29.0.1
@@ -2851,23 +2851,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nrwl/cli@npm:14.7.11":
-  version: 14.7.11
-  resolution: "@nrwl/cli@npm:14.7.11"
+"@nrwl/cli@npm:14.7.12":
+  version: 14.7.12
+  resolution: "@nrwl/cli@npm:14.7.12"
   dependencies:
-    nx: 14.7.11
-  checksum: ea0b43ec01573018984b2bf65cc8659577a9062a4ae0e78e585560a5537b9bb981f8bc4b99bb9499cbe9d8c5fe1224fd1af5bc1256604d61fad5c77a2d58e60a
+    nx: 14.7.12
+  checksum: 8da94a6cc22aaa7aff6a9a17a4b6e6a6ced80ea9a0878d29b3b92ec24a8ea8d69e272cc913ee675bfbbbf8eb3c173d0c3624d7a827243df3de2264f607f51603
   languageName: node
   linkType: hard
 
-"@nrwl/tao@npm:14.7.11":
-  version: 14.7.11
-  resolution: "@nrwl/tao@npm:14.7.11"
+"@nrwl/tao@npm:14.7.12":
+  version: 14.7.12
+  resolution: "@nrwl/tao@npm:14.7.12"
   dependencies:
-    nx: 14.7.11
+    nx: 14.7.12
   bin:
     tao: index.js
-  checksum: c78ab83bf3f176511c002c7455706af998d38f03748539f1f5d6ea70e29fd1196ba3f14cc6248ce3a94ebc23d1c64c1e00db24d7e93c8aaf2ea1b98d4b608934
+  checksum: 188c02d8d7ef52775a9a3faa4d7db53eef097090c9cec2ca9b3af2079b2f17866f8004cbc2aa1f460c19d57b944a31bf7063a137ea1a770c5cf34cf63afaf609
   languageName: node
   linkType: hard
 
@@ -3487,10 +3487,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^18.7.18":
-  version: 18.7.18
-  resolution: "@types/node@npm:18.7.18"
-  checksum: 8aec61f0f96e2a69ce51f1f40f949ca578bbb4fe05d7c0b8ce3aeeb848e90f755837f17f6ac132ca404d974fe9b2974150ad3b4984fc9dc7c3ceddb10bae0167
+"@types/node@npm:^18.7.19":
+  version: 18.7.19
+  resolution: "@types/node@npm:18.7.19"
+  checksum: 879366b379599cd0e06bff86973c82497de57d23b113967d20cac94994acdf2c47b6fc5cb92d007a9ff1939bd037257a5f3965e7bbda70cfa6b949a40e4e14a8
   languageName: node
   linkType: hard
 
@@ -10730,9 +10730,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"npm-check-updates@npm:^16.2.1":
-  version: 16.2.1
-  resolution: "npm-check-updates@npm:16.2.1"
+"npm-check-updates@npm:^16.3.2":
+  version: 16.3.2
+  resolution: "npm-check-updates@npm:16.3.2"
   dependencies:
     chalk: ^5.0.1
     cli-table: ^0.3.11
@@ -10765,7 +10765,7 @@ __metadata:
   bin:
     ncu: build/src/bin/cli.js
     npm-check-updates: build/src/bin/cli.js
-  checksum: eca63cd1956f6eae19061c1db1ed314d1515af83eea93b4a21a23327298298e622092f0027b56cce515132c62077dbaff11275ec450d4fd1fdeb92f7575a813a
+  checksum: 0db6239d7c5aad4ce9dd21e7e0aa6860b73b5e71bbd2b78055b94570a058247b164f3e6cd84cbd0bb00c1f9abcfa3267cd4c80b4485fc6626a57f0d9b7e4d8f2
   languageName: node
   linkType: hard
 
@@ -10896,12 +10896,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nx@npm:14.7.11":
-  version: 14.7.11
-  resolution: "nx@npm:14.7.11"
+"nx@npm:14.7.12":
+  version: 14.7.12
+  resolution: "nx@npm:14.7.12"
   dependencies:
-    "@nrwl/cli": 14.7.11
-    "@nrwl/tao": 14.7.11
+    "@nrwl/cli": 14.7.12
+    "@nrwl/tao": 14.7.12
     "@parcel/watcher": 2.0.4
     "@yarnpkg/lockfile": ^1.1.0
     "@yarnpkg/parsers": ^3.0.0-rc.18
@@ -10944,7 +10944,7 @@ __metadata:
       optional: true
   bin:
     nx: bin/nx.js
-  checksum: 0ef1c1b8102b06003d066183cff6b5d886b6d68245d06125b336135d8e89e80f5dccc30345ddbf6c3331f8ae51f5a0c7f58ce07dd60e2a93b203399a92319d99
+  checksum: 805058e4ad65b406239c809f9c09288c668e7d92b86dc77e7a3ddb16584f5103bf7a2be28ebe8acd7dff617c54a8a7b875bdc8382e22096d4dd3e5430214f220
   languageName: node
   linkType: hard
 
