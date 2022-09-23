@@ -205,5 +205,6 @@ sequenceDiagram
     SDKOutboundDomainEventHandler->>SDKOutboundCommandEventHandler: ProcessSDKOutboundBulkResponseSent
     Note left of SDKOutboundCommandEventHandler: topic-sdk-outbound-command-events
     SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "RESPONSE_SENT"
+    SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: SDKOutboundBulkResponseSentProcessed
 
 ```

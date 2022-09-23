@@ -45,3 +45,4 @@ export * from './bulk_transfers_callback_processed';
 export * from './sdk_outbound_bulk_transfers_request_processed';
 export * from './sdk_outbound_bulk_response_prepared';
 export * from './sdk_outbound_bulk_party_info_request_processed';
+export * from './sdk_outbound_bulk_response_set_processed';

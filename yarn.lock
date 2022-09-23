@@ -2420,7 +2420,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-shared@npm:17.3.0":
+"@mojaloop/central-services-shared@npm:17.3.0, @mojaloop/central-services-shared@npm:^17.3.0":
   version: 17.3.0
   resolution: "@mojaloop/central-services-shared@npm:17.3.0"
   dependencies:
@@ -2622,6 +2622,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-command-event-handler@workspace:modules/outbound-command-event-handler"
   dependencies:
     "@mojaloop/api-snippets": ^16.0.3
+    "@mojaloop/central-services-shared": ^17.3.0
     "@mojaloop/logging-bc-client-lib": ^0.1.14
     "@mojaloop/logging-bc-public-types-lib": ^0.1.11
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"

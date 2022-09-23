@@ -716,6 +716,8 @@ export class ProcessHelper {
     const processBulkTransfersCallbackCmdEvt = new ProcessBulkTransfersCallbackCmdEvt(processBulkTransfersCallbackCmdEvtData)
     await this.commandEventProducer.sendCommandEvent(processBulkTransfersCallbackCmdEvt);
 
+    await Timer.wait(messageTimeout);
+
     if (options.StopAfterEvent === StopAfterEventEnum.ProcessBulkTransfersCallbackCmdEvt) {
       this.logger.warn(`ProcessHelper - Stopping at StopAfterEvent=${StopAfterEventEnum.ProcessBulkTransfersCallbackCmdEvt}`);
       return {
@@ -727,6 +729,10 @@ export class ProcessHelper {
         domainEvents: this.domainEvents
       }
     };
+
+    // TODO: Need to add PrepareSDKOutboundBulkResponse
+
+    // TODO: Need to add ProcessSDKOutboundBulkResponseSent
 
     return {
       bulkTransactionId,
