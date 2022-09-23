@@ -92,7 +92,8 @@ describe("Tests for ProcessSDKOutboundBulkTransferRequestCmdEvnt Command Event",
     await bulkTransactionEntityRepo.destroy();
   });
 
-  test("When inbound command event ProcessSDKOutboundBulkTransfersRequestCompleteCmdEvt is received \
+  // TODO: Clarify with @sri as to what the intent of this test-case is considering the CmdEvt does not exist?
+  test.skip("When inbound command event ProcessSDKOutboundBulkTransfersRequestCompleteCmdEvt is received \
         Then the global state should be updated to TRANSFERS_COMPLETED \
         And SDKOutboundBulkTransfersRequestProcessedDmEvnt should be published", async () => {
 
