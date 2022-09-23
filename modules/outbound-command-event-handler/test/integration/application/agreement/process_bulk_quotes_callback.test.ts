@@ -25,47 +25,47 @@
  --------------
  ******/
 
- "use strict";
+"use strict";
 
- import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
- import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
- import { SDKSchemeAdapter } from "@mojaloop/api-snippets";
- 
- import {
-   BulkBatchInternalState,
-   BulkQuotesCallbackProcessedDmEvt,
-   BulkTransactionInternalState,
-   DomainEvent,
-   IKafkaEventConsumerOptions,
-   IKafkaEventProducerOptions,
-   IndividualTransferInternalState,
-   IProcessBulkQuotesCallbackCmdEvtData,
-   IProcessPartyInfoCallbackCmdEvtData,
-   IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData,
-   IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData,
-   IProcessSDKOutboundBulkQuotesRequestCmdEvtData,
-   IProcessSDKOutboundBulkRequestCmdEvtData,
-   IRedisBulkTransactionStateRepoOptions,
-   KafkaCommandEventProducer,
-   KafkaDomainEventConsumer,
-   ProcessBulkQuotesCallbackCmdEvt,
-   ProcessPartyInfoCallbackCmdEvt,
-   ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt,
-   ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
-   ProcessSDKOutboundBulkQuotesRequestCmdEvt,
-   ProcessSDKOutboundBulkRequestCmdEvt,
-   RedisBulkTransactionStateRepo,
-   SDKOutboundBulkQuotesRequestProcessedDmEvt,
- } from "@mojaloop/sdk-scheme-adapter-private-shared-lib"
- import { randomUUID } from "crypto";
+import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
+import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
+import { SDKSchemeAdapter } from "@mojaloop/api-snippets";
+
+import {
+  BulkBatchInternalState,
+  BulkQuotesCallbackProcessedDmEvt,
+  BulkTransactionInternalState,
+  DomainEvent,
+  IKafkaEventConsumerOptions,
+  IKafkaEventProducerOptions,
+  IndividualTransferInternalState,
+  IProcessBulkQuotesCallbackCmdEvtData,
+  IProcessPartyInfoCallbackCmdEvtData,
+  IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData,
+  IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData,
+  IProcessSDKOutboundBulkQuotesRequestCmdEvtData,
+  IProcessSDKOutboundBulkRequestCmdEvtData,
+  IRedisBulkTransactionStateRepoOptions,
+  KafkaCommandEventProducer,
+  KafkaDomainEventConsumer,
+  ProcessBulkQuotesCallbackCmdEvt,
+  ProcessPartyInfoCallbackCmdEvt,
+  ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt,
+  ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
+  ProcessSDKOutboundBulkQuotesRequestCmdEvt,
+  ProcessSDKOutboundBulkRequestCmdEvt,
+  RedisBulkTransactionStateRepo,
+  SDKOutboundBulkQuotesRequestProcessedDmEvt,
+} from "@mojaloop/sdk-scheme-adapter-private-shared-lib"
+import { randomUUID } from "crypto";
 import { Timer } from "../../../util/timer";
- 
+
  // Tests can timeout in a CI pipeline so giving it leeway
  jest.setTimeout(30000)
- 
+
  const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion'); //TODO: parameterize the names here
  const messageTimeout = 2000;
- 
+
  // Setup for Kafka Producer
  const commandEventProducerOptions: IKafkaEventProducerOptions = {
      brokerList: 'localhost:9092',
@@ -73,7 +73,7 @@ import { Timer } from "../../../util/timer";
      topic: 'topic-sdk-outbound-command-events'
  }
  const producer = new KafkaCommandEventProducer(commandEventProducerOptions, logger)
- 
+
  // Setup for Kafka Consumer
  const domainEventConsumerOptions: IKafkaEventConsumerOptions = {
    brokerList: 'localhost:9092',
@@ -87,27 +87,27 @@ import { Timer } from "../../../util/timer";
    domainEvents.push(message);
  }
  const consumer = new KafkaDomainEventConsumer(_messageHandler.bind(this), domainEventConsumerOptions, logger)
- 
+
  // Setup for Redis access
  const bulkTransactionEntityRepoOptions: IRedisBulkTransactionStateRepoOptions = {
    connStr: 'redis://localhost:6379'
  }
  const bulkTransactionEntityRepo = new RedisBulkTransactionStateRepo(bulkTransactionEntityRepoOptions, logger);
- 
- 
+
+
  describe("Tests for ProcessBulkQuotesCallback Event Handler", () => {
- 
+
    beforeEach(async () => {
      domainEvents = [];
    });
- 
+
    beforeAll(async () => {
      await producer.init();
      await consumer.init();
      await consumer.start();
      await bulkTransactionEntityRepo.init();
    });
- 
+
    afterAll(async () => {
      await producer.destroy();
      await consumer.destroy();
@@ -631,7 +631,7 @@ import { Timer } from "../../../util/timer";
       const processSDKOutboundBulkRequestMessageObj = new ProcessSDKOutboundBulkRequestCmdEvt(sampleCommandEventData);
       await producer.sendCommandEvent(processSDKOutboundBulkRequestMessageObj);
       await Timer.wait(messageTimeout);
-  
+
       const bulkPartyInfoRequestCommandEventData: IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData = {
         bulkId: bulkTransactionId,
         timestamp: Date.now(),
@@ -642,10 +642,10 @@ import { Timer } from "../../../util/timer";
       );
       await producer.sendCommandEvent(bulkPartyInfoRequestCommandEventObj);
       await Timer.wait(messageTimeout);
-  
+
       // Get the randomly generated transferIds for the callback
       const randomGeneratedTransferIds = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
-  
+
       // The transfer ids are unordered so using the transfer amounts to identify each transfer
       // so we can reference the proper transferId in subsequent callbacks
       const amountList: string[] = []
@@ -653,7 +653,7 @@ import { Timer } from "../../../util/timer";
       amountList.push((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, randomGeneratedTransferIds[1])).request.amount)
       amountList.push((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, randomGeneratedTransferIds[2])).request.amount)
       amountList.push((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, randomGeneratedTransferIds[3])).request.amount)
-  
+
       // Simulate the domain handler sending the command handler PProcessPartyInfoCallback messages
       // for each individual transfer
       const processPartyInfoCallbackMessageData1: IProcessPartyInfoCallbackCmdEvtData = {
@@ -728,7 +728,7 @@ import { Timer } from "../../../util/timer";
         timestamp: Date.now(),
         headers: []
       }
-  
+
       const processPartyInfoCallbackMessageObjOne = new ProcessPartyInfoCallbackCmdEvt(processPartyInfoCallbackMessageData1);
       await producer.sendCommandEvent(processPartyInfoCallbackMessageObjOne);
       const processPartyInfoCallbackMessageObjTwo = new ProcessPartyInfoCallbackCmdEvt(processPartyInfoCallbackMessageData2);
@@ -738,7 +738,7 @@ import { Timer } from "../../../util/timer";
       const processPartyInfoCallbackMessageObjFour = new ProcessPartyInfoCallbackCmdEvt(processPartyInfoCallbackMessageData4);
       await producer.sendCommandEvent(processPartyInfoCallbackMessageObjFour);
       await Timer.wait(messageTimeout);
-  
+
       // Command event for bulk accept party info
       const processSDKOutboundBulkAcceptPartyInfoCommandEventData : IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData = {
         bulkId: bulkTransactionId,
@@ -775,7 +775,7 @@ import { Timer } from "../../../util/timer";
       );
       await producer.sendCommandEvent(processSDKOutboundBulkAcceptPartyInfoCommandEventObj);
       await Timer.wait(messageTimeout);
-  
+
       // Simulate domain handler sending command event for bulk quotes request
       const processSDKOutboundBulkQuotesRequestCommandEventData : IProcessSDKOutboundBulkQuotesRequestCmdEvtData = {
         bulkId: bulkTransactionId,
@@ -787,16 +787,16 @@ import { Timer } from "../../../util/timer";
       );
       await producer.sendCommandEvent(processSDKOutboundBulkQuotesRequestCommandEventObj);
       await Timer.wait(messageTimeout);
-  
+
       // Check that bulk batches have been created.
       // One should be for receiverfsp and another for differentfsp
       const bulkBatchIds = await bulkTransactionEntityRepo.getAllBulkBatchIds(bulkTransactionId);
       expect(bulkBatchIds[0]).toBeDefined();
       expect(bulkBatchIds[1]).toBeDefined();
-  
+
       const bulkBatchOne = await bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, bulkBatchIds[0]);
       const bulkBatchTwo = await bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, bulkBatchIds[1]);
-  
+
       // Bulk batch ids are unordered so check the quotes for the intended fsp
       // so we can send proper callbacks
       let receiverFspBatch;
@@ -808,12 +808,12 @@ import { Timer } from "../../../util/timer";
         receiverFspBatch = bulkBatchTwo
         differentFspBatch = bulkBatchOne
       }
-  
+
       const bulkQuoteId = randomUUID();
       const quoteAmountList: string[] = []
       quoteAmountList.push(receiverFspBatch.bulkQuotesRequest.individualQuotes[0].amount);
       quoteAmountList.push(receiverFspBatch.bulkQuotesRequest.individualQuotes[1].amount);
-  
+
       // Simulate the domain handler sending ProcessBulkQuotesCallback to command handler
       // for receiverfsp batch
       const processBulkQuotesCallbackCommandEventDataReceiverFsp : IProcessBulkQuotesCallbackCmdEvtData = {
@@ -863,9 +863,9 @@ import { Timer } from "../../../util/timer";
       );
       await producer.sendCommandEvent(processBulkQuotesCallbackCommandEventObjReceiverFsp);
       await Timer.wait(messageTimeout);
-  
+
       const bulkQuoteIdDifferentFsp = randomUUID();
-  
+
       // Simulate the domain handler sending ProcessBulkQuotesCallback to command handler
       // for differentfsp batch with empty results
       // Currently only empty individualQuoteResults result in AGREEMENT_FAILED for bulk batch state
@@ -888,33 +888,33 @@ import { Timer } from "../../../util/timer";
       );
       await producer.sendCommandEvent(processBulkQuotesCallbackCommandEventObjDifferentFsp);
       await Timer.wait(messageTimeout);
-  
+
       // Check that the state of bulk batch for receiverfsp to be AGREEMENT_COMPLETED
       const postBulkBatchReceiverFsp = await bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, receiverFspBatch.id);
       expect(postBulkBatchReceiverFsp.state).toBe(BulkBatchInternalState.AGREEMENT_COMPLETED);
-  
+
       // Check that bulkQuoteResponse state has been updated to COMPLETED
       expect(postBulkBatchReceiverFsp.bulkQuotesResponse!.currentState).toEqual("COMPLETED")
-  
+
       // Check that the state of bulk batch for differentfsp to be AGREEMENT_FAILED
       const postBulkBatchDifferentFsp = await bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, differentFspBatch.id);
       expect(postBulkBatchDifferentFsp.state).toBe(BulkBatchInternalState.AGREEMENT_FAILED);
-  
+
       // Check that bulkQuoteResponse state has been updated to ERROR_OCCURRED
       expect(postBulkBatchDifferentFsp.bulkQuotesResponse!.currentState).toEqual("ERROR_OCCURRED")
-  
+
       // Check the individual transfer state whose quote was successful in a successful bulk quote batch
       expect((await bulkTransactionEntityRepo.getIndividualTransfer(
         bulkTransactionId,
         randomGeneratedTransferIds[amountList.indexOf('1')])).state)
       .toBe(IndividualTransferInternalState.AGREEMENT_SUCCESS);
-  
+
       // Check the individual transfer state whose quote was errored in a successful bulk quote batch
       expect((await bulkTransactionEntityRepo.getIndividualTransfer(
         bulkTransactionId,
         randomGeneratedTransferIds[amountList.indexOf('2')])).state)
       .toBe(IndividualTransferInternalState.AGREEMENT_FAILED);
-  
+
       // Check the individual transfer state whose quotes were in an errored bulk quote batch
       expect((await bulkTransactionEntityRepo.getIndividualTransfer(
         bulkTransactionId,
@@ -924,21 +924,21 @@ import { Timer } from "../../../util/timer";
         bulkTransactionId,
         randomGeneratedTransferIds[amountList.indexOf('4')])).state)
       .toBe(IndividualTransferInternalState.AGREEMENT_FAILED);
-  
+
       // Now that all the bulk batches have reached a final state check the global state
       // Check that the global state of bulk to be AGREEMENT_COMPLETED
       const bulkStateAgreementCompleted = await bulkTransactionEntityRepo.load(bulkTransactionId);
       expect(bulkStateAgreementCompleted.state).toBe(BulkTransactionInternalState.AGREEMENT_COMPLETED);
-  
+
       // Check that command handler published BulkQuotesCallbackProcessed message
       const hasBulkQuotesCallbackProcessed = (domainEvents.find((e) => e.getName() === BulkQuotesCallbackProcessedDmEvt.name));
       expect(hasBulkQuotesCallbackProcessed).toBeTruthy();
-  
+
       // Check that command handler published SDKOutboundBulkQuotesRequestProcessed message
       const hasSDKOutboundBulkQuotesRequestProcessed = (domainEvents.find((e) => e.getName() === SDKOutboundBulkQuotesRequestProcessedDmEvt.name));
       expect(hasSDKOutboundBulkQuotesRequestProcessed).toBeTruthy();
     });
- 
+
    // Skipping this since there is no easy way to programmatically control the
    // maxEntryConfigPerBatch config value atm.
    test.skip("Given the callback for quote batch is successful \
