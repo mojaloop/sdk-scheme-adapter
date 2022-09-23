@@ -45,6 +45,8 @@ import {
     ProcessSDKOutboundBulkTransfersRequestCmdEvt,
     ProcessSDKOutboundBulkAcceptQuoteCmdEvt,
     ProcessBulkTransfersCallbackCmdEvt,
+    PrepareSDKOutboundBulkResponseCmdEvt,
+    ProcessSDKOutboundBulkResponseSentCmdEvt,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { ICommandEventHandlerOptions } from '@module-types';
 
@@ -171,6 +173,22 @@ export class OutboundEventHandler implements IRunHandler {
             case ProcessBulkTransfersCallbackCmdEvt.name: {
                 BulkTransactionAgg.ProcessCommandEvent(
                     ProcessBulkTransfersCallbackCmdEvt.CreateFromCommandEvent(message),
+                    this._commandEventHandlerOptions,
+                    this._logger,
+                );
+                break;
+            }
+            case PrepareSDKOutboundBulkResponseCmdEvt.name: {
+                BulkTransactionAgg.ProcessCommandEvent(
+                    PrepareSDKOutboundBulkResponseCmdEvt.CreateFromCommandEvent(message),
+                    this._commandEventHandlerOptions,
+                    this._logger,
+                );
+                break;
+            }
+            case ProcessSDKOutboundBulkResponseSentCmdEvt.name:{
+                BulkTransactionAgg.ProcessCommandEvent(
+                    ProcessSDKOutboundBulkResponseSentCmdEvt.CreateFromCommandEvent(message),
                     this._commandEventHandlerOptions,
                     this._logger,
                 );
