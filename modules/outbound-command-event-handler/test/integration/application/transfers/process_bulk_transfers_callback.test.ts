@@ -26,7 +26,6 @@
 
 import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
-import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 import {
   BulkBatchInternalState,
@@ -44,7 +43,6 @@ import {
   SDKOutboundBulkTransfersRequestProcessedDmEvt,
   SDKOutboundTransferState,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
-import { randomUUID } from "crypto";
 import { ProcessHelper, StopAfterEventEnum } from "../../../util/generator";
 
 // Tests can timeout in a CI pipeline so giving it leeway
@@ -211,8 +209,8 @@ describe("Tests for ProcessBulkTransfersCallbackCmdEvt Command Event", () => {
 
     // Now that all the bulk batches have reached a final state check the global state
     // Check that the global state of bulk to be TRANSFERS_COMPLETED
-    const bulkStateAgreementCompleted = await processHelper.bulkTransactionEntityRepo.load(bulkTransactionId);
-    expect(bulkStateAgreementCompleted.state).toBe(BulkTransactionInternalState.TRANSFERS_COMPLETED);
+    const bulkStateTransfersCompleted = await processHelper.bulkTransactionEntityRepo.load(bulkTransactionId);
+    expect(bulkStateTransfersCompleted.state).toBe(BulkTransactionInternalState.TRANSFERS_COMPLETED);
 
     // Check that command handler published BulkQuotesCallbackProcessed message
     const hasBulkQuotesCallbackProcessed = (processHelper.domainEvents.find((e) => e.getName() === BulkQuotesCallbackProcessedDmEvt.name));

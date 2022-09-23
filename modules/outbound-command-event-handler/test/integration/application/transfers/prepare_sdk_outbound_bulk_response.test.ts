@@ -26,26 +26,14 @@
 
 import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
-import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 import {
-  BulkBatchInternalState,
-  BulkBatchState,
-  BulkQuotesCallbackProcessedDmEvt,
   BulkTransactionInternalState,
-  BulkTransfersCallbackProcessedDmEvt,
-  BulkTransfersRequestedDmEvt,
   IKafkaEventConsumerOptions,
   IKafkaEventProducerOptions,
-  IndividualTransferInternalState,
   IRedisBulkTransactionStateRepoOptions,
-  SDKOutboundBulkAcceptQuoteProcessedDmEvt,
-  SDKOutboundBulkQuotesRequestProcessedDmEvt,
   SDKOutboundBulkResponsePreparedDmEvt,
-  SDKOutboundBulkTransfersRequestProcessedDmEvt,
-  SDKOutboundTransferState,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
-import { randomUUID } from "crypto";
 import { ProcessHelper, StopAfterEventEnum } from "../../../util/generator";
 
 // Tests can timeout in a CI pipeline so giving it leeway
