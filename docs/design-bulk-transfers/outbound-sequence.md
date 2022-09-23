@@ -32,17 +32,22 @@ sequenceDiagram
 
 
     loop Party Lookup per transfer
-        SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Read individual attributes, if the party info already exists then change the individual state to DISCOVERY_SUCCESS else publish the individual event and update the state to DISCOVERY_RECEIVED
-        SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the party request
-        SDKOutboundCommandEventHandler->>SDKFspiopApi: PartyInfoRequested (includes info for SDK for making a party call)
-        Note left of SDKFspiopApi: topic-sdk-outbound-domain-events
-        SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Set individual state: DISCOVERY_PROCESSING
-        SDKFspiopApi->>SDKFspiopApi: Process outbound Trace Headers
-        SDKFspiopApi->>MojaloopSwitch: GET /parties
-        MojaloopSwitch->>SDKFspiopApi: PUT /parties
-        SDKFspiopApi->>SDKFspiopApi: Process Inbound Trace Headers
-        SDKFspiopApi->>SDKOutboundDomainEventHandler: PartyInfoCallbackReceived
-        Note right of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
+                    SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the global state to DISCOVERY_RECEIVED
+        alt party info already exists
+            SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the individual state to DISCOVERY_SUCCESS
+            SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: PartyInfoCallbackReceived
+        else party info doesn't exist
+            SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the party request
+            SDKOutboundCommandEventHandler->>SDKFspiopApi: PartyInfoRequested (includes info for SDK for making a party call)
+            Note left of SDKFspiopApi: topic-sdk-outbound-domain-events
+            SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Set individual state: DISCOVERY_PROCESSING
+            SDKFspiopApi->>SDKFspiopApi: Process outbound Trace Headers
+            SDKFspiopApi->>MojaloopSwitch: GET /parties
+            MojaloopSwitch->>SDKFspiopApi: PUT /parties
+            SDKFspiopApi->>SDKFspiopApi: Process Inbound Trace Headers
+            SDKFspiopApi->>SDKOutboundDomainEventHandler: PartyInfoCallbackReceived
+            Note right of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
+        end
         SDKOutboundDomainEventHandler->>SDKOutboundCommandEventHandler: ProcessPartyInfoCallback
         Note left of SDKOutboundCommandEventHandler: topic-sdk-outbound-command-events
         SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the individual state: DISCOVERY_SUCCESS / DISCOVERY_FAILED
