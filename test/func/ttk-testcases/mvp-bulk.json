@@ -5,7 +5,7 @@
       "id": 1,
       "name": "1. Happy Path",
       "fileInfo": {
-        "path": "mvp-bulk.json"
+        "path": "ttk-testcases/mvp-bulk.json"
       },
       "requests": [
         {
@@ -285,7 +285,7 @@
                 "id": 4,
                 "description": "Check state is WAITING_FOR_QUOTE_ACCEPTANCE",
                 "exec": [
-                  "expect(environment.acceptQuoteCallback.body.currentState).to.equal('WAITING_FOR_QUOTE_ACCEPTANCE')"
+                  "expect(environment.acceptQuoteCallback.body.currentState).to.equal('COMPLETED')"
                 ]
               }
             ]
@@ -315,7 +315,7 @@
       "id": 2,
       "name": "2. When the receiverfsp information already exists in the request in to section, Then party lookup should be skipped and PUT /bulkTxn response should be received",
       "fileInfo": {
-        "path": "mvp-bulk.json"
+        "path": "ttk-testcases/mvp-bulk.json"
       },
       "requests": [
         {
@@ -604,7 +604,7 @@
       "id": 3,
       "name": "3. When the request has a receiver-id that does not exist in payee fsp, Then the payer fsp backend should receive an ID not found as error message.",
       "fileInfo": {
-        "path": "mvp-bulk.json"
+        "path": "ttk-testcases/mvp-bulk.json"
       },
       "requests": [
         {
@@ -717,7 +717,7 @@
       "id": 4,
       "name": "4. When the receiver fsp responds after the timeout elapses, Then the payer fsp should receive an timed-out as error message.",
       "fileInfo": {
-        "path": "mvp-bulk.json"
+        "path": "ttk-testcases/mvp-bulk.json"
       },
       "requests": [
         {
@@ -837,7 +837,7 @@
       "id": 5,
       "name": "5. Given there are 2 transfers in the bulk request, When one transfer has a succesful party lookup and the other has a failure, Then the PUT response should have details about both the transfers, And the response to PUT should only have one acceptParty.",
       "fileInfo": {
-        "path": "mvp-bulk.json"
+        "path": "ttk-testcases/mvp-bulk.json"
       },
       "requests": [
         {
@@ -1095,7 +1095,7 @@
       "id": 6,
       "name": "6. Given there are 2 transfers in the bulk request, When one transfer has a succesful party lookup and the other has a timeout, Then the PUT response should have details about both the transfers, And the response to PUT should only have one acceptParty.",
       "fileInfo": {
-        "path": "mvp-bulk.json"
+        "path": "ttk-testcases/mvp-bulk.json"
       },
       "requests": [
         {
@@ -1353,7 +1353,7 @@
       "id": 7,
       "name": "7. Given there are 2 transfers in the bulk request that has the same receiver id, When acceptParty is set to true for both the transfers in PUT request, Then the PUT response should have details about both the transfers for acceptQuote.",
       "fileInfo": {
-        "path": "mvp-bulk.json"
+        "path": "ttk-testcases/mvp-bulk.json"
       },
       "requests": [
         {
@@ -1594,7 +1594,7 @@
       "id": 8,
       "name": "8. Given party lookup is skipped and bulk quotes request is submitted, When receiver fsp errors out while sending bulk quotes reponse, Then the PUT response should have error details about the transfer.",
       "fileInfo": {
-        "path": "mvp-bulk.json"
+        "path": "ttk-testcases/mvp-bulk.json"
       },
       "requests": [
         {
@@ -1829,7 +1829,7 @@
       "id": 9,
       "name": "9. Given party lookup is skipped and bulk quotes request is submitted, When receiver fsp sends response after timeout while sending bulk quotes reponse, Then the PUT response should have error details about timeout.",
       "fileInfo": {
-        "path": "mvp-bulk.json"
+        "path": "ttk-testcases/mvp-bulk.json"
       },
       "requests": [
         {
@@ -2064,7 +2064,7 @@
       "id": 10,
       "name": "10. Given party lookup is skipped and bulk quotes request having 2 transfers with same receiver fsp id is submitted, When receiver fsp sends response for only transfer out of the 2 while sending bulk quotes reponse, Then the PUT response should have error details about missing transfer.",
       "fileInfo": {
-        "path": "mvp-bulk.json"
+        "path": "ttk-testcases/mvp-bulk.json"
       },
       "requests": [
         {
@@ -2312,7 +2312,7 @@
       "id": 11,
       "name": "11. When there are 3 transfers in the bulk request 2 of which that have the same receiver fsp id and the 3rd one has a different receiver fsp id and acceptParty is true for all the transfers, Then the PUT response should have details of all the 3 transfers for acceptQuote.",
       "fileInfo": {
-        "path": "mvp-bulk.json"
+        "path": "ttk-testcases/mvp-bulk.json"
       },
       "requests": [
         {
@@ -2566,7 +2566,7 @@
       "id": 12,
       "name": "12. Given there are 3 transfers in the bulk request 2 of which that have the same receiver fsp id and the 3rd one has a different receiver fsp id, When the receiver with receiverhas1id times out sending the response, Then the PUT response should have details of all the 2 transfers from receiverfsphas2ids.",
       "fileInfo": {
-        "path": "mvp-bulk.json"
+        "path": "ttk-testcases/mvp-bulk.json"
       },
       "requests": [
         {
@@ -2820,7 +2820,7 @@
       "id": 13,
       "name": "13. Given there are 3 transfers in the bulk request all of which that have the same receiver fsp id, When the receiver fsp sends the response for only 2 transfers in the batch and not the third one, Then the PUT response should have details of all the 3 transfers with an error for the 3rd transfer that did not have any response.",
       "fileInfo": {
-        "path": "mvp-bulk.json"
+        "path": "ttk-testcases/mvp-bulk.json"
       },
       "requests": [
         {
