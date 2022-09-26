@@ -435,7 +435,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         for await (const bulkBatchId of batchesPerFspIdArray) {
             const bulkBatch = await this.getBulkBatchEntityById(bulkBatchId);
             if(bulkBatch.state == BulkBatchInternalState.AGREEMENT_COMPLETED) {
-                const individualQuoteResults = bulkBatch.bulkQuotesResponse?.individualQuoteResults; // TODO: Are we not missing the condition here?
+                const individualQuoteResults = bulkBatch.bulkQuotesResponse?.individualQuoteResults;
 
                 if(individualQuoteResults == null) continue; // TODO: how to handle this?
 
