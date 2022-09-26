@@ -41,6 +41,7 @@ import {
   // IEventProducer,
   IKafkaEventConsumerOptions,
   IKafkaEventProducerOptions,
+  IPrepareSDKOutboundBulkResponseCmdEvtData,
   IProcessBulkQuotesCallbackCmdEvtData,
   IProcessBulkTransfersCallbackCmdEvtData,
   IProcessPartyInfoCallbackCmdEvtData,
@@ -49,11 +50,13 @@ import {
   IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData,
   IProcessSDKOutboundBulkQuotesRequestCmdEvtData,
   IProcessSDKOutboundBulkRequestCmdEvtData,
+  IProcessSDKOutboundBulkResponseSentCmdEvtData,
   IProcessSDKOutboundBulkTransfersRequestCmdEvtData,
   IRedisBulkTransactionStateRepoOptions,
   KafkaCommandEventProducer,
   KafkaDomainEventConsumer,
   KafkaDomainEventProducer,
+  PrepareSDKOutboundBulkResponseCmdEvt,
   ProcessBulkQuotesCallbackCmdEvt,
   ProcessBulkTransfersCallbackCmdEvt,
   ProcessPartyInfoCallbackCmdEvt,
@@ -62,6 +65,7 @@ import {
   ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
   ProcessSDKOutboundBulkQuotesRequestCmdEvt,
   ProcessSDKOutboundBulkRequestCmdEvt,
+  ProcessSDKOutboundBulkResponseSentCmdEvt,
   ProcessSDKOutboundBulkTransfersRequestCmdEvt,
   RedisBulkTransactionStateRepo,
 } from "@mojaloop/sdk-scheme-adapter-private-shared-lib"
@@ -78,6 +82,8 @@ export enum StopAfterEventEnum {
   ProcessSDKOutboundBulkAcceptQuoteCmdEvt = 'ProcessSDKOutboundBulkAcceptQuoteCmdEvt',
   ProcessSDKOutboundBulkTransfersRequestCmdEvt = 'ProcessSDKOutboundBulkTransfersRequestCmdEvt',
   ProcessBulkTransfersCallbackCmdEvt = 'ProcessBulkTransfersCallbackCmdEvt',
+  PrepareSDKOutboundBulkResponseCmdEvt = 'PrepareSDKOutboundBulkResponseCmdEvt',
+  ProcessSDKOutboundBulkResponseSentCmdEvt = 'ProcessSDKOutboundBulkResponseSentCmdEvt',
 }
 
 export type IProcessHelperGenerateOptions = {
@@ -730,9 +736,53 @@ export class ProcessHelper {
       }
     };
 
-    // TODO: Need to add PrepareSDKOutboundBulkResponse
+    const prepareSDKOutboundBulkResponseCmdEvt: IPrepareSDKOutboundBulkResponseCmdEvtData = {
+      bulkId: bulkTransactionId,
+      content: null,
+      timestamp: Date.now(),
+      headers: null
+    }
 
-    // TODO: Need to add ProcessSDKOutboundBulkResponseSent
+    const PrepareSDKOutboundBulkResponse = new PrepareSDKOutboundBulkResponseCmdEvt(prepareSDKOutboundBulkResponseCmdEvt)
+    await this.commandEventProducer.sendCommandEvent(PrepareSDKOutboundBulkResponse);
+
+    await Timer.wait(messageTimeout);
+
+    if (options.StopAfterEvent === StopAfterEventEnum.PrepareSDKOutboundBulkResponseCmdEvt) {
+      this.logger.warn(`ProcessHelper - Stopping at StopAfterEvent=${StopAfterEventEnum.PrepareSDKOutboundBulkResponseCmdEvt}`);
+      return {
+        bulkTransactionId,
+        amountList,
+        quoteAmountList,
+        individualTransferIds: randomGeneratedTransferIds,
+        bulkBatchIds,
+        domainEvents: this.domainEvents
+      }
+    };
+
+    const processSDKOutboundBulkResponseSentCmdEvtData: IProcessSDKOutboundBulkResponseSentCmdEvtData = {
+      bulkId: bulkTransactionId,
+      content: null,
+      timestamp: Date.now(),
+      headers: null
+    }
+
+    const processSDKOutboundBulkResponseSentCmdEvt = new ProcessSDKOutboundBulkResponseSentCmdEvt(processSDKOutboundBulkResponseSentCmdEvtData)
+    await this.commandEventProducer.sendCommandEvent(processSDKOutboundBulkResponseSentCmdEvt);
+
+    await Timer.wait(messageTimeout);
+
+    if (options.StopAfterEvent === StopAfterEventEnum.ProcessSDKOutboundBulkResponseSentCmdEvt) {
+      this.logger.warn(`ProcessHelper - Stopping at StopAfterEvent=${StopAfterEventEnum.ProcessSDKOutboundBulkResponseSentCmdEvt}`);
+      return {
+        bulkTransactionId,
+        amountList,
+        quoteAmountList,
+        individualTransferIds: randomGeneratedTransferIds,
+        bulkBatchIds,
+        domainEvents: this.domainEvents
+      }
+    };
 
     return {
       bulkTransactionId,
