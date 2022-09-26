@@ -2524,14 +2524,32 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/platform-shared-lib-messaging-types-lib@npm:^0.2.0, @mojaloop/platform-shared-lib-messaging-types-lib@npm:~0.2.0":
+"@mojaloop/platform-shared-lib-messaging-types-lib@npm:^0.1.1, @mojaloop/platform-shared-lib-messaging-types-lib@npm:~0.1.0":
+  version: 0.1.1
+  resolution: "@mojaloop/platform-shared-lib-messaging-types-lib@npm:0.1.1"
+  checksum: 495aace8eecb1eb3fddbe0d6ef90a0453ec8c99e4f7c606e94922a3277379f676ed78d52dd4a9a38a6117dd3b1992dc4d3485518545ed4d767421fccce5ef284
+  languageName: node
+  linkType: hard
+
+"@mojaloop/platform-shared-lib-messaging-types-lib@npm:~0.2.0":
   version: 0.2.0
   resolution: "@mojaloop/platform-shared-lib-messaging-types-lib@npm:0.2.0"
   checksum: d10678bc22d4b154f44be14106d57695d97ec049d24554605870a98ca4cf4e7f3d907566b87612563217b17c0b9628b319493319b75fc892f157f7a3413daac6
   languageName: node
   linkType: hard
 
-"@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:^0.2.0, @mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:~0.2.0":
+"@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:0.1.1"
+  dependencies:
+    "@mojaloop/logging-bc-public-types-lib": ^0.1.11
+    "@mojaloop/platform-shared-lib-messaging-types-lib": ~0.1.0
+    node-rdkafka: ^2.13.0
+  checksum: ea65acdab11ce6ddf1cc71a20f178d444ae8925b45ac3f0b77ef4bcce80de77432d0aca4c3696c7d9124ad6846806eb1c911706a6b18dfb0cc76b1c33c8119ce
+  languageName: node
+  linkType: hard
+
+"@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:~0.2.0":
   version: 0.2.0
   resolution: "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:0.2.0"
   dependencies:
@@ -2671,8 +2689,8 @@ __metadata:
   dependencies:
     "@mojaloop/api-snippets": ^16.0.3
     "@mojaloop/logging-bc-public-types-lib": ^0.1.12
-    "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.2.0
-    "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": ^0.2.0
+    "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.1.1
+    "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": ^0.1.1
     "@types/node": ^18.7.22
     ajv: ^8.11.0
     eslint: ^8.24.0
@@ -10567,7 +10585,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-rdkafka@npm:~2.13.0":
+"node-rdkafka@npm:^2.13.0, node-rdkafka@npm:~2.13.0":
   version: 2.13.0
   resolution: "node-rdkafka@npm:2.13.0"
   dependencies:
