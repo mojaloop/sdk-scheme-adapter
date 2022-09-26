@@ -1,6 +1,0 @@
-{
-    "reject": [
-        "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib",
-        "@mojaloop/platform-shared-lib-messaging-types-lib"
-    ]
-}
