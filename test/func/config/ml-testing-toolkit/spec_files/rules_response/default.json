@@ -244,7 +244,7 @@
   {
     "ruleId": 5,
     "priority": 1,
-    "description": "post /bulkQuotes - bulk quotes receiver responds with 2 quotes results",
+    "description": "post /bulkQuotes - bulk quotes receiver responds with 1 quotes result",
     "apiVersion": {
       "minorVersion": 4,
       "majorVersion": 1,
@@ -280,8 +280,8 @@
       "path": null,
       "params": {
         "body": {
-          "bulkQuoteId": "{$request.body.bulkQuoteId",
-          "expiration": "2040-01-01T00:00:00.000Z",
+          "bulkQuoteId": "{$request.body.bulkQuoteId}",
+          "expiration": "{$request.body.expiration}",
           "individualQuoteResults": [
             {
               "quoteId": "{$request.body.individualQuotes[0].quoteId}",
@@ -377,7 +377,7 @@
         {
           "fact": "body",
           "operator": "equal",
-          "value": "bulkquotesreceiversendserror",
+          "value": "bulkquotesreceivertimesout",
           "path": "individualQuotes[0].to.fspId"
         },
         {
@@ -397,10 +397,23 @@
       "path": null,
       "params": {
         "body": {
-          "statusCode": "4001",
-          "message": "Cannot process the bulk quote"
+          "bulkQuoteId": "{$request.body.bulkQuoteId}",
+          "expiration": "2040-01-01T00:00:00.000Z",
+          "individualQuoteResults": [
+            {
+              "quoteId": "{$request.body.individualQuotes[0].quoteId}",
+              "transferAmount": "{$request.body.individualQuotes[0].amount}",
+              "transferAmountCurrency": "{$request.body.individualQuotes[0].currency}",
+              "payeeReceiveAmount": "{$request.body.individualQuotes[0].amount}",
+              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[0].currency}",
+              "payeeFspFeeAmount": "0",
+              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[0].currency}",
+              "payeeFspCommissionAmount": "0",
+              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[0].currency}"
+            }
+          ]
         },
-        "statusCode": "500",
+        "statusCode": "200",
         "scripts": {
           "scriptingEngine": "postman"
         },

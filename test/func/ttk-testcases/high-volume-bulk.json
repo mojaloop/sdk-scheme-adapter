@@ -37,7 +37,7 @@
               "autoAcceptQuote": {
                 "enabled": false
               },
-              "skipPartyLookup": false,
+              "skipPartyLookup": true,
               "synchronous": false,
               "bulkExpiration": "{$requestVariables.bulkTimeout}"
             },
@@ -53,7 +53,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp1"
                   }
                 },
                 "amountType": "SEND",
@@ -65,7 +66,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp2"
                   }
                 },
                 "amountType": "SEND",
@@ -77,7 +79,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp3"
                   }
                 },
                 "amountType": "SEND",
@@ -89,7 +92,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp4"
                   }
                 },
                 "amountType": "SEND",
@@ -101,7 +105,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp5"
                   }
                 },
                 "amountType": "SEND",
@@ -113,7 +118,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp6"
                   }
                 },
                 "amountType": "SEND",
@@ -125,7 +131,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp7"
                   }
                 },
                 "amountType": "SEND",
@@ -137,7 +144,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp8"
                   }
                 },
                 "amountType": "SEND",
@@ -149,7 +157,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp9"
                   }
                 },
                 "amountType": "SEND",
@@ -161,7 +170,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp10"
                   }
                 },
                 "amountType": "SEND",
@@ -173,7 +183,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp11"
                   }
                 },
                 "amountType": "SEND",
@@ -185,7 +196,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp12"
                   }
                 },
                 "amountType": "SEND",
@@ -197,7 +209,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp13"
                   }
                 },
                 "amountType": "SEND",
@@ -209,7 +222,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp14"
                   }
                 },
                 "amountType": "SEND",
@@ -221,7 +235,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp15"
                   }
                 },
                 "amountType": "SEND",
@@ -233,7 +248,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp16"
                   }
                 },
                 "amountType": "SEND",
@@ -245,7 +261,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp17"
                   }
                 },
                 "amountType": "SEND",
@@ -257,7 +274,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp18"
                   }
                 },
                 "amountType": "SEND",
@@ -269,7 +287,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp19"
                   }
                 },
                 "amountType": "SEND",
@@ -281,7 +300,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp20"
                   }
                 },
                 "amountType": "SEND",
@@ -293,7 +313,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp21"
                   }
                 },
                 "amountType": "SEND",
@@ -305,7 +326,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp22"
                   }
                 },
                 "amountType": "SEND",
@@ -317,7 +339,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp23"
                   }
                 },
                 "amountType": "SEND",
@@ -329,7 +352,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp24"
                   }
                 },
                 "amountType": "SEND",
@@ -341,7 +365,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp25"
                   }
                 },
                 "amountType": "SEND",
@@ -353,7 +378,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp26"
                   }
                 },
                 "amountType": "SEND",
@@ -365,7 +391,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp27"
                   }
                 },
                 "amountType": "SEND",
@@ -377,7 +404,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp28"
                   }
                 },
                 "amountType": "SEND",
@@ -389,7 +417,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp29"
                   }
                 },
                 "amountType": "SEND",
@@ -401,7 +430,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp30"
                   }
                 },
                 "amountType": "SEND",
@@ -413,7 +443,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp31"
                   }
                 },
                 "amountType": "SEND",
@@ -425,7 +456,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp32"
                   }
                 },
                 "amountType": "SEND",
@@ -437,7 +469,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp33"
                   }
                 },
                 "amountType": "SEND",
@@ -449,7 +482,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp34"
                   }
                 },
                 "amountType": "SEND",
@@ -461,7 +495,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp35"
                   }
                 },
                 "amountType": "SEND",
@@ -473,7 +508,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp36"
                   }
                 },
                 "amountType": "SEND",
@@ -485,7 +521,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp37"
                   }
                 },
                 "amountType": "SEND",
@@ -497,7 +534,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp38"
                   }
                 },
                 "amountType": "SEND",
@@ -509,7 +547,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp39"
                   }
                 },
                 "amountType": "SEND",
@@ -521,7 +560,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp40"
                   }
                 },
                 "amountType": "SEND",
@@ -533,7 +573,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp41"
                   }
                 },
                 "amountType": "SEND",
@@ -545,7 +586,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp42"
                   }
                 },
                 "amountType": "SEND",
@@ -557,7 +599,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp43"
                   }
                 },
                 "amountType": "SEND",
@@ -569,7 +612,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp44"
                   }
                 },
                 "amountType": "SEND",
@@ -581,7 +625,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp45"
                   }
                 },
                 "amountType": "SEND",
@@ -593,7 +638,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp46"
                   }
                 },
                 "amountType": "SEND",
@@ -605,7 +651,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp47"
                   }
                 },
                 "amountType": "SEND",
@@ -617,7 +664,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp48"
                   }
                 },
                 "amountType": "SEND",
@@ -629,7 +677,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp49"
                   }
                 },
                 "amountType": "SEND",
@@ -641,7 +690,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "56781234"
+                    "partyIdentifier": "56781234",
+                    "fspId": "receiverfsp50"
                   }
                 },
                 "amountType": "SEND",
@@ -1109,69 +1159,11 @@
                 "id": 2,
                 "description": "Check number of returned transfers",
                 "exec": [
-                  "expect(environment.transfersCallback.body.individualTransferResults.length).to.equal(1)"
+                  "expect(environment.transfersCallback.body.individualTransferResults.length).to.equal(50)"
                 ]
               },
               {
                 "id": 3,
-                "description": "Check response MSISDN is same as in the request",
-                "exec": [
-                  "expect(environment.transfersCallback.body.individualTransferResults[0].to.partyIdInfo.partyIdentifier).to.equal('56781234')"
-                ]
-              },
-              {
-                "id": 4,
-                "description": "Check response has the receiver fspid populated",
-                "exec": [
-                  "expect(environment.transfersCallback.body.individualTransferResults[0].to.partyIdInfo.fspId).to.not.be.empty"
-                ]
-              },
-              {
-                "id": 5,
-                "description": "Check response receiver first name is ReceiverFirst",
-                "exec": [
-                  "expect(environment.transfersCallback.body.individualTransferResults[0].to.personalInfo.complexName.firstName).to.equal('ReceiverFirst')"
-                ]
-              },
-              {
-                "id": 6,
-                "description": "Check response receiver last name is ReceiverLast",
-                "exec": [
-                  "expect(environment.transfersCallback.body.individualTransferResults[0].to.personalInfo.complexName.lastName).to.equal('ReceiverLast')"
-                ]
-              },
-              {
-                "id": 7,
-                "description": "Check response has quote result",
-                "exec": [
-                  "expect(environment.transfersCallback.body.individualTransferResults[0].quoteResponse).to.exist;"
-                ]
-              },
-              {
-                "id": 8,
-                "description": "Check response has ilpPacket and condition",
-                "exec": [
-                  "expect(environment.transfersCallback.body.individualTransferResults[0].quoteResponse.ilpPacket).to.not.be.empty;",
-                  "",
-                  "expect(environment.transfersCallback.body.individualTransferResults[0].quoteResponse.condition).to.not.be.empty;"
-                ]
-              },
-              {
-                "id": 9,
-                "description": "Check response has  fulfillment",
-                "exec": [
-                  "expect(environment.transfersCallback.body.individualTransferResults[0].fulfil.fulfilment).to.exist;"
-                ]
-              },
-              {
-                "id": 10,
-                "description": "Check response has  COMPLETED state",
-                "exec": [
-                  "expect(environment.transfersCallback.body.individualTransferResults[0].fulfil.transferState).to.equal('COMMITTED');"
-                ]
-              },
-              {
-                "id": 11,
                 "description": "Check overall bulk transaction state is COMPLETED",
                 "exec": [
                   "expect(environment.transfersCallback.body.currentState).to.equal('COMPLETED')"
