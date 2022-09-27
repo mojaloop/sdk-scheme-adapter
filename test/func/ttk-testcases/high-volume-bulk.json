@@ -721,34 +721,6 @@
               },
               {
                 "id": 3,
-                "description": "Check response MSISDN is same as in the request",
-                "exec": [
-                  "expect(environment.acceptPartyCallback.body.individualTransferResults[0].to.partyIdInfo.partyIdentifier).to.equal('56781234')"
-                ]
-              },
-              {
-                "id": 4,
-                "description": "Check response has the receiver fspid populated",
-                "exec": [
-                  "expect(environment.acceptPartyCallback.body.individualTransferResults[0].to.partyIdInfo.fspId).to.not.be.empty"
-                ]
-              },
-              {
-                "id": 5,
-                "description": "Check response receiver first name is ReceiverFirst",
-                "exec": [
-                  "expect(environment.acceptPartyCallback.body.individualTransferResults[0].to.personalInfo.complexName.firstName).to.equal('ReceiverFirst')"
-                ]
-              },
-              {
-                "id": 6,
-                "description": "Check response receiver last name is ReceiverLast",
-                "exec": [
-                  "expect(environment.acceptPartyCallback.body.individualTransferResults[0].to.personalInfo.complexName.lastName).to.equal('ReceiverLast')"
-                ]
-              },
-              {
-                "id": 7,
                 "description": "Check current state is WAITING_FOR_PARTY_ACCEPTANCE",
                 "exec": [
                   "expect(environment.acceptPartyCallback.body.currentState).to.equal('WAITING_FOR_PARTY_ACCEPTANCE')"
