@@ -1923,7 +1923,7 @@
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
                     "partyIdentifier": "123456789",
-                    "fspId": "bulkquotesreceiversendserror"
+                    "fspId": "bulkquotesreceivertimesout"
                   }
                 },
                 "amountType": "SEND",
@@ -1949,20 +1949,6 @@
                 "description": "Check number of returned transfers",
                 "exec": [
                   "expect(environment.acceptPartyCallback.body.individualTransferResults.length).to.equal(1)"
-                ]
-              },
-              {
-                "id": 3,
-                "description": "Check that the response has an error code of 4001",
-                "exec": [
-                  "expect(environment.acceptPartyCallback.body.individualTransferResults[0].lastError.mojaloopError.errorInformation.errorCode).to.equal('4001')"
-                ]
-              },
-              {
-                "id": 4,
-                "description": "Check that the response has an error description of ID Not Found",
-                "exec": [
-                  "expect(environment.acceptPartyCallback.body.individualTransferResults[0].lastError.mojaloopError.errorInformation.description).to.equal('ID Not Found')"
                 ]
               }
             ]
@@ -2018,11 +2004,6 @@
                 "homeTransactionId": "abc456",
                 "transactionId": "{$environment.acceptPartyCallback.body.individualTransferResults[0].transactionId}",
                 "acceptParty": true
-              },
-              {
-                "homeTransactionId": "abc456",
-                "transactionId": "{$environment.acceptPartyCallback.body.individualTransferResults[1].transactionId}",
-                "acceptParty": true
               }
             ]
           },
@@ -2057,22 +2038,6 @@
                   "expect(environment.acceptQuoteCallback.body.individualTransferResults[0].quoteResponse.ilpPacket).to.not.be.empty;",
                   "",
                   "expect(environment.acceptQuoteCallback.body.individualTransferResults[0].quoteResponse.condition).to.not.be.empty;"
-                ]
-              },
-              {
-                "id": 5,
-                "description": "Check response has quote result for second transfer",
-                "exec": [
-                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[1].quoteResponse).to.exist;"
-                ]
-              },
-              {
-                "id": 6,
-                "description": "Check response has ilpPacket and condition for second transfer",
-                "exec": [
-                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[1].quoteResponse.ilpPacket).to.not.be.empty;",
-                  "",
-                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[1].quoteResponse.condition).to.not.be.empty;"
                 ]
               },
               {
@@ -2198,20 +2163,6 @@
                 "exec": [
                   "expect(environment.acceptPartyCallback.body.individualTransferResults.length).to.equal(1)"
                 ]
-              },
-              {
-                "id": 3,
-                "description": "Check that the response has an error code of 4001",
-                "exec": [
-                  "expect(environment.acceptPartyCallback.body.individualTransferResults[0].lastError.mojaloopError.errorInformation.errorCode).to.equal('4001')"
-                ]
-              },
-              {
-                "id": 4,
-                "description": "Check that the response has an error description of ID Not Found",
-                "exec": [
-                  "expect(environment.acceptPartyCallback.body.individualTransferResults[0].lastError.mojaloopError.errorInformation.description).to.equal('ID Not Found')"
-                ]
               }
             ]
           },
@@ -2239,7 +2190,7 @@
         },
         {
           "id": 2,
-          "description": "put bulk transaction",
+          "description": "put bulk transaction for acceptParty",
           "apiVersion": {
             "minorVersion": 0,
             "majorVersion": 1,
@@ -2493,7 +2444,7 @@
         },
         {
           "id": 2,
-          "description": "put bulk transaction",
+          "description": "put bulk transaction for acceptParty",
           "apiVersion": {
             "minorVersion": 0,
             "majorVersion": 1,
@@ -2525,6 +2476,11 @@
                 "homeTransactionId": "abc456",
                 "transactionId": "{$environment.acceptPartyCallback.body.individualTransferResults[1].transactionId}",
                 "acceptParty": true
+              },
+              {
+                "homeTransactionId": "abc456",
+                "transactionId": "{$environment.acceptPartyCallback.body.individualTransferResults[2].transactionId}",
+                "acceptParty": true
               }
             ]
           },
@@ -2542,7 +2498,7 @@
                 "id": 2,
                 "description": "Check number of returned transfers",
                 "exec": [
-                  "expect(environment.acceptQuoteCallback.body.individualTransferResults.length).to.equal(2)"
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults.length).to.equal(3)"
                 ]
               },
               {
@@ -2579,6 +2535,22 @@
               },
               {
                 "id": 7,
+                "description": "Check response has quote result for third transfer",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[2].quoteResponse).to.exist;"
+                ]
+              },
+              {
+                "id": 8,
+                "description": "Check response has ilpPacket and condition for third transfer",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[2].quoteResponse.ilpPacket).to.not.be.empty;",
+                  "",
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[2].quoteResponse.condition).to.not.be.empty;"
+                ]
+              },
+              {
+                "id": 9,
                 "description": "Check state is WAITING_FOR_QUOTE_ACCEPTANCE",
                 "exec": [
                   "expect(environment.acceptQuoteCallback.body.currentState).to.equal('WAITING_FOR_QUOTE_ACCEPTANCE')"
@@ -2863,7 +2835,7 @@
     },
     {
       "id": 13,
-      "name": "13. Given there are 3 transfers in the bulk request all of which that have the same receiver fsp id, When the receiver fsp sends the response for only 2 transfers in the batch and not the third one, Then the PUT response should have details of all the 3 transfers with an error for the 3rd transfer that did not have any response.",
+      "name": "13. Given there are 2 transfers in the bulk request, When the sender fsp sends the acceptParty response for only transfers and not the second one, Then the PUT response should have details of the 1 transfer for which the acceptParty response was sent.",
       "fileInfo": {
         "path": "ttk-testcases/mvp-bulk.json"
       },
@@ -2913,8 +2885,7 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "123456789",
-                    "fspId": "receiverfsphas2ids"
+                    "partyIdentifier": "123456789"
                   }
                 },
                 "amountType": "SEND",
@@ -2926,21 +2897,7 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "123456007",
-                    "fspId": "receiverfsphas2ids"
-                  }
-                },
-                "amountType": "SEND",
-                "currency": "USD",
-                "amount": "678.91"
-              },
-              {
-                "homeTransactionId": "abc3",
-                "to": {
-                  "partyIdInfo": {
-                    "partyIdType": "MSISDN",
-                    "partyIdentifier": "123456007",
-                    "fspId": "receiverfsphas2ids"
+                    "partyIdentifier": "123456789"
                   }
                 },
                 "amountType": "SEND",
@@ -2990,11 +2947,7 @@
                 "",
                 "environment.bulkTransactionId = acceptPartyCallback.body.bulkTransactionId;",
                 "",
-                "environment.acceptPartyCallback = acceptPartyCallback;",
-                "",
-                "environment.individualTransferId1 = acceptPartyCallback.body.individualTransferResults[0].transactionId;",
-                "",
-                "environment.individualTransferId2 = acceptPartyCallback.body.individualTransferResults[1].transactionId;"
+                "environment.acceptPartyCallback = acceptPartyCallback;"
               ]
             }
           }
@@ -3028,11 +2981,6 @@
                 "homeTransactionId": "abc456",
                 "transactionId": "{$environment.acceptPartyCallback.body.individualTransferResults[0].transactionId}",
                 "acceptParty": true
-              },
-              {
-                "homeTransactionId": "abc456",
-                "transactionId": "{$environment.acceptPartyCallback.body.individualTransferResults[1].transactionId}",
-                "acceptParty": true
               }
             ]
           },
@@ -3050,7 +2998,7 @@
                 "id": 2,
                 "description": "Check number of returned transfers",
                 "exec": [
-                  "expect(environment.acceptQuoteCallback.body.individualTransferResults.length).to.equal(2)"
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults.length).to.equal(1)"
                 ]
               },
               {
@@ -3071,22 +3019,6 @@
               },
               {
                 "id": 5,
-                "description": "Check response has quote result for second transfer",
-                "exec": [
-                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[1].quoteResponse).to.exist;"
-                ]
-              },
-              {
-                "id": 6,
-                "description": "Check response has ilpPacket and condition for second transfer",
-                "exec": [
-                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[1].quoteResponse.ilpPacket).to.not.be.empty;",
-                  "",
-                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[1].quoteResponse.condition).to.not.be.empty;"
-                ]
-              },
-              {
-                "id": 7,
                 "description": "Check state is WAITING_FOR_QUOTE_ACCEPTANCE",
                 "exec": [
                   "expect(environment.acceptQuoteCallback.body.currentState).to.equal('WAITING_FOR_QUOTE_ACCEPTANCE')"
