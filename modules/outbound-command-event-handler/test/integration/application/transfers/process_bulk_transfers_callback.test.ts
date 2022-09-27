@@ -26,13 +26,13 @@
 
 import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
-import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 import {
   BulkBatchInternalState,
   BulkBatchState,
   BulkQuotesCallbackProcessedDmEvt,
   BulkTransactionInternalState,
+  BulkTransfersCallbackProcessedDmEvt,
   BulkTransfersRequestedDmEvt,
   IKafkaEventConsumerOptions,
   IKafkaEventProducerOptions,
@@ -40,9 +40,9 @@ import {
   IRedisBulkTransactionStateRepoOptions,
   SDKOutboundBulkAcceptQuoteProcessedDmEvt,
   SDKOutboundBulkQuotesRequestProcessedDmEvt,
+  SDKOutboundBulkTransfersRequestProcessedDmEvt,
   SDKOutboundTransferState,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
-import { randomUUID } from "crypto";
 import { ProcessHelper, StopAfterEventEnum } from "../../../util/generator";
 
 // Tests can timeout in a CI pipeline so giving it leeway
@@ -80,7 +80,7 @@ const bulkTransactionEntityRepoOptions: IRedisBulkTransactionStateRepoOptions = 
 
 let processHelper: ProcessHelper;
 
-describe("Tests for PrepareSDKOutboundBulkResponseCmdEvt Command Event", () => {
+describe("Tests for ProcessBulkTransfersCallbackCmdEvt Command Event", () => {
 
   beforeEach(async () => {
     processHelper.resetDomainEvents();
@@ -103,13 +103,6 @@ describe("Tests for PrepareSDKOutboundBulkResponseCmdEvt Command Event", () => {
     await processHelper.destroy();
   });
 
-  test("When inbound command event ProcessBulkTransfersCallbackCmdEvt is received \
-  Then the transfer batch state should be updated to TRANSFERS_COMPLETED \
-  And the logic should loop through individual transfers in the batch and update the state to TRANSFER_SUCCESS or TRANSFER_FAILED \
-  And BulkTransferProcessedDmEvnt should be published for each transfer batch", async () => {
-    // TO BE IMPLEMENTED
-  });
-
   test("Given the BulkTransaction with Options { \
         synchronous: false, \
         onlyValidateParty: true, \
@@ -117,18 +110,17 @@ describe("Tests for PrepareSDKOutboundBulkResponseCmdEvt Command Event", () => {
         autoAcceptParty: false, \
         autoAcceptQuote: false \
       } \
-      And callback for quote batch is successful \
-      And the callback has a combination of success and failed responses for individual quotes \
-      When Inbound command event ProcessSDKOutboundBulkTransfersRequestCmdEvt is received \
-      Then the global Bulk Transaction State should be updated to TRANSFERS_PROCESSING \
-      And the individual batch state should be equal to either TRANSFERS_PROCESSING or TRANSFERS_FAILED, \
-      And for each individual transfers in the batch, the state AGREEMENT_ACCEPTED or AGREEMENT_REJECTED depending on the acceptQuotes = TRUE/FALSE, \
-      And for each individual transfers in an AGREEMENT_FAILED state should not be altered, \
-      And the individual quote data in redis should be updated with the response \
+      When inbound command event ProcessBulkTransfersCallbackCmdEvt is received \
+      Then the transfer batch state should be updated to TRANSFERS_COMPLETED \
+      States of failed quotes should remain AGREEMENT_FAILED \
+      And the logic should loop through individual transfers in the batch and update the state to TRANSFER_SUCCESS or TRANSFER_FAILED \
+      And BulkTransferProcessedDmEvt should be published for each transfer batch \
       And domain event BulkQuotesCallbackProcessed should be published \
       And domain event SDKOutboundBulkQuotesRequestProcessed should be published \
       And domain event SDKOutboundBulkAutoAcceptQuoteProcessedDmEvt should be published \
       And domain event BulkTransfersRequestedDmEvt should be published \
+      And domain event BulkTransfersCallbackProcessed should be published \
+      And domain event SDKOutboundBulkTransfersRequestProcessed should be published \
     ",
     async () => {
     // SETUP // ACT
@@ -170,9 +162,9 @@ describe("Tests for PrepareSDKOutboundBulkResponseCmdEvt Command Event", () => {
       throw Error('Shouldnt be here'); // TODO: Handle this
     }
 
-    // Check that the state of bulk batch for receiverfsp to be TRANSFERS_PROCESSING
+    // Check that the state of bulk batch for receiverfsp to be TRANSFERS_COMPLETED
     const postBulkBatchReceiverFsp = await processHelper.bulkTransactionEntityRepo.getBulkBatch(bulkTransactionId, receiverFspBatch.id);
-    expect(postBulkBatchReceiverFsp.state).toBe(BulkBatchInternalState.TRANSFERS_PROCESSING);
+    expect(postBulkBatchReceiverFsp.state).toBe(BulkBatchInternalState.TRANSFERS_COMPLETED);
 
     // Check that bulkQuoteResponse state has been updated to COMPLETED
     expect(postBulkBatchReceiverFsp.bulkQuotesResponse!.currentState).toEqual(SDKOutboundTransferState.COMPLETED)
@@ -202,7 +194,7 @@ describe("Tests for PrepareSDKOutboundBulkResponseCmdEvt Command Event", () => {
     expect((await processHelper.bulkTransactionEntityRepo.getIndividualTransfer(
       bulkTransactionId,
       result?.individualTransferIds[result?.amountList?.indexOf('2')])).state
-    ).toBe(IndividualTransferInternalState.TRANSFERS_FAILED);
+    ).toBe(IndividualTransferInternalState.AGREEMENT_FAILED);
 
     // Check the individual transfer state whose quotes were in an errored bulk quote batch
     expect((await processHelper.bulkTransactionEntityRepo.getIndividualTransfer(
@@ -216,9 +208,9 @@ describe("Tests for PrepareSDKOutboundBulkResponseCmdEvt Command Event", () => {
     ).toBe(IndividualTransferInternalState.AGREEMENT_FAILED);
 
     // Now that all the bulk batches have reached a final state check the global state
-    // Check that the global state of bulk to be TRANSFERS_PROCESSING
-    const bulkStateAgreementCompleted = await processHelper.bulkTransactionEntityRepo.load(bulkTransactionId);
-    expect(bulkStateAgreementCompleted.state).toBe(BulkTransactionInternalState.TRANSFERS_PROCESSING);
+    // Check that the global state of bulk to be TRANSFERS_COMPLETED
+    const bulkStateTransfersCompleted = await processHelper.bulkTransactionEntityRepo.load(bulkTransactionId);
+    expect(bulkStateTransfersCompleted.state).toBe(BulkTransactionInternalState.TRANSFERS_COMPLETED);
 
     // Check that command handler published BulkQuotesCallbackProcessed message
     const hasBulkQuotesCallbackProcessed = (processHelper.domainEvents.find((e) => e.getName() === BulkQuotesCallbackProcessedDmEvt.name));
@@ -235,5 +227,13 @@ describe("Tests for PrepareSDKOutboundBulkResponseCmdEvt Command Event", () => {
     // Check that command handler published hasBulkTransfersRequested message
     const hasBulkTransfersRequested = (processHelper.domainEvents.find((e) => e.getName() === BulkTransfersRequestedDmEvt.name));
     expect(hasBulkTransfersRequested).toBeTruthy();
+
+    // Check that command handler published SDKOutboundBulkAutoAcceptQuoteProcessed message
+    const hasBulkTransfersCallbackProcessed = (processHelper.domainEvents.find((e) => e.getName() === BulkTransfersCallbackProcessedDmEvt.name));
+    expect(hasBulkTransfersCallbackProcessed).toBeTruthy();
+
+    // Check that command handler published SDKOutboundBulkTransfersRequestProcessed message
+    const hasSDKOutboundBulkTransfersRequestProcessed = (processHelper.domainEvents.find((e) => e.getName() === SDKOutboundBulkTransfersRequestProcessedDmEvt.name));
+    expect(hasSDKOutboundBulkTransfersRequestProcessed).toBeTruthy();
   });
 });

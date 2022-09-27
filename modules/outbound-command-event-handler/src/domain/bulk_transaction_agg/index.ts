@@ -40,6 +40,7 @@ import {
     BulkBatchEntity,
     BulkBatchState,
     IndividualTransferInternalState,
+    BulkBatchInternalState,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
@@ -433,62 +434,65 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         let bulkTransfersTotalCount = 0;
         for await (const bulkBatchId of batchesPerFspIdArray) {
             const bulkBatch = await this.getBulkBatchEntityById(bulkBatchId);
+            if(bulkBatch.state == BulkBatchInternalState.AGREEMENT_COMPLETED) {
+                const individualQuoteResults = bulkBatch.bulkQuotesResponse?.individualQuoteResults;
 
-            const individualQuoteResults = bulkBatch.bulkQuotesResponse?.individualQuoteResults; // TODO: Are we not missing the condition here?
+                if(individualQuoteResults == null) continue; // TODO: how to handle this?
 
-            if(individualQuoteResults == null) continue; // TODO: how to handle this?
+                for await (const individualQuoteResult of individualQuoteResults) {
+                    if(!individualQuoteResult.lastError) {
+                        const individualTransferId = bulkBatch.getReferenceIdForQuoteId(individualQuoteResult.quoteId);
+                        const individualTransfer = await this.getIndividualTransferById(individualTransferId);
+                        const party = individualTransfer.partyResponse?.party;
+                        const condition = individualTransfer.quoteResponse?.condition;
+                        if(!condition) {
+                            throw new Error(`condition for BulkBatch[${bulkBatchId}].IndividualTransfer[${individualTransferId}] is missing!`);
+                        }
+                        const ilpPacket = individualTransfer.quoteResponse?.ilpPacket;
+                        if(!ilpPacket) {
+                            throw new Error(`ilpPacket for BulkBatch[${bulkBatchId}].IndividualTransfer[${individualTransferId}] is missing!`);
+                        }
 
-            for await (const individualQuoteResult of individualQuoteResults) {
-                const individualTransferId = bulkBatch.getReferenceIdForQuoteId(individualQuoteResult.quoteId);
-                const individualTransfer = await this.getIndividualTransferById(individualTransferId);
-                const party = individualTransfer.partyResponse?.party;
-                const condition = individualTransfer.quoteResponse?.condition;
-                if(!condition) {
-                    throw new Error(`condition for BulkBatch[${bulkBatchId}].IndividualTransfer[${individualTransferId}] is missing!`);
+                        if(party) {
+                            // Generate Transfers request
+                            const individualBulkTransferRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualTransfer = {
+                                transferId: individualTransfer.id,
+                                to: {
+                                    idType: party.partyIdInfo.partyIdType,
+                                    idValue: party.partyIdInfo.partyIdentifier,
+                                    idSubValue: party.partyIdInfo.partySubIdOrType,
+                                    displayName: party.name,
+                                    firstName: party.personalInfo?.complexName?.firstName,
+                                    middleName: party.personalInfo?.complexName?.middleName,
+                                    lastName: party.personalInfo?.complexName?.lastName,
+                                    dateOfBirth: party.personalInfo?.dateOfBirth,
+                                    merchantClassificationCode: party.merchantClassificationCode,
+                                    fspId: party.partyIdInfo.fspId,
+                                    extensionList: party.partyIdInfo.extensionList?.extension,
+                                },
+                                amountType: individualTransfer.request.amountType,
+                                currency: individualTransfer.request.currency,
+                                amount: individualTransfer.request.amount,
+                                condition,
+                                ilpPacket,
+                                transactionType: 'TRANSFER',
+                                extensions: individualTransfer.request.quoteExtensions,
+                            };
+                            this._logger.debug(`Generated Transfers Request ${JSON.stringify(individualBulkTransferRequest, null, 2)} for BulkBatch.bulkQuoteId=${bulkBatch.bulkQuoteId}`);
+                            // Add Transfers to batch
+                            bulkBatch.addIndividualTransfer(
+                                individualBulkTransferRequest,
+                                individualTransfer.id,
+                            );
+                        }
+                        // Add Transfers to batch
+                        bulkTransfersTotalCount += 1;
+                    }
                 }
-                const ilpPacket = individualTransfer.quoteResponse?.ilpPacket;
-                if(!ilpPacket) {
-                    throw new Error(`ilpPacket for BulkBatch[${bulkBatchId}].IndividualTransfer[${individualTransferId}] is missing!`);
-                }
-
-                if(party) {
-                    // Generate Transfers request
-                    const individualBulkTransferRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualTransfer = {
-                        transferId: individualTransfer.id,
-                        to: {
-                            idType: party.partyIdInfo.partyIdType,
-                            idValue: party.partyIdInfo.partyIdentifier,
-                            idSubValue: party.partyIdInfo.partySubIdOrType,
-                            displayName: party.name,
-                            firstName: party.personalInfo?.complexName?.firstName,
-                            middleName: party.personalInfo?.complexName?.middleName,
-                            lastName: party.personalInfo?.complexName?.lastName,
-                            dateOfBirth: party.personalInfo?.dateOfBirth,
-                            merchantClassificationCode: party.merchantClassificationCode,
-                            fspId: party.partyIdInfo.fspId,
-                            extensionList: party.partyIdInfo.extensionList?.extension,
-                        },
-                        amountType: individualTransfer.request.amountType,
-                        currency: individualTransfer.request.currency,
-                        amount: individualTransfer.request.amount,
-                        condition,
-                        ilpPacket,
-                        transactionType: 'TRANSFER',
-                        extensions: individualTransfer.request.quoteExtensions,
-                    };
-                    this._logger.debug(`Generated Transfers Request ${JSON.stringify(individualBulkTransferRequest, null, 2)} for BulkBatch.bulkQuoteId=${bulkBatch.bulkQuoteId}`);
-                    // Add Transfers to batch
-                    bulkBatch.addIndividualTransfer(
-                        individualBulkTransferRequest,
-                        individualTransfer.id,
-                    );
-                }
-                // Add Transfers to batch
-                bulkTransfersTotalCount += 1;
+                // TODO: should we not add the bulkTransfersRequest to the BulkTransaction.individualItem and update its status?
+                await this.setBulkBatchById(bulkBatch.id, bulkBatch);
+                await this.setBulkTransfersTotalCount(bulkTransfersTotalCount);
             }
-            // TODO: should we not add the bulkTransfersRequest to the BulkTransaction.individualItem and update its status?
-            await this.setBulkBatchById(bulkBatch.id, bulkBatch);
-            await this.setBulkTransfersTotalCount(bulkTransfersTotalCount);
         }
         return {
             bulkTransfersTotalCount,
