@@ -166,7 +166,7 @@ export class ProcessHelper {
       }
   ): Promise<GenerateReturn> {
     const bulkTransactionId = options?.bulkTransactionRequest?.bulkTransactionId || randomUUID();
-    
+
     const defaultBulkTransactionOptions: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest['options'] = {
       onlyValidateParty: true,
       autoAcceptParty: {
@@ -540,7 +540,7 @@ export class ProcessHelper {
                 amount: '1',
               },
               ilpPacket: 'string',
-              condition: 'string'
+              condition: 'BYZDY3HBhwqhiTtzbf4nKADcmsNVMCHCCRkYQFb5cbZ'
             },
             {
               quoteId: receiverFspBatch.bulkQuotesRequest.individualQuotes[quoteAmountList.indexOf('2')].quoteId,
@@ -549,7 +549,7 @@ export class ProcessHelper {
                 amount: '2',
               },
               ilpPacket: 'string',
-              condition: 'string',
+              condition: 'BYZDY3HBhwqhiTtzbf4nKADcmsNVMCHCCRkYQFb5cbZ',
               lastError: {
                 httpStatusCode: 500,
                 mojaloopError: {
@@ -689,8 +689,8 @@ export class ProcessHelper {
     const bulkTransferId = randomUUID();
     const transferAmountList: string[] = []
     transferAmountList.push(receiverFspBatch.bulkTransfersRequest.individualTransfers[0].amount);
-    transferAmountList.push(receiverFspBatch.bulkTransfersRequest.individualTransfers[1].amount);
 
+    // TODO: Need to handle a transfer callback that is errored
     const processBulkTransfersCallbackCmdEvtData: IProcessBulkTransfersCallbackCmdEvtData = {
       bulkId: bulkTransactionId,
       content: {
@@ -706,10 +706,6 @@ export class ProcessHelper {
           individualTransferResults: [
             {
               transferId: receiverFspBatch.bulkTransfersRequest.individualTransfers[0].transferId,
-              fulfilment: 'fulfilment',
-            },
-            { // TODO: This should not be included since the Quote failed for this request. There is no validation when this is send!
-              transferId: receiverFspBatch.bulkTransfersRequest.individualTransfers[1].transferId,
               fulfilment: 'fulfilment',
             }
           ]
