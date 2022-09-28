@@ -28,12 +28,15 @@ import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
+type BulkQuoteResponse = SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteResponse;
+type BulkQuoteErrorResponse = SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteErrorResponse;
+
 export interface IBulkQuotesCallbackReceivedDmEvtData {
     bulkId: string;
     content: {
         batchId: string;
-        bulkQuoteId: string;
-        bulkQuotesResult: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteResponse;
+        bulkQuoteId?: string;
+        bulkQuotesResult: BulkQuoteResponse | BulkQuoteErrorResponse;
     };
     timestamp: number | null;
     headers: IMessageHeader[] | null;
@@ -68,12 +71,12 @@ export class BulkQuotesCallbackReceivedDmEvt extends DomainEvent {
         return content.batchId;
     }
 
-    get bulkQuoteId(): string {
+    get bulkQuoteId(): string | undefined {
         const content = this.getContent() as IBulkQuotesCallbackReceivedDmEvtData['content'];
         return content.bulkQuoteId;
     }
 
-    get bulkQuotesResult(): SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteResponse {
+    get bulkQuotesResult(): BulkQuoteResponse | BulkQuoteErrorResponse {
         const content = this.getContent() as IBulkQuotesCallbackReceivedDmEvtData['content'];
         return content.bulkQuotesResult;
     }

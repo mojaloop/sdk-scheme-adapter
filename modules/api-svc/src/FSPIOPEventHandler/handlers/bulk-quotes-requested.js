@@ -59,5 +59,19 @@ module.exports.handleBulkQuotesRequestedDmEvt = async (
     }
     catch (err) {
         logger.push({ err }).log('Error in handleBulkQuotesRequestedDmEvt');
+        const bulkQuotesCallbackReceivedDmEvt = new BulkQuotesCallbackReceivedDmEvt({
+            bulkId: event.getKey(),
+            content: {
+                batchId: event.batchId,
+                bulkQuotesResult: {
+                    statusCode: err.httpStatusCode,
+                    message: err.message,
+                    bulkQuoteState: err.bulkQuoteState,
+                },
+            },
+            timestamp: Date.now(),
+            headers: [],
+        });
+        await options.producer.sendDomainEvent(bulkQuotesCallbackReceivedDmEvt);
     }
 };

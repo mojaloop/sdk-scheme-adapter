@@ -59,5 +59,19 @@ module.exports.handleBulkTransfersRequestedDmEvt = async (
         await options.producer.sendDomainEvent(bulkTransfersCallbackReceivedDmEvt);
     } catch (err) {
         logger.push({ err }).log('Error in handleBulkTransfersRequestedDmEvt');
+        const bulkTransfersCallbackReceivedDmEvt = new BulkTransfersCallbackReceivedDmEvt({
+            bulkId: event.getKey(),
+            content: {
+                batchId: event.batchId,
+                bulkQuotesResult: {
+                    statusCode: err.httpStatusCode,
+                    message: err.message,
+                    bulkTransferState: err.bulkTransferState,
+                },
+            },
+            timestamp: Date.now(),
+            headers: [],
+        });
+        await options.producer.sendDomainEvent(bulkTransfersCallbackReceivedDmEvt);
     }
 };
