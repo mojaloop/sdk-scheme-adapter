@@ -41,6 +41,7 @@ import {
     BulkBatchState,
     IndividualTransferInternalState,
     BulkBatchInternalState,
+    BulkQuoteResponse,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
@@ -435,7 +436,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         for await (const bulkBatchId of batchesPerFspIdArray) {
             const bulkBatch = await this.getBulkBatchEntityById(bulkBatchId);
             if(bulkBatch.state == BulkBatchInternalState.AGREEMENT_COMPLETED) {
-                const individualQuoteResults = bulkBatch.bulkQuotesResponse?.individualQuoteResults;
+                const individualQuoteResults = (bulkBatch.bulkQuotesResponse as BulkQuoteResponse)?.individualQuoteResults;
 
                 if(individualQuoteResults == null) continue; // TODO: how to handle this?
 

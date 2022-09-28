@@ -25,10 +25,19 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { CommandEvent, BulkQuotesCallbackProcessedDmEvt, ProcessBulkQuotesCallbackCmdEvt, SDKOutboundBulkQuotesRequestProcessedDmEvt, SDKOutboundBulkAcceptQuoteRequestedDmEvt, CoreConnectorBulkAcceptQuoteRequestIndividualTransferResult } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import {
+    CommandEvent,
+    BulkQuotesCallbackProcessedDmEvt,
+    ProcessBulkQuotesCallbackCmdEvt,
+    SDKOutboundBulkQuotesRequestProcessedDmEvt,
+    SDKOutboundBulkAcceptQuoteRequestedDmEvt,
+    CoreConnectorBulkAcceptQuoteRequestIndividualTransferResult,
+    BulkQuoteResponse,
+} from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
 import { BulkBatchInternalState, BulkTransactionInternalState, IndividualTransferInternalState } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+
 
 export async function handleProcessBulkQuotesCallbackCmdEvt(
     message: CommandEvent,
@@ -51,7 +60,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
         const bulkBatch = await bulkTransactionAgg.getBulkBatchEntityById(
             processBulkQuotesCallbackMessage.batchId,
         );
-        const bulkQuotesResult = processBulkQuotesCallbackMessage.bulkQuotesResult;
+        const bulkQuotesResult = processBulkQuotesCallbackMessage.bulkQuotesResult as BulkQuoteResponse;
 
         // If individual quote result contains `lastError` the individual transfer state should be AGREEMENT_FAILED.
         // bulkQuotesResult.currentState === 'ERROR_OCCURRED' necessitates erroring out all individual transfers in that bulk batch.

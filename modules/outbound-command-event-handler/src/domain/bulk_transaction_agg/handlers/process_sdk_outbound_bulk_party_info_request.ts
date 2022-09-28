@@ -64,7 +64,7 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestCmdEvt(
         for await (const individualTransferId of allIndividualTransferIds) {
             const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
 
-            if(bulkTx.isSkipPartyLookupEnabled()) {
+            if(bulkTx.isSkipPartyLookupEnabled() || individualTransfer.isPartyInfoExists) {
                 let partyResult: IPartyResult;
                 if(individualTransfer.isPartyInfoExists) {
                     partyResult = {
