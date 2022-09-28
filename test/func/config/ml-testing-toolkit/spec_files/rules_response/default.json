@@ -118,17 +118,20 @@
       "minorVersion": 4,
       "majorVersion": 1,
       "type": "mojaloop_simulator_inbound",
-      "hostnames": [
-        "ttkpm4mlreceiver-ttk-backend"
-      ],
-      "specFile": "spec_files/api_definitions/payment_manager_1.4/api_spec.yaml",
-      "callbackMapFile": "spec_files/api_definitions/payment_manager_1.4/callback_map.json",
-      "responseMapFile": "spec_files/api_definitions/payment_manager_1.4/response_map.json",
-      "jsfRefFile": "spec_files/api_definitions/payment_manager_1.4/mockRef.json",
-      "triggerTemplatesFolder": "spec_files/api_definitions/payment_manager_1.4/trigger_templates"
+      "specFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/api_spec.yaml",
+      "callbackMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/callback_map.json",
+      "responseMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/response_map.json",
+      "jsfRefFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/mockRef.json",
+      "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/trigger_templates"
     },
     "conditions": {
       "all": [
+        {
+          "fact": "pathParams",
+          "operator": "equal",
+          "value": "idtimesout",
+          "path": "idValue"
+        },
         {
           "fact": "operationPath",
           "operator": "equal",
@@ -158,7 +161,8 @@
         "statusCode": "200",
         "scripts": {
           "scriptingEngine": "postman"
-        }
+        },
+        "delay": 300000
       },
       "type": "FIXED_RESPONSE"
     },
@@ -195,7 +199,7 @@
         {
           "fact": "method",
           "operator": "equal",
-          "value": "post"
+          "value": "get"
         }
       ]
     },
@@ -397,7 +401,7 @@
       "path": null,
       "params": {
         "body": {
-          "bulkQuoteId": "{$request.body.bulkQuoteId}",
+          "bulkQuoteId": "{$request.body.bulkQuoteId",
           "expiration": "2040-01-01T00:00:00.000Z",
           "individualQuoteResults": [
             {
