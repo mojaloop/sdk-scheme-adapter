@@ -60,7 +60,7 @@
   },
   "dependencies": {
     "@koa/cors": "^3.4.1",
-    "@mojaloop/api-snippets": "^16.0.1",
+    "@mojaloop/api-snippets": "^16.0.3",
     "@mojaloop/central-services-error-handling": "^12.0.4",
     "@mojaloop/central-services-logger": "^11.0.1",
     "@mojaloop/central-services-metrics": "^12.0.5",
@@ -88,7 +88,7 @@
     "random-word-slugs": "^0.1.6",
     "redis": "^4.3.1",
     "uuidv4": "^6.2.13",
-    "ws": "^8.8.1"
+    "ws": "^8.9.0"
   },
   "devDependencies": {
     "@babel/core": "^7.19.1",
@@ -96,14 +96,14 @@
     "@redocly/openapi-cli": "^1.0.0-beta.94",
     "@types/jest": "^29.0.3",
     "babel-jest": "^29.0.3",
-    "eslint": "^8.23.1",
+    "eslint": "^8.24.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jest": "^27.0.4",
     "jest": "^29.0.3",
     "jest-junit": "^14.0.1",
     "nock": "^13.2.9",
-    "npm-check-updates": "^16.2.1",
+    "npm-check-updates": "^16.3.2",
     "openapi-response-validator": "^12.0.2",
     "openapi-typescript": "^5.4.1",
     "redis-mock": "^0.56.3",

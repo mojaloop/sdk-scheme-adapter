@@ -42,6 +42,11 @@ import {
     SDKOutboundBulkAcceptPartyInfoReceivedDmEvt,
     SDKOutboundBulkAcceptPartyInfoProcessedDmEvt,
     BulkQuotesCallbackReceivedDmEvt,
+    SDKOutboundBulkAcceptQuoteReceivedDmEvt,
+    SDKOutboundBulkAcceptQuoteProcessedDmEvt,
+    BulkTransfersCallbackReceivedDmEvt,
+    SDKOutboundBulkTransfersRequestProcessedDmEvt,
+    SDKOutboundBulkResponseSentDmEvt,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { IDomainEventHandlerOptions } from '../types';
 import {
@@ -51,7 +56,12 @@ import {
     handleSDKOutboundBulkAcceptPartyInfoReceived,
     handleSDKOutboundBulkAcceptPartyInfoProcessed,
     handleBulkQuotesCallbackReceived,
+    handleSDKOutboundBulkAcceptQuoteReceived,
+    handleSDKOutboundBulkAcceptQuoteProcessed,
+    handleBulkTransfersCallbackReceived,
 } from './handlers';
+import { handleSDKOutboundBulkResponseSent } from './handlers/sdk_outbound_bulk_response_sent';
+import { handleSDKOutboundBulkTransfersRequestProcessed } from './handlers/sdk_outbound_bulk_transfers_request_processed';
 
 export interface IOutboundEventHandlerOptions {
     bulkTransactionEntityRepo: IBulkTransactionEntityReadOnlyRepo;
@@ -110,27 +120,90 @@ export class OutboundEventHandler implements IRunHandler {
         // TODO: Handle errors validation here
         switch (message.getName()) {
             case SDKOutboundBulkRequestReceivedDmEvt.name: {
-                await handleSDKOutboundBulkRequestReceived(message, this._domainEventHandlerOptions, this._logger);
+                await handleSDKOutboundBulkRequestReceived(
+                    message,
+                    this._domainEventHandlerOptions,
+                    this._logger,
+                );
                 break;
             }
             case SDKOutboundBulkPartyInfoRequestedDmEvt.name: {
-                await handleSDKOutboundBulkPartyInfoRequested(message, this._domainEventHandlerOptions, this._logger);
+                await handleSDKOutboundBulkPartyInfoRequested(
+                    message,
+                    this._domainEventHandlerOptions,
+                    this._logger,
+                );
                 break;
             }
             case PartyInfoCallbackReceivedDmEvt.name: {
-                await handlePartyInfoCallbackReceived(message, this._domainEventHandlerOptions, this._logger);
+                await handlePartyInfoCallbackReceived(
+                    message,
+                    this._domainEventHandlerOptions,
+                    this._logger,
+                );
                 break;
             }
             case SDKOutboundBulkAcceptPartyInfoReceivedDmEvt.name: {
-                await handleSDKOutboundBulkAcceptPartyInfoReceived(message, this._domainEventHandlerOptions, this._logger);
+                await handleSDKOutboundBulkAcceptPartyInfoReceived(
+                    message,
+                    this._domainEventHandlerOptions,
+                    this._logger,
+                );
                 break;
             }
             case SDKOutboundBulkAcceptPartyInfoProcessedDmEvt.name: {
-                await handleSDKOutboundBulkAcceptPartyInfoProcessed(message, this._domainEventHandlerOptions, this._logger);
+                await handleSDKOutboundBulkAcceptPartyInfoProcessed(
+                    message,
+                    this._domainEventHandlerOptions,
+                    this._logger,
+                );
                 break;
             }
             case BulkQuotesCallbackReceivedDmEvt.name: {
-                await handleBulkQuotesCallbackReceived(message, this._domainEventHandlerOptions, this._logger);
+                await handleBulkQuotesCallbackReceived(message,
+                    this._domainEventHandlerOptions,
+                    this._logger,
+                );
+                break;
+            }
+            case SDKOutboundBulkAcceptQuoteReceivedDmEvt.name: {
+                await handleSDKOutboundBulkAcceptQuoteReceived(
+                    message,
+                    this._domainEventHandlerOptions,
+                    this._logger,
+                );
+                break;
+            }
+            case SDKOutboundBulkAcceptQuoteProcessedDmEvt.name: {
+                await handleSDKOutboundBulkAcceptQuoteProcessed(
+                    message,
+                    this._domainEventHandlerOptions,
+                    this._logger,
+                );
+                break;
+            }
+            case BulkTransfersCallbackReceivedDmEvt.name: {
+                await handleBulkTransfersCallbackReceived(
+                    message,
+                    this._domainEventHandlerOptions,
+                    this._logger,
+                );
+                break;
+            }
+            case SDKOutboundBulkTransfersRequestProcessedDmEvt.name: {
+                await handleSDKOutboundBulkTransfersRequestProcessed(
+                    message,
+                    this._domainEventHandlerOptions,
+                    this._logger,
+                );
+                break;
+            }
+            case SDKOutboundBulkResponseSentDmEvt.name:  {
+                await handleSDKOutboundBulkResponseSent(
+                    message,
+                    this._domainEventHandlerOptions,
+                    this._logger,
+                );
                 break;
             }
             default: {
@@ -139,5 +212,4 @@ export class OutboundEventHandler implements IRunHandler {
             }
         }
     }
-
 }

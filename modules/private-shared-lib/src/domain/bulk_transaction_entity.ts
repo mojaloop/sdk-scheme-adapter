@@ -42,10 +42,15 @@ export enum BulkTransactionInternalState {
     DISCOVERY_COMPLETED = 'DISCOVERY_COMPLETED',
     DISCOVERY_ACCEPTANCE_PENDING = 'DISCOVERY_ACCEPTANCE_PENDING',
     AGREEMENT_PROCESSING = 'AGREEMENT_PROCESSING',
-    TRANSFER_PROCESSING = 'TRANSFER_PROCESSING',
+    TRANSFERS_PROCESSING = 'TRANSFERS_PROCESSING',
     DISCOVERY_ACCEPTANCE_COMPLETED = 'DISCOVERY_ACCEPTANCE_COMPLETED',
     AGREEMENT_COMPLETED = 'AGREEMENT_COMPLETED',
     AGREEMENT_ACCEPTANCE_PENDING = 'AGREEMENT_ACCEPTANCE_PENDING',
+    AGREEMENT_ACCEPTANCE_COMPLETED = 'AGREEMENT_ACCEPTANCE_COMPLETED',
+    TRANSFERS_COMPLETED = 'TRANSFERS_COMPLETED',
+    TRANSFERS_FAILED = 'TRANSFERS_FAILED',
+    RESPONSE_PROCESSING = 'RESPONSE_PROCESSING',
+    RESPONSE_SENT = 'RESPONSE_SENT',
 }
 
 export interface BulkTransactionState extends BaseEntityState {
@@ -71,6 +76,14 @@ export class BulkTransactionEntity extends BaseEntity<BulkTransactionState> {
 
     get from(): SDKSchemeAdapter.V2_0_0.Outbound.Types.Party {
         return this._state.from;
+    }
+
+    get state(): BulkTransactionInternalState {
+        return this._state.state;
+    }
+
+    get options(): SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionOptions {
+        return this._state.options;
     }
 
     get extensions(): SDKSchemeAdapter.V2_0_0.Outbound.Types.ExtensionList | undefined {

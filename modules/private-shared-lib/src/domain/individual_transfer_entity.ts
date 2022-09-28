@@ -46,7 +46,11 @@ export enum IndividualTransferInternalState {
     AGREEMENT_PROCESSING = 'AGREEMENT_PROCESSING',
     AGREEMENT_SUCCESS = 'AGREEMENT_SUCCESS',
     AGREEMENT_FAILED = 'AGREEMENT_FAILED',
-    TRANSFER_PROCESSING = 'TRANSFER_PROCESSING',
+    AGREEMENT_ACCEPTED = 'AGREEMENT_ACCEPTED',
+    AGREEMENT_REJECTED = 'AGREEMENT_REJECTED',
+    TRANSFERS_PROCESSING = 'TRANSFERS_PROCESSING',
+    TRANSFERS_FAILED = 'TRANSFERS_FAILED',
+    TRANSFERS_SUCCESS = 'TRANSFERS_SUCCESS',
 }
 
 export interface IndividualTransferState extends BaseEntityState {
@@ -61,6 +65,7 @@ export interface IndividualTransferState extends BaseEntityState {
     quoteResponse?: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualQuoteResult;
     transferResponse?: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualTransferResult;
     lastError?: SDKSchemeAdapter.V2_0_0.Outbound.Types.transferError;
+    transactionId?: string;
 }
 
 export class IndividualTransferEntity extends BaseEntity<IndividualTransferState> {
@@ -85,6 +90,10 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
 
     get transferResponse(): SDKSchemeAdapter.V2_0_0.Outbound.Types.individualTransferResult | undefined {
         return this._state.transferResponse;
+    }
+
+    get transactionId(): string | undefined {
+        return this._state.transactionId;
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
@@ -133,6 +142,11 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
 
     setAcceptParty(acceptParty: boolean) {
         this._state.acceptParty = acceptParty;
+    }
+
+    // This refers to the bulk batch id.
+    setTransactionId(transactionId: string) {
+        this._state.transactionId = transactionId;
     }
 
     // get payeeResolved(): boolean {

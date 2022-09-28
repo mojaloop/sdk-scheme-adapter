@@ -2,6 +2,8 @@
 
 ```mermaid
 sequenceDiagram
+    autonumber
+
     participant CoreConnector as Core Connector
     participant SDKOutboundAPI as SDK Backend API
     participant SDKOutboundDomainEventHandler as SDK Outbound Domain Event Handler
@@ -139,6 +141,7 @@ sequenceDiagram
         loop for each individual transfer in bulk
             SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the individual state: AGREEMENT_ACCEPTED / AGREEMENT_REJECTED
         end
+        SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "AGREEMENT_ACCEPTANCE_COMPLETED"
         SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: SDKOutboundBulkAcceptQuoteProcessed
         Note right of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
     else autoAcceptQuote == true
@@ -150,7 +153,8 @@ sequenceDiagram
             SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Check fee limits
             SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the individual state: AGREEMENT_ACCEPTED / AGREEMENT_REJECTED
         end
-        SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: SDKOutboundBulkAutoAcceptQuoteCompleted
+        SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "AGREEMENT_ACCEPTANCE_COMPLETED"
+        SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: SDKOutboundBulkAutoAcceptQuoteProcessed
         Note right of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
     end
     SDKOutboundDomainEventHandler->>SDKOutboundCommandEventHandler: ProcessSDKOutboundBulkTransfersRequest
@@ -178,12 +182,10 @@ sequenceDiagram
           SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the individual state: TRANSFERS_SUCCESS / TRANSFERS_FAILED
           SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the transfer response
         end
-        SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: BulkTransfersProcessed
+        SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: BulkTransfersCallbackProcessed
         Note right of SDKOutboundDomainEventHandler: topic-sdk-outbound-domain-events
-        SDKOutboundDomainEventHandler->>SDKOutboundDomainEventHandler: Check the status of the remaining items in the bulk
+        SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Check the status of the remaining items in the bulk
     end
-    SDKOutboundDomainEventHandler->>SDKOutboundCommandEventHandler: ProcessSDKOutboundBulkTransfersRequestComplete
-    Note left of SDKOutboundCommandEventHandler: topic-sdk-outbound-command-events
     SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "TRANSFERS_COMPLETED"
 
     SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: SDKOutboundBulkTransfersRequestProcessed
@@ -203,5 +205,6 @@ sequenceDiagram
     SDKOutboundDomainEventHandler->>SDKOutboundCommandEventHandler: ProcessSDKOutboundBulkResponseSent
     Note left of SDKOutboundCommandEventHandler: topic-sdk-outbound-command-events
     SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "RESPONSE_SENT"
+    SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: SDKOutboundBulkResponseSentProcessed
 
 ```

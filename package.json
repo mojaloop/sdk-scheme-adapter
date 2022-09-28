@@ -51,8 +51,8 @@
     "test:integration": "nx run-many --parallel --all --target=test:integration",
     "test:integration:affected": "nx affected --parallel --all --target=test:integration",
     "audit:check": "yarn dlx audit-ci --config ./audit-ci.jsonc",
-    "dep:check": "yarn ncu -e 2 && nx run-many --parallel --all --target=dep:check",
-    "dep:update": "yarn ncu -u && nx run-many --parallel --all --target=dep:update",
+    "dep:check": "yarn ncu -e 2 && nx run-many --parallel --all --target=dep:check --output-style=static",
+    "dep:update": "yarn ncu -u && nx run-many --parallel --all --target=dep:update --output-style=static",
     "release": "yarn run release:modules -- --skip.tag --skip.commit && standard-version --commit-all --no-verify --releaseCommitMessageFormat 'chore(release): {{currentTag}} [skip ci]'",
     "release:modules": "nx affected --parallel --all --target=release",
     "snapshot": "yarn run snapshot:modules -- --skip.tag --skip.commit && standard-version --commit-all --no-verify --skip.changelog --prerelease snapshot --releaseCommitMessageFormat 'chore(snapshot): {{currentTag}}'",
@@ -60,29 +60,29 @@
     "wait-4-docker": "node ./scripts/_wait4_all.js"
   },
   "dependencies": {
-    "nx": "14.7.10",
+    "nx": "14.7.13",
     "tslib": "^2.4.0"
   },
   "devDependencies": {
     "@types/jest": "^29.0.3",
-    "@types/node": "^18.7.18",
+    "@types/node": "^18.7.22",
     "@types/node-cache": "^4.2.5",
     "@typescript-eslint/eslint-plugin": "^5.38.0",
     "@typescript-eslint/parser": "^5.38.0",
     "audit-ci": "^6.3.0",
-    "eslint": "^8.23.1",
+    "eslint": "^8.24.0",
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-plugin-import": "latest",
     "husky": "^8.0.1",
     "jest": "^29.0.3",
     "nodemon": "^2.0.20",
-    "npm-check-updates": "^16.2.1",
+    "npm-check-updates": "^16.3.2",
     "replace": "^1.2.1",
     "standard-version": "^9.5.0",
-    "ts-jest": "^29.0.1",
+    "ts-jest": "^29.0.2",
     "ts-node": "^10.9.1",
     "typescript": "^4.8.3",
-    "yarn-audit-fix": "^9.3.5"
+    "yarn-audit-fix": "^9.3.6"
   },
   "standard-version": {
     "scripts": {

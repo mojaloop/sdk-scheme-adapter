@@ -61,5 +61,4 @@ export class ProcessSDKOutboundBulkRequestCmdEvt extends CommandEvent {
     getBulkRequest(): SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest {
         return this.getContent() as SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest;
     }
-
 }

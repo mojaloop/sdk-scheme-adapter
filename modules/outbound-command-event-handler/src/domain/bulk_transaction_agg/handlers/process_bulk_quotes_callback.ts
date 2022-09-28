@@ -145,6 +145,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                         });
                     }
                 }
+
                 const sdkOutboundBulkAcceptQuoteRequestedDmEvt = new SDKOutboundBulkAcceptQuoteRequestedDmEvt({
                     bulkId: bulkTransactionAgg.bulkId,
                     bulkAcceptQuoteRequest: {

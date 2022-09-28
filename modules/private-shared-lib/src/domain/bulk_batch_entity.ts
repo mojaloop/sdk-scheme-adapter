@@ -46,7 +46,9 @@ export enum BulkBatchInternalState {
     AGREEMENT_PROCESSING = 'AGREEMENT_PROCESSING',
     AGREEMENT_COMPLETED = 'AGREEMENT_COMPLETED',
     AGREEMENT_FAILED = 'AGREEMENT_FAILED',
-    TRANSFER_PROCESSING = 'TRANSFER_PROCESSING',
+    TRANSFERS_PROCESSING = 'TRANSFERS_PROCESSING',
+    TRANSFERS_FAILED = 'TRANSFERS_FAILED',
+    TRANSFERS_COMPLETED = 'TRANSFERS_COMPLETED',
 }
 
 export interface BulkBatchState extends BaseEntityState {
@@ -97,8 +99,12 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
         return this._state.bulkTransfersResponse;
     }
 
-    get quoteIdReferenceIdMap():{ [quoteId: string]: string } {
+    get quoteIdReferenceIdMap(): { [quoteId: string]: string } {
         return this._state.quoteIdReferenceIdMap;
+    }
+
+    get transferIdReferenceIdMap(): { [transactionId: string]: string } {
+        return this._state.transferIdReferenceIdMap;
     }
 
     private static _convertPartyToFrom(party: SDKSchemeAdapter.V2_0_0.Outbound.Types.Party): SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteRequest['from'] {
@@ -138,8 +144,9 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
                 extensions: bulkTransactionEntity.extensions,
             },
             bulkTransfersRequest: {
-                homeTransactionId: bulkTransactionEntity.bulkHomeTransactionID,
                 bulkTransferId,
+                bulkQuoteId,
+                homeTransactionId: bulkTransactionEntity.bulkHomeTransactionID,
                 from: BulkBatchEntity._convertPartyToFrom(bulkTransactionEntity.from),
                 individualTransfers: [],
                 extensions: bulkTransactionEntity.extensions,
@@ -186,6 +193,9 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
         this._state.bulkQuotesResponse = response;
     }
 
+    setBulkTransfersResponse(response: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransferResponse) {
+        this._state.bulkTransfersResponse = response;
+    }
 
     validateBulkQuotesRequest() {
         BulkBatchEntity._validateBulkQuotesRequest(this._state.bulkQuotesRequest);
