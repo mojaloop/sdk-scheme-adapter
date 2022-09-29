@@ -3795,6 +3795,150 @@
           }
         }
       ]
+    },
+    {
+      "id": 16,
+      "name": "15. When the incoming request has a format issue that fails schema validation, Then the return code should be 400 instead of 202",
+      "fileInfo": {
+        "path": "ttk-testcases/mvp-bulk.json"
+      },
+      "requests": [
+        {
+          "id": 1,
+          "description": "Post /bulkTransaction",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/bulkTransactions",
+          "path": "/bulkTransactions",
+          "method": "post",
+          "body": {
+            "bulkHomeTransactionID": "abc123",
+            "bulkTransactionId": "{$function.generic.generateUUID}",
+            "options": {
+              "onlyValidateParty": true,
+              "autoAcceptParty": {
+                "enabled": false
+              },
+              "autoAcceptQuote": {
+                "enabled": false
+              },
+              "skipPartyLookup": true,
+              "synchronous": false,
+              "bulkExpiration": "{$requestVariables.bulkTimeout}"
+            },
+            "from": {
+              "partyIdInfo": {
+                "partyIdType": "DOESNOTEXIST",
+                "partyIdentifier": "16135551212"
+              }
+            },
+            "individualTransfers": [
+              {
+                "homeTransactionId": "abc1",
+                "to": {
+                  "partyIdInfo": {
+                    "partyIdType": "DOESNOTEXIST",
+                    "partyIdentifier": "123456789",
+                    "fspId": "receiverfsphas2ids"
+                  }
+                },
+                "amountType": "SEND",
+                "currency": "USD",
+                "amount": "456.78"
+              },
+              {
+                "homeTransactionId": "abc2",
+                "to": {
+                  "partyIdInfo": {
+                    "partyIdType": "MSISDN",
+                    "partyIdentifier": "123456789",
+                    "fspId": "receiverfsphas2ids"
+                  }
+                },
+                "amountType": "SEND",
+                "currency": "USD",
+                "amount": "678.91"
+              },
+              {
+                "homeTransactionId": "abc2",
+                "to": {
+                  "partyIdInfo": {
+                    "partyIdType": "MSISDN",
+                    "partyIdentifier": "123456789",
+                    "fspId": "receiverfsphas2ids"
+                  }
+                },
+                "amountType": "SEND",
+                "currency": "USD",
+                "amount": "678.91"
+              }
+            ]
+          },
+          "url": "http://payer-sdk-api-svc:4001",
+          "scriptingEngine": "javascript",
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Check Return Status Code",
+                "exec": [
+                  "expect(response.status).to.equal(400)",
+                  ""
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Check response has statusText with value Bad Request",
+                "exec": [
+                  "expect(response.statusText).to.equal('Bad Request')"
+                ]
+              },
+              {
+                "id": 3,
+                "description": "Check response body message should be must be equal to one of the allowed values",
+                "exec": [
+                  "expect(response.body.message).to.equal('must be equal to one of the allowed values')"
+                ]
+              },
+              {
+                "id": 4,
+                "description": "Check response body status code to be 400",
+                "exec": [
+                  "expect(response.body.statusCode).to.equal(400)"
+                ]
+              }
+            ]
+          },
+          "scripts": {
+            "preRequest": {
+              "exec": [
+                "requestVariables.bulkTimeout = (new Date(Date.now()-5000)).toISOString()",
+                "await inboundEvent.addListener('acceptPartyCallback', 'put', '/bulkTransactions/{$request.body.bulkTransactionId}')"
+              ]
+            },
+            "postRequest": {
+              "exec": [
+                "const acceptPartyCallback = await inboundEvent.getMessage('acceptPartyCallback')",
+                "console.log(acceptPartyCallback);",
+                "",
+                "environment.bulkTransactionId = acceptPartyCallback.body.bulkTransactionId;",
+                "",
+                "environment.acceptPartyCallback = acceptPartyCallback;"
+              ]
+            }
+          }
+        }
+      ]
     }
   ]
 }

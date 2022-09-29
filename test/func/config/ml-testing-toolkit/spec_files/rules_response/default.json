@@ -188,7 +188,7 @@
         {
           "fact": "body",
           "operator": "equal",
-          "value": "receiverfsphas2ids",
+          "value": "receiverfsphastwoids",
           "path": "individualQuotes[0].to.fspId"
         },
         {
@@ -199,7 +199,7 @@
         {
           "fact": "method",
           "operator": "equal",
-          "value": "get"
+          "value": "post"
         }
       ]
     },
