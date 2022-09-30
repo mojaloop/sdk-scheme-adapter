@@ -29,6 +29,7 @@ import {
     InMemoryBulkTransactionStateRepo,
     IndividualTransferInternalState,
     PartyResponse,
+    SDKOutboundTransferState,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BULK_REQUEST } from '../../data/bulk_transaction_request'
 import { DefaultLogger } from '@mojaloop/logging-bc-client-lib';
@@ -111,7 +112,7 @@ describe('BulkTransactionAggregate', () => {
                         fspId: 'dfsp1'
                     }
                 },
-                currentState: 'COMPLETED'
+                currentState: SDKOutboundTransferState.COMPLETED
             }
             const partyResponse2: PartyResponse = {
                 party: {
@@ -121,7 +122,7 @@ describe('BulkTransactionAggregate', () => {
                         fspId: 'dfsp1'
                     }
                 },
-                currentState: 'COMPLETED'
+                currentState: SDKOutboundTransferState.COMPLETED
             }
             const allIndividualTransferIds = await bulkTransactionAgg.getAllIndividualTransferIds();
             const individualTransfer1 = await bulkTransactionAgg.getIndividualTransferById(allIndividualTransferIds[0]);
@@ -162,7 +163,7 @@ describe('BulkTransactionAggregate', () => {
                         fspId: 'dfsp2'
                     }
                 },
-                currentState: 'COMPLETED'
+                currentState: SDKOutboundTransferState.COMPLETED
             }
             const allIndividualTransferIds = await bulkTransactionAgg.getAllIndividualTransferIds();
             const individualTransfer3 = await bulkTransactionAgg.getIndividualTransferById(allIndividualTransferIds[1]);

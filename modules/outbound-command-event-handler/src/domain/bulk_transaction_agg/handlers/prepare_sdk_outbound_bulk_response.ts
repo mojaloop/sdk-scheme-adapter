@@ -28,14 +28,13 @@ import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import {
     BulkTransactionInternalState,
     CommandEvent,
-    IndividualTransferInternalState,
     PrepareSDKOutboundBulkResponseCmdEvt,
     SDKOutboundBulkResponsePreparedDmEvt,
+    SDKOutboundTransferState,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
-import { Enum as CentralServicedSharedEnum } from '@mojaloop/central-services-shared';
 
 export async function handlePrepareSDKOutboundBulkResponseCmdEvt(
     message: CommandEvent,
@@ -62,7 +61,7 @@ export async function handlePrepareSDKOutboundBulkResponseCmdEvt(
         const bulkTransactionResponse: SDKSchemeAdapter.V2_0_0.Inbound.Types.bulkTransactionResponse = {
             bulkHomeTransactionID: bulkTransaction.bulkHomeTransactionID,
             bulkTransactionId: bulkTransaction.id,
-            currentState: bulkTransaction.state == BulkTransactionInternalState.TRANSFERS_COMPLETED ? 'COMPLETED' : 'ERROR_OCCURRED',
+            currentState: bulkTransaction.state == BulkTransactionInternalState.TRANSFERS_COMPLETED ? SDKOutboundTransferState.COMPLETED : SDKOutboundTransferState.ERROR_OCCURRED,
             options: bulkTransaction.options,
             individualTransferResults,
         };
@@ -74,7 +73,7 @@ export async function handlePrepareSDKOutboundBulkResponseCmdEvt(
         });
         await options.domainProducer.sendDomainEvent(msg);
 
-        bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.RESPONSE_PROCESSING);
+        await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.RESPONSE_PROCESSING);
     } catch (err) {
         logger.error(`Failed to create BulkTransactionAggregate. ${(err as Error).message}`);
     }

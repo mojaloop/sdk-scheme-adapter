@@ -15,6 +15,7 @@ const {
     PartiesModel,
     OutboundBulkTransfersModel,
 } = require('~/lib/model');
+const { SDKStateEnum } = require('../../src');
 
 const logger = new Logger.Logger({ context: { app: 'FSPIOPEventHandler' }, stringify: () => '' });
 
@@ -71,7 +72,7 @@ describe('FSPIOPEventHandler', () => {
                 party: {
                     body: partyResult,
                 },
-                currentState: 'COMPLETED',
+                currentState: SDKStateEnum.COMPLETED,
             }))
         };
 
@@ -104,7 +105,7 @@ describe('FSPIOPEventHandler', () => {
             transferId: 'faaaea55-da85-4818-8b16-f720f9737889',
             partyResult: {
                 party: partyResult,
-                currentState: 'COMPLETED',
+                currentState: SDKStateEnum.COMPLETED,
             }
         });
     });
@@ -280,7 +281,7 @@ describe('FSPIOPEventHandler', () => {
 
         const bulkTransfersResult = {
             bulkTransferId: '81c35bae-77d0-4f7d-b894-be375b838ff6',
-            currentState: 'COMPLETED',
+            currentState: SDKStateEnum.COMPLETED,
             individualTransferResults: [
                 {
                     transferId: 'individual-transfer-id',

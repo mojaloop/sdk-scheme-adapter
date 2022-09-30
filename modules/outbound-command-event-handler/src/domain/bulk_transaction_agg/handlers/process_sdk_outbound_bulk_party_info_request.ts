@@ -33,6 +33,7 @@ import {
     PartyInfoRequestedDmEvt,
     PartyInfoCallbackReceivedDmEvt,
     PartyResponse, PartyErrorResponse,
+    SDKOutboundTransferState,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
@@ -70,7 +71,7 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestCmdEvt(
                 if(individualTransfer.isPartyInfoExists) {
                     partyResult = {
                         party: individualTransfer.payee,
-                        currentState: 'COMPLETED',
+                        currentState: SDKOutboundTransferState.COMPLETED,
                     };
                 } else {
                     partyErrorResult = {

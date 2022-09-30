@@ -31,14 +31,15 @@ import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 
 import {
-  KafkaDomainEventProducer,
-  IKafkaEventProducerOptions,
-  RedisBulkTransactionStateRepo,
-  IRedisBulkTransactionStateRepoOptions,
-  IndividualTransferInternalState,
-  SDKOutboundBulkAcceptPartyInfoReceivedDmEvt,
-  ISDKOutboundBulkAcceptPartyInfoReceivedDmEvtData
-} from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+    KafkaDomainEventProducer,
+    IKafkaEventProducerOptions,
+    RedisBulkTransactionStateRepo,
+    IRedisBulkTransactionStateRepoOptions,
+    IndividualTransferInternalState,
+    SDKOutboundBulkAcceptPartyInfoReceivedDmEvt,
+    ISDKOutboundBulkAcceptPartyInfoReceivedDmEvtData,
+    SDKOutboundTransferState,
+} from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { randomUUID } from "crypto";
 
 import { BulkTransactionAgg } from '../../../src/domain'
@@ -127,7 +128,7 @@ describe.skip('SDKOutboundBulkAcceptPartyInfoRequested', () => {
           fspId: 'testpayeefsp1'
         }
       },
-      currentState: 'COMPLETED'
+      currentState: SDKOutboundTransferState.COMPLETED
     })
     individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS)
     await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer)

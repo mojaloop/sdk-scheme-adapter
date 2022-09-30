@@ -31,44 +31,45 @@ import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 import { SDKSchemeAdapter } from "@mojaloop/api-snippets";
 
 import {
-  BulkBatchState,
-  // BulkTransactionInternalState,
-  DomainEvent,
-  IBulkTransactionEntityRepo,
-  ICommandEventProducer,
-  IDomainEventProducer,
-  IEventConsumer,
-  // IEventProducer,
-  IKafkaEventConsumerOptions,
-  IKafkaEventProducerOptions,
-  IPrepareSDKOutboundBulkResponseCmdEvtData,
-  IProcessBulkQuotesCallbackCmdEvtData,
-  IProcessBulkTransfersCallbackCmdEvtData,
-  IProcessPartyInfoCallbackCmdEvtData,
-  IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData,
-  IProcessSDKOutboundBulkAcceptQuoteCmdEvtData,
-  IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData,
-  IProcessSDKOutboundBulkQuotesRequestCmdEvtData,
-  IProcessSDKOutboundBulkRequestCmdEvtData,
-  IProcessSDKOutboundBulkResponseSentCmdEvtData,
-  IProcessSDKOutboundBulkTransfersRequestCmdEvtData,
-  IRedisBulkTransactionStateRepoOptions,
-  KafkaCommandEventProducer,
-  KafkaDomainEventConsumer,
-  KafkaDomainEventProducer,
-  PrepareSDKOutboundBulkResponseCmdEvt,
-  ProcessBulkQuotesCallbackCmdEvt,
-  ProcessBulkTransfersCallbackCmdEvt,
-  ProcessPartyInfoCallbackCmdEvt,
-  ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt,
-  ProcessSDKOutboundBulkAcceptQuoteCmdEvt,
-  ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
-  ProcessSDKOutboundBulkQuotesRequestCmdEvt,
-  ProcessSDKOutboundBulkRequestCmdEvt,
-  ProcessSDKOutboundBulkResponseSentCmdEvt,
-  ProcessSDKOutboundBulkTransfersRequestCmdEvt,
-  RedisBulkTransactionStateRepo,
-} from "@mojaloop/sdk-scheme-adapter-private-shared-lib"
+    BulkBatchState,
+    // BulkTransactionInternalState,
+    DomainEvent,
+    IBulkTransactionEntityRepo,
+    ICommandEventProducer,
+    IDomainEventProducer,
+    IEventConsumer,
+    // IEventProducer,
+    IKafkaEventConsumerOptions,
+    IKafkaEventProducerOptions,
+    IPrepareSDKOutboundBulkResponseCmdEvtData,
+    IProcessBulkQuotesCallbackCmdEvtData,
+    IProcessBulkTransfersCallbackCmdEvtData,
+    IProcessPartyInfoCallbackCmdEvtData,
+    IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData,
+    IProcessSDKOutboundBulkAcceptQuoteCmdEvtData,
+    IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData,
+    IProcessSDKOutboundBulkQuotesRequestCmdEvtData,
+    IProcessSDKOutboundBulkRequestCmdEvtData,
+    IProcessSDKOutboundBulkResponseSentCmdEvtData,
+    IProcessSDKOutboundBulkTransfersRequestCmdEvtData,
+    IRedisBulkTransactionStateRepoOptions,
+    KafkaCommandEventProducer,
+    KafkaDomainEventConsumer,
+    KafkaDomainEventProducer,
+    PrepareSDKOutboundBulkResponseCmdEvt,
+    ProcessBulkQuotesCallbackCmdEvt,
+    ProcessBulkTransfersCallbackCmdEvt,
+    ProcessPartyInfoCallbackCmdEvt,
+    ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt,
+    ProcessSDKOutboundBulkAcceptQuoteCmdEvt,
+    ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
+    ProcessSDKOutboundBulkQuotesRequestCmdEvt,
+    ProcessSDKOutboundBulkRequestCmdEvt,
+    ProcessSDKOutboundBulkResponseSentCmdEvt,
+    ProcessSDKOutboundBulkTransfersRequestCmdEvt,
+    RedisBulkTransactionStateRepo,
+    SDKOutboundTransferState,
+} from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { randomUUID } from "crypto";
 import { Timer } from "./timer";
 
@@ -323,7 +324,7 @@ export class ProcessHelper {
                   fspId: 'receiverfsp'
               }
           },
-          currentState: 'COMPLETED'
+          currentState: SDKOutboundTransferState.COMPLETED
         },
       },
       timestamp: Date.now(),
@@ -341,7 +342,7 @@ export class ProcessHelper {
                   fspId: 'receiverfsp'
               }
           },
-          currentState: 'COMPLETED'
+          currentState: SDKOutboundTransferState.COMPLETED
         },
       },
       timestamp: Date.now(),
@@ -359,7 +360,7 @@ export class ProcessHelper {
                   fspId: 'differentfsp'
               }
           },
-          currentState: 'COMPLETED'
+          currentState: SDKOutboundTransferState.COMPLETED
         },
       },
       timestamp: Date.now(),
@@ -377,7 +378,7 @@ export class ProcessHelper {
                   fspId: 'differentfsp'
               }
           },
-          currentState: 'COMPLETED'
+          currentState: SDKOutboundTransferState.COMPLETED
         },
       },
       timestamp: Date.now(),
@@ -531,7 +532,8 @@ export class ProcessHelper {
         bulkQuoteId: bulkQuoteId,
         bulkQuotesResult: {
           bulkQuoteId: bulkQuoteId,
-          currentState: 'COMPLETED',
+          expiration: '2022-08-08T11:12:13',
+          currentState: SDKOutboundTransferState.COMPLETED,
           individualQuoteResults: [
             {
               quoteId: receiverFspBatch.bulkQuotesRequest.individualQuotes[quoteAmountList.indexOf('1')].quoteId,

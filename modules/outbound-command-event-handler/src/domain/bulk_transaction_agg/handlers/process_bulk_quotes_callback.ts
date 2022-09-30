@@ -32,6 +32,7 @@ import {
     SDKOutboundBulkQuotesRequestProcessedDmEvt,
     SDKOutboundBulkAcceptQuoteRequestedDmEvt,
     CoreConnectorBulkAcceptQuoteRequestIndividualTransferResult,
+    SDKStateEnum,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
@@ -63,7 +64,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
 
         // If individual quote result contains `lastError` the individual transfer state should be AGREEMENT_FAILED.
         // bulkQuotesResult.currentState === 'ERROR_OCCURRED' necessitates erroring out all individual transfers in that bulk batch.
-        if(bulkQuotesResult?.currentState === 'COMPLETED') {
+        if(bulkQuotesResult?.currentState === SDKStateEnum.COMPLETED) {
             bulkBatch.setState(BulkBatchInternalState.AGREEMENT_COMPLETED);
             successCountAfterIncrement = await bulkTransactionAgg.incrementBulkQuotesSuccessCount();
 

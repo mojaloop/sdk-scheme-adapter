@@ -40,18 +40,19 @@ import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
 import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 
 import {
-  // KafkaDomainEventProducer,
-  IKafkaEventProducerOptions,
-  RedisBulkTransactionStateRepo,
-  IRedisBulkTransactionStateRepoOptions,
-  KafkaCommandEventProducer,
-  ProcessSDKOutboundBulkTransfersRequestCmdEvt,
-  IProcessSDKOutboundBulkTransfersRequestCmdEvtData,
-  BulkTransactionInternalState,
-  IndividualTransferInternalState,
-  IPartyResult,
-  BulkBatchInternalState
-} from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+    // KafkaDomainEventProducer,
+    IKafkaEventProducerOptions,
+    RedisBulkTransactionStateRepo,
+    IRedisBulkTransactionStateRepoOptions,
+    KafkaCommandEventProducer,
+    ProcessSDKOutboundBulkTransfersRequestCmdEvt,
+    IProcessSDKOutboundBulkTransfersRequestCmdEvtData,
+    BulkTransactionInternalState,
+    IndividualTransferInternalState,
+    BulkBatchInternalState,
+    SDKOutboundTransferState,
+    PartyResponse,
+} from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
 import { randomUUID } from "crypto";
 
@@ -159,11 +160,11 @@ describe('processSDKOutboundBulkTransfersRequestCmdEvt', () => {
 
     const allIndividualTransferIds = await bulkTransactionAgg.getAllIndividualTransferIds();
 
-    bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.DISCOVERY_COMPLETED)
+    await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.DISCOVERY_COMPLETED)
     const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(allIndividualTransferIds[0])
 
     // Lets add a partyResponse
-    const partyResponse: IPartyResult = {
+    const partyResponse: PartyResponse = {
       party: {
         partyIdInfo: { ...bulkTransactionRequest.individualTransfers[0].to.partyIdInfo, fspId: 'test' },
         name: 'test',
@@ -192,8 +193,9 @@ describe('processSDKOutboundBulkTransfersRequestCmdEvt', () => {
     // Lets create a bulkQuoteResult
     const bulkQuoteResponse: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteResponse = {
       bulkQuoteId: bulkBatch.bulkQuoteId,
+      expiration: '2016-05-24T08:38:08.699-04:00',
       homeTransactionId: bulkTransactionRequest.bulkHomeTransactionID,
-      currentState: 'COMPLETED',
+      currentState: SDKOutboundTransferState.COMPLETED,
       individualQuoteResults: [
         {
           quoteId: bulkBatch.bulkQuotesRequest.individualQuotes[0].quoteId,
@@ -220,10 +222,10 @@ describe('processSDKOutboundBulkTransfersRequestCmdEvt', () => {
 
     // Lets complete the Agreement stage by changing the state to match the result
 
-    bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.AGREEMENT_COMPLETED);
+    await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.AGREEMENT_COMPLETED);
 
     const individualTransferAfterBulkQuotesResponse = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
-    
+
     individualTransferAfterBulkQuotesResponse.setTransferState(IndividualTransferInternalState.AGREEMENT_SUCCESS);
 
     await bulkTransactionAgg.setIndividualTransferById(individualTransferAfterBulkQuotesResponse.id, individualTransfer);

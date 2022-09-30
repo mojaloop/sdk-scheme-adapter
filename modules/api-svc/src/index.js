@@ -31,6 +31,7 @@ const OutboundServerMiddleware = require('./OutboundServer/middlewares.js');
 const Router = require('./lib/router');
 const Validate = require('./lib/validate');
 const Cache = require('./lib/cache');
+const { SDKStateEnum } = require('./lib/model/common');
 const { Logger, WSO2Auth } = require('@mojaloop/sdk-standard-components');
 
 const LOG_ID = {
@@ -373,4 +374,5 @@ module.exports = {
     Router,
     Server,
     Validate,
+    SDKStateEnum,
 };
