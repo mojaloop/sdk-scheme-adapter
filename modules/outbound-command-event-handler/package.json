@@ -39,7 +39,7 @@
     "snapshot": "standard-version --no-verify --skip.changelog --prerelease snapshot --releaseCommitMessageFormat 'chore(snapshot): {{currentTag}}'"
   },
   "dependencies": {
-    "@mojaloop/api-snippets": "^16.0.3",
+    "@mojaloop/api-snippets": "^16.0.4",
     "@mojaloop/central-services-shared": "^17.3.1",
     "@mojaloop/logging-bc-client-lib": "^0.1.15",
     "@mojaloop/logging-bc-public-types-lib": "^0.1.12",
@@ -55,7 +55,7 @@
   "devDependencies": {
     "@types/convict": "^6.1.1",
     "@types/express": "^4.17.14",
-    "@types/jest": "^29.1.0",
+    "@types/jest": "^29.1.1",
     "@types/node": "^18.7.23",
     "@types/node-cache": "^4.2.5",
     "@types/supertest": "^2.0.12",
@@ -65,7 +65,7 @@
     "@typescript-eslint/parser": "^5.38.1",
     "copyfiles": "^2.4.1",
     "eslint": "^8.24.0",
-    "jest": "^29.1.1",
+    "jest": "^29.1.2",
     "nodemon": "^2.0.20",
     "npm-check-updates": "^16.3.4",
     "replace": "^1.2.1",
