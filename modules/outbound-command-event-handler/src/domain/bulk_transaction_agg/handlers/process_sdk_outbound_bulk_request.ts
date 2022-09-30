@@ -27,11 +27,13 @@
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import {
     CommandEvent,
+    PrepareSDKOutboundBulkResponseCmdEvt,
     ProcessSDKOutboundBulkRequestCmdEvt,
     SDKOutboundBulkPartyInfoRequestedDmEvt,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
+import { handlePrepareSDKOutboundBulkResponseCmdEvt } from './prepare_sdk_outbound_bulk_response';
 
 export async function handleProcessSDKOutboundBulkRequestCmdEvt(
     message: CommandEvent,
@@ -50,12 +52,24 @@ export async function handleProcessSDKOutboundBulkRequestCmdEvt(
         );
         logger.info(`Created BulkTransactionAggregate ${bulkTransactionAgg}`);
 
-        const msg = new SDKOutboundBulkPartyInfoRequestedDmEvt({
-            bulkId: bulkTransactionAgg.bulkId,
-            timestamp: Date.now(),
-            headers: [],
-        });
-        await options.domainProducer.sendDomainEvent(msg);
+        const totalCount = await bulkTransactionAgg.getTotalCount();
+        const failedCount = await bulkTransactionAgg.getTotalCount();
+
+        if(totalCount === failedCount) {
+            const msg = new PrepareSDKOutboundBulkResponseCmdEvt({
+                bulkId: bulkTransactionAgg.bulkId,
+                timestamp: Date.now(),
+                headers: [],
+            });
+            await handlePrepareSDKOutboundBulkResponseCmdEvt(msg, options, logger);
+        } else {
+            const msg = new SDKOutboundBulkPartyInfoRequestedDmEvt({
+                bulkId: bulkTransactionAgg.bulkId,
+                timestamp: Date.now(),
+                headers: [],
+            });
+            await options.domainProducer.sendDomainEvent(msg);
+        }
 
     } catch (err) {
         logger.error(`Failed to create BulkTransactionAggregate. ${(err as Error).message}`);

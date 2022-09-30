@@ -27,13 +27,14 @@
 
 import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { IPartyResult } from '../../types';
+import { PartyErrorResponse, PartyResponse } from '@module-types';
 
 export interface IPartyInfoCallbackReceivedDmEvtData {
     bulkId: string;
     content: {
         transferId: string;
-        partyResult: IPartyResult;
+        partyResult?: PartyResponse;
+        partyErrorResult?: PartyErrorResponse;
     };
     timestamp: number | null;
     headers: IMessageHeader[] | null;
@@ -50,16 +51,20 @@ export class PartyInfoCallbackReceivedDmEvt extends DomainEvent {
         });
     }
 
-    getBulkId(): string {
+    get bulkId(): string {
         return this.getKey();
     }
 
-    getTransferId(): string {
+    get transferId(): string {
         return (this.getContent() as IPartyInfoCallbackReceivedDmEvtData['content']).transferId;
     }
 
-    getPartyResult(): IPartyResult {
+    get partyResult(): PartyResponse | undefined {
         return (this.getContent() as IPartyInfoCallbackReceivedDmEvtData['content']).partyResult;
+    }
+
+    get partyErrorResult(): PartyErrorResponse | undefined {
+        return (this.getContent() as IPartyInfoCallbackReceivedDmEvtData['content']).partyErrorResult;
     }
 
     static CreateFromDomainEvent(message: DomainEvent): PartyInfoCallbackReceivedDmEvt {

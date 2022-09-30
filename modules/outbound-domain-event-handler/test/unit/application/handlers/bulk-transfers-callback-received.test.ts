@@ -62,7 +62,6 @@ describe('handleBulkTransfersCallbackReceived', () => {
       bulkId,
       content: {
         batchId: '61c35bae-77d0-4f7d-b894-be375b838ff6',
-        bulkTransferId: '81c35bae-77d0-4f7d-b894-be375b838ff6',
         bulkTransfersResult: {
           bulkTransferId: '81c35bae-77d0-4f7d-b894-be375b838ff6',
           currentState: 'COMPLETED',

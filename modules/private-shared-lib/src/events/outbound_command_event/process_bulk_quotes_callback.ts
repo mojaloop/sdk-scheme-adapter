@@ -26,17 +26,15 @@
 
 import { CommandEvent } from '../command_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
-
-type BulkQuoteResponse = SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteResponse;
-type BulkQuoteErrorResponse = SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteErrorResponse;
+import { BulkQuoteErrorResponse, BulkQuoteResponse } from '../../types';
 
 export interface IProcessBulkQuotesCallbackCmdEvtData {
     bulkId: string;
     content: {
         batchId: string;
         bulkQuoteId?: string;
-        bulkQuotesResult: BulkQuoteResponse | BulkQuoteErrorResponse;
+        bulkQuotesResult?: BulkQuoteResponse;
+        bulkQuotesErrorResult?: BulkQuoteErrorResponse;
     };
     timestamp: number | null;
     headers: IMessageHeader[] | null;
@@ -76,8 +74,13 @@ export class ProcessBulkQuotesCallbackCmdEvt extends CommandEvent {
         return content.bulkQuoteId;
     }
 
-    get bulkQuotesResult(): BulkQuoteResponse | BulkQuoteErrorResponse {
+    get bulkQuotesResult(): BulkQuoteResponse | undefined {
         const content = this.getContent() as IProcessBulkQuotesCallbackCmdEvtData['content'];
         return content.bulkQuotesResult;
+    }
+
+    get bulkQuotesErrorResult(): BulkQuoteErrorResponse | undefined {
+        const content = this.getContent() as IProcessBulkQuotesCallbackCmdEvtData['content'];
+        return content.bulkQuotesErrorResult;
     }
 }

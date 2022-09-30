@@ -11,8 +11,8 @@ export interface IProcessBulkTransfersCallbackCmdEvtData {
     bulkId: string;
     content: {
         batchId: string;
-        bulkTransferId: string;
-        bulkTransfersResult: BulkTransferResponse | BulkTransferErrorResponse;
+        bulkTransfersResult?: BulkTransferResponse;
+        bulkTransfersErrorResult?: BulkTransferErrorResponse;
     },
     timestamp: number | null;
     headers: IMessageHeader[] | null;
@@ -46,13 +46,18 @@ export class ProcessBulkTransfersCallbackCmdEvt extends CommandEvent {
         return content.batchId;
     }
 
-    get bulkTransferId(): string {
+    get bulkTransferId(): string | undefined {
         const content = this.getContent() as IProcessBulkTransfersCallbackCmdEvtData['content'];
-        return content.bulkTransferId;
+        return content.bulkTransfersResult?.bulkTransferId;
     }
 
-    get bulkTransfersResult(): BulkTransferResponse | BulkTransferErrorResponse {
+    get bulkTransfersResult(): BulkTransferResponse | undefined {
         const content = this.getContent() as IProcessBulkTransfersCallbackCmdEvtData['content'];
         return content.bulkTransfersResult;
+    }
+
+    get bulkTransfersErrorResult(): BulkTransferErrorResponse | undefined {
+        const content = this.getContent() as IProcessBulkTransfersCallbackCmdEvtData['content'];
+        return content.bulkTransfersErrorResult;
     }
 }

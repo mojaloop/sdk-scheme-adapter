@@ -79,15 +79,15 @@ describe('PartyInfoCallbackReceivedDmEvt', () => {
     partyInfoCallbackReceivedMessage = new PartyInfoCallbackReceivedDmEvt(samplePartyInfoCallbackReceivedMessageData)
   })
 
-  test('getBulkId', async () => {
-    expect(partyInfoCallbackReceivedMessage.getBulkId()).toEqual(bulkId)
+  test('bulkId', async () => {
+    expect(partyInfoCallbackReceivedMessage.bulkId).toEqual(bulkId)
   })
 
-  test('getTransferId', async () => {
-    expect(partyInfoCallbackReceivedMessage.getTransferId()).toEqual(transferId)
+  test('transferId', async () => {
+    expect(partyInfoCallbackReceivedMessage.transferId).toEqual(transferId)
   })
 
-  test('getPartyResult', async () => {
-    expect(partyInfoCallbackReceivedMessage.getPartyResult()).toEqual(samplePartyInfoCallbackReceivedMessageData.content.partyResult)
+  test('partyResult', async () => {
+    expect(partyInfoCallbackReceivedMessage.partyResult).toEqual(samplePartyInfoCallbackReceivedMessageData.content.partyResult)
   })
 })

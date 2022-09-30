@@ -2,14 +2,14 @@
 
 import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
+import { BulkTransferErrorResponse, BulkTransferResponse } from '@module-types';
 
 export type IBulkTransfersCallbackReceivedDmEvtData = {
     bulkId: string;
     content: {
         batchId: string;
-        bulkTransferId: string;
-        bulkTransfersResult: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransferResponse
+        bulkTransfersResult?: BulkTransferResponse;
+        bulkTransfersErrorResult?: BulkTransferErrorResponse;
     },
     timestamp: number | null;
     headers: IMessageHeader[] | null;
@@ -45,13 +45,18 @@ export class BulkTransfersCallbackReceivedDmEvt extends DomainEvent {
         return content.batchId;
     }
 
-    get bulkTransferId(): string {
+    get bulkTransferId(): string | undefined {
         const content = this.getContent() as IBulkTransfersCallbackReceivedDmEvtData['content'];
-        return content.bulkTransferId;
+        return content.bulkTransfersResult?.bulkTransferId;
     }
 
-    get bulkTransfersResult(): SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransferResponse {
+    get bulkTransfersResult(): BulkTransferResponse | undefined {
         const content = this.getContent() as IBulkTransfersCallbackReceivedDmEvtData['content'];
         return content.bulkTransfersResult;
+    }
+
+    get bulkTransfersErrorResult(): BulkTransferErrorResponse | undefined {
+        const content = this.getContent() as IBulkTransfersCallbackReceivedDmEvtData['content'];
+        return content.bulkTransfersErrorResult;
     }
 }

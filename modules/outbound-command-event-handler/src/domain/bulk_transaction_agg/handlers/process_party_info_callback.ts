@@ -34,10 +34,11 @@ import {
     BulkTransactionInternalState,
     SDKOutboundBulkPartyInfoRequestProcessedDmEvt,
     SDKOutboundBulkAutoAcceptPartyInfoRequestedDmEvt,
-    SDKOutboundBulkAcceptPartyInfoRequestedDmEvt,
+    SDKOutboundBulkAcceptPartyInfoRequestedDmEvt, PrepareSDKOutboundBulkResponseCmdEvt,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
+import { handlePrepareSDKOutboundBulkResponseCmdEvt } from './prepare_sdk_outbound_bulk_response';
 
 export async function handleProcessPartyInfoCallbackCmdEvt(
     message: CommandEvent,
@@ -52,34 +53,48 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
 
         // Create aggregate
         const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRepo(
-            processPartyInfoCallback.getBulkId(),
+            processPartyInfoCallback.bulkId,
             options.bulkTransactionEntityRepo,
             logger,
         );
 
         const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(
-            processPartyInfoCallback.getTransferId(),
+            processPartyInfoCallback.transferId,
         );
-        const partyResult = processPartyInfoCallback.getPartyResult();
-        if(partyResult.currentState && partyResult.currentState === SDKOutboundTransferState.COMPLETED && !partyResult.errorInformation) {
+        if(processPartyInfoCallback.partyResult?.currentState === SDKOutboundTransferState.COMPLETED) {
             individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS);
             successCountAfterIncrement = await bulkTransactionAgg.incrementPartyLookupSuccessCount();
+            individualTransfer.setPartyResponse(processPartyInfoCallback.partyResult);
         } else {
             individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_FAILED);
             failedCountAfterIncrement = await bulkTransactionAgg.incrementPartyLookupFailedCount();
+            await bulkTransactionAgg.incrementFailedCount();
+            individualTransfer.setLastError(processPartyInfoCallback.partyErrorResult);
         }
-        individualTransfer.setPartyResponse(partyResult);
         await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
 
         const msg = new PartyInfoCallbackProcessedDmEvt({
             bulkId: processPartyInfoCallback.getKey(),
             content: {
-                transferId: processPartyInfoCallback.getTransferId(),
+                transferId: processPartyInfoCallback.transferId,
             },
             timestamp: Date.now(),
             headers: [],
         });
         await options.domainProducer.sendDomainEvent(msg);
+
+        const totalCount = await bulkTransactionAgg.getTotalCount();
+        const failedCount = await bulkTransactionAgg.getTotalCount();
+
+        if(totalCount === failedCount) {
+            const prepareSDKOutboundBulkResponseCmdEvt = new PrepareSDKOutboundBulkResponseCmdEvt({
+                bulkId: bulkTransactionAgg.bulkId,
+                timestamp: Date.now(),
+                headers: [],
+            });
+            await handlePrepareSDKOutboundBulkResponseCmdEvt(prepareSDKOutboundBulkResponseCmdEvt, options, logger);
+            return;
+        }
 
         // Progressing to the next step
         // Check the status of the remaining party lookups

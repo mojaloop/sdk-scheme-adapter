@@ -242,7 +242,6 @@ describe('FSPIOPEventHandler', () => {
         expect(sent._data.name).toEqual('BulkQuotesCallbackReceivedDmEvt');
         expect(sent._data.content).toEqual({
             batchId: '61c35bae-77d0-4f7d-b894-be375b838ff6',
-            bulkQuoteId: bulkQuoteResponse.bulkQuoteId,
             bulkQuotesResult: bulkQuoteResponse,
         });
     });
@@ -317,7 +316,6 @@ describe('FSPIOPEventHandler', () => {
         expect(sent._data.name).toEqual('BulkTransfersCallbackReceivedDmEvt');
         expect(sent._data.content).toEqual({
             batchId: '61c35bae-77d0-4f7d-b894-be375b838ff6',
-            bulkTransferId: '81c35bae-77d0-4f7d-b894-be375b838ff6',
             bulkTransfersResult
         });
     });

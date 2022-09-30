@@ -24,7 +24,6 @@
 
 const { PartyInfoRequestedDmEvt } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
 const { PartiesModel } = require('../../lib/model');
-const { SDKStateEnum } = require('../../lib/model/common');
 const { PartyInfoCallbackReceivedDmEvt } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
 const { Errors } = require('@mojaloop/sdk-standard-components');
 
@@ -34,7 +33,7 @@ module.exports.handlePartyInfoRequestedDmEvt = async (
     logger,
 ) => {
     const event = PartyInfoRequestedDmEvt.CreateFromDomainEvent(message);
-    const request = event.getPartyRequest();
+    const request = event.partyRequest;
     const args = { type: request.partyIdType, id: request.partyIdentifier, subId: request.partySubIdOrType || undefined };
 
     try {
@@ -57,7 +56,7 @@ module.exports.handlePartyInfoRequestedDmEvt = async (
         const partyInfoCallbackReceivedDmEvt = new PartyInfoCallbackReceivedDmEvt({
             bulkId: event.getKey(),
             content: {
-                transferId: event.getTransferId(),
+                transferId: event.transferId,
                 partyResult: {
                     party: response.party?.body,
                     currentState: response.currentState,
@@ -76,13 +75,15 @@ module.exports.handlePartyInfoRequestedDmEvt = async (
         const partyInfoCallbackReceivedDmEvt = new PartyInfoCallbackReceivedDmEvt({
             bulkId: event.getKey(),
             content: {
-                transferId: event.getTransferId(),
-                partyResult: {
-                    currentState: SDKStateEnum.ERROR_OCCURRED,
-                    errorInformation: {
-                        errorCode: code,
-                        errorDescription: message
-                    }
+                transferId: event.transferId,
+                partyErrorResult: {
+                    httpStatusCode: err.httpStatusCode,
+                    mojaloopError: {
+                        errorInformation: {
+                            errorCode: code,
+                            errorDescription: message
+                        },
+                    },
                 },
             },
             timestamp: Date.now(),

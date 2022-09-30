@@ -32,7 +32,6 @@ import {
     SDKOutboundBulkQuotesRequestProcessedDmEvt,
     SDKOutboundBulkAcceptQuoteRequestedDmEvt,
     CoreConnectorBulkAcceptQuoteRequestIndividualTransferResult,
-    BulkQuoteResponse,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
@@ -60,12 +59,11 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
         const bulkBatch = await bulkTransactionAgg.getBulkBatchEntityById(
             processBulkQuotesCallbackMessage.batchId,
         );
-        const bulkQuotesResult = processBulkQuotesCallbackMessage.bulkQuotesResult as BulkQuoteResponse;
+        const bulkQuotesResult = processBulkQuotesCallbackMessage.bulkQuotesResult;
 
         // If individual quote result contains `lastError` the individual transfer state should be AGREEMENT_FAILED.
         // bulkQuotesResult.currentState === 'ERROR_OCCURRED' necessitates erroring out all individual transfers in that bulk batch.
-        if(bulkQuotesResult.currentState &&
-           bulkQuotesResult.currentState === 'COMPLETED') {
+        if(bulkQuotesResult?.currentState === 'COMPLETED') {
             bulkBatch.setState(BulkBatchInternalState.AGREEMENT_COMPLETED);
             successCountAfterIncrement = await bulkTransactionAgg.incrementBulkQuotesSuccessCount();
 
@@ -75,13 +73,16 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                     const individualTransferId = bulkBatch.getReferenceIdForQuoteId(quoteResult.quoteId);
                     const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
                     individualTransfer.setTransferState(IndividualTransferInternalState.AGREEMENT_SUCCESS);
-                    individualTransfer.setQuoteResponse(quoteResult);
+                    individualTransfer.setQuoteResponse({
+                        ...quoteResult,
+                        expiration: bulkQuotesResult.expiration,
+                    });
                     await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
                 } else {
                     const individualTransferId = bulkBatch.getReferenceIdForQuoteId(quoteResult.quoteId);
                     const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
                     individualTransfer.setTransferState(IndividualTransferInternalState.AGREEMENT_FAILED);
-                    individualTransfer.setQuoteResponse(quoteResult);
+                    individualTransfer.setLastError(quoteResult.lastError);
                     await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
                 }
             }
@@ -98,7 +99,12 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                 await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
             }
         }
-        bulkBatch.setBulkQuotesResponse(bulkQuotesResult);
+        if(bulkQuotesResult) {
+            bulkBatch.setBulkQuotesResponse(bulkQuotesResult);
+        } else if(processBulkQuotesCallbackMessage.bulkQuotesErrorResult) {
+            // eslint-disable-next-line max-len
+            bulkBatch.setLastError(processBulkQuotesCallbackMessage.bulkQuotesErrorResult);
+        }
         await bulkTransactionAgg.setBulkBatchById(bulkBatch.id, bulkBatch);
 
         const bulkQuotesCallbackProcessedDmEvt = new BulkQuotesCallbackProcessedDmEvt({

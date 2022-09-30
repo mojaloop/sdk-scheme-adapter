@@ -60,8 +60,7 @@ export async function handleProcessBulkTransfersCallbackCmdEvt(
 
         // If individual transfer result contains `lastError` the individual transfer state should be TRANSFER_FAILED.
         // bulkTransfersResult.currentState === 'ERROR_OCCURRED' necessitates erroring out all individual transfers in that bulk batch.
-        if(bulkTransfersResult.currentState &&
-           bulkTransfersResult.currentState === 'COMPLETED') {
+        if(bulkTransfersResult.currentState === 'COMPLETED') {
             bulkBatch.setState(BulkBatchInternalState.TRANSFERS_COMPLETED);
             successCount = await bulkTransactionAgg.incrementBulkTransfersSuccessCount();
 
@@ -72,7 +71,10 @@ export async function handleProcessBulkTransfersCallbackCmdEvt(
                     const individualTransferId = bulkBatch.getReferenceIdForTransferId(transferResult.transferId);
                     const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
                     individualTransfer.setTransferState(IndividualTransferInternalState.TRANSFERS_SUCCESS);
-                    individualTransfer.setTransferResponse(transferResult);
+                    individualTransfer.setTransferResponse({
+                        ...transferResult,
+                        completedTimestamp: bulkTransfersResult.completedTimestamp,
+                    });
                     individualTransfer.setTransactionId(bulkBatch.id);
                     await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
                 } else {

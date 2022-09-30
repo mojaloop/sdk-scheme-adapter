@@ -29,6 +29,8 @@ import {
     BaseEntity,
 } from '.';
 import {
+    BulkQuoteResponse,
+    BulkTransferResponse,
     SchemaValidationError,
 } from '..';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
@@ -51,11 +53,6 @@ export enum BulkBatchInternalState {
     TRANSFERS_COMPLETED = 'TRANSFERS_COMPLETED',
 }
 
-export type BulkQuoteResponse = SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteResponse;
-export type BulkQuoteErrorResponse = SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteErrorResponse;
-export type BulkTransferResponse = SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransferResponse;
-export type BulkTransferErrorResponse = SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransferErrorResponse;
-
 export interface BulkBatchState extends BaseEntityState {
     id: string;
     state: BulkBatchInternalState;
@@ -63,13 +60,12 @@ export interface BulkBatchState extends BaseEntityState {
     bulkQuoteId: string;
     bulkTransferId: string;
     bulkQuotesRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteRequest;
-    bulkQuotesResponse?: BulkQuoteResponse | BulkQuoteErrorResponse;
+    bulkQuotesResponse?: BulkQuoteResponse;
     bulkTransfersRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransferRequest;
-    bulkTransfersResponse?: BulkTransferResponse | BulkTransferErrorResponse;
+    bulkTransfersResponse?: BulkTransferResponse;
     quoteIdReferenceIdMap: { [quoteId: string]: string }; // Key = individual quoteId from bulkQuotesRequest, Value = transactionId representing an individual transfer from the bulkTransaction
     transferIdReferenceIdMap: { [transactionId: string]: string }; // Key = individual transferId from bulkTransferRequest, Value = transactionId representing an individual transfer from the bulkTransaction
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    lastError?: any; // TODO: Define a format for this
+    lastError?: SDKSchemeAdapter.V2_0_0.Outbound.Types.transferError;
 }
 
 export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
@@ -92,7 +88,7 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
         return this._state.bulkQuotesRequest;
     }
 
-    get bulkQuotesResponse(): BulkQuoteResponse | BulkQuoteErrorResponse | undefined {
+    get bulkQuotesResponse(): BulkQuoteResponse | undefined {
         return this._state.bulkQuotesResponse;
     }
 
@@ -100,7 +96,7 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
         return this._state.bulkTransfersRequest;
     }
 
-    get bulkTransfersResponse(): BulkTransferResponse | BulkTransferErrorResponse | undefined {
+    get bulkTransfersResponse(): BulkTransferResponse | undefined {
         return this._state.bulkTransfersResponse;
     }
 
@@ -110,6 +106,10 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
 
     get transferIdReferenceIdMap(): { [transactionId: string]: string } {
         return this._state.transferIdReferenceIdMap;
+    }
+
+    get lastError() {
+        return this._state.lastError;
     }
 
     private static _convertPartyToFrom(party: SDKSchemeAdapter.V2_0_0.Outbound.Types.Party): SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteRequest['from'] {
@@ -194,12 +194,16 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
         this._state.state = state;
     }
 
-    setBulkQuotesResponse(response: BulkQuoteResponse | BulkQuoteErrorResponse) {
+    setBulkQuotesResponse(response: BulkQuoteResponse) {
         this._state.bulkQuotesResponse = response;
     }
 
-    setBulkTransfersResponse(response: BulkTransferResponse | BulkTransferErrorResponse) {
+    setBulkTransfersResponse(response: BulkTransferResponse) {
         this._state.bulkTransfersResponse = response;
+    }
+
+    setLastError(response: SDKSchemeAdapter.V2_0_0.Outbound.Types.transferError) {
+        this._state.lastError = response;
     }
 
     validateBulkQuotesRequest() {
