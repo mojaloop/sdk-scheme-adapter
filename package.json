@@ -36,7 +36,7 @@
     "watch": "nx run-many --parallel --all --target=watch",
     "clean": "yarn run clean:dist && yarn run clean:npm",
     "clean:npm": "nx run-many --parallel --all --target=clean:npm",
-    "clean:dist": "nx run-many --parallel --all --target=clean:dist",
+    "clean:dist": "nx run-many --parallel --all --target=clean:dist --skip-nx-cache",
     "lint": "nx run-many --parallel --all --target=lint",
     "lint:affected": "nx affected --parallel --all --target=lint",
     "lint:fix": "yarn run lint -- --fix",

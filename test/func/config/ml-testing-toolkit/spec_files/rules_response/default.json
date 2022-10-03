@@ -188,7 +188,7 @@
         {
           "fact": "body",
           "operator": "equal",
-          "value": "receiverfsphas2ids",
+          "value": "receiverfsphastwoids",
           "path": "individualQuotes[0].to.fspId"
         },
         {
@@ -199,7 +199,7 @@
         {
           "fact": "method",
           "operator": "equal",
-          "value": "get"
+          "value": "post"
         }
       ]
     },
@@ -349,8 +349,8 @@
       "path": null,
       "params": {
         "body": {
-          "statusCode": "4001",
-          "message": "Cannot process the bulk quote"
+          "statusCode": "2000",
+          "message": "Generic Server Error"
         },
         "statusCode": "500",
         "scripts": {
@@ -363,9 +363,9 @@
     "version": 1
   },
   {
-    "ruleId": 6,
+    "ruleId": 9,
     "priority": 1,
-    "description": "post /bulkQuotes - bulk quotes receiver sends response with a delay/timesout",
+    "description": "post /bulkQuotes - receiver sends response after timeout",
     "apiVersion": {
       "minorVersion": 4,
       "majorVersion": 1,
@@ -378,12 +378,6 @@
     },
     "conditions": {
       "all": [
-        {
-          "fact": "body",
-          "operator": "equal",
-          "value": "bulkquotesreceivertimesout",
-          "path": "individualQuotes[0].to.fspId"
-        },
         {
           "fact": "operationPath",
           "operator": "equal",
@@ -401,7 +395,7 @@
       "path": null,
       "params": {
         "body": {
-          "bulkQuoteId": "{$request.body.bulkQuoteId",
+          "bulkQuoteId": "{$request.body.bulkQuoteId}",
           "expiration": "2040-01-01T00:00:00.000Z",
           "individualQuoteResults": [
             {
@@ -422,6 +416,152 @@
           "scriptingEngine": "postman"
         },
         "delay": 300000
+      },
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 9,
+    "priority": 1,
+    "description": "post /bulkQuotes - receiver sends success response for one transfer and failure for other",
+    "apiVersion": {
+      "minorVersion": 4,
+      "majorVersion": 1,
+      "type": "mojaloop_simulator_inbound",
+      "specFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/api_spec.yaml",
+      "callbackMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/callback_map.json",
+      "responseMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/response_map.json",
+      "jsfRefFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/mockRef.json",
+      "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/trigger_templates"
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "body",
+          "operator": "equal",
+          "value": "bulkqtrcvrsendssuccessanderror",
+          "path": "individualQuotes[0].to.fspId"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/bulkQuotes"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "bulkQuoteId": "{$request.body.bulkQuoteId}",
+          "expiration": "2040-01-01T00:00:00.000Z",
+          "individualQuoteResults": [
+            {
+              "quoteId": "{$request.body.individualQuotes[0].quoteId}",
+              "transferAmount": "{$request.body.individualQuotes[0].amount}",
+              "transferAmountCurrency": "{$request.body.individualQuotes[0].currency}",
+              "payeeReceiveAmount": "{$request.body.individualQuotes[0].amount}",
+              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[0].currency}",
+              "payeeFspFeeAmount": "0",
+              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[0].currency}",
+              "payeeFspCommissionAmount": "0",
+              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[0].currency}"
+            },
+            {
+              "statusCode": "5101",
+              "message": "Payee Rejected Quote"
+            }
+          ]
+        },
+        "statusCode": "200",
+        "scripts": {
+          "scriptingEngine": "postman"
+        },
+        "delay": 300000
+      },
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 4,
+    "priority": 1,
+    "description": "post /bulkQuotes - bulk quotes response for transfers scenario that has an error in the result",
+    "apiVersion": {
+      "minorVersion": 4,
+      "majorVersion": 1,
+      "type": "mojaloop_simulator_inbound",
+      "specFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/api_spec.yaml",
+      "callbackMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/callback_map.json",
+      "responseMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/response_map.json",
+      "jsfRefFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/mockRef.json",
+      "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/trigger_templates"
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "body",
+          "operator": "equal",
+          "value": "bulktransferresponsehas1error",
+          "path": "individualQuotes[0].to.fspId"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/bulkQuotes"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "bulkQuoteId": "{$request.body.bulkQuoteId}",
+          "expiration": "{$request.body.expiration}",
+          "individualQuoteResults": [
+            {
+              "quoteId": "{$request.body.individualQuotes[0].quoteId}",
+              "transferAmount": "{$request.body.individualQuotes[0].amount}",
+              "transferAmountCurrency": "{$request.body.individualQuotes[0].currency}",
+              "payeeReceiveAmount": "{$request.body.individualQuotes[0].amount}",
+              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[0].currency}",
+              "payeeFspFeeAmount": "0",
+              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[0].currency}",
+              "payeeFspCommissionAmount": "0",
+              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[0].currency}"
+            },
+            {
+              "quoteId": "{$request.body.individualQuotes[1].quoteId}",
+              "transferAmount": "{$request.body.individualQuotes[1].amount}",
+              "transferAmountCurrency": "{$request.body.individualQuotes[1].currency}",
+              "payeeReceiveAmount": "{$request.body.individualQuotes[1].amount}",
+              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[1].currency}",
+              "payeeFspFeeAmount": "0",
+              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[1].currency}",
+              "payeeFspCommissionAmount": "0",
+              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[1].currency}"
+            }
+          ]
+        },
+        "statusCode": "200",
+        "scripts": {
+          "scriptingEngine": "postman"
+        }
       },
       "type": "FIXED_RESPONSE"
     },
@@ -531,6 +671,240 @@
   },
   {
     "ruleId": 8,
+    "priority": 1,
+    "description": "post /bulkTransfers - bulk transfers receiver sends error",
+    "apiVersion": {
+      "minorVersion": 4,
+      "majorVersion": 1,
+      "type": "mojaloop_simulator_inbound",
+      "specFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/api_spec.yaml",
+      "callbackMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/callback_map.json",
+      "responseMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/response_map.json",
+      "jsfRefFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/mockRef.json",
+      "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/trigger_templates"
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "body",
+          "operator": "equal",
+          "value": "receiversendserror",
+          "path": "individualTransfers[0].to.fspId"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/bulkTransfers"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "statusCode": "4001",
+          "message": "Cannot process the bulk transfer"
+        },
+        "statusCode": "500",
+        "scripts": {
+          "scriptingEngine": "postman"
+        }
+      },
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 9,
+    "priority": 1,
+    "description": "post /bulkTransfers - bulk transfers receiver sends response with a delay/timesout",
+    "apiVersion": {
+      "minorVersion": 4,
+      "majorVersion": 1,
+      "type": "mojaloop_simulator_inbound",
+      "specFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/api_spec.yaml",
+      "callbackMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/callback_map.json",
+      "responseMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/response_map.json",
+      "jsfRefFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/mockRef.json",
+      "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/trigger_templates"
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "body",
+          "operator": "equal",
+          "value": "receivertimesout",
+          "path": "individualTransfers[0].to.fspId"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/bulkTransfers"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "bulkTransferId": "{$request.body.bulkTransferId}",
+          "homeTransactionId": "{$request.body.homeTransactionId}",
+          "individualTransferResults": [
+            {
+              "transferId": "{$request.body.individualTransfers[0].transferId}"
+            }
+          ]
+        },
+        "statusCode": "200",
+        "scripts": {
+          "scriptingEngine": "postman"
+        },
+        "delay": 300000
+      },
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 10,
+    "priority": 1,
+    "description": "post /bulkTransfers - error response for one of the transfers",
+    "apiVersion": {
+      "minorVersion": 4,
+      "majorVersion": 1,
+      "type": "mojaloop_simulator_inbound",
+      "hostnames": [
+        "ttkpm4mlreceiver-ttk-backend"
+      ],
+      "specFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/api_spec.yaml",
+      "callbackMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/callback_map.json",
+      "responseMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/response_map.json",
+      "jsfRefFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/mockRef.json",
+      "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/trigger_templates"
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "body",
+          "operator": "equal",
+          "value": "receiversendserrorfor1transfer",
+          "path": "individualTransfers[0].to.fspId"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/bulkTransfers"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "bulkTransferId": "{$request.body.bulkTransferId}",
+          "homeTransactionId": "{$request.body.homeTransactionId}",
+          "individualTransferResults": [
+            {
+              "transferId": "{$request.body.individualTransfers[0].transferId}"
+            }
+          ]
+        },
+        "statusCode": "200",
+        "scripts": {
+          "scriptingEngine": "postman"
+        }
+      },
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 10,
+    "priority": 1,
+    "description": "post /bulkTransfers - bulk transfers response for transfers scenario that has an error in the result",
+    "apiVersion": {
+      "minorVersion": 4,
+      "majorVersion": 1,
+      "type": "mojaloop_simulator_inbound",
+      "hostnames": [
+        "ttkpm4mlreceiver-ttk-backend"
+      ],
+      "specFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/api_spec.yaml",
+      "callbackMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/callback_map.json",
+      "responseMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/response_map.json",
+      "jsfRefFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/mockRef.json",
+      "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/trigger_templates"
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "body",
+          "operator": "equal",
+          "value": "bulktransferresponsehas1error",
+          "path": "individualTransfers[0].to.fspId"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/bulkTransfers"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "bulkTransferId": "{$request.body.bulkTransferId}",
+          "homeTransactionId": "{$request.body.homeTransactionId}",
+          "individualTransferResults": [
+            {
+              "transferId": "{$request.body.individualTransfers[0].transferId}"
+            },
+            {
+              "statusCode": "4001",
+              "message": "Cannot process the transfer"
+            }
+          ]
+        },
+        "statusCode": "200",
+        "scripts": {
+          "scriptingEngine": "postman"
+        }
+      },
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 10,
     "priority": 1,
     "description": "post /bulkTransfers - default path",
     "apiVersion": {

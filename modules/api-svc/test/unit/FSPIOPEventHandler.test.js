@@ -14,8 +14,8 @@ const {
     OutboundBulkQuotesModel,
     PartiesModel,
     OutboundBulkTransfersModel,
+    SDKStateEnum
 } = require('~/lib/model');
-const { SDKStateEnum } = require('../../src');
 
 const logger = new Logger.Logger({ context: { app: 'FSPIOPEventHandler' }, stringify: () => '' });
 
