@@ -584,8 +584,8 @@ export class ProcessHelper {
       bulkId: bulkTransactionId,
       content: {
         batchId: differentFspBatch.id,
-        bulkQuoteId: bulkQuoteIdDifferentFsp,
         bulkQuotesResult: {
+          expiration: '2016-05-24T08:38:08.699-04:00',
           bulkQuoteId: bulkQuoteIdDifferentFsp,
           currentState: 'ERROR_OCCURRED',
           individualQuoteResults: []
@@ -697,7 +697,6 @@ export class ProcessHelper {
       bulkId: bulkTransactionId,
       content: {
         batchId: receiverFspBatch.id,
-        bulkTransferId: bulkTransferId,
         bulkTransfersResult: {
           bulkTransferId: receiverFspBatch.bulkTransfersRequest.bulkTransferId,
           bulkQuoteId: receiverFspBatch.bulkTransfersRequest.bulkQuoteId,
@@ -736,7 +735,6 @@ export class ProcessHelper {
 
     const prepareSDKOutboundBulkResponseCmdEvt: IPrepareSDKOutboundBulkResponseCmdEvtData = {
       bulkId: bulkTransactionId,
-      content: null,
       timestamp: Date.now(),
       headers: null
     }
