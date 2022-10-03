@@ -10,7 +10,6 @@
           "build:openapi:inbound",
           "build:openapi:outbound",
           "build:dto:outbound",
-          "clean:dist",
           "lint",
           "lint:fix",
           "test",
