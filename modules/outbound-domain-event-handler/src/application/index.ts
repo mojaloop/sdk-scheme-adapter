@@ -32,6 +32,7 @@ import { ILogger, LogLevel } from '@mojaloop/logging-bc-public-types-lib';
 
 import { IRunHandler, BC_CONFIG, IRedisBulkTransactionStateRepoOptions, RedisBulkTransactionStateRepo } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { IOutboundEventHandlerOptions, OutboundEventHandler } from './handler';
+import { IOutboundDomainEventHandlerAPIServerOptions, OutboundDomainEventHandlerAPIServer } from '../api-server';
 import Config from '../shared/config';
 
 (async () => {
@@ -59,6 +60,15 @@ import Config from '../shared/config';
         await outboundEventHandler.destroy();
     }
 
+    // API Server
+    const outboundDomainEventHandlerAPIServerOptions: IOutboundDomainEventHandlerAPIServerOptions = {
+        port: Config.get('API_SERVER.PORT'),
+    };
+    const apiServer = new OutboundDomainEventHandlerAPIServer(outboundDomainEventHandlerAPIServerOptions, logger);
+    if(Config.get('API_SERVER.ENABLED')) {
+        logger.info('Starting API Server...');
+        await apiServer.startServer();
+    }
     // lets clean up all consumers here
     /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
     const killProcess = async (): Promise<void> => {

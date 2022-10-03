@@ -2,6 +2,10 @@
   "REDIS": {
     "CONNECTION_URL": "redis://localhost:6379"
   },
+  "API_SERVER":{
+    "ENABLED": false,
+    "PORT": 8001
+  },
   "LOG_LEVEL": "info",
   "KAFKA": {
     "DOMAIN_EVENT_CONSUMER": {
