@@ -2627,7 +2627,7 @@ __metadata:
     lodash: ^4.17.21
     module-alias: ^2.2.2
     nock: ^13.2.9
-    npm-check-updates: ^16.3.4
+    npm-check-updates: ^16.3.7
     oauth2-server: ^4.0.0-dev.2
     openapi-jsonschema-parameters: ^12.0.2
     openapi-response-validator: ^12.0.2
@@ -2658,7 +2658,7 @@ __metadata:
     "@types/convict": ^6.1.1
     "@types/express": ^4.17.14
     "@types/jest": ^29.1.1
-    "@types/node": ^18.7.23
+    "@types/node": ^18.8.0
     "@types/node-cache": ^4.2.5
     "@types/supertest": ^2.0.12
     "@types/swagger-ui-express": ^4.1.3
@@ -2672,7 +2672,7 @@ __metadata:
     express: ^4.18.1
     jest: ^29.1.2
     nodemon: ^2.0.20
-    npm-check-updates: ^16.3.4
+    npm-check-updates: ^16.3.7
     openapi-backend: ^5.5.0
     redis: ^4.3.1
     replace: ^1.2.1
@@ -2695,7 +2695,7 @@ __metadata:
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
     "@types/convict": ^6.1.1
     "@types/jest": ^29.1.1
-    "@types/node": ^18.7.23
+    "@types/node": ^18.8.0
     "@types/node-cache": ^4.2.5
     "@typescript-eslint/eslint-plugin": ^5.38.1
     "@typescript-eslint/parser": ^5.38.1
@@ -2703,7 +2703,7 @@ __metadata:
     eslint: ^8.24.0
     jest: ^29.1.2
     nodemon: ^2.0.20
-    npm-check-updates: ^16.3.4
+    npm-check-updates: ^16.3.7
     replace: ^1.2.1
     standard-version: ^9.5.0
     ts-jest: ^29.0.3
@@ -2721,11 +2721,11 @@ __metadata:
     "@mojaloop/logging-bc-public-types-lib": ^0.1.12
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.1.1
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": ^0.1.1
-    "@types/node": ^18.7.23
+    "@types/node": ^18.8.0
     ajv: ^8.11.0
     eslint: ^8.24.0
     jest: ^29.1.2
-    npm-check-updates: ^16.3.4
+    npm-check-updates: ^16.3.7
     redis: ^4.3.1
     replace: ^1.2.1
     standard-version: ^9.5.0
@@ -2740,7 +2740,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter@workspace:."
   dependencies:
     "@types/jest": ^29.1.1
-    "@types/node": ^18.7.23
+    "@types/node": ^18.8.0
     "@types/node-cache": ^4.2.5
     "@typescript-eslint/eslint-plugin": ^5.38.1
     "@typescript-eslint/parser": ^5.38.1
@@ -2751,7 +2751,7 @@ __metadata:
     husky: ^8.0.1
     jest: ^29.1.2
     nodemon: ^2.0.20
-    npm-check-updates: ^16.3.4
+    npm-check-updates: ^16.3.7
     nx: 14.8.2
     replace: ^1.2.1
     standard-version: ^9.5.0
@@ -3517,10 +3517,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^18.7.23":
-  version: 18.7.23
-  resolution: "@types/node@npm:18.7.23"
-  checksum: 2c8df0830d8345e5cd1ca17feb9cf43fa667aae749888e0a068c5c1b35eaedd2f9b24ed987a0758078395edf7a03681e5e0b7790a518ff7afe1ff6d8459f7b4a
+"@types/node@npm:^18.8.0":
+  version: 18.8.0
+  resolution: "@types/node@npm:18.8.0"
+  checksum: 3433cbc22e90fafb047f93b3ef05ba01a07f780a24ff1af393f435f807537b533fe9e8a816586825f4c5fd5336c3e80225571f44ec3b6479c463408c072773e7
   languageName: node
   linkType: hard
 
@@ -10755,13 +10755,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"npm-check-updates@npm:^16.3.4":
-  version: 16.3.4
-  resolution: "npm-check-updates@npm:16.3.4"
+"npm-check-updates@npm:^16.3.7":
+  version: 16.3.7
+  resolution: "npm-check-updates@npm:16.3.7"
   dependencies:
     chalk: ^5.0.1
     cli-table: ^0.3.11
-    commander: ^9.4.0
+    commander: ^9.4.1
     fast-memoize: ^2.5.2
     find-up: 5.0.0
     fp-and-or: ^0.1.3
@@ -10790,7 +10790,7 @@ __metadata:
   bin:
     ncu: build/src/bin/cli.js
     npm-check-updates: build/src/bin/cli.js
-  checksum: a53ee9a6cf27523ce53eb32dc7a941c16a0eabac145b0390df444c61996baa96ad93cd0d53c8ceb1349141659f302640491f3223e4c22267318f0b58ead2bda7
+  checksum: cd95d198fa5d2e66e9f3dcb297fcc96895d6b14448090aba694197b46dea3e5fb5dbb96a45785df8adcef8396828b1eb993b568cae8dd79a7055f806a1b28f9d
   languageName: node
   linkType: hard
 
