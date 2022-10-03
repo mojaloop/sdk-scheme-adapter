@@ -461,8 +461,8 @@ import { Timer } from "../../../util/timer";
         bulkId: bulkTransactionId,
         content: {
           batchId: differentFspBatch.id,
-          bulkQuoteId: bulkQuoteIdDifferentFsp,
           bulkQuotesResult: {
+            expiration: '2016-05-24T08:38:08.699-04:00',
             bulkQuoteId: bulkQuoteIdDifferentFsp,
             currentState: 'ERROR_OCCURRED',
             individualQuoteResults: []
@@ -876,8 +876,8 @@ import { Timer } from "../../../util/timer";
         bulkId: bulkTransactionId,
         content: {
           batchId: differentFspBatch.id,
-          bulkQuoteId: bulkQuoteIdDifferentFsp,
           bulkQuotesResult: {
+            expiration: '2016-05-24T08:38:08.699-04:00',
             bulkQuoteId: bulkQuoteIdDifferentFsp,
             currentState: 'ERROR_OCCURRED',
             individualQuoteResults: []
