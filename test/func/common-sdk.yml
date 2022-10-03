@@ -1,13 +1,8 @@
 version: '3.7'
-networks:
-  mojaloop-net:
-    name: mojaloop-net
 
 services:
 
   api-svc:
-    networks:
-        - mojaloop-net
     image: mojaloop/sdk-scheme-adapter:local
     build:
       context: ../../
@@ -35,8 +30,6 @@ services:
       interval: 30s
 
   outbound-command-event-handler:
-    networks:
-        - mojaloop-net
     image: mojaloop/sdk-scheme-adapter:local
     build:
       context: ../../
@@ -60,8 +53,6 @@ services:
     #   interval: 30s
 
   outbound-domain-event-handler:
-    networks:
-        - mojaloop-net
     image: mojaloop/sdk-scheme-adapter:local
     build:
       context: ../../
@@ -85,8 +76,6 @@ services:
     #   interval: 30s
 
   redis:
-    networks:
-        - mojaloop-net
     image: "redis:5.0.4-alpine"
     # ports:
     #   - "6379:6379"

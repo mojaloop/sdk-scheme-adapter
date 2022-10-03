@@ -1,6 +1,6 @@
 version: '3.7'
 networks:
-  mojaloop-net:
+  default:
     name: mojaloop-net
 
 services:
@@ -8,8 +8,6 @@ services:
     extends:
       file: common-sdk.yml
       service: api-svc
-    networks:
-      - mojaloop-net
     env_file: ./config/payer-sdk/api-svc.env
     ports:
       - "14000:4000"
@@ -25,8 +23,6 @@ services:
     env_file: ./config/payer-sdk/outbound-command-event-handler.env
     ports:
       - "18000:8000"
-    networks:
-      - mojaloop-net
     depends_on:
       payer-redis:
         condition: service_started
@@ -38,8 +34,6 @@ services:
       file: common-sdk.yml
       service: outbound-domain-event-handler
     env_file: ./config/payer-sdk/outbound-domain-event-handler.env
-    networks:
-      - mojaloop-net
     depends_on:
       payer-redis:
         condition: service_started
@@ -50,8 +44,6 @@ services:
     extends:
       file: common-sdk.yml
       service: redis
-    networks:
-      - mojaloop-net
     ports:
       - "16379:6379"
 
@@ -60,8 +52,6 @@ services:
       file: common-sdk.yml
       service: api-svc
     env_file: ./config/payee-sdk/api-svc.env
-    networks:
-      - mojaloop-net
     ports:
       - "24000:4000"
       - "24001:4001"
@@ -73,14 +63,10 @@ services:
     extends:
       file: common-sdk.yml
       service: redis
-    networks:
-      - mojaloop-net
     ports:
       - "26379:6379"
 
   ml-testing-toolkit:
-    networks:
-        - mojaloop-net
     image: mojaloop/ml-testing-toolkit:v15.0.0
     container_name: ml-testing-toolkit
     user: root
@@ -97,8 +83,6 @@ services:
     image: mojaloop/ml-testing-toolkit-ui:v15.0.0
     ports:
       - "6060:6060"
-    networks:
-      - mojaloop-net
     environment:
       - API_BASE_URL=http://localhost:5050
       - AUTH_ENABLED=FALSE
@@ -107,20 +91,14 @@ services:
       - /usr/share/nginx/start.sh
 
   zookeeper:
-    networks:
-      - mojaloop-net
     image: docker.io/bitnami/zookeeper:3.8
-    container_name: zookeeper
     ports:
       - 2181:2181
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
 
   kafka:
-    networks:
-      - mojaloop-net
     image: docker.io/bitnami/kafka:3.2
-    container_name: kafka
     ports:
       - "9092:9092"
     environment:
@@ -142,8 +120,6 @@ services:
       interval: 30s
 
   init-kafka:
-    networks:
-      - mojaloop-net
     image: docker.io/bitnami/kafka:3.2
     depends_on:
       - kafka
@@ -170,8 +146,6 @@ services:
     restart: on-failure
     ports:
     - "9080:8080"
-    networks:
-      - mojaloop-net
     environment:
       - KAFKA_BROKERS=kafka:9093
     depends_on:
@@ -181,8 +155,6 @@ services:
     image: redislabs/redisinsight
     ports:
       - "9001:8001"
-    networks:
-      - mojaloop-net
     volumes: []
     restart: on-failure
 
