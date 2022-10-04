@@ -53,6 +53,11 @@ export class OutboundCommandEventHandlerAPIServer {
     }
 
     async startServer(): Promise<Application> {
+        if(this._app) {
+            this._logger.warn('Server already exists!');
+            return this._app;
+        }
+
         return new Promise(async resolve => {
             this._app = await CreateExpressServer(
                 path.join(__dirname, './interface/api.yaml'),
