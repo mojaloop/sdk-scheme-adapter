@@ -43,6 +43,7 @@
     "lint:fix:affected": "yarn run lint:affected -- --fix",
     "test": "yarn run test:unit",
     "test:unit": "nx run-many --parallel --all --target=test:unit",
+    "test:unit:no-cache": "yarn run test:unit --skip-nx-cache",
     "test:unit:affected": "nx affected --parallel --all --target=test:unit",
     "test:coverage": "nx run-many --parallel --all --target=test:coverage",
     "test:coverage:affected": "nx affected --parallel --all --target=test:coverage",
