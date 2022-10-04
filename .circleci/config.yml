@@ -125,7 +125,6 @@ jobs:
           command: apk del build-dependencies
 
   test-unit:
-    no_output_timeout: 30m
     executor: default-docker
     environment: *defaults_environment
     steps:
@@ -147,6 +146,7 @@ jobs:
           name: Execute build
           command: yarn run build
       - run:
+          no_output_timeout: 30m
           name: Execute unit tests
           command: yarn run test:unit
       - store_test_results:
