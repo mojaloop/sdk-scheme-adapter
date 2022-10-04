@@ -75,11 +75,6 @@ export class OutboundDomainEventHandlerAPIServer {
     }
 
     async stopServer() : Promise<void> {
-        if(this._serverInstance) {
-            this._serverInstance.close(() => {
-                this._logger.info('API Server is stopped');
-            });
-        }
         this._app = null;
         this._serverInstance = null;
         return;
