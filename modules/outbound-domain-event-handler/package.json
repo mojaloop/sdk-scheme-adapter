@@ -19,7 +19,7 @@
     "scripts": {
         "start": "yarn run service",
         "start:dev": "ts-node src/application/index.ts",
-        "service": "tsc && node dist/application/index.js",
+        "service": "node dist/application/index.js",
         "build": "tsc && yarn run copy-files",
         "watch": "tsc -w",
         "dev": "nodemon",

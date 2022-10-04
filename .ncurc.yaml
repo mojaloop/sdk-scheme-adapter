@@ -5,10 +5,8 @@ reject: [
   ## Story to resolve issue: https://github.com/mojaloop/project/issues/2949
   '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib',
   '@mojaloop/platform-shared-lib-messaging-types-lib',
-  ## v16.0.4 necessitates test refactoring. Changes found here https://github.com/mojaloop/api-snippets/pull/145
-  ## The changes are being addressed in https://github.com/mojaloop/sdk-scheme-adapter/pull/391
-  ## REMOVE @mojaloop/api-snippets once changes are addressed.
-  '@mojaloop/api-snippets',
-  ## Testing the last version of nx where ci passed successfully
-  'nx'
+  ## Upgrading this causes builds to fail (dependency relationship/graph are not being respected). TODO: Remove and upgrade once issue is resolved.
+  'nx',
+  ## This should be removed and upgraded as part of this PR: https://github.com/mojaloop/sdk-scheme-adapter/pull/391
+  '@mojaloop/api-snippets'
 ]
