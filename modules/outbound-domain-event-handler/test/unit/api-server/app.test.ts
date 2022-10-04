@@ -15,10 +15,12 @@ describe("Test the docs endpoints", () => {
         } as IBulkTransactionEntityReadOnlyRepo,
     }, logger);
     let app: Application;
-    beforeEach(async () => {
+
+    beforeAll(async () => {
         app = await apiServer.startServer();
     });
-    afterEach(async () => {
+
+    afterAll(async () => {
         await apiServer.stopServer();
     });
     test("/docs should be redirected to /docs/", async () => {
@@ -32,22 +34,7 @@ describe("Test the docs endpoints", () => {
         expect(response.statusCode).toBe(200);
         expect(response).toHaveProperty('text');
     });
-});
 
-describe("Test the unknown endpoint", () => {
-    const apiServer = new ApiServer({
-        port: 39999,
-        bulkTransactionEntityRepo: {
-            canCall: jest.fn()
-        } as IBulkTransactionEntityReadOnlyRepo,
-    }, logger);
-    let app: Application;
-    beforeEach(async () => {
-        app = await apiServer.startServer();
-    });
-    afterEach(async () => {
-        await apiServer.stopServer();
-    });
     test("/someunknown endpoint should throw 404 error", async () => {
         const response = await request(app).get("/someunknown");
         expect(response.statusCode).toBe(404);

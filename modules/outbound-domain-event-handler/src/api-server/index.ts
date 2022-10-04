@@ -26,8 +26,8 @@ import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import { Server } from 'http';
 import { CreateExpressServer } from './app';
 import path from 'path';
-import { Application } from 'express';
 import { IBulkTransactionEntityReadOnlyRepo } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { Application } from 'express';
 
 
 export interface IOutboundDomainEventHandlerAPIServerOptions {
@@ -40,9 +40,11 @@ export class OutboundDomainEventHandlerAPIServer {
 
     private _port: number;
 
-    private _serverInstance: Server;
+    private _serverInstance: Server | null;
 
     private _options: IOutboundDomainEventHandlerAPIServerOptions;
+
+    private _app: Application | null;
 
     constructor(options: IOutboundDomainEventHandlerAPIServerOptions, logger: ILogger) {
         this._options = options;
@@ -51,27 +53,33 @@ export class OutboundDomainEventHandlerAPIServer {
     }
 
     async startServer(): Promise<Application> {
+        if(this._app) {
+            this._logger.warn('Server already exists!');
+            return this._app;
+        }
+
         return new Promise(async resolve => {
-            const app = await CreateExpressServer(
+            this._app = await CreateExpressServer(
                 path.join(__dirname, './interface/api.yaml'),
                 {
                     bulkTransactionEntityRepo: this._options.bulkTransactionEntityRepo,
                     logger: this._logger,
                 },
             );
-            this._serverInstance = app.listen(this._port, () => {
+            this._serverInstance = this._app.listen(this._port, () => {
                 this._logger.info(`API Server is running on port ${this._port}`);
-                resolve(app);
+                resolve(this._app!);
             });
         });
     }
 
     async stopServer() : Promise<void> {
-        return new Promise(resolve => {
-            this._serverInstance.close(() => {
-                this._logger.info('API Server is stopped');
-                resolve();
-            });
-        });
+        this._app = null;
+        this._serverInstance = null;
+        return;
+    }
+
+    public get server() {
+        return this._app;
     }
 }
