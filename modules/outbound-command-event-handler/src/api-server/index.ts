@@ -44,6 +44,8 @@ export class OutboundCommandEventHandlerAPIServer {
 
     private _options: IOutboundCommandEventHandlerAPIServerOptions;
 
+    private _app: Application;
+
     constructor(options: IOutboundCommandEventHandlerAPIServerOptions, logger: ILogger) {
         this._options = options;
         this._port = options.port;
@@ -52,26 +54,34 @@ export class OutboundCommandEventHandlerAPIServer {
 
     async startServer(): Promise<Application> {
         return new Promise(async resolve => {
-            const app = await CreateExpressServer(
+            this._app = await CreateExpressServer(
                 path.join(__dirname, './interface/api.yaml'),
                 {
                     bulkTransactionEntityRepo: this._options.bulkTransactionEntityRepo,
                     logger: this._logger,
                 },
             );
-            this._serverInstance = app.listen(this._port, () => {
+            this._serverInstance = this._app.listen(this._port, () => {
                 this._logger.info(`API Server is running on port ${this._port}`);
-                resolve(app);
+                resolve(this._app);
             });
         });
     }
 
     async stopServer() : Promise<void> {
-        return new Promise(resolve => {
-            this._serverInstance.close(() => {
-                this._logger.info('API Server is stopped');
+        return new Promise(async resolve => {
+            if(this._serverInstance) {
+                this._serverInstance.closeAllConnections();
+                this._serverInstance.on('close', ()=> {
+                    resolve();
+                });
+            } else {
                 resolve();
-            });
+            }
         });
+    }
+
+    public get server() {
+        return this._app;
     }
 }
