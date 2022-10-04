@@ -74,16 +74,8 @@ export class OutboundCommandEventHandlerAPIServer {
     }
 
     async stopServer() : Promise<void> {
-        return new Promise(async resolve => {
-            if(this._serverInstance) {
-                this._serverInstance.closeAllConnections();
-                this._serverInstance.on('close', ()=> {
-                    resolve();
-                });
-            } else {
-                resolve();
-            }
-        });
+        // Nothing to do here.
+        return;
     }
 
     public get server() {
