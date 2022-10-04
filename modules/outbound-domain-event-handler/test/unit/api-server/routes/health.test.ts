@@ -5,6 +5,7 @@ import Config from '../../../../src/shared/config';
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import { DefaultLogger } from '@mojaloop/logging-bc-client-lib';
 import { Application } from 'express';
+import { IBulkTransactionEntityReadOnlyRepo } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -13,7 +14,10 @@ const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion');
 
 describe("Test the health route without mock service", () => {
     const apiServer = new ApiServer({
-        port: 29999,
+        port: 49999,
+        bulkTransactionEntityRepo: {
+            canCall: jest.fn()
+        } as IBulkTransactionEntityReadOnlyRepo,
     }, logger);
     let app: Application;
     beforeEach(async () => {
@@ -32,7 +36,10 @@ describe("Test the health route without mock service", () => {
 
 describe("Test the health route with mock service enabled", () => {
     const apiServer = new ApiServer({
-        port: 19999,
+        port: 59999,
+        bulkTransactionEntityRepo: {
+            canCall: jest.fn()
+        } as IBulkTransactionEntityReadOnlyRepo,
     }, logger);
     let app: Application;
     beforeEach(async () => {

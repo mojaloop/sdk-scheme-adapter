@@ -3,12 +3,16 @@ import { OutboundDomainEventHandlerAPIServer as ApiServer } from '../../../src/a
 import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import { Application } from 'express';
+import { IBulkTransactionEntityReadOnlyRepo } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
 const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion');
 
 describe("Test the docs endpoints", () => {
     const apiServer = new ApiServer({
-        port: 9999,
+        port: 39999,
+        bulkTransactionEntityRepo: {
+            canCall: jest.fn()
+        } as IBulkTransactionEntityReadOnlyRepo,
     }, logger);
     let app: Application;
     beforeEach(async () => {
@@ -32,7 +36,10 @@ describe("Test the docs endpoints", () => {
 
 describe("Test the unknown endpoint", () => {
     const apiServer = new ApiServer({
-        port: 9999,
+        port: 39999,
+        bulkTransactionEntityRepo: {
+            canCall: jest.fn()
+        } as IBulkTransactionEntityReadOnlyRepo,
     }, logger);
     let app: Application;
     beforeEach(async () => {

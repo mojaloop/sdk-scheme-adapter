@@ -32,7 +32,9 @@ const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion');
 describe("Test the health route without mock service", () => {
     const apiServer = new ApiServer({
         port: 29999,
-        bulkTransactionEntityRepo: {} as IBulkTransactionEntityRepo,
+        bulkTransactionEntityRepo: {
+            canCall: jest.fn()
+        } as IBulkTransactionEntityRepo,
     }, logger);
     let app: Application;
     beforeEach(async () => {
@@ -52,7 +54,9 @@ describe("Test the health route without mock service", () => {
 describe("Test the health route with mock service enabled", () => {
     const apiServer = new ApiServer({
         port: 19999,
-        bulkTransactionEntityRepo: {} as IBulkTransactionEntityRepo,
+        bulkTransactionEntityRepo: {
+            canCall: jest.fn()
+        } as IBulkTransactionEntityRepo,
     }, logger);
     let app: Application;
     beforeEach(async () => {
