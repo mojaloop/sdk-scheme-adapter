@@ -8,5 +8,7 @@ reject: [
   ## v16.0.4 necessitates test refactoring. Changes found here https://github.com/mojaloop/api-snippets/pull/145
   ## The changes are being addressed in https://github.com/mojaloop/sdk-scheme-adapter/pull/391
   ## REMOVE @mojaloop/api-snippets once changes are addressed.
-  '@mojaloop/api-snippets'
+  '@mojaloop/api-snippets',
+  ## Testing the last version of nx where ci passed successfully
+  'nx'
 ]
