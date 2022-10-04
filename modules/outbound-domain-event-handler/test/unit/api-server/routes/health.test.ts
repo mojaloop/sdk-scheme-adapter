@@ -21,11 +21,11 @@ describe("Test the health route without mock service", () => {
     }, logger);
     let app: Application;
 
-    beforeEach(async () => {
+    beforeAll(async () => {
         app = await apiServer.startServer();
     });
 
-    afterEach(async () => {
+    afterAll(async () => {
         await apiServer.stopServer();
     });
     test("Health endpoint should work", async () => {
