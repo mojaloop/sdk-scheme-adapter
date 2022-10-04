@@ -29,18 +29,18 @@
  import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
  import {
-   DomainEvent,
-   IKafkaEventConsumerOptions,
-   IKafkaEventProducerOptions,
-   IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData,
-   IProcessSDKOutboundBulkRequestCmdEvtData,
-   IRedisBulkTransactionStateRepoOptions,
-   KafkaCommandEventProducer,
-   KafkaDomainEventConsumer,
-   ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
-   ProcessSDKOutboundBulkRequestCmdEvt,
-   RedisBulkTransactionStateRepo,
- } from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+    DomainEvent,
+    IKafkaEventConsumerOptions,
+    IKafkaEventProducerOptions,
+    IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData,
+    IProcessSDKOutboundBulkRequestCmdEvtData,
+    IRedisBulkTransactionStateRepoOptions,
+    KafkaCommandEventProducer,
+    KafkaDomainEventConsumer,
+    ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
+    ProcessSDKOutboundBulkRequestCmdEvt,
+    RedisBulkTransactionStateRepo,
+} from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
  import { randomUUID } from "crypto";
 
  // Tests can timeout in a CI pipeline so giving it leeway
@@ -201,13 +201,13 @@
              When inbound command event ProcessSDKOutboundBulkPartyInfoRequest is received \
              Then the global state should be updated to DISCOVERY_PROCESSING. \
                And PartyInfoRequested outbound event should not be published for each individual transfer. \
-               And State for individual transfer should be updated to DISCOVERY_SUCCESS.", async () => {
+               And State for individual transfer should be updated to RECEIVED.", async () => {
 
     //Publish this message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
     const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
       bulkHomeTransactionID: "string",
-      bulkTransactionId: bulkTransactionId,
+      bulkTransactionId,
       options: {
         onlyValidateParty: true,
         autoAcceptParty: {
@@ -269,7 +269,8 @@
     //Check that the state of individual transfers in bulk to be RECEIVED
     const individualTransfers = await bulkTransactionEntityRepo.getAllIndividualTransferIds(bulkTransactionId);
     expect(individualTransfers.length).toBe(1);
-    expect((await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[0])).state).toBe('DISCOVERY_SUCCESS');
+    const { state } = await bulkTransactionEntityRepo.getIndividualTransfer(bulkTransactionId, individualTransfers[0]);
+    expect(state).toBe('RECEIVED');
 
     const filteredEvents = domainEvents.filter(domainEvent => domainEvent.getName() === 'PartyInfoRequestedDmEvt');
     // Check domain events published to kafka

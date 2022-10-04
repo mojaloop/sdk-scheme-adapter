@@ -84,7 +84,7 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
         await options.domainProducer.sendDomainEvent(msg);
 
         const totalCount = await bulkTransactionAgg.getTotalCount();
-        const failedCount = await bulkTransactionAgg.getTotalCount();
+        const failedCount = await bulkTransactionAgg.getFailedCount();
 
         if(totalCount === failedCount) {
             const prepareSDKOutboundBulkResponseCmdEvt = new PrepareSDKOutboundBulkResponseCmdEvt({

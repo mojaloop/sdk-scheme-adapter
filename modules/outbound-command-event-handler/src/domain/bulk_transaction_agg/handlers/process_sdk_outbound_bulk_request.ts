@@ -53,7 +53,7 @@ export async function handleProcessSDKOutboundBulkRequestCmdEvt(
         logger.info(`Created BulkTransactionAggregate ${bulkTransactionAgg}`);
 
         const totalCount = await bulkTransactionAgg.getTotalCount();
-        const failedCount = await bulkTransactionAgg.getTotalCount();
+        const failedCount = await bulkTransactionAgg.getFailedCount();
 
         if(totalCount === failedCount) {
             const msg = new PrepareSDKOutboundBulkResponseCmdEvt({
