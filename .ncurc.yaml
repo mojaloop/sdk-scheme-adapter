@@ -6,5 +6,7 @@ reject: [
   '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib',
   '@mojaloop/platform-shared-lib-messaging-types-lib',
   ## Upgrading this causes builds to fail (dependency relationship/graph are not being respected). TODO: Remove and upgrade once issue is resolved.
-  'nx'
+  'nx',
+  ## This should be removed and upgraded as part of this PR: https://github.com/mojaloop/sdk-scheme-adapter/pull/391
+  '@mojaloop/api-snippets'
 ]
