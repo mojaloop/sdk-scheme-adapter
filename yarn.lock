@@ -2758,7 +2758,7 @@ __metadata:
     jest: ^29.1.2
     nodemon: ^2.0.20
     npm-check-updates: ^16.3.8
-    nx: 14.8.2
+    nx: 14.8.3
     replace: ^1.2.1
     standard-version: ^9.5.0
     ts-jest: ^29.0.3
@@ -2887,23 +2887,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nrwl/cli@npm:14.8.2":
-  version: 14.8.2
-  resolution: "@nrwl/cli@npm:14.8.2"
+"@nrwl/cli@npm:14.8.3":
+  version: 14.8.3
+  resolution: "@nrwl/cli@npm:14.8.3"
   dependencies:
-    nx: 14.8.2
-  checksum: 18d698397cd0536109b1a6dbe50e9ec13063dde2793b49ab25d3db3f55ec74931ad20ae32375c5d2a1554d9c91f5b1152e42d6738aaca3ebecca4735bd4916c8
+    nx: 14.8.3
+  checksum: 0f8f0dcb9acd6da9fab605135d506a5f140df0ad47ae4360559f02136a726d339dd20817e89bdce91e76eca199fe4ac1a0523e2f7758d5e66f11bba136419ae4
   languageName: node
   linkType: hard
 
-"@nrwl/tao@npm:14.8.2":
-  version: 14.8.2
-  resolution: "@nrwl/tao@npm:14.8.2"
+"@nrwl/tao@npm:14.8.3":
+  version: 14.8.3
+  resolution: "@nrwl/tao@npm:14.8.3"
   dependencies:
-    nx: 14.8.2
+    nx: 14.8.3
   bin:
     tao: index.js
-  checksum: 78067a5c61b88c7cc43b0313dd1a96cc40149b84f349f2c634dd8ee5514b9d71deca28267a03fa081c8c5877d406e3774046c4927f0111c9f5c5571fd617e254
+  checksum: 193bfd943357634285ae848247c8382cf1d3202934f2a543b4d64db3dd5c1fe863cc05e313514b1a7913327499c719831a4c400c0387bec453b5a5662eb01391
   languageName: node
   linkType: hard
 
@@ -4313,6 +4313,15 @@ __metadata:
   bin:
     audit-ci: dist/bin.js
   checksum: f781bc37e5a7f3b24d47759f2f85618f7aa0ad2bf4221c02ff434805ef641a90dab845a7857d088baec335c36339af162f1a807e89174cf7a7b43cbf549b9412
+  languageName: node
+  linkType: hard
+
+"axios@npm:0.21.1":
+  version: 0.21.1
+  resolution: "axios@npm:0.21.1"
+  dependencies:
+    follow-redirects: ^1.10.0
+  checksum: c87915fa0b18c15c63350112b6b3563a3e2ae524d7707de0a73d2e065e0d30c5d3da8563037bc29d4cc1b7424b5a350cb7274fa52525c6c04a615fe561c6ab11
   languageName: node
   linkType: hard
 
@@ -7166,6 +7175,16 @@ __metadata:
   version: 1.1.0
   resolution: "fn.name@npm:1.1.0"
   checksum: e357144f48cfc9a7f52a82bbc6c23df7c8de639fce049cac41d41d62cabb740cdb9f14eddc6485e29c933104455bdd7a69bb14a9012cef9cd4fa252a4d0cf293
+  languageName: node
+  linkType: hard
+
+"follow-redirects@npm:^1.10.0":
+  version: 1.15.2
+  resolution: "follow-redirects@npm:1.15.2"
+  peerDependenciesMeta:
+    debug:
+      optional: true
+  checksum: faa66059b66358ba65c234c2f2a37fcec029dc22775f35d9ad6abac56003268baf41e55f9ee645957b32c7d9f62baf1f0b906e68267276f54ec4b4c597c2b190
   languageName: node
   linkType: hard
 
@@ -10927,16 +10946,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nx@npm:14.8.2":
-  version: 14.8.2
-  resolution: "nx@npm:14.8.2"
+"nx@npm:14.8.3":
+  version: 14.8.3
+  resolution: "nx@npm:14.8.3"
   dependencies:
-    "@nrwl/cli": 14.8.2
-    "@nrwl/tao": 14.8.2
+    "@nrwl/cli": 14.8.3
+    "@nrwl/tao": 14.8.3
     "@parcel/watcher": 2.0.4
     "@yarnpkg/lockfile": ^1.1.0
     "@yarnpkg/parsers": ^3.0.0-rc.18
     "@zkochan/js-yaml": 0.0.6
+    axios: 0.21.1
     chalk: 4.1.0
     chokidar: ^3.5.1
     cli-cursor: 3.1.0
@@ -10975,7 +10995,7 @@ __metadata:
       optional: true
   bin:
     nx: bin/nx.js
-  checksum: b0c0428366f867e20d5f89d8e9bf2f8c8b6f9c0a60a7b8bebc3617d652b0e33109bc8bce352b9e7218db69eb181b0bacb3378c3d0f5b063acfd986ed0b35f7df
+  checksum: e946f121814ae9513e78a28e67a308457d5002c6804d38757b784cdda50e0c7fc4ef8d097bff786a3a67a30a26d7c4ca76afda839214def3657552fd572adf89
   languageName: node
   linkType: hard
 
