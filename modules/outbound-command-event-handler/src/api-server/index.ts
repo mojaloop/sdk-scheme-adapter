@@ -40,11 +40,11 @@ export class OutboundCommandEventHandlerAPIServer {
 
     private _port: number;
 
-    private _serverInstance: Server;
+    private _serverInstance: Server | null;
 
     private _options: IOutboundCommandEventHandlerAPIServerOptions;
 
-    private _app: Application;
+    private _app: Application | null;
 
     constructor(options: IOutboundCommandEventHandlerAPIServerOptions, logger: ILogger) {
         this._options = options;
@@ -68,13 +68,14 @@ export class OutboundCommandEventHandlerAPIServer {
             );
             this._serverInstance = this._app.listen(this._port, () => {
                 this._logger.info(`API Server is running on port ${this._port}`);
-                resolve(this._app);
+                resolve(this._app!);
             });
         });
     }
 
     async stopServer() : Promise<void> {
-        // Nothing to do here.
+        this._app = null;
+        this._serverInstance = null;
         return;
     }
 
