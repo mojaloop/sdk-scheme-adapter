@@ -20,9 +20,11 @@ describe("Test the health route without mock service", () => {
         } as IBulkTransactionEntityReadOnlyRepo,
     }, logger);
     let app: Application;
+
     beforeEach(async () => {
         app = await apiServer.startServer();
     });
+
     afterEach(async () => {
         await apiServer.stopServer();
     });
@@ -42,12 +44,15 @@ describe("Test the health route with mock service enabled", () => {
         } as IBulkTransactionEntityReadOnlyRepo,
     }, logger);
     let app: Application;
-    beforeEach(async () => {
+
+    beforeAll(async () => {
         app = await apiServer.startServer();
     });
-    afterEach(async () => {
+
+    afterAll(async () => {
         await apiServer.stopServer();
     });
+
     test("Happy path", async () => {
         Config.set('GET_DATA_FROM_MOCK_SERVICE', true);
         mockedAxios.get.mockResolvedValueOnce({})

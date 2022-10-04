@@ -40,11 +40,9 @@ export class OutboundCommandEventHandlerAPIServer {
 
     private _port: number;
 
-    private _serverInstance: Server | null;
+    private _serverInstance: Server;
 
     private _options: IOutboundCommandEventHandlerAPIServerOptions;
-
-    private _app: Application | null;
 
     constructor(options: IOutboundCommandEventHandlerAPIServerOptions, logger: ILogger) {
         this._options = options;
@@ -53,33 +51,27 @@ export class OutboundCommandEventHandlerAPIServer {
     }
 
     async startServer(): Promise<Application> {
-        if(this._app) {
-            this._logger.warn('Server already exists!');
-            return this._app;
-        }
-
         return new Promise(async resolve => {
-            this._app = await CreateExpressServer(
+            const app = await CreateExpressServer(
                 path.join(__dirname, './interface/api.yaml'),
                 {
                     bulkTransactionEntityRepo: this._options.bulkTransactionEntityRepo,
                     logger: this._logger,
                 },
             );
-            this._serverInstance = this._app.listen(this._port, () => {
+            this._serverInstance = app.listen(this._port, () => {
                 this._logger.info(`API Server is running on port ${this._port}`);
-                resolve(this._app!);
+                resolve(app);
             });
         });
     }
 
     async stopServer() : Promise<void> {
-        this._app = null;
-        this._serverInstance = null;
-        return;
-    }
-
-    public get server() {
-        return this._app;
+        return new Promise(resolve => {
+            this._serverInstance.close(() => {
+                this._logger.info('API Server is stopped');
+                resolve();
+            });
+        });
     }
 }
