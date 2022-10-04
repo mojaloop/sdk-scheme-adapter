@@ -127,12 +127,6 @@
     "conditions": {
       "all": [
         {
-          "fact": "pathParams",
-          "operator": "equal",
-          "value": "idtimesout",
-          "path": "idValue"
-        },
-        {
           "fact": "operationPath",
           "operator": "equal",
           "value": "/parties/{idType}/{idValue}"
@@ -161,8 +155,7 @@
         "statusCode": "200",
         "scripts": {
           "scriptingEngine": "postman"
-        },
-        "delay": 300000
+        }
       },
       "type": "FIXED_RESPONSE"
     },
