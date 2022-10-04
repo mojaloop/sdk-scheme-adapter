@@ -25,4 +25,5 @@
 export interface Health {
     status: 'OK' | 'ERROR';
     errors?: string[];
+    bulkTransactionRepoConnected?: boolean;
 }

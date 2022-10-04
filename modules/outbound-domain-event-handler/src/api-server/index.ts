@@ -27,10 +27,12 @@ import { Server } from 'http';
 import { CreateExpressServer } from './app';
 import path from 'path';
 import { Application } from 'express';
+import { IBulkTransactionEntityReadOnlyRepo } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
 
 export interface IOutboundDomainEventHandlerAPIServerOptions {
     port: number;
+    bulkTransactionEntityRepo: IBulkTransactionEntityReadOnlyRepo;
 }
 
 export class OutboundDomainEventHandlerAPIServer {
@@ -40,7 +42,10 @@ export class OutboundDomainEventHandlerAPIServer {
 
     private _serverInstance: Server;
 
+    private _options: IOutboundDomainEventHandlerAPIServerOptions;
+
     constructor(options: IOutboundDomainEventHandlerAPIServerOptions, logger: ILogger) {
+        this._options = options;
         this._port = options.port;
         this._logger = logger.createChild(this.constructor.name);
     }
@@ -50,6 +55,7 @@ export class OutboundDomainEventHandlerAPIServer {
             const app = await CreateExpressServer(
                 path.join(__dirname, './interface/api.yaml'),
                 {
+                    bulkTransactionEntityRepo: this._options.bulkTransactionEntityRepo,
                     logger: this._logger,
                 },
             );

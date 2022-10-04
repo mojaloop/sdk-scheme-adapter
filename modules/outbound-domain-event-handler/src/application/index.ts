@@ -63,6 +63,7 @@ import Config from '../shared/config';
     // API Server
     const outboundDomainEventHandlerAPIServerOptions: IOutboundDomainEventHandlerAPIServerOptions = {
         port: Config.get('API_SERVER.PORT'),
+        bulkTransactionEntityRepo,
     };
     const apiServer = new OutboundDomainEventHandlerAPIServer(outboundDomainEventHandlerAPIServerOptions, logger);
     if(Config.get('API_SERVER.ENABLED')) {

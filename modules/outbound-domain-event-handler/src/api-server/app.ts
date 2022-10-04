@@ -30,8 +30,10 @@ import type { Request } from 'openapi-backend';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
 import Handlers from './handlers';
+import { IBulkTransactionEntityReadOnlyRepo } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
 export interface IAPIServerOptions {
+    bulkTransactionEntityRepo: IBulkTransactionEntityReadOnlyRepo;
     logger: ILogger;
 }
 
@@ -58,6 +60,7 @@ export const CreateExpressServer =
         app.use(Express.json());
 
         // Pass repo to context
+        app.set('bulkTransactionRepo', options.bulkTransactionEntityRepo);
         app.set('logger', options.logger);
 
         // API routes based on the swagger file
