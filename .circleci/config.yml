@@ -125,6 +125,7 @@ jobs:
           command: apk del build-dependencies
 
   test-unit:
+    no_output_timeout: 30m
     executor: default-docker
     environment: *defaults_environment
     steps:
