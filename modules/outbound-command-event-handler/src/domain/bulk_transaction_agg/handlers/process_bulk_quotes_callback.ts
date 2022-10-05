@@ -33,10 +33,12 @@ import {
     SDKOutboundBulkAcceptQuoteRequestedDmEvt,
     CoreConnectorBulkAcceptQuoteRequestIndividualTransferResult,
     SDKOutboundTransferState,
+    PrepareSDKOutboundBulkResponseCmdEvt,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
 import { BulkBatchInternalState, BulkTransactionInternalState, IndividualTransferInternalState } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { handlePrepareSDKOutboundBulkResponseCmdEvt } from './prepare_sdk_outbound_bulk_response';
 
 
 export async function handleProcessBulkQuotesCallbackCmdEvt(
@@ -98,12 +100,12 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                 const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
                 individualTransfer.setTransferState(IndividualTransferInternalState.AGREEMENT_FAILED);
                 await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
+                await bulkTransactionAgg.incrementFailedCount();
             }
         }
         if(bulkQuotesResult) {
             bulkBatch.setBulkQuotesResponse(bulkQuotesResult);
         } else if(processBulkQuotesCallbackMessage.bulkQuotesErrorResult) {
-            // eslint-disable-next-line max-len
             bulkBatch.setLastError(processBulkQuotesCallbackMessage.bulkQuotesErrorResult);
         }
         await bulkTransactionAgg.setBulkBatchById(bulkBatch.id, bulkBatch);
@@ -117,6 +119,19 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
             headers: [],
         });
         await options.domainProducer.sendDomainEvent(bulkQuotesCallbackProcessedDmEvt);
+
+        const totalCount = await bulkTransactionAgg.getTotalCount();
+        const failedCount = await bulkTransactionAgg.getFailedCount();
+
+        if(totalCount === failedCount) {
+            const prepareSDKOutboundBulkResponseCmdEvt = new PrepareSDKOutboundBulkResponseCmdEvt({
+                bulkId: bulkTransactionAgg.bulkId,
+                timestamp: Date.now(),
+                headers: [],
+            });
+            await handlePrepareSDKOutboundBulkResponseCmdEvt(prepareSDKOutboundBulkResponseCmdEvt, options, logger);
+            return;
+        }
 
         // Progressing to the next step
         // Check the status of the remaining items in the bulk
@@ -163,19 +178,21 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                     }
                 }
 
-                const sdkOutboundBulkAcceptQuoteRequestedDmEvt = new SDKOutboundBulkAcceptQuoteRequestedDmEvt({
-                    bulkId: bulkTransactionAgg.bulkId,
-                    bulkAcceptQuoteRequest: {
-                        bulkHomeTransactionID: bulkTransactionAgg.getBulkTransaction().bulkHomeTransactionID,
-                        bulkTransactionId: bulkTransactionAgg.bulkId,
-                        individualTransferResults,
-                    },
-                    timestamp: Date.now(),
-                    headers: [],
-                });
-                await options.domainProducer.sendDomainEvent(sdkOutboundBulkAcceptQuoteRequestedDmEvt);
-                // Update global state AGREEMENT_ACCEPTANCE_PENDING
-                await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.AGREEMENT_ACCEPTANCE_PENDING);
+                if(individualTransferResults.length > 0) {
+                    const sdkOutboundBulkAcceptQuoteRequestedDmEvt = new SDKOutboundBulkAcceptQuoteRequestedDmEvt({
+                        bulkId: bulkTransactionAgg.bulkId,
+                        bulkAcceptQuoteRequest: {
+                            bulkHomeTransactionID: bulkTransactionAgg.getBulkTransaction().bulkHomeTransactionID,
+                            bulkTransactionId: bulkTransactionAgg.bulkId,
+                            individualTransferResults,
+                        },
+                        timestamp: Date.now(),
+                        headers: [],
+                    });
+                    await options.domainProducer.sendDomainEvent(sdkOutboundBulkAcceptQuoteRequestedDmEvt);
+                    // Update global state AGREEMENT_ACCEPTANCE_PENDING
+                    await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.AGREEMENT_ACCEPTANCE_PENDING);
+                }
             }
         }
 
