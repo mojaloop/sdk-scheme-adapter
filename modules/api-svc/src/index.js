@@ -31,6 +31,7 @@ const OutboundServerMiddleware = require('./OutboundServer/middlewares.js');
 const Router = require('./lib/router');
 const Validate = require('./lib/validate');
 const Cache = require('./lib/cache');
+const { SDKStateEnum } = require('./lib/model/common');
 const { Logger, WSO2Auth } = require('@mojaloop/sdk-standard-components');
 
 const LOG_ID = {
@@ -293,7 +294,11 @@ class Server extends EventEmitter {
     }
 
     stop() {
+        this.wso2.auth.stop();
+        this.controlClient?.removeAllListeners();
+        this.inboundServer.removeAllListeners();
         return Promise.all([
+            this.cache.disconnect(),
             this.inboundServer.stop(),
             this.outboundServer.stop(),
             this.oauthTestServer?.stop(),
@@ -373,4 +378,5 @@ module.exports = {
     Router,
     Server,
     Validate,
+    SDKStateEnum,
 };

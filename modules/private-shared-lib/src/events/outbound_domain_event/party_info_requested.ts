@@ -49,15 +49,15 @@ export class PartyInfoRequestedDmEvt extends DomainEvent {
         });
     }
 
-    getBulkId() {
+    get bulkId() {
         return this.getKey();
     }
 
-    getTransferId() {
+    get transferId() {
         return (this.getContent() as IPartyInfoRequestedDmEvtData['content']).transferId;
     }
 
-    getPartyRequest(): PartyInfoRequest {
+    get partyRequest(): PartyInfoRequest {
         return (this.getContent() as IPartyInfoRequestedDmEvtData['content']).request;
     }
 

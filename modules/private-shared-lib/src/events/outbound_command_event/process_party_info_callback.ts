@@ -26,13 +26,14 @@
 
 import { CommandEvent } from '../command_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { IPartyResult } from '../../types';
+import { PartyErrorResponse, PartyResponse } from '@module-types';
 
 export interface IProcessPartyInfoCallbackCmdEvtData {
     bulkId: string;
     content: {
         transferId: string;
-        partyResult: IPartyResult;
+        partyResult?: PartyResponse;
+        partyErrorResult?: PartyErrorResponse;
     };
     timestamp: number | null;
     headers: IMessageHeader[] | null;
@@ -49,16 +50,20 @@ export class ProcessPartyInfoCallbackCmdEvt extends CommandEvent {
         });
     }
 
-    getBulkId() {
+    get bulkId() {
         return this.getKey();
     }
 
-    getTransferId() {
+    get transferId() {
         return (this.getContent() as IProcessPartyInfoCallbackCmdEvtData['content']).transferId;
     }
 
-    getPartyResult() {
+    get partyResult() {
         return (this.getContent() as IProcessPartyInfoCallbackCmdEvtData['content']).partyResult;
+    }
+
+    get partyErrorResult() {
+        return (this.getContent() as IProcessPartyInfoCallbackCmdEvtData['content']).partyErrorResult;
     }
 
     static CreateFromCommandEvent(message: CommandEvent): ProcessPartyInfoCallbackCmdEvt {

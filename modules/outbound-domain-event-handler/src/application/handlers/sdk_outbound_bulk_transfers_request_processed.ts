@@ -18,7 +18,6 @@ export async function handleSDKOutboundBulkTransfersRequestProcessed(
 
         const prepareSDKOutboundBulkResponseCmdEvtData: IPrepareSDKOutboundBulkResponseCmdEvtData = {
             bulkId: sdkOutboundBulkTransfersRequestProcessedDmEvt.getKey(),
-            content: null,
             timestamp: Date.now(),
             headers: sdkOutboundBulkTransfersRequestProcessedDmEvt.getHeaders(),
         };

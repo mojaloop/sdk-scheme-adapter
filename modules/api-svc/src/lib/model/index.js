@@ -19,7 +19,7 @@ const OutboundRequestToPayTransferModel = require('./OutboundRequestToPayTransfe
 const AccountsModel = require('./AccountsModel');
 const ProxyModel = require('./ProxyModel');
 const OutboundRequestToPayModel = require('./OutboundRequestToPayModel');
-const { BackendError, PersistentStateMachine } = require('./common');
+const { SDKStateEnum, BackendError, PersistentStateMachine } = require('./common');
 const PartiesModel = require('./PartiesModel');
 const QuotesModel = require('./QuotesModel');
 const TransfersModel = require('./TransfersModel');
@@ -37,5 +37,6 @@ module.exports = {
     PersistentStateMachine,
     PartiesModel,
     QuotesModel,
-    TransfersModel
+    TransfersModel,
+    SDKStateEnum
 };

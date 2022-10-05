@@ -1,5 +1,6 @@
 const { BackendEventHandler } = require('../../src/BackendEventHandler');
 const { BackendRequests } = require('../../src/lib/model/lib/requests');
+const { SDKStateEnum } = require('../../src/lib/model/common');
 const { Logger } = require('@mojaloop/sdk-standard-components');
 const config = require('./data/defaultConfig.json');
 const bulkTransactionResponse = require('./lib/model/data/bulkTransactionResponse.json');
@@ -110,7 +111,7 @@ describe('BackendEventHandler', () => {
 
         expect(putBulkTransactions).toBeCalledWith(bulkId, {
             ...bulkTransactionResponse,
-            currentState: 'COMPLETED',
+            currentState: SDKStateEnum.COMPLETED,
         });
 
         const sent = KafkaDomainEventProducer.mock.sendDomainEvent.mock.calls[0][0];

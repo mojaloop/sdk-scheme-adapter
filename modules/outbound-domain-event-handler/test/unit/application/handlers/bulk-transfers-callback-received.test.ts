@@ -32,17 +32,18 @@
 
  import { DefaultLogger } from "@mojaloop/logging-bc-client-lib";
  import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
- import {
-   DomainEvent,
-   EventType,
-   IDomainEventData,
-   BulkTransfersCallbackReceivedDmEvt,
-   ProcessBulkTransfersCallbackCmdEvt,
-   IBulkTransfersCallbackReceivedDmEvtData,
- } from "@mojaloop/sdk-scheme-adapter-private-shared-lib"
- import { randomUUID } from "crypto";
- import { handleBulkTransfersCallbackReceived } from "../../../../src/application/handlers"
- import { IDomainEventHandlerOptions } from "../../../../src/types";
+import {
+    DomainEvent,
+    EventType,
+    IDomainEventData,
+    BulkTransfersCallbackReceivedDmEvt,
+    ProcessBulkTransfersCallbackCmdEvt,
+    IBulkTransfersCallbackReceivedDmEvtData,
+    SDKOutboundTransferState,
+} from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { randomUUID } from "crypto";
+import { handleBulkTransfersCallbackReceived } from "../../../../src/application/handlers"
+import { IDomainEventHandlerOptions } from "../../../../src/types";
 
 
 describe('handleBulkTransfersCallbackReceived', () => {
@@ -62,10 +63,9 @@ describe('handleBulkTransfersCallbackReceived', () => {
       bulkId,
       content: {
         batchId: '61c35bae-77d0-4f7d-b894-be375b838ff6',
-        bulkTransferId: '81c35bae-77d0-4f7d-b894-be375b838ff6',
         bulkTransfersResult: {
           bulkTransferId: '81c35bae-77d0-4f7d-b894-be375b838ff6',
-          currentState: 'COMPLETED',
+          currentState: SDKOutboundTransferState.COMPLETED,
           individualTransferResults: [
               {
                   transferId: 'individual-transfer-id',

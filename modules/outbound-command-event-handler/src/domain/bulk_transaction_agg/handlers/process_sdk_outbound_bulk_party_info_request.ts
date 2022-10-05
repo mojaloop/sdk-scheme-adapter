@@ -32,7 +32,8 @@ import {
     ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
     PartyInfoRequestedDmEvt,
     PartyInfoCallbackReceivedDmEvt,
-    IPartyResult,
+    PartyResponse, PartyErrorResponse,
+    SDKOutboundTransferState,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
@@ -64,19 +65,21 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestCmdEvt(
         for await (const individualTransferId of allIndividualTransferIds) {
             const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
 
-            if(bulkTx.isSkipPartyLookupEnabled()) {
-                let partyResult: IPartyResult;
+            if(bulkTx.isSkipPartyLookupEnabled() || individualTransfer.isPartyInfoExists) {
+                let partyResult: PartyResponse | undefined;
+                let partyErrorResult: PartyErrorResponse | undefined;
                 if(individualTransfer.isPartyInfoExists) {
                     partyResult = {
                         party: individualTransfer.payee,
-                        currentState: 'COMPLETED',
+                        currentState: SDKOutboundTransferState.COMPLETED,
                     };
                 } else {
-                    partyResult = {
-                        currentState: 'ERROR_OCCURRED',
-                        errorInformation: {
-                            errorCode: '5100',
-                            errorDescription: 'party information was not provided but skipPartyLookup is true',
+                    partyErrorResult = {
+                        mojaloopError: {
+                            errorInformation: {
+                                errorCode: '5100',
+                                errorDescription: 'party information was not provided but skipPartyLookup is true',
+                            },
                         },
                     };
                 }
@@ -85,6 +88,7 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestCmdEvt(
                     content: {
                         transferId: individualTransfer.id,
                         partyResult,
+                        partyErrorResult,
                     },
                     timestamp: Date.now(),
                     headers: [],
