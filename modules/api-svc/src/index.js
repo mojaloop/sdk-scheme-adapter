@@ -293,7 +293,11 @@ class Server extends EventEmitter {
     }
 
     stop() {
+        this.wso2.auth.stop();
+        this.controlClient?.removeAllListeners();
+        this.inboundServer.removeAllListeners();
         return Promise.all([
+            this.cache.disconnect(),
             this.inboundServer.stop(),
             this.outboundServer.stop(),
             this.oauthTestServer?.stop(),

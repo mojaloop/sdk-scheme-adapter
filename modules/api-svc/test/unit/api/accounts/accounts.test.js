@@ -38,6 +38,10 @@ describe('Outbound Accounts API', () => {
         redisClient = redis.createClient(defaultConfig);
     });
 
+    afterAll(async () => {
+        await redisClient.disconnect();
+    });
+
     beforeEach(async () => {
         serversInfo = await createTestServers(defaultConfig);
         testPostAccounts = createPostAccountsTester({
@@ -49,10 +53,6 @@ describe('Outbound Accounts API', () => {
 
     afterEach(async () => {
         await destroyTestServers(serversInfo);
-    });
-
-    afterAll(async () => {
-        await redisClient.disconnect();
     });
 
     describe('POST /accounts', () => {
