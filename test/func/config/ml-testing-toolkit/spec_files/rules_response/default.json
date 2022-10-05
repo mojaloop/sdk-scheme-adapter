@@ -127,12 +127,6 @@
     "conditions": {
       "all": [
         {
-          "fact": "pathParams",
-          "operator": "equal",
-          "value": "idtimesout",
-          "path": "idValue"
-        },
-        {
           "fact": "operationPath",
           "operator": "equal",
           "value": "/parties/{idType}/{idValue}"
@@ -161,8 +155,7 @@
         "statusCode": "200",
         "scripts": {
           "scriptingEngine": "postman"
-        },
-        "delay": 300000
+        }
       },
       "type": "FIXED_RESPONSE"
     },
@@ -313,6 +306,196 @@
   {
     "ruleId": 6,
     "priority": 1,
+    "description": "post /bulkQuotes - bulk quotes receiver sends error",
+    "apiVersion": {
+      "minorVersion": 4,
+      "majorVersion": 1,
+      "type": "mojaloop_simulator_inbound",
+      "specFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/api_spec.yaml",
+      "callbackMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/callback_map.json",
+      "responseMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/response_map.json",
+      "jsfRefFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/mockRef.json",
+      "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/trigger_templates"
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "body",
+          "operator": "equal",
+          "value": "bulkquotesreceiversendserror",
+          "path": "individualQuotes[0].to.fspId"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/bulkQuotes"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "statusCode": "2000",
+          "message": "Generic Server Error"
+        },
+        "statusCode": "500",
+        "scripts": {
+          "scriptingEngine": "postman"
+        }
+      },
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 9,
+    "priority": 1,
+    "description": "post /bulkQuotes - receiver sends success response for one transfer and failure for other",
+    "apiVersion": {
+      "minorVersion": 4,
+      "majorVersion": 1,
+      "type": "mojaloop_simulator_inbound",
+      "specFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/api_spec.yaml",
+      "callbackMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/callback_map.json",
+      "responseMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/response_map.json",
+      "jsfRefFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/mockRef.json",
+      "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/trigger_templates"
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "body",
+          "operator": "equal",
+          "value": "bulkqtrcvrsendssuccessanderror",
+          "path": "from.idValue"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/bulkQuotes"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "bulkQuoteId": "{$request.body.bulkQuoteId}",
+          "expiration": "2040-01-01T00:00:00.000Z",
+          "individualQuoteResults": [
+            {
+              "quoteId": "{$request.body.individualQuotes[0].quoteId}",
+              "transferAmount": "{$request.body.individualQuotes[0].amount}",
+              "transferAmountCurrency": "{$request.body.individualQuotes[0].currency}",
+              "payeeReceiveAmount": "{$request.body.individualQuotes[0].amount}",
+              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[0].currency}",
+              "payeeFspFeeAmount": "0",
+              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[0].currency}",
+              "payeeFspCommissionAmount": "0",
+              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[0].currency}"
+            },
+            {
+              "statusCode": "5101",
+              "message": "Payee Rejected Quote"
+            }
+          ]
+        },
+        "statusCode": "200",
+        "scripts": {
+          "scriptingEngine": "postman"
+        }
+      },
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 9,
+    "priority": 1,
+    "description": "post /bulkQuotes - receiver sends success response for one transfer and failure for other",
+    "apiVersion": {
+      "minorVersion": 4,
+      "majorVersion": 1,
+      "type": "mojaloop_simulator_inbound",
+      "specFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/api_spec.yaml",
+      "callbackMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/callback_map.json",
+      "responseMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/response_map.json",
+      "jsfRefFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/mockRef.json",
+      "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/trigger_templates"
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "body",
+          "operator": "equal",
+          "value": "bulkqtrcvrsendssuccessanderror",
+          "path": "from.idValue"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/bulkQuotes"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "bulkQuoteId": "{$request.body.bulkQuoteId}",
+          "expiration": "2040-01-01T00:00:00.000Z",
+          "individualQuoteResults": [
+            {
+              "quoteId": "{$request.body.individualQuotes[0].quoteId}",
+              "transferAmount": "{$request.body.individualQuotes[0].amount}",
+              "transferAmountCurrency": "{$request.body.individualQuotes[0].currency}",
+              "payeeReceiveAmount": "{$request.body.individualQuotes[0].amount}",
+              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[0].currency}",
+              "payeeFspFeeAmount": "0",
+              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[0].currency}",
+              "payeeFspCommissionAmount": "0",
+              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[0].currency}"
+            },
+            {
+              "statusCode": "5101",
+              "message": "Payee Rejected Quote"
+            }
+          ]
+        },
+        "statusCode": "200",
+        "scripts": {
+          "scriptingEngine": "postman"
+        }
+      },
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 4,
+    "priority": 1,
     "description": "post /bulkQuotes - bulk quotes response for transfers scenario that has an error in the result",
     "apiVersion": {
       "minorVersion": 4,
@@ -387,127 +570,9 @@
     "version": 1
   },
   {
-    "ruleId": 6,
-    "priority": 1,
-    "description": "post /bulkQuotes - bulk quotes receiver sends error",
-    "apiVersion": {
-      "minorVersion": 4,
-      "majorVersion": 1,
-      "type": "mojaloop_simulator_inbound",
-      "specFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/api_spec.yaml",
-      "callbackMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/callback_map.json",
-      "responseMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/response_map.json",
-      "jsfRefFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/mockRef.json",
-      "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/trigger_templates"
-    },
-    "conditions": {
-      "all": [
-        {
-          "fact": "body",
-          "operator": "equal",
-          "value": "bulkquotesreceiversendserror",
-          "path": "individualQuotes[0].to.fspId"
-        },
-        {
-          "fact": "operationPath",
-          "operator": "equal",
-          "value": "/bulkQuotes"
-        },
-        {
-          "fact": "method",
-          "operator": "equal",
-          "value": "post"
-        }
-      ]
-    },
-    "event": {
-      "method": null,
-      "path": null,
-      "params": {
-        "body": {
-          "statusCode": "4001",
-          "message": "Cannot process the bulk quote"
-        },
-        "statusCode": "500",
-        "scripts": {
-          "scriptingEngine": "postman"
-        }
-      },
-      "type": "FIXED_RESPONSE"
-    },
-    "type": "response",
-    "version": 1
-  },
-  {
-    "ruleId": 6,
-    "priority": 1,
-    "description": "post /bulkQuotes - bulk quotes receiver sends response with a delay/timesout",
-    "apiVersion": {
-      "minorVersion": 4,
-      "majorVersion": 1,
-      "type": "mojaloop_simulator_inbound",
-      "specFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/api_spec.yaml",
-      "callbackMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/callback_map.json",
-      "responseMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/response_map.json",
-      "jsfRefFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/mockRef.json",
-      "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/trigger_templates"
-    },
-    "conditions": {
-      "all": [
-        {
-          "fact": "body",
-          "operator": "equal",
-          "value": "bulkquotesreceivertimesout",
-          "path": "individualQuotes[0].to.fspId"
-        },
-        {
-          "fact": "operationPath",
-          "operator": "equal",
-          "value": "/bulkQuotes"
-        },
-        {
-          "fact": "method",
-          "operator": "equal",
-          "value": "post"
-        }
-      ]
-    },
-    "event": {
-      "method": null,
-      "path": null,
-      "params": {
-        "body": {
-          "bulkQuoteId": "{$request.body.bulkQuoteId",
-          "expiration": "2040-01-01T00:00:00.000Z",
-          "individualQuoteResults": [
-            {
-              "quoteId": "{$request.body.individualQuotes[0].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[0].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[0].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[0].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[0].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[0].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[0].currency}"
-            }
-          ]
-        },
-        "statusCode": "200",
-        "scripts": {
-          "scriptingEngine": "postman"
-        },
-        "delay": 300000
-      },
-      "type": "FIXED_RESPONSE"
-    },
-    "type": "response",
-    "version": 1
-  },
-  {
     "ruleId": 9,
     "priority": 1,
-    "description": "post /bulkQuotes - default path",
+    "description": "post /bulkQuotes - receiver sends success response for one transfer and failure for other",
     "apiVersion": {
       "minorVersion": 4,
       "majorVersion": 1,
@@ -520,6 +585,12 @@
     },
     "conditions": {
       "all": [
+        {
+          "fact": "body",
+          "operator": "equal",
+          "value": "bulkqtrcvrsendssuccessanderror",
+          "path": "from.idValue"
+        },
         {
           "fact": "operationPath",
           "operator": "equal",
@@ -550,6 +621,10 @@
               "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[0].currency}",
               "payeeFspCommissionAmount": "0",
               "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[0].currency}"
+            },
+            {
+              "statusCode": "5101",
+              "message": "Payee Rejected Quote"
             }
           ]
         },
@@ -660,7 +735,7 @@
   {
     "ruleId": 9,
     "priority": 1,
-    "description": "post /bulkTransfers - bulk transfers receiver sends response with a delay/timesout",
+    "description": "post /bulkQuotes - receiver sends success response for one transfer and failure for other",
     "apiVersion": {
       "minorVersion": 4,
       "majorVersion": 1,
@@ -676,13 +751,13 @@
         {
           "fact": "body",
           "operator": "equal",
-          "value": "receivertimesout",
-          "path": "individualTransfers[0].to.fspId"
+          "value": "bulkqtrcvrsendssuccessanderror",
+          "path": "from.idValue"
         },
         {
           "fact": "operationPath",
           "operator": "equal",
-          "value": "/bulkTransfers"
+          "value": "/bulkQuotes"
         },
         {
           "fact": "method",
@@ -696,19 +771,30 @@
       "path": null,
       "params": {
         "body": {
-          "bulkTransferId": "{$request.body.bulkTransferId}",
-          "homeTransactionId": "{$request.body.homeTransactionId}",
-          "individualTransferResults": [
+          "bulkQuoteId": "{$request.body.bulkQuoteId}",
+          "expiration": "2040-01-01T00:00:00.000Z",
+          "individualQuoteResults": [
             {
-              "transferId": "{$request.body.individualTransfers[0].transferId}"
+              "quoteId": "{$request.body.individualQuotes[0].quoteId}",
+              "transferAmount": "{$request.body.individualQuotes[0].amount}",
+              "transferAmountCurrency": "{$request.body.individualQuotes[0].currency}",
+              "payeeReceiveAmount": "{$request.body.individualQuotes[0].amount}",
+              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[0].currency}",
+              "payeeFspFeeAmount": "0",
+              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[0].currency}",
+              "payeeFspCommissionAmount": "0",
+              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[0].currency}"
+            },
+            {
+              "statusCode": "5101",
+              "message": "Payee Rejected Quote"
             }
           ]
         },
         "statusCode": "200",
         "scripts": {
           "scriptingEngine": "postman"
-        },
-        "delay": 300000
+        }
       },
       "type": "FIXED_RESPONSE"
     },
@@ -798,7 +884,7 @@
           "fact": "body",
           "operator": "equal",
           "value": "bulktransferresponsehas1error",
-          "path": "individualQuotes[0].to.fspId"
+          "path": "individualTransfers[0].to.fspId"
         },
         {
           "fact": "operationPath",
@@ -826,7 +912,7 @@
             {
               "statusCode": "4001",
               "message": "Cannot process the transfer"
-          }
+            }
           ]
         },
         "statusCode": "200",
