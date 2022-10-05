@@ -2,8 +2,8 @@
   "name": "multi",
   "test_cases": [
     {
-      "id": 3,
-      "name": "3. When the request has a receiver-id that does not exist in payee fsp, Then the payer fsp backend should receive an ID not found as error message.",
+      "id": 1,
+      "name": "TC-BP1. When the request has a receiver-id that does not exist in payee fsp, Then the payer fsp backend should receive an ID not found as error message.",
       "fileInfo": {
         "path": "ttk-testcases/mvp-bulk.json"
       },
@@ -115,8 +115,8 @@
       ]
     },
     {
-      "id": 4,
-      "name": "4. When the receiver fsp responds after the timeout elapses, Then the payer fsp should receive an timed-out as error message.",
+      "id": 2,
+      "name": "TC-BP2. When the receiver fsp responds after the timeout elapses, Then the payer fsp should receive an timed-out as error message.",
       "fileInfo": {
         "path": "ttk-testcases/mvp-bulk.json"
       },
@@ -235,8 +235,8 @@
       ]
     },
     {
-      "id": 5,
-      "name": "5. Given there are 2 transfers in the bulk request, When one transfer has a succesful party lookup and the other has a failure, Then the PUT response should have details about both the transfers, And the response to PUT should only have one acceptParty.",
+      "id": 3,
+      "name": "TC-BP3. Given there are 2 transfers in the bulk request, When one transfer has a succesful party lookup and the other has a failure, Then the PUT response should have details about both the transfers, And the response to PUT should only have one acceptParty.",
       "fileInfo": {
         "path": "ttk-testcases/mvp-bulk.json"
       },

@@ -3,7 +3,7 @@
   "test_cases": [
     {
       "id": 1,
-      "name": "1. Happy Path",
+      "name": "TC-BHP1. Happy Path",
       "fileInfo": {
         "path": "ttk-testcases/mvp-bulk.json"
       },
@@ -361,8 +361,8 @@
       ]
     },
     {
-      "id": 7,
-      "name": "7. When the incoming request has bulk expiration in the past, Then the PUT response should have error details of the failure",
+      "id": 2,
+      "name": "TC-BHP2. When the incoming request has bulk expiration in the past, Then the PUT response should have error details of the failure",
       "fileInfo": {
         "path": "ttk-testcases/mvp-bulk.json"
       },
@@ -727,8 +727,8 @@
       ]
     },
     {
-      "id": 8,
-      "name": "8. When the incoming request has a format issue that fails schema validation, Then the return code should be 400 instead of 202",
+      "id": 3,
+      "name": "TC-BHP3. When the incoming request has a format issue that fails schema validation, Then the return code should be 400 instead of 202",
       "fileInfo": {
         "path": "ttk-testcases/mvp-bulk.json"
       },
