@@ -3,7 +3,7 @@
   "test_cases": [
     {
       "id": 1,
-      "name": "1. Given party lookup is skipped and bulk quotes request is submitted, When receiver fsp errors out while sending bulk quotes reponse, Then the PUT response should have error details about the transfer.",
+      "name": "TC-BQ1. Given party lookup is skipped and bulk quotes request is submitted, When receiver fsp errors out while sending bulk quotes reponse, Then the PUT response should have error details about the transfer.",
       "fileInfo": {
         "path": "ttk-testcases/mvp-bulk.json"
       },
@@ -44,7 +44,7 @@
             "from": {
               "partyIdInfo": {
                 "partyIdType": "MSISDN",
-                "partyIdentifier": "16135551212"
+                "partyIdentifier": "bulkquotesreceiversendserror"
               }
             },
             "individualTransfers": [
@@ -199,7 +199,7 @@
     },
     {
       "id": 2,
-      "name": "2. Given party lookup is skipped and bulk quotes request is submitted, When receiver fsp sends response after timeout while sending bulk quotes reponse, Then the PUT response should have error details about timeout.",
+      "name": "TC-BQ2. Given party lookup is skipped and bulk quotes request is submitted, When receiver fsp sends response after timeout while sending bulk quotes reponse, Then the PUT response should have error details about timeout.",
       "fileInfo": {
         "path": "ttk-testcases/mvp-bulk.json"
       },
@@ -399,7 +399,7 @@
     },
     {
       "id": 3,
-      "name": "3. Given party lookup is skipped and bulk quotes request having 3 transfers with same receiver fsp id is submitted, When receiver fsp only sends response for 2 quotes out of the 3 while sending bulk quotes reponse, Then the PUT response should have error details about missing quote.",
+      "name": "TC-BQ3. Given party lookup is skipped and bulk quotes request having 3 transfers with same receiver fsp id is submitted, When receiver fsp only sends response for 2 quotes out of the 3 while sending bulk quotes reponse, Then the PUT response should have error details about missing quote.",
       "fileInfo": {
         "path": "ttk-testcases/mvp-bulk.json"
       },
@@ -651,7 +651,7 @@
     },
     {
       "id": 4,
-      "name": "4. Given there are 2 transfers in the bulk request and acceptParty is true for both the transfers, When the receiver fsp sends success response for first quote and failure for the second quote, Then the PUT response should have details of success and failure for both the quotes.",
+      "name": "TC-BQ4. Given there are 2 transfers in the bulk request and acceptParty is true for both the transfers, When the receiver fsp sends success response for first quote and failure for the second quote, Then the PUT response should have details of success and failure for both the quotes.",
       "fileInfo": {
         "path": "ttk-testcases/mvp-bulk.json"
       },
@@ -692,7 +692,7 @@
             "from": {
               "partyIdInfo": {
                 "partyIdType": "MSISDN",
-                "partyIdentifier": "16135551212"
+                "partyIdentifier": "bulkqtrcvrsendssuccessanderror"
               }
             },
             "individualTransfers": [
@@ -872,7 +872,7 @@
     },
     {
       "id": 5,
-      "name": "5. Given there are 2 transfers in the bulk request, When the sender fsp sends the acceptParty:true for 1 transfer and acceptParty:false for the second transfer, Then the PUT response should have details of the 1 transfer for which the acceptParty:true response was sent.",
+      "name": "TC-BQ5. Given there are 2 transfers in the bulk request, When the sender fsp sends the acceptParty:true for 1 transfer and acceptParty:false for the second transfer, Then the PUT response should have details of the 1 transfer for which the acceptParty:true response was sent.",
       "fileInfo": {
         "path": "ttk-testcases/mvp-bulk.json"
       },
@@ -1214,7 +1214,7 @@
     },
     {
       "id": 6,
-      "name": "6. Given there are 2 transfers in the bulk request, When the sender fsp sends  acceptParty:false for the both the transfers, Then the PUT response should have party details of the 2 transfers.",
+      "name": "TC-BQ6. Given there are 2 transfers in the bulk request, When the sender fsp sends  acceptParty:false for the both the transfers, Then the PUT response should have party details of the 2 transfers.",
       "fileInfo": {
         "path": "ttk-testcases/mvp-bulk.json"
       },
@@ -1435,7 +1435,7 @@
     },
     {
       "id": 7,
-      "name": "7. Given there are 2 transfers in the bulk request, When the sender fsp sends  acceptParty:true for the one of the transfers and ignores the other, Then the PUT response should have party details of the 1 transfer for which the acceptParty response was sent.",
+      "name": "TC-BQ7. Given there are 2 transfers in the bulk request, When the sender fsp sends  acceptParty:true for the one of the transfers and ignores the other, Then the PUT response should have party details of the 1 transfer for which the acceptParty response was sent.",
       "fileInfo": {
         "path": "ttk-testcases/mvp-bulk.json"
       },
@@ -1476,7 +1476,7 @@
             "from": {
               "partyIdInfo": {
                 "partyIdType": "MSISDN",
-                "partyIdentifier": "16135551212"
+                "partyIdentifier": "receiverfsphas1id"
               }
             },
             "individualTransfers": [
@@ -1651,7 +1651,7 @@
     },
     {
       "id": 8,
-      "name": "8. Given there are 2 transfers in the bulk request, When the sender fsp sends  acceptParty:false for the one of the transfers and ignores the other, Then the PUT response should have party details of the 1 transfer for which the acceptParty response was sent.",
+      "name": "TC-BQ8. Given there are 2 transfers in the bulk request, When the sender fsp sends  acceptParty:false for the one of the transfers and ignores the other, Then the PUT response should have party details of the 1 transfer for which the acceptParty response was sent.",
       "fileInfo": {
         "path": "ttk-testcases/mvp-bulk.json"
       },
@@ -1866,8 +1866,8 @@
       ]
     },
     {
-      "id": 12,
-      "name": "12. Given there are 3 transfers in the bulk request 2 of which that have the same receiver fsp id and the 3rd one has a different receiver fsp id, When the receiver with receiverhas1id times out sending the response, Then the PUT response should have details of all the 2 transfers from receiverfsphas2ids.",
+      "id": 9,
+      "name": "TC-BQ9. Given there are 3 transfers in the bulk request 2 of which that have the same receiver fsp id and the 3rd one has a different receiver fsp id, When the receiver with receiverhas1id times out sending the response, Then the PUT response should have details of all the 2 transfers from receiverfsphas2ids.",
       "fileInfo": {
         "path": "ttk-testcases/mvp-bulk.json"
       },
@@ -2120,8 +2120,8 @@
       ]
     },
     {
-      "id": 9,
-      "name": "9. Given there are 2 transfers in the bulk request, When the sender fsp sends the acceptParty:false for only 1 transfer and skips sending anything for the second transfer, Then the PUT response should not have details of any transfer.",
+      "id": 10,
+      "name": "TC-BQ10. Given there are 2 transfers in the bulk request, When the sender fsp sends the acceptParty:false for only 1 transfer and skips sending anything for the second transfer, Then the PUT response should not have details of any transfer.",
       "fileInfo": {
         "path": "ttk-testcases/mvp-bulk.json"
       },
