@@ -12,7 +12,6 @@ const redisMock = require('redis-mock');
 const { promisify } = require('util');
 
 const { EventEmitter } = require('events');
-EventEmitter.defaultMaxListeners = 50;
 
 const events = {};
 
