@@ -49,6 +49,7 @@ class RedisClient extends redisMock.RedisClient {
     }
 
     end() {
+        this._redisMock.removeAllListeners('message');
         this.events.removeAllListeners();
     }
 
