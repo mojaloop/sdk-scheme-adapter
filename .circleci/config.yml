@@ -148,7 +148,7 @@ jobs:
       - run:
           no_output_timeout: 20m
           name: Execute unit tests
-          command: yarn run test:unit
+          command: yarn run test:unit --verbose
       - store_test_results:
           path: /home/circleci/project/
       - store_artifacts:
