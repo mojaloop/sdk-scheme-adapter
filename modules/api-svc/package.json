@@ -69,7 +69,7 @@
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^",
     "@mojaloop/sdk-standard-components": "^17.1.1",
     "ajv": "8.11.0",
-    "axios": "^0.27.2",
+    "axios": "^1.0.0",
     "co-body": "^6.1.0",
     "dotenv": "^16.0.3",
     "env-var": "^7.3.0",
