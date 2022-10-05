@@ -92,7 +92,7 @@ executors:
   default-machine:
     working_directory: *WORKING_DIR
     machine:
-      image: ubuntu-2004:current # Ref: https://circleci.com/developer/machine/image/ubuntu-2004
+      image: ubuntu-2204:current # Ref: https://circleci.com/developer/machine/image/ubuntu-2204
 
 ##
 # Jobs
