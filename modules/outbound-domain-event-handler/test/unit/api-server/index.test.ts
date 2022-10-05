@@ -23,7 +23,7 @@ jest.mock('http', () => {
 
 describe.skip("Start and Stop API Server", () => {
     const apiServer = new ApiServer({
-        port: 39999,
+        port: 10999,
         bulkTransactionEntityRepo: {
             canCall: jest.fn()
         }  as IBulkTransactionEntityReadOnlyRepo,

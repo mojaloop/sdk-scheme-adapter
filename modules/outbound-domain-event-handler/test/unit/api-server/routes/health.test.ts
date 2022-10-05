@@ -14,7 +14,7 @@ const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion');
 
 describe("Test the health route without mock service", () => {
     const apiServer = new ApiServer({
-        port: 49999,
+        port: 11999,
         bulkTransactionEntityRepo: {
             canCall: jest.fn()
         } as IBulkTransactionEntityReadOnlyRepo,
@@ -38,7 +38,7 @@ describe("Test the health route without mock service", () => {
 
 describe("Test the health route with mock service enabled", () => {
     const apiServer = new ApiServer({
-        port: 59999,
+        port: 12999,
         bulkTransactionEntityRepo: {
             canCall: jest.fn()
         } as IBulkTransactionEntityReadOnlyRepo,
