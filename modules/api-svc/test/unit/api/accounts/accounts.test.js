@@ -52,7 +52,7 @@ describe('Outbound Accounts API', () => {
     });
 
     afterAll(async () => {
-        // redisClient.end();
+        await redisClient.disconnect();
     });
 
     describe('POST /accounts', () => {
