@@ -92,13 +92,19 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         await agg.store();
         // Create individualTransfer entities
         if(Array.isArray(request?.individualTransfers)) {
+            await agg.setTotalCount(request.individualTransfers.length);
+            await agg.setFailedCount(0);
             // TODO: limit the number of concurrently created promises to avoid nodejs high memory consumption
-            await Promise.all(
-                request.individualTransfers.map(
-                    (individualTransfer: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionIndividualTransfer) =>
-                        agg.addIndividualTransferEntity(IndividualTransferEntity.CreateFromRequest(individualTransfer)),
-                ),
-            );
+            for await (const individualTransfer of request.individualTransfers) {
+                const entity = IndividualTransferEntity.CreateFromRequest(individualTransfer);
+                await agg.addIndividualTransferEntity(entity);
+                if(entity.lastError) {
+                    await agg.incrementFailedCount();
+                }
+            }
+        } else {
+            await agg.setTotalCount(0);
+            await agg.setFailedCount(0);
         }
         // Set initial values
         await agg.setBulkTransfersTotalCount(0);
@@ -144,7 +150,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         return this._rootEntity.id;
     }
 
-    async getAllIndividualTransferIds() {
+    async getAllIndividualTransferIds(): Promise<string[]> {
         const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
         return repo.getAllIndividualTransferIds(this._rootEntity.id);
     }
@@ -237,6 +243,31 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
     async incrementBulkTransfersFailedCount(increment = 1) : Promise<number> {
         const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
         return repo.incrementBulkTransfersFailedCount(this._rootEntity.id, increment);
+    }
+
+    async getTotalCount(): Promise<number> {
+        const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
+        return repo.getTotalCount(this._rootEntity.id);
+    }
+
+    async setTotalCount(totalCount: number): Promise<void> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .setTotalCount(this._rootEntity.id, totalCount);
+    }
+
+    async getFailedCount(): Promise<number> {
+        const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
+        return repo.getFailedCount(this._rootEntity.id);
+    }
+
+    async setFailedCount(count: number): Promise<void> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .setFailedCount(this._rootEntity.id, count);
+    }
+
+    async incrementFailedCount(increment = 1): Promise<number> {
+        const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
+        return repo.incrementFailedCount(this._rootEntity.id, increment);
     }
 
     async getBulkQuotesTotalCount(): Promise<number> {
@@ -443,6 +474,9 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                     if(!individualQuoteResult.lastError) {
                         const individualTransferId = bulkBatch.getReferenceIdForQuoteId(individualQuoteResult.quoteId);
                         const individualTransfer = await this.getIndividualTransferById(individualTransferId);
+                        if(individualTransfer.transferState === IndividualTransferInternalState.AGREEMENT_REJECTED) {
+                            continue;
+                        }
                         const party = individualTransfer.partyResponse?.party;
                         const condition = individualTransfer.quoteResponse?.condition;
                         if(!condition) {

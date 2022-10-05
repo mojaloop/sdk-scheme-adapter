@@ -25,12 +25,16 @@
 'use strict'
 
 import { BulkTransactionAgg } from '../../../../src/domain';
-import { InMemoryBulkTransactionStateRepo, IndividualTransferInternalState } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import {
+    InMemoryBulkTransactionStateRepo,
+    IndividualTransferInternalState,
+    PartyResponse,
+    SDKOutboundTransferState,
+} from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BULK_REQUEST } from '../../data/bulk_transaction_request'
 import { DefaultLogger } from '@mojaloop/logging-bc-client-lib';
 import { ILogger, LogLevel } from '@mojaloop/logging-bc-public-types-lib';
 // import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
-import { IPartyResult } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
 
 const logger: ILogger = new DefaultLogger('SDK-Scheme-Adapter', 'command-event-handler-unit-tests', '0.0.1', LogLevel.INFO);
@@ -100,7 +104,7 @@ describe('BulkTransactionAggregate', () => {
                 logger,
             );
             // Simulate party resposnes
-            const partyResponse1: IPartyResult = {
+            const partyResponse1: PartyResponse = {
                 party: {
                     partyIdInfo: {
                         partyIdType: 'MSISDN',
@@ -108,9 +112,9 @@ describe('BulkTransactionAggregate', () => {
                         fspId: 'dfsp1'
                     }
                 },
-                currentState: 'COMPLETED'
+                currentState: SDKOutboundTransferState.COMPLETED
             }
-            const partyResponse2: IPartyResult = {
+            const partyResponse2: PartyResponse = {
                 party: {
                     partyIdInfo: {
                         partyIdType: 'MSISDN',
@@ -118,7 +122,7 @@ describe('BulkTransactionAggregate', () => {
                         fspId: 'dfsp1'
                     }
                 },
-                currentState: 'COMPLETED'
+                currentState: SDKOutboundTransferState.COMPLETED
             }
             const allIndividualTransferIds = await bulkTransactionAgg.getAllIndividualTransferIds();
             const individualTransfer1 = await bulkTransactionAgg.getIndividualTransferById(allIndividualTransferIds[0]);
@@ -134,7 +138,7 @@ describe('BulkTransactionAggregate', () => {
         afterEach(async () => {
             bulkTransactionAgg.destroy();
         })
-    
+
         test('createBatches should create a single batch for two transfers', async () => {
             const generateBulkQuoteBatchesResult = await bulkTransactionAgg.generateBulkQuoteBatches(10);
             expect(generateBulkQuoteBatchesResult.bulkQuotesTotalCount).toEqual(1);
@@ -151,7 +155,7 @@ describe('BulkTransactionAggregate', () => {
 
         test('createBatches should create two batches if there is a second fsp', async () => {
             // Add another individual transfer with different dfspId
-            const partyResponse3: IPartyResult = {
+            const partyResponse3: PartyResponse = {
                 party: {
                     partyIdInfo: {
                         partyIdType: 'MSISDN',
@@ -159,7 +163,7 @@ describe('BulkTransactionAggregate', () => {
                         fspId: 'dfsp2'
                     }
                 },
-                currentState: 'COMPLETED'
+                currentState: SDKOutboundTransferState.COMPLETED
             }
             const allIndividualTransferIds = await bulkTransactionAgg.getAllIndividualTransferIds();
             const individualTransfer3 = await bulkTransactionAgg.getIndividualTransferById(allIndividualTransferIds[1]);

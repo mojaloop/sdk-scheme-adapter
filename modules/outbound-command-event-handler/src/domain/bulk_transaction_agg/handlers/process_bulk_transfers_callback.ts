@@ -30,6 +30,8 @@ import {
     BulkTransfersCallbackProcessedDmEvt,
     ProcessBulkTransfersCallbackCmdEvt,
     SDKOutboundBulkTransfersRequestProcessedDmEvt,
+    BulkTransferResponse,
+    SDKOutboundTransferState,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
@@ -55,12 +57,11 @@ export async function handleProcessBulkTransfersCallbackCmdEvt(
         const bulkBatch = await bulkTransactionAgg.getBulkBatchEntityById(
             processBulkTransfersCallbackMessage.batchId,
         );
-        const bulkTransfersResult = processBulkTransfersCallbackMessage.bulkTransfersResult;
+        const bulkTransfersResult = processBulkTransfersCallbackMessage.bulkTransfersResult as BulkTransferResponse;
 
         // If individual transfer result contains `lastError` the individual transfer state should be TRANSFER_FAILED.
         // bulkTransfersResult.currentState === 'ERROR_OCCURRED' necessitates erroring out all individual transfers in that bulk batch.
-        if(bulkTransfersResult.currentState &&
-           bulkTransfersResult.currentState === 'COMPLETED') {
+        if(bulkTransfersResult.currentState === SDKOutboundTransferState.COMPLETED) {
             bulkBatch.setState(BulkBatchInternalState.TRANSFERS_COMPLETED);
             successCount = await bulkTransactionAgg.incrementBulkTransfersSuccessCount();
 
@@ -71,7 +72,10 @@ export async function handleProcessBulkTransfersCallbackCmdEvt(
                     const individualTransferId = bulkBatch.getReferenceIdForTransferId(transferResult.transferId);
                     const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
                     individualTransfer.setTransferState(IndividualTransferInternalState.TRANSFERS_SUCCESS);
-                    individualTransfer.setTransferResponse(transferResult);
+                    individualTransfer.setTransferResponse({
+                        ...transferResult,
+                        completedTimestamp: bulkTransfersResult.completedTimestamp,
+                    });
                     individualTransfer.setTransactionId(bulkBatch.id);
                     await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
                 } else {

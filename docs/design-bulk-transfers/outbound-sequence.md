@@ -34,7 +34,6 @@ sequenceDiagram
     loop Party Lookup per transfer
                     SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the global state to DISCOVERY_RECEIVED
         alt party info already exists
-            SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the individual state to DISCOVERY_SUCCESS
             SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: PartyInfoCallbackReceived
         else party info doesn't exist
             SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update the party request
@@ -211,5 +210,4 @@ sequenceDiagram
     Note left of SDKOutboundCommandEventHandler: topic-sdk-outbound-command-events
     SDKOutboundCommandEventHandler->>SDKOutboundCommandEventHandler: Update global state "RESPONSE_SENT"
     SDKOutboundCommandEventHandler->>SDKOutboundDomainEventHandler: SDKOutboundBulkResponseSentProcessed
-
 ```

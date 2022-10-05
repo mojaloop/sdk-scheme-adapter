@@ -1,2 +1,2 @@
-export * from './party-result';
+export * from './PartyResponse';
 export * from './PartyInfoRequest';

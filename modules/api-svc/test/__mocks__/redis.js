@@ -19,6 +19,7 @@ const events = {};
 class RedisClient extends redisMock.RedisClient {
     constructor(opts) {
         super(opts);
+        this._redisMock.setMaxListeners(30);
         events[opts.cacheUrl] = events[opts.cacheUrl] || new EventEmitter();
         this.events = events[opts.cacheUrl];
     }
@@ -49,6 +50,7 @@ class RedisClient extends redisMock.RedisClient {
     }
 
     end() {
+        this._redisMock.removeAllListeners('message');
         this.events.removeAllListeners();
     }
 

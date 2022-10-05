@@ -16,8 +16,9 @@ export async function handlePartyInfoCallbackReceived(
         const processPartyInfoCallbackMessageData: IProcessPartyInfoCallbackCmdEvtData = {
             bulkId: partyInfoCallbackReceived.getKey(),
             content: {
-                transferId: partyInfoCallbackReceived.getTransferId(),
-                partyResult: partyInfoCallbackReceived.getPartyResult(),
+                transferId: partyInfoCallbackReceived.transferId,
+                partyResult: partyInfoCallbackReceived.partyResult,
+                partyErrorResult: partyInfoCallbackReceived.partyErrorResult,
             },
             timestamp: Date.now(),
             headers: partyInfoCallbackReceived.getHeaders(),

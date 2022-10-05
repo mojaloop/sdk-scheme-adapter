@@ -49,7 +49,7 @@ export async function handleProcessSDKOutboundBulkResponseSentCmdEvt(
         );
         logger.info(`Created BulkTransactionAggregate ${bulkTransactionAgg}`);
 
-        bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.RESPONSE_SENT);
+        await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.RESPONSE_SENT);
 
         const sdkOutboundBulkResponseSentProcessedDmEvt = new SDKOutboundBulkResponseSentProcessedDmEvt({
             bulkId: bulkTransactionAgg.bulkId,

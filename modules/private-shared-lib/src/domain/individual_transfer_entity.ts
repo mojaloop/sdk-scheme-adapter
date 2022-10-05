@@ -25,11 +25,12 @@
 'use strict';
 
 import { BaseEntityState, BaseEntity } from './';
-import { IPartyResult, PartyInfoRequest } from '@module-types';
+import { PartyInfoRequest, PartyResponse } from '@module-types';
 import { SchemaValidationError } from '../errors';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 import { randomUUID } from 'crypto';
 import Ajv from 'ajv';
+import { Enum as CentralServicedSharedEnum } from '@mojaloop/central-services-shared';
 const ajv = new Ajv({
     strict:false,
     allErrors: false,
@@ -53,18 +54,32 @@ export enum IndividualTransferInternalState {
     TRANSFERS_SUCCESS = 'TRANSFERS_SUCCESS',
 }
 
+export interface IndividualQuoteResponse extends SDKSchemeAdapter.V2_0_0.Outbound.Types.individualQuoteResult {
+    expiration: SDKSchemeAdapter.V2_0_0.Outbound.Types.DateTime;
+}
+
+export interface IndividualTransferResponse extends SDKSchemeAdapter.V2_0_0.Outbound.Types.individualTransferResult {
+    completedTimestamp?: SDKSchemeAdapter.V2_0_0.Outbound.Types.DateTime;
+}
+
+export type IndividualTransferError = SDKSchemeAdapter.V2_0_0.Outbound.Types.transferError;
+// TODO: Extend API-Snippets lastError with the following types
+// SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransferErrorResponse |
+// SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteErrorResponse |
+// SDKSchemeAdapter.V2_0_0.Outbound.Types.partyError;
+
 export interface IndividualTransferState extends BaseEntityState {
     id: string;
     request: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionIndividualTransfer;
     state: IndividualTransferInternalState;
     batchId?: string;
     partyRequest?: PartyInfoRequest;
-    partyResponse?: IPartyResult
+    partyResponse?: PartyResponse;
     acceptParty?: boolean;
     acceptQuote?: boolean;
-    quoteResponse?: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualQuoteResult;
-    transferResponse?: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualTransferResult;
-    lastError?: SDKSchemeAdapter.V2_0_0.Outbound.Types.transferError;
+    quoteResponse?: IndividualQuoteResponse;
+    transferResponse?: IndividualTransferResponse;
+    lastError?: IndividualTransferError;
     transactionId?: string;
 }
 
@@ -80,15 +95,15 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         return this._state.request;
     }
 
-    get partyResponse(): IPartyResult | undefined {
+    get partyResponse(): PartyResponse | undefined {
         return this._state.partyResponse;
     }
 
-    get quoteResponse(): SDKSchemeAdapter.V2_0_0.Outbound.Types.individualQuoteResult | undefined {
+    get quoteResponse(): IndividualQuoteResponse | undefined {
         return this._state.quoteResponse;
     }
 
-    get transferResponse(): SDKSchemeAdapter.V2_0_0.Outbound.Types.individualTransferResult | undefined {
+    get transferResponse(): IndividualTransferResponse | undefined {
         return this._state.transferResponse;
     }
 
@@ -108,6 +123,7 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
             created_at: Date.now(),
             updated_at: Date.now(),
             version: IndividualTransferEntity.IndividualTransferStateVersion,
+            lastError: request.lastError,
         };
         return new IndividualTransferEntity(initialState);
     }
@@ -128,15 +144,15 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         this._state.partyRequest = request;
     }
 
-    setPartyResponse(response: IPartyResult) {
+    setPartyResponse(response: PartyResponse) {
         this._state.partyResponse = response;
     }
 
-    setQuoteResponse(response: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualQuoteResult) {
+    setQuoteResponse(response: IndividualQuoteResponse) {
         this._state.quoteResponse = response;
     }
 
-    setTransferResponse(response: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualTransferResult) {
+    setTransferResponse(response: IndividualTransferResponse) {
         this._state.transferResponse = response;
     }
 
@@ -149,6 +165,10 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         this._state.transactionId = transactionId;
     }
 
+    setLastError(lastError?: IndividualTransferError) {
+        this._state.lastError = lastError;
+    }
+
     // get payeeResolved(): boolean {
     // //     return !!this._state.partyResponse;
     // //     return !!this._state.state == IndividualTransferInternalState.DISCOVERY_SUCCESS;
@@ -158,8 +178,38 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         return this._state.state;
     }
 
+    get lastError() {
+        return this._state.lastError;
+    }
+
     get toFspId(): string | undefined {
         return this._state.partyResponse?.party?.partyIdInfo?.fspId;
+    }
+
+    toIndividualTransferResult(): SDKSchemeAdapter.V2_0_0.Inbound.Types.bulkTransactionIndividualTransferResult {
+        // TODO: Should we infer the FSPIOP-transferState for the individualTransfer based on the SDK-IndividualTransferInternalState? See comments below in the Fulfil mapping.
+        // eslint-disable-next-line max-len
+        const transferState = (this.transferState === IndividualTransferInternalState.TRANSFERS_SUCCESS) ? CentralServicedSharedEnum.Transfers.TransferState.COMMITTED : CentralServicedSharedEnum.Transfers.TransferState.ABORTED;
+        return {
+            transferId: this.transferResponse?.transferId,
+            homeTransactionId: this.request.homeTransactionId,
+            transactionId: this.transactionId,
+            quoteId: this.quoteResponse?.quoteId,
+            to: this.partyResponse?.party || this.payee,
+            amountType: this.request.amountType,
+            amount: this.request.amount,
+            currency: this.request.currency,
+            quoteResponse: this.quoteResponse,
+            ...(this.transferResponse && {
+                fulfil: {
+                    ...this.transferResponse,
+                    transferState,
+                },
+            }),
+            quoteExtensions: this.quoteResponse?.extensionList,
+            transferExtensions: this.transferResponse?.extensionList,
+            lastError: this.lastError,
+        };
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */

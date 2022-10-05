@@ -68,7 +68,7 @@ describe('Outbound Transfers API', () => {
     });
 
     afterAll(async () => {
-        redisClient.end();
+        await redisClient.disconnect();
     });
 
     describe('POST /transfers', () => {

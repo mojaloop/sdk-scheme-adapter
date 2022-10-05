@@ -48,11 +48,11 @@ export class PartyInfoCallbackProcessedDmEvt extends DomainEvent {
         });
     }
 
-    getBulkId() {
+    get bulkId() {
         return this.getKey();
     }
 
-    getTransferId() {
+    get transferId() {
         return (this.getContent() as IPartyInfoCallbackProcessedDmEvtData['content']).transferId;
     }
 

@@ -43,9 +43,13 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
 
     private readonly bulkBatchKeyPrefix: string = 'bulkBatch_';
 
-    private readonly bulkTransfersTotalCountKey: string = 'bulkQuotesTotalCount';
+    private readonly totalCountKey: string = 'totalCount';
 
-    private readonly bulkTransfersSuccessCountKey: string = 'bulkQuotesSuccessCount';
+    private readonly failedCountKey: string = 'failedCount';
+
+    private readonly bulkTransfersTotalCountKey: string = 'bulkTransfersTotalCount';
+
+    private readonly bulkTransfersSuccessCountKey: string = 'bulkTransfersSuccessCount';
 
     private readonly bulkTransfersFailedCountKey: string = 'bulkTransfersFailedCount';
 
@@ -292,17 +296,39 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
         }
     }
 
+    async getTotalCount(bulkId: string): Promise<number> {
+        return this._getCount(this.totalCountKey, bulkId);
+    }
+
+    async setTotalCount(
+        bulkId: string,
+        value: number,
+    ): Promise<void> {
+        return this._setCount(this.totalCountKey, bulkId, value);
+    }
+
+    async incrementFailedCount(bulkId: string, increment = 1): Promise<number> {
+        return this._incrementCount(this.failedCountKey, bulkId, increment);
+    }
+
+    async getFailedCount(bulkId: string): Promise<number> {
+        return this._getCount(this.failedCountKey, bulkId);
+    }
+
+    async setFailedCount(bulkId: string, value: number): Promise<void> {
+        return this._setCount(this.failedCountKey, bulkId, value);
+    }
+
     async getBulkTransfersTotalCount(bulkId: string): Promise<number> {
-        return this._getCount(this.bulkQuotesTotalCountKey, bulkId);
+        return this._getCount(this.bulkTransfersTotalCountKey, bulkId);
     }
 
     async setBulkTransfersTotalCount(
         bulkId: string,
         value: number,
     ): Promise<void> {
-        return this._setCount(this.bulkQuotesTotalCountKey, bulkId, value);
+        return this._setCount(this.bulkTransfersTotalCountKey, bulkId, value);
     }
-
 
     async getBulkTransfersSuccessCount(bulkId: string): Promise<number> {
         return this._getCount(this.bulkTransfersSuccessCountKey, bulkId);
@@ -329,7 +355,7 @@ export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityR
     }
 
     async getBulkQuotesTotalCount(bulkId: string): Promise<number> {
-        return this._getCount(this.bulkTransfersTotalCountKey, bulkId);
+        return this._getCount(this.bulkQuotesTotalCountKey, bulkId);
     }
 
     async setBulkQuotesTotalCount(

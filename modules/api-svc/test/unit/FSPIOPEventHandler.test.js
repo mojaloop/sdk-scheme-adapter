@@ -14,6 +14,7 @@ const {
     OutboundBulkQuotesModel,
     PartiesModel,
     OutboundBulkTransfersModel,
+    SDKStateEnum
 } = require('~/lib/model');
 
 const logger = new Logger.Logger({ context: { app: 'FSPIOPEventHandler' }, stringify: () => '' });
@@ -71,7 +72,7 @@ describe('FSPIOPEventHandler', () => {
                 party: {
                     body: partyResult,
                 },
-                currentState: 'COMPLETED',
+                currentState: SDKStateEnum.COMPLETED,
             }))
         };
 
@@ -104,7 +105,7 @@ describe('FSPIOPEventHandler', () => {
             transferId: 'faaaea55-da85-4818-8b16-f720f9737889',
             partyResult: {
                 party: partyResult,
-                currentState: 'COMPLETED',
+                currentState: SDKStateEnum.COMPLETED,
             }
         });
     });
@@ -242,7 +243,6 @@ describe('FSPIOPEventHandler', () => {
         expect(sent._data.name).toEqual('BulkQuotesCallbackReceivedDmEvt');
         expect(sent._data.content).toEqual({
             batchId: '61c35bae-77d0-4f7d-b894-be375b838ff6',
-            bulkQuoteId: bulkQuoteResponse.bulkQuoteId,
             bulkQuotesResult: bulkQuoteResponse,
         });
     });
@@ -281,7 +281,7 @@ describe('FSPIOPEventHandler', () => {
 
         const bulkTransfersResult = {
             bulkTransferId: '81c35bae-77d0-4f7d-b894-be375b838ff6',
-            currentState: 'COMPLETED',
+            currentState: SDKStateEnum.COMPLETED,
             individualTransferResults: [
                 {
                     transferId: 'individual-transfer-id',
@@ -317,7 +317,6 @@ describe('FSPIOPEventHandler', () => {
         expect(sent._data.name).toEqual('BulkTransfersCallbackReceivedDmEvt');
         expect(sent._data.content).toEqual({
             batchId: '61c35bae-77d0-4f7d-b894-be375b838ff6',
-            bulkTransferId: '81c35bae-77d0-4f7d-b894-be375b838ff6',
             bulkTransfersResult
         });
     });
