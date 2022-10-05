@@ -78,6 +78,8 @@ import Config from '../shared/config';
         logger.info('\tDestroying outboundEventHandler handler...');
 
         await outboundEventHandler.destroy();
+        await bulkTransactionEntityRepo?.destroy();
+        await apiServer.stopServer();
 
         logger.info('Exit complete!');
         process.exit(0);
