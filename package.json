@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
-  "version": "20.0.0-bulk-snapshot.18",
+  "version": "20.0.0-bulk-snapshot.19",
   "description": "mojaloop sdk-scheme-adapter",
   "license": "Apache-2.0",
   "homepage": "https://github.com/mojaloop/sdk-scheme-adapter",
@@ -42,7 +42,7 @@
     "lint:fix": "yarn run lint -- --fix",
     "lint:fix:affected": "yarn run lint:affected -- --fix",
     "test": "yarn run test:unit",
-    "test:unit": "nx run-many --parallel --all --target=test:unit",
+    "test:unit": "nx run-many --parallel --all --target=test:unit -- --forceExit",
     "test:unit:no-cache": "yarn run test:unit --skip-nx-cache",
     "test:unit:affected": "nx affected --parallel --all --target=test:unit",
     "test:coverage": "nx run-many --parallel --all --target=test:coverage",
