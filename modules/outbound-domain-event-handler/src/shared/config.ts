@@ -52,13 +52,13 @@ const config = Convict({
             doc: 'Whether to enable API server or not',
             format: 'Boolean',
             default: false,
-            env: 'API_SERVER_ENABLED',
+            env: 'DOMAIN_EVENT_API_SERVER_ENABLED',
         },
         PORT: {
             doc: 'The port of the API server.',
             format: 'port',
             default: 8001,
-            env: 'API_SERVER_PORT',
+            env: 'DOMAIN_EVENT_API_SERVER_PORT',
         },
     },
     REDIS: {
