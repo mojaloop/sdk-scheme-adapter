@@ -37,6 +37,11 @@ export interface IAPIServerOptions {
     logger: ILogger;
 }
 
+export enum AppServerPropertyEnum {
+    bulkTransactionRepo = 'bulkTransactionRepo',
+    logger = 'logger',
+}
+
 export const CreateExpressServer =
     async (
         openApiSpecFilePath: string,
@@ -60,8 +65,8 @@ export const CreateExpressServer =
         app.use(Express.json());
 
         // Pass repo to context
-        app.set('bulkTransactionRepo', options.bulkTransactionEntityRepo);
-        app.set('logger', options.logger);
+        app.set(AppServerPropertyEnum.bulkTransactionRepo, options.bulkTransactionEntityRepo);
+        app.set(AppServerPropertyEnum.logger, options.logger);
 
         // API routes based on the swagger file
         const api = new OpenAPIBackend({

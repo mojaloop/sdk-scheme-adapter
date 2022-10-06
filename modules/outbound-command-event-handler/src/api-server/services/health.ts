@@ -24,6 +24,7 @@
 
 import { HealthStatusEnum, Health } from '../models';
 import Express from 'express';
+import { AppServerPropertyEnum } from '../app';
 
 export class HealthService {
     private _request: Express.Request;
@@ -34,7 +35,7 @@ export class HealthService {
 
     public async getHealth(): Promise<Health> {
         const status: HealthStatusEnum = HealthStatusEnum.OK;
-        const bulkTransactionRepo = this._request.app.get('bulkTransactionRepo');
+        const bulkTransactionRepo = this._request.app.get(AppServerPropertyEnum.bulkTransactionRepo);
         const bulkTransactionRepoConnected = bulkTransactionRepo.canCall();
         const errors: string[] = [];
         return {
