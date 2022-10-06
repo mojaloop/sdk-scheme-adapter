@@ -99,6 +99,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
             for await (const individualTransferId of individualTransferIds) {
                 const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
                 individualTransfer.setTransferState(IndividualTransferInternalState.AGREEMENT_FAILED);
+                individualTransfer.setLastError(processBulkQuotesCallbackMessage.bulkQuotesErrorResult);
                 await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
                 await bulkTransactionAgg.incrementFailedCount();
             }
