@@ -29,9 +29,7 @@ import { HealthService } from '../services/health';
 
 export default {
     getHealth: async (_c: Context<Document>, req: Express.Request, res: Express.Response) => {
-        const health: Health = await new HealthService().getHealth();
-        const bulkTransactionRepo = req.app.get('bulkTransactionRepo');
-        health.bulkTransactionRepoConnected = bulkTransactionRepo.canCall();
+        const health: Health = await new HealthService(req).getHealth();
         return res.status(200).json(health);
     },
 };
