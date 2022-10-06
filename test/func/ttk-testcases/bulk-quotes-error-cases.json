@@ -3,7 +3,7 @@
   "test_cases": [
     {
       "id": 1,
-      "name": "TC-BQ1. Given party lookup is skipped and bulk quotes request is submitted, When receiver fsp errors out while sending bulk quotes reponse, Then the PUT response should have error details about the transfer.",
+      "name": "TC-BQ1. Given party lookup is skipped and bulk quotes request is submitted, When receiver fsp fails the entire batch and sends the error, Then the PUT response should have error details about the transfer.",
       "fileInfo": {
         "path": "ttk-testcases/mvp-bulk.json"
       },
@@ -44,7 +44,7 @@
             "from": {
               "partyIdInfo": {
                 "partyIdType": "MSISDN",
-                "partyIdentifier": "bulkquotesreceiversendserror"
+                "partyIdentifier": "12345678"
               }
             },
             "individualTransfers": [
@@ -240,7 +240,7 @@
             "from": {
               "partyIdInfo": {
                 "partyIdType": "MSISDN",
-                "partyIdentifier": "16135551212"
+                "partyIdentifier": "blkqtreceivertimesout"
               }
             },
             "individualTransfers": [
