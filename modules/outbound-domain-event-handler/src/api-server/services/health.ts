@@ -22,7 +22,7 @@
  --------------
  ******/
 
-import { Health } from '../models';
+import { HealthStatusEnum, Health } from '../models';
 import Express from 'express';
 
 export class HealthService {
@@ -33,7 +33,7 @@ export class HealthService {
     }
 
     public async getHealth(): Promise<Health> {
-        const status: 'OK' | 'ERROR' = 'OK';
+        const status: HealthStatusEnum = HealthStatusEnum.OK;
         const bulkTransactionRepo = this._request.app.get('bulkTransactionRepo');
         const bulkTransactionRepoConnected = bulkTransactionRepo.canCall();
         const errors: string[] = [];

@@ -22,5 +22,4 @@
  --------------
  ******/
 
-import { Health } from './health';
-export { Health };
+export * from './health';
