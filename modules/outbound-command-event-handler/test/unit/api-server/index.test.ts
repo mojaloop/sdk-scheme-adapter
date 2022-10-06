@@ -41,7 +41,9 @@ jest.mock('http', () => {
 describe.skip("Start and Stop API Server", () => {
     const apiServer = new ApiServer({
         port: 9999,
-        bulkTransactionEntityRepo: {} as IBulkTransactionEntityRepo,
+        bulkTransactionEntityRepo: {
+            canCall: jest.fn()
+        } as IBulkTransactionEntityRepo,
     }, logger);
     test("startServer should return a resolved promise", async () => {
         await expect(apiServer.startServer()).resolves.toBe(undefined);

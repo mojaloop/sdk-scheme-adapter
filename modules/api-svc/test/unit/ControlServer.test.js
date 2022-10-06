@@ -32,7 +32,7 @@ describe('ControlServer', () => {
         const appConfig = { what: 'ever' };
         const changedConfig = { ...appConfig, some: 'thing' };
 
-        beforeEach(async () => {
+        beforeAll(async () => {
             logger = new Logger.Logger({ stringify: () => '' });
             server = new ControlServer.Server({ logger, appConfig });
             client = await ControlServer.Client.Create({
@@ -42,7 +42,7 @@ describe('ControlServer', () => {
             });
         });
 
-        afterEach(async () => {
+        afterAll(async () => {
             await server.stop();
         });
 

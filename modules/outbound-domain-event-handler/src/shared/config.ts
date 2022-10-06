@@ -32,6 +32,10 @@ export interface RedisConfig {
 // interface to represent service configuration
 export interface ServiceConfig {
     LOG_LEVEL: LogLevel
+    API_SERVER: {
+        ENABLED: boolean
+        PORT: number
+    }
     KAFKA: KafkaConfig
     REDIS: RedisConfig
 }
@@ -42,6 +46,20 @@ const config = Convict({
         format: ['trace', 'debug', 'info', 'warn', 'error', 'fatal'],
         default: 'info',
         env: 'LOG_LEVEL',
+    },
+    API_SERVER: {
+        ENABLED: {
+            doc: 'Whether to enable API server or not',
+            format: 'Boolean',
+            default: false,
+            env: 'DOMAIN_EVENT_API_SERVER_ENABLED',
+        },
+        PORT: {
+            doc: 'The port of the API server.',
+            format: 'port',
+            default: 8001,
+            env: 'DOMAIN_EVENT_API_SERVER_PORT',
+        },
     },
     REDIS: {
         CONNECTION_URL: {

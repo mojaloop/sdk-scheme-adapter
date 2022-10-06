@@ -18,7 +18,7 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Modusbox
- - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
+ - Kevin Leyow <kevin.leyow@modusbox.com>
  --------------
  ******/
 
@@ -26,27 +26,27 @@ import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import { Server } from 'http';
 import { CreateExpressServer } from './app';
 import path from 'path';
-import { IBulkTransactionEntityRepo } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { Application } from 'express';
+import { IBulkTransactionEntityReadOnlyRepo } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
 
-export interface IOutboundCommandEventHandlerAPIServerOptions {
+export interface IOutboundDomainEventHandlerAPIServerOptions {
     port: number;
-    bulkTransactionEntityRepo: IBulkTransactionEntityRepo;
+    bulkTransactionEntityRepo: IBulkTransactionEntityReadOnlyRepo;
 }
 
-export class OutboundCommandEventHandlerAPIServer {
+export class OutboundDomainEventHandlerAPIServer {
     private _logger: ILogger;
 
     private _port: number;
 
     private _serverInstance: Server | null;
 
-    private _options: IOutboundCommandEventHandlerAPIServerOptions;
+    private _options: IOutboundDomainEventHandlerAPIServerOptions;
 
     private _app: Application | null;
 
-    constructor(options: IOutboundCommandEventHandlerAPIServerOptions, logger: ILogger) {
+    constructor(options: IOutboundDomainEventHandlerAPIServerOptions, logger: ILogger) {
         this._options = options;
         this._port = options.port;
         this._logger = logger.createChild(this.constructor.name);
