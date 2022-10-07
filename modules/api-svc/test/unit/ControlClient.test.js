@@ -33,7 +33,7 @@ describe('ControlAgent', () => {
         const appConfig = { control: { port: 4005 }, what: 'ever' };
         const changedConfig = { ...appConfig, some: 'thing' };
 
-        beforeEach(async () => {
+        beforeAll(async () => {
             logger = new Logger.Logger({ stringify: () => '' });
             server = new TestControlServer.Server({ logger, appConfig });
             client = await ControlAgent.Client.Create({
@@ -44,7 +44,7 @@ describe('ControlAgent', () => {
             });
         });
 
-        afterEach(async () => {
+        afterAll(async () => {
             await client.stop();
             await server.stop();
         });

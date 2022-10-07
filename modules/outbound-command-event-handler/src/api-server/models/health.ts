@@ -22,7 +22,13 @@
  --------------
  ******/
 
+export enum HealthStatusEnum {
+    OK = 'OK',
+    ERROR = 'ERROR',
+}
+
 export interface Health {
-    status: 'OK' | 'ERROR';
+    status: HealthStatusEnum;
     errors?: string[];
+    bulkTransactionRepoConnected?: boolean;
 }

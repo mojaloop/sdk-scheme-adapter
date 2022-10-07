@@ -47,10 +47,10 @@ import Config from '../shared/config';
     await bulkTransactionEntityRepo.init();
 
     // start outboundEventHandler
-    const outboundEventHanlerOptions: IOutboundEventHandlerOptions = {
+    const outboundEventHandlerOptions: IOutboundEventHandlerOptions = {
         bulkTransactionEntityRepo,
     };
-    const outboundEventHandler: IRunHandler = new OutboundEventHandler(outboundEventHanlerOptions);
+    const outboundEventHandler: IRunHandler = new OutboundEventHandler(outboundEventHandlerOptions);
     try {
         await outboundEventHandler.start(Config, logger);
     } catch (err) {

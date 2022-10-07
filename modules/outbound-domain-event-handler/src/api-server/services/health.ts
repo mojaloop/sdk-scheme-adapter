@@ -18,18 +18,30 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Modusbox
- - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
+ - Kevin Leyow <kevin.leyow@modusbox.com>
  --------------
  ******/
 
-import { Context, Document } from 'openapi-backend';
+import { HealthStatusEnum, Health } from '../models';
 import Express from 'express';
-import { Health } from '../models';
-import { HealthService } from '../services/health';
+import { AppServerPropertyEnum } from '../app';
 
-export default {
-    getHealth: async (_c: Context<Document>, req: Express.Request, res: Express.Response) => {
-        const health: Health = await new HealthService(req).getHealth();
-        return res.status(200).json(health);
-    },
-};
+export class HealthService {
+    private _request: Express.Request;
+
+    constructor(request: Express.Request) {
+        this._request = request;
+    }
+
+    public async getHealth(): Promise<Health> {
+        const status: HealthStatusEnum = HealthStatusEnum.OK;
+        const bulkTransactionRepo = this._request.app.get(AppServerPropertyEnum.bulkTransactionRepo);
+        const bulkTransactionRepoConnected = bulkTransactionRepo.canCall();
+        const errors: string[] = [];
+        return {
+            status,
+            errors,
+            bulkTransactionRepoConnected,
+        };
+    }
+}

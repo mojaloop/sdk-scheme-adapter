@@ -22,6 +22,5 @@
  --------------
  ******/
 
-import { BulkTransaction } from './bulk-transaction';
-import { Health } from './health';
-export { BulkTransaction, Health };
+export * from './bulk-transaction';
+export * from './health';

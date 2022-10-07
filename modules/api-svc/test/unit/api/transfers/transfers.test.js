@@ -45,6 +45,10 @@ describe('Outbound Transfers API', () => {
         redisClient = redis.createClient({ cacheUrl: 'redis://dummy:1234' });
     });
 
+    afterAll(async () => {
+        await redisClient.disconnect();
+    });
+
     beforeEach(async () => {
         serversInfo = await createTestServers({
             ...defaultConfig,
@@ -65,10 +69,6 @@ describe('Outbound Transfers API', () => {
 
     afterEach(async () => {
         await destroyTestServers(serversInfo);
-    });
-
-    afterAll(async () => {
-        await redisClient.disconnect();
     });
 
     describe('POST /transfers', () => {

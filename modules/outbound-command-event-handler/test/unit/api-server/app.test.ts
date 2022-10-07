@@ -32,7 +32,9 @@ const logger: ILogger = new DefaultLogger('bc', 'appName', 'appVersion');
 describe("Test the docs endpoints", () => {
     const apiServer = new ApiServer({
         port: 9999,
-        bulkTransactionEntityRepo: {} as IBulkTransactionEntityRepo,
+        bulkTransactionEntityRepo: {
+            canCall: jest.fn()
+        } as IBulkTransactionEntityRepo,
     }, logger);
     let app: Application;
 

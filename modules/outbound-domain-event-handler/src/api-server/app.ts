@@ -18,7 +18,7 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Modusbox
- - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
+ - Kevin Leyow <kevin.leyow@modusbox.com>
  --------------
  ******/
 
@@ -30,10 +30,10 @@ import type { Request } from 'openapi-backend';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
 import Handlers from './handlers';
-import { IBulkTransactionEntityRepo } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { IBulkTransactionEntityReadOnlyRepo } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
 export interface IAPIServerOptions {
-    bulkTransactionEntityRepo: IBulkTransactionEntityRepo;
+    bulkTransactionEntityRepo: IBulkTransactionEntityReadOnlyRepo;
     logger: ILogger;
 }
 

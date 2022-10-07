@@ -18,18 +18,11 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Modusbox
- - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
+ - Kevin Leyow <kevin.leyow@modusbox.com>
  --------------
  ******/
 
-import { Context, Document } from 'openapi-backend';
-import Express from 'express';
-import { Health } from '../models';
-import { HealthService } from '../services/health';
-
+import getHealthHandlers from './health';
 export default {
-    getHealth: async (_c: Context<Document>, req: Express.Request, res: Express.Response) => {
-        const health: Health = await new HealthService(req).getHealth();
-        return res.status(200).json(health);
-    },
+    ...getHealthHandlers,
 };
