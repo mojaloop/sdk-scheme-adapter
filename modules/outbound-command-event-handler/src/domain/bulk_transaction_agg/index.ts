@@ -46,7 +46,6 @@ import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 import CommandEventHandlerFunctions from './handlers';
 import { ICommandEventHandlerOptions } from '@module-types';
-import { randomUUID } from 'crypto';
 
 type BatchMapArray = { [fspId: string]: string[][] };
 
@@ -361,8 +360,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                     }
                 } else {
                     const newElement = [ individualTransfer.id ];
-                    batchesPerFsp[individualTransfer.toFspId] = [];
-                    batchesPerFsp[individualTransfer.toFspId].push(newElement);
+                    batchesPerFsp[individualTransfer.toFspId] = [ newElement ];
                 }
             } else {
                 this._logger.error(`The individual transfer with id ${individualTransfer.id} is not in state DISCOVERY_ACCEPTED or toFspId is not found in the partyResponse`);
@@ -403,7 +401,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                     if(party) {
                         // Generate Quote request
                         const individualBulkQuoteRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualQuote = {
-                            quoteId: randomUUID(),
+                            quoteId: individualTransfer.quoteId,
                             to: {
                                 idType: party.partyIdInfo.partyIdType,
                                 idValue: party.partyIdInfo.partyIdentifier,
@@ -430,6 +428,8 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                             individualBulkQuoteRequest,
                             individualTransfer.id,
                         );
+                        individualTransfer.setTransactionId(bulkBatch.id);
+                        await this.setIndividualTransferById(individualTransfer.id, individualTransfer);
                     }
                 }
                 // TODO: should we not add the bulkQuoteRequest to the BulkTransaction.individualItem and update its status?
@@ -490,7 +490,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                         if(party) {
                             // Generate Transfers request
                             const individualBulkTransferRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualTransfer = {
-                                transferId: individualTransfer.id,
+                                transferId: individualTransfer.transferId,
                                 to: {
                                     idType: party.partyIdInfo.partyIdType,
                                     idValue: party.partyIdInfo.partyIdentifier,

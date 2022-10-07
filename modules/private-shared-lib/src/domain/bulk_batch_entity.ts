@@ -132,11 +132,12 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
         bulkTransactionEntity: BulkTransactionEntity,
     ): BulkBatchEntity {
 
-        const bulkQuoteId = randomUUID();
-        const bulkTransferId = randomUUID();
+        const id = randomUUID();
+        const bulkQuoteId = id;
+        const bulkTransferId = id;
 
         const initialState: BulkBatchState = {
-            id: randomUUID(),
+            id,
             state: BulkBatchInternalState.CREATED,
             bulkId: bulkTransactionEntity.id,
             bulkQuoteId,

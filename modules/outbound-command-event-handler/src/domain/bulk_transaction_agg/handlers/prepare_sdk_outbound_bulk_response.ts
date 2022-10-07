@@ -58,6 +58,7 @@ export async function handlePrepareSDKOutboundBulkResponseCmdEvt(
             return individualTransfer.toIndividualTransferResult();
         }));
 
+        // TODO: Refactor SDKSchemeAdapter.V2_0_0.Inbound -> DFSP.V2_0_0.Inbound
         const bulkTransactionResponse: SDKSchemeAdapter.V2_0_0.Inbound.Types.bulkTransactionResponse = {
             bulkHomeTransactionID: bulkTransaction.bulkHomeTransactionID,
             bulkTransactionId: bulkTransaction.id,

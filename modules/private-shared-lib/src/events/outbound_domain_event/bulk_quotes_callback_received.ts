@@ -32,6 +32,7 @@ export interface IBulkQuotesCallbackReceivedDmEvtData {
     bulkId: string;
     content: {
         batchId: string;
+        bulkQuoteId: string;
         bulkQuotesResult?: BulkQuoteResponse;
         bulkQuotesErrorResult?: BulkQuoteErrorResponse;
     };
@@ -68,9 +69,9 @@ export class BulkQuotesCallbackReceivedDmEvt extends DomainEvent {
         return content.batchId;
     }
 
-    get bulkQuoteId(): string | undefined {
+    get bulkQuoteId(): string {
         const content = this.getContent() as IBulkQuotesCallbackReceivedDmEvtData['content'];
-        return content.bulkQuotesResult?.bulkQuoteId;
+        return content.bulkQuoteId;
     }
 
     get bulkQuotesResult(): BulkQuoteResponse | undefined {

@@ -25,7 +25,6 @@
 const { BulkQuotesRequestedDmEvt } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
 const { OutboundBulkQuotesModel } = require('../../lib/model');
 const { BulkQuotesCallbackReceivedDmEvt } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
-const { Errors } = require('@mojaloop/sdk-standard-components');
 
 module.exports.handleBulkQuotesRequestedDmEvt = async (
     message,
@@ -50,6 +49,7 @@ module.exports.handleBulkQuotesRequestedDmEvt = async (
             bulkId: event.getKey(),
             content: {
                 batchId: event.batchId,
+                bulkQuoteId: event.request.bulkQuoteId,
                 bulkQuotesResult: response,
             },
             timestamp: Date.now(),
@@ -59,19 +59,14 @@ module.exports.handleBulkQuotesRequestedDmEvt = async (
     }
     catch (err) {
         logger.push({ err }).log('Error in handleBulkQuotesRequestedDmEvt');
-        const { code, message } = Errors.MojaloopApiErrorCodes.SERVER_TIMED_OUT;
         const bulkQuotesCallbackReceivedDmEvt = new BulkQuotesCallbackReceivedDmEvt({
             bulkId: event.getKey(),
             content: {
                 batchId: event.batchId,
+                bulkQuoteId: event.request.bulkQuoteId,
                 bulkQuotesErrorResult: {
                     httpStatusCode: err.httpStatusCode,
-                    mojaloopError: {
-                        errorInformation: {
-                            errorCode: code,
-                            errorDescription: message
-                        },
-                    },
+                    mojaloopError: err.mojaloopError,
                 },
             },
             timestamp: Date.now(),

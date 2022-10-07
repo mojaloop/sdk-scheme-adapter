@@ -25,7 +25,6 @@
 const { BulkTransfersRequestedDmEvt } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
 const { OutboundBulkTransfersModel } = require('../../lib/model');
 const { BulkTransfersCallbackReceivedDmEvt } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
-const { Errors } = require('@mojaloop/sdk-standard-components');
 
 module.exports.handleBulkTransfersRequestedDmEvt = async (
     message,
@@ -59,19 +58,13 @@ module.exports.handleBulkTransfersRequestedDmEvt = async (
         await options.producer.sendDomainEvent(bulkTransfersCallbackReceivedDmEvt);
     } catch (err) {
         logger.push({ err }).log('Error in handleBulkTransfersRequestedDmEvt');
-        const { code, message } = Errors.MojaloopApiErrorCodes.SERVER_TIMED_OUT;
         const bulkTransfersCallbackReceivedDmEvt = new BulkTransfersCallbackReceivedDmEvt({
             bulkId: event.getKey(),
             content: {
                 batchId: event.batchId,
                 bulkTransfersErrorResult: {
                     httpStatusCode: err.httpStatusCode,
-                    mojaloopError: {
-                        errorInformation: {
-                            errorCode: code,
-                            errorDescription: message
-                        },
-                    },
+                    mojaloopError: err.mojaloopError,
                 },
             },
             timestamp: Date.now(),

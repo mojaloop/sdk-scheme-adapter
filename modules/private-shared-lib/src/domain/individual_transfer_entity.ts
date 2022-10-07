@@ -91,6 +91,18 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         return this._state.id;
     }
 
+    get transferId(): string {
+        return this.id;
+    }
+
+    get quoteId(): string {
+        return this.id;
+    }
+
+    get transactionId(): string {
+        return this._state.transactionId as string;
+    }
+
     get request(): SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionIndividualTransfer {
         return this._state.request;
     }
@@ -105,10 +117,6 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
 
     get transferResponse(): IndividualTransferResponse | undefined {
         return this._state.transferResponse;
-    }
-
-    get transactionId(): string | undefined {
-        return this._state.transactionId;
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
@@ -186,12 +194,13 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         return this._state.partyResponse?.party?.partyIdInfo?.fspId;
     }
 
+    // TODO: Refactor SDKSchemeAdapter.V2_0_0.Inbound -> DFSP.V2_0_0.Inbound
     toIndividualTransferResult(): SDKSchemeAdapter.V2_0_0.Inbound.Types.bulkTransactionIndividualTransferResult {
         // TODO: Should we infer the FSPIOP-transferState for the individualTransfer based on the SDK-IndividualTransferInternalState? See comments below in the Fulfil mapping.
         // eslint-disable-next-line max-len
         const transferState = (this.transferState === IndividualTransferInternalState.TRANSFERS_SUCCESS) ? CentralServicedSharedEnum.Transfers.TransferState.COMMITTED : CentralServicedSharedEnum.Transfers.TransferState.ABORTED;
         return {
-            transferId: this.transferResponse?.transferId,
+            transferId: this.transferId,
             homeTransactionId: this.request.homeTransactionId,
             transactionId: this.transactionId,
             quoteId: this.quoteResponse?.quoteId,

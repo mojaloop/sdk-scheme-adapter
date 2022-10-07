@@ -173,7 +173,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                     if(individualTransfer.quoteResponse) {
                         individualTransferResults.push({
                             homeTransactionId: individualTransfer.request.homeTransactionId,
-                            transactionId: individualTransfer.id,
+                            transactionId: individualTransfer.transactionId,
                             quoteResponse: individualTransfer.quoteResponse,
                         });
                     }

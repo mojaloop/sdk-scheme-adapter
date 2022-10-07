@@ -32,7 +32,7 @@ export interface IProcessBulkQuotesCallbackCmdEvtData {
     bulkId: string;
     content: {
         batchId: string;
-        bulkQuoteId?: string;
+        bulkQuoteId: string;
         bulkQuotesResult?: BulkQuoteResponse;
         bulkQuotesErrorResult?: BulkQuoteErrorResponse;
     };
@@ -69,7 +69,7 @@ export class ProcessBulkQuotesCallbackCmdEvt extends CommandEvent {
         return content.batchId;
     }
 
-    get bulkQuoteId(): string | undefined {
+    get bulkQuoteId(): string {
         const content = this.getContent() as IProcessBulkQuotesCallbackCmdEvtData['content'];
         return content.bulkQuoteId;
     }
