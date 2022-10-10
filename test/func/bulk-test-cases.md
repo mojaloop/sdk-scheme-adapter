@@ -1,4 +1,4 @@
-## Happy Path:
+## Happy Path: (bulk-happy-path.json)
  - 1 transfer with acceptParty and acceptQuote set to true
  - Bulk transaction having a format error
 
