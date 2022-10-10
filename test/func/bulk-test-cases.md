@@ -25,7 +25,7 @@
     - TC-BQ7 - True is sent only for one quote in PUT /bulkTxn acceptParty, ignoring second one - PASS
     - TC-BQ8- false is sent only for one quote in PUT /bulkTxn acceptParty, ignoring second one - what should be the expected behavior?
  - 2 transfers having different receiver fsp ids
-  - acceptParty
+   - acceptParty
      - All true
        - TC-BQ9 - One batch sends an error - FAIL - no final PUT response
        - TC-BQ10- Both batches sends error - FAIL - no final PUT response
