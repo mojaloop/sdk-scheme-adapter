@@ -20,10 +20,10 @@
        - TC-BQ2 - Receiver fsp times out the entire batch
        - TC-BQ3 - Receiver fsp sends only one response and skips the other
        - TC-BQ4 - Receiver fsp sends one success response and one failure response - failing in payeefsp because of missing transfer, but is this something we need to worry about?
-       - TC-BQ5 - One true, one false - not getting final transfers response in TTK - PASS
-       - TC-BQ6 - All false - what should be the expected behavior?
-       - TC-BQ7 - True is sent only for one quote in PUT /bulkTxn acceptParty, ignoring second one - PASS
-       - TC-BQ8- false is sent only for one quote in PUT /bulkTxn acceptParty, ignoring second one - what should be the expected behavior?
+    - TC-BQ5 - One true, one false - not getting final transfers response in TTK - PASS
+    - TC-BQ6 - All false - what should be the expected behavior?
+    - TC-BQ7 - True is sent only for one quote in PUT /bulkTxn acceptParty, ignoring second one - PASS
+    - TC-BQ8- false is sent only for one quote in PUT /bulkTxn acceptParty, ignoring second one - what should be the expected behavior?
  - 2 transfers having different receiver fsp ids
   - acceptParty
      - All true
@@ -43,7 +43,7 @@
        - TC-BT2 - Receiver times out for the entire batch
        - TC-BT3 - Receiver fsp sends only one response and skips the other
        - TC-BT4 - Receiver fsp sends one success response and one failure  - Bug 2974 Also TTK rule for bulkQuotes not working as expected
-       - TC-BT5 - One true one false - TC2 - Bug 2958
-       - TC-BT6 - All false - TC1
-       - TC-BT7 - True is sent only for one transfer in PUT /bulkTxn acceptParty, ignoring second one working
-       - TC-BT8- false is sent only for one transfer in PUT /bulkTxn acceptParty, ignoring second one
+    - TC-BT5 - One true one false - TC2 - Bug 2958
+    - TC-BT6 - All false - TC1
+    - TC-BT7 - True is sent only for one transfer in PUT /bulkTxn acceptParty, ignoring second one working
+    - TC-BT8- false is sent only for one transfer in PUT /bulkTxn acceptParty, ignoring second one
