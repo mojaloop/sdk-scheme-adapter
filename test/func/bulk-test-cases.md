@@ -32,7 +32,7 @@
        - TC-BQ11 - One batch times out
        - TC-BQ12 - Both batches times out
  - 3 transfers with 2 transfers having 1 receiver fsp id and the other having a different one
-  - The batch with 2 transfers sends only 1 transfer response and the other batch sends the success response
+   - The batch with 2 transfers sends only 1 transfer response and the other batch sends the success response
 			
 				
 ## Transfers Errors: (bulk-transfer-errors.json)
