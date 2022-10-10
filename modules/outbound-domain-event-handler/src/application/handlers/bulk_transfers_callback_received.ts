@@ -19,8 +19,8 @@ export async function handleBulkTransfersCallbackReceived(
             bulkId: bulkTransfersCallbackReceivedMessage.getKey(),
             content: {
                 batchId: bulkTransfersCallbackReceivedMessage.batchId,
-                bulkTransferId: bulkTransfersCallbackReceivedMessage.bulkTransferId,
                 bulkTransfersResult: bulkTransfersCallbackReceivedMessage.bulkTransfersResult,
+                bulkTransfersErrorResult: bulkTransfersCallbackReceivedMessage.bulkTransfersErrorResult,
             },
             timestamp: Date.now(),
             headers: bulkTransfersCallbackReceivedMessage.getHeaders(),

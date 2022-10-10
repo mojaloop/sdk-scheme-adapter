@@ -46,7 +46,6 @@ import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 import CommandEventHandlerFunctions from './handlers';
 import { ICommandEventHandlerOptions } from '@module-types';
-import { randomUUID } from 'crypto';
 
 type BatchMapArray = { [fspId: string]: string[][] };
 
@@ -92,13 +91,19 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         await agg.store();
         // Create individualTransfer entities
         if(Array.isArray(request?.individualTransfers)) {
+            await agg.setTotalCount(request.individualTransfers.length);
+            await agg.setFailedCount(0);
             // TODO: limit the number of concurrently created promises to avoid nodejs high memory consumption
-            await Promise.all(
-                request.individualTransfers.map(
-                    (individualTransfer: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionIndividualTransfer) =>
-                        agg.addIndividualTransferEntity(IndividualTransferEntity.CreateFromRequest(individualTransfer)),
-                ),
-            );
+            for await (const individualTransfer of request.individualTransfers) {
+                const entity = IndividualTransferEntity.CreateFromRequest(individualTransfer);
+                await agg.addIndividualTransferEntity(entity);
+                if(entity.lastError) {
+                    await agg.incrementFailedCount();
+                }
+            }
+        } else {
+            await agg.setTotalCount(0);
+            await agg.setFailedCount(0);
         }
         // Set initial values
         await agg.setBulkTransfersTotalCount(0);
@@ -144,7 +149,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         return this._rootEntity.id;
     }
 
-    async getAllIndividualTransferIds() {
+    async getAllIndividualTransferIds(): Promise<string[]> {
         const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
         return repo.getAllIndividualTransferIds(this._rootEntity.id);
     }
@@ -239,6 +244,31 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
         return repo.incrementBulkTransfersFailedCount(this._rootEntity.id, increment);
     }
 
+    async getTotalCount(): Promise<number> {
+        const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
+        return repo.getTotalCount(this._rootEntity.id);
+    }
+
+    async setTotalCount(totalCount: number): Promise<void> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .setTotalCount(this._rootEntity.id, totalCount);
+    }
+
+    async getFailedCount(): Promise<number> {
+        const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
+        return repo.getFailedCount(this._rootEntity.id);
+    }
+
+    async setFailedCount(count: number): Promise<void> {
+        await (<IBulkTransactionEntityRepo> this._entity_state_repo)
+            .setFailedCount(this._rootEntity.id, count);
+    }
+
+    async incrementFailedCount(increment = 1): Promise<number> {
+        const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
+        return repo.incrementFailedCount(this._rootEntity.id, increment);
+    }
+
     async getBulkQuotesTotalCount(): Promise<number> {
         const repo = this._entity_state_repo as IBulkTransactionEntityRepo;
         return repo.getBulkQuotesTotalCount(this._rootEntity.id);
@@ -330,8 +360,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                     }
                 } else {
                     const newElement = [ individualTransfer.id ];
-                    batchesPerFsp[individualTransfer.toFspId] = [];
-                    batchesPerFsp[individualTransfer.toFspId].push(newElement);
+                    batchesPerFsp[individualTransfer.toFspId] = [ newElement ];
                 }
             } else {
                 this._logger.error(`The individual transfer with id ${individualTransfer.id} is not in state DISCOVERY_ACCEPTED or toFspId is not found in the partyResponse`);
@@ -372,7 +401,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                     if(party) {
                         // Generate Quote request
                         const individualBulkQuoteRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualQuote = {
-                            quoteId: randomUUID(),
+                            quoteId: individualTransfer.quoteId,
                             to: {
                                 idType: party.partyIdInfo.partyIdType,
                                 idValue: party.partyIdInfo.partyIdentifier,
@@ -399,6 +428,8 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                             individualBulkQuoteRequest,
                             individualTransfer.id,
                         );
+                        individualTransfer.setTransactionId(bulkBatch.id);
+                        await this.setIndividualTransferById(individualTransfer.id, individualTransfer);
                     }
                 }
                 // TODO: should we not add the bulkQuoteRequest to the BulkTransaction.individualItem and update its status?
@@ -443,6 +474,9 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                     if(!individualQuoteResult.lastError) {
                         const individualTransferId = bulkBatch.getReferenceIdForQuoteId(individualQuoteResult.quoteId);
                         const individualTransfer = await this.getIndividualTransferById(individualTransferId);
+                        if(individualTransfer.transferState === IndividualTransferInternalState.AGREEMENT_REJECTED) {
+                            continue;
+                        }
                         const party = individualTransfer.partyResponse?.party;
                         const condition = individualTransfer.quoteResponse?.condition;
                         if(!condition) {
@@ -456,7 +490,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                         if(party) {
                             // Generate Transfers request
                             const individualBulkTransferRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualTransfer = {
-                                transferId: individualTransfer.id,
+                                transferId: individualTransfer.transferId,
                                 to: {
                                     idType: party.partyIdInfo.partyIdType,
                                     idValue: party.partyIdInfo.partyIdentifier,

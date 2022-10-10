@@ -25,10 +25,21 @@
 'use strict';
 
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
-import { CommandEvent, BulkQuotesCallbackProcessedDmEvt, ProcessBulkQuotesCallbackCmdEvt, SDKOutboundBulkQuotesRequestProcessedDmEvt, SDKOutboundBulkAcceptQuoteRequestedDmEvt, CoreConnectorBulkAcceptQuoteRequestIndividualTransferResult } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import {
+    CommandEvent,
+    BulkQuotesCallbackProcessedDmEvt,
+    ProcessBulkQuotesCallbackCmdEvt,
+    SDKOutboundBulkQuotesRequestProcessedDmEvt,
+    SDKOutboundBulkAcceptQuoteRequestedDmEvt,
+    CoreConnectorBulkAcceptQuoteRequestIndividualTransferResult,
+    SDKOutboundTransferState,
+    PrepareSDKOutboundBulkResponseCmdEvt,
+} from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
 import { BulkBatchInternalState, BulkTransactionInternalState, IndividualTransferInternalState } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
+import { handlePrepareSDKOutboundBulkResponseCmdEvt } from './prepare_sdk_outbound_bulk_response';
+
 
 export async function handleProcessBulkQuotesCallbackCmdEvt(
     message: CommandEvent,
@@ -55,8 +66,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
 
         // If individual quote result contains `lastError` the individual transfer state should be AGREEMENT_FAILED.
         // bulkQuotesResult.currentState === 'ERROR_OCCURRED' necessitates erroring out all individual transfers in that bulk batch.
-        if(bulkQuotesResult.currentState &&
-           bulkQuotesResult.currentState === 'COMPLETED') {
+        if(bulkQuotesResult?.currentState === SDKOutboundTransferState.COMPLETED) {
             bulkBatch.setState(BulkBatchInternalState.AGREEMENT_COMPLETED);
             successCountAfterIncrement = await bulkTransactionAgg.incrementBulkQuotesSuccessCount();
 
@@ -66,13 +76,16 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                     const individualTransferId = bulkBatch.getReferenceIdForQuoteId(quoteResult.quoteId);
                     const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
                     individualTransfer.setTransferState(IndividualTransferInternalState.AGREEMENT_SUCCESS);
-                    individualTransfer.setQuoteResponse(quoteResult);
+                    individualTransfer.setQuoteResponse({
+                        ...quoteResult,
+                        expiration: bulkQuotesResult.expiration,
+                    });
                     await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
                 } else {
                     const individualTransferId = bulkBatch.getReferenceIdForQuoteId(quoteResult.quoteId);
                     const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
                     individualTransfer.setTransferState(IndividualTransferInternalState.AGREEMENT_FAILED);
-                    individualTransfer.setQuoteResponse(quoteResult);
+                    individualTransfer.setLastError(quoteResult.lastError);
                     await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
                 }
             }
@@ -86,10 +99,16 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
             for await (const individualTransferId of individualTransferIds) {
                 const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
                 individualTransfer.setTransferState(IndividualTransferInternalState.AGREEMENT_FAILED);
+                individualTransfer.setLastError(processBulkQuotesCallbackMessage.bulkQuotesErrorResult);
                 await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
+                await bulkTransactionAgg.incrementFailedCount();
             }
         }
-        bulkBatch.setBulkQuotesResponse(bulkQuotesResult);
+        if(bulkQuotesResult) {
+            bulkBatch.setBulkQuotesResponse(bulkQuotesResult);
+        } else if(processBulkQuotesCallbackMessage.bulkQuotesErrorResult) {
+            bulkBatch.setLastError(processBulkQuotesCallbackMessage.bulkQuotesErrorResult);
+        }
         await bulkTransactionAgg.setBulkBatchById(bulkBatch.id, bulkBatch);
 
         const bulkQuotesCallbackProcessedDmEvt = new BulkQuotesCallbackProcessedDmEvt({
@@ -102,9 +121,23 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
         });
         await options.domainProducer.sendDomainEvent(bulkQuotesCallbackProcessedDmEvt);
 
+        const totalCount = await bulkTransactionAgg.getTotalCount();
+        const failedCount = await bulkTransactionAgg.getFailedCount();
+
+        if(totalCount === failedCount) {
+            const prepareSDKOutboundBulkResponseCmdEvt = new PrepareSDKOutboundBulkResponseCmdEvt({
+                bulkId: bulkTransactionAgg.bulkId,
+                timestamp: Date.now(),
+                headers: [],
+            });
+            await handlePrepareSDKOutboundBulkResponseCmdEvt(prepareSDKOutboundBulkResponseCmdEvt, options, logger);
+            return;
+        }
+
         // Progressing to the next step
         // Check the status of the remaining items in the bulk
         const bulkQuotesTotalCount = await bulkTransactionAgg.getBulkQuotesTotalCount();
+        // eslint-disable-next-line max-len
         const bulkQuotesSuccessCount = successCountAfterIncrement || await bulkTransactionAgg.getBulkQuotesSuccessCount();
         const bulkQuotesFailedCount = failedCountAfterIncrement || await bulkTransactionAgg.getBulkQuotesFailedCount();
         if(bulkQuotesTotalCount === (bulkQuotesSuccessCount + bulkQuotesFailedCount)) {
@@ -140,25 +173,27 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                     if(individualTransfer.quoteResponse) {
                         individualTransferResults.push({
                             homeTransactionId: individualTransfer.request.homeTransactionId,
-                            transactionId: individualTransfer.id,
+                            transactionId: individualTransfer.transactionId,
                             quoteResponse: individualTransfer.quoteResponse,
                         });
                     }
                 }
 
-                const sdkOutboundBulkAcceptQuoteRequestedDmEvt = new SDKOutboundBulkAcceptQuoteRequestedDmEvt({
-                    bulkId: bulkTransactionAgg.bulkId,
-                    bulkAcceptQuoteRequest: {
-                        bulkHomeTransactionID: bulkTransactionAgg.getBulkTransaction().bulkHomeTransactionID,
-                        bulkTransactionId: bulkTransactionAgg.bulkId,
-                        individualTransferResults,
-                    },
-                    timestamp: Date.now(),
-                    headers: [],
-                });
-                await options.domainProducer.sendDomainEvent(sdkOutboundBulkAcceptQuoteRequestedDmEvt);
-                // Update global state AGREEMENT_ACCEPTANCE_PENDING
-                await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.AGREEMENT_ACCEPTANCE_PENDING);
+                if(individualTransferResults.length > 0) {
+                    const sdkOutboundBulkAcceptQuoteRequestedDmEvt = new SDKOutboundBulkAcceptQuoteRequestedDmEvt({
+                        bulkId: bulkTransactionAgg.bulkId,
+                        bulkAcceptQuoteRequest: {
+                            bulkHomeTransactionID: bulkTransactionAgg.getBulkTransaction().bulkHomeTransactionID,
+                            bulkTransactionId: bulkTransactionAgg.bulkId,
+                            individualTransferResults,
+                        },
+                        timestamp: Date.now(),
+                        headers: [],
+                    });
+                    await options.domainProducer.sendDomainEvent(sdkOutboundBulkAcceptQuoteRequestedDmEvt);
+                    // Update global state AGREEMENT_ACCEPTANCE_PENDING
+                    await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.AGREEMENT_ACCEPTANCE_PENDING);
+                }
             }
         }
 

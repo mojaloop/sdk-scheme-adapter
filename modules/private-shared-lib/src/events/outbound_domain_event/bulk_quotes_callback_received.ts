@@ -26,14 +26,15 @@
 
 import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
-import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
+import { BulkQuoteErrorResponse, BulkQuoteResponse } from '@module-types';
 
 export interface IBulkQuotesCallbackReceivedDmEvtData {
     bulkId: string;
     content: {
         batchId: string;
         bulkQuoteId: string;
-        bulkQuotesResult: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteResponse;
+        bulkQuotesResult?: BulkQuoteResponse;
+        bulkQuotesErrorResult?: BulkQuoteErrorResponse;
     };
     timestamp: number | null;
     headers: IMessageHeader[] | null;
@@ -73,8 +74,13 @@ export class BulkQuotesCallbackReceivedDmEvt extends DomainEvent {
         return content.bulkQuoteId;
     }
 
-    get bulkQuotesResult(): SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteResponse {
+    get bulkQuotesResult(): BulkQuoteResponse | undefined {
         const content = this.getContent() as IBulkQuotesCallbackReceivedDmEvtData['content'];
         return content.bulkQuotesResult;
+    }
+
+    get bulkQuotesErrorResult(): BulkQuoteErrorResponse | undefined {
+        const content = this.getContent() as IBulkQuotesCallbackReceivedDmEvtData['content'];
+        return content.bulkQuotesErrorResult;
     }
 }

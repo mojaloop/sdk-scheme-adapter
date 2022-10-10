@@ -31,6 +31,9 @@ import {
     IndividualTransferInternalState,
     ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
     PartyInfoRequestedDmEvt,
+    PartyInfoCallbackReceivedDmEvt,
+    PartyResponse, PartyErrorResponse,
+    SDKOutboundTransferState,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
@@ -62,25 +65,40 @@ export async function handleProcessSDKOutboundBulkPartyInfoRequestCmdEvt(
         for await (const individualTransferId of allIndividualTransferIds) {
             const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
 
-            if(bulkTx.isSkipPartyLookupEnabled()) {
+            if(bulkTx.isSkipPartyLookupEnabled() || individualTransfer.isPartyInfoExists) {
+                let partyResult: PartyResponse | undefined;
+                let partyErrorResult: PartyErrorResponse | undefined;
                 if(individualTransfer.isPartyInfoExists) {
-                    individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS);
-                    await bulkTransactionAgg.incrementPartyLookupSuccessCount();
+                    partyResult = {
+                        party: individualTransfer.payee,
+                        currentState: SDKOutboundTransferState.COMPLETED,
+                    };
                 } else {
-                    individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_FAILED);
-                    await bulkTransactionAgg.incrementPartyLookupFailedCount();
+                    partyErrorResult = {
+                        mojaloopError: {
+                            errorInformation: {
+                                errorCode: '5100',
+                                errorDescription: 'party information was not provided but skipPartyLookup is true',
+                            },
+                        },
+                    };
                 }
+                const partyInfoCallbackReceivedDmEvt = new PartyInfoCallbackReceivedDmEvt({
+                    bulkId: bulkTx.id,
+                    content: {
+                        transferId: individualTransfer.id,
+                        partyResult,
+                        partyErrorResult,
+                    },
+                    timestamp: Date.now(),
+                    headers: [],
+                });
+                await options.domainProducer.sendDomainEvent(partyInfoCallbackReceivedDmEvt);
                 await bulkTransactionAgg.setIndividualTransferById(individualTransferId, individualTransfer);
                 continue;
             }
+
             const { partyIdInfo } = individualTransfer.request.to;
-
-            if(partyIdInfo.fspId) {
-                individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS);
-                await bulkTransactionAgg.setIndividualTransferById(individualTransferId, individualTransfer);
-                continue;
-            }
-
             const subId = partyIdInfo.partySubIdOrType ? `/${partyIdInfo.partySubIdOrType}` : '';
             const partyInfoRequestedDmEvt = new PartyInfoRequestedDmEvt({
                 bulkId: bulkTx.id,

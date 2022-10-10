@@ -29,7 +29,6 @@ import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-li
 
 export interface IPrepareSDKOutboundBulkResponseCmdEvtData {
     bulkId: string;
-    content: null;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
@@ -51,7 +50,6 @@ export class PrepareSDKOutboundBulkResponseCmdEvt extends CommandEvent {
         const data: IPrepareSDKOutboundBulkResponseCmdEvtData = {
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
-            content: message.getContent() as IPrepareSDKOutboundBulkResponseCmdEvtData['content'],
             bulkId: message.getKey(),
         };
         return new PrepareSDKOutboundBulkResponseCmdEvt(data);

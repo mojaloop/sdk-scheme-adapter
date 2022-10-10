@@ -49,7 +49,6 @@ module.exports.handleBulkTransfersRequestedDmEvt = async (
             bulkId: event.getKey(),
             content: {
                 batchId: event.batchId,
-                bulkTransferId: response.bulkTransferId,
                 bulkTransfersResult: response,
             },
             timestamp: Date.now(),
@@ -59,5 +58,18 @@ module.exports.handleBulkTransfersRequestedDmEvt = async (
         await options.producer.sendDomainEvent(bulkTransfersCallbackReceivedDmEvt);
     } catch (err) {
         logger.push({ err }).log('Error in handleBulkTransfersRequestedDmEvt');
+        const bulkTransfersCallbackReceivedDmEvt = new BulkTransfersCallbackReceivedDmEvt({
+            bulkId: event.getKey(),
+            content: {
+                batchId: event.batchId,
+                bulkTransfersErrorResult: {
+                    httpStatusCode: err.httpStatusCode,
+                    mojaloopError: err.mojaloopError,
+                },
+            },
+            timestamp: Date.now(),
+            headers: [],
+        });
+        await options.producer.sendDomainEvent(bulkTransfersCallbackReceivedDmEvt);
     }
 };

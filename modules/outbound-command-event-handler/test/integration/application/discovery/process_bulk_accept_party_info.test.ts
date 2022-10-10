@@ -31,24 +31,25 @@ import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 import {
-  BulkTransactionInternalState,
-  DomainEvent,
-  IKafkaEventConsumerOptions,
-  IKafkaEventProducerOptions,
-  IndividualTransferInternalState,
-  IProcessPartyInfoCallbackCmdEvtData,
-  IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData,
-  IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData,
-  IProcessSDKOutboundBulkRequestCmdEvtData,
-  IRedisBulkTransactionStateRepoOptions,
-  KafkaCommandEventProducer,
-  KafkaDomainEventConsumer,
-  ProcessPartyInfoCallbackCmdEvt,
-  ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt,
-  ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
-  ProcessSDKOutboundBulkRequestCmdEvt,
-  RedisBulkTransactionStateRepo,
-} from '@mojaloop/sdk-scheme-adapter-private-shared-lib'
+    BulkTransactionInternalState,
+    DomainEvent,
+    IKafkaEventConsumerOptions,
+    IKafkaEventProducerOptions,
+    IndividualTransferInternalState,
+    IProcessPartyInfoCallbackCmdEvtData,
+    IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData,
+    IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData,
+    IProcessSDKOutboundBulkRequestCmdEvtData,
+    IRedisBulkTransactionStateRepoOptions,
+    KafkaCommandEventProducer,
+    KafkaDomainEventConsumer,
+    ProcessPartyInfoCallbackCmdEvt,
+    ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt,
+    ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
+    ProcessSDKOutboundBulkRequestCmdEvt,
+    RedisBulkTransactionStateRepo,
+    SDKOutboundTransferState,
+} from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { randomUUID } from "crypto";
 
 // Tests can timeout in a CI pipeline so giving it leeway
@@ -204,7 +205,7 @@ describe("Tests for ProcessSDKOutboundBulkAcceptPartyInfo Event Handler", () => 
                   fspId: 'receiverfsp'
               }
           },
-          currentState: 'COMPLETED'
+          currentState: SDKOutboundTransferState.COMPLETED
         },
       },
       timestamp: Date.now(),
@@ -222,7 +223,7 @@ describe("Tests for ProcessSDKOutboundBulkAcceptPartyInfo Event Handler", () => 
                   fspId: 'receiverfsp'
               }
           },
-          currentState: 'COMPLETED'
+          currentState: SDKOutboundTransferState.COMPLETED
         },
       },
       timestamp: Date.now(),

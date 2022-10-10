@@ -49,6 +49,10 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
 
     private readonly bulkBatchKeyPrefix: string = 'bulkBatch_';
 
+    private readonly totalCountKey: string = 'totalCount';
+
+    private readonly failedCountKey: string = 'failedCount';
+
     private readonly bulkTransfersTotalCountKey: string = 'bulkTransfersTotalCount';
 
     private readonly bulkTransfersSuccessCountKey: string = 'bulkTransfersSuccessCount';
@@ -329,6 +333,29 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
         }
     }
 
+    async getTotalCount(bulkId: string): Promise<number> {
+        return this._getCount(this.totalCountKey, bulkId);
+    }
+
+    async setTotalCount(
+        bulkId: string,
+        value: number,
+    ): Promise<void> {
+        return this._setCount(this.totalCountKey, bulkId, value);
+    }
+
+    async incrementFailedCount(bulkId: string, increment = 1): Promise<number> {
+        return this._incrementCount(this.failedCountKey, bulkId, increment);
+    }
+
+    async getFailedCount(bulkId: string): Promise<number> {
+        return this._getCount(this.failedCountKey, bulkId);
+    }
+
+    async setFailedCount(bulkId: string, value: number): Promise<void> {
+        return this._setCount(this.failedCountKey, bulkId, value);
+    }
+
     async getBulkTransfersTotalCount(bulkId: string): Promise<number> {
         return this._getCount(this.bulkTransfersTotalCountKey, bulkId);
     }
@@ -339,7 +366,6 @@ export class RedisBulkTransactionStateRepo implements IBulkTransactionEntityRepo
     ): Promise<void> {
         return this._setCount(this.bulkTransfersTotalCountKey, bulkId, value);
     }
-
 
     async getBulkTransfersSuccessCount(bulkId: string): Promise<number> {
         return this._getCount(this.bulkTransfersSuccessCountKey, bulkId);

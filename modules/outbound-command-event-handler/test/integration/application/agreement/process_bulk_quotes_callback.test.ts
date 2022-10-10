@@ -32,31 +32,32 @@ import { ILogger } from "@mojaloop/logging-bc-public-types-lib";
 import { SDKSchemeAdapter } from "@mojaloop/api-snippets";
 
 import {
-  BulkBatchInternalState,
-  BulkQuotesCallbackProcessedDmEvt,
-  BulkTransactionInternalState,
-  DomainEvent,
-  IKafkaEventConsumerOptions,
-  IKafkaEventProducerOptions,
-  IndividualTransferInternalState,
-  IProcessBulkQuotesCallbackCmdEvtData,
-  IProcessPartyInfoCallbackCmdEvtData,
-  IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData,
-  IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData,
-  IProcessSDKOutboundBulkQuotesRequestCmdEvtData,
-  IProcessSDKOutboundBulkRequestCmdEvtData,
-  IRedisBulkTransactionStateRepoOptions,
-  KafkaCommandEventProducer,
-  KafkaDomainEventConsumer,
-  ProcessBulkQuotesCallbackCmdEvt,
-  ProcessPartyInfoCallbackCmdEvt,
-  ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt,
-  ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
-  ProcessSDKOutboundBulkQuotesRequestCmdEvt,
-  ProcessSDKOutboundBulkRequestCmdEvt,
-  RedisBulkTransactionStateRepo,
-  SDKOutboundBulkQuotesRequestProcessedDmEvt,
-} from "@mojaloop/sdk-scheme-adapter-private-shared-lib"
+    BulkBatchInternalState,
+    BulkQuotesCallbackProcessedDmEvt,
+    BulkTransactionInternalState,
+    DomainEvent,
+    IKafkaEventConsumerOptions,
+    IKafkaEventProducerOptions,
+    IndividualTransferInternalState,
+    IProcessBulkQuotesCallbackCmdEvtData,
+    IProcessPartyInfoCallbackCmdEvtData,
+    IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData,
+    IProcessSDKOutboundBulkPartyInfoRequestCmdEvtData,
+    IProcessSDKOutboundBulkQuotesRequestCmdEvtData,
+    IProcessSDKOutboundBulkRequestCmdEvtData,
+    IRedisBulkTransactionStateRepoOptions,
+    KafkaCommandEventProducer,
+    KafkaDomainEventConsumer,
+    ProcessBulkQuotesCallbackCmdEvt,
+    ProcessPartyInfoCallbackCmdEvt,
+    ProcessSDKOutboundBulkAcceptPartyInfoCmdEvt,
+    ProcessSDKOutboundBulkPartyInfoRequestCmdEvt,
+    ProcessSDKOutboundBulkQuotesRequestCmdEvt,
+    ProcessSDKOutboundBulkRequestCmdEvt,
+    RedisBulkTransactionStateRepo,
+    SDKOutboundBulkQuotesRequestProcessedDmEvt,
+    SDKOutboundTransferState,
+} from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { randomUUID } from "crypto";
 import { Timer } from "../../../util/timer";
 
@@ -252,7 +253,7 @@ import { Timer } from "../../../util/timer";
                     fspId: 'receiverfsp'
                 }
             },
-            currentState: 'COMPLETED'
+            currentState: SDKOutboundTransferState.COMPLETED
           },
         },
         timestamp: Date.now(),
@@ -270,7 +271,7 @@ import { Timer } from "../../../util/timer";
                     fspId: 'receiverfsp'
                 }
             },
-            currentState: 'COMPLETED'
+            currentState: SDKOutboundTransferState.COMPLETED
           },
         },
         timestamp: Date.now(),
@@ -288,7 +289,7 @@ import { Timer } from "../../../util/timer";
                     fspId: 'differentfsp'
                 }
             },
-            currentState: 'COMPLETED'
+            currentState: SDKOutboundTransferState.COMPLETED
           },
         },
         timestamp: Date.now(),
@@ -306,7 +307,7 @@ import { Timer } from "../../../util/timer";
                     fspId: 'differentfsp'
                 }
             },
-            currentState: 'COMPLETED'
+            currentState: SDKOutboundTransferState.COMPLETED
           },
         },
         timestamp: Date.now(),
@@ -409,7 +410,8 @@ import { Timer } from "../../../util/timer";
           bulkQuoteId: bulkQuoteId,
           bulkQuotesResult: {
             bulkQuoteId: bulkQuoteId,
-            currentState: 'COMPLETED',
+            expiration: '2016-05-24T08:38:08.699-04:00',
+            currentState: SDKOutboundTransferState.COMPLETED,
             individualQuoteResults: [
               {
                 quoteId: receiverFspBatch.bulkQuotesRequest.individualQuotes[quoteAmountList.indexOf('1')].quoteId,
@@ -459,8 +461,9 @@ import { Timer } from "../../../util/timer";
         bulkId: bulkTransactionId,
         content: {
           batchId: differentFspBatch.id,
-          bulkQuoteId: bulkQuoteIdDifferentFsp,
+          bulkQuoteId: bulkQuoteId,
           bulkQuotesResult: {
+            expiration: '2016-05-24T08:38:08.699-04:00',
             bulkQuoteId: bulkQuoteIdDifferentFsp,
             currentState: 'ERROR_OCCURRED',
             individualQuoteResults: []
@@ -668,7 +671,7 @@ import { Timer } from "../../../util/timer";
                     fspId: 'receiverfsp'
                 }
             },
-            currentState: 'COMPLETED'
+            currentState: SDKOutboundTransferState.COMPLETED
           },
         },
         timestamp: Date.now(),
@@ -686,7 +689,7 @@ import { Timer } from "../../../util/timer";
                     fspId: 'receiverfsp'
                 }
             },
-            currentState: 'COMPLETED'
+            currentState: SDKOutboundTransferState.COMPLETED
           },
         },
         timestamp: Date.now(),
@@ -704,7 +707,7 @@ import { Timer } from "../../../util/timer";
                     fspId: 'differentfsp'
                 }
             },
-            currentState: 'COMPLETED'
+            currentState: SDKOutboundTransferState.COMPLETED
           },
         },
         timestamp: Date.now(),
@@ -722,7 +725,7 @@ import { Timer } from "../../../util/timer";
                     fspId: 'differentfsp'
                 }
             },
-            currentState: 'COMPLETED'
+            currentState: SDKOutboundTransferState.COMPLETED
           },
         },
         timestamp: Date.now(),
@@ -823,7 +826,8 @@ import { Timer } from "../../../util/timer";
           bulkQuoteId: bulkQuoteId,
           bulkQuotesResult: {
             bulkQuoteId: bulkQuoteId,
-            currentState: 'COMPLETED',
+            expiration: '2016-05-24T08:38:08.699-04:00',
+            currentState: SDKOutboundTransferState.COMPLETED,
             individualQuoteResults: [
               {
                 quoteId: receiverFspBatch.bulkQuotesRequest.individualQuotes[quoteAmountList.indexOf('1')].quoteId,
@@ -873,8 +877,9 @@ import { Timer } from "../../../util/timer";
         bulkId: bulkTransactionId,
         content: {
           batchId: differentFspBatch.id,
-          bulkQuoteId: bulkQuoteIdDifferentFsp,
+          bulkQuoteId: bulkQuoteId,
           bulkQuotesResult: {
+            expiration: '2016-05-24T08:38:08.699-04:00',
             bulkQuoteId: bulkQuoteIdDifferentFsp,
             currentState: 'ERROR_OCCURRED',
             individualQuoteResults: []

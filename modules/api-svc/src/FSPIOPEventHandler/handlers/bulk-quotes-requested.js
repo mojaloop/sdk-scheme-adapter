@@ -49,7 +49,7 @@ module.exports.handleBulkQuotesRequestedDmEvt = async (
             bulkId: event.getKey(),
             content: {
                 batchId: event.batchId,
-                bulkQuoteId: response.bulkQuoteId,
+                bulkQuoteId: event.request.bulkQuoteId,
                 bulkQuotesResult: response,
             },
             timestamp: Date.now(),
@@ -59,5 +59,19 @@ module.exports.handleBulkQuotesRequestedDmEvt = async (
     }
     catch (err) {
         logger.push({ err }).log('Error in handleBulkQuotesRequestedDmEvt');
+        const bulkQuotesCallbackReceivedDmEvt = new BulkQuotesCallbackReceivedDmEvt({
+            bulkId: event.getKey(),
+            content: {
+                batchId: event.batchId,
+                bulkQuoteId: event.request.bulkQuoteId,
+                bulkQuotesErrorResult: {
+                    httpStatusCode: err.httpStatusCode,
+                    mojaloopError: err.mojaloopError,
+                },
+            },
+            timestamp: Date.now(),
+            headers: [],
+        });
+        await options.producer.sendDomainEvent(bulkQuotesCallbackReceivedDmEvt);
     }
 };

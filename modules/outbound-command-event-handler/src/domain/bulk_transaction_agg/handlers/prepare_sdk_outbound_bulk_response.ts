@@ -28,14 +28,13 @@ import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import {
     BulkTransactionInternalState,
     CommandEvent,
-    IndividualTransferInternalState,
     PrepareSDKOutboundBulkResponseCmdEvt,
     SDKOutboundBulkResponsePreparedDmEvt,
+    SDKOutboundTransferState,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
-import { Enum as CentralServicedSharedEnum } from '@mojaloop/central-services-shared';
 
 export async function handlePrepareSDKOutboundBulkResponseCmdEvt(
     message: CommandEvent,
@@ -54,47 +53,18 @@ export async function handlePrepareSDKOutboundBulkResponseCmdEvt(
 
         const bulkTransaction = bulkTransactionAgg.getBulkTransaction();
         const allIndividualTransferIds = await bulkTransactionAgg.getAllIndividualTransferIds();
-        const individualTransferResults = [];
-        for await (const individualTransferId of allIndividualTransferIds) {
-            const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
-            const individualTransferRequest = individualTransfer.request;
-            const individualTransferResponse = individualTransfer.transferResponse;
+        const individualTransferResults = await Promise.all(allIndividualTransferIds.map(async id => {
+            const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(id);
+            return individualTransfer.toIndividualTransferResult();
+        }));
 
-            // TODO: Should we infer the FSPIOP-transferState for the individualTransfer based on the SDK-IndividualTransferInternalState? See comments below in the Fulfil mapping.
-            // eslint-disable-next-line max-len
-            const transferState = (individualTransfer.transferState === IndividualTransferInternalState.TRANSFERS_SUCCESS) ? CentralServicedSharedEnum.Transfers.TransferState.COMMITTED : CentralServicedSharedEnum.Transfers.TransferState.ABORTED;
-            
-            // TODO: Investigate how many individual transfers this message can handle.
-            // eslint-disable-next-line max-len
-            const individualTransferResult: SDKSchemeAdapter.V2_0_0.Inbound.Types.bulkTransactionIndividualTransferResult = {
-                transferId: individualTransferResponse?.transferId,
-                homeTransactionId: individualTransferRequest.homeTransactionId,
-                transactionId: individualTransfer.transactionId!, // TODO: why is this failing lint?
-                quoteId: individualTransfer.quoteResponse?.quoteId,
-                to: individualTransfer.partyResponse.party,
-                amountType: individualTransferRequest.amountType,
-                amount: individualTransferRequest.amount,
-                currency: individualTransferRequest.currency,
-                quoteResponse: individualTransfer.quoteResponse as SDKSchemeAdapter.V2_0_0.Inbound.Types.bulkTransactionIndividualTransferResult['quoteResponse'],
-                fulfil: {
-                    ...individualTransferResponse as SDKSchemeAdapter.V2_0_0.Inbound.Types.bulkTransactionIndividualTransferResult['fulfil'],
-                    transferState, // TODO: This should be addressed as the BulkTransfers SDK model is missing the individualTransfers.transferState. Future story to address this.
-                    // completedTimestamp?: string; // TODO: This also should be mapped from the BulkTransfers SDK model, but is currently missing. Future story (possible bug) to address this.
-                },
-                quoteExtensions: individualTransfer.quoteResponse?.extensionList,
-                transferExtensions: individualTransferResponse?.extensionList,
-                // eslint-disable-next-line max-len
-                lastError: individualTransferResponse?.lastError || individualTransfer.quoteResponse?.lastError || undefined,
-            };
-            individualTransferResults.push(individualTransferResult);
-        }
-
+        // TODO: Refactor SDKSchemeAdapter.V2_0_0.Inbound -> DFSP.V2_0_0.Inbound
         const bulkTransactionResponse: SDKSchemeAdapter.V2_0_0.Inbound.Types.bulkTransactionResponse = {
             bulkHomeTransactionID: bulkTransaction.bulkHomeTransactionID,
             bulkTransactionId: bulkTransaction.id,
-            currentState: bulkTransaction.state == BulkTransactionInternalState.TRANSFERS_COMPLETED ? 'COMPLETED' : 'ERROR_OCCURRED',
+            currentState: bulkTransaction.state == BulkTransactionInternalState.TRANSFERS_COMPLETED ? SDKOutboundTransferState.COMPLETED : SDKOutboundTransferState.ERROR_OCCURRED,
             options: bulkTransaction.options,
-            individualTransferResults: individualTransferResults,
+            individualTransferResults,
         };
         const msg = new SDKOutboundBulkResponsePreparedDmEvt({
             bulkId: bulkTransaction.id,
@@ -104,7 +74,7 @@ export async function handlePrepareSDKOutboundBulkResponseCmdEvt(
         });
         await options.domainProducer.sendDomainEvent(msg);
 
-        bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.RESPONSE_PROCESSING);
+        await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.RESPONSE_PROCESSING);
     } catch (err) {
         logger.error(`Failed to create BulkTransactionAggregate. ${(err as Error).message}`);
     }
