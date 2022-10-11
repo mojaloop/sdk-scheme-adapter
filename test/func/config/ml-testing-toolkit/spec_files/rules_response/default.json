@@ -304,9 +304,9 @@
     "version": 1
   },
   {
-    "ruleId": 6,
-    "priority": 6,
-    "description": "post /bulkQuotes - receiver times out entire batch",
+    "ruleId": 16,
+    "priority": 1,
+    "description": "post /bulkQuotes - receiver fails entire batch",
     "apiVersion": {
       "minorVersion": 4,
       "majorVersion": 1,
@@ -322,7 +322,7 @@
         {
           "fact": "body",
           "operator": "equal",
-          "value": "blkqtreceivertimesout",
+          "value": "bulkqtreceiversendserror",
           "path": "individualQuotes[0].to.fspId"
         },
         {
@@ -342,81 +342,13 @@
       "path": null,
       "params": {
         "body": {
-          "quoteId": "{$request.body.individualQuotes[0].quoteId}",
-          "transferAmount": "{$request.body.individualQuotes[0].amount}",
-          "transferAmountCurrency": "{$request.body.individualQuotes[0].currency}",
-          "payeeReceiveAmount": "{$request.body.individualQuotes[0].amount}",
-          "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[0].currency}",
-          "payeeFspFeeAmount": "0",
-          "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[0].currency}",
-          "payeeFspCommissionAmount": "0",
-          "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[0].currency}"
+          "statusCode": "2001",
+          "message": "Error processing bulk quote"
         },
-        "statusCode": "200",
+        "statusCode": "500",
         "scripts": {
           "scriptingEngine": "postman"
-        },
-        "delay": 300000
-      },
-      "type": "FIXED_RESPONSE"
-    },
-    "type": "response",
-    "version": 1
-  },
-  {
-    "ruleId": 6,
-    "priority": 6,
-    "description": "post /bulkQuotes - receiver times out entire batch",
-    "apiVersion": {
-      "minorVersion": 4,
-      "majorVersion": 1,
-      "type": "mojaloop_simulator_inbound",
-      "specFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/api_spec.yaml",
-      "callbackMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/callback_map.json",
-      "responseMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/response_map.json",
-      "jsfRefFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/mockRef.json",
-      "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/trigger_templates"
-    },
-    "conditions": {
-      "all": [
-        {
-          "fact": "body",
-          "operator": "equal",
-          "value": "blkqtreceivertimesout",
-          "path": "individualQuotes[0].to.fspId"
-        },
-        {
-          "fact": "operationPath",
-          "operator": "equal",
-          "value": "/bulkQuotes"
-        },
-        {
-          "fact": "method",
-          "operator": "equal",
-          "value": "post"
         }
-      ]
-    },
-    "event": {
-      "method": null,
-      "path": null,
-      "params": {
-        "body": {
-          "quoteId": "{$request.body.individualQuotes[0].quoteId}",
-          "transferAmount": "{$request.body.individualQuotes[0].amount}",
-          "transferAmountCurrency": "{$request.body.individualQuotes[0].currency}",
-          "payeeReceiveAmount": "{$request.body.individualQuotes[0].amount}",
-          "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[0].currency}",
-          "payeeFspFeeAmount": "0",
-          "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[0].currency}",
-          "payeeFspCommissionAmount": "0",
-          "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[0].currency}"
-        },
-        "statusCode": "200",
-        "scripts": {
-          "scriptingEngine": "postman"
-        },
-        "delay": 300000
       },
       "type": "FIXED_RESPONSE"
     },
@@ -493,66 +425,6 @@
         "scripts": {
           "scriptingEngine": "postman"
         }
-      },
-      "type": "FIXED_RESPONSE"
-    },
-    "type": "response",
-    "version": 1
-  },
-  {
-    "ruleId": 6,
-    "priority": 6,
-    "description": "post /bulkQuotes - receiver times out entire batch",
-    "apiVersion": {
-      "minorVersion": 4,
-      "majorVersion": 1,
-      "type": "mojaloop_simulator_inbound",
-      "specFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/api_spec.yaml",
-      "callbackMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/callback_map.json",
-      "responseMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/response_map.json",
-      "jsfRefFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/mockRef.json",
-      "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/trigger_templates"
-    },
-    "conditions": {
-      "all": [
-        {
-          "fact": "body",
-          "operator": "equal",
-          "value": "blkqtreceivertimesout",
-          "path": "individualQuotes[0].to.fspId"
-        },
-        {
-          "fact": "operationPath",
-          "operator": "equal",
-          "value": "/bulkQuotes"
-        },
-        {
-          "fact": "method",
-          "operator": "equal",
-          "value": "post"
-        }
-      ]
-    },
-    "event": {
-      "method": null,
-      "path": null,
-      "params": {
-        "body": {
-          "quoteId": "{$request.body.individualQuotes[0].quoteId}",
-          "transferAmount": "{$request.body.individualQuotes[0].amount}",
-          "transferAmountCurrency": "{$request.body.individualQuotes[0].currency}",
-          "payeeReceiveAmount": "{$request.body.individualQuotes[0].amount}",
-          "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[0].currency}",
-          "payeeFspFeeAmount": "0",
-          "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[0].currency}",
-          "payeeFspCommissionAmount": "0",
-          "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[0].currency}"
-        },
-        "statusCode": "200",
-        "scripts": {
-          "scriptingEngine": "postman"
-        },
-        "delay": 300000
       },
       "type": "FIXED_RESPONSE"
     },
@@ -767,7 +639,7 @@
   {
     "ruleId": 10,
     "priority": 10,
-    "description": "post /bulkQuotes - bulk quotes response for transfers scenario that has an error in the result",
+    "description": "post /bulkQuotes - bulk transfer test case - quotes response for transfers scenario that has an error in the result",
     "apiVersion": {
       "minorVersion": 4,
       "majorVersion": 1,

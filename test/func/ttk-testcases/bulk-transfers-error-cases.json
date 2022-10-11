@@ -226,12 +226,12 @@
               {
                 "homeTransactionId": "abc456",
                 "transactionId": "{$environment.acceptPartyCallback.body.individualTransferResults[0].transactionId}",
-                "acceptQuote": false
+                "acceptQuote": true
               },
               {
                 "homeTransactionId": "abc456",
                 "transactionId": "{$environment.acceptPartyCallback.body.individualTransferResults[1].transactionId}",
-                "acceptQuote": false
+                "acceptQuote": true
               }
             ]
           },

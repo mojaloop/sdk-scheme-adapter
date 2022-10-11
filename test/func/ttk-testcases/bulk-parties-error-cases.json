@@ -296,7 +296,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "idexists"
+                    "partyIdentifier": "1234567",
+                    "fspId": "idexists"
                   }
                 },
                 "amountType": "SEND",
@@ -321,7 +322,7 @@
                 "id": 2,
                 "description": "Check Receiver name should not exist",
                 "exec": [
-                  "expect(environment.acceptPartyCallback.body.individualTransferResults[0].to.personalInfo).to.be.null"
+                  "expect(environment.acceptPartyCallback.body.individualTransferResults[0].to.personalInfo).to.be.undefined"
                 ]
               }
             ]

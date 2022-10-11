@@ -54,7 +54,7 @@
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
                     "partyIdentifier": "123456789",
-                    "fspId": "bulkquotesreceiversendserror"
+                    "fspId": "bulkqtreceiversendserror"
                   }
                 },
                 "amountType": "SEND",
@@ -155,23 +155,30 @@
               },
               {
                 "id": 3,
+                "description": "Check that the response has an http status code of 500",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[0].lastError.httpStatusCode).to.equal(500)"
+                ]
+              },
+              {
+                "id": 3,
                 "description": "Check that the response has an error code of 4001",
                 "exec": [
-                  "expect(environment.acceptPartyCallback.body.individualTransferResults[0].lastError.mojaloopError.errorInformation.errorCode).to.equal('4001')"
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[0].lastError.mojaloopError.errorInformation.errorCode).to.equal('2001')"
                 ]
               },
               {
                 "id": 4,
-                "description": "Check that the response has an error description of ID Not Found",
+                "description": "Check that the response has an error description of Error processing bulk quote",
                 "exec": [
-                  "expect(environment.acceptPartyCallback.body.individualTransferResults[0].lastError.mojaloopError.errorInformation.description).to.equal('Cannot process the bulk quote')"
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[0].lastError.mojaloopError.errorInformation.errorDescription).to.equal('Error processing bulk quote')"
                 ]
               },
               {
                 "id": 5,
-                "description": "Check state is WAITING_FOR_QUOTE_ACCEPTANCE",
+                "description": "Check state is COMPLETED",
                 "exec": [
-                  "expect(environment.acceptQuoteCallback.body.currentState).to.equal('WAITING_FOR_QUOTE_ACCEPTANCE')"
+                  "expect(environment.acceptQuoteCallback.body.currentState).to.equal('COMPLETED')"
                 ]
               }
             ]
