@@ -54,7 +54,7 @@
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
                     "partyIdentifier": "56781234",
-                    "fspId": "receiverfsphastwoids"
+                    "fspId": "blktrfrrcvrfailsbatch"
                   }
                 },
                 "amountType": "SEND",
@@ -67,7 +67,7 @@
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
                     "partyIdentifier": "56781234",
-                    "fspId": "receiverfsphastwoids"
+                    "fspId": "blktrfrrcvrfailsbatch"
                   }
                 },
                 "amountType": "SEND",
