@@ -16,21 +16,21 @@
  - 2 transfers having the same receiver fsp id
    - acceptParty
      - All true
-       - TC-BQ1 - Receiver fsp fails the entire batch - Bug 2946
-       - TC-BQ2 - Receiver fsp times out the entire batch
-       - TC-BQ3 - Receiver fsp sends only one response and skips the other
-       - TC-BQ4 - Receiver fsp sends one success response and one failure response - failing in payeefsp because of missing transfer, but is this something we need to worry about?
-    - TC-BQ5 - One true, one false - not getting final transfers response in TTK - PASS
-    - TC-BQ6 - All false - what should be the expected behavior?
+       - TC-BQ1 - Receiver fsp fails the entire batch - FAIL - Bug 2946
+       - TC-BQ2 - Receiver fsp times out the entire batch - PASS
+       - TC-BQ3 - Receiver fsp sends only one response and skips the other - PASS
+       - TC-BQ4 - Receiver fsp sends one success response and one failure response - FAIL - Bug 2974 - failing in payeefsp because of missing transfer, but is this something we need to worry about?
+    - TC-BQ5 - One true, one false - FAIL - not getting final transfers response in TTK - PASS
+    - TC-BQ6 - All false - TBD - what should be the expected behavior?
     - TC-BQ7 - True is sent only for one quote in PUT /bulkTxn acceptParty, ignoring second one - PASS
-    - TC-BQ8- false is sent only for one quote in PUT /bulkTxn acceptParty, ignoring second one - what should be the expected behavior?
+    - TC-BQ8- false is sent only for one quote in PUT /bulkTxn acceptParty, ignoring second one - TBD - what should be the expected behavior?
  - 2 transfers having different receiver fsp ids
    - acceptParty
      - All true
        - TC-BQ9 - One batch sends an error - FAIL - no final PUT response
        - TC-BQ10- Both batches sends error - FAIL - no final PUT response
-       - TC-BQ11 - One batch times out
-       - TC-BQ12 - Both batches times out
+       - TC-BQ11 - One batch times out - FAIL - no final PUT response
+       - TC-BQ12 - Both batches times out - FAIL - no final PUT response
  - 3 transfers with 2 transfers having 1 receiver fsp id and the other having a different one
    - The batch with 2 transfers sends only 1 transfer response and the other batch sends the success response
 			
