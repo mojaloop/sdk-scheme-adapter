@@ -10,6 +10,9 @@
 
 'use strict';
 
+const { Errors } = require('@mojaloop/sdk-standard-components');
+const FSPIOPBulkTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.BulkTransferState;
+
 
 /**
  * Build a quote party object from an outgoing transfer API party
@@ -367,7 +370,23 @@ const mojaloopBulkQuotesResponseToInternal = (external) => {
         internal.extensionList = external.bulkQuotesResponse.extensionList;
     }
 
-    internal.individualQuoteResults = external.bulkQuotesResponse?.individualQuoteResults;
+    const individualQuoteResults = external.individualQuoteResults?.map((quote) => {
+        let internalQuote = {
+            ...quote
+        };
+        delete internalQuote.errorInformation;
+
+        if(quote.errorInformation) {
+            internalQuote.lastError = {
+                mojaloopError: {
+                    errorInformation: quote.errorInformation
+                }
+            };
+        }
+        return internalQuote;
+    });
+
+    internal.individualQuoteResults = individualQuoteResults;
 
     return internal;
 };
@@ -379,35 +398,60 @@ const mojaloopBulkQuotesResponseToInternal = (external) => {
  */
 const internalBulkQuotesResponseToMojaloop = (internal) => {
     const individualQuoteResults = internal.individualQuoteResults.map((quote) => {
-        const externalQuote = {
-            quoteId: quote.quoteId,
-            transferAmount: {
-                amount: quote.transferAmount,
-                currency: quote.transferAmountCurrency,
-            },
-            ilpPacket: quote.ilpPacket,
-            condition: quote.ilpCondition
-        };
-
-        if (quote.payeeReceiveAmount) {
-            externalQuote.payeeReceiveAmount = {
-                amount: quote.payeeReceiveAmount,
-                currency: quote.payeeReceiveAmountCurrency
+        let externalQuote;
+        // How do we map fsp backend errors to mojaloop errors?
+        // For now we will map any error returned by the backend as a
+        // mojaloop payee rejection and put the fsp backend error into an extension
+        // list.
+        if(quote.errorResponse) {
+            externalQuote = {
+                quoteId: quote.quoteId,
+                errorInformation: Errors.MojaloopApiErrorObjectFromCode(Errors.MojaloopApiErrorCodes.PAYEE_REJECTION).errorInformation,
+                extensionList: {
+                    extension: [
+                        {
+                            key: 'errorResponseStatusCode',
+                            value: quote.errorResponse.statusCode
+                        },
+                        {
+                            key: 'errorResponseMessage',
+                            value: quote.errorResponse.message
+                        },
+                    ]
+                }
             };
-        }
-
-        if (quote.payeeFspFeeAmount) {
-            externalQuote.payeeFspFee = {
-                amount: quote.payeeFspFeeAmount,
-                currency: quote.payeeFspFeeAmountCurrency
+        } else {
+            externalQuote = {
+                quoteId: quote.quoteId,
+                transferAmount: {
+                    amount: quote.transferAmount,
+                    currency: quote.transferAmountCurrency,
+                },
+                ilpPacket: quote.ilpPacket,
+                condition: quote.ilpCondition
             };
-        }
 
-        if (quote.payeeFspCommissionAmount) {
-            externalQuote.payeeFspCommission = {
-                amount: quote.payeeFspCommissionAmount,
-                currency: quote.payeeFspCommissionAmountCurrency
-            };
+            if (quote.payeeReceiveAmount) {
+                externalQuote.payeeReceiveAmount = {
+                    amount: quote.payeeReceiveAmount,
+                    currency: quote.payeeReceiveAmountCurrency
+                };
+            }
+
+            if (quote.payeeFspFeeAmount) {
+                externalQuote.payeeFspFee = {
+                    amount: quote.payeeFspFeeAmount,
+                    currency: quote.payeeFspFeeAmountCurrency
+                };
+            }
+
+            if (quote.payeeFspCommissionAmount) {
+                externalQuote.payeeFspCommission = {
+                    amount: quote.payeeFspCommissionAmount,
+                    currency: quote.payeeFspCommissionAmountCurrency
+                };
+            }
+
         }
 
         return externalQuote;
@@ -423,6 +467,61 @@ const internalBulkQuotesResponseToMojaloop = (internal) => {
 
     if (internal.extensionList) {
         external.extensionList = internal.extensionList;
+    }
+
+    return external;
+};
+
+/**
+ * Converts an internal bulk transfer response to mojaloop POST /bulkTransfers/{ID} response
+ *
+ * @returns {object}
+ */
+const internalBulkTransfersResponseToMojaloop = (internal, fulfilments) => {
+    const external = {
+        completedTimestamp: new Date(),
+        bulkTransferState: FSPIOPBulkTransferStateEnum.COMPLETED,
+    };
+
+    if(internal.individualTransferResults && internal.individualTransferResults.length) {
+        const individualTransferResults = internal.individualTransferResults.map((transfer) => {
+            let externalTransfer;
+            // How do we map fsp backend errors to mojaloop errors?
+            // For now we will map any error returned by the backend as a
+            // mojaloop payee rejection and put the fsp backend error into an extension
+            // list.
+            if(transfer.errorResponse) {
+                externalTransfer = {
+                    transferId: transfer.transferId,
+                    errorInformation: Errors.MojaloopApiErrorObjectFromCode(Errors.MojaloopApiErrorCodes.PAYEE_REJECTION).errorInformation,
+                    extensionList: {
+                        extension: [
+                            {
+                                key: 'errorResponseStatusCode',
+                                value: transfer.errorResponse.statusCode
+                            },
+                            {
+                                key: 'errorResponseMessage',
+                                value: transfer.errorResponse.message
+                            },
+                        ]
+                    }
+                };
+            } else {
+                externalTransfer = {
+                    transferId: transfer.transferId,
+                    fulfilment: fulfilments[transfer.transferId],
+                    ...transfer.extensionList && {
+                        extensionList: {
+                            extension: transfer.extensionList,
+                        },
+                    }
+                };
+            }
+
+            return externalTransfer;
+        });
+        external.individualTransferResults = individualTransferResults;
     }
 
     return external;
@@ -506,7 +605,23 @@ const mojaloopBulkTransfersResponseToInternal = (external) => {
         internal.extensionList = external.bulkTransfersResponse.extensionList;
     }
 
-    internal.individualTransferResults = external.bulkTransfersResponse?.individualTransferResults;
+    const individualTransferResults = external.individualTransferResults?.map((transfer) => {
+        let internalTransfer = {
+            ...transfer
+        };
+        delete internalTransfer.errorInformation;
+
+        if(transfer.errorInformation) {
+            internalTransfer.lastError = {
+                mojaloopError: {
+                    errorInformation: transfer.errorInformation
+                }
+            };
+        }
+        return internalTransfer;
+    });
+
+    internal.individualTransferResults = individualTransferResults;
 
     return internal;
 };
@@ -524,5 +639,6 @@ module.exports = {
     mojaloopBulkQuotesResponseToInternal,
     internalBulkQuotesResponseToMojaloop,
     mojaloopBulkPrepareToInternalBulkTransfer,
-    mojaloopBulkTransfersResponseToInternal
+    mojaloopBulkTransfersResponseToInternal,
+    internalBulkTransfersResponseToMojaloop
 };
