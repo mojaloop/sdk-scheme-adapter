@@ -370,7 +370,7 @@ const mojaloopBulkQuotesResponseToInternal = (external) => {
         internal.extensionList = external.bulkQuotesResponse.extensionList;
     }
 
-    const individualQuoteResults = external.individualQuoteResults.map((quote) => {
+    const individualQuoteResults = external.individualQuoteResults?.map((quote) => {
         let internalQuote = {
             ...quote
         };
@@ -605,7 +605,7 @@ const mojaloopBulkTransfersResponseToInternal = (external) => {
         internal.extensionList = external.bulkTransfersResponse.extensionList;
     }
 
-    const individualTransferResults = external.individualTransferResults.map((transfer) => {
+    const individualTransferResults = external.individualTransferResults?.map((transfer) => {
         let internalTransfer = {
             ...transfer
         };
