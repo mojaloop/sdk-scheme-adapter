@@ -511,7 +511,7 @@
           "fact": "body",
           "operator": "equal",
           "value": "bulkqtrcvrsendssuccessanderror",
-          "path": "from.idValue"
+          "path": "individualQuotes[0].to.fspId"
         },
         {
           "fact": "operationPath",
@@ -545,6 +545,7 @@
               "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[0].currency}"
             },
             {
+              "transferAmount": "0",
               "statusCode": "5101",
               "message": "Payee Rejected Quote"
             }

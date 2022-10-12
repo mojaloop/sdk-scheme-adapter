@@ -257,7 +257,7 @@
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
                     "partyIdentifier": "123456789",
-                    "fspId": "bulkquotesreceivertimesout"
+                    "fspId": "blkqtreceivertimesout"
                   }
                 },
                 "amountType": "SEND",
