@@ -501,8 +501,16 @@ class InboundTransfersModel {
             const mojaloopResponse = shared.internalBulkQuotesResponseToMojaloop(response);
 
             // create our ILP packet and condition and tag them on to our internal quote response
+            this._logger.info(JSON.stringify({bulkQuoteRequest}));
+            this._logger.info(JSON.stringify({mojaloopResponse}));
+
             bulkQuoteRequest.individualQuotes.map((quote) => {
-                if(!mojaloopResponse.errorInformation) {
+                // TODO: Optimize with a HashMap
+                const mojaloopIndividualQuote = mojaloopResponse.individualQuoteResults.find(
+                    (quoteResult) => quoteResult.quoteId === quote.quoteId
+                );
+                this._logger.info(JSON.stringify({mojaloopIndividualQuote}));
+                if(!mojaloopIndividualQuote.errorInformation) {
                     const quoteRequest = {
                         transactionId: quote.transactionId,
                         quoteId: quote.quoteId,
@@ -510,10 +518,7 @@ class InboundTransfersModel {
                         payer: bulkQuoteRequest.payer,
                         transactionType: quote.transactionType,
                     };
-                    // TODO: Optimize with a HashMap
-                    const mojaloopIndividualQuote = mojaloopResponse.individualQuoteResults.find(
-                        (quoteResult) => quoteResult.quoteId === quote.quoteId
-                    );
+
                     const quoteResponse = {
                         transferAmount: mojaloopIndividualQuote.transferAmount,
                         note: mojaloopIndividualQuote.note || '',

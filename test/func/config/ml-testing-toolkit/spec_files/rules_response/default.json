@@ -622,8 +622,10 @@
             },
             {
               "quoteId": "{$request.body.individualQuotes[1].quoteId}",
-              "statusCode": "5101",
-              "message": "Payee Rejected Quote"
+              "errorResponse": {
+                "statusCode": "5101",
+                "message": "Payee Rejected Quote"
+              }
             }
           ]
         },
@@ -1129,8 +1131,10 @@
             },
             {
               "transferId": "{$request.body.individualTransfers[1].transferId}",
-              "statusCode": "4001",
-              "message": "Cannot process the transfer"
+              "errorResponse": {
+                "statusCode": "4001",
+                "message": "Cannot process the transfer"
+              }
             }
           ]
         },

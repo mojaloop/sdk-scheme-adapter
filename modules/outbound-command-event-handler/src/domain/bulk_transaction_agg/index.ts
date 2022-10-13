@@ -519,10 +519,10 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                                 individualTransfer.id,
                             );
                         }
-                        // Add Transfers to batch
-                        bulkTransfersTotalCount += 1;
                     }
                 }
+                // Increment bulk transfer count
+                bulkTransfersTotalCount += 1;
                 // TODO: should we not add the bulkTransfersRequest to the BulkTransaction.individualItem and update its status?
                 await this.setBulkBatchById(bulkBatch.id, bulkBatch);
                 await this.setBulkTransfersTotalCount(bulkTransfersTotalCount);
