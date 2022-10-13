@@ -120,6 +120,7 @@ export async function handleProcessBulkTransfersCallbackCmdEvt(
         const bulkTransfersTotalCount = await bulkTransactionAgg.getBulkTransfersTotalCount();
         const bulkTransfersSuccessCount = successCount || await bulkTransactionAgg.getBulkTransfersSuccessCount();
         const bulkTransfersFailedCount = failedCount || await bulkTransactionAgg.getBulkTransfersFailedCount();
+
         if(bulkTransfersTotalCount === (bulkTransfersSuccessCount + bulkTransfersFailedCount)) {
             // Update global state "TRANSFERS_COMPLETED"
             await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.TRANSFERS_COMPLETED);

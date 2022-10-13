@@ -15,7 +15,7 @@ export async function handleBulkTransfersCallbackReceived(
     const bulkTransfersCallbackReceivedMessage
         = BulkTransfersCallbackReceivedDmEvt.CreateFromDomainEvent(message);
     try {
-        const processPartyInfoCallbackMessageData: IProcessBulkTransfersCallbackCmdEvtData = {
+        const processBulkTransfersCallbackMessageData: IProcessBulkTransfersCallbackCmdEvtData = {
             bulkId: bulkTransfersCallbackReceivedMessage.getKey(),
             content: {
                 batchId: bulkTransfersCallbackReceivedMessage.batchId,
@@ -27,7 +27,7 @@ export async function handleBulkTransfersCallbackReceived(
         };
 
         const processBulkTransfersCallbackMessage
-            = new ProcessBulkTransfersCallbackCmdEvt(processPartyInfoCallbackMessageData);
+            = new ProcessBulkTransfersCallbackCmdEvt(processBulkTransfersCallbackMessageData);
 
         await options.commandProducer.sendCommandEvent(processBulkTransfersCallbackMessage);
 

@@ -44,6 +44,7 @@ module.exports.handleBulkQuotesRequestedDmEvt = async (
 
         await model.initialize(event.request);
         const response = await model.run();
+        logger.push({response}).log(`${OutboundBulkQuotesModel.name}`);
 
         const bulkQuotesCallbackReceivedDmEvt = new BulkQuotesCallbackReceivedDmEvt({
             bulkId: event.getKey(),

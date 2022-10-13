@@ -376,7 +376,9 @@ class OutboundBulkQuotesModel {
         // we want to project some of our internal state into a more useful
         // representation to return to the SDK API consumer
         // let resp = { ...this.data };
+        this._logger.push(JSON.stringify(this.data)).log(`${OutboundBulkQuotesModel.name} data - getResponse()`);
         let resp = shared.mojaloopBulkQuotesResponseToInternal(this.data);
+        this._logger.push(JSON.stringify(resp)).log(`${OutboundBulkQuotesModel.name} getResponse() - Result`);
 
         switch(this.data.currentState) {
             case 'succeeded':
