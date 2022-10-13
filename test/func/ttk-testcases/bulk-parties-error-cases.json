@@ -53,7 +53,7 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "iddoesnotexist"
+                    "partyIdentifier": "fsp2msisdnerrorsout"
                   }
                 },
                 "amountType": "SEND",

@@ -2,7 +2,7 @@
   {
     "ruleId": 1,
     "priority": 1,
-    "description": "get /parties/{idType}/{idValue} - error case - id not found",
+    "description": "get /parties/{idType}/{idValue} - error case - receiver errors out",
     "apiVersion": {
       "minorVersion": 4,
       "majorVersion": 1,
@@ -18,7 +18,7 @@
         {
           "fact": "pathParams",
           "operator": "equal",
-          "value": "iddoesnotexist",
+          "value": "fsp2msisdnerrorsout",
           "path": "idValue"
         },
         {
