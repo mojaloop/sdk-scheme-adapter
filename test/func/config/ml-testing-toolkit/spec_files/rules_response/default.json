@@ -163,147 +163,6 @@
     "version": 1
   },
   {
-    "ruleId": 4,
-    "priority": 4,
-    "description": "post /bulkQuotes - receiver responds with 2 quotes results",
-    "apiVersion": {
-      "minorVersion": 4,
-      "majorVersion": 1,
-      "type": "mojaloop_simulator_inbound",
-      "specFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/api_spec.yaml",
-      "callbackMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/callback_map.json",
-      "responseMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/response_map.json",
-      "jsfRefFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/mockRef.json",
-      "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/trigger_templates"
-    },
-    "conditions": {
-      "all": [
-        {
-          "fact": "body",
-          "operator": "equal",
-          "value": "receiverfsphastwoids",
-          "path": "from.idValue"
-        },
-        {
-          "fact": "operationPath",
-          "operator": "equal",
-          "value": "/bulkQuotes"
-        },
-        {
-          "fact": "method",
-          "operator": "equal",
-          "value": "post"
-        }
-      ]
-    },
-    "event": {
-      "method": null,
-      "path": null,
-      "params": {
-        "body": {
-          "bulkQuoteId": "{$request.body.bulkQuoteId}",
-          "expiration": "{$request.body.expiration}",
-          "individualQuoteResults": [
-            {
-              "quoteId": "{$request.body.individualQuotes[0].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[0].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[0].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[0].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[0].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[0].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[0].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[1].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[1].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[1].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[1].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[1].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[1].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[1].currency}"
-            }
-          ]
-        },
-        "statusCode": "200",
-        "scripts": {
-          "scriptingEngine": "postman"
-        }
-      },
-      "type": "FIXED_RESPONSE"
-    },
-    "type": "response",
-    "version": 1
-  },
-  {
-    "ruleId": 5,
-    "priority": 5,
-    "description": "post /bulkQuotes - receiver responds with 1 quotes result",
-    "apiVersion": {
-      "minorVersion": 4,
-      "majorVersion": 1,
-      "type": "mojaloop_simulator_inbound",
-      "specFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/api_spec.yaml",
-      "callbackMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/callback_map.json",
-      "responseMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/response_map.json",
-      "jsfRefFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/mockRef.json",
-      "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/trigger_templates"
-    },
-    "conditions": {
-      "all": [
-        {
-          "fact": "body",
-          "operator": "equal",
-          "value": "receiverfsphas1id",
-          "path": "from.idValue"
-        },
-        {
-          "fact": "operationPath",
-          "operator": "equal",
-          "value": "/bulkQuotes"
-        },
-        {
-          "fact": "method",
-          "operator": "equal",
-          "value": "post"
-        }
-      ]
-    },
-    "event": {
-      "method": null,
-      "path": null,
-      "params": {
-        "body": {
-          "bulkQuoteId": "{$request.body.bulkQuoteId}",
-          "expiration": "{$request.body.expiration}",
-          "individualQuoteResults": [
-            {
-              "quoteId": "{$request.body.individualQuotes[0].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[0].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[0].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[0].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[0].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[0].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[0].currency}"
-            }
-          ]
-        },
-        "statusCode": "200",
-        "scripts": {
-          "scriptingEngine": "postman"
-        }
-      },
-      "type": "FIXED_RESPONSE"
-    },
-    "type": "response",
-    "version": 1
-  },
-  {
     "ruleId": 16,
     "priority": 1,
     "description": "post /bulkQuotes - receiver fails entire batch",
@@ -322,7 +181,7 @@
         {
           "fact": "body",
           "operator": "equal",
-          "value": "fspbatchfailure",
+          "value": "blkqtbatchfailure",
           "path": "note"
         },
         {
@@ -450,8 +309,8 @@
         {
           "fact": "body",
           "operator": "equal",
-          "value": "fspbatchtimesout",
-          "path": "body.note"
+          "value": "blkqtbatchtimesout",
+          "path": "note"
         },
         {
           "fact": "operationPath",
@@ -868,9 +727,74 @@
     "version": 1
   },
   {
+    "ruleId": 5,
+    "priority": 5,
+    "description": "post /bulkQuotes - receiver responds with 1 quote result",
+    "apiVersion": {
+      "minorVersion": 4,
+      "majorVersion": 1,
+      "type": "mojaloop_simulator_inbound",
+      "specFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/api_spec.yaml",
+      "callbackMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/callback_map.json",
+      "responseMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/response_map.json",
+      "jsfRefFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/mockRef.json",
+      "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/trigger_templates"
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "body",
+          "operator": "equal",
+          "value": "blkqtbatchwith1qtresponse",
+          "path": "note"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/bulkQuotes"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "bulkQuoteId": "{$request.body.bulkQuoteId}",
+          "expiration": "{$request.body.expiration}",
+          "individualQuoteResults": [
+            {
+              "quoteId": "{$request.body.individualQuotes[0].quoteId}",
+              "transferAmount": "{$request.body.individualQuotes[0].amount}",
+              "transferAmountCurrency": "{$request.body.individualQuotes[0].currency}",
+              "payeeReceiveAmount": "{$request.body.individualQuotes[0].amount}",
+              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[0].currency}",
+              "payeeFspFeeAmount": "0",
+              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[0].currency}",
+              "payeeFspCommissionAmount": "0",
+              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[0].currency}"
+            }
+          ]
+        },
+        "statusCode": "200",
+        "scripts": {
+          "scriptingEngine": "postman"
+        }
+      },
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
     "ruleId": 11,
     "priority": 11,
-    "description": "post /bulkQuotes - default path",
+    "description": "post /bulkQuotes - default path - receiver responds with 2 quote results",
     "apiVersion": {
       "minorVersion": 4,
       "majorVersion": 1,
@@ -913,6 +837,17 @@
               "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[0].currency}",
               "payeeFspCommissionAmount": "0",
               "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[0].currency}"
+            },
+            {
+              "quoteId": "{$request.body.individualQuotes[1].quoteId}",
+              "transferAmount": "{$request.body.individualQuotes[1].amount}",
+              "transferAmountCurrency": "{$request.body.individualQuotes[1].currency}",
+              "payeeReceiveAmount": "{$request.body.individualQuotes[1].amount}",
+              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[1].currency}",
+              "payeeFspFeeAmount": "0",
+              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[1].currency}",
+              "payeeFspCommissionAmount": "0",
+              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[1].currency}"
             }
           ]
         },
@@ -1246,6 +1181,9 @@
           "individualTransferResults": [
             {
               "transferId": "{$request.body.individualTransfers[0].transferId}"
+            },
+            {
+              "transferId": "{$request.body.individualTransfers[1].transferId}"
             }
           ]
         },
