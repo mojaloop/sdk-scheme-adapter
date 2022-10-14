@@ -322,8 +322,8 @@
         {
           "fact": "body",
           "operator": "equal",
-          "value": "bulkqtreceiversendserror",
-          "path": "individualQuotes[0].to.fspId"
+          "value": "fspbatchfailure",
+          "path": "note"
         },
         {
           "fact": "operationPath",
@@ -450,8 +450,8 @@
         {
           "fact": "body",
           "operator": "equal",
-          "value": "blkqtreceivertimesout",
-          "path": "individualQuotes[0].to.fspId"
+          "value": "fspbatchtimesout",
+          "path": "body.note"
         },
         {
           "fact": "operationPath",

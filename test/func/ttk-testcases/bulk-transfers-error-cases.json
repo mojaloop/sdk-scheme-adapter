@@ -1257,7 +1257,7 @@
                 "id": 3,
                 "description": "Check response MSISDN is same as in the request",
                 "exec": [
-                  "expect(environment.transfersCallback.body.individualTransferResults[0].to.partyIdInfo.partyIdentifier).to.equal('56781234')"
+                  "expect(environment.transfersCallback.body.individualTransferResults[0].to.partyIdInfo.partyIdentifier).to.equal('123456789')"
                 ]
               },
               {

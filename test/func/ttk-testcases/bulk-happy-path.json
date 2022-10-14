@@ -58,7 +58,8 @@
                 },
                 "amountType": "SEND",
                 "currency": "USD",
-                "amount": "123.45"
+                "amount": "123.45",
+                "note": "fspsuccess"
               }
             ]
           },
