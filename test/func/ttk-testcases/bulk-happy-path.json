@@ -873,7 +873,7 @@
     },
     {
       "id": 4,
-      "name": "TC-BHP4. When there are 4 transfers in the bulk request 2 of which that have the same receiver fsp id and the others has a different receiver fsp id and acceptParty is true for all the transfers, Then the PUT response should have details of all the 4 transfers for acceptQuote.",
+      "name": "TC-BHP4. When there are 4 transfers in the bulk request 2 of which that have the same receiver fsp id and the others has a different receiver fsp id and acceptParty is true for all the transfers, Then the PUT response should have details of all the 4 transfers.",
       "fileInfo": {
         "path": "ttk-testcases/mvp-bulk.json"
       },
