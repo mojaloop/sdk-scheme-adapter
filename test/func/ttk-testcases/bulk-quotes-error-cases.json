@@ -445,12 +445,13 @@
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
                     "partyIdentifier": "123456789",
-                    "fspId": "bulkqtrcvrsendssuccessanderror"
+                    "fspId": "ttksim2"
                   }
                 },
                 "amountType": "SEND",
                 "currency": "USD",
-                "amount": "456.78"
+                "amount": "456.78",
+                "note":"blkqtbatchpartialsuccess"
               },
               {
                 "homeTransactionId": "abc2",
@@ -458,7 +459,7 @@
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
                     "partyIdentifier": "123456789",
-                    "fspId": "bulkqtrcvrsendssuccessanderror"
+                    "fspId": "ttksim2"
                   }
                 },
                 "amountType": "SEND",
@@ -570,14 +571,14 @@
               },
               {
                 "id": 3,
-                "description": "Check response has quote result for first transfer",
+                "description": "Check response has quote result for first quote result",
                 "exec": [
                   "expect(environment.acceptQuoteCallback.body.individualTransferResults[0].quoteResponse).to.exist;"
                 ]
               },
               {
                 "id": 4,
-                "description": "Check response has ilpPacket and condition for first transfer",
+                "description": "Check response has ilpPacket and condition for first quote result",
                 "exec": [
                   "expect(environment.acceptQuoteCallback.body.individualTransferResults[0].quoteResponse.ilpPacket).to.not.be.empty;",
                   "",
@@ -586,6 +587,20 @@
               },
               {
                 "id": 5,
+                "description": "Check response has error code for second quote result",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[1].quoteResponse.lastError.mojaloopError.errorInformation.errorCode).to.equal('5100');"
+                ]
+              },
+              {
+                "id": 6,
+                "description": "Check response has error description for second quote result",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[1].quoteResponse.lastError.mojaloopError.errorInformation.errorDescription).to.equal('Generic Payee rejection');"
+                ]
+              },
+              {
+                "id": 7,
                 "description": "Check state is WAITING_FOR_QUOTE_ACCEPTANCE",
                 "exec": [
                   "expect(environment.acceptQuoteCallback.body.currentState).to.equal('WAITING_FOR_QUOTE_ACCEPTANCE')"
@@ -1883,22 +1898,22 @@
             "bulkHomeTransactionID": "{$prev.1.request.body.bulkHomeTransactionID}",
             "individualTransfers": [
               {
-                "homeTransactionId": "abc456",
+                "homeTransactionId": "abc1",
                 "transactionId": "{$environment.acceptPartyCallback.body.individualTransferResults[0].transactionId}",
                 "acceptParty": true
               },
               {
-                "homeTransactionId": "abc456",
+                "homeTransactionId": "abc2",
                 "transactionId": "{$environment.acceptPartyCallback.body.individualTransferResults[1].transactionId}",
                 "acceptParty": true
               },
               {
-                "homeTransactionId": "abc789",
+                "homeTransactionId": "abc3",
                 "transactionId": "{$environment.acceptPartyCallback.body.individualTransferResults[2].transactionId}",
                 "acceptParty": true
               },
               {
-                "homeTransactionId": "abc789",
+                "homeTransactionId": "abc4",
                 "transactionId": "{$environment.acceptPartyCallback.body.individualTransferResults[3].transactionId}",
                 "acceptParty": true
               }
@@ -2346,6 +2361,34 @@
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
                     "partyIdentifier": "123456789",
+                    "fspId": "ttksim2"
+                  }
+                },
+                "amountType": "SEND",
+                "currency": "USD",
+                "amount": "456.78",
+                "note":"blkqtbatch"
+              },
+              {
+                "homeTransactionId": "abc2",
+                "to": {
+                  "partyIdInfo": {
+                    "partyIdType": "MSISDN",
+                    "partyIdentifier": "123456007",
+                    "fspId": "ttksim2"
+                  }
+                },
+                "amountType": "SEND",
+                "currency": "USD",
+                "amount": "678.91",
+                "note":"blkqtbatch"
+              },
+              {
+                "homeTransactionId": "abc3",
+                "to": {
+                  "partyIdInfo": {
+                    "partyIdType": "MSISDN",
+                    "partyIdentifier": "123456789",
                     "fspId": "bulkquotesreceiver"
                   }
                 },
@@ -2355,7 +2398,7 @@
                 "note":"blkqtbatchwith1qtresponse"
               },
               {
-                "homeTransactionId": "abc2",
+                "homeTransactionId": "abc4",
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",

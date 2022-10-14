@@ -445,8 +445,8 @@
         {
           "fact": "body",
           "operator": "equal",
-          "value": "bulkqtrcvrsendssuccessanderror",
-          "path": "individualQuotes[0].to.fspId"
+          "value": "blkqtbatchpartialsuccess",
+          "path": "note"
         },
         {
           "fact": "operationPath",
