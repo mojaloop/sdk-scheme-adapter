@@ -44,7 +44,8 @@
             "from": {
               "partyIdInfo": {
                 "partyIdType": "MSISDN",
-                "partyIdentifier": "blktrfrrcvrfailsbatch"
+                "partyIdentifier": "blktrfrrcvrfailsbatch",
+                "fspId": "ttksim1"
               }
             },
             "individualTransfers": [
@@ -54,12 +55,13 @@
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
                     "partyIdentifier": "56781234",
-                    "fspId": "blktrfrrcvrfailsbatch"
+                    "fspId": "ttksim2"
                   }
                 },
                 "amountType": "SEND",
                 "currency": "USD",
-                "amount": "123.45"
+                "amount": "123.45",
+                "note": "blktrbatchfailure"
               },
               {
                 "homeTransactionId": "abc1",
@@ -67,12 +69,13 @@
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
                     "partyIdentifier": "56781234",
-                    "fspId": "blktrfrrcvrfailsbatch"
+                    "fspId": "ttksim2"
                   }
                 },
                 "amountType": "SEND",
                 "currency": "USD",
-                "amount": "123.45"
+                "amount": "123.45",
+                "note": "blktrbatchfailure"
               }
             ]
           },
@@ -376,7 +379,8 @@
             "from": {
               "partyIdInfo": {
                 "partyIdType": "MSISDN",
-                "partyIdentifier": "blktrfrrcvrtimesout"
+                "partyIdentifier": "123456",
+                "fspId": "ttksim1"
               }
             },
             "individualTransfers": [
@@ -386,12 +390,13 @@
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
                     "partyIdentifier": "56781234",
-                    "fspId": "blktrfrrcvrtimesout"
+                    "fspId": "ttksim2"
                   }
                 },
                 "amountType": "SEND",
                 "currency": "USD",
-                "amount": "123.45"
+                "amount": "123.45",
+                "note": "blktrbatchtimesout"
               },
               {
                 "homeTransactionId": "abc1",
@@ -399,12 +404,13 @@
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
                     "partyIdentifier": "56781234",
-                    "fspId": "blktrfrrcvrtimesout"
+                    "fspId": "ttksim2"
                   }
                 },
                 "amountType": "SEND",
                 "currency": "USD",
-                "amount": "123.45"
+                "amount": "123.45",
+                "note": "blktrbatchtimesout"
               }
             ]
           },

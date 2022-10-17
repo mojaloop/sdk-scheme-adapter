@@ -233,8 +233,8 @@
         {
           "fact": "body",
           "operator": "equal",
-          "value": "blktrfrrcvrfailsbatch",
-          "path": "individualQuotes[0].to.fspId"
+          "value": "blktrbatchfailure",
+          "path": "note"
         },
         {
           "fact": "operationPath",
@@ -369,8 +369,8 @@
         {
           "fact": "body",
           "operator": "equal",
-          "value": "blktrfrrcvrtimesout",
-          "path": "individualQuotes[0].to.fspId"
+          "value": "blktrbatchtimesout",
+          "path": "individualTransfers[0].note"
         },
         {
           "fact": "operationPath",
@@ -1526,8 +1526,8 @@
         {
           "fact": "body",
           "operator": "equal",
-          "value": "blktrfrrcvrfailsbatch",
-          "path": "individualTransfers[0].to.fspId"
+          "value": "blktrbatchfailure",
+          "path": "individualTransfers[0].note"
         },
         {
           "fact": "operationPath",
