@@ -264,39 +264,48 @@
               },
               {
                 "id": 4,
-                "description": "Check response has the receiver fspid populated",
+                "description": "Check first response has the receiver fspid populated",
                 "exec": [
                   "expect(environment.transfersCallback.body.individualTransferResults[0].to.partyIdInfo.fspId).to.not.be.empty"
                 ]
               },
               {
-                "id": 5,
-                "description": "Check response receiver first name is ReceiverFirst",
-                "exec": [
-                  "expect(environment.transfersCallback.body.individualTransferResults[0].to.personalInfo.complexName.firstName).to.equal('ReceiverFirst')"
-                ]
-              },
-              {
-                "id": 6,
-                "description": "Check response receiver last name is ReceiverLast",
-                "exec": [
-                  "expect(environment.transfersCallback.body.individualTransferResults[0].to.personalInfo.complexName.lastName).to.equal('ReceiverLast')"
-                ]
-              },
-              {
                 "id": 7,
-                "description": "Check response has quote result",
+                "description": "Check first response has quote result",
                 "exec": [
                   "expect(environment.transfersCallback.body.individualTransferResults[0].quoteResponse).to.exist;"
                 ]
               },
               {
                 "id": 8,
-                "description": "Check response has ilpPacket and condition",
+                "description": "Check first response has ilpPacket and condition",
                 "exec": [
                   "expect(environment.transfersCallback.body.individualTransferResults[0].quoteResponse.ilpPacket).to.not.be.empty;",
                   "",
                   "expect(environment.transfersCallback.body.individualTransferResults[0].quoteResponse.condition).to.not.be.empty;"
+                ]
+              },
+              {
+                "id": 4,
+                "description": "Check second response has the receiver fspid populated",
+                "exec": [
+                  "expect(environment.transfersCallback.body.individualTransferResults[1].to.partyIdInfo.fspId).to.not.be.empty"
+                ]
+              },
+              {
+                "id": 7,
+                "description": "Check second response has quote result",
+                "exec": [
+                  "expect(environment.transfersCallback.body.individualTransferResults[1].quoteResponse).to.exist;"
+                ]
+              },
+              {
+                "id": 8,
+                "description": "Check second response has ilpPacket and condition",
+                "exec": [
+                  "expect(environment.transfersCallback.body.individualTransferResults[1].quoteResponse.ilpPacket).to.not.be.empty;",
+                  "",
+                  "expect(environment.transfersCallback.body.individualTransferResults[1].quoteResponse.condition).to.not.be.empty;"
                 ]
               },
               {
