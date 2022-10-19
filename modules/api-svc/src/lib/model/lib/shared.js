@@ -405,17 +405,23 @@ const internalBulkQuotesResponseToMojaloop = (internal) => {
             try {
                 // Throws error if invalid
                 ErrorHandling.ValidateFSPIOPErrorGroups(quote.errorResponse.statusCode);
-                error = new ErrorHandling.FSPIOPError(
+
+                const mojaloopApiErrorCode = ErrorHandling.Enums.findFSPIOPErrorCode(quote.errorResponse.statusCode) || {
+                    code: quote.errorResponse.statusCode,
+                    message: quote.errorResponse.message
+                };
+
+                error = new ErrorHandling.Factory.FSPIOPError(
                     quote.errorResponse.message,
                     quote.errorResponse.message,
                     null,
-                    quote.errorResponse.statusCode,
+                    mojaloopApiErrorCode,
                     null,
                 );
             } catch (e) {
                 // If error status code isn't FSPIOP conforming, create generic
                 // FSPIOP error and include backend code and message in FSPIOP message.
-                error = new ErrorHandling.FSPIOPError(
+                error = new ErrorHandling.Factory.FSPIOPError(
                     quote.errorResponse.message,
                     `${quote.errorResponse.statusCode} - ${quote.errorResponse.message}`,
                     null,
@@ -502,11 +508,16 @@ const internalBulkTransfersResponseToMojaloop = (internal, fulfilments) => {
                     // Throws error if invalid
                     ErrorHandling.ValidateFSPIOPErrorGroups(transfer.errorResponse.statusCode);
 
-                    error = new ErrorHandling.FSPIOPError(
+                    const mojaloopApiErrorCode = ErrorHandling.Enums.findFSPIOPErrorCode(transfer.errorResponse.statusCode) || {
+                        code: transfer.errorResponse.statusCode,
+                        message: transfer.errorResponse.message
+                    };
+
+                    error = new ErrorHandling.Factory.FSPIOPError(
                         transfer.errorResponse.message,
                         transfer.errorResponse.message,
                         null,
-                        transfer.errorResponse.statusCode,
+                        mojaloopApiErrorCode,
                         null,
                     );
 
@@ -518,7 +529,7 @@ const internalBulkTransfersResponseToMojaloop = (internal, fulfilments) => {
                 } catch (e) {
                     // If error status code isn't FSPIOP conforming, create generic
                     // FSPIOP error and include backend code and message in FSPIOP message.
-                    error = new ErrorHandling.FSPIOPError(
+                    error = new ErrorHandling.Factory.FSPIOPError(
                         transfer.errorResponse.message,
                         `${transfer.errorResponse.statusCode} - ${transfer.errorResponse.message}`,
                         null,

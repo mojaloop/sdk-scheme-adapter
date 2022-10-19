@@ -589,14 +589,14 @@
                 "id": 5,
                 "description": "Check response has error code for second quote result",
                 "exec": [
-                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[1].quoteResponse.lastError.mojaloopError.errorInformation.errorCode).to.equal('5100');"
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[1].quoteResponse.lastError.mojaloopError.errorInformation.errorCode).to.equal('5101');"
                 ]
               },
               {
                 "id": 6,
                 "description": "Check response has error description for second quote result",
                 "exec": [
-                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[1].quoteResponse.lastError.mojaloopError.errorInformation.errorDescription).to.equal('Generic Payee rejection');"
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[1].quoteResponse.lastError.mojaloopError.errorInformation.errorDescription).to.equal('Payee rejected quote - Payee Rejected Quote');"
                 ]
               },
               {
@@ -2772,6 +2772,6 @@
         }
       ]
     }
-    
+
   ]
 }
