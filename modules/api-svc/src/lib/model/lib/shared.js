@@ -12,6 +12,7 @@
 
 const { Errors } = require('@mojaloop/sdk-standard-components');
 const FSPIOPBulkTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.BulkTransferState;
+const ErrorHandling = require('@mojaloop/central-services-error-handling');
 
 
 /**
@@ -398,26 +399,41 @@ const mojaloopBulkQuotesResponseToInternal = (external) => {
 const internalBulkQuotesResponseToMojaloop = (internal) => {
     const individualQuoteResults = internal.individualQuoteResults.map((quote) => {
         let externalQuote;
-        // How do we map fsp backend errors to mojaloop errors?
-        // For now we will map any error returned by the backend as a
-        // mojaloop payee rejection and put the fsp backend error into an extension
-        // list.
+
         if(quote.errorResponse) {
+            let error;
+            try {
+                // Throws error if invalid
+                ErrorHandling.ValidateFSPIOPErrorGroups(quote.errorResponse.statusCode);
+
+                const mojaloopApiErrorCode = ErrorHandling.Enums.findFSPIOPErrorCode(quote.errorResponse.statusCode) || {
+                    code: quote.errorResponse.statusCode,
+                    message: quote.errorResponse.message
+                };
+
+                error = new ErrorHandling.Factory.FSPIOPError(
+                    quote.errorResponse.message,
+                    quote.errorResponse.message,
+                    null,
+                    mojaloopApiErrorCode,
+                    null,
+                );
+            } catch (e) {
+                // If error status code isn't FSPIOP conforming, create generic
+                // FSPIOP error and include backend code and message in FSPIOP message.
+                error = new ErrorHandling.Factory.FSPIOPError(
+                    quote.errorResponse.message,
+                    `${quote.errorResponse.statusCode} - ${quote.errorResponse.message}`,
+                    null,
+                    Errors.MojaloopApiErrorCodes.CLIENT_ERROR,
+                    null,
+                    true
+                );
+            }
+
             externalQuote = {
                 quoteId: quote.quoteId,
-                errorInformation: Errors.MojaloopApiErrorObjectFromCode(Errors.MojaloopApiErrorCodes.PAYEE_REJECTION).errorInformation,
-                extensionList: {
-                    extension: [
-                        {
-                            key: 'errorResponseStatusCode',
-                            value: quote.errorResponse.statusCode
-                        },
-                        {
-                            key: 'errorResponseMessage',
-                            value: quote.errorResponse.message
-                        },
-                    ]
-                }
+                errorInformation: error.toApiErrorObject().errorInformation,
             };
         } else {
             externalQuote = {
@@ -485,26 +501,47 @@ const internalBulkTransfersResponseToMojaloop = (internal, fulfilments) => {
     if(internal.individualTransferResults && internal.individualTransferResults.length) {
         const individualTransferResults = internal.individualTransferResults.map((transfer) => {
             let externalTransfer;
-            // How do we map fsp backend errors to mojaloop errors?
-            // For now we will map any error returned by the backend as a
-            // mojaloop payee rejection and put the fsp backend error into an extension
-            // list.
+
             if(transfer.errorResponse) {
+                let error;
+                try {
+                    // Throws error if invalid
+                    ErrorHandling.ValidateFSPIOPErrorGroups(transfer.errorResponse.statusCode);
+
+                    const mojaloopApiErrorCode = ErrorHandling.Enums.findFSPIOPErrorCode(transfer.errorResponse.statusCode) || {
+                        code: transfer.errorResponse.statusCode,
+                        message: transfer.errorResponse.message
+                    };
+
+                    error = new ErrorHandling.Factory.FSPIOPError(
+                        transfer.errorResponse.message,
+                        transfer.errorResponse.message,
+                        null,
+                        mojaloopApiErrorCode,
+                        null,
+                    );
+
+                    externalTransfer = {
+                        transferId: transfer.transferId,
+                        errorInformation: error.toApiErrorObject().errorInformation,
+                    };
+
+                } catch (e) {
+                    // If error status code isn't FSPIOP conforming, create generic
+                    // FSPIOP error and include backend code and message in FSPIOP message.
+                    error = new ErrorHandling.Factory.FSPIOPError(
+                        transfer.errorResponse.message,
+                        `${transfer.errorResponse.statusCode} - ${transfer.errorResponse.message}`,
+                        null,
+                        Errors.MojaloopApiErrorCodes.CLIENT_ERROR,
+                        null,
+                        true
+                    );
+                }
+
                 externalTransfer = {
                     transferId: transfer.transferId,
-                    errorInformation: Errors.MojaloopApiErrorObjectFromCode(Errors.MojaloopApiErrorCodes.PAYEE_REJECTION).errorInformation,
-                    extensionList: {
-                        extension: [
-                            {
-                                key: 'errorResponseStatusCode',
-                                value: transfer.errorResponse.statusCode
-                            },
-                            {
-                                key: 'errorResponseMessage',
-                                value: transfer.errorResponse.message
-                            },
-                        ]
-                    }
+                    errorInformation: error.toApiErrorObject().errorInformation,
                 };
             } else {
                 externalTransfer = {
