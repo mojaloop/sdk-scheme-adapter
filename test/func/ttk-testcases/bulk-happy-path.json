@@ -58,7 +58,7 @@
                   }
                 },
                 "amountType": "SEND",
-                "currency": "{$inputs}",
+                "currency": "{$inputs.SIM2_CURRENCY}",
                 "amount": "456.78"
               },
               {
@@ -434,7 +434,11 @@
                 "",
                 "console.log(transfersCallback)",
                 "",
-                "environment.transfersCallback = transfersCallback;"
+                "environment.transfersCallback = transfersCallback;",
+                "",
+                "requestVariables.sim2msisdn1response = transfersCallback.body.individualTransferResults.filter(transfer => (transfer.to.partyIdInfo.partyIdentifier === inputs.SIM2_MSISDN_1))",
+                "",
+                "console.log('sim2msisdn1response: ', requestVariables.sim2msisdn1response);"
               ]
             }
           }
