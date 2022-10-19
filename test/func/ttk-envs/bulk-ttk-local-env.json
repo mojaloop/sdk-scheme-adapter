@@ -1,0 +1,31 @@
+{
+    "inputValues": {
+      "SIM1_FSPID": "ttksim1",
+      "SIM1_SDK_BACKEND_ENDPOINT": "http://payer-sdk-api-svc:4001",
+      "SIM1_SDK_FSPIOP_ENDPOINT": "http://payer-sdk-api-svc:4000",
+      "SIM1_MSISDN_1": "16135551212",
+      "SIM1_MSISDN_1_FIRST_NAME": "ReceiverFirst",
+      "SIM1_MSISDN_1_LAST_NAME": "ReceiverLast",
+      "SIM1_CURRENCY": "USD",
+      "SIM2_FSPID": "ttksim2",
+      "SIM2_SDK_BACKEND_ENDPOINT": "http://payer-sdk-api-svc:4001",
+      "SIM2_SDK_FSPIOP_ENDPOINT": "http://payee-sdk-api-svc:4000",
+      "SIM2_MSISDN_1": "56781234001",
+      "SIM2_MSISDN_1_FIRST_NAME": "ReceiverFirst",
+      "SIM2_MSISDN_1_LAST_NAME": "ReceiverLast",
+      "SIM2_MSISDN_2": "56781234002",
+      "SIM2_MSISDN_2_FIRST_NAME": "ReceiverFirst",
+      "SIM2_MSISDN_2_LAST_NAME": "ReceiverLast",
+      "SIM2_CURRENCY": "USD",
+      "SIM3_FSPID": "ttksim3",
+      "SIM3_SDK_BACKEND_ENDPOINT": "http://payee-sdk-api-svc:4001",
+      "SIM3_SDK_FSPIOP_ENDPOINT": "http://payee-sdk-api-svc:4000",
+      "SIM3_MSISDN_1": "56781235001",
+      "SIM3_MSISDN_1_FIRST_NAME": "ReceiverFirst",
+      "SIM3_MSISDN_1_LAST_NAME": "ReceiverLast",
+      "SIM3_MSISDN_2": "56781235002",
+      "SIM3_MSISDN_2_FIRST_NAME": "ReceiverFirst",
+      "SIM3_MSISDN_2_LAST_NAME": "ReceiverLast",
+      "SIM3_CURRENCY": "USD"
+    }
+  }
