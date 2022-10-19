@@ -252,7 +252,7 @@
                 "id": 2,
                 "description": "Check number of returned transfers",
                 "exec": [
-                  "expect(environment.transfersCallback.body.individualTransferResults.length).to.equal(1)"
+                  "expect(environment.transfersCallback.body.individualTransferResults.length).to.equal(2)"
                 ]
               },
               {
@@ -270,14 +270,14 @@
                 ]
               },
               {
-                "id": 7,
+                "id": 5,
                 "description": "Check first response has quote result",
                 "exec": [
                   "expect(environment.transfersCallback.body.individualTransferResults[0].quoteResponse).to.exist;"
                 ]
               },
               {
-                "id": 8,
+                "id": 6,
                 "description": "Check first response has ilpPacket and condition",
                 "exec": [
                   "expect(environment.transfersCallback.body.individualTransferResults[0].quoteResponse.ilpPacket).to.not.be.empty;",
@@ -286,21 +286,32 @@
                 ]
               },
               {
-                "id": 4,
+                "id": 7,
+                "description": "Check first response has error details for transfer response",
+                "exec": [
+                  "expect(environment.transfersCallback.body.individualTransferResults[0].lastError.httpStatusCode).to.equal(500);",
+                  "",
+                  "expect(environment.transfersCallback.body.individualTransferResults[0].lastError.mojaloopError.errorInformation.errorCode).to.equal('4001');",
+                  "",
+                  "expect(environment.transfersCallback.body.individualTransferResults[0].lastError.mojaloopError.errorInformation.errorDescription).to.equal('Cannot process the bulk transfer');"
+                ]
+              },
+              {
+                "id": 8,
                 "description": "Check second response has the receiver fspid populated",
                 "exec": [
                   "expect(environment.transfersCallback.body.individualTransferResults[1].to.partyIdInfo.fspId).to.not.be.empty"
                 ]
               },
               {
-                "id": 7,
+                "id": 9,
                 "description": "Check second response has quote result",
                 "exec": [
                   "expect(environment.transfersCallback.body.individualTransferResults[1].quoteResponse).to.exist;"
                 ]
               },
               {
-                "id": 8,
+                "id": 10,
                 "description": "Check second response has ilpPacket and condition",
                 "exec": [
                   "expect(environment.transfersCallback.body.individualTransferResults[1].quoteResponse.ilpPacket).to.not.be.empty;",
@@ -309,14 +320,18 @@
                 ]
               },
               {
-                "id": 10,
-                "description": "Check response has  COMPLETED state",
+                "id": 11,
+                "description": "Check second response has error details for transfer response",
                 "exec": [
-                  "expect(environment.transfersCallback.body.individualTransferResults[0].fulfil.transferState).to.equal('COMMITTED');"
+                  "expect(environment.transfersCallback.body.individualTransferResults[1].lastError.httpStatusCode).to.equal(500);",
+                  "",
+                  "expect(environment.transfersCallback.body.individualTransferResults[1].lastError.mojaloopError.errorInformation.errorCode).to.equal('4001');",
+                  "",
+                  "expect(environment.transfersCallback.body.individualTransferResults[1].lastError.mojaloopError.errorInformation.errorDescription).to.equal('Cannot process the bulk transfer');"
                 ]
               },
               {
-                "id": 11,
+                "id": 12,
                 "description": "Check overall bulk transaction state is COMPLETED",
                 "exec": [
                   "expect(environment.transfersCallback.body.currentState).to.equal('COMPLETED')"
