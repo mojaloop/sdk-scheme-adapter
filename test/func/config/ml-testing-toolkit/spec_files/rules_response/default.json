@@ -1643,7 +1643,7 @@
           "fact": "body",
           "operator": "equal",
           "value": "blktrbatchpartialsuccess",
-          "path": "individualTransferResults[0].note"
+          "path": "individualTransfers[0].note"
         },
         {
           "fact": "operationPath",
