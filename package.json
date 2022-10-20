@@ -8,7 +8,6 @@
   "bugs": {
     "url": "https://github.com/mojaloop/sdk-scheme-adapter/issues#readme"
   },
-  "author": "Matt Kingston, James Bush, ModusBox Inc.",
   "contributors": [
     "Kamuela Franco <kamuela.franco@modusbox.com>",
     "Steven Oderayi <steven.oderayi@modusbox.com>",
@@ -17,7 +16,8 @@
     "Paweł Marzec <pawel.marzec@modusbox.com>",
     "Kevin Leyow <kevin.leyow@modusbox.com",
     "Miguel de Barros <miguel.debarros@modusbox.com>",
-    "Yevhen Kyriukha <yevhen.kyriukha@modusbox.com>"
+    "Yevhen Kyriukha <yevhen.kyriukha@modusbox.com>",
+    "Vijay Kumar Guthi <vijaya.guthi@modusbox.com>"
   ],
   "packageManager": "yarn@3.2.0",
   "engines": {
