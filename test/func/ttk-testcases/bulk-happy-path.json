@@ -44,7 +44,8 @@
             "from": {
               "partyIdInfo": {
                 "partyIdType": "MSISDN",
-                "partyIdentifier": "{$inputs.SIM1_MSISDN_1}"
+                "partyIdentifier": "{$inputs.SIM1_MSISDN_1}",
+                "fspId": "{$inputs.SIM1_FSPID}"
               }
             },
             "individualTransfers": [
@@ -436,9 +437,13 @@
                 "",
                 "environment.transfersCallback = transfersCallback;",
                 "",
-                "requestVariables.sim2msisdn1response = transfersCallback.body.individualTransferResults.filter(transfer => (transfer.to.partyIdInfo.partyIdentifier === inputs.SIM2_MSISDN_1))",
+                "requestVariables.sim2msisdn1response = transfersCallback.body.individualTransferResults.filter(transfer => (transfer.to.partyIdInfo.partyIdentifier === environment.SIM2_MSISDN_1))[0]",
                 "",
-                "console.log('sim2msisdn1response: ', requestVariables.sim2msisdn1response);"
+                "requestVariables.sim2msisdn2response = transfersCallback.body.individualTransferResults.filter(transfer => (transfer.to.partyIdInfo.partyIdentifier === environment.SIM2_MSISDN_2))[0]",
+                "",
+                "requestVariables.sim3msisdn1response = transfersCallback.body.individualTransferResults.filter(transfer => (transfer.to.partyIdInfo.partyIdentifier === environment.SIM3_MSISDN_1))[0]",
+                "",
+                "requestVariables.sim3msisdn2response = transfersCallback.body.individualTransferResults.filter(transfer => (transfer.to.partyIdInfo.partyIdentifier === environment.SIM3_MSISDN_2))[0]"
               ]
             }
           }
@@ -488,7 +493,8 @@
             "from": {
               "partyIdInfo": {
                 "partyIdType": "MSISDN",
-                "partyIdentifier": "16135551212"
+                "partyIdentifier": "{$inputs.SIM1_MSISDN_1}",
+                "fspId": "{$inputs.SIM1_FSPID}"
               }
             },
             "individualTransfers": [
@@ -497,12 +503,12 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "123456789",
-                    "fspId": "receiverfsphas2ids"
+                    "partyIdentifier": "{$inputs.SIM2_MSISDN_1}",
+                    "fspId": "{$inputs.SIM2_FSPID}"
                   }
                 },
                 "amountType": "SEND",
-                "currency": "USD",
+                "currency": "{$inputs.SIM2_CURRENCY}",
                 "amount": "456.78"
               },
               {
@@ -510,12 +516,12 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "123456789",
-                    "fspId": "receiverfsphas2ids"
+                    "partyIdentifier": "{$inputs.SIM2_MSISDN_2}",
+                    "fspId": "{$inputs.SIM2_FSPID}"
                   }
                 },
                 "amountType": "SEND",
-                "currency": "USD",
+                "currency": "{$inputs.SIM2_CURRENCY}",
                 "amount": "678.91"
               },
               {
@@ -523,17 +529,17 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "123456789",
-                    "fspId": "receiverfsphas2ids"
+                    "partyIdentifier": "{$inputs.SIM2_MSISDN_2}",
+                    "fspId": "{$inputs.SIM2_FSPID}"
                   }
                 },
                 "amountType": "SEND",
-                "currency": "USD",
+                "currency": "{$inputs.SIM2_CURRENCY}",
                 "amount": "678.91"
               }
             ]
           },
-          "url": "http://payer-sdk-api-svc:4001",
+          "url": "{$inputs.SIM1_SDK_BACKEND_ENDPOINT}",
           "scriptingEngine": "javascript",
           "tests": {
             "assertions": [
@@ -854,7 +860,7 @@
             "from": {
               "partyIdInfo": {
                 "partyIdType": "DOESNOTEXIST",
-                "partyIdentifier": "16135551212"
+                "partyIdentifier": "{$inputs.SIM1_MSISDN_1}"
               }
             },
             "individualTransfers": [
@@ -863,8 +869,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "DOESNOTEXIST",
-                    "partyIdentifier": "123456789",
-                    "fspId": "receiverfsphas2ids"
+                    "partyIdentifier": "{$SIM2_MSISDN_1}",
+                    "fspId": "{$SIM2_FSPID}"
                   }
                 },
                 "amountType": "SEND",
@@ -876,21 +882,8 @@
                 "to": {
                   "partyIdInfo": {
                     "partyIdType": "MSISDN",
-                    "partyIdentifier": "123456789",
-                    "fspId": "receiverfsphas2ids"
-                  }
-                },
-                "amountType": "SEND",
-                "currency": "USD",
-                "amount": "678.91"
-              },
-              {
-                "homeTransactionId": "abc2",
-                "to": {
-                  "partyIdInfo": {
-                    "partyIdType": "MSISDN",
-                    "partyIdentifier": "123456789",
-                    "fspId": "receiverfsphas2ids"
+                    "partyIdentifier": "{$SIM2_MSISDN_2}",
+                    "fspId": "{$SIM2_FSPID}"
                   }
                 },
                 "amountType": "SEND",
@@ -899,7 +892,7 @@
               }
             ]
           },
-          "url": "http://payer-sdk-api-svc:4001",
+          "url": "{}",
           "scriptingEngine": "javascript",
           "tests": {
             "assertions": [
