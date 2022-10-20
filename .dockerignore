@@ -13,7 +13,6 @@ docker-compose.dev.yml
 docker-compose.functional.yml
 docker-compose.yml
 Dockerfile
-README.md
 sonar-project.properties
 .devspace/
 .yarn/cache/
