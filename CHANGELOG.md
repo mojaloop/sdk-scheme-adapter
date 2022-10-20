@@ -1,4 +1,34 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [19.0.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v19.0.0...v19.0.1) (2022-08-24)
+
+
+### Bug Fixes
+
+* **mojaloop/2886:** fix bulk-quotes and bulk-transfers functionality ([#344](https://github.com/mojaloop/sdk-scheme-adapter/issues/344)) ([85f308b](https://github.com/mojaloop/sdk-scheme-adapter/commit/85f308be589b41f0c7281c65163d791b8052accf))
+
+## [19.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v18.0.2...v19.0.0) (2022-07-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* use updated outbound OpenAPI specification from api-snippets (#340)
+
+### Features
+
+* use updated outbound OpenAPI specification from api-snippets ([#340](https://github.com/mojaloop/sdk-scheme-adapter/issues/340)) ([92eb491](https://github.com/mojaloop/sdk-scheme-adapter/commit/92eb4918fcbebc4532ebd1434aa7c565822e15bd))
+
+### [18.0.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v18.0.1...v18.0.2) (2022-07-27)
+
+
+### Bug Fixes
+
+* ws-connection-issue ([#339](https://github.com/mojaloop/sdk-scheme-adapter/issues/339)) ([e29e158](https://github.com/mojaloop/sdk-scheme-adapter/commit/e29e158807d1c758e18418752339b8b10d42377b))
+
+
+### Chore
+
+* updates to readme for header badges [skip ci] ([#334](https://github.com/mojaloop/sdk-scheme-adapter/issues/334)) ([415bb33](https://github.com/mojaloop/sdk-scheme-adapter/commit/415bb3380a17cfd35841095bb9b2f399e969f5c6))
+
 ### [18.0.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v18.0.0...v18.0.1) (2022-07-12)
 
 

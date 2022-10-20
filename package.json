@@ -9,8 +9,14 @@
     "url": "https://github.com/mojaloop/sdk-scheme-adapter/issues#readme"
   },
   "contributors": [
-    "Miguel de Barros <miguel.debarros@modusbox.com>",
+    "Kamuela Franco <kamuela.franco@modusbox.com>",
+    "Steven Oderayi <steven.oderayi@modusbox.com>",
+    "Valentin Genev <valentin.genev@modusbox.com>",
     "Shashikant Hirugade <shashikant.hirugade@modusbox.com>",
+    "Paweł Marzec <pawel.marzec@modusbox.com>",
+    "Kevin Leyow <kevin.leyow@modusbox.com",
+    "Miguel de Barros <miguel.debarros@modusbox.com>",
+    "Yevhen Kyriukha <yevhen.kyriukha@modusbox.com>",
     "Vijay Kumar Guthi <vijaya.guthi@modusbox.com>"
   ],
   "packageManager": "yarn@3.2.0",
@@ -66,7 +72,7 @@
   },
   "devDependencies": {
     "@types/jest": "^29.2.0",
-    "@types/node": "^18.11.2",
+    "@types/node": "^18.11.3",
     "@types/node-cache": "^4.2.5",
     "@typescript-eslint/eslint-plugin": "^5.40.1",
     "@typescript-eslint/parser": "^5.40.1",

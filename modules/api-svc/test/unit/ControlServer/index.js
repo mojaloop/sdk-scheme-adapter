@@ -210,7 +210,7 @@ class Server extends ws.Server {
    */
     broadcast(msg) {
         this.clients.forEach((client) => {
-            if (client.readyState === ws.WebSocket.OPEN) {
+            if (client.readyState === ws.OPEN) {
                 client.send(msg);
             }
         });
