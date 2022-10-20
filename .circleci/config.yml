@@ -37,16 +37,6 @@ defaults_license_scanner: &defaults_license_scanner
     git clone https://github.com/mojaloop/license-scanner /tmp/license-scanner
     cd /tmp/license-scanner && make build default-files set-up
 
-defaults_npm_auth: &defaults_npm_auth
-  name: Update NPM registry auth token
-  command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
-
-defaults_npm_publish_release: &defaults_npm_publish_release
-  name: Publish NPM $RELEASE_TAG artifact
-  command: |
-    source $BASH_ENV
-    echo "Publishing tag $RELEASE_TAG"
-    npm publish --tag $RELEASE_TAG --access public
 
 defaults_export_version_from_package: &defaults_export_version_from_package
   name: Format the changelog into the github release body and get release tag
@@ -609,84 +599,6 @@ jobs:
           event: fail
           template: SLACK_TEMP_RELEASE_FAILURE
 
-  publish-npm:
-    executor: default-docker
-    environment: *defaults_environment
-    steps:
-      - run:
-          name: Install general dependencies
-          command: *defaults_Dependencies
-      - checkout
-      - restore_cache:
-          key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
-      - run:
-          name: Setup for LATEST release
-          command: |
-            echo "export RELEASE_TAG=$RELEASE_TAG_PROD" >> $BASH_ENV
-            echo "RELEASE_TAG=$RELEASE_TAG_PROD"
-            PACKAGE_VERSION=$(cat package-lock.json | jq -r .version)
-            echo "export PACKAGE_VERSION=${PACKAGE_VERSION}" >> $BASH_ENV
-            echo "PACKAGE_VERSION=${PACKAGE_VERSION}"
-      - run:
-          name: Setup Slack config
-          command: |
-            echo "export SLACK_PROJECT_NAME=${CIRCLE_PROJECT_REPONAME}" >> $BASH_ENV
-            echo "export SLACK_RELEASE_TYPE='NPM Release'" >> $BASH_ENV
-            echo "export SLACK_RELEASE_TAG=v${CIRCLE_TAG:1}" >> $BASH_ENV
-            echo "export SLACK_RELEASE_URL=https://www.npmjs.com/package/@mojaloop/${CIRCLE_PROJECT_REPONAME}/v/${CIRCLE_TAG:1}" >> $BASH_ENV
-            echo "export SLACK_BUILD_ID=${CIRCLE_BUILD_NUM}" >> $BASH_ENV
-            echo "export SLACK_CI_URL=${CIRCLE_BUILD_URL}" >> $BASH_ENV
-      - run:
-          <<: *defaults_npm_auth
-      - run:
-          <<: *defaults_npm_publish_release
-      - slack/notify:
-          event: pass
-          template: SLACK_TEMP_RELEASE_SUCCESS
-      - slack/notify:
-          event: fail
-          template: SLACK_TEMP_RELEASE_FAILURE
-
-  publish-npm-snapshot:
-    executor: default-docker
-    environment: *defaults_environment
-    steps:
-      - run:
-          name: Install general dependencies
-          command: *defaults_Dependencies
-      - checkout
-      - restore_cache:
-          key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
-      - run:
-          name: Setup for SNAPSHOT release
-          command: |
-            echo "export RELEASE_TAG=${RELEASE_TAG_SNAPSHOT}" >> $BASH_ENV
-            echo "RELEASE_TAG=${RELEASE_TAG_SNAPSHOT}"
-            echo "Override package version: ${CIRCLE_TAG:1}"
-            npx standard-version --skip.tag --skip.commit --skip.changelog --release-as ${CIRCLE_TAG:1}
-            PACKAGE_VERSION=$(cat package-lock.json | jq -r .version)
-            echo "export PACKAGE_VERSION=${PACKAGE_VERSION}" >> $BASH_ENV
-            echo "PACKAGE_VERSION=${PACKAGE_VERSION}"
-      - run:
-          name: Setup Slack config
-          command: |
-            echo "export SLACK_PROJECT_NAME=${CIRCLE_PROJECT_REPONAME}" >> $BASH_ENV
-            echo "export SLACK_RELEASE_TYPE='NPM Snapshot'" >> $BASH_ENV
-            echo "export SLACK_RELEASE_TAG=v${CIRCLE_TAG:1}" >> $BASH_ENV
-            echo "export SLACK_RELEASE_URL=https://www.npmjs.com/package/@mojaloop/${CIRCLE_PROJECT_REPONAME}/v/${CIRCLE_TAG:1}" >> $BASH_ENV
-            echo "export SLACK_BUILD_ID=${CIRCLE_BUILD_NUM}" >> $BASH_ENV
-            echo "export SLACK_CI_URL=${CIRCLE_BUILD_URL}" >> $BASH_ENV
-      - run:
-          <<: *defaults_npm_auth
-      - run:
-          <<: *defaults_npm_publish_release
-      - slack/notify:
-          event: pass
-          template: SLACK_TEMP_RELEASE_SUCCESS
-      - slack/notify:
-          event: fail
-          template: SLACK_TEMP_RELEASE_FAILURE
-
 ##
 # Workflows
 #
@@ -883,46 +795,6 @@ workflows:
           context: org-global
           requires:
             - build-local
-            - pr-tools/pr-title-check
-            - validate-openapi
-            - test-dependencies
-            - test-lint
-            - test-unit
-            - test-integration
-            - vulnerability-check
-            - audit-licenses
-            - license-scan
-            - image-scan
-          filters:
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*\-snapshot+((\.[0-9]+)?)/
-            branches:
-              ignore:
-                - /.*/
-
-      - publish-npm:
-          context: org-global
-          requires:
-            - pr-tools/pr-title-check
-            - validate-openapi
-            - test-dependencies
-            - test-lint
-            - test-unit
-            - test-integration
-            - vulnerability-check
-            - audit-licenses
-            - license-scan
-            - image-scan
-          filters:
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*/
-            branches:
-              ignore:
-                - /.*/
-
-      - publish-npm-snapshot:
-          context: org-global
-          requires:
             - pr-tools/pr-title-check
             - validate-openapi
             - test-dependencies

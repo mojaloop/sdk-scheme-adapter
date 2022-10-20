@@ -9,8 +9,14 @@
     "url": "https://github.com/mojaloop/sdk-scheme-adapter/issues#readme"
   },
   "contributors": [
-    "Miguel de Barros <miguel.debarros@modusbox.com>",
+    "Kamuela Franco <kamuela.franco@modusbox.com>",
+    "Steven Oderayi <steven.oderayi@modusbox.com>",
+    "Valentin Genev <valentin.genev@modusbox.com>",
     "Shashikant Hirugade <shashikant.hirugade@modusbox.com>",
+    "Paweł Marzec <pawel.marzec@modusbox.com>",
+    "Kevin Leyow <kevin.leyow@modusbox.com",
+    "Miguel de Barros <miguel.debarros@modusbox.com>",
+    "Yevhen Kyriukha <yevhen.kyriukha@modusbox.com>",
     "Vijay Kumar Guthi <vijaya.guthi@modusbox.com>"
   ],
   "packageManager": "yarn@3.2.0",
@@ -61,23 +67,23 @@
     "wait-4-docker": "node ./scripts/_wait4_all.js"
   },
   "dependencies": {
-    "nx": "14.8.3",
+    "nx": "15.0.0",
     "tslib": "^2.4.0"
   },
   "devDependencies": {
-    "@types/jest": "^29.1.2",
-    "@types/node": "^18.8.3",
+    "@types/jest": "^29.2.0",
+    "@types/node": "^18.11.3",
     "@types/node-cache": "^4.2.5",
-    "@typescript-eslint/eslint-plugin": "^5.40.0",
-    "@typescript-eslint/parser": "^5.40.0",
+    "@typescript-eslint/eslint-plugin": "^5.40.1",
+    "@typescript-eslint/parser": "^5.40.1",
     "audit-ci": "^6.3.0",
     "eslint": "^8.25.0",
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-plugin-import": "latest",
     "husky": "^8.0.1",
-    "jest": "^29.1.2",
+    "jest": "^29.2.1",
     "nodemon": "^2.0.20",
-    "npm-check-updates": "^16.3.11",
+    "npm-check-updates": "^16.3.14",
     "replace": "^1.2.1",
     "standard-version": "^9.5.0",
     "ts-jest": "^29.0.3",
