@@ -43,7 +43,7 @@ defaults_export_version_from_package: &defaults_export_version_from_package
   command: |
     git diff --no-indent-heuristic master~1 HEAD CHANGELOG.md | sed -n '/^+[^+]/ s/^+//p' > /tmp/changes
     echo 'export RELEASE_CHANGES=`cat /tmp/changes`' >> $BASH_ENV
-    echo 'export RELEASE_TAG=`cat package-lock.json | jq -r .version`' >> $BASH_ENV
+    echo 'export RELEASE_TAG=`cat package.json | jq -r .version`' >> $BASH_ENV
 
 defaults_configure_git: &defaults_configure_git
   name: Configure git
@@ -493,7 +493,7 @@ jobs:
           command: |
             echo "export RELEASE_TAG=$RELEASE_TAG_PROD" >> $BASH_ENV
             echo "RELEASE_TAG=$RELEASE_TAG_PROD"
-            PACKAGE_VERSION=$(cat package-lock.json | jq -r .version)
+            PACKAGE_VERSION=$(cat package.json | jq -r .version)
             echo "export PACKAGE_VERSION=${PACKAGE_VERSION}" >> $BASH_ENV
             echo "PACKAGE_VERSION=${PACKAGE_VERSION}"
       - run:
@@ -551,7 +551,7 @@ jobs:
           command: |
             echo "export RELEASE_TAG=$RELEASE_TAG_SNAPSHOT" >> $BASH_ENV
             echo "RELEASE_TAG=$RELEASE_TAG_SNAPSHOT"
-            PACKAGE_VERSION=$(cat package-lock.json | jq -r .version)
+            PACKAGE_VERSION=$(cat package.json | jq -r .version)
             echo "export PACKAGE_VERSION=${PACKAGE_VERSION}" >> $BASH_ENV
             echo "PACKAGE_VERSION=${PACKAGE_VERSION}"
       - run:
