@@ -10,6 +10,10 @@
 
 'use strict';
 
+const { Errors } = require('@mojaloop/sdk-standard-components');
+const FSPIOPBulkTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.BulkTransferState;
+const ErrorHandling = require('@mojaloop/central-services-error-handling');
+
 
 /**
  * Build a quote party object from an outgoing transfer API party
@@ -366,8 +370,23 @@ const mojaloopBulkQuotesResponseToInternal = (external) => {
     if (external.bulkQuotesResponse?.extensionList) {
         internal.extensionList = external.bulkQuotesResponse.extensionList;
     }
+    const individualQuoteResults = external.bulkQuotesResponse?.individualQuoteResults?.map((quote) => {
+        let internalQuote = {
+            ...quote
+        };
+        delete internalQuote.errorInformation;
 
-    internal.individualQuoteResults = external.bulkQuotesResponse?.individualQuoteResults;
+        if(quote.errorInformation) {
+            internalQuote.lastError = {
+                mojaloopError: {
+                    errorInformation: quote.errorInformation
+                }
+            };
+        }
+        return internalQuote;
+    });
+
+    internal.individualQuoteResults = individualQuoteResults;
 
     return internal;
 };
@@ -379,35 +398,75 @@ const mojaloopBulkQuotesResponseToInternal = (external) => {
  */
 const internalBulkQuotesResponseToMojaloop = (internal) => {
     const individualQuoteResults = internal.individualQuoteResults.map((quote) => {
-        const externalQuote = {
-            quoteId: quote.quoteId,
-            transferAmount: {
-                amount: quote.transferAmount,
-                currency: quote.transferAmountCurrency,
-            },
-            ilpPacket: quote.ilpPacket,
-            condition: quote.ilpCondition
-        };
+        let externalQuote;
 
-        if (quote.payeeReceiveAmount) {
-            externalQuote.payeeReceiveAmount = {
-                amount: quote.payeeReceiveAmount,
-                currency: quote.payeeReceiveAmountCurrency
-            };
-        }
+        if(quote.errorResponse) {
+            let error;
+            try {
+                // Throws error if invalid
+                ErrorHandling.ValidateFSPIOPErrorGroups(quote.errorResponse.statusCode);
 
-        if (quote.payeeFspFeeAmount) {
-            externalQuote.payeeFspFee = {
-                amount: quote.payeeFspFeeAmount,
-                currency: quote.payeeFspFeeAmountCurrency
-            };
-        }
+                const mojaloopApiErrorCode = ErrorHandling.Enums.findFSPIOPErrorCode(quote.errorResponse.statusCode) || {
+                    code: quote.errorResponse.statusCode,
+                    message: quote.errorResponse.message
+                };
 
-        if (quote.payeeFspCommissionAmount) {
-            externalQuote.payeeFspCommission = {
-                amount: quote.payeeFspCommissionAmount,
-                currency: quote.payeeFspCommissionAmountCurrency
+                error = new ErrorHandling.Factory.FSPIOPError(
+                    quote.errorResponse.message,
+                    quote.errorResponse.message,
+                    null,
+                    mojaloopApiErrorCode,
+                    null,
+                );
+            } catch (e) {
+                // If error status code isn't FSPIOP conforming, create generic
+                // FSPIOP error and include backend code and message in FSPIOP message.
+                error = new ErrorHandling.Factory.FSPIOPError(
+                    quote.errorResponse.message,
+                    `${quote.errorResponse.statusCode} - ${quote.errorResponse.message}`,
+                    null,
+                    Errors.MojaloopApiErrorCodes.CLIENT_ERROR,
+                    null,
+                    true
+                );
+            }
+
+            externalQuote = {
+                quoteId: quote.quoteId,
+                errorInformation: error.toApiErrorObject().errorInformation,
             };
+        } else {
+            externalQuote = {
+                quoteId: quote.quoteId,
+                transferAmount: {
+                    amount: quote.transferAmount,
+                    currency: quote.transferAmountCurrency,
+                },
+                ilpPacket: quote.ilpPacket,
+                condition: quote.ilpCondition
+            };
+
+            if (quote.payeeReceiveAmount) {
+                externalQuote.payeeReceiveAmount = {
+                    amount: quote.payeeReceiveAmount,
+                    currency: quote.payeeReceiveAmountCurrency
+                };
+            }
+
+            if (quote.payeeFspFeeAmount) {
+                externalQuote.payeeFspFee = {
+                    amount: quote.payeeFspFeeAmount,
+                    currency: quote.payeeFspFeeAmountCurrency
+                };
+            }
+
+            if (quote.payeeFspCommissionAmount) {
+                externalQuote.payeeFspCommission = {
+                    amount: quote.payeeFspCommissionAmount,
+                    currency: quote.payeeFspCommissionAmountCurrency
+                };
+            }
+
         }
 
         return externalQuote;
@@ -423,6 +482,82 @@ const internalBulkQuotesResponseToMojaloop = (internal) => {
 
     if (internal.extensionList) {
         external.extensionList = internal.extensionList;
+    }
+
+    return external;
+};
+
+/**
+ * Converts an internal bulk transfer response to mojaloop POST /bulkTransfers/{ID} response
+ *
+ * @returns {object}
+ */
+const internalBulkTransfersResponseToMojaloop = (internal, fulfilments) => {
+    const external = {
+        completedTimestamp: new Date(),
+        bulkTransferState: FSPIOPBulkTransferStateEnum.COMPLETED,
+    };
+
+    if(internal.individualTransferResults && internal.individualTransferResults.length) {
+        const individualTransferResults = internal.individualTransferResults.map((transfer) => {
+            let externalTransfer;
+
+            if(transfer.errorResponse) {
+                let error;
+                try {
+                    // Throws error if invalid
+                    ErrorHandling.ValidateFSPIOPErrorGroups(transfer.errorResponse.statusCode);
+
+                    const mojaloopApiErrorCode = ErrorHandling.Enums.findFSPIOPErrorCode(transfer.errorResponse.statusCode) || {
+                        code: transfer.errorResponse.statusCode,
+                        message: transfer.errorResponse.message
+                    };
+
+                    error = new ErrorHandling.Factory.FSPIOPError(
+                        transfer.errorResponse.message,
+                        transfer.errorResponse.message,
+                        null,
+                        mojaloopApiErrorCode,
+                        null,
+                    );
+
+                    externalTransfer = {
+                        transferId: transfer.transferId,
+                        errorInformation: error.toApiErrorObject().errorInformation,
+                    };
+
+                } catch (e) {
+                    // If error status code isn't FSPIOP conforming, create generic
+                    // FSPIOP error and include backend code and message in FSPIOP message.
+                    error = new ErrorHandling.Factory.FSPIOPError(
+                        transfer.errorResponse.message,
+                        `${transfer.errorResponse.statusCode} - ${transfer.errorResponse.message}`,
+                        null,
+                        Errors.MojaloopApiErrorCodes.CLIENT_ERROR,
+                        null,
+                        true
+                    );
+                }
+
+                externalTransfer = {
+                    transferId: transfer.transferId,
+                    errorInformation: error.toApiErrorObject().errorInformation,
+                };
+            } else {
+                externalTransfer = {
+                    transferId: transfer.transferId,
+                    fulfilment: fulfilments[transfer.transferId],
+                    ...transfer.extensionList && {
+                        extensionList: {
+                            extension: transfer.extensionList,
+                        },
+                    }
+                };
+            }
+
+            return externalTransfer;
+        });
+        external.individualTransferResults = individualTransferResults;
     }
 
     return external;
@@ -506,7 +641,23 @@ const mojaloopBulkTransfersResponseToInternal = (external) => {
         internal.extensionList = external.bulkTransfersResponse.extensionList;
     }
 
-    internal.individualTransferResults = external.bulkTransfersResponse?.individualTransferResults;
+    const individualTransferResults = external.bulkTransfersResponse?.individualTransferResults?.map((transfer) => {
+        let internalTransfer = {
+            ...transfer
+        };
+        delete internalTransfer.errorInformation;
+
+        if(transfer.errorInformation) {
+            internalTransfer.lastError = {
+                mojaloopError: {
+                    errorInformation: transfer.errorInformation
+                }
+            };
+        }
+        return internalTransfer;
+    });
+
+    internal.individualTransferResults = individualTransferResults;
 
     return internal;
 };
@@ -524,5 +675,6 @@ module.exports = {
     mojaloopBulkQuotesResponseToInternal,
     internalBulkQuotesResponseToMojaloop,
     mojaloopBulkPrepareToInternalBulkTransfer,
-    mojaloopBulkTransfersResponseToInternal
+    mojaloopBulkTransfersResponseToInternal,
+    internalBulkTransfersResponseToMojaloop
 };

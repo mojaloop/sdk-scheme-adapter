@@ -502,29 +502,32 @@ class InboundTransfersModel {
 
             // create our ILP packet and condition and tag them on to our internal quote response
             bulkQuoteRequest.individualQuotes.map((quote) => {
-                const quoteRequest = {
-                    transactionId: quote.transactionId,
-                    quoteId: quote.quoteId,
-                    payee: quote.payee,
-                    payer: bulkQuoteRequest.payer,
-                    transactionType: quote.transactionType,
-                };
                 // TODO: Optimize with a HashMap
                 const mojaloopIndividualQuote = mojaloopResponse.individualQuoteResults.find(
                     (quoteResult) => quoteResult.quoteId === quote.quoteId
                 );
-                const quoteResponse = {
-                    transferAmount: mojaloopIndividualQuote.transferAmount,
-                    note: mojaloopIndividualQuote.note || '',
-                };
-                const { fulfilment, ilpPacket, condition } = this._ilp.getQuoteResponseIlp(
-                    quoteRequest, quoteResponse);
+                if(!mojaloopIndividualQuote.errorInformation) {
+                    const quoteRequest = {
+                        transactionId: quote.transactionId,
+                        quoteId: quote.quoteId,
+                        payee: quote.payee,
+                        payer: bulkQuoteRequest.payer,
+                        transactionType: quote.transactionType,
+                    };
 
-                // mutate individual quotes in `mojaloopResponse`
-                mojaloopIndividualQuote.ilpPacket = ilpPacket;
-                mojaloopIndividualQuote.condition = condition;
+                    const quoteResponse = {
+                        transferAmount: mojaloopIndividualQuote.transferAmount,
+                        note: mojaloopIndividualQuote.note || '',
+                    };
+                    const { fulfilment, ilpPacket, condition } = this._ilp.getQuoteResponseIlp(
+                        quoteRequest, quoteResponse);
 
-                fulfilments[quote.quoteId] = fulfilment;
+                    // mutate individual quotes in `mojaloopResponse`
+                    mojaloopIndividualQuote.ilpPacket = ilpPacket;
+                    mojaloopIndividualQuote.condition = condition;
+
+                    fulfilments[quote.quoteId] = fulfilment;
+                }
             });
 
             // now store the fulfilments and the bulk quotes data against the bulkQuoteId in our cache
@@ -560,7 +563,7 @@ class InboundTransfersModel {
                 return 'No response from backend';
             }
 
-            // project our internal quote reponse into mojaloop bulk quote response form
+            // project our internal quote response into mojaloop bulk quote response form
             const mojaloopResponse = shared.internalBulkQuotesResponseToMojaloop(response);
 
             // make a callback to the source fsp with the bulk quote response
@@ -679,25 +682,7 @@ class InboundTransfersModel {
             this._logger.log(`Bulk transfer accepted by backend returning homeTransactionId: ${response.homeTransactionId} for mojaloop bulk transferId: ${bulkPrepareRequest.bulkTransferId}`);
 
             // create a  mojaloop transfer fulfil response
-            const mojaloopResponse = {
-                completedTimestamp: new Date(),
-                bulkTransferState: FSPIOPBulkTransferStateEnum.COMPLETED,
-            };
-
-            if (response.individualTransferResults && response.individualTransferResults.length) {
-                // eslint-disable-next-line no-unused-vars
-                mojaloopResponse.individualTransferResults = response.individualTransferResults.map((transfer) => {
-                    return {
-                        transferId: transfer.transferId,
-                        fulfilment: fulfilments[transfer.transferId],
-                        ...transfer.extensionList && {
-                            extensionList: {
-                                extension: transfer.extensionList,
-                            },
-                        }
-                    };
-                });
-            }
+            const mojaloopResponse = shared.internalBulkTransfersResponseToMojaloop(response, fulfilments);
 
             // make a callback to the source fsp with the transfer fulfilment
             return this._mojaloopRequests.putBulkTransfers(bulkPrepareRequest.bulkTransferId, mojaloopResponse, sourceFspId);
@@ -793,7 +778,7 @@ class InboundTransfersModel {
             else if(body.transferState === FSPIOPTransferStateEnum.ABORTED) {
                 // if the transfer was ABORTED in the switch, set the overall transfer state to ABORTED
                 this.data.currentState = SDKStateEnum.ABORTED;
-            }            
+            }
             else {
                 // if the final notification has anything other than COMMITTED as the final state, set an error
                 // in the transfer state.

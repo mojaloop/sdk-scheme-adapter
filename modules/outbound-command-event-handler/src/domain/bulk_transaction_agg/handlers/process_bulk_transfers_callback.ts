@@ -61,7 +61,7 @@ export async function handleProcessBulkTransfersCallbackCmdEvt(
 
         // If individual transfer result contains `lastError` the individual transfer state should be TRANSFER_FAILED.
         // bulkTransfersResult.currentState === 'ERROR_OCCURRED' necessitates erroring out all individual transfers in that bulk batch.
-        if(bulkTransfersResult.currentState === SDKOutboundTransferState.COMPLETED) {
+        if(bulkTransfersResult?.currentState === SDKOutboundTransferState.COMPLETED) {
             bulkBatch.setState(BulkBatchInternalState.TRANSFERS_COMPLETED);
             successCount = await bulkTransactionAgg.incrementBulkTransfersSuccessCount();
 
@@ -98,6 +98,7 @@ export async function handleProcessBulkTransfersCallbackCmdEvt(
                 const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
                 individualTransfer.setTransferState(IndividualTransferInternalState.TRANSFERS_FAILED);
                 individualTransfer.setTransactionId(bulkBatch.id);
+                individualTransfer.setLastError(processBulkTransfersCallbackMessage.bulkTransfersErrorResult);
                 await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
             }
         }
@@ -120,6 +121,7 @@ export async function handleProcessBulkTransfersCallbackCmdEvt(
         const bulkTransfersTotalCount = await bulkTransactionAgg.getBulkTransfersTotalCount();
         const bulkTransfersSuccessCount = successCount || await bulkTransactionAgg.getBulkTransfersSuccessCount();
         const bulkTransfersFailedCount = failedCount || await bulkTransactionAgg.getBulkTransfersFailedCount();
+
         if(bulkTransfersTotalCount === (bulkTransfersSuccessCount + bulkTransfersFailedCount)) {
             // Update global state "TRANSFERS_COMPLETED"
             await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.TRANSFERS_COMPLETED);
