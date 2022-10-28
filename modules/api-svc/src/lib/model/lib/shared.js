@@ -599,7 +599,7 @@ const mojaloopBulkPrepareToInternalBulkTransfer = (external, bulkQuotes, ilp) =>
             const internalQuote = internalQuotesByQuoteId[externalQuoteIdByTransferIds[transfer.transferId]];
             return {
                 transferId: transfer.transferId,
-                to: internalQuote.quoteId,
+                to: internalQuote.to,
                 amountType: internalQuote.amountType,
                 amount: internalQuote.amount,
                 currency: internalQuote.currency,
