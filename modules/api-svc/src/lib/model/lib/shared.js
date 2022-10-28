@@ -571,19 +571,22 @@ const internalBulkTransfersResponseToMojaloop = (internal, fulfilments) => {
 const mojaloopBulkPrepareToInternalBulkTransfer = (external, bulkQuotes, ilp) => {
     let internal = null;
     if (bulkQuotes) {
-        // create a map of internal individual quotes payees indexed by quotedId, for faster lookup
-        const internalQuotesPayeesByQuoteId = {};
+        // In order to pass on information not contained in an FSPIOP `IndividualTransfer` to
+        // FSP backend, we create mappings that can resolve an internal quote from
+        // the transfer id.
 
+        // create a map of internal individual quotes indexed by quotedId, for faster lookup
+        const internalQuotesByQuoteId = {};
         for (const quote of bulkQuotes.internalRequest.individualQuotes) {
-            internalQuotesPayeesByQuoteId[quote.quoteId] = quote.to;
+            internalQuotesByQuoteId[quote.quoteId] = quote;
         }
 
-        // create a map of external individual transfers indexed by quotedId, for faster lookup
-        const externalTransferIdsByQuoteId = {};
+        // create a map of quoted ids indexed by individual transfers id, for faster lookup
+        const externalQuoteIdByTransferIds = {};
 
         for (const transfer of external.individualTransfers) {
             const transactionObject = ilp.getTransactionObject(transfer.ilpPacket);
-            externalTransferIdsByQuoteId[transactionObject.quoteId] = transfer.transferId;
+            externalQuoteIdByTransferIds[transfer.transferId] = transactionObject.quoteId;
         }
 
         internal = {
@@ -592,15 +595,18 @@ const mojaloopBulkPrepareToInternalBulkTransfer = (external, bulkQuotes, ilp) =>
             from: bulkQuotes.internalRequest.from,
         };
 
-        internal.individualTransfers = bulkQuotes.request.individualQuotes.map((quote) => ({
-            transferId: externalTransferIdsByQuoteId[quote.quoteId],
-            to: internalQuotesPayeesByQuoteId[quote.quoteId],
-            amountType: quote.amountType,
-            currency: quote.amount.currency,
-            amount: quote.amount.amount,
-            transactionType: quote.transactionType.scenario,
-            note: quote.note
-        }));
+        internal.individualTransfers = external.individualTransfers.map((transfer) => {
+            const internalQuote = internalQuotesByQuoteId[externalQuoteIdByTransferIds[transfer.transferId]];
+            return {
+                transferId: transfer.transferId,
+                to: internalQuote.quoteId,
+                amountType: internalQuote.amountType,
+                amount: internalQuote.amount,
+                currency: internalQuote.currency,
+                transactionType: internalQuote.transactionType,
+                note: internalQuote.note
+            };
+        });
     } else {
         internal = {
             bulkTransferId: external.bulkTransferId,
