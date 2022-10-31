@@ -1,0 +1,23 @@
+{
+  "LOG_LEVEL": "info",
+  "REDIS": {
+    "CONNECTION_URL": "redis://localhost:6379"
+  },
+  "API_SERVER":{
+    "ENABLED": false,
+    "PORT": 8000
+  },
+  "KAFKA": {
+    "COMMAND_EVENT_CONSUMER": {
+      "brokerList": "localhost:9092",
+      "groupId": "command_events_consumer_group",
+      "clientId": "command_events_consumer_client_id",
+      "topics": ["topic-sdk-outbound-command-events"]
+    },
+    "DOMAIN_EVENT_PRODUCER": {
+      "brokerList": "localhost:9092",
+      "clientId": "domain_events_producer_client_id",
+      "topic": "topic-sdk-outbound-domain-events"
+    }
+  }
+}

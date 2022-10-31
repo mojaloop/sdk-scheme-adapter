@@ -1,6 +1,7 @@
 {
   "VERSION": 1,
-  "CALLBACK_ENDPOINT": "http://scheme-adapter:4000",
+  "CALLBACK_ENDPOINT": "http://sdk-scheme-adapter-api-svc:4000",
+  "ALS_ENDPOINT": "http://account-lookup-service:4002",
   "CALLBACK_RESOURCE_ENDPOINTS": {
     "enabled": false,
     "endpoints": [

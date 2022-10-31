@@ -6,6 +6,13 @@ junit.xml
 secrets/*.pem
 coverage
 .env
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
 
 # https://devspace.sh/
 devspace*
@@ -13,3 +20,6 @@ devspace*
 
 *.log
 *IGNORE*
+**/dist/*
+.DS_Store
+dist
