@@ -2274,11 +2274,11 @@ __metadata:
     js-yaml: ^4.1.0
     json-schema-ref-parser: ^9.0.9
     koa: ^2.13.4
-    koa-body: ^6.0.0
+    koa-body: ^6.0.1
     lodash: ^4.17.21
     module-alias: ^2.2.2
     nock: ^13.2.9
-    npm-check-updates: ^16.3.15
+    npm-check-updates: ^16.3.16
     oauth2-server: ^4.0.0-dev.2
     openapi-jsonschema-parameters: ^12.0.2
     openapi-response-validator: ^12.0.2
@@ -2309,7 +2309,7 @@ __metadata:
     "@types/convict": ^6.1.1
     "@types/express": ^4.17.14
     "@types/jest": ^29.2.0
-    "@types/node": ^18.11.7
+    "@types/node": ^18.11.8
     "@types/node-cache": ^4.2.5
     "@types/supertest": ^2.0.12
     "@types/swagger-ui-express": ^4.1.3
@@ -2323,7 +2323,7 @@ __metadata:
     express: ^4.18.2
     jest: ^29.2.2
     nodemon: ^2.0.20
-    npm-check-updates: ^16.3.15
+    npm-check-updates: ^16.3.16
     openapi-backend: ^5.5.0
     redis: ^4.3.1
     replace: ^1.2.2
@@ -2347,7 +2347,7 @@ __metadata:
     "@types/convict": ^6.1.1
     "@types/express": ^4.17.14
     "@types/jest": ^29.2.0
-    "@types/node": ^18.11.7
+    "@types/node": ^18.11.8
     "@types/node-cache": ^4.2.5
     "@types/supertest": ^2.0.12
     "@types/swagger-ui-express": ^4.1.3
@@ -2360,7 +2360,7 @@ __metadata:
     express: ^4.18.2
     jest: ^29.2.2
     nodemon: ^2.0.20
-    npm-check-updates: ^16.3.15
+    npm-check-updates: ^16.3.16
     openapi-backend: ^5.5.0
     redis: ^4.3.1
     replace: ^1.2.2
@@ -2382,11 +2382,11 @@ __metadata:
     "@mojaloop/logging-bc-public-types-lib": ^0.1.12
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.1.1
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": ^0.1.1
-    "@types/node": ^18.11.7
+    "@types/node": ^18.11.8
     ajv: ^8.11.0
     eslint: ^8.26.0
     jest: ^29.2.2
-    npm-check-updates: ^16.3.15
+    npm-check-updates: ^16.3.16
     redis: ^4.3.1
     replace: ^1.2.2
     standard-version: ^9.5.0
@@ -2401,7 +2401,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter@workspace:."
   dependencies:
     "@types/jest": ^29.2.0
-    "@types/node": ^18.11.7
+    "@types/node": ^18.11.8
     "@types/node-cache": ^4.2.5
     "@typescript-eslint/eslint-plugin": ^5.41.0
     "@typescript-eslint/parser": ^5.41.0
@@ -2412,7 +2412,7 @@ __metadata:
     husky: ^8.0.1
     jest: ^29.2.2
     nodemon: ^2.0.20
-    npm-check-updates: ^16.3.15
+    npm-check-updates: ^16.3.16
     nx: 15.0.4
     replace: ^1.2.2
     standard-version: ^9.5.0
@@ -3241,10 +3241,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^18.11.7":
-  version: 18.11.7
-  resolution: "@types/node@npm:18.11.7"
-  checksum: 69d630825cf6fbf580d08d76a4d4836ef8c34ed4fe0842221ade87d275f517099cbfabe8e22397208e564bd24926db97699ab9db5c091383269a432b336665e2
+"@types/node@npm:^18.11.8":
+  version: 18.11.8
+  resolution: "@types/node@npm:18.11.8"
+  checksum: 60b358f97c1a029722dc785811b217615ef20249c3fbde60a65869cfd7a5cd5b1872ee95c79c187ef70e5a078f4ac7670d2129803985268b1f021ad6e8040af8
   languageName: node
   linkType: hard
 
@@ -7958,6 +7958,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ini@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "ini@npm:3.0.1"
+  checksum: 947b582a822f06df3c22c75c90aec217d604ea11f7a20249530ee5c1cf8f508288439abe17b0e1d9b421bda5f4fae5e7aae0b18cb3ded5ac9d68f607df82f10f
+  languageName: node
+  linkType: hard
+
 "internal-slot@npm:^1.0.3":
   version: 1.0.3
   resolution: "internal-slot@npm:1.0.3"
@@ -8992,7 +8999,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-yaml@npm:4.1.0, js-yaml@npm:^4.0.0, js-yaml@npm:^4.1.0":
+"js-yaml@npm:4.1.0, js-yaml@npm:^4.1.0":
   version: 4.1.0
   resolution: "js-yaml@npm:4.1.0"
   dependencies:
@@ -9162,7 +9169,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json5@npm:^2.1.2, json5@npm:^2.2.1":
+"json5@npm:^2.2.1":
   version: 2.2.1
   resolution: "json5@npm:2.2.1"
   bin:
@@ -9320,9 +9327,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"koa-body@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "koa-body@npm:6.0.0"
+"koa-body@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "koa-body@npm:6.0.1"
   dependencies:
     "@types/co-body": ^6.1.0
     "@types/formidable": ^2.0.5
@@ -9330,7 +9337,7 @@ __metadata:
     co-body: ^6.1.0
     formidable: ^2.0.1
     zod: ^3.19.1
-  checksum: f17edaba2ffa88a1e8cb69fd9b20262e7f2cbd951e1a81484b950c39f94d98ebdf1886e0063b0fb76a7751fbb5572b21c5605d2c758f00111cbb4ad052c223a3
+  checksum: 515bcac2976a53cd0ba17cbd84d1f3c7f6cc5f9789a93cb6e9a7245b35b456380c0a538bc12dbfdc35fbc7be08b04525b33330bc407d09301903373b441b7e4a
   languageName: node
   linkType: hard
 
@@ -10476,9 +10483,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"npm-check-updates@npm:^16.3.15":
-  version: 16.3.15
-  resolution: "npm-check-updates@npm:16.3.15"
+"npm-check-updates@npm:^16.3.16":
+  version: 16.3.16
+  resolution: "npm-check-updates@npm:16.3.16"
   dependencies:
     chalk: ^5.1.2
     cli-table: ^0.3.11
@@ -10489,6 +10496,7 @@ __metadata:
     get-stdin: ^8.0.0
     globby: ^11.0.4
     hosted-git-info: ^5.1.0
+    ini: ^3.0.1
     json-parse-helpfulerror: ^1.0.3
     jsonlines: ^0.1.1
     lodash: ^4.17.21
@@ -10498,7 +10506,7 @@ __metadata:
     parse-github-url: ^1.0.2
     progress: ^2.0.3
     prompts-ncu: ^2.5.1
-    rc-config-loader: ^4.1.0
+    rc-config-loader: ^4.1.1
     remote-git-tags: ^3.0.0
     rimraf: ^3.0.2
     semver: ^7.3.8
@@ -10511,7 +10519,7 @@ __metadata:
   bin:
     ncu: build/src/bin/cli.js
     npm-check-updates: build/src/bin/cli.js
-  checksum: 4d875a942fbd822fa45e4770a0b2647d348979e9a285688601c1f66e715a8087fac8548047f26b37dd7ac5157d6e5c3f42fc3346394bd3c3de2bc1bfd8ebe3c4
+  checksum: af2ab721e745dcca892136be948cdb267f8de38b118b463dc122a7734ffaa9afbfd99c8672a0339b5de73a3c8a69e557f8f81f4d751fe0bbc8f9fe8f0f54c986
   languageName: node
   linkType: hard
 
@@ -11861,15 +11869,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rc-config-loader@npm:^4.1.0":
-  version: 4.1.0
-  resolution: "rc-config-loader@npm:4.1.0"
+"rc-config-loader@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "rc-config-loader@npm:4.1.1"
   dependencies:
-    debug: ^4.1.1
-    js-yaml: ^4.0.0
-    json5: ^2.1.2
+    debug: ^4.3.4
+    js-yaml: ^4.1.0
+    json5: ^2.2.1
     require-from-string: ^2.0.2
-  checksum: 1d07aaf6116026f47b1c183d64999e9449168e3c2fd8caacfeb6328d16800011d060258ca03c914559fb287a49584910c6410e24cef7bbac4817c2bf547069ad
+  checksum: faeff4f6d4811207dad271015ebe0302cc9837eda9b3153f0b5101b8b06fac9d80d04675824bdbeb427cc1b319cf468823affd7f426a34b38a404f4405811eb5
   languageName: node
   linkType: hard
 
