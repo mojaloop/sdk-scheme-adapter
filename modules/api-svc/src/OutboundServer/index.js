@@ -11,7 +11,7 @@
 const http = require('http');
 
 const Koa = require('koa');
-const koaBody = require('koa-body');
+const koaBody = require('koa-body').default;
 const yaml = require('js-yaml');
 const fs = require('fs');
 const path = require('path');
