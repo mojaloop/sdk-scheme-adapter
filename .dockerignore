@@ -1,6 +1,7 @@
 deploy/
 coverage/
 node_modules/
+**/*node_modules/
 .dockerignore
 .editorconfig
 .git/
@@ -12,7 +13,13 @@ docker-compose.dev.yml
 docker-compose.functional.yml
 docker-compose.yml
 Dockerfile
-LICENSE
-README.md
 sonar-project.properties
 .devspace/
+.yarn/cache/
+.versionrc
+audit-ci.jsonc
+Makefile
+**/dist
+**/coverage
+**/*.log
+**/*.env

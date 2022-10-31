@@ -1,0 +1,21 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+      "rootDir": "./src",
+      "outDir": "./dist",
+      "baseUrl": ".",
+      "paths": {
+        "@module-domain": [ "./src/domain/index.ts" ],
+        "@module-types": [ "./src/types/index.ts" ],
+        "@module-shared": [ "./src/shared/index.ts" ],
+        "@module-infrastructure": [ "./src/infrastructure/index.ts" ],
+        "@module-domain/*": [ "./src/domain/*" ],
+        "@module-types/*": [ "./src/types/*" ],
+        "@module-shared/*": [ "./src/shared/*" ],
+        "@module-infrastructure/*": [ "./src/infrastructure/*" ]
+      }
+    },
+    "include": [
+      "./src"
+    ]
+}

@@ -221,3 +221,43 @@ push a release triggering another subsequent build that also publishes a docker 
 
 *   It is unknown if a race condition might occur with multiple merges with master in
     quick succession, but this is a suspected edge case.
+
+
+### Running monorepo
+
+- Start the dependencies
+```
+docker-compose up
+```
+
+- Run application
+```
+nvm use
+yarn install
+yarn run build
+export API_SERVER_ENABLED=true
+yarn run start
+```
+
+This starts all the modules in the monorepo.
+Note: api-svc is failing to start at the moment.
+
+- Produce a domain event with the following test code
+
+```
+yarn workspace @mojaloop/sdk-scheme-adapter-outbound-domain-event-handler run test:integration
+```
+
+- Observe the bulk transaction state using test API
+Go to `http://localhost:8000/docs/` and execute the `GET /bulkTransactionsState` request and see response
+
+
+- Redis commands to observe
+
+```
+KEYS *
+HKEYS outboundBulkTransaction_b51ec534-ee48-4575-b6a9-ead2955b8069
+HGET outboundBulkTransaction_b51ec534-ee48-4575-b6a9-ead2955b8069 bulkTransactionEntityState
+HGET outboundBulkTransaction_b51ec534-ee48-4575-b6a9-ead2955b8069 individualItem_<individualTransferIDHere>
+```
+Note: If you run test code multiple times, you may observe duplicate individual transfer added to the same bulk transaction. Duplicate check should be implemented somewhere to handle this.

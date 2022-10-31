@@ -1,0 +1,48 @@
+{
+  "name": "multi",
+  "test_cases": [
+    {
+      "id": 1,
+      "name": "P2P Transfer Happy Path",
+      "fileInfo": {
+        "path": "pm4ml_test2.json"
+      },
+      "requests": [
+        {
+          "id": 1,
+          "description": "Post /Transfers SDK-Out",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/transfers",
+          "path": "/transfers",
+          "method": "post",
+          "url": "http://payer-sdk-api-svc:4001",
+          "body": {
+            "homeTransactionId": "abc123",
+            "from": {
+              "idType": "MSISDN",
+              "idValue": "123456789"
+            },
+            "to": {
+              "idType": "MSISDN",
+              "idValue": "48500002222"
+            },
+            "amountType": "SEND",
+            "currency": "USD",
+            "amount": "10",
+            "transactionType": "TRANSFER",
+            "note": "string"
+          }
+        }
+      ]
+    }
+  ]
+}

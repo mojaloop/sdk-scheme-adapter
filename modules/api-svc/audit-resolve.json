@@ -1,0 +1,71 @@
+{
+  "decisions": {
+    "1075703|@mojaloop/central-services-shared>@mojaloop/event-sdk>grpc>protobufjs": {
+      "decision": "ignore",
+      "madeAt": 1657188195403,
+      "expiresAt": 1659780190646
+    },
+    "1075704|@mojaloop/central-services-shared>@mojaloop/event-sdk>grpc>protobufjs": {
+      "decision": "ignore",
+      "madeAt": 1657188196343,
+      "expiresAt": 1659780190646
+    },
+    "1080944|@mojaloop/central-services-shared>@mojaloop/event-sdk>grpc>protobufjs>moment": {
+      "decision": "ignore",
+      "madeAt": 1657188197274,
+      "expiresAt": 1659780190646
+    },
+    "1070030|@mojaloop/central-services-shared>@mojaloop/event-sdk>grpc>protobufjs>moment>shins>markdown-it": {
+      "decision": "ignore",
+      "madeAt": 1657188198190,
+      "expiresAt": 1659780190646
+    },
+    "1070030|widdershins>markdown-it": {
+      "decision": "ignore",
+      "madeAt": 1657188198190,
+      "expiresAt": 1659780190646
+    },
+    "1068155|@mojaloop/central-services-shared>@mojaloop/event-sdk>grpc>protobufjs>moment>shins>markdown-it>sanitize-html": {
+      "decision": "ignore",
+      "madeAt": 1657188199040,
+      "expiresAt": 1659780190646
+    },
+    "1070260|@mojaloop/central-services-shared>@mojaloop/event-sdk>grpc>protobufjs>moment>shins>markdown-it>sanitize-html": {
+      "decision": "ignore",
+      "madeAt": 1657188199954,
+      "expiresAt": 1659780190646
+    },
+    "1070412|ejs": {
+      "decision": "ignore",
+      "madeAt": 1657188200902,
+      "expiresAt": 1659780190646
+    },
+    "1067553|swagger2openapi>better-ajv-errors>jsonpointer": {
+      "decision": "ignore",
+      "madeAt": 1657188201786,
+      "expiresAt": 1659780190646
+    },
+    "1067946|swagger2openapi>better-ajv-errors>jsonpointer>oas-validator>ajv": {
+      "decision": "ignore",
+      "madeAt": 1657188202661,
+      "expiresAt": 1659780190646
+    },
+    "1068310|widdershins>markdown-it>yargs>yargs-parser": {
+      "decision": "ignore",
+      "madeAt": 1657188203603,
+      "expiresAt": 1659780190646
+    },
+    "1080969|@mojaloop/central-services-shared>@mojaloop/event-sdk>grpc>protobufjs>moment": {
+      "decision": "ignore",
+      "madeAt": 1657217280998,
+      "expiresAt": 1659809259103
+    },
+    "1081008|@mojaloop/central-services-shared>@mojaloop/event-sdk>grpc>protobufjs>moment": {
+      "decision": "ignore",
+      "madeAt": 1657621042651,
+      "expiresAt": 1660213039412
+    }
+  },
+  "rules": {},
+  "version": 1
+}
