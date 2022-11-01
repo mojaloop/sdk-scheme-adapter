@@ -1,4 +1,4 @@
-# Changelog: [mojaloop/thirdparty-api-svc](https://github.com/mojaloop/sdk-scheme-adapter)
+# Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
 ## [20.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v19.0.1...v20.0.0) (2022-10-31)
 
 
@@ -71,7 +71,7 @@
 
 ### Bug Fixes
 
-* **mojaloop/#2811:** sdk-scheme-adapter sending incorrect transferState on a PUT transfers Callback ([#331](https://github.com/mojaloop/sdk-scheme-adapter/issues/331)) ([f7e450c](https://github.com/mojaloop/sdk-scheme-adapter/commit/f7e450cc2568f70f6c9abbb39d9c2186787c31b7)), closes [mojaloop/#2811](https://github.com/mojaloop/project/issues/2811)
+* **mojaloop/#2811:** sdk-scheme-adapter sending incorrect transferState on a PUT transfers Callback ([#331](https://github.com/mojaloop/sdk-scheme-adapter/issues/331)) ([f7e450c](https://github.com/mojaloop/sdk-scheme-adapter/commit/f7e450cc2568f70f6c9abbb39d9c2186787c31b7)), closes [mojaloop/#2811](https://github.com/mojaloop/project/issues/2811) [mojaloop/#2816](https://github.com/mojaloop/sdk-scheme-adapter/issues/2816)
 * updated dependencies ([6500476](https://github.com/mojaloop/sdk-scheme-adapter/commit/650047699ce7679d21a08daa1fb3cf2956b0e514))
 
 ### [17.0.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v17.0.0...v17.0.1) (2022-07-04)

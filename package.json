@@ -71,8 +71,8 @@
     "tslib": "^2.4.1"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.0",
-    "@types/node": "^18.11.8",
+    "@types/jest": "^29.2.1",
+    "@types/node": "^18.11.9",
     "@types/node-cache": "^4.2.5",
     "@typescript-eslint/eslint-plugin": "^5.42.0",
     "@typescript-eslint/parser": "^5.42.0",
