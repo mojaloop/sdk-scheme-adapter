@@ -1398,7 +1398,7 @@
   {
     "ruleId": 11,
     "priority": 11,
-    "description": "post /bulkQuotes - default path - receiver responds with 2 quote results",
+    "description": "post /bulkQuotes - default path",
     "apiVersion": {
       "minorVersion": 4,
       "majorVersion": 1,
@@ -1430,34 +1430,29 @@
         "body": {
           "bulkQuoteId": "{$request.body.bulkQuoteId}",
           "expiration": "2040-01-01T00:00:00.000Z",
-          "individualQuoteResults": [
-            {
-              "quoteId": "{$request.body.individualQuotes[0].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[0].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[0].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[0].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[0].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[0].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[0].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[1].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[1].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[1].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[1].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[1].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[1].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[1].currency}"
-            }
-          ]
+          "individualQuoteResults": []
         },
         "statusCode": "200",
         "scripts": {
-          "scriptingEngine": "postman"
+          "exec": [
+            "const reqBody = JSON.parse(request.body)",
+            "const individualQuoteResults = reqBody.individualQuotes.map(quote => ({",
+            "  payeeFspCommissionAmount: \"0\",",
+            "  payeeFspCommissionAmountCurrency: quote.currency,",
+            "  payeeFspFeeAmount: \"0\",",
+            "  payeeFspFeeAmountCurrency: quote.currency,",
+            "  payeeReceiveAmount: quote.amount,",
+            "  payeeReceiveAmountCurrency: quote.currency,",
+            "  quoteId: quote.quoteId,",
+            "  transferAmount: quote.amount,",
+            "  transferAmountCurrency: quote.currency",
+            "}))",
+            "",
+            "custom.appendEventBody({",
+            "  individualQuoteResults",
+            "})"
+          ],
+          "scriptingEngine": "javascript"
         }
       },
       "type": "FIXED_RESPONSE"
@@ -1929,18 +1924,21 @@
         "body": {
           "bulkTransferId": "{$request.body.bulkTransferId}",
           "homeTransactionId": "{$request.body.homeTransactionId}",
-          "individualTransferResults": [
-            {
-              "transferId": "{$request.body.individualTransfers[0].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[1].transferId}"
-            }
-          ]
+          "individualTransferResults": []
         },
         "statusCode": "200",
         "scripts": {
-          "scriptingEngine": "postman"
+          "exec": [
+            "const reqBody = JSON.parse(request.body)",
+            "const individualTransferResults = reqBody.individualTransfers.map(transfer => ({",
+            "  transferId: transfer.transferId",
+            "}))",
+            "",
+            "custom.appendEventBody({",
+            "  individualTransferResults",
+            "})"
+          ],
+          "scriptingEngine": "javascript"
         }
       },
       "type": "FIXED_RESPONSE"
