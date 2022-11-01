@@ -81,7 +81,7 @@ services:
   ml-testing-toolkit:
     networks:
         - mojaloop-net
-    image: mojaloop/ml-testing-toolkit:v15.0.0
+    image: mojaloop/ml-testing-toolkit:v15.2.0
     container_name: ml-testing-toolkit
     user: root
     volumes:
@@ -94,7 +94,7 @@ services:
     command: npm start
 
   ml-testing-toolkit-ui:
-    image: mojaloop/ml-testing-toolkit-ui:v15.0.0
+    image: mojaloop/ml-testing-toolkit-ui:v15.0.1
     ports:
       - "6060:6060"
     networks:
