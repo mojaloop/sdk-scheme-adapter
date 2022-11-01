@@ -1,4 +1,29 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [20.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v19.0.1...v20.0.0) (2022-10-31)
+
+
+### ⚠ BREAKING CHANGES
+
+* **mojaloop/#2990:** docker image now uses `/opt/app` instead of the root folder which will impact config mounts, and the secrets folder is no longer included in the docker image which aligns with best practices. Both these changes should NOT be a breaking change but I have marked them as such to make this change more obvious.
+
+* fix: updated dependencies
+
+* chore(release): 18.0.0 [skip ci]
+* **mojaloop/#2990:** docker image now uses `/opt/app` instead of the root folder which will impact config mounts, and the secrets folder is no longer included in the docker image which aligns with best practices. Both these changes should NOT be a breaking change but I have marked them as such to make this change more obvious.
+
+* fix: updated dependencies
+
+* chore(release): 18.0.0 [skip ci]
+* **mojaloop/#2990:** docker image now uses `/opt/app` instead of the root folder which will impact config mounts, and the secrets folder is no longer included in the docker image which aligns with best practices. Both these changes should NOT be a breaking change but I have marked them as such to make this change more obvious.
+
+* fix: updated dependencies
+
+* chore(release): 18.0.0 [skip ci]
+
+### Features
+
+* **mojaloop/#2990:** add bulk transfers MVP functionality ([#407](https://github.com/mojaloop/sdk-scheme-adapter/issues/407)) ([42a6e12](https://github.com/mojaloop/sdk-scheme-adapter/commit/42a6e128a460e8ee9f0f7d8aa3f6969938ecae8c)), closes [mojaloop/#2990](https://github.com/mojaloop/project/issues/2990)
+
 ### [19.0.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v19.0.0...v19.0.1) (2022-08-24)
 
 
@@ -46,7 +71,7 @@
 
 ### Bug Fixes
 
-* **mojaloop/#2811:** sdk-scheme-adapter sending incorrect transferState on a PUT transfers Callback ([#331](https://github.com/mojaloop/sdk-scheme-adapter/issues/331)) ([f7e450c](https://github.com/mojaloop/sdk-scheme-adapter/commit/f7e450cc2568f70f6c9abbb39d9c2186787c31b7)), closes [mojaloop/#2811](https://github.com/mojaloop/sdk-scheme-adapter/issues/2811) [mojaloop/#2811](https://github.com/mojaloop/sdk-scheme-adapter/issues/2811) [mojaloop/#2816](https://github.com/mojaloop/sdk-scheme-adapter/issues/2816)
+* **mojaloop/#2811:** sdk-scheme-adapter sending incorrect transferState on a PUT transfers Callback ([#331](https://github.com/mojaloop/sdk-scheme-adapter/issues/331)) ([f7e450c](https://github.com/mojaloop/sdk-scheme-adapter/commit/f7e450cc2568f70f6c9abbb39d9c2186787c31b7)), closes [mojaloop/#2811](https://github.com/mojaloop/project/issues/2811) [mojaloop/#2816](https://github.com/mojaloop/sdk-scheme-adapter/issues/2816)
 * updated dependencies ([6500476](https://github.com/mojaloop/sdk-scheme-adapter/commit/650047699ce7679d21a08daa1fb3cf2956b0e514))
 
 ### [17.0.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v17.0.0...v17.0.1) (2022-07-04)
@@ -239,7 +264,7 @@
 
 ### Bug Fixes
 
-* **mojaloop/#2478:** sdk-scheme-adapter does not publish ws notifications when cache is restarted ([0a301c5](https://github.com/mojaloop/sdk-scheme-adapter/commit/0a301c59f3a17adc3e32d1965353b776c568ecae)), closes [mojaloop/#2478](https://github.com/mojaloop/sdk-scheme-adapter/issues/2478)
+* **mojaloop/#2478:** sdk-scheme-adapter does not publish ws notifications when cache is restarted ([0a301c5](https://github.com/mojaloop/sdk-scheme-adapter/commit/0a301c59f3a17adc3e32d1965353b776c568ecae)), closes [mojaloop/#2478](https://github.com/mojaloop/project/issues/2478)
 
 
 ### Chore
@@ -251,14 +276,14 @@
 
 ### Bug Fixes
 
-* **mojaloop/#2436:** sdk-sch-adapter inb-API responds incorrectly for 'Unknown uri' error scenario ([132f941](https://github.com/mojaloop/sdk-scheme-adapter/commit/132f941a365bfa60b456d21b4a5d301fb3af9695)), closes [mojaloop/#2436](https://github.com/mojaloop/sdk-scheme-adapter/issues/2436)
+* **mojaloop/#2436:** sdk-sch-adapter inb-API responds incorrectly for 'Unknown uri' error scenario ([132f941](https://github.com/mojaloop/sdk-scheme-adapter/commit/132f941a365bfa60b456d21b4a5d301fb3af9695)), closes [mojaloop/#2436](https://github.com/mojaloop/project/issues/2436)
 
 ### [11.18.6](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.18.5...v11.18.6) (2021-08-26)
 
 
 ### Bug Fixes
 
-* **mojaloop/#2433:** sdk-scheme-adapter-v11.18.5-release-failing-on-startup ([39cc8e2](https://github.com/mojaloop/sdk-scheme-adapter/commit/39cc8e2df09676798e0e6062d13f3de903544adf)), closes [mojaloop/#2433](https://github.com/mojaloop/sdk-scheme-adapter/issues/2433)
+* **mojaloop/#2433:** sdk-scheme-adapter-v11.18.5-release-failing-on-startup ([39cc8e2](https://github.com/mojaloop/sdk-scheme-adapter/commit/39cc8e2df09676798e0e6062d13f3de903544adf)), closes [mojaloop/#2433](https://github.com/mojaloop/project/issues/2433)
 
 ### [11.18.5](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.18.4...v11.18.5) (2021-08-25)
 
