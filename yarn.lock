@@ -2413,7 +2413,7 @@ __metadata:
     jest: ^29.2.2
     nodemon: ^2.0.20
     npm-check-updates: ^16.3.16
-    nx: 15.0.6
+    nx: 15.0.8
     replace: ^1.2.2
     standard-version: ^9.5.0
     ts-jest: ^29.0.3
@@ -2561,23 +2561,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nrwl/cli@npm:15.0.6":
-  version: 15.0.6
-  resolution: "@nrwl/cli@npm:15.0.6"
+"@nrwl/cli@npm:15.0.8":
+  version: 15.0.8
+  resolution: "@nrwl/cli@npm:15.0.8"
   dependencies:
-    nx: 15.0.6
-  checksum: 1e7b5dd00abad1d5090c99edd9e52672cc3568b932e30334b6ee3a7d04ad262b09e7ef64ba343ee8939c9203ef57abb979fe3ce493836162af786555f28b23e8
+    nx: 15.0.8
+  checksum: 0db02cc5650d57e376ac67e1987f50ef403a8b560e03b23944e10fc3d79a69fd36f193cc1f88c8a5e2545f10e2ae7b8a5ededba0f184cc797b1ecc6123992a5a
   languageName: node
   linkType: hard
 
-"@nrwl/tao@npm:15.0.6":
-  version: 15.0.6
-  resolution: "@nrwl/tao@npm:15.0.6"
+"@nrwl/tao@npm:15.0.8":
+  version: 15.0.8
+  resolution: "@nrwl/tao@npm:15.0.8"
   dependencies:
-    nx: 15.0.6
+    nx: 15.0.8
   bin:
     tao: index.js
-  checksum: eca13fd091f9de4a2b31a1db2505af5b7f2e232f9e02d1933e161215dae8fc02efb5c2b894badba6a074fa0fe927877e55eb6da81b99a462c422010f181943ef
+  checksum: d43032334c35ff14796e35a66ebc66c62ce925a2ca5ef490b3e421c6183561a5ebfaee7e1898f051e9ae4db0f56f2ed4c1996ac68bafdd84918e1a1d22f8cfe4
   languageName: node
   linkType: hard
 
@@ -10667,12 +10667,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nx@npm:15.0.6":
-  version: 15.0.6
-  resolution: "nx@npm:15.0.6"
+"nx@npm:15.0.8":
+  version: 15.0.8
+  resolution: "nx@npm:15.0.8"
   dependencies:
-    "@nrwl/cli": 15.0.6
-    "@nrwl/tao": 15.0.6
+    "@nrwl/cli": 15.0.8
+    "@nrwl/tao": 15.0.8
     "@parcel/watcher": 2.0.4
     "@yarnpkg/lockfile": ^1.1.0
     "@yarnpkg/parsers": ^3.0.0-rc.18
@@ -10716,7 +10716,7 @@ __metadata:
       optional: true
   bin:
     nx: bin/nx.js
-  checksum: b34fd275570360b9314affc1ab48b586083ca866e5c9ba66738932491c7fc5c3126b62266433639cdb73bf4ca328d01e898198bca55d08e766bb223cc51abba2
+  checksum: 20ac28d36e3a84ec89eb6d645e8dfcf251539dd943f8e077046f9ae270fc5432dad354594f0ed59d720e01320d446dbba00fcd5c3746edbf0c1247ed5f65390b
   languageName: node
   linkType: hard
 
