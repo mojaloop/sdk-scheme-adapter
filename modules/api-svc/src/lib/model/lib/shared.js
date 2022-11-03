@@ -330,16 +330,12 @@ const mojaloopBulkQuotesRequestToInternal = (external) => {
         };
 
         if (quote.fees) {
-            internal.feesAmount = quote.fees.amount;
-            internal.feesCurrency = quote.fees.currency;
-        }
-
-        if (quote.geoCode) {
-            internal.geoCode = quote.geoCode;
+            internalQuote.feesAmount = quote.fees.amount;
+            internalQuote.feesCurrency = quote.fees.currency;
         }
 
         if (quote.note) {
-            internal.note = quote.note;
+            internalQuote.note = quote.note;
         }
 
         return internalQuote;
