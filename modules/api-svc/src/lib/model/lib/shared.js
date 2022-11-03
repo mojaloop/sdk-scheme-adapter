@@ -324,13 +324,20 @@ const mojaloopBulkQuotesRequestToInternal = (external) => {
             amountType: quote.amountType,
             amount: quote.amount.amount,
             currency: quote.amount.currency,
-            feesAmount: quote.fees.amount,
-            feesCurrency: quote.fees.currency,
             transactionType: quote.transactionType.scenario,
             initiator: quote.transactionType.initiator,
-            initiatorType: quote.transactionType.initiatorType,
-            note: quote.note
+            initiatorType: quote.transactionType.initiatorType
         };
+
+        if (quote.fees) {
+            internalQuote.feesAmount = quote.fees.amount;
+            internalQuote.feesCurrency = quote.fees.currency;
+        }
+
+        if (quote.note) {
+            internalQuote.note = quote.note;
+        }
+
         return internalQuote;
     });
 
