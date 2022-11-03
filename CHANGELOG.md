@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [21.0.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.0.0...v21.0.1) (2022-11-03)
+
+
+### Bug Fixes
+
+* correct internal/external bulk quote convert function ([#411](https://github.com/mojaloop/sdk-scheme-adapter/issues/411)) ([76184be](https://github.com/mojaloop/sdk-scheme-adapter/commit/76184beb57bcf781472f64566ed9133ec395f442))
+
 ## [21.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v20.0.0...v21.0.0) (2022-11-02)
 
 
