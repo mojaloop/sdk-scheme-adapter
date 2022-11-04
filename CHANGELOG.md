@@ -1,4 +1,17 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [21.1.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.0.1...v21.1.0) (2022-11-04)
+
+
+### Features
+
+* **mojaloop/2949:** [sdk-scheme-adapter][private-shared-lib] Update private-shared-lib to use v0.2 ([#414](https://github.com/mojaloop/sdk-scheme-adapter/issues/414)) ([b313a72](https://github.com/mojaloop/sdk-scheme-adapter/commit/b313a7298a3050dd3c47314abaffb2b4eeb122c6))
+
+
+### Chore
+
+* bump deps ([#415](https://github.com/mojaloop/sdk-scheme-adapter/issues/415)) ([d4eb87d](https://github.com/mojaloop/sdk-scheme-adapter/commit/d4eb87ded2b293a1caa57dcf30dc1accb758404f))
+* remove max items from put bulkTransactions ([#412](https://github.com/mojaloop/sdk-scheme-adapter/issues/412)) ([443bd92](https://github.com/mojaloop/sdk-scheme-adapter/commit/443bd92e13e3b9e7971c7f791cb090207fbf2d17))
+
 ### [21.0.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.0.0...v21.0.1) (2022-11-03)
 
 
