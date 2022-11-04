@@ -264,7 +264,8 @@ const createHeaderValidator = (logger) => async (
     }
 
     try {
-        ctx.request.body = await coBody.json(ctx.req);
+        // TODO: parameterize this
+        ctx.request.body = await coBody.json(ctx.req, { limit: '200mb' });
     }
     catch(err) {
         // error parsing body
@@ -356,9 +357,10 @@ const createLogger = (logger) => async (ctx, next) => {
         path: ctx.path,
         method: ctx.method
     }});
-    if (!ctx.state.logExcludePaths.includes(ctx.path)) {
-        ctx.state.logger.push({body: ctx.request.body}).log('Request received');
-    }
+    await ctx.state.logger.log('Request received');
+    // if (!ctx.state.logExcludePaths.includes(ctx.path)) {
+    //     ctx.state.logger.push({body: ctx.request.body}).log('Request received');
+    // }
     try {
         await next();
     } catch (err) {

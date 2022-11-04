@@ -1913,9 +1913,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/api-snippets@npm:^16.0.5":
-  version: 16.0.5
-  resolution: "@mojaloop/api-snippets@npm:16.0.5"
+"@mojaloop/api-snippets@npm:^16.0.6":
+  version: 16.0.6
+  resolution: "@mojaloop/api-snippets@npm:16.0.6"
   dependencies:
     "@apidevtools/json-schema-ref-parser": ^9.0.9
     commander: ^9.4.1
@@ -1926,7 +1926,7 @@ __metadata:
     openapi-typescript: ^5.4.1
     ts-auto-mock: ^3.6.2
     ttypescript: ^1.5.13
-  checksum: 6db08cc4a0f998943b962b553740a17a732ba6cccecdb6e9a9a4cf7577853b192c1a2717fd387c02841995436bed3a18f621929ebd487a6f5caee29ffbc15e00
+  checksum: 1bba9a429f712c1b5a871306d0b86564c3621a10a525a7841850f4feaa2c11a39812a591afb2185b14be47158f1c623dac09f170ffa0736196416731b03ddd86
   languageName: node
   linkType: hard
 
@@ -2062,7 +2062,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:^0.2.13, @mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:~0.2.0":
+"@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:^0.2.14-snapshot.0":
+  version: 0.2.14-snapshot.0
+  resolution: "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:0.2.14-snapshot.0"
+  dependencies:
+    "@mojaloop/logging-bc-public-types-lib": ^0.1.11
+    "@mojaloop/platform-shared-lib-messaging-types-lib": ~0.2.0
+    node-rdkafka: ~2.13.0
+  checksum: bbf0757989594f6ec10d134cf9464da932317469f296c173ab899f7b6212f79dee6769e753a9611fccf577e5b131cfff349d13b251517918b6ed735f2859d417
+  languageName: node
+  linkType: hard
+
+"@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:~0.2.0":
   version: 0.2.13
   resolution: "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:0.2.13"
   dependencies:
@@ -2080,7 +2091,7 @@ __metadata:
     "@babel/core": ^7.19.6
     "@babel/preset-env": ^7.19.4
     "@koa/cors": ^4.0.0
-    "@mojaloop/api-snippets": ^16.0.5
+    "@mojaloop/api-snippets": ^16.0.6
     "@mojaloop/central-services-error-handling": ^12.0.5
     "@mojaloop/central-services-logger": ^11.0.1
     "@mojaloop/central-services-metrics": ^12.0.5
@@ -2135,7 +2146,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-command-event-handler@workspace:modules/outbound-command-event-handler"
   dependencies:
-    "@mojaloop/api-snippets": ^16.0.5
+    "@mojaloop/api-snippets": ^16.0.6
     "@mojaloop/central-services-shared": ^17.3.1
     "@mojaloop/logging-bc-client-lib": ^0.1.15
     "@mojaloop/logging-bc-public-types-lib": ^0.1.12
@@ -2174,7 +2185,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-domain-event-handler@workspace:modules/outbound-domain-event-handler"
   dependencies:
-    "@mojaloop/api-snippets": ^16.0.5
+    "@mojaloop/api-snippets": ^16.0.6
     "@mojaloop/logging-bc-client-lib": ^0.1.15
     "@mojaloop/logging-bc-public-types-lib": ^0.1.12
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
@@ -2211,11 +2222,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-private-shared-lib@workspace:modules/private-shared-lib"
   dependencies:
-    "@mojaloop/api-snippets": ^16.0.5
+    "@mojaloop/api-snippets": ^16.0.6
     "@mojaloop/central-services-shared": ^17.3.1
     "@mojaloop/logging-bc-public-types-lib": ^0.1.12
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.2.16
-    "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": ^0.2.13
+    "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": ^0.2.14-snapshot.0
     "@types/node": ^18.11.9
     ajv: ^8.11.0
     eslint: ^8.26.0

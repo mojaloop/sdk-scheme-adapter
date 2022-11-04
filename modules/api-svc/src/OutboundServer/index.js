@@ -38,7 +38,8 @@ class OutboundApi extends EventEmitter {
 
         this._api.use(middlewares.createErrorHandler(this._logger));
         this._api.use(middlewares.createRequestIdGenerator());
-        this._api.use(koaBody()); // outbound always expects application/json
+        // TODO: parameterize this
+        this._api.use(koaBody({ formidable: { maxFieldsSize: 200 * 1024 * 1024 } })); // outbound always expects application/json
         this._api.use(middlewares.applyState({ cache, wso2, conf, metricsClient, logExcludePaths, eventProducer, eventLogger }));
         this._api.use(middlewares.createLogger(this._logger));
 
