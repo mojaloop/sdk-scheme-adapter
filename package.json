@@ -67,11 +67,11 @@
     "wait-4-docker": "node ./scripts/_wait4_all.js"
   },
   "dependencies": {
-    "nx": "15.0.8",
+    "nx": "15.0.9",
     "tslib": "^2.4.1"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.1",
+    "@types/jest": "^29.2.2",
     "@types/node": "^18.11.9",
     "@types/node-cache": "^4.2.5",
     "@typescript-eslint/eslint-plugin": "^5.42.0",
