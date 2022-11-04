@@ -1,5 +1,5 @@
 {
-  "name": "Happy Path Dynamic",
+  "name": "multi",
   "test_cases": [
     {
       "id": 1,
@@ -69,31 +69,26 @@
                 ]
               },
               {
-                "id": 4,
-                "description": "Check response has the receiver fspid populated",
-                "exec": [
-                  "expect(callback.body.individualTransferResults[0].to.partyIdInfo.fspId).to.not.be.empty"
-                ]
-              },
-              {
-                "id": 5,
-                "description": "Check response receiver first name is ReceiverFirst",
-                "exec": [
-                  "expect(callback.body.individualTransferResults[0].to.personalInfo.complexName.firstName).to.equal('ReceiverFirst')"
-                ]
-              },
-              {
-                "id": 6,
-                "description": "Check response receiver last name is ReceiverLast",
-                "exec": [
-                  "expect(callback.body.individualTransferResults[0].to.personalInfo.complexName.lastName).to.equal('ReceiverLast')"
-                ]
-              },
-              {
                 "id": 7,
                 "description": "Check current state is WAITING_FOR_PARTY_ACCEPTANCE",
                 "exec": [
                   "expect(callback.body.currentState).to.equal('WAITING_FOR_PARTY_ACCEPTANCE')"
+                ]
+              },
+              {
+                "id": 8,
+                "description": "Check all the responses have ilpPacket and condition",
+                "exec": [
+                  "expect(callback.body.individualTransferResults.filter(transfer => transfer.to.partyIdInfo.fspId)).to.not.be.empty;",
+                  ""
+                ]
+              },
+              {
+                "id": 9,
+                "description": "Check all the responses don't have lastError",
+                "exec": [
+                  "expect(callback.body.individualTransferResults.filter(transfer => transfer.lastError)).to.be.empty;",
+                  ""
                 ]
               }
             ]
@@ -102,7 +97,7 @@
           "scripts": {
             "preRequest": {
               "exec": [
-                "environment.totalIndividualTransfers = 50",
+                "environment.totalIndividualTransfers = 100",
                 "",
                 "const individualTransfers = []",
                 "for(let i=1; i<=environment.totalIndividualTransfers/2; i++) {",
@@ -111,7 +106,7 @@
                 "    to: {",
                 "      partyIdInfo: {",
                 "        partyIdType: 'MSISDN',",
-                "        partyIdentifier: '56781234'",
+                "        partyIdentifier: (5678123400000 + i) + ''",
                 "      }",
                 "    },",
                 "    amountType: 'SEND',",
@@ -126,7 +121,7 @@
                 "    to: {",
                 "      partyIdInfo: {",
                 "        partyIdType: 'MSISDN',",
-                "        partyIdentifier: '56781235001'",
+                "        partyIdentifier: (5678123500000 + i) + ''",
                 "      }",
                 "    },",
                 "    amountType: 'SEND',",

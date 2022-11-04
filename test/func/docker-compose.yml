@@ -4,62 +4,68 @@ networks:
     name: mojaloop-net
 
 services:
-  payer-sdk-api-svc:
+
+  redis:
+    networks:
+        - mojaloop-net
+    image: "redis:5.0.4-alpine"
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD" ,"sh", "-c", "redis-cli","ping"]
+      timeout: 20s
+      retries: 10
+      start_period: 40s
+      interval: 30s
+
+  ttksim1-sdk-api-svc:
     extends:
       file: common-sdk.yml
       service: api-svc
     networks:
       - mojaloop-net
-    env_file: ./config/payer-sdk/api-svc.env
+    env_file: ./config/sdk-ttksim1/api-svc.env
     ports:
       - "14000:4000"
       - "14001:4001"
       - "14002:4002"
     depends_on:
-      - payer-redis
+      - redis
 
-  payer-sdk-outbound-command-event-handler:
+  ttksim1-sdk-outbound-command-event-handler:
     extends:
       file: common-sdk.yml
       service: outbound-command-event-handler
-    env_file: ./config/payer-sdk/outbound-command-event-handler.env
+    env_file: ./config/sdk-ttksim1/outbound-command-event-handler.env
     ports:
       - "18000:8000"
     networks:
       - mojaloop-net
     depends_on:
-      payer-redis:
+      redis:
         condition: service_started
       init-kafka:
         condition: service_completed_successfully
 
-  payer-sdk-outbound-domain-event-handler:
+  ttksim1-sdk-outbound-domain-event-handler:
     extends:
       file: common-sdk.yml
       service: outbound-domain-event-handler
-    env_file: ./config/payer-sdk/outbound-domain-event-handler.env
+    env_file: ./config/sdk-ttksim1/outbound-domain-event-handler.env
     networks:
       - mojaloop-net
     depends_on:
-      payer-redis:
+      redis:
         condition: service_started
       init-kafka:
         condition: service_completed_successfully
 
-  payer-redis:
-    extends:
-      file: common-sdk.yml
-      service: redis
-    networks:
-      - mojaloop-net
-    ports:
-      - "16379:6379"
 
-  payee-sdk-api-svc:
+  ttksim2-sdk-api-svc:
     extends:
       file: common-sdk.yml
       service: api-svc
-    env_file: ./config/payee-sdk/api-svc.env
+    env_file: ./config/sdk-ttksim2/api-svc.env
     networks:
       - mojaloop-net
     ports:
@@ -67,40 +73,129 @@ services:
       - "24001:4001"
       - "24002:4002"
     depends_on:
-      - payee-redis
+      - redis
 
-  payee-redis:
+  ttksim3-sdk-api-svc:
     extends:
       file: common-sdk.yml
-      service: redis
+      service: api-svc
+    env_file: ./config/sdk-ttksim3/api-svc.env
     networks:
       - mojaloop-net
     ports:
-      - "26379:6379"
+      - "34000:4000"
+      - "34001:4001"
+      - "34002:4002"
+    depends_on:
+      - redis
 
-  ml-testing-toolkit:
+  ttk-ttksim1:
     networks:
         - mojaloop-net
     image: mojaloop/ml-testing-toolkit:v15.2.0
-    container_name: ml-testing-toolkit
+    container_name: ttk-ttksim1
     user: root
     volumes:
-      - "./config/ml-testing-toolkit/spec_files:/opt/app/spec_files"
+      - "./config/ttk-ttksim1/spec_files:/opt/app/spec_files"
     ports:
-      - "4040:4040"
-      - "5050:5050"
+      - "14040:4040"
+      - "15050:5050"
     environment:
       - AUTH_ENABLED=FALSE
     command: npm start
 
-  ml-testing-toolkit-ui:
+  ttk-ttksim1-ui:
     image: mojaloop/ml-testing-toolkit-ui:v15.0.1
     ports:
-      - "6060:6060"
+      - "16060:6060"
     networks:
       - mojaloop-net
     environment:
-      - API_BASE_URL=http://localhost:5050
+      - API_BASE_URL=http://localhost:15050
+      - AUTH_ENABLED=FALSE
+    command:
+      - sh
+      - /usr/share/nginx/start.sh
+
+  ttk-ttksim2:
+    networks:
+        - mojaloop-net
+    image: mojaloop/ml-testing-toolkit:v15.2.0
+    container_name: ttk-ttksim2
+    user: root
+    volumes:
+      - "./config/ttk-ttksim2/spec_files:/opt/app/spec_files"
+    ports:
+      - "24040:4040"
+      - "25050:5050"
+    environment:
+      - AUTH_ENABLED=FALSE
+    command: npm start
+
+  ttk-ttksim2-ui:
+    image: mojaloop/ml-testing-toolkit-ui:v15.0.1
+    ports:
+      - "26060:6060"
+    networks:
+      - mojaloop-net
+    environment:
+      - API_BASE_URL=http://localhost:25050
+      - AUTH_ENABLED=FALSE
+    command:
+      - sh
+      - /usr/share/nginx/start.sh
+
+  ttk-ttksim3:
+    networks:
+        - mojaloop-net
+    image: mojaloop/ml-testing-toolkit:v15.2.0
+    container_name: ttk-ttksim4
+    user: root
+    volumes:
+      - "./config/ttk-ttksim3/spec_files:/opt/app/spec_files"
+    ports:
+      - "34040:4040"
+      - "35050:5050"
+    environment:
+      - AUTH_ENABLED=FALSE
+    command: npm start
+
+  ttk-ttksim3-ui:
+    image: mojaloop/ml-testing-toolkit-ui:v15.0.1
+    ports:
+      - "36060:6060"
+    networks:
+      - mojaloop-net
+    environment:
+      - API_BASE_URL=http://localhost:35050
+      - AUTH_ENABLED=FALSE
+    command:
+      - sh
+      - /usr/share/nginx/start.sh
+
+  ttk-hub:
+    networks:
+        - mojaloop-net
+    image: mojaloop/ml-testing-toolkit:v15.2.0
+    container_name: ttk-hub
+    user: root
+    volumes:
+      - "./config/ttk-hub/spec_files:/opt/app/spec_files"
+    ports:
+      - "54040:4040"
+      - "55050:5050"
+    environment:
+      - AUTH_ENABLED=FALSE
+    command: npm start
+
+  ttk-hub-ui:
+    image: mojaloop/ml-testing-toolkit-ui:v15.0.1
+    ports:
+      - "56060:6060"
+    networks:
+      - mojaloop-net
+    environment:
+      - API_BASE_URL=http://localhost:55050
       - AUTH_ENABLED=FALSE
     command:
       - sh
@@ -132,6 +227,7 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_INTERN
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CFG_MESSAGE_MAX_BYTES: 10485760
     depends_on:
       - zookeeper
     healthcheck:
@@ -154,10 +250,12 @@ services:
       kafka-topics.sh --bootstrap-server kafka:9093 --list
 
       echo -e 'Creating kafka topics'
-      kafka-topics.sh --bootstrap-server kafka:9093 --create --if-not-exists --topic payer-topic-sdk-outbound-command-events --replication-factor 1 --partitions 1
-      kafka-topics.sh --bootstrap-server kafka:9093 --create --if-not-exists --topic payer-topic-sdk-outbound-domain-events --replication-factor 1 --partitions 1
-      kafka-topics.sh --bootstrap-server kafka:9093 --create --if-not-exists --topic payee-topic-sdk-outbound-command-events --replication-factor 1 --partitions 1
-      kafka-topics.sh --bootstrap-server kafka:9093 --create --if-not-exists --topic payee-topic-sdk-outbound-domain-events --replication-factor 1 --partitions 1
+      kafka-topics.sh --bootstrap-server kafka:9093 --create --if-not-exists --topic ttksim1-topic-sdk-outbound-command-events --replication-factor 1 --partitions 1
+      kafka-topics.sh --bootstrap-server kafka:9093 --create --if-not-exists --topic ttksim1-topic-sdk-outbound-domain-events --replication-factor 1 --partitions 1
+      kafka-topics.sh --bootstrap-server kafka:9093 --create --if-not-exists --topic ttksim2-topic-sdk-outbound-command-events --replication-factor 1 --partitions 1
+      kafka-topics.sh --bootstrap-server kafka:9093 --create --if-not-exists --topic ttksim2-topic-sdk-outbound-domain-events --replication-factor 1 --partitions 1
+      kafka-topics.sh --bootstrap-server kafka:9093 --create --if-not-exists --topic ttksim3-topic-sdk-outbound-command-events --replication-factor 1 --partitions 1
+      kafka-topics.sh --bootstrap-server kafka:9093 --create --if-not-exists --topic ttksim3-topic-sdk-outbound-domain-events --replication-factor 1 --partitions 1
       
       echo -e 'Successfully created the following topics:'
       kafka-topics.sh --bootstrap-server kafka:9093 --list
@@ -177,12 +275,12 @@ services:
     depends_on:
       - kafka
 
-  redisinsight:
-    image: redislabs/redisinsight
-    ports:
-      - "9001:8001"
-    networks:
-      - mojaloop-net
-    volumes: []
-    restart: on-failure
+  # redisinsight:
+  #   image: redislabs/redisinsight
+  #   ports:
+  #     - "9001:8001"
+  #   networks:
+  #     - mojaloop-net
+  #   volumes: []
+  #   restart: on-failure
 

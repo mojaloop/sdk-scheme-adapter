@@ -84,15 +84,3 @@ services:
     #   start_period: 40s
     #   interval: 30s
 
-  redis:
-    networks:
-        - mojaloop-net
-    image: "redis:5.0.4-alpine"
-    # ports:
-    #   - "6379:6379"
-    healthcheck:
-      test: ["CMD" ,"sh", "-c", "redis-cli","ping"]
-      timeout: 20s
-      retries: 10
-      start_period: 40s
-      interval: 30s
