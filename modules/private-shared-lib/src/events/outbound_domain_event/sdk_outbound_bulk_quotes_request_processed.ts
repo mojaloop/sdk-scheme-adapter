@@ -25,7 +25,7 @@
 'use strict';
 
 import { DomainEvent } from '../domain_event';
-import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+import { IMessageHeader } from '@module-types';
 
 export interface ISDKOutboundBulkQuotesRequestProcessedDmEvtData {
     bulkId: string;

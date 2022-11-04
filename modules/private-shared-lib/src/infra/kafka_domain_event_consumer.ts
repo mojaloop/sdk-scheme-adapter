@@ -26,11 +26,11 @@
 
 // TODO: Try to use the generic kafka consumer from platform-shared-lib and investigate if there is any value in maintaining these classes here.
 
-import { MLKafkaConsumerOptions, MLKafkaConsumerOutputType } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib';
+import { MLKafkaRawConsumerOptions, MLKafkaRawConsumerOutputType } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib';
 import { KafkaEventConsumer } from './kafka_event_consumer';
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import { DomainEvent }  from '../events';
-import { IMessage } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+import { IMessage } from '@module-types';
 import { IKafkaEventConsumerOptions } from '../types';
 
 export class KafkaDomainEventConsumer extends KafkaEventConsumer {
@@ -46,10 +46,10 @@ export class KafkaDomainEventConsumer extends KafkaEventConsumer {
             // Call handler function with domain event message
             await handlerFn(domainEventMessageObj);
         };
-        const mlConsumerOptions: MLKafkaConsumerOptions = {
+        const mlConsumerOptions: MLKafkaRawConsumerOptions = {
             kafkaBrokerList: consumerOptions.brokerList,
             kafkaGroupId: consumerOptions.groupId,
-            outputType: MLKafkaConsumerOutputType.Json,
+            outputType: MLKafkaRawConsumerOutputType.Json,
         };
         super(mlConsumerOptions, consumerOptions.topics, superHandlerFn, logger);
     }

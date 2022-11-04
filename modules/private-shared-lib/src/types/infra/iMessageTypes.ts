@@ -1,3 +1,4 @@
+
 /*****
  License
  --------------
@@ -18,43 +19,12 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Modusbox
- - Yevhen Kyriukha <yevhen.kyriukha@modusbox.com>
+ - Miguel de Barros <miguel.debarros@modusbox.com>
  --------------
  ******/
 
-'use strict';
+//  IMessage, IMessageHeader
+import { IRawMessage, IRawMessageHeader } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib';
 
-import { IMessageHeader } from '@module-types';
-import { DomainEvent } from '../domain_event';
-
-export interface ISDKOutboundBulkPartyInfoRequestProcessedDmEvtData {
-    bulkId: string;
-    timestamp: number | null;
-    headers: IMessageHeader[] | null;
-}
-
-export class SDKOutboundBulkPartyInfoRequestProcessedDmEvt extends DomainEvent {
-    constructor(data: ISDKOutboundBulkPartyInfoRequestProcessedDmEvtData) {
-        super({
-            key: data.bulkId,
-            timestamp: data.timestamp,
-            headers: data.headers,
-            content: null,
-            name: SDKOutboundBulkPartyInfoRequestProcessedDmEvt.name,
-        });
-    }
-
-    static CreateFromDomainEvent(
-        message: DomainEvent,
-    ): SDKOutboundBulkPartyInfoRequestProcessedDmEvt {
-        if((message.getKey() === null || typeof message.getKey() !== 'string')) {
-            throw new Error('Bulk id is in unknown format');
-        }
-        const data: ISDKOutboundBulkPartyInfoRequestProcessedDmEvtData = {
-            timestamp: message.getTimeStamp(),
-            headers: message.getHeaders(),
-            bulkId: message.getKey(),
-        };
-        return new SDKOutboundBulkPartyInfoRequestProcessedDmEvt(data);
-    }
-}
+export type IMessage = IRawMessage;
+export type IMessageHeader = IRawMessageHeader;

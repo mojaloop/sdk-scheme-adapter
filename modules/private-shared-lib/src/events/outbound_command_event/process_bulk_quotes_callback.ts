@@ -25,7 +25,7 @@
 'use strict';
 
 import { CommandEvent } from '../command_event';
-import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+import { IMessageHeader } from '@module-types';
 import { BulkQuoteErrorResponse, BulkQuoteResponse } from '../../types';
 
 export interface IProcessBulkQuotesCallbackCmdEvtData {
