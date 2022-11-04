@@ -24,6 +24,11 @@
           "path": "ID"
         },
         {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/parties/{Type}/{ID}"
+        },
+        {
           "fact": "method",
           "operator": "equal",
           "value": "get"
