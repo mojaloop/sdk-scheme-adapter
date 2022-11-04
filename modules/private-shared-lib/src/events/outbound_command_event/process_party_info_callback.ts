@@ -25,7 +25,7 @@
 'use strict';
 
 import { CommandEvent } from '../command_event';
-import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+import { IMessageHeader } from '@module-types';
 import { PartyErrorResponse, PartyResponse } from '@module-types';
 
 export interface IProcessPartyInfoCallbackCmdEvtData {

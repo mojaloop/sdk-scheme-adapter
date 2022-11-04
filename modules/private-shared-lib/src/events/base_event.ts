@@ -24,7 +24,7 @@
 
 'use strict';
 // import { v4 as uuidv4 } from 'uuid'
-import { IMessage, IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+import { IMessage, IMessageHeader } from '@module-types';
 import { getEnumValues } from '../utils';
 
 export enum EventType {
@@ -121,6 +121,8 @@ export class BaseEvent {
             key: this._data.key,
             timestamp: this._data.timestamp,
             headers: this._data.headers,
+            partition: null,
+            offset: null,
         };
         return message;
     }
