@@ -2062,15 +2062,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@portal:/Users/mdebarros/Documents/work/projects/mojaloop/git/platform-shared-lib/modules/nodejs-kafka-client-lib::locator=%40mojaloop%2Fsdk-scheme-adapter%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@portal:/Users/mdebarros/Documents/work/projects/mojaloop/git/platform-shared-lib/modules/nodejs-kafka-client-lib::locator=%40mojaloop%2Fsdk-scheme-adapter%40workspace%3A."
+"@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:^0.2.13, @mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:~0.2.0":
+  version: 0.2.13
+  resolution: "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:0.2.13"
   dependencies:
     "@mojaloop/logging-bc-public-types-lib": ^0.1.11
     "@mojaloop/platform-shared-lib-messaging-types-lib": ~0.2.0
     node-rdkafka: ~2.13.0
+  checksum: ce109e54f8b0305a05dc84db55b7f90cbfb036c8b4a6f5703579713b5a1789b4d522cf369e6210cb24b0dc0d750eda7175acbb22d4b0f6995a08f8a3661a44b2
   languageName: node
-  linkType: soft
+  linkType: hard
 
 "@mojaloop/sdk-scheme-adapter-api-svc@workspace:modules/api-svc":
   version: 0.0.0-use.local

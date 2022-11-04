@@ -96,9 +96,5 @@
       "postchangelog": "replace '\\[mojaloop/#(\\d+)\\]\\(https://github.com/mojaloop/(.*)/issues/(\\d+)\\)' '[mojaloop/#$1](https://github.com/mojaloop/project/issues/$1)' CHANGELOG.md",
       "precommit": "git add **/*package.json"
     }
-  },
-  "resolutions": {
-    "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "portal:/Users/mdebarros/Documents/work/projects/mojaloop/git/platform-shared-lib/modules/nodejs-kafka-client-lib",
-    "@mojaloop/platform-shared-lib-public-messages-lib": "portal:/Users/mdebarros/Documents/work/projects/mojaloop/git/platform-shared-lib/modules/public-messages-lib"
   }
 }
