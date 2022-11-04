@@ -26,21 +26,21 @@
 
 'use strict';
 
-import { MLKafkaProducer, MLKafkaProducerOptions } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib';
-import { IMessage } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+import { MLKafkaRawProducer, MLKafkaRawProducerOptions } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib';
+import { IMessage } from '@module-types';
 import { IEventProducer } from '../types';
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 
 export class KafkaEventProducer implements IEventProducer {
-    private _kafkaProducer: MLKafkaProducer;
+    private _kafkaProducer: MLKafkaRawProducer;
 
     private _logger: ILogger;
 
     private _handler: (message: IMessage) => Promise<void>;
 
-    constructor(producerOptions: MLKafkaProducerOptions, logger: ILogger) {
+    constructor(producerOptions: MLKafkaRawProducerOptions, logger: ILogger) {
         this._logger = logger;
-        this._kafkaProducer = new MLKafkaProducer(producerOptions, this._logger);
+        this._kafkaProducer = new MLKafkaRawProducer(producerOptions, this._logger);
     }
 
     async init(): Promise<void> {

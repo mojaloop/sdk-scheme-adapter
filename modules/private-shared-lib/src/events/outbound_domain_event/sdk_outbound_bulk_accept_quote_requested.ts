@@ -25,7 +25,7 @@
 'use strict';
 
 import { DomainEvent } from '../domain_event';
-import { IMessageHeader } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+import { IMessageHeader } from '@module-types';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
 // TODO: Current dfspInboundAPI is outdated and its better to add the core connector API to the API snippets library as single source of truth.

@@ -24,7 +24,7 @@
 
 'use strict';
 
-import { IMessage } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+import { IMessage } from '@module-types';
 import { IEventData, EventType, BaseEvent, IEventValue } from './base_event';
 
 export type ICommandEventData = Omit<IEventData, 'type'>;
