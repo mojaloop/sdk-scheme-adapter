@@ -1,6 +1,6 @@
 {
   "VERSION": 1,
-  "CALLBACK_ENDPOINT": "http://payee-sdk-api-svc:4001",
+  "CALLBACK_ENDPOINT": "http://payer-sdk-api-svc:4001",
   "CALLBACK_RESOURCE_ENDPOINTS": {
     "enabled": false,
     "endpoints": []
