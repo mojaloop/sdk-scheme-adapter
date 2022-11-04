@@ -26,13 +26,13 @@
 
 'use strict';
 
-import { MLKafkaConsumer, MLKafkaConsumerOptions } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib';
-import { IMessage } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+import { MLKafkaRawConsumer, MLKafkaRawConsumerOptions } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib';
+import { IMessage } from '@module-types';
 import { IEventConsumer } from '../types';
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 
 export class KafkaEventConsumer implements IEventConsumer {
-    private _kafkaConsumer: MLKafkaConsumer;
+    private _kafkaConsumer: MLKafkaRawConsumer;
 
     private _kafkaTopics: string[];
 
@@ -41,7 +41,7 @@ export class KafkaEventConsumer implements IEventConsumer {
     private _handler: (message: IMessage) => Promise<void>;
 
     constructor(
-        consumerOptions: MLKafkaConsumerOptions,
+        consumerOptions: MLKafkaRawConsumerOptions,
         kafkaTopics: string[],
         handlerFn: (message: IMessage) => Promise<void>,
         logger: ILogger,
@@ -49,7 +49,7 @@ export class KafkaEventConsumer implements IEventConsumer {
         this._logger = logger;
         this._kafkaTopics = kafkaTopics;
         this._handler = handlerFn;
-        this._kafkaConsumer = new MLKafkaConsumer(consumerOptions, this._logger);
+        this._kafkaConsumer = new MLKafkaRawConsumer(consumerOptions, this._logger);
     }
 
     async init(): Promise<void> {

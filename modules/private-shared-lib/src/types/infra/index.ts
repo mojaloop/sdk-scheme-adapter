@@ -31,6 +31,7 @@
 'use strict';
 
 export * from './irun_handler';
+export * from './iMessageTypes';
 export * from './ievent-consumer';
 export * from './ievent-producer';
 export * from './idomain-event-producer';

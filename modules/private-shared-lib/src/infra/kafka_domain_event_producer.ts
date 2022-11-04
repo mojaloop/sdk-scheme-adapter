@@ -28,11 +28,11 @@
 
 // TODO: Try to use the generic kafka producer from platform-shared-lib and investigate if there is any value in maintaining these classes here.
 
-import { MLKafkaProducerOptions } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib';
+import { MLKafkaRawProducerOptions } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib';
 import { KafkaEventProducer } from './kafka_event_producer';
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import { DomainEvent }  from '../events';
-import { IMessage } from '@mojaloop/platform-shared-lib-messaging-types-lib';
+import { IMessage } from '@module-types';
 import { IDomainEventProducer, IKafkaEventProducerOptions } from '../types';
 
 export class KafkaDomainEventProducer extends KafkaEventProducer implements IDomainEventProducer {
@@ -42,7 +42,7 @@ export class KafkaDomainEventProducer extends KafkaEventProducer implements IDom
         producerOptions: IKafkaEventProducerOptions,
         logger: ILogger,
     ) {
-        const mlProducerOptions: MLKafkaProducerOptions = {
+        const mlProducerOptions: MLKafkaRawProducerOptions = {
             kafkaBrokerList: producerOptions.brokerList,
             producerClientId: producerOptions.clientId,
             skipAcknowledgements: true,
