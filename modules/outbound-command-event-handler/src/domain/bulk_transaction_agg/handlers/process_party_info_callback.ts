@@ -130,16 +130,18 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
                 for await (const individualTransferId of allIndividualTransferIds) {
                     const individualTransferData = await bulkTransactionAgg
                         .getIndividualTransferById(individualTransferId);
-                    if(individualTransferData.partyResponse) {
-                        individualTransferResults.push({
-                            homeTransactionId: individualTransferData.request.homeTransactionId,
-                            transactionId: individualTransferData.id,
-                            to: individualTransferData.partyResponse?.party,
-                            lastError: individualTransferData.partyResponse?.errorInformation && {
-                                mojaloopError: individualTransferData.partyResponse?.errorInformation,
-                            },
-                        });
-                    }
+
+                    // Individual transfers where `partyResult.currentState` does
+                    // not match SDKOutboundTransferState.COMPLETED will have no `partyResponse`
+                    // set. `transactionId` and `homeTransaction` still need to be set.
+                    individualTransferResults.push({
+                        homeTransactionId: individualTransferData.request.homeTransactionId,
+                        transactionId: individualTransferData.id,
+                        to: individualTransferData.partyResponse?.party,
+                        lastError: individualTransferData.partyResponse?.errorInformation && {
+                            mojaloopError: individualTransferData.partyResponse?.errorInformation,
+                        },
+                    });
                 }
                 const sdkOutboundBulkAcceptPartyInfoRequestedDmEvt = new SDKOutboundBulkAcceptPartyInfoRequestedDmEvt({
                     bulkId: bulkTransactionAgg.bulkId,
