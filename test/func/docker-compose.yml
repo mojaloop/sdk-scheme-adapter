@@ -92,9 +92,7 @@ services:
   ttk-ttksim1:
     networks:
         - mojaloop-net
-    # image: mojaloop/ml-testing-toolkit:v15.2.0
-    # TODO: Change the following to standard version after it gets released
-    image: vijayg10/ml-testing-toolkit:v15.1.0
+    image: mojaloop/ml-testing-toolkit:v15.2.1
     container_name: ttk-ttksim1
     user: root
     volumes:
@@ -122,9 +120,7 @@ services:
   ttk-ttksim2:
     networks:
         - mojaloop-net
-    # image: mojaloop/ml-testing-toolkit:v15.2.0
-    # TODO: Change the following to standard version after it gets released
-    image: vijayg10/ml-testing-toolkit:v15.1.0
+    image: mojaloop/ml-testing-toolkit:v15.2.1
     container_name: ttk-ttksim2
     user: root
     volumes:
@@ -152,9 +148,7 @@ services:
   ttk-ttksim3:
     networks:
         - mojaloop-net
-    # image: mojaloop/ml-testing-toolkit:v15.2.0
-    # TODO: Change the following to standard version after it gets released
-    image: vijayg10/ml-testing-toolkit:v15.1.0
+    image: mojaloop/ml-testing-toolkit:v15.2.1
     container_name: ttk-ttksim4
     user: root
     volumes:
@@ -182,9 +176,7 @@ services:
   ttk-hub:
     networks:
         - mojaloop-net
-    # image: mojaloop/ml-testing-toolkit:v15.2.0
-    # TODO: Change the following to standard version after it gets released
-    image: vijayg10/ml-testing-toolkit:v15.1.0
+    image: mojaloop/ml-testing-toolkit:v15.2.1
     container_name: ttk-hub
     user: root
     volumes:
