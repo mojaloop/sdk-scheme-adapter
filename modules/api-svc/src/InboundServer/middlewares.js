@@ -174,7 +174,7 @@ const createRequestIdGenerator = () => async (ctx, next) => {
  * @return {Function}
  */
 //
-const createHeaderValidator = (logger) => async (
+const createHeaderValidator = (conf, logger) => async (
     ctx,
     next,
     resources = defaultProtocolResources,
@@ -264,8 +264,7 @@ const createHeaderValidator = (logger) => async (
     }
 
     try {
-        // TODO: parameterize this
-        ctx.request.body = await coBody.json(ctx.req, { limit: '200mb' });
+        ctx.request.body = await coBody.json(ctx.req, { limit: conf.fspiopApiServerMaxRequestBytes });
     }
     catch(err) {
         // error parsing body
