@@ -46,9 +46,8 @@ export class KafkaCommandEventProducer extends KafkaEventProducer implements ICo
             kafkaBrokerList: producerOptions.brokerList,
             producerClientId: producerOptions.clientId,
             skipAcknowledgements: true,
-            // TODO: Parameterize the following
-            messageMaxBytes: 200000000,
-            compressionCodec: MLKafkaRawProdOpCompressionCodecEnum.lz4,
+            messageMaxBytes: producerOptions.messageMaxBytes || 200000000,
+            compressionCodec: producerOptions.compressionCodec || MLKafkaRawProdOpCompressionCodecEnum.none,
         };
         super(mlProducerOptions, logger);
         this._topic = producerOptions.topic;

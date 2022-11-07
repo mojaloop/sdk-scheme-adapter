@@ -50,8 +50,7 @@ export class KafkaCommandEventConsumer extends KafkaEventConsumer {
             kafkaBrokerList: consumerOptions.brokerList,
             kafkaGroupId: consumerOptions.groupId,
             outputType: MLKafkaRawConsumerOutputType.Json,
-            // TODO: Parameterize this
-            messageMaxBytes: 200000000,
+            messageMaxBytes: consumerOptions.messageMaxBytes || 200000000,
         };
         super(mlConsumerOptions, consumerOptions.topics, superHandlerFn, logger);
     }
