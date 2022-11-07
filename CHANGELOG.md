@@ -1,4 +1,16 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [21.1.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.1.0...v21.1.1) (2022-11-07)
+
+
+### Bug Fixes
+
+* update party callback handling ([#416](https://github.com/mojaloop/sdk-scheme-adapter/issues/416)) ([e51aa79](https://github.com/mojaloop/sdk-scheme-adapter/commit/e51aa7946e295d0f37dca43f326665c392f48532))
+
+
+### Chore
+
+* dep update ([d43c618](https://github.com/mojaloop/sdk-scheme-adapter/commit/d43c61827aab23eb3930e6f47590ab24376473ed))
+
 ## [21.1.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.0.1...v21.1.0) (2022-11-04)
 
 
