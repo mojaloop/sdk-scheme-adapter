@@ -1,4 +1,5 @@
 {
+  "name": "modules-outbound-domain-event-handler",
   "root": "modules/outbound-domain-event-handler/",
   "sourceRoot": "modules/outbound-domain-event-handler/src",
   "projectType": "application",

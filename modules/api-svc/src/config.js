@@ -209,4 +209,7 @@ module.exports = {
     allowDifferentTransferTransactionId: env.get('ALLOW_DIFFERENT_TRANSFER_TRANSACTION_ID').default('false').asBool(),
 
     pm4mlEnabled: env.get('PM4ML_ENABLED').default('false').asBool(),
+
+    fspiopApiServerMaxRequestBytes: env.get('FSPIOP_API_SERVER_MAX_REQUEST_BYTES').default('209715200').asIntPositive(), // Default is 200mb
+    backendApiServerMaxRequestBytes: env.get('BACKEND_API_SERVER_MAX_REQUEST_BYTES').default('209715200').asIntPositive(), // Default is 200mb
 };
