@@ -29,6 +29,6 @@ export type IKafkaEventProducerOptions = {
     brokerList: string,
     clientId: string,
     topic: string,
-    messageMaxBytes: number,
-    compressionCodec: MLKafkaRawProdOpCompressionCodecEnum,
+    messageMaxBytes?: number,
+    compressionCodec?: MLKafkaRawProdOpCompressionCodecEnum,
 };
