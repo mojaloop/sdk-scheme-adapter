@@ -1,4 +1,16 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [21.2.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.1.1...v21.2.0) (2022-11-08)
+
+
+### Features
+
+* added two payee sdks and ttk as hub in func tests ([#413](https://github.com/mojaloop/sdk-scheme-adapter/issues/413)) ([42a9d4a](https://github.com/mojaloop/sdk-scheme-adapter/commit/42a9d4a1c0625f33dda7a5f26e3ca29de00a4a28))
+
+
+### Bug Fixes
+
+* remove transactionId from required from sdk api spec ([#417](https://github.com/mojaloop/sdk-scheme-adapter/issues/417)) ([c391a21](https://github.com/mojaloop/sdk-scheme-adapter/commit/c391a217e88bf03e6a8959233fb8a46ca85dd798))
+
 ### [21.1.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.1.0...v21.1.1) (2022-11-07)
 
 
