@@ -50,6 +50,7 @@ export class KafkaDomainEventConsumer extends KafkaEventConsumer {
             kafkaBrokerList: consumerOptions.brokerList,
             kafkaGroupId: consumerOptions.groupId,
             outputType: MLKafkaRawConsumerOutputType.Json,
+            messageMaxBytes: consumerOptions.messageMaxBytes || 200000000,
         };
         super(mlConsumerOptions, consumerOptions.topics, superHandlerFn, logger);
     }

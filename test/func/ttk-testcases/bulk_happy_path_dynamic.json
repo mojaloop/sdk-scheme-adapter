@@ -1,0 +1,410 @@
+{
+  "name": "multi",
+  "test_cases": [
+    {
+      "id": 1,
+      "name": "TC-BHPD. Happy Path Dynamic",
+      "fileInfo": {
+        "path": "ttk-testcases/bulk_happy_path_dynamic.json"
+      },
+      "requests": [
+        {
+          "id": 1,
+          "description": "Post /bulkTransaction",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "asynchronous": true,
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/bulkTransactions",
+          "path": "/bulkTransactions",
+          "method": "post",
+          "body": {
+            "bulkHomeTransactionID": "abc123",
+            "bulkTransactionId": "{$function.generic.generateUUID}",
+            "options": {
+              "onlyValidateParty": true,
+              "autoAcceptParty": {
+                "enabled": false
+              },
+              "autoAcceptQuote": {
+                "enabled": false
+              },
+              "skipPartyLookup": false,
+              "synchronous": false,
+              "bulkExpiration": "{$requestVariables.bulkTimeout}"
+            },
+            "from": {
+              "partyIdInfo": {
+                "partyIdType": "MSISDN",
+                "partyIdentifier": "16135551212"
+              }
+            },
+            "individualTransfers": []
+          },
+          "scriptingEngine": "javascript",
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Check Return Status Code",
+                "exec": [
+                  "expect(response.status).to.equal(202)",
+                  ""
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Check number of returned transfers",
+                "exec": [
+                  "expect(callback.body.individualTransferResults.length).to.equal(environment.totalIndividualTransfers)"
+                ]
+              },
+              {
+                "id": 7,
+                "description": "Check current state is WAITING_FOR_PARTY_ACCEPTANCE",
+                "exec": [
+                  "expect(callback.body.currentState).to.equal('WAITING_FOR_PARTY_ACCEPTANCE')"
+                ]
+              },
+              {
+                "id": 8,
+                "description": "Check all the responses have ilpPacket and condition",
+                "exec": [
+                  "expect(callback.body.individualTransferResults.filter(transfer => transfer.to.partyIdInfo.fspId)).to.not.be.empty;",
+                  ""
+                ]
+              },
+              {
+                "id": 9,
+                "description": "Check all the responses don't have lastError",
+                "exec": [
+                  "expect(callback.body.individualTransferResults.filter(transfer => transfer.lastError)).to.be.empty;",
+                  ""
+                ]
+              }
+            ]
+          },
+          "ignoreCallbacks": false,
+          "scripts": {
+            "preRequest": {
+              "exec": [
+                "environment.totalIndividualTransfers = 100",
+                "",
+                "const individualTransfers = []",
+                "for(let i=1; i<=environment.totalIndividualTransfers/2; i++) {",
+                "  individualTransfers.push({",
+                "    homeTransactionId: 'abc' + i,",
+                "    to: {",
+                "      partyIdInfo: {",
+                "        partyIdType: 'MSISDN',",
+                "        partyIdentifier: (5678123400000 + i) + ''",
+                "      }",
+                "    },",
+                "    amountType: 'SEND',",
+                "    currency: 'TZS',",
+                "    amount: '100',",
+                "    note: 'fspsuccess'",
+                "  })",
+                "}",
+                "for(let i=1; i<=environment.totalIndividualTransfers/2; i++) {",
+                "  individualTransfers.push({",
+                "    homeTransactionId: 'abcd' + i,",
+                "    to: {",
+                "      partyIdInfo: {",
+                "        partyIdType: 'MSISDN',",
+                "        partyIdentifier: (5678123500000 + i) + ''",
+                "      }",
+                "    },",
+                "    amountType: 'SEND',",
+                "    currency: 'TZS',",
+                "    amount: '100',",
+                "    note: 'fspsuccess'",
+                "  })",
+                "}",
+                "",
+                "",
+                "",
+                "custom.appendRequestBody({",
+                "  individualTransfers: individualTransfers",
+                "})",
+                "",
+                "requestVariables.bulkTimeout = (new Date(Date.now()+240000)).toISOString()",
+                ""
+              ]
+            },
+            "postRequest": {
+              "exec": [
+                "environment.acceptPartyCallback = callback"
+              ]
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "put bulk transaction for acceptParty",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "asynchronous": true,
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/bulkTransactions/{bulkTransactionId}",
+          "path": "/bulkTransactions/{$prev.1.request.body.bulkTransactionId}",
+          "method": "put",
+          "params": {
+            "bulkTransactionId": "{$prev.1.request.body.bulkTransactionId}"
+          },
+          "body": {
+            "bulkHomeTransactionID": "{$prev.1.request.body.bulkHomeTransactionID}",
+            "individualTransfers": []
+          },
+          "scriptingEngine": "javascript",
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Check Return Status Code",
+                "exec": [
+                  "expect(response.status).to.equal(202)"
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Check response has quote result",
+                "exec": [
+                  "expect(callback.body.individualTransferResults[0].quoteResponse).to.exist;"
+                ]
+              },
+              {
+                "id": 3,
+                "description": "Check response has ilpPacket and condition",
+                "exec": [
+                  "expect(callback.body.individualTransferResults[0].quoteResponse.ilpPacket).to.not.be.empty;",
+                  "",
+                  "expect(callback.body.individualTransferResults[0].quoteResponse.condition).to.not.be.empty;"
+                ]
+              },
+              {
+                "id": 4,
+                "description": "Check state is WAITING_FOR_QUOTE_ACCEPTANCE",
+                "exec": [
+                  "expect(callback.body.currentState).to.equal('WAITING_FOR_QUOTE_ACCEPTANCE')"
+                ]
+              },
+              {
+                "id": 5,
+                "description": "Check all the responses have ilpPacket and condition",
+                "exec": [
+                  "expect(callback.body.individualTransferResults.filter(transfer => transfer.quoteResponse.ilpPacket && transfer.quoteResponse.condition)).to.not.be.empty;",
+                  ""
+                ]
+              },
+              {
+                "id": 6,
+                "description": "Check all the responses don't have lastError",
+                "exec": [
+                  "expect(callback.body.individualTransferResults.filter(transfer => transfer.quoteResponse.lastError)).to.be.empty;",
+                  ""
+                ]
+              }
+            ]
+          },
+          "disabled": false,
+          "scripts": {
+            "preRequest": {
+              "exec": [
+                "const individualTransfers = []",
+                "for(let i=1; i<=environment.totalIndividualTransfers; i++) {",
+                "  individualTransfers.push({",
+                "    transactionId: environment.acceptPartyCallback.body.individualTransferResults[i-1].transactionId,",
+                "    acceptParty: true,",
+                "    homeTransactionId: 'abc' + i,",
+                "  })",
+                "}",
+                "",
+                "custom.appendRequestBody({",
+                "  individualTransfers: individualTransfers",
+                "})",
+                ""
+              ]
+            },
+            "postRequest": {
+              "exec": [
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "id": 3,
+          "description": "put bulk transaction for acceptQuote",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "asynchronous": true,
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/bulkTransactions/{bulkTransactionId}",
+          "path": "/bulkTransactions/{$prev.1.request.body.bulkTransactionId}",
+          "method": "put",
+          "params": {
+            "bulkTransactionId": "{$prev.1.request.body.bulkTransactionId}"
+          },
+          "body": {
+            "bulkHomeTransactionID": "{$prev.1.request.body.bulkHomeTransactionID}",
+            "individualTransfers": []
+          },
+          "scriptingEngine": "javascript",
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Check Return Status Code",
+                "exec": [
+                  "expect(response.status).to.equal(202)"
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Check number of returned transfers",
+                "exec": [
+                  "expect(callback.body.individualTransferResults.length).to.equal(environment.totalIndividualTransfers)"
+                ]
+              },
+              {
+                "id": 4,
+                "description": "Check response has the receiver fspid populated",
+                "exec": [
+                  "expect(callback.body.individualTransferResults[0].to.partyIdInfo.fspId).to.not.be.empty"
+                ]
+              },
+              {
+                "id": 5,
+                "description": "Check response receiver first name is ReceiverFirst",
+                "exec": [
+                  "expect(callback.body.individualTransferResults[0].to.personalInfo.complexName.firstName).to.equal('ReceiverFirst')"
+                ]
+              },
+              {
+                "id": 6,
+                "description": "Check response receiver last name is ReceiverLast",
+                "exec": [
+                  "expect(callback.body.individualTransferResults[0].to.personalInfo.complexName.lastName).to.equal('ReceiverLast')"
+                ]
+              },
+              {
+                "id": 7,
+                "description": "Check response has quote result",
+                "exec": [
+                  "expect(callback.body.individualTransferResults[0].quoteResponse).to.exist;"
+                ]
+              },
+              {
+                "id": 8,
+                "description": "Check response has ilpPacket and condition",
+                "exec": [
+                  "expect(callback.body.individualTransferResults[0].quoteResponse.ilpPacket).to.not.be.empty;",
+                  "",
+                  "expect(callback.body.individualTransferResults[0].quoteResponse.condition).to.not.be.empty;"
+                ]
+              },
+              {
+                "id": 9,
+                "description": "Check response has  fulfillment",
+                "exec": [
+                  "expect(callback.body.individualTransferResults[0].fulfil.fulfilment).to.exist;"
+                ]
+              },
+              {
+                "id": 10,
+                "description": "Check response has  COMPLETED state",
+                "exec": [
+                  "expect(callback.body.individualTransferResults[0].fulfil.transferState).to.equal('COMMITTED');"
+                ]
+              },
+              {
+                "id": 11,
+                "description": "Check overall bulk transaction state is COMPLETED",
+                "exec": [
+                  "expect(callback.body.currentState).to.equal('COMPLETED')"
+                ]
+              },
+              {
+                "id": 12,
+                "description": "Check all the responses have fulfilment and transferId",
+                "exec": [
+                  "expect(callback.body.individualTransferResults.filter(transfer => transfer.fulfil.fulfilment && transfer.fulfil.transferId)).to.not.be.empty;",
+                  ""
+                ]
+              },
+              {
+                "id": 13,
+                "description": "Check all the responses don't have lastError",
+                "exec": [
+                  "expect(callback.body.individualTransferResults.filter(transfer => transfer.fulfil.lastError)).to.be.empty;",
+                  ""
+                ]
+              },
+              {
+                "id": 14,
+                "description": "Check all the responses have transferState as COMMITTED",
+                "exec": [
+                  "expect(callback.body.individualTransferResults.filter(transfer => transfer.fulfil.transferState == 'COMMITTED')).to.not.be.empty;",
+                  ""
+                ]
+              }
+            ]
+          },
+          "disabled": false,
+          "scripts": {
+            "preRequest": {
+              "exec": [
+                "const individualTransfers = []",
+                "for(let i=1; i<=environment.totalIndividualTransfers; i++) {",
+                "  individualTransfers.push({",
+                "    transactionId: environment.acceptPartyCallback.body.individualTransferResults[i-1].transactionId,",
+                "    acceptQuote: true,",
+                "    homeTransactionId: 'abc' + i,",
+                "  })",
+                "}",
+                "",
+                "custom.appendRequestBody({",
+                "  individualTransfers: individualTransfers",
+                "})",
+                ""
+              ]
+            },
+            "postRequest": {
+              "exec": [
+                ""
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

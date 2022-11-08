@@ -97,6 +97,12 @@ const config = Convict({
                 default: ['topic-sdk-outbound-command-events'],
                 env: 'COMMAND_EVENT_CONSUMER_TOPICS',
             },
+            messageMaxBytes: {
+                doc: 'messageMaxBytes',
+                format: Number,
+                default: 200000000,
+                env: 'COMMAND_EVENT_CONSUMER_MESSAGE_MAX_BYTES',
+            },
         },
         DOMAIN_EVENT_PRODUCER: {
             brokerList: {
@@ -116,6 +122,18 @@ const config = Convict({
                 format: String,
                 default: 'topic-sdk-outbound-domain-events',
                 env: 'DOMAIN_EVENT_PRODUCER_TOPIC',
+            },
+            messageMaxBytes: {
+                doc: 'messageMaxBytes',
+                format: Number,
+                default: 200000000,
+                env: 'DOMAIN_EVENT_PRODUCER_MESSAGE_MAX_BYTES',
+            },
+            compressionCodec: {
+                doc: 'compressionCodec',
+                format: String,
+                default: 'none',
+                env: 'DOMAIN_EVENT_PRODUCER_COMPRESSION_CODEC',
             },
         },
     },
