@@ -357,9 +357,10 @@ const createLogger = (logger) => async (ctx, next) => {
         method: ctx.method
     }});
     await ctx.state.logger.log('Request received');
-    // if (!ctx.state.logExcludePaths.includes(ctx.path)) {
-    //     ctx.state.logger.push({body: ctx.request.body}).log('Request received');
-    // }
+    // TODO: we need to disable the following log message based on a configurable parameter like DEBUG
+    if (!ctx.state.logExcludePaths.includes(ctx.path)) {
+        ctx.state.logger.push({body: ctx.request.body}).log('Request received');
+    }
     try {
         await next();
     } catch (err) {
