@@ -358,7 +358,7 @@ const createLogger = (logger) => async (ctx, next) => {
     }});
     await ctx.state.logger.log('Request received');
     // TODO: we need to disable the following log message based on a configurable parameter like DEBUG
-    if (!ctx.state.logExcludePaths.includes(ctx.path)) {
+    if (!ctx.state.logExcludePaths.includes(ctx.path) && !ctx.path.startsWith('/bulk')) {
         ctx.state.logger.push({body: ctx.request.body}).log('Request received');
     }
     try {

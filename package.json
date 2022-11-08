@@ -67,7 +67,7 @@
     "wait-4-docker": "node ./scripts/_wait4_all.js"
   },
   "dependencies": {
-    "nx": "15.0.11",
+    "nx": "15.0.12",
     "tslib": "^2.4.1"
   },
   "devDependencies": {
