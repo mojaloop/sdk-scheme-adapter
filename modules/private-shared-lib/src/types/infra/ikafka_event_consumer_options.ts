@@ -28,5 +28,6 @@ export type IKafkaEventConsumerOptions = {
     brokerList: string,
     groupId: string,
     clientId: string,
-    topics: string[]
+    topics: string[],
+    messageMaxBytes?: number,
 };

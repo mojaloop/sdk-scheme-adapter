@@ -174,7 +174,7 @@ const createRequestIdGenerator = () => async (ctx, next) => {
  * @return {Function}
  */
 //
-const createHeaderValidator = (logger) => async (
+const createHeaderValidator = (conf, logger) => async (
     ctx,
     next,
     resources = defaultProtocolResources,
@@ -264,7 +264,7 @@ const createHeaderValidator = (logger) => async (
     }
 
     try {
-        ctx.request.body = await coBody.json(ctx.req);
+        ctx.request.body = await coBody.json(ctx.req, { limit: conf.fspiopApiServerMaxRequestBytes });
     }
     catch(err) {
         // error parsing body
@@ -356,7 +356,9 @@ const createLogger = (logger) => async (ctx, next) => {
         path: ctx.path,
         method: ctx.method
     }});
-    if (!ctx.state.logExcludePaths.includes(ctx.path)) {
+    await ctx.state.logger.log('Request received');
+    // TODO: we need to disable the following log message based on a configurable parameter like DEBUG
+    if (!ctx.state.logExcludePaths.includes(ctx.path) && !ctx.path.startsWith('/bulk')) {
         ctx.state.logger.push({body: ctx.request.body}).log('Request received');
     }
     try {
