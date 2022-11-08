@@ -49,8 +49,9 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
     const processBulkQuotesCallbackMessage = message as ProcessBulkQuotesCallbackCmdEvt;
     try {
         logger.info(`Got ProcessBulkQuotesCallbackCmdEvt: id=${processBulkQuotesCallbackMessage.getKey()}`);
-        let successCountAfterIncrement;
-        let failedCountAfterIncrement;
+        let bulkQuotesSuccessCountAfterIncrement;
+        let bulkQuotesFailedCountAfterIncrement;
+        let individualTransfersFailedCounterAfterIncrement;
 
         // Create aggregate
         const bulkTransactionAgg = await BulkTransactionAgg.CreateFromRepo(
@@ -68,7 +69,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
         // bulkQuotesResult.currentState === 'ERROR_OCCURRED' necessitates erroring out all individual transfers in that bulk batch.
         if(bulkQuotesResult?.currentState === SDKOutboundTransferState.COMPLETED) {
             bulkBatch.setState(BulkBatchInternalState.AGREEMENT_COMPLETED);
-            successCountAfterIncrement = await bulkTransactionAgg.incrementBulkQuotesSuccessCount();
+            bulkQuotesSuccessCountAfterIncrement = await bulkTransactionAgg.incrementBulkQuotesSuccessCount();
 
             // Iterate through items in batch and update the individual states
             for await (const quoteResult of bulkQuotesResult.individualQuoteResults) {
@@ -97,7 +98,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
         // to AGREEMENT_FAILED.
         } else {
             bulkBatch.setState(BulkBatchInternalState.AGREEMENT_FAILED);
-            failedCountAfterIncrement = await bulkTransactionAgg.incrementBulkQuotesFailedCount();
+            bulkQuotesFailedCountAfterIncrement = await bulkTransactionAgg.incrementBulkQuotesFailedCount();
 
             const individualTransferIds = Object.values(bulkBatch.quoteIdReferenceIdMap);
             for await (const individualTransferId of individualTransferIds) {
@@ -105,7 +106,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                 individualTransfer.setTransferState(IndividualTransferInternalState.AGREEMENT_FAILED);
                 individualTransfer.setLastError(processBulkQuotesCallbackMessage.bulkQuotesErrorResult);
                 await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
-                await bulkTransactionAgg.incrementFailedCount();
+                individualTransfersFailedCounterAfterIncrement = await bulkTransactionAgg.incrementFailedCount();
             }
         }
         if(bulkQuotesResult) {
@@ -126,8 +127,9 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
         await options.domainProducer.sendDomainEvent(bulkQuotesCallbackProcessedDmEvt);
 
         const totalCount = await bulkTransactionAgg.getTotalCount();
-        const failedCount = await bulkTransactionAgg.getFailedCount();
+        const failedCount = individualTransfersFailedCounterAfterIncrement || await bulkTransactionAgg.getFailedCount();
 
+        // All individual transfers have failed. Skip to preparing response.
         if(totalCount === failedCount) {
             const prepareSDKOutboundBulkResponseCmdEvt = new PrepareSDKOutboundBulkResponseCmdEvt({
                 bulkId: bulkTransactionAgg.bulkId,
@@ -142,8 +144,8 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
         // Check the status of the remaining items in the bulk
         const bulkQuotesTotalCount = await bulkTransactionAgg.getBulkQuotesTotalCount();
         // eslint-disable-next-line max-len
-        const bulkQuotesSuccessCount = successCountAfterIncrement || await bulkTransactionAgg.getBulkQuotesSuccessCount();
-        const bulkQuotesFailedCount = failedCountAfterIncrement || await bulkTransactionAgg.getBulkQuotesFailedCount();
+        const bulkQuotesSuccessCount = bulkQuotesSuccessCountAfterIncrement || await bulkTransactionAgg.getBulkQuotesSuccessCount();
+        const bulkQuotesFailedCount = bulkQuotesFailedCountAfterIncrement || await bulkTransactionAgg.getBulkQuotesFailedCount();
         if(bulkQuotesTotalCount === (bulkQuotesSuccessCount + bulkQuotesFailedCount)) {
             // Update global state "AGREEMENT_COMPLETED"
             await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.AGREEMENT_COMPLETED);
@@ -177,7 +179,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                     if(individualTransfer.quoteResponse) {
                         individualTransferResults.push({
                             homeTransactionId: individualTransfer.request.homeTransactionId,
-                            transactionId: individualTransfer.transactionId,
+                            transactionId: individualTransfer.transactionId, // ???????
                             quoteResponse: individualTransfer.quoteResponse,
                         });
                     }
