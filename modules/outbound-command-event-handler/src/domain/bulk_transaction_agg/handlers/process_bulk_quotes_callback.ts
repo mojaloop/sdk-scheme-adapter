@@ -69,7 +69,6 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
         // bulkQuotesResult.currentState === 'ERROR_OCCURRED' necessitates erroring out all individual transfers in that bulk batch.
         if(bulkQuotesResult?.currentState === SDKOutboundTransferState.COMPLETED) {
             bulkBatch.setState(BulkBatchInternalState.AGREEMENT_COMPLETED);
-            bulkQuotesSuccessCountAfterIncrement = await bulkTransactionAgg.incrementBulkQuotesSuccessCount();
 
             // Iterate through items in batch and update the individual states
             for await (const quoteResult of bulkQuotesResult.individualQuoteResults) {
@@ -94,11 +93,12 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                     await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
                 }
             }
+            bulkQuotesSuccessCountAfterIncrement = await bulkTransactionAgg.incrementBulkQuotesSuccessCount();
+
         // If the bulk quote is in any other state, update the bulk batch and all individual transfers
         // to AGREEMENT_FAILED.
         } else {
             bulkBatch.setState(BulkBatchInternalState.AGREEMENT_FAILED);
-            bulkQuotesFailedCountAfterIncrement = await bulkTransactionAgg.incrementBulkQuotesFailedCount();
 
             const individualTransferIds = Object.values(bulkBatch.quoteIdReferenceIdMap);
             for await (const individualTransferId of individualTransferIds) {
@@ -108,6 +108,8 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                 await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
                 individualTransfersFailedCounterAfterIncrement = await bulkTransactionAgg.incrementFailedCount();
             }
+
+            bulkQuotesFailedCountAfterIncrement = await bulkTransactionAgg.incrementBulkQuotesFailedCount();
         }
         if(bulkQuotesResult) {
             bulkBatch.setBulkQuotesResponse(bulkQuotesResult);
@@ -179,7 +181,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                     if(individualTransfer.quoteResponse) {
                         individualTransferResults.push({
                             homeTransactionId: individualTransfer.request.homeTransactionId,
-                            transactionId: individualTransfer.transactionId, // ???????
+                            transactionId: individualTransfer.transactionId,
                             quoteResponse: individualTransfer.quoteResponse,
                         });
                     }

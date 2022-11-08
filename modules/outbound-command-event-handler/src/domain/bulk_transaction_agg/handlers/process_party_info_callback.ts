@@ -64,13 +64,14 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
         );
         if(processPartyInfoCallback.partyResult?.currentState === SDKOutboundTransferState.COMPLETED) {
             individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS);
-            partyLookupSuccessCountAfterIncrement = await bulkTransactionAgg.incrementPartyLookupSuccessCount();
             individualTransfer.setPartyResponse(processPartyInfoCallback.partyResult);
+            partyLookupSuccessCountAfterIncrement = await bulkTransactionAgg.incrementPartyLookupSuccessCount();
+
         } else {
             individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_FAILED);
+            individualTransfer.setLastError(processPartyInfoCallback.partyErrorResult);
             partyLookupFailedCountAfterIncrement = await bulkTransactionAgg.incrementPartyLookupFailedCount();
             individualTransfersFailedCounterAfterIncrement = await bulkTransactionAgg.incrementFailedCount();
-            individualTransfer.setLastError(processPartyInfoCallback.partyErrorResult);
         }
         await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
 
@@ -148,7 +149,7 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
                     // set. `transactionId` and `homeTransaction` still need to be set.
                     individualTransferResults.push({
                         homeTransactionId: individualTransferData.request.homeTransactionId,
-                        transactionId: individualTransferData.id, // ????????
+                        transactionId: individualTransferData.id,
                         to: individualTransferData.partyResponse?.party,
                         lastError,
                     });

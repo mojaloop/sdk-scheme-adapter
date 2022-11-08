@@ -64,7 +64,6 @@ export async function handleProcessBulkTransfersCallbackCmdEvt(
         // bulkTransfersResult.currentState === 'ERROR_OCCURRED' necessitates erroring out all individual transfers in that bulk batch.
         if(bulkTransfersResult?.currentState === SDKOutboundTransferState.COMPLETED) {
             bulkBatch.setState(BulkBatchInternalState.TRANSFERS_COMPLETED);
-            bulkTransfersSuccessCountAfterIncrement = await bulkTransactionAgg.incrementBulkTransfersSuccessCount();
 
             // Iterate through items in batch and update the individual states
             // TODO: We need to handle the case where the Quote was not successful!
@@ -88,11 +87,12 @@ export async function handleProcessBulkTransfersCallbackCmdEvt(
                     await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
                 }
             }
+
+            bulkTransfersSuccessCountAfterIncrement = await bulkTransactionAgg.incrementBulkTransfersSuccessCount();
         // If the bulk transfer is in any other state, update the bulk batch and all individual transfers
         // to TRANSFERS_FAILED.
         } else {
             bulkBatch.setState(BulkBatchInternalState.TRANSFERS_FAILED);
-            bulkTransfersFailedCountAfterIncrement = await bulkTransactionAgg.incrementBulkTransfersFailedCount();
 
             const individualTransferIds = Object.values(bulkBatch.transferIdReferenceIdMap);
             for await (const individualTransferId of individualTransferIds) {
@@ -102,6 +102,8 @@ export async function handleProcessBulkTransfersCallbackCmdEvt(
                 individualTransfer.setLastError(processBulkTransfersCallbackMessage.bulkTransfersErrorResult);
                 await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
             }
+
+            bulkTransfersFailedCountAfterIncrement = await bulkTransactionAgg.incrementBulkTransfersFailedCount();
         }
 
         bulkBatch.setBulkTransfersResponse(bulkTransfersResult);
