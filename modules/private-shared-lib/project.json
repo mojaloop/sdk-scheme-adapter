@@ -1,4 +1,5 @@
 {
+  "name": "modules-private-shared-lib",
   "root": "modules/private-shared-lib/",
   "sourceRoot": "modules/private-shared-lib/src",
   "projectType": "library",
