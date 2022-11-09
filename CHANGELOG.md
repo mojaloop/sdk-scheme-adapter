@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [21.3.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.2.0...v21.3.0) (2022-11-09)
+
+
+### Features
+
+* **mojaloop/3000:** higher capacity bulk tests for load charact... ([cd14508](https://github.com/mojaloop/sdk-scheme-adapter/commit/cd145081007d4a47888fac3e6eaaa33e1eb95634))
+
 ## [21.2.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.1.1...v21.2.0) (2022-11-08)
 
 
