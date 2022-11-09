@@ -653,11 +653,11 @@ workflows:
             - setup
           filters:
             tags:
-              only: /.*/
+              ignore: /.*/
             branches:
               ignore:
-                - /feature*/
-                - /bugfix*/
+                - master
+                - main
 
       - test-lint:
           context: org-global
@@ -748,7 +748,6 @@ workflows:
             - build-local
             - pr-tools/pr-title-check
             - validate-openapi
-            - test-dependencies
             - test-lint
             - test-unit
             - test-integration
@@ -778,7 +777,6 @@ workflows:
             - build-local
             - pr-tools/pr-title-check
             - validate-openapi
-            - test-dependencies
             - test-lint
             - test-unit
             - test-integration
@@ -799,7 +797,6 @@ workflows:
             - build-local
             - pr-tools/pr-title-check
             - validate-openapi
-            - test-dependencies
             - test-lint
             - test-unit
             - test-integration
