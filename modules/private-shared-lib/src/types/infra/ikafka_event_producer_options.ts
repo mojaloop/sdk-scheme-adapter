@@ -23,12 +23,12 @@
  ******/
 
 'use strict';
-import { MLKafkaRawProdOpCompressionCodecEnum } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib';
+import { MLKafkaRawProducerCompressionCodecs } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib';
 
 export type IKafkaEventProducerOptions = {
     brokerList: string,
     clientId: string,
     topic: string,
     messageMaxBytes?: number,
-    compressionCodec?: MLKafkaRawProdOpCompressionCodecEnum,
+    compressionCodec?: MLKafkaRawProducerCompressionCodecs,
 };
