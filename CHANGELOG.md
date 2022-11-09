@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [21.3.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.3.0...v21.3.1) (2022-11-09)
+
+
+### Bug Fixes
+
+* fix missing party error ([#418](https://github.com/mojaloop/sdk-scheme-adapter/issues/418)) ([54d858c](https://github.com/mojaloop/sdk-scheme-adapter/commit/54d858c39ec40109e88816a8465fd24010ebd469))
+
 ## [21.3.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.2.0...v21.3.0) (2022-11-09)
 
 
