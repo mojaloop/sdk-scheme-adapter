@@ -131,16 +131,6 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
                     const individualTransferData = await bulkTransactionAgg
                         .getIndividualTransferById(individualTransferId);
 
-                    // An error contained in the partyResponse was sent by the payee.
-                    // Otherwise, server or timeout errors are set into lastError.
-                    const lastError = (
-                        individualTransferData.partyResponse?.errorInformation && {
-                            mojaloopError: individualTransferData.partyResponse?.errorInformation,
-                        }) || (
-                        individualTransferData.lastError && {
-                            mojaloopError: individualTransferData.lastError.mojaloopError,
-                        });
-
                     // Individual transfers where `partyResult.currentState` does
                     // not match SDKOutboundTransferState.COMPLETED will have no `partyResponse`
                     // set. `transactionId` and `homeTransaction` still need to be set.
@@ -148,7 +138,9 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
                         homeTransactionId: individualTransferData.request.homeTransactionId,
                         transactionId: individualTransferData.id,
                         to: individualTransferData.partyResponse?.party,
-                        lastError,
+                        lastError:  individualTransferData.lastError && {
+                            mojaloopError: individualTransferData.lastError.mojaloopError,
+                        },
                     });
                 }
                 const sdkOutboundBulkAcceptPartyInfoRequestedDmEvt = new SDKOutboundBulkAcceptPartyInfoRequestedDmEvt({
