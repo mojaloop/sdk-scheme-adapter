@@ -2171,10 +2171,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/platform-shared-lib-messaging-types-lib@npm:^0.2.17":
-  version: 0.2.17
-  resolution: "@mojaloop/platform-shared-lib-messaging-types-lib@npm:0.2.17"
-  checksum: e1afe132510a75e746e7fb967e6897a22220e66b814363b95beb04716a984aacee69caf40fac83a736ab3a7da5496cb9dbe81574cd95e75d464d3a64315661da
+"@mojaloop/platform-shared-lib-messaging-types-lib@npm:^0.2.18":
+  version: 0.2.18
+  resolution: "@mojaloop/platform-shared-lib-messaging-types-lib@npm:0.2.18"
+  checksum: e035053293a245f002b6feb3ff361c286fcd6729d8e393ba79ad611333bd223951ec640c61f5d41ceb724b1e6549f8bc7f776e2ad639672f48d04819c399c539
   languageName: node
   linkType: hard
 
@@ -2348,7 +2348,7 @@ __metadata:
     "@mojaloop/api-snippets": ^16.0.6
     "@mojaloop/central-services-shared": ^17.3.1
     "@mojaloop/logging-bc-public-types-lib": ^0.1.13
-    "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.2.17
+    "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.2.18
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": ^0.2.15
     "@types/node": ^18.11.9
     ajv: ^8.11.0
