@@ -36,8 +36,6 @@ import {
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
 import { BulkBatchInternalState, BulkTransactionInternalState, IndividualTransferInternalState } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-// TODO: remove this
-import { setTimeout } from 'timers/promises';
 
 export async function handleProcessBulkTransfersCallbackCmdEvt(
     message: CommandEvent,
@@ -78,8 +76,6 @@ export async function handleProcessBulkTransfersCallbackCmdEvt(
                     });
                     individualTransfer.setTransactionId(bulkBatch.id);
                     await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
-                    // TODO: remove this
-                    await setTimeout(10, 'resolved');
                 } else {
                     const individualTransferId = bulkBatch.getReferenceIdForTransferId(transferResult.transferId);
                     const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
