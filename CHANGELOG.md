@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [21.3.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.3.1...v21.3.2) (2022-11-09)
+
+
+### Bug Fixes
+
+* fix party lasterror logic ([a232def](https://github.com/mojaloop/sdk-scheme-adapter/commit/a232def8e7e972369ffd0aff9012ddc7bc4fb9e2))
+
 ### [21.3.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.3.0...v21.3.1) (2022-11-09)
 
 
