@@ -2146,7 +2146,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/logging-bc-client-lib@npm:^0.1.15":
+"@mojaloop/logging-bc-client-lib@npm:^0.1.16":
   version: 0.1.16
   resolution: "@mojaloop/logging-bc-client-lib@npm:0.1.16"
   dependencies:
@@ -2164,14 +2164,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/logging-bc-public-types-lib@npm:^0.1.12, @mojaloop/logging-bc-public-types-lib@npm:~0.1.12":
+"@mojaloop/logging-bc-public-types-lib@npm:^0.1.13, @mojaloop/logging-bc-public-types-lib@npm:~0.1.12":
   version: 0.1.13
   resolution: "@mojaloop/logging-bc-public-types-lib@npm:0.1.13"
   checksum: 2362698d8f2ace981261e9a18c3af5e1136095c618c34a1fa54386f20fe3b23922228093c458f7d7ed8bd86f7a7921e46c3fbc88010e6f31b0482c4b52a8c656
   languageName: node
   linkType: hard
 
-"@mojaloop/platform-shared-lib-messaging-types-lib@npm:^0.2.16":
+"@mojaloop/platform-shared-lib-messaging-types-lib@npm:^0.2.17":
   version: 0.2.17
   resolution: "@mojaloop/platform-shared-lib-messaging-types-lib@npm:0.2.17"
   checksum: e1afe132510a75e746e7fb967e6897a22220e66b814363b95beb04716a984aacee69caf40fac83a736ab3a7da5496cb9dbe81574cd95e75d464d3a64315661da
@@ -2185,7 +2185,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:^0.2.14, @mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:~0.2.13":
+"@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:^0.2.15":
+  version: 0.2.15
+  resolution: "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:0.2.15"
+  dependencies:
+    "@mojaloop/logging-bc-public-types-lib": ^0.1.11
+    "@mojaloop/platform-shared-lib-messaging-types-lib": ~0.2.0
+    node-rdkafka: ~2.13.0
+  checksum: abc30b51d57585bcd2fd116de08d6412be2d3b2db0fe5ad7d92d2ef632da7460bcb1d811c82c52fe01d948932d6e9f73d2f1e4fc11eb3f054e1d37e5df1210a1
+  languageName: node
+  linkType: hard
+
+"@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:~0.2.13":
   version: 0.2.14
   resolution: "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:0.2.14"
   dependencies:
@@ -2215,7 +2226,7 @@ __metadata:
     "@types/jest": ^29.2.2
     ajv: 8.11.0
     axios: ^1.1.3
-    babel-jest: ^29.3.0
+    babel-jest: ^29.3.1
     co-body: ^6.1.0
     dotenv: ^16.0.3
     env-var: ^7.3.0
@@ -2226,7 +2237,7 @@ __metadata:
     express: ^4.18.2
     fast-json-patch: ^3.1.1
     javascript-state-machine: ^3.1.0
-    jest: ^29.3.0
+    jest: ^29.3.1
     jest-junit: ^14.0.1
     js-yaml: ^4.1.0
     json-schema-ref-parser: ^9.0.9
@@ -2239,7 +2250,7 @@ __metadata:
     oauth2-server: ^4.0.0-dev.2
     openapi-jsonschema-parameters: ^12.0.2
     openapi-response-validator: ^12.0.2
-    openapi-typescript: ^5.4.1
+    openapi-typescript: ^6.0.1
     prom-client: ^14.1.0
     promise-timeout: ^1.3.0
     random-word-slugs: ^0.1.6
@@ -2260,8 +2271,8 @@ __metadata:
   dependencies:
     "@mojaloop/api-snippets": ^16.0.6
     "@mojaloop/central-services-shared": ^17.3.1
-    "@mojaloop/logging-bc-client-lib": ^0.1.15
-    "@mojaloop/logging-bc-public-types-lib": ^0.1.12
+    "@mojaloop/logging-bc-client-lib": ^0.1.16
+    "@mojaloop/logging-bc-public-types-lib": ^0.1.13
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
     "@types/convict": ^6.1.1
     "@types/express": ^4.17.14
@@ -2278,7 +2289,7 @@ __metadata:
     copyfiles: ^2.4.1
     eslint: ^8.27.0
     express: ^4.18.2
-    jest: ^29.3.0
+    jest: ^29.3.1
     nodemon: ^2.0.20
     npm-check-updates: ^16.3.18
     openapi-backend: ^5.5.0
@@ -2298,8 +2309,8 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-domain-event-handler@workspace:modules/outbound-domain-event-handler"
   dependencies:
     "@mojaloop/api-snippets": ^16.0.6
-    "@mojaloop/logging-bc-client-lib": ^0.1.15
-    "@mojaloop/logging-bc-public-types-lib": ^0.1.12
+    "@mojaloop/logging-bc-client-lib": ^0.1.16
+    "@mojaloop/logging-bc-public-types-lib": ^0.1.13
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
     "@types/convict": ^6.1.1
     "@types/express": ^4.17.14
@@ -2315,7 +2326,7 @@ __metadata:
     copyfiles: ^2.4.1
     eslint: ^8.27.0
     express: ^4.18.2
-    jest: ^29.3.0
+    jest: ^29.3.1
     nodemon: ^2.0.20
     npm-check-updates: ^16.3.18
     openapi-backend: ^5.5.0
@@ -2336,13 +2347,13 @@ __metadata:
   dependencies:
     "@mojaloop/api-snippets": ^16.0.6
     "@mojaloop/central-services-shared": ^17.3.1
-    "@mojaloop/logging-bc-public-types-lib": ^0.1.12
-    "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.2.16
-    "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": ^0.2.14
+    "@mojaloop/logging-bc-public-types-lib": ^0.1.13
+    "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.2.17
+    "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": ^0.2.15
     "@types/node": ^18.11.9
     ajv: ^8.11.0
     eslint: ^8.27.0
-    jest: ^29.3.0
+    jest: ^29.3.1
     npm-check-updates: ^16.3.18
     redis: ^4.4.0
     replace: ^1.2.2
@@ -2367,10 +2378,10 @@ __metadata:
     eslint-config-airbnb-typescript: ^17.0.0
     eslint-plugin-import: latest
     husky: ^8.0.2
-    jest: ^29.3.0
+    jest: ^29.3.1
     nodemon: ^2.0.20
     npm-check-updates: ^16.3.18
-    nx: 15.0.12
+    nx: 15.0.13
     replace: ^1.2.2
     standard-version: ^9.5.0
     ts-jest: ^29.0.3
@@ -2508,23 +2519,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nrwl/cli@npm:15.0.12":
-  version: 15.0.12
-  resolution: "@nrwl/cli@npm:15.0.12"
+"@nrwl/cli@npm:15.0.13":
+  version: 15.0.13
+  resolution: "@nrwl/cli@npm:15.0.13"
   dependencies:
-    nx: 15.0.12
-  checksum: ddd21122c954015e245b3198ff8ddd6d5deed45fe2992ac97221ba4f42295d3e361625de300c75680a7a1b3f4ff8d5558821995f328725c3001d21b11d78fd50
+    nx: 15.0.13
+  checksum: 0fa1e87e0e2c23b8c28499176dd64fa7fca1713cf12065ef94fa653a67f2ca8eae4f1be0006edb18752547835bcdf0ec2392d22c2a04610f558e93a5fe5a025a
   languageName: node
   linkType: hard
 
-"@nrwl/tao@npm:15.0.12":
-  version: 15.0.12
-  resolution: "@nrwl/tao@npm:15.0.12"
+"@nrwl/tao@npm:15.0.13":
+  version: 15.0.13
+  resolution: "@nrwl/tao@npm:15.0.13"
   dependencies:
-    nx: 15.0.12
+    nx: 15.0.13
   bin:
     tao: index.js
-  checksum: 4a24b936bd14e91b7fda758c20a2796fd0f343aa3acd76c46b96426ed3ee618804fe5501678df5e7954202e8f13799413978f3a6d6ea634ce304c47479e8ddc8
+  checksum: 4e66ccc19c97e297c4f23a46d9533f9835c060b01a6b8e1c44483c1ee80940cb6641a8799bb540b97490bd28a5eec600813b621c254ad9a77af4b3702b6e100a
   languageName: node
   linkType: hard
 
@@ -3690,7 +3701,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ansi-colors@npm:^4.1.1":
+"ansi-colors@npm:^4.1.1, ansi-colors@npm:^4.1.3":
   version: 4.1.3
   resolution: "ansi-colors@npm:4.1.3"
   checksum: a9c2ec842038a1fabc7db9ece7d3177e2fe1c5dc6f0c51ecfbf5f39911427b89c00b5dc6b8bd95f82a26e9b16aaae2e83d45f060e98070ce4d1333038edceb0e
@@ -3982,7 +3993,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-jest@npm:^29.3.0, babel-jest@npm:^29.3.1":
+"babel-jest@npm:^29.3.1":
   version: 29.3.1
   resolution: "babel-jest@npm:29.3.1"
   dependencies:
@@ -6592,7 +6603,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-glob@npm:^3.2.11, fast-glob@npm:^3.2.9":
+"fast-glob@npm:^3.2.11, fast-glob@npm:^3.2.12, fast-glob@npm:^3.2.9":
   version: 3.2.12
   resolution: "fast-glob@npm:3.2.12"
   dependencies:
@@ -8814,7 +8825,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest@npm:^29.3.0":
+"jest@npm:^29.3.1":
   version: 29.3.1
   resolution: "jest@npm:29.3.1"
   dependencies:
@@ -10550,12 +10561,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nx@npm:15.0.12":
-  version: 15.0.12
-  resolution: "nx@npm:15.0.12"
+"nx@npm:15.0.13":
+  version: 15.0.13
+  resolution: "nx@npm:15.0.13"
   dependencies:
-    "@nrwl/cli": 15.0.12
-    "@nrwl/tao": 15.0.12
+    "@nrwl/cli": 15.0.13
+    "@nrwl/tao": 15.0.13
     "@parcel/watcher": 2.0.4
     "@yarnpkg/lockfile": ^1.1.0
     "@yarnpkg/parsers": ^3.0.0-rc.18
@@ -10599,7 +10610,7 @@ __metadata:
       optional: true
   bin:
     nx: bin/nx.js
-  checksum: 51763600e2f67dc0bd2bfd400529a19ed9a214824cd4dd2d7804146ea5132e47d0f02fb283fd66cfad7f2aa208b52601564211549fadff058bbbb0a195541343
+  checksum: 25003f30a8dd3a816e975cdbbd33b73ab9e405f055dc9d288534868afcf46e868da014cedb7df443118ff20277c1f4d216ce85a680bcc2d27b97a3919b114a02
   languageName: node
   linkType: hard
 
@@ -10885,6 +10896,22 @@ __metadata:
   bin:
     openapi-typescript: bin/cli.js
   checksum: ab0e7613a478fcfa675887e50ff00fd6403ad6313357944408c11b420c08bbfa2bb58bff66c4e9a8c5670c79fe1a8d2f4ee85beceb004e72c529a97019b57c20
+  languageName: node
+  linkType: hard
+
+"openapi-typescript@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "openapi-typescript@npm:6.0.1"
+  dependencies:
+    ansi-colors: ^4.1.3
+    fast-glob: ^3.2.12
+    js-yaml: ^4.1.0
+    supports-color: ^9.2.3
+    undici: ^5.12.0
+    yargs-parser: ^21.1.1
+  bin:
+    openapi-typescript: bin/cli.js
+  checksum: d61f1f7d0f11b48fcdf7d47cbd4d05d233ec59f0c36cb2a454406a29891b7e657ec936816e13c0eb622bf142995a885232336530733f889c0890b03439b76c49
   languageName: node
   linkType: hard
 
@@ -13132,6 +13159,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"supports-color@npm:^9.2.3":
+  version: 9.2.3
+  resolution: "supports-color@npm:9.2.3"
+  checksum: 47d598b70d2bac3cbce98950344134de17c2935f45e8ad6256cde78ebe5da440e240d9fa17c1146bd84b1c36f865239fef6c563d70068a8d901ca5a6c56960af
+  languageName: node
+  linkType: hard
+
 "supports-preserve-symlinks-flag@npm:^1.0.0":
   version: 1.0.0
   resolution: "supports-preserve-symlinks-flag@npm:1.0.0"
@@ -13720,7 +13754,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici@npm:^5.4.0":
+"undici@npm:^5.12.0, undici@npm:^5.4.0":
   version: 5.12.0
   resolution: "undici@npm:5.12.0"
   dependencies:
