@@ -2233,7 +2233,7 @@ __metadata:
     eslint: ^8.27.0
     eslint-config-airbnb-base: ^15.0.0
     eslint-plugin-import: ^2.26.0
-    eslint-plugin-jest: ^27.1.4
+    eslint-plugin-jest: ^27.1.5
     express: ^4.18.2
     fast-json-patch: ^3.1.1
     javascript-state-machine: ^3.1.0
@@ -2250,7 +2250,7 @@ __metadata:
     oauth2-server: ^4.0.0-dev.2
     openapi-jsonschema-parameters: ^12.0.2
     openapi-response-validator: ^12.0.2
-    openapi-typescript: ^6.0.2
+    openapi-typescript: ^6.0.3
     prom-client: ^14.1.0
     promise-timeout: ^1.3.0
     random-word-slugs: ^0.1.6
@@ -6241,9 +6241,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-jest@npm:^27.1.4":
-  version: 27.1.4
-  resolution: "eslint-plugin-jest@npm:27.1.4"
+"eslint-plugin-jest@npm:^27.1.5":
+  version: 27.1.5
+  resolution: "eslint-plugin-jest@npm:27.1.5"
   dependencies:
     "@typescript-eslint/utils": ^5.10.0
   peerDependencies:
@@ -6254,7 +6254,7 @@ __metadata:
       optional: true
     jest:
       optional: true
-  checksum: b7e3bf0dc092d9936ac1c10a0aceda411935c411c9323def109c2429ccf8486b3faead80fb769119add578c200352729ff96523bffec083f421e1b151404f642
+  checksum: 7c9de765793f7161afa0bdcdce67f4d072944152880fa638b25d228188dcee47a4b4aada26c57db72bc10193c96a1979e17afb8a7c3e400e961d8adfbf23ddbe
   languageName: node
   linkType: hard
 
@@ -10899,9 +10899,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openapi-typescript@npm:^6.0.2":
-  version: 6.0.2
-  resolution: "openapi-typescript@npm:6.0.2"
+"openapi-typescript@npm:^6.0.3":
+  version: 6.0.3
+  resolution: "openapi-typescript@npm:6.0.3"
   dependencies:
     ansi-colors: ^4.1.3
     fast-glob: ^3.2.12
@@ -10911,7 +10911,7 @@ __metadata:
     yargs-parser: ^21.1.1
   bin:
     openapi-typescript: bin/cli.js
-  checksum: 17900e6590d47efb2d49df149c90d9bea082340805b33d2b939a46c2d5675e21dbd9ede2ca2439365ba98e41e014ac29f9c0b4a81842d43daa081e1992c4f5e2
+  checksum: c16b187737dc44f07975861e318d53ea0172a6205bbc41b9454f3c9670fc5e7bf43867c27b2e8e38ae330727d464b1839cc48ebbec7c7b415b25ffdcf992a6d9
   languageName: node
   linkType: hard
 
