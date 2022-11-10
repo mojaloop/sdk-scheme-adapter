@@ -178,20 +178,14 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                 for await (const individualTransferId of allIndividualTransferIds) {
                     const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
 
-                    const lastError = (
-                        individualTransfer.quoteResponse?.lastError && {
-                            mojaloopError: individualTransfer.quoteResponse?.lastError?.mojaloopError,
-                        }) || (
-                        individualTransfer.lastError && {
-                            mojaloopError: individualTransfer.lastError.mojaloopError,
-                        });
-
-
                     individualTransferResults.push({
                         homeTransactionId: individualTransfer.request.homeTransactionId,
                         transactionId: individualTransfer.transactionId,
                         quoteResponse: individualTransfer.quoteResponse,
-                        lastError,
+                        lastError: individualTransfer.lastError && {
+                            httpStatusCode: individualTransfer.lastError.httpStatusCode,
+                            mojaloopError: individualTransfer.lastError.mojaloopError,
+                        },
                     });
                 }
 
