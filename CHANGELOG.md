@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [21.3.3](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.3.2...v21.3.3) (2022-11-10)
+
+
+### Bug Fixes
+
+* **mojaloop/3017:** callbacks count comparison logic ([#419](https://github.com/mojaloop/sdk-scheme-adapter/issues/419)) ([56e1db0](https://github.com/mojaloop/sdk-scheme-adapter/commit/56e1db02a7c741dbedac05e320b4208cc06d02ea))
+
 ### [21.3.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.3.1...v21.3.2) (2022-11-09)
 
 
