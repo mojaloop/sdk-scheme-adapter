@@ -9,6 +9,8 @@ services:
     networks:
         - mojaloop-net
     image: "redis:5.0.4-alpine"
+    cap_add:
+      - NET_ADMIN
     ports:
       - "6379:6379"
     healthcheck:
@@ -275,12 +277,26 @@ services:
     depends_on:
       - kafka
 
-  # redisinsight:
-  #   image: redislabs/redisinsight
-  #   ports:
-  #     - "9001:8001"
-  #   networks:
-  #     - mojaloop-net
-  #   volumes: []
-  #   restart: on-failure
+  redisinsight:
+    image: redislabs/redisinsight
+    ports:
+      - "9001:8001"
+    networks:
+      - mojaloop-net
+    volumes: []
+    restart: on-failure
+    healthcheck:
+      test: ["CMD" ,"sh", "-c", "curl http://localhost:8001/api/instance/"]
+      timeout: 20s
+      retries: 30
+      start_period: 5s
+      interval: 5s
 
+  init-redisinsight:
+    networks:
+      - mojaloop-net
+    image: curlimages/curl:7.86.0
+    depends_on:
+      redisinsight:
+        condition: service_healthy
+    command: "--location --request POST 'http://redisinsight:8001/api/instance/' --header 'Content-Type: application/json' --data-raw '{\"name\": \"Redis DB\",\"connectionType\": \"STANDALONE\",\"host\": \"redis\",\"port\": 6379}'"
