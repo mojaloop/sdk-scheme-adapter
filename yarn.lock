@@ -2250,11 +2250,11 @@ __metadata:
     oauth2-server: ^4.0.0-dev.2
     openapi-jsonschema-parameters: ^12.0.2
     openapi-response-validator: ^12.0.2
-    openapi-typescript: ^6.0.1
+    openapi-typescript: ^6.0.2
     prom-client: ^14.1.0
     promise-timeout: ^1.3.0
     random-word-slugs: ^0.1.6
-    redis: ^4.4.0
+    redis: ^4.5.0
     redis-mock: ^0.56.3
     replace: ^1.2.2
     standard-version: ^9.5.0
@@ -2293,7 +2293,7 @@ __metadata:
     nodemon: ^2.0.20
     npm-check-updates: ^16.3.18
     openapi-backend: ^5.5.0
-    redis: ^4.4.0
+    redis: ^4.5.0
     replace: ^1.2.2
     standard-version: ^9.5.0
     swagger-ui-express: ^4.6.0
@@ -2330,7 +2330,7 @@ __metadata:
     nodemon: ^2.0.20
     npm-check-updates: ^16.3.18
     openapi-backend: ^5.5.0
-    redis: ^4.4.0
+    redis: ^4.5.0
     replace: ^1.2.2
     standard-version: ^9.5.0
     swagger-ui-express: ^4.6.0
@@ -2355,7 +2355,7 @@ __metadata:
     eslint: ^8.27.0
     jest: ^29.3.1
     npm-check-updates: ^16.3.18
-    redis: ^4.4.0
+    redis: ^4.5.0
     replace: ^1.2.2
     standard-version: ^9.5.0
     ts-jest: ^29.0.3
@@ -2651,14 +2651,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@redis/client@npm:1.3.1":
-  version: 1.3.1
-  resolution: "@redis/client@npm:1.3.1"
+"@redis/client@npm:1.4.0":
+  version: 1.4.0
+  resolution: "@redis/client@npm:1.4.0"
   dependencies:
     cluster-key-slot: 1.1.1
     generic-pool: 3.9.0
     yallist: 4.0.0
-  checksum: fb82a1a80da941d7de9bcf8a3fa04b58a3c4682473f1331578cd04e6325bf0ea0e17c98bc3bed620c6408f320796265f2b453542e2b53dcc811c0ae8592c2e57
+  checksum: 1fb229ccfb960620273750551c63cd5b3ce521b03ed5ef52cd196063873f589045cc87578694ee5ffde05c62347a58e70b0aee0725c3d567a1f234861d3afad6
   languageName: node
   linkType: hard
 
@@ -2689,12 +2689,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@redis/time-series@npm:1.0.3":
-  version: 1.0.3
-  resolution: "@redis/time-series@npm:1.0.3"
+"@redis/time-series@npm:1.0.4":
+  version: 1.0.4
+  resolution: "@redis/time-series@npm:1.0.4"
   peerDependencies:
     "@redis/client": ^1.0.0
-  checksum: 4d11518185dd15f31c5b4a433902e53a3ebc24614a0221080ab12abf4f6fc60b3db00a71a83de7b4b10f11077de611dc1c273274573646d63481d40ca246f82d
+  checksum: a5fca079deb04a2f204a7f9a375a6ff698a119d5dd53f7581fa8fd9e3bacacf1ecb0253b97fada484a012fea7a98014bc0f4f79707d4e92ff61c00318f2bfe04
   languageName: node
   linkType: hard
 
@@ -10899,9 +10899,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openapi-typescript@npm:^6.0.1":
-  version: 6.0.1
-  resolution: "openapi-typescript@npm:6.0.1"
+"openapi-typescript@npm:^6.0.2":
+  version: 6.0.2
+  resolution: "openapi-typescript@npm:6.0.2"
   dependencies:
     ansi-colors: ^4.1.3
     fast-glob: ^3.2.12
@@ -10911,7 +10911,7 @@ __metadata:
     yargs-parser: ^21.1.1
   bin:
     openapi-typescript: bin/cli.js
-  checksum: d61f1f7d0f11b48fcdf7d47cbd4d05d233ec59f0c36cb2a454406a29891b7e657ec936816e13c0eb622bf142995a885232336530733f889c0890b03439b76c49
+  checksum: 17900e6590d47efb2d49df149c90d9bea082340805b33d2b939a46c2d5675e21dbd9ede2ca2439365ba98e41e014ac29f9c0b4a81842d43daa081e1992c4f5e2
   languageName: node
   linkType: hard
 
@@ -11958,17 +11958,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"redis@npm:^4.4.0":
-  version: 4.4.0
-  resolution: "redis@npm:4.4.0"
+"redis@npm:^4.5.0":
+  version: 4.5.0
+  resolution: "redis@npm:4.5.0"
   dependencies:
     "@redis/bloom": 1.1.0
-    "@redis/client": 1.3.1
+    "@redis/client": 1.4.0
     "@redis/graph": 1.1.0
     "@redis/json": 1.0.4
     "@redis/search": 1.1.0
-    "@redis/time-series": 1.0.3
-  checksum: 54a66d7acf5bd2acd36d5653c02fa2b1a43ffb25c9e3915a14a02ed722b7bd835bc6c9b0e21ec87c1ec6cc6fa536a9ee0371eb8360bb5b0f6cf455453bfaffc0
+    "@redis/time-series": 1.0.4
+  checksum: 3c2a2fdf497acbd8847715d32d41466498908e96c53145b6a7c74187018c1cbf59f3fadae4e8d8166feef5c72fe8f1ac5d7b03eef665914c658bfc182e1216f3
   languageName: node
   linkType: hard
 

@@ -47,8 +47,6 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
 ): Promise<void> {
     const processPartyInfoCallback = message as ProcessPartyInfoCallbackCmdEvt;
     try {
-        let successCountAfterIncrement;
-        let failedCountAfterIncrement;
         logger.info(`Got ProcessPartyInfoCallbackCmdEvt: id=${processPartyInfoCallback.getKey()}`);
 
         // Create aggregate
@@ -63,12 +61,9 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
         );
         if(processPartyInfoCallback.partyResult?.currentState === SDKOutboundTransferState.COMPLETED) {
             individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_SUCCESS);
-            successCountAfterIncrement = await bulkTransactionAgg.incrementPartyLookupSuccessCount();
             individualTransfer.setPartyResponse(processPartyInfoCallback.partyResult);
         } else {
             individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_FAILED);
-            failedCountAfterIncrement = await bulkTransactionAgg.incrementPartyLookupFailedCount();
-            await bulkTransactionAgg.incrementFailedCount();
             individualTransfer.setLastError(processPartyInfoCallback.partyErrorResult);
         }
         await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
@@ -99,8 +94,17 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
         // Progressing to the next step
         // Check the status of the remaining party lookups
         const partyLookupTotalCount = await bulkTransactionAgg.getPartyLookupTotalCount();
-        const partyLookupSuccessCount = successCountAfterIncrement || await bulkTransactionAgg.getPartyLookupSuccessCount();
-        const partyLookupFailedCount = failedCountAfterIncrement || await bulkTransactionAgg.getPartyLookupFailedCount();
+        let partyLookupSuccessCount;
+        let partyLookupFailedCount;
+        if(processPartyInfoCallback.partyResult?.currentState === SDKOutboundTransferState.COMPLETED) {
+            partyLookupSuccessCount = await bulkTransactionAgg.incrementPartyLookupSuccessCount();
+            partyLookupFailedCount = await bulkTransactionAgg.getPartyLookupFailedCount();
+        } else {
+            partyLookupFailedCount = await bulkTransactionAgg.incrementPartyLookupFailedCount();
+            await bulkTransactionAgg.incrementFailedCount();
+            partyLookupSuccessCount = await bulkTransactionAgg.getPartyLookupSuccessCount();
+        }
+        
         if(partyLookupTotalCount === (partyLookupSuccessCount + partyLookupFailedCount)) {
             // Update global state "DISCOVERY_COMPLETED"
             await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.DISCOVERY_COMPLETED);
