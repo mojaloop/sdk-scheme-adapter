@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [21.3.5](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.3.4...v21.3.5) (2022-11-11)
+
+
+### Bug Fixes
+
+* fix logic to prune acceptParty false quote response ([#423](https://github.com/mojaloop/sdk-scheme-adapter/issues/423)) ([6360c6c](https://github.com/mojaloop/sdk-scheme-adapter/commit/6360c6c12390f9507cb4549fb7e6ab0eaadeb151))
+
 ### [21.3.4](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.3.3...v21.3.4) (2022-11-11)
 
 
