@@ -149,7 +149,7 @@ describe.skip('SDKOutboundBulkAcceptPartyInfoRequested', () => {
         individualTransfers: [
           {
             homeTransactionId: homeTransactionId1,
-            transactionId: allIndividualTransferIds[0],
+            transferId: allIndividualTransferIds[0],
             acceptParty: true
           }
         ]
