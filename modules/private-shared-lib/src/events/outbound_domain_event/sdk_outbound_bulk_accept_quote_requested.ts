@@ -35,7 +35,7 @@ export type CoreConnectorBulkAcceptQuoteRequestIndividualTransferResult = {
     homeTransactionId: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionIndividualTransfer['homeTransactionId'];
     transactionId: string;
     quoteResponse?: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualQuoteResult;
-    lastError: IndividualTransferError
+    lastError?: IndividualTransferError
 };
 
 export type CoreConnectorBulkAcceptQuoteRequest = {
