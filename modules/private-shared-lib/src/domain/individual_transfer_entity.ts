@@ -119,6 +119,14 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         return this._state.transferResponse;
     }
 
+    get acceptParty(): boolean | undefined {
+        return this._state.acceptParty;
+    }
+
+    get acceptQuote(): boolean | undefined {
+        return this._state.acceptQuote;
+    }
+
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     static CreateFromRequest(
         request: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionIndividualTransfer,
@@ -166,6 +174,10 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
 
     setAcceptParty(acceptParty: boolean) {
         this._state.acceptParty = acceptParty;
+    }
+
+    setAcceptQuote(acceptQuote: boolean) {
+        this._state.acceptQuote = acceptQuote;
     }
 
     // This refers to the bulk batch id.

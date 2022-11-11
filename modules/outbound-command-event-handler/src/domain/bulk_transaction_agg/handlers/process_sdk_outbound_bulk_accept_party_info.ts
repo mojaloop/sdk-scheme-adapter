@@ -51,7 +51,7 @@ export async function handleProcessSDKOutboundBulkAcceptPartyInfoCmdEvt(
         // Update the individual state: DISCOVERY_ACCEPTED / DISCOVERY_REJECTED
         const bulkTx = bulkTransactionAgg.getBulkTransaction();
 
-        const allIndividualTransfersFromMessage = 
+        const allIndividualTransfersFromMessage =
             // eslint-disable-next-line max-len
             processSDKOutboundBulkAcceptPartyInfoMessage.getBulkTransactionContinuationAcceptParty().individualTransfers;
         for await (const individualTransferFromMessage of allIndividualTransfersFromMessage) {
@@ -66,6 +66,7 @@ export async function handleProcessSDKOutboundBulkAcceptPartyInfoCmdEvt(
             }
 
             individualTransfer.setAcceptParty(individualTransferFromMessage.acceptParty);
+
             if(individualTransferFromMessage.acceptParty) {
                 individualTransfer.setTransferState(IndividualTransferInternalState.DISCOVERY_ACCEPTED);
             } else {
