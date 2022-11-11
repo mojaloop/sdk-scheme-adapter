@@ -172,7 +172,6 @@
             "bulkTransactionId": "{$prev.1.request.body.bulkTransactionId}"
           },
           "body": {
-            "bulkHomeTransactionID": "{$prev.1.request.body.bulkHomeTransactionID}",
             "individualTransfers": []
           },
           "scriptingEngine": "javascript",
@@ -276,7 +275,6 @@
             "bulkTransactionId": "{$prev.1.request.body.bulkTransactionId}"
           },
           "body": {
-            "bulkHomeTransactionID": "{$prev.1.request.body.bulkHomeTransactionID}",
             "individualTransfers": []
           },
           "scriptingEngine": "javascript",
