@@ -27,6 +27,7 @@
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import {
     CommandEvent,
+    IndividualTransferEntity,
     IndividualTransferInternalState,
     ProcessPartyInfoCallbackCmdEvt,
     PartyInfoCallbackProcessedDmEvt,
@@ -34,7 +35,7 @@ import {
     BulkTransactionInternalState,
     SDKOutboundBulkPartyInfoRequestProcessedDmEvt,
     SDKOutboundBulkAutoAcceptPartyInfoRequestedDmEvt,
-    SDKOutboundBulkAcceptPartyInfoRequestedDmEvt, PrepareSDKOutboundBulkResponseCmdEvt,
+    SDKOutboundBulkAcceptPartyInfoRequestedDmEvt, PrepareSDKOutboundBulkResponseCmdEvt, CoreConnectorBulkAcceptPartyInfoRequestIndividualTransferResult, IndividualTransferState,
 } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 import { BulkTransactionAgg } from '..';
 import { ICommandEventHandlerOptions } from '@module-types';
@@ -104,7 +105,7 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
             await bulkTransactionAgg.incrementFailedCount();
             partyLookupSuccessCount = await bulkTransactionAgg.getPartyLookupSuccessCount();
         }
-        
+
         if(partyLookupTotalCount === (partyLookupSuccessCount + partyLookupFailedCount)) {
             // Update global state "DISCOVERY_COMPLETED"
             await bulkTransactionAgg.setGlobalState(BulkTransactionInternalState.DISCOVERY_COMPLETED);
@@ -129,7 +130,7 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
                 });
                 await options.domainProducer.sendDomainEvent(autoAcceptPartyMsg);
             } else {
-                const individualTransferResults = [];
+                const individualTransferResults: CoreConnectorBulkAcceptPartyInfoRequestIndividualTransferResult[] = [];
                 const allIndividualTransferIds = await bulkTransactionAgg.getAllIndividualTransferIds();
                 for await (const individualTransferId of allIndividualTransferIds) {
                     const individualTransferData = await bulkTransactionAgg
@@ -140,6 +141,7 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
                             mojaloopError: individualTransferData.partyResponse?.errorInformation,
                         }) || (
                         individualTransferData.lastError && {
+                            httpStatusCode: individualTransferData.lastError.httpStatusCode,
                             mojaloopError: individualTransferData.lastError.mojaloopError,
                         });
 

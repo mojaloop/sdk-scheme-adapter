@@ -27,11 +27,13 @@
 import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@module-types';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
+import { IndividualTransferError } from '@module-domain';
 
 export type CoreConnectorBulkAcceptPartyInfoRequestIndividualTransferResult = {
     homeTransactionId: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionIndividualTransfer['homeTransactionId'];
     transactionId: string;
-    to: SDKSchemeAdapter.V2_0_0.Outbound.Types.Party;
+    to?: SDKSchemeAdapter.V2_0_0.Outbound.Types.Party;
+    lastError: IndividualTransferError
 };
 
 export type CoreConnectorBulkAcceptPartyInfoRequest = {
