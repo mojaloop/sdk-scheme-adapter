@@ -160,6 +160,14 @@ docker-compose -f docker-compose.yml down
 src/junit.xml
 ```
 
+If you want to use Redis Insights, you can start it as follows:
+<!-- TODO: Add this as part of the Docker Compose -->
+```bash
+docker run -itd -p 8001:8001 --network="mojaloop-net" redislabs/redisinsight
+```
+
+And open http://localhost:8001 in your browser.
+
 ### Get status of quote request
 
 The status of a previously sent quotation request can be get by executing `GET /quotes/{ID}`.
