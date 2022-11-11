@@ -2022,9 +2022,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/api-snippets@npm:17.0.0-snapshot.0":
-  version: 17.0.0-snapshot.0
-  resolution: "@mojaloop/api-snippets@npm:17.0.0-snapshot.0"
+"@mojaloop/api-snippets@npm:17.0.0-snapshot.1":
+  version: 17.0.0-snapshot.1
+  resolution: "@mojaloop/api-snippets@npm:17.0.0-snapshot.1"
   dependencies:
     "@apidevtools/json-schema-ref-parser": ^9.0.9
     commander: ^9.4.1
@@ -2035,7 +2035,7 @@ __metadata:
     openapi-typescript: ^5.4.1
     ts-auto-mock: ^3.6.2
     ttypescript: ^1.5.13
-  checksum: 660b652733335d5c331a3fc98eba529d74275f262100b47c259aa39af6f6093e83a6479b641053f9c14d1ae2e6f3d524b2702b83fb1fa8e7923d2c0cd3d5ab7f
+  checksum: e34d3085d1f978826e3e59485c0c189071a6a608910bd94c30e81ca64cadf39129d0791da6ac837259209f0f0cae231eb0715074392b9f49cb4e961f02a9071c
   languageName: node
   linkType: hard
 
@@ -2214,7 +2214,7 @@ __metadata:
     "@babel/core": ^7.20.2
     "@babel/preset-env": ^7.20.2
     "@koa/cors": ^4.0.0
-    "@mojaloop/api-snippets": 17.0.0-snapshot.0
+    "@mojaloop/api-snippets": 17.0.0-snapshot.1
     "@mojaloop/central-services-error-handling": ^12.0.5
     "@mojaloop/central-services-logger": ^11.0.1
     "@mojaloop/central-services-metrics": ^12.0.5
@@ -2269,7 +2269,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-command-event-handler@workspace:modules/outbound-command-event-handler"
   dependencies:
-    "@mojaloop/api-snippets": 17.0.0-snapshot.0
+    "@mojaloop/api-snippets": 17.0.0-snapshot.1
     "@mojaloop/central-services-shared": ^17.3.1
     "@mojaloop/logging-bc-client-lib": ^0.1.16
     "@mojaloop/logging-bc-public-types-lib": ^0.1.13
@@ -2308,7 +2308,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-domain-event-handler@workspace:modules/outbound-domain-event-handler"
   dependencies:
-    "@mojaloop/api-snippets": 17.0.0-snapshot.0
+    "@mojaloop/api-snippets": 17.0.0-snapshot.1
     "@mojaloop/logging-bc-client-lib": ^0.1.16
     "@mojaloop/logging-bc-public-types-lib": ^0.1.13
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
@@ -2345,7 +2345,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-private-shared-lib@workspace:modules/private-shared-lib"
   dependencies:
-    "@mojaloop/api-snippets": 17.0.0-snapshot.0
+    "@mojaloop/api-snippets": 17.0.0-snapshot.1
     "@mojaloop/central-services-shared": ^17.3.1
     "@mojaloop/logging-bc-public-types-lib": ^0.1.13
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.2.18
