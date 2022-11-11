@@ -80,6 +80,7 @@ export async function handleProcessBulkTransfersCallbackCmdEvt(
                     const individualTransferId = bulkBatch.getReferenceIdForTransferId(transferResult.transferId);
                     const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
                     individualTransfer.setTransferState(IndividualTransferInternalState.TRANSFERS_FAILED);
+                    individualTransfer.setLastError(transferResult.lastError);
                     individualTransfer.setTransferResponse(transferResult);
                     individualTransfer.setTransactionId(bulkBatch.id);
                     await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);

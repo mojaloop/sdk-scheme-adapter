@@ -52,7 +52,7 @@ export async function handleProcessSDKOutboundBulkAcceptQuoteCmdEvt(
         // Update the individual state: AGREEMENT_ACCEPTED / AGREEMENT_REJECTED
         const bulkTx = bulkTransactionAgg.getBulkTransaction();
 
-        const allIndividualTransfersFromMessage = 
+        const allIndividualTransfersFromMessage =
             // eslint-disable-next-line max-len
             processSDKOutboundBulkAcceptQuoteCmdEvtMessage.getBulkTransactionContinuationAcceptQuote().individualTransfers;
         for await (const individualTransferFromMessage of allIndividualTransfersFromMessage) {
@@ -66,15 +66,15 @@ export async function handleProcessSDKOutboundBulkAcceptQuoteCmdEvt(
                 continue;
             }
 
-            individualTransfer.setAcceptParty(individualTransferFromMessage.acceptQuote);
+            individualTransfer.setAcceptQuote(individualTransferFromMessage.acceptQuote);
 
             if( // handle accept case
-                individualTransferFromMessage.acceptQuote && 
+                individualTransferFromMessage.acceptQuote &&
                 individualTransfer.transferState === IndividualTransferInternalState.AGREEMENT_SUCCESS
             ) {
                 individualTransfer.setTransferState(IndividualTransferInternalState.AGREEMENT_ACCEPTED);
             } else if( // handle reject case
-                !individualTransferFromMessage.acceptQuote && 
+                !individualTransferFromMessage.acceptQuote &&
                 individualTransfer.transferState === IndividualTransferInternalState.AGREEMENT_SUCCESS
             ) {
                 individualTransfer.setTransferState(IndividualTransferInternalState.AGREEMENT_REJECTED);

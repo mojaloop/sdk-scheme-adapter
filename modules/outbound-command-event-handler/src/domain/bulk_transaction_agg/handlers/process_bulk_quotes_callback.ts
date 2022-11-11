@@ -178,16 +178,32 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                 for await (const individualTransferId of allIndividualTransferIds) {
                     const individualTransfer = await bulkTransactionAgg.getIndividualTransferById(individualTransferId);
 
-                    individualTransferResults.push({
+                    // Received a response
+                    if(individualTransfer.quoteResponse) {
+                        individualTransferResults.push({
                         homeTransactionId: individualTransfer.request.homeTransactionId,
                         transferId: individualTransfer.id,
                         transactionId: individualTransfer.transactionId,
                         quoteResponse: individualTransfer.quoteResponse,
-                        lastError: individualTransfer.lastError && {
-                            httpStatusCode: individualTransfer.lastError.httpStatusCode,
-                            mojaloopError: individualTransfer.lastError.mojaloopError,
-                        },
-                    });
+                            lastError: individualTransfer.lastError && {
+                                httpStatusCode: individualTransfer.lastError.httpStatusCode,
+                                mojaloopError: individualTransfer.lastError.mojaloopError,
+                            },
+                        });
+                    // Received server error
+                    } else if(!individualTransfer.quoteResponse && individualTransfer.lastError) {
+                        individualTransferResults.push({
+                            homeTransactionId: individualTransfer.request.homeTransactionId,
+                            transferId: individualTransfer.id,
+                            lastError: {
+                                httpStatusCode: individualTransfer.lastError.httpStatusCode,
+                                mojaloopError: individualTransfer.lastError.mojaloopError,
+                            },
+                        });
+                    // Party was not accepted. Prune individual transfer result.
+                    } else if(!individualTransfer.acceptParty) {
+                        continue;
+                    }
                 }
 
                 if(individualTransferResults.length > 0) {
