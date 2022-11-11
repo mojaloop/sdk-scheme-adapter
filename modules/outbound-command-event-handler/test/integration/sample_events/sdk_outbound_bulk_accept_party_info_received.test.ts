@@ -145,10 +145,8 @@ describe.skip('SDKOutboundBulkAcceptPartyInfoRequested', () => {
     const sampleSDKOutboundBulkAcceptPartyInfoReceivedDmEvtData: ISDKOutboundBulkAcceptPartyInfoReceivedDmEvtData = {
       bulkId: bulkTransactionId,
       bulkTransactionContinuationAcceptParty: {
-        bulkHomeTransactionID: "abc123",
         individualTransfers: [
           {
-            homeTransactionId: homeTransactionId1,
             transferId: allIndividualTransferIds[0],
             acceptParty: true
           }

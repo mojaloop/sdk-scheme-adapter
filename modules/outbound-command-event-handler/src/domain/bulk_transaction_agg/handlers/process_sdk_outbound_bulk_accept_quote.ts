@@ -79,7 +79,7 @@ export async function handleProcessSDKOutboundBulkAcceptQuoteCmdEvt(
             ) {
                 individualTransfer.setTransferState(IndividualTransferInternalState.AGREEMENT_REJECTED);
             } else { // handle other cases
-                logger.warn(`individualTransfer.transactionId[${individualTransferFromMessage.transactionId}] is already in a non-processing state: ${individualTransfer.transferState}`);
+                logger.warn(`individualTransfer.transferId[${individualTransfer.transferId}] is already in a non-processing state: ${individualTransfer.transferState}`);
             }
 
             await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
