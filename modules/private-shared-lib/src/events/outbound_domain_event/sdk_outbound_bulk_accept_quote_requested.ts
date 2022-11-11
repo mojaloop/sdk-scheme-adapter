@@ -27,13 +27,15 @@
 import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@module-types';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
+import { IndividualTransferError } from '@module-domain';
 
 // TODO: Current dfspInboundAPI is outdated and its better to add the core connector API to the API snippets library as single source of truth.
 // For now we are defining these types here.
 export type CoreConnectorBulkAcceptQuoteRequestIndividualTransferResult = {
     homeTransactionId: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionIndividualTransfer['homeTransactionId'];
     transactionId: string;
-    quoteResponse: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualQuoteResult;
+    quoteResponse?: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualQuoteResult;
+    lastError: IndividualTransferError
 };
 
 export type CoreConnectorBulkAcceptQuoteRequest = {
