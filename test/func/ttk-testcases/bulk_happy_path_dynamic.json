@@ -94,10 +94,11 @@
             ]
           },
           "ignoreCallbacks": false,
+          "disabled": false,
           "scripts": {
             "preRequest": {
               "exec": [
-                "environment.totalIndividualTransfers = 100",
+                "environment.totalIndividualTransfers = 10",
                 "",
                 "const individualTransfers = []",
                 "for(let i=1; i<=environment.totalIndividualTransfers/2; i++) {",
@@ -233,6 +234,7 @@
                 "for(let i=1; i<=environment.totalIndividualTransfers; i++) {",
                 "  individualTransfers.push({",
                 "    transactionId: environment.acceptPartyCallback.body.individualTransferResults[i-1].transactionId,",
+                "    transferId: environment.acceptPartyCallback.body.individualTransferResults[i-1].transferId,",
                 "    acceptParty: true,",
                 "    homeTransactionId: 'abc' + i,",
                 "  })",
@@ -241,6 +243,8 @@
                 "custom.appendRequestBody({",
                 "  individualTransfers: individualTransfers",
                 "})",
+                "",
+                "console.log(individualTransfers)",
                 ""
               ]
             },
@@ -386,6 +390,7 @@
                 "for(let i=1; i<=environment.totalIndividualTransfers; i++) {",
                 "  individualTransfers.push({",
                 "    transactionId: environment.acceptPartyCallback.body.individualTransferResults[i-1].transactionId,",
+                "    transferId: environment.acceptPartyCallback.body.individualTransferResults[i-1].transferId,",
                 "    acceptQuote: true,",
                 "    homeTransactionId: 'abc' + i,",
                 "  })",
@@ -394,6 +399,8 @@
                 "custom.appendRequestBody({",
                 "  individualTransfers: individualTransfers",
                 "})",
+                "",
+                "console.log(individualTransfers)",
                 ""
               ]
             },

@@ -27,10 +27,12 @@ services:
     networks:
       - mojaloop-net
     env_file: ./config/sdk-ttksim1/api-svc.env
+    command: yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run start:debug
     ports:
       - "14000:4000"
       - "14001:4001"
       - "14002:4002"
+      - "19221:9229"
     depends_on:
       - redis
 
@@ -39,8 +41,10 @@ services:
       file: common-sdk.yml
       service: outbound-command-event-handler
     env_file: ./config/sdk-ttksim1/outbound-command-event-handler.env
+    command: yarn workspace @mojaloop/sdk-scheme-adapter-outbound-command-event-handler run start:debug
     ports:
       - "18000:8000"
+      - "19222:9229"
     networks:
       - mojaloop-net
     depends_on:
@@ -54,6 +58,10 @@ services:
       file: common-sdk.yml
       service: outbound-domain-event-handler
     env_file: ./config/sdk-ttksim1/outbound-domain-event-handler.env
+    command: yarn workspace @mojaloop/sdk-scheme-adapter-outbound-domain-event-handler run start:debug
+    ports:
+      - "18001:8000"
+      - "19223:9229"
     networks:
       - mojaloop-net
     depends_on:
@@ -61,7 +69,6 @@ services:
         condition: service_started
       init-kafka:
         condition: service_completed_successfully
-
 
   ttksim2-sdk-api-svc:
     extends:

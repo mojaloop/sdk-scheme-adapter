@@ -27,7 +27,6 @@
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import {
     CommandEvent,
-    IndividualTransferEntity,
     IndividualTransferInternalState,
     ProcessPartyInfoCallbackCmdEvt,
     PartyInfoCallbackProcessedDmEvt,
@@ -150,7 +149,8 @@ export async function handleProcessPartyInfoCallbackCmdEvt(
                     // set. `transactionId` and `homeTransaction` still need to be set.
                     individualTransferResults.push({
                         homeTransactionId: individualTransferData.request.homeTransactionId,
-                        transactionId: individualTransferData.id,
+                        transferId: individualTransferData.id,
+                        transactionId: individualTransferData.transactionId, // NOTE: This is not available at this time as batches have not been generated yet.
                         to: individualTransferData.partyResponse?.party,
                         lastError,
                     });

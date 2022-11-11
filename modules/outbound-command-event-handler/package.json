@@ -18,8 +18,10 @@
   ],
   "scripts": {
     "start": "yarn run service",
+    "start:debug": "yarn run service:debug",
     "start:dev": "ts-node src/application/index.ts",
     "service": "node dist/application/index.js",
+    "service:debug": "node --inspect=0.0.0.0:9229 dist/application/index.js",
     "build": "tsc && yarn run copy-files",
     "watch": "tsc -w",
     "dev": "nodemon",
@@ -39,7 +41,7 @@
     "snapshot": "standard-version --no-verify --skip.changelog --prerelease snapshot --releaseCommitMessageFormat 'chore(snapshot): {{currentTag}}'"
   },
   "dependencies": {
-    "@mojaloop/api-snippets": "^16.0.6",
+    "@mojaloop/api-snippets": "17.0.0-snapshot.0",
     "@mojaloop/central-services-shared": "^17.3.1",
     "@mojaloop/logging-bc-client-lib": "^0.1.16",
     "@mojaloop/logging-bc-public-types-lib": "^0.1.13",

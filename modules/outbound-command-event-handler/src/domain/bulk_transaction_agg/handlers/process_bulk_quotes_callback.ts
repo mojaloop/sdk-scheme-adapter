@@ -180,6 +180,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
 
                     individualTransferResults.push({
                         homeTransactionId: individualTransfer.request.homeTransactionId,
+                        transferId: individualTransfer.id,
                         transactionId: individualTransfer.transactionId,
                         quoteResponse: individualTransfer.quoteResponse,
                         lastError: individualTransfer.lastError && {
