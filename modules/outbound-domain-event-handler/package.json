@@ -1,6 +1,6 @@
 {
     "name": "@mojaloop/sdk-scheme-adapter-outbound-domain-event-handler",
-    "version": "0.2.9-snapshot.2",
+    "version": "0.2.9",
     "description": "mojaloop sdk scheme adapter outbound domain event handler",
     "license": "Apache-2.0",
     "homepage": "https://github.com/mojaloop/sdk-scheme-adapter/",
