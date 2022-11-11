@@ -195,6 +195,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                         individualTransferResults.push({
                             homeTransactionId: individualTransfer.request.homeTransactionId,
                             transferId: individualTransfer.id,
+                            transactionId: individualTransfer.transactionId,
                             lastError: {
                                 httpStatusCode: individualTransfer.lastError.httpStatusCode,
                                 mojaloopError: individualTransfer.lastError.mojaloopError,
