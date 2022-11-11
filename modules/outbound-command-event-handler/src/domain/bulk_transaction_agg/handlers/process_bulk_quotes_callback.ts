@@ -181,10 +181,10 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                     // Received a response
                     if(individualTransfer.quoteResponse) {
                         individualTransferResults.push({
-                        homeTransactionId: individualTransfer.request.homeTransactionId,
-                        transferId: individualTransfer.id,
-                        transactionId: individualTransfer.transactionId,
-                        quoteResponse: individualTransfer.quoteResponse,
+                            homeTransactionId: individualTransfer.request.homeTransactionId,
+                            transferId: individualTransfer.id,
+                            transactionId: individualTransfer.transactionId,
+                            quoteResponse: individualTransfer.quoteResponse,
                             lastError: individualTransfer.lastError && {
                                 httpStatusCode: individualTransfer.lastError.httpStatusCode,
                                 mojaloopError: individualTransfer.lastError.mojaloopError,
