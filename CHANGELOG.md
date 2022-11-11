@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [21.3.4](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.3.3...v21.3.4) (2022-11-11)
+
+
+### Bug Fixes
+
+* fix quote last error missing on batch failure response ([#421](https://github.com/mojaloop/sdk-scheme-adapter/issues/421)) ([bf65415](https://github.com/mojaloop/sdk-scheme-adapter/commit/bf65415aa82e895f0181748ec0fd14ed09f56134))
+
 ### [21.3.3](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.3.2...v21.3.3) (2022-11-10)
 
 
