@@ -31,6 +31,7 @@ import { IndividualTransferError } from '@module-domain';
 
 export type CoreConnectorBulkAcceptPartyInfoRequestIndividualTransferResult = {
     homeTransactionId: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionIndividualTransfer['homeTransactionId'];
+    transferId: string;
     transactionId: string;
     to?: SDKSchemeAdapter.V2_0_0.Outbound.Types.Party;
     lastError: IndividualTransferError

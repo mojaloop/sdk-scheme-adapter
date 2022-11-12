@@ -133,7 +133,6 @@ _Note that these instructions are for Linux based systems. For Mac and/or Window
 
 You can now examine the code of the Mock DFSP backend to understand how it implements the scheme-adapter simplified inbound API.
 
-
 ## Testing
 
 ### Unit Tests
@@ -161,13 +160,23 @@ docker-compose -f docker-compose.yml down
 src/junit.xml
 ```
 
+If you want to use Redis Insights, you can start it as follows:
+<!-- TODO: Add this as part of the Docker Compose -->
+```bash
+docker run -itd -p 8001:8001 --network="mojaloop-net" redislabs/redisinsight
+```
+
+And open http://localhost:8001 in your browser.
+
 ### Get status of quote request
+
 The status of a previously sent quotation request can be get by executing `GET /quotes/{ID}`.
 When the response to the original quote request is sent, the response is cached in the redis store. When a `GET /quotes/{ID}` is received,
 the cached response is retrieved from the redis store and returned to the caller as a body with `PUT /quotes/{ID}` request.
 When the redis is setup as a persistent store then it will return the response for all the quote requests sent with `POST /quotes`. If the the redis is setup as cache with expiry time then it will not return response for the expired quotes when the cache expires. Also only the payer dfsp is supposed to make the `GET /quotes/{ID}` request.
 If the quote response is not found in the redis store `PUT /quotes/{ID}` will be made with the following body
-```
+
+```json
 {
    "errorInformation":{
       "errorCode":"3205",
@@ -177,6 +186,7 @@ If the quote response is not found in the redis store `PUT /quotes/{ID}` will be
 ```
 
 ### Dev Tools
+
 This project uses @redocly/openapi-cli and @mojaloop/api-snippets to build interfaces.
 
 Any interface changes should be done in the corresponding `api-template.yaml`
@@ -222,16 +232,17 @@ push a release triggering another subsequent build that also publishes a docker 
 *   It is unknown if a race condition might occur with multiple merges with master in
     quick succession, but this is a suspected edge case.
 
-
 ### Running monorepo
 
 - Start the dependencies
-```
+
+```bash
 docker-compose up
 ```
 
 - Run application
-```
+
+```bash
 nvm use
 yarn install
 yarn run build
@@ -244,20 +255,20 @@ Note: api-svc is failing to start at the moment.
 
 - Produce a domain event with the following test code
 
-```
+```bash
 yarn workspace @mojaloop/sdk-scheme-adapter-outbound-domain-event-handler run test:integration
 ```
 
 - Observe the bulk transaction state using test API
 Go to `http://localhost:8000/docs/` and execute the `GET /bulkTransactionsState` request and see response
 
-
 - Redis commands to observe
 
-```
+```redis
 KEYS *
 HKEYS outboundBulkTransaction_b51ec534-ee48-4575-b6a9-ead2955b8069
 HGET outboundBulkTransaction_b51ec534-ee48-4575-b6a9-ead2955b8069 bulkTransactionEntityState
 HGET outboundBulkTransaction_b51ec534-ee48-4575-b6a9-ead2955b8069 individualItem_<individualTransferIDHere>
 ```
+
 Note: If you run test code multiple times, you may observe duplicate individual transfer added to the same bulk transaction. Duplicate check should be implemented somewhere to handle this.

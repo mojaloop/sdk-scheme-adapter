@@ -33,7 +33,8 @@ import { IndividualTransferError } from '@module-domain';
 // For now we are defining these types here.
 export type CoreConnectorBulkAcceptQuoteRequestIndividualTransferResult = {
     homeTransactionId: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionIndividualTransfer['homeTransactionId'];
-    transactionId: string;
+    transferId: string,
+    transactionId?: string;
     quoteResponse?: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualQuoteResult;
     lastError?: IndividualTransferError
 };

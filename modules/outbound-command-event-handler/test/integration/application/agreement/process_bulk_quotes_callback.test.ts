@@ -328,26 +328,21 @@ import { Timer } from "../../../util/timer";
       const processSDKOutboundBulkAcceptPartyInfoCommandEventData : IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData = {
         bulkId: bulkTransactionId,
         bulkTransactionContinuationAcceptParty: {
-          bulkHomeTransactionID: 'string',
           individualTransfers: [
             {
-              homeTransactionId: 'string',
-              transactionId: randomGeneratedTransferIds[amountList.indexOf('1')],
+              transferId: randomGeneratedTransferIds[amountList.indexOf('1')],
               acceptParty: true
             },
             {
-              homeTransactionId: 'string',
-              transactionId: randomGeneratedTransferIds[amountList.indexOf('2')],
+              transferId: randomGeneratedTransferIds[amountList.indexOf('2')],
               acceptParty: true
             },
             {
-              homeTransactionId: 'string',
-              transactionId: randomGeneratedTransferIds[amountList.indexOf('3')],
+              transferId: randomGeneratedTransferIds[amountList.indexOf('3')],
               acceptParty: true
             },
             {
-              homeTransactionId: 'string',
-              transactionId: randomGeneratedTransferIds[amountList.indexOf('4')],
+              transferId: randomGeneratedTransferIds[amountList.indexOf('4')],
               acceptParty: true
             }
           ]
@@ -746,26 +741,21 @@ import { Timer } from "../../../util/timer";
       const processSDKOutboundBulkAcceptPartyInfoCommandEventData : IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData = {
         bulkId: bulkTransactionId,
         bulkTransactionContinuationAcceptParty: {
-          bulkHomeTransactionID: 'string',
           individualTransfers: [
             {
-              homeTransactionId: 'string',
-              transactionId: randomGeneratedTransferIds[amountList.indexOf('1')],
+              transferId: randomGeneratedTransferIds[amountList.indexOf('1')],
               acceptParty: true
             },
             {
-              homeTransactionId: 'string',
-              transactionId: randomGeneratedTransferIds[amountList.indexOf('2')],
+              transferId: randomGeneratedTransferIds[amountList.indexOf('2')],
               acceptParty: true
             },
             {
-              homeTransactionId: 'string',
-              transactionId: randomGeneratedTransferIds[amountList.indexOf('3')],
+              transferId: randomGeneratedTransferIds[amountList.indexOf('3')],
               acceptParty: true
             },
             {
-              homeTransactionId: 'string',
-              transactionId: randomGeneratedTransferIds[amountList.indexOf('4')],
+              transferId: randomGeneratedTransferIds[amountList.indexOf('4')],
               acceptParty: true
             }
           ]

@@ -60,9 +60,9 @@ export async function handleProcessSDKOutboundBulkAcceptQuoteCmdEvt(
             try {
                 // TODO: Confirm the field name transactionId in the individualTransfer from the message
                 individualTransfer =
-                    await bulkTransactionAgg.getIndividualTransferById(individualTransferFromMessage.transactionId);
+                    await bulkTransactionAgg.getIndividualTransferById(individualTransferFromMessage.transferId);
             } catch {
-                logger.warn(`Can not find the individual transfer with id ${individualTransferFromMessage.transactionId} in bulk transaction`);
+                logger.warn(`Can not find the individual transfer with id ${individualTransferFromMessage.transferId} in bulk transaction`);
                 continue;
             }
 
@@ -79,7 +79,7 @@ export async function handleProcessSDKOutboundBulkAcceptQuoteCmdEvt(
             ) {
                 individualTransfer.setTransferState(IndividualTransferInternalState.AGREEMENT_REJECTED);
             } else { // handle other cases
-                logger.warn(`individualTransfer.transactionId[${individualTransferFromMessage.transactionId}] is already in a non-processing state: ${individualTransfer.transferState}`);
+                logger.warn(`individualTransfer.transferId[${individualTransfer.transferId}] is already in a non-processing state: ${individualTransfer.transferState}`);
             }
 
             await bulkTransactionAgg.setIndividualTransferById(individualTransfer.id, individualTransfer);
