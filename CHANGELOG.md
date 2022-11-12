@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [21.4.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.3.5...v21.4.0) (2022-11-12)
+
+
+### Features
+
+* **mojaloop/3018:** [SDK-Scheme-Adapter] TransactionId is being used instead of TransferId ([#422](https://github.com/mojaloop/sdk-scheme-adapter/issues/422)) ([5d349fe](https://github.com/mojaloop/sdk-scheme-adapter/commit/5d349fe066f26629298e3e53dec3cd2bc6b57126))
+
 ### [21.3.5](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.3.4...v21.3.5) (2022-11-11)
 
 
