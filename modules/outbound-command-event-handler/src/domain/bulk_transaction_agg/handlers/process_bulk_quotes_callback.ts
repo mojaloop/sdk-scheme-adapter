@@ -182,6 +182,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                     if(individualTransfer.quoteResponse) {
                         individualTransferResults.push({
                             homeTransactionId: individualTransfer.request.homeTransactionId,
+                            transferId: individualTransfer.id,
                             transactionId: individualTransfer.transactionId,
                             quoteResponse: individualTransfer.quoteResponse,
                             lastError: individualTransfer.lastError && {
@@ -193,6 +194,7 @@ export async function handleProcessBulkQuotesCallbackCmdEvt(
                     } else if(!individualTransfer.quoteResponse && individualTransfer.lastError) {
                         individualTransferResults.push({
                             homeTransactionId: individualTransfer.request.homeTransactionId,
+                            transferId: individualTransfer.id,
                             transactionId: individualTransfer.transactionId,
                             lastError: {
                                 httpStatusCode: individualTransfer.lastError.httpStatusCode,

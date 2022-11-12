@@ -240,16 +240,13 @@ describe("Tests for ProcessSDKOutboundBulkAcceptPartyInfo Event Handler", () => 
     const processSDKOutboundBulkAcceptPartyInfoCommandEventData : IProcessSDKOutboundBulkAcceptPartyInfoCmdEvtData = {
       bulkId: bulkTransactionId,
       bulkTransactionContinuationAcceptParty: {
-        bulkHomeTransactionID: 'string',
         individualTransfers: [
           {
-            homeTransactionId: 'string',
-            transactionId: randomGeneratedTransferIds[amountList.indexOf('1')],
+            transferId: randomGeneratedTransferIds[amountList.indexOf('1')],
             acceptParty: true
           },
           {
-            homeTransactionId: 'string',
-            transactionId: randomGeneratedTransferIds[amountList.indexOf('2')],
+            transferId: randomGeneratedTransferIds[amountList.indexOf('2')],
             acceptParty: false
           }
         ]

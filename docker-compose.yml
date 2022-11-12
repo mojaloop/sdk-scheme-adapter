@@ -1,3 +1,6 @@
+## TODOs
+# - Add Redis Insights
+
 version: '3.7'
 networks:
   mojaloop-net:
@@ -18,6 +21,7 @@ services:
       - "4000:4000"
       - "4001:4001"
       - "4002:4002"
+      - "9229:9229"
     depends_on:
       - redis
       - ml-testing-toolkit
