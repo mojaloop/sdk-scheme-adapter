@@ -247,11 +247,8 @@ alt if (!autoAcceptParty)
     note left
       **bulkTransferContinuationAcceptParty**
       {
-        "bulkHomeTransactionID": "string", # external identifier
         "individualTransfers": [
                 {
-                  "homeTransactionId": "string", # Payer DFSP CBS Transaction identifier
-                  "transactionId": "UUID", # Created by ML connector
                   "transferId": "UUID", # Created by ML connector
                   "acceptParty": "true" # (boolean)
                 }
@@ -377,11 +374,8 @@ alt if (!autoAcceptQuote)
     note left
       **bulkAcceptQuote**
       {
-        "bulkHomeTransactionID": "string", # external identifier
         "individualTransfers": [
                 {
-                  "homeTransactionId": "string", # Payer DFSP CBS Transaction identifier
-                  "transactionId": "UUID", # Created by ML connector
                   "transferId": "UUID", # Created by ML connector
                   "acceptQuote": "true" #boolean
                 }
