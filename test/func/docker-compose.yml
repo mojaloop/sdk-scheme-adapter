@@ -106,12 +106,18 @@ services:
     user: root
     volumes:
       - "./config/ttk-ttksim1/spec_files:/opt/app/spec_files"
+      - "./config/ttk-ttksim1/environments:/opt/app/examples/environments"
     ports:
       - "14040:4040"
       - "15050:5050"
     environment:
       - AUTH_ENABLED=FALSE
     command: npm start
+    healthcheck:
+      test: ["CMD-SHELL", "nc localhost 4040"]
+      interval: 5s
+      timeout: 10s
+      retries: 3
 
   ttk-ttksim1-ui:
     image: mojaloop/ml-testing-toolkit-ui:v15.0.1
