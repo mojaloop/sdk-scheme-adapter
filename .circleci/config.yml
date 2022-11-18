@@ -223,9 +223,6 @@ jobs:
       - checkout
       - run:
           <<: *defaults_configure_nvm
-      - run:
-          name: Install Yarn dependencies
-          command: yarn install --immutable
       - attach_workspace:
           at: /tmp
       - run:
@@ -237,21 +234,12 @@ jobs:
             cd test/func
             docker-compose up -d
       - run:
-          name: Wait 4 Health Services
+          name: Wait for some time
           command: |
-            yarn run wait-4-docker
+            sleep 10
       - run:
           name: Execute Functional Tests
           command: |
-            run_int_tests() {
-              pushd /home/circleci/project/modules/$1
-              yarn run start & echo $! > /tmp/sdk-scheme-adapter.pid
-              sleep 10
-              yarn run test:integration
-              kill $(cat /tmp/sdk-scheme-adapter.pid)
-              popd
-              sleep 10
-            }
             docker-compose -f ./ttk-tests-docker-compose.yml up
             docker-compose -f ./ttk-tests-docker-compose.yml down
             docker compose down
