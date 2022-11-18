@@ -735,6 +735,19 @@ workflows:
                 - /feature*/
                 - /bugfix*/
 
+      - test-func:
+          context: org-global
+          requires:
+            - setup
+            - build-local
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
+
       - vulnerability-check:
           context: org-global
           requires:
