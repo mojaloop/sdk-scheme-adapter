@@ -216,6 +216,46 @@ jobs:
       # - store_test_results:
       #     path: ./test/results
 
+  test-func:
+    executor: default-machine
+    environment: *defaults_environment
+    steps:
+      - checkout
+      - run:
+          <<: *defaults_configure_nvm
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Load the pre-built docker image from workspace
+          command: docker load -i /tmp/docker-image.tar
+      - run:
+          name: Start docker-compose for SDK and simulators
+          command: |
+            cd test/func
+            docker-compose up -d
+      - run:
+          name: Wait 4 Health Services
+          command: |
+            yarn run wait-4-docker
+      - run:
+          name: Execute Functional Tests
+          command: |
+            run_int_tests() {
+              pushd /home/circleci/project/modules/$1
+              yarn run start & echo $! > /tmp/sdk-scheme-adapter.pid
+              sleep 10
+              yarn run test:integration
+              kill $(cat /tmp/sdk-scheme-adapter.pid)
+              popd
+              sleep 10
+            }
+            docker-compose -f ./ttk-tests-docker-compose.yml up
+            docker-compose -f ./ttk-tests-docker-compose.yml down
+            docker compose down
+      - store_artifacts:
+          path: ./test/func/reports
+          prefix: test
+
   validate-openapi:
     executor: default-docker
     environment: *defaults_environment
