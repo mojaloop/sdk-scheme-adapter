@@ -1,0 +1,4 @@
+reports/*.html
+*.log
+*IGNORE*
+.DS_Store
