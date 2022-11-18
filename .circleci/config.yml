@@ -223,6 +223,9 @@ jobs:
       - checkout
       - run:
           <<: *defaults_configure_nvm
+      - run:
+          name: Install Yarn dependencies
+          command: yarn install --immutable
       - attach_workspace:
           at: /tmp
       - run:
