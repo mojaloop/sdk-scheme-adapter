@@ -242,7 +242,6 @@ jobs:
           command: |
             cd test/func
             docker-compose -f ./ttk-tests-docker-compose.yml up
-            docker-compose -f ./ttk-tests-docker-compose.yml down
             docker compose down
       - store_artifacts:
           path: ./test/func/reports
