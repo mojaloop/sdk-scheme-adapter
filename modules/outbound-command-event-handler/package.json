@@ -19,9 +19,11 @@
   "scripts": {
     "start": "yarn run service",
     "start:debug": "yarn run service:debug",
+    "start:debug-brk": "yarn run service:debug-brk",
     "start:dev": "ts-node src/application/index.ts",
     "service": "node dist/application/index.js",
     "service:debug": "node --inspect=0.0.0.0:9229 dist/application/index.js",
+    "service:debug-brk": "node --inspect-brk=0.0.0.0:9229 dist/application/index.js",
     "build": "tsc && yarn run copy-files",
     "watch": "tsc -w",
     "dev": "nodemon",

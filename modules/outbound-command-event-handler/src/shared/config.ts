@@ -103,6 +103,13 @@ const config = Convict({
                 default: 200000000,
                 env: 'COMMAND_EVENT_CONSUMER_MESSAGE_MAX_BYTES',
             },
+            consumeMessageNum: {
+                doc: 'consumeMessageNum',
+                nullable: true,
+                default: null,
+                format: Number,
+                env: 'COMMAND_EVENT_CONSUMER_MESSAGE_NUM',
+            },
         },
         DOMAIN_EVENT_PRODUCER: {
             brokerList: {
