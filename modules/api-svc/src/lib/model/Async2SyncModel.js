@@ -161,7 +161,7 @@ function generate({
         const { requests, config } = this.handlersContext;
         logger.push({ args }).log('onRequestAction - arguments');
 
-        return deferredJob(cache, channelNameMethod(args))
+        return deferredJob(cache, channelNameMethod(args)) // TODO: timeout is not be configured here, and thus uses the default!
             .init(async (channel) => {
                 const res = await requestActionMethod(requests, args);
                 logger.push({ res, channel, args }).log('RequestAction call sent to peer, listening on response');

@@ -13,7 +13,8 @@
       "groupId": "domain_events_consumer_group",
       "clientId": "domain_events_consumer_client_id",
       "topics": ["topic-sdk-outbound-domain-events"],
-      "messageMaxBytes": 200000000
+      "messageMaxBytes": 200000000,
+      "consumeMessageNum": 1
     },
     "COMMAND_EVENT_PRODUCER": {
       "brokerList": "localhost:9092",

@@ -11,7 +11,7 @@
 
 const fs = require('fs');
 require('dotenv').config();
-const { from } = require('env-var');
+const { from, accessors } = require('env-var');
 const yaml = require('js-yaml');
 
 function getFileContent (path) {
@@ -49,11 +49,17 @@ function parseResourceVersions (resourceString) {
     return getVersionFromConfig(noSpResources);
 }
 
+function praseIntOrNull (numAsString) {
+    if (numAsString) return accessors.asIntPositive(numAsString);
+    return null;
+}
+
 const env = from(process.env, {
     asFileContent: (path) => getFileContent(path),
     asFileListContent: (pathList) => pathList.split(',').map((path) => getFileContent(path)),
     asYamlConfig: (path) => yaml.load(getFileContent(path)),
     asResourceVersions: (resourceString) => parseResourceVersions(resourceString),
+    asIntOrNull: (num) => praseIntOrNull(num)
 });
 
 module.exports = {
@@ -96,6 +102,8 @@ module.exports = {
             groupId: env.get('BACKEND_EVENT_CONSUMER_GROUP_ID').default('domain_events_consumer_api_svc_backend_group').asString(),
             clientId: env.get('BACKEND_EVENT_CONSUMER_CLIENT_ID').default('backend_consumer_client_id').asString(),
             topics: env.get('BACKEND_EVENT_CONSUMER_TOPICS').default('topic-sdk-outbound-domain-events').asArray(),
+            consumeMessageNum: env.get('BACKEND_EVENT_CONSUMER_MESSAGE_NUM').asIntOrNull(),
+
         },
         domainEventProducer:{
             brokerList: env.get('BACKEND_EVENT_PRODUCER_BROKER_LIST').default('localhost:9092').asString(),
@@ -110,6 +118,7 @@ module.exports = {
             groupId: env.get('FSPIOP_EVENT_CONSUMER_GROUP_ID').default('domain_events_consumer_api_svc_fspiop_group').asString(),
             clientId: env.get('FSPIOP_EVENT_CONSUMER_CLIENT_ID').default('fspiop_consumer_client_id').asString(),
             topics: env.get('FSPIOP_EVENT_CONSUMER_TOPICS').default('topic-sdk-outbound-domain-events').asArray(),
+            consumeMessageNum: env.get('FSPIOP_EVENT_CONSUMER_MESSAGE_NUM').asIntOrNull(),
         },
         domainEventProducer:{
             brokerList: env.get('FSPIOP_EVENT_PRODUCER_BROKER_LIST').default('localhost:9092').asString(),

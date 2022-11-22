@@ -26,6 +26,7 @@
 
 'use strict';
 
+import Util from 'util';
 import { MLKafkaRawConsumer, MLKafkaRawConsumerOptions } from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib';
 import { IMessage } from '@module-types';
 import { IEventConsumer } from '../types';
@@ -49,6 +50,8 @@ export class KafkaEventConsumer implements IEventConsumer {
         this._logger = logger;
         this._kafkaTopics = kafkaTopics;
         this._handler = handlerFn;
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        this._logger.isDebugEnabled() && this._logger.debug(`consumerOptions = ${Util.inspect(consumerOptions)}`);
         this._kafkaConsumer = new MLKafkaRawConsumer(consumerOptions, this._logger);
     }
 

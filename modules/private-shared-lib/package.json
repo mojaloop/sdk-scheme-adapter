@@ -31,7 +31,7 @@
     "@mojaloop/central-services-shared": "^17.3.1",
     "@mojaloop/logging-bc-public-types-lib": "^0.1.13",
     "@mojaloop/platform-shared-lib-messaging-types-lib": "^0.2.18",
-    "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "^0.2.15",
+    "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "0.3.0-snapshot.6",
     "ajv": "^8.11.2",
     "redis": "^4.5.0",
     "uuid": "^9.0.0"

@@ -52,6 +52,10 @@ export class KafkaDomainEventConsumer extends KafkaEventConsumer {
             outputType: MLKafkaRawConsumerOutputType.Json,
             messageMaxBytes: consumerOptions.messageMaxBytes || 200000000,
         };
+
+        // This ensures that there is back-pressure when consuming messages in order. This can > 1. Comment this out for flow mode is preferred.
+        if(consumerOptions?.consumeMessageNum) mlConsumerOptions.consumeMessageNum = consumerOptions.consumeMessageNum;
+
         super(mlConsumerOptions, consumerOptions.topics, superHandlerFn, logger);
     }
 
