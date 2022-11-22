@@ -101,9 +101,11 @@
         },
         "statusCode": "200",
         "scripts": {
-          "scriptingEngine": "postman"
-        },
-        "delay": 300000
+          "exec": [
+            "return null"
+          ],
+          "scriptingEngine": "javascript"
+        }
       },
       "type": "FIXED_RESPONSE"
     },
@@ -341,9 +343,11 @@
         },
         "statusCode": "200",
         "scripts": {
-          "scriptingEngine": "postman"
-        },
-        "delay": 300000
+          "exec": [
+            "return null"
+          ],
+          "scriptingEngine": "javascript"
+        }
       },
       "type": "FIXED_RESPONSE"
     },
@@ -1002,9 +1006,11 @@
         },
         "statusCode": "200",
         "scripts": {
-          "scriptingEngine": "postman"
-        },
-        "delay": 300000
+          "exec": [
+            "return null"
+          ],
+          "scriptingEngine": "javascript"
+        }
       },
       "type": "FIXED_RESPONSE"
     },
