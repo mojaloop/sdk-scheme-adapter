@@ -322,6 +322,40 @@
   {
     "ruleId": 9,
     "priority": 1,
+    "description": "put /bulkQuotes/{ID}/error",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/bulkQuotes/{ID}/error"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "put"
+        }
+      ]
+    },
+    "event": {
+      "params": {
+        "to": "ttksim1",
+        "dfspId": "ttksim1"
+      },
+      "type": "FORWARD"
+    },
+    "type": "forward",
+    "version": 1
+  },
+  {
+    "ruleId": 10,
+    "priority": 1,
     "description": "post /bulkTransfers to ttksim2",
     "apiVersion": {
       "minorVersion": 0,
@@ -360,7 +394,7 @@
     "version": 1
   },
   {
-    "ruleId": 10,
+    "ruleId": 11,
     "priority": 1,
     "description": "post /bulkTransfers to ttksim3",
     "apiVersion": {
@@ -400,7 +434,7 @@
     "version": 1
   },
   {
-    "ruleId": 11,
+    "ruleId": 12,
     "priority": 1,
     "description": "put /bulkTransfers",
     "apiVersion": {
@@ -415,6 +449,40 @@
           "fact": "operationPath",
           "operator": "equal",
           "value": "/bulkTransfers/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "put"
+        }
+      ]
+    },
+    "event": {
+      "params": {
+        "to": "ttksim1",
+        "dfspId": "ttksim1"
+      },
+      "type": "FORWARD"
+    },
+    "type": "forward",
+    "version": 1
+  },
+  {
+    "ruleId": 13,
+    "priority": 1,
+    "description": "put /bulkTransfers/{ID}/error",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/bulkTransfers/{ID}/error"
         },
         {
           "fact": "method",

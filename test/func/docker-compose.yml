@@ -168,7 +168,7 @@ services:
     networks:
         - mojaloop-net
     image: mojaloop/ml-testing-toolkit:v15.2.1
-    container_name: ttk-ttksim4
+    container_name: ttk-ttksim3
     user: root
     volumes:
       - "./config/ttk-ttksim3/spec_files:/opt/app/spec_files"
@@ -237,10 +237,12 @@ services:
   kafka:
     networks:
       - mojaloop-net
+    restart: "no"
     image: docker.io/bitnami/kafka:3.2
     container_name: kafka
     ports:
       - "9092:9092"
+      - "9093:9093"
     environment:
       ALLOW_PLAINTEXT_LISTENER: "yes"
       # KAFKA_ADVERTISED_HOST_NAME: kafka
