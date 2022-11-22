@@ -94,6 +94,86 @@
   {
     "ruleId": 3,
     "priority": 1,
+    "description": "get /parties/{Type}/{ID} for partynotfound",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "pathParams",
+          "operator": "equal",
+          "value": "partynotfound",
+          "path": "ID"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/parties/{Type}/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "get"
+        }
+      ]
+    },
+    "event": {
+      "params": {
+        "to": "ttksim2",
+        "dfspId": "ttksim2"
+      },
+      "type": "FORWARD"
+    },
+    "type": "forward",
+    "version": 1
+  },
+  {
+    "ruleId": 4,
+    "priority": 1,
+    "description": "get /parties/{Type}/{ID} for partynotfound",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "pathParams",
+          "operator": "equal",
+          "value": "partytimesout",
+          "path": "ID"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/parties/{Type}/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "get"
+        }
+      ]
+    },
+    "event": {
+      "params": {
+        "to": "ttksim2",
+        "dfspId": "ttksim2"
+      },
+      "type": "FORWARD"
+    },
+    "type": "forward",
+    "version": 1
+  },
+  {
+    "ruleId": 5,
+    "priority": 1,
     "description": "put /parties/{Type}/{ID}",
     "apiVersion": {
       "minorVersion": 0,
@@ -126,7 +206,7 @@
     "version": 1
   },
   {
-    "ruleId": 4,
+    "ruleId": 6,
     "priority": 1,
     "description": "post /bulkQuotes to ttksim2",
     "apiVersion": {
@@ -166,7 +246,7 @@
     "version": 1
   },
   {
-    "ruleId": 5,
+    "ruleId": 7,
     "priority": 1,
     "description": "post /bulkQuotes to ttksim3",
     "apiVersion": {
@@ -206,7 +286,7 @@
     "version": 1
   },
   {
-    "ruleId": 6,
+    "ruleId": 8,
     "priority": 1,
     "description": "put /bulkQuotes",
     "apiVersion": {
@@ -240,7 +320,7 @@
     "version": 1
   },
   {
-    "ruleId": 7,
+    "ruleId": 9,
     "priority": 1,
     "description": "post /bulkTransfers to ttksim2",
     "apiVersion": {
@@ -280,7 +360,7 @@
     "version": 1
   },
   {
-    "ruleId": 8,
+    "ruleId": 10,
     "priority": 1,
     "description": "post /bulkTransfers to ttksim3",
     "apiVersion": {
@@ -320,7 +400,7 @@
     "version": 1
   },
   {
-    "ruleId": 9,
+    "ruleId": 11,
     "priority": 1,
     "description": "put /bulkTransfers",
     "apiVersion": {
