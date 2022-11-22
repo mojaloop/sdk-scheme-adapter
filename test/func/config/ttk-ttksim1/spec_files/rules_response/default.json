@@ -18,7 +18,7 @@
         {
           "fact": "pathParams",
           "operator": "equal",
-          "value": "fsp2msisdnerrorsout",
+          "value": "partynotfound",
           "path": "idValue"
         },
         {
@@ -39,7 +39,7 @@
       "params": {
         "body": {
           "statusCode": "4001",
-          "message": "ID Not Found"
+          "message": "Party Not Found in the backend application"
         },
         "statusCode": "404",
         "scripts": {
@@ -70,7 +70,7 @@
         {
           "fact": "pathParams",
           "operator": "equal",
-          "value": "idtimesout",
+          "value": "partytimesout",
           "path": "idValue"
         },
         {
@@ -182,7 +182,7 @@
           "fact": "body",
           "operator": "equal",
           "value": "blkqtbatchfailure",
-          "path": "note"
+          "path": "individualQuotes[0].note"
         },
         {
           "fact": "operationPath",
@@ -234,7 +234,7 @@
           "fact": "body",
           "operator": "equal",
           "value": "blktrbatchfailure",
-          "path": "note"
+          "path": "individualQuotes[0].note"
         },
         {
           "fact": "operationPath",
@@ -310,7 +310,7 @@
           "fact": "body",
           "operator": "equal",
           "value": "blkqtbatchtimesout",
-          "path": "note"
+          "path": "individualQuotes[0].note"
         },
         {
           "fact": "operationPath",
@@ -370,7 +370,7 @@
           "fact": "body",
           "operator": "equal",
           "value": "blktrbatchtimesout",
-          "path": "note"
+          "path": "individualQuotes[0].note"
         },
         {
           "fact": "operationPath",
@@ -446,7 +446,7 @@
           "fact": "body",
           "operator": "equal",
           "value": "blkqtbatchpartialsuccess",
-          "path": "note"
+          "path": "individualQuotes[0].note"
         },
         {
           "fact": "operationPath",
@@ -518,7 +518,7 @@
           "fact": "body",
           "operator": "equal",
           "value": "blktrbatchpartialsuccess",
-          "path": "note"
+          "path": "individualQuotes[0].note"
         },
         {
           "fact": "operationPath",
@@ -746,7 +746,7 @@
           "fact": "body",
           "operator": "equal",
           "value": "blkqtbatchwith1qtresponse",
-          "path": "note"
+          "path": "individualQuotes[0].note"
         },
         {
           "fact": "operationPath",
@@ -792,622 +792,18 @@
     "version": 1
   },
   {
-    "ruleId": 21,
-    "priority": 1,
-    "description": "post /bulkQuotes - receiver responds with 50 quote results",
-    "apiVersion": {
-      "minorVersion": 4,
-      "majorVersion": 1,
-      "type": "mojaloop_simulator_inbound",
-      "specFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/api_spec.yaml",
-      "callbackMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/callback_map.json",
-      "responseMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/response_map.json",
-      "jsfRefFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/mockRef.json",
-      "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/trigger_templates"
-    },
-    "conditions": {
-      "all": [
-        {
-          "fact": "body",
-          "operator": "equal",
-          "value": "receiverfspwith50responses",
-          "path": "note"
-        },
-        {
-          "fact": "operationPath",
-          "operator": "equal",
-          "value": "/bulkQuotes"
-        },
-        {
-          "fact": "method",
-          "operator": "equal",
-          "value": "post"
-        }
-      ]
-    },
-    "event": {
-      "method": null,
-      "path": null,
-      "params": {
-        "body": {
-          "bulkQuoteId": "{$request.body.bulkQuoteId}",
-          "expiration": "2040-01-01T00:00:00.000Z",
-          "individualQuoteResults": [
-            {
-              "quoteId": "{$request.body.individualQuotes[0].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[0].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[0].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[0].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[0].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[0].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[0].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[1].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[1].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[1].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[1].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[1].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[1].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[1].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[2].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[2].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[2].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[2].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[2].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[2].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[2].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[3].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[3].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[3].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[3].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[3].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[3].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[3].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[4].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[4].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[4].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[4].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[4].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[4].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[4].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[5].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[5].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[5].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[5].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[5].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[5].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[5].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[6].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[6].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[6].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[6].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[6].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[6].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[6].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[7].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[7].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[7].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[7].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[7].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[7].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[7].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[8].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[8].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[8].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[8].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[8].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[8].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[8].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[9].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[9].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[9].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[9].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[9].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[9].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[9].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[10].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[10].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[10].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[10].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[10].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[10].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[10].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[11].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[11].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[11].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[11].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[11].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[11].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[11].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[12].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[12].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[12].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[12].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[12].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[12].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[12].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[13].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[13].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[13].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[13].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[13].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[13].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[13].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[14].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[14].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[14].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[14].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[14].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[14].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[14].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[15].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[15].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[15].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[15].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[15].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[15].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[15].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[16].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[16].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[16].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[16].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[16].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[16].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[16].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[17].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[17].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[17].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[17].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[17].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[17].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[17].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[18].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[18].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[18].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[18].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[18].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[18].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[18].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[19].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[19].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[19].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[19].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[19].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[19].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[19].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[20].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[20].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[20].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[20].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[20].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[20].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[20].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[21].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[21].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[21].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[21].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[21].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[21].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[21].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[22].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[22].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[22].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[22].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[22].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[22].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[22].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[23].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[23].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[23].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[23].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[23].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[23].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[23].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[24].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[24].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[24].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[24].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[24].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[24].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[24].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[25].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[25].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[25].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[25].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[25].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[25].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[25].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[26].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[26].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[26].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[26].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[26].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[26].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[26].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[27].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[27].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[27].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[27].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[27].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[27].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[27].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[28].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[28].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[28].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[28].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[28].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[28].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[28].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[29].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[29].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[29].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[29].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[29].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[29].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[29].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[30].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[30].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[30].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[30].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[30].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[30].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[30].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[31].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[31].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[31].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[31].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[31].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[31].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[31].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[32].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[32].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[32].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[32].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[32].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[32].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[32].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[33].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[33].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[33].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[33].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[33].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[33].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[33].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[34].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[34].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[34].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[34].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[34].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[34].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[34].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[35].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[35].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[35].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[35].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[35].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[35].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[35].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[36].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[36].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[36].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[36].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[36].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[36].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[36].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[37].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[37].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[37].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[37].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[37].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[37].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[37].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[38].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[38].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[38].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[38].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[38].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[38].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[38].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[39].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[39].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[39].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[39].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[39].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[39].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[39].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[40].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[40].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[40].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[40].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[40].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[40].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[40].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[41].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[41].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[41].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[41].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[41].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[41].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[41].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[42].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[42].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[42].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[42].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[42].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[42].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[42].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[43].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[43].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[43].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[43].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[43].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[43].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[43].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[44].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[44].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[44].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[44].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[44].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[44].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[44].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[45].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[45].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[45].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[45].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[45].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[45].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[45].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[46].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[46].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[46].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[46].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[46].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[46].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[46].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[47].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[47].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[47].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[47].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[47].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[47].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[47].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[48].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[48].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[48].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[48].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[48].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[48].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[48].currency}"
-            },
-            {
-              "quoteId": "{$request.body.individualQuotes[49].quoteId}",
-              "transferAmount": "{$request.body.individualQuotes[49].amount}",
-              "transferAmountCurrency": "{$request.body.individualQuotes[49].currency}",
-              "payeeReceiveAmount": "{$request.body.individualQuotes[49].amount}",
-              "payeeReceiveAmountCurrency": "{$request.body.individualQuotes[49].currency}",
-              "payeeFspFeeAmount": "0",
-              "payeeFspFeeAmountCurrency": "{$request.body.individualQuotes[49].currency}",
-              "payeeFspCommissionAmount": "0",
-              "payeeFspCommissionAmountCurrency": "{$request.body.individualQuotes[49].currency}"
-            }
-          ]
-        },
-        "statusCode": "200",
-        "scripts": {
-          "scriptingEngine": "postman"
-        }
-      },
-      "type": "FIXED_RESPONSE"
-    },
-    "type": "response",
-    "version": 1
-  },
-  {
     "ruleId": 11,
     "priority": 11,
     "description": "post /bulkQuotes - default path",
     "apiVersion": {
-      "minorVersion": 4,
-      "majorVersion": 1,
-      "type": "mojaloop_simulator_inbound",
-      "specFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/api_spec.yaml",
       "callbackMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/callback_map.json",
-      "responseMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/response_map.json",
       "jsfRefFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/mockRef.json",
-      "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/trigger_templates"
+      "majorVersion": 1,
+      "minorVersion": 4,
+      "responseMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/response_map.json",
+      "specFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/api_spec.yaml",
+      "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/trigger_templates",
+      "type": "mojaloop_simulator_inbound"
     },
     "conditions": {
       "all": [
@@ -1425,7 +821,6 @@
     },
     "event": {
       "method": null,
-      "path": null,
       "params": {
         "body": {
           "bulkQuoteId": "{$request.body.bulkQuoteId}",
@@ -1455,6 +850,7 @@
           "scriptingEngine": "javascript"
         }
       },
+      "path": null,
       "type": "FIXED_RESPONSE"
     },
     "type": "response",
@@ -1666,213 +1062,9 @@
             {
               "transferId": "{$request.body.individualTransfers[1].transferId}",
               "errorResponse": {
-                "statusCode": "4001",
+                "statusCode": "1001",
                 "message": "Cannot process the transfer"
               }
-            }
-          ]
-        },
-        "statusCode": "200",
-        "scripts": {
-          "scriptingEngine": "postman"
-        }
-      },
-      "type": "FIXED_RESPONSE"
-    },
-    "type": "response",
-    "version": 1
-  },
-  {
-    "ruleId": 22,
-    "priority": 1,
-    "description": "post /bulkTransfers - receiver responds with 50 transfer results",
-    "apiVersion": {
-      "minorVersion": 4,
-      "majorVersion": 1,
-      "type": "mojaloop_simulator_inbound",
-      "specFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/api_spec.yaml",
-      "callbackMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/callback_map.json",
-      "responseMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/response_map.json",
-      "jsfRefFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/mockRef.json",
-      "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/trigger_templates"
-    },
-    "conditions": {
-      "all": [
-        {
-          "fact": "body",
-          "operator": "equal",
-          "value": "receiverfspwith50responses",
-          "path": "individualTransfers[0].note"
-        },
-        {
-          "fact": "operationPath",
-          "operator": "equal",
-          "value": "/bulkTransfers"
-        },
-        {
-          "fact": "method",
-          "operator": "equal",
-          "value": "post"
-        }
-      ]
-    },
-    "event": {
-      "method": null,
-      "path": null,
-      "params": {
-        "body": {
-          "bulkTransferId": "{$request.body.bulkTransferId}",
-          "homeTransactionId": "{$request.body.homeTransactionId}",
-          "individualTransferResults": [
-            {
-              "transferId": "{$request.body.individualTransfers[0].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[1].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[2].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[3].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[4].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[5].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[6].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[7].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[8].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[9].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[10].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[11].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[12].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[13].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[14].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[15].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[16].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[17].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[18].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[19].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[20].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[21].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[22].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[23].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[24].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[25].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[26].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[27].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[28].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[29].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[30].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[31].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[32].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[33].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[34].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[35].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[36].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[37].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[38].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[39].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[40].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[41].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[42].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[43].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[44].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[45].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[46].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[47].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[48].transferId}"
-            },
-            {
-              "transferId": "{$request.body.individualTransfers[49].transferId}"
             }
           ]
         },
@@ -1891,17 +1083,17 @@
     "priority": 15,
     "description": "post /bulkTransfers - default path",
     "apiVersion": {
-      "minorVersion": 4,
-      "majorVersion": 1,
-      "type": "mojaloop_simulator_inbound",
+      "callbackMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/callback_map.json",
       "hostnames": [
         "ttkpm4mlreceiver-ttk-backend"
       ],
-      "specFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/api_spec.yaml",
-      "callbackMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/callback_map.json",
-      "responseMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/response_map.json",
       "jsfRefFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/mockRef.json",
-      "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/trigger_templates"
+      "majorVersion": 1,
+      "minorVersion": 4,
+      "responseMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/response_map.json",
+      "specFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/api_spec.yaml",
+      "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/trigger_templates",
+      "type": "mojaloop_simulator_inbound"
     },
     "conditions": {
       "all": [
@@ -1919,7 +1111,6 @@
     },
     "event": {
       "method": null,
-      "path": null,
       "params": {
         "body": {
           "bulkTransferId": "{$request.body.bulkTransferId}",
@@ -1941,6 +1132,7 @@
           "scriptingEngine": "javascript"
         }
       },
+      "path": null,
       "type": "FIXED_RESPONSE"
     },
     "type": "response",
