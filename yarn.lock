@@ -2147,7 +2147,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/logging-bc-client-lib@npm:^0.1.16, @mojaloop/logging-bc-client-lib@npm:^0.1.17":
+"@mojaloop/logging-bc-client-lib@npm:^0.1.17":
   version: 0.1.17
   resolution: "@mojaloop/logging-bc-client-lib@npm:0.1.17"
   dependencies:
@@ -2317,8 +2317,8 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-domain-event-handler@workspace:modules/outbound-domain-event-handler"
   dependencies:
     "@mojaloop/api-snippets": 17.0.0
-    "@mojaloop/logging-bc-client-lib": ^0.1.16
-    "@mojaloop/logging-bc-public-types-lib": ^0.1.13
+    "@mojaloop/logging-bc-client-lib": ^0.1.17
+    "@mojaloop/logging-bc-public-types-lib": ^0.1.14
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
     "@types/convict": ^6.1.1
     "@types/express": ^4.17.14
