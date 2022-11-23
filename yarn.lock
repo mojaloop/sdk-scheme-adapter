@@ -2344,7 +2344,7 @@ __metadata:
     swagger-ui-express: ^4.6.0
     ts-jest: ^29.0.3
     ts-node: ^10.9.1
-    typescript: ^4.8.4
+    typescript: ^4.9.3
     yamljs: ^0.3.0
   languageName: unknown
   linkType: soft
@@ -13752,7 +13752,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.8.4, typescript@npm:^4.9.3":
+"typescript@npm:^4.9.3":
   version: 4.9.3
   resolution: "typescript@npm:4.9.3"
   bin:
@@ -13762,7 +13762,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.8.4#~builtin<compat/typescript>, typescript@patch:typescript@^4.9.3#~builtin<compat/typescript>":
+"typescript@patch:typescript@^4.9.3#~builtin<compat/typescript>":
   version: 4.9.3
   resolution: "typescript@patch:typescript@npm%3A4.9.3#~builtin<compat/typescript>::version=4.9.3&hash=bda367"
   bin:
