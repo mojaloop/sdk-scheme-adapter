@@ -42,12 +42,12 @@
     },
     "dependencies": {
         "@mojaloop/api-snippets": "17.0.0",
-        "@mojaloop/logging-bc-client-lib": "^0.1.17",
-        "@mojaloop/logging-bc-public-types-lib": "^0.1.14",
+        "@mojaloop/logging-bc-client-lib": "^0.1.16",
+        "@mojaloop/logging-bc-public-types-lib": "^0.1.13",
         "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^",
         "convict": "^6.2.3",
         "express": "^4.18.2",
-        "openapi-backend": "^5.6.0",
+        "openapi-backend": "^5.5.0",
         "redis": "^4.5.0",
         "swagger-ui-express": "^4.6.0",
         "yamljs": "^0.3.0"
@@ -72,7 +72,7 @@
         "standard-version": "^9.5.0",
         "ts-jest": "^29.0.3",
         "ts-node": "^10.9.1",
-        "typescript": "^4.9.3"
+        "typescript": "^4.8.4"
     },
     "nodemonConfig": {
         "watch": [
