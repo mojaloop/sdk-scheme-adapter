@@ -1,4 +1,16 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [21.5.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.4.0...v21.5.0) (2022-11-24)
+
+
+### Features
+
+* **mojaloop/3023:** align ttk func tests from ttk testcases repo ([#425](https://github.com/mojaloop/sdk-scheme-adapter/issues/425)) ([973faa7](https://github.com/mojaloop/sdk-scheme-adapter/commit/973faa7bd09e69608b324fb754c20d2a0719da85))
+
+
+### Chore
+
+* **mojaloop/#3018:** update documentation for transferId refactor [skip ci] ([#424](https://github.com/mojaloop/sdk-scheme-adapter/issues/424)) ([9680e32](https://github.com/mojaloop/sdk-scheme-adapter/commit/9680e325830f557fa778d31e1610a86901361af1)), closes [mojaloop/#3018](https://github.com/mojaloop/project/issues/3018)
+
 ## [21.4.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.3.5...v21.4.0) (2022-11-12)
 
 
