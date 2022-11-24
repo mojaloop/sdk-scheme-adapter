@@ -216,6 +216,37 @@ jobs:
       # - store_test_results:
       #     path: ./test/results
 
+  test-func:
+    executor: default-machine
+    environment: *defaults_environment
+    steps:
+      - checkout
+      - run:
+          <<: *defaults_configure_nvm
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Load the pre-built docker image from workspace
+          command: docker load -i /tmp/docker-image.tar
+      - run:
+          name: Start docker-compose for SDK and simulators
+          command: |
+            cd test/func
+            docker-compose up -d
+      - run:
+          name: Wait for some time
+          command: |
+            sleep 10
+      - run:
+          name: Execute Functional Tests
+          command: |
+            cd test/func
+            docker-compose -f ./ttk-tests-docker-compose.yml up --abort-on-container-exit
+            docker compose down
+      - store_artifacts:
+          path: ./test/func/reports
+          prefix: test
+
   validate-openapi:
     executor: default-docker
     environment: *defaults_environment
@@ -683,6 +714,19 @@ workflows:
                 - /bugfix*/
 
       - test-integration:
+          context: org-global
+          requires:
+            - setup
+            - build-local
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
+
+      - test-func:
           context: org-global
           requires:
             - setup

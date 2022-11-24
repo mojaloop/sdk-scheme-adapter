@@ -42,6 +42,6 @@
     "TEST_CASES_REPO_HUB_GP_PATH": "collections/hub/golden_path",
     "TEST_CASES_REPO_HUB_PROVISIONING_PATH": "collections/hub/provisioning"
   },
-  "DEFAULT_ENVIRONMENT_FILE_NAME": "dfsp_local_environment.json",
+  "DEFAULT_ENVIRONMENT_FILE_NAME": "hub_local_environment.json",
   "LABELS": []
 }
