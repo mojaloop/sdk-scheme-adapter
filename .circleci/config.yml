@@ -241,7 +241,8 @@ jobs:
           name: Execute Functional Tests
           command: |
             cd test/func
-            docker-compose -f ./ttk-tests-docker-compose.yml up
+            docker-compose -f ./ttk-tests-docker-compose.yml up --abort-on-container-exit
+            docker compose down
       - store_artifacts:
           path: ./test/func/reports
           prefix: test
