@@ -1,2 +1,6 @@
 ## Add a TODO comment indicating the reason for each rejected dependency upgrade added to this list, and what should be done to resolve it (i.e. handle it through a story, etc).
-reject: []
+reject: [
+  ## Between version 0.2.15-0.2.21 there is a breaking change that results in a segmentation fault.
+  ## TODO: Investigate.
+  '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib'
+]

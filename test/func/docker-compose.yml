@@ -106,12 +106,18 @@ services:
     user: root
     volumes:
       - "./config/ttk-ttksim1/spec_files:/opt/app/spec_files"
+      - "./config/ttk-ttksim1/environments:/opt/app/examples/environments"
     ports:
       - "14040:4040"
       - "15050:5050"
     environment:
       - AUTH_ENABLED=FALSE
     command: npm start
+    healthcheck:
+      test: ["CMD-SHELL", "nc localhost 4040"]
+      interval: 5s
+      timeout: 10s
+      retries: 3
 
   ttk-ttksim1-ui:
     image: mojaloop/ml-testing-toolkit-ui:v15.0.1
@@ -125,6 +131,8 @@ services:
     command:
       - sh
       - /usr/share/nginx/start.sh
+    profiles:
+      - debug
 
   ttk-ttksim2:
     networks:
@@ -153,12 +161,14 @@ services:
     command:
       - sh
       - /usr/share/nginx/start.sh
+    profiles:
+      - debug
 
   ttk-ttksim3:
     networks:
         - mojaloop-net
     image: mojaloop/ml-testing-toolkit:v15.2.1
-    container_name: ttk-ttksim4
+    container_name: ttk-ttksim3
     user: root
     volumes:
       - "./config/ttk-ttksim3/spec_files:/opt/app/spec_files"
@@ -181,6 +191,8 @@ services:
     command:
       - sh
       - /usr/share/nginx/start.sh
+    profiles:
+      - debug
 
   ttk-hub:
     networks:
@@ -209,6 +221,8 @@ services:
     command:
       - sh
       - /usr/share/nginx/start.sh
+    profiles:
+      - debug
 
   zookeeper:
     networks:
@@ -223,10 +237,12 @@ services:
   kafka:
     networks:
       - mojaloop-net
+    restart: "no"
     image: docker.io/bitnami/kafka:3.2
     container_name: kafka
     ports:
       - "9092:9092"
+      - "9093:9093"
     environment:
       ALLOW_PLAINTEXT_LISTENER: "yes"
       # KAFKA_ADVERTISED_HOST_NAME: kafka
@@ -283,6 +299,8 @@ services:
       - KAFKA_BROKERS=kafka:9093
     depends_on:
       - kafka
+    profiles:
+      - debug
 
   redisinsight:
     image: redislabs/redisinsight
@@ -298,6 +316,8 @@ services:
       retries: 30
       start_period: 5s
       interval: 5s
+    profiles:
+      - debug
 
   init-redisinsight:
     networks:
@@ -307,3 +327,5 @@ services:
       redisinsight:
         condition: service_healthy
     command: "--location --request POST 'http://redisinsight:8001/api/instance/' --header 'Content-Type: application/json' --data-raw '{\"name\": \"Redis DB\",\"connectionType\": \"STANDALONE\",\"host\": \"redis\",\"port\": 6379}'"
+    profiles:
+      - debug
