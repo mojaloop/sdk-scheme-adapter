@@ -1,0 +1,1013 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="13746px" preserveAspectRatio="none" style="width:4873px;height:13746px;background:#FFFFFF;" version="1.1" viewBox="0 0 4873 13746" width="4873px" zoomAndPan="magnify"><defs/><g><rect fill="#D3D3D3" height="13734.1406" style="stroke:#181818;stroke-width:0.5;" width="853" x="1526.5" y="6"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="228" x="1839" y="26.4209">Payment Manager</text><rect fill="#D3D3D3" height="13734.1406" style="stroke:#181818;stroke-width:0.5;" width="789" x="4021.5" y="6"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="228" x="4302" y="26.4209">Payment Manager</text><rect fill="#FFFFFF" height="300.875" style="stroke:#181818;stroke-width:1.0;" width="10" x="2251.5" y="3300.5156"/><rect fill="#FFFFFF" height="565.75" style="stroke:#181818;stroke-width:1.0;" width="10" x="2251.5" y="6850.9844"/><rect fill="#FFFFFF" height="1026.6719" style="stroke:#181818;stroke-width:1.0;" width="10" x="2251.5" y="10633.9844"/><rect fill="none" height="264.875" style="stroke:#000000;stroke-width:1.5;" width="602.5" x="1367" y="1282.0313"/><rect fill="none" height="90.8281" style="stroke:#000000;stroke-width:1.5;" width="439" x="1520.5" y="1449.0781"/><rect fill="none" height="117.4375" style="stroke:#000000;stroke-width:1.5;" width="1516.5" x="869" y="2861.375"/><rect fill="none" height="1052.2813" style="stroke:#000000;stroke-width:1.5;" width="2149.5" x="2020" y="2992.8125"/><rect fill="none" height="842.0156" style="stroke:#000000;stroke-width:1.5;" width="2129.5" x="2030" y="3038.0313"/><rect fill="none" height="720.5781" style="stroke:#000000;stroke-width:1.5;" width="2022" x="2127.5" y="3152.4688"/><rect fill="none" height="116.4375" style="stroke:#000000;stroke-width:1.5;" width="664" x="2127.5" y="3921.6563"/><rect fill="none" height="2377.1875" style="stroke:#000000;stroke-width:1.5;" width="2814.5" x="407" y="4111.7031"/><rect fill="none" height="2324.9688" style="stroke:#000000;stroke-width:1.5;" width="2794.5" x="417" y="4156.9219"/><rect fill="none" height="1000.0625" style="stroke:#000000;stroke-width:1.5;" width="2851.5" x="1985" y="6502.8906"/><rect fill="none" height="432.9219" style="stroke:#000000;stroke-width:1.5;" width="821" x="4005.5" y="6905.5938"/><rect fill="none" height="195.6563" style="stroke:#000000;stroke-width:1.5;" width="801" x="4015.5" y="7135.8594"/><rect fill="none" height="2658.8906" style="stroke:#000000;stroke-width:1.5;" width="2814.5" x="407" y="7516.9531"/><rect fill="none" height="2606.6719" style="stroke:#000000;stroke-width:1.5;" width="2794.5" x="417" y="7562.1719"/><rect fill="none" height="1564.0313" style="stroke:#000000;stroke-width:1.5;" width="2871.5" x="1985" y="10189.8438"/><rect fill="none" height="142.0469" style="stroke:#000000;stroke-width:1.5;" width="667" x="2127.5" y="10304.2813"/><rect fill="none" height="1286.5469" style="stroke:#000000;stroke-width:1.5;" width="2719" x="2127.5" y="10460.3281"/><rect fill="none" height="432.9219" style="stroke:#000000;stroke-width:1.5;" width="821" x="4005.5" y="10793.8125"/><rect fill="none" height="195.6563" style="stroke:#000000;stroke-width:1.5;" width="801" x="4015.5" y="11024.0781"/><rect fill="none" height="289.0938" style="stroke:#000000;stroke-width:1.5;" width="1682.5" x="3154" y="11332.9531"/><rect fill="none" height="197.2656" style="stroke:#000000;stroke-width:1.5;" width="821" x="4005.5" y="11417.7813"/><rect fill="none" height="77.8281" style="stroke:#000000;stroke-width:1.5;" width="801" x="4015.5" y="11530.2188"/><rect fill="none" height="459.5313" style="stroke:#000000;stroke-width:1.5;" width="1968.5" x="417" y="13168.7813"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="478" x2="478" y1="127.4375" y2="13645.3125"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="930" x2="930" y1="127.4375" y2="13645.3125"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1593.5" x2="1593.5" y1="127.4375" y2="13645.3125"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="2256.5" x2="2256.5" y1="127.4375" y2="13645.3125"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="3219" x2="3219" y1="127.4375" y2="13645.3125"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="3875.5" x2="3875.5" y1="127.4375" y2="13645.3125"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="4144.5" x2="4144.5" y1="127.4375" y2="13645.3125"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="4743.5" x2="4743.5" y1="127.4375" y2="13645.3125"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="97" x="427" y="122.249">MFI Staff</text><ellipse cx="478.5" cy="50.3281" fill="#E3E3E3" rx="8" ry="8" style="stroke:#181818;stroke-width:0.5;"/><path d="M478.5,58.3281 L478.5,85.3281 M465.5,66.3281 L491.5,66.3281 M478.5,85.3281 L465.5,100.3281 M478.5,85.3281 L491.5,100.3281 " fill="none" style="stroke:#181818;stroke-width:0.5;"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="97" x="427" y="13664.7334">MFI Staff</text><ellipse cx="478.5" cy="13678.4219" fill="#E3E3E3" rx="8" ry="8" style="stroke:#181818;stroke-width:0.5;"/><path d="M478.5,13686.4219 L478.5,13713.4219 M465.5,13694.4219 L491.5,13694.4219 M478.5,13713.4219 L465.5,13728.4219 M478.5,13713.4219 L491.5,13728.4219 " fill="none" style="stroke:#181818;stroke-width:0.5;"/><rect fill="#E3E3E3" height="39.6094" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="103" x="879" y="86.8281"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="89" x="886" y="114.249">MFI CBS</text><rect fill="#E3E3E3" height="39.6094" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="103" x="879" y="13644.3125"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="89" x="886" y="13671.7334">MFI CBS</text><rect fill="#E3E3E3" height="65.2188" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="126" x="1530.5" y="61.2188"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="50" x="1568.5" y="88.6396">Core</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="112" x="1537.5" y="114.249">Connector</text><rect fill="#E3E3E3" height="65.2188" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="126" x="1530.5" y="13644.3125"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="50" x="1568.5" y="13671.7334">Core</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="112" x="1537.5" y="13697.3428">Connector</text><rect fill="#E3E3E3" height="39.6094" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="238" x="2137.5" y="86.8281"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="224" x="2144.5" y="114.249">sdk-scheme-adapter</text><rect fill="#E3E3E3" height="39.6094" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="238" x="2137.5" y="13644.3125"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="224" x="2144.5" y="13671.7334">sdk-scheme-adapter</text><rect fill="#E3E3E3" height="65.2188" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="111" x="3164" y="61.2188"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="97" x="3171" y="88.6396">Mojaloop</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="73" x="3183" y="114.249">Switch</text><rect fill="#E3E3E3" height="65.2188" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="111" x="3164" y="13644.3125"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="97" x="3171" y="13671.7334">Mojaloop</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="73" x="3183" y="13697.3428">Switch</text><rect fill="#E3E3E3" height="39.6094" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="84" x="3833.5" y="86.8281"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="70" x="3840.5" y="114.249">Oracle</text><rect fill="#E3E3E3" height="39.6094" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="84" x="3833.5" y="13644.3125"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="70" x="3840.5" y="13671.7334">Oracle</text><rect fill="#E3E3E3" height="65.2188" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="238" x="4025.5" y="61.2188"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="66" x="4111.5" y="88.6396">Payee</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="224" x="4032.5" y="114.249">sdk-scheme-adapter</text><rect fill="#E3E3E3" height="65.2188" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="238" x="4025.5" y="13644.3125"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="66" x="4111.5" y="13671.7334">Payee</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="224" x="4032.5" y="13697.3428">sdk-scheme-adapter</text><rect fill="#E3E3E3" height="90.8281" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="126" x="4680.5" y="35.6094"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="66" x="4710.5" y="63.0303">Payee</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="50" x="4718.5" y="88.6396">Core</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="112" x="4687.5" y="114.249">Connector</text><rect fill="#E3E3E3" height="90.8281" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="126" x="4680.5" y="13644.3125"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="66" x="4710.5" y="13671.7334">Payee</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="50" x="4718.5" y="13697.3428">Core</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="112" x="4687.5" y="13722.9521">Connector</text><rect fill="#FFFFFF" height="300.875" style="stroke:#181818;stroke-width:1.0;" width="10" x="2251.5" y="3300.5156"/><rect fill="#FFFFFF" height="565.75" style="stroke:#181818;stroke-width:1.0;" width="10" x="2251.5" y="6850.9844"/><rect fill="#FFFFFF" height="1026.6719" style="stroke:#181818;stroke-width:1.0;" width="10" x="2251.5" y="10633.9844"/><rect fill="#EEEEEE" height="3" style="stroke:#EEEEEE;stroke-width:1.0;" width="4866.5" x="0" y="163.2422"/><line style="stroke:#000000;stroke-width:1.0;" x1="0" x2="4866.5" y1="163.2422" y2="163.2422"/><line style="stroke:#000000;stroke-width:1.0;" x1="0" x2="4866.5" y1="166.2422" y2="166.2422"/><rect fill="#EEEEEE" height="33.6094" style="stroke:#000000;stroke-width:2.0;" width="764" x="2051.25" y="147.4375"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="742" x="2057.25" y="171.8584">Bulk Transfers implemented using Mojaloop bulk transfers</text><polygon fill="#181818" points="918.5,218.6563,928.5,222.6563,918.5,226.6563,922.5,222.6563" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="478.5" x2="924.5" y1="222.6563" y2="222.6563"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="35" x="485.5" y="215.4678">[1]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="304" x="524.5" y="215.4678">Initiate bulk transaction call</text><polygon fill="#181818" points="1581.5,773.4531,1591.5,777.4531,1581.5,781.4531,1585.5,777.4531" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="930.5" x2="1587.5" y1="777.4531" y2="777.4531"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="35" x="937.5" y="757.46">[2]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="163" x="976.5" y="744.6553">Disburse funds</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="7" x="976.5" y="770.2646"> </text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="66" x="983.5" y="770.2646">POST</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="304" x="1056.5" y="770.2646">outbound/bulkTransactions/</text><path d="M5,235.6563 L5,1269.6563 L926,1269.6563 L926,245.6563 L916,235.6563 L5,235.6563 " fill="#FAFAFA" style="stroke:#181818;stroke-width:0.5;"/><path d="M916,235.6563 L916,245.6563 L926,245.6563 L916,235.6563 " fill="#FAFAFA" style="stroke:#181818;stroke-width:0.5;"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="11" y="261.0771">{</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="310" x="32" y="286.6865">"bulkTransactionId": "UUID",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="614" x="32" y="312.2959">"bulkHomeTransactionID": "string", # external identifier</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="128" x="32" y="337.9053">"options": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="442" x="53" y="363.5146">"onlyValidateParty": "false", # (boolean)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="230" x="53" y="389.124">"autoAcceptParty": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="304" x="81" y="414.7334">"enabled": "true" # boolean</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="21" x="53" y="440.3428">},</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="238" x="53" y="465.9521">"autoAcceptQuote": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="329" x="67" y="491.5615">"enabled": "true", # (boolean)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="844" x="67" y="517.1709">"perTransferFeeLimits": [{ "currency": "AED", "amount": "1.69" }], #optional</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="53" y="542.7803">}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="429" x="53" y="568.3896">"skipPartyLookup": "false", # (boolean)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="387" x="53" y="593.999">"synchronous": "false", # (boolean)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="650" x="53" y="619.6084">"bulkExpiration": DateTime, # expiration date time (string)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="21" x="39" y="645.2178">},</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="516" x="32" y="670.8271">"from": { "partyIdInfo": {} # (partyIdInfo type)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="21" x="88" y="696.4365">},</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="251" x="32" y="722.0459">"individualTransfers": [</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="81" y="747.6553">{</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="781" x="95" y="773.2646">"homeTransactionId": "string", # Payer DFSP CBS Transaction identifier</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="492" x="95" y="798.874">"reference": "string", # Payer Loan reference</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="217" x="95" y="824.4834">"to": { # Party type</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="168" x="109" y="850.0928">"partyIdInfo": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="280" x="123" y="875.7021">"partyIdType": "MSISDN",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="281" x="123" y="901.3115">"partyIdentifier": "string",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="325" x="123" y="926.9209">"partySubIdOrType": "string",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="177" x="123" y="952.5303">"fspId": "string",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="735" x="123" y="978.1396">"extensionList": {"extension": [{"key": "string","value": "string"}]}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="21" x="109" y="1003.749">},</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="575" x="95" y="1029.3584">"amountType": "RECEIVE" # SEND, RECEIVE (Enum)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="320" x="95" y="1054.9678">"currency" : "XXX" # (Enum)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="384" x="95" y="1080.5771">"amount": "100", # money (string)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="166" x="95" y="1106.1865">"note": "string"</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="624" x="95" y="1131.7959">"quoteExtensions": [{ "key": "string", "value": "string"}],</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="640" x="95" y="1157.4053">"transferExtensions": [{ "key": "string", "value": "string"}]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="49" x="95" y="1183.0146">}, ...</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="16" x="81" y="1208.624">],</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="560" x="32" y="1234.2334">"extensions": [{ "key": "string", "value": "string"}],</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="11" y="1259.8428">}</text><path d="M1367,1282.0313 L1466,1282.0313 L1466,1299.6406 L1456,1309.6406 L1367,1309.6406 L1367,1282.0313 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="264.875" style="stroke:#000000;stroke-width:1.5;" width="602.5" x="1367" y="1282.0313"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="54" x="1382" y="1303.4521">loop</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="278" x="1481" y="1304.4521">[n times  (in parallel)]</text><polygon fill="#FAFAFA" points="1387,1325.25,1578,1325.25,1588,1354.25,1578,1384.25,1387,1384.25,1377,1354.25,1387,1325.25" style="stroke:#181818;stroke-width:0.5;"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="187" x="1389" y="1349.6709">For each transfer</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="178" x="1389" y="1375.2803">in bulk message</text><line style="stroke:#181818;stroke-width:1.0;" x1="1593.5" x2="1635.5" y1="1421.0781" y2="1421.0781"/><line style="stroke:#181818;stroke-width:1.0;" x1="1635.5" x2="1635.5" y1="1421.0781" y2="1434.0781"/><line style="stroke:#181818;stroke-width:1.0;" x1="1594.5" x2="1635.5" y1="1434.0781" y2="1434.0781"/><polygon fill="#181818" points="1604.5,1430.0781,1594.5,1434.0781,1604.5,1438.0781,1600.5,1434.0781" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="35" x="1600.5" y="1413.8896">[3]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="275" x="1639.5" y="1413.8896">validate MSISDN &amp; Prefix</text><path d="M1520.5,1449.0781 L1599.5,1449.0781 L1599.5,1466.6875 L1589.5,1476.6875 L1520.5,1476.6875 L1520.5,1449.0781 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="90.8281" style="stroke:#000000;stroke-width:1.5;" width="439" x="1520.5" y="1449.0781"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="34" x="1535.5" y="1470.499">alt</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="340" x="1614.5" y="1471.499">[MSISDN Failed Validation]</text><line style="stroke:#181818;stroke-width:1.0;" x1="1593.5" x2="1635.5" y1="1518.9063" y2="1518.9063"/><line style="stroke:#181818;stroke-width:1.0;" x1="1635.5" x2="1635.5" y1="1518.9063" y2="1531.9063"/><line style="stroke:#181818;stroke-width:1.0;" x1="1594.5" x2="1635.5" y1="1531.9063" y2="1531.9063"/><polygon fill="#181818" points="1604.5,1527.9063,1594.5,1531.9063,1604.5,1535.9063,1600.5,1531.9063" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="35" x="1600.5" y="1511.7178">[4]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="282" x="1639.5" y="1511.7178">Add Last Error to Transfer</text><polygon fill="#181818" points="2244.5,2211.9453,2254.5,2215.9453,2244.5,2219.9453,2248.5,2215.9453" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="1593.5" x2="2250.5" y1="2215.9453" y2="2215.9453"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="35" x="1600.5" y="2208.7568">[5]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="66" x="1639.5" y="2208.7568">POST</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="297" x="1712.5" y="2208.7568">outbound/bulkTransactions</text><path d="M667,1558.9063 L667,2848.9063 L1588,2848.9063 L1588,1568.9063 L1578,1558.9063 L667,1558.9063 " fill="#FAFAFA" style="stroke:#181818;stroke-width:0.5;"/><path d="M1578,1558.9063 L1578,1568.9063 L1588,1568.9063 L1578,1558.9063 " fill="#FAFAFA" style="stroke:#181818;stroke-width:0.5;"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="222" x="673" y="1584.3271">BulkTransferType</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="673" y="1609.9365">{</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="310" x="694" y="1635.5459">"bulkTransactionId": "UUID",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="614" x="694" y="1661.1553">"bulkHomeTransactionID": "string", # external identifier</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="128" x="694" y="1686.7646">"options": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="442" x="715" y="1712.374">"onlyValidateParty": "false", # (boolean)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="230" x="715" y="1737.9834">"autoAcceptParty": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="304" x="743" y="1763.5928">"enabled": "true" # boolean</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="21" x="715" y="1789.2021">},</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="238" x="715" y="1814.8115">"autoAcceptQuote": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="329" x="729" y="1840.4209">"enabled": "true", # (boolean)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="844" x="729" y="1866.0303">"perTransferFeeLimits": [{ "currency": "AED", "amount": "1.69" }], #optional</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="715" y="1891.6396">}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="429" x="715" y="1917.249">"skipPartyLookup": "false", # (boolean)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="387" x="715" y="1942.8584">"synchronous": "false", # (boolean)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="650" x="715" y="1968.4678">"bulkExpiration": DateTime, # expiration date time (string)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="21" x="701" y="1994.0771">},</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="516" x="694" y="2019.6865">"from": { "partyIdInfo": {} # (partyIdInfo type)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="21" x="750" y="2045.2959">},</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="251" x="694" y="2070.9053">"individualTransfers": [</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="743" y="2096.5146">{</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="781" x="757" y="2122.124">"homeTransactionId": "string", # Payer DFSP CBS Transaction identifier</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="492" x="757" y="2147.7334">"reference": "string", # Payer Loan reference</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="217" x="757" y="2173.3428">"to": { # Party type</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="168" x="771" y="2198.9521">"partyIdInfo": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="280" x="785" y="2224.5615">"partyIdType": "MSISDN",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="281" x="785" y="2250.1709">"partyIdentifier": "string",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="325" x="785" y="2275.7803">"partySubIdOrType": "string",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="177" x="785" y="2301.3896">"fspId": "string",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="735" x="785" y="2326.999">"extensionList": {"extension": [{"key": "string","value": "string"}]}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="21" x="771" y="2352.6084">},</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="575" x="757" y="2378.2178">"amountType": "RECEIVE" # SEND, RECEIVE (Enum)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="320" x="757" y="2403.8271">"currency" : "XXX" # (Enum)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="384" x="757" y="2429.4365">"amount": "100", # money (string)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="166" x="757" y="2455.0459">"note": "string"</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="624" x="757" y="2480.6553">"quoteExtensions": [{ "key": "string", "value": "string"}],</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="640" x="757" y="2506.2646">"transferExtensions": [{ "key": "string", "value": "string"}]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="141" x="757" y="2531.874">"lastError": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="254" x="771" y="2557.4834">"httpStatusCode": 503,</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="202" x="771" y="2583.0928">"mojaloopError": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="228" x="785" y="2608.7021">"errorInformation": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="225" x="799" y="2634.3115">"errorCode": "8812",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="301" x="799" y="2659.9209">"errorDescription": "string",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="735" x="799" y="2685.5303">"extensionList": {"extension": [{"key": "string","value": "string"}]}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="785" y="2711.1396">}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="771" y="2736.749">}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="49" x="757" y="2762.3584">}, ...</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="16" x="743" y="2787.9678">],</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="560" x="694" y="2813.5771">"extensions": [{ "key": "string", "value": "string"}],</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="673" y="2839.1865">}</text><path d="M869,2861.375 L948,2861.375 L948,2878.9844 L938,2888.9844 L869,2888.9844 L869,2861.375 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="117.4375" style="stroke:#000000;stroke-width:1.5;" width="1516.5" x="869" y="2861.375"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="34" x="884" y="2882.7959">alt</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="234" x="963" y="2883.7959">[if (!synchronous)]</text><polygon fill="#181818" points="1604.5,2927.2031,1594.5,2931.2031,1604.5,2935.2031,1600.5,2931.2031" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="1598.5" x2="2255.5" y1="2931.2031" y2="2931.2031"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="35" x="1610.5" y="2924.0146">[6]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="303" x="1649.5" y="2924.0146">Receive HTTP 202 response</text><polygon fill="#181818" points="941.5,2966.8125,931.5,2970.8125,941.5,2974.8125,937.5,2970.8125" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="935.5" x2="1592.5" y1="2970.8125" y2="2970.8125"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="35" x="947.5" y="2963.624">[7]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="303" x="986.5" y="2963.624">Receive HTTP 202 response</text><path d="M2020,2992.8125 L2099,2992.8125 L2099,3010.4219 L2089,3020.4219 L2020,3020.4219 L2020,2992.8125 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="1052.2813" style="stroke:#000000;stroke-width:1.5;" width="2149.5" x="2020" y="2992.8125"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="34" x="2035" y="3014.2334">alt</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="286" x="2114" y="3015.2334">[if (!skipPartyLookup)]</text><path d="M2030,3038.0313 L2129,3038.0313 L2129,3055.6406 L2119,3065.6406 L2030,3065.6406 L2030,3038.0313 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="842.0156" style="stroke:#000000;stroke-width:1.5;" width="2129.5" x="2030" y="3038.0313"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="54" x="2045" y="3059.4521">loop</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="709" x="2144" y="3060.4521">[N times &amp; within bulkExpiration timelimit  (in parallel)]</text><polygon fill="#FAFAFA" points="2050,3081.25,2241,3081.25,2251,3110.25,2241,3140.25,2050,3140.25,2040,3110.25,2050,3081.25" style="stroke:#181818;stroke-width:0.5;"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="187" x="2052" y="3105.6709">For each transfer</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="178" x="2052" y="3131.2803">in bulk message</text><path d="M2127.5,3152.4688 L2206.5,3152.4688 L2206.5,3170.0781 L2196.5,3180.0781 L2127.5,3180.0781 L2127.5,3152.4688 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="720.5781" style="stroke:#000000;stroke-width:1.5;" width="2022" x="2127.5" y="3152.4688"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="34" x="2142.5" y="3173.8896">alt</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="233" x="2221.5" y="3174.8896">[if (validTransfer)]</text><line style="stroke:#181818;stroke-width:1.0;" x1="2256.5" x2="2298.5" y1="3222.2969" y2="3222.2969"/><line style="stroke:#181818;stroke-width:1.0;" x1="2298.5" x2="2298.5" y1="3222.2969" y2="3235.2969"/><line style="stroke:#181818;stroke-width:1.0;" x1="2257.5" x2="2298.5" y1="3235.2969" y2="3235.2969"/><polygon fill="#181818" points="2267.5,3231.2969,2257.5,3235.2969,2267.5,3239.2969,2263.5,3235.2969" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="35" x="2263.5" y="3215.1084">[8]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="226" x="2302.5" y="3215.1084">Create TransactionId</text><polygon fill="#181818" points="3207.5,3296.5156,3217.5,3300.5156,3207.5,3304.5156,3211.5,3300.5156" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2261.5" x2="3213.5" y1="3300.5156" y2="3300.5156"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="35" x="2268.5" y="3280.5225">[9]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="48" x="2307.5" y="3267.7178">GET</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="100" x="2362.5" y="3267.7178">/parties/*</text><text fill="#000000" font-family="sans-serif" font-size="22" font-style="italic" lengthAdjust="spacing" textLength="166" x="2307.5" y="3293.3271">&lt;PartyIdType&gt;</text><text fill="#000000" font-family="sans-serif" font-size="22" font-style="italic" font-weight="bold" lengthAdjust="spacing" textLength="8" x="2473.5" y="3293.3271">/</text><text fill="#000000" font-family="sans-serif" font-size="22" font-style="italic" lengthAdjust="spacing" textLength="113" x="2481.5" y="3293.3271">&lt;PartyId&gt;</text><polygon fill="#181818" points="3863.5,3361.7344,3873.5,3365.7344,3863.5,3369.7344,3867.5,3365.7344" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="3219.5" x2="3869.5" y1="3365.7344" y2="3365.7344"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="3226.5" y="3345.7412">[10]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="180" x="3280.5" y="3332.9365">Lookup DFSP for</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="201" x="3280.5" y="3358.5459">requested Type/ID</text><line style="stroke:#181818;stroke-width:1.0;" x1="3875.5" x2="3917.5" y1="3430.9531" y2="3430.9531"/><line style="stroke:#181818;stroke-width:1.0;" x1="3917.5" x2="3917.5" y1="3430.9531" y2="3443.9531"/><line style="stroke:#181818;stroke-width:1.0;" x1="3876.5" x2="3917.5" y1="3443.9531" y2="3443.9531"/><polygon fill="#181818" points="3886.5,3439.9531,3876.5,3443.9531,3886.5,3447.9531,3882.5,3443.9531" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="3882.5" y="3410.96">[11]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="181" x="3936.5" y="3398.1553">Lookup Party for</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="201" x="3936.5" y="3423.7646">requested Type/ID</text><polygon fill="#181818" points="3230.5,3479.5625,3220.5,3483.5625,3230.5,3487.5625,3226.5,3483.5625" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="3224.5" x2="3874.5" y1="3483.5625" y2="3483.5625"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="3236.5" y="3476.374">[12]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="168" x="3290.5" y="3476.374">Return DFSP ID</text><line style="stroke:#181818;stroke-width:1.0;" x1="3219.5" x2="3261.5" y1="3548.7813" y2="3548.7813"/><line style="stroke:#181818;stroke-width:1.0;" x1="3261.5" x2="3261.5" y1="3548.7813" y2="3561.7813"/><line style="stroke:#181818;stroke-width:1.0;" x1="3220.5" x2="3261.5" y1="3561.7813" y2="3561.7813"/><polygon fill="#181818" points="3230.5,3557.7813,3220.5,3561.7813,3230.5,3565.7813,3226.5,3561.7813" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="3226.5" y="3528.7881">[13]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="48" x="3280.5" y="3515.9834">GET</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="316" x="3335.5" y="3515.9834">/parties/{type}/{id}/{subid}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="588" x="3280.5" y="3541.5928">Make call to payee DFSP to confirm Party information</text><polygon fill="#181818" points="2267.5,3597.3906,2257.5,3601.3906,2267.5,3605.3906,2263.5,3601.3906" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2261.5" x2="3218.5" y1="3601.3906" y2="3601.3906"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="2273.5" y="3594.2021">[14]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="49" x="2327.5" y="3594.2021">PUT</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="311" x="2383.5" y="3594.2021">inbound/parties/{type}/{id}</text><line style="stroke:#181818;stroke-width:1.0;" x1="2256.5" x2="2298.5" y1="3666.6094" y2="3666.6094"/><line style="stroke:#181818;stroke-width:1.0;" x1="2298.5" x2="2298.5" y1="3666.6094" y2="3679.6094"/><line style="stroke:#181818;stroke-width:1.0;" x1="2257.5" x2="2298.5" y1="3679.6094" y2="3679.6094"/><polygon fill="#181818" points="2267.5,3675.6094,2257.5,3679.6094,2267.5,3683.6094,2263.5,3679.6094" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="2263.5" y="3646.6162">[15]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="331" x="2317.5" y="3633.8115">Update transaction status and</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="300" x="2324.5" y="3659.4209">attach get parties response</text><line style="stroke:#181818;stroke-width:1.0;" x1="2256.5" x2="2298.5" y1="3719.2188" y2="3719.2188"/><line style="stroke:#181818;stroke-width:1.0;" x1="2298.5" x2="2298.5" y1="3719.2188" y2="3732.2188"/><line style="stroke:#181818;stroke-width:1.0;" x1="2257.5" x2="2298.5" y1="3732.2188" y2="3732.2188"/><polygon fill="#181818" points="2267.5,3728.2188,2257.5,3732.2188,2267.5,3736.2188,2263.5,3732.2188" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="2263.5" y="3712.0303">[16]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="346" x="2317.5" y="3712.0303">Add to next phase FSP bulk call</text><line style="stroke:#181818;stroke-width:1.0;" x1="2256.5" x2="2298.5" y1="3771.8281" y2="3771.8281"/><line style="stroke:#181818;stroke-width:1.0;" x1="2298.5" x2="2298.5" y1="3771.8281" y2="3784.8281"/><line style="stroke:#181818;stroke-width:1.0;" x1="2257.5" x2="2298.5" y1="3784.8281" y2="3784.8281"/><polygon fill="#181818" points="2267.5,3780.8281,2257.5,3784.8281,2267.5,3788.8281,2263.5,3784.8281" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="2263.5" y="3764.6396">[17]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="895" x="2317.5" y="3764.6396">Any Error, save the error state in lastError object to be returned to the caller later</text><line style="stroke:#000000;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2127.5" x2="4149.5" y1="3793.8281" y2="3793.8281"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="243" x="2132.5" y="3814.249">[if (!validTransfer)]</text><line style="stroke:#181818;stroke-width:1.0;" x1="2256.5" x2="2298.5" y1="3852.0469" y2="3852.0469"/><line style="stroke:#181818;stroke-width:1.0;" x1="2298.5" x2="2298.5" y1="3852.0469" y2="3865.0469"/><line style="stroke:#181818;stroke-width:1.0;" x1="2257.5" x2="2298.5" y1="3865.0469" y2="3865.0469"/><polygon fill="#181818" points="2267.5,3861.0469,2257.5,3865.0469,2267.5,3869.0469,2263.5,3865.0469" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="2263.5" y="3844.8584">[18]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="47" x="2317.5" y="3844.8584">Skip</text><line style="stroke:#000000;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2020" x2="4169.5" y1="3888.0469" y2="3888.0469"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="276" x="2025" y="3908.4678">[if (skipPartyLookup)]</text><path d="M2127.5,3921.6563 L2226.5,3921.6563 L2226.5,3939.2656 L2216.5,3949.2656 L2127.5,3949.2656 L2127.5,3921.6563 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="116.4375" style="stroke:#000000;stroke-width:1.5;" width="664" x="2127.5" y="3921.6563"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="54" x="2142.5" y="3943.0771">loop</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="545" x="2241.5" y="3944.0771">[N times &amp; within bulkExpiration timelimit]</text><line style="stroke:#181818;stroke-width:1.0;" x1="2256.5" x2="2298.5" y1="4017.0938" y2="4017.0938"/><line style="stroke:#181818;stroke-width:1.0;" x1="2298.5" x2="2298.5" y1="4017.0938" y2="4030.0938"/><line style="stroke:#181818;stroke-width:1.0;" x1="2257.5" x2="2298.5" y1="4030.0938" y2="4030.0938"/><polygon fill="#181818" points="2267.5,4026.0938,2257.5,4030.0938,2267.5,4034.0938,2263.5,4030.0938" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="2263.5" y="3997.1006">[19]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="203" x="2317.5" y="3984.2959">Validate party info</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="346" x="2324.5" y="4009.9053">Add to next phase FSP bulk call</text><line style="stroke:#181818;stroke-width:1.0;" x1="2256.5" x2="2298.5" y1="4083.7031" y2="4083.7031"/><line style="stroke:#181818;stroke-width:1.0;" x1="2298.5" x2="2298.5" y1="4083.7031" y2="4096.7031"/><line style="stroke:#181818;stroke-width:1.0;" x1="2257.5" x2="2298.5" y1="4096.7031" y2="4096.7031"/><polygon fill="#181818" points="2267.5,4092.7031,2257.5,4096.7031,2267.5,4100.7031,2263.5,4096.7031" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="2263.5" y="4076.5146">[20]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="539" x="2317.5" y="4076.5146">if(transferStatusValid) Group into M Payee DFSPs</text><path d="M407,4111.7031 L486,4111.7031 L486,4129.3125 L476,4139.3125 L407,4139.3125 L407,4111.7031 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="2377.1875" style="stroke:#000000;stroke-width:1.5;" width="2814.5" x="407" y="4111.7031"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="34" x="422" y="4133.124">alt</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="285" x="501" y="4134.124">[if (!autoAcceptParty)]</text><path d="M417,4156.9219 L496,4156.9219 L496,4174.5313 L486,4184.5313 L417,4184.5313 L417,4156.9219 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="2324.9688" style="stroke:#000000;stroke-width:1.5;" width="2794.5" x="417" y="4156.9219"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="34" x="432" y="4178.3428">alt</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="224" x="511" y="4179.3428">[if (synchronous)]</text><polygon fill="#181818" points="1604.5,4248.3594,1594.5,4252.3594,1604.5,4256.3594,1600.5,4252.3594" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="1598.5" x2="2255.5" y1="4252.3594" y2="4252.3594"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="1610.5" y="4232.3662">[21]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="435" x="1664.5" y="4219.5615">Response &lt;bulkPartyLookupResponse&gt;</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="563" x="1678.5" y="4245.1709">currentState="WAITING_FOR_PARTY_ACCEPTANCE"</text><polygon fill="#181818" points="941.5,4313.5781,931.5,4317.5781,941.5,4321.5781,937.5,4317.5781" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="935.5" x2="1592.5" y1="4317.5781" y2="4317.5781"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="947.5" y="4297.585">[22]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="435" x="1001.5" y="4284.7803">Response &lt;bulkPartyLookupResponse&gt;</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="563" x="1015.5" y="4310.3896">currentState="WAITING_FOR_PARTY_ACCEPTANCE"</text><polygon fill="#181818" points="489.5,4353.1875,479.5,4357.1875,489.5,4361.1875,485.5,4357.1875" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="483.5" x2="929.5" y1="4357.1875" y2="4357.1875"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="495.5" y="4349.999">[23]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="258" x="549.5" y="4349.999">Present Party Response</text><polygon fill="#181818" points="918.5,4392.7969,928.5,4396.7969,918.5,4400.7969,922.5,4396.7969" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="478.5" x2="924.5" y1="4396.7969" y2="4396.7969"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="485.5" y="4389.6084">[24]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="140" x="539.5" y="4389.6084">Accept Party</text><polygon fill="#181818" points="1581.5,4432.4063,1591.5,4436.4063,1581.5,4440.4063,1585.5,4436.4063" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="930.5" x2="1587.5" y1="4436.4063" y2="4436.4063"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="937.5" y="4429.2178">[25]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="49" x="991.5" y="4429.2178">PUT</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="526" x="1047.5" y="4429.2178">outbound/bulkTransactions/{bulkTransactionId}</text><polygon fill="#181818" points="2244.5,4472.0156,2254.5,4476.0156,2244.5,4480.0156,2248.5,4476.0156" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1593.5" x2="2250.5" y1="4476.0156" y2="4476.0156"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="1600.5" y="4468.8271">[26]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="49" x="1654.5" y="4468.8271">PUT</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="526" x="1710.5" y="4468.8271">outbound/bulkTransactions/{bulkTransactionId}</text><line style="stroke:#000000;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="417" x2="3211.5" y1="4485.0156" y2="4485.0156"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="234" x="422" y="4505.4365">[if (!synchronous)]</text><polygon fill="#181818" points="1604.5,5220.8828,1594.5,5224.8828,1604.5,5228.8828,1600.5,5224.8828" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1598.5" x2="2255.5" y1="5224.8828" y2="5224.8828"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="1610.5" y="5204.8896">[27]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="49" x="1664.5" y="5192.085">PUT</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="510" x="1720.5" y="5192.085">inbound/bulkTransactions/{bulkTransactionId}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="563" x="1678.5" y="5217.6943">currentState="WAITING_FOR_PARTY_ACCEPTANCE"</text><path d="M2261,4516.625 L2261,5883.625 L3196,5883.625 L3196,4526.625 L3186,4516.625 L2261,4516.625 " fill="#FAFAFA" style="stroke:#181818;stroke-width:0.5;"/><path d="M3186,4516.625 L3186,4526.625 L3196,4526.625 L3186,4516.625 " fill="#FAFAFA" style="stroke:#181818;stroke-width:0.5;"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="333" x="2267" y="4542.0459">bulkPartyLookupResponse</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="58" x="2267" y="4567.6553">Refer</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="320" x="2332" y="4567.6553">Party Lookup Error Codes</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="271" x="2659" y="4567.6553">table for lastError details</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="2267" y="4593.2646">{</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="621" x="2281" y="4618.874">"bulkHomeTransactionID": "string", # external identifier,</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="613" x="2281" y="4644.4834">"bulkTransferId": "UUID",  # generated by ML connector</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="586" x="2281" y="4670.0928">"currentState": "WAITING_FOR_PARTY_ACCEPTANCE",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="128" x="2281" y="4695.7021">"options": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="442" x="2309" y="4721.3115">"onlyValidateParty": "false", # (boolean)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="230" x="2309" y="4746.9209">"autoAcceptParty": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="304" x="2337" y="4772.5303">"enabled": "true" # boolean</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="21" x="2309" y="4798.1396">},</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="238" x="2309" y="4823.749">"autoAcceptQuote": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="329" x="2337" y="4849.3584">"enabled": "true", # (boolean)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="844" x="2337" y="4874.9678">"perTransferFeeLimits": [{ "currency": "AED", "amount": "1.69" }], #optional</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="2309" y="4900.5771">}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="429" x="2309" y="4926.1865">"skipPartyLookup": "false", # (boolean)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="387" x="2309" y="4951.7959">"synchronous": "false", # (boolean)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="650" x="2309" y="4977.4053">"bulkExpiration": DateTime, # expiration date time (string)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="21" x="2281" y="5003.0146">},</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="319" x="2281" y="5028.624">"individualTransferResults": [</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="2337" y="5054.2334">{</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="781" x="2351" y="5079.8428">"homeTransactionId": "string", # Payer DFSP CBS Transaction identifier</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="566" x="2351" y="5105.4521">"transactionId": "UUID", # Created by ML connector</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="529" x="2351" y="5131.0615">"transferId": "UUID", # Created by ML connector</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="492" x="2351" y="5156.6709">"reference": "string", # Payer Loan reference</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="217" x="2351" y="5182.2803">"to": { # Party type</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="168" x="2365" y="5207.8896">"partyIdInfo": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="280" x="2379" y="5233.499">"partyIdType": "MSISDN",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="281" x="2379" y="5259.1084">"partyIdentifier": "string",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="325" x="2379" y="5284.7178">"partySubIdOrType": "string",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="177" x="2379" y="5310.3271">"fspId": "string",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="735" x="2379" y="5335.9365">"extensionList": {"extension": [{"key": "string","value": "string"}]}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="21" x="2365" y="5361.5459">},</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="575" x="2351" y="5387.1553">"amountType": "RECEIVE" # SEND, RECEIVE (Enum)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="320" x="2351" y="5412.7646">"currency" : "XXX" # (Enum)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="384" x="2351" y="5438.374">"amount": "100", # money (string)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="166" x="2351" y="5463.9834">"note": "string"</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="624" x="2351" y="5489.5928">"quoteExtensions": [{ "key": "string", "value": "string"}],</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="640" x="2351" y="5515.2021">"transferExtensions": [{ "key": "string", "value": "string"}]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="141" x="2351" y="5540.8115">"lastError": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="254" x="2365" y="5566.4209">"httpStatusCode": 503,</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="202" x="2365" y="5592.0303">"mojaloopError": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="228" x="2379" y="5617.6396">"errorInformation": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="239" x="2393" y="5643.249">"errorCode": "8812",1</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="301" x="2393" y="5668.8584">"errorDescription": "string",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="735" x="2393" y="5694.4678">"extensionList": {"extension": [{"key": "string","value": "string"}]}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="2379" y="5720.0771">}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="2365" y="5745.6865">}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="2351" y="5771.2959">}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="2337" y="5796.9053">}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="16" x="2281" y="5822.5146">],</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="560" x="2281" y="5848.124">"extensions": [{ "key": "string", "value": "string"}],</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="2267" y="5873.7334">}</text><polygon fill="#181818" points="2244.5,5916.5313,2254.5,5920.5313,2244.5,5924.5313,2248.5,5920.5313" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="1593.5" x2="2250.5" y1="5920.5313" y2="5920.5313"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="1600.5" y="5913.3428">[28]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="303" x="1654.5" y="5913.3428">Receive HTTP 202 response</text><polygon fill="#181818" points="941.5,5981.75,931.5,5985.75,941.5,5989.75,937.5,5985.75" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="935.5" x2="1592.5" y1="5985.75" y2="5985.75"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="947.5" y="5965.7568">[29]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="49" x="1001.5" y="5952.9521">PUT</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="421" x="1057.5" y="5952.9521">/bulkTransactions/{bulkTransactionId}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="563" x="1015.5" y="5978.5615">currentState="WAITING_FOR_PARTY_ACCEPTANCE"</text><polygon fill="#181818" points="1581.5,6021.3594,1591.5,6025.3594,1581.5,6029.3594,1585.5,6025.3594" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="930.5" x2="1587.5" y1="6025.3594" y2="6025.3594"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="937.5" y="6018.1709">[30]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="303" x="991.5" y="6018.1709">Receive HTTP 202 response</text><polygon fill="#181818" points="489.5,6060.9688,479.5,6064.9688,489.5,6068.9688,485.5,6064.9688" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="483.5" x2="929.5" y1="6064.9688" y2="6064.9688"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="495.5" y="6057.7803">[31]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="258" x="549.5" y="6057.7803">Present Party Response</text><polygon fill="#181818" points="918.5,6100.5781,928.5,6104.5781,918.5,6108.5781,922.5,6104.5781" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="478.5" x2="924.5" y1="6104.5781" y2="6104.5781"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="485.5" y="6097.3896">[32]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="140" x="539.5" y="6097.3896">Accept Party</text><polygon fill="#181818" points="1581.5,6140.1875,1591.5,6144.1875,1581.5,6148.1875,1585.5,6144.1875" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="930.5" x2="1587.5" y1="6144.1875" y2="6144.1875"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="937.5" y="6136.999">[33]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="49" x="991.5" y="6136.999">PUT</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="526" x="1047.5" y="6136.999">outbound/bulkTransactions/{bulkTransactionId}</text><polygon fill="#181818" points="2244.5,6285.2344,2254.5,6289.2344,2244.5,6293.2344,2248.5,6289.2344" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1593.5" x2="2250.5" y1="6289.2344" y2="6289.2344"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="1600.5" y="6282.0459">[34]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="49" x="1654.5" y="6282.0459">PUT</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="526" x="1710.5" y="6282.0459">outbound/bulkTransactions/{bulkTransactionId}</text><path d="M954,6157.1875 L954,6397.1875 L1588,6397.1875 L1588,6167.1875 L1578,6157.1875 L954,6157.1875 " fill="#FAFAFA" style="stroke:#181818;stroke-width:0.5;"/><path d="M1578,6157.1875 L1578,6167.1875 L1588,6167.1875 L1578,6157.1875 " fill="#FAFAFA" style="stroke:#181818;stroke-width:0.5;"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="476" x="960" y="6182.6084">bulkTransferContinuationAcceptParty</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="960" y="6208.2178">{</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="251" x="974" y="6233.8271">"individualTransfers": [</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="1030" y="6259.4365">{</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="529" x="1044" y="6285.0459">"transferId": "UUID", # Created by ML connector</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="366" x="1044" y="6310.6553">"acceptParty": "true" # (boolean)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="1030" y="6336.2646">}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="16" x="974" y="6361.874">],</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="960" y="6387.4834">}</text><polygon fill="#181818" points="1604.5,6430.2813,1594.5,6434.2813,1604.5,6438.2813,1600.5,6434.2813" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="1598.5" x2="2255.5" y1="6434.2813" y2="6434.2813"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="1610.5" y="6427.0928">[35]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="303" x="1664.5" y="6427.0928">Receive HTTP 202 response</text><polygon fill="#181818" points="941.5,6469.8906,931.5,6473.8906,941.5,6477.8906,937.5,6473.8906" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="935.5" x2="1592.5" y1="6473.8906" y2="6473.8906"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="947.5" y="6466.7021">[36]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="303" x="1001.5" y="6466.7021">Receive HTTP 202 response</text><path d="M1985,6502.8906 L2084,6502.8906 L2084,6520.5 L2074,6530.5 L1985,6530.5 L1985,6502.8906 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="1000.0625" style="stroke:#000000;stroke-width:1.5;" width="2851.5" x="1985" y="6502.8906"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="54" x="2000" y="6524.3115">loop</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="933" x="2099" y="6525.3115">[Quote Processing (M times &amp; within bulkExpiration timelimit in parallel)]</text><polygon fill="#FAFAFA" points="2005,6546.1094,2241,6546.1094,2251,6575.1094,2241,6605.1094,2005,6605.1094,1995,6575.1094,2005,6546.1094" style="stroke:#181818;stroke-width:0.5;"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="232" x="2007" y="6570.5303">For each payee DFSP</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="178" x="2007" y="6596.1396">in bulk message</text><line style="stroke:#181818;stroke-width:1.0;" x1="2256.5" x2="2298.5" y1="6641.9375" y2="6641.9375"/><line style="stroke:#181818;stroke-width:1.0;" x1="2298.5" x2="2298.5" y1="6641.9375" y2="6654.9375"/><line style="stroke:#181818;stroke-width:1.0;" x1="2257.5" x2="2298.5" y1="6654.9375" y2="6654.9375"/><polygon fill="#181818" points="2267.5,6650.9375,2257.5,6654.9375,2267.5,6658.9375,2263.5,6654.9375" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="2263.5" y="6634.749">[37]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="233" x="2317.5" y="6634.749">Check bulkExpiration</text><line style="stroke:#181818;stroke-width:1.0;" x1="2256.5" x2="2298.5" y1="6694.5469" y2="6694.5469"/><line style="stroke:#181818;stroke-width:1.0;" x1="2298.5" x2="2298.5" y1="6694.5469" y2="6707.5469"/><line style="stroke:#181818;stroke-width:1.0;" x1="2257.5" x2="2298.5" y1="6707.5469" y2="6707.5469"/><polygon fill="#181818" points="2267.5,6703.5469,2257.5,6707.5469,2267.5,6711.5469,2263.5,6707.5469" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="2263.5" y="6687.3584">[38]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="273" x="2317.5" y="6687.3584">Create bulkTransactionId</text><line style="stroke:#181818;stroke-width:1.0;" x1="2256.5" x2="2298.5" y1="6798.375" y2="6798.375"/><line style="stroke:#181818;stroke-width:1.0;" x1="2298.5" x2="2298.5" y1="6798.375" y2="6811.375"/><line style="stroke:#181818;stroke-width:1.0;" x1="2257.5" x2="2298.5" y1="6811.375" y2="6811.375"/><line style="stroke:#181818;stroke-width:1.0;" x1="2257.5" x2="2267.5" y1="6811.375" y2="6807.375"/><line style="stroke:#181818;stroke-width:1.0;" x1="2257.5" x2="2267.5" y1="6811.375" y2="6815.375"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="2263.5" y="6765.5771">[39]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="232" x="2317.5" y="6739.9678">Calculate bulk expiry</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="446" x="2317.5" y="6765.5771">based on both expirySeconds config and</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="159" x="2317.5" y="6791.1865">bulkExpiration</text><line style="stroke:#181818;stroke-width:1.0;" x1="3217.5" x2="3207.5" y1="6850.9844" y2="6846.9844"/><line style="stroke:#181818;stroke-width:1.0;" x1="3217.5" x2="3207.5" y1="6850.9844" y2="6854.9844"/><line style="stroke:#181818;stroke-width:1.0;" x1="2261.5" x2="3218.5" y1="6850.9844" y2="6850.9844"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="2268.5" y="6843.7959">[40]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="66" x="2322.5" y="6843.7959">POST</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="128" x="2395.5" y="6843.7959">/bulkquotes</text><polygon fill="#181818" points="4132.5,6886.5938,4142.5,6890.5938,4132.5,6894.5938,4136.5,6890.5938" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="3219.5" x2="4138.5" y1="6890.5938" y2="6890.5938"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="3226.5" y="6883.4053">[41]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="66" x="3280.5" y="6883.4053">POST</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="217" x="3353.5" y="6883.4053">inbound/bulkquotes</text><path d="M4005.5,6905.5938 L4084.5,6905.5938 L4084.5,6923.2031 L4074.5,6933.2031 L4005.5,6933.2031 L4005.5,6905.5938 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="432.9219" style="stroke:#000000;stroke-width:1.5;" width="821" x="4005.5" y="6905.5938"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="34" x="4020.5" y="6927.0146">alt</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="399" x="4099.5" y="6928.0146">[if (HasSupportForBulkQuotes)]</text><polygon fill="#181818" points="4731.5,6971.4219,4741.5,6975.4219,4731.5,6979.4219,4735.5,6975.4219" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="4144.5" x2="4737.5" y1="6975.4219" y2="6975.4219"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="4151.5" y="6968.2334">[42]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="66" x="4205.5" y="6968.2334">POST</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="217" x="4278.5" y="6968.2334">inbound/bulkquotes</text><polygon fill="#181818" points="4155.5,7011.0313,4145.5,7015.0313,4155.5,7019.0313,4151.5,7015.0313" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="4149.5" x2="4742.5" y1="7015.0313" y2="7015.0313"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="4161.5" y="7007.8428">[43]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="332" x="4215.5" y="7007.8428">Reponse bulkquotes Response</text><line style="stroke:#181818;stroke-width:1.0;" x1="4144.5" x2="4186.5" y1="7080.25" y2="7080.25"/><line style="stroke:#181818;stroke-width:1.0;" x1="4186.5" x2="4186.5" y1="7080.25" y2="7093.25"/><line style="stroke:#181818;stroke-width:1.0;" x1="4145.5" x2="4186.5" y1="7093.25" y2="7093.25"/><polygon fill="#181818" points="4155.5,7089.25,4145.5,7093.25,4155.5,7097.25,4151.5,7093.25" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="4151.5" y="7060.2568">[44]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="307" x="4205.5" y="7047.4521">Update transaction statuses</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="304" x="4205.5" y="7073.0615">and attach quote responses</text><line style="stroke:#000000;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="4005.5" x2="4826.5" y1="7102.25" y2="7102.25"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="409" x="4010.5" y="7122.6709">[if (!HasSupportForBulkQuotes)]</text><path d="M4015.5,7135.8594 L4114.5,7135.8594 L4114.5,7153.4688 L4104.5,7163.4688 L4015.5,7163.4688 L4015.5,7135.8594 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="195.6563" style="stroke:#000000;stroke-width:1.5;" width="801" x="4015.5" y="7135.8594"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="54" x="4030.5" y="7157.2803">loop</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="549" x="4129.5" y="7158.2803">[X times for each transfer in bulk message]</text><polygon fill="#181818" points="4731.5,7201.6875,4741.5,7205.6875,4731.5,7209.6875,4735.5,7205.6875" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="4144.5" x2="4737.5" y1="7205.6875" y2="7205.6875"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="4151.5" y="7198.499">[45]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="66" x="4205.5" y="7198.499">POST</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="253" x="4278.5" y="7198.499">inbound/quoterequests</text><polygon fill="#181818" points="4155.5,7241.2969,4145.5,7245.2969,4155.5,7249.2969,4151.5,7245.2969" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="4149.5" x2="4742.5" y1="7245.2969" y2="7245.2969"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="4161.5" y="7238.1084">[46]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="98" x="4215.5" y="7238.1084">response</text><line style="stroke:#181818;stroke-width:1.0;" x1="4144.5" x2="4186.5" y1="7310.5156" y2="7310.5156"/><line style="stroke:#181818;stroke-width:1.0;" x1="4186.5" x2="4186.5" y1="7310.5156" y2="7323.5156"/><line style="stroke:#181818;stroke-width:1.0;" x1="4145.5" x2="4186.5" y1="7323.5156" y2="7323.5156"/><polygon fill="#181818" points="4155.5,7319.5156,4145.5,7323.5156,4155.5,7327.5156,4151.5,7323.5156" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="4151.5" y="7290.5225">[47]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="283" x="4205.5" y="7277.7178">Update transaction status</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="293" x="4205.5" y="7303.3271">and attach quote response</text><polygon fill="#181818" points="3230.5,7373.125,3220.5,7377.125,3230.5,7381.125,3226.5,7377.125" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="3224.5" x2="4143.5" y1="7377.125" y2="7377.125"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="3236.5" y="7369.9365">[48]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="49" x="3290.5" y="7369.9365">PUT</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="178" x="3346.5" y="7369.9365">/bulkquotes/{id)</text><polygon fill="#181818" points="2267.5,7412.7344,2257.5,7416.7344,2267.5,7420.7344,2263.5,7416.7344" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2261.5" x2="3218.5" y1="7416.7344" y2="7416.7344"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="2273.5" y="7409.5459">[49]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="49" x="2327.5" y="7409.5459">PUT</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="267" x="2383.5" y="7409.5459">inbound/bulkquotes/{id)</text><line style="stroke:#181818;stroke-width:1.0;" x1="2256.5" x2="2298.5" y1="7481.9531" y2="7481.9531"/><line style="stroke:#181818;stroke-width:1.0;" x1="2298.5" x2="2298.5" y1="7481.9531" y2="7494.9531"/><line style="stroke:#181818;stroke-width:1.0;" x1="2257.5" x2="2298.5" y1="7494.9531" y2="7494.9531"/><polygon fill="#181818" points="2267.5,7490.9531,2257.5,7494.9531,2267.5,7498.9531,2263.5,7494.9531" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="2263.5" y="7461.96">[50]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="283" x="2317.5" y="7449.1553">Update transaction status</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="293" x="2317.5" y="7474.7646">and attach quote response</text><path d="M407,7516.9531 L486,7516.9531 L486,7534.5625 L476,7544.5625 L407,7544.5625 L407,7516.9531 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="2658.8906" style="stroke:#000000;stroke-width:1.5;" width="2814.5" x="407" y="7516.9531"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="34" x="422" y="7538.374">alt</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="294" x="501" y="7539.374">[if (!autoAcceptQuote)]</text><path d="M417,7562.1719 L496,7562.1719 L496,7579.7813 L486,7589.7813 L417,7589.7813 L417,7562.1719 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="2606.6719" style="stroke:#000000;stroke-width:1.5;" width="2794.5" x="417" y="7562.1719"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="34" x="432" y="7583.5928">alt</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="224" x="511" y="7584.5928">[if (synchronous)]</text><polygon fill="#181818" points="1604.5,7653.6094,1594.5,7657.6094,1604.5,7661.6094,1600.5,7657.6094" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="1598.5" x2="2255.5" y1="7657.6094" y2="7657.6094"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="1610.5" y="7637.6162">[51]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="453" x="1664.5" y="7624.8115">Response &lt;bulkQuoteRequestResponse&gt;</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="571" x="1678.5" y="7650.4209">currentState="WAITING_FOR_QUOTE_ACCEPTANCE"</text><polygon fill="#181818" points="941.5,7718.8281,931.5,7722.8281,941.5,7726.8281,937.5,7722.8281" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="935.5" x2="1592.5" y1="7722.8281" y2="7722.8281"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="947.5" y="7702.835">[52]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="453" x="1001.5" y="7690.0303">Response &lt;bulkQuoteRequestResponse&gt;</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="571" x="1015.5" y="7715.6396">currentState="WAITING_FOR_QUOTE_ACCEPTANCE"</text><polygon fill="#181818" points="489.5,7758.4375,479.5,7762.4375,489.5,7766.4375,485.5,7762.4375" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="483.5" x2="929.5" y1="7762.4375" y2="7762.4375"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="495.5" y="7755.249">[53]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="266" x="549.5" y="7755.249">Present Quote Response</text><polygon fill="#181818" points="918.5,7798.0469,928.5,7802.0469,918.5,7806.0469,922.5,7802.0469" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="478.5" x2="924.5" y1="7802.0469" y2="7802.0469"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="485.5" y="7794.8584">[54]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="148" x="539.5" y="7794.8584">Accept Quote</text><polygon fill="#181818" points="1581.5,7837.6563,1591.5,7841.6563,1581.5,7845.6563,1585.5,7841.6563" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="930.5" x2="1587.5" y1="7841.6563" y2="7841.6563"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="937.5" y="7834.4678">[55]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="49" x="991.5" y="7834.4678">PUT</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="526" x="1047.5" y="7834.4678">outbound/bulkTransactions/{bulkTransactionId}</text><polygon fill="#181818" points="2244.5,7877.2656,2254.5,7881.2656,2244.5,7885.2656,2248.5,7881.2656" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1593.5" x2="2250.5" y1="7881.2656" y2="7881.2656"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="1600.5" y="7874.0771">[56]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="49" x="1654.5" y="7874.0771">PUT</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="526" x="1710.5" y="7874.0771">outbound/bulkTransactions/{bulkTransactionId}</text><line style="stroke:#000000;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="417" x2="3211.5" y1="7890.2656" y2="7890.2656"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="234" x="422" y="7910.6865">[if (!synchronous)]</text><polygon fill="#181818" points="1604.5,8766.9844,1594.5,8770.9844,1604.5,8774.9844,1600.5,8770.9844" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1598.5" x2="2255.5" y1="8770.9844" y2="8770.9844"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="1610.5" y="8750.9912">[57]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="49" x="1664.5" y="8738.1865">PUT</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="510" x="1720.5" y="8738.1865">inbound/bulkTransactions/{bulkTransactionId}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="571" x="1678.5" y="8763.7959">currentState="WAITING_FOR_QUOTE_ACCEPTANCE"</text><path d="M2261,7921.875 L2261,9570.875 L3196,9570.875 L3196,7931.875 L3186,7921.875 L2261,7921.875 " fill="#FAFAFA" style="stroke:#181818;stroke-width:0.5;"/><path d="M3186,7921.875 L3186,7931.875 L3196,7931.875 L3186,7921.875 " fill="#FAFAFA" style="stroke:#181818;stroke-width:0.5;"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="354" x="2267" y="7947.2959">bulkQuoteRequestResponse</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="2267" y="7972.9053">{</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="614" x="2281" y="7998.5146">"bulkHomeTransactionID": "string", # external identifier</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="613" x="2281" y="8024.124">"bulkTransferId": "UUID",  # generated by ML connector</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="594" x="2281" y="8049.7334">"currentState": "WAITING_FOR_QUOTE_ACCEPTANCE",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="128" x="2281" y="8075.3428">"options": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="442" x="2309" y="8100.9521">"onlyValidateParty": "false", # (boolean)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="230" x="2309" y="8126.5615">"autoAcceptParty": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="304" x="2337" y="8152.1709">"enabled": "true" # boolean</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="21" x="2309" y="8177.7803">},</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="238" x="2309" y="8203.3896">"autoAcceptQuote": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="329" x="2337" y="8228.999">"enabled": "true", # (boolean)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="844" x="2337" y="8254.6084">"perTransferFeeLimits": [{ "currency": "AED", "amount": "1.69" }], #optional</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="2309" y="8280.2178">}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="429" x="2309" y="8305.8271">"skipPartyLookup": "false", # (boolean)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="387" x="2309" y="8331.4365">"synchronous": "false", # (boolean)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="650" x="2309" y="8357.0459">"bulkExpiration": DateTime, # expiration date time (string)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="21" x="2281" y="8382.6553">},</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="319" x="2281" y="8408.2646">"individualTransferResults": [</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="2337" y="8433.874">{</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="781" x="2351" y="8459.4834">"homeTransactionId": "string", # Payer DFSP CBS Transaction identifier</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="566" x="2351" y="8485.0928">"transactionId": "UUID", # Created by ML connector</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="529" x="2351" y="8510.7021">"transferId": "UUID", # Created by ML connector</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="492" x="2351" y="8536.3115">"reference": "string", # Payer Loan reference</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="217" x="2351" y="8561.9209">"to": { # Party type</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="168" x="2365" y="8587.5303">"partyIdInfo": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="280" x="2379" y="8613.1396">"partyIdType": "MSISDN",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="281" x="2379" y="8638.749">"partyIdentifier": "string",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="325" x="2379" y="8664.3584">"partySubIdOrType": "string",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="177" x="2379" y="8689.9678">"fspId": "string",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="735" x="2379" y="8715.5771">"extensionList": {"extension": [{"key": "string","value": "string"}]}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="21" x="2365" y="8741.1865">},</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="575" x="2351" y="8766.7959">"amountType": "RECEIVE" # SEND, RECEIVE (Enum)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="320" x="2351" y="8792.4053">"currency" : "XXX" # (Enum)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="384" x="2351" y="8818.0146">"amount": "100", # money (string)</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="166" x="2351" y="8843.624">"note": "string"</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="606" x="2351" y="8869.2334">"quoteId": "4932beab-423e-37b6-8587-49c016d2f5ef",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="624" x="2351" y="8894.8428">"quoteExtensions": [{ "key": "string", "value": "string"}],</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="647" x="2351" y="8920.4521">"transferExtensions": [{ "key": "string", "value": "string"}],</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="215" x="2351" y="8946.0615">"quoteResponse": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="620" x="2365" y="8971.6709">"transferAmount": {"currency": "AED","amount": "0.7"},</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="715" x="2365" y="8997.2803">"payeeReceiveAmount": {"currency": "AED","amount": "0.922"},</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="668" x="2365" y="9022.8896">"payeeFspFee": {"currency": "AED","amount": "67247160"},</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="776" x="2365" y="9048.499">"payeeFspCommission": {"currency": "AED","amount": "829358883"},</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="541" x="2365" y="9074.1084">"expiration": "6286-11-29T16:19:08.300+06:14",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="606" x="2365" y="9099.7178">"geoCode": {"latitude": "5.9","longitude": "180.0000"},</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="513" x="2365" y="9125.3271">"ilpPacket": "XqOB5HUGEifQ-ebr0TAVAgD3...",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="319" x="2365" y="9150.9365">"condition": "gZI4iD9u_Yc...",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="735" x="2365" y="9176.5459">"extensionList": {"extension": [{"key": "string","value": "string"}]}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="21" x="2351" y="9202.1553">},</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="141" x="2351" y="9227.7646">"lastError": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="254" x="2365" y="9253.374">"httpStatusCode": 503,</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="202" x="2365" y="9278.9834">"mojaloopError": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="228" x="2379" y="9304.5928">"errorInformation": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="225" x="2393" y="9330.2021">"errorCode": "8812",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="301" x="2393" y="9355.8115">"errorDescription": "string",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="735" x="2393" y="9381.4209">"extensionList": {"extension": [{"key": "string","value": "string"}]}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="2379" y="9407.0303">}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="2365" y="9432.6396">}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="2351" y="9458.249">}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="2337" y="9483.8584">}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="16" x="2281" y="9509.4678">],</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="560" x="2281" y="9535.0771">"extensions": [{ "key": "string", "value": "string"}],</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="2267" y="9560.6865">}</text><polygon fill="#181818" points="2244.5,9603.4844,2254.5,9607.4844,2244.5,9611.4844,2248.5,9607.4844" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="1593.5" x2="2250.5" y1="9607.4844" y2="9607.4844"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="1600.5" y="9600.2959">[58]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="303" x="1654.5" y="9600.2959">Receive HTTP 202 response</text><polygon fill="#181818" points="941.5,9668.7031,931.5,9672.7031,941.5,9676.7031,937.5,9672.7031" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="935.5" x2="1592.5" y1="9672.7031" y2="9672.7031"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="947.5" y="9652.71">[59]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="49" x="1001.5" y="9639.9053">PUT</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="421" x="1057.5" y="9639.9053">/bulkTransactions/{bulkTransactionId}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="571" x="1015.5" y="9665.5146">currentState="WAITING_FOR_QUOTE_ACCEPTANCE"</text><polygon fill="#181818" points="1581.5,9708.3125,1591.5,9712.3125,1581.5,9716.3125,1585.5,9712.3125" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="930.5" x2="1587.5" y1="9712.3125" y2="9712.3125"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="937.5" y="9705.124">[60]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="303" x="991.5" y="9705.124">Receive HTTP 202 response</text><polygon fill="#181818" points="489.5,9747.9219,479.5,9751.9219,489.5,9755.9219,485.5,9751.9219" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="483.5" x2="929.5" y1="9751.9219" y2="9751.9219"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="495.5" y="9744.7334">[61]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="266" x="549.5" y="9744.7334">Present Quote Response</text><polygon fill="#181818" points="918.5,9787.5313,928.5,9791.5313,918.5,9795.5313,922.5,9791.5313" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="478.5" x2="924.5" y1="9791.5313" y2="9791.5313"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="485.5" y="9784.3428">[62]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="148" x="539.5" y="9784.3428">Accept Quote</text><polygon fill="#181818" points="1581.5,9827.1406,1591.5,9831.1406,1581.5,9835.1406,1585.5,9831.1406" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="930.5" x2="1587.5" y1="9831.1406" y2="9831.1406"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="937.5" y="9823.9521">[63]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="49" x="991.5" y="9823.9521">PUT</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="526" x="1047.5" y="9823.9521">outbound/bulkTransactions/{bulkTransactionId}</text><polygon fill="#181818" points="2244.5,9972.1875,2254.5,9976.1875,2244.5,9980.1875,2248.5,9976.1875" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1593.5" x2="2250.5" y1="9976.1875" y2="9976.1875"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="1600.5" y="9968.999">[64]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="49" x="1654.5" y="9968.999">PUT</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="526" x="1710.5" y="9968.999">outbound/bulkTransactions/{bulkTransactionId}</text><path d="M954,9844.1406 L954,10084.1406 L1588,10084.1406 L1588,9854.1406 L1578,9844.1406 L954,9844.1406 " fill="#FAFAFA" style="stroke:#181818;stroke-width:0.5;"/><path d="M1578,9844.1406 L1578,9854.1406 L1588,9854.1406 L1578,9844.1406 " fill="#FAFAFA" style="stroke:#181818;stroke-width:0.5;"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="216" x="960" y="9869.5615">bulkAcceptQuote</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="960" y="9895.1709">{</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="251" x="974" y="9920.7803">"individualTransfers": [</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="1030" y="9946.3896">{</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="529" x="1044" y="9971.999">"transferId": "UUID", # Created by ML connector</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="349" x="1044" y="9997.6084">"acceptQuote": "true" #boolean</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="1030" y="10023.2178">}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="16" x="974" y="10048.8271">],</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="960" y="10074.4365">}</text><polygon fill="#181818" points="1604.5,10117.2344,1594.5,10121.2344,1604.5,10125.2344,1600.5,10121.2344" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="1598.5" x2="2255.5" y1="10121.2344" y2="10121.2344"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="1610.5" y="10114.0459">[65]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="303" x="1664.5" y="10114.0459">Receive HTTP 202 response</text><polygon fill="#181818" points="941.5,10156.8438,931.5,10160.8438,941.5,10164.8438,937.5,10160.8438" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="935.5" x2="1592.5" y1="10160.8438" y2="10160.8438"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="947.5" y="10153.6553">[66]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="303" x="1001.5" y="10153.6553">Receive HTTP 202 response</text><path d="M1985,10189.8438 L2084,10189.8438 L2084,10207.4531 L2074,10217.4531 L1985,10217.4531 L1985,10189.8438 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="1564.0313" style="stroke:#000000;stroke-width:1.5;" width="2871.5" x="1985" y="10189.8438"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="54" x="2000" y="10211.2646">loop</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="971" x="2099" y="10212.2646">[Transfer Processing (M times &amp; within bulkExpiration timelimit  in parallel)]</text><polygon fill="#FAFAFA" points="2005,10233.0625,2241,10233.0625,2251,10262.0625,2241,10292.0625,2005,10292.0625,1995,10262.0625,2005,10233.0625" style="stroke:#181818;stroke-width:0.5;"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="232" x="2007" y="10257.4834">For each payee DFSP</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="178" x="2007" y="10283.0928">in bulk message</text><path d="M2127.5,10304.2813 L2206.5,10304.2813 L2206.5,10321.8906 L2196.5,10331.8906 L2127.5,10331.8906 L2127.5,10304.2813 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="142.0469" style="stroke:#000000;stroke-width:1.5;" width="667" x="2127.5" y="10304.2813"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="34" x="2142.5" y="10325.7021">alt</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="286" x="2221.5" y="10326.7021">[if (AutoAcceptQuote)]</text><line style="stroke:#181818;stroke-width:1.0;" x1="2256.5" x2="2298.5" y1="10425.3281" y2="10425.3281"/><line style="stroke:#181818;stroke-width:1.0;" x1="2298.5" x2="2298.5" y1="10425.3281" y2="10438.3281"/><line style="stroke:#181818;stroke-width:1.0;" x1="2257.5" x2="2298.5" y1="10438.3281" y2="10438.3281"/><polygon fill="#181818" points="2267.5,10434.3281,2257.5,10438.3281,2267.5,10442.3281,2263.5,10438.3281" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="2263.5" y="10392.5303">[67]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="425" x="2317.5" y="10366.9209">Confirm Fees meets auto accept levels</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="451" x="2324.5" y="10392.5303">and bulkExpiration timelimit not reached</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="286" x="2317.5" y="10418.1396">-&gt; Update Transfer Status</text><path d="M2127.5,10460.3281 L2206.5,10460.3281 L2206.5,10477.9375 L2196.5,10487.9375 L2127.5,10487.9375 L2127.5,10460.3281 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="1286.5469" style="stroke:#000000;stroke-width:1.5;" width="2719" x="2127.5" y="10460.3281"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="34" x="2142.5" y="10481.749">alt</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="258" x="2221.5" y="10482.749">[if (AcceptedQuote)]</text><line style="stroke:#181818;stroke-width:1.0;" x1="2256.5" x2="2298.5" y1="10581.375" y2="10581.375"/><line style="stroke:#181818;stroke-width:1.0;" x1="2298.5" x2="2298.5" y1="10581.375" y2="10594.375"/><line style="stroke:#181818;stroke-width:1.0;" x1="2257.5" x2="2298.5" y1="10594.375" y2="10594.375"/><line style="stroke:#181818;stroke-width:1.0;" x1="2257.5" x2="2267.5" y1="10594.375" y2="10590.375"/><line style="stroke:#181818;stroke-width:1.0;" x1="2257.5" x2="2267.5" y1="10594.375" y2="10598.375"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="2263.5" y="10548.5771">[68]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="232" x="2317.5" y="10522.9678">Calculate bulk expiry</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="446" x="2317.5" y="10548.5771">based on both expirySeconds config and</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="159" x="2317.5" y="10574.1865">bulkExpiration</text><line style="stroke:#181818;stroke-width:1.0;" x1="3217.5" x2="3207.5" y1="10633.9844" y2="10629.9844"/><line style="stroke:#181818;stroke-width:1.0;" x1="3217.5" x2="3207.5" y1="10633.9844" y2="10637.9844"/><line style="stroke:#181818;stroke-width:1.0;" x1="2261.5" x2="3218.5" y1="10633.9844" y2="10633.9844"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="2268.5" y="10626.7959">[69]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="66" x="2322.5" y="10626.7959">POST</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="151" x="2395.5" y="10626.7959">/bulktransfers</text><line style="stroke:#181818;stroke-width:1.0;" x1="3219.5" x2="3261.5" y1="10673.5938" y2="10673.5938"/><line style="stroke:#181818;stroke-width:1.0;" x1="3261.5" x2="3261.5" y1="10673.5938" y2="10686.5938"/><line style="stroke:#181818;stroke-width:1.0;" x1="3220.5" x2="3261.5" y1="10686.5938" y2="10686.5938"/><polygon fill="#181818" points="3230.5,10682.5938,3220.5,10686.5938,3230.5,10690.5938,3226.5,10686.5938" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="3226.5" y="10666.4053">[70]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="580" x="3280.5" y="10666.4053">Perform liquidity(NDC)check at indivial transfer level</text><line style="stroke:#181818;stroke-width:1.0;" x1="3219.5" x2="3261.5" y1="10726.2031" y2="10726.2031"/><line style="stroke:#181818;stroke-width:1.0;" x1="3261.5" x2="3261.5" y1="10726.2031" y2="10739.2031"/><line style="stroke:#181818;stroke-width:1.0;" x1="3220.5" x2="3261.5" y1="10739.2031" y2="10739.2031"/><polygon fill="#181818" points="3230.5,10735.2031,3220.5,10739.2031,3230.5,10743.2031,3226.5,10739.2031" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="3226.5" y="10719.0146">[71]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="428" x="3280.5" y="10719.0146">Reserve Funds at indivial transfer level</text><line style="stroke:#181818;stroke-width:1.0;" x1="4142.5" x2="4132.5" y1="10778.8125" y2="10774.8125"/><line style="stroke:#181818;stroke-width:1.0;" x1="4142.5" x2="4132.5" y1="10778.8125" y2="10782.8125"/><line style="stroke:#181818;stroke-width:1.0;" x1="3219.5" x2="4143.5" y1="10778.8125" y2="10778.8125"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="3226.5" y="10771.624">[72]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="66" x="3280.5" y="10771.624">POST</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="240" x="3353.5" y="10771.624">inbound/bulktransfers</text><path d="M4005.5,10793.8125 L4084.5,10793.8125 L4084.5,10811.4219 L4074.5,10821.4219 L4005.5,10821.4219 L4005.5,10793.8125 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="432.9219" style="stroke:#000000;stroke-width:1.5;" width="821" x="4005.5" y="10793.8125"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="34" x="4020.5" y="10815.2334">alt</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="429" x="4099.5" y="10816.2334">[if (HasSupportForBulkTransfers)]</text><polygon fill="#181818" points="4731.5,10859.6406,4741.5,10863.6406,4731.5,10867.6406,4735.5,10863.6406" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="4144.5" x2="4737.5" y1="10863.6406" y2="10863.6406"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="4151.5" y="10856.4521">[73]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="66" x="4205.5" y="10856.4521">POST</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="240" x="4278.5" y="10856.4521">inbound/bulktransfers</text><polygon fill="#181818" points="4155.5,10899.25,4145.5,10903.25,4155.5,10907.25,4151.5,10903.25" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="4149.5" x2="4742.5" y1="10903.25" y2="10903.25"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="4161.5" y="10896.0615">[74]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="98" x="4215.5" y="10896.0615">response</text><line style="stroke:#181818;stroke-width:1.0;" x1="4144.5" x2="4186.5" y1="10968.4688" y2="10968.4688"/><line style="stroke:#181818;stroke-width:1.0;" x1="4186.5" x2="4186.5" y1="10968.4688" y2="10981.4688"/><line style="stroke:#181818;stroke-width:1.0;" x1="4145.5" x2="4186.5" y1="10981.4688" y2="10981.4688"/><polygon fill="#181818" points="4155.5,10977.4688,4145.5,10981.4688,4155.5,10985.4688,4151.5,10981.4688" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="4151.5" y="10948.4756">[75]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="307" x="4205.5" y="10935.6709">Update transaction statuses</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="327" x="4205.5" y="10961.2803">and attach transfer responses</text><line style="stroke:#000000;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="4005.5" x2="4826.5" y1="10990.4688" y2="10990.4688"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="439" x="4010.5" y="11010.8896">[if (!HasSupportForBulkTransfers)]</text><path d="M4015.5,11024.0781 L4114.5,11024.0781 L4114.5,11041.6875 L4104.5,11051.6875 L4015.5,11051.6875 L4015.5,11024.0781 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="195.6563" style="stroke:#000000;stroke-width:1.5;" width="801" x="4015.5" y="11024.0781"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="54" x="4030.5" y="11045.499">loop</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="549" x="4129.5" y="11046.499">[X times for each transfer in bulk message]</text><polygon fill="#181818" points="4731.5,11089.9063,4741.5,11093.9063,4731.5,11097.9063,4735.5,11093.9063" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="4144.5" x2="4737.5" y1="11093.9063" y2="11093.9063"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="4151.5" y="11086.7178">[76]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="66" x="4205.5" y="11086.7178">POST</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="193" x="4278.5" y="11086.7178">inbound/transfers</text><polygon fill="#181818" points="4155.5,11129.5156,4145.5,11133.5156,4155.5,11137.5156,4151.5,11133.5156" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="4149.5" x2="4742.5" y1="11133.5156" y2="11133.5156"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="4161.5" y="11126.3271">[77]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="98" x="4215.5" y="11126.3271">response</text><line style="stroke:#181818;stroke-width:1.0;" x1="4144.5" x2="4186.5" y1="11198.7344" y2="11198.7344"/><line style="stroke:#181818;stroke-width:1.0;" x1="4186.5" x2="4186.5" y1="11198.7344" y2="11211.7344"/><line style="stroke:#181818;stroke-width:1.0;" x1="4145.5" x2="4186.5" y1="11211.7344" y2="11211.7344"/><polygon fill="#181818" points="4155.5,11207.7344,4145.5,11211.7344,4155.5,11215.7344,4151.5,11211.7344" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="4151.5" y="11178.7412">[78]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="283" x="4205.5" y="11165.9365">Update transaction status</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="316" x="4205.5" y="11191.5459">and attach transfer response</text><line style="stroke:#181818;stroke-width:1.0;" x1="3220.5" x2="3230.5" y1="11265.3438" y2="11261.3438"/><line style="stroke:#181818;stroke-width:1.0;" x1="3220.5" x2="3230.5" y1="11265.3438" y2="11269.3438"/><line style="stroke:#181818;stroke-width:1.0;" x1="3219.5" x2="4143.5" y1="11265.3438" y2="11265.3438"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="3236.5" y="11258.1553">[79]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="49" x="3290.5" y="11258.1553">PUT</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="349" x="3346.5" y="11258.1553">/bulktransfers/{id} (BulkStatus)</text><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="3219.5" x2="3261.5" y1="11304.9531" y2="11304.9531"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="3261.5" x2="3261.5" y1="11304.9531" y2="11317.9531"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="3220.5" x2="3261.5" y1="11317.9531" y2="11317.9531"/><polygon fill="#181818" points="3230.5,11313.9531,3220.5,11317.9531,3230.5,11321.9531,3226.5,11317.9531" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="3226.5" y="11297.7646">[80]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="422" x="3280.5" y="11297.7646">Commit funds at indivial transfer level</text><path d="M3154,11332.9531 L3233,11332.9531 L3233,11350.5625 L3223,11360.5625 L3154,11360.5625 L3154,11332.9531 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="289.0938" style="stroke:#000000;stroke-width:1.5;" width="1682.5" x="3154" y="11332.9531"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="34" x="3169" y="11354.374">alt</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="397" x="3248" y="11355.374">[if (bulkStatus == 'ACCEPTED')]</text><polygon fill="#181818" points="4132.5,11398.7813,4142.5,11402.7813,4132.5,11406.7813,4136.5,11402.7813" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="3219.5" x2="4138.5" y1="11402.7813" y2="11402.7813"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="3226.5" y="11395.5928">[81]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="82" x="3280.5" y="11395.5928">PATCH</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="438" x="3369.5" y="11395.5928">inbound/bulktransfers/{id} (BulkStatus)</text><path d="M4005.5,11417.7813 L4084.5,11417.7813 L4084.5,11435.3906 L4074.5,11445.3906 L4005.5,11445.3906 L4005.5,11417.7813 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="197.2656" style="stroke:#000000;stroke-width:1.5;" width="821" x="4005.5" y="11417.7813"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="34" x="4020.5" y="11439.2021">alt</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="429" x="4099.5" y="11440.2021">[if (HasSupportForBulkTransfers)]</text><polygon fill="#181818" points="4731.5,11483.6094,4741.5,11487.6094,4731.5,11491.6094,4735.5,11487.6094" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="4144.5" x2="4737.5" y1="11487.6094" y2="11487.6094"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="4151.5" y="11480.4209">[82]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="82" x="4205.5" y="11480.4209">PATCH</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="432" x="4294.5" y="11480.4209">inbound/bulktransfers/{bulkTransferId}</text><line style="stroke:#000000;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="4005.5" x2="4826.5" y1="11496.6094" y2="11496.6094"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="439" x="4010.5" y="11517.0303">[if (!HasSupportForBulkTransfers)]</text><path d="M4015.5,11530.2188 L4114.5,11530.2188 L4114.5,11547.8281 L4104.5,11557.8281 L4015.5,11557.8281 L4015.5,11530.2188 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="77.8281" style="stroke:#000000;stroke-width:1.5;" width="801" x="4015.5" y="11530.2188"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="54" x="4030.5" y="11551.6396">loop</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="549" x="4129.5" y="11552.6396">[X times for each transfer in bulk message]</text><polygon fill="#181818" points="4731.5,11596.0469,4741.5,11600.0469,4731.5,11604.0469,4735.5,11600.0469" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="4144.5" x2="4737.5" y1="11600.0469" y2="11600.0469"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="4151.5" y="11592.8584">[83]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="82" x="4205.5" y="11592.8584">PATCH</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="334" x="4294.5" y="11592.8584">inbound/transfers/{transferId}</text><polygon fill="#181818" points="2267.5,11656.6563,2257.5,11660.6563,2267.5,11664.6563,2263.5,11660.6563" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2261.5" x2="3218.5" y1="11660.6563" y2="11660.6563"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="2273.5" y="11653.4678">[84]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="49" x="2327.5" y="11653.4678">PUT</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="295" x="2383.5" y="11653.4678">inbound/bulktransfers/{id}</text><line style="stroke:#181818;stroke-width:1.0;" x1="2256.5" x2="2298.5" y1="11725.875" y2="11725.875"/><line style="stroke:#181818;stroke-width:1.0;" x1="2298.5" x2="2298.5" y1="11725.875" y2="11738.875"/><line style="stroke:#181818;stroke-width:1.0;" x1="2257.5" x2="2298.5" y1="11738.875" y2="11738.875"/><polygon fill="#181818" points="2267.5,11734.875,2257.5,11738.875,2267.5,11742.875,2263.5,11738.875" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="2263.5" y="11705.8818">[85]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="283" x="2317.5" y="11693.0771">Update transaction status</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="381" x="2317.5" y="11718.6865">and attach bulk transfers response</text><polygon fill="#FAFAFA" points="2271,11765.875,3270,11765.875,3280,12460.875,3270,13155.875,2271,13155.875,2261,12460.875,2271,11765.875" style="stroke:#181818;stroke-width:0.5;"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="323" x="2273" y="11790.2959">bulkTransactionResponse</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="2273" y="11815.9053">{</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="614" x="2280" y="11841.5146">"bulkHomeTransactionID": "string", # external identifier</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="613" x="2280" y="11867.124">"bulkTransferId": "UUID",  # generated by ML connector</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="740" x="2280" y="11892.7334">"currentState": "COMPLETED", # status of the bulk transfer request</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="319" x="2280" y="11918.3428">"individualTransferResults": [</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="2301" y="11943.9521">{</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="615" x="2315" y="11969.5615">"transferId": "310e5c51-e4fd-30bc-96ae-6dffee2c54cb",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="781" x="2315" y="11995.1709">"homeTransactionId": "string", # Payer DFSP CBS Transaction identifier</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="953" x="2315" y="12020.7803">"transactionId": "string", # Mojaloop bulk transaction Id used to make the bulk transfer</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="217" x="2315" y="12046.3896">"to": { # Party type</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="168" x="2329" y="12071.999">"partyIdInfo": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="280" x="2343" y="12097.6084">"partyIdType": "MSISDN",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="281" x="2343" y="12123.2178">"partyIdentifier": "string",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="325" x="2343" y="12148.8271">"partySubIdOrType": "string",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="177" x="2343" y="12174.4365">"fspId": "string",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="735" x="2343" y="12200.0459">"extensionList": {"extension": [{"key": "string","value": "string"}]}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="2329" y="12225.6553">}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="21" x="2315" y="12251.2646">},</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="261" x="2315" y="12276.874">"amountType": "SEND",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="204" x="2315" y="12302.4834">"currency": "AED",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="188" x="2315" y="12328.0928">"amount": "100",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="173" x="2315" y="12353.7021">"note": "string",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="606" x="2315" y="12379.3115">"quoteId": "4932beab-423e-37b6-8587-49c016d2f5ef",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="624" x="2315" y="12404.9209">"quoteExtensions": [{ "key": "string", "value": "string"}],</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="640" x="2315" y="12430.5303">"transferExtensions": [{ "key": "string", "value": "string"}]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="215" x="2315" y="12456.1396">"quoteResponse": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="620" x="2329" y="12481.749">"transferAmount": {"currency": "AED","amount": "0.7"},</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="715" x="2329" y="12507.3584">"payeeReceiveAmount": {"currency": "AED","amount": "0.922"},</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="591" x="2329" y="12532.9678">"payeeFspFee": {"currency": "AED","amount": "0.2"},</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="685" x="2329" y="12558.5771">"payeeFspCommission": {"currency": "AED","amount": "0.3"},</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="541" x="2329" y="12584.1865">"expiration": "6286-11-29T16:19:08.300+06:14",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="606" x="2329" y="12609.7959">"geoCode": {"latitude": "5.9","longitude": "180.0000"},</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="513" x="2329" y="12635.4053">"ilpPacket": "XqOB5HUGEifQ-ebr0TAVAgD3...",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="319" x="2329" y="12661.0146">"condition": "gZI4iD9u_Yc...",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="735" x="2329" y="12686.624">"extensionList": {"extension": [{"key": "string","value": "string"}]}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="21" x="2315" y="12712.2334">},</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="96" x="2315" y="12737.8428">"fulfil": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="361" x="2329" y="12763.4521">"fulfilment": "UXgB0280lbHM...",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="603" x="2329" y="12789.0615">"completedTimestamp": "5138-01-31T21:10:42.484Z",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="338" x="2329" y="12814.6709">"transferState": "COMMITTED",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="735" x="2329" y="12840.2803">"extensionList": {"extension": [{"key": "string","value": "string"}]}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="2315" y="12865.8896">}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="141" x="2315" y="12891.499">"lastError": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="254" x="2329" y="12917.1084">"httpStatusCode": 503,</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="202" x="2329" y="12942.7178">"mojaloopError": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="228" x="2343" y="12968.3271">"errorInformation": {</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="225" x="2357" y="12993.9365">"errorCode": "8812",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="301" x="2357" y="13019.5459">"errorDescription": "string",</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="735" x="2357" y="13045.1553">"extensionList": {"extension": [{"key": "string","value": "string"}]}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="2329" y="13070.7646">}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="58" x="2287" y="13096.374">}}}],</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="553" x="2287" y="13121.9834">"extensions": [{ "key": "string", "value": "string"}]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="14" x="2273" y="13147.5928">}</text><path d="M417,13168.7813 L496,13168.7813 L496,13186.3906 L486,13196.3906 L417,13196.3906 L417,13168.7813 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="459.5313" style="stroke:#000000;stroke-width:1.5;" width="1968.5" x="417" y="13168.7813"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="34" x="432" y="13190.2021">alt</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="224" x="511" y="13191.2021">[if (synchronous)]</text><polygon fill="#181818" points="1604.5,13234.6094,1594.5,13238.6094,1604.5,13242.6094,1600.5,13238.6094" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1598.5" x2="2255.5" y1="13238.6094" y2="13238.6094"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="1610.5" y="13231.4209">[86]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="425" x="1664.5" y="13231.4209">Response &lt;bulkTransactionResponse&gt;</text><polygon fill="#181818" points="941.5,13274.2188,931.5,13278.2188,941.5,13282.2188,937.5,13278.2188" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="935.5" x2="1592.5" y1="13278.2188" y2="13278.2188"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="947.5" y="13271.0303">[87]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="425" x="1001.5" y="13271.0303">Response &lt;bulkTransactionResponse&gt;</text><polygon fill="#181818" points="489.5,13313.8281,479.5,13317.8281,489.5,13321.8281,485.5,13317.8281" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="483.5" x2="929.5" y1="13317.8281" y2="13317.8281"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="495.5" y="13310.6396">[88]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="374" x="549.5" y="13310.6396">Transafer response(success &amp; fail)</text><line style="stroke:#000000;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="417" x2="2385.5" y1="13326.8281" y2="13326.8281"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="234" x="422" y="13347.249">[if (!synchronous)]</text><polygon fill="#181818" points="1604.5,13432.2656,1594.5,13436.2656,1604.5,13440.2656,1600.5,13436.2656" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1598.5" x2="2255.5" y1="13436.2656" y2="13436.2656"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="1610.5" y="13403.4678">[89]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="203" x="1664.5" y="13377.8584">Callback Response</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="49" x="1664.5" y="13403.4678">PUT</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="510" x="1720.5" y="13403.4678">inbound/bulkTransactions/{bulkTransactionId}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="367" x="1664.5" y="13429.0771">Transfer Response(success &amp; fail)</text><polygon fill="#181818" points="2244.5,13471.875,2254.5,13475.875,2244.5,13479.875,2248.5,13475.875" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="1593.5" x2="2250.5" y1="13475.875" y2="13475.875"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="1600.5" y="13468.6865">[90]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="303" x="1654.5" y="13468.6865">Receive HTTP 202 response</text><polygon fill="#181818" points="941.5,13537.0938,931.5,13541.0938,941.5,13545.0938,937.5,13541.0938" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="935.5" x2="1592.5" y1="13541.0938" y2="13541.0938"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="947.5" y="13521.1006">[91]</text><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="49" x="1001.5" y="13508.2959">PUT</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="421" x="1057.5" y="13508.2959">/bulkTransactions/{bulkTransactionId}</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="426" x="1001.5" y="13533.9053">Transfer Status Update (success &amp; fail)</text><polygon fill="#181818" points="1581.5,13576.7031,1591.5,13580.7031,1581.5,13584.7031,1585.5,13580.7031" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="930.5" x2="1587.5" y1="13580.7031" y2="13580.7031"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="937.5" y="13573.5146">[92]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="303" x="991.5" y="13573.5146">Receive HTTP 202 response</text><polygon fill="#181818" points="489.5,13616.3125,479.5,13620.3125,489.5,13624.3125,485.5,13620.3125" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="483.5" x2="929.5" y1="13620.3125" y2="13620.3125"/><text fill="#000000" font-family="sans-serif" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="50" x="495.5" y="13613.124">[93]</text><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacing" textLength="374" x="549.5" y="13613.124">Transafer response(success &amp; fail)</text><!--MD5=[8c8c4be10bdde8e3092632697c4b9cc1]
+@startuml
+/'********
+- - - - - - - - - - - - - -
+*********'/
+
+skinparam activityFontSize 4
+skinparam activityDiamondFontSize 30
+skinparam activityArrowFontSize 22
+skinparam defaultFontSize 22
+skinparam noteFontSize 22
+skinparam monochrome true
+' declare title
+' title Bulk Transactions pattern using the Mojaloop Connector
+' declare actors
+actor "MFI Staff" as MStaff
+participant "MFI CBS" as MFI
+box "Payment Manager" #LightGrey
+participant "Core\nConnector" as MFICC
+participant "sdk-scheme-adapter" as MFIMC
+end box
+participant "Mojaloop\nSwitch" as MJW
+participant "Oracle" as Oracle
+box "Payment Manager" #LightGrey
+participant "Payee\nsdk-scheme-adapter" as PayeeFSPMC
+participant "Payee\nCore\nConnector" as PayeeFSPCC
+end box
+
+== Bulk Transfers implemented using Mojaloop bulk transfers ==
+
+autonumber 1 1 "<b>[0]"
+MStaff -> MFI: Initiate bulk transaction call
+MFI -> MFICC: Disburse funds \n **POST** outbound/bulkTransactions/
+note left
+{
+   "bulkTransactionId": "UUID",
+   "bulkHomeTransactionID": "string", # external identifier
+   "options": {
+      "onlyValidateParty": "false", # (boolean)
+      "autoAcceptParty": {
+          "enabled": "true" # boolean
+      },
+      "autoAcceptQuote": {
+        "enabled": "true", # (boolean)
+        "perTransferFeeLimits": [{ "currency": "AED", "amount": "1.69" }], #optional
+      }
+      "skipPartyLookup": "false", # (boolean)
+      "synchronous": "false", # (boolean)
+      "bulkExpiration": DateTime, # expiration date time (string)
+    },
+   "from": { "partyIdInfo": {} # (partyIdInfo type)
+           },
+   "individualTransfers": [
+          {
+            "homeTransactionId": "string", # Payer DFSP CBS Transaction identifier
+            "reference": "string", # Payer Loan reference
+            "to": { # Party type
+              "partyIdInfo": {
+                "partyIdType": "MSISDN",
+                "partyIdentifier": "string",
+                "partySubIdOrType": "string",
+                "fspId": "string",
+                "extensionList": {"extension": [{"key": "string","value": "string"}]}
+              },
+            "amountType": "RECEIVE" # SEND, RECEIVE (Enum)
+            "currency" : "XXX" # (Enum)
+            "amount": "100", # money (string)
+            "note": "string"
+            "quoteExtensions": [{ "key": "string", "value": "string"}],
+            "transferExtensions": [{ "key": "string", "value": "string"}]
+            }, ...
+          ],
+   "extensions": [{ "key": "string", "value": "string"}],
+}
+end note
+
+Loop n times  (in parallel)
+    hnote left of MFICC
+        For each transfer
+        in bulk message
+    end hnote
+    MFICC -> MFICC: validate MSISDN & Prefix
+    alt MSISDN Failed Validation
+    MFICC->MFICC:  Add Last Error to Transfer
+    end
+end Loop
+MFICC- ->MFIMC: **POST** outbound/bulkTransactions
+note left
+**BulkTransferType**
+{
+   "bulkTransactionId": "UUID",
+   "bulkHomeTransactionID": "string", # external identifier
+   "options": {
+      "onlyValidateParty": "false", # (boolean)
+      "autoAcceptParty": {
+          "enabled": "true" # boolean
+      },
+      "autoAcceptQuote": {
+        "enabled": "true", # (boolean)
+        "perTransferFeeLimits": [{ "currency": "AED", "amount": "1.69" }], #optional
+      }
+      "skipPartyLookup": "false", # (boolean)
+      "synchronous": "false", # (boolean)
+      "bulkExpiration": DateTime, # expiration date time (string)
+    },
+   "from": { "partyIdInfo": {} # (partyIdInfo type)
+           },
+   "individualTransfers": [
+          {
+            "homeTransactionId": "string", # Payer DFSP CBS Transaction identifier
+            "reference": "string", # Payer Loan reference
+            "to": { # Party type
+              "partyIdInfo": {
+                "partyIdType": "MSISDN",
+                "partyIdentifier": "string",
+                "partySubIdOrType": "string",
+                "fspId": "string",
+                "extensionList": {"extension": [{"key": "string","value": "string"}]}
+              },
+            "amountType": "RECEIVE" # SEND, RECEIVE (Enum)
+            "currency" : "XXX" # (Enum)
+            "amount": "100", # money (string)
+            "note": "string"
+            "quoteExtensions": [{ "key": "string", "value": "string"}],
+            "transferExtensions": [{ "key": "string", "value": "string"}]
+            "lastError": {
+              "httpStatusCode": 503,
+              "mojaloopError": {
+                "errorInformation": {
+                  "errorCode": "8812",
+                  "errorDescription": "string",
+                  "extensionList": {"extension": [{"key": "string","value": "string"}]}
+                }
+              }
+            }, ...
+          ],
+   "extensions": [{ "key": "string", "value": "string"}],
+}
+end note
+alt if (!synchronous)
+MFIMC- ->MFICC: Receive HTTP 202 response
+MFI <- - MFICC: Receive HTTP 202 response
+end
+
+alt if (!skipPartyLookup)
+loop N times & within bulkExpiration timelimit  (in parallel)
+hnote left of MFIMC
+        For each transfer
+        in bulk message
+end hnote
+  alt if (validTransfer)
+    MFIMC -> MFIMC: Create TransactionId
+    MFIMC -> MJW: **GET** /parties/*\n<i><PartyIdType>**/**</i><i><PartyId>
+    activate MFIMC
+    MJW -> Oracle: Lookup DFSP for \nrequested Type/ID
+    Oracle-> Oracle: Lookup Party for \nrequested Type/ID
+    Oracle->MJW: Return DFSP ID
+    MJW->MJW: **GET** /parties/{type}/{id}/{subid}\nMake call to payee DFSP to confirm Party information
+    MJW->MFIMC: **PUT** inbound/parties/{type}/{id}
+    deactivate MFIMC
+
+    MFIMC -> MFIMC: Update transaction status and\n attach get parties response
+    MFIMC -> MFIMC: Add to next phase FSP bulk call
+    MFIMC -> MFIMC: Any Error, save the error state in lastError object to be returned to the caller later
+  else if (!validTransfer)
+    MFIMC->MFIMC: Skip
+  end
+end Loop
+else if (skipPartyLookup)
+  loop N times & within bulkExpiration timelimit
+    MFIMC->MFIMC: Validate party info \n Add to next phase FSP bulk call
+  end loop
+end
+MFIMC->MFIMC: if(transferStatusValid) Group into M Payee DFSPs
+
+alt if (!autoAcceptParty)
+  alt if (synchronous)
+    MFIMC- ->MFICC: Response <bulkPartyLookupResponse> \n  currentState="WAITING_FOR_PARTY_ACCEPTANCE"
+    MFI <- - MFICC: Response <bulkPartyLookupResponse>  \n  currentState="WAITING_FOR_PARTY_ACCEPTANCE"
+    MFI->MStaff: Present Party Response
+    MStaff->MFI: Accept Party
+    MFI->MFICC: **PUT** outbound/bulkTransactions/{bulkTransactionId}
+    MFICC->MFIMC: **PUT** outbound/bulkTransactions/{bulkTransactionId}
+  else if (!synchronous)
+    MFIMC->MFICC: **PUT** inbound/bulkTransactions/{bulkTransactionId}  \n  currentState="WAITING_FOR_PARTY_ACCEPTANCE"
+    note right
+      **bulkPartyLookupResponse**
+      Refer **Party Lookup Error Codes** table for lastError details
+      {
+        "bulkHomeTransactionID": "string", # external identifier,
+        "bulkTransferId": "UUID",  # generated by ML connector
+        "currentState": "WAITING_FOR_PARTY_ACCEPTANCE",
+        "options": {
+            "onlyValidateParty": "false", # (boolean)
+            "autoAcceptParty": {
+                "enabled": "true" # boolean
+            },
+            "autoAcceptQuote": {
+                "enabled": "true", # (boolean)
+                "perTransferFeeLimits": [{ "currency": "AED", "amount": "1.69" }], #optional
+            }
+            "skipPartyLookup": "false", # (boolean)
+            "synchronous": "false", # (boolean)
+            "bulkExpiration": DateTime, # expiration date time (string)
+        },
+        "individualTransferResults": [
+                {
+                  "homeTransactionId": "string", # Payer DFSP CBS Transaction identifier
+                  "transactionId": "UUID", # Created by ML connector
+                  "transferId": "UUID", # Created by ML connector
+                  "reference": "string", # Payer Loan reference
+                  "to": { # Party type
+                    "partyIdInfo": {
+                      "partyIdType": "MSISDN",
+                      "partyIdentifier": "string",
+                      "partySubIdOrType": "string",
+                      "fspId": "string",
+                      "extensionList": {"extension": [{"key": "string","value": "string"}]}
+                    },
+                  "amountType": "RECEIVE" # SEND, RECEIVE (Enum)
+                  "currency" : "XXX" # (Enum)
+                  "amount": "100", # money (string)
+                  "note": "string"
+                  "quoteExtensions": [{ "key": "string", "value": "string"}],
+                  "transferExtensions": [{ "key": "string", "value": "string"}]
+                  "lastError": {
+                    "httpStatusCode": 503,
+                    "mojaloopError": {
+                      "errorInformation": {
+                        "errorCode": "8812",1
+                        "errorDescription": "string",
+                        "extensionList": {"extension": [{"key": "string","value": "string"}]}
+                      }
+                    }
+                  }
+                }
+        ],
+        "extensions": [{ "key": "string", "value": "string"}],
+      }
+    end note
+    MFICC- ->MFIMC: Receive HTTP 202 response
+    MFICC->MFI: **PUT** /bulkTransactions/{bulkTransactionId}  \n  currentState="WAITING_FOR_PARTY_ACCEPTANCE"
+    MFI- ->MFICC: Receive HTTP 202 response
+    MFI->MStaff: Present Party Response
+    MStaff->MFI: Accept Party
+    MFI->MFICC: **PUT** outbound/bulkTransactions/{bulkTransactionId}
+    MFICC->MFIMC: **PUT** outbound/bulkTransactions/{bulkTransactionId}
+    note left
+      **bulkTransferContinuationAcceptParty**
+      {
+        "individualTransfers": [
+                {
+                  "transferId": "UUID", # Created by ML connector
+                  "acceptParty": "true" # (boolean)
+                }
+        ],
+      }
+    end note
+    MFIMC- ->MFICC: Receive HTTP 202 response
+    MFI <- - MFICC: Receive HTTP 202 response
+  end
+end
+
+loop Quote Processing (M times & within bulkExpiration timelimit in parallel)
+hnote left of MFIMC
+        For each payee DFSP
+        in bulk message
+end hnote
+    MFIMC->MFIMC: Check bulkExpiration
+    MFIMC->MFIMC: Create bulkTransactionId
+    MFIMC ->> MFIMC: Calculate bulk expiry \nbased on both expirySeconds config and \nbulkExpiration
+    MFIMC ->> MJW: **POST** /bulkquotes
+    activate MFIMC
+    MJW->PayeeFSPMC: **POST** inbound/bulkquotes
+    alt if (HasSupportForBulkQuotes)
+      PayeeFSPMC->PayeeFSPCC: **POST** inbound/bulkquotes
+      PayeeFSPCC- ->PayeeFSPMC: Reponse bulkquotes Response
+      PayeeFSPMC -> PayeeFSPMC: Update transaction statuses \nand attach quote responses
+    else if (!HasSupportForBulkQuotes)
+      loop X times for each transfer in bulk message
+        PayeeFSPMC->PayeeFSPCC: **POST** inbound/quoterequests
+        PayeeFSPCC- ->PayeeFSPMC: response
+        PayeeFSPMC -> PayeeFSPMC: Update transaction status \nand attach quote response
+      end Loop
+    end
+    PayeeFSPMC->MJW: **PUT** /bulkquotes/{id)
+    MJW->MFIMC: **PUT** inbound/bulkquotes/{id)
+    deactivate  MFIMC
+    MFIMC -> MFIMC: Update transaction status \nand attach quote response
+end loop
+
+alt if (!autoAcceptQuote)
+  alt if (synchronous)
+    MFIMC- ->MFICC: Response <bulkQuoteRequestResponse> \n  currentState="WAITING_FOR_QUOTE_ACCEPTANCE"
+    MFI <- - MFICC: Response <bulkQuoteRequestResponse>\n  currentState="WAITING_FOR_QUOTE_ACCEPTANCE"
+    MFI->MStaff: Present Quote Response
+    MStaff->MFI: Accept Quote
+    MFI->MFICC: **PUT** outbound/bulkTransactions/{bulkTransactionId}
+    MFICC->MFIMC: **PUT** outbound/bulkTransactions/{bulkTransactionId}
+  else if (!synchronous)
+    MFIMC->MFICC: **PUT** inbound/bulkTransactions/{bulkTransactionId}\n  currentState="WAITING_FOR_QUOTE_ACCEPTANCE"
+    note right
+      **bulkQuoteRequestResponse**
+      {
+        "bulkHomeTransactionID": "string", # external identifier
+        "bulkTransferId": "UUID",  # generated by ML connector
+        "currentState": "WAITING_FOR_QUOTE_ACCEPTANCE",
+        "options": {
+            "onlyValidateParty": "false", # (boolean)
+            "autoAcceptParty": {
+                "enabled": "true" # boolean
+            },
+            "autoAcceptQuote": {
+                "enabled": "true", # (boolean)
+                "perTransferFeeLimits": [{ "currency": "AED", "amount": "1.69" }], #optional
+            }
+            "skipPartyLookup": "false", # (boolean)
+            "synchronous": "false", # (boolean)
+            "bulkExpiration": DateTime, # expiration date time (string)
+        },
+        "individualTransferResults": [
+                {
+                  "homeTransactionId": "string", # Payer DFSP CBS Transaction identifier
+                  "transactionId": "UUID", # Created by ML connector
+                  "transferId": "UUID", # Created by ML connector
+                  "reference": "string", # Payer Loan reference
+                  "to": { # Party type
+                    "partyIdInfo": {
+                      "partyIdType": "MSISDN",
+                      "partyIdentifier": "string",
+                      "partySubIdOrType": "string",
+                      "fspId": "string",
+                      "extensionList": {"extension": [{"key": "string","value": "string"}]}
+                    },
+                  "amountType": "RECEIVE" # SEND, RECEIVE (Enum)
+                  "currency" : "XXX" # (Enum)
+                  "amount": "100", # money (string)
+                  "note": "string"
+                  "quoteId": "4932beab-423e-37b6-8587-49c016d2f5ef",
+                  "quoteExtensions": [{ "key": "string", "value": "string"}],
+                  "transferExtensions": [{ "key": "string", "value": "string"}],
+                  "quoteResponse": {
+                    "transferAmount": {"currency": "AED","amount": "0.7"},
+                    "payeeReceiveAmount": {"currency": "AED","amount": "0.922"},
+                    "payeeFspFee": {"currency": "AED","amount": "67247160"},
+                    "payeeFspCommission": {"currency": "AED","amount": "829358883"},
+                    "expiration": "6286-11-29T16:19:08.300+06:14",
+                    "geoCode": {"latitude": "5.9","longitude": "180.0000"},
+                    "ilpPacket": "XqOB5HUGEifQ-ebr0TAVAgD3...",
+                    "condition": "gZI4iD9u_Yc...",
+                    "extensionList": {"extension": [{"key": "string","value": "string"}]}
+                  },
+                  "lastError": {
+                    "httpStatusCode": 503,
+                    "mojaloopError": {
+                      "errorInformation": {
+                        "errorCode": "8812",
+                        "errorDescription": "string",
+                        "extensionList": {"extension": [{"key": "string","value": "string"}]}
+                      }
+                    }
+                  }
+                }
+        ],
+        "extensions": [{ "key": "string", "value": "string"}],
+      }
+    end note
+    MFICC- ->MFIMC: Receive HTTP 202 response
+    MFICC->MFI: **PUT** /bulkTransactions/{bulkTransactionId}\n  currentState="WAITING_FOR_QUOTE_ACCEPTANCE"
+    MFI- ->MFICC: Receive HTTP 202 response
+    MFI->MStaff: Present Quote Response
+    MStaff->MFI: Accept Quote
+    MFI->MFICC: **PUT** outbound/bulkTransactions/{bulkTransactionId}
+    MFICC->MFIMC: **PUT** outbound/bulkTransactions/{bulkTransactionId}
+    note left
+      **bulkAcceptQuote**
+      {
+        "individualTransfers": [
+                {
+                  "transferId": "UUID", # Created by ML connector
+                  "acceptQuote": "true" #boolean
+                }
+        ],
+      }
+    end note
+
+    MFIMC- ->MFICC: Receive HTTP 202 response
+    MFI <- - MFICC: Receive HTTP 202 response
+  end
+end
+
+
+loop Transfer Processing (M times & within bulkExpiration timelimit  in parallel)
+  hnote left of MFIMC
+        For each payee DFSP
+        in bulk message
+  end hnote
+    alt if (AutoAcceptQuote)
+      MFIMC -> MFIMC: Confirm Fees meets auto accept levels\n and bulkExpiration timelimit not reached \n-> Update Transfer Status
+    end
+
+    alt if (AcceptedQuote)
+    MFIMC ->> MFIMC: Calculate bulk expiry \nbased on both expirySeconds config and \nbulkExpiration
+    MFIMC ->> MJW: **POST** /bulktransfers
+    activate MFIMC
+    MJW-> MJW: Perform liquidity(NDC)check at indivial transfer level
+    MJW->MJW: Reserve Funds at indivial transfer level
+    MJW ->> PayeeFSPMC: **POST** inbound/bulktransfers
+    alt if (HasSupportForBulkTransfers)
+      PayeeFSPMC->PayeeFSPCC: **POST** inbound/bulktransfers
+      PayeeFSPCC- ->PayeeFSPMC: response
+      PayeeFSPMC -> PayeeFSPMC:Update transaction statuses \nand attach transfer responses
+    else if (!HasSupportForBulkTransfers)
+      loop X times for each transfer in bulk message
+        PayeeFSPMC->PayeeFSPCC: **POST** inbound/transfers
+        PayeeFSPCC- ->PayeeFSPMC: response
+        PayeeFSPMC -> PayeeFSPMC:Update transaction status \nand attach transfer response
+      end Loop
+    end
+    PayeeFSPMC ->> MJW: **PUT** /bulktransfers/{id} (BulkStatus)
+    MJW- ->MJW: Commit funds at indivial transfer level
+    alt if (bulkStatus == 'ACCEPTED')
+    MJW -> PayeeFSPMC: **PATCH** inbound/bulktransfers/{id} (BulkStatus)
+    alt if (HasSupportForBulkTransfers)
+      PayeeFSPMC->PayeeFSPCC: **PATCH** inbound/bulktransfers/{bulkTransferId}
+    else if (!HasSupportForBulkTransfers)
+      loop X times for each transfer in bulk message
+        PayeeFSPMC->PayeeFSPCC: **PATCH** inbound/transfers/{transferId}
+      end Loop
+    end
+    end
+    MJW->MFIMC:**PUT** inbound/bulktransfers/{id}
+
+    deactivate MFIMC
+    MFIMC -> MFIMC: Update transaction status \nand attach bulk transfers response
+    end
+end loop
+hnote right MFIMC
+**bulkTransactionResponse**
+{
+ "bulkHomeTransactionID": "string", # external identifier
+ "bulkTransferId": "UUID",  # generated by ML connector
+ "currentState": "COMPLETED", # status of the bulk transfer request
+ "individualTransferResults": [
+    {
+      "transferId": "310e5c51-e4fd-30bc-96ae-6dffee2c54cb",
+      "homeTransactionId": "string", # Payer DFSP CBS Transaction identifier
+      "transactionId": "string", # Mojaloop bulk transaction Id used to make the bulk transfer
+      "to": { # Party type
+        "partyIdInfo": {
+          "partyIdType": "MSISDN",
+          "partyIdentifier": "string",
+          "partySubIdOrType": "string",
+          "fspId": "string",
+          "extensionList": {"extension": [{"key": "string","value": "string"}]}
+        }
+      },
+      "amountType": "SEND",
+      "currency": "AED",
+      "amount": "100",
+      "note": "string",
+      "quoteId": "4932beab-423e-37b6-8587-49c016d2f5ef",
+      "quoteExtensions": [{ "key": "string", "value": "string"}],
+      "transferExtensions": [{ "key": "string", "value": "string"}]
+      "quoteResponse": {
+        "transferAmount": {"currency": "AED","amount": "0.7"},
+        "payeeReceiveAmount": {"currency": "AED","amount": "0.922"},
+        "payeeFspFee": {"currency": "AED","amount": "0.2"},
+        "payeeFspCommission": {"currency": "AED","amount": "0.3"},
+        "expiration": "6286-11-29T16:19:08.300+06:14",
+        "geoCode": {"latitude": "5.9","longitude": "180.0000"},
+        "ilpPacket": "XqOB5HUGEifQ-ebr0TAVAgD3...",
+        "condition": "gZI4iD9u_Yc...",
+        "extensionList": {"extension": [{"key": "string","value": "string"}]}
+      },
+      "fulfil": {
+        "fulfilment": "UXgB0280lbHM...",
+        "completedTimestamp": "5138-01-31T21:10:42.484Z",
+        "transferState": "COMMITTED",
+        "extensionList": {"extension": [{"key": "string","value": "string"}]}
+      }
+      "lastError": {
+        "httpStatusCode": 503,
+        "mojaloopError": {
+          "errorInformation": {
+            "errorCode": "8812",
+            "errorDescription": "string",
+            "extensionList": {"extension": [{"key": "string","value": "string"}]}
+        }
+  }}}],
+  "extensions": [{ "key": "string", "value": "string"}]
+}
+end hnote
+alt if (synchronous)
+    MFIMC->MFICC: Response <bulkTransactionResponse>
+    MFICC->MFI: Response <bulkTransactionResponse>
+    MFI->MStaff: Transafer response(success & fail)
+else if (!synchronous)
+    MFIMC->MFICC:Callback Response \n**PUT** inbound/bulkTransactions/{bulkTransactionId}\nTransfer Response(success & fail)
+    MFICC- ->MFIMC: Receive HTTP 202 response
+    MFICC->MFI: **PUT** /bulkTransactions/{bulkTransactionId}\nTransfer Status Update (success & fail)
+    MFI- ->MFICC: Receive HTTP 202 response
+    MFI->MStaff: Transafer response(success & fail)
+end
+@enduml
+
+@startuml
+
+skinparam activityFontSize 4
+skinparam activityDiamondFontSize 30
+skinparam activityArrowFontSize 22
+skinparam defaultFontSize 22
+skinparam noteFontSize 22
+skinparam monochrome true
+actor "MFI Staff" as MStaff
+participant "MFI CBS" as MFI
+box "Payment Manager" #LightGrey
+participant "Core\nConnector" as MFICC
+participant "sdk-scheme-adapter" as MFIMC
+end box
+participant "Mojaloop\nSwitch" as MJW
+participant "Oracle" as Oracle
+box "Payment Manager" #LightGrey
+participant "Payee\nsdk-scheme-adapter" as PayeeFSPMC
+participant "Payee\nCore\nConnector" as PayeeFSPCC
+end box
+
+== Bulk Transfers implemented using Mojaloop bulk transfers ==
+
+autonumber 1 1 "<b>[0]"
+MStaff -> MFI: Initiate bulk transaction call
+MFI -> MFICC: Disburse funds \n **POST** outbound/bulkTransactions/
+note left
+{
+   "bulkTransactionId": "UUID",
+   "bulkHomeTransactionID": "string", # external identifier
+   "options": {
+      "onlyValidateParty": "false", # (boolean)
+      "autoAcceptParty": {
+          "enabled": "true" # boolean
+      },
+      "autoAcceptQuote": {
+        "enabled": "true", # (boolean)
+        "perTransferFeeLimits": [{ "currency": "AED", "amount": "1.69" }], #optional
+      }
+      "skipPartyLookup": "false", # (boolean)
+      "synchronous": "false", # (boolean)
+      "bulkExpiration": DateTime, # expiration date time (string)
+    },
+   "from": { "partyIdInfo": {} # (partyIdInfo type)
+           },
+   "individualTransfers": [
+          {
+            "homeTransactionId": "string", # Payer DFSP CBS Transaction identifier
+            "reference": "string", # Payer Loan reference
+            "to": { # Party type
+              "partyIdInfo": {
+                "partyIdType": "MSISDN",
+                "partyIdentifier": "string",
+                "partySubIdOrType": "string",
+                "fspId": "string",
+                "extensionList": {"extension": [{"key": "string","value": "string"}]}
+              },
+            "amountType": "RECEIVE" # SEND, RECEIVE (Enum)
+            "currency" : "XXX" # (Enum)
+            "amount": "100", # money (string)
+            "note": "string"
+            "quoteExtensions": [{ "key": "string", "value": "string"}],
+            "transferExtensions": [{ "key": "string", "value": "string"}]
+            }, ...
+          ],
+   "extensions": [{ "key": "string", "value": "string"}],
+}
+end note
+
+Loop n times  (in parallel)
+    hnote left of MFICC
+        For each transfer
+        in bulk message
+    end hnote
+    MFICC -> MFICC: validate MSISDN & Prefix
+    alt MSISDN Failed Validation
+    MFICC->MFICC:  Add Last Error to Transfer
+    end
+end Loop
+MFICC- ->MFIMC: **POST** outbound/bulkTransactions
+note left
+**BulkTransferType**
+{
+   "bulkTransactionId": "UUID",
+   "bulkHomeTransactionID": "string", # external identifier
+   "options": {
+      "onlyValidateParty": "false", # (boolean)
+      "autoAcceptParty": {
+          "enabled": "true" # boolean
+      },
+      "autoAcceptQuote": {
+        "enabled": "true", # (boolean)
+        "perTransferFeeLimits": [{ "currency": "AED", "amount": "1.69" }], #optional
+      }
+      "skipPartyLookup": "false", # (boolean)
+      "synchronous": "false", # (boolean)
+      "bulkExpiration": DateTime, # expiration date time (string)
+    },
+   "from": { "partyIdInfo": {} # (partyIdInfo type)
+           },
+   "individualTransfers": [
+          {
+            "homeTransactionId": "string", # Payer DFSP CBS Transaction identifier
+            "reference": "string", # Payer Loan reference
+            "to": { # Party type
+              "partyIdInfo": {
+                "partyIdType": "MSISDN",
+                "partyIdentifier": "string",
+                "partySubIdOrType": "string",
+                "fspId": "string",
+                "extensionList": {"extension": [{"key": "string","value": "string"}]}
+              },
+            "amountType": "RECEIVE" # SEND, RECEIVE (Enum)
+            "currency" : "XXX" # (Enum)
+            "amount": "100", # money (string)
+            "note": "string"
+            "quoteExtensions": [{ "key": "string", "value": "string"}],
+            "transferExtensions": [{ "key": "string", "value": "string"}]
+            "lastError": {
+              "httpStatusCode": 503,
+              "mojaloopError": {
+                "errorInformation": {
+                  "errorCode": "8812",
+                  "errorDescription": "string",
+                  "extensionList": {"extension": [{"key": "string","value": "string"}]}
+                }
+              }
+            }, ...
+          ],
+   "extensions": [{ "key": "string", "value": "string"}],
+}
+end note
+alt if (!synchronous)
+MFIMC- ->MFICC: Receive HTTP 202 response
+MFI <- - MFICC: Receive HTTP 202 response
+end
+
+alt if (!skipPartyLookup)
+loop N times & within bulkExpiration timelimit  (in parallel)
+hnote left of MFIMC
+        For each transfer
+        in bulk message
+end hnote
+  alt if (validTransfer)
+    MFIMC -> MFIMC: Create TransactionId
+    MFIMC -> MJW: **GET** /parties/*\n<i><PartyIdType>**/**</i><i><PartyId>
+    activate MFIMC
+    MJW -> Oracle: Lookup DFSP for \nrequested Type/ID
+    Oracle-> Oracle: Lookup Party for \nrequested Type/ID
+    Oracle->MJW: Return DFSP ID
+    MJW->MJW: **GET** /parties/{type}/{id}/{subid}\nMake call to payee DFSP to confirm Party information
+    MJW->MFIMC: **PUT** inbound/parties/{type}/{id}
+    deactivate MFIMC
+
+    MFIMC -> MFIMC: Update transaction status and\n attach get parties response
+    MFIMC -> MFIMC: Add to next phase FSP bulk call
+    MFIMC -> MFIMC: Any Error, save the error state in lastError object to be returned to the caller later
+  else if (!validTransfer)
+    MFIMC->MFIMC: Skip
+  end
+end Loop
+else if (skipPartyLookup)
+  loop N times & within bulkExpiration timelimit
+    MFIMC->MFIMC: Validate party info \n Add to next phase FSP bulk call
+  end loop
+end
+MFIMC->MFIMC: if(transferStatusValid) Group into M Payee DFSPs
+
+alt if (!autoAcceptParty)
+  alt if (synchronous)
+    MFIMC- ->MFICC: Response <bulkPartyLookupResponse> \n  currentState="WAITING_FOR_PARTY_ACCEPTANCE"
+    MFI <- - MFICC: Response <bulkPartyLookupResponse>  \n  currentState="WAITING_FOR_PARTY_ACCEPTANCE"
+    MFI->MStaff: Present Party Response
+    MStaff->MFI: Accept Party
+    MFI->MFICC: **PUT** outbound/bulkTransactions/{bulkTransactionId}
+    MFICC->MFIMC: **PUT** outbound/bulkTransactions/{bulkTransactionId}
+  else if (!synchronous)
+    MFIMC->MFICC: **PUT** inbound/bulkTransactions/{bulkTransactionId}  \n  currentState="WAITING_FOR_PARTY_ACCEPTANCE"
+    note right
+      **bulkPartyLookupResponse**
+      Refer **Party Lookup Error Codes** table for lastError details
+      {
+        "bulkHomeTransactionID": "string", # external identifier,
+        "bulkTransferId": "UUID",  # generated by ML connector
+        "currentState": "WAITING_FOR_PARTY_ACCEPTANCE",
+        "options": {
+            "onlyValidateParty": "false", # (boolean)
+            "autoAcceptParty": {
+                "enabled": "true" # boolean
+            },
+            "autoAcceptQuote": {
+                "enabled": "true", # (boolean)
+                "perTransferFeeLimits": [{ "currency": "AED", "amount": "1.69" }], #optional
+            }
+            "skipPartyLookup": "false", # (boolean)
+            "synchronous": "false", # (boolean)
+            "bulkExpiration": DateTime, # expiration date time (string)
+        },
+        "individualTransferResults": [
+                {
+                  "homeTransactionId": "string", # Payer DFSP CBS Transaction identifier
+                  "transactionId": "UUID", # Created by ML connector
+                  "transferId": "UUID", # Created by ML connector
+                  "reference": "string", # Payer Loan reference
+                  "to": { # Party type
+                    "partyIdInfo": {
+                      "partyIdType": "MSISDN",
+                      "partyIdentifier": "string",
+                      "partySubIdOrType": "string",
+                      "fspId": "string",
+                      "extensionList": {"extension": [{"key": "string","value": "string"}]}
+                    },
+                  "amountType": "RECEIVE" # SEND, RECEIVE (Enum)
+                  "currency" : "XXX" # (Enum)
+                  "amount": "100", # money (string)
+                  "note": "string"
+                  "quoteExtensions": [{ "key": "string", "value": "string"}],
+                  "transferExtensions": [{ "key": "string", "value": "string"}]
+                  "lastError": {
+                    "httpStatusCode": 503,
+                    "mojaloopError": {
+                      "errorInformation": {
+                        "errorCode": "8812",1
+                        "errorDescription": "string",
+                        "extensionList": {"extension": [{"key": "string","value": "string"}]}
+                      }
+                    }
+                  }
+                }
+        ],
+        "extensions": [{ "key": "string", "value": "string"}],
+      }
+    end note
+    MFICC- ->MFIMC: Receive HTTP 202 response
+    MFICC->MFI: **PUT** /bulkTransactions/{bulkTransactionId}  \n  currentState="WAITING_FOR_PARTY_ACCEPTANCE"
+    MFI- ->MFICC: Receive HTTP 202 response
+    MFI->MStaff: Present Party Response
+    MStaff->MFI: Accept Party
+    MFI->MFICC: **PUT** outbound/bulkTransactions/{bulkTransactionId}
+    MFICC->MFIMC: **PUT** outbound/bulkTransactions/{bulkTransactionId}
+    note left
+      **bulkTransferContinuationAcceptParty**
+      {
+        "individualTransfers": [
+                {
+                  "transferId": "UUID", # Created by ML connector
+                  "acceptParty": "true" # (boolean)
+                }
+        ],
+      }
+    end note
+    MFIMC- ->MFICC: Receive HTTP 202 response
+    MFI <- - MFICC: Receive HTTP 202 response
+  end
+end
+
+loop Quote Processing (M times & within bulkExpiration timelimit in parallel)
+hnote left of MFIMC
+        For each payee DFSP
+        in bulk message
+end hnote
+    MFIMC->MFIMC: Check bulkExpiration
+    MFIMC->MFIMC: Create bulkTransactionId
+    MFIMC ->> MFIMC: Calculate bulk expiry \nbased on both expirySeconds config and \nbulkExpiration
+    MFIMC ->> MJW: **POST** /bulkquotes
+    activate MFIMC
+    MJW->PayeeFSPMC: **POST** inbound/bulkquotes
+    alt if (HasSupportForBulkQuotes)
+      PayeeFSPMC->PayeeFSPCC: **POST** inbound/bulkquotes
+      PayeeFSPCC- ->PayeeFSPMC: Reponse bulkquotes Response
+      PayeeFSPMC -> PayeeFSPMC: Update transaction statuses \nand attach quote responses
+    else if (!HasSupportForBulkQuotes)
+      loop X times for each transfer in bulk message
+        PayeeFSPMC->PayeeFSPCC: **POST** inbound/quoterequests
+        PayeeFSPCC- ->PayeeFSPMC: response
+        PayeeFSPMC -> PayeeFSPMC: Update transaction status \nand attach quote response
+      end Loop
+    end
+    PayeeFSPMC->MJW: **PUT** /bulkquotes/{id)
+    MJW->MFIMC: **PUT** inbound/bulkquotes/{id)
+    deactivate  MFIMC
+    MFIMC -> MFIMC: Update transaction status \nand attach quote response
+end loop
+
+alt if (!autoAcceptQuote)
+  alt if (synchronous)
+    MFIMC- ->MFICC: Response <bulkQuoteRequestResponse> \n  currentState="WAITING_FOR_QUOTE_ACCEPTANCE"
+    MFI <- - MFICC: Response <bulkQuoteRequestResponse>\n  currentState="WAITING_FOR_QUOTE_ACCEPTANCE"
+    MFI->MStaff: Present Quote Response
+    MStaff->MFI: Accept Quote
+    MFI->MFICC: **PUT** outbound/bulkTransactions/{bulkTransactionId}
+    MFICC->MFIMC: **PUT** outbound/bulkTransactions/{bulkTransactionId}
+  else if (!synchronous)
+    MFIMC->MFICC: **PUT** inbound/bulkTransactions/{bulkTransactionId}\n  currentState="WAITING_FOR_QUOTE_ACCEPTANCE"
+    note right
+      **bulkQuoteRequestResponse**
+      {
+        "bulkHomeTransactionID": "string", # external identifier
+        "bulkTransferId": "UUID",  # generated by ML connector
+        "currentState": "WAITING_FOR_QUOTE_ACCEPTANCE",
+        "options": {
+            "onlyValidateParty": "false", # (boolean)
+            "autoAcceptParty": {
+                "enabled": "true" # boolean
+            },
+            "autoAcceptQuote": {
+                "enabled": "true", # (boolean)
+                "perTransferFeeLimits": [{ "currency": "AED", "amount": "1.69" }], #optional
+            }
+            "skipPartyLookup": "false", # (boolean)
+            "synchronous": "false", # (boolean)
+            "bulkExpiration": DateTime, # expiration date time (string)
+        },
+        "individualTransferResults": [
+                {
+                  "homeTransactionId": "string", # Payer DFSP CBS Transaction identifier
+                  "transactionId": "UUID", # Created by ML connector
+                  "transferId": "UUID", # Created by ML connector
+                  "reference": "string", # Payer Loan reference
+                  "to": { # Party type
+                    "partyIdInfo": {
+                      "partyIdType": "MSISDN",
+                      "partyIdentifier": "string",
+                      "partySubIdOrType": "string",
+                      "fspId": "string",
+                      "extensionList": {"extension": [{"key": "string","value": "string"}]}
+                    },
+                  "amountType": "RECEIVE" # SEND, RECEIVE (Enum)
+                  "currency" : "XXX" # (Enum)
+                  "amount": "100", # money (string)
+                  "note": "string"
+                  "quoteId": "4932beab-423e-37b6-8587-49c016d2f5ef",
+                  "quoteExtensions": [{ "key": "string", "value": "string"}],
+                  "transferExtensions": [{ "key": "string", "value": "string"}],
+                  "quoteResponse": {
+                    "transferAmount": {"currency": "AED","amount": "0.7"},
+                    "payeeReceiveAmount": {"currency": "AED","amount": "0.922"},
+                    "payeeFspFee": {"currency": "AED","amount": "67247160"},
+                    "payeeFspCommission": {"currency": "AED","amount": "829358883"},
+                    "expiration": "6286-11-29T16:19:08.300+06:14",
+                    "geoCode": {"latitude": "5.9","longitude": "180.0000"},
+                    "ilpPacket": "XqOB5HUGEifQ-ebr0TAVAgD3...",
+                    "condition": "gZI4iD9u_Yc...",
+                    "extensionList": {"extension": [{"key": "string","value": "string"}]}
+                  },
+                  "lastError": {
+                    "httpStatusCode": 503,
+                    "mojaloopError": {
+                      "errorInformation": {
+                        "errorCode": "8812",
+                        "errorDescription": "string",
+                        "extensionList": {"extension": [{"key": "string","value": "string"}]}
+                      }
+                    }
+                  }
+                }
+        ],
+        "extensions": [{ "key": "string", "value": "string"}],
+      }
+    end note
+    MFICC- ->MFIMC: Receive HTTP 202 response
+    MFICC->MFI: **PUT** /bulkTransactions/{bulkTransactionId}\n  currentState="WAITING_FOR_QUOTE_ACCEPTANCE"
+    MFI- ->MFICC: Receive HTTP 202 response
+    MFI->MStaff: Present Quote Response
+    MStaff->MFI: Accept Quote
+    MFI->MFICC: **PUT** outbound/bulkTransactions/{bulkTransactionId}
+    MFICC->MFIMC: **PUT** outbound/bulkTransactions/{bulkTransactionId}
+    note left
+      **bulkAcceptQuote**
+      {
+        "individualTransfers": [
+                {
+                  "transferId": "UUID", # Created by ML connector
+                  "acceptQuote": "true" #boolean
+                }
+        ],
+      }
+    end note
+
+    MFIMC- ->MFICC: Receive HTTP 202 response
+    MFI <- - MFICC: Receive HTTP 202 response
+  end
+end
+
+
+loop Transfer Processing (M times & within bulkExpiration timelimit  in parallel)
+  hnote left of MFIMC
+        For each payee DFSP
+        in bulk message
+  end hnote
+    alt if (AutoAcceptQuote)
+      MFIMC -> MFIMC: Confirm Fees meets auto accept levels\n and bulkExpiration timelimit not reached \n-> Update Transfer Status
+    end
+
+    alt if (AcceptedQuote)
+    MFIMC ->> MFIMC: Calculate bulk expiry \nbased on both expirySeconds config and \nbulkExpiration
+    MFIMC ->> MJW: **POST** /bulktransfers
+    activate MFIMC
+    MJW-> MJW: Perform liquidity(NDC)check at indivial transfer level
+    MJW->MJW: Reserve Funds at indivial transfer level
+    MJW ->> PayeeFSPMC: **POST** inbound/bulktransfers
+    alt if (HasSupportForBulkTransfers)
+      PayeeFSPMC->PayeeFSPCC: **POST** inbound/bulktransfers
+      PayeeFSPCC- ->PayeeFSPMC: response
+      PayeeFSPMC -> PayeeFSPMC:Update transaction statuses \nand attach transfer responses
+    else if (!HasSupportForBulkTransfers)
+      loop X times for each transfer in bulk message
+        PayeeFSPMC->PayeeFSPCC: **POST** inbound/transfers
+        PayeeFSPCC- ->PayeeFSPMC: response
+        PayeeFSPMC -> PayeeFSPMC:Update transaction status \nand attach transfer response
+      end Loop
+    end
+    PayeeFSPMC ->> MJW: **PUT** /bulktransfers/{id} (BulkStatus)
+    MJW- ->MJW: Commit funds at indivial transfer level
+    alt if (bulkStatus == 'ACCEPTED')
+    MJW -> PayeeFSPMC: **PATCH** inbound/bulktransfers/{id} (BulkStatus)
+    alt if (HasSupportForBulkTransfers)
+      PayeeFSPMC->PayeeFSPCC: **PATCH** inbound/bulktransfers/{bulkTransferId}
+    else if (!HasSupportForBulkTransfers)
+      loop X times for each transfer in bulk message
+        PayeeFSPMC->PayeeFSPCC: **PATCH** inbound/transfers/{transferId}
+      end Loop
+    end
+    end
+    MJW->MFIMC:**PUT** inbound/bulktransfers/{id}
+
+    deactivate MFIMC
+    MFIMC -> MFIMC: Update transaction status \nand attach bulk transfers response
+    end
+end loop
+hnote right MFIMC
+**bulkTransactionResponse**
+{
+ "bulkHomeTransactionID": "string", # external identifier
+ "bulkTransferId": "UUID",  # generated by ML connector
+ "currentState": "COMPLETED", # status of the bulk transfer request
+ "individualTransferResults": [
+    {
+      "transferId": "310e5c51-e4fd-30bc-96ae-6dffee2c54cb",
+      "homeTransactionId": "string", # Payer DFSP CBS Transaction identifier
+      "transactionId": "string", # Mojaloop bulk transaction Id used to make the bulk transfer
+      "to": { # Party type
+        "partyIdInfo": {
+          "partyIdType": "MSISDN",
+          "partyIdentifier": "string",
+          "partySubIdOrType": "string",
+          "fspId": "string",
+          "extensionList": {"extension": [{"key": "string","value": "string"}]}
+        }
+      },
+      "amountType": "SEND",
+      "currency": "AED",
+      "amount": "100",
+      "note": "string",
+      "quoteId": "4932beab-423e-37b6-8587-49c016d2f5ef",
+      "quoteExtensions": [{ "key": "string", "value": "string"}],
+      "transferExtensions": [{ "key": "string", "value": "string"}]
+      "quoteResponse": {
+        "transferAmount": {"currency": "AED","amount": "0.7"},
+        "payeeReceiveAmount": {"currency": "AED","amount": "0.922"},
+        "payeeFspFee": {"currency": "AED","amount": "0.2"},
+        "payeeFspCommission": {"currency": "AED","amount": "0.3"},
+        "expiration": "6286-11-29T16:19:08.300+06:14",
+        "geoCode": {"latitude": "5.9","longitude": "180.0000"},
+        "ilpPacket": "XqOB5HUGEifQ-ebr0TAVAgD3...",
+        "condition": "gZI4iD9u_Yc...",
+        "extensionList": {"extension": [{"key": "string","value": "string"}]}
+      },
+      "fulfil": {
+        "fulfilment": "UXgB0280lbHM...",
+        "completedTimestamp": "5138-01-31T21:10:42.484Z",
+        "transferState": "COMMITTED",
+        "extensionList": {"extension": [{"key": "string","value": "string"}]}
+      }
+      "lastError": {
+        "httpStatusCode": 503,
+        "mojaloopError": {
+          "errorInformation": {
+            "errorCode": "8812",
+            "errorDescription": "string",
+            "extensionList": {"extension": [{"key": "string","value": "string"}]}
+        }
+  }}}],
+  "extensions": [{ "key": "string", "value": "string"}]
+}
+end hnote
+alt if (synchronous)
+    MFIMC->MFICC: Response <bulkTransactionResponse>
+    MFICC->MFI: Response <bulkTransactionResponse>
+    MFI->MStaff: Transafer response(success & fail)
+else if (!synchronous)
+    MFIMC->MFICC:Callback Response \n**PUT** inbound/bulkTransactions/{bulkTransactionId}\nTransfer Response(success & fail)
+    MFICC- ->MFIMC: Receive HTTP 202 response
+    MFICC->MFI: **PUT** /bulkTransactions/{bulkTransactionId}\nTransfer Status Update (success & fail)
+    MFI- ->MFICC: Receive HTTP 202 response
+    MFI->MStaff: Transafer response(success & fail)
+end
+@enduml
+
+PlantUML version 1.2022.7(Mon Aug 22 12:01:30 EST 2022)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: US
+--></g></svg>

@@ -1,4 +1,160 @@
-# Changelog: [mojaloop/thirdparty-api-svc](https://github.com/mojaloop/thirdparty-api-svc)
+# Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [21.4.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.3.5...v21.4.0) (2022-11-12)
+
+
+### Features
+
+* **mojaloop/3018:** [SDK-Scheme-Adapter] TransactionId is being used instead of TransferId ([#422](https://github.com/mojaloop/sdk-scheme-adapter/issues/422)) ([5d349fe](https://github.com/mojaloop/sdk-scheme-adapter/commit/5d349fe066f26629298e3e53dec3cd2bc6b57126))
+
+### [21.3.5](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.3.4...v21.3.5) (2022-11-11)
+
+
+### Bug Fixes
+
+* fix logic to prune acceptParty false quote response ([#423](https://github.com/mojaloop/sdk-scheme-adapter/issues/423)) ([6360c6c](https://github.com/mojaloop/sdk-scheme-adapter/commit/6360c6c12390f9507cb4549fb7e6ab0eaadeb151))
+
+### [21.3.4](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.3.3...v21.3.4) (2022-11-11)
+
+
+### Bug Fixes
+
+* fix quote last error missing on batch failure response ([#421](https://github.com/mojaloop/sdk-scheme-adapter/issues/421)) ([bf65415](https://github.com/mojaloop/sdk-scheme-adapter/commit/bf65415aa82e895f0181748ec0fd14ed09f56134))
+
+### [21.3.3](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.3.2...v21.3.3) (2022-11-10)
+
+
+### Bug Fixes
+
+* **mojaloop/3017:** callbacks count comparison logic ([#419](https://github.com/mojaloop/sdk-scheme-adapter/issues/419)) ([56e1db0](https://github.com/mojaloop/sdk-scheme-adapter/commit/56e1db02a7c741dbedac05e320b4208cc06d02ea))
+
+### [21.3.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.3.1...v21.3.2) (2022-11-09)
+
+
+### Bug Fixes
+
+* fix party lasterror logic ([a232def](https://github.com/mojaloop/sdk-scheme-adapter/commit/a232def8e7e972369ffd0aff9012ddc7bc4fb9e2))
+
+### [21.3.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.3.0...v21.3.1) (2022-11-09)
+
+
+### Bug Fixes
+
+* fix missing party error ([#418](https://github.com/mojaloop/sdk-scheme-adapter/issues/418)) ([54d858c](https://github.com/mojaloop/sdk-scheme-adapter/commit/54d858c39ec40109e88816a8465fd24010ebd469))
+
+## [21.3.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.2.0...v21.3.0) (2022-11-09)
+
+
+### Features
+
+* **mojaloop/3000:** higher capacity bulk tests for load charact... ([cd14508](https://github.com/mojaloop/sdk-scheme-adapter/commit/cd145081007d4a47888fac3e6eaaa33e1eb95634))
+
+## [21.2.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.1.1...v21.2.0) (2022-11-08)
+
+
+### Features
+
+* added two payee sdks and ttk as hub in func tests ([#413](https://github.com/mojaloop/sdk-scheme-adapter/issues/413)) ([42a9d4a](https://github.com/mojaloop/sdk-scheme-adapter/commit/42a9d4a1c0625f33dda7a5f26e3ca29de00a4a28))
+
+
+### Bug Fixes
+
+* remove transactionId from required from sdk api spec ([#417](https://github.com/mojaloop/sdk-scheme-adapter/issues/417)) ([c391a21](https://github.com/mojaloop/sdk-scheme-adapter/commit/c391a217e88bf03e6a8959233fb8a46ca85dd798))
+
+### [21.1.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.1.0...v21.1.1) (2022-11-07)
+
+
+### Bug Fixes
+
+* update party callback handling ([#416](https://github.com/mojaloop/sdk-scheme-adapter/issues/416)) ([e51aa79](https://github.com/mojaloop/sdk-scheme-adapter/commit/e51aa7946e295d0f37dca43f326665c392f48532))
+
+
+### Chore
+
+* dep update ([d43c618](https://github.com/mojaloop/sdk-scheme-adapter/commit/d43c61827aab23eb3930e6f47590ab24376473ed))
+
+## [21.1.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.0.1...v21.1.0) (2022-11-04)
+
+
+### Features
+
+* **mojaloop/2949:** [sdk-scheme-adapter][private-shared-lib] Update private-shared-lib to use v0.2 ([#414](https://github.com/mojaloop/sdk-scheme-adapter/issues/414)) ([b313a72](https://github.com/mojaloop/sdk-scheme-adapter/commit/b313a7298a3050dd3c47314abaffb2b4eeb122c6))
+
+
+### Chore
+
+* bump deps ([#415](https://github.com/mojaloop/sdk-scheme-adapter/issues/415)) ([d4eb87d](https://github.com/mojaloop/sdk-scheme-adapter/commit/d4eb87ded2b293a1caa57dcf30dc1accb758404f))
+* remove max items from put bulkTransactions ([#412](https://github.com/mojaloop/sdk-scheme-adapter/issues/412)) ([443bd92](https://github.com/mojaloop/sdk-scheme-adapter/commit/443bd92e13e3b9e7971c7f791cb090207fbf2d17))
+
+### [21.0.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.0.0...v21.0.1) (2022-11-03)
+
+
+### Bug Fixes
+
+* correct internal/external bulk quote convert function ([#411](https://github.com/mojaloop/sdk-scheme-adapter/issues/411)) ([76184be](https://github.com/mojaloop/sdk-scheme-adapter/commit/76184beb57bcf781472f64566ed9133ec395f442))
+
+## [21.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v20.0.0...v21.0.0) (2022-11-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* **mojaloop/2998:** docker image now uses `/opt/app` instead of the root folder which will impact config mounts, and the secrets folder is no longer included in the docker image which aligns with best practices. Both these changes should NOT be a breaking change but I have marked them as such to make this change more obvious.
+
+* fix: updated dependencies
+
+* chore(release): 18.0.0 [skip ci]
+* **mojaloop/2998:** docker image now uses `/opt/app` instead of the root folder which will impact config mounts, and the secrets folder is no longer included in the docker image which aligns with best practices. Both these changes should NOT be a breaking change but I have marked them as such to make this change more obvious.
+
+* fix: updated dependencies
+
+* chore(release): 18.0.0 [skip ci]
+* **mojaloop/2998:** docker image now uses `/opt/app` instead of the root folder which will impact config mounts, and the secrets folder is no longer included in the docker image which aligns with best practices. Both these changes should NOT be a breaking change but I have marked them as such to make this change more obvious.
+
+* fix: updated dependencies
+
+* chore(release): 18.0.0 [skip ci]
+
+### Features
+
+* **mojaloop/2998:** change ttk apis to async ([#409](https://github.com/mojaloop/sdk-scheme-adapter/issues/409)) ([8cdc08b](https://github.com/mojaloop/sdk-scheme-adapter/commit/8cdc08b4e80a8d01b2cf86c7ef46106076397a2b)), closes [#323](https://github.com/mojaloop/sdk-scheme-adapter/issues/323) [#326](https://github.com/mojaloop/sdk-scheme-adapter/issues/326) [#337](https://github.com/mojaloop/sdk-scheme-adapter/issues/337) [#327](https://github.com/mojaloop/sdk-scheme-adapter/issues/327) [#328](https://github.com/mojaloop/sdk-scheme-adapter/issues/328) [#329](https://github.com/mojaloop/sdk-scheme-adapter/issues/329) [mojaloop/#2811](https://github.com/mojaloop/project/issues/2811)
+
+
+### Chore
+
+* fix version rc [skip ci] ([c13b4b1](https://github.com/mojaloop/sdk-scheme-adapter/commit/c13b4b13859d5085406209919a1315a13bea7ea6))
+* upgraded dependencies for v21 release ([#410](https://github.com/mojaloop/sdk-scheme-adapter/issues/410)) ([a088ece](https://github.com/mojaloop/sdk-scheme-adapter/commit/a088ece31761b35851cdf36e23ec5a72b7f699cc))
+
+## [20.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v19.0.1...v20.0.0) (2022-10-31)
+
+
+### ⚠ BREAKING CHANGES
+
+* **mojaloop/#2990:** docker image now uses `/opt/app` instead of the root folder which will impact config mounts, and the secrets folder is no longer included in the docker image which aligns with best practices. Both these changes should NOT be a breaking change but I have marked them as such to make this change more obvious.
+
+* fix: updated dependencies
+
+* chore(release): 18.0.0 [skip ci]
+* **mojaloop/#2990:** docker image now uses `/opt/app` instead of the root folder which will impact config mounts, and the secrets folder is no longer included in the docker image which aligns with best practices. Both these changes should NOT be a breaking change but I have marked them as such to make this change more obvious.
+
+* fix: updated dependencies
+
+* chore(release): 18.0.0 [skip ci]
+* **mojaloop/#2990:** docker image now uses `/opt/app` instead of the root folder which will impact config mounts, and the secrets folder is no longer included in the docker image which aligns with best practices. Both these changes should NOT be a breaking change but I have marked them as such to make this change more obvious.
+
+* fix: updated dependencies
+
+* chore(release): 18.0.0 [skip ci]
+
+### Features
+
+* **mojaloop/#2990:** add bulk transfers MVP functionality ([#407](https://github.com/mojaloop/sdk-scheme-adapter/issues/407)) ([42a6e12](https://github.com/mojaloop/sdk-scheme-adapter/commit/42a6e128a460e8ee9f0f7d8aa3f6969938ecae8c)), closes [mojaloop/#2990](https://github.com/mojaloop/project/issues/2990)
+
+### [19.0.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v19.0.0...v19.0.1) (2022-08-24)
+
+
+### Bug Fixes
+
+* **mojaloop/2886:** fix bulk-quotes and bulk-transfers functionality ([#344](https://github.com/mojaloop/sdk-scheme-adapter/issues/344)) ([85f308b](https://github.com/mojaloop/sdk-scheme-adapter/commit/85f308be589b41f0c7281c65163d791b8052accf))
+
 ## [19.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v18.0.2...v19.0.0) (2022-07-28)
 
 
@@ -39,7 +195,7 @@
 
 ### Bug Fixes
 
-* **mojaloop/#2811:** sdk-scheme-adapter sending incorrect transferState on a PUT transfers Callback ([#331](https://github.com/mojaloop/sdk-scheme-adapter/issues/331)) ([f7e450c](https://github.com/mojaloop/sdk-scheme-adapter/commit/f7e450cc2568f70f6c9abbb39d9c2186787c31b7)), closes [mojaloop/#2811](https://github.com/mojaloop/sdk-scheme-adapter/issues/2811) [mojaloop/#2811](https://github.com/mojaloop/sdk-scheme-adapter/issues/2811) [mojaloop/#2816](https://github.com/mojaloop/sdk-scheme-adapter/issues/2816)
+* **mojaloop/#2811:** sdk-scheme-adapter sending incorrect transferState on a PUT transfers Callback ([#331](https://github.com/mojaloop/sdk-scheme-adapter/issues/331)) ([f7e450c](https://github.com/mojaloop/sdk-scheme-adapter/commit/f7e450cc2568f70f6c9abbb39d9c2186787c31b7)), closes [mojaloop/#2811](https://github.com/mojaloop/project/issues/2811)
 * updated dependencies ([6500476](https://github.com/mojaloop/sdk-scheme-adapter/commit/650047699ce7679d21a08daa1fb3cf2956b0e514))
 
 ### [17.0.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v17.0.0...v17.0.1) (2022-07-04)
@@ -232,7 +388,7 @@
 
 ### Bug Fixes
 
-* **mojaloop/#2478:** sdk-scheme-adapter does not publish ws notifications when cache is restarted ([0a301c5](https://github.com/mojaloop/sdk-scheme-adapter/commit/0a301c59f3a17adc3e32d1965353b776c568ecae)), closes [mojaloop/#2478](https://github.com/mojaloop/sdk-scheme-adapter/issues/2478)
+* **mojaloop/#2478:** sdk-scheme-adapter does not publish ws notifications when cache is restarted ([0a301c5](https://github.com/mojaloop/sdk-scheme-adapter/commit/0a301c59f3a17adc3e32d1965353b776c568ecae)), closes [mojaloop/#2478](https://github.com/mojaloop/project/issues/2478)
 
 
 ### Chore
@@ -244,14 +400,14 @@
 
 ### Bug Fixes
 
-* **mojaloop/#2436:** sdk-sch-adapter inb-API responds incorrectly for 'Unknown uri' error scenario ([132f941](https://github.com/mojaloop/sdk-scheme-adapter/commit/132f941a365bfa60b456d21b4a5d301fb3af9695)), closes [mojaloop/#2436](https://github.com/mojaloop/sdk-scheme-adapter/issues/2436)
+* **mojaloop/#2436:** sdk-sch-adapter inb-API responds incorrectly for 'Unknown uri' error scenario ([132f941](https://github.com/mojaloop/sdk-scheme-adapter/commit/132f941a365bfa60b456d21b4a5d301fb3af9695)), closes [mojaloop/#2436](https://github.com/mojaloop/project/issues/2436)
 
 ### [11.18.6](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.18.5...v11.18.6) (2021-08-26)
 
 
 ### Bug Fixes
 
-* **mojaloop/#2433:** sdk-scheme-adapter-v11.18.5-release-failing-on-startup ([39cc8e2](https://github.com/mojaloop/sdk-scheme-adapter/commit/39cc8e2df09676798e0e6062d13f3de903544adf)), closes [mojaloop/#2433](https://github.com/mojaloop/sdk-scheme-adapter/issues/2433)
+* **mojaloop/#2433:** sdk-scheme-adapter-v11.18.5-release-failing-on-startup ([39cc8e2](https://github.com/mojaloop/sdk-scheme-adapter/commit/39cc8e2df09676798e0e6062d13f3de903544adf)), closes [mojaloop/#2433](https://github.com/mojaloop/project/issues/2433)
 
 ### [11.18.5](https://github.com/mojaloop/sdk-scheme-adapter/compare/v11.18.4...v11.18.5) (2021-08-25)
 

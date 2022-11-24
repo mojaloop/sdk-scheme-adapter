@@ -1,0 +1,76 @@
+{
+  "control": {},
+  "test": {
+    "tls": {
+      "mutualTLS": { "enabled": false },
+      "creds": {
+        "ca": null,
+        "cert": null,
+        "key": null
+      }
+    }
+  },
+  "inbound": {
+    "tls": {
+      "mutualTLS": { "enabled": false },
+      "creds": {
+        "ca": null,
+        "cert": null,
+        "key": null
+      }
+    }
+  },
+  "outbound": {
+    "tls": {
+      "mutualTLS": { "enabled": false },
+      "creds": {
+        "ca": null,
+        "cert": null,
+        "key": null
+      }
+    }
+  },
+  "peerEndpoint": "172.17.0.2:3001",
+  "backendEndpoint": "172.17.0.2:3001",
+  "alsEndpoint": "127.0.0.1:6500",
+  "dfspId": "mojaloop-sdk",
+  "ilpSecret": "mojaloop-sdk",
+  "checkIlp": false,
+  "expirySeconds": 60,
+  "requestProcessingTimeoutSeconds": 30,
+  "autoAcceptQuotes": true,
+  "autoAcceptParty": true,
+  "useQuoteSourceFSPAsTransferPayeeFSP": false,
+  "tls": {
+  },
+  "validateInboundJws": false,
+  "validateInboundPutPartiesJws": false,
+  "jwsSign": false,
+  "jwsSignPutParties": false,
+  "jwsSigningKey": "/jwsSigningKey.key",
+  "jwsVerificationKeysDirectory": null,
+  "cacheUrl": "redis://localhost:6379",
+  "enableTestFeatures": false,
+  "oauthTestServer": {
+    "enabled": false,
+    "listenPort": 6000
+  },
+  "wso2": {
+      "auth": {
+          "refreshSeconds": 3600
+      }
+  },
+  "rejectExpiredQuoteResponses": false,
+  "rejectExpiredTransferFulfils": false,
+  "rejectTransfersOnExpiredQuotes": false,
+  "logIndent": 2,
+  "metrics": {
+    "port": 4004
+  },
+  "backendEventHandler": {
+    "enabled": false
+  },
+  "fspiopEventHandler": {
+    "enabled": false
+  }
+}

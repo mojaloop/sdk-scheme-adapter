@@ -1,0 +1,26 @@
+{
+  "REDIS": {
+    "CONNECTION_URL": "redis://localhost:6379"
+  },
+  "API_SERVER":{
+    "ENABLED": false,
+    "PORT": 8001
+  },
+  "LOG_LEVEL": "info",
+  "KAFKA": {
+    "DOMAIN_EVENT_CONSUMER": {
+      "brokerList": "localhost:9092",
+      "groupId": "domain_events_consumer_group",
+      "clientId": "domain_events_consumer_client_id",
+      "topics": ["topic-sdk-outbound-domain-events"],
+      "messageMaxBytes": 200000000
+    },
+    "COMMAND_EVENT_PRODUCER": {
+      "brokerList": "localhost:9092",
+      "clientId": "command_events_producer_client_id",
+      "topic": "topic-sdk-outbound-command-events",
+      "messageMaxBytes": 200000000,
+      "compressionCodec": "none"
+    }
+  }
+}

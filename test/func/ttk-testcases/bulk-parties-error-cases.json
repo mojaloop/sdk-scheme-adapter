@@ -1,0 +1,1387 @@
+{
+  "name": "multi",
+  "test_cases": [
+    {
+      "id": 1,
+      "name": "TC-BP1. When the request has a receiver-id that does not exist in payee fsp, Then the payer fsp backend should receive an ID not found as error message in the PUT callback response.",
+      "fileInfo": {
+        "path": "ttk-testcases/mvp-bulk.json"
+      },
+      "requests": [
+        {
+          "id": 1,
+          "description": "Post /bulkTransaction",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/bulkTransactions",
+          "path": "/bulkTransactions",
+          "method": "post",
+          "body": {
+            "bulkHomeTransactionID": "abc123",
+            "bulkTransactionId": "{$function.generic.generateUUID}",
+            "options": {
+              "onlyValidateParty": true,
+              "autoAcceptParty": {
+                "enabled": false
+              },
+              "autoAcceptQuote": {
+                "enabled": false
+              },
+              "skipPartyLookup": false,
+              "synchronous": false,
+              "bulkExpiration": "2016-05-24T08:38:08.699-04:00"
+            },
+            "from": {
+              "partyIdInfo": {
+                "partyIdType": "MSISDN",
+                "partyIdentifier": "16135551212"
+              }
+            },
+            "individualTransfers": [
+              {
+                "homeTransactionId": "abc2",
+                "to": {
+                  "partyIdInfo": {
+                    "partyIdType": "MSISDN",
+                    "partyIdentifier": "fsp2msisdnerrorsout"
+                  }
+                },
+                "amountType": "SEND",
+                "currency": "USD",
+                "amount": "456.78"
+              }
+            ]
+          },
+          "url": "http://payer-sdk-api-svc:4001",
+          "scriptingEngine": "javascript",
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Check Return Status Code",
+                "exec": [
+                  "expect(response.status).to.equal(202)",
+                  ""
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Check error code 4001",
+                "exec": [
+                  "expect(environment.acceptPartyCallback.body.individualTransferResults[0].lastError.mojaloopError.errorCode).to.equal('4001')"
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Check error description is ID Not Found",
+                "exec": [
+                  "expect(environment.acceptPartyCallback.body.individualTransferResults[0].lastError.mojaloopError.errorDescription).to.equal('ID Not Found')"
+                ]
+              },
+              {
+                "id": 3,
+                "description": "Check the response state is PARTY_REJECTED",
+                "exec": [
+                  "expect(environment.acceptPartyCallback.body.currentState).to.equal('PARTY_REJECTED')"
+                ]
+              }
+            ]
+          },
+          "scripts": {
+            "preRequest": {
+              "exec": [
+                "await inboundEvent.addListener('acceptPartyCallback', 'put', '/bulkTransactions/{$request.body.bulkTransactionId}')"
+              ]
+            },
+            "postRequest": {
+              "exec": [
+                "const acceptPartyCallback = await inboundEvent.getMessage('acceptPartyCallback')",
+                "console.log(acceptPartyCallback);",
+                "",
+                "environment.bulkTransactionId = acceptPartyCallback.body.bulkTransactionId;",
+                "",
+                "environment.acceptPartyCallback = acceptPartyCallback;"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "TC-BP2. When the receiver fsp responds after the timeout elapses, Then the payer fsp should receive an timed-out as error message.",
+      "fileInfo": {
+        "path": "ttk-testcases/mvp-bulk.json"
+      },
+      "requests": [
+        {
+          "id": 1,
+          "description": "Post /bulkTransaction",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/bulkTransactions",
+          "path": "/bulkTransactions",
+          "method": "post",
+          "body": {
+            "bulkHomeTransactionID": "abc123",
+            "bulkTransactionId": "{$function.generic.generateUUID}",
+            "options": {
+              "onlyValidateParty": true,
+              "autoAcceptParty": {
+                "enabled": false
+              },
+              "autoAcceptQuote": {
+                "enabled": false
+              },
+              "skipPartyLookup": false,
+              "synchronous": false,
+              "bulkExpiration": "2016-05-24T08:38:08.699-04:00"
+            },
+            "from": {
+              "partyIdInfo": {
+                "partyIdType": "MSISDN",
+                "partyIdentifier": "16135551212"
+              }
+            },
+            "individualTransfers": [
+              {
+                "homeTransactionId": "abc2",
+                "to": {
+                  "partyIdInfo": {
+                    "partyIdType": "MSISDN",
+                    "partyIdentifier": "idtimesout"
+                  }
+                },
+                "amountType": "SEND",
+                "currency": "USD",
+                "amount": "456.78"
+              }
+            ]
+          },
+          "url": "http://payer-sdk-api-svc:4001",
+          "scriptingEngine": "javascript",
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Check Return Status Code",
+                "exec": [
+                  "expect(response.status).to.equal(202)",
+                  ""
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Check number of returned transfers",
+                "exec": [
+                  "expect(environment.acceptPartyCallback.body.individualTransferResults.length).to.equal(1)"
+                ]
+              },
+              {
+                "id": 3,
+                "description": "Check that the response has an error code of 4001",
+                "exec": [
+                  "expect(environment.acceptPartyCallback.body.individualTransferResults[0].lastError.mojaloopError.errorCode).to.equal('2004')"
+                ]
+              },
+              {
+                "id": 4,
+                "description": "Check that the response has an error description of Server timed out",
+                "exec": [
+                  "expect(environment.acceptPartyCallback.body.individualTransferResults[0].lastError.mojaloopError.errorDescription).to.equal('Server timed out')"
+                ]
+              },
+              {
+                "id": 5,
+                "description": "Check that the state in the final response is PARTY_REJECTED",
+                "exec": [
+                  "expect(environment.acceptPartyCallback.body.currentState).to.equal('PARTY_REJECTED')"
+                ]
+              }
+            ]
+          },
+          "scripts": {
+            "preRequest": {
+              "exec": [
+                "await inboundEvent.addListener('acceptPartyCallback', 'put', '/bulkTransactions/{$request.body.bulkTransactionId}')"
+              ]
+            },
+            "postRequest": {
+              "exec": [
+                "const acceptPartyCallback = await inboundEvent.getMessage('acceptPartyCallback')",
+                "console.log(acceptPartyCallback);",
+                "",
+                "environment.bulkTransactionId = acceptPartyCallback.body.bulkTransactionId;",
+                "",
+                "environment.acceptPartyCallback = acceptPartyCallback;",
+                "",
+                "environment.individualTransferId1 = acceptPartyCallback.body.individualTransferResults[0].transactionId;",
+                "",
+                "environment.individualTransferId2 = acceptPartyCallback.body.individualTransferResults[1].transactionId;"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id":3,
+      "name": "TC-BP3. Given skipPartyLookup is set to false, When the incoming request has receiver info already populated, Then party lookup should be skipped.",
+      "fileInfo": {
+        "path": "ttk-testcases/mvp-bulk.json"
+      },
+      "requests": [
+        {
+          "id": 1,
+          "description": "Post /bulkTransaction",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/bulkTransactions",
+          "path": "/bulkTransactions",
+          "method": "post",
+          "body": {
+            "bulkHomeTransactionID": "abc123",
+            "bulkTransactionId": "{$function.generic.generateUUID}",
+            "options": {
+              "onlyValidateParty": true,
+              "autoAcceptParty": {
+                "enabled": false
+              },
+              "autoAcceptQuote": {
+                "enabled": false
+              },
+              "skipPartyLookup": false,
+              "synchronous": false,
+              "bulkExpiration": "2016-05-24T08:38:08.699-04:00"
+            },
+            "from": {
+              "partyIdInfo": {
+                "partyIdType": "MSISDN",
+                "partyIdentifier": "16135551212"
+              }
+            },
+            "individualTransfers": [
+              {
+                "homeTransactionId": "abc2",
+                "to": {
+                  "partyIdInfo": {
+                    "partyIdType": "MSISDN",
+                    "partyIdentifier": "1234567",
+                    "fspId": "idexists"
+                  }
+                },
+                "amountType": "SEND",
+                "currency": "USD",
+                "amount": "456.78"
+              }
+            ]
+          },
+          "url": "http://payer-sdk-api-svc:4001",
+          "scriptingEngine": "javascript",
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Check Return Status Code",
+                "exec": [
+                  "expect(response.status).to.equal(202)",
+                  ""
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Check Receiver name should not exist",
+                "exec": [
+                  "expect(environment.acceptPartyCallback.body.individualTransferResults[0].to.personalInfo).to.be.undefined"
+                ]
+              }
+            ]
+          },
+          "scripts": {
+            "preRequest": {
+              "exec": [
+                "await inboundEvent.addListener('acceptPartyCallback', 'put', '/bulkTransactions/{$request.body.bulkTransactionId}')"
+              ]
+            },
+            "postRequest": {
+              "exec": [
+                "const acceptPartyCallback = await inboundEvent.getMessage('acceptPartyCallback')",
+                "console.log(acceptPartyCallback);",
+                "",
+                "environment.bulkTransactionId = acceptPartyCallback.body.bulkTransactionId;",
+                "",
+                "environment.acceptPartyCallback = acceptPartyCallback;"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "TC-BP4. Given there are 2 transfers in the bulk request, When one transfer has a succesful party lookup and the other has a failure, Then the PUT response should have details about both the transfers.",
+      "fileInfo": {
+        "path": "ttk-testcases/mvp-bulk.json"
+      },
+      "requests": [
+        {
+          "id": 1,
+          "description": "Post /bulkTransaction",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/bulkTransactions",
+          "path": "/bulkTransactions",
+          "method": "post",
+          "body": {
+            "bulkHomeTransactionID": "abc123",
+            "bulkTransactionId": "{$function.generic.generateUUID}",
+            "options": {
+              "onlyValidateParty": true,
+              "autoAcceptParty": {
+                "enabled": false
+              },
+              "autoAcceptQuote": {
+                "enabled": false
+              },
+              "skipPartyLookup": false,
+              "synchronous": false,
+              "bulkExpiration": "2016-05-24T08:38:08.699-04:00"
+            },
+            "from": {
+              "partyIdInfo": {
+                "partyIdType": "MSISDN",
+                "partyIdentifier": "16135551212"
+              }
+            },
+            "individualTransfers": [
+              {
+                "homeTransactionId": "abc1",
+                "to": {
+                  "partyIdInfo": {
+                    "partyIdType": "MSISDN",
+                    "partyIdentifier": "idexists"
+                  }
+                },
+                "amountType": "SEND",
+                "currency": "USD",
+                "amount": "456.78"
+              },
+              {
+                "homeTransactionId": "abc2",
+                "to": {
+                  "partyIdInfo": {
+                    "partyIdType": "MSISDN",
+                    "partyIdentifier": "iddoesnotexist"
+                  }
+                },
+                "amountType": "SEND",
+                "currency": "USD",
+                "amount": "678.91"
+              }
+            ]
+          },
+          "url": "http://payer-sdk-api-svc:4001",
+          "scriptingEngine": "javascript",
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Check Return Status Code",
+                "exec": [
+                  "expect(response.status).to.equal(202)",
+                  ""
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Check number of returned transfers",
+                "exec": [
+                  "expect(requestVariables.acceptPartyCallback.body.individualTransferResults.length).to.equal(2)"
+                ]
+              },
+              {
+                "id": 3,
+                "description": "Check response has the receiver fspid populated",
+                "exec": [
+                  "expect(environment.partySuccess.to.partyIdInfo.fspId).to.not.be.empty"
+                ]
+              },
+              {
+                "id": 4,
+                "description": "Check response receiver first name is ReceiverFirst",
+                "exec": [
+                  "expect(environment.partySuccess.to.personalInfo.complexName.firstName).to.equal('ReceiverFirst')"
+                ]
+              },
+              {
+                "id": 5,
+                "description": "Check response receiver last name is ReceiverLast",
+                "exec": [
+                  "expect(environment.partySuccess.to.personalInfo.complexName.lastName).to.equal('ReceiverLast')"
+                ]
+              },
+              {
+                "id": 6,
+                "description": "Check that the response has an error code of 4001",
+                "exec": [
+                  "expect(requestVariables.partyFailure.lastError.mojaloopError.errorCode).to.equal('4001')"
+                ]
+              },
+              {
+                "id": 7,
+                "description": "Check that the response has an error description of ID Not Found",
+                "exec": [
+                  "expect(requestVariables.partyFailure.lastError.mojaloopError.errorDescription).to.equal('ID Not Found')"
+                ]
+              },
+              {
+                "id": 8,
+                "description": "Check current state is WAITING_FOR_PARTY_ACCEPTANCE",
+                "exec": [
+                  "expect(requestVariables.acceptPartyCallback.body.currentState).to.equal('WAITING_FOR_PARTY_ACCEPTANCE')"
+                ]
+              }
+            ]
+          },
+          "scripts": {
+            "preRequest": {
+              "exec": [
+                "await inboundEvent.addListener('acceptPartyCallback', 'put', '/bulkTransactions/{$request.body.bulkTransactionId}')"
+              ]
+            },
+            "postRequest": {
+              "exec": [
+                "const acceptPartyCallback = await inboundEvent.getMessage('acceptPartyCallback')",
+                "console.log(acceptPartyCallback);",
+                "",
+                "environment.bulkTransactionId = acceptPartyCallback.body.bulkTransactionId;",
+                "",
+                "requestVariables.acceptPartyCallback = acceptPartyCallback;",
+                "",
+                "acceptPartyCallback.body.individualTransferResults.forEach(individualTransferResult => {",
+                "  if(individualTransferResult.to){",
+                "    environment.partySuccess = individualTransferResult;",
+                "    environment.acceptPartyCallback = individualTransferResult;",
+                "  } else{",
+                "    requestVariables.partyFailure = individualTransferResult;",
+                "  }",
+                "});"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "5. Given there are 2 transfers in the bulk request, When one transfer has a succesful party lookup and the other has a timeout, Then the PUT response should have details about both the transfers.",
+      "fileInfo": {
+        "path": "ttk-testcases/mvp-bulk.json"
+      },
+      "requests": [
+        {
+          "id": 1,
+          "description": "Post /bulkTransaction",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/bulkTransactions",
+          "path": "/bulkTransactions",
+          "method": "post",
+          "body": {
+            "bulkHomeTransactionID": "abc123",
+            "bulkTransactionId": "{$function.generic.generateUUID}",
+            "options": {
+              "onlyValidateParty": true,
+              "autoAcceptParty": {
+                "enabled": false
+              },
+              "autoAcceptQuote": {
+                "enabled": false
+              },
+              "skipPartyLookup": false,
+              "synchronous": false,
+              "bulkExpiration": "2016-05-24T08:38:08.699-04:00"
+            },
+            "from": {
+              "partyIdInfo": {
+                "partyIdType": "MSISDN",
+                "partyIdentifier": "16135551212"
+              }
+            },
+            "individualTransfers": [
+              {
+                "homeTransactionId": "abc1",
+                "to": {
+                  "partyIdInfo": {
+                    "partyIdType": "MSISDN",
+                    "partyIdentifier": "idexists"
+                  }
+                },
+                "amountType": "SEND",
+                "currency": "USD",
+                "amount": "456.78"
+              },
+              {
+                "homeTransactionId": "abc2",
+                "to": {
+                  "partyIdInfo": {
+                    "partyIdType": "MSISDN",
+                    "partyIdentifier": "idtimesout"
+                  }
+                },
+                "amountType": "SEND",
+                "currency": "USD",
+                "amount": "678.91"
+              }
+            ]
+          },
+          "url": "http://payer-sdk-api-svc:4001",
+          "scriptingEngine": "javascript",
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Check Return Status Code",
+                "exec": [
+                  "expect(response.status).to.equal(202)",
+                  ""
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Check number of returned transfers",
+                "exec": [
+                  "expect(requestVariables.acceptPartyCallback.body.individualTransferResults.length).to.equal(2)"
+                ]
+              },
+              {
+                "id": 3,
+                "description": "Check response has the receiver fspid populated",
+                "exec": [
+                  "expect(environment.partySuccess.to.partyIdInfo.fspId).to.not.be.empty"
+                ]
+              },
+              {
+                "id": 4,
+                "description": "Check response receiver first name is ReceiverFirst",
+                "exec": [
+                  "expect(environment.partySuccess.to.personalInfo.complexName.firstName).to.equal('ReceiverFirst')"
+                ]
+              },
+              {
+                "id": 5,
+                "description": "Check response receiver last name is ReceiverLast",
+                "exec": [
+                  "expect(environment.partySuccess.to.personalInfo.complexName.lastName).to.equal('ReceiverLast')"
+                ]
+              },
+              {
+                "id": 6,
+                "description": "Check that the response has an error code of 2004",
+                "exec": [
+                  "expect(requestVariables.partyFailure.lastError.mojaloopError.errorCode).to.equal('2004')"
+                ]
+              },
+              {
+                "id": 7,
+                "description": "Check that the response has an error description of ID Not Found",
+                "exec": [
+                  "expect(requestVariables.partyFailure.lastError.mojaloopError.errorDescription).to.equal('Server timed out')"
+                ]
+              },
+              {
+                "id": 8,
+                "description": "Check current state is WAITING_FOR_PARTY_ACCEPTANCE",
+                "exec": [
+                  "expect(requestVariables.acceptPartyCallback.body.currentState).to.equal('WAITING_FOR_PARTY_ACCEPTANCE')"
+                ]
+              }
+            ]
+          },
+          "scripts": {
+            "preRequest": {
+              "exec": [
+                "await inboundEvent.addListener('acceptPartyCallback', 'put', '/bulkTransactions/{$request.body.bulkTransactionId}')"
+              ]
+            },
+            "postRequest": {
+              "exec": [
+                "const acceptPartyCallback = await inboundEvent.getMessage('acceptPartyCallback')",
+                "console.log(acceptPartyCallback);",
+                "",
+                "environment.bulkTransactionId = acceptPartyCallback.body.bulkTransactionId;",
+                "",
+                "requestVariables.acceptPartyCallback = acceptPartyCallback;",
+                "",
+                "acceptPartyCallback.body.individualTransferResults.forEach(individualTransferResult => {",
+                "  if(individualTransferResult.to){",
+                "    environment.partySuccess = individualTransferResult;",
+                "    environment.acceptPartyCallback = individualTransferResult;",
+                "  } else{",
+                "    requestVariables.partyFailure = individualTransferResult;",
+                "  }",
+                "});"
+              ]
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "put bulk transaction",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/bulkTransactions/{bulkTransactionId}",
+          "path": "/bulkTransactions/{$prev.1.request.body.bulkTransactionId}",
+          "method": "put",
+          "params": {
+            "bulkTransactionId": "{$prev.1.request.body.bulkTransactionId}"
+          },
+          "url": "http://payer-sdk-api-svc:4001",
+          "body": {
+            "bulkHomeTransactionID": "{$prev.1.request.body.bulkHomeTransactionID}",
+            "individualTransfers": [
+              {
+                "homeTransactionId": "abc456",
+                "transactionId": "{$environment.partySuccess.transactionId}",
+                "acceptParty": true
+              }
+            ]
+          },
+          "scriptingEngine": "javascript",
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Check Return Status Code",
+                "exec": [
+                  "expect(response.status).to.equal(202)"
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Check response has only one transfer result",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults.length).to.equal(1);"
+                ]
+              },
+              {
+                "id": 3,
+                "description": "Check response has quote result",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[0].quoteResponse).to.exist;"
+                ]
+              },
+              {
+                "id": 4,
+                "description": "Check response has ilpPacket and condition",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[0].quoteResponse.ilpPacket).to.not.be.empty;",
+                  "",
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[0].quoteResponse.condition).to.not.be.empty;"
+                ]
+              },
+              {
+                "id": 5,
+                "description": "Check state is WAITING_FOR_QUOTE_ACCEPTANCE",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.currentState).to.equal('WAITING_FOR_QUOTE_ACCEPTANCE')"
+                ]
+              }
+            ]
+          },
+          "scripts": {
+            "preRequest": {
+              "exec": [
+                "console.log(environment.bulkTransactionId)",
+                "",
+                "await inboundEvent.addListener('acceptQuoteCallback', 'put', `/bulkTransactions/${environment.bulkTransactionId}`)"
+              ]
+            },
+            "postRequest": {
+              "exec": [
+                "const acceptQuoteCallback = await inboundEvent.getMessage('acceptQuoteCallback')",
+                "",
+                "console.log(acceptQuoteCallback)",
+                "",
+                "environment.acceptQuoteCallback = acceptQuoteCallback;"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "6. Given there are 2 transfers in the bulk request, When both the transfers have a timeout, Then the PUT response should have timeout details about both the transfers.",
+      "fileInfo": {
+        "path": "ttk-testcases/mvp-bulk.json"
+      },
+      "requests": [
+        {
+          "id": 1,
+          "description": "Post /bulkTransaction",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/bulkTransactions",
+          "path": "/bulkTransactions",
+          "method": "post",
+          "body": {
+            "bulkHomeTransactionID": "abc123",
+            "bulkTransactionId": "{$function.generic.generateUUID}",
+            "options": {
+              "onlyValidateParty": true,
+              "autoAcceptParty": {
+                "enabled": false
+              },
+              "autoAcceptQuote": {
+                "enabled": false
+              },
+              "skipPartyLookup": false,
+              "synchronous": false,
+              "bulkExpiration": "2016-05-24T08:38:08.699-04:00"
+            },
+            "from": {
+              "partyIdInfo": {
+                "partyIdType": "MSISDN",
+                "partyIdentifier": "16135551212"
+              }
+            },
+            "individualTransfers": [
+              {
+                "homeTransactionId": "abc1",
+                "to": {
+                  "partyIdInfo": {
+                    "partyIdType": "MSISDN",
+                    "partyIdentifier": "idtimesout"
+                  }
+                },
+                "amountType": "SEND",
+                "currency": "USD",
+                "amount": "456.78"
+              },
+              {
+                "homeTransactionId": "abc2",
+                "to": {
+                  "partyIdInfo": {
+                    "partyIdType": "MSISDN",
+                    "partyIdentifier": "idtimesout"
+                  }
+                },
+                "amountType": "SEND",
+                "currency": "USD",
+                "amount": "678.91"
+              }
+            ]
+          },
+          "url": "http://payer-sdk-api-svc:4001",
+          "scriptingEngine": "javascript",
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Check Return Status Code",
+                "exec": [
+                  "expect(response.status).to.equal(202)",
+                  ""
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Check number of returned transfers",
+                "exec": [
+                  "expect(requestVariables.acceptPartyCallback.body.individualTransferResults.length).to.equal(2)"
+                ]
+              },
+              {
+                "id": 3,
+                "description": "Check that the response has an error code of 2004",
+                "exec": [
+                  "expect(requestVariables.acceptPartyCallback.body.individualTransferResults[0].lastError.mojaloopError.errorCode).to.equal('2004')"
+                ]
+              },
+              {
+                "id": 4,
+                "description": "Check that the response has an error description of ID Not Found",
+                "exec": [
+                  "expect(requestVariables.acceptPartyCallback.body.individualTransferResults[0].lastError.mojaloopError.errorDescription).to.equal('Server timed out')"
+                ]
+              },
+              {
+                "id": 5,
+                "description": "Check that the response has an error code of 2004",
+                "exec": [
+                  "expect(requestVariables.acceptPartyCallback.body.individualTransferResults[1].lastError.mojaloopError.errorCode).to.equal('2004')"
+                ]
+              },
+              {
+                "id": 6,
+                "description": "Check that the response has an error description of ID Not Found",
+                "exec": [
+                  "expect(requestVariables.acceptPartyCallback.body.individualTransferResults[1].lastError.mojaloopError.errorDescription).to.equal('Server timed out')"
+                ]
+              },
+              {
+                "id": 8,
+                "description": "Check current state is DISCOVERY_COMPLETED",
+                "exec": [
+                  "expect(requestVariables.acceptPartyCallback.body.currentState).to.equal('DISCOVERY_COMPLETED')"
+                ]
+              }
+            ]
+          },
+          "scripts": {
+            "preRequest": {
+              "exec": [
+                "await inboundEvent.addListener('acceptPartyCallback', 'put', '/bulkTransactions/{$request.body.bulkTransactionId}')"
+              ]
+            },
+            "postRequest": {
+              "exec": [
+                "const acceptPartyCallback = await inboundEvent.getMessage('acceptPartyCallback')",
+                "console.log(acceptPartyCallback);",
+                "",
+                "environment.bulkTransactionId = acceptPartyCallback.body.bulkTransactionId;",
+                "",
+                "requestVariables.acceptPartyCallback = acceptPartyCallback;",
+                "",
+                "acceptPartyCallback.body.individualTransferResults.forEach(individualTransferResult => {",
+                "  if(individualTransferResult.to){",
+                "    environment.partySuccess = individualTransferResult;",
+                "    environment.acceptPartyCallback = individualTransferResult;",
+                "  } else{",
+                "    requestVariables.partyFailure = individualTransferResult;",
+                "  }",
+                "});"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "7. Given there are 2 transfers in the bulk request that has the same receiver id, When acceptParty is set to true for both the transfers in PUT request, Then the PUT response should have details about both the transfers for acceptQuote.",
+      "fileInfo": {
+        "path": "ttk-testcases/mvp-bulk.json"
+      },
+      "requests": [
+        {
+          "id": 1,
+          "description": "Post /bulkTransaction",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/bulkTransactions",
+          "path": "/bulkTransactions",
+          "method": "post",
+          "body": {
+            "bulkHomeTransactionID": "abc123",
+            "bulkTransactionId": "{$function.generic.generateUUID}",
+            "options": {
+              "onlyValidateParty": true,
+              "autoAcceptParty": {
+                "enabled": false
+              },
+              "autoAcceptQuote": {
+                "enabled": false
+              },
+              "skipPartyLookup": false,
+              "synchronous": false,
+              "bulkExpiration": "2016-05-24T08:38:08.699-04:00"
+            },
+            "from": {
+              "partyIdInfo": {
+                "partyIdType": "MSISDN",
+                "partyIdentifier": "16135551212"
+              }
+            },
+            "individualTransfers": [
+              {
+                "homeTransactionId": "abc1",
+                "to": {
+                  "partyIdInfo": {
+                    "partyIdType": "MSISDN",
+                    "partyIdentifier": "123456789",
+                    "fspId": "receiverfsphas2ids"
+                  }
+                },
+                "amountType": "SEND",
+                "currency": "USD",
+                "amount": "456.78"
+              },
+              {
+                "homeTransactionId": "abc2",
+                "to": {
+                  "partyIdInfo": {
+                    "partyIdType": "MSISDN",
+                    "partyIdentifier": "123456007",
+                    "fspId": "receiverfsphas2ids"
+                  }
+                },
+                "amountType": "SEND",
+                "currency": "USD",
+                "amount": "678.91"
+              }
+            ]
+          },
+          "url": "http://payer-sdk-api-svc:4001",
+          "scriptingEngine": "javascript",
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Check Return Status Code",
+                "exec": [
+                  "expect(response.status).to.equal(202)",
+                  ""
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Check number of returned transfers",
+                "exec": [
+                  "expect(environment.acceptPartyCallback.body.individualTransferResults.length).to.equal(2)"
+                ]
+              },
+              {
+                "id": 3,
+                "description": "Check current state is WAITING_FOR_PARTY_ACCEPTANCE",
+                "exec": [
+                  "expect(environment.acceptPartyCallback.body.currentState).to.equal('WAITING_FOR_PARTY_ACCEPTANCE')"
+                ]
+              }
+            ]
+          },
+          "scripts": {
+            "preRequest": {
+              "exec": [
+                "await inboundEvent.addListener('acceptPartyCallback', 'put', '/bulkTransactions/{$request.body.bulkTransactionId}')"
+              ]
+            },
+            "postRequest": {
+              "exec": [
+                "const acceptPartyCallback = await inboundEvent.getMessage('acceptPartyCallback')",
+                "console.log(acceptPartyCallback);",
+                "",
+                "environment.bulkTransactionId = acceptPartyCallback.body.bulkTransactionId;",
+                "",
+                "environment.acceptPartyCallback = acceptPartyCallback;",
+                "",
+                "environment.individualTransferId1 = acceptPartyCallback.body.individualTransferResults[0].transactionId;",
+                "",
+                "environment.individualTransferId2 = acceptPartyCallback.body.individualTransferResults[1].transactionId;"
+              ]
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "put bulk transaction",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/bulkTransactions/{bulkTransactionId}",
+          "path": "/bulkTransactions/{$prev.1.request.body.bulkTransactionId}",
+          "method": "put",
+          "params": {
+            "bulkTransactionId": "{$prev.1.request.body.bulkTransactionId}"
+          },
+          "url": "http://payer-sdk-api-svc:4001",
+          "body": {
+            "bulkHomeTransactionID": "{$prev.1.request.body.bulkHomeTransactionID}",
+            "individualTransfers": [
+              {
+                "homeTransactionId": "abc456",
+                "transactionId": "{$environment.acceptPartyCallback.body.individualTransferResults[0].transactionId}",
+                "acceptParty": true
+              },
+              {
+                "homeTransactionId": "abc456",
+                "transactionId": "{$environment.acceptPartyCallback.body.individualTransferResults[1].transactionId}",
+                "acceptParty": true
+              }
+            ]
+          },
+          "scriptingEngine": "javascript",
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Check Return Status Code",
+                "exec": [
+                  "expect(response.status).to.equal(202)"
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Check number of returned transfers",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults.length).to.equal(2)"
+                ]
+              },
+              {
+                "id": 3,
+                "description": "Check response has quote result for first transfer",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[0].quoteResponse).to.exist;"
+                ]
+              },
+              {
+                "id": 4,
+                "description": "Check response has ilpPacket and condition for first transfer",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[0].quoteResponse.ilpPacket).to.not.be.empty;",
+                  "",
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[0].quoteResponse.condition).to.not.be.empty;"
+                ]
+              },
+              {
+                "id": 5,
+                "description": "Check response has quote result for second transfer",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[1].quoteResponse).to.exist;"
+                ]
+              },
+              {
+                "id": 6,
+                "description": "Check response has ilpPacket and condition for second transfer",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[1].quoteResponse.ilpPacket).to.not.be.empty;",
+                  "",
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[1].quoteResponse.condition).to.not.be.empty;"
+                ]
+              },
+              {
+                "id": 7,
+                "description": "Check state is WAITING_FOR_QUOTE_ACCEPTANCE",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.currentState).to.equal('WAITING_FOR_QUOTE_ACCEPTANCE')"
+                ]
+              }
+            ]
+          },
+          "scripts": {
+            "preRequest": {
+              "exec": [
+                "console.log(environment.bulkTransactionId)",
+                "",
+                "await inboundEvent.addListener('acceptQuoteCallback', 'put', `/bulkTransactions/${environment.bulkTransactionId}`)"
+              ]
+            },
+            "postRequest": {
+              "exec": [
+                "const acceptQuoteCallback = await inboundEvent.getMessage('acceptQuoteCallback')",
+                "",
+                "console.log(acceptQuoteCallback)",
+                "",
+                "environment.acceptQuoteCallback = acceptQuoteCallback;"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "name": "13. Given there are 2 transfers in the bulk request, When the sender fsp sends the acceptParty response for only transfers and not the second one, Then the PUT response should have details of the 1 transfer for which the acceptParty response was sent.",
+      "fileInfo": {
+        "path": "ttk-testcases/mvp-bulk.json"
+      },
+      "requests": [
+        {
+          "id": 1,
+          "description": "Post /bulkTransaction",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/bulkTransactions",
+          "path": "/bulkTransactions",
+          "method": "post",
+          "body": {
+            "bulkHomeTransactionID": "abc123",
+            "bulkTransactionId": "{$function.generic.generateUUID}",
+            "options": {
+              "onlyValidateParty": true,
+              "autoAcceptParty": {
+                "enabled": false
+              },
+              "autoAcceptQuote": {
+                "enabled": false
+              },
+              "skipPartyLookup": false,
+              "synchronous": false,
+              "bulkExpiration": "2016-05-24T08:38:08.699-04:00"
+            },
+            "from": {
+              "partyIdInfo": {
+                "partyIdType": "MSISDN",
+                "partyIdentifier": "16135551212"
+              }
+            },
+            "individualTransfers": [
+              {
+                "homeTransactionId": "abc1",
+                "to": {
+                  "partyIdInfo": {
+                    "partyIdType": "MSISDN",
+                    "partyIdentifier": "123456789"
+                  }
+                },
+                "amountType": "SEND",
+                "currency": "USD",
+                "amount": "456.78"
+              },
+              {
+                "homeTransactionId": "abc2",
+                "to": {
+                  "partyIdInfo": {
+                    "partyIdType": "MSISDN",
+                    "partyIdentifier": "123456789"
+                  }
+                },
+                "amountType": "SEND",
+                "currency": "USD",
+                "amount": "678.91"
+              }
+            ]
+          },
+          "url": "http://payer-sdk-api-svc:4001",
+          "scriptingEngine": "javascript",
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Check Return Status Code",
+                "exec": [
+                  "expect(response.status).to.equal(202)",
+                  ""
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Check number of returned transfers",
+                "exec": [
+                  "expect(environment.acceptPartyCallback.body.individualTransferResults.length).to.equal(2)"
+                ]
+              },
+              {
+                "id": 3,
+                "description": "Check current state is WAITING_FOR_PARTY_ACCEPTANCE",
+                "exec": [
+                  "expect(environment.acceptPartyCallback.body.currentState).to.equal('WAITING_FOR_PARTY_ACCEPTANCE')"
+                ]
+              }
+            ]
+          },
+          "scripts": {
+            "preRequest": {
+              "exec": [
+                "await inboundEvent.addListener('acceptPartyCallback', 'put', '/bulkTransactions/{$request.body.bulkTransactionId}')"
+              ]
+            },
+            "postRequest": {
+              "exec": [
+                "const acceptPartyCallback = await inboundEvent.getMessage('acceptPartyCallback')",
+                "console.log(acceptPartyCallback);",
+                "",
+                "environment.bulkTransactionId = acceptPartyCallback.body.bulkTransactionId;",
+                "",
+                "environment.acceptPartyCallback = acceptPartyCallback;"
+              ]
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "put bulk transaction",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/bulkTransactions/{bulkTransactionId}",
+          "path": "/bulkTransactions/{$prev.1.request.body.bulkTransactionId}",
+          "method": "put",
+          "params": {
+            "bulkTransactionId": "{$prev.1.request.body.bulkTransactionId}"
+          },
+          "url": "http://payer-sdk-api-svc:4001",
+          "body": {
+            "bulkHomeTransactionID": "{$prev.1.request.body.bulkHomeTransactionID}",
+            "individualTransfers": [
+              {
+                "homeTransactionId": "abc456",
+                "transactionId": "{$environment.acceptPartyCallback.body.individualTransferResults[0].transactionId}",
+                "acceptParty": true
+              }
+            ]
+          },
+          "scriptingEngine": "javascript",
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Check Return Status Code",
+                "exec": [
+                  "expect(response.status).to.equal(202)"
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Check number of returned transfers",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults.length).to.equal(1)"
+                ]
+              },
+              {
+                "id": 3,
+                "description": "Check response has quote result for first transfer",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[0].quoteResponse).to.exist;"
+                ]
+              },
+              {
+                "id": 4,
+                "description": "Check response has ilpPacket and condition for first transfer",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[0].quoteResponse.ilpPacket).to.not.be.empty;",
+                  "",
+                  "expect(environment.acceptQuoteCallback.body.individualTransferResults[0].quoteResponse.condition).to.not.be.empty;"
+                ]
+              },
+              {
+                "id": 5,
+                "description": "Check state is WAITING_FOR_QUOTE_ACCEPTANCE",
+                "exec": [
+                  "expect(environment.acceptQuoteCallback.body.currentState).to.equal('WAITING_FOR_QUOTE_ACCEPTANCE')"
+                ]
+              }
+            ]
+          },
+          "scripts": {
+            "preRequest": {
+              "exec": [
+                "console.log(environment.bulkTransactionId)",
+                "",
+                "await inboundEvent.addListener('acceptQuoteCallback', 'put', `/bulkTransactions/${environment.bulkTransactionId}`)"
+              ]
+            },
+            "postRequest": {
+              "exec": [
+                "const acceptQuoteCallback = await inboundEvent.getMessage('acceptQuoteCallback')",
+                "",
+                "console.log(acceptQuoteCallback)",
+                "",
+                "environment.acceptQuoteCallback = acceptQuoteCallback;"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

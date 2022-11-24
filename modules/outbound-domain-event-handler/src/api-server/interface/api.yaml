@@ -1,0 +1,42 @@
+components:
+  examples: {}
+  headers: {}
+  parameters: {}
+  requestBodies: {}
+  responses: {}
+  schemas:
+    Health:
+      properties:
+        status:
+          type: string
+          enum:
+            - OK
+            - ERROR
+        errors:
+          items:
+            type: string
+          type: array
+      required:
+        - status
+      type: object
+      additionalProperties: false
+info:
+  title: '@mojaloop/sdk-scheme-adapter-outbound-domain-event-handler'
+  version: 0.0.1
+  description: API for @mojaloop/sdk-scheme-adapter-outbound-domain-event-handler
+openapi: 3.0.0
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+      security: []
+      parameters: []
+servers:
+  - url: /

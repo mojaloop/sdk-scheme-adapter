@@ -1,0 +1,11 @@
+{
+  "name": "modules-api-svc",
+  "root": "modules/api-svc/",
+  "sourceRoot": "modules/api-svc/src",
+  "projectType": "application",
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*"]
+  },
+  "targets": {},
+  "implicitDependencies": ["modules-private-shared-lib"]
+}

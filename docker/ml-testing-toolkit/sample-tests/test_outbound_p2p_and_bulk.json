@@ -1,0 +1,125 @@
+{
+  "name": "multi",
+  "test_cases": [
+    {
+      "id": 3,
+      "name": "outbound-post-bulk-quotes",
+      "requests": [
+        {
+          "id": 1,
+          "description": "Post BulkQuotes",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/bulkQuotes",
+          "path": "/bulkQuotes",
+          "method": "post",
+          "url": "http://172.17.0.1:4001",
+          "body": {
+            "homeTransactionId": "7c5eaec1-5db2-4aca-92dd-0b68071becaa",
+            "bulkQuoteId": "7106d650-fb27-4a2a-9b70-c9731fc058aa",
+            "from": {
+              "idType": "MSISDN",
+              "idValue": "123456789",
+              "type": "CONSUMER",
+              "displayName": "PayerFirst PayerLast",
+              "firstName": "PayerFirst",
+              "middleName": "Something",
+              "lastName": "PayerLast",
+              "fspId": "ttkpm4mlreceiver"
+            },
+            "individualQuotes": [
+              {
+                "quoteId": "5fdba48f-0388-4a56-94e9-57f1bc4d78fc",
+                "to": {
+                  "type": "CONSUMER",
+                  "idType": "MSISDN",
+                  "idValue": "48500002222",
+                  "fspId": "ttkpm4mlreceiver"
+                },
+                "amountType": "SEND",
+                "currency": "USD",
+                "amount": "10",
+                "transactionType": "TRANSFER",
+                "note": "test"
+              }
+            ]
+          }
+        },
+        {
+          "id": 2,
+          "description": "bulkTransfers",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/bulkTransfers",
+          "path": "/bulkTransfers",
+          "method": "post",
+          "url": "http://172.17.0.1:4001",
+          "body": {
+            "homeTransactionId": "{$prev.1.request.body.homeTransactionId}",
+            "bulkTransferId": "{$function.generic.generateUUID}",
+            "bulkQuoteId": "7106d650-fb27-4a2a-9b70-c9731fc058aa",
+            "from": {
+              "idType": "MSISDN",
+              "idValue": "123456789",
+              "type": "CONSUMER",
+              "displayName": "PayerFirst PayerLast",
+              "firstName": "PayerFirst",
+              "middleName": "Something",
+              "lastName": "PayerLast",
+              "fspId": "ttkpm4mlreceiver"
+            },
+            "individualTransfers": [
+              {
+                "transferId": "{$function.generic.generateUUID}",
+                "to": {
+                  "type": "CONSUMER",
+                  "idType": "MSISDN",
+                  "idValue": "48500002222",
+                  "fspId": "ttkpm4mlreceiver"
+                },
+                "amountType": "SEND",
+                "currency": "USD",
+                "amount": "10",
+                "transactionType": "TRANSFER",
+                "note": "string",
+                "ilpPacket": "{$prev.1.response.body.individualQuoteResults[0].ilpPacket}",
+                "condition": "{$prev.1.response.body.individualQuoteResults[0].condition}"
+              }
+            ],
+            "extensions": {
+              "extension": [
+                {
+                  "key": "string",
+                  "value": "string"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "fileInfo": {
+        "path": "test_sdk1.json"
+      }
+    }
+  ]
+}

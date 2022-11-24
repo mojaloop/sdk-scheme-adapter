@@ -1,0 +1,86 @@
+version: '3.7'
+networks:
+  mojaloop-net:
+    name: mojaloop-net
+
+services:
+
+  api-svc:
+    networks:
+        - mojaloop-net
+    image: mojaloop/sdk-scheme-adapter:local
+    build:
+      context: ../../
+    # ports:
+    #   - "4000:4000"
+    #   - "4001:4001"
+    #   - "4002:4002"
+    # depends_on:
+    #   - redis
+    command: yarn nx run modules-api-svc:start
+    # volumes:
+    #   - ./docker/wait4:/tmp/wait4
+    #   - ./secrets:/opt/app/secrets
+    user: root # Set Root so we can install Curl for Healthchecks
+    healthcheck:
+      test: [
+        "CMD" ,
+        "apk", "add", "--no-cache", "curl", # Install curl
+        "&&",
+        "curl", "-f", "http://localhost:4001" # Check if api is up
+        ]
+      timeout: 20s
+      retries: 10
+      start_period: 40s
+      interval: 30s
+
+  outbound-command-event-handler:
+    networks:
+        - mojaloop-net
+    image: mojaloop/sdk-scheme-adapter:local
+    build:
+      context: ../../
+    # ports:
+    #   - "8000:8000"
+    # depends_on:
+    #   - kafka
+    #   - redis
+    command: yarn workspace @mojaloop/sdk-scheme-adapter-outbound-command-event-handler run start
+    user: root # Set Root so we can install Curl for Health check
+    # healthcheck:
+    #   test: [
+    #     "CMD" ,
+    #     "apk", "add", "--no-cache", "curl", # Install curl
+    #     "&&",
+    #     "curl", "-f", "http://localhost:8000/health" # Check if api is up
+    #     ]
+    #   timeout: 20s
+    #   retries: 10
+    #   start_period: 40s
+    #   interval: 30s
+
+  outbound-domain-event-handler:
+    networks:
+        - mojaloop-net
+    image: mojaloop/sdk-scheme-adapter:local
+    build:
+      context: ../../
+    # ports:
+    #   - "8000:8000"
+    # depends_on:
+    #   - kafka
+    #   - redis
+    command: yarn workspace @mojaloop/sdk-scheme-adapter-outbound-domain-event-handler run start
+    user: root # Set Root so we can install Curl for Health check
+    # healthcheck:
+    #   test: [
+    #     "CMD" ,
+    #     "apk", "add", "--no-cache", "curl", # Install curl
+    #     "&&",
+    #     "curl", "-f", "http://localhost:8000/health" # Check if api is up
+    #     ]
+    #   timeout: 20s
+    #   retries: 10
+    #   start_period: 40s
+    #   interval: 30s
+

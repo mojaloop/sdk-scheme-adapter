@@ -1,0 +1,11 @@
+{
+  "name": "modules-outbound-domain-event-handler",
+  "root": "modules/outbound-domain-event-handler/",
+  "sourceRoot": "modules/outbound-domain-event-handler/src",
+  "projectType": "application",
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*"]
+  },
+  "targets": {},
+  "implicitDependencies": ["modules-private-shared-lib"]
+}

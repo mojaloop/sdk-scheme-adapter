@@ -1,7 +1,2 @@
 ## Add a TODO comment indicating the reason for each rejected dependency upgrade added to this list, and what should be done to resolve it (i.e. handle it through a story, etc).
-reject: [
-  ## TODO: Breaking changes to ws lib dependency will need to be addressed in a future story. ref https://github.com/websockets/ws/releases/tag/8.0.0.
-  "ws",
-  ## TODO: This will need to be removed, and upgraded once this PR https://github.com/mojaloop/sdk-scheme-adapter/pull/340 has been merged
-  "@mojaloop/api-snippets"
-]
+reject: []

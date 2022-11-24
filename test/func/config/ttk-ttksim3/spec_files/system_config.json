@@ -1,0 +1,78 @@
+{
+  "API_PORT": 4040,
+  "HOSTING_ENABLED": false,
+  "REQUEST_PAYLOAD_MAX_BYTES": 200485760,
+  "INBOUND_MUTUAL_TLS_ENABLED": false,
+  "OUTBOUND_MUTUAL_TLS_ENABLED": false,
+  "CONFIG_VERSIONS": {
+    "response": 1,
+    "callback": 1,
+    "validation": 1,
+    "forward": 1,
+    "userSettings": 1
+  },
+  "DB": {
+    "URI": "mongodb://ttk:ttk@localhost:27017/ttk"
+  },
+  "OAUTH": {
+    "AUTH_ENABLED": false,
+    "APP_OAUTH_CLIENT_KEY": "ttk",
+    "APP_OAUTH_CLIENT_SECRET": "secret",
+    "MTA_ROLE": "Application/MTA",
+    "PTA_ROLE": "Application/PTA",
+    "EVERYONE_ROLE": "Internal/everyone",
+    "OAUTH2_TOKEN_ISS": "http://mojaloop-testing-toolkit:5050/api/oauth2/token",
+    "OAUTH2_ISSUER": "http://mojaloop-testing-toolkit:5050/api/oauth2/token",
+    "EMBEDDED_CERTIFICATE": "CERTIFICATE"
+  },
+  "CONNECTION_MANAGER": {
+    "ENABLED": false,
+    "API_URL": "http://connection-manager-api:5061",
+    "AUTH_ENABLED": false,
+    "HUB_USERNAME": "hub",
+    "HUB_PASSWORD": "hub"
+  },
+  "KEYCLOAK": {
+    "ENABLED": false,
+    "API_URL": "http://localhost:8080",
+    "REALM": "testingtoolkit",
+    "ADMIN_REALM": "master",
+    "ADMIN_USERNAME": "admin",
+    "ADMIN_PASSWORD": "admin",
+    "ADMIN_CLIENT_ID": "admin-cli"
+  },
+  "SERVER_LOGS": {
+    "ENABLED": true,
+    "RESULTS_PAGE_SIZE": 50,
+    "ADAPTER": {
+      "TYPE": "ELASTICSEARCH",
+      "INDEX": "moja*",
+      "API_URL": "http://dev1-elasticsearch.mojaloop.live/"
+    }
+  },
+  "HTTP_CLIENT": {
+    "KEEP_ALIVE": true,
+    "MAX_SOCKETS": 50,
+    "UNUSED_AGENTS_EXPIRY_MS": 1800000,
+    "UNUSED_AGENTS_CHECK_TIMER_MS": 300000
+  },
+  "INIT_CONFIG": {
+    "objectStore": {}
+  },
+  "API_DEFINITIONS": [
+    {
+      "type": "mojaloop_simulator_inbound",
+      "version": "1.4",
+      "folderPath": "mojaloop_simulator_sim_1.4",
+      "asynchronous": true
+    },
+    {
+      "type": "scheme_adapter_outbound",
+      "version": "1.0",
+      "folderPath": "mojaloop_sdk_outbound_scheme_adapter_1.0",
+      "hostnames": [],
+      "prefix": "/sdk-out",
+      "asynchronous": true
+    }
+  ]
+}
