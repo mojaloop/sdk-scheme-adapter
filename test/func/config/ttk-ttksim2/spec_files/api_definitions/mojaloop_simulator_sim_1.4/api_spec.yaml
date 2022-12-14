@@ -17,14 +17,14 @@ info:
 paths:
   /:
     get:
-      operationId: healthCheck
+      operationId: BackendHealthCheck
       responses:
         '200':
           description: Returns empty body if the service is running.
       summary: Health check endpoint.
   /bulkQuotes:
     post:
-      operationId: BulkQuotesPost
+      operationId: BackendBulkQuotesPost
       requestBody:
         content:
           application/json:
@@ -45,11 +45,11 @@ paths:
       summary: Requests a bulk quote
       tags:
         - BulkQuotes
-  /bulkQuotes/{ID}:
+  /bulkQuotes/{idValue}:
     get:
-      operationId: BulkQuotesGet
+      operationId: BackendBulkQuotesGet
       parameters:
-        - $ref: '#/components/parameters/ID'
+        - $ref: '#/components/parameters/idValue'
       responses:
         '200':
           content:
@@ -69,7 +69,7 @@ paths:
   /bulkTransactions/{bulkTransactionId}:
     put:
       description: The HTTP request `PUT /bulkTransactions/{bulkTransactionId}` is used to amend information regarding a bulk transaction, i.e. when autoAcceptParty or autoAcceptQuote  is false then the payer need to provide confirmation to proceed with further processing of the request. The `{bulkTransactionId}` in the URI should contain the `bulkTransactionId` that was used for the creation of the bulk transfer.
-      operationId: BulkTransactionsPut
+      operationId: BackendBulkTransactionsPut
       parameters:
         - $ref: '#/components/parameters/bulkTransactionId'
       requestBody:
@@ -117,7 +117,7 @@ paths:
         - BulkTransactionsPut
   /bulkTransfers:
     post:
-      operationId: BulkTransfersPost
+      operationId: BackendBulkTransfersPost
       requestBody:
         content:
           application/json:
@@ -138,11 +138,11 @@ paths:
       summary: Execute bulk transfer of funds from an external account to internal accounts
       tags:
         - BulkTransfers
-  /bulkTransfers/{ID}:
+  /bulkTransfers/{idValue}:
     get:
-      operationId: BulkTransfersGet
+      operationId: BackendBulkTransfersGet
       parameters:
-        - $ref: '#/components/parameters/ID'
+        - $ref: '#/components/parameters/idValue'
       responses:
         '200':
           content:
@@ -161,7 +161,7 @@ paths:
         - BulkTransfers
   /otp/{requestToPayId}:
     get:
-      operationId: OtpGet
+      operationId: BackendOtpGet
       parameters:
         - $ref: '#/components/parameters/requestToPayId'
       responses:
@@ -180,13 +180,13 @@ paths:
       summary: Requests OTP
       tags:
         - OTP
-  /participants/{Type}/{ID}:
+  /participants/{idType}/{idValue}:
     get:
-      description: The HTTP request `GET /participants/{Type}/{ID}` is used to find out in which FSP the requested party, defined by `{Type}` and `{ID}`, is located.
-      operationId: ParticipantsGetByTypeAndID
+      description: The HTTP request `GET /participants/{idType}/{idValue}` is used to find out in which FSP the requested party, defined by `{idType}` and `{idValue}`, is located.
+      operationId: BackendParticipantsGetByTypeAndID
       parameters:
-        - $ref: '#/components/parameters/Type'
-        - $ref: '#/components/parameters/ID'
+        - $ref: '#/components/parameters/idType'
+        - $ref: '#/components/parameters/idValue'
       responses:
         '200':
           content:
@@ -203,14 +203,14 @@ paths:
       summary: Asks for the identifier (fspId) of the scheme participant (FSP) that can handle transfers for the specified identifier type and value
       tags:
         - Participants
-  /participants/{Type}/{ID}/{SubId}:
+  /participants/{idType}/{idValue}/{subIdValue}:
     get:
-      operationId: ParticipantsGetByTypeIDAndSubId
-      description: The HTTP request `GET /participants/{Type}/{ID}/{SubId}` is used to find out in which FSP the requested party, defined by `{Type}`, `{ID}` and `{SubId}` is located.
+      operationId: BackendParticipantsGetByTypeIDAndSubId
+      description: The HTTP request `GET /participants/{idType}/{idValue}/{subIdValue}` is used to find out in which FSP the requested party, defined by `{idType}`, `{idValue}` and `{subIdValue}` is located.
       parameters:
-        - $ref: '#/components/parameters/Type'
-        - $ref: '#/components/parameters/ID'
-        - $ref: '#/components/parameters/SubId'
+        - $ref: '#/components/parameters/idType'
+        - $ref: '#/components/parameters/idValue'
+        - $ref: '#/components/parameters/subIdValue'
       responses:
         '200':
           content:
@@ -227,13 +227,13 @@ paths:
       summary: Asks for the identifier (fspId) of the scheme participant (FSP) that can handle transfers for the specified identifier type and value
       tags:
         - Participants
-  /parties/{Type}/{ID}:
+  /parties/{idType}/{idValue}:
     get:
-      operationId: PartiesGetByTypeAndID
-      description: The HTTP request `GET /parties/{Type}/{ID}` is used to look up information regarding the requested transfer party, identified by `{Type}` and `{ID}`.
+      operationId: BackendPartiesGetByTypeAndID
+      description: The HTTP request `GET /parties/{idType}/{idValue}` is used to look up information regarding the requested transfer party, identified by `{idType}` and `{idValue}`.
       parameters:
-        - $ref: '#/components/parameters/Type'
-        - $ref: '#/components/parameters/ID'
+        - $ref: '#/components/parameters/idType'
+        - $ref: '#/components/parameters/idValue'
       responses:
         '200':
           content:
@@ -250,14 +250,14 @@ paths:
       summary: Requests information relating to a transfer party identified by the specified identifier type and value
       tags:
         - Parties
-  /parties/{Type}/{ID}/{SubId}:
+  /parties/{idType}/{idValue}/{subIdValue}:
     get:
-      operationId: PartiesGetByTypeIdAndSubId
-      description: The HTTP request `GET /parties/{Type}/{ID}/{SubId}` is used to look up information regarding the requested transfer party, identified by `{Type}`, `{ID}` and `{SubId}`.
+      operationId: BackendPartiesGetByTypeIdAndSubId
+      description: The HTTP request `GET /parties/{idType}/{idValue}/{subIdValue}` is used to look up information regarding the requested transfer party, identified by `{idType}`, `{idValue}` and `{subIdValue}`.
       parameters:
-        - $ref: '#/components/parameters/Type'
-        - $ref: '#/components/parameters/ID'
-        - $ref: '#/components/parameters/SubId'
+        - $ref: '#/components/parameters/idType'
+        - $ref: '#/components/parameters/idValue'
+        - $ref: '#/components/parameters/subIdValue'
       responses:
         '200':
           content:
@@ -276,7 +276,7 @@ paths:
         - Parties
   /quoterequests:
     post:
-      operationId: QuoteRequest
+      operationId: BackendQuoteRequest
       description: The HTTP request `POST /quoterequests` is used to request the creation of a quote for the provided financial transaction.
       requestBody:
         content:
@@ -300,7 +300,7 @@ paths:
         - Quotes
   /transactionrequests:
     post:
-      operationId: TransactionRequest
+      operationId: BackendTransactionRequest
       requestBody:
         content:
           application/json:
@@ -323,7 +323,7 @@ paths:
         - TransactionRequest
   /transfers:
     post:
-      operationId: TransfersPost
+      operationId: BackendTransfersPost
       description: The HTTP request `POST /transfers` is used to request the creation of a transfer for the transfer party.
       requestBody:
         content:
@@ -347,7 +347,7 @@ paths:
         - Transfers
   /transfers/{transferId}:
     get:
-      operationId: TransfersGet
+      operationId: BackendTransfersGet
       description: The HTTP request `GET /transfers/{transferId}` is used to get information regarding a transfer created or requested earlier. The `{transferId}` in the URI should contain the `transferId` that was used for the creation of the transfer.
       parameters:
         - $ref: '#/components/parameters/transferId'
@@ -364,7 +364,7 @@ paths:
       tags:
         - Transfers
     put:
-      operationId: TransfersPut
+      operationId: BackendTransfersPut
       description: The HTTP request `PUT /transfers/{transferId}` is used to receive notification for transfer being fulfiled when the FSP is a Payee
       parameters:
         - $ref: '#/components/parameters/transferId'
@@ -396,22 +396,22 @@ components:
         pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
         title: CorrelationId
         type: string
-    Type:
-      name: Type
+    idType:
+      name: idType
       in: path
       required: true
       schema:
         type: string
       description: 'The type of the party identifier. For example, `MSISDN`, `PERSONAL_ID`.'
-    ID:
-      name: ID
+    idValue:
+      name: idValue
       in: path
       required: true
       schema:
         type: string
       description: The identifier value.
-    SubId:
-      name: SubId
+    subIdValue:
+      name: subIdValue
       in: path
       required: true
       schema:
@@ -1401,7 +1401,7 @@ components:
         fspId:
           description: Mojaloop scheme FSPID of the DFSP which owns the party account.
           type: string
-        idSubValue:
+        subIdValue:
           $ref: '#/components/schemas/SubId'
         idType:
           $ref: '#/components/schemas/Type'
