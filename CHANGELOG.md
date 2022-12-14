@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [21.5.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.5.0...v21.5.1) (2022-12-14)
+
+
+### Chore
+
+* sort SDK backend api and upgrade dependencies ([#429](https://github.com/mojaloop/sdk-scheme-adapter/issues/429)) ([75bb92a](https://github.com/mojaloop/sdk-scheme-adapter/commit/75bb92a99512e7879003ddd5bbc11b7ba5206814))
+
 ## [21.5.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.4.0...v21.5.0) (2022-11-24)
 
 
