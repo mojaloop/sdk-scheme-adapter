@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [21.5.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.5.1...v21.5.2) (2022-12-16)
+
+
+### Chore
+
+* **mojaloop/#3074:** sync DFSP backend api with api-snippets ([#428](https://github.com/mojaloop/sdk-scheme-adapter/issues/428)) ([edf601e](https://github.com/mojaloop/sdk-scheme-adapter/commit/edf601ea407c5d8624c3cc2d8ff96e012805a71e)), closes [mojaloop/#3074](https://github.com/mojaloop/project/issues/3074)
+
 ### [21.5.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.5.0...v21.5.1) (2022-12-14)
 
 
