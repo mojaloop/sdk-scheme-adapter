@@ -500,7 +500,7 @@ components:
       example: Henrik
       maxLength: 128
       minLength: 1
-      pattern: ^(?!\s*$)[\w .,'-]{1,128}$
+      pattern: ^(?!\s*$)[\p{L}\p{gc=Mark}\p{digit}\p{gc=Connector_Punctuation}\p{Join_Control} .,''-]{1,128}$
       title: FirstName
       type: string
     FspId:
@@ -635,7 +635,7 @@ components:
       example: Karlsson
       maxLength: 128
       minLength: 1
-      pattern: ^(?!\s*$)[\w .,'-]{1,128}$
+      pattern: ^(?!\s*$)[\p{L}\p{gc=Mark}\p{digit}\p{gc=Connector_Punctuation}\p{Join_Control} .,''-]{1,128}$
       title: LastName
       type: string
     MerchantClassificationCode:
@@ -648,7 +648,7 @@ components:
       example: Johannes
       maxLength: 128
       minLength: 1
-      pattern: ^(?!\s*$)[\w .,'-]{1,128}$
+      pattern: ^(?!\s*$)[\p{L}\p{gc=Mark}\p{digit}\p{gc=Connector_Punctuation}\p{Join_Control} .,''-]{1,128}$
       title: MiddleName
       type: string
     Party:
