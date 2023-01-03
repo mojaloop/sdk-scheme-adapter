@@ -12,6 +12,7 @@
   "currency": "USD",
   "amount": "100",
   "transactionType": "TRANSFER",
+  "subScenario": "SUBSCENARIO",
   "note": "test payment",
   "homeTransactionId": "123ABC"
 }

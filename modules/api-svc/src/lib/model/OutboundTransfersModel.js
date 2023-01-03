@@ -599,6 +599,7 @@ class OutboundTransfersModel {
 
         quote.transactionType = {
             scenario: this.data.transactionType,
+            subScenario: this.data.subScenario,
             // TODO: support payee initiated txns?
             initiator: 'PAYER',
             // TODO: defaulting to CONSUMER initiator type should

@@ -21,7 +21,8 @@
         "transactionType": {
           "initiator": "PAYER",
           "initiatorType": "CONSUMER",
-          "scenario": "TRANSFER"
+          "scenario": "TRANSFER",
+          "subScenario": "SUBSCENARIO"
         }
       }
     ]

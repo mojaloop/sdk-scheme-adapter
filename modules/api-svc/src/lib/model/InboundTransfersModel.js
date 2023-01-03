@@ -258,7 +258,7 @@ class InboundTransfersModel {
      */
     async getQuoteRequest(quoteId, sourceFspId) {
         try {
-            // Get the quoteRespnse data for the quoteId from the cache to be sent as a response to GET /quotes/{ID}
+            // Get the quoteResponse data for the quoteId from the cache to be sent as a response to GET /quotes/{ID}
             const quoteResponse = await this._cache.get(`quoteResponse_${quoteId}`);
 
             // If no quoteResponse is found in the cache, make an error callback to the source fsp
@@ -441,6 +441,7 @@ class InboundTransfersModel {
                 currency: response.currency,
                 amount: response.amount,
                 transactionType: response.transactionType,
+                subScenario: response.subScenario,
                 note: response.note,
             };
 
@@ -513,6 +514,7 @@ class InboundTransfersModel {
                         payee: quote.payee,
                         payer: bulkQuoteRequest.payer,
                         transactionType: quote.transactionType,
+                        subScenario: quote.subScenario,
                     };
 
                     const quoteResponse = {
@@ -718,6 +720,7 @@ class InboundTransfersModel {
                     currency: transfer.currency,
                     amount: transfer.amount,
                     transactionType: transfer.transactionType,
+                    subScenario: transfer.subScenario,
                     note: transfer.note,
                 };
                 let fulfilment;
