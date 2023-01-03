@@ -384,7 +384,6 @@ paths:
       summary: Receive notification for a specific transfer.
       tags:
         - Transfers
-
 components:
   parameters:
     bulkTransactionId:
@@ -533,6 +532,8 @@ components:
           type: string
         quoteId:
           $ref: '#/components/schemas/quoteId'
+        subScenario:
+          $ref: '#/components/schemas/transactionSubScenario'
         to:
           $ref: '#/components/schemas/transferParty'
         transactionId:
@@ -607,6 +608,8 @@ components:
           maxLength: 128
           minLength: 1
           type: string
+        subScenario:
+          $ref: '#/components/schemas/transactionSubScenario'
         to:
           $ref: '#/components/schemas/transferParty'
         transactionType:
@@ -1377,6 +1380,8 @@ components:
           type: string
         quoteId:
           $ref: '#/components/schemas/quoteId'
+        subScenario:
+          $ref: '#/components/schemas/transactionSubScenario'
         to:
           $ref: '#/components/schemas/transferParty'
           description: Information about the Payee in the proposed financial transaction.
@@ -1485,6 +1490,8 @@ components:
           $ref: '#/components/schemas/transactionRequestId'
         transactionType:
           $ref: '#/components/schemas/transactionType'
+        subScenario:
+          $ref: '#/components/schemas/transactionSubScenario'
       required:
         - transactionRequestId
         - to
@@ -1517,6 +1524,12 @@ components:
         - ACCEPTED
         - REJECTED
       type: string
+    transactionSubScenario:
+      description: Possible sub-scenario, defined locally within the scheme (UndefinedEnum Type). Based on FSPIOP TransactionSubScenario.
+      example: LOCALLY_DEFINED_SUBSCENARIO
+      pattern: ^[A-Z_]{1,32}$
+      title: transactionSubScenario
+      type: string
     transactionType:
       enum:
         - TRANSFER
@@ -1533,6 +1546,8 @@ components:
           description: Specifies the type of the transaction initiator.
         scenario:
           $ref: '#/components/schemas/scenario'
+        subScenario:
+          $ref: '#/components/schemas/transactionSubScenario'
       required:
         - scenario
         - initiator
@@ -1556,6 +1571,8 @@ components:
         note:
           maxLength: 128
           type: string
+        subScenario:
+          $ref: '#/components/schemas/transactionSubScenario'
         timestamp:
           $ref: '#/components/schemas/timestamp'
         to:
@@ -1650,6 +1667,8 @@ components:
           $ref: '#/components/schemas/quoteResponse'
         quoteRequestExtensions:
           $ref: '#/components/schemas/extensionList'
+        subScenario:
+          $ref: '#/components/schemas/transactionSubScenario'
         to:
           $ref: '#/components/schemas/transferParty'
         transactionType:
