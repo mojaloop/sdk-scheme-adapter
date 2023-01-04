@@ -2125,9 +2125,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/api-snippets@npm:17.0.1":
-  version: 17.0.1
-  resolution: "@mojaloop/api-snippets@npm:17.0.1"
+"@mojaloop/api-snippets@npm:17.0.2-snapshot.1":
+  version: 17.0.2-snapshot.1
+  resolution: "@mojaloop/api-snippets@npm:17.0.2-snapshot.1"
   dependencies:
     "@apidevtools/json-schema-ref-parser": ^9.1.0
     commander: ^9.4.1
@@ -2138,24 +2138,7 @@ __metadata:
     openapi-typescript: ^5.4.1
     ts-auto-mock: ^3.6.4
     ttypescript: ^1.5.15
-  checksum: 49aacf6a25dd3101650585a70327e22392cc65def461d58a7af8dc39d8055a519b77f3079a0367cddba9e36a56faa8655af12eaba373ff7940fbae5dcde00d4f
-  languageName: node
-  linkType: hard
-
-"@mojaloop/api-snippets@npm:17.0.2-snapshot.0":
-  version: 17.0.2-snapshot.0
-  resolution: "@mojaloop/api-snippets@npm:17.0.2-snapshot.0"
-  dependencies:
-    "@apidevtools/json-schema-ref-parser": ^9.1.0
-    commander: ^9.4.1
-    jest-ts-auto-mock: ^2.1.0
-    js-yaml: ^4.1.0
-    json-refs: ^3.0.15
-    openapi-types: ^12.1.0
-    openapi-typescript: ^5.4.1
-    ts-auto-mock: ^3.6.4
-    ttypescript: ^1.5.15
-  checksum: fe1abc39397970d5518dd257f0b79d516b919b30f5a89a20ff83b5933f2809d6509681625c4d70f357d1261a969df0ba9be8141cd6d52971f889e0a90cfd783c
+  checksum: c58fef28f067460213b9e191f50bc5bc9726111e569f35b5a38df7d5cd5ff49d6980af07cc4efb8aa5e78e424f37252fdbaa82eb6226dc59297f077c64145d90
   languageName: node
   linkType: hard
 
@@ -2342,7 +2325,7 @@ __metadata:
     "@babel/core": ^7.20.12
     "@babel/preset-env": ^7.20.2
     "@koa/cors": ^4.0.0
-    "@mojaloop/api-snippets": 17.0.2-snapshot.0
+    "@mojaloop/api-snippets": 17.0.2-snapshot.1
     "@mojaloop/central-services-error-handling": ^12.0.5
     "@mojaloop/central-services-logger": ^11.2.0
     "@mojaloop/central-services-metrics": ^12.0.5
@@ -2397,7 +2380,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-command-event-handler@workspace:modules/outbound-command-event-handler"
   dependencies:
-    "@mojaloop/api-snippets": 17.0.1
+    "@mojaloop/api-snippets": 17.0.2-snapshot.1
     "@mojaloop/central-services-shared": ^17.3.1
     "@mojaloop/logging-bc-client-lib": ^0.1.17
     "@mojaloop/logging-bc-public-types-lib": ^0.1.14
@@ -2436,7 +2419,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-domain-event-handler@workspace:modules/outbound-domain-event-handler"
   dependencies:
-    "@mojaloop/api-snippets": 17.0.1
+    "@mojaloop/api-snippets": 17.0.2-snapshot.1
     "@mojaloop/logging-bc-client-lib": ^0.1.17
     "@mojaloop/logging-bc-public-types-lib": ^0.1.14
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
@@ -2473,7 +2456,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-private-shared-lib@workspace:modules/private-shared-lib"
   dependencies:
-    "@mojaloop/api-snippets": 17.0.1
+    "@mojaloop/api-snippets": 17.0.2-snapshot.1
     "@mojaloop/central-services-shared": ^17.3.1
     "@mojaloop/logging-bc-public-types-lib": ^0.1.14
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.2.31
