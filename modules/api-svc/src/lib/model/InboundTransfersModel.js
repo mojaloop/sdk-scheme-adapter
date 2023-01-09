@@ -200,11 +200,9 @@ class InboundTransfersModel {
 
         try {
             const internalForm = shared.mojaloopQuoteRequestToInternal(quoteRequest);
-            this._logger.push(internalForm).log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
 
             // make a call to the backend to ask for a quote response
             const response = await this._backendRequests.postQuoteRequests(internalForm);
-            this._logger.push(response).log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
             if(!response) {
                 // make an error callback to the source fsp
                 return 'No response from backend';
