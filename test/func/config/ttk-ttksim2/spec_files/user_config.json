@@ -1,7 +1,7 @@
 {
   "VERSION": 1,
   "CALLBACK_ENDPOINT": "http://ttksim2-sdk-api-svc:4001",
-  "MONITORING_LOG_INCLUDE_PAYLOAD": true,
+  "MONITORING_LOG_INCLUDE_PAYLOAD": false,
   "CALLBACK_RESOURCE_ENDPOINTS": {
     "enabled": false,
     "endpoints": []

@@ -1,7 +1,7 @@
 {
   "VERSION": 1,
   "CALLBACK_ENDPOINT": "http://localhost:4040",
-  "MONITORING_LOG_INCLUDE_PAYLOAD": true,
+  "MONITORING_LOG_INCLUDE_PAYLOAD": false,
   "CALLBACK_RESOURCE_ENDPOINTS": {
     "enabled": false,
     "endpoints": [
