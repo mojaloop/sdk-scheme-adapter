@@ -2484,7 +2484,7 @@ __metadata:
     "@types/node-cache": ^4.2.5
     "@typescript-eslint/eslint-plugin": ^5.48.1
     "@typescript-eslint/parser": ^5.48.1
-    audit-ci: ^6.5.0
+    audit-ci: ^6.6.0
     eslint: ^8.31.0
     eslint-config-airbnb-typescript: ^17.0.0
     eslint-plugin-import: latest
@@ -4089,9 +4089,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"audit-ci@npm:^6.5.0":
-  version: 6.5.0
-  resolution: "audit-ci@npm:6.5.0"
+"audit-ci@npm:^6.6.0":
+  version: 6.6.0
+  resolution: "audit-ci@npm:6.6.0"
   dependencies:
     JSONStream: ^1.3.5
     cross-spawn: ^7.0.3
@@ -4103,7 +4103,7 @@ __metadata:
     yargs: ^17.0.0
   bin:
     audit-ci: dist/bin.js
-  checksum: 646796a90ebbd6e7ed454e4ad6ca410953a87df0601891368980edefea47faa546678ad86ec70141c192a3ae19ce613a12382465ab3bd3db3241fc29d2410ba8
+  checksum: 2c2fe8e41835eb30cf750e6ff40dbdda8a982c0fe27561695f3931d221086277069f6263eacf94c6fc0e3304843f661c9bc79ed36a4e65d07f4d7836c1f9af6c
   languageName: node
   linkType: hard
 

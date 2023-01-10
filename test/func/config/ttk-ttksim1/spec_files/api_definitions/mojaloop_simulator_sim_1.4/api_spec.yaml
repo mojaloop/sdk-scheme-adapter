@@ -2054,93 +2054,6 @@ components:
       maxLength: 128
       description: Memo assigned to transaction.
       example: Note sent to Payee.
-    Money:
-      title: Money
-      type: object
-      description: Data model for the complex type Money.
-      properties:
-        currency:
-          $ref: '#/components/schemas/Currency'
-        amount:
-          $ref: '#/components/schemas/Amount'
-      required:
-        - currency
-        - amount
-    Latitude:
-      title: Latitude
-      type: string
-      pattern: >-
-        ^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$
-      description: >-
-        The API data type Latitude is a JSON String in a lexical format that is
-        restricted by a regular expression for interoperability reasons.
-      example: '+45.4215'
-    Longitude:
-      title: Longitude
-      type: string
-      pattern: >-
-        ^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,6})?))$
-      description: >-
-        The API data type Longitude is a JSON String in a lexical format that is
-        restricted by a regular expression for interoperability reasons.
-      example: '+75.6972'
-    GeoCode:
-      title: GeoCode
-      type: object
-      description: >-
-        Data model for the complex type GeoCode. Indicates the geographic
-        location from where the transaction was initiated.
-      properties:
-        latitude:
-          $ref: '#/components/schemas/Latitude'
-        longitude:
-          $ref: '#/components/schemas/Longitude'
-      required:
-        - latitude
-        - longitude
-    IlpPacket:
-      title: IlpPacket
-      type: string
-      pattern: ^[A-Za-z0-9-_]+[=]{0,2}$
-      minLength: 1
-      maxLength: 32768
-      description: Information for recipient (transport layer information).
-      example: >-
-        AYIBgQAAAAAAAASwNGxldmVsb25lLmRmc3AxLm1lci45T2RTOF81MDdqUUZERmZlakgyOVc4bXFmNEpLMHlGTFGCAUBQU0svMS4wCk5vbmNlOiB1SXlweUYzY3pYSXBFdzVVc05TYWh3CkVuY3J5cHRpb246IG5vbmUKUGF5bWVudC1JZDogMTMyMzZhM2ItOGZhOC00MTYzLTg0NDctNGMzZWQzZGE5OGE3CgpDb250ZW50LUxlbmd0aDogMTM1CkNvbnRlbnQtVHlwZTogYXBwbGljYXRpb24vanNvbgpTZW5kZXItSWRlbnRpZmllcjogOTI4MDYzOTEKCiJ7XCJmZWVcIjowLFwidHJhbnNmZXJDb2RlXCI6XCJpbnZvaWNlXCIsXCJkZWJpdE5hbWVcIjpcImFsaWNlIGNvb3BlclwiLFwiY3JlZGl0TmFtZVwiOlwibWVyIGNoYW50XCIsXCJkZWJpdElkZW50aWZpZXJcIjpcIjkyODA2MzkxXCJ9IgA
-    IlpCondition:
-      title: IlpCondition
-      type: string
-      pattern: ^[A-Za-z0-9-_]{43}$
-      maxLength: 48
-      description: Condition that must be attached to the transfer by the Payer.
-    QuotesIDPutResponse:
-      title: QuotesIDPutResponse
-      type: object
-      description: The object sent in the PUT /quotes/{ID} callback.
-      properties:
-        transferAmount:
-          $ref: '#/components/schemas/Money'
-        payeeReceiveAmount:
-          $ref: '#/components/schemas/Money'
-        payeeFspFee:
-          $ref: '#/components/schemas/Money'
-        payeeFspCommission:
-          $ref: '#/components/schemas/Money'
-        expiration:
-          $ref: '#/components/schemas/DateTime'
-        geoCode:
-          $ref: '#/components/schemas/GeoCode'
-        ilpPacket:
-          $ref: '#/components/schemas/IlpPacket'
-        condition:
-          $ref: '#/components/schemas/IlpCondition'
-        extensionList:
-          $ref: '#/components/schemas/ExtensionList'
-      required:
-        - transferAmount
-        - expiration
-        - ilpPacket
-        - condition
     IlpFulfilment:
       title: IlpFulfilment
       type: string
@@ -2242,11 +2155,6 @@ components:
       type: object
       required:
         - homeTransactionId
-        - transferId
-        - to
-        - amountType
-        - currency
-        - amount
       properties:
         transferId:
           $ref: '#/components/schemas/CorrelationId'
@@ -2273,7 +2181,7 @@ components:
         quoteId:
           $ref: '#/components/schemas/CorrelationId'
         quoteResponse:
-          $ref: '#/components/schemas/QuotesIDPutResponse'
+          type: object
         fulfil:
           $ref: '#/components/schemas/TransfersIDPutResponse'
         quoteExtensions:
