@@ -2054,48 +2054,65 @@ components:
       maxLength: 128
       description: Memo assigned to transaction.
       example: Note sent to Payee.
-    IlpFulfilment:
-      title: IlpFulfilment
+    Money:
+      title: Money
+      type: object
+      description: Data model for the complex type Money.
+      properties:
+        currency:
+          $ref: '#/components/schemas/Currency'
+        amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+        - currency
+        - amount
+    Latitude:
+      title: Latitude
+      type: string
+      pattern: >-
+        ^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$
+      description: >-
+        The API data type Latitude is a JSON String in a lexical format that is
+        restricted by a regular expression for interoperability reasons.
+      example: '+45.4215'
+    Longitude:
+      title: Longitude
+      type: string
+      pattern: >-
+        ^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,6})?))$
+      description: >-
+        The API data type Longitude is a JSON String in a lexical format that is
+        restricted by a regular expression for interoperability reasons.
+      example: '+75.6972'
+    GeoCode:
+      title: GeoCode
+      type: object
+      description: >-
+        Data model for the complex type GeoCode. Indicates the geographic
+        location from where the transaction was initiated.
+      properties:
+        latitude:
+          $ref: '#/components/schemas/Latitude'
+        longitude:
+          $ref: '#/components/schemas/Longitude'
+      required:
+        - latitude
+        - longitude
+    IlpPacket:
+      title: IlpPacket
+      type: string
+      pattern: ^[A-Za-z0-9-_]+[=]{0,2}$
+      minLength: 1
+      maxLength: 32768
+      description: Information for recipient (transport layer information).
+      example: >-
+        AYIBgQAAAAAAAASwNGxldmVsb25lLmRmc3AxLm1lci45T2RTOF81MDdqUUZERmZlakgyOVc4bXFmNEpLMHlGTFGCAUBQU0svMS4wCk5vbmNlOiB1SXlweUYzY3pYSXBFdzVVc05TYWh3CkVuY3J5cHRpb246IG5vbmUKUGF5bWVudC1JZDogMTMyMzZhM2ItOGZhOC00MTYzLTg0NDctNGMzZWQzZGE5OGE3CgpDb250ZW50LUxlbmd0aDogMTM1CkNvbnRlbnQtVHlwZTogYXBwbGljYXRpb24vanNvbgpTZW5kZXItSWRlbnRpZmllcjogOTI4MDYzOTEKCiJ7XCJmZWVcIjowLFwidHJhbnNmZXJDb2RlXCI6XCJpbnZvaWNlXCIsXCJkZWJpdE5hbWVcIjpcImFsaWNlIGNvb3BlclwiLFwiY3JlZGl0TmFtZVwiOlwibWVyIGNoYW50XCIsXCJkZWJpdElkZW50aWZpZXJcIjpcIjkyODA2MzkxXCJ9IgA
+    IlpCondition:
+      title: IlpCondition
       type: string
       pattern: ^[A-Za-z0-9-_]{43}$
       maxLength: 48
-      description: Fulfilment that must be attached to the transfer by the Payee.
-      example: WLctttbu2HvTsa1XWvUoGRcQozHsqeu9Ahl2JW9Bsu8
-    TransferState:
-      title: TransferState
-      type: string
-      enum:
-        - RECEIVED
-        - RESERVED
-        - COMMITTED
-        - ABORTED
-      description: >-
-        Below are the allowed values for the enumeration.
-
-        - RECEIVED - Next ledger has received the transfer.
-
-        - RESERVED - Next ledger has reserved the transfer.
-
-        - COMMITTED - Next ledger has successfully performed the transfer.
-
-        - ABORTED - Next ledger has aborted the transfer due to a rejection or
-        failure to perform the transfer.
-      example: RESERVED
-    TransfersIDPutResponse:
-      title: TransfersIDPutResponse
-      type: object
-      description: The object sent in the PUT /transfers/{ID} callback.
-      properties:
-        fulfilment:
-          $ref: '#/components/schemas/IlpFulfilment'
-        completedTimestamp:
-          $ref: '#/components/schemas/DateTime'
-        transferState:
-          $ref: '#/components/schemas/TransferState'
-        extensionList:
-          $ref: '#/components/schemas/ExtensionList'
-      required:
-        - transferState
+      description: Condition that must be attached to the transfer by the Payer.
     ErrorCode:
       title: ErrorCode
       type: string
@@ -2134,6 +2151,71 @@ components:
       properties:
         errorInformation:
           $ref: '#/components/schemas/ErrorInformation'
+    quoteError:
+      type: object
+      description: >-
+        This object represents a Mojaloop API error received at any time during
+        the quote process
+      properties:
+        httpStatusCode:
+          type: integer
+          description: >-
+            The HTTP status code returned to the caller. This is the same as the
+            actual HTTP status code returned with the response.
+        mojaloopError:
+          $ref: '#/components/schemas/mojaloopError'
+    individualQuoteResult:
+      type: object
+      properties:
+        quoteId:
+          $ref: '#/components/schemas/CorrelationId'
+        transferAmount:
+          $ref: '#/components/schemas/Money'
+        payeeReceiveAmount:
+          $ref: '#/components/schemas/Money'
+        payeeFspFee:
+          $ref: '#/components/schemas/Money'
+        payeeFspCommission:
+          $ref: '#/components/schemas/Money'
+        geoCode:
+          $ref: '#/components/schemas/GeoCode'
+        ilpPacket:
+          $ref: '#/components/schemas/IlpPacket'
+        condition:
+          $ref: '#/components/schemas/IlpCondition'
+        extensionList:
+          $ref: '#/components/schemas/ExtensionList'
+        lastError:
+          $ref: '#/components/schemas/quoteError'
+      required:
+        - quoteId
+    IlpFulfilment:
+      title: IlpFulfilment
+      type: string
+      pattern: ^[A-Za-z0-9-_]{43}$
+      maxLength: 48
+      description: Fulfilment that must be attached to the transfer by the Payee.
+      example: WLctttbu2HvTsa1XWvUoGRcQozHsqeu9Ahl2JW9Bsu8
+    TransferState:
+      title: TransferState
+      type: string
+      enum:
+        - RECEIVED
+        - RESERVED
+        - COMMITTED
+        - ABORTED
+      description: >-
+        Below are the allowed values for the enumeration.
+
+        - RECEIVED - Next ledger has received the transfer.
+
+        - RESERVED - Next ledger has reserved the transfer.
+
+        - COMMITTED - Next ledger has successfully performed the transfer.
+
+        - ABORTED - Next ledger has aborted the transfer due to a rejection or
+        failure to perform the transfer.
+      example: RESERVED
     transferError:
       type: object
       description: >-
@@ -2146,11 +2228,22 @@ components:
             The HTTP status code returned to the caller. This is the same as the
             actual HTTP status code returned with the response.
         mojaloopError:
-          description: >-
-            If a transfer process results in an error callback during the
-            asynchronous Mojaloop API exchange, this property will contain the
-            underlying Mojaloop API error object.
           $ref: '#/components/schemas/mojaloopError'
+    individualTransferResult:
+      type: object
+      required:
+        - transferId
+      properties:
+        transferId:
+          $ref: '#/components/schemas/CorrelationId'
+        fulfilment:
+          $ref: '#/components/schemas/IlpFulfilment'
+        extensionList:
+          $ref: '#/components/schemas/ExtensionList'
+        transferState:
+          $ref: '#/components/schemas/TransferState'
+        lastError:
+          $ref: '#/components/schemas/transferError'
     bulkTransactionIndividualTransferResult:
       type: object
       required:
@@ -2181,9 +2274,9 @@ components:
         quoteId:
           $ref: '#/components/schemas/CorrelationId'
         quoteResponse:
-          type: object
+          $ref: '#/components/schemas/individualQuoteResult'
         fulfil:
-          $ref: '#/components/schemas/TransfersIDPutResponse'
+          $ref: '#/components/schemas/individualTransferResult'
         quoteExtensions:
           $ref: '#/components/schemas/ExtensionList'
         transferExtensions:

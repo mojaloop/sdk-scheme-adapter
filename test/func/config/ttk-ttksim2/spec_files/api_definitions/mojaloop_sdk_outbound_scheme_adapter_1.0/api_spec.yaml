@@ -922,10 +922,6 @@ components:
             The HTTP status code returned to the caller. This is the same as the
             actual HTTP status code returned with the response.
         mojaloopError:
-          description: >-
-            If a transfer process results in an error callback during the
-            asynchronous Mojaloop API exchange, this property will contain the
-            underlying Mojaloop API error object.
           $ref: '#/components/schemas/mojaloopError'
     accountsResponse:
       type: object
@@ -1275,10 +1271,6 @@ components:
             The HTTP status code returned to the caller. This is the same as the
             actual HTTP status code returned with the response.
         mojaloopError:
-          description: >-
-            If a quote process results in an error callback during the
-            asynchronous Mojaloop API exchange, this property will contain the
-            underlying Mojaloop API error object.
           $ref: '#/components/schemas/mojaloopError'
     individualQuoteResult:
       type: object
@@ -1301,19 +1293,10 @@ components:
           $ref: '#/components/schemas/IlpCondition'
         extensionList:
           $ref: '#/components/schemas/ExtensionList'
-          description: Optional extension, specific to deployment.
         lastError:
-          description: >
-            Object representing the last error to occur during a quote process.
-            This may be a Mojaloop API error returned from another entity in the
-            scheme or an object representing other types of error e.g.
-            exceptions that may occur inside the scheme adapter.
           $ref: '#/components/schemas/quoteError'
       required:
         - quoteId
-        - transferAmount
-        - ilpPacket
-        - condition
     bulkQuoteResponse:
       type: object
       required:
@@ -1605,12 +1588,10 @@ components:
           $ref: '#/components/schemas/CorrelationId'
         fulfilment:
           $ref: '#/components/schemas/IlpFulfilment'
-          description: >
-            Fulfilment of the condition specified with the transaction.
-            Mandatory if transfer has completed successfully.
         extensionList:
           $ref: '#/components/schemas/ExtensionList'
-          description: Optional extension, specific to deployment.
+        transferState:
+          $ref: '#/components/schemas/TransferState'
         lastError:
           $ref: '#/components/schemas/transferError'
     bulkTransferResponse:
@@ -1726,10 +1707,6 @@ components:
             The HTTP status code returned to the caller. This is the same as the
             actual HTTP status code returned with the response.
         mojaloopError:
-          description: >-
-            If a transfer process results in an error callback during the
-            asynchronous Mojaloop API exchange, this property will contain the
-            underlying Mojaloop API error object.
           $ref: '#/components/schemas/mojaloopError'
     bulkTransactionAcceptPartyErrorResponse:
       allOf:
@@ -1825,12 +1802,8 @@ components:
       properties:
         fulfilment:
           $ref: '#/components/schemas/IlpFulfilment'
-          description: >
-            Fulfilment of the condition specified with the transaction.
-            Mandatory if transfer has completed successfully.
         extensionList:
           $ref: '#/components/schemas/ExtensionList'
-          description: Optional extension, specific to deployment.
     bulkTransferStatusResponse:
       type: object
       required:
