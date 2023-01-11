@@ -2125,12 +2125,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/api-snippets@npm:17.0.2-snapshot.1":
-  version: 17.0.2-snapshot.1
-  resolution: "@mojaloop/api-snippets@npm:17.0.2-snapshot.1"
+"@mojaloop/api-snippets@npm:17.0.2":
+  version: 17.0.2
+  resolution: "@mojaloop/api-snippets@npm:17.0.2"
   dependencies:
     "@apidevtools/json-schema-ref-parser": ^9.1.0
-    commander: ^9.4.1
+    commander: ^9.5.0
     jest-ts-auto-mock: ^2.1.0
     js-yaml: ^4.1.0
     json-refs: ^3.0.15
@@ -2138,7 +2138,7 @@ __metadata:
     openapi-typescript: ^5.4.1
     ts-auto-mock: ^3.6.4
     ttypescript: ^1.5.15
-  checksum: c58fef28f067460213b9e191f50bc5bc9726111e569f35b5a38df7d5cd5ff49d6980af07cc4efb8aa5e78e424f37252fdbaa82eb6226dc59297f077c64145d90
+  checksum: b8edec320a24cac2af28cb3a1fd58676fd7a9ee56c35e033730ff6386b6d16c6c785bb8305437db5743f12fb2fa5ed41f57d9f2f875ca4e885c22f9567b9443f
   languageName: node
   linkType: hard
 
@@ -2325,7 +2325,7 @@ __metadata:
     "@babel/core": ^7.20.12
     "@babel/preset-env": ^7.20.2
     "@koa/cors": ^4.0.0
-    "@mojaloop/api-snippets": 17.0.2-snapshot.1
+    "@mojaloop/api-snippets": 17.0.2
     "@mojaloop/central-services-error-handling": ^12.0.5
     "@mojaloop/central-services-logger": ^11.2.0
     "@mojaloop/central-services-metrics": ^12.0.5
@@ -2356,7 +2356,7 @@ __metadata:
     koa-body: ^6.0.1
     lodash: ^4.17.21
     module-alias: ^2.2.2
-    nock: ^13.2.9
+    nock: ^13.3.0
     npm-check-updates: ^16.6.2
     oauth2-server: ^4.0.0-dev.2
     openapi-jsonschema-parameters: ^12.1.0
@@ -2380,7 +2380,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-command-event-handler@workspace:modules/outbound-command-event-handler"
   dependencies:
-    "@mojaloop/api-snippets": 17.0.2-snapshot.1
+    "@mojaloop/api-snippets": 17.0.2
     "@mojaloop/central-services-shared": ^17.3.1
     "@mojaloop/logging-bc-client-lib": ^0.1.17
     "@mojaloop/logging-bc-public-types-lib": ^0.1.14
@@ -2419,7 +2419,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-domain-event-handler@workspace:modules/outbound-domain-event-handler"
   dependencies:
-    "@mojaloop/api-snippets": 17.0.2-snapshot.1
+    "@mojaloop/api-snippets": 17.0.2
     "@mojaloop/logging-bc-client-lib": ^0.1.17
     "@mojaloop/logging-bc-public-types-lib": ^0.1.14
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
@@ -2456,7 +2456,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-private-shared-lib@workspace:modules/private-shared-lib"
   dependencies:
-    "@mojaloop/api-snippets": 17.0.2-snapshot.1
+    "@mojaloop/api-snippets": 17.0.2
     "@mojaloop/central-services-shared": ^17.3.1
     "@mojaloop/logging-bc-public-types-lib": ^0.1.14
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.2.32
@@ -5162,6 +5162,13 @@ __metadata:
   version: 9.4.1
   resolution: "commander@npm:9.4.1"
   checksum: bfb18e325a5bdf772763c2213d5c7d9e77144d944124e988bcd8e5e65fb6d45d5d4e86b09155d0f2556c9a59c31e428720e57968bcd050b2306e910a0bf3cf13
+  languageName: node
+  linkType: hard
+
+"commander@npm:^9.5.0":
+  version: 9.5.0
+  resolution: "commander@npm:9.5.0"
+  checksum: c7a3e27aa59e913b54a1bafd366b88650bc41d6651f0cbe258d4ff09d43d6a7394232a4dadd0bf518b3e696fdf595db1028a0d82c785b88bd61f8a440cecfade
   languageName: node
   linkType: hard
 
@@ -10413,15 +10420,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nock@npm:^13.2.9":
-  version: 13.2.9
-  resolution: "nock@npm:13.2.9"
+"nock@npm:^13.3.0":
+  version: 13.3.0
+  resolution: "nock@npm:13.3.0"
   dependencies:
     debug: ^4.1.0
     json-stringify-safe: ^5.0.1
     lodash: ^4.17.21
     propagate: ^2.0.0
-  checksum: 04a2dc60b4b55fd1240f28fe34865bbc744088a4570db3781fcf66021644cc3cc9178fd86a0cb0c1f28ea77b83e8f1c9288535f6b39a6d07100059f156ccc23b
+  checksum: 118d04e95a17f493898a82b5dfecc03762776e1980d9c3b2077479747e60b77109c5f7c0df969d1a8f6039260abe5961733553a5841f0f627bb35238576a0009
   languageName: node
   linkType: hard
 
