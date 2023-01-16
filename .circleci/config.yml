@@ -63,9 +63,8 @@ defaults_configure_nvm: &defaults_configure_nvm
     nvm use $(cat .nvmrc)
 
 defaults_environment: &defaults_environment
-  ## TODO: Update this to master/main once its merged into working branch
   # env var for nx to set main branch
-  MAIN_BRANCH_NAME: mvp/bulk-sdk
+  MAIN_BRANCH_NAME: master
 
 ##
 # Executors
