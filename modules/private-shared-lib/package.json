@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@mojaloop/api-snippets": "17.0.3",
-    "@mojaloop/central-services-shared": "^17.4.0",
+    "@mojaloop/central-services-shared": "^17.5.0",
     "@mojaloop/logging-bc-public-types-lib": "^0.1.14",
     "@mojaloop/platform-shared-lib-messaging-types-lib": "^0.2.32",
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "0.2.15",
