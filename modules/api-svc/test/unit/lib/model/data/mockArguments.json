@@ -45,7 +45,8 @@
       "transactionType": {
         "scenario": "TRANSFER",
         "initiator": "PAYER",
-        "initiatorType": "CONSUMER"
+        "initiatorType": "CONSUMER",
+        "subScenario": "SUBSCENARIO"
       },
       "extensionList": {
         "extension": [{
@@ -84,6 +85,7 @@
     "amount": 10,
     "currency": "XOF",
     "transactionType": "TRANSFER",
+    "subScenario": "SUBSCENARIO",
     "initiator": "PAYER",
     "initiatorType": "CONSUMER",
     "expiration": "2019-06-04T04:02:10.378Z",
@@ -165,6 +167,7 @@
         },
         "transactionType": {
           "scenario": "TRANSFER",
+          "subScenario": "SUBSCENARIO",
           "initiator": "PAYER",
           "initiatorType": "CONSUMER"
         }

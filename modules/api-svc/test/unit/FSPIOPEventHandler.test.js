@@ -222,6 +222,7 @@ describe('FSPIOPEventHandler', () => {
                     currency: 'USD',
                     amount: '10',
                     transactionType: 'TRANSFER',
+                    subScenario: 'SUBSCENARIO',
                     note: 'test'
                 }
             ]

@@ -133,6 +133,7 @@ const mojaloopQuoteRequestToInternal = (external) => {
         amount: external.amount.amount,
         currency: external.amount.currency,
         transactionType: external.transactionType.scenario,
+        subScenario: external.transactionType.subScenario,
         initiator: external.transactionType.initiator,
         initiatorType: external.transactionType.initiatorType
     };
@@ -253,6 +254,7 @@ const mojaloopPrepareToInternalTransfer = (external, quote, ilp) => {
             currency: quote.request.amount.currency,
             amount: quote.request.amount.amount,
             transactionType: quote.request.transactionType.scenario,
+            subScenario: quote.request.transactionType.subScenario,
             ilpPacket: {
                 data: ilp.getTransactionObject(external.ilpPacket),
             },
@@ -286,6 +288,7 @@ const mojaloopTransactionRequestToInternal = (external) => {
         amount: external.amount.amount,
         currency: external.amount.currency,
         transactionType: external.transactionType.scenario,
+        subScenario: external.transactionType.subScenario,
         initiator: external.transactionType.initiator,
         initiatorType: external.transactionType.initiatorType
     };
@@ -325,6 +328,7 @@ const mojaloopBulkQuotesRequestToInternal = (external) => {
             amount: quote.amount.amount,
             currency: quote.amount.currency,
             transactionType: quote.transactionType.scenario,
+            subScenario: quote.transactionType.subScenario,
             initiator: quote.transactionType.initiator,
             initiatorType: quote.transactionType.initiatorType
         };
@@ -600,6 +604,7 @@ const mojaloopBulkPrepareToInternalBulkTransfer = (external, bulkQuotes, ilp) =>
                 to: internalQuote.to,
                 amountType: internalQuote.amountType,
                 transactionType: internalQuote.transactionType,
+                subScenario: internalQuote.subScenario,
                 note: internalQuote.note
             };
         });

@@ -58,8 +58,7 @@ export async function handlePrepareSDKOutboundBulkResponseCmdEvt(
             return individualTransfer.toIndividualTransferResult();
         }));
 
-        // TODO: Refactor SDKSchemeAdapter.V2_0_0.Inbound -> DFSP.V2_0_0.Inbound
-        const bulkTransactionResponse: SDKSchemeAdapter.V2_0_0.Inbound.Types.bulkTransactionResponse = {
+        const bulkTransactionResponse: SDKSchemeAdapter.V2_0_0.Backend.Types.bulkTransactionResponse = {
             bulkHomeTransactionID: bulkTransaction.bulkHomeTransactionID,
             bulkTransactionId: bulkTransaction.id,
             currentState: bulkTransaction.state == BulkTransactionInternalState.TRANSFERS_COMPLETED ? SDKOutboundTransferState.COMPLETED : SDKOutboundTransferState.ERROR_OCCURRED,
