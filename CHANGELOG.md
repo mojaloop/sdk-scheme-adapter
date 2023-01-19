@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [21.6.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.5.2...v21.6.0) (2023-01-19)
+
+
+### Features
+
+* **mojaloop/#3053:** add support for subscenarios to backend, outboud and ilp ([#430](https://github.com/mojaloop/sdk-scheme-adapter/issues/430)) ([f6c739a](https://github.com/mojaloop/sdk-scheme-adapter/commit/f6c739a93ab6e64a0bd824ed31fc45e1ec56c948)), closes [mojaloop/#3053](https://github.com/mojaloop/project/issues/3053)
+
 ### [21.5.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.5.1...v21.5.2) (2022-12-16)
 
 
