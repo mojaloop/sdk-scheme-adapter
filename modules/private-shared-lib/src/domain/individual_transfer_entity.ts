@@ -206,8 +206,7 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         return this._state.partyResponse?.party?.partyIdInfo?.fspId;
     }
 
-    // TODO: Refactor SDKSchemeAdapter.V2_0_0.Inbound -> DFSP.V2_0_0.Inbound
-    toIndividualTransferResult(): SDKSchemeAdapter.V2_0_0.Inbound.Types.bulkTransactionIndividualTransferResult {
+    toIndividualTransferResult(): SDKSchemeAdapter.V2_0_0.Backend.Types.bulkTransactionIndividualTransferResult {
         // TODO: Should we infer the FSPIOP-transferState for the individualTransfer based on the SDK-IndividualTransferInternalState? See comments below in the Fulfil mapping.
         // eslint-disable-next-line max-len
         const transferState = (this.transferState === IndividualTransferInternalState.TRANSFERS_SUCCESS) ? CentralServicedSharedEnum.Transfers.TransferState.COMMITTED : CentralServicedSharedEnum.Transfers.TransferState.ABORTED;

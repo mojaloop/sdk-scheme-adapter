@@ -368,6 +368,7 @@ class OutboundRequestToPayModel {
             },
             transactionType: {
                 scenario: this.data.scenario,
+                subScenario: this.data.subScenario,
                 initiator: this.data.initiator,
                 initiatorType: this.data.initiatorType
             }

@@ -28,8 +28,7 @@ import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@module-types';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
-// TODO: Refactor SDKSchemeAdapter.V2_0_0.Inbound -> DFSP.V2_0_0.Inbound
-type BulkTransactionResponse = SDKSchemeAdapter.V2_0_0.Inbound.Types.bulkTransactionResponse;
+type BulkTransactionResponse = SDKSchemeAdapter.V2_0_0.Backend.Types.bulkTransactionResponse;
 
 export type ISDKOutboundBulkResponsePreparedDmEvtData = {
     bulkId: string;

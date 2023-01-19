@@ -47,6 +47,7 @@
       "idValue": "987654321"
     },
     "transactionType": "TRANSFER",
+    "subScenario": "SUBSCENARIO",
     "transferId": "00000000-0000-1000-8000-000000000001",
     "transferRequestExtensions": [
       {

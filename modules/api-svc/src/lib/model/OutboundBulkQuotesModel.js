@@ -257,6 +257,7 @@ class OutboundBulkQuotesModel {
                 },
                 transactionType: {
                     scenario: individualQuote.transactionType,
+                    subScenario: individualQuote.subScenario,
                     // TODO: support payee initiated txns?
                     initiator: 'PAYER',
                     // TODO: defaulting to CONSUMER initiator type should
