@@ -23,6 +23,8 @@
  ******/
 
 import getHealthHandlers from './health';
-export default {
+import { Handler } from 'openapi-backend';
+
+export default <{ [operationId: string]: Handler }> {
     ...getHealthHandlers,
 };

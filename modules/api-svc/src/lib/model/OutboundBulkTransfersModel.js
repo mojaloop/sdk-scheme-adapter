@@ -206,7 +206,7 @@ class OutboundBulkTransfersModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /bulkTransfers request to the switch
             try {
-                const res = await this._requests.postBulkTransfers(bulkTransferPrepare, this.data.from.fspId);
+                const res = await this._requests.postBulkTransfers(bulkTransferPrepare, bulkTransferPrepare.payeeFsp);
                 this._logger.push({ res }).log('Bulk transfer request sent to peer');
             }
             catch (err) {
