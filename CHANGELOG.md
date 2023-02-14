@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [21.6.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.6.0...v21.6.1) (2023-02-14)
+
+
+### Bug Fixes
+
+* **mojaloop/2891:** fix outbound fspiop headers ([#436](https://github.com/mojaloop/sdk-scheme-adapter/issues/436)) ([bfce0b0](https://github.com/mojaloop/sdk-scheme-adapter/commit/bfce0b097d40d565da47b5c56a0e7a84ff47fb1d))
+
 ## [21.6.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.5.2...v21.6.0) (2023-01-19)
 
 
