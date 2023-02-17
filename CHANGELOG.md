@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [22.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.6.1...v22.0.0) (2023-02-17)
+
+
+### Bug Fixes
+
+* **mojaloop/3132:** wso2 auth fix fspiop handler ([#437](https://github.com/mojaloop/sdk-scheme-adapter/issues/437)) ([4260361](https://github.com/mojaloop/sdk-scheme-adapter/commit/4260361f537606de15d114da3aa897e6124e1a34))
+
 ### [21.6.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.6.0...v21.6.1) (2023-02-14)
 
 
