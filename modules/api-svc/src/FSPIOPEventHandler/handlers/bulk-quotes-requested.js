@@ -39,7 +39,7 @@ module.exports.handleBulkQuotesRequestedDmEvt = async (
             ...options.config,
             cache: options.cache,
             logger: logger,
-            wso2: options.wso2Auth,
+            wso2: options.wso2,
         });
 
         await model.initialize(event.request);

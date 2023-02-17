@@ -40,11 +40,11 @@ const {
 } = require('./handlers');
 
 class FSPIOPEventHandler {
-    constructor({ config, logger, cache, wso2Auth }) {
+    constructor({ config, logger, cache, wso2 }) {
         this._conf = config;
         this._logger = logger;
         this._cache = cache;
-        this._wso2Auth = wso2Auth;
+        this._wso2 = wso2;
 
         this._loggerFromLoggingBC = new DefaultLogger(BC_CONFIG.bcName, 'fspiop-event-handler', '0.0.1', config.logLevel);
 
@@ -66,7 +66,7 @@ class FSPIOPEventHandler {
             producer: this._producer,
             consumer: this._consumer,
             cache: this._cache,
-            wso2Auth: this._wso2Auth,
+            wso2: this._wso2,
             config: this._conf,
         };
 

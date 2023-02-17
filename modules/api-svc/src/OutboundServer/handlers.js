@@ -520,7 +520,7 @@ const getPartiesByTypeAndId = async (ctx) => {
             ...ctx.state.conf,
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            wso2Auth: ctx.state.wso2Auth,
+            wso2: ctx.state.wso2,
         };
 
         const cacheKey = PartiesModel.generateKey(args);
@@ -554,7 +554,7 @@ const postQuotes = async (ctx) => {
             ...ctx.state.conf,
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            wso2Auth: ctx.state.wso2Auth,
+            wso2: ctx.state.wso2,
         };
 
         const cacheKey = QuotesModel.generateKey(args);
@@ -584,7 +584,7 @@ const postSimpleTransfers = async (ctx) => {
             ...ctx.state.conf,
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            wso2Auth: ctx.state.wso2Auth,
+            wso2: ctx.state.wso2,
         };
 
         const cacheKey = TransfersModel.generateKey(args);
