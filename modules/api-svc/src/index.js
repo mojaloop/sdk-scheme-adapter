@@ -131,7 +131,7 @@ class Server extends EventEmitter {
                 config: this.conf,
                 logger: this.logger.push(LOG_ID.FSPIOP_EVENT_HANDLER),
                 cache: this.cache,
-                wso2Auth: this.wso2,
+                wso2: this.wso2,
             });
         }
     }

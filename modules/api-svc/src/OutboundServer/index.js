@@ -51,7 +51,7 @@ class OutboundApi extends EventEmitter {
                 peerEndpoint: conf.peerEndpoint.replace(endpointRegex, ''),
                 proxyConfig: conf.proxyConfig,
                 logger: this._logger,
-                wso2Auth: wso2.auth,
+                wso2: wso2,
                 tls: conf.outbound.tls,
             }));
         }

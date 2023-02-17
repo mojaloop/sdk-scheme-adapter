@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
-  "version": "21.6.1",
+  "version": "22.0.0-snapshot.2",
   "description": "mojaloop sdk-scheme-adapter",
   "license": "Apache-2.0",
   "homepage": "https://github.com/mojaloop/sdk-scheme-adapter",
@@ -67,7 +67,7 @@
     "wait-4-docker": "node ./scripts/_wait4_all.js"
   },
   "dependencies": {
-    "nx": "15.7.0",
+    "nx": "15.7.1",
     "tslib": "^2.5.0"
   },
   "devDependencies": {
@@ -81,7 +81,7 @@
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-plugin-import": "latest",
     "husky": "^8.0.3",
-    "jest": "^29.4.2",
+    "jest": "^29.4.3",
     "nodemon": "^2.0.20",
     "npm-check-updates": "^16.7.4",
     "replace": "^1.2.2",

@@ -27,7 +27,7 @@ class ProxyModel {
      * @param config.peerEndpoint {string}
      * @param config.dfspId {string}
      * @param config.tls {Object}
-     * @param config.wso2Auth {Object}
+     * @param config.wso2 {Object}
      */
     constructor(config) {
         this._logger = config.logger;
@@ -41,7 +41,7 @@ class ProxyModel {
             },
             jwsSign: config.jwsSign,
             jwsSigningKey: config.jwsSigningKey,
-            wso2Auth: config.wso2Auth
+            wso2: config.wso2
         });
 
         this._validateConfig(config.proxyConfig);
