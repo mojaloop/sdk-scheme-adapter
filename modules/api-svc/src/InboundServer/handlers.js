@@ -740,12 +740,14 @@ const postBulkQuotes = async (ctx) => {
  */
 const putBulkQuotesById = async (ctx) => {
     // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`bulkQuote_${ctx.state.path.params.ID}`, {
+    const bulkQuotesId = ctx.state.path.params.ID;
+    const data = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers }
+    };
+    await ctx.state.cache.publish(`bulkQuote_${bulkQuotesId}`, {
         type: 'bulkQuoteResponse',
-        data: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        }
+        data
     });
 
     ctx.response.status = ReturnCodes.OK.CODE;
@@ -756,12 +758,14 @@ const putBulkQuotesById = async (ctx) => {
  */
 const putBulkQuotesByIdError = async(ctx) => {
     // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`bulkQuote_${ctx.state.path.params.ID}`, {
+    const bulkQuotesId = ctx.state.path.params.ID;
+    const data = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers }
+    };
+    await ctx.state.cache.publish(`bulkQuote_${bulkQuotesId}`, {
         type: 'bulkQuoteResponseError',
-        data: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        }
+        data
     });
 
     ctx.response.status = ReturnCodes.OK.CODE;
