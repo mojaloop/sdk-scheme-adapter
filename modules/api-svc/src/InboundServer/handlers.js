@@ -27,6 +27,8 @@ const {
  * Handles a GET /authorizations/{id} request
  */
 const getAuthorizationsById = async (ctx) => {
+    const sourceFspId = ctx.request.headers['fspiop-source'];
+    const authId = ctx.state.path.params.ID;
     // kick off an asyncronous operation to handle the request
     (async () => {
         try {
@@ -39,10 +41,8 @@ const getAuthorizationsById = async (ctx) => {
                 resourceVersions: ctx.resourceVersions,
             });
 
-            const sourceFspId = ctx.request.headers['fspiop-source'];
-
             // use the model to handle the request
-            const response = await model.getAuthorizations(ctx.state.path.params.ID, sourceFspId);
+            const response = await model.getAuthorizations(authId, sourceFspId);
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled GET /parties/{idType}/{idValue} request');
@@ -63,6 +63,10 @@ const getAuthorizationsById = async (ctx) => {
  * Handles a GET /participants/{idType}/{idValue} request
  */
 const getParticipantsByTypeAndId = async (ctx) => {
+    const sourceFspId = ctx.request.headers['fspiop-source'];
+    const idType = ctx.state.path.params.Type;
+    const idValue = ctx.state.path.params.ID;
+    const subIdValue = ctx.state.path.params.SubId;
     // kick off an asynchronous operation to handle the request
     (async () => {
         try {
@@ -75,11 +79,8 @@ const getParticipantsByTypeAndId = async (ctx) => {
                 resourceVersions: ctx.resourceVersions,
             });
 
-            const sourceFspId = ctx.request.headers['fspiop-source'];
-
             // use the model to handle the request
-            const response = await model.getParticipants(ctx.state.path.params.Type,
-                ctx.state.path.params.ID, ctx.state.path.params.SubId, sourceFspId);
+            const response = await model.getParticipants(idType, idValue, subIdValue, sourceFspId);
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled GET /participants/{idType}/{idValue}');
@@ -101,6 +102,10 @@ const getParticipantsByTypeAndId = async (ctx) => {
  * Handles a GET /parties/{idType}/{idValue} request
  */
 const getPartiesByTypeAndId = async (ctx) => {
+    const sourceFspId = ctx.request.headers['fspiop-source'];
+    const idType = ctx.state.path.params.Type;
+    const idValue = ctx.state.path.params.ID;
+    const subIdValue = ctx.state.path.params.SubId;
     // kick off an asyncronous operation to handle the request
     (async () => {
         try {
@@ -113,11 +118,8 @@ const getPartiesByTypeAndId = async (ctx) => {
                 resourceVersions: ctx.resourceVersions,
             });
 
-            const sourceFspId = ctx.request.headers['fspiop-source'];
-
             // use the model to handle the request
-            const response = await model.getParties(ctx.state.path.params.Type, ctx.state.path.params.ID,
-                ctx.state.path.params.SubId, sourceFspId);
+            const response = await model.getParties(idType, idValue, subIdValue, sourceFspId);
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled GET /parties/{idType}/{idValue} request');
@@ -149,6 +151,11 @@ const postPartiesByTypeAndId = (ctx) => {
  * Handles a POST /quotes request
  */
 const postQuotes = async (ctx) => {
+    const sourceFspId = ctx.request.headers['fspiop-source'];
+    const quoteRequest = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers },
+    };
     // kick off an asyncronous operation to handle the request
     (async () => {
         try {
@@ -161,13 +168,8 @@ const postQuotes = async (ctx) => {
                 resourceVersions: ctx.resourceVersions,
             });
 
-            const sourceFspId = ctx.request.headers['fspiop-source'];
-
             // use the model to handle the request
-            const response = await model.quoteRequest({
-                body: ctx.request.body,
-                headers: ctx.request.headers,
-            }, sourceFspId);
+            const response = await model.quoteRequest(quoteRequest, sourceFspId);
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled POST /quotes request');
@@ -189,6 +191,11 @@ const postQuotes = async (ctx) => {
  * Handles a POST /transfers request
  */
 const postTransfers = async (ctx) => {
+    const sourceFspId = ctx.request.headers['fspiop-source'];
+    const transferRequest = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers },
+    };
     // kick off an asyncronous operation to handle the request
     (async () => {
         try {
@@ -201,13 +208,8 @@ const postTransfers = async (ctx) => {
                 resourceVersions: ctx.resourceVersions,
             });
 
-            const sourceFspId = ctx.request.headers['fspiop-source'];
-
             // use the model to handle the request
-            const response = await model.prepareTransfer({
-                body: ctx.request.body,
-                headers: ctx.request.headers,
-            }, sourceFspId);
+            const response = await model.prepareTransfer(transferRequest, sourceFspId);
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled POST /transfers request');
@@ -228,6 +230,8 @@ const postTransfers = async (ctx) => {
  * Handles a GET /transfers/{ID} request
  */
 const getTransfersById = async (ctx) => {
+    const sourceFspId = ctx.request.headers['fspiop-source'];
+    const transferId = ctx.state.path.params.ID;
     // kick off an asyncronous operation to handle the request
     (async () => {
         try {
@@ -240,11 +244,8 @@ const getTransfersById = async (ctx) => {
                 resourceVersions: ctx.resourceVersions,
             });
 
-            const sourceFspId = ctx.request.headers['fspiop-source'];
-
             // use the model to handle the request
-            const response = await model.getTransfer(ctx.state.path.params.ID,
-                sourceFspId);
+            const response = await model.getTransfer(transferId, sourceFspId);
 
             // log the result
             ctx.state.logger.push({response}).
@@ -266,6 +267,8 @@ const getTransfersById = async (ctx) => {
  * Handles a POST /transactionRequests request
  */
 const postTransactionRequests = async (ctx) => {
+    const sourceFspId = ctx.request.headers['fspiop-source'];
+    const transactionRequest = { ...ctx.request.body };
     // kick off an asyncronous operation to handle the request
     (async () => {
         try {
@@ -278,10 +281,8 @@ const postTransactionRequests = async (ctx) => {
                 resourceVersions: ctx.resourceVersions,
             });
 
-            const sourceFspId = ctx.request.headers['fspiop-source'];
-
             // use the model to handle the request
-            const response = await model.transactionRequest(ctx.request.body, sourceFspId);
+            const response = await model.transactionRequest(transactionRequest, sourceFspId);
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled POST /transactionRequests request');
@@ -498,6 +499,8 @@ const putQuotesByIdError = async (ctx) => {
  * Handles a GET /quotes/{ID}
  */
 const getQuoteById = async (ctx) => {
+    const sourceFspId = ctx.request.headers['fspiop-source'];
+    const quoteId = ctx.state.path.params.ID;
     // kick off an asyncronous operation to handle the request
     (async () => {
         try {
@@ -510,10 +513,8 @@ const getQuoteById = async (ctx) => {
                 resourceVersions: ctx.resourceVersions,
             });
 
-            const sourceFspId = ctx.request.headers['fspiop-source'];
-
             // use the model to handle the request
-            const response = await model.getQuoteRequest(ctx.state.path.params.ID, sourceFspId);
+            const response = await model.getQuoteRequest(quoteId, sourceFspId);
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled GET /quotes request');
@@ -668,6 +669,8 @@ const putTransfersByIdError = async (ctx) => {
  * Handles a GET /bulkQuotes/{ID} request
  */
 const getBulkQuotesById = async (ctx) => {
+    const sourceFspId = ctx.request.headers['fspiop-source'];
+    const bulkQuoteId = ctx.state.path.params.ID;
     // kick off an asyncronous operation to handle the request
     (async () => {
         try {
@@ -680,11 +683,8 @@ const getBulkQuotesById = async (ctx) => {
                 resourceVersions: ctx.resourceVersions,
             });
 
-            const sourceFspId = ctx.request.headers['fspiop-source'];
-
             // use the model to handle the request
-            const response = await model.getBulkQuote(ctx.state.path.params.ID,
-                sourceFspId);
+            const response = await model.getBulkQuote(bulkQuoteId, sourceFspId);
 
             // log the result
             ctx.state.logger.push({response}).
@@ -706,6 +706,8 @@ const getBulkQuotesById = async (ctx) => {
  * Handles a POST /bulkQuotes request
  */
 const postBulkQuotes = async (ctx) => {
+    const sourceFspId = ctx.request.headers['fspiop-source'];
+    const bulkQuoteRequest = { ...ctx.request.body };
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
@@ -717,10 +719,8 @@ const postBulkQuotes = async (ctx) => {
                 resourceVersions: ctx.resourceVersions,
             });
 
-            const sourceFspId = ctx.request.headers['fspiop-source'];
-
             // use the model to handle the request
-            const response = await model.bulkQuoteRequest(ctx.request.body, sourceFspId);
+            const response = await model.bulkQuoteRequest(bulkQuoteRequest, sourceFspId);
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled POST /bulkQuotes request');
@@ -772,6 +772,8 @@ const putBulkQuotesByIdError = async(ctx) => {
  * Handles a GET /bulkTransfers/{ID} request
  */
 const getBulkTransfersById = async (ctx) => {
+    const sourceFspId = ctx.request.headers['fspiop-source'];
+    const bulkTransferId = ctx.state.path.params.ID;
     // kick off an asyncronous operation to handle the request
     (async () => {
         try {
@@ -784,11 +786,8 @@ const getBulkTransfersById = async (ctx) => {
                 resourceVersions: ctx.resourceVersions,
             });
 
-            const sourceFspId = ctx.request.headers['fspiop-source'];
-
             // use the model to handle the request
-            const response = await model.getBulkTransfer(ctx.state.path.params.ID,
-                sourceFspId);
+            const response = await model.getBulkTransfer(bulkTransferId, sourceFspId);
 
             // log the result
             ctx.state.logger.push({response}).
@@ -810,6 +809,8 @@ const getBulkTransfersById = async (ctx) => {
  * Handles a POST /bulkTransfers request
  */
 const postBulkTransfers = async (ctx) => {
+    const sourceFspId = ctx.request.headers['fspiop-source'];
+    const bulkPrepareRequest = { ...ctx.request.body };
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
@@ -821,10 +822,8 @@ const postBulkTransfers = async (ctx) => {
                 resourceVersions: ctx.resourceVersions,
             });
 
-            const sourceFspId = ctx.request.headers['fspiop-source'];
-
             // use the model to handle the request
-            const response = await model.prepareBulkTransfer(ctx.request.body, sourceFspId);
+            const response = await model.prepareBulkTransfer(bulkPrepareRequest, sourceFspId);
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled POST /bulkTransfers request');
