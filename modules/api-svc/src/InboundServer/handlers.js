@@ -305,16 +305,17 @@ const postTransactionRequests = async (ctx) => {
  */
 const putAuthorizationsById = async (ctx) => {
     const idValue = ctx.state.path.params.ID;
+    const data = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers }
+    };
 
     // publish an event onto the cache for subscribers to action
     const cacheId = `otp_${idValue}`;
     // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(cacheId, {
         type: 'authorizationsResponse',
-        data: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        }
+        data
     });
     ctx.response.status = ReturnCodes.OK.CODE;
 };
@@ -325,12 +326,14 @@ const putAuthorizationsById = async (ctx) => {
  */
 const putParticipantsById = async (ctx) => {
     // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`ac_${ctx.state.path.params.ID}`, {
+    const participantId = ctx.state.path.params.ID;
+    const data = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers }
+    };
+    await ctx.state.cache.publish(`ac_${participantId}`, {
         type: 'accountsCreationSuccessfulResponse',
-        data: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        }
+        data
     });
 
     ctx.response.status = ReturnCodes.OK.CODE;
@@ -342,12 +345,14 @@ const putParticipantsById = async (ctx) => {
  */
 const putParticipantsByIdError = async (ctx) => {
     // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`ac_${ctx.state.path.params.ID}`, {
+    const participantId = ctx.state.path.params.ID;
+    const data = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers }
+    };
+    await ctx.state.cache.publish(`ac_${participantId}`, {
         type: 'accountsCreationErrorResponse',
-        data: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        }
+        data
     });
 
     ctx.response.status = ReturnCodes.OK.CODE;
@@ -364,14 +369,15 @@ const putParticipantsByTypeAndId = async (ctx) => {
         const idType = ctx.state.path.params.Type;
         const idValue = ctx.state.path.params.ID;
         const idSubValue = ctx.state.path.params.SubId;
+        const data = {
+            body: { ...ctx.request.body },
+            headers: { ...ctx.request.headers }
+        };
 
         // publish an event onto the cache for subscribers to action
         const cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
         await ctx.state.cache.publish(cacheId, {
-            data: {
-                body: ctx.request.body,
-                headers: ctx.request.headers
-            }
+            data
         });
         ctx.response.status = ReturnCodes.OK.CODE;
     } else {
@@ -389,17 +395,17 @@ const putParticipantsByTypeAndIdError = async(ctx) => {
     const idType = ctx.state.path.params.Type;
     const idValue = ctx.state.path.params.ID;
     const idSubValue = ctx.state.path.params.SubId;
-
+    const data = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers }
+    };
     // publish an event onto the cache for subscribers to action
     // note that we publish the event the same way we publish a success PUT
     // the subscriber will notice the body contains an errorInformation property
     // and recognise it as an error response
     const cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
     await ctx.state.cache.publish(cacheId, {
-        data: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        }
+        data
     });
 
     ctx.response.status = ReturnCodes.OK.CODE;
@@ -415,14 +421,15 @@ const putPartiesByTypeAndId = async (ctx) => {
     const idType = ctx.state.path.params.Type;
     const idValue = ctx.state.path.params.ID;
     const idSubValue = ctx.state.path.params.SubId;
+    const message = {
+        body: { ...ctx.request.body },
+        headers: {...ctx.request.headers}
+    };
 
     // publish an event onto the cache for subscribers to finish the action
     await PartiesModel.triggerDeferredJob({
         cache: ctx.state.cache,
-        message: {
-            headers: ctx.request.headers,
-            body: ctx.request.body
-        },
+        message,
         args: {
             type: idType,
             id: idValue,
@@ -441,23 +448,22 @@ const putQuoteById = async (ctx) => {
     // - OutboundRequestToPayTransferModel
     // - OutboundTransfersModel
     // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`qt_${ctx.state.path.params.ID}`, {
+    const quoteId = ctx.state.path.params.ID;
+    const data = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers }
+    };
+    await ctx.state.cache.publish(`qt_${quoteId}`, {
         type: 'quoteResponse',
-        data: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        }
+        data
     });
 
     // duplicate publication until legacy code refactored
     await QuotesModel.triggerDeferredJob({
         cache: ctx.state.cache,
-        message: {
-            headers: ctx.request.headers,
-            body: ctx.request.body
-        },
+        message: data,
         args: {
-            quoteId: ctx.state.path.params.ID
+            quoteId
         }
     });
 
@@ -473,20 +479,22 @@ const putQuotesByIdError = async (ctx) => {
     // - OutboundRequestToPayTransferModel
     // - OutboundTransfersModel
     // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`qt_${ctx.state.path.params.ID}`, {
+    const quoteId = ctx.state.path.params.ID;
+    const data = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers }
+    };
+    await ctx.state.cache.publish(`qt_${quoteId}`, {
         type: 'quoteResponseError',
-        data: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        }
+        data
     });
 
     // duplicate publication until legacy code refactored
     await QuotesModel.triggerDeferredJob({
         cache: ctx.state.cache,
-        message: ctx.request.body,
+        message: data.body,
         args: {
-            quoteId: ctx.state.path.params.ID
+            quoteId
         }
     });
 
@@ -536,12 +544,14 @@ const getQuoteById = async (ctx) => {
  */
 const putTransactionRequestsById = async (ctx) => {
     // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`txnreq_${ctx.state.path.params.ID}`, {
+    const transactionRequestId = ctx.state.path.params.ID;
+    const data = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers }
+    };
+    await ctx.state.cache.publish(`txnreq_${transactionRequestId}`, {
         type: 'transactionRequestResponse',
-        data: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        }
+        data
     });
 
     ctx.response.status = ReturnCodes.OK.CODE;
@@ -555,22 +565,21 @@ const putTransfersById = async (ctx) => {
     // - OutboundRequestToPayTransferModel
     // - OutboundTransfersModel
     // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`tf_${ctx.state.path.params.ID}`, {
+    const transferId = ctx.state.path.params.ID;
+    const data = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers }
+    };
+    await ctx.state.cache.publish(`tf_${transferId}`, {
         type: 'transferFulfil',
-        data: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        }
+        data
     });
 
     await TransfersModel.triggerDeferredJob({
         cache: ctx.state.cache,
-        message: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        },
+        message: data,
         args: {
-            transferId: ctx.state.path.params.ID,
+            transferId,
         }
     });
 
@@ -582,10 +591,9 @@ const putTransfersById = async (ctx) => {
  */
 const patchTransfersById = async (ctx) => {
     const req = {
-        headers: ctx.request.headers,
-        data: ctx.request.body
+        headers: { ...ctx.request.headers },
+        data: { ...ctx.request.body }
     };
-
     const idValue = ctx.state.path.params.ID;
 
     // use the transfers model to execute asynchronous stages with the switch
@@ -612,17 +620,17 @@ const putPartiesByTypeAndIdError = async(ctx) => {
     const idType = ctx.state.path.params.Type;
     const idValue = ctx.state.path.params.ID;
     const idSubValue = ctx.state.path.params.SubId;
-
+    const message = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers }
+    };
     // publish an event onto the cache for subscribers to action
     // note that we publish the event the same way we publish a success PUT
     // the subscriber will notice the body contains an errorInformation property
     // and recognizes it as an error response
     await PartiesModel.triggerDeferredJob({
         cache: ctx.state.cache,
-        message: {
-            headers: ctx.request.headers,
-            body: ctx.request.body
-        },
+        message,
         args: {
             type: idType,
             id: idValue,
@@ -642,22 +650,21 @@ const putTransfersByIdError = async (ctx) => {
     // - OutboundRequestToPayTransferModel
     // - OutboundTransfersModel
     // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`tf_${ctx.state.path.params.ID}`, {
+    const transferId = ctx.state.path.params.ID;
+    const data = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers }
+    };
+    await ctx.state.cache.publish(`tf_${transferId}`, {
         type: 'transferError',
-        data: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        }
+        data
     });
 
     await TransfersModel.triggerDeferredJob({
         cache: ctx.state.cache,
-        message: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        },
+        message: data,
         args: {
-            transferId: ctx.state.path.params.ID,
+            transferId,
         }
     });
 
@@ -847,12 +854,14 @@ const postBulkTransfers = async (ctx) => {
  */
 const putBulkTransfersById = async (ctx) => {
     // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`bulkTransfer_${ctx.state.path.params.ID}`, {
+    const bulkTransfersId = ctx.state.path.params.ID;
+    const data = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers }
+    };
+    await ctx.state.cache.publish(`bulkTransfer_${bulkTransfersId}`, {
         type: 'bulkTransferResponse',
-        data: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        }
+        data
     });
 
     ctx.response.status = ReturnCodes.OK.CODE;
@@ -863,12 +872,14 @@ const putBulkTransfersById = async (ctx) => {
  */
 const putBulkTransfersByIdError = async(ctx) => {
     // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`bulkTransfer_${ctx.state.path.params.ID}`, {
+    const bulkTransfersId = ctx.state.path.params.ID;
+    const data = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers }
+    };
+    await ctx.state.cache.publish(`bulkTransfer_${bulkTransfersId}`, {
         type: 'bulkTransferResponseError',
-        data: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        }
+        data
     });
 
     ctx.response.status = ReturnCodes.OK.CODE;
