@@ -148,18 +148,22 @@ class Cache {
             this._callbacks[channel] = { [id]: callback };
             await this._subscriptionClient.subscribe(channel, (msg) => {
                 // we have some callbacks to make
-                for (const [id, cb] of Object.entries(this._callbacks[channel])) {
-                    this._logger.log(`Cache message received on channel ${channel}. Making callback with id ${id}`);
-
-                    // call the callback with the channel name, message and callbackId...
-                    // ...(which is useful for unsubscribe)
-                    try {
-                        cb(channel, msg, id);
-                    } catch (err) {
-                        this._logger
-                            .push({ callbackId: id, err })
-                            .log('Unhandled error in cache subscription handler');
+                if (this._callbacks[channel]) {
+                    for (const [id, cb] of Object.entries(this._callbacks[channel])) {
+                        this._logger.log(`Cache message received on channel ${channel}. Making callback with id ${id}`);
+    
+                        // call the callback with the channel name, message and callbackId...
+                        // ...(which is useful for unsubscribe)
+                        try {
+                            cb(channel, msg, id);
+                        } catch (err) {
+                            this._logger
+                                .push({ callbackId: id, err })
+                                .log('Unhandled error in cache subscription handler');
+                        }
                     }
+                } else {
+                    this._logger.log(`Cache message received on unknown channel ${channel}. Ignoring...`);
                 }
             });
         } else {

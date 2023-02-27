@@ -27,6 +27,8 @@ const {
  * Handles a GET /authorizations/{id} request
  */
 const getAuthorizationsById = async (ctx) => {
+    const sourceFspId = ctx.request.headers['fspiop-source'];
+    const authId = ctx.state.path.params.ID;
     // kick off an asyncronous operation to handle the request
     (async () => {
         try {
@@ -39,10 +41,8 @@ const getAuthorizationsById = async (ctx) => {
                 resourceVersions: ctx.resourceVersions,
             });
 
-            const sourceFspId = ctx.request.headers['fspiop-source'];
-
             // use the model to handle the request
-            const response = await model.getAuthorizations(ctx.state.path.params.ID, sourceFspId);
+            const response = await model.getAuthorizations(authId, sourceFspId);
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled GET /parties/{idType}/{idValue} request');
@@ -63,6 +63,10 @@ const getAuthorizationsById = async (ctx) => {
  * Handles a GET /participants/{idType}/{idValue} request
  */
 const getParticipantsByTypeAndId = async (ctx) => {
+    const sourceFspId = ctx.request.headers['fspiop-source'];
+    const idType = ctx.state.path.params.Type;
+    const idValue = ctx.state.path.params.ID;
+    const subIdValue = ctx.state.path.params.SubId;
     // kick off an asynchronous operation to handle the request
     (async () => {
         try {
@@ -75,11 +79,8 @@ const getParticipantsByTypeAndId = async (ctx) => {
                 resourceVersions: ctx.resourceVersions,
             });
 
-            const sourceFspId = ctx.request.headers['fspiop-source'];
-
             // use the model to handle the request
-            const response = await model.getParticipants(ctx.state.path.params.Type,
-                ctx.state.path.params.ID, ctx.state.path.params.SubId, sourceFspId);
+            const response = await model.getParticipants(idType, idValue, subIdValue, sourceFspId);
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled GET /participants/{idType}/{idValue}');
@@ -101,6 +102,10 @@ const getParticipantsByTypeAndId = async (ctx) => {
  * Handles a GET /parties/{idType}/{idValue} request
  */
 const getPartiesByTypeAndId = async (ctx) => {
+    const sourceFspId = ctx.request.headers['fspiop-source'];
+    const idType = ctx.state.path.params.Type;
+    const idValue = ctx.state.path.params.ID;
+    const subIdValue = ctx.state.path.params.SubId;
     // kick off an asyncronous operation to handle the request
     (async () => {
         try {
@@ -113,11 +118,8 @@ const getPartiesByTypeAndId = async (ctx) => {
                 resourceVersions: ctx.resourceVersions,
             });
 
-            const sourceFspId = ctx.request.headers['fspiop-source'];
-
             // use the model to handle the request
-            const response = await model.getParties(ctx.state.path.params.Type, ctx.state.path.params.ID,
-                ctx.state.path.params.SubId, sourceFspId);
+            const response = await model.getParties(idType, idValue, subIdValue, sourceFspId);
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled GET /parties/{idType}/{idValue} request');
@@ -149,6 +151,11 @@ const postPartiesByTypeAndId = (ctx) => {
  * Handles a POST /quotes request
  */
 const postQuotes = async (ctx) => {
+    const sourceFspId = ctx.request.headers['fspiop-source'];
+    const quoteRequest = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers },
+    };
     // kick off an asyncronous operation to handle the request
     (async () => {
         try {
@@ -161,13 +168,8 @@ const postQuotes = async (ctx) => {
                 resourceVersions: ctx.resourceVersions,
             });
 
-            const sourceFspId = ctx.request.headers['fspiop-source'];
-
             // use the model to handle the request
-            const response = await model.quoteRequest({
-                body: ctx.request.body,
-                headers: ctx.request.headers,
-            }, sourceFspId);
+            const response = await model.quoteRequest(quoteRequest, sourceFspId);
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled POST /quotes request');
@@ -189,6 +191,11 @@ const postQuotes = async (ctx) => {
  * Handles a POST /transfers request
  */
 const postTransfers = async (ctx) => {
+    const sourceFspId = ctx.request.headers['fspiop-source'];
+    const transferRequest = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers },
+    };
     // kick off an asyncronous operation to handle the request
     (async () => {
         try {
@@ -201,13 +208,8 @@ const postTransfers = async (ctx) => {
                 resourceVersions: ctx.resourceVersions,
             });
 
-            const sourceFspId = ctx.request.headers['fspiop-source'];
-
             // use the model to handle the request
-            const response = await model.prepareTransfer({
-                body: ctx.request.body,
-                headers: ctx.request.headers,
-            }, sourceFspId);
+            const response = await model.prepareTransfer(transferRequest, sourceFspId);
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled POST /transfers request');
@@ -228,6 +230,8 @@ const postTransfers = async (ctx) => {
  * Handles a GET /transfers/{ID} request
  */
 const getTransfersById = async (ctx) => {
+    const sourceFspId = ctx.request.headers['fspiop-source'];
+    const transferId = ctx.state.path.params.ID;
     // kick off an asyncronous operation to handle the request
     (async () => {
         try {
@@ -240,11 +244,8 @@ const getTransfersById = async (ctx) => {
                 resourceVersions: ctx.resourceVersions,
             });
 
-            const sourceFspId = ctx.request.headers['fspiop-source'];
-
             // use the model to handle the request
-            const response = await model.getTransfer(ctx.state.path.params.ID,
-                sourceFspId);
+            const response = await model.getTransfer(transferId, sourceFspId);
 
             // log the result
             ctx.state.logger.push({response}).
@@ -266,6 +267,8 @@ const getTransfersById = async (ctx) => {
  * Handles a POST /transactionRequests request
  */
 const postTransactionRequests = async (ctx) => {
+    const sourceFspId = ctx.request.headers['fspiop-source'];
+    const transactionRequest = { ...ctx.request.body };
     // kick off an asyncronous operation to handle the request
     (async () => {
         try {
@@ -278,10 +281,8 @@ const postTransactionRequests = async (ctx) => {
                 resourceVersions: ctx.resourceVersions,
             });
 
-            const sourceFspId = ctx.request.headers['fspiop-source'];
-
             // use the model to handle the request
-            const response = await model.transactionRequest(ctx.request.body, sourceFspId);
+            const response = await model.transactionRequest(transactionRequest, sourceFspId);
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled POST /transactionRequests request');
@@ -304,16 +305,17 @@ const postTransactionRequests = async (ctx) => {
  */
 const putAuthorizationsById = async (ctx) => {
     const idValue = ctx.state.path.params.ID;
+    const data = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers }
+    };
 
     // publish an event onto the cache for subscribers to action
     const cacheId = `otp_${idValue}`;
     // publish an event onto the cache for subscribers to action
     await ctx.state.cache.publish(cacheId, {
         type: 'authorizationsResponse',
-        data: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        }
+        data
     });
     ctx.response.status = ReturnCodes.OK.CODE;
 };
@@ -324,12 +326,14 @@ const putAuthorizationsById = async (ctx) => {
  */
 const putParticipantsById = async (ctx) => {
     // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`ac_${ctx.state.path.params.ID}`, {
+    const participantId = ctx.state.path.params.ID;
+    const data = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers }
+    };
+    await ctx.state.cache.publish(`ac_${participantId}`, {
         type: 'accountsCreationSuccessfulResponse',
-        data: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        }
+        data
     });
 
     ctx.response.status = ReturnCodes.OK.CODE;
@@ -341,12 +345,14 @@ const putParticipantsById = async (ctx) => {
  */
 const putParticipantsByIdError = async (ctx) => {
     // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`ac_${ctx.state.path.params.ID}`, {
+    const participantId = ctx.state.path.params.ID;
+    const data = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers }
+    };
+    await ctx.state.cache.publish(`ac_${participantId}`, {
         type: 'accountsCreationErrorResponse',
-        data: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        }
+        data
     });
 
     ctx.response.status = ReturnCodes.OK.CODE;
@@ -363,14 +369,15 @@ const putParticipantsByTypeAndId = async (ctx) => {
         const idType = ctx.state.path.params.Type;
         const idValue = ctx.state.path.params.ID;
         const idSubValue = ctx.state.path.params.SubId;
+        const data = {
+            body: { ...ctx.request.body },
+            headers: { ...ctx.request.headers }
+        };
 
         // publish an event onto the cache for subscribers to action
         const cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
         await ctx.state.cache.publish(cacheId, {
-            data: {
-                body: ctx.request.body,
-                headers: ctx.request.headers
-            }
+            data
         });
         ctx.response.status = ReturnCodes.OK.CODE;
     } else {
@@ -388,17 +395,17 @@ const putParticipantsByTypeAndIdError = async(ctx) => {
     const idType = ctx.state.path.params.Type;
     const idValue = ctx.state.path.params.ID;
     const idSubValue = ctx.state.path.params.SubId;
-
+    const data = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers }
+    };
     // publish an event onto the cache for subscribers to action
     // note that we publish the event the same way we publish a success PUT
     // the subscriber will notice the body contains an errorInformation property
     // and recognise it as an error response
     const cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
     await ctx.state.cache.publish(cacheId, {
-        data: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        }
+        data
     });
 
     ctx.response.status = ReturnCodes.OK.CODE;
@@ -414,14 +421,15 @@ const putPartiesByTypeAndId = async (ctx) => {
     const idType = ctx.state.path.params.Type;
     const idValue = ctx.state.path.params.ID;
     const idSubValue = ctx.state.path.params.SubId;
+    const message = {
+        body: { ...ctx.request.body },
+        headers: {...ctx.request.headers}
+    };
 
     // publish an event onto the cache for subscribers to finish the action
     await PartiesModel.triggerDeferredJob({
         cache: ctx.state.cache,
-        message: {
-            headers: ctx.request.headers,
-            body: ctx.request.body
-        },
+        message,
         args: {
             type: idType,
             id: idValue,
@@ -440,23 +448,22 @@ const putQuoteById = async (ctx) => {
     // - OutboundRequestToPayTransferModel
     // - OutboundTransfersModel
     // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`qt_${ctx.state.path.params.ID}`, {
+    const quoteId = ctx.state.path.params.ID;
+    const data = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers }
+    };
+    await ctx.state.cache.publish(`qt_${quoteId}`, {
         type: 'quoteResponse',
-        data: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        }
+        data
     });
 
     // duplicate publication until legacy code refactored
     await QuotesModel.triggerDeferredJob({
         cache: ctx.state.cache,
-        message: {
-            headers: ctx.request.headers,
-            body: ctx.request.body
-        },
+        message: data,
         args: {
-            quoteId: ctx.state.path.params.ID
+            quoteId
         }
     });
 
@@ -472,20 +479,22 @@ const putQuotesByIdError = async (ctx) => {
     // - OutboundRequestToPayTransferModel
     // - OutboundTransfersModel
     // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`qt_${ctx.state.path.params.ID}`, {
+    const quoteId = ctx.state.path.params.ID;
+    const data = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers }
+    };
+    await ctx.state.cache.publish(`qt_${quoteId}`, {
         type: 'quoteResponseError',
-        data: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        }
+        data
     });
 
     // duplicate publication until legacy code refactored
     await QuotesModel.triggerDeferredJob({
         cache: ctx.state.cache,
-        message: ctx.request.body,
+        message: data.body,
         args: {
-            quoteId: ctx.state.path.params.ID
+            quoteId
         }
     });
 
@@ -498,6 +507,8 @@ const putQuotesByIdError = async (ctx) => {
  * Handles a GET /quotes/{ID}
  */
 const getQuoteById = async (ctx) => {
+    const sourceFspId = ctx.request.headers['fspiop-source'];
+    const quoteId = ctx.state.path.params.ID;
     // kick off an asyncronous operation to handle the request
     (async () => {
         try {
@@ -510,10 +521,8 @@ const getQuoteById = async (ctx) => {
                 resourceVersions: ctx.resourceVersions,
             });
 
-            const sourceFspId = ctx.request.headers['fspiop-source'];
-
             // use the model to handle the request
-            const response = await model.getQuoteRequest(ctx.state.path.params.ID, sourceFspId);
+            const response = await model.getQuoteRequest(quoteId, sourceFspId);
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled GET /quotes request');
@@ -535,12 +544,14 @@ const getQuoteById = async (ctx) => {
  */
 const putTransactionRequestsById = async (ctx) => {
     // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`txnreq_${ctx.state.path.params.ID}`, {
+    const transactionRequestId = ctx.state.path.params.ID;
+    const data = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers }
+    };
+    await ctx.state.cache.publish(`txnreq_${transactionRequestId}`, {
         type: 'transactionRequestResponse',
-        data: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        }
+        data
     });
 
     ctx.response.status = ReturnCodes.OK.CODE;
@@ -554,22 +565,21 @@ const putTransfersById = async (ctx) => {
     // - OutboundRequestToPayTransferModel
     // - OutboundTransfersModel
     // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`tf_${ctx.state.path.params.ID}`, {
+    const transferId = ctx.state.path.params.ID;
+    const data = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers }
+    };
+    await ctx.state.cache.publish(`tf_${transferId}`, {
         type: 'transferFulfil',
-        data: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        }
+        data
     });
 
     await TransfersModel.triggerDeferredJob({
         cache: ctx.state.cache,
-        message: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        },
+        message: data,
         args: {
-            transferId: ctx.state.path.params.ID,
+            transferId,
         }
     });
 
@@ -581,10 +591,9 @@ const putTransfersById = async (ctx) => {
  */
 const patchTransfersById = async (ctx) => {
     const req = {
-        headers: ctx.request.headers,
-        data: ctx.request.body
+        headers: { ...ctx.request.headers },
+        data: { ...ctx.request.body }
     };
-
     const idValue = ctx.state.path.params.ID;
 
     // use the transfers model to execute asynchronous stages with the switch
@@ -611,17 +620,17 @@ const putPartiesByTypeAndIdError = async(ctx) => {
     const idType = ctx.state.path.params.Type;
     const idValue = ctx.state.path.params.ID;
     const idSubValue = ctx.state.path.params.SubId;
-
+    const message = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers }
+    };
     // publish an event onto the cache for subscribers to action
     // note that we publish the event the same way we publish a success PUT
     // the subscriber will notice the body contains an errorInformation property
     // and recognizes it as an error response
     await PartiesModel.triggerDeferredJob({
         cache: ctx.state.cache,
-        message: {
-            headers: ctx.request.headers,
-            body: ctx.request.body
-        },
+        message,
         args: {
             type: idType,
             id: idValue,
@@ -641,22 +650,21 @@ const putTransfersByIdError = async (ctx) => {
     // - OutboundRequestToPayTransferModel
     // - OutboundTransfersModel
     // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`tf_${ctx.state.path.params.ID}`, {
+    const transferId = ctx.state.path.params.ID;
+    const data = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers }
+    };
+    await ctx.state.cache.publish(`tf_${transferId}`, {
         type: 'transferError',
-        data: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        }
+        data
     });
 
     await TransfersModel.triggerDeferredJob({
         cache: ctx.state.cache,
-        message: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        },
+        message: data,
         args: {
-            transferId: ctx.state.path.params.ID,
+            transferId,
         }
     });
 
@@ -668,6 +676,8 @@ const putTransfersByIdError = async (ctx) => {
  * Handles a GET /bulkQuotes/{ID} request
  */
 const getBulkQuotesById = async (ctx) => {
+    const sourceFspId = ctx.request.headers['fspiop-source'];
+    const bulkQuoteId = ctx.state.path.params.ID;
     // kick off an asyncronous operation to handle the request
     (async () => {
         try {
@@ -680,11 +690,8 @@ const getBulkQuotesById = async (ctx) => {
                 resourceVersions: ctx.resourceVersions,
             });
 
-            const sourceFspId = ctx.request.headers['fspiop-source'];
-
             // use the model to handle the request
-            const response = await model.getBulkQuote(ctx.state.path.params.ID,
-                sourceFspId);
+            const response = await model.getBulkQuote(bulkQuoteId, sourceFspId);
 
             // log the result
             ctx.state.logger.push({response}).
@@ -706,6 +713,8 @@ const getBulkQuotesById = async (ctx) => {
  * Handles a POST /bulkQuotes request
  */
 const postBulkQuotes = async (ctx) => {
+    const sourceFspId = ctx.request.headers['fspiop-source'];
+    const bulkQuoteRequest = { ...ctx.request.body };
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
@@ -717,10 +726,8 @@ const postBulkQuotes = async (ctx) => {
                 resourceVersions: ctx.resourceVersions,
             });
 
-            const sourceFspId = ctx.request.headers['fspiop-source'];
-
             // use the model to handle the request
-            const response = await model.bulkQuoteRequest(ctx.request.body, sourceFspId);
+            const response = await model.bulkQuoteRequest(bulkQuoteRequest, sourceFspId);
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled POST /bulkQuotes request');
@@ -740,12 +747,14 @@ const postBulkQuotes = async (ctx) => {
  */
 const putBulkQuotesById = async (ctx) => {
     // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`bulkQuote_${ctx.state.path.params.ID}`, {
+    const bulkQuotesId = ctx.state.path.params.ID;
+    const data = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers }
+    };
+    await ctx.state.cache.publish(`bulkQuote_${bulkQuotesId}`, {
         type: 'bulkQuoteResponse',
-        data: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        }
+        data
     });
 
     ctx.response.status = ReturnCodes.OK.CODE;
@@ -756,12 +765,14 @@ const putBulkQuotesById = async (ctx) => {
  */
 const putBulkQuotesByIdError = async(ctx) => {
     // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`bulkQuote_${ctx.state.path.params.ID}`, {
+    const bulkQuotesId = ctx.state.path.params.ID;
+    const data = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers }
+    };
+    await ctx.state.cache.publish(`bulkQuote_${bulkQuotesId}`, {
         type: 'bulkQuoteResponseError',
-        data: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        }
+        data
     });
 
     ctx.response.status = ReturnCodes.OK.CODE;
@@ -772,6 +783,8 @@ const putBulkQuotesByIdError = async(ctx) => {
  * Handles a GET /bulkTransfers/{ID} request
  */
 const getBulkTransfersById = async (ctx) => {
+    const sourceFspId = ctx.request.headers['fspiop-source'];
+    const bulkTransferId = ctx.state.path.params.ID;
     // kick off an asyncronous operation to handle the request
     (async () => {
         try {
@@ -784,11 +797,8 @@ const getBulkTransfersById = async (ctx) => {
                 resourceVersions: ctx.resourceVersions,
             });
 
-            const sourceFspId = ctx.request.headers['fspiop-source'];
-
             // use the model to handle the request
-            const response = await model.getBulkTransfer(ctx.state.path.params.ID,
-                sourceFspId);
+            const response = await model.getBulkTransfer(bulkTransferId, sourceFspId);
 
             // log the result
             ctx.state.logger.push({response}).
@@ -810,6 +820,8 @@ const getBulkTransfersById = async (ctx) => {
  * Handles a POST /bulkTransfers request
  */
 const postBulkTransfers = async (ctx) => {
+    const sourceFspId = ctx.request.headers['fspiop-source'];
+    const bulkPrepareRequest = { ...ctx.request.body };
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
@@ -821,10 +833,8 @@ const postBulkTransfers = async (ctx) => {
                 resourceVersions: ctx.resourceVersions,
             });
 
-            const sourceFspId = ctx.request.headers['fspiop-source'];
-
             // use the model to handle the request
-            const response = await model.prepareBulkTransfer(ctx.request.body, sourceFspId);
+            const response = await model.prepareBulkTransfer(bulkPrepareRequest, sourceFspId);
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled POST /bulkTransfers request');
@@ -844,12 +854,14 @@ const postBulkTransfers = async (ctx) => {
  */
 const putBulkTransfersById = async (ctx) => {
     // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`bulkTransfer_${ctx.state.path.params.ID}`, {
+    const bulkTransfersId = ctx.state.path.params.ID;
+    const data = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers }
+    };
+    await ctx.state.cache.publish(`bulkTransfer_${bulkTransfersId}`, {
         type: 'bulkTransferResponse',
-        data: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        }
+        data
     });
 
     ctx.response.status = ReturnCodes.OK.CODE;
@@ -860,12 +872,14 @@ const putBulkTransfersById = async (ctx) => {
  */
 const putBulkTransfersByIdError = async(ctx) => {
     // publish an event onto the cache for subscribers to action
-    await ctx.state.cache.publish(`bulkTransfer_${ctx.state.path.params.ID}`, {
+    const bulkTransfersId = ctx.state.path.params.ID;
+    const data = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers }
+    };
+    await ctx.state.cache.publish(`bulkTransfer_${bulkTransfersId}`, {
         type: 'bulkTransferResponseError',
-        data: {
-            body: ctx.request.body,
-            headers: ctx.request.headers
-        }
+        data
     });
 
     ctx.response.status = ReturnCodes.OK.CODE;
