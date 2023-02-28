@@ -25,7 +25,10 @@ const createRequestValidator = (validator) => async (ctx, next) => {
         ctx.state.logger.log('Validating request');
     }
     try {
-        ctx.state.path = validator.validateRequest(ctx, ctx.state.logger);
+        const matchedPathObject = validator.validateRequest(ctx, ctx.state.logger);
+        ctx.state.path = {
+            ...matchedPathObject
+        };
         if (!ctx.state.logExcludePaths.includes(ctx.path)) {
             ctx.state.logger.log('Request passed validation');
         }

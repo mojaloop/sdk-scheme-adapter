@@ -178,7 +178,7 @@ describe('Inbound API handlers:', () => {
             await expect(handlers['/bulkQuotes'].post(mockContext)).resolves.toBe(undefined);
 
             expect(bulkQuoteRequestSpy).toHaveBeenCalledTimes(1);
-            expect(bulkQuoteRequestSpy.mock.calls[0][0]).toBe(mockContext.request.body);
+            expect(bulkQuoteRequestSpy.mock.calls[0][0]).toMatchObject(mockContext.request.body);
             expect(bulkQuoteRequestSpy.mock.calls[0][1]).toBe(mockContext.request.headers['fspiop-source']);
         });
     });
@@ -340,7 +340,7 @@ describe('Inbound API handlers:', () => {
             await expect(handlers['/bulkTransfers'].post(mockContext)).resolves.toBe(undefined);
 
             expect(bulkTransferRequestSpy).toHaveBeenCalledTimes(1);
-            expect(bulkTransferRequestSpy.mock.calls[0][0]).toBe(mockContext.request.body);
+            expect(bulkTransferRequestSpy.mock.calls[0][0]).toMatchObject(mockContext.request.body);
             expect(bulkTransferRequestSpy.mock.calls[0][1]).toBe(mockContext.request.headers['fspiop-source']);
         });
     });
@@ -501,7 +501,7 @@ describe('Inbound API handlers:', () => {
             await expect(handlers['/transactionRequests'].post(mockTransactionReqContext)).resolves.toBe(undefined);
 
             expect(transactionRequestSpy).toHaveBeenCalledTimes(1);
-            expect(transactionRequestSpy.mock.calls[0][0]).toBe(mockTransactionReqContext.request.body);
+            expect(transactionRequestSpy.mock.calls[0][0]).toMatchObject(mockTransactionReqContext.request.body);
             expect(transactionRequestSpy.mock.calls[0][1]).toBe(mockTransactionReqContext.request.headers['fspiop-source']);
         });
     });

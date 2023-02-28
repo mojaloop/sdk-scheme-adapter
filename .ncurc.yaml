@@ -2,5 +2,7 @@
 reject: [
   ## Between version 0.2.15-0.2.21 there is a breaking change that results in a segmentation fault.
   ## TODO: Investigate.
-  '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib'
+  '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib',
+  ## TODO: The kafka connectivity is not working properly and the following update is causing service crash.
+  '@mojaloop/logging-bc-client-lib'
 ]
