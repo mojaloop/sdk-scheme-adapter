@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [22.0.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v22.0.0...v22.0.1) (2023-02-28)
+
+
+### Bug Fixes
+
+* **mojaloop/3137:** bulk transactions sdk crash ([#440](https://github.com/mojaloop/sdk-scheme-adapter/issues/440)) ([acb7a01](https://github.com/mojaloop/sdk-scheme-adapter/commit/acb7a0172a3a43d0cc20350622ae68162f4b9252))
+
 ## [22.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.6.1...v22.0.0) (2023-02-17)
 
 
