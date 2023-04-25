@@ -238,7 +238,7 @@ services:
     networks:
       - mojaloop-net
     restart: "no"
-    image: docker.io/bitnami/kafka:3.2
+    image: docker.io/bitnami/kafka:3.1
     container_name: kafka
     ports:
       - "9092:9092"
