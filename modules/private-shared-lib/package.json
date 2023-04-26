@@ -29,8 +29,8 @@
   "dependencies": {
     "@mojaloop/api-snippets": "17.0.3",
     "@mojaloop/central-services-shared": "^17.5.1",
-    "@mojaloop/logging-bc-public-types-lib": "^0.1.19",
-    "@mojaloop/platform-shared-lib-messaging-types-lib": "^0.2.82",
+    "@mojaloop/logging-bc-public-types-lib": "^0.1.15",
+    "@mojaloop/platform-shared-lib-messaging-types-lib": "^0.2.71",
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "0.2.15",
     "ajv": "^8.12.0",
     "redis": "^4.6.5",
@@ -44,7 +44,7 @@
     "replace": "^1.2.2",
     "standard-version": "^9.5.0",
     "ts-jest": "^29.1.0",
-    "typescript": "^5.0.4"
+    "typescript": "^4.9.5"
   },
   "standard-version": {
     "scripts": {
