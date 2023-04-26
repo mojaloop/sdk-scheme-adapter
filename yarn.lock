@@ -51,18 +51,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apidevtools/json-schema-ref-parser@npm:^9.1.0":
-  version: 9.1.0
-  resolution: "@apidevtools/json-schema-ref-parser@npm:9.1.0"
-  dependencies:
-    "@jsdevtools/ono": ^7.1.3
-    "@types/json-schema": ^7.0.6
-    call-me-maybe: ^1.0.1
-    js-yaml: ^4.1.0
-  checksum: 135569d905cd5cd3652fe850ff3a07bfbbfb1585bb20139710e8a865f0bd9fa1c8bbe8122cce11928ce00fc618b8b9f61ccd7b62827654c9b7e2853789ee0e4a
-  languageName: node
-  linkType: hard
-
 "@apidevtools/json-schema-ref-parser@npm:^9.1.2":
   version: 9.1.2
   resolution: "@apidevtools/json-schema-ref-parser@npm:9.1.2"
@@ -2346,26 +2334,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/api-snippets@npm:17.0.3":
-  version: 17.0.3
-  resolution: "@mojaloop/api-snippets@npm:17.0.3"
-  dependencies:
-    "@apidevtools/json-schema-ref-parser": ^9.1.0
-    commander: ^9.5.0
-    jest-ts-auto-mock: ^2.1.0
-    js-yaml: ^4.1.0
-    json-refs: ^3.0.15
-    openapi-types: ^12.1.0
-    openapi-typescript: ^5.4.1
-    ts-auto-mock: ^3.6.4
-    ttypescript: ^1.5.15
-  checksum: fac8f3bf8848f182a60e3a363ba80d6ad3f647be8bccb3b196e716b9d4d238f6fc82b0a645d42a6145183f6714a6be223b79926d955ba80006c93818185c5d9f
-  languageName: node
-  linkType: hard
-
-"@mojaloop/api-snippets@npm:17.0.4-snapshot.1":
-  version: 17.0.4-snapshot.1
-  resolution: "@mojaloop/api-snippets@npm:17.0.4-snapshot.1"
+"@mojaloop/api-snippets@npm:17.0.4":
+  version: 17.0.4
+  resolution: "@mojaloop/api-snippets@npm:17.0.4"
   dependencies:
     "@apidevtools/json-schema-ref-parser": ^9.1.2
     commander: ^10.0.1
@@ -2376,7 +2347,7 @@ __metadata:
     openapi-typescript: ^5.4.1
     ts-auto-mock: ^3.6.4
     ttypescript: ^1.5.15
-  checksum: db71489047a561e4dfebe6736d3a1c9f788b08871fdef3213ce6b601df448ab82e570ad8589b823513c2a8db23fa53bd18d874341ba1c66ef88884721440abf5
+  checksum: f9f2ebbc65647ce608c4a515eb72ec27105c600faddfa0444df51089a7a75866c9538ca6191ca8c073987b5a7b03a44cfede4f882525950081ef13f838951890
   languageName: node
   linkType: hard
 
@@ -2563,7 +2534,7 @@ __metadata:
     "@babel/core": ^7.21.4
     "@babel/preset-env": ^7.21.4
     "@koa/cors": ^4.0.0
-    "@mojaloop/api-snippets": 17.0.4-snapshot.1
+    "@mojaloop/api-snippets": 17.0.4
     "@mojaloop/central-services-error-handling": ^12.0.5
     "@mojaloop/central-services-logger": ^11.2.0
     "@mojaloop/central-services-metrics": ^12.0.5
@@ -2599,7 +2570,7 @@ __metadata:
     oauth2-server: ^4.0.0-dev.2
     openapi-jsonschema-parameters: ^12.1.0
     openapi-response-validator: ^12.1.0
-    openapi-typescript: ^6.2.2
+    openapi-typescript: ^6.2.3
     prom-client: ^14.2.0
     promise-timeout: ^1.3.0
     random-word-slugs: ^0.1.7
@@ -2618,7 +2589,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-command-event-handler@workspace:modules/outbound-command-event-handler"
   dependencies:
-    "@mojaloop/api-snippets": 17.0.3
+    "@mojaloop/api-snippets": 17.0.4
     "@mojaloop/central-services-shared": ^17.5.1
     "@mojaloop/logging-bc-client-lib": ^0.1.17
     "@mojaloop/logging-bc-public-types-lib": ^0.1.19
@@ -2657,7 +2628,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-domain-event-handler@workspace:modules/outbound-domain-event-handler"
   dependencies:
-    "@mojaloop/api-snippets": 17.0.3
+    "@mojaloop/api-snippets": 17.0.4
     "@mojaloop/logging-bc-client-lib": ^0.1.17
     "@mojaloop/logging-bc-public-types-lib": ^0.1.19
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
@@ -2694,7 +2665,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-private-shared-lib@workspace:modules/private-shared-lib"
   dependencies:
-    "@mojaloop/api-snippets": 17.0.3
+    "@mojaloop/api-snippets": 17.0.4
     "@mojaloop/central-services-shared": ^17.5.1
     "@mojaloop/logging-bc-public-types-lib": ^0.1.19
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.2.84
@@ -5524,13 +5495,6 @@ __metadata:
   version: 7.2.0
   resolution: "commander@npm:7.2.0"
   checksum: 53501cbeee61d5157546c0bef0fedb6cdfc763a882136284bed9a07225f09a14b82d2a84e7637edfd1a679fb35ed9502fd58ef1d091e6287f60d790147f68ddc
-  languageName: node
-  linkType: hard
-
-"commander@npm:^9.5.0":
-  version: 9.5.0
-  resolution: "commander@npm:9.5.0"
-  checksum: c7a3e27aa59e913b54a1bafd366b88650bc41d6651f0cbe258d4ff09d43d6a7394232a4dadd0bf518b3e696fdf595db1028a0d82c785b88bd61f8a440cecfade
   languageName: node
   linkType: hard
 
@@ -11695,9 +11659,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openapi-typescript@npm:^6.2.2":
-  version: 6.2.2
-  resolution: "openapi-typescript@npm:6.2.2"
+"openapi-typescript@npm:^6.2.3":
+  version: 6.2.3
+  resolution: "openapi-typescript@npm:6.2.3"
   dependencies:
     ansi-colors: ^4.1.3
     fast-glob: ^3.2.12
@@ -11707,7 +11671,7 @@ __metadata:
     yargs-parser: ^21.1.1
   bin:
     openapi-typescript: bin/cli.js
-  checksum: ada77bda804f84c149a346b71e7fd186c935d9827ac997722200e916af58a2c4528ec5457a879eaf42771f3cbd192e81102e90964ef36d015cb21b30d7361fca
+  checksum: f5ecc11c3eb90bb7dfda889fb87238c22c374fe6a970cdf415edab2234a80e56d140fd0215b6906836800c20dda665c0b9b51ccb1f1f6fd0c5bb9a09f0e87d62
   languageName: node
   linkType: hard
 
