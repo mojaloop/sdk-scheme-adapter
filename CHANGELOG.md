@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [22.0.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v22.0.1...v22.0.2) (2023-04-27)
+
+
+### Bug Fixes
+
+* **mojaloop/3285:** request to pay scenario field format ([#442](https://github.com/mojaloop/sdk-scheme-adapter/issues/442)) ([7121e12](https://github.com/mojaloop/sdk-scheme-adapter/commit/7121e1257db9aac7f2d5fbdd1c9f49cda5c7002e))
+
 ### [22.0.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v22.0.0...v22.0.1) (2023-02-28)
 
 
