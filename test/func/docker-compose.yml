@@ -34,7 +34,10 @@ services:
       - "14002:4002"
       - "19221:9229"
     depends_on:
-      - redis
+      redis:
+        condition: service_started
+      init-kafka:
+        condition: service_completed_successfully
 
   ttksim1-sdk-outbound-command-event-handler:
     extends:
@@ -238,7 +241,7 @@ services:
     networks:
       - mojaloop-net
     restart: "no"
-    image: docker.io/bitnami/kafka:3.2
+    image: docker.io/bitnami/kafka:3.2.0
     container_name: kafka
     ports:
       - "9092:9092"
