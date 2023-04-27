@@ -588,5 +588,47 @@
     },
     "type": "callback",
     "version": 1
+  },
+  {
+    "ruleId": 9,
+    "priority": 1,
+    "description": "post /transactionRequests",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "fspiop",
+      "asynchronous": true,
+      "specFile": "spec_files/api_definitions/fspiop_1.0/api_spec.yaml",
+      "callbackMapFile": "spec_files/api_definitions/fspiop_1.0/callback_map.json",
+      "responseMapFile": "spec_files/api_definitions/fspiop_1.0/response_map.json",
+      "jsfRefFile": "spec_files/api_definitions/fspiop_1.0/mockRef.json",
+      "triggerTemplatesFolder": "spec_files/api_definitions/fspiop_1.0/trigger_templates"
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/transactionRequests"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": "put",
+      "path": "/transactionRequests/{ID}",
+      "params": {
+        "scripts": {
+          "scriptingEngine": "postman"
+        }
+      },
+      "type": "MOCK_CALLBACK"
+    },
+    "type": "callback",
+    "version": 1
   }
 ]
