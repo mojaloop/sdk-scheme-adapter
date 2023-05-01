@@ -2351,6 +2351,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mojaloop/api-snippets@npm:17.0.5-snapshot.0":
+  version: 17.0.5-snapshot.0
+  resolution: "@mojaloop/api-snippets@npm:17.0.5-snapshot.0"
+  dependencies:
+    "@apidevtools/json-schema-ref-parser": ^9.1.2
+    commander: ^10.0.1
+    jest-ts-auto-mock: ^2.1.0
+    js-yaml: ^4.1.0
+    json-refs: ^3.0.15
+    openapi-types: ^12.1.0
+    openapi-typescript: ^5.4.1
+    ts-auto-mock: ^3.6.4
+    ttypescript: ^1.5.15
+  checksum: b10ee234bcd55f8d8f2c15df0e5e28fcc85f9339814d1f703207cf3e727b4703108e858a0ccf2e55e3a889c74792131a91e7cf9ad4861ada85550ba1f1c37a15
+  languageName: node
+  linkType: hard
+
 "@mojaloop/central-services-error-handling@npm:^12.0.5":
   version: 12.0.5
   resolution: "@mojaloop/central-services-error-handling@npm:12.0.5"
@@ -2534,7 +2551,7 @@ __metadata:
     "@babel/core": ^7.21.4
     "@babel/preset-env": ^7.21.4
     "@koa/cors": ^4.0.0
-    "@mojaloop/api-snippets": 17.0.4
+    "@mojaloop/api-snippets": 17.0.5-snapshot.0
     "@mojaloop/central-services-error-handling": ^12.0.5
     "@mojaloop/central-services-logger": ^11.2.0
     "@mojaloop/central-services-metrics": ^12.0.5

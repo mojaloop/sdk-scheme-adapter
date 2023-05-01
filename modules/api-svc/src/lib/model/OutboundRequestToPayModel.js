@@ -53,9 +53,9 @@ class OutboundRequestToPayModel {
     async initialize(data) {
         this.data = data;
 
-        // add a transactionRequestId if one is not present e.g. on first submission
-        if(!this.data.hasOwnProperty('transactionRequestId')) {
-            this.data.transactionRequestId = uuid();
+        // add a requestToPayId if one is not present e.g. on first submission
+        if(!this.data.hasOwnProperty('requestToPayId')) {
+            this.data.requestToPayId = uuid();
         }
 
         // initialize the transfer state machine to its starting state
@@ -99,7 +99,7 @@ class OutboundRequestToPayModel {
      * Handles state machine transitions
      */
     async _handleTransition(lifecycle, ...args) {
-        this._logger.log(`Request To Pay ${this.data.transactionRequestId} is transitioning from ${lifecycle.from} to ${lifecycle.to} in response to ${lifecycle.transition}`);
+        this._logger.log(`Request To Pay ${this.data.requestToPayId} is transitioning from ${lifecycle.from} to ${lifecycle.to} in response to ${lifecycle.transition}`);
 
         switch(lifecycle.transition) {
             case 'init':
@@ -262,8 +262,8 @@ class OutboundRequestToPayModel {
             // create a transfer prepare request
             const transactionRequest = this._buildTransactionRequest();
 
-            // listen for events on the transactionRequestId
-            const transactionRequestKey = `txnreq_${this.data.transactionRequestId}`;
+            // listen for events on the requestToPayId
+            const transactionRequestKey = `txnreq_${this.data.requestToPayId}`;
 
             const subId = await this._cache.subscribe(transactionRequestKey, async (cn, msg, subId) => {
                 try {
@@ -341,7 +341,7 @@ class OutboundRequestToPayModel {
      */
     _buildTransactionRequest() {
         let transactionRequest = {
-            transactionRequestId: this.data.transactionRequestId,
+            transactionRequestId: this.data.requestToPayId,
             payer: {
                 partyIdType: this.data.from.idType,
                 partyIdentifier: this.data.from.idValue,
@@ -389,11 +389,11 @@ class OutboundRequestToPayModel {
      *
      * @param transferId {string} - UUID transferId of the model to load from cache
      */
-    async load(transactionRequestId) {
+    async load(requestToPayId) {
         try {
-            const data = await this._cache.get(`txnReqModel_${transactionRequestId}`);
+            const data = await this._cache.get(`txnReqModel_${requestToPayId}`);
             if(!data) {
-                throw new Error(`No cached data found for transactionRequestId: ${transactionRequestId}`);
+                throw new Error(`No cached data found for requestToPayId: ${requestToPayId}`);
             }
             await this.initialize(data);
             this._logger.push({ cache: this.data }).log('TransactionRequest model loaded from cached state');
@@ -426,7 +426,7 @@ class OutboundRequestToPayModel {
                 case 'payeeResolved':
                     // next transition is to requestQuote
                     await this.stateMachine.executeTransactionRequest();
-                    this._logger.log(`Transaction Request for ${this.data.transactionRequestId} has been completed`);
+                    this._logger.log(`Transaction Request for ${this.data.requestToPayId} has been completed`);
                     break;
 
                 case 'succeeded':
@@ -481,6 +481,7 @@ class OutboundRequestToPayModel {
 
             case 'succeeded':
                 resp.currentState = SDKStateEnum.COMPLETED;
+                resp.transactionRequestId = this.data.requestToPayId;
                 break;
 
             case 'errored':
@@ -502,7 +503,7 @@ class OutboundRequestToPayModel {
     async _save() {
         try {
             this.data.currentState = this.stateMachine.state;
-            const res = await this._cache.set(`txnReqModel_${this.data.transactionRequestId}`, this.data);
+            const res = await this._cache.set(`txnReqModel_${this.data.requestToPayId}`, this.data);
             this._logger.push({ res }).log('Persisted transaction request model in cache');
         }
         catch(err) {
