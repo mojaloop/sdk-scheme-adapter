@@ -52,7 +52,8 @@
               "scenario": "TRANSFER",
               "initiator": "PAYEE",
               "initiatorType": "CONSUMER"
-            }
+            },
+            "authenticationType": "OTP"
           },
           "headers": {
             "Accept": "application/vnd.interoperability.transactionRequests+json;version=1",
