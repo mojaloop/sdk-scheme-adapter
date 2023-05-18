@@ -1,12 +1,8 @@
 {
-  "name": "multi",
   "test_cases": [
     {
       "id": 1,
       "name": "Post Request To Pay",
-      "fileInfo": {
-        "path": "sample-tests/outbound-request-to-pay.json"
-      },
       "requests": [
         {
           "id": 1,
@@ -28,7 +24,7 @@
           "method": "post",
           "url": "http://host.docker.internal:4001",
           "body": {
-            "homeTransactionId": "abc123",
+            "homeR2PTransactionId": "abc123",
             "from": {
               "idType": "MSISDN",
               "idValue": "25644444444"
@@ -40,7 +36,8 @@
             "amountType": "SEND",
             "currency": "USD",
             "amount": "10",
-            "transactionType": "TRANSFER"
+            "transactionType": "TRANSFER",
+            "authenticationType": "OTP"
           }
         },
         {
@@ -70,7 +67,10 @@
           },
           "disabled": false
         }
-      ]
+      ],
+      "fileInfo": {
+        "path": "sample-tests/outbound-request-to-pay.json"
+      }
     }
   ]
 }

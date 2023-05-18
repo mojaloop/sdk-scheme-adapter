@@ -367,7 +367,8 @@ class OutboundRequestToPayModel {
                 subScenario: this.data.subScenario,
                 initiator: 'PAYEE',
                 initiatorType: this.data.from.type || 'CONSUMER'
-            }
+            },
+            authenticationType: this.data.authenticationType
         };
 
         // add extensions list if provided
