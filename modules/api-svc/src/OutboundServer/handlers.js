@@ -502,6 +502,41 @@ const postRequestToPay = async (ctx) => {
     }
 };
 
+/**
+ * Handler for resuming outbound requestToPay in scenarios where two-step transfers are enabled
+ * by disabling the autoAcceptParty SDK option
+ */
+const putRequestToPay = async (ctx) => {
+    try {
+        // this requires a multi-stage sequence with the switch.
+        // use the transfers model to execute asynchronous stages with the switch
+        const model = new OutboundRequestToPayModel({
+            ...ctx.state.conf,
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            wso2: ctx.state.wso2,
+        });
+
+        // TODO: check the incoming body to reject party or quote when requested to do so
+        const data = ctx.request.body;
+        // load the transfer model from cache and start it running again
+        await model.load(ctx.state.path.params.transactionRequestId);
+        let response;
+        if(data.acceptParty === true) {
+            response = await model.run();
+        } else {
+            response = await model.rejectRequestToPay();
+        }
+
+        // return the result
+        ctx.response.status = ReturnCodes.OK.CODE;
+        ctx.response.body = response;
+    }
+    catch(err) {
+        return handleTransferError('putRequestToPay', err, ctx);
+    }
+};
+
 const healthCheck = async (ctx) => {
     ctx.response.status = ReturnCodes.OK.CODE;
     ctx.response.body = '';
@@ -636,6 +671,9 @@ module.exports = {
     },
     '/requestToPay': {
         post: postRequestToPay
+    },
+    '/requestToPay/{requestToPayId}': {
+        put: putRequestToPay
     },
     '/requestToPayTransfer': {
         post: postRequestToPayTransfer

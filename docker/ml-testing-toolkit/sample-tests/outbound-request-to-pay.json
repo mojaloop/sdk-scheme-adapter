@@ -1,8 +1,12 @@
 {
+  "name": "multi",
   "test_cases": [
     {
       "id": 1,
       "name": "Post Request To Pay",
+      "fileInfo": {
+        "path": "sample-tests/outbound-request-to-pay.json"
+      },
       "requests": [
         {
           "id": 1,
@@ -38,11 +42,35 @@
             "amount": "10",
             "transactionType": "TRANSFER"
           }
+        },
+        {
+          "id": 2,
+          "description": "Accept Party",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/requestToPay/{requestToPayId}",
+          "path": "/requestToPay/{$prev.1.response.body.requestToPayId}",
+          "method": "put",
+          "params": {
+            "requestToPayId": "{$prev.1.response.body.requestToPayId}"
+          },
+          "url": "http://host.docker.internal:4001",
+          "body": {
+            "acceptParty": true
+          },
+          "disabled": false
         }
-      ],
-      "fileInfo": {
-        "path": "sample-tests/outbound-request-to-pay.json"
-      }
+      ]
     }
   ]
 }
