@@ -27,7 +27,7 @@ class OutboundRequestToPayModel {
         this._requestProcessingTimeoutSeconds = config.requestProcessingTimeoutSeconds;
         this._dfspId = config.dfspId;
         this._expirySeconds = config.expirySeconds;
-        this._autoAcceptParty = config.autoAcceptParty;
+        this._autoAcceptR2PParty = config.autoAcceptR2PParty;
 
         this._requests = new MojaloopRequests({
             logger: this._logger,
@@ -411,7 +411,7 @@ class OutboundRequestToPayModel {
                     // next transition is to resolvePayee
                     await this.stateMachine.resolvePayee();
                     this._logger.log(`Payee resolved for transfer ${this.data.transferId}`);
-                    if(this.stateMachine.state === 'payeeResolved' && !this._autoAcceptParty) {
+                    if(this.stateMachine.state === 'payeeResolved' && !this._autoAcceptR2PParty) {
                         //we break execution here and return the resolved party details to allow asynchronous accept or reject
                         //of the resolved party
                         await this._save();
