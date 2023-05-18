@@ -540,7 +540,7 @@ const getQuoteById = async (ctx) => {
 };
 
 /**
- * Handles a PUT /quotes/{ID}. This is a response to a POST /quotes request
+ * Handles a PUT /transactionRequests/{ID}. This is a response to a POST /transactionRequests request
  */
 const putTransactionRequestsById = async (ctx) => {
     // publish an event onto the cache for subscribers to action
@@ -551,6 +551,24 @@ const putTransactionRequestsById = async (ctx) => {
     };
     await ctx.state.cache.publish(`txnreq_${transactionRequestId}`, {
         type: 'transactionRequestResponse',
+        data
+    });
+
+    ctx.response.status = ReturnCodes.OK.CODE;
+};
+
+/**
+ * Handles a PUT /transactionRequests/{ID}/error. This is a response to a POST /transactionRequests request
+ */
+const putTransactionRequestsByIdError = async (ctx) => {
+    // publish an event onto the cache for subscribers to action
+    const transactionRequestId = ctx.state.path.params.ID;
+    const data = {
+        body: { ...ctx.request.body },
+        headers: { ...ctx.request.headers }
+    };
+    await ctx.state.cache.publish(`txnreq_${transactionRequestId}`, {
+        type: 'transactionRequestResponseError',
         data
     });
 
@@ -979,5 +997,8 @@ module.exports = {
     },
     '/transactionRequests/{ID}': {
         put: putTransactionRequestsById
+    },
+    '/transactionRequests/{ID}/error': {
+        put: putTransactionRequestsByIdError
     }
 };
