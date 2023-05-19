@@ -672,7 +672,7 @@ module.exports = {
     '/requestToPay': {
         post: postRequestToPay
     },
-    '/requestToPay/{requestToPayId}': {
+    '/requestToPay/{transactionRequestId}': {
         put: putRequestToPay
     },
     '/requestToPayTransfer': {
