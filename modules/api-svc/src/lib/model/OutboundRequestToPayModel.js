@@ -447,15 +447,15 @@ class OutboundRequestToPayModel {
 
             // as this function is recursive, we dont want to error the state machine multiple times
             if(this.data.currentState !== 'errored') {
-                // err should not have a requestToPayState property here!
-                if(err.requestToPayState) {
+                // err should not have a lastError property here!
+                if(err.lastError) {
                     this._logger.log(`State machine is broken: ${util.inspect(err)}`);
                 }
                 // transition to errored state
                 await this.stateMachine.error(err);
 
                 // avoid circular ref between transferState.lastError and err
-                err.requestToPayState = JSON.parse(JSON.stringify(this.getResponse()));
+                err.lastError = JSON.parse(JSON.stringify(this.getResponse()));
             }
             throw err;
         }
