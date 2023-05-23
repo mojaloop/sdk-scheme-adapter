@@ -24,7 +24,7 @@
           "method": "post",
           "url": "http://host.docker.internal:4001",
           "body": {
-            "homeTransactionId": "abc123",
+            "homeR2PTransactionId": "abc123",
             "from": {
               "idType": "MSISDN",
               "idValue": "25644444444"
@@ -36,8 +36,36 @@
             "amountType": "SEND",
             "currency": "USD",
             "amount": "10",
-            "transactionType": "TRANSFER"
+            "transactionType": "TRANSFER",
+            "authenticationType": "OTP"
           }
+        },
+        {
+          "id": 2,
+          "description": "Accept Party",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/requestToPay/{requestToPayId}",
+          "path": "/requestToPay/{$prev.1.response.body.requestToPayId}",
+          "method": "put",
+          "params": {
+            "requestToPayId": "{$prev.1.response.body.requestToPayId}"
+          },
+          "url": "http://host.docker.internal:4001",
+          "body": {
+            "acceptParty": true
+          },
+          "disabled": false
         }
       ],
       "fileInfo": {

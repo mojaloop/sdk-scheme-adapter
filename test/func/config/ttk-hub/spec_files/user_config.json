@@ -105,7 +105,7 @@
       "color": "blue"
     }
   ],
-  "INSTANCE_NAME": "Mojaloop Testing Toolkit",
+  "INSTANCE_NAME": "TTK Hub",
   "UI_THEME": {
     "HEADER_COLOR": "rgb(41, 62, 93)",
     "TITLE_COLOR": "#fff"

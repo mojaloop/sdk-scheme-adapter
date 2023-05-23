@@ -94,8 +94,8 @@ describe('outboundModel', () => {
     });
 
 
-    test('executes all two stages without halting when AUTO_ACCEPT_PARTY is true', async () => {
-        config.autoAcceptParty = true;
+    test('executes all two stages without halting when AUTO_ACCEPT_R2P_PARTY is true', async () => {
+        config.autoAcceptR2PParty = true;
 
         MojaloopRequests.__getParties = jest.fn(() => {
             emitPartyCacheMessage(cache, payeeParty);
@@ -126,12 +126,12 @@ describe('outboundModel', () => {
 
         // check we stopped at payeeResolved state
         expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
-        expect(result.requestToPayState).toBe('RECEIVED');
+        expect(result.transactionRequestResponse.transactionRequestState).toBe('RECEIVED');
         expect(StateMachine.__instance.state).toBe('succeeded');
     });
 
-    test('resolves payee and halts when AUTO_ACCEPT_PARTY is false', async () => {
-        config.autoAcceptParty = false;
+    test('resolves payee and halts when AUTO_ACCEPT_R2P_PARTY is false', async () => {
+        config.autoAcceptR2PParty = false;
 
         MojaloopRequests.__getParties = jest.fn(() => {
             emitPartyCacheMessage(cache, payeeParty);
@@ -162,5 +162,45 @@ describe('outboundModel', () => {
         expect(StateMachine.__instance.state).toBe('payeeResolved');
     });
 
+    test('resolves payee and halts when AUTO_ACCEPT_R2P_PARTY is false and continue after party acceptance', async () => {
+        config.autoAcceptR2PParty = false;
+
+        MojaloopRequests.__getParties = jest.fn(() => {
+            emitPartyCacheMessage(cache, payeeParty);
+            return Promise.resolve();
+        });
+
+        MojaloopRequests.__postTransactionRequests = jest.fn((postTransactionRequestsBody) => {
+            // simulate a callback with the quote response
+            emitTransactionRequestResponseCacheMessage(cache, postTransactionRequestsBody.transactionRequestId, transactionRequestResponse);
+            return Promise.resolve();
+        });
+
+        const model = new Model({
+            cache,
+            logger,
+            ...config,
+        });
+
+        await model.initialize(JSON.parse(JSON.stringify(requestToPayRequest)));
+
+        expect(StateMachine.__instance.state).toBe('start');
+
+        // start the model running
+        const result = await model.run();
+
+        expect(MojaloopRequests.__getParties).toHaveBeenCalledTimes(1);
+        expect(MojaloopRequests.__postTransactionRequests).toHaveBeenCalledTimes(0);
+        expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_PARTY_ACCEPTANCE);
+        expect(result.transactionRequestResponse).toBe(undefined);
+        expect(StateMachine.__instance.state).toBe('payeeResolved');
+
+        // start the model running
+        const result2 = await model.run();
+        expect(MojaloopRequests.__postTransactionRequests).toHaveBeenCalledTimes(1);
+        expect(result2.currentState).toBe(SDKStateEnum.COMPLETED);
+        expect(result2.transactionRequestResponse.transactionRequestState).toBe('RECEIVED');
+        expect(StateMachine.__instance.state).toBe('succeeded');
+    });
 
 });
