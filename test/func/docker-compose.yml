@@ -104,7 +104,7 @@ services:
   ttk-ttksim1:
     networks:
         - mojaloop-net
-    image: mojaloop/ml-testing-toolkit:v15.6.3
+    image: mojaloop/ml-testing-toolkit:v16.1.1
     container_name: ttk-ttksim1
     user: root
     volumes:
@@ -123,7 +123,7 @@ services:
       retries: 3
 
   ttk-ttksim1-ui:
-    image: mojaloop/ml-testing-toolkit-ui:v15.1.1
+    image: mojaloop/ml-testing-toolkit-ui:v15.3.0
     ports:
       - "16060:6060"
     networks:
@@ -140,7 +140,7 @@ services:
   ttk-ttksim2:
     networks:
         - mojaloop-net
-    image: mojaloop/ml-testing-toolkit:v15.6.3
+    image: mojaloop/ml-testing-toolkit:v16.1.1
     container_name: ttk-ttksim2
     user: root
     volumes:
@@ -153,7 +153,7 @@ services:
     command: npm start
 
   ttk-ttksim2-ui:
-    image: mojaloop/ml-testing-toolkit-ui:v15.1.1
+    image: mojaloop/ml-testing-toolkit-ui:v15.3.0
     ports:
       - "26060:6060"
     networks:
@@ -170,7 +170,7 @@ services:
   ttk-ttksim3:
     networks:
         - mojaloop-net
-    image: mojaloop/ml-testing-toolkit:v15.6.3
+    image: mojaloop/ml-testing-toolkit:v16.1.1
     container_name: ttk-ttksim3
     user: root
     volumes:
@@ -183,7 +183,7 @@ services:
     command: npm start
 
   ttk-ttksim3-ui:
-    image: mojaloop/ml-testing-toolkit-ui:v15.1.1
+    image: mojaloop/ml-testing-toolkit-ui:v15.3.0
     ports:
       - "36060:6060"
     networks:
@@ -200,7 +200,7 @@ services:
   ttk-hub:
     networks:
         - mojaloop-net
-    image: mojaloop/ml-testing-toolkit:v15.6.3
+    image: mojaloop/ml-testing-toolkit:v16.1.1
     container_name: ttk-hub
     user: root
     volumes:
@@ -213,7 +213,7 @@ services:
     command: npm start
 
   ttk-hub-ui:
-    image: mojaloop/ml-testing-toolkit-ui:v15.1.1
+    image: mojaloop/ml-testing-toolkit-ui:v15.3.0
     ports:
       - "56060:6060"
     networks:

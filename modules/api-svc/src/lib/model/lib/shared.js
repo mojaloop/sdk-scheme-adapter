@@ -290,7 +290,8 @@ const mojaloopTransactionRequestToInternal = (external) => {
         transactionType: external.transactionType.scenario,
         subScenario: external.transactionType.subScenario,
         initiator: external.transactionType.initiator,
-        initiatorType: external.transactionType.initiatorType
+        initiatorType: external.transactionType.initiatorType,
+        authenticationType: external.authenticationType
     };
 
     return internal;
