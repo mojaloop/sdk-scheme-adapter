@@ -1277,7 +1277,39 @@
         },
         "statusCode": "200",
         "scripts": {
-          "scriptingEngine": "postman"
+          "exec": [
+            "const reqBody = JSON.parse(request.body)",
+            "const outEndpoint = userConfig.CALLBACK_ENDPOINT",
+            "const outReqBody = {",
+            "  requestToPayTransactionId: \"string\",",
+            "  from: reqBody.to,",
+            "  to: reqBody.from,",
+            "  amountType: \"RECEIVE\",",
+            "  currency: reqBody.currency,",
+            "  amount: reqBody.amount,",
+            "  scenario: {",
+            "    scenario: \"DEPOSIT\",",
+            "    initiator: \"PAYEE\",",
+            "    initiatorType: \"CONSUMER\"",
+            "  },",
+            "  initiator: reqBody.initiator,",
+            "  initiatorType: reqBody.initiatorType,",
+            "  note: \"Note sent to Payee.\"",
+            "}",
+            "try {",
+            "  const axioResponse = await axios({",
+            "    method: 'post',",
+            "    url: outEndpoint + '/requestToPayTransfer',",
+            "    data: outReqBody",
+            "  });",
+            "  res = axioResponse.data;",
+            "  responseCode = axioResponse.code || axioResponse.status",
+            "} catch (err) {",
+            "  console.log(err)",
+            "}",
+            ""
+          ],
+          "scriptingEngine": "javascript"
         }
       },
       "type": "MOCK_RESPONSE"
