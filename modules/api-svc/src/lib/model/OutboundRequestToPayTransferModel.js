@@ -133,7 +133,7 @@ class OutboundRequestToPayTransferModel {
                     // next transition is requestOTP
                     await this.stateMachine.requestOTP();
                     if(this.data.initiatorType !== 'BUSINESS') {
-                        this._logger.log(`OTP received for transactionId: ${this.data.requestToPayTransactionId} and transferId: ${this.data.transferId}`);
+                        this._logger.log(`OTP received for transactionRequestId: ${this.data.transactionRequestId} and transferId: ${this.data.transferId}`);
                         if(this.stateMachine.state === 'otpReceived' && !this._autoAcceptR2PDeviceOTP) {
                             //we break execution here and return the otp response details to allow asynchronous accept or reject
                             //of the quote
@@ -234,9 +234,9 @@ class OutboundRequestToPayTransferModel {
         const authResponse = {
             responseType: 'REJECTED'
         };
-        await this._requests.putAuthorizations(this.data.requestToPayTransactionId,JSON.stringify(authResponse),this.data.to.fspId);
+        await this._requests.putAuthorizations(this.data.transactionRequestId,JSON.stringify(authResponse),this.data.to.fspId);
         const response = {
-            status : `${this.data.requestToPayTransactionId} has been REJECTED`
+            status : `${this.data.transactionRequestId} has been REJECTED`
         };
         return JSON.stringify(response);
     }
@@ -478,7 +478,7 @@ class OutboundRequestToPayTransferModel {
             if( this.data.initiatorType && this.data.initiatorType === 'BUSINESS') return resolve();
 
             // listen for events on the quoteId
-            const otpKey = `otp_${this.data.requestToPayTransactionId}`;
+            const otpKey = `otp_${this.data.transactionRequestId}`;
 
             // hook up a subscriber to handle response messages
             const subId = await this._cache.subscribe(otpKey, (cn, msg, subId) => {
@@ -522,7 +522,7 @@ class OutboundRequestToPayTransferModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /authorizations request to the switch
             try {
-                const res = await this._requests.getAuthorizations(this.data.requestToPayTransactionId,`authenticationType=OTP&retriesLeft=1&amount=${this.data.amount}&currency=${this.data.currency}`,this.data.to.fspId);
+                const res = await this._requests.getAuthorizations(this.data.transactionRequestId,`authenticationType=OTP&retriesLeft=1&amount=${this.data.amount}&currency=${this.data.currency}`,this.data.to.fspId);
                 this._logger.push({ res }).log('Authorizations request sent to peer');
             }
             catch(err) {
@@ -549,7 +549,7 @@ class OutboundRequestToPayTransferModel {
         let quote = {
             quoteId: uuid(),
             transactionId: this.data.transferId,
-            transactionRequestId: this.data.requestToPayTransactionId,
+            transactionRequestId: this.data.transactionRequestId,
             amountType: this.data.amountType,
             amount: {
                 currency: this.data.currency,
@@ -852,7 +852,7 @@ class OutboundRequestToPayTransferModel {
     async _save() {
         try {
             this.data.currentState = this.stateMachine.state;
-            const res = await this._cache.set(`requestToPayTransferModel_${this.data.requestToPayTransactionId}`, this.data);
+            const res = await this._cache.set(`requestToPayTransferModel_${this.data.transactionRequestId}`, this.data);
             this._logger.push({ res }).log('Persisted transfer model in cache');
         }
         catch(err) {
@@ -867,11 +867,11 @@ class OutboundRequestToPayTransferModel {
      *
      * @param transferId {string} - UUID transferId of the model to load from cache
      */
-    async load(requestToPayTransactionId) {
+    async load(transactionRequestId) {
         try {
-            const data = await this._cache.get(`requestToPayTransferModel_${requestToPayTransactionId}`);
+            const data = await this._cache.get(`requestToPayTransferModel_${transactionRequestId}`);
             if(!data) {
-                throw new Error(`No cached data found for requestToPayTransactionId: ${requestToPayTransactionId}`);
+                throw new Error(`No cached data found for transactionRequestId: ${transactionRequestId}`);
             }
             await this.initialize(data);
             this._logger.push({ cache: this.data }).log('RequestToPay Transfer model loaded from cached state');

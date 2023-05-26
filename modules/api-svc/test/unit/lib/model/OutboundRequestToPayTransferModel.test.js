@@ -31,7 +31,7 @@ const transferFulfil = require('./data/transferFulfil');
 const emitQuoteResponseCacheMessage = (cache, quoteId, quoteResponse) => cache.publish(`qt_${quoteId}`, JSON.stringify(quoteResponse));
 
 // util function to simulate a authorizations response subscription message on a cache client
-const emitAuthorizationsResponseCacheMessage = (cache, authorizationsResponse) => cache.publish(`otp_${requestToPayTransferRequest.requestToPayTransactionId}`, JSON.stringify(authorizationsResponse));
+const emitAuthorizationsResponseCacheMessage = (cache, authorizationsResponse) => cache.publish(`otp_${requestToPayTransferRequest.transactionRequestId}`, JSON.stringify(authorizationsResponse));
 
 
 // util function to simulate a transfer fulfilment subscription message on a cache client
@@ -187,7 +187,7 @@ describe('outboundRequestToPayTransferModel', () => {
     //     expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE);
     //     expect(StateMachine.__instance.state).toBe('quoteReceived');
 
-    //     const requestToPayTransactionId = requestToPayTransferRequest.requestToPayTransactionId;
+    //     const transactionRequestId = requestToPayTransferRequest.transactionRequestId;
 
     //     // load a new model from the saved state
     //     model = new Model({
@@ -196,7 +196,7 @@ describe('outboundRequestToPayTransferModel', () => {
     //         ...config,
     //     });
 
-    //     await model.load(requestToPayTransactionId);
+    //     await model.load(transactionRequestId);
 
     //     // check the model loaded to the correct state
     //     expect(StateMachine.__instance.state).toBe('quoteReceived');
@@ -205,7 +205,7 @@ describe('outboundRequestToPayTransferModel', () => {
     //     resultPromise = model.run();
 
     //     // now we started the model running we simulate a callback with the otp response
-    //     cache.publish(`otp_${requestToPayTransactionId}`, JSON.stringify(authorizationsResponse));
+    //     cache.publish(`otp_${transactionRequestId}`, JSON.stringify(authorizationsResponse));
 
     //     // wait for the model to reach a terminal state
     //     result = await resultPromise;
@@ -221,7 +221,7 @@ describe('outboundRequestToPayTransferModel', () => {
     //         ...config,
     //     });
 
-    //     await model.load(requestToPayTransactionId);
+    //     await model.load(transactionRequestId);
 
     //     // check the model loaded to the correct state
     //     expect(StateMachine.__instance.state).toBe('otpReceived');
