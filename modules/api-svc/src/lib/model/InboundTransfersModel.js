@@ -201,6 +201,16 @@ class InboundTransfersModel {
         try {
             const internalForm = shared.mojaloopQuoteRequestToInternal(quoteRequest);
 
+            // Check the transactionRequestId exists in cache
+            if(quoteRequest.transactionRequestId) {
+                const previousTxnReq = await this._cache.get(`txnReqModel_${quoteRequest.transactionRequestId}`);
+                if(previousTxnReq) {
+                    internalForm.homeR2PTransactionId = previousTxnReq.homeR2PTransactionId
+                } else {
+                    this._logger.error(`No previous transactionRequest found in cache with transactionRequestId: ${quoteRequest.transactionRequestId}. Unable to fetch homeR2PTransactionId.`);
+                }
+            }
+
             // make a call to the backend to ask for a quote response
             const response = await this._backendRequests.postQuoteRequests(internalForm);
             if(!response) {
@@ -241,6 +251,43 @@ class InboundTransfersModel {
             this.data.currentState = SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE;
             await this._save();
             return res;
+        }
+        catch(err) {
+            this._logger.push({ err }).log('Error in quoteRequest');
+            const mojaloopError = await this._handleError(err);
+            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            return await this._mojaloopRequests.putQuotesError(quoteRequest.quoteId,
+                mojaloopError, sourceFspId);
+        }
+    }
+
+    /**
+     * Notifies backend about the transactionRequest callback
+     */
+    async putTransactionRequest(request, transactionRequestId, sourceFspId) {
+        const putTransactionRequest = request.body;
+
+        try {
+            const internalForm = shared.mojaloopPutTransactionRequestToInternal(putTransactionRequest);
+
+            // Check the transactionRequestId exists in cache and fetch homeR2PTransactionId
+            if(transactionRequestId) {
+                const previousTxnReq = await this._cache.get(`txnReqModel_${transactionRequestId}`);
+                if(previousTxnReq) {
+                    internalForm.homeR2PTransactionId = previousTxnReq.homeR2PTransactionId
+                    const udpatedTxnReq = {
+                        ...previousTxnReq,
+                        putTransactionRequestNotification: request
+                    }
+                    // Update transactionRequest model in cache with notification
+                    await this._cache.set(`txnReqModel_${transactionRequestId}`, udpatedTxnReq);
+                } else {
+                    this._logger.error(`No previous transactionRequest found in cache with transactionRequestId: ${quoteRequest.transactionRequestId}. Unable to fetch homeR2PTransactionId.`);
+                }
+            }
+
+            // make a call to the backend about this notification anyway
+            await this._backendRequests.putRequestToPayNotification(internalForm, transactionRequestId);
         }
         catch(err) {
             this._logger.push({ err }).log('Error in quoteRequest');
