@@ -94,10 +94,9 @@ describe('outboundRequestToPayTransferModel', () => {
     });
 
 
-    test('executes all three transfer stages without halting when AUTO_ACCEPT_QUOTES and AUTO_ACCEPT_PARTY are true', async () => {
+    test('executes all three transfer stages without halting when AUTO_ACCEPT_R2P_BUSINESS_QUOTES and AUTO_ACCEPT_R2P_PARTY are true', async () => {
         config.autoAcceptR2PDeviceOTP = true;
-        config.autoAcceptR2PDeviceQuotes = true;
-        config.autoAcceptQuotes = true;
+        config.autoAcceptR2PBusinessQuotes = true;
 
         MojaloopRequests.__getAuthorizations = jest.fn(() => {
             emitAuthorizationsResponseCacheMessage(cache, authorizationsResponse);
@@ -162,7 +161,7 @@ describe('outboundRequestToPayTransferModel', () => {
     // test('halts and resumes after quotes and otp stages when AUTO_ACCEPT_QUOTES is false and AUTO_ACCEPT_OTP is false', async () => {
 
     //     config.autoAcceptR2PDeviceOTP = false;
-    //     config.autoAcceptR2PDeviceQuotes = false;
+    //     config.autoAcceptR2PBusinessQuotes = false;
 
     //     let model = new Model({
     //         cache,

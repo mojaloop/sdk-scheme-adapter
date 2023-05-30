@@ -2410,6 +2410,86 @@ components:
           $ref: '#/components/schemas/Note'
         authenticationType:
           $ref: '#/components/schemas/AuthenticationType'
+    AuthenticationValue:
+      title: AuthenticationValue
+      anyOf:
+        - title: OtpValue
+          type: string
+          pattern: ^\d{3,10}$
+          description: >-
+            The API data type OtpValue is a JSON String of 3 to 10 characters,
+            consisting of digits only. Negative numbers are not allowed. One or
+            more leading zeros are allowed.
+        - title: QRCODE
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: QR code used as a One Time Password.
+        - title: U2FPinValue
+          type: object
+          description: >
+            U2F challenge-response, where payer FSP verifies if the response
+            provided by end-user device matches the previously registered key.
+          properties:
+            pinValue:
+              type: string
+              pattern: ^\S{1,64}$
+              minLength: 1
+              maxLength: 64
+              description: >
+                U2F challenge-response, where payer FSP verifies if the response
+                provided by end-user device matches the previously registered
+                key.
+            counter:
+              title: Integer
+              type: string
+              pattern: ^[1-9]\d*$
+              description: >-
+                Sequential counter used for cloning detection. Present only for
+                U2F authentication.
+          required:
+            - pinValue
+            - counter
+      pattern: ^\d{3,10}$|^\S{1,64}$
+      description: >-
+        Contains the authentication value. The format depends on the
+        authentication type used in the AuthenticationInfo complex type.
+    AuthenticationInfo:
+      title: AuthenticationInfo
+      type: object
+      description: Data model for the complex type AuthenticationInfo.
+      properties:
+        authentication:
+          $ref: '#/components/schemas/AuthenticationType'
+        authenticationValue:
+          $ref: '#/components/schemas/AuthenticationValue'
+      required:
+        - authentication
+        - authenticationValue
+    AuthorizationResponseType:
+      title: AuthorizationResponseType
+      type: string
+      enum:
+        - ENTERED
+        - REJECTED
+        - RESEND
+      description: |-
+        Below are the allowed values for the enumeration.
+        - ENTERED - Consumer entered the authentication value.
+        - REJECTED - Consumer rejected the transaction.
+        - RESEND - Consumer requested to resend the authentication value.
+      example: ENTERED
+    AuthorizationIDPutResponse:
+      title: AuthorizationIDPutResponse
+      type: object
+      description: The object sent in the PUT /authorizations/{ID} callback.
+      properties:
+        authenticationInfo:
+          $ref: '#/components/schemas/AuthenticationInfo'
+        responseType:
+          $ref: '#/components/schemas/AuthorizationResponseType'
+      required:
+        - responseType
     requestToPayTransferResponse:
       type: object
       required:
@@ -2449,7 +2529,14 @@ components:
         quoteId:
           $ref: '#/components/schemas/CorrelationId'
         quoteResponse:
-          $ref: '#/components/schemas/QuotesIDPutResponse'
+          type: object
+          required:
+            - body
+          properties:
+            body:
+              $ref: '#/components/schemas/QuotesIDPutResponse'
+            headers:
+              type: object
         quoteResponseSource:
           type: string
           description: >
@@ -2457,8 +2544,24 @@ components:
             be the same as the FSPID of the entity which owns the end user
             account in the case of a FOREX transfer. i.e. it may be a FOREX
             gateway.
+        authorizationResponse:
+          type: object
+          required:
+            - body
+          properties:
+            body:
+              $ref: '#/components/schemas/AuthorizationIDPutResponse'
+            headers:
+              type: object
         fulfil:
-          $ref: '#/components/schemas/TransfersIDPutResponse'
+          type: object
+          required:
+            - body
+          properties:
+            body:
+              $ref: '#/components/schemas/TransfersIDPutResponse'
+            headers:
+              type: object
         lastError:
           description: >
             Object representing the last error to occur during a transfer

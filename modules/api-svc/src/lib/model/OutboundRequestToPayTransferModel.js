@@ -34,7 +34,6 @@ class OutboundRequestToPayTransferModel {
         this._rejectExpiredTransferFulfils = config.rejectExpiredTransferFulfils;
         this._autoAcceptQuotes = config.autoAcceptQuotes;
         this._autoAcceptR2PBusinessQuotes = config.autoAcceptR2PBusinessQuotes;
-        this._autoAcceptR2PDeviceQuotes = config.autoAcceptR2PDeviceQuotes;
         this._autoAcceptR2PDeviceOTP = config.autoAcceptR2PDeviceOTP;
         this._useQuoteSourceFSPAsTransferPayeeFSP = config.useQuoteSourceFSPAsTransferPayeeFSP;
         this._checkIlp = config.checkIlp;
@@ -44,6 +43,7 @@ class OutboundRequestToPayTransferModel {
             peerEndpoint: config.peerEndpoint,
             quotesEndpoint: config.quotesEndpoint,
             authorizationsEndpoint: config.authorizationsEndpoint,
+            transactionRequestsEndpoint: config.transactionRequestsEndpoint,
             transfersEndpoint: config.transfersEndpoint,
             dfspId: config.dfspId,
             tls: {
@@ -121,7 +121,10 @@ class OutboundRequestToPayTransferModel {
                     // next transition is to requestQuote
                     await this.stateMachine.requestQuote();
                     this._logger.log(`Quote received for transfer ${this.data.transferId}`);
-                    if(this.stateMachine.state === 'quoteReceived' && this.data.initiatorType === 'BUSINESS' && !this._autoAcceptR2PBusinessQuotes) {
+                    if(
+                        (this.stateMachine.state === 'quoteReceived' && this.data.initiatorType !== 'BUSINESS')
+                        || (this.data.initiatorType === 'BUSINESS' && !this._autoAcceptR2PBusinessQuotes)
+                    ) {
                         //we break execution here and return the quote response details to allow asynchronous accept or reject
                         //of the quote
                         await this._save();
@@ -231,10 +234,10 @@ class OutboundRequestToPayTransferModel {
      * sent because the OTP did not match.
      */
     async rejectRequestToPay() {
-        const authResponse = {
-            responseType: 'REJECTED'
+        const mojaloopResponse = {
+            transactionRequestState: 'REJECTED'
         };
-        await this._requests.putAuthorizations(this.data.transactionRequestId,JSON.stringify(authResponse),this.data.to.fspId);
+        await this._requests.putTransactionRequests(this.data.transactionRequestId, JSON.stringify(mojaloopResponse), this.data.to.fspId);
         const response = {
             status : `${this.data.transactionRequestId} has been REJECTED`
         };
@@ -424,7 +427,10 @@ class OutboundRequestToPayTransferModel {
                     const quoteResponseHeaders = message.data.headers;
                     this._logger.push({ quoteResponseBody }).log('Quote response received');
 
-                    this.data.quoteResponse = quoteResponseBody;
+                    this.data.quoteResponse = {
+                        body: quoteResponseBody,
+                        headers: quoteResponseHeaders
+                    };
                     this.data.quoteResponseSource = quoteResponseHeaders['fspiop-source'];
 
                     return resolve(quote);
@@ -483,7 +489,7 @@ class OutboundRequestToPayTransferModel {
             // hook up a subscriber to handle response messages
             const subId = await this._cache.subscribe(otpKey, (cn, msg, subId) => {
                 try {
-                    let otpResponse = JSON.parse(msg);
+                    let authorizationResponse = JSON.parse(msg);
 
                     // cancel the timeout handler
                     clearTimeout(timeout);
@@ -495,12 +501,12 @@ class OutboundRequestToPayTransferModel {
                         this._logger.log(`Error unsubscribing (in callback) ${otpKey} ${subId}: ${e.stack || util.inspect(e)}`);
                     });
 
-                    const otpResponseBody = otpResponse.data;
-                    this._logger.push({ otpResponseBody }).log('OTP response received');
+                    const authorizationResponseBody = authorizationResponse.data;
+                    this._logger.push({ authorizationResponseBody }).log('OTP response received');
 
-                    this.data.otpResponse = otpResponseBody;
+                    this.data.authorizationResponse = authorizationResponseBody;
 
-                    return resolve(otpResponse);
+                    return resolve(authorizationResponse);
                 }
                 catch(err) {
                     return reject(err);
@@ -637,7 +643,7 @@ class OutboundRequestToPayTransferModel {
                     this._logger.push({ fulfil }).log('Transfer fulfil received');
                     this.data.fulfil = fulfil;
 
-                    if(this._checkIlp && !this._ilp.validateFulfil(fulfil.fulfilment, this.data.quoteResponse.condition)) {
+                    if(this._checkIlp && !this._ilp.validateFulfil(fulfil.body.fulfilment, this.data.quoteResponse.body.condition)) {
                         throw new Error('Invalid fulfilment received from peer DFSP.');
                     }
 
@@ -773,11 +779,11 @@ class OutboundRequestToPayTransferModel {
                 // rather than the original request. In Forex cases we may have requested
                 // a RECEIVE amount in a currency we cannot send. FXP should always give us
                 // a quote response with transferAmount in the correct currency.
-                currency: this.data.quoteResponse.transferAmount.currency,
-                amount: this.data.quoteResponse.transferAmount.amount
+                currency: this.data.quoteResponse.body.transferAmount.currency,
+                amount: this.data.quoteResponse.body.transferAmount.amount
             },
-            ilpPacket: this.data.quoteResponse.ilpPacket,
-            condition: this.data.quoteResponse.condition,
+            ilpPacket: this.data.quoteResponse.body.ilpPacket,
+            condition: this.data.quoteResponse.body.condition,
             expiration: this._getExpirationTimestamp()
         };
 
