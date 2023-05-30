@@ -19,6 +19,10 @@
     {
       "name": "outbound-request-to-pay-transfer.json",
       "type": "file"
+    },
+    {
+      "name": "outbound-request-to-pay-transfer-otp.json",
+      "type": "file"
     }
   ]
 }

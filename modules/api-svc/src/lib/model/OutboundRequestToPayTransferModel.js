@@ -92,6 +92,7 @@ class OutboundRequestToPayTransferModel {
             transitions: [
                 { name: 'requestQuote', from: 'start', to: 'quoteReceived' },
                 { name: 'requestOTP', from: 'quoteReceived', to: 'otpReceived' },
+                { name: 'skipOTP', from: 'quoteReceived', to: 'otpReceived' },
                 { name: 'executeTransfer', from: 'otpReceived', to: 'succeeded' },
                 { name: 'error', from: '*', to: 'errored' },
             ],
@@ -133,8 +134,21 @@ class OutboundRequestToPayTransferModel {
                     break;
 
                 case 'quoteReceived':
+                    if (!this.data.authenticationType) {
+                        // Skipping otp step
+                        this._logger.log(`Skipping authorization for transactionRequestId: ${this.data.transactionRequestId} as authenticationType is not provided`);
+                        // this.data.currentState = 'otpReceived'
+                        await this.stateMachine.skipOTP();
+                        break;
+                    } else if (this.data.authenticationType === 'OTP') {
+                        await this.stateMachine.requestOTP();
+                    } else {
+                        // await this.stateMachine.error(err);
+                        await this.stateMachine.error('authenticationType is not supported');
+                        await this._save();
+                        return this.getResponse();
+                    }
                     // next transition is requestOTP
-                    await this.stateMachine.requestOTP();
                     if(this.data.initiatorType !== 'BUSINESS') {
                         this._logger.log(`OTP received for transactionRequestId: ${this.data.transactionRequestId} and transferId: ${this.data.transferId}`);
                         if(this.stateMachine.state === 'otpReceived' && !this._autoAcceptR2PDeviceOTP) {
@@ -214,6 +228,10 @@ class OutboundRequestToPayTransferModel {
             case 'requestOTP':
                 // request an OTP
                 return this._requestOTP();
+
+            case 'skipOTP':
+                // request an OTP
+                return;
 
             case 'executeTransfer':
                 // prepare a transfer and wait for fulfillment
@@ -831,7 +849,7 @@ class OutboundRequestToPayTransferModel {
                 break;
 
             case 'otpReceived':
-                resp.currentState = SDKStateEnum.WAITING_FOR_OTP_ACCEPTANCE;
+                resp.currentState = SDKStateEnum.WAITING_FOR_AUTH_ACCEPTANCE;
                 break;
 
             case 'succeeded':
