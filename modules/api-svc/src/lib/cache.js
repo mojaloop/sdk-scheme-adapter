@@ -202,7 +202,7 @@ class Cache {
     }
     
     getSubscribers(channel) {
-        return this._callbacks[channel]
+        return this._callbacks[channel];
     }
 
     /**

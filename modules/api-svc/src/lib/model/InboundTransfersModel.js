@@ -205,7 +205,7 @@ class InboundTransfersModel {
             if(quoteRequest.transactionRequestId) {
                 const previousTxnReq = await this._cache.get(`txnReqModel_${quoteRequest.transactionRequestId}`);
                 if(previousTxnReq) {
-                    internalForm.homeR2PTransactionId = previousTxnReq.homeR2PTransactionId
+                    internalForm.homeR2PTransactionId = previousTxnReq.homeR2PTransactionId;
                 } else {
                     this._logger.error(`No previous transactionRequest found in cache with transactionRequestId: ${quoteRequest.transactionRequestId}. Unable to fetch homeR2PTransactionId.`);
                 }
@@ -274,15 +274,15 @@ class InboundTransfersModel {
             if(transactionRequestId) {
                 const previousTxnReq = await this._cache.get(`txnReqModel_${transactionRequestId}`);
                 if(previousTxnReq) {
-                    internalForm.homeR2PTransactionId = previousTxnReq.homeR2PTransactionId
+                    internalForm.homeR2PTransactionId = previousTxnReq.homeR2PTransactionId;
                     const udpatedTxnReq = {
                         ...previousTxnReq,
                         putTransactionRequestNotification: request
-                    }
+                    };
                     // Update transactionRequest model in cache with notification
                     await this._cache.set(`txnReqModel_${transactionRequestId}`, udpatedTxnReq);
                 } else {
-                    this._logger.error(`No previous transactionRequest found in cache with transactionRequestId: ${quoteRequest.transactionRequestId}. Unable to fetch homeR2PTransactionId.`);
+                    this._logger.error(`No previous transactionRequest found in cache with transactionRequestId: ${transactionRequestId}. Unable to fetch homeR2PTransactionId.`);
                 }
             }
 
@@ -290,10 +290,10 @@ class InboundTransfersModel {
             await this._backendRequests.putRequestToPayNotification(internalForm, transactionRequestId);
         }
         catch(err) {
-            this._logger.push({ err }).log('Error in quoteRequest');
+            this._logger.push({ err }).log('Error in putTransactionRequest');
             const mojaloopError = await this._handleError(err);
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
-            return await this._mojaloopRequests.putQuotesError(quoteRequest.quoteId,
+            return await this._mojaloopRequests.putQuotesError(transactionRequestId,
                 mojaloopError, sourceFspId);
         }
     }
