@@ -2632,9 +2632,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/api-snippets@npm:17.2.0-snapshot.2":
-  version: 17.2.0-snapshot.2
-  resolution: "@mojaloop/api-snippets@npm:17.2.0-snapshot.2"
+"@mojaloop/api-snippets@npm:17.2.0":
+  version: 17.2.0
+  resolution: "@mojaloop/api-snippets@npm:17.2.0"
   dependencies:
     "@apidevtools/json-schema-ref-parser": ^9.1.2
     commander: ^10.0.1
@@ -2645,7 +2645,7 @@ __metadata:
     openapi-typescript: ^5.4.1
     ts-auto-mock: ^3.6.4
     ttypescript: ^1.5.15
-  checksum: f9f59f1fc12de29549e1078d323a91c9ca5b8089213eab443fc040c518c0dcf04b20cc7d4e382b43a46657ea4501342ecfc79f2976915c16fdff797d7b639430
+  checksum: c1d5f779c93e212595fb04f05fdc36f31ffbc77cff08e38d3a0df77ab1baf85ac59e32519f12b5b8253c9417f725de1af805b1d9c5362278ef79eea5dab3515c
   languageName: node
   linkType: hard
 
@@ -2832,7 +2832,7 @@ __metadata:
     "@babel/core": ^7.22.1
     "@babel/preset-env": ^7.22.4
     "@koa/cors": ^4.0.0
-    "@mojaloop/api-snippets": 17.2.0-snapshot.2
+    "@mojaloop/api-snippets": 17.2.0
     "@mojaloop/central-services-error-handling": ^12.0.5
     "@mojaloop/central-services-logger": ^11.2.0
     "@mojaloop/central-services-metrics": ^12.0.5
