@@ -2615,23 +2615,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/api-snippets@npm:17.1.0":
-  version: 17.1.0
-  resolution: "@mojaloop/api-snippets@npm:17.1.0"
-  dependencies:
-    "@apidevtools/json-schema-ref-parser": ^9.1.2
-    commander: ^10.0.1
-    jest-ts-auto-mock: ^2.1.0
-    js-yaml: ^4.1.0
-    json-refs: ^3.0.15
-    openapi-types: ^12.1.0
-    openapi-typescript: ^5.4.1
-    ts-auto-mock: ^3.6.4
-    ttypescript: ^1.5.15
-  checksum: c1fa03b61ea1a595d1bad5b1ca40576b58131c8a1e3384b9018e1036588ce7f7d83ca3b88d2c773819d1dd1153d306cc72f517008cdd9d7940743421cfdb6854
-  languageName: node
-  linkType: hard
-
 "@mojaloop/api-snippets@npm:17.2.0":
   version: 17.2.0
   resolution: "@mojaloop/api-snippets@npm:17.2.0"
@@ -2887,7 +2870,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-command-event-handler@workspace:modules/outbound-command-event-handler"
   dependencies:
-    "@mojaloop/api-snippets": 17.1.0
+    "@mojaloop/api-snippets": 17.2.0
     "@mojaloop/central-services-shared": ^17.5.1
     "@mojaloop/logging-bc-client-lib": ^0.1.17
     "@mojaloop/logging-bc-public-types-lib": ^0.1.19
@@ -2926,7 +2909,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-domain-event-handler@workspace:modules/outbound-domain-event-handler"
   dependencies:
-    "@mojaloop/api-snippets": 17.1.0
+    "@mojaloop/api-snippets": 17.2.0
     "@mojaloop/logging-bc-client-lib": ^0.1.17
     "@mojaloop/logging-bc-public-types-lib": ^0.1.19
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
@@ -2963,7 +2946,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-private-shared-lib@workspace:modules/private-shared-lib"
   dependencies:
-    "@mojaloop/api-snippets": 17.1.0
+    "@mojaloop/api-snippets": 17.2.0
     "@mojaloop/central-services-shared": ^17.5.1
     "@mojaloop/logging-bc-public-types-lib": ^0.1.19
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.2.98
@@ -11972,13 +11955,6 @@ __metadata:
   version: 12.0.2
   resolution: "openapi-types@npm:12.0.2"
   checksum: 097edc46adb5a8fc2a3419e2e0adbb5516737fd83b4041ec62ee28427e85d9f18c6ead9231b9d1c8f718d86eeccf3c0997437414011d8bb1597387a047493fea
-  languageName: node
-  linkType: hard
-
-"openapi-types@npm:^12.1.0":
-  version: 12.1.0
-  resolution: "openapi-types@npm:12.1.0"
-  checksum: d8f3e2bae519aa6bcf2012f4a5592b7283fe928c06f3bdc182776ce637c7ed8d5f9f342724f68c95c9572aefe21ed5e89b18a0295a703da61af5f97bd2aea9a7
   languageName: node
   linkType: hard
 
