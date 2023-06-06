@@ -18,7 +18,7 @@ const shared = require('./lib/shared');
 const { BackendError } = require('./common');
 const PartiesModel = require('./PartiesModel');
 
-const { SDKStateEnum } = require('./common');
+const { SDKStateEnum, TransactionRequestStateEnum } = require('./common');
 
 /**
  *  Models the state machine and operations required for performing an outbound transfer
@@ -253,11 +253,11 @@ class OutboundRequestToPayTransferModel {
      */
     async rejectRequestToPay() {
         const mojaloopResponse = {
-            transactionRequestState: 'REJECTED'
+            transactionRequestState: TransactionRequestStateEnum.REJECTED
         };
         await this._requests.putTransactionRequests(this.data.transactionRequestId, JSON.stringify(mojaloopResponse), this.data.to.fspId);
         const response = {
-            status : `${this.data.transactionRequestId} has been REJECTED`
+            status : `${this.data.transactionRequestId} has been ${TransactionRequestStateEnum.REJECTED}`
         };
         return JSON.stringify(response);
     }

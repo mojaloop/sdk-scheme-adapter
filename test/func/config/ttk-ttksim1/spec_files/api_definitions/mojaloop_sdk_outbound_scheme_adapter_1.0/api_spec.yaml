@@ -386,12 +386,12 @@ paths:
   /requestToPayTransfer/{transactionRequestId}:
     put:
       summary: >-
-        Continues a transfer that has paused at the otp stage in order to accept
+        Continues a transfer that has paused at the Authentication stage in order to accept
         or reject quote
       description: >
         This request is used to continue a requestToPayTransfer initiated via
-        the `POST /requestToPayTransfer` method that has halted after quotation
-        stage and/or otp stage.
+        the `POST /requestToPayTransfer` method that has halted after Quotation
+        stage and/or Authentication stage.
 
 
         The request body should contain either the "acceptOTP" or "acceptQuote"

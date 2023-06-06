@@ -26,6 +26,14 @@ const SDKStateEnum = {
     RESERVED: 'RESERVED',
 };
 
+const TransactionRequestStateEnum = {
+    RECEIVED: 'RECEIVED',
+    PENDING: 'PENDING',
+    ACCEPTED: 'ACCEPTED',
+    REJECTED: 'REJECTED',
+};
+
 module.exports = {
     SDKStateEnum,
+    TransactionRequestStateEnum
 };
