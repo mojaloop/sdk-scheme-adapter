@@ -1236,5 +1236,97 @@
     },
     "type": "response",
     "version": 1
+  },
+  {
+    "ruleId": 23,
+    "priority": 1,
+    "description": "post /transactionrequests",
+    "apiVersion": {
+      "minorVersion": 4,
+      "majorVersion": 1,
+      "type": "mojaloop_simulator_inbound",
+      "asynchronous": true,
+      "specFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/api_spec.yaml",
+      "callbackMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/callback_map.json",
+      "responseMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/response_map.json",
+      "jsfRefFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/mockRef.json",
+      "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/trigger_templates"
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/transactionrequests"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "homeR2PTransactionId": "cba321",
+          "transactionId": "{$function.generic.generateUUID}",
+          "transactionRequestState": "RECEIVED"
+        },
+        "statusCode": "200",
+        "scripts": {
+          "exec": [
+            "const reqBody = JSON.parse(request.body)",
+            "const outEndpoint = userConfig.CALLBACK_ENDPOINT",
+            "const outReqBody = {",
+            "  transactionRequestId: reqBody.transactionRequestId,",
+            "  homeR2PTransactionId: 'abc123',",
+            "  from: reqBody.to,",
+            "  to: reqBody.from,",
+            "  amountType: \"RECEIVE\",",
+            "  currency: reqBody.currency,",
+            "  amount: reqBody.amount,",
+            "  authenticationType: reqBody.authenticationType,",
+            "  scenario: \"TRANSFER\",",
+            "  initiator: reqBody.initiator,",
+            "  initiatorType: reqBody.initiatorType,",
+            "  note: \"Note sent to Payee.\"",
+            "}",
+            "",
+            "const startRequestToPayTransferProcess = async () => {",
+            "  try {",
+            "    const axioResponse1 = await axios({",
+            "      method: 'post',",
+            "      url: outEndpoint + '/requestToPayTransfer',",
+            "      data: outReqBody",
+            "    });",
+            "    res1 = axioResponse1.data;",
+            "    const axioResponse2 = await axios({",
+            "      method: 'put',",
+            "      url: outEndpoint + '/requestToPayTransfer/' + outReqBody.transactionRequestId,",
+            "      data: {",
+            "        acceptQuote: true",
+            "      }",
+            "    });",
+            "    res2 = axioResponse2.data;",
+            "",
+            "    // responseCode = axioResponse.code || axioResponse.status",
+            "  } catch (err) {",
+            "    console.log(err)",
+            "  }",
+            "}",
+            "",
+            "startRequestToPayTransferProcess()",
+            ""
+          ],
+          "scriptingEngine": "javascript"
+        }
+      },
+      "type": "MOCK_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
   }
 ]

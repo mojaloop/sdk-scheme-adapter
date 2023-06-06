@@ -1,5 +1,6 @@
 {
-  "requestToPayTransactionId": "123ABC",
+  "homeR2PTransactionId": "abc123",
+  "transactionRequestId": "c85e581e-fccf-4f55-8bea-96192ee2a32b",
   "from": {
     "displayName": "Customer",
     "idType": "MSISDN",

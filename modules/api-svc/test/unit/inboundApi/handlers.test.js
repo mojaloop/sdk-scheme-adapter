@@ -440,6 +440,56 @@ describe('Inbound API handlers:', () => {
         });
     });
 
+    describe('PUT /transactionRequests/{ID}/error', () => {
+
+        let mockContext;
+
+        beforeEach(() => {
+
+            mockContext = {
+                request: {
+                    body: {
+                        errorInformation: {
+                            errorCode: '5100',
+                            errorDescription: 'Fake error'
+                        }
+                    },
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    path: {
+                        params: {
+                            'ID': '4d99aeb4-e198-4398-b644-eb4ba42530cd'
+                        }
+                    },
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
+                    cache: {
+                        publish: async () => Promise.resolve(true)
+                    }
+                }
+            };
+        });
+
+        test('calls `ctx.state.cache.publish` with the expected arguments.', async () => {
+            const putTransactionRequestsByIdErrorSpy = jest.spyOn(mockContext.state.cache, 'publish');
+
+            await expect(handlers['/transactionRequests/{ID}/error'].put(mockContext)).resolves.toBe(undefined);
+            expect(mockContext.response.status).toBe(200);
+            expect(putTransactionRequestsByIdErrorSpy).toHaveBeenCalledTimes(1);
+            expect(putTransactionRequestsByIdErrorSpy.mock.calls[0][1]).toMatchObject({
+                type: 'transactionRequestResponseError',
+                data: {
+                    body: mockContext.request.body,
+                    headers: mockContext.request.headers,
+                }
+            });
+        });
+    });
+
     describe('GET /bulkTransfers/{ID}', () => {
 
         let mockContext;
