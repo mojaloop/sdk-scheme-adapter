@@ -56,5 +56,12 @@
     "put": {
       "response": {}
     }
+  },
+  "/transactionrequests": {
+    "post": {
+      "response": {
+        "bodyOverride": {}
+      }
+    }
   }
 }

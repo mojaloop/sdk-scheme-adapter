@@ -148,6 +148,17 @@ class BackendRequests {
     }
 
     /**
+     * Executes a PUT /requestToPay/{ID} request to forward notification for success
+     *
+     * @returns {object} - JSON response body if one was received
+     */
+
+    async putRequestToPayNotification(notifcation, transactionRequestId) {
+        const url = `requestToPay/${transactionRequestId}`;
+        return this._put(url, notifcation);
+    }
+
+    /**
      * Executes a PUT /bulkTransactions/{ID} request
      *
      * @returns {object} - JSON response body if one was received

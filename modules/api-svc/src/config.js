@@ -139,8 +139,8 @@ module.exports = {
 
     autoAcceptQuotes: env.get('AUTO_ACCEPT_QUOTES').default('true').asBool(),
     autoAcceptParty: env.get('AUTO_ACCEPT_PARTY').default('true').asBool(),
+    autoAcceptR2PParty: env.get('AUTO_ACCEPT_R2P_PARTY').default('false').asBool(),
     autoAcceptR2PBusinessQuotes: env.get('AUTO_ACCEPT_R2P_BUSINESS_QUOTES').default('false').asBool(),
-    autoAcceptR2PDeviceQuotes: env.get('AUTO_ACCEPT_R2P_DEVICE_QUOTES').default('true').asBool(),
     autoAcceptR2PDeviceOTP: env.get('AUTO_ACCEPT_R2P_DEVICE_OTP').default('false').asBool(),
     autoAcceptParticipantsPut: env.get('AUTO_ACCEPT_PARTICIPANTS_PUT').default('false').asBool(),
 

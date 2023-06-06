@@ -27,7 +27,7 @@ class OutboundRequestToPayModel {
         this._requestProcessingTimeoutSeconds = config.requestProcessingTimeoutSeconds;
         this._dfspId = config.dfspId;
         this._expirySeconds = config.expirySeconds;
-        this._autoAcceptParty = config.autoAcceptParty;
+        this._autoAcceptR2PParty = config.autoAcceptR2PParty;
 
         this._requests = new MojaloopRequests({
             logger: this._logger,
@@ -270,13 +270,10 @@ class OutboundRequestToPayModel {
                     let error;
                     let message = JSON.parse(msg);
 
-                    // if (message.type === 'transactionRequestFail') {
-                    //     error = new BackendError(`Got an error response processing transaction request: ${util.inspect(message.data)}`, 500);
-                    //     error.mojaloopError = message.data;
-                    // } else {
-                    //     this._logger.push({ message }).log(`Ignoring cache notification for transfer ${transactionRequestKey}. Uknokwn message type ${message.type}.`);
-                    //     return;
-                    // }
+                    if (message.type === 'transactionRequestResponseError') {
+                        error = new BackendError(`Got an error response processing transaction request: ${util.inspect(message.data)}`, 500);
+                        error.mojaloopError = message.data;
+                    }
 
                     // cancel the timeout handler
                     clearTimeout(timeout);
@@ -292,8 +289,7 @@ class OutboundRequestToPayModel {
 
                     const transactionRequestResponse = message.data;
                     this._logger.push({ transactionRequestResponse }).log('Transaction Request Response received');
-                    this.data.requestToPayState = transactionRequestResponse.transactionRequestState;
-
+                    this.data.transactionRequestResponse = transactionRequestResponse;
 
                     return resolve(transactionRequestResponse);
                 }
@@ -371,7 +367,8 @@ class OutboundRequestToPayModel {
                 subScenario: this.data.subScenario,
                 initiator: 'PAYEE',
                 initiatorType: this.data.from.type || 'CONSUMER'
-            }
+            },
+            authenticationType: this.data.authenticationType
         };
 
         // add extensions list if provided
@@ -415,7 +412,7 @@ class OutboundRequestToPayModel {
                     // next transition is to resolvePayee
                     await this.stateMachine.resolvePayee();
                     this._logger.log(`Payee resolved for transfer ${this.data.transferId}`);
-                    if(this.stateMachine.state === 'payeeResolved' && !this._autoAcceptParty) {
+                    if(this.stateMachine.state === 'payeeResolved' && !this._autoAcceptR2PParty) {
                         //we break execution here and return the resolved party details to allow asynchronous accept or reject
                         //of the resolved party
                         await this._save();
@@ -450,15 +447,15 @@ class OutboundRequestToPayModel {
 
             // as this function is recursive, we dont want to error the state machine multiple times
             if(this.data.currentState !== 'errored') {
-                // err should not have a transferState property here!
-                if(err.transferState) {
+                // err should not have a lastError property here!
+                if(err.lastError) {
                     this._logger.log(`State machine is broken: ${util.inspect(err)}`);
                 }
                 // transition to errored state
                 await this.stateMachine.error(err);
 
                 // avoid circular ref between transferState.lastError and err
-                err.transferState = JSON.parse(JSON.stringify(this.getResponse()));
+                err.lastError = JSON.parse(JSON.stringify(this.getResponse()));
             }
             throw err;
         }
@@ -481,6 +478,7 @@ class OutboundRequestToPayModel {
 
             case 'succeeded':
                 resp.currentState = SDKStateEnum.COMPLETED;
+                resp.transactionRequestId = this.data.transactionRequestId;
                 break;
 
             case 'errored':
