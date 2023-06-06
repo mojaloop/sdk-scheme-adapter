@@ -332,6 +332,12 @@
     "conditions": {
       "all": [
         {
+          "fact": "headers",
+          "operator": "equal",
+          "value": "ttksim1",
+          "path": "fspiop-destination"
+        },
+        {
           "fact": "operationPath",
           "operator": "equal",
           "value": "/bulkQuotes/{ID}"
@@ -365,6 +371,12 @@
     },
     "conditions": {
       "all": [
+        {
+          "fact": "headers",
+          "operator": "equal",
+          "value": "ttksim1",
+          "path": "fspiop-destination"
+        },
         {
           "fact": "operationPath",
           "operator": "equal",
@@ -480,6 +492,12 @@
     "conditions": {
       "all": [
         {
+          "fact": "headers",
+          "operator": "equal",
+          "value": "ttksim1",
+          "path": "fspiop-destination"
+        },
+        {
           "fact": "operationPath",
           "operator": "equal",
           "value": "/bulkTransfers/{ID}"
@@ -513,6 +531,12 @@
     },
     "conditions": {
       "all": [
+        {
+          "fact": "headers",
+          "operator": "equal",
+          "value": "ttksim1",
+          "path": "fspiop-destination"
+        },
         {
           "fact": "operationPath",
           "operator": "equal",
@@ -588,6 +612,12 @@
     "conditions": {
       "all": [
         {
+          "fact": "headers",
+          "operator": "equal",
+          "value": "ttksim1",
+          "path": "fspiop-destination"
+        },
+        {
           "fact": "operationPath",
           "operator": "equal",
           "value": "/quotes/{ID}"
@@ -661,6 +691,12 @@
     },
     "conditions": {
       "all": [
+        {
+          "fact": "headers",
+          "operator": "equal",
+          "value": "ttksim1",
+          "path": "fspiop-destination"
+        },
         {
           "fact": "operationPath",
           "operator": "equal",
@@ -736,6 +772,12 @@
     "conditions": {
       "all": [
         {
+          "fact": "headers",
+          "operator": "equal",
+          "value": "ttksim1",
+          "path": "fspiop-destination"
+        },
+        {
           "fact": "operationPath",
           "operator": "equal",
           "value": "/transactionRequests/{ID}"
@@ -774,6 +816,12 @@
     "conditions": {
       "all": [
         {
+          "fact": "headers",
+          "operator": "equal",
+          "value": "ttksim1",
+          "path": "fspiop-destination"
+        },
+        {
           "fact": "operationPath",
           "operator": "equal",
           "value": "/transactionrequests"
@@ -786,20 +834,173 @@
       ]
     },
     "event": {
-      "method": null,
-      "path": null,
       "params": {
-        "body": {
-          "transactionRequestState": "RECEIVED"
-        },
-        "statusCode": "200",
-        "scripts": {
-          "scriptingEngine": "postman"
-        }
+        "to": "ttksim1",
+        "dfspId": "ttksim1"
       },
-      "type": "MOCK_RESPONSE"
+      "type": "FORWARD"
     },
     "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 22,
+    "priority": 1,
+    "description": "post /quotes to ttksim1",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "headers",
+          "operator": "equal",
+          "value": "ttksim1",
+          "path": "fspiop-destination"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/quotes"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "params": {
+        "to": "ttksim1",
+        "dfspId": "ttksim1"
+      },
+      "type": "FORWARD"
+    },
+    "type": "forward",
+    "version": 1
+  },
+  {
+    "ruleId": 23,
+    "priority": 1,
+    "description": "put /quotes/{ID}",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "headers",
+          "operator": "equal",
+          "value": "ttksim2",
+          "path": "fspiop-destination"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/quotes/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "put"
+        }
+      ]
+    },
+    "event": {
+      "params": {
+        "to": "ttksim2",
+        "dfspId": "ttksim2"
+      },
+      "type": "FORWARD"
+    },
+    "type": "forward",
+    "version": 1
+  },
+  {
+    "ruleId": 24,
+    "priority": 1,
+    "description": "post /transfers to ttksim1",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "headers",
+          "operator": "equal",
+          "value": "ttksim1",
+          "path": "fspiop-destination"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/transfers"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "params": {
+        "to": "ttksim1",
+        "dfspId": "ttksim1"
+      },
+      "type": "FORWARD"
+    },
+    "type": "forward",
+    "version": 1
+  },
+  {
+    "ruleId": 25,
+    "priority": 1,
+    "description": "put /transfers/{ID}",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 1,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "headers",
+          "operator": "equal",
+          "value": "ttksim2",
+          "path": "fspiop-destination"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/transfers/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "put"
+        }
+      ]
+    },
+    "event": {
+      "params": {
+        "to": "ttksim2",
+        "dfspId": "ttksim2"
+      },
+      "type": "FORWARD"
+    },
+    "type": "forward",
     "version": 1
   }
 ]

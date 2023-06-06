@@ -383,15 +383,15 @@ paths:
           $ref: '#/components/responses/transferServerError'
         '504':
           $ref: '#/components/responses/transferTimeout'
-  /requestToPayTransfer/{requestToPayTransactionId}:
+  /requestToPayTransfer/{transactionRequestId}:
     put:
       summary: >-
-        Continues a transfer that has paused at the otp stage in order to accept
+        Continues a transfer that has paused at the Authentication stage in order to accept
         or reject quote
       description: >
-        The HTTP request `PUT /transfers/{transferId}` is used to continue a
-        transfer initiated via the `POST /transfers` method that has halted
-        after party lookup and/or quotation stage.
+        This request is used to continue a requestToPayTransfer initiated via
+        the `POST /requestToPayTransfer` method that has halted after Quotation
+        stage and/or Authentication stage.
 
 
         The request body should contain either the "acceptOTP" or "acceptQuote"
@@ -410,7 +410,7 @@ paths:
                 - $ref: '#/components/schemas/transferContinuationAcceptQuote'
                 - $ref: '#/components/schemas/transferContinuationAcceptOTP'
       parameters:
-        - $ref: '#/components/parameters/requestToPayTransactionId'
+        - $ref: '#/components/parameters/transactionRequestId'
       responses:
         '200':
           $ref: '#/components/responses/transferSuccess'
@@ -2370,7 +2370,8 @@ components:
     requestToPayTransferRequest:
       type: object
       required:
-        - requestToPayTransactionId
+        - homeR2PTransactionId
+        - transactionRequestId
         - from
         - to
         - amountType
@@ -2380,11 +2381,13 @@ components:
         - initiator
         - initiatorType
       properties:
-        requestToPayTransactionId:
+        homeR2PTransactionId:
           type: string
           description: >-
             Transaction ID from the DFSP backend, used to reconcile transactions
             between the Switch and DFSP backend systems.
+        transactionRequestId:
+          $ref: '#/components/schemas/CorrelationId'
         from:
           $ref: '#/components/schemas/transferParty'
         to:
@@ -2396,17 +2399,101 @@ components:
         amount:
           $ref: '#/components/schemas/Amount'
         scenario:
-          $ref: '#/components/schemas/TransactionType'
+          $ref: '#/components/schemas/TransactionScenario'
+        subScenario:
+          $ref: '#/components/schemas/TransactionSubScenario'
         initiator:
           $ref: '#/components/schemas/TransactionInitiator'
         initiatorType:
           $ref: '#/components/schemas/TransactionInitiatorType'
         note:
           $ref: '#/components/schemas/Note'
+        authenticationType:
+          $ref: '#/components/schemas/AuthenticationType'
+    AuthenticationValue:
+      title: AuthenticationValue
+      anyOf:
+        - title: OtpValue
+          type: string
+          pattern: ^\d{3,10}$
+          description: >-
+            The API data type OtpValue is a JSON String of 3 to 10 characters,
+            consisting of digits only. Negative numbers are not allowed. One or
+            more leading zeros are allowed.
+        - title: QRCODE
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: QR code used as a One Time Password.
+        - title: U2FPinValue
+          type: object
+          description: >
+            U2F challenge-response, where payer FSP verifies if the response
+            provided by end-user device matches the previously registered key.
+          properties:
+            pinValue:
+              type: string
+              pattern: ^\S{1,64}$
+              minLength: 1
+              maxLength: 64
+              description: >
+                U2F challenge-response, where payer FSP verifies if the response
+                provided by end-user device matches the previously registered
+                key.
+            counter:
+              title: Integer
+              type: string
+              pattern: ^[1-9]\d*$
+              description: >-
+                Sequential counter used for cloning detection. Present only for
+                U2F authentication.
+          required:
+            - pinValue
+            - counter
+      pattern: ^\d{3,10}$|^\S{1,64}$
+      description: >-
+        Contains the authentication value. The format depends on the
+        authentication type used in the AuthenticationInfo complex type.
+    AuthenticationInfo:
+      title: AuthenticationInfo
+      type: object
+      description: Data model for the complex type AuthenticationInfo.
+      properties:
+        authentication:
+          $ref: '#/components/schemas/AuthenticationType'
+        authenticationValue:
+          $ref: '#/components/schemas/AuthenticationValue'
+      required:
+        - authentication
+        - authenticationValue
+    AuthorizationResponseType:
+      title: AuthorizationResponseType
+      type: string
+      enum:
+        - ENTERED
+        - REJECTED
+        - RESEND
+      description: |-
+        Below are the allowed values for the enumeration.
+        - ENTERED - Consumer entered the authentication value.
+        - REJECTED - Consumer rejected the transaction.
+        - RESEND - Consumer requested to resend the authentication value.
+      example: ENTERED
+    AuthorizationIDPutResponse:
+      title: AuthorizationIDPutResponse
+      type: object
+      description: The object sent in the PUT /authorizations/{ID} callback.
+      properties:
+        authenticationInfo:
+          $ref: '#/components/schemas/AuthenticationInfo'
+        responseType:
+          $ref: '#/components/schemas/AuthorizationResponseType'
+      required:
+        - responseType
     requestToPayTransferResponse:
       type: object
       required:
-        - requestToPayTransactionId
+        - transactionRequestId
         - from
         - to
         - amountType
@@ -2416,11 +2503,13 @@ components:
       properties:
         transferId:
           $ref: '#/components/schemas/CorrelationId'
-        requestToPayTransactionId:
+        homeR2PTransactionId:
           type: string
           description: >-
             Transaction ID from the DFSP backend, used to reconcile transactions
             between the Switch and DFSP backend systems.
+        transactionRequestId:
+          $ref: '#/components/schemas/CorrelationId'
         from:
           $ref: '#/components/schemas/transferParty'
         to:
@@ -2440,7 +2529,14 @@ components:
         quoteId:
           $ref: '#/components/schemas/CorrelationId'
         quoteResponse:
-          $ref: '#/components/schemas/QuotesIDPutResponse'
+          type: object
+          required:
+            - body
+          properties:
+            body:
+              $ref: '#/components/schemas/QuotesIDPutResponse'
+            headers:
+              type: object
         quoteResponseSource:
           type: string
           description: >
@@ -2448,8 +2544,24 @@ components:
             be the same as the FSPID of the entity which owns the end user
             account in the case of a FOREX transfer. i.e. it may be a FOREX
             gateway.
+        authorizationResponse:
+          type: object
+          required:
+            - body
+          properties:
+            body:
+              $ref: '#/components/schemas/AuthorizationIDPutResponse'
+            headers:
+              type: object
         fulfil:
-          $ref: '#/components/schemas/TransfersIDPutResponse'
+          type: object
+          required:
+            - body
+          properties:
+            body:
+              $ref: '#/components/schemas/TransfersIDPutResponse'
+            headers:
+              type: object
         lastError:
           description: >
             Object representing the last error to occur during a transfer
@@ -2803,15 +2915,6 @@ components:
       description: >-
         Identifier of the merchant request to pay to continue as returned in the
         response to a `POST /requestToPay` request.
-    requestToPayTransactionId:
-      name: requestToPayTransactionId
-      in: path
-      required: true
-      schema:
-        $ref: '#/components/schemas/CorrelationId'
-      description: >-
-        Identifier of the merchant request to pay transfer to continue as
-        returned in the response to a `POST /requestToPayTransfer` request.
     transferId:
       name: transferId
       in: path

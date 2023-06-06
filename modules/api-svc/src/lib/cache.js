@@ -200,6 +200,10 @@ class Cache {
             throw new Error(`Channel ${channel} does not have a callback with id ${callbackId} subscribed`);
         }
     }
+    
+    getSubscribers(channel) {
+        return this._callbacks[channel];
+    }
 
     /**
       * Returns a new redis client

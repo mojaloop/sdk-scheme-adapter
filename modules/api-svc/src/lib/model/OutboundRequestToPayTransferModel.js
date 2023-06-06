@@ -18,7 +18,7 @@ const shared = require('./lib/shared');
 const { BackendError } = require('./common');
 const PartiesModel = require('./PartiesModel');
 
-const { SDKStateEnum } = require('./common');
+const { SDKStateEnum, TransactionRequestStateEnum } = require('./common');
 
 /**
  *  Models the state machine and operations required for performing an outbound transfer
@@ -34,7 +34,6 @@ class OutboundRequestToPayTransferModel {
         this._rejectExpiredTransferFulfils = config.rejectExpiredTransferFulfils;
         this._autoAcceptQuotes = config.autoAcceptQuotes;
         this._autoAcceptR2PBusinessQuotes = config.autoAcceptR2PBusinessQuotes;
-        this._autoAcceptR2PDeviceQuotes = config.autoAcceptR2PDeviceQuotes;
         this._autoAcceptR2PDeviceOTP = config.autoAcceptR2PDeviceOTP;
         this._useQuoteSourceFSPAsTransferPayeeFSP = config.useQuoteSourceFSPAsTransferPayeeFSP;
         this._checkIlp = config.checkIlp;
@@ -44,6 +43,7 @@ class OutboundRequestToPayTransferModel {
             peerEndpoint: config.peerEndpoint,
             quotesEndpoint: config.quotesEndpoint,
             authorizationsEndpoint: config.authorizationsEndpoint,
+            transactionRequestsEndpoint: config.transactionRequestsEndpoint,
             transfersEndpoint: config.transfersEndpoint,
             dfspId: config.dfspId,
             tls: {
@@ -92,6 +92,7 @@ class OutboundRequestToPayTransferModel {
             transitions: [
                 { name: 'requestQuote', from: 'start', to: 'quoteReceived' },
                 { name: 'requestOTP', from: 'quoteReceived', to: 'otpReceived' },
+                { name: 'skipOTP', from: 'quoteReceived', to: 'otpReceived' },
                 { name: 'executeTransfer', from: 'otpReceived', to: 'succeeded' },
                 { name: 'error', from: '*', to: 'errored' },
             ],
@@ -121,7 +122,10 @@ class OutboundRequestToPayTransferModel {
                     // next transition is to requestQuote
                     await this.stateMachine.requestQuote();
                     this._logger.log(`Quote received for transfer ${this.data.transferId}`);
-                    if(this.stateMachine.state === 'quoteReceived' && this.data.initiatorType === 'BUSINESS' && !this._autoAcceptR2PBusinessQuotes) {
+                    if(
+                        (this.stateMachine.state === 'quoteReceived' && this.data.initiatorType !== 'BUSINESS')
+                        || (this.data.initiatorType === 'BUSINESS' && !this._autoAcceptR2PBusinessQuotes)
+                    ) {
                         //we break execution here and return the quote response details to allow asynchronous accept or reject
                         //of the quote
                         await this._save();
@@ -130,10 +134,23 @@ class OutboundRequestToPayTransferModel {
                     break;
 
                 case 'quoteReceived':
+                    if (!this.data.authenticationType) {
+                        // Skipping otp step
+                        this._logger.log(`Skipping authorization for transactionRequestId: ${this.data.transactionRequestId} as authenticationType is not provided`);
+                        // this.data.currentState = 'otpReceived'
+                        await this.stateMachine.skipOTP();
+                        break;
+                    } else if (this.data.authenticationType === 'OTP') {
+                        await this.stateMachine.requestOTP();
+                    } else {
+                        // await this.stateMachine.error(err);
+                        await this.stateMachine.error('authenticationType is not supported');
+                        await this._save();
+                        return this.getResponse();
+                    }
                     // next transition is requestOTP
-                    await this.stateMachine.requestOTP();
                     if(this.data.initiatorType !== 'BUSINESS') {
-                        this._logger.log(`OTP received for transactionId: ${this.data.requestToPayTransactionId} and transferId: ${this.data.transferId}`);
+                        this._logger.log(`OTP received for transactionRequestId: ${this.data.transactionRequestId} and transferId: ${this.data.transferId}`);
                         if(this.stateMachine.state === 'otpReceived' && !this._autoAcceptR2PDeviceOTP) {
                             //we break execution here and return the otp response details to allow asynchronous accept or reject
                             //of the quote
@@ -212,6 +229,10 @@ class OutboundRequestToPayTransferModel {
                 // request an OTP
                 return this._requestOTP();
 
+            case 'skipOTP':
+                // Skip OTP request
+                return;
+
             case 'executeTransfer':
                 // prepare a transfer and wait for fulfillment
                 return this._executeTransfer();
@@ -231,12 +252,12 @@ class OutboundRequestToPayTransferModel {
      * sent because the OTP did not match.
      */
     async rejectRequestToPay() {
-        const authResponse = {
-            responseType: 'REJECTED'
+        const mojaloopResponse = {
+            transactionRequestState: TransactionRequestStateEnum.REJECTED
         };
-        await this._requests.putAuthorizations(this.data.requestToPayTransactionId,JSON.stringify(authResponse),this.data.to.fspId);
+        await this._requests.putTransactionRequests(this.data.transactionRequestId, JSON.stringify(mojaloopResponse), this.data.to.fspId);
         const response = {
-            status : `${this.data.requestToPayTransactionId} has been REJECTED`
+            status : `${this.data.transactionRequestId} has been ${TransactionRequestStateEnum.REJECTED}`
         };
         return JSON.stringify(response);
     }
@@ -424,7 +445,10 @@ class OutboundRequestToPayTransferModel {
                     const quoteResponseHeaders = message.data.headers;
                     this._logger.push({ quoteResponseBody }).log('Quote response received');
 
-                    this.data.quoteResponse = quoteResponseBody;
+                    this.data.quoteResponse = {
+                        body: quoteResponseBody,
+                        headers: quoteResponseHeaders
+                    };
                     this.data.quoteResponseSource = quoteResponseHeaders['fspiop-source'];
 
                     return resolve(quote);
@@ -478,12 +502,12 @@ class OutboundRequestToPayTransferModel {
             if( this.data.initiatorType && this.data.initiatorType === 'BUSINESS') return resolve();
 
             // listen for events on the quoteId
-            const otpKey = `otp_${this.data.requestToPayTransactionId}`;
+            const otpKey = `otp_${this.data.transactionRequestId}`;
 
             // hook up a subscriber to handle response messages
             const subId = await this._cache.subscribe(otpKey, (cn, msg, subId) => {
                 try {
-                    let otpResponse = JSON.parse(msg);
+                    let authorizationResponse = JSON.parse(msg);
 
                     // cancel the timeout handler
                     clearTimeout(timeout);
@@ -495,12 +519,12 @@ class OutboundRequestToPayTransferModel {
                         this._logger.log(`Error unsubscribing (in callback) ${otpKey} ${subId}: ${e.stack || util.inspect(e)}`);
                     });
 
-                    const otpResponseBody = otpResponse.data;
-                    this._logger.push({ otpResponseBody }).log('OTP response received');
+                    const authorizationResponseBody = authorizationResponse.data;
+                    this._logger.push({ authorizationResponseBody }).log('OTP response received');
 
-                    this.data.otpResponse = otpResponseBody;
+                    this.data.authorizationResponse = authorizationResponseBody;
 
-                    return resolve(otpResponse);
+                    return resolve(authorizationResponse);
                 }
                 catch(err) {
                     return reject(err);
@@ -522,7 +546,7 @@ class OutboundRequestToPayTransferModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /authorizations request to the switch
             try {
-                const res = await this._requests.getAuthorizations(this.data.requestToPayTransactionId,`authenticationType=OTP&retriesLeft=1&amount=${this.data.amount}&currency=${this.data.currency}`,this.data.to.fspId);
+                const res = await this._requests.getAuthorizations(this.data.transactionRequestId,`authenticationType=OTP&retriesLeft=1&amount=${this.data.amount}&currency=${this.data.currency}`,this.data.to.fspId);
                 this._logger.push({ res }).log('Authorizations request sent to peer');
             }
             catch(err) {
@@ -549,7 +573,7 @@ class OutboundRequestToPayTransferModel {
         let quote = {
             quoteId: uuid(),
             transactionId: this.data.transferId,
-            transactionRequestId: this.data.requestToPayTransactionId,
+            transactionRequestId: this.data.transactionRequestId,
             amountType: this.data.amountType,
             amount: {
                 currency: this.data.currency,
@@ -637,7 +661,7 @@ class OutboundRequestToPayTransferModel {
                     this._logger.push({ fulfil }).log('Transfer fulfil received');
                     this.data.fulfil = fulfil;
 
-                    if(this._checkIlp && !this._ilp.validateFulfil(fulfil.fulfilment, this.data.quoteResponse.condition)) {
+                    if(this._checkIlp && !this._ilp.validateFulfil(fulfil.body.fulfilment, this.data.quoteResponse.body.condition)) {
                         throw new Error('Invalid fulfilment received from peer DFSP.');
                     }
 
@@ -773,11 +797,11 @@ class OutboundRequestToPayTransferModel {
                 // rather than the original request. In Forex cases we may have requested
                 // a RECEIVE amount in a currency we cannot send. FXP should always give us
                 // a quote response with transferAmount in the correct currency.
-                currency: this.data.quoteResponse.transferAmount.currency,
-                amount: this.data.quoteResponse.transferAmount.amount
+                currency: this.data.quoteResponse.body.transferAmount.currency,
+                amount: this.data.quoteResponse.body.transferAmount.amount
             },
-            ilpPacket: this.data.quoteResponse.ilpPacket,
-            condition: this.data.quoteResponse.condition,
+            ilpPacket: this.data.quoteResponse.body.ilpPacket,
+            condition: this.data.quoteResponse.body.condition,
             expiration: this._getExpirationTimestamp()
         };
 
@@ -825,7 +849,7 @@ class OutboundRequestToPayTransferModel {
                 break;
 
             case 'otpReceived':
-                resp.currentState = SDKStateEnum.WAITING_FOR_OTP_ACCEPTANCE;
+                resp.currentState = SDKStateEnum.WAITING_FOR_AUTH_ACCEPTANCE;
                 break;
 
             case 'succeeded':
@@ -852,7 +876,7 @@ class OutboundRequestToPayTransferModel {
     async _save() {
         try {
             this.data.currentState = this.stateMachine.state;
-            const res = await this._cache.set(`requestToPayTransferModel_${this.data.requestToPayTransactionId}`, this.data);
+            const res = await this._cache.set(`requestToPayTransferModel_${this.data.transactionRequestId}`, this.data);
             this._logger.push({ res }).log('Persisted transfer model in cache');
         }
         catch(err) {
@@ -867,11 +891,11 @@ class OutboundRequestToPayTransferModel {
      *
      * @param transferId {string} - UUID transferId of the model to load from cache
      */
-    async load(requestToPayTransactionId) {
+    async load(transactionRequestId) {
         try {
-            const data = await this._cache.get(`requestToPayTransferModel_${requestToPayTransactionId}`);
+            const data = await this._cache.get(`requestToPayTransferModel_${transactionRequestId}`);
             if(!data) {
-                throw new Error(`No cached data found for requestToPayTransactionId: ${requestToPayTransactionId}`);
+                throw new Error(`No cached data found for transactionRequestId: ${transactionRequestId}`);
             }
             await this.initialize(data);
             this._logger.push({ cache: this.data }).log('RequestToPay Transfer model loaded from cached state');

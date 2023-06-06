@@ -427,7 +427,7 @@ const putRequestToPayTransfer = async (ctx) => {
         // TODO: check the incoming body to reject party or quote when requested to do so
         const data = ctx.request.body;
         // load the transfer model from cache and start it running again
-        await model.load(ctx.state.path.params.requestToPayTransactionId);
+        await model.load(ctx.state.path.params.transactionRequestId);
         let response;
         if(data.acceptQuote === true || data.acceptOTP === true) {
             response = await model.run();
@@ -678,7 +678,7 @@ module.exports = {
     '/requestToPayTransfer': {
         post: postRequestToPayTransfer
     },
-    '/requestToPayTransfer/{requestToPayTransactionId}': {
+    '/requestToPayTransfer/{transactionRequestId}': {
         put: putRequestToPayTransfer
     },
     '/parties/{Type}/{ID}': {
