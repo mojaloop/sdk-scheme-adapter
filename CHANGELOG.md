@@ -1,4 +1,15 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [23.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v22.0.2...v23.0.0) (2023-06-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* **mojaloop/3344:** Changes to the RequestToPay and RequestToPayTransfer operations to ensure alignment with the FSPIOP v1.1 specifications, see [SDK Backend API](https://github.com/mojaloop/api-snippets/compare/v17.1.0...v17.2.0#diff-10028ebe8e69dc8dabdda64ce187e7e7aa953456b9f925a41bf7fdc91d0d8695), [SDK Outbound API](https://github.com/mojaloop/api-snippets/compare/v17.1.0...v17.2.0#diff-18017d197f177e339457590d33522aad3ebb5181d6ea64c17325de039904bd8c), and [Design Documentation](https://github.com/mojaloop/documentation/pull/413) for more information.
+
+### Features
+
+* **mojaloop/3344:** enhance SDK Scheme Adaptor to support the request to Pay use case ([#446](https://github.com/mojaloop/sdk-scheme-adapter/issues/446)) ([388f1df](https://github.com/mojaloop/sdk-scheme-adapter/commit/388f1dfb2db963a262cf26744d16b44434120536)), closes [mojaloop/#3344](https://github.com/mojaloop/project/issues/3344)
+
 ### [22.0.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v22.0.1...v22.0.2) (2023-04-27)
 
 
