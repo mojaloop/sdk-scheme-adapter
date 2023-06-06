@@ -230,7 +230,7 @@ class OutboundRequestToPayTransferModel {
                 return this._requestOTP();
 
             case 'skipOTP':
-                // request an OTP
+                // Skip OTP request
                 return;
 
             case 'executeTransfer':
