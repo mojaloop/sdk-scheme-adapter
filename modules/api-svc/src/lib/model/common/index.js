@@ -10,11 +10,13 @@
 
 'use strict';
 const { SDKStateEnum } = require('./Enums');
+const { TransactionRequestStateEnum } = require('./Enums');
 const { BackendError } = require('./BackendError');
 const PersistentStateMachine = require('./PersistentStateMachine');
 
 module.exports = {
     BackendError,
     SDKStateEnum,
+    TransactionRequestStateEnum,
     PersistentStateMachine
 };

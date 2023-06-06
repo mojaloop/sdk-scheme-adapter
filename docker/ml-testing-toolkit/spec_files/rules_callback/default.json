@@ -630,5 +630,57 @@
     },
     "type": "callback",
     "version": 1
+  },
+  {
+    "ruleId": 10,
+    "priority": 1,
+    "description": "get /authorizations/{ID}",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 1,
+      "type": "fspiop",
+      "asynchronous": true,
+      "hostnames": [
+        "localhost"
+      ],
+      "specFile": "spec_files/api_definitions/fspiop_1.1/api_spec.yaml",
+      "callbackMapFile": "spec_files/api_definitions/fspiop_1.1/callback_map.json",
+      "responseMapFile": "spec_files/api_definitions/fspiop_1.1/response_map.json",
+      "jsfRefFile": "spec_files/api_definitions/fspiop_1.1/mockRef.json",
+      "triggerTemplatesFolder": "spec_files/api_definitions/fspiop_1.1/trigger_templates"
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/authorizations/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "get"
+        }
+      ]
+    },
+    "event": {
+      "method": "put",
+      "path": "/authorizations/{ID}",
+      "params": {
+        "scripts": {
+          "scriptingEngine": "postman"
+        },
+        "body": {
+          "responseType": "ENTERED",
+          "authenticationInfo": {
+            "authentication": "OTP",
+            "authenticationValue": "1234"
+          }
+        }
+      },
+      "type": "MOCK_CALLBACK"
+    },
+    "type": "callback",
+    "version": 1
   }
 ]

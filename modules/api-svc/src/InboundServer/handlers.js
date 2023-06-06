@@ -549,10 +549,43 @@ const putTransactionRequestsById = async (ctx) => {
         body: { ...ctx.request.body },
         headers: { ...ctx.request.headers }
     };
-    await ctx.state.cache.publish(`txnreq_${transactionRequestId}`, {
-        type: 'transactionRequestResponse',
-        data
-    });
+    // If there are no subscribers, send a callback
+    const subscribersObj = await ctx.state.cache.getSubscribers(`txnreq_${transactionRequestId}`);
+    if(!subscribersObj) {
+        const sourceFspId = ctx.request.headers['fspiop-source'];
+        const putTransactionRequest = {
+            body: { ...ctx.request.body },
+            headers: { ...ctx.request.headers },
+        };
+        // kick off an asyncronous operation to handle the request
+        (async () => {
+            try {
+                // use the transfers model to execute asynchronous stages with the switch
+                const model = new Model({
+                    ...ctx.state.conf,
+                    cache: ctx.state.cache,
+                    logger: ctx.state.logger,
+                    wso2: ctx.state.wso2,
+                    resourceVersions: ctx.resourceVersions,
+                });
+    
+                // use the model to handle the request
+                const response = await model.putTransactionRequest(putTransactionRequest, transactionRequestId, sourceFspId);
+    
+                // log the result
+                ctx.state.logger.push({ response }).log('Inbound transfers model handled PUT /transactionRequests/{ID} request');
+            }
+            catch(err) {
+                // nothing we can do if an error gets thrown back to us here apart from log it and continue
+                ctx.state.logger.push({ err }).log('Error handling PUT /transactionRequests/{ID}');
+            }
+        })();
+    } else {
+        await ctx.state.cache.publish(`txnreq_${transactionRequestId}`, {
+            type: 'transactionRequestResponse',
+            data
+        });
+    }
 
     ctx.response.status = ReturnCodes.OK.CODE;
 };

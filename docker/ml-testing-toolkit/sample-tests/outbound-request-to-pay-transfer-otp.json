@@ -1,0 +1,116 @@
+{
+  "test_cases": [
+    {
+      "id": 1,
+      "name": "RequestToPayTransfer Happy Path",
+      "requests": [
+        {
+          "id": 1,
+          "description": "Post RequestToPayTransfer",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/requestToPayTransfer",
+          "path": "/requestToPayTransfer",
+          "method": "post",
+          "body": {
+            "homeR2PTransactionId": "abc123",
+            "transactionRequestId": "b51ec534-ee48-4575-b6a9-ead2955b8069",
+            "from": {
+              "idType": "MSISDN",
+              "idValue": "1234567890",
+              "displayName": "Henrik",
+              "firstName": "Henrik",
+              "lastName": "Karlsson",
+              "dateOfBirth": "1966-06-16"
+            },
+            "to": {
+              "idType": "MSISDN",
+              "idValue": "25644444444",
+              "displayName": "James",
+              "firstName": "James",
+              "lastName": "Smith",
+              "dateOfBirth": "1966-06-16",
+              "fspId": "dfspb"
+            },
+            "amountType": "RECEIVE",
+            "currency": "USD",
+            "amount": "10",
+            "scenario": "DEPOSIT",
+            "initiator": "PAYEE",
+            "initiatorType": "CONSUMER",
+            "note": "Note sent to Payee.",
+            "authenticationType": "OTP"
+          },
+          "url": "http://host.docker.internal:4001"
+        },
+        {
+          "id": 2,
+          "description": "Accept Quote",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/requestToPayTransfer/{transactionRequestId}",
+          "path": "/requestToPayTransfer/{$prev.1.request.body.transactionRequestId}",
+          "method": "put",
+          "params": {
+            "transactionRequestId": "{$prev.1.request.body.transactionRequestId}"
+          },
+          "url": "http://host.docker.internal:4001",
+          "body": {
+            "acceptQuote": true
+          },
+          "disabled": false
+        },
+        {
+          "id": 3,
+          "description": "Accept OTP",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "scheme_adapter_outbound",
+            "prefix": "/sdk-out",
+            "hostnames": [],
+            "specFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/mojaloop_sdk_outbound_scheme_adapter_1.0/trigger_templates"
+          },
+          "operationPath": "/requestToPayTransfer/{transactionRequestId}",
+          "path": "/requestToPayTransfer/{$prev.1.request.body.transactionRequestId}",
+          "method": "put",
+          "params": {
+            "transactionRequestId": "{$prev.1.request.body.transactionRequestId}"
+          },
+          "url": "http://host.docker.internal:4001",
+          "body": {
+            "acceptOTP": true
+          },
+          "disabled": false
+        }
+      ],
+      "fileInfo": {
+        "path": "sample-tests/outbound-request-to-pay-transfer-otp.json"
+      }
+    }
+  ]
+}

@@ -16,8 +16,8 @@ services:
       - sh
       - -c
       - |
-        wget https://github.com/mojaloop/testing-toolkit-test-cases/archive/refs/heads/feat/%233344-EPIC-Enhance-SDK-Scheme-Adaptor-to-support-the-request-to-Pay-use-case.zip -O /tmp/downloaded-test-collections.zip &&
+        wget https://github.com/mojaloop/testing-toolkit-test-cases/archive/refs/tags/v15.0.0-sdk.1.zip -O /tmp/downloaded-test-collections.zip &&
         rm -rf /tmp/test_cases; mkdir /tmp/test_cases &&
         unzip -d /tmp/test_cases -o /tmp/downloaded-test-collections.zip &&
-        npm run cli -- -u http://ttk-ttksim1:5050 -l 2 -i /tmp/test_cases/testing-toolkit-test-cases-feat-3344-EPIC-Enhance-SDK-Scheme-Adaptor-to-support-the-request-to-Pay-use-case/collections/hub/sdk_scheme_adapter/bulk/basic -e environments/hub_local_environment.json --report-format html --report-target file://reports/ttk-func-bulk-tests-report.html &&
-        npm run cli -- -u http://ttk-ttksim1:5050 -l 2 -i /tmp/test_cases/testing-toolkit-test-cases-feat-3344-EPIC-Enhance-SDK-Scheme-Adaptor-to-support-the-request-to-Pay-use-case/collections/hub/sdk_scheme_adapter/request-to-pay/basic -e environments/hub_local_environment.json --report-format html --report-target file://reports/ttk-func-r2p-tests-report.html
+        npm run cli -- -u http://ttk-ttksim1:5050 -l 2 -i /tmp/test_cases/testing-toolkit-test-cases-15.0.0-sdk.1/collections/hub/sdk_scheme_adapter/bulk/basic -e environments/hub_local_environment.json --report-format html --report-target file://reports/ttk-func-bulk-tests-report.html &&
+        npm run cli -- -u http://ttk-ttksim1:5050 -l 2 -i /tmp/test_cases/testing-toolkit-test-cases-15.0.0-sdk.1/collections/hub/sdk_scheme_adapter/request-to-pay/basic -e environments/hub_local_environment.json --report-format html --report-target file://reports/ttk-func-r2p-tests-report.html
