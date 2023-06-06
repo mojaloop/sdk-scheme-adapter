@@ -10,6 +10,9 @@
 
 * **mojaloop/3344:** enhance SDK Scheme Adaptor to support the request to Pay use case ([#446](https://github.com/mojaloop/sdk-scheme-adapter/issues/446)) ([388f1df](https://github.com/mojaloop/sdk-scheme-adapter/commit/388f1dfb2db963a262cf26744d16b44434120536)), closes [mojaloop/#3344](https://github.com/mojaloop/project/issues/3344)
 
+### Maintenance
+* fix: updates for nx v16 changes ([#449](https://github.com/mojaloop/sdk-scheme-adapter/pull/449))
+
 ### [22.0.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v22.0.1...v22.0.2) (2023-04-27)
 
 
