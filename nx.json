@@ -46,6 +46,6 @@
     }
   },
   "affected": {
-    "defaultBase": "mvp/bulk-sdk"
+    "defaultBase": "master"
   }
 }

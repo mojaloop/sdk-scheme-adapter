@@ -127,6 +127,7 @@ const mojaloopQuoteRequestToInternal = (external) => {
     const internal = {
         quoteId: external.quoteId,
         transactionId: external.transactionId,
+        transactionRequestId: external.transactionRequestId,
         to: mojaloopPartyToInternalParty(external.payee),
         from: mojaloopPartyToInternalParty(external.payer),
         amountType: external.amountType,
@@ -159,6 +160,18 @@ const mojaloopQuoteRequestToInternal = (external) => {
         internal.extensionList = external.extensionList;
     }
 
+    return internal;
+};
+
+/**
+ * Projects a Mojaloop API spec PutTransactionRequest request to internal form
+ *
+ * @returns {object} - the internal form PutTransactionRequest
+ */
+const mojaloopPutTransactionRequestToInternal = (external) => {
+    const internal = {
+        transactionRequestState: external.transactionRequestState
+    };
     return internal;
 };
 
@@ -247,6 +260,8 @@ const mojaloopPrepareToInternalTransfer = (external, quote, ilp) => {
     if(quote) {
         internal = {
             transferId: external.transferId,
+            transactionRequestId: quote.request.transactionRequestId,
+            homeR2PTransactionId: quote.internalRequest.homeR2PTransactionId,
             quote: quote.response,
             from: quote.internalRequest.from,
             to: quote.internalRequest.to,
@@ -290,7 +305,8 @@ const mojaloopTransactionRequestToInternal = (external) => {
         transactionType: external.transactionType.scenario,
         subScenario: external.transactionType.subScenario,
         initiator: external.transactionType.initiator,
-        initiatorType: external.transactionType.initiatorType
+        initiatorType: external.transactionType.initiatorType,
+        authenticationType: external.authenticationType
     };
 
     return internal;
@@ -683,5 +699,6 @@ module.exports = {
     internalBulkQuotesResponseToMojaloop,
     mojaloopBulkPrepareToInternalBulkTransfer,
     mojaloopBulkTransfersResponseToInternal,
-    internalBulkTransfersResponseToMojaloop
+    internalBulkTransfersResponseToMojaloop,
+    mojaloopPutTransactionRequestToInternal
 };

@@ -104,6 +104,29 @@ paths:
       summary: Callbacks for the bulk transaction request.
       tags:
         - BulkTransactionsPut
+  /requestToPay/{transactionRequestId}:
+    put:
+      description: >-
+        It is used to notify the DFSP backend about the status of the
+        requestToPayTransfer.
+      operationId: RequestToPayPut
+      parameters:
+        - $ref: '#/components/parameters/transactionRequestId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/requestToPayCallback'
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/400'
+        '500':
+          $ref: '#/components/responses/500'
+      summary: Callback for the requestToPay request.
+      tags:
+        - RequestToPayPut
   /bulkTransfers:
     post:
       operationId: BackendBulkTransfersPost
@@ -152,11 +175,11 @@ paths:
         specified identifier value.
       tags:
         - BulkTransfers
-  /otp/{requestToPayId}:
+  /otp/{transactionRequestId}:
     get:
       operationId: BackendOtpGet
       parameters:
-        - $ref: '#/components/parameters/requestToPayId'
+        - $ref: '#/components/parameters/transactionRequestId'
       responses:
         '200':
           content:
@@ -430,14 +453,12 @@ components:
       required: true
       schema:
         type: string
-    requestToPayId:
+    transactionRequestId:
       in: path
-      name: requestToPayId
+      name: transactionRequestId
       required: true
       schema:
-        maxLength: 128
-        minLength: 1
-        type: string
+        $ref: '#/components/schemas/transactionRequestId'
     transferId:
       in: path
       name: transferId
@@ -1198,6 +1219,11 @@ components:
     quoteRequest:
       description: A request for a quote for transfer from the DFSP backend.
       properties:
+        homeR2PTransactionId:
+          type: string
+          description: >-
+            Linked homeR2PTransactionId which was generated as part of POST
+            /requestToPay to SDK incase of requestToPay transfer.
         amount:
           $ref: '#/components/schemas/money'
         amountType:
@@ -1235,6 +1261,8 @@ components:
           $ref: '#/components/schemas/transactionId'
         transactionType:
           $ref: '#/components/schemas/transactionType'
+        transactionRequestId:
+          $ref: '#/components/schemas/transactionRequestId'
       required:
         - quoteId
         - transactionId
@@ -1328,6 +1356,8 @@ components:
           $ref: '#/components/schemas/transactionType'
         subScenario:
           $ref: '#/components/schemas/TransactionSubScenario'
+        authenticationType:
+          $ref: '#/components/schemas/AuthenticationType'
       required:
         - transactionRequestId
         - to
@@ -1346,9 +1376,14 @@ components:
     transactionRequestResponse:
       description: A response to a request for a quote.
       properties:
+        homeR2PTransactionId:
+          type: string
+          description: >-
+            Transaction ID from the DFSP backend, used to reconcile transactions
+            between the Switch and DFSP backend systems.
         transactionId:
           $ref: '#/components/schemas/transactionId'
-        transferAmount:
+        transactionRequestState:
           $ref: '#/components/schemas/transactionRequestState'
       required:
         - transactionId
@@ -1478,6 +1513,11 @@ components:
       type: object
     transferRequest:
       properties:
+        homeR2PTransactionId:
+          type: string
+          description: >-
+            Linked homeR2PTransactionId which was generated as part of POST
+            /requestToPay to SDK incase of requestToPay transfer.
         amount:
           $ref: '#/components/schemas/money'
         amountType:
@@ -1508,6 +1548,8 @@ components:
           $ref: '#/components/schemas/transactionType'
         transferId:
           $ref: '#/components/schemas/transferId'
+        transactionRequestId:
+          $ref: '#/components/schemas/transactionRequestId'
       required:
         - transferId
         - quote
@@ -1555,6 +1597,18 @@ components:
         - WAITING_FOR_QUOTE_ACCEPTANCE
         - COMPLETED
       type: string
+    requestToPayCallback:
+      description: Callback for requestToPay.
+      properties:
+        homeR2PTransactionId:
+          type: string
+          description: >-
+            Transaction ID from the DFSP backend, used to reconcile transactions
+            between the Switch and DFSP backend systems.
+        transactionRequestState:
+          $ref: '#/components/schemas/transactionRequestState'
+      required:
+        - transactionRequestState
     TransactionSubScenario:
       title: TransactionSubScenario
       type: string
@@ -2311,3 +2365,16 @@ components:
             $ref: '#/components/schemas/bulkTransactionIndividualTransferResult'
         extensions:
           $ref: '#/components/schemas/ExtensionList'
+    AuthenticationType:
+      title: AuthenticationType
+      type: string
+      enum:
+        - OTP
+        - QRCODE
+        - U2F
+      description: |-
+        Below are the allowed values for the enumeration AuthenticationType.
+        - OTP - One-time password generated by the Payer FSP.
+        - QRCODE - QR code used as One Time Password.
+        - U2F - U2F is a new addition isolated to Thirdparty stream.
+      example: OTP
