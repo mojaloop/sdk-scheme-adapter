@@ -57,7 +57,9 @@ defaults_configure_nvm: &defaults_configure_nvm
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    echo "Installing Node version: $(cat .nvmrc)"
+    export NVMRC_VERSION=$(cat .nvmrc)
+    echo "export NVMRC_VERSION=$NVMRC_VERSION" >> $BASH_ENV
+    echo "Installing Node version: $NVMRC_VERSION"
     nvm install $(cat .nvmrc)
     nvm alias default $(cat .nvmrc)
     nvm use $(cat .nvmrc)
@@ -75,7 +77,7 @@ executors:
   default-docker:
     working_directory: &WORKING_DIR /home/circleci/project
     docker:
-      - image: node:18.16.0-alpine # Ref: https://hub.docker.com/_/node?tab=tags&page=1&name=alpine
+      - image: node:lts-alpine # Ref: https://hub.docker.com/_/node?tab=tags&page=1&name=alpine
 
   default-machine:
     working_directory: *WORKING_DIR
@@ -373,6 +375,8 @@ jobs:
       - setup_remote_docker
       - checkout
       - run:
+          <<: *defaults_configure_nvm
+      - run:
           name: Setup Slack config
           command: |
             echo "export SLACK_PROJECT_NAME=${CIRCLE_PROJECT_REPONAME}" >> $BASH_ENV
@@ -418,7 +422,7 @@ jobs:
       - anchore/analyze_local_image:
           # Force the older version, version 0.7.0 was just published, and is broken
           anchore_version: v0.6.1
-          image_name: "docker.io/node:18.16.0-alpine $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local"
+          image_name: "docker.io/node:$NVMRC_VERSION-alpine $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local"
           policy_failure: false
           timeout: '500'
           # Note: if the generated policy is invalid, this will fallback to the default policy, which we don't want!
@@ -431,7 +435,7 @@ jobs:
             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive
       - run:
           name: Evaluate failures
-          command: /tmp/ci-config/container-scanning/anchore-result-diff.js anchore-reports/node_18.16.0-alpine-policy.json anchore-reports/${CIRCLE_PROJECT_REPONAME}*-policy.json
+          command: /tmp/ci-config/container-scanning/anchore-result-diff.js anchore-reports/node_${NVMRC_VERSION}-alpine-policy.json anchore-reports/${CIRCLE_PROJECT_REPONAME}*-policy.json
       - store_artifacts:
           path: anchore-reports
       - slack/notify:
