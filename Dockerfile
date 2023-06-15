@@ -5,7 +5,11 @@ ARG NODE_VERSION=18.16.0-alpine
 FROM node:${NODE_VERSION} as builder
 
 ## Install tool dependencies
-RUN apk add --no-cache -t build-dependencies make gcc g++ python3 libtool libressl-dev openssl-dev autoconf automake yarn
+RUN apk add --no-cache -t build-dependencies make gcc g++ python3 libtool openssl-dev autoconf automake yarn bash
+
+## Install & Setup LibrdKafka Lib for Builder
+RUN apk add --no-cache add librdkafka-dev
+ENV BUILD_LIBRDKAFKA=0
 
 WORKDIR /opt/app
 
@@ -33,7 +37,11 @@ RUN yarn install --immutable
 FROM node:${NODE_VERSION}
 WORKDIR /opt/app
 
-RUN apk add --no-cache yarn
+## Install general dependencies
+RUN apk add --no-cache bash yarn
+
+## Install & Setup LibrdKafka Lib for Runtime
+RUN apk add --no-cache librdkafka
 
 ARG BUILD_DATE
 ARG VCS_URL=https://github.com/mojaloop/sdk-scheme-adapter
