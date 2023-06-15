@@ -75,7 +75,7 @@ executors:
   default-docker:
     working_directory: &WORKING_DIR /home/circleci/project
     docker:
-      - image: node:16.15.0-alpine # Ref: https://hub.docker.com/_/node?tab=tags&page=1&name=alpine
+      - image: node:18.16.0-alpine # Ref: https://hub.docker.com/_/node?tab=tags&page=1&name=alpine
 
   default-machine:
     working_directory: *WORKING_DIR
@@ -412,13 +412,13 @@ jobs:
       - run:
           name: Pull base image locally
           command: |
-            docker pull node:16.15.0-alpine
+            docker pull node:18.16.0-alpine
       # Analyze the base and derived image
       # Note: It seems images are scanned in parallel, so preloading the base image result doesn't give us any real performance gain
       - anchore/analyze_local_image:
           # Force the older version, version 0.7.0 was just published, and is broken
           anchore_version: v0.6.1
-          image_name: "docker.io/node:16.15.0-alpine $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local"
+          image_name: "docker.io/node:18.16.0-alpine $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local"
           policy_failure: false
           timeout: '500'
           # Note: if the generated policy is invalid, this will fallback to the default policy, which we don't want!
