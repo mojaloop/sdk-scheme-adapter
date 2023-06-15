@@ -1,4 +1,6 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [23.0.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.0.1...v23.0.2) (2023-06-15)
+
 ### [23.0.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.0.0...v23.0.1) (2023-06-15)
 
 
