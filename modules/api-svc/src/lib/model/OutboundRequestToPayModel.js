@@ -33,6 +33,7 @@ class OutboundRequestToPayModel {
             logger: this._logger,
             peerEndpoint: config.peerEndpoint,
             alsEndpoint: config.alsEndpoint,
+            transactionRequestsEndpoint: config.transactionRequestsEndpoint,
             dfspId: config.dfspId,
             tls: {
                 enabled: config.outbound.tls.mutualTLS.enabled,
