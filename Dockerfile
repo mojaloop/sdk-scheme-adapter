@@ -8,7 +8,7 @@ FROM node:${NODE_VERSION} as builder
 RUN apk add --no-cache -t build-dependencies make gcc g++ python3 libtool openssl-dev autoconf automake yarn bash
 
 ## Install & Setup LibrdKafka Lib for Builder
-RUN apk add --no-cache add librdkafka-dev
+RUN apk add --no-cache librdkafka-dev
 ENV BUILD_LIBRDKAFKA=0
 
 WORKDIR /opt/app
