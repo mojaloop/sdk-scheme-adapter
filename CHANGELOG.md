@@ -1,4 +1,16 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [23.0.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.0.0...v23.0.1) (2023-06-15)
+
+
+### Bug Fixes
+
+* **mojaloop/#3382:** sdk-scheme-adapter config.trxReqEndpoint is not being set ([#451](https://github.com/mojaloop/sdk-scheme-adapter/issues/451)) ([c29a81d](https://github.com/mojaloop/sdk-scheme-adapter/commit/c29a81db5cdb673c21a96c0185eade9cb4b36e3c)), closes [mojaloop/#3382](https://github.com/mojaloop/project/issues/3382)
+
+
+### Documentation
+
+* update CHANGELOG.md [skip ci] ([#450](https://github.com/mojaloop/sdk-scheme-adapter/issues/450)) ([3b302be](https://github.com/mojaloop/sdk-scheme-adapter/commit/3b302bef13cecf16659f77ffa5aaf60eed8ee623))
+
 ## [23.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v22.0.2...v23.0.0) (2023-06-06)
 
 
