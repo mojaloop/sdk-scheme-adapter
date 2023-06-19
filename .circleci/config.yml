@@ -24,7 +24,14 @@ defaults_Dependencies: &defaults_Dependencies |
   apk --no-cache add curl
   apk --no-cache add openssh-client
   apk --no-cache add bash
-  apk add --no-cache -t build-dependencies make gcc g++ python3 libtool autoconf automake yarn
+  apk add --no-cache -t build-dependencies make gcc g++ python3 libtool autoconf automake
+
+##
+# defaults
+#
+# YAML defaults templates, in alphabetical order
+##
+defaults_YarnConfig: &defaults_YarnConfig |
   yarn config set unsafe-perm true
   yarn global add node-gyp
 
@@ -97,6 +104,9 @@ jobs:
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
+      - run:
+          name: Configure Yarn
+          command: *defaults_YarnConfig
       - checkout
       - run:
           <<: *defaults_configure_nvm
@@ -121,6 +131,9 @@ jobs:
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
+      - run:
+          name: Configure Yarn
+          command: *defaults_YarnConfig
       - checkout
       - run:
           <<: *defaults_configure_nvm
@@ -168,6 +181,9 @@ jobs:
       - checkout
       - run:
           <<: *defaults_configure_nvm
+      - run:
+          name: Configure Yarn
+          command: *defaults_YarnConfig
       - run:
           name: Install Yarn dependencies
           command: yarn install --immutable
@@ -272,6 +288,9 @@ jobs:
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
+      - run:
+          name: Configure Yarn
+          command: *defaults_YarnConfig
       - checkout
       - run:
           <<: *defaults_configure_nvm
@@ -293,6 +312,9 @@ jobs:
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
+      - run:
+          name: Configure Yarn
+          command: *defaults_YarnConfig
       - checkout
       - run:
           <<: *defaults_configure_nvm
@@ -315,6 +337,9 @@ jobs:
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
+      - run:
+          name: Configure Yarn
+          command: *defaults_YarnConfig
       - checkout
       - run:
           <<: *defaults_configure_nvm
@@ -337,6 +362,9 @@ jobs:
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
+      - run:
+          name: Configure Yarn
+          command: *defaults_YarnConfig
       - checkout
       - run:
           <<: *defaults_license_scanner
@@ -452,6 +480,9 @@ jobs:
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
+      - run:
+          name: Configure Yarn
+          command: *defaults_YarnConfig
       - checkout
       - restore_cache:
           name: Restore Yarn Package Cache
