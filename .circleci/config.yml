@@ -373,6 +373,9 @@ jobs:
     environment: *defaults_environment
     steps:
       - setup_remote_docker
+      - run:
+          name: Install general dependencies
+          command: *defaults_Dependencies
       - checkout
       - run:
           <<: *defaults_configure_nvm
