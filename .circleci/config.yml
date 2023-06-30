@@ -68,7 +68,8 @@ defaults_configure_nvm: &defaults_configure_nvm
     export NVM_DIR="$HOME/.nvm"
     echo "export NVM_DIR=$NVM_DIR" >> $BASH_ENV
     echo "4. Executing nvm.sh"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    # [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    source $NVM_DIR/nvm.sh
     echo "5. Configuring Nodejs Version"
     export NVMRC_VERSION=$(cat .nvmrc)
     echo "export NVMRC_VERSION=$NVMRC_VERSION" >> $BASH_ENV
@@ -438,8 +439,8 @@ jobs:
             echo "export SLACK_CI_URL=${CIRCLE_BUILD_URL}" >> $BASH_ENV
             echo "export SLACK_CUSTOM_MSG='Anchore Image Scan failed for: \`${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_TAG}\`'" >> $BASH_ENV
       ## Temporarily disabling to try debug the issue!
-      # - run:
-      #     <<: *defaults_configure_nvm
+      - run:
+          <<: *defaults_configure_nvm
       # - attach_workspace:
       #     at: /tmp
       # - run:
