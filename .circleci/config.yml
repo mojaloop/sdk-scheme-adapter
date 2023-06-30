@@ -437,8 +437,8 @@ jobs:
             echo "export SLACK_BUILD_ID=${CIRCLE_BUILD_NUM}" >> $BASH_ENV
             echo "export SLACK_CI_URL=${CIRCLE_BUILD_URL}" >> $BASH_ENV
             echo "export SLACK_CUSTOM_MSG='Anchore Image Scan failed for: \`${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_TAG}\`'" >> $BASH_ENV
-      - run:
-          <<: *defaults_configure_nvm
+      # - run:
+      #     <<: *defaults_configure_nvm
       # - attach_workspace:
       #     at: /tmp
       # - run:
