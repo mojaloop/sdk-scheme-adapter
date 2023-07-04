@@ -144,7 +144,7 @@ executors:
 jobs:
   setup:
     executor: default-docker
-    shell: /bin/sh -leo pipefail
+    shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment: *defaults_environment
     steps:
       - run:
@@ -179,7 +179,7 @@ jobs:
 
   test-unit:
     executor: default-docker
-    shell: /bin/sh -leo pipefail
+    shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment: *defaults_environment
     steps:
       - run:
@@ -326,7 +326,7 @@ jobs:
 
   validate-openapi:
     executor: default-docker
-    shell: /bin/sh -leo pipefail
+    shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment: *defaults_environment
     steps:
       - run:
@@ -345,7 +345,7 @@ jobs:
 
   test-dependencies:
     executor: default-docker
-    shell: /bin/sh -leo pipefail
+    shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment: *defaults_environment
     steps:
       - run:
@@ -371,7 +371,7 @@ jobs:
 
   test-lint:
     executor: default-docker
-    shell: /bin/sh -leo pipefail
+    shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment: *defaults_environment
     steps:
       - run:
@@ -397,7 +397,7 @@ jobs:
 
   vulnerability-check:
     executor: default-docker
-    shell: /bin/sh -leo pipefail
+    shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment: *defaults_environment
     steps:
       - run:
@@ -423,7 +423,7 @@ jobs:
 
   audit-licenses:
     executor: default-docker
-    shell: /bin/sh -leo pipefail
+    shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment: *defaults_environment
     steps:
       - run:
@@ -547,7 +547,7 @@ jobs:
 
   release:
     executor: default-docker
-    shell: /bin/sh -leo pipefail
+    shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment: *defaults_environment
     steps:
       - run:
