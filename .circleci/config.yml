@@ -60,9 +60,6 @@ defaults_configure_git: &defaults_configure_git
 defaults_configure_nvm: &defaults_configure_nvm
   name: Configure NVM
   command: |
-    echo "0.1 Shell=$SHELL"
-    cd $HOME
-    echo "0.2 path=$(pwd)"
     echo "1. Creating .profile"
     touch $HOME/.profile
     echo "2. Exporting NVM_DIR"
@@ -72,8 +69,6 @@ defaults_configure_nvm: &defaults_configure_nvm
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
     echo "4. Executing $NVM_DIR/nvm.sh"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    # cat $NVM_DIR/nvm.sh
-    # source $NVM_DIR/nvm.sh
     echo "5. Configuring Nodejs Version"
     export NVMRC_VERSION=$(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)
     echo "export NVMRC_VERSION=$NVMRC_VERSION" >> $BASH_ENV
@@ -121,6 +116,9 @@ jobs:
       - checkout
       - run:
           <<: *defaults_configure_nvm
+      - run:
+          name: Nodejs Version
+          command: node --version
       - run:
           name: Install Dependencies
           command: yarn install --immutable
