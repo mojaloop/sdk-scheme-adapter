@@ -61,6 +61,7 @@ defaults_configure_nvm: &defaults_configure_nvm
   name: Configure NVM
   command: |
     echo "1. Creating .profile"
+    cd $HOME
     touch $HOME/.profile
     echo "2. Exporting NVM_DIR"
     export NVM_DIR="$HOME/.nvm"
