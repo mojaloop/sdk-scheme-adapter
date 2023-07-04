@@ -446,45 +446,45 @@ jobs:
       ## Temporarily disabling to try debug the issue!
       - run:
           <<: *defaults_configure_nvm
-      # - attach_workspace:
-      #     at: /tmp
-      # - run:
-      #     name: Load the pre-built docker image from workspace
-      #     command: docker load -i /tmp/docker-image.tar
-      # - run:
-      #     name: Download the mojaloop/ci-config repo
-      #     command: |
-      #       git clone https://github.com/mojaloop/ci-config /tmp/ci-config
-      #       # Generate the mojaloop anchore-policy
-      #       cd /tmp/ci-config/container-scanning && ./mojaloop-policy-generator.js /tmp/mojaloop-policy.json
-      # - run:
-      #     name: Pull base image locally
-      #     command: |
-      #       docker pull node:18.16.0-alpine
-      # Analyze the base and derived image
-      # Note: It seems images are scanned in parallel, so preloading the base image result doesn't give us any real performance gain
-      # - anchore/analyze_local_image:
-      #     # Force the older version, version 0.7.0 was just published, and is broken
-      #     anchore_version: v0.6.1
-      #     image_name: "docker.io/node:$NVMRC_VERSION-alpine $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local"
-      #     policy_failure: false
-      #     timeout: '500'
-      #     # Note: if the generated policy is invalid, this will fallback to the default policy, which we don't want!
-      #     policy_bundle_file_path: /tmp/mojaloop-policy.json
-      # - run:
-      #     name: Upload Anchore reports to s3
-      #     command: |
-      #       aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/${CIRCLE_PROJECT_REPONAME}/ --recursive
-      #       aws s3 rm ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive --exclude "*" --include "${CIRCLE_PROJECT_REPONAME}*"
-      #       aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive
-      # - run:
-      #     name: Evaluate failures
-      #     command: /tmp/ci-config/container-scanning/anchore-result-diff.js anchore-reports/node_${NVMRC_VERSION}-alpine-policy.json anchore-reports/${CIRCLE_PROJECT_REPONAME}*-policy.json
-      # - store_artifacts:
-      #     path: anchore-reports
-      # - slack/notify:
-      #     event: fail
-      #     template: SLACK_TEMP_RELEASE_FAILURE
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Load the pre-built docker image from workspace
+          command: docker load -i /tmp/docker-image.tar
+      - run:
+          name: Download the mojaloop/ci-config repo
+          command: |
+            git clone https://github.com/mojaloop/ci-config /tmp/ci-config
+            # Generate the mojaloop anchore-policy
+            cd /tmp/ci-config/container-scanning && ./mojaloop-policy-generator.js /tmp/mojaloop-policy.json
+      - run:
+          name: Pull base image locally
+          command: |
+            docker pull node:18.16.0-alpine
+      ## Analyze the base and derived image
+      ## Note: It seems images are scanned in parallel, so preloading the base image result doesn't give us any real performance gain
+      - anchore/analyze_local_image:
+          # Force the older version, version 0.7.0 was just published, and is broken
+          anchore_version: v0.6.1
+          image_name: "docker.io/node:$NVMRC_VERSION-alpine $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local"
+          policy_failure: false
+          timeout: '500'
+          # Note: if the generated policy is invalid, this will fallback to the default policy, which we don't want!
+          policy_bundle_file_path: /tmp/mojaloop-policy.json
+      - run:
+          name: Upload Anchore reports to s3
+          command: |
+            aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/${CIRCLE_PROJECT_REPONAME}/ --recursive
+            aws s3 rm ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive --exclude "*" --include "${CIRCLE_PROJECT_REPONAME}*"
+            aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive
+      - run:
+          name: Evaluate failures
+          command: /tmp/ci-config/container-scanning/anchore-result-diff.js anchore-reports/node_${NVMRC_VERSION}-alpine-policy.json anchore-reports/${CIRCLE_PROJECT_REPONAME}*-policy.json
+      - store_artifacts:
+          path: anchore-reports
+      - slack/notify:
+          event: fail
+          template: SLACK_TEMP_RELEASE_FAILURE
 
   release:
     executor: default-docker
