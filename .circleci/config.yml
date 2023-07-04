@@ -455,6 +455,8 @@ jobs:
           <<: *defaults_configure_nvm
       - attach_workspace:
           at: /tmp
+      # - attach_workspace:
+      #     at: $NVM_DIR
       - run:
           name: Load the pre-built docker image from workspace
           command: docker load -i /tmp/docker-image.tar
