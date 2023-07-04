@@ -116,6 +116,7 @@ defaults_environment: &defaults_environment
   MAIN_BRANCH_NAME: master
   ## Disable LIBRDKAFKA build since we install it via general dependencies
   BUILD_LIBRDKAFKA: 0
+  DOCKER_ORG: mojaloop
   ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
   # BASH_ENV: /etc/profile
 
@@ -175,7 +176,7 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - .nvm
+            - ./.nvm
 
   test-unit:
     executor: default-docker
