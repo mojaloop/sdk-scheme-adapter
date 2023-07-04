@@ -24,7 +24,8 @@ defaults_Dependencies: &defaults_Dependencies |
   apk --no-cache add curl
   apk --no-cache add openssh-client
   apk --no-cache add bash
-  apk add --no-cache -t build-dependencies make gcc g++ python3 libtool autoconf automake
+  apk --no-cache add -t build-dependencies make gcc g++ python3 libtool autoconf automake
+  apk --no-cache add librdkafka-dev
 
 ##
 # defaults
@@ -113,6 +114,8 @@ defaults_configure_nvm: &defaults_configure_nvm
 defaults_environment: &defaults_environment
   # env var for nx to set main branch
   MAIN_BRANCH_NAME: master
+  # Disable LIBRDKAFKA build since we install it via general dependencies
+  BUILD_LIBRDKAFKA: 0
 
 ##
 # Executors
@@ -206,7 +209,11 @@ jobs:
     executor: default-machine
     environment: *defaults_environment
     steps:
+      - attach_workspace:
+          at: ~/
       - checkout
+      - run:
+          <<: *defaults_configure_nvm
       - run:
           name: Build Docker local image
           command: |
