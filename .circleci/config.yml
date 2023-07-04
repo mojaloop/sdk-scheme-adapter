@@ -61,6 +61,7 @@ defaults_configure_nvm: &defaults_configure_nvm
   name: Configure NVM
   command: |
     echo "0.1 Shell=$SHELL"
+    cd ../
     echo "0.2 path=$(pwd)"
     echo "1. Creating .profile"
     touch $HOME/.profile
@@ -74,12 +75,12 @@ defaults_configure_nvm: &defaults_configure_nvm
     cat $NVM_DIR/nvm.sh
     source $NVM_DIR/nvm.sh
     echo "5. Configuring Nodejs Version"
-    export NVMRC_VERSION=$(cat .nvmrc)
+    export NVMRC_VERSION=$(cat ./project/.nvmrc)
     echo "export NVMRC_VERSION=$NVMRC_VERSION" >> $BASH_ENV
     echo "6. Installing Node version: $NVMRC_VERSION"
-    nvm install $(cat .nvmrc)
-    nvm alias default $(cat .nvmrc)
-    nvm use $(cat .nvmrc)
+    nvm install $(cat ./project/.nvmrc)
+    nvm alias default $(cat ./project/.nvmrc)
+    nvm use $(cat ./project/.nvmrc)
 
 defaults_environment: &defaults_environment
   # env var for nx to set main branch
