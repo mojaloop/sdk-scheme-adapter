@@ -120,11 +120,6 @@ jobs:
       - run:
           name: Nodejs Version
           command: node --version
-      - save_cache:
-          key: Cache NVM Binary
-          paths:
-            - my-file.txt
-            - my-project/my-dependencies-directory
       - run:
           name: Install Dependencies
           command: yarn install --immutable
