@@ -688,8 +688,8 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      # - pr-tools/pr-title-check:
-      #     context: org-global
+      - pr-tools/pr-title-check:
+          context: org-global
 
       - setup:
           context: org-global
