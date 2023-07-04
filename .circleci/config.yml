@@ -80,9 +80,9 @@ defaults_configure_nvm: &defaults_configure_nvm
     echo "export NVMRC_VERSION=$(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)" >> $BASH_ENV
 
     echo "6. Installing Node version: $NVMRC_VERSION"
-    nvm install $(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)
-    nvm alias default $(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)
-    nvm use $(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)
+    nvm install $NVMRC_VERSION
+    nvm alias default $NVMRC_VERSION
+    nvm use $NVMRC_VERSION
 
 defaults_environment: &defaults_environment
   # env var for nx to set main branch
