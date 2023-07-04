@@ -77,7 +77,7 @@ defaults_configure_nvm: &defaults_configure_nvm
 
     echo "5. Configuring Nodejs Version"
     export NVMRC_VERSION=$(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)
-    echo "export NVMRC_VERSION=$(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)" >> $BASH_ENV
+    echo "export NVMRC_VERSION=$NVMRC_VERSION" >> $BASH_ENV
 
     echo "6. Installing Node version: $NVMRC_VERSION"
     nvm install $NVMRC_VERSION
