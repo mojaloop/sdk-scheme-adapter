@@ -71,6 +71,7 @@ defaults_configure_nvm: &defaults_configure_nvm
     echo "3. Update $BASH_ENV"
     echo "export NVM_DIR=$NVM_DIR" >> $BASH_ENV
     echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
+
     echo "4. Executing $NVM_DIR/nvm.sh"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
