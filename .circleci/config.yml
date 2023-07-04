@@ -117,7 +117,7 @@ defaults_environment: &defaults_environment
   ## Disable LIBRDKAFKA build since we install it via general dependencies
   BUILD_LIBRDKAFKA: 0
   ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
-  BASH_ENV: /etc/profile
+  # BASH_ENV: /etc/profile
 
 
 ##
@@ -214,8 +214,8 @@ jobs:
     executor: default-machine
     environment: *defaults_environment
     steps:
-      - attach_workspace:
-          at: ~/
+      # - attach_workspace:
+      #     at: ~/
       - checkout
       - run:
           <<: *defaults_configure_nvm
@@ -346,6 +346,7 @@ jobs:
   test-dependencies:
     executor: default-docker
     shell: /bin/sh -leo pipefail
+    environment: *defaults_environment
     steps:
       - run:
           name: Install general dependencies
@@ -371,6 +372,7 @@ jobs:
   test-lint:
     executor: default-docker
     shell: /bin/sh -leo pipefail
+    environment: *defaults_environment
     steps:
       - run:
           name: Install general dependencies
