@@ -409,6 +409,7 @@ jobs:
   image-scan:
     executor: anchore/anchore_engine
     environment: *defaults_environment
+    working_directory: *WORKING_DIR
     steps:
       - setup_remote_docker
       - run:
