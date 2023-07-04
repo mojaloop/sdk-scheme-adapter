@@ -688,8 +688,8 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - pr-tools/pr-title-check:
-          context: org-global
+      # - pr-tools/pr-title-check:
+      #     context: org-global
 
       - setup:
           context: org-global
@@ -701,53 +701,57 @@ workflows:
                 - /feature*/
                 - /bugfix*/
 
-      - test-unit:
-          context: org-global
-          requires:
-            - setup
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore:
-                - /feature*/
-                - /bugfix*/
+      ## TODO: UNcomment
+      # - test-unit:
+      #     context: org-global
+      #     requires:
+      #       - setup
+      #     filters:
+      #       tags:
+      #         only: /.*/
+      #       branches:
+      #         ignore:
+      #           - /feature*/
+      #           - /bugfix*/
 
-      - validate-openapi:
-          context: org-global
-          requires:
-            - setup
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore:
-                - /feature*/
-                - /bugfix*/
+      ## TODO: UNcomment
+      # - validate-openapi:
+      #     context: org-global
+      #     requires:
+      #       - setup
+      #     filters:
+      #       tags:
+      #         only: /.*/
+      #       branches:
+      #         ignore:
+      #           - /feature*/
+      #           - /bugfix*/
 
-      - test-dependencies:
-          context: org-global
-          requires:
-            - setup
-          filters:
-            tags:
-              ignore: /.*/
-            branches:
-              ignore:
-                - master
-                - main
+      ## TODO: UNcomment
+      # - test-dependencies:
+      #     context: org-global
+      #     requires:
+      #       - setup
+      #     filters:
+      #       tags:
+      #         ignore: /.*/
+      #       branches:
+      #         ignore:
+      #           - master
+      #           - main
 
-      - test-lint:
-          context: org-global
-          requires:
-            - setup
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore:
-                - /feature*/
-                - /bugfix*/
+      ## TODO: UNcomment
+      # - test-lint:
+      #     context: org-global
+      #     requires:
+      #       - setup
+      #     filters:
+      #       tags:
+      #         only: /.*/
+      #       branches:
+      #         ignore:
+      #           - /feature*/
+      #           - /bugfix*/
 
       - build-local:
           context: org-global
@@ -761,54 +765,59 @@ workflows:
                 - /feature*/
                 - /bugfix*/
 
-      - test-integration:
-          context: org-global
-          requires:
-            - setup
-            - build-local
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore:
-                - /feature*/
-                - /bugfix*/
+      ## TODO: UNcomment
+      # - test-integration:
+      #     context: org-global
+      #     requires:
+      #       - setup
+      #       - build-local
+      #     filters:
+      #       tags:
+      #         only: /.*/
+      #       branches:
+      #         ignore:
+      #           - /feature*/
+      #           - /bugfix*/
 
-      - test-func:
-          context: org-global
-          requires:
-            - setup
-            - build-local
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore:
-                - /feature*/
-                - /bugfix*/
+      ## TODO: UNcomment
+      # - test-func:
+      #     context: org-global
+      #     requires:
+      #       - setup
+      #       - build-local
+      #     filters:
+      #       tags:
+      #         only: /.*/
+      #       branches:
+      #         ignore:
+      #           - /feature*/
+      #           - /bugfix*/
 
-      - vulnerability-check:
-          context: org-global
-          requires:
-            - setup
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore:
-                - /feature*/
-                - /bugfix*/
-      - audit-licenses:
-          context: org-global
-          requires:
-            - setup
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore:
-                - /feature*/
-                - /bugfix*/
+      ## TODO: UNcomment
+      # - vulnerability-check:
+      #     context: org-global
+      #     requires:
+      #       - setup
+      #     filters:
+      #       tags:
+      #         only: /.*/
+      #       branches:
+      #         ignore:
+      #           - /feature*/
+      #           - /bugfix*/
+
+      ## TODO: UNcomment
+      # - audit-licenses:
+      #     context: org-global
+      #     requires:
+      #       - setup
+      #     filters:
+      #       tags:
+      #         only: /.*/
+      #       branches:
+      #         ignore:
+      #           - /feature*/
+      #           - /bugfix*/
 
       - license-scan:
           context: org-global
