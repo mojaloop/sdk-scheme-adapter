@@ -60,6 +60,7 @@ defaults_configure_git: &defaults_configure_git
 defaults_configure_nvm: &defaults_configure_nvm
   name: Configure NVM
   command: |
+    echo "0. Shell=$SHELL"
     echo "1. Creating .profile"
     touch $HOME/.profile
     echo "2. Installing NVM"
