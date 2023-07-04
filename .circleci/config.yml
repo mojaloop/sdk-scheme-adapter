@@ -60,19 +60,24 @@ defaults_configure_git: &defaults_configure_git
 defaults_configure_nvm: &defaults_configure_nvm
   name: Configure NVM
   command: |
-    echo "1. Creating .profile"
     cd $HOME
-    touch $HOME/.profile
-    echo "2. Exporting NVM_DIR"
+
+    echo "1. Exporting NVM_DIR"
     export NVM_DIR="$HOME/.nvm"
-    echo "export NVM_DIR=$NVM_DIR" >> $BASH_ENV
-    echo "3. Installing NVM"
+
+    echo "2. Installing NVM"
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+
+    echo "3. Update $BASH_ENV"
+    echo "export NVM_DIR=$NVM_DIR" >> $BASH_ENV
+    echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
     echo "4. Executing $NVM_DIR/nvm.sh"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
     echo "5. Configuring Nodejs Version"
     export NVMRC_VERSION=$(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)
     echo "export NVMRC_VERSION=$(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)" >> $BASH_ENV
+
     echo "6. Installing Node version: $NVMRC_VERSION"
     nvm install $(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)
     nvm alias default $(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)
@@ -133,6 +138,10 @@ jobs:
       - run:
           name: Delete build dependencies
           command: apk del build-dependencies
+      - persist_to_workspace:
+          root: $HOME
+          paths:
+            - .nvm
 
   test-unit:
     executor: default-docker
