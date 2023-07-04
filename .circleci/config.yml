@@ -66,21 +66,49 @@ defaults_configure_nvm: &defaults_configure_nvm
     export NVMRC_VERSION=$(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)
     export NVM_DIR="$HOME/.nvm"
 
-    echo "2. Installing NVM"
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+    if [ -f "$NVM_DIR" ]; then
+      echo "==> $NVM_DIR exists. Skipping steps 2-4!"
+    else 
+      echo "==> $NVM_DIR does not exists. Executing steps 2-4!"
 
-    echo "3. Executing $NVM_DIR/nvm.sh"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+      echo "2. Installing NVM"
+      curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
 
-    echo "4. Update $BASH_ENV"
-    echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
-    echo "export NVMRC_VERSION=$NVMRC_VERSION" >> $BASH_ENV
-    echo "export NVM_DIR=$NVM_DIR" >> $BASH_ENV
+      echo "3. Executing $NVM_DIR/nvm.sh"
+      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-    echo "6. Installing Node version: $NVMRC_VERSION"
+      echo "4. Update $BASH_ENV"
+      echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
+      echo "export NVMRC_VERSION=$NVMRC_VERSION" >> $BASH_ENV
+      echo "export NVM_DIR=$NVM_DIR" >> $BASH_ENV
+    fi
+
+    echo "5. Installing Node version: $NVMRC_VERSION"
     nvm install $NVMRC_VERSION
     nvm alias default $NVMRC_VERSION
     nvm use $NVMRC_VERSION
+  # command: |
+  #   cd $HOME
+
+  #   echo "1. Export env variable"
+  #   export NVMRC_VERSION=$(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)
+  #   export NVM_DIR="$HOME/.nvm"
+
+  #   echo "2. Installing NVM"
+  #   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+
+  #   echo "3. Executing $NVM_DIR/nvm.sh"
+  #   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+  #   echo "4. Update $BASH_ENV"
+  #   echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
+  #   echo "export NVMRC_VERSION=$NVMRC_VERSION" >> $BASH_ENV
+  #   echo "export NVM_DIR=$NVM_DIR" >> $BASH_ENV
+
+  #   echo "5. Installing Node version: $NVMRC_VERSION"
+  #   nvm install $NVMRC_VERSION
+  #   nvm alias default $NVMRC_VERSION
+  #   nvm use $NVMRC_VERSION
 
 defaults_environment: &defaults_environment
   # env var for nx to set main branch
