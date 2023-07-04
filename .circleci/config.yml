@@ -460,7 +460,7 @@ jobs:
       - run:
           name: Pull base image locally
           command: |
-            docker pull node:18.16.0-alpine
+            docker pull node:$NVMRC_VERSION-alpine
       ## Analyze the base and derived image
       ## Note: It seems images are scanned in parallel, so preloading the base image result doesn't give us any real performance gain
       - anchore/analyze_local_image:
