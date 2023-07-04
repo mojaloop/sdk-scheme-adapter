@@ -61,7 +61,7 @@ defaults_configure_nvm: &defaults_configure_nvm
   name: Configure NVM
   command: |
     echo "0.1 Shell=$SHELL"
-    cd ../
+    cd $HOME
     echo "0.2 path=$(pwd)"
     echo "1. Creating .profile"
     touch $HOME/.profile
