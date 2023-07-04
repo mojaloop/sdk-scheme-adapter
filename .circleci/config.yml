@@ -112,10 +112,13 @@ defaults_configure_nvm: &defaults_configure_nvm
   #   nvm use $NVMRC_VERSION
 
 defaults_environment: &defaults_environment
-  # env var for nx to set main branch
+  ## env var for nx to set main branch
   MAIN_BRANCH_NAME: master
-  # Disable LIBRDKAFKA build since we install it via general dependencies
+  ## Disable LIBRDKAFKA build since we install it via general dependencies
   BUILD_LIBRDKAFKA: 0
+  ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
+  BASH_ENV: /etc/profile
+
 
 ##
 # Executors
@@ -141,6 +144,7 @@ executors:
 jobs:
   setup:
     executor: default-docker
+    shell: /bin/sh -leo pipefail
     environment: *defaults_environment
     steps:
       - run:
@@ -175,6 +179,7 @@ jobs:
 
   test-unit:
     executor: default-docker
+    shell: /bin/sh -leo pipefail
     environment: *defaults_environment
     steps:
       - run:
@@ -321,6 +326,7 @@ jobs:
 
   validate-openapi:
     executor: default-docker
+    shell: /bin/sh -leo pipefail
     environment: *defaults_environment
     steps:
       - run:
@@ -339,6 +345,7 @@ jobs:
 
   test-dependencies:
     executor: default-docker
+    shell: /bin/sh -leo pipefail
     steps:
       - run:
           name: Install general dependencies
@@ -363,6 +370,7 @@ jobs:
 
   test-lint:
     executor: default-docker
+    shell: /bin/sh -leo pipefail
     steps:
       - run:
           name: Install general dependencies
@@ -387,6 +395,7 @@ jobs:
 
   vulnerability-check:
     executor: default-docker
+    shell: /bin/sh -leo pipefail
     environment: *defaults_environment
     steps:
       - run:
@@ -412,6 +421,7 @@ jobs:
 
   audit-licenses:
     executor: default-docker
+    shell: /bin/sh -leo pipefail
     environment: *defaults_environment
     steps:
       - run:
@@ -499,14 +509,12 @@ jobs:
           command: docker load -i /tmp/docker-image.tar
       - run:
           name: Download the mojaloop/ci-config repo
-          shell: /bin/bash
           command: |
             git clone https://github.com/mojaloop/ci-config /tmp/ci-config
             # Generate the mojaloop anchore-policy
             cd /tmp/ci-config/container-scanning && ./mojaloop-policy-generator.js /tmp/mojaloop-policy.json
       - run:
           name: Pull base image locally
-          shell: /bin/bash
           command: |
             echo "Pulling docker image: node:$NVMRC_VERSION-alpine"
             docker pull node:$NVMRC_VERSION-alpine
@@ -522,7 +530,6 @@ jobs:
           policy_bundle_file_path: /tmp/mojaloop-policy.json
       - run:
           name: Upload Anchore reports to s3
-          shell: /bin/bash
           command: |
             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/${CIRCLE_PROJECT_REPONAME}/ --recursive
             aws s3 rm ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive --exclude "*" --include "${CIRCLE_PROJECT_REPONAME}*"
@@ -538,6 +545,7 @@ jobs:
 
   release:
     executor: default-docker
+    shell: /bin/sh -leo pipefail
     environment: *defaults_environment
     steps:
       - run:
