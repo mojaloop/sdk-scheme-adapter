@@ -419,6 +419,8 @@ jobs:
     environment: *defaults_environment
     working_directory: *WORKING_DIR
     steps:
+      - attach_workspace:
+          at: $HOME
       - setup_remote_docker
       - run:
           name: Install general dependencies
@@ -455,8 +457,6 @@ jobs:
           <<: *defaults_configure_nvm
       - attach_workspace:
           at: /tmp
-      # - attach_workspace:
-      #     at: $NVM_DIR
       - run:
           name: Load the pre-built docker image from workspace
           command: docker load -i /tmp/docker-image.tar
