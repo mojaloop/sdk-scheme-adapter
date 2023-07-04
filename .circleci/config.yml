@@ -143,15 +143,15 @@ jobs:
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
-      - run:
-          name: Configure Yarn
-          command: *defaults_YarnConfig
       - checkout
       - run:
           <<: *defaults_configure_nvm
       - run:
           name: Nodejs Version
           command: node --version
+      - run:
+          name: Configure Yarn
+          command: *defaults_YarnConfig
       - run:
           name: Install Dependencies
           command: yarn install --immutable
@@ -166,7 +166,7 @@ jobs:
           name: Delete build dependencies
           command: apk del build-dependencies
       - persist_to_workspace:
-          root: $HOME
+          root: ~/
           paths:
             - .nvm
 
@@ -448,7 +448,7 @@ jobs:
     working_directory: *WORKING_DIR
     steps:
       - attach_workspace:
-          at: $HOME
+          at: ~/
       - setup_remote_docker
       - run:
           name: Install general dependencies
