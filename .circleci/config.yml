@@ -64,11 +64,11 @@ defaults_configure_nvm: &defaults_configure_nvm
     echo "0.2 path=$(pwd)"
     echo "1. Creating .profile"
     touch $HOME/.profile
-    echo "2. Installing NVM"
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-    echo "3. Exporting NVM_DIR"
+    echo "2. Exporting NVM_DIR"
     export NVM_DIR="$HOME/.nvm"
     echo "export NVM_DIR=$NVM_DIR" >> $BASH_ENV
+    echo "3. Installing NVM"
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
     echo "4. Executing $NVM_DIR/nvm.sh"
     # [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
     cat $NVM_DIR/nvm.sh
