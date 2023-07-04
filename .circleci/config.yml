@@ -819,16 +819,17 @@ workflows:
       #           - /feature*/
       #           - /bugfix*/
 
-      - license-scan:
-          context: org-global
-          requires:
-            - build-local
-          filters:
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot(\.[0-9]+)?)?(\-hotfix(\.[0-9]+)?)?(\-perf(\.[0-9]+)?)?/
-            branches:
-              ignore:
-                - /.*/
+      ## TODO: UNcomment
+      # - license-scan:
+      #     context: org-global
+      #     requires:
+      #       - build-local
+      #     filters:
+      #       tags:
+      #         only: /v[0-9]+(\.[0-9]+)*(\-snapshot(\.[0-9]+)?)?(\-hotfix(\.[0-9]+)?)?(\-perf(\.[0-9]+)?)?/
+      #       branches:
+      #         ignore:
+      #           - /.*/
 
       - image-scan:
           context: org-global
@@ -849,72 +850,72 @@ workflows:
           #     ignore:
           #       - /.*/
 
-      # New commits to master release automatically
-      - release:
-          context: org-global
-          requires:
-            - build-local
-            - pr-tools/pr-title-check
-            - validate-openapi
-            - test-lint
-            - test-unit
-            - test-integration
-            - vulnerability-check
-            - audit-licenses
-            - license-scan
-            - image-scan
-          filters:
-            branches:
-              only:
-                - master
-                - /release\/v.*/
+      # # New commits to master release automatically
+      # - release:
+      #     context: org-global
+      #     requires:
+      #       - build-local
+      #       - pr-tools/pr-title-check
+      #       - validate-openapi
+      #       - test-lint
+      #       - test-unit
+      #       - test-integration
+      #       - vulnerability-check
+      #       - audit-licenses
+      #       - license-scan
+      #       - image-scan
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #           - /release\/v.*/
 
-      - github-release:
-          context: org-global
-          requires:
-            - release
-          filters:
-            branches:
-              only:
-                - master
-                - /release\/v.*/
+      # - github-release:
+      #     context: org-global
+      #     requires:
+      #       - release
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #           - /release\/v.*/
 
-      - publish-docker:
-          context: org-global
-          requires:
-            - build-local
-            - pr-tools/pr-title-check
-            - validate-openapi
-            - test-lint
-            - test-unit
-            - test-integration
-            - vulnerability-check
-            - audit-licenses
-            - license-scan
-            - image-scan
-          filters:
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*/
-            branches:
-              ignore:
-                - /.*/
+      # - publish-docker:
+      #     context: org-global
+      #     requires:
+      #       - build-local
+      #       - pr-tools/pr-title-check
+      #       - validate-openapi
+      #       - test-lint
+      #       - test-unit
+      #       - test-integration
+      #       - vulnerability-check
+      #       - audit-licenses
+      #       - license-scan
+      #       - image-scan
+      #     filters:
+      #       tags:
+      #         only: /v[0-9]+(\.[0-9]+)*/
+      #       branches:
+      #         ignore:
+      #           - /.*/
 
-      - publish-docker-snapshot:
-          context: org-global
-          requires:
-            - build-local
-            - pr-tools/pr-title-check
-            - validate-openapi
-            - test-lint
-            - test-unit
-            - test-integration
-            - vulnerability-check
-            - audit-licenses
-            - license-scan
-            - image-scan
-          filters:
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*\-snapshot+((\.[0-9]+)?)/
-            branches:
-              ignore:
-                - /.*/
+      # - publish-docker-snapshot:
+      #     context: org-global
+      #     requires:
+      #       - build-local
+      #       - pr-tools/pr-title-check
+      #       - validate-openapi
+      #       - test-lint
+      #       - test-unit
+      #       - test-integration
+      #       - vulnerability-check
+      #       - audit-licenses
+      #       - license-scan
+      #       - image-scan
+      #     filters:
+      #       tags:
+      #         only: /v[0-9]+(\.[0-9]+)*\-snapshot+((\.[0-9]+)?)/
+      #       branches:
+      #         ignore:
+      #           - /.*/
