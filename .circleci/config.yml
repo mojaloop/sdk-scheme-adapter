@@ -475,7 +475,7 @@ jobs:
       - run:
           name: Install docker dependencies for anchore
           command: |
-            apk add --update py-pip docker python3-dev libffi-dev openssl-dev gcc libc-dev make jq npm
+            apk add --update py-pip docker python3-dev libffi-dev openssl-dev gcc libc-dev make jq
       - run:
           name: Install AWS CLI dependencies
           command: *defaults_awsCliDependencies
