@@ -72,7 +72,7 @@ defaults_configure_nvm: &defaults_configure_nvm
     echo "4. Executing $NVM_DIR/nvm.sh"
     # [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
     cat $NVM_DIR/nvm.sh
-    bash $NVM_DIR/nvm.sh
+    source $NVM_DIR/nvm.sh
     echo "5. Configuring Nodejs Version"
     export NVMRC_VERSION=$(cat .nvmrc)
     echo "export NVMRC_VERSION=$NVMRC_VERSION" >> $BASH_ENV
