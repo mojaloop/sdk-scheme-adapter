@@ -460,6 +460,7 @@ jobs:
       - run:
           name: Pull base image locally
           command: |
+            echo "Pulling docker image: node:$NVMRC_VERSION-alpine"
             docker pull node:$NVMRC_VERSION-alpine
       ## Analyze the base and derived image
       ## Note: It seems images are scanned in parallel, so preloading the base image result doesn't give us any real performance gain
