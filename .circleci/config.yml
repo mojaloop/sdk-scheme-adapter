@@ -67,8 +67,9 @@ defaults_configure_nvm: &defaults_configure_nvm
     echo "3. Exporting NVM_DIR"
     export NVM_DIR="$HOME/.nvm"
     echo "export NVM_DIR=$NVM_DIR" >> $BASH_ENV
-    echo "4. Executing nvm.sh"
+    echo "4. Executing $NVM_DIR/nvm.sh"
     # [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    cat $NVM_DIR/nvm.sh
     source $NVM_DIR/nvm.sh
     echo "5. Configuring Nodejs Version"
     export NVMRC_VERSION=$(cat .nvmrc)
