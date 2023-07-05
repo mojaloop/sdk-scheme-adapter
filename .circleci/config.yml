@@ -509,7 +509,7 @@ jobs:
       - run:
           name: Setup NVM repos ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
           command:
-            echo -e 'nvm_get_arch() { nvm_echo "x64-musl"; }\n' >> $BASH_ENV
+            echo -e "nvm_get_arch() { nvm_echo \"x64-musl\"; }\n" >> $BASH_ENV
             echo "export NVM_NODEJS_ORG_MIRROR=https://unofficial-builds.nodejs.org/download/release" >> $BASH_ENV
       ## Temporarily disabling to try debug the issue!
       - run:
