@@ -471,8 +471,8 @@ jobs:
     environment: *defaults_environment
     working_directory: *WORKING_DIR
     steps:
-      - attach_workspace:
-          at: ~/
+      # - attach_workspace:
+      #     at: ~/
       - setup_remote_docker
       - run:
           name: Install general dependencies
