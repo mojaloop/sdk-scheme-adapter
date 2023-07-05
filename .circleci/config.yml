@@ -532,6 +532,7 @@ jobs:
           command: docker load -i /tmp/docker-image.tar
       - run:
           name: Download the mojaloop/ci-config repo
+          shell: /bin/bash
           command: |
             git clone https://github.com/mojaloop/ci-config /tmp/ci-config
             # Generate the mojaloop anchore-policy
