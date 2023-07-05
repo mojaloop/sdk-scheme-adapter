@@ -88,6 +88,7 @@ defaults_configure_nvm: &defaults_configure_nvm
 
     ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
     if [ ! -z "$NVM_ARCH_UNOFFICIAL_OVERRIDE" ]; then
+      echo "==> Handle NVM_ARCH_UNOFFICIAL_OVERRIDE=$NVM_ARCH_UNOFFICIAL_OVERRIDE!"
       echo "nvm_get_arch() { nvm_echo \"${NVM_ARCH_UNOFFICIAL_OVERRIDE}\"; }" >> $HOME/.profile
       echo "export NVM_NODEJS_ORG_MIRROR=https://unofficial-builds.nodejs.org/download/release" >> $HOME/.profile
       source $HOME/.profile
