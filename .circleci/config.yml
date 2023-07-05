@@ -88,6 +88,8 @@ defaults_configure_nvm: &defaults_configure_nvm
     nvm install $NVMRC_VERSION
     nvm alias default $NVMRC_VERSION
     nvm use $NVMRC_VERSION
+
+    cd $CIRCLE_WORKING_DIRECTORY
   # command: |
   #   cd $HOME
 
