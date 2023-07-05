@@ -540,7 +540,9 @@ jobs:
             cd /tmp/ci-config/container-scanning && ./mojaloop-policy-generator.js /tmp/mojaloop-policy.json
       - run:
           name: Pull base image locally
+          shell: /bin/bash
           command: |
+            # source $BASH_ENV
             echo "Pulling docker image: node:$NVMRC_VERSION-alpine"
             docker pull node:$NVMRC_VERSION-alpine
       ## Analyze the base and derived image
