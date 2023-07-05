@@ -127,7 +127,6 @@ defaults_environment: &defaults_environment
   MAIN_BRANCH_NAME: master
   ## Disable LIBRDKAFKA build since we install it via general dependencies
   BUILD_LIBRDKAFKA: 0
-  DOCKER_ORG: mojaloop
   ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
   # BASH_ENV: /etc/profile
 
@@ -479,6 +478,7 @@ jobs:
     executor: anchore/anchore_engine
     environment:
       NVM_ARCH_UNOFFICIAL_OVERRIDE: x64-musl
+      DOCKER_ORG: mojaloop
     working_directory: *WORKING_DIR
     steps:
       # - attach_workspace:
