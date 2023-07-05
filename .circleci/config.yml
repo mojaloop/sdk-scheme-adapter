@@ -479,16 +479,16 @@ jobs:
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
-      - run:
-          name: Install general dependencies
-          command: |
-            apk --no-cache add git
-            apk --no-cache add ca-certificates
-            apk --no-cache add curl
-            apk --no-cache add openssh-client
-            apk add --no-cache -t build-dependencies make gcc g++ python3 libtool autoconf automake
-            npm config set unsafe-perm true
-            npm install -g node-gyp
+      # - run:
+      #     name: Install general dependencies
+      #     command: |
+      #       apk --no-cache add git
+      #       apk --no-cache add ca-certificates
+      #       apk --no-cache add curl
+      #       apk --no-cache add openssh-client
+      #       apk add --no-cache -t build-dependencies make gcc g++ python3 libtool autoconf automake
+      #       npm config set unsafe-perm true
+      #       npm install -g node-gyp
       - run:
           name: Install docker dependencies for anchore
           command: |
@@ -506,18 +506,18 @@ jobs:
             echo "export SLACK_BUILD_ID=${CIRCLE_BUILD_NUM}" >> $BASH_ENV
             echo "export SLACK_CI_URL=${CIRCLE_BUILD_URL}" >> $BASH_ENV
             echo "export SLACK_CUSTOM_MSG='Anchore Image Scan failed for: \`${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_TAG}\`'" >> $BASH_ENV
-      # - run:
-      #     name: Setup NVM repos ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
-      #     command:
-      #       echo "nvm_get_arch() { nvm_echo \"x64-musl\"; }" >> $BASH_ENV
-      #       echo "export NVM_NODEJS_ORG_MIRROR=https://unofficial-builds.nodejs.org/download/release" >> $BASH_ENV
-      # ## Temporarily disabling to try debug the issue!
-      # - run:
-      #     <<: *defaults_configure_nvm
       - run:
-          name: Configure NVMRC_VERSION
-          command: |
-            echo "export NVMRC_VERSION=$(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)" >> $BASH_ENV
+          name: Setup NVM repos ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
+          command:
+            echo "nvm_get_arch() { nvm_echo \"x64-musl\"; }" >> $BASH_ENV
+            echo "export NVM_NODEJS_ORG_MIRROR=https://unofficial-builds.nodejs.org/download/release" >> $BASH_ENV
+      ## Temporarily disabling to try debug the issue!
+      - run:
+          <<: *defaults_configure_nvm
+      # - run:
+      #     name: Configure NVMRC_VERSION
+      #     command: |
+      #       echo "export NVMRC_VERSION=$(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)" >> $BASH_ENV
       - attach_workspace:
           at: /tmp
       - run:
