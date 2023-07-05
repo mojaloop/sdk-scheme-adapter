@@ -195,11 +195,6 @@ jobs:
           command: *defaults_YarnConfig
       - checkout
       - run:
-          name: Setup NVM repos
-          command:
-            echo "nvm_get_arch() { nvm_echo \"x64-musl\"; }" >> $BASH_ENV
-            echo "export NVM_NODEJS_ORG_MIRROR=https://unofficial-builds.nodejs.org/download/release" >> $BASH_ENV
-      - run:
           <<: *defaults_configure_nvm
       ## TODO: figure out why jest is not installed
       # - restore_cache:
@@ -511,6 +506,11 @@ jobs:
             echo "export SLACK_BUILD_ID=${CIRCLE_BUILD_NUM}" >> $BASH_ENV
             echo "export SLACK_CI_URL=${CIRCLE_BUILD_URL}" >> $BASH_ENV
             echo "export SLACK_CUSTOM_MSG='Anchore Image Scan failed for: \`${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_TAG}\`'" >> $BASH_ENV
+      - run:
+          name: Setup NVM repos ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
+          command:
+            echo "nvm_get_arch() { nvm_echo \"x64-musl\"; }" >> $BASH_ENV
+            echo "export NVM_NODEJS_ORG_MIRROR=https://unofficial-builds.nodejs.org/download/release" >> $BASH_ENV
       ## Temporarily disabling to try debug the issue!
       - run:
           <<: *defaults_configure_nvm
