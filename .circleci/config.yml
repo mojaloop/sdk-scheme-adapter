@@ -514,6 +514,10 @@ jobs:
       # ## Temporarily disabling to try debug the issue!
       # - run:
       #     <<: *defaults_configure_nvm
+      - run:
+          name: Configure NVMRC_VERSION
+          command: |
+            echo "export NVMRC_VERSION=$(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)" >> $BASH_ENV
       - attach_workspace:
           at: /tmp
       - run:
