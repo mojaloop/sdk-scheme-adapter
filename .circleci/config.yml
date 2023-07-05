@@ -184,10 +184,6 @@ jobs:
       - run:
           name: Delete build dependencies
           command: apk del build-dependencies
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - ./.nvm
 
   test-unit:
     executor: default-docker
@@ -226,8 +222,6 @@ jobs:
     executor: default-machine
     environment: *defaults_environment
     steps:
-      # - attach_workspace:
-      #     at: ~/
       - checkout
       - run:
           <<: *defaults_configure_nvm
@@ -486,6 +480,8 @@ jobs:
       # - attach_workspace:
       #     at: ~/
       - setup_remote_docker
+      - attach_workspace:
+          at: /tmp
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
@@ -530,8 +526,6 @@ jobs:
       #     name: Configure NVMRC_VERSION
       #     command: |
       #       echo "export NVMRC_VERSION=$(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)" >> $BASH_ENV
-      - attach_workspace:
-          at: /tmp
       - run:
           name: Load the pre-built docker image from workspace
           command: docker load -i /tmp/docker-image.tar
