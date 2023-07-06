@@ -63,6 +63,14 @@ defaults_configure_git: &defaults_configure_git
     git config user.email ${GIT_CI_EMAIL}
     git config user.name ${GIT_CI_USER}
 
+defaults_configure_nvmrc: &defaults_configure_nvmrc
+  name: Configure NVMRC
+  command: |
+    if [ -z "$NVMRC_VERSION" ]; then
+      echo "==> Configuring NVMRC_VERSION!"
+      export NVMRC_VERSION=$(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)
+    fi
+
 defaults_configure_nvm: &defaults_configure_nvm
   name: Configure NVM
   command: |
@@ -73,8 +81,11 @@ defaults_configure_nvm: &defaults_configure_nvm
     touch $ENV_DOT_PROFILE
 
     echo "1. Export env variable"
-    export NVMRC_VERSION=$(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)
     export NVM_DIR="$HOME/.nvm"
+    if [ -z "$NVMRC_VERSION" ]; then
+      echo "==> Configuring NVMRC_VERSION!"
+      export NVMRC_VERSION=$(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)
+    fi
 
     if [ -f "$NVM_DIR" ]; then
       echo "==> $NVM_DIR exists. Skipping steps 2-4!"
@@ -212,15 +223,12 @@ jobs:
 
   build-local:
     executor: default-machine
-    shell: "/bin/sh -leo pipefail" ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment:
       <<: *defaults_environment
-      BASH_ENV: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
-      NVM_ARCH_UNOFFICIAL_OVERRIDE: x64-musl ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
     steps:
       - checkout
       - run:
-          <<: *defaults_configure_nvm
+          <<: *defaults_configure_nvmrc
       - run:
           name: Build Docker local image
           command: |
@@ -330,7 +338,6 @@ jobs:
 
   validate-openapi:
     executor: default-docker
-    shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment:
       <<: *defaults_environment
     steps:
@@ -350,7 +357,6 @@ jobs:
 
   test-dependencies:
     executor: default-docker
-    shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment:
       <<: *defaults_environment
     steps:
@@ -364,10 +370,10 @@ jobs:
           name: Configure Yarn
           command: *defaults_YarnConfig
       ## TODO: Resolve cache issue to replace `Install Dependencies`
-      # - restore_cache:
-      #     name: Restore Yarn Package Cache
-      #     keys:
-      #       - yarn-packages-{{ checksum "yarn.lock" }}
+      - restore_cache:
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
           name: Install Dependencies
           command: yarn install --immutable
@@ -377,7 +383,6 @@ jobs:
 
   test-lint:
     executor: default-docker
-    shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment:
       <<: *defaults_environment
     steps:
@@ -390,11 +395,10 @@ jobs:
       - run:
           name: Configure Yarn
           command: *defaults_YarnConfig
-      ## TODO: Resolve cache issue to replace `Install Dependencies`
-      # - restore_cache:
-      #     name: Restore Yarn Package Cache
-      #     keys:
-      #       - yarn-packages-{{ checksum "yarn.lock" }}
+      - restore_cache:
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
           name: Install Dependencies
           command: yarn install --immutable
@@ -784,53 +788,53 @@ workflows:
                 - /feature*/
                 - /bugfix*/
 
-      # - validate-openapi:
-      #     context: org-global
-      #     requires:
-      #       - setup
-      #     filters:
-      #       tags:
-      #         only: /.*/
-      #       branches:
-      #         ignore:
-      #           - /feature*/
-      #           - /bugfix*/
+      - validate-openapi:
+          context: org-global
+          requires:
+            - setup
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
 
-      # - test-dependencies:
-      #     context: org-global
-      #     requires:
-      #       - setup
-      #     filters:
-      #       tags:
-      #         ignore: /.*/
-      #       branches:
-      #         ignore:
-      #           - master
-      #           - main
+      - test-dependencies:
+          context: org-global
+          requires:
+            - setup
+          filters:
+            tags:
+              ignore: /.*/
+            branches:
+              ignore:
+                - master
+                - main
 
-      # - test-lint:
-      #     context: org-global
-      #     requires:
-      #       - setup
-      #     filters:
-      #       tags:
-      #         only: /.*/
-      #       branches:
-      #         ignore:
-      #           - /feature*/
-      #           - /bugfix*/
+      - test-lint:
+          context: org-global
+          requires:
+            - setup
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
 
-      # - build-local:
-      #     context: org-global
-      #     requires:
-      #       - setup
-      #     filters:
-      #       tags:
-      #         only: /.*/
-      #       branches:
-      #         ignore:
-      #           - /feature*/
-      #           - /bugfix*/
+      - build-local:
+          context: org-global
+          requires:
+            - setup
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
 
       # - test-integration:
       #     context: org-global
