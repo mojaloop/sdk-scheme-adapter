@@ -165,35 +165,26 @@ jobs:
       - run:
           name: Nodejs Version
           command: |
-            echo "SHELL=$SHELL"
-            echo "LOCAL_DOT_PROFILE=$LOCAL_DOT_PROFILE"
-            source $LOCAL_DOT_PROFILE
-            echo "SHELL=$SHELL"
+            echo "What is the active version of Nodejs?"
             node --version
-            touch ~/.profile
-            echo "TEST1=HELLO1" >> ~/.profile
-            echo "TEST2=HELLO2" >> /etc/profile
+            yarn --version
+            npm --version
+            nvm debug
       - run:
           name: Configure Yarn
           command: *defaults_YarnConfig
       - run:
           name: Install Dependencies
           command: |
-            echo "TEST1=$TEST1"
-            echo "TEST2=$TEST2"
             node --version
-            yarn --version
-            source $LOCAL_DOT_PROFILE
-            node --version
-            yarn --version
             # yarn install --immutable
-      - save_cache:
-          name: Save Yarn Package Cache
-          key: yarn-packages-{{ checksum "yarn.lock" }}
-          paths:
-            - .yarn/cache
-            - .yarn/unplugged
-            - node_modules
+      # - save_cache:
+      #     name: Save Yarn Package Cache
+      #     key: yarn-packages-{{ checksum "yarn.lock" }}
+      #     paths:
+      #       - .yarn/cache
+      #       - .yarn/unplugged
+      #       - node_modules
 
   test-unit:
     executor: default-docker
