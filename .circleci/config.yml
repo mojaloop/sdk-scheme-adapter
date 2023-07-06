@@ -143,8 +143,6 @@ jobs:
     environment:
       <<: *defaults_environment
       BASH_ENV: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
-      # ENV: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
-      # BASH_ENV: $ENV
       NVM_ARCH_UNOFFICIAL_OVERRIDE: x64-musl ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
     steps:
       - run:
@@ -158,13 +156,9 @@ jobs:
             echo "SHELL=$SHELL"
       - checkout
       - run:
-          # shell: /bin/bash -eo pipefail
-          # shell: "/bin/sh -leo pipefail"
           <<: *defaults_configure_nvm
       - run:
           name: Nodejs Version
-          # shell: /bin/bash -eo pipefail
-          # shell: "/bin/sh -leo pipefail"
           command: |
             echo "SHELL=$SHELL"
             echo "BASH_ENV=$BASH_ENV"
@@ -174,14 +168,11 @@ jobs:
             touch ~/.profile
             echo "TEST1=HELLO1" >> ~/.profile
             echo "TEST2=HELLO2" >> /etc/profile
-      # - run:
-      #     name: Configure Yarn
-      #     # shell: /bin/bash -eo pipefail
-      #     command: *defaults_YarnConfig
+      - run:
+          name: Configure Yarn
+          command: *defaults_YarnConfig
       - run:
           name: Install Dependencies
-          # shell: /bin/bash -eo pipefail
-          shell: "/bin/sh -leo pipefail"
           command: |
             echo "TEST1=$TEST1"
             echo "TEST2=$TEST2"
