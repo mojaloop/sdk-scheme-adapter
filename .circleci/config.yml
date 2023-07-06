@@ -170,6 +170,9 @@ jobs:
             source $BASH_ENV
             echo "SHELL=$SHELL"
             node --version
+            touch ~/.profile
+            echo "TEST1=HELLO1" >> ~/.profile
+            echo "TEST2=HELLO2" >> /etc/.profile
       - run:
           name: Configure Yarn
           # shell: /bin/bash -eo pipefail
@@ -178,6 +181,8 @@ jobs:
           name: Install Dependencies
           # shell: /bin/bash -eo pipefail
           command: |
+            echo "TEST1=$TEST1"
+            echo "TEST2=$TEST2"
             node --version
             yarn --version
             source $BASH_ENV
