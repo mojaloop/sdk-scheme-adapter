@@ -69,6 +69,7 @@ defaults_configure_nvmrc: &defaults_configure_nvmrc
     if [ -z "$NVMRC_VERSION" ]; then
       echo "==> Configuring NVMRC_VERSION!"
       export NVMRC_VERSION=$(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)
+      echo "export NVMRC_VERSION=$NVMRC_VERSION" >> $ENV_DOT_PROFILE
     fi
 
 defaults_configure_nvm: &defaults_configure_nvm
@@ -85,6 +86,7 @@ defaults_configure_nvm: &defaults_configure_nvm
     if [ -z "$NVMRC_VERSION" ]; then
       echo "==> Configuring NVMRC_VERSION!"
       export NVMRC_VERSION=$(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)
+      echo "export NVMRC_VERSION=$NVMRC_VERSION" >> $ENV_DOT_PROFILE
     fi
 
     if [ -f "$NVM_DIR" ]; then
@@ -100,7 +102,6 @@ defaults_configure_nvm: &defaults_configure_nvm
 
       echo "4. Update $ENV_DOT_PROFILE"
       echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $ENV_DOT_PROFILE
-      echo "export NVMRC_VERSION=$NVMRC_VERSION" >> $ENV_DOT_PROFILE
       echo "export NVM_DIR=$NVM_DIR" >> $ENV_DOT_PROFILE
     fi
 
