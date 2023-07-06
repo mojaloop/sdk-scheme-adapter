@@ -163,6 +163,7 @@ jobs:
           shell: /bin/bash -eo pipefail
           command: |
             echo "SHELL=$SHELL"
+            echo "BASH_ENV=$BASH_ENV"
             source $BASH_ENV
             echo "SHELL=$SHELL"
             node --version
