@@ -9,6 +9,7 @@ services:
     networks:
         - mojaloop-net
     image: mojaloop/sdk-scheme-adapter:local
+    container_name: sdk-scheme-adapter-api-svc
     build:
       context: ./
       dockerfile: ./Dockerfile
@@ -43,6 +44,7 @@ services:
     networks:
       - mojaloop-net
     image: "redis:6.2.4-alpine"
+    container_name: redis
     ports:
       - "6379:6379"
     healthcheck:
@@ -89,6 +91,7 @@ services:
     networks:
       - mojaloop-net
     image: docker.io/bitnami/kafka:3.4.0
+    container_name: kafka
     ports:
       - "9092:9092"
     environment:
