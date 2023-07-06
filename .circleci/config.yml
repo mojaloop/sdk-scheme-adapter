@@ -153,7 +153,7 @@ jobs:
           command: |
             apk add -U curl bash ca-certificates openssl ncurses coreutils make gcc g++ libgcc linux-headers grep util-linux binutils findutils
             apk add --no-cache libstdc++
-            echo "ENV=$ENV"
+            echo "SHELL=$SHELL"
       - checkout
       - run:
           shell: /bin/bash -eo pipefail
@@ -162,10 +162,10 @@ jobs:
           name: Nodejs Version
           shell: /bin/bash -eo pipefail
           command: |
-            echo "ENV=$ENV"
+            echo "SHELL=$SHELL"
             source $BASH_ENV
             node --version
-            echo "ENV=$ENV"
+            echo "SHELL=$SHELL"
       - run:
           name: Configure Yarn
           shell: /bin/bash -eo pipefail
