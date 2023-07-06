@@ -68,6 +68,10 @@ defaults_configure_nvmrc: &defaults_configure_nvmrc
   command: |
     if [ -z "$NVMRC_VERSION" ]; then
       echo "==> Configuring NVMRC_VERSION!"
+
+      export ENV_DOT_PROFILE=$HOME/.profile
+      touch $ENV_DOT_PROFILE
+
       export NVMRC_VERSION=$(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)
       echo "export NVMRC_VERSION=$NVMRC_VERSION" >> $ENV_DOT_PROFILE
     fi
