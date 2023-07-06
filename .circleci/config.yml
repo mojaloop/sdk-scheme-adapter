@@ -23,7 +23,7 @@ defaults_Dependencies: &defaults_Dependencies |
   apk --no-cache add util-linux pciutils usbutils coreutils binutils findutils grep iproute2
   apk --no-cache add git
   apk --no-cache add ca-certificates
-  apk --no-cache add curl
+  apk --no-cache add curl wget
   apk --no-cache add openssh-client
   apk --no-cache add bash bash-doc bash-completion
   apk --no-cache add -t build-dependencies make gcc g++ python3 libtool autoconf automake
