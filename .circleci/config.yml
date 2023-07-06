@@ -150,7 +150,7 @@ jobs:
           command: *defaults_Dependencies
       - run:
           name: install libc
-          command: apk add --no-cache libstdc+
+          command: apk add --no-cache libstdc++
       - checkout
       - run:
           shell: /bin/bash -eo pipefail
