@@ -129,7 +129,7 @@ executors:
     working_directory: &WORKING_DIR /home/circleci/project
     shell: "/bin/sh -leo pipefail" ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment:
-      LOCAL_DOT_PROFILE: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
+      BASH_ENV: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
       NVM_ARCH_UNOFFICIAL_OVERRIDE: x64-musl ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
     docker:
       - image: node:lts-alpine # Ref: https://hub.docker.com/_/node?tab=tags&page=1&name=alpine
