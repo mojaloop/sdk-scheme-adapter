@@ -522,6 +522,7 @@ jobs:
       #       source $HOME/.profile
       ## Temporarily disabling to try debug the issue!
       - run:
+          shell: /bin/bash
           <<: *defaults_configure_nvm
       # - run:
       #     name: Configure NVMRC_VERSION
