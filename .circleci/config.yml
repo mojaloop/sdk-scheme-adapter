@@ -148,6 +148,9 @@ jobs:
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
+      - run:
+          name: install libc
+          command: apk --no-cache add -U curl bash ca-certificates openssl ncurses coreutils python2 make gcc g++ libgcc linux-headers grep util-linux binutils findutils
       - checkout
       - run:
           shell: /bin/bash -eo pipefail
