@@ -35,9 +35,8 @@ defaults_Dependencies: &defaults_Dependencies |
 # YAML defaults templates, in alphabetical order
 ##
 defaults_YarnConfig: &defaults_YarnConfig |
-  # yarn config set unsafe-perm true
-  # yarn global add node-gyp
-  echo "nothing to do here"
+  yarn config set unsafe-perm true
+  yarn global add node-gyp
 
 defaults_awsCliDependencies: &defaults_awsCliDependencies |
     apk --no-cache add aws-cli
