@@ -75,6 +75,7 @@ defaults_configure_nvmrc: &defaults_configure_nvmrc
       export NVMRC_VERSION=$(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)
       echo "export NVMRC_VERSION=$NVMRC_VERSION" >> $ENV_DOT_PROFILE
     fi
+    echo "NVMRC_VERSION=$NVMRC_VERSION"
 
 defaults_configure_nvm: &defaults_configure_nvm
   name: Configure NVM
