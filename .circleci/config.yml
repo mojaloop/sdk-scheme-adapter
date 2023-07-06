@@ -147,6 +147,10 @@ jobs:
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
+      - run:
+          name: Configure Yarn
+          shell: /bin/bash -eo pipefail
+          command: *defaults_YarnConfig
       - checkout
       - run:
           shell: /bin/bash -eo pipefail
