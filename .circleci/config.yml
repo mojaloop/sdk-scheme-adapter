@@ -100,37 +100,12 @@ defaults_configure_nvm: &defaults_configure_nvm
     nvm use $NVMRC_VERSION
 
     cd $CIRCLE_WORKING_DIRECTORY
-  # command: |
-  #   cd $HOME
-
-  #   echo "1. Export env variable"
-  #   export NVMRC_VERSION=$(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)
-  #   export NVM_DIR="$HOME/.nvm"
-
-  #   echo "2. Installing NVM"
-  #   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-
-  #   echo "3. Executing $NVM_DIR/nvm.sh"
-  #   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-
-  #   echo "4. Update $BASH_ENV"
-  #   echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
-  #   echo "export NVMRC_VERSION=$NVMRC_VERSION" >> $BASH_ENV
-  #   echo "export NVM_DIR=$NVM_DIR" >> $BASH_ENV
-
-  #   echo "5. Installing Node version: $NVMRC_VERSION"
-  #   nvm install $NVMRC_VERSION
-  #   nvm alias default $NVMRC_VERSION
-  #   nvm use $NVMRC_VERSION
 
 defaults_environment: &defaults_environment
   ## env var for nx to set main branch
   MAIN_BRANCH_NAME: master
   ## Disable LIBRDKAFKA build since we install it via general dependencies
   BUILD_LIBRDKAFKA: 0
-  ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
-  # BASH_ENV: /etc/profile
-
 
 ##
 # Executors
@@ -483,33 +458,18 @@ jobs:
   image-scan:
     executor: anchore/anchore_engine
     shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
-    # shell: /bin/bash
     environment: 
       <<: *defaults_environment
-      BASH_ENV: /etc/profile
-      NVM_ARCH_UNOFFICIAL_OVERRIDE: x64-musl
-      ## TO BE REMOVED
-      DOCKER_ORG: mojaloop
+      BASH_ENV: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
+      NVM_ARCH_UNOFFICIAL_OVERRIDE: x64-musl ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
     working_directory: *WORKING_DIR
     steps:
-      # - attach_workspace:
-      #     at: ~/
       - setup_remote_docker
       - attach_workspace:
           at: /tmp
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
-      # - run:
-      #     name: Install general dependencies
-      #     command: |
-      #       apk --no-cache add git
-      #       apk --no-cache add ca-certificates
-      #       apk --no-cache add curl
-      #       apk --no-cache add openssh-client
-      #       apk add --no-cache -t build-dependencies make gcc g++ python3 libtool autoconf automake
-      #       npm config set unsafe-perm true
-      #       npm install -g node-gyp
       - run:
           name: Install docker dependencies for anchore
           command: |
@@ -527,27 +487,15 @@ jobs:
             echo "export SLACK_BUILD_ID=${CIRCLE_BUILD_NUM}" >> $BASH_ENV
             echo "export SLACK_CI_URL=${CIRCLE_BUILD_URL}" >> $BASH_ENV
             echo "export SLACK_CUSTOM_MSG='Anchore Image Scan failed for: \`${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_TAG}\`'" >> $BASH_ENV
-      # - run:
-      #     name: Setup NVM repos ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
-      #     command: |
-      #       echo "nvm_get_arch() { nvm_echo \"x64-musl\"; }" >> $HOME/.profile
-      #       echo "export NVM_NODEJS_ORG_MIRROR=https://unofficial-builds.nodejs.org/download/release" >> $HOME/.profile
-      #       echo "export NVM_IOJS_ORG_MIRROR=https://notvalid" >> $HOME/.profile
-      #       source $HOME/.profile
-      ## Temporarily disabling to try debug the issue!
       - run:
-          shell: /bin/bash
+          shell: /bin/bash -eo pipefail
           <<: *defaults_configure_nvm
-      # - run:
-      #     name: Configure NVMRC_VERSION
-      #     command: |
-      #       echo "export NVMRC_VERSION=$(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)" >> $BASH_ENV
       - run:
           name: Load the pre-built docker image from workspace
           command: docker load -i /tmp/docker-image.tar
       - run:
           name: Download the mojaloop/ci-config repo
-          shell: /bin/bash
+          shell: /bin/bash -eo pipefail
           command: |
             source $BASH_ENV
             git clone https://github.com/mojaloop/ci-config /tmp/ci-config
@@ -555,7 +503,7 @@ jobs:
             cd /tmp/ci-config/container-scanning && ./mojaloop-policy-generator.js /tmp/mojaloop-policy.json
       - run:
           name: Pull base image locally
-          shell: /bin/bash
+          shell: /bin/bash -eo pipefail
           command: |
             echo "Pulling docker image: node:$NVMRC_VERSION-alpine"
             docker pull node:$NVMRC_VERSION-alpine
