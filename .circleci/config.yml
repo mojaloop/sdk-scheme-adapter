@@ -156,10 +156,10 @@ jobs:
             apk add --no-cache libstdc++
             echo "SHELL=$SHELL"
       - checkout
-      - run:
-          # shell: /bin/bash -eo pipefail
-          shell: "/bin/sh -leo pipefail"
-          <<: *defaults_configure_nvm
+      # - run:
+      #     # shell: /bin/bash -eo pipefail
+      #     shell: "/bin/sh -leo pipefail"
+      #     <<: *defaults_configure_nvm
       - run:
           name: Nodejs Version
           # shell: /bin/bash -eo pipefail
@@ -173,10 +173,10 @@ jobs:
             touch ~/.profile
             echo "TEST1=HELLO1" >> ~/.profile
             echo "TEST2=HELLO2" >> /etc/.profile
-      - run:
-          name: Configure Yarn
-          # shell: /bin/bash -eo pipefail
-          command: *defaults_YarnConfig
+      # - run:
+      #     name: Configure Yarn
+      #     # shell: /bin/bash -eo pipefail
+      #     command: *defaults_YarnConfig
       - run:
           name: Install Dependencies
           # shell: /bin/bash -eo pipefail
@@ -189,14 +189,14 @@ jobs:
             source $BASH_ENV
             node --version
             yarn --version
-            yarn install --immutable
-      - save_cache:
-          name: Save Yarn Package Cache
-          key: yarn-packages-{{ checksum "yarn.lock" }}
-          paths:
-            - .yarn/cache
-            - .yarn/unplugged
-            - node_modules
+            # yarn install --immutable
+      # - save_cache:
+      #     name: Save Yarn Package Cache
+      #     key: yarn-packages-{{ checksum "yarn.lock" }}
+      #     paths:
+      #       - .yarn/cache
+      #       - .yarn/unplugged
+      #       - node_modules
 
   test-unit:
     executor: default-docker
