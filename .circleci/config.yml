@@ -37,9 +37,12 @@ defaults_Dependencies: &defaults_Dependencies |
 defaults_YarnConfig: &defaults_YarnConfig |
   node --version
   yarn --version
-  # yarn config set unsafe-perm true
   pwd
   ls -la
+  source $BASH_ENV
+  node --version
+  yarn --version
+  yarn config set unsafe-perm true
   yarn global add node-gyp
 
 defaults_awsCliDependencies: &defaults_awsCliDependencies |
@@ -151,7 +154,9 @@ jobs:
       - run:
           name: Nodejs Version
           shell: /bin/bash -eo pipefail
-          command: node --version
+          command: |
+            source $BASH_ENV
+            node --version
       - run:
           name: Configure Yarn
           shell: /bin/bash -eo pipefail
