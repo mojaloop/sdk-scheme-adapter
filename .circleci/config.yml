@@ -123,6 +123,10 @@ defaults_environment: &defaults_environment
 executors:
   default-docker:
     working_directory: &WORKING_DIR /home/circleci/project
+    shell: "/bin/sh -leo pipefail" ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
+    environment:
+      BASH_ENV: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
+      NVM_ARCH_UNOFFICIAL_OVERRIDE: x64-musl ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
     docker:
       - image: node:lts-alpine # Ref: https://hub.docker.com/_/node?tab=tags&page=1&name=alpine
 
@@ -139,11 +143,8 @@ executors:
 jobs:
   setup:
     executor: default-docker
-    shell: "/bin/sh -leo pipefail" ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment:
       <<: *defaults_environment
-      BASH_ENV: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
-      NVM_ARCH_UNOFFICIAL_OVERRIDE: x64-musl ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
     steps:
       - run:
           name: Install general dependencies
@@ -182,19 +183,21 @@ jobs:
             node --version
             yarn --version
             # yarn install --immutable
-      # - save_cache:
-      #     name: Save Yarn Package Cache
-      #     key: yarn-packages-{{ checksum "yarn.lock" }}
-      #     paths:
-      #       - .yarn/cache
-      #       - .yarn/unplugged
-      #       - node_modules
+      - save_cache:
+          name: Save Yarn Package Cache
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+          paths:
+            - .yarn/cache
+            - .yarn/unplugged
+            - node_modules
 
   test-unit:
     executor: default-docker
-    shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
+    shell: "/bin/sh -leo pipefail" ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment:
       <<: *defaults_environment
+      BASH_ENV: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
+      NVM_ARCH_UNOFFICIAL_OVERRIDE: x64-musl ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
     steps:
       - run:
           name: Install general dependencies
@@ -226,8 +229,11 @@ jobs:
 
   build-local:
     executor: default-machine
+    shell: "/bin/sh -leo pipefail" ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment:
       <<: *defaults_environment
+      BASH_ENV: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
+      NVM_ARCH_UNOFFICIAL_OVERRIDE: x64-musl ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
     steps:
       - checkout
       - run:
