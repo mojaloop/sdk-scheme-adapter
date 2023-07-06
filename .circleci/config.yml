@@ -139,10 +139,10 @@ executors:
 jobs:
   setup:
     executor: default-docker
-    # shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
+    shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment:
       <<: *defaults_environment
-      # BASH_ENV: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
+      BASH_ENV: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
       # NVM_ARCH_UNOFFICIAL_OVERRIDE: x64-musl ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
     steps:
       - run:
