@@ -257,6 +257,10 @@ jobs:
     environment:
       <<: *defaults_environment
     steps:
+      - run:
+          name: Install Dependencies
+          command: |
+            apt install librdkafka-dev
       - checkout
       - run:
           <<: *defaults_configure_nvm
