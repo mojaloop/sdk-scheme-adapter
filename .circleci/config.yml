@@ -40,7 +40,7 @@ defaults_YarnConfig: &defaults_YarnConfig |
   # yarn --version
   # pwd
   # ls -la
-  # source $BASH_ENV
+  # source $LOCAL_DOT_PROFILE
   # node --version
   # yarn --version
   # yarn config set unsafe-perm true
@@ -59,8 +59,8 @@ defaults_export_version_from_package: &defaults_export_version_from_package
   name: Format the changelog into the github release body and get release tag
   command: |
     git diff --no-indent-heuristic master~1 HEAD CHANGELOG.md | sed -n '/^+[^+]/ s/^+//p' > /tmp/changes
-    echo 'export RELEASE_CHANGES=`cat /tmp/changes`' >> $BASH_ENV
-    echo 'export RELEASE_TAG=`cat package.json | jq -r .version`' >> $BASH_ENV
+    echo 'export RELEASE_CHANGES=`cat /tmp/changes`' >> $LOCAL_DOT_PROFILE
+    echo 'export RELEASE_TAG=`cat package.json | jq -r .version`' >> $LOCAL_DOT_PROFILE
 
 defaults_configure_git: &defaults_configure_git
   name: Configure git
@@ -72,6 +72,10 @@ defaults_configure_nvm: &defaults_configure_nvm
   name: Configure NVM
   command: |
     cd $HOME
+
+    export LOCAL_DOT_PROFILE=$HOME/.profile
+
+    touch $LOCAL_DOT_PROFILE
 
     echo "1. Export env variable"
     export NVMRC_VERSION=$(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)
@@ -88,18 +92,18 @@ defaults_configure_nvm: &defaults_configure_nvm
       echo "3. Executing $NVM_DIR/nvm.sh"
       [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-      echo "4. Update $BASH_ENV"
-      echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
-      echo "export NVMRC_VERSION=$NVMRC_VERSION" >> $BASH_ENV
-      echo "export NVM_DIR=$NVM_DIR" >> $BASH_ENV
+      echo "4. Update $LOCAL_DOT_PROFILE"
+      echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $LOCAL_DOT_PROFILE
+      echo "export NVMRC_VERSION=$NVMRC_VERSION" >> $LOCAL_DOT_PROFILE
+      echo "export NVM_DIR=$NVM_DIR" >> $LOCAL_DOT_PROFILE
     fi
 
     ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
     if [ ! -z "$NVM_ARCH_UNOFFICIAL_OVERRIDE" ]; then
       echo "==> Handle NVM_ARCH_UNOFFICIAL_OVERRIDE=$NVM_ARCH_UNOFFICIAL_OVERRIDE!"
-      echo "nvm_get_arch() { nvm_echo \"${NVM_ARCH_UNOFFICIAL_OVERRIDE}\"; }" >> $HOME/.profile
-      echo "export NVM_NODEJS_ORG_MIRROR=https://unofficial-builds.nodejs.org/download/release" >> $HOME/.profile
-      source $HOME/.profile
+      echo "nvm_get_arch() { nvm_echo \"${NVM_ARCH_UNOFFICIAL_OVERRIDE}\"; }" >> $LOCAL_DOT_PROFILE
+      echo "export NVM_NODEJS_ORG_MIRROR=https://unofficial-builds.nodejs.org/download/release" >> $LOCAL_DOT_PROFILE
+      source $LOCAL_DOT_PROFILE
     fi
 
     echo "5. Installing Node version: $NVMRC_VERSION"
@@ -125,7 +129,7 @@ executors:
     working_directory: &WORKING_DIR /home/circleci/project
     shell: "/bin/sh -leo pipefail" ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment:
-      BASH_ENV: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
+      LOCAL_DOT_PROFILE: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
       NVM_ARCH_UNOFFICIAL_OVERRIDE: x64-musl ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
     docker:
       - image: node:lts-alpine # Ref: https://hub.docker.com/_/node?tab=tags&page=1&name=alpine
@@ -162,8 +166,8 @@ jobs:
           name: Nodejs Version
           command: |
             echo "SHELL=$SHELL"
-            echo "BASH_ENV=$BASH_ENV"
-            source $BASH_ENV
+            echo "LOCAL_DOT_PROFILE=$LOCAL_DOT_PROFILE"
+            source $LOCAL_DOT_PROFILE
             echo "SHELL=$SHELL"
             node --version
             touch ~/.profile
@@ -179,7 +183,7 @@ jobs:
             echo "TEST2=$TEST2"
             node --version
             yarn --version
-            source $BASH_ENV
+            source $LOCAL_DOT_PROFILE
             node --version
             yarn --version
             # yarn install --immutable
@@ -196,7 +200,7 @@ jobs:
     shell: "/bin/sh -leo pipefail" ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment:
       <<: *defaults_environment
-      BASH_ENV: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
+      LOCAL_DOT_PROFILE: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
       NVM_ARCH_UNOFFICIAL_OVERRIDE: x64-musl ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
     steps:
       - run:
@@ -232,7 +236,7 @@ jobs:
     shell: "/bin/sh -leo pipefail" ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment:
       <<: *defaults_environment
-      BASH_ENV: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
+      LOCAL_DOT_PROFILE: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
       NVM_ARCH_UNOFFICIAL_OVERRIDE: x64-musl ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
     steps:
       - checkout
@@ -242,7 +246,7 @@ jobs:
           name: Build Docker local image
           command: |
             export DOCKER_NODE_VERSION="$NVMRC_VERSION-alpine"
-            echo "export DOCKER_NODE_VERSION=$NVMRC_VERSION-alpine" >> $BASH_ENV
+            echo "export DOCKER_NODE_VERSION=$NVMRC_VERSION-alpine" >> $LOCAL_DOT_PROFILE
             echo "Building Docker image: ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:local --build-arg NODE_VERSION=$DOCKER_NODE_VERSION"
             docker build -t ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:local --build-arg NODE_VERSION=$DOCKER_NODE_VERSION .
       - run:
@@ -495,7 +499,7 @@ jobs:
     shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment:
       <<: *defaults_environment
-      BASH_ENV: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
+      LOCAL_DOT_PROFILE: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
       NVM_ARCH_UNOFFICIAL_OVERRIDE: x64-musl ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
     working_directory: *WORKING_DIR
     steps:
@@ -516,12 +520,12 @@ jobs:
       - run:
           name: Setup Slack config
           command: |
-            echo "export SLACK_PROJECT_NAME=${CIRCLE_PROJECT_REPONAME}" >> $BASH_ENV
-            echo "export SLACK_RELEASE_TYPE='GitHub Release'" >> $BASH_ENV
-            echo "export SLACK_RELEASE_TAG='${RELEASE_TAG} on ${CIRCLE_BRANCH} branch'" >> $BASH_ENV
-            echo "export SLACK_BUILD_ID=${CIRCLE_BUILD_NUM}" >> $BASH_ENV
-            echo "export SLACK_CI_URL=${CIRCLE_BUILD_URL}" >> $BASH_ENV
-            echo "export SLACK_CUSTOM_MSG='Anchore Image Scan failed for: \`${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_TAG}\`'" >> $BASH_ENV
+            echo "export SLACK_PROJECT_NAME=${CIRCLE_PROJECT_REPONAME}" >> $LOCAL_DOT_PROFILE
+            echo "export SLACK_RELEASE_TYPE='GitHub Release'" >> $LOCAL_DOT_PROFILE
+            echo "export SLACK_RELEASE_TAG='${RELEASE_TAG} on ${CIRCLE_BRANCH} branch'" >> $LOCAL_DOT_PROFILE
+            echo "export SLACK_BUILD_ID=${CIRCLE_BUILD_NUM}" >> $LOCAL_DOT_PROFILE
+            echo "export SLACK_CI_URL=${CIRCLE_BUILD_URL}" >> $LOCAL_DOT_PROFILE
+            echo "export SLACK_CUSTOM_MSG='Anchore Image Scan failed for: \`${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_TAG}\`'" >> $LOCAL_DOT_PROFILE
       - run:
           shell: /bin/bash -eo pipefail
           <<: *defaults_configure_nvm
@@ -532,7 +536,7 @@ jobs:
           name: Download the mojaloop/ci-config repo
           shell: /bin/bash -eo pipefail
           command: |
-            source $BASH_ENV
+            source $LOCAL_DOT_PROFILE
             git clone https://github.com/mojaloop/ci-config /tmp/ci-config
             # Generate the mojaloop anchore-policy
             cd /tmp/ci-config/container-scanning && ./mojaloop-policy-generator.js /tmp/mojaloop-policy.json
@@ -630,12 +634,12 @@ jobs:
       - run:
           name: Setup Slack config
           command: |
-            echo "export SLACK_PROJECT_NAME=${CIRCLE_PROJECT_REPONAME}" >> $BASH_ENV
-            echo "export SLACK_RELEASE_TYPE='Github Release'" >> $BASH_ENV
-            echo "export SLACK_RELEASE_TAG=v${RELEASE_TAG}" >> $BASH_ENV
-            echo "export SLACK_RELEASE_URL=https://github.com/mojaloop/${CIRCLE_PROJECT_REPONAME}/releases/tag/v${RELEASE_TAG}" >> $BASH_ENV
-            echo "export SLACK_BUILD_ID=${CIRCLE_BUILD_NUM}" >> $BASH_ENV
-            echo "export SLACK_CI_URL=${CIRCLE_BUILD_URL}" >> $BASH_ENV
+            echo "export SLACK_PROJECT_NAME=${CIRCLE_PROJECT_REPONAME}" >> $LOCAL_DOT_PROFILE
+            echo "export SLACK_RELEASE_TYPE='Github Release'" >> $LOCAL_DOT_PROFILE
+            echo "export SLACK_RELEASE_TAG=v${RELEASE_TAG}" >> $LOCAL_DOT_PROFILE
+            echo "export SLACK_RELEASE_URL=https://github.com/mojaloop/${CIRCLE_PROJECT_REPONAME}/releases/tag/v${RELEASE_TAG}" >> $LOCAL_DOT_PROFILE
+            echo "export SLACK_BUILD_ID=${CIRCLE_BUILD_NUM}" >> $LOCAL_DOT_PROFILE
+            echo "export SLACK_CI_URL=${CIRCLE_BUILD_URL}" >> $LOCAL_DOT_PROFILE
       - run:
           name: Create Release
           command: |
@@ -656,19 +660,19 @@ jobs:
       - run:
           name: Setup for LATEST release
           command: |
-            echo "export RELEASE_TAG=$RELEASE_TAG_PROD" >> $BASH_ENV
+            echo "export RELEASE_TAG=$RELEASE_TAG_PROD" >> $LOCAL_DOT_PROFILE
             echo "RELEASE_TAG=$RELEASE_TAG_PROD"
             PACKAGE_VERSION=$(cat package.json | jq -r .version)
-            echo "export PACKAGE_VERSION=${PACKAGE_VERSION}" >> $BASH_ENV
+            echo "export PACKAGE_VERSION=${PACKAGE_VERSION}" >> $LOCAL_DOT_PROFILE
             echo "PACKAGE_VERSION=${PACKAGE_VERSION}"
       - run:
           name: Setup Slack config
           command: |
-            echo "export SLACK_PROJECT_NAME=${CIRCLE_PROJECT_REPONAME}" >> $BASH_ENV
-            echo "export SLACK_RELEASE_TYPE='Docker Release'" >> $BASH_ENV
-            echo "export SLACK_RELEASE_TAG=v${CIRCLE_TAG:1}" >> $BASH_ENV
-            echo "export SLACK_BUILD_ID=${CIRCLE_BUILD_NUM}" >> $BASH_ENV
-            echo "export SLACK_CI_URL=${CIRCLE_BUILD_URL}" >> $BASH_ENV
+            echo "export SLACK_PROJECT_NAME=${CIRCLE_PROJECT_REPONAME}" >> $LOCAL_DOT_PROFILE
+            echo "export SLACK_RELEASE_TYPE='Docker Release'" >> $LOCAL_DOT_PROFILE
+            echo "export SLACK_RELEASE_TAG=v${CIRCLE_TAG:1}" >> $LOCAL_DOT_PROFILE
+            echo "export SLACK_BUILD_ID=${CIRCLE_BUILD_NUM}" >> $LOCAL_DOT_PROFILE
+            echo "export SLACK_CI_URL=${CIRCLE_BUILD_URL}" >> $LOCAL_DOT_PROFILE
       - attach_workspace:
           at: /tmp
       - run:
@@ -695,11 +699,11 @@ jobs:
           command: |
             IMAGE_DIGEST=$(docker inspect $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:v${CIRCLE_TAG:1} | jq '.[0].RepoDigests | .[]')
             echo "IMAGE_DIGEST=${IMAGE_DIGEST}"
-            echo "export IMAGE_DIGEST=${IMAGE_DIGEST}" >> $BASH_ENV
+            echo "export IMAGE_DIGEST=${IMAGE_DIGEST}" >> $LOCAL_DOT_PROFILE
       - run:
           name: Update Slack config
           command: |
-            echo "export SLACK_RELEASE_URL='https://hub.docker.com/layers/${CIRCLE_PROJECT_REPONAME}/${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}/v${CIRCLE_TAG:1}/images/${IMAGE_DIGEST}?context=explore'" | sed -r "s/${DOCKER_ORG}\/${CIRCLE_PROJECT_REPONAME}@sha256:/sha256-/g" >> $BASH_ENV
+            echo "export SLACK_RELEASE_URL='https://hub.docker.com/layers/${CIRCLE_PROJECT_REPONAME}/${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}/v${CIRCLE_TAG:1}/images/${IMAGE_DIGEST}?context=explore'" | sed -r "s/${DOCKER_ORG}\/${CIRCLE_PROJECT_REPONAME}@sha256:/sha256-/g" >> $LOCAL_DOT_PROFILE
       - slack/notify:
           event: pass
           template: SLACK_TEMP_RELEASE_SUCCESS
@@ -716,19 +720,19 @@ jobs:
       - run:
           name: Setup for SNAPSHOT release
           command: |
-            echo "export RELEASE_TAG=$RELEASE_TAG_SNAPSHOT" >> $BASH_ENV
+            echo "export RELEASE_TAG=$RELEASE_TAG_SNAPSHOT" >> $LOCAL_DOT_PROFILE
             echo "RELEASE_TAG=$RELEASE_TAG_SNAPSHOT"
             PACKAGE_VERSION=$(cat package.json | jq -r .version)
-            echo "export PACKAGE_VERSION=${PACKAGE_VERSION}" >> $BASH_ENV
+            echo "export PACKAGE_VERSION=${PACKAGE_VERSION}" >> $LOCAL_DOT_PROFILE
             echo "PACKAGE_VERSION=${PACKAGE_VERSION}"
       - run:
           name: Setup Slack config
           command: |
-            echo "export SLACK_PROJECT_NAME=${CIRCLE_PROJECT_REPONAME}" >> $BASH_ENV
-            echo "export SLACK_RELEASE_TYPE='Docker Release'" >> $BASH_ENV
-            echo "export SLACK_RELEASE_TAG=v${CIRCLE_TAG:1}" >> $BASH_ENV
-            echo "export SLACK_BUILD_ID=${CIRCLE_BUILD_NUM}" >> $BASH_ENV
-            echo "export SLACK_CI_URL=${CIRCLE_BUILD_URL}" >> $BASH_ENV
+            echo "export SLACK_PROJECT_NAME=${CIRCLE_PROJECT_REPONAME}" >> $LOCAL_DOT_PROFILE
+            echo "export SLACK_RELEASE_TYPE='Docker Release'" >> $LOCAL_DOT_PROFILE
+            echo "export SLACK_RELEASE_TAG=v${CIRCLE_TAG:1}" >> $LOCAL_DOT_PROFILE
+            echo "export SLACK_BUILD_ID=${CIRCLE_BUILD_NUM}" >> $LOCAL_DOT_PROFILE
+            echo "export SLACK_CI_URL=${CIRCLE_BUILD_URL}" >> $LOCAL_DOT_PROFILE
       - attach_workspace:
           at: /tmp
       - run:
@@ -755,11 +759,11 @@ jobs:
           command: |
             IMAGE_DIGEST=$(docker inspect $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:v${CIRCLE_TAG:1} | jq '.[0].RepoDigests | .[]')
             echo "IMAGE_DIGEST=${IMAGE_DIGEST}"
-            echo "export IMAGE_DIGEST=${IMAGE_DIGEST}" >> $BASH_ENV
+            echo "export IMAGE_DIGEST=${IMAGE_DIGEST}" >> $LOCAL_DOT_PROFILE
       - run:
           name: Update Slack config
           command: |
-            echo "export SLACK_RELEASE_URL='https://hub.docker.com/layers/${CIRCLE_PROJECT_REPONAME}/${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}/v${CIRCLE_TAG:1}/images/${IMAGE_DIGEST}?context=explore'" | sed -r "s/${DOCKER_ORG}\/${CIRCLE_PROJECT_REPONAME}@sha256:/sha256-/g" >> $BASH_ENV
+            echo "export SLACK_RELEASE_URL='https://hub.docker.com/layers/${CIRCLE_PROJECT_REPONAME}/${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}/v${CIRCLE_TAG:1}/images/${IMAGE_DIGEST}?context=explore'" | sed -r "s/${DOCKER_ORG}\/${CIRCLE_PROJECT_REPONAME}@sha256:/sha256-/g" >> $LOCAL_DOT_PROFILE
       - slack/notify:
           event: pass
           template: SLACK_TEMP_RELEASE_SUCCESS
