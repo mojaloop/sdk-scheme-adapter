@@ -165,7 +165,8 @@ jobs:
             echo "npm: $(npm --version)"
             echo "nvm: $(nvm --version)"
             echo "==> nvm debug"
-            nvm debug
+            ## Commented out on purpose, since this can be useful for debugging NVM/Env issues
+            # nvm debug
       - run:
           name: Configure Yarn
           command: *defaults_YarnConfig
