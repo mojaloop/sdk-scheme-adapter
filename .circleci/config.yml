@@ -150,7 +150,9 @@ jobs:
           command: *defaults_Dependencies
       - run:
           name: install libc
-          command: apk add --no-cache libstdc++
+          command: |
+            apk add -U curl bash ca-certificates openssl ncurses coreutils make gcc g++ libgcc linux-headers grep util-linux binutils findutils
+            apk add --no-cache libstdc++
       - checkout
       - run:
           shell: /bin/bash -eo pipefail
