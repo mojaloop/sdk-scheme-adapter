@@ -3,6 +3,7 @@ RANDFILE        = $ENV::HOME/.rnd
 
 ####################################################################
 [ req ]
+prompt = no
 default_bits       = 4096
 default_keyfile    = hub_server_key.key
 distinguished_name = server_distinguished_name

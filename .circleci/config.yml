@@ -867,6 +867,7 @@ workflows:
             - test-lint
             - test-unit
             - test-integration
+            - test-integration-pm4ml
             - vulnerability-check
             - audit-licenses
             - license-scan
@@ -896,6 +897,7 @@ workflows:
             - test-lint
             - test-unit
             - test-integration
+            - test-integration-pm4ml
             - vulnerability-check
             - audit-licenses
             - license-scan
@@ -916,6 +918,7 @@ workflows:
             - test-lint
             - test-unit
             - test-integration
+            - test-integration-pm4ml
             - vulnerability-check
             - audit-licenses
             - license-scan

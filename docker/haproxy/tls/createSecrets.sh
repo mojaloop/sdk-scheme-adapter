@@ -1,6 +1,10 @@
 OUTPUT_DIR="."
 setopt +o nomatch
-rm *.key *.pem *.csr *.crt *.srl
+rm *.key
+rm *.pem
+rm *.csr
+rm *.crt
+rm *.srl
 
 #####################
 
@@ -16,7 +20,7 @@ openssl req -x509 -config openssl-dfsp-ca.cnf -newkey rsa:4096 -sha256 -nodes -o
 openssl req -config openssl-hub-server.cnf -newkey rsa:4096 -sha256 -nodes -out hub_server.csr -outform PEM
 
 ## Sign Hub server cert with DFSP CA
-openssl ca -config openssl-dfsp-ca.cnf -policy signing_policy -extensions signing_req -out hub_server_cert.pem -infiles hub_server.csr
+openssl ca -batch -config openssl-dfsp-ca.cnf -policy signing_policy -extensions signing_req -out hub_server_cert.pem -infiles hub_server.csr
 
 ## Append ca cert to PEM file
 cat dfsp_cacert.pem >> hub_server_cert.pem
@@ -30,4 +34,4 @@ cat hub_server_key.key >> hub_server_cert.pem
 openssl req -config openssl-dfsp-client.cnf -newkey rsa:4096 -sha256 -nodes -out dfsp_client.csr -outform PEM
 
 ## Sign DFSP client cert with Hub CA
-openssl ca -config openssl-hub-ca.cnf -policy signing_policy -extensions signing_req -out dfsp_client_cert.crt -infiles dfsp_client.csr
+openssl ca -batch -config openssl-hub-ca.cnf -policy signing_policy -extensions signing_req -out dfsp_client_cert.crt -infiles dfsp_client.csr
