@@ -158,10 +158,12 @@ jobs:
       - checkout
       - run:
           # shell: /bin/bash -eo pipefail
+          shell: "/bin/sh -leo pipefail"
           <<: *defaults_configure_nvm
       - run:
           name: Nodejs Version
           # shell: /bin/bash -eo pipefail
+          shell: "/bin/sh -leo pipefail"
           command: |
             echo "SHELL=$SHELL"
             echo "BASH_ENV=$BASH_ENV"
