@@ -23,7 +23,7 @@ defaults_Dependencies: &defaults_Dependencies |
   apk --no-cache add util-linux pciutils usbutils coreutils binutils findutils grep iproute2
   apk --no-cache add git
   apk --no-cache add ca-certificates
-  apk --no-cache add curl wget
+  apk --no-cache add curl
   apk --no-cache add openssh-client
   apk --no-cache add bash bash-doc bash-completion
   apk --no-cache add -t build-dependencies make gcc g++ python3 libtool autoconf automake
@@ -35,19 +35,14 @@ defaults_Dependencies: &defaults_Dependencies |
 # YAML defaults templates, in alphabetical order
 ##
 defaults_YarnConfig: &defaults_YarnConfig |
-  echo "This is placeholder...Nothing to do here!"
-  # node --version
-  # yarn --version
-  # pwd
-  # ls -la
-  # source $BASH_ENV
-  # node --version
-  # yarn --version
+  ## Example configs that could be applied here
   # yarn config set unsafe-perm true
   # yarn global add node-gyp
 
+  echo "This is placeholder...Nothing to do here!"
+
 defaults_awsCliDependencies: &defaults_awsCliDependencies |
-    apk --no-cache add aws-cli
+  apk --no-cache add aws-cli
 
 defaults_license_scanner: &defaults_license_scanner
   name: Install and set up license-scanner
@@ -126,7 +121,7 @@ defaults_environment: &defaults_environment
 ##
 executors:
   default-docker:
-    working_directory: &WORKING_DIR /home/circleci/project
+    working_directory: &WORKING_DIR ~/project
     shell: "/bin/sh -leo pipefail" ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment:
       BASH_ENV: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
@@ -197,10 +192,10 @@ jobs:
           name: Configure Yarn
           command: *defaults_YarnConfig
       ## TODO: figure out why jest is not installed
-      # - restore_cache:
-      #     name: Restore Yarn Package Cache
-      #     keys:
-      #       - yarn-packages-{{ checksum "yarn.lock" }}
+      - restore_cache:
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
           name: Install Yarn dependencies
           command: yarn install --immutable
