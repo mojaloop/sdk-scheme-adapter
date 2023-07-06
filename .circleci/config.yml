@@ -312,7 +312,7 @@ jobs:
     steps:
       - checkout
       - run:
-          <<: *defaults_configure_nvm
+          <<: *defaults_configure_nvmrc
       - attach_workspace:
           at: /tmp
       - run:
@@ -837,31 +837,31 @@ workflows:
                 - /feature*/
                 - /bugfix*/
 
-      # - test-integration:
-      #     context: org-global
-      #     requires:
-      #       - setup
-      #       - build-local
-      #     filters:
-      #       tags:
-      #         only: /.*/
-      #       branches:
-      #         ignore:
-      #           - /feature*/
-      #           - /bugfix*/
+      - test-integration:
+          context: org-global
+          requires:
+            - setup
+            - build-local
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
 
-      # - test-func:
-      #     context: org-global
-      #     requires:
-      #       - setup
-      #       - build-local
-      #     filters:
-      #       tags:
-      #         only: /.*/
-      #       branches:
-      #         ignore:
-      #           - /feature*/
-      #           - /bugfix*/
+      - test-func:
+          context: org-global
+          requires:
+            - setup
+            - build-local
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
 
       # - vulnerability-check:
       #     context: org-global
