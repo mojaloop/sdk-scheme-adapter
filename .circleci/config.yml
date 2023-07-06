@@ -157,7 +157,8 @@ jobs:
   setup:
     executor: default-docker
     shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
-    environment: *defaults_environment
+    environment: 
+      <<: *defaults_environment
     steps:
       - run:
           name: Install general dependencies
@@ -188,7 +189,8 @@ jobs:
   test-unit:
     executor: default-docker
     shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
-    environment: *defaults_environment
+    environment: 
+      <<: *defaults_environment
     steps:
       - run:
           name: Install general dependencies
@@ -220,7 +222,8 @@ jobs:
 
   build-local:
     executor: default-machine
-    environment: *defaults_environment
+    environment: 
+      <<: *defaults_environment
     steps:
       - checkout
       - run:
@@ -242,7 +245,8 @@ jobs:
 
   test-integration:
     executor: default-machine
-    environment: *defaults_environment
+    environment: 
+      <<: *defaults_environment
     steps:
       - checkout
       - run:
@@ -301,7 +305,8 @@ jobs:
 
   test-func:
     executor: default-machine
-    environment: *defaults_environment
+    environment: 
+      <<: *defaults_environment
     steps:
       - checkout
       - run:
@@ -333,7 +338,8 @@ jobs:
   validate-openapi:
     executor: default-docker
     shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
-    environment: *defaults_environment
+    environment: 
+      <<: *defaults_environment
     steps:
       - run:
           name: Install general dependencies
@@ -352,7 +358,8 @@ jobs:
   test-dependencies:
     executor: default-docker
     shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
-    environment: *defaults_environment
+    environment: 
+      <<: *defaults_environment
     steps:
       - run:
           name: Install general dependencies
@@ -378,7 +385,8 @@ jobs:
   test-lint:
     executor: default-docker
     shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
-    environment: *defaults_environment
+    environment: 
+      <<: *defaults_environment
     steps:
       - run:
           name: Install general dependencies
@@ -404,7 +412,8 @@ jobs:
   vulnerability-check:
     executor: default-docker
     shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
-    environment: *defaults_environment
+    environment: 
+      <<: *defaults_environment
     steps:
       - run:
           name: Install general dependencies
@@ -430,7 +439,8 @@ jobs:
   audit-licenses:
     executor: default-docker
     shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
-    environment: *defaults_environment
+    environment: 
+      <<: *defaults_environment
     steps:
       - run:
           name: Install general dependencies
@@ -453,7 +463,8 @@ jobs:
 
   license-scan:
     executor: default-machine
-    environment: *defaults_environment
+    environment: 
+      <<: *defaults_environment
     steps:
       - checkout
       - attach_workspace:
@@ -471,9 +482,11 @@ jobs:
 
   image-scan:
     executor: anchore/anchore_engine
-    # shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
-    shell: /bin/bash
-    environment:
+    shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
+    # shell: /bin/bash
+    environment: 
+      <<: *defaults_environment
+      BASH_ENV: /etc/profile
       NVM_ARCH_UNOFFICIAL_OVERRIDE: x64-musl
       ## TO BE REMOVED
       DOCKER_ORG: mojaloop
@@ -574,7 +587,8 @@ jobs:
   release:
     executor: default-docker
     shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
-    environment: *defaults_environment
+    environment: 
+      <<: *defaults_environment
     steps:
       - run:
           name: Install general dependencies
@@ -608,7 +622,8 @@ jobs:
 
   github-release:
     executor: default-machine
-    environment: *defaults_environment
+    environment: 
+      <<: *defaults_environment
     steps:
       - run:
           name: Install git
@@ -651,7 +666,8 @@ jobs:
 
   publish-docker:
     executor: default-machine
-    environment: *defaults_environment
+    environment: 
+      <<: *defaults_environment
     steps:
       - checkout
       - run:
@@ -710,7 +726,8 @@ jobs:
 
   publish-docker-snapshot:
     executor: default-machine
-    environment: *defaults_environment
+    environment: 
+      <<: *defaults_environment
     steps:
       - checkout
       - run:
