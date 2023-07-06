@@ -139,7 +139,7 @@ executors:
 jobs:
   setup:
     executor: default-docker
-    # shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
+    shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment:
       <<: *defaults_environment
       BASH_ENV: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
@@ -156,11 +156,11 @@ jobs:
             echo "SHELL=$SHELL"
       - checkout
       - run:
-          shell: /bin/bash -eo pipefail
+          # shell: /bin/bash -eo pipefail
           <<: *defaults_configure_nvm
       - run:
           name: Nodejs Version
-          shell: /bin/bash -eo pipefail
+          # shell: /bin/bash -eo pipefail
           command: |
             echo "SHELL=$SHELL"
             echo "BASH_ENV=$BASH_ENV"
@@ -169,11 +169,11 @@ jobs:
             node --version
       - run:
           name: Configure Yarn
-          shell: /bin/bash -eo pipefail
+          # shell: /bin/bash -eo pipefail
           command: *defaults_YarnConfig
       - run:
           name: Install Dependencies
-          shell: /bin/bash -eo pipefail
+          # shell: /bin/bash -eo pipefail
           command: |
             node --version
             yarn --version
