@@ -173,23 +173,19 @@ jobs:
       - run:
           name: Install Dependencies
           command: |
-            node --version
-            # yarn install --immutable
-      # - save_cache:
-      #     name: Save Yarn Package Cache
-      #     key: yarn-packages-{{ checksum "yarn.lock" }}
-      #     paths:
-      #       - .yarn/cache
-      #       - .yarn/unplugged
-      #       - node_modules
+            yarn install --immutable
+      - save_cache:
+          name: Save Yarn Package Cache
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+          paths:
+            - .yarn/cache
+            - .yarn/unplugged
+            - node_modules
 
   test-unit:
     executor: default-docker
-    shell: "/bin/sh -leo pipefail" ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment:
       <<: *defaults_environment
-      BASH_ENV: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
-      NVM_ARCH_UNOFFICIAL_OVERRIDE: x64-musl ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
     steps:
       - run:
           name: Install general dependencies
@@ -781,17 +777,17 @@ workflows:
                 - /feature*/
                 - /bugfix*/
 
-      # - test-unit:
-      #     context: org-global
-      #     requires:
-      #       - setup
-      #     filters:
-      #       tags:
-      #         only: /.*/
-      #       branches:
-      #         ignore:
-      #           - /feature*/
-      #           - /bugfix*/
+      - test-unit:
+          context: org-global
+          requires:
+            - setup
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
 
       # - validate-openapi:
       #     context: org-global
