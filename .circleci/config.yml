@@ -164,8 +164,8 @@ jobs:
           command: |
             echo "SHELL=$SHELL"
             source $BASH_ENV
-            node --version
             echo "SHELL=$SHELL"
+            node --version
       - run:
           name: Configure Yarn
           shell: /bin/bash -eo pipefail
