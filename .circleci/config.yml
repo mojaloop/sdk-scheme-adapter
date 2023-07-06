@@ -172,7 +172,7 @@ jobs:
             node --version
             touch ~/.profile
             echo "TEST1=HELLO1" >> ~/.profile
-            echo "TEST2=HELLO2" >> /etc/.profile
+            echo "TEST2=HELLO2" >> /etc/profile
       # - run:
       #     name: Configure Yarn
       #     # shell: /bin/bash -eo pipefail
