@@ -148,6 +148,7 @@ executors:
 
   default-machine:
     working_directory: *WORKING_DIR
+    shell: "/bin/bash -leo pipefail"
     machine:
       image: ubuntu-2204:2023.04.2 # Ref: https://circleci.com/developer/machine/image/ubuntu-2204
 
