@@ -36,7 +36,8 @@ defaults_Dependencies: &defaults_Dependencies |
 ##
 defaults_YarnConfig: &defaults_YarnConfig |
   # yarn config set unsafe-perm true
-  yarn global add node-gyp
+  # yarn global add node-gyp
+  echo "nothing to do here"
 
 defaults_awsCliDependencies: &defaults_awsCliDependencies |
     apk --no-cache add aws-cli
