@@ -144,15 +144,19 @@ jobs:
           command: *defaults_Dependencies
       - checkout
       - run:
+          shell: /bin/bash -eo pipefail
           <<: *defaults_configure_nvm
       - run:
           name: Nodejs Version
+          shell: /bin/bash -eo pipefail
           command: node --version
       - run:
           name: Configure Yarn
+          shell: /bin/bash -eo pipefail
           command: *defaults_YarnConfig
       - run:
           name: Install Dependencies
+          shell: /bin/bash -eo pipefail
           command: |
             node --version
             yarn --version
@@ -164,9 +168,6 @@ jobs:
             - .yarn/cache
             - .yarn/unplugged
             - node_modules
-      - run:
-          name: Delete build dependencies
-          command: apk del build-dependencies
 
   test-unit:
     executor: default-docker
