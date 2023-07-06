@@ -121,7 +121,7 @@ defaults_environment: &defaults_environment
 ##
 executors:
   default-docker:
-    working_directory: &WORKING_DIR ~/project
+    working_directory: &WORKING_DIR /home/circleci/project
     shell: "/bin/sh -leo pipefail" ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment:
       BASH_ENV: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
