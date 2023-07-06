@@ -236,6 +236,12 @@ jobs:
       #     command: |
       #       docker-compose build
       - run:
+          name: Generate certificates
+          command: |
+            cd docker/haproxy/tls
+            sh createSecrets.sh
+            cd ../../../
+      - run:
           name: Start docker-compose in PM4ML mode
           command: |
             docker-compose -f ./docker-compose.yml -f ./docker-compose.pm4ml.yml up -d
