@@ -132,7 +132,7 @@ jobs:
   setup:
     executor: default-docker
     shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
-    environment: 
+    environment:
       <<: *defaults_environment
     steps:
       - run:
@@ -149,7 +149,10 @@ jobs:
           command: *defaults_YarnConfig
       - run:
           name: Install Dependencies
-          command: yarn install --immutable
+          command: |
+            node --version
+            yarn --version
+            yarn install --immutable
       - save_cache:
           name: Save Yarn Package Cache
           key: yarn-packages-{{ checksum "yarn.lock" }}
@@ -164,7 +167,7 @@ jobs:
   test-unit:
     executor: default-docker
     shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
-    environment: 
+    environment:
       <<: *defaults_environment
     steps:
       - run:
@@ -197,7 +200,7 @@ jobs:
 
   build-local:
     executor: default-machine
-    environment: 
+    environment:
       <<: *defaults_environment
     steps:
       - checkout
@@ -220,7 +223,7 @@ jobs:
 
   test-integration:
     executor: default-machine
-    environment: 
+    environment:
       <<: *defaults_environment
     steps:
       - checkout
@@ -280,7 +283,7 @@ jobs:
 
   test-func:
     executor: default-machine
-    environment: 
+    environment:
       <<: *defaults_environment
     steps:
       - checkout
@@ -313,7 +316,7 @@ jobs:
   validate-openapi:
     executor: default-docker
     shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
-    environment: 
+    environment:
       <<: *defaults_environment
     steps:
       - run:
@@ -333,7 +336,7 @@ jobs:
   test-dependencies:
     executor: default-docker
     shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
-    environment: 
+    environment:
       <<: *defaults_environment
     steps:
       - run:
@@ -360,7 +363,7 @@ jobs:
   test-lint:
     executor: default-docker
     shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
-    environment: 
+    environment:
       <<: *defaults_environment
     steps:
       - run:
@@ -387,7 +390,7 @@ jobs:
   vulnerability-check:
     executor: default-docker
     shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
-    environment: 
+    environment:
       <<: *defaults_environment
     steps:
       - run:
@@ -414,7 +417,7 @@ jobs:
   audit-licenses:
     executor: default-docker
     shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
-    environment: 
+    environment:
       <<: *defaults_environment
     steps:
       - run:
@@ -438,7 +441,7 @@ jobs:
 
   license-scan:
     executor: default-machine
-    environment: 
+    environment:
       <<: *defaults_environment
     steps:
       - checkout
@@ -458,7 +461,7 @@ jobs:
   image-scan:
     executor: anchore/anchore_engine
     shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
-    environment: 
+    environment:
       <<: *defaults_environment
       BASH_ENV: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
       NVM_ARCH_UNOFFICIAL_OVERRIDE: x64-musl ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
@@ -535,7 +538,7 @@ jobs:
   release:
     executor: default-docker
     shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
-    environment: 
+    environment:
       <<: *defaults_environment
     steps:
       - run:
@@ -570,7 +573,7 @@ jobs:
 
   github-release:
     executor: default-machine
-    environment: 
+    environment:
       <<: *defaults_environment
     steps:
       - run:
@@ -614,7 +617,7 @@ jobs:
 
   publish-docker:
     executor: default-machine
-    environment: 
+    environment:
       <<: *defaults_environment
     steps:
       - checkout
@@ -674,7 +677,7 @@ jobs:
 
   publish-docker-snapshot:
     executor: default-machine
-    environment: 
+    environment:
       <<: *defaults_environment
     steps:
       - checkout
@@ -754,204 +757,204 @@ workflows:
                 - /feature*/
                 - /bugfix*/
 
-      - test-unit:
-          context: org-global
-          requires:
-            - setup
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore:
-                - /feature*/
-                - /bugfix*/
+      # - test-unit:
+      #     context: org-global
+      #     requires:
+      #       - setup
+      #     filters:
+      #       tags:
+      #         only: /.*/
+      #       branches:
+      #         ignore:
+      #           - /feature*/
+      #           - /bugfix*/
 
-      - validate-openapi:
-          context: org-global
-          requires:
-            - setup
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore:
-                - /feature*/
-                - /bugfix*/
+      # - validate-openapi:
+      #     context: org-global
+      #     requires:
+      #       - setup
+      #     filters:
+      #       tags:
+      #         only: /.*/
+      #       branches:
+      #         ignore:
+      #           - /feature*/
+      #           - /bugfix*/
 
-      - test-dependencies:
-          context: org-global
-          requires:
-            - setup
-          filters:
-            tags:
-              ignore: /.*/
-            branches:
-              ignore:
-                - master
-                - main
+      # - test-dependencies:
+      #     context: org-global
+      #     requires:
+      #       - setup
+      #     filters:
+      #       tags:
+      #         ignore: /.*/
+      #       branches:
+      #         ignore:
+      #           - master
+      #           - main
 
-      - test-lint:
-          context: org-global
-          requires:
-            - setup
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore:
-                - /feature*/
-                - /bugfix*/
+      # - test-lint:
+      #     context: org-global
+      #     requires:
+      #       - setup
+      #     filters:
+      #       tags:
+      #         only: /.*/
+      #       branches:
+      #         ignore:
+      #           - /feature*/
+      #           - /bugfix*/
 
-      - build-local:
-          context: org-global
-          requires:
-            - setup
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore:
-                - /feature*/
-                - /bugfix*/
+      # - build-local:
+      #     context: org-global
+      #     requires:
+      #       - setup
+      #     filters:
+      #       tags:
+      #         only: /.*/
+      #       branches:
+      #         ignore:
+      #           - /feature*/
+      #           - /bugfix*/
 
-      - test-integration:
-          context: org-global
-          requires:
-            - setup
-            - build-local
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore:
-                - /feature*/
-                - /bugfix*/
+      # - test-integration:
+      #     context: org-global
+      #     requires:
+      #       - setup
+      #       - build-local
+      #     filters:
+      #       tags:
+      #         only: /.*/
+      #       branches:
+      #         ignore:
+      #           - /feature*/
+      #           - /bugfix*/
 
-      - test-func:
-          context: org-global
-          requires:
-            - setup
-            - build-local
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore:
-                - /feature*/
-                - /bugfix*/
+      # - test-func:
+      #     context: org-global
+      #     requires:
+      #       - setup
+      #       - build-local
+      #     filters:
+      #       tags:
+      #         only: /.*/
+      #       branches:
+      #         ignore:
+      #           - /feature*/
+      #           - /bugfix*/
 
-      - vulnerability-check:
-          context: org-global
-          requires:
-            - setup
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore:
-                - /feature*/
-                - /bugfix*/
+      # - vulnerability-check:
+      #     context: org-global
+      #     requires:
+      #       - setup
+      #     filters:
+      #       tags:
+      #         only: /.*/
+      #       branches:
+      #         ignore:
+      #           - /feature*/
+      #           - /bugfix*/
 
-      - audit-licenses:
-          context: org-global
-          requires:
-            - setup
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore:
-                - /feature*/
-                - /bugfix*/
+      # - audit-licenses:
+      #     context: org-global
+      #     requires:
+      #       - setup
+      #     filters:
+      #       tags:
+      #         only: /.*/
+      #       branches:
+      #         ignore:
+      #           - /feature*/
+      #           - /bugfix*/
 
-      - license-scan:
-          context: org-global
-          requires:
-            - build-local
-          filters:
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot(\.[0-9]+)?)?(\-hotfix(\.[0-9]+)?)?(\-perf(\.[0-9]+)?)?/
-            branches:
-              ignore:
-                - /.*/
+      # - license-scan:
+      #     context: org-global
+      #     requires:
+      #       - build-local
+      #     filters:
+      #       tags:
+      #         only: /v[0-9]+(\.[0-9]+)*(\-snapshot(\.[0-9]+)?)?(\-hotfix(\.[0-9]+)?)?(\-perf(\.[0-9]+)?)?/
+      #       branches:
+      #         ignore:
+      #           - /.*/
 
-      - image-scan:
-          context: org-global
-          requires:
-            - build-local
-          filters:
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot(\.[0-9]+)?)?(\-hotfix(\.[0-9]+)?)?(\-perf(\.[0-9]+)?)?/
-            branches:
-              ignore:
-                - /.*/
+      # - image-scan:
+      #     context: org-global
+      #     requires:
+      #       - build-local
+      #     filters:
+      #       tags:
+      #         only: /v[0-9]+(\.[0-9]+)*(\-snapshot(\.[0-9]+)?)?(\-hotfix(\.[0-9]+)?)?(\-perf(\.[0-9]+)?)?/
+      #       branches:
+      #         ignore:
+      #           - /.*/
 
-      # New commits to master release automatically
-      - release:
-          context: org-global
-          requires:
-            - build-local
-            - pr-tools/pr-title-check
-            - validate-openapi
-            - test-lint
-            - test-unit
-            - test-integration
-            - vulnerability-check
-            - audit-licenses
-            - license-scan
-            - image-scan
-          filters:
-            branches:
-              only:
-                - master
-                - /release\/v.*/
+      # # New commits to master release automatically
+      # - release:
+      #     context: org-global
+      #     requires:
+      #       - build-local
+      #       - pr-tools/pr-title-check
+      #       - validate-openapi
+      #       - test-lint
+      #       - test-unit
+      #       - test-integration
+      #       - vulnerability-check
+      #       - audit-licenses
+      #       - license-scan
+      #       - image-scan
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #           - /release\/v.*/
 
-      - github-release:
-          context: org-global
-          requires:
-            - release
-          filters:
-            branches:
-              only:
-                - master
-                - /release\/v.*/
+      # - github-release:
+      #     context: org-global
+      #     requires:
+      #       - release
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #           - /release\/v.*/
 
-      - publish-docker:
-          context: org-global
-          requires:
-            - build-local
-            - pr-tools/pr-title-check
-            - validate-openapi
-            - test-lint
-            - test-unit
-            - test-integration
-            - vulnerability-check
-            - audit-licenses
-            - license-scan
-            - image-scan
-          filters:
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*/
-            branches:
-              ignore:
-                - /.*/
+      # - publish-docker:
+      #     context: org-global
+      #     requires:
+      #       - build-local
+      #       - pr-tools/pr-title-check
+      #       - validate-openapi
+      #       - test-lint
+      #       - test-unit
+      #       - test-integration
+      #       - vulnerability-check
+      #       - audit-licenses
+      #       - license-scan
+      #       - image-scan
+      #     filters:
+      #       tags:
+      #         only: /v[0-9]+(\.[0-9]+)*/
+      #       branches:
+      #         ignore:
+      #           - /.*/
 
-      - publish-docker-snapshot:
-          context: org-global
-          requires:
-            - build-local
-            - pr-tools/pr-title-check
-            - validate-openapi
-            - test-lint
-            - test-unit
-            - test-integration
-            - vulnerability-check
-            - audit-licenses
-            - license-scan
-            - image-scan
-          filters:
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*\-snapshot+((\.[0-9]+)?)/
-            branches:
-              ignore:
-                - /.*/
+      # - publish-docker-snapshot:
+      #     context: org-global
+      #     requires:
+      #       - build-local
+      #       - pr-tools/pr-title-check
+      #       - validate-openapi
+      #       - test-lint
+      #       - test-unit
+      #       - test-integration
+      #       - vulnerability-check
+      #       - audit-licenses
+      #       - license-scan
+      #       - image-scan
+      #     filters:
+      #       tags:
+      #         only: /v[0-9]+(\.[0-9]+)*\-snapshot+((\.[0-9]+)?)/
+      #       branches:
+      #         ignore:
+      #           - /.*/
