@@ -471,7 +471,8 @@ jobs:
 
   image-scan:
     executor: anchore/anchore_engine
-    shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
+    # shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
+    shell: /bin/bash
     environment:
       NVM_ARCH_UNOFFICIAL_OVERRIDE: x64-musl
       ## TO BE REMOVED
