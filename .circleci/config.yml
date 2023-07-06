@@ -35,6 +35,8 @@ defaults_Dependencies: &defaults_Dependencies |
 # YAML defaults templates, in alphabetical order
 ##
 defaults_YarnConfig: &defaults_YarnConfig |
+  node --version
+  yarn --version
   yarn config set unsafe-perm true
   yarn global add node-gyp
 
