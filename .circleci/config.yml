@@ -153,6 +153,7 @@ jobs:
           command: |
             apk add -U curl bash ca-certificates openssl ncurses coreutils make gcc g++ libgcc linux-headers grep util-linux binutils findutils
             apk add --no-cache libstdc++
+            echo "ENV=$ENV"
       - checkout
       - run:
           shell: /bin/bash -eo pipefail
