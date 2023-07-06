@@ -160,9 +160,11 @@ jobs:
           name: Nodejs Version
           command: |
             echo "What is the active version of Nodejs?"
-            node --version
-            yarn --version
-            npm --version
+            echo "node: $(node --version)"
+            echo "yarn: $(yarn --version)"
+            echo "npm: $(npm --version)"
+            echo "nvm: $(nvm --version)"
+            echo "==> nvm debug"
             nvm debug
       - run:
           name: Configure Yarn
