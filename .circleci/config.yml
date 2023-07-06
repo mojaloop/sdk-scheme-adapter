@@ -180,6 +180,7 @@ jobs:
       - run:
           name: Install Dependencies
           # shell: /bin/bash -eo pipefail
+          shell: "/bin/sh -leo pipefail"
           command: |
             echo "TEST1=$TEST1"
             echo "TEST2=$TEST2"
