@@ -38,6 +38,7 @@ defaults_YarnConfig: &defaults_YarnConfig |
   node --version
   yarn --version
   # yarn config set unsafe-perm true
+  pwd
   yarn global add node-gyp
 
 defaults_awsCliDependencies: &defaults_awsCliDependencies |
