@@ -162,8 +162,10 @@ jobs:
           name: Nodejs Version
           shell: /bin/bash -eo pipefail
           command: |
+            echo "ENV=$ENV"
             source $BASH_ENV
             node --version
+            echo "ENV=$ENV"
       - run:
           name: Configure Yarn
           shell: /bin/bash -eo pipefail
