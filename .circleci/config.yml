@@ -170,12 +170,12 @@ jobs:
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
-      - run:
-          name: Configure Yarn
-          command: *defaults_YarnConfig
       - checkout
       - run:
           <<: *defaults_configure_nvm
+      - run:
+          name: Configure Yarn
+          command: *defaults_YarnConfig
       ## TODO: figure out why jest is not installed
       # - restore_cache:
       #     name: Restore Yarn Package Cache
@@ -339,12 +339,12 @@ jobs:
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
-      - run:
-          name: Configure Yarn
-          command: *defaults_YarnConfig
       - checkout
       - run:
           <<: *defaults_configure_nvm
+      - run:
+          name: Configure Yarn
+          command: *defaults_YarnConfig
       ## TODO: Resolve cache issue to replace `Install Dependencies`
       # - restore_cache:
       #     name: Restore Yarn Package Cache
@@ -366,12 +366,12 @@ jobs:
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
-      - run:
-          name: Configure Yarn
-          command: *defaults_YarnConfig
       - checkout
       - run:
           <<: *defaults_configure_nvm
+      - run:
+          name: Configure Yarn
+          command: *defaults_YarnConfig
       ## TODO: Resolve cache issue to replace `Install Dependencies`
       # - restore_cache:
       #     name: Restore Yarn Package Cache
@@ -393,12 +393,12 @@ jobs:
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
-      - run:
-          name: Configure Yarn
-          command: *defaults_YarnConfig
       - checkout
       - run:
           <<: *defaults_configure_nvm
+      - run:
+          name: Configure Yarn
+          command: *defaults_YarnConfig
       - restore_cache:
           key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
       - run:
