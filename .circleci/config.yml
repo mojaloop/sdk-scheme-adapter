@@ -215,6 +215,64 @@ jobs:
       # - store_test_results:
       #     path: ./test/results
 
+  test-integration-pm4ml:
+    executor: default-machine
+    environment: *defaults_environment
+    steps:
+      - checkout
+      - run:
+          <<: *defaults_configure_nvm
+      - run:
+          name: Install Yarn dependencies
+          command: yarn install --immutable
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Load the pre-built docker image from workspace
+          command: docker load -i /tmp/docker-image.tar
+      ## This shouldn't be needed as the docker image is pre-built by build-local job
+      # - run:
+      #     name: Build docker-compose
+      #     command: |
+      #       docker-compose build
+      - run:
+          name: Generate certificates
+          command: |
+            cd docker/haproxy/tls
+            sh createSecrets.sh
+            cd $CIRCLE_WORKING_DIRECTORY
+      - run:
+          name: Start docker-compose in PM4ML mode
+          command: |
+            docker-compose -f ./docker-compose.yml -f ./docker-compose.pm4ml.yml up -d
+      - run:
+          name: Wait 4 Health Services
+          command: |
+            yarn run wait-4-docker
+      - run:
+          name: Execute Build
+          command: yarn run build
+      - run:
+          name: Execute PM4ML Integration Tests
+          command: |
+            run_int_tests() {
+              pushd /home/circleci/project/modules/$1
+              yarn run test:integration-pm4ml
+              popd
+              sleep 10
+            }
+            run_int_tests api-svc
+      ## TODO Capture results
+      # - run:
+      #     name: prepare test/results
+      #     command: |
+      #       mkdir -p test/results
+      #       mv junit.xml test/results
+      # - store_artifacts:
+      #     path: ./test/results
+      # - store_test_results:
+      #     path: ./test/results
+
   test-func:
     executor: default-machine
     environment: *defaults_environment
@@ -725,6 +783,19 @@ workflows:
                 - /feature*/
                 - /bugfix*/
 
+      - test-integration-pm4ml:
+          context: org-global
+          requires:
+            - setup
+            - build-local
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
+
       - test-func:
           context: org-global
           requires:
@@ -793,6 +864,7 @@ workflows:
             - test-lint
             - test-unit
             - test-integration
+            - test-integration-pm4ml
             - vulnerability-check
             - audit-licenses
             - license-scan
@@ -822,6 +894,7 @@ workflows:
             - test-lint
             - test-unit
             - test-integration
+            - test-integration-pm4ml
             - vulnerability-check
             - audit-licenses
             - license-scan
@@ -842,6 +915,7 @@ workflows:
             - test-lint
             - test-unit
             - test-integration
+            - test-integration-pm4ml
             - vulnerability-check
             - audit-licenses
             - license-scan

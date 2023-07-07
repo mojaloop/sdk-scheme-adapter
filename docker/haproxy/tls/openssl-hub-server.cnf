@@ -1,0 +1,39 @@
+HOME            = .
+RANDFILE        = $ENV::HOME/.rnd
+
+####################################################################
+[ req ]
+prompt = no
+default_bits       = 4096
+default_keyfile    = hub_server_key.key
+distinguished_name = server_distinguished_name
+req_extensions     = server_req_extensions
+string_mask        = utf8only
+
+####################################################################
+[ server_distinguished_name ]
+countryName = US
+stateOrProvinceName = MD
+localityName = Baltimore
+organizationName    = Test Server, Limited
+organizationalUnitName = Payments
+commonName   = hubsimulator
+emailAddress = hubserver@example.com
+
+####################################################################
+[ server_req_extensions ]
+
+subjectKeyIdentifier = hash
+basicConstraints     = CA:FALSE
+keyUsage             = digitalSignature, keyEncipherment
+extendedKeyUsage     = serverAuth, clientAuth, codeSigning, emailProtection
+subjectAltName       = @alternate_names
+nsComment            = "OpenSSL Generated Certificate"
+
+####################################################################
+[ alternate_names ]
+
+DNS.1  = mojaloop-testing-toolkit
+DNS.2  = localhost
+DNS.3  = hubsimulator
+DNS.4  = haproxy

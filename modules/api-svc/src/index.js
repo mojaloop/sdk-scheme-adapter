@@ -182,7 +182,7 @@ class Server extends EventEmitter {
 
         let oldCache;
         const updateCache = !_.isEqual(this.conf.cacheUrl, newConf.cacheUrl)
-          || !_.isEqual(this.conf.enableTestFeatures, newConf.enableTestFeatures);
+            || !_.isEqual(this.conf.enableTestFeatures, newConf.enableTestFeatures);
         if (updateCache) {
             oldCache = this.cache;
             await this.cache.disconnect();
@@ -195,7 +195,7 @@ class Server extends EventEmitter {
         }
 
         const updateWSO2 = !_.isEqual(this.conf.wso2, newConf.wso2)
-        || !_.isEqual(this.conf.outbound.tls, newConf.outbound.tls);
+            || !_.isEqual(this.conf.outbound.tls, newConf.outbound.tls);
         if (updateWSO2) {
             this.wso2.auth.stop();
             this.wso2.auth = new WSO2Auth({
@@ -210,7 +210,8 @@ class Server extends EventEmitter {
             await this.wso2.auth.start();
         }
 
-        const updateInboundServer = !_.isEqual(this.conf.inbound, newConf.inbound);
+        const updateInboundServer = !_.isEqual(this.conf.inbound, newConf.inbound)
+            || !_.isEqual(this.conf.outbound, newConf.outbound);
         if (updateInboundServer) {
             await this.inboundServer.stop();
             this.inboundServer = new InboundServer(
@@ -241,6 +242,19 @@ class Server extends EventEmitter {
                 this.emit('error', 'Unhandled error in Outbound Server');
             });
             await this.outboundServer.start();
+        }
+
+        const updateFspiopEventHandler = !_.isEqual(this.conf.outbound, newConf.outbound)
+            && this.conf.fspiopEventHandler.enabled;
+        if (updateFspiopEventHandler) {
+            await this.fspiopEventHandler.stop();
+            this.fspiopEventHandler = new FSPIOPEventHandler({
+                config: newConf,
+                logger: this.logger.push(LOG_ID.FSPIOP_EVENT_HANDLER),
+                cache: this.cache,
+                wso2: this.wso2,
+            });
+            await this.fspiopEventHandler.start();
         }
 
         const updateControlClient = !_.isEqual(this.conf.control, newConf.control);
