@@ -721,6 +721,7 @@ jobs:
 
   publish-docker-snapshot:
     executor: default-machine
+    shell: "/bin/bash -eo pipefail"
     environment:
       <<: *defaults_environment
     steps:
@@ -943,6 +944,7 @@ workflows:
             - test-lint
             - test-unit
             - test-integration
+            - test-func
             - vulnerability-check
             - audit-licenses
             - license-scan
@@ -972,6 +974,7 @@ workflows:
             - test-lint
             - test-unit
             - test-integration
+            - test-func
             - vulnerability-check
             - audit-licenses
             - license-scan
@@ -992,6 +995,7 @@ workflows:
             - test-lint
             - test-unit
             - test-integration
+            - test-func
             - vulnerability-check
             - audit-licenses
             - license-scan
