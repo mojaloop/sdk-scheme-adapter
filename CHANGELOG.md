@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [23.1.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.0.2...v23.1.0) (2023-07-07)
+
+
+### Features
+
+* **mojaloop/#3264:** tls cert reload issue ([#454](https://github.com/mojaloop/sdk-scheme-adapter/issues/454)) ([d5fa071](https://github.com/mojaloop/sdk-scheme-adapter/commit/d5fa071013580ae951a0c81968400b0131828322)), closes [mojaloop/#3264](https://github.com/mojaloop/project/issues/3264)
+
 ### [23.0.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.0.1...v23.0.2) (2023-06-15)
 
 ### [23.0.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.0.0...v23.0.1) (2023-06-15)
