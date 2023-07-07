@@ -240,7 +240,7 @@ jobs:
           command: |
             cd docker/haproxy/tls
             sh createSecrets.sh
-            cd ../../../
+            cd $CIRCLE_WORKING_DIRECTORY
       - run:
           name: Start docker-compose in PM4ML mode
           command: |

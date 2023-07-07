@@ -107,8 +107,12 @@ describe("Tests for discovery part in FSPIOP Handler", () => {
     headers: [],
     });
 
+    // Wait for the TLS configuration change to be propagated to SDK
     await new Promise(resolve => setTimeout(resolve, 10000));
+
     await producer.sendDomainEvent(partyInfoRequestedDmEvt);
+
+    // TODO: The following timeout can be enhanced with wrapRetries [https://github.com/mojaloop/project/issues/3408]
     await new Promise(resolve => setTimeout(resolve, 10000));
 
     // Check domain events published to kafka
@@ -116,6 +120,8 @@ describe("Tests for discovery part in FSPIOP Handler", () => {
     expect(domainEvents[0].getName()).toBe('PartyInfoRequestedDmEvt');
     expect(domainEvents[1].getName()).toBe('PartyInfoCallbackReceivedDmEvt');
     const callbackContent = domainEvents[1].getContent();
+    // TODO: We are not checking for the specific error because SDK error response doesn't contain helpful error codes.
+    // There is a story to address this issue [https://github.com/mojaloop/project/issues/3407]
     expect(callbackContent).toHaveProperty('partyErrorResult');
 
   });
@@ -146,8 +152,12 @@ describe("Tests for discovery part in FSPIOP Handler", () => {
     headers: [],
     });
 
+    // Wait for the TLS configuration change to be propagated to SDK
     await new Promise(resolve => setTimeout(resolve, 10000));
+
     await producer.sendDomainEvent(partyInfoRequestedDmEvt);
+
+    // TODO: The following timeout can be enhanced with wrapRetries [https://github.com/mojaloop/project/issues/3408]
     await new Promise(resolve => setTimeout(resolve, 10000));
 
     // Check domain events published to kafka
