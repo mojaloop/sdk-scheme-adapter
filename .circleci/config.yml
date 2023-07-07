@@ -262,7 +262,7 @@ jobs:
           command: |
             wget -qO - https://packages.confluent.io/deb/7.4/archive.key | sudo apt-key add -
             # sudo add-apt-repository "deb [arch=amd64] https://packages.confluent.io/deb/7.4 stable main"
-            sudo add-apt-repository "deb https://packages.confluent.io/clients/deb $(lsb_release -cs) main"
+            sudo add-apt-repository -y "deb https://packages.confluent.io/clients/deb $(lsb_release -cs) main"
             sudo apt install -y librdkafka-dev
       - checkout
       - run:
