@@ -33,7 +33,6 @@
         // Some audit issues with api-snippets
         "GHSA-r6ch-mqf9-qc9w",
         "GHSA-5r9g-qh6m-jxff",
-        // Audit issues with eslint --> https://github.com/advisories/GHSA-j8xg-fqg3-53r7
-        "GHSA-j8xg-fqg3-53r7"
+        "GHSA-c2qf-rxjj-qqgw"
     ]
 }
