@@ -8,7 +8,7 @@ version: 2.1
 ###
 orbs:
   anchore: anchore/anchore-engine@1.9.0 # Ref: https://circleci.com/developer/orbs/orb/anchore/anchore-engine
-  slack: circleci/slack@4.9.3 # Ref: https://github.com/mojaloop/ci-config/tree/master/slack-templates
+  slack: circleci/slack@4.12.5 # Ref: https://github.com/mojaloop/ci-config/tree/master/slack-templates
   pr-tools: mojaloop/pr-tools@0.1.10 # Ref: https://github.com/mojaloop/ci-config/
   gh: circleci/github-cli@2.1.0 # Ref: https://github.com/CircleCI-Public/github-cli-orb
   nx: nrwl/nx@1.6.0 # Ref: https://github.com/nrwl/nx-orb
@@ -132,9 +132,6 @@ defaults_display_versions: &defaults_display_versions
     echo "yarn: $(yarn --version)"
     echo "npm: $(npm --version)"
     echo "nvm: $(nvm --version)"
-    echo "==> nvm debug"
-    ## Commented out on purpose, since this can be useful for debugging NVM/Env issues
-    # nvm debug
 
 defaults_environment: &defaults_environment
   ## env var for nx to set main branch
@@ -228,9 +225,9 @@ jobs:
           name: Execute unit tests
           command: yarn run test:unit
       - store_test_results:
-          path: /home/circleci/project/
+          path: /home/circleci/project/modules
       - store_artifacts:
-          path: /home/circleci/project/junit.xml
+          path: /home/circleci/project/modules/api-svc/junit.xml
 
   build-local:
     executor: default-machine
