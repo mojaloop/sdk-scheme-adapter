@@ -260,9 +260,12 @@ jobs:
       - run:
           name: Install Dependencies
           command: |
+            ## Add Package Repos
+            ## Ref: https://docs.confluent.io/platform/current/installation/installing_cp/deb-ubuntu.html#get-the-software
             wget -qO - https://packages.confluent.io/deb/7.4/archive.key | sudo apt-key add -
-            # sudo add-apt-repository "deb [arch=amd64] https://packages.confluent.io/deb/7.4 stable main"
             sudo add-apt-repository -y "deb https://packages.confluent.io/clients/deb $(lsb_release -cs) main"
+
+            ## Install deps
             sudo apt install -y librdkafka-dev
       - checkout
       - run:
@@ -423,7 +426,6 @@ jobs:
 
   vulnerability-check:
     executor: default-docker
-    shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment:
       <<: *defaults_environment
     steps:
@@ -450,7 +452,6 @@ jobs:
 
   audit-licenses:
     executor: default-docker
-    shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment:
       <<: *defaults_environment
     steps:
@@ -488,17 +489,14 @@ jobs:
           <<: *defaults_license_scanner
       - run:
           name: Run the license-scanner
-          command: cd /tmp/license-scanner && mode=docker dockerImages=mojaloop/$CIRCLE_PROJECT_REPONAME:local make run
+          command: cd /tmp/license-scanner && mode=docker dockerImages=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local make run
       - store_artifacts:
           path: /tmp/license-scanner/results
 
   image-scan:
     executor: anchore/anchore_engine
-    shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment:
       <<: *defaults_environment
-      BASH_ENV: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
-      NVM_ARCH_UNOFFICIAL_OVERRIDE: x64-musl ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
     working_directory: *WORKING_DIR
     steps:
       - setup_remote_docker
@@ -525,14 +523,12 @@ jobs:
             echo "export SLACK_CI_URL=${CIRCLE_BUILD_URL}" >> $BASH_ENV
             echo "export SLACK_CUSTOM_MSG='Anchore Image Scan failed for: \`${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_TAG}\`'" >> $BASH_ENV
       - run:
-          shell: /bin/bash -eo pipefail
           <<: *defaults_configure_nvm
       - run:
           name: Load the pre-built docker image from workspace
           command: docker load -i /tmp/docker-image.tar
       - run:
           name: Download the mojaloop/ci-config repo
-          shell: /bin/bash -eo pipefail
           command: |
             source $BASH_ENV
             git clone https://github.com/mojaloop/ci-config /tmp/ci-config
@@ -540,7 +536,6 @@ jobs:
             cd /tmp/ci-config/container-scanning && ./mojaloop-policy-generator.js /tmp/mojaloop-policy.json
       - run:
           name: Pull base image locally
-          shell: /bin/bash -eo pipefail
           command: |
             echo "Pulling docker image: node:$NVMRC_VERSION-alpine"
             docker pull node:$NVMRC_VERSION-alpine
@@ -571,7 +566,6 @@ jobs:
 
   release:
     executor: default-docker
-    shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment:
       <<: *defaults_environment
     steps:
@@ -877,118 +871,118 @@ workflows:
                 - /feature*/
                 - /bugfix*/
 
-      # - vulnerability-check:
-      #     context: org-global
-      #     requires:
-      #       - setup
-      #     filters:
-      #       tags:
-      #         only: /.*/
-      #       branches:
-      #         ignore:
-      #           - /feature*/
-      #           - /bugfix*/
+      - vulnerability-check:
+          context: org-global
+          requires:
+            - setup
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
 
-      # - audit-licenses:
-      #     context: org-global
-      #     requires:
-      #       - setup
-      #     filters:
-      #       tags:
-      #         only: /.*/
-      #       branches:
-      #         ignore:
-      #           - /feature*/
-      #           - /bugfix*/
+      - audit-licenses:
+          context: org-global
+          requires:
+            - setup
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
 
-      # - license-scan:
-      #     context: org-global
-      #     requires:
-      #       - build-local
-      #     filters:
-      #       tags:
-      #         only: /v[0-9]+(\.[0-9]+)*(\-snapshot(\.[0-9]+)?)?(\-hotfix(\.[0-9]+)?)?(\-perf(\.[0-9]+)?)?/
-      #       branches:
-      #         ignore:
-      #           - /.*/
+      - license-scan:
+          context: org-global
+          requires:
+            - build-local
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot(\.[0-9]+)?)?(\-hotfix(\.[0-9]+)?)?(\-perf(\.[0-9]+)?)?/
+            branches:
+              ignore:
+                - /.*/
 
-      # - image-scan:
-      #     context: org-global
-      #     requires:
-      #       - build-local
-      #     filters:
-      #       tags:
-      #         only: /v[0-9]+(\.[0-9]+)*(\-snapshot(\.[0-9]+)?)?(\-hotfix(\.[0-9]+)?)?(\-perf(\.[0-9]+)?)?/
-      #       branches:
-      #         ignore:
-      #           - /.*/
+      - image-scan:
+          context: org-global
+          requires:
+            - build-local
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot(\.[0-9]+)?)?(\-hotfix(\.[0-9]+)?)?(\-perf(\.[0-9]+)?)?/
+            branches:
+              ignore:
+                - /.*/
 
-      # # New commits to master release automatically
-      # - release:
-      #     context: org-global
-      #     requires:
-      #       - build-local
-      #       - pr-tools/pr-title-check
-      #       - validate-openapi
-      #       - test-lint
-      #       - test-unit
-      #       - test-integration
-      #       - vulnerability-check
-      #       - audit-licenses
-      #       - license-scan
-      #       - image-scan
-      #     filters:
-      #       branches:
-      #         only:
-      #           - master
-      #           - /release\/v.*/
+      # New commits to master release automatically
+      - release:
+          context: org-global
+          requires:
+            - build-local
+            - pr-tools/pr-title-check
+            - validate-openapi
+            - test-lint
+            - test-unit
+            - test-integration
+            - vulnerability-check
+            - audit-licenses
+            - license-scan
+            - image-scan
+          filters:
+            branches:
+              only:
+                - master
+                - /release\/v.*/
 
-      # - github-release:
-      #     context: org-global
-      #     requires:
-      #       - release
-      #     filters:
-      #       branches:
-      #         only:
-      #           - master
-      #           - /release\/v.*/
+      - github-release:
+          context: org-global
+          requires:
+            - release
+          filters:
+            branches:
+              only:
+                - master
+                - /release\/v.*/
 
-      # - publish-docker:
-      #     context: org-global
-      #     requires:
-      #       - build-local
-      #       - pr-tools/pr-title-check
-      #       - validate-openapi
-      #       - test-lint
-      #       - test-unit
-      #       - test-integration
-      #       - vulnerability-check
-      #       - audit-licenses
-      #       - license-scan
-      #       - image-scan
-      #     filters:
-      #       tags:
-      #         only: /v[0-9]+(\.[0-9]+)*/
-      #       branches:
-      #         ignore:
-      #           - /.*/
+      - publish-docker:
+          context: org-global
+          requires:
+            - build-local
+            - pr-tools/pr-title-check
+            - validate-openapi
+            - test-lint
+            - test-unit
+            - test-integration
+            - vulnerability-check
+            - audit-licenses
+            - license-scan
+            - image-scan
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*/
+            branches:
+              ignore:
+                - /.*/
 
-      # - publish-docker-snapshot:
-      #     context: org-global
-      #     requires:
-      #       - build-local
-      #       - pr-tools/pr-title-check
-      #       - validate-openapi
-      #       - test-lint
-      #       - test-unit
-      #       - test-integration
-      #       - vulnerability-check
-      #       - audit-licenses
-      #       - license-scan
-      #       - image-scan
-      #     filters:
-      #       tags:
-      #         only: /v[0-9]+(\.[0-9]+)*\-snapshot+((\.[0-9]+)?)/
-      #       branches:
-      #         ignore:
-      #           - /.*/
+      - publish-docker-snapshot:
+          context: org-global
+          requires:
+            - build-local
+            - pr-tools/pr-title-check
+            - validate-openapi
+            - test-lint
+            - test-unit
+            - test-integration
+            - vulnerability-check
+            - audit-licenses
+            - license-scan
+            - image-scan
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*\-snapshot+((\.[0-9]+)?)/
+            branches:
+              ignore:
+                - /.*/
