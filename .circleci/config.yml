@@ -550,7 +550,6 @@ jobs:
       - run:
           name: Download the mojaloop/ci-config repo
           command: |
-            source $BASH_ENV
             git clone https://github.com/mojaloop/ci-config /tmp/ci-config
             # Generate the mojaloop anchore-policy
             cd /tmp/ci-config/container-scanning && ./mojaloop-policy-generator.js /tmp/mojaloop-policy.json
