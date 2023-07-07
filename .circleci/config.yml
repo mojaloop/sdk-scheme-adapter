@@ -257,10 +257,7 @@ jobs:
           command: |
             run_int_tests() {
               pushd /home/circleci/project/modules/$1
-              yarn run start & echo $! > /tmp/sdk-scheme-adapter.pid
-              sleep 10
               yarn run test:integration-pm4ml
-              kill $(cat /tmp/sdk-scheme-adapter.pid)
               popd
               sleep 10
             }

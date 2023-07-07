@@ -12,14 +12,13 @@ string_mask        = utf8only
 
 ####################################################################
 [ server_distinguished_name ]
-countryName_default = US
-stateOrProvinceName_default = MD
-localityName_default = Baltimore
-organizationName_default    = Test Server, Limited
-organizationalUnitName_default = Payments
+countryName = US
+stateOrProvinceName = MD
+localityName = Baltimore
+organizationName    = Test Server, Limited
+organizationalUnitName = Payments
 commonName   = hubsimulator
-commonName_default   = hubsimulator
-emailAddress_default = hubserver@example.com
+emailAddress = hubserver@example.com
 
 ####################################################################
 [ server_req_extensions ]
