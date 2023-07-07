@@ -23,7 +23,33 @@ DFSP backends can call the [DFSP Outbound API](https://github.com/mojaloop/api-s
 
 ## Docker Image
 
+### Official Packaged Release
+
 This package is available as a pre-built docker image on Docker Hub: [https://hub.docker.com/r/mojaloop/sdk-scheme-adapter](https://hub.docker.com/r/mojaloop/sdk-scheme-adapter)
+
+
+### Build from Source
+
+You can also build it directly from source: [https://github.com/mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+
+However, take note of the default argument in the [Dockerfile](./Dockerfile) for `NODE_VERSION`:
+
+```dockerfile
+ARG NODE_VERSION=lts-alpine
+```
+
+It is recommend that you set the `NODE_VERSION` argument against the version set in the local [.nvmrc](./.nvmrc).
+
+This can be done using the following command:
+
+```bash
+export NODE_VERSION="$(cat .nvmrc)-alpine"
+
+docker build \
+   --build-arg NODE_VERSION=$NODE_VERSION \
+   -t mojaloop/sdk-scheme-adapter:local \
+   .
+```
 
 ## NPM Package
 

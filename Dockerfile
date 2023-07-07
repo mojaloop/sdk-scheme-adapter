@@ -1,5 +1,14 @@
 # Arguments
-ARG NODE_VERSION=18.16.0-alpine
+ARG NODE_VERSION=lts-alpine
+
+# NOTE: Ensure you set NODE_VERSION Build Argument as follows...
+#
+#  export NODE_VERSION="$(cat .nvmrc)-alpine" \
+#  docker build \
+#    --build-arg NODE_VERSION=$NODE_VERSION \
+#    -t mojaloop/sdk-scheme-adapter:local \
+#    . \
+#
 
 # Build Image
 FROM node:${NODE_VERSION} as builder
