@@ -124,6 +124,18 @@ defaults_configure_nvm: &defaults_configure_nvm
 
     cd $CIRCLE_WORKING_DIRECTORY
 
+defaults_display_versions: &defaults_display_versions
+  name: Display Versions
+  command: |
+    echo "What is the active version of Nodejs?"
+    echo "node: $(node --version)"
+    echo "yarn: $(yarn --version)"
+    echo "npm: $(npm --version)"
+    echo "nvm: $(nvm --version)"
+    echo "==> nvm debug"
+    ## Commented out on purpose, since this can be useful for debugging NVM/Env issues
+    # nvm debug
+
 defaults_environment: &defaults_environment
   ## env var for nx to set main branch
   MAIN_BRANCH_NAME: master
@@ -169,16 +181,7 @@ jobs:
       - run:
           <<: *defaults_configure_nvm
       - run:
-          name: Nodejs Version
-          command: |
-            echo "What is the active version of Nodejs?"
-            echo "node: $(node --version)"
-            echo "yarn: $(yarn --version)"
-            echo "npm: $(npm --version)"
-            echo "nvm: $(nvm --version)"
-            echo "==> nvm debug"
-            ## Commented out on purpose, since this can be useful for debugging NVM/Env issues
-            # nvm debug
+          <<: *defaults_display_versions
       - run:
           name: Configure Yarn
           command: *defaults_YarnConfig
@@ -205,6 +208,8 @@ jobs:
       - checkout
       - run:
           <<: *defaults_configure_nvm
+      - run:
+          <<: *defaults_display_versions
       - run:
           name: Configure Yarn
           command: *defaults_YarnConfig
@@ -269,6 +274,8 @@ jobs:
       - checkout
       - run:
           <<: *defaults_configure_nvm
+      - run:
+          <<: *defaults_display_versions
       - run:
           name: Configure Yarn
           command: *defaults_YarnConfig
@@ -364,6 +371,8 @@ jobs:
       - checkout
       - run:
           <<: *defaults_configure_nvm
+      - run:
+          <<: *defaults_display_versions
       - restore_cache:
           name: Restore Yarn Package Cache
           keys:
@@ -383,6 +392,8 @@ jobs:
       - checkout
       - run:
           <<: *defaults_configure_nvm
+      - run:
+          <<: *defaults_display_versions
       - run:
           name: Configure Yarn
           command: *defaults_YarnConfig
@@ -410,6 +421,8 @@ jobs:
       - run:
           <<: *defaults_configure_nvm
       - run:
+          <<: *defaults_display_versions
+      - run:
           name: Configure Yarn
           command: *defaults_YarnConfig
       - restore_cache:
@@ -434,6 +447,8 @@ jobs:
       - checkout
       - run:
           <<: *defaults_configure_nvm
+      - run:
+          <<: *defaults_display_versions
       - run:
           name: Configure Yarn
           command: *defaults_YarnConfig
@@ -498,6 +513,7 @@ jobs:
     environment:
       <<: *defaults_environment
       BASH_ENV: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
+      ENV: /etc/profile
       NVM_ARCH_UNOFFICIAL_OVERRIDE: x64-musl ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
     working_directory: *WORKING_DIR
     steps:
@@ -526,6 +542,8 @@ jobs:
             echo "export SLACK_CUSTOM_MSG='Anchore Image Scan failed for: \`${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_TAG}\`'" >> $BASH_ENV
       - run:
           <<: *defaults_configure_nvm
+      - run:
+          <<: *defaults_display_versions
       - run:
           name: Load the pre-built docker image from workspace
           command: docker load -i /tmp/docker-image.tar
