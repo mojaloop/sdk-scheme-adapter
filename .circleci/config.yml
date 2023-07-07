@@ -13,6 +13,12 @@ orbs:
   gh: circleci/github-cli@2.1.0 # Ref: https://github.com/CircleCI-Public/github-cli-orb
   nx: nrwl/nx@1.6.0 # Ref: https://github.com/nrwl/nx-orb
 
+##
+# defaults
+#
+# YAML defaults templates
+##
+
 ## Default 'default-docker' executor dependencies
 defaults_docker_Dependencies: &defaults_docker_Dependencies |
   apk --no-cache add coreutils
@@ -35,11 +41,6 @@ defaults_machine_Dependencies: &defaults_machine_Dependencies |
   ## Install deps
   sudo apt install -y librdkafka-dev
 
-##
-# defaults
-#
-# YAML defaults templates, in alphabetical order
-##
 defaults_YarnConfig: &defaults_YarnConfig |
   ## Example configs that could be applied here
   # yarn config set unsafe-perm true
@@ -123,7 +124,7 @@ defaults_configure_nvm: &defaults_configure_nvm
       source $ENV_DOT_PROFILE
     fi
 
-    echo "5. Installing Node version: $NVMRC_VERSION"
+    echo "4. Installing Node version: $NVMRC_VERSION"
     nvm install $NVMRC_VERSION
     nvm alias default $NVMRC_VERSION
     nvm use $NVMRC_VERSION
