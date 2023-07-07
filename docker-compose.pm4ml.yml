@@ -1,0 +1,43 @@
+version: '3.7'
+
+services:
+
+  sdk-scheme-adapter-api-svc:
+    env_file: ./modules/api-svc/test/config/integration-pm4ml.env
+    depends_on:
+      - mock-management-svc
+    command: yarn nx run modules-api-svc:start
+
+  mock-management-svc:
+    networks:
+        - mojaloop-net
+    image: mojaloop/sdk-scheme-adapter:local
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    ports:
+      - "4005:4005"
+      - "5005:5005"
+    command: yarn nx run modules-api-svc:test:pm4ml-run-mock-servers
+    user: root # Set Root so we can install Curl for Healthchecks
+    healthcheck:
+      test: ["CMD-SHELL", "nc localhost 4005"]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+
+  hubsimulator:
+    networks:
+      - mojaloop-net
+    image: haproxy:2.8.1-alpine
+    depends_on:
+      - ml-testing-toolkit
+    links:
+      - ml-testing-toolkit:ml-testing-toolkit
+    volumes:
+      - ./docker/haproxy/certs:/usr/local/etc/haproxy/certs
+      - ./docker/haproxy/tls:/usr/local/etc/haproxy/tls
+      - ./docker/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    ports:
+      - "8443:8443"
+
