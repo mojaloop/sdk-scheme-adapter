@@ -13,12 +13,8 @@ orbs:
   gh: circleci/github-cli@2.1.0 # Ref: https://github.com/CircleCI-Public/github-cli-orb
   nx: nrwl/nx@1.6.0 # Ref: https://github.com/nrwl/nx-orb
 
-##
-# defaults
-#
-# YAML defaults templates, in alphabetical order
-##
-defaults_Dependencies: &defaults_Dependencies |
+## Default 'default-docker' executor dependencies
+defaults_docker_Dependencies: &defaults_docker_Dependencies |
   apk --no-cache add coreutils
   apk --no-cache add util-linux pciutils usbutils coreutils binutils findutils grep iproute2
   apk --no-cache add git
@@ -28,6 +24,16 @@ defaults_Dependencies: &defaults_Dependencies |
   apk --no-cache add bash bash-doc bash-completion
   apk --no-cache add -t build-dependencies make gcc g++ python3 libtool autoconf automake
   apk --no-cache add librdkafka-dev
+
+## Default 'default-machine' executor dependencies
+defaults_machine_Dependencies: &defaults_machine_Dependencies |
+  ## Add Package Repos
+  ## Ref: https://docs.confluent.io/platform/current/installation/installing_cp/deb-ubuntu.html#get-the-software
+  wget -qO - https://packages.confluent.io/deb/7.4/archive.key | sudo apt-key add -
+  sudo add-apt-repository -y "deb https://packages.confluent.io/clients/deb $(lsb_release -cs) main"
+
+  ## Install deps
+  sudo apt install -y librdkafka-dev
 
 ##
 # defaults
@@ -173,7 +179,7 @@ jobs:
     steps:
       - run:
           name: Install general dependencies
-          command: *defaults_Dependencies
+          command: *defaults_docker_Dependencies
       - checkout
       - run:
           <<: *defaults_configure_nvm
@@ -201,7 +207,7 @@ jobs:
     steps:
       - run:
           name: Install general dependencies
-          command: *defaults_Dependencies
+          command: *defaults_docker_Dependencies
       - checkout
       - run:
           <<: *defaults_configure_nvm
@@ -259,15 +265,8 @@ jobs:
       <<: *defaults_environment
     steps:
       - run:
-          name: Install Dependencies
-          command: |
-            ## Add Package Repos
-            ## Ref: https://docs.confluent.io/platform/current/installation/installing_cp/deb-ubuntu.html#get-the-software
-            wget -qO - https://packages.confluent.io/deb/7.4/archive.key | sudo apt-key add -
-            sudo add-apt-repository -y "deb https://packages.confluent.io/clients/deb $(lsb_release -cs) main"
-
-            ## Install deps
-            sudo apt install -y librdkafka-dev
+          name: Install general dependencies
+          command: *defaults_machine_Dependencies
       - checkout
       - run:
           <<: *defaults_configure_nvm
@@ -329,6 +328,9 @@ jobs:
     executor: default-machine
     environment: *defaults_environment
     steps:
+      - run:
+          name: Install general dependencies
+          command: *defaults_machine_Dependencies
       - checkout
       - run:
           <<: *defaults_configure_nvm
@@ -422,7 +424,7 @@ jobs:
     steps:
       - run:
           name: Install general dependencies
-          command: *defaults_Dependencies
+          command: *defaults_docker_Dependencies
       - checkout
       - run:
           <<: *defaults_configure_nvm
@@ -443,7 +445,7 @@ jobs:
     steps:
       - run:
           name: Install general dependencies
-          command: *defaults_Dependencies
+          command: *defaults_docker_Dependencies
       - checkout
       - run:
           <<: *defaults_configure_nvm
@@ -471,7 +473,7 @@ jobs:
     steps:
       - run:
           name: Install general dependencies
-          command: *defaults_Dependencies
+          command: *defaults_docker_Dependencies
       - checkout
       - run:
           <<: *defaults_configure_nvm
@@ -498,7 +500,7 @@ jobs:
     steps:
       - run:
           name: Install general dependencies
-          command: *defaults_Dependencies
+          command: *defaults_docker_Dependencies
       - checkout
       - run:
           <<: *defaults_configure_nvm
@@ -526,7 +528,7 @@ jobs:
     steps:
       - run:
           name: Install general dependencies
-          command: *defaults_Dependencies
+          command: *defaults_docker_Dependencies
       - run:
           name: Configure Yarn
           command: *defaults_YarnConfig
@@ -577,7 +579,7 @@ jobs:
           at: /tmp
       - run:
           name: Install general dependencies
-          command: *defaults_Dependencies
+          command: *defaults_docker_Dependencies
       - run:
           name: Install docker dependencies for anchore
           command: |
@@ -645,7 +647,7 @@ jobs:
     steps:
       - run:
           name: Install general dependencies
-          command: *defaults_Dependencies
+          command: *defaults_docker_Dependencies
       - run:
           name: Configure Yarn
           command: *defaults_YarnConfig
