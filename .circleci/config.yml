@@ -70,7 +70,6 @@ defaults_configure_nvmrc: &defaults_configure_nvmrc
       echo "==> Configuring NVMRC_VERSION!"
 
       export ENV_DOT_PROFILE=$HOME/.profile
-      # export ENV_DOT_PROFILE=$ENV
       touch $ENV_DOT_PROFILE
 
       export NVMRC_VERSION=$(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)
@@ -84,7 +83,6 @@ defaults_configure_nvm: &defaults_configure_nvm
     cd $HOME
 
     export ENV_DOT_PROFILE=$HOME/.profile
-    # export ENV_DOT_PROFILE=$ENV
     touch $ENV_DOT_PROFILE
 
     echo "1. Export env variable"
@@ -106,9 +104,9 @@ defaults_configure_nvm: &defaults_configure_nvm
       echo "3. Executing $NVM_DIR/nvm.sh"
       [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-      echo "4. Update $ENV_DOT_PROFILE"
-      echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $ENV_DOT_PROFILE
-      echo "export NVM_DIR=$NVM_DIR" >> $ENV_DOT_PROFILE
+      # echo "4. Update $ENV_DOT_PROFILE"
+      # echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $ENV_DOT_PROFILE
+      # echo "export NVM_DIR=$NVM_DIR" >> $ENV_DOT_PROFILE
     fi
 
     ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
@@ -143,7 +141,6 @@ executors:
     shell: "/bin/sh -leo pipefail" ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment:
       BASH_ENV: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
-      # ENV: "$BASH_ENV"
       NVM_ARCH_UNOFFICIAL_OVERRIDE: x64-musl ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
     docker:
       - image: node:lts-alpine # Ref: https://hub.docker.com/_/node?tab=tags&page=1&name=alpine
@@ -151,8 +148,6 @@ executors:
   default-machine:
     working_directory: *WORKING_DIR
     shell: "/bin/bash -leo pipefail"
-    # environment:
-    #   ENV: "$BASH_ENV"
     machine:
       image: ubuntu-2204:2023.04.2 # Ref: https://circleci.com/developer/machine/image/ubuntu-2204
 
@@ -161,7 +156,6 @@ executors:
     shell: "/bin/sh -leo pipefail" ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment:
       BASH_ENV: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
-      ENV: "$BASH_ENV"
       NVM_ARCH_UNOFFICIAL_OVERRIDE: x64-musl ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
     machine:
       image: anchore/anchore_engine
