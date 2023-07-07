@@ -69,7 +69,8 @@ defaults_configure_nvmrc: &defaults_configure_nvmrc
     if [ -z "$NVMRC_VERSION" ]; then
       echo "==> Configuring NVMRC_VERSION!"
 
-      export ENV_DOT_PROFILE=$HOME/.profile
+      # export ENV_DOT_PROFILE=$HOME/.profile
+      export ENV_DOT_PROFILE=$ENV
       touch $ENV_DOT_PROFILE
 
       export NVMRC_VERSION=$(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)
@@ -82,8 +83,8 @@ defaults_configure_nvm: &defaults_configure_nvm
   command: |
     cd $HOME
 
-    export ENV_DOT_PROFILE=$HOME/.profile
-
+    # export ENV_DOT_PROFILE=$HOME/.profile
+    export ENV_DOT_PROFILE=$ENV
     touch $ENV_DOT_PROFILE
 
     echo "1. Export env variable"
@@ -142,6 +143,7 @@ executors:
     shell: "/bin/sh -leo pipefail" ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
     environment:
       BASH_ENV: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
+      ENV: "$BASH_ENV"
       NVM_ARCH_UNOFFICIAL_OVERRIDE: x64-musl ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
     docker:
       - image: node:lts-alpine # Ref: https://hub.docker.com/_/node?tab=tags&page=1&name=alpine
@@ -149,8 +151,20 @@ executors:
   default-machine:
     working_directory: *WORKING_DIR
     shell: "/bin/bash -leo pipefail"
+    environment:
+      ENV: "$BASH_ENV"
     machine:
       image: ubuntu-2204:2023.04.2 # Ref: https://circleci.com/developer/machine/image/ubuntu-2204
+
+  default-anchore:
+    working_directory: *WORKING_DIR
+    shell: "/bin/sh -leo pipefail" ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
+    environment:
+      BASH_ENV: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
+      ENV: "$BASH_ENV"
+      NVM_ARCH_UNOFFICIAL_OVERRIDE: x64-musl ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
+    machine:
+      image: anchore/anchore_engine
 
 ##
 # Jobs
@@ -494,7 +508,7 @@ jobs:
           path: /tmp/license-scanner/results
 
   image-scan:
-    executor: anchore/anchore_engine
+    executor: default-anchore
     environment:
       <<: *defaults_environment
     working_directory: *WORKING_DIR
