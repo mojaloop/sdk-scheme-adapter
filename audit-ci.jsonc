@@ -33,6 +33,8 @@
         // Some audit issues with api-snippets
         "GHSA-r6ch-mqf9-qc9w",
         "GHSA-5r9g-qh6m-jxff",
-        "GHSA-c2qf-rxjj-qqgw"
+        "GHSA-c2qf-rxjj-qqgw",
+        // Issue with protobuffs (https://github.com/advisories/GHSA-h755-8qp9-cq85). No fix available.
+        "GHSA-h755-8qp9-cq85"
     ]
 }
