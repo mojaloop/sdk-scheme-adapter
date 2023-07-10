@@ -11,28 +11,19 @@
         "GHSA-6vfc-qv3f-vr6c",
         "GHSA-rjqq-98f6-6j3r",
         "GHSA-phwq-j96m-2c2q",
-        "GHSA-pfrx-2q88-qq97",
         "GHSA-wc69-rhjr-hc9g",
-        "GHSA-3cvr-822r-rqcc",
         "GHSA-8qr4-xgw6-wmr3",
-        "GHSA-f772-66g8-q5h3",
-        "GHSA-cph5-m8f7-6c5x",
         "GHSA-hrpp-h998-j3pp",
         "GHSA-8cf7-32gw-wr33",
         // Vulnerabilities for jsonwebtoken in
         // sdk-standard-components
         // central-services-error-handling
         // central-services-shared
-        "GHSA-27h2-hvpr-p74q",
         "GHSA-hjrf-2m68-5959",
         "GHSA-qwph-4952-7xr6",
-        "GHSA-9c47-m6qq-7p4h",
-        "GHSA-h452-7996-h45h",
-        "GHSA-rc47-6667-2j5j",
-        "GHSA-8x6c-cv3v-vp6g",
         // Some audit issues with api-snippets
-        "GHSA-r6ch-mqf9-qc9w",
-        "GHSA-5r9g-qh6m-jxff",
-        "GHSA-c2qf-rxjj-qqgw"
+        "GHSA-c2qf-rxjj-qqgw",
+        // Issue with protobuffs (https://github.com/advisories/GHSA-h755-8qp9-cq85). No fix available.
+        "GHSA-h755-8qp9-cq85"
     ]
 }
