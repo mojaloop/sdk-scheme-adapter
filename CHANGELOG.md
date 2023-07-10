@@ -1,4 +1,17 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [23.1.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.1.0...v23.1.1) (2023-07-10)
+
+
+### Bug Fixes
+
+* protobuff vuln issue ([#455](https://github.com/mojaloop/sdk-scheme-adapter/issues/455)) ([fa600ad](https://github.com/mojaloop/sdk-scheme-adapter/commit/fa600ad0d84b5586cc1d1b2747fc6eca51ac8050)), closes [#3386](https://github.com/mojaloop/sdk-scheme-adapter/issues/3386)
+
+
+### Chore
+
+* fix to snapshot version ([#456](https://github.com/mojaloop/sdk-scheme-adapter/issues/456)) ([e5c47c9](https://github.com/mojaloop/sdk-scheme-adapter/commit/e5c47c9cb47fd618dfc2274a057108fb561432f6))
+* **mojaloop/#3386:** sdk nodejs maintenance upgrade ([#453](https://github.com/mojaloop/sdk-scheme-adapter/issues/453)) ([9ac931a](https://github.com/mojaloop/sdk-scheme-adapter/commit/9ac931ae17f7f30c3ef9e25e57f0830d57349e34)), closes [mojaloop/#3386](https://github.com/mojaloop/project/issues/3386)
+
 ## [23.1.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.0.2...v23.1.0) (2023-07-07)
 
 
