@@ -2649,7 +2649,7 @@ __metadata:
     "@mojaloop/central-services-shared": 17.5.1
     "@mojaloop/event-sdk": ^11.0.2
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
-    "@mojaloop/sdk-standard-components": ^17.1.1
+    "@mojaloop/sdk-standard-components": "github:mojaloop/sdk-standard-components#feat/IPROD-93"
     "@redocly/openapi-cli": ^1.0.0-beta.94
     "@types/jest": ^29.5.2
     ajv: 8.12.0
@@ -2820,16 +2820,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mojaloop/sdk-standard-components@npm:^17.1.1":
-  version: 17.1.1
-  resolution: "@mojaloop/sdk-standard-components@npm:17.1.1"
+"@mojaloop/sdk-standard-components@github:mojaloop/sdk-standard-components#feat/IPROD-93":
+  version: 17.1.4
+  resolution: "@mojaloop/sdk-standard-components@https://github.com/mojaloop/sdk-standard-components.git#commit=b1bd3a6d99320e50ae83f33167add289a6c56d7f"
   dependencies:
     base64url: 3.0.1
     fast-safe-stringify: ^2.1.1
     ilp-packet: 2.2.0
-    jsonwebtoken: 8.5.1
+    jsonwebtoken: 9.0.2
     jws: 4.0.0
-  checksum: cf36828bc3635f88a0b18b0d6af49c22e67f87f2e27355db7d54a9b5fe639c59139f6bd5925394507ed0977bebb8f69d3359e60a7bd925b09ef27fbc2d994365
+  checksum: 126f207147c8be019124dfe58d99036212ebf308a54751e4abd4ba97d141974a7e2d713ee7f518c8615dfc062bd660d74fd96ea48ffb5a326831d98519852d4d
   languageName: node
   linkType: hard
 
@@ -9899,9 +9899,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsonwebtoken@npm:8.5.1":
-  version: 8.5.1
-  resolution: "jsonwebtoken@npm:8.5.1"
+"jsonwebtoken@npm:9.0.2":
+  version: 9.0.2
+  resolution: "jsonwebtoken@npm:9.0.2"
   dependencies:
     jws: ^3.2.2
     lodash.includes: ^4.3.0
@@ -9912,8 +9912,8 @@ __metadata:
     lodash.isstring: ^4.0.1
     lodash.once: ^4.0.0
     ms: ^2.1.1
-    semver: ^5.6.0
-  checksum: 93c9e3f23c59b758ac88ba15f4e4753b3749dfce7a6f7c40fb86663128a1e282db085eec852d4e0cbca4cefdcd3a8275ee255dbd08fcad0df26ad9f6e4cc853a
+    semver: ^7.5.4
+  checksum: fc739a6a8b33f1974f9772dca7f8493ca8df4cc31c5a09dcfdb7cff77447dcf22f4236fb2774ef3fe50df0abeb8e1c6f4c41eba82f500a804ab101e2fbc9d61a
   languageName: node
   linkType: hard
 
@@ -13307,7 +13307,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:2 || 3 || 4 || 5, semver@npm:^5.0.3, semver@npm:^5.5.0, semver@npm:^5.6.0":
+"semver@npm:2 || 3 || 4 || 5, semver@npm:^5.0.3, semver@npm:^5.5.0":
   version: 5.7.1
   resolution: "semver@npm:5.7.1"
   bin:
@@ -13344,6 +13344,17 @@ __metadata:
   bin:
     semver: bin/semver.js
   checksum: 3fdf5d1e6f170fe8bcc41669e31787649af91af7f54f05c71d0865bb7aa27e8b92f68b3e6b582483e2c1c648008bc84249d2cd86301771fe5cbf7621d1fe5375
+  languageName: node
+  linkType: hard
+
+"semver@npm:^7.5.4":
+  version: 7.5.4
+  resolution: "semver@npm:7.5.4"
+  dependencies:
+    lru-cache: ^6.0.0
+  bin:
+    semver: bin/semver.js
+  checksum: 12d8ad952fa353b0995bf180cdac205a4068b759a140e5d3c608317098b3575ac2f1e09182206bf2eb26120e1c0ed8fb92c48c592f6099680de56bb071423ca3
   languageName: node
   linkType: hard
 
