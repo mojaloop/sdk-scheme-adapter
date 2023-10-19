@@ -21,9 +21,12 @@
         // central-services-shared
         "GHSA-hjrf-2m68-5959",
         "GHSA-qwph-4952-7xr6",
+        "GHSA-7fh5-64p2-3v2j",
         // Some audit issues with api-snippets
         "GHSA-c2qf-rxjj-qqgw",
         // Issue with protobuffs (https://github.com/advisories/GHSA-h755-8qp9-cq85). No fix available.
-        "GHSA-h755-8qp9-cq85"
+        "GHSA-h755-8qp9-cq85",
+        // @babel/traverse (https://github.com/advisories/GHSA-67hx-6x53-jw92)
+        "GHSA-67hx-6x53-jw92"
     ]
 }
