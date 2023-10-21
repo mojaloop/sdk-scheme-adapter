@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
-  "version": "23.1.1",
+  "version": "23.1.2",
   "description": "mojaloop sdk-scheme-adapter",
   "license": "Apache-2.0",
   "homepage": "https://github.com/mojaloop/sdk-scheme-adapter",
@@ -77,7 +77,7 @@
     "@typescript-eslint/eslint-plugin": "^6.8.0",
     "@typescript-eslint/parser": "^6.8.0",
     "audit-ci": "^6.6.1",
-    "eslint": "^8.51.0",
+    "eslint": "^8.52.0",
     "eslint-config-airbnb-typescript": "^17.1.0",
     "eslint-plugin-import": "latest",
     "husky": "^8.0.3",

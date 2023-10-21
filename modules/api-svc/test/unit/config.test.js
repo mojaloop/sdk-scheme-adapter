@@ -95,7 +95,6 @@ describe('config', () => {
     });
 
     it('should transform correctly resources versions to config', () => {
-
         const resourceVersions = {
             resourceOneName: {
                 acceptVersion: '1',
@@ -116,4 +115,19 @@ describe('config', () => {
         expect(() => parseResourceVersion('resourceOneName=1.0;resourceTwoName=1.1')).toThrowError(new Error('Resource versions format should be in format: "resourceOneName=1.0,resourceTwoName=1.1"'));
     });
 
+    it('should return outbound.tls.creds with keys if OUTBOUND_MUTUAL_TLS_USE_FILES is true', () => {
+        process.env.OUTBOUND_MUTUAL_TLS_USE_FILES = 'true';
+        const config = require('~/config');
+        expect(config.outbound.tls.creds).toStrictEqual({
+            ca: undefined,
+            cert: undefined,
+            key: undefined,
+        });
+    });
+
+    it('should return outbound.tls.creds as empty object if OUTBOUND_MUTUAL_TLS_USE_FILES is false', () => {
+        process.env.OUTBOUND_MUTUAL_TLS_USE_FILES = 'false';
+        const config = require('~/config');
+        expect(config.outbound.tls.creds).toStrictEqual({});
+    });
 });
