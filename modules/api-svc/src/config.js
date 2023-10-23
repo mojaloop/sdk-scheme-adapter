@@ -56,8 +56,6 @@ const env = from(process.env, {
     asResourceVersions: (resourceString) => parseResourceVersions(resourceString),
 });
 
-const OUTBOUND_MUTUAL_TLS_USE_FILES = env.get('OUTBOUND_MUTUAL_TLS_USE_FILES').default('false').asBool();
-
 module.exports = {
     __parseResourceVersion: parseResourceVersions,
     control: {
@@ -84,11 +82,12 @@ module.exports = {
             mutualTLS: {
                 enabled: env.get('OUTBOUND_MUTUAL_TLS_ENABLED').default('false').asBool(),
             },
-            creds: OUTBOUND_MUTUAL_TLS_USE_FILES ? {
+            creds: {
                 ca: env.get('OUT_CA_CERT_PATH').asFileListContent(),
                 cert: env.get('OUT_CLIENT_CERT_PATH').asFileContent(),
                 key: env.get('OUT_CLIENT_KEY_PATH').asFileContent(),
-            } : {}, // will be populated from CONFIGURATION ws-message from pm-management-api
+            },
+            useCertFilesForAuth: env.get('OUT_USE_CERT_FILES_FOR_AUTH').default('false').asBool()
         },
     },
     backendEventHandler: {

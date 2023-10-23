@@ -11,11 +11,17 @@
 const fs  = require('fs');
 const path = require('path');
 const os = require('os');
+const sdkSC = require('@mojaloop/sdk-standard-components');
+const { createAuthClient } = require('../../src/lib/utils');
 
 const outErrorStatusKey = 'outErrorStatusKey';
 
 jest.mock('dotenv', () => ({
     config: jest.fn(),
+}));
+
+jest.mock('@mojaloop/sdk-standard-components', () => ({
+    WSO2Auth: jest.fn(),
 }));
 
 describe('config', () => {
@@ -125,9 +131,11 @@ describe('config', () => {
         });
     });
 
-    it('should return outbound.tls.creds as empty object if OUTBOUND_MUTUAL_TLS_USE_FILES is false', () => {
-        process.env.OUTBOUND_MUTUAL_TLS_USE_FILES = 'false';
+    it('should pass outbound tlsCreds as false to WSO2Auth ctor, if OUT_USE_CERT_FILES_FOR_AUTH is false', () => {
+        process.env.OUT_USE_CERT_FILES_FOR_AUTH = 'false';
         const config = require('~/config');
-        expect(config.outbound.tls.creds).toStrictEqual({});
+        createAuthClient(config, {});
+        const { tlsCreds } = sdkSC.WSO2Auth.mock.calls[0][0];
+        expect(tlsCreds).toBe(false);
     });
 });
