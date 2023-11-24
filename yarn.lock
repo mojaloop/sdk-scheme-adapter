@@ -2863,7 +2863,7 @@ __metadata:
     standard-version: ^9.5.0
     ts-jest: ^29.1.1
     ts-node: ^10.9.1
-    tslib: ^2.6.0
+    tslib: ^2.6.2
     typescript: ^5.3.2
     yarn-audit-fix: ^10.0.7
   languageName: unknown
@@ -14719,7 +14719,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:2.6.2, tslib@npm:^2.6.0":
+"tslib@npm:2.6.2, tslib@npm:^2.6.2":
   version: 2.6.2
   resolution: "tslib@npm:2.6.2"
   checksum: 329ea56123005922f39642318e3d1f0f8265d1e7fcb92c633e0809521da75eeaca28d2cf96d7248229deb40e5c19adf408259f4b9640afd20d13aecc1430f3ad
