@@ -534,7 +534,7 @@ class InboundTransfersModel {
                 response: beResponse,
                 mojaloopResponse,
                 fulfilment
-                // todo: think, if we need to stare ilpPacket as well
+                // todo: think, if we need to store ilpPacket as well
             };
             await this.saveFxState();
 
@@ -564,7 +564,6 @@ class InboundTransfersModel {
             this.data = await this.loadFxState(body.commitRequestId);
 
             if (!this.data?.fxQuote) {
-                // todo: do we need to check this._allowTransferWithoutQuote here?
                 throw new Error(`Corresponding fxQuote not found for commitRequestId ${body.commitRequestId}`);
             }
             const { fxQuote } = this.data;
