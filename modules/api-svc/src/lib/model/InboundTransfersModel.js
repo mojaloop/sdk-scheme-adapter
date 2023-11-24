@@ -538,7 +538,7 @@ class InboundTransfersModel {
             };
             await this.saveFxState();
 
-            const res = await this._mojaloopRequests.putFxQuotes(body.conversionId, mojaloopResponse, sourceFspId);
+            const res = await this._mojaloopRequests.putFxQuotes(body.conversionRequestId, mojaloopResponse, sourceFspId);
 
             this.data.fxQuoteResponse = {
                 headers: res.originalRequest.headers,
