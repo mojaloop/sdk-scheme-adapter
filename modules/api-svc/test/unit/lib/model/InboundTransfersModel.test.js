@@ -289,6 +289,7 @@ describe('inboundModel', () => {
                 rejectTransfersOnExpiredQuotes: true,
             });
             cache.set(`transferModel_in_${TRANSFER_ID}`, {
+                transferId: TRANSFER_ID,
                 quote: {
                     mojaloopResponse: {
                         expiration: new Date(new Date().getTime() - 1000).toISOString(),
@@ -786,6 +787,7 @@ describe('inboundModel', () => {
             const notif = JSON.parse(JSON.stringify(notificationReservedToPayee));
 
             const expectedRequest = {
+                currentState: SDKStateEnum.ERROR_OCCURRED,
                 finalNotification: notif.data,
                 lastError: 'Final notification state not COMMITTED',
             };

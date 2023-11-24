@@ -127,6 +127,8 @@ module.exports = {
     transactionRequestsEndpoint: env.get('TRANSACTION_REQUESTS_ENDPOINT').asString(),
     transfersEndpoint: env.get('TRANSFERS_ENDPOINT').asString(),
     bulkTransfersEndpoint: env.get('BULK_TRANSFERS_ENDPOINT').asString(),
+    fxQuotesEndpoint: env.get('FX_QUOTES_ENDPOINT').asString(),
+    fxTransfersEndpoint: env.get('FX_TRANSFERS_ENDPOINT').asString(),
     backendEndpoint: env.get('BACKEND_ENDPOINT').required().asString(),
 
     dfspId: env.get('DFSP_ID').default('mojaloop').asString(),
