@@ -13,7 +13,9 @@
 const assert = require('assert').strict;
 const util = require('util');
 const { MojaloopRequests, Errors, WSO2Auth, Jws, Logger } = jest.requireActual('@mojaloop/sdk-standard-components');
+const mocks = require('../../unit/lib/model/data/mocks');
 
+const mockMojaResponseFn = async () => mocks.mockMojaApiResponse();
 
 class MockMojaloopRequests extends MojaloopRequests {
     constructor(...args) {
@@ -71,12 +73,12 @@ MockMojaloopRequests.__postBulkTransfers = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putBulkTransfers = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putBulkTransfersError = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__patchTransfers = jest.fn(() => Promise.resolve());
-MockMojaloopRequests.__postFxQuotes = jest.fn(async () => ({}));
-MockMojaloopRequests.__putFxQuotes = jest.fn(async () => ({}));
-MockMojaloopRequests.__putFxQuotesError = jest.fn(async () => ({}));
-MockMojaloopRequests.__postFxTransfers = jest.fn(async () => ({}));
-MockMojaloopRequests.__putFxTransfers = jest.fn(async () => ({}));
-MockMojaloopRequests.__putFxTransfersError = jest.fn(async () => ({}));
+MockMojaloopRequests.__postFxQuotes = jest.fn(mockMojaResponseFn);
+MockMojaloopRequests.__putFxQuotes = jest.fn(mockMojaResponseFn);
+MockMojaloopRequests.__putFxQuotesError = jest.fn(mockMojaResponseFn);
+MockMojaloopRequests.__postFxTransfers = jest.fn(mockMojaResponseFn);
+MockMojaloopRequests.__putFxTransfers = jest.fn(mockMojaResponseFn);
+MockMojaloopRequests.__putFxTransfersError = jest.fn(mockMojaResponseFn);
 
 class MockIlp {
     constructor(config) {

@@ -1,3 +1,4 @@
+/*eslint quote-props: ["error", "as-needed"]*/
 const { randomUUID } = require('node:crypto');
 
 const mockCurrencyAmount = ({
@@ -11,7 +12,7 @@ const mockCurrencyAmount = ({
 const mockFxQuotesPayload = ({
     conversionRequestId = randomUUID(),
     conversionId = randomUUID(),
-    determiningTransferId = 'b51ec534-ee48-4575-b6a9-ead2955b8069',
+    determiningTransferId = randomUUID(),
     initiatingFsp = 'initiatingFsp',
     counterPartyFsp = 'fxpId',
     amountType = 'RECEIVE',
@@ -44,6 +45,38 @@ const mockFxQuotesInternalResponse = ({
     ...(targetAmount && { targetAmount }),
 });
 
+const mockFxTransfersPayload = ({
+    commitRequestId = randomUUID(),
+    determiningTransferId = randomUUID(),
+    initiatingFsp = 'initiatingFsp',
+    counterPartyFsp = 'fxpId',
+    sourceAmount = mockCurrencyAmount(),
+    targetAmount = mockCurrencyAmount(),
+    condition = '3scAs9T4nie3OsHy8DqswhOXKiQqoLOMu0Q8q-ob_Kq',
+    expiration = new Date().toISOString()
+} = {}) => Object.freeze({
+    commitRequestId,
+    determiningTransferId,
+    initiatingFsp,
+    counterPartyFsp,
+    sourceAmount,
+    targetAmount,
+    condition,
+    expiration
+});
+
+const mockFxTransfersInternalResponse = ({
+    homeTransactionId = randomUUID(),
+    fulfilment = 'WLctttbu2HvTsa1XWvUoGRcQozHsqeu9Ahl2JW9Bsu8',
+    completedTimestamp = new Date().toISOString(),
+    conversionState = 'RESERVED'
+} = {}) => Object.freeze({
+    homeTransactionId,
+    fulfilment,
+    completedTimestamp,
+    conversionState
+});
+
 const mockMojaApiResponse = ({
     headers = {},
     body = {}
@@ -57,6 +90,8 @@ const mockMojaApiResponse = ({
 module.exports = {
     mockFxQuotesPayload,
     mockFxQuotesInternalResponse,
+    mockFxTransfersPayload,
+    mockFxTransfersInternalResponse,
     mockMojaApiResponse,
     mockCurrencyAmount,
 };

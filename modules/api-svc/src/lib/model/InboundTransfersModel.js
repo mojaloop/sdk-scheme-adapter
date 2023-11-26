@@ -557,7 +557,7 @@ class InboundTransfersModel {
         }
     }
 
-    async postFxTransfer(request, sourceFspId) {
+    async postFxTransfers(request, sourceFspId) {
         const { body } = request;
         try {
             // assume commitRequestId from fxTransfer should be same as conversionTerms.conversionId from fxQuotes

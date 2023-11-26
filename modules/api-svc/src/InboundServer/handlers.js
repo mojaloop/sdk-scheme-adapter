@@ -976,7 +976,7 @@ const postFxTransfers = async (ctx) => {
     const logPrefix = 'Handling POST fxTransfers request';
 
     const model = createInboundTransfersModel(ctx);
-    model.postFxTransfer({ body, headers }, sourceFspId)
+    model.postFxTransfers({ body, headers }, sourceFspId)
         .then(response => logger.push({ response }).log(`${logPrefix} is done`))
         .catch(err => logger.push({ err }).log(`${logPrefix} error`));
 

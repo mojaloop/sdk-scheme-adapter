@@ -14,6 +14,7 @@ jest.mock('redis');
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('~/lib/model/lib/requests',() => require('./mockedLibRequests'));
 
+const { randomUUID } = require('node:crypto');
 const defaultConfig = require('./data/defaultConfig');
 const Model = require('~/lib/model').InboundTransfersModel;
 const mocks = require('./data/mocks');
@@ -819,15 +820,12 @@ describe('inboundModel', () => {
         });
     });
 
-    describe('postFxQuotes method Tests -->', () => {
+    describe('postFxQuotes Method Tests -->', () => {
         let model;
-        let beResponse;
-        const mojaResponse = mocks.mockMojaApiResponse();
+        let fxpResponse;
 
         beforeEach(async () => {
-            BackendRequests.__postFxQuotes = jest.fn(async () => beResponse);
-            MojaloopRequests.__putFxQuotes = jest.fn(async () => mojaResponse);
-
+            BackendRequests.__postFxQuotes = jest.fn(async () => fxpResponse);
             model = new Model({
                 ...config,
                 cache,
@@ -840,16 +838,16 @@ describe('inboundModel', () => {
         });
 
         test('should send PUT /fxQuotes callback request with the expected values', async () => {
-            const conversionRequestId = '12345';
+            const conversionRequestId = randomUUID();
             const initiatingFsp = 'dfsp_1';
             const body = mocks.mockFxQuotesPayload({
                 conversionRequestId,
                 initiatingFsp
             });
-            beResponse = mocks.mockFxQuotesInternalResponse();
+            fxpResponse = mocks.mockFxQuotesInternalResponse();
 
             const res = await model.postFxQuotes({ body }, initiatingFsp);
-            expect(res).toEqual(mojaResponse);
+            expect(res).toEqual(mocks.mockMojaApiResponse());
             expect(model.data.currentState).toBe(SDKStateEnum.FX_QUOTE_WAITING_FOR_ACCEPTANCE);
             expect(model.data.fxQuote.fulfilment).toBeTruthy();
 
@@ -860,6 +858,74 @@ describe('inboundModel', () => {
             expect(putArgs[0]).toBe(conversionRequestId);
             expect(putArgs[1].condition).toBe(Ilp.__response.condition);
             expect(putArgs[1].homeTransactionId).toBeUndefined();
+            expect(putArgs[2]).toBe(initiatingFsp);
+        });
+
+        test('should save fxQuote data in cache', async () => {
+            const conversionId = randomUUID();
+            const initiatingFsp = 'dfsp_123';
+            const body = mocks.mockFxQuotesPayload({
+                conversionId,
+                initiatingFsp
+            });
+
+            let data = await model.loadFxState(conversionId);
+            expect(data).toBeNull();
+
+            await model.postFxQuotes({ body }, initiatingFsp);
+            data = await model.loadFxState(conversionId);
+            expect(data).toBeDefined();
+        });
+        // todo: add error case tests
+    });
+
+    describe('postFxTransfers Method Tests -->', () => {
+        let model;
+        let fxpResponse;
+
+        beforeEach(async () => {
+            BackendRequests.__postFxTransfers = jest.fn(async () => fxpResponse);
+            model = new Model({
+                ...config,
+                cache,
+                logger,
+            });
+        });
+
+        afterEach(async () => {
+            jest.clearAllMocks();
+        });
+
+        test('should send PUT /fxTransfers callback request with the expected values', async () => {
+            const commitRequestId = randomUUID();
+            const initiatingFsp = 'dfsp_1';
+            const { condition } = Ilp.__response;
+            const body = mocks.mockFxTransfersPayload({
+                commitRequestId,
+                initiatingFsp,
+                condition,
+            });
+            fxpResponse = mocks.mockFxTransfersInternalResponse();
+
+            const fxQuoteBody = mocks.mockFxQuotesPayload({
+                conversionId: commitRequestId,
+                initiatingFsp
+            });
+            await model.postFxQuotes({ body: fxQuoteBody }, initiatingFsp);
+            expect(model.data).toBeTruthy();
+
+            await model.postFxTransfers({ body }, initiatingFsp);
+            expect(model.data.currentState).toBe(fxpResponse.conversionState);
+            expect(model.data.fulfil).toBeDefined();
+
+            expect(BackendRequests.__postFxTransfers).toHaveBeenCalledTimes(1);
+            expect(MojaloopRequests.__putFxTransfers).toHaveBeenCalledTimes(1);
+
+            // eslint-disable-next-line no-unused-vars
+            const { homeTransactionId, ...callbackPayload } = fxpResponse;
+            const putArgs = MojaloopRequests.__putFxTransfers.mock.calls[0];
+            expect(putArgs[0]).toBe(commitRequestId);
+            expect(putArgs[1]).toEqual(callbackPayload);
             expect(putArgs[2]).toBe(initiatingFsp);
         });
         // todo: add error case tests
