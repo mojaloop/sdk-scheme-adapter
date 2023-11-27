@@ -1023,12 +1023,14 @@ class InboundTransfersModel {
         }
     }
 
+    // todo: combine with this._save
     async saveFxState() { // fxQuote + fxTransfer
         const key = this.makeFxQuoteCacheKey(this.data?.conversionId);
         const res = await this._cache.set(key, this.data);
         this._logger.push({ key, res }).log('fxState is saved in cache');
     }
 
+    // todo: combine with this._load
     async loadFxState(conversionId) {
         const key = this.makeFxQuoteCacheKey(conversionId);
         const data = await this._cache.get(key);
