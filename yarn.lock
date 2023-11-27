@@ -2544,7 +2544,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-shared@npm:^18.2.0, @mojaloop/central-services-shared@npm:v18.2.0":
+"@mojaloop/central-services-shared@npm:^18.2.0":
   version: 18.2.0
   resolution: "@mojaloop/central-services-shared@npm:18.2.0"
   dependencies:
@@ -2586,6 +2586,51 @@ __metadata:
     ajv-keyboards:
       optional: false
   checksum: a54d43571e4f7031374fa754443ad15a6c0c46c653e9367169612cb026657d80a47d601b28885ca73509abc574c3b25fca1579bdf71cf79df57feae17b961855
+  languageName: node
+  linkType: hard
+
+"@mojaloop/central-services-shared@npm:v18.2.0-snapshot.16":
+  version: 18.2.0-snapshot.16
+  resolution: "@mojaloop/central-services-shared@npm:18.2.0-snapshot.16"
+  dependencies:
+    "@hapi/catbox": 12.1.1
+    "@hapi/catbox-memory": 5.0.1
+    axios: 1.6.2
+    clone: 2.1.2
+    dotenv: 16.3.1
+    env-var: 7.4.1
+    event-stream: 4.0.1
+    immutable: 4.3.4
+    lodash: 4.17.21
+    mustache: 4.2.0
+    openapi-backend: 5.10.5
+    raw-body: 2.5.2
+    rc: 1.2.8
+    shins: 2.6.0
+    uuid4: 2.0.3
+    widdershins: ^4.0.1
+    yaml: 2.3.4
+  peerDependencies:
+    "@mojaloop/central-services-error-handling": ">=12.x.x"
+    "@mojaloop/central-services-logger": ">=11.x.x"
+    "@mojaloop/central-services-metrics": ">=12.x.x"
+    "@mojaloop/event-sdk": ">=14.x.x"
+    ajv: 8.x.x
+    ajv-keywords: 5.x.x
+  peerDependenciesMeta:
+    "@mojaloop/central-services-error-handling":
+      optional: false
+    "@mojaloop/central-services-logger":
+      optional: false
+    "@mojaloop/central-services-metrics":
+      optional: false
+    "@mojaloop/event-sdk":
+      optional: false
+    ajv:
+      optional: false
+    ajv-keyboards:
+      optional: false
+  checksum: 81bff2cf3fc537206e63bc27f40f92320d58bb3c557f110312f62e0f7903c811328814bb30e9beab75324ad27cc32572706c23b569892aba5d333570f79123c8
   languageName: node
   linkType: hard
 
@@ -2695,7 +2740,7 @@ __metadata:
     "@mojaloop/central-services-error-handling": ^12.0.7
     "@mojaloop/central-services-logger": ^11.2.2
     "@mojaloop/central-services-metrics": ^12.0.8
-    "@mojaloop/central-services-shared": v18.2.0
+    "@mojaloop/central-services-shared": v18.2.0-snapshot.16
     "@mojaloop/event-sdk": ^14.0.0
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
     "@mojaloop/sdk-standard-components": v17.2.0-snapshot.2
