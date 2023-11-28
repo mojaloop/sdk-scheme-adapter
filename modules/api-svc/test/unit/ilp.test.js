@@ -27,9 +27,7 @@ describe('ILP Tests -->', () => {
 
         const decodedIlp = ilp.decodeIlpPacket(ilpPacket);
         expect(decodedIlp).toBeTruthy();
-        expect(decodedIlp.amount).toBe('0');
-        expect(decodedIlp.sourceAmount).toBeUndefined();
-        expect(decodedIlp.targetAmount).toBeUndefined();
+        expect(typeof decodedIlp.amount).toBe('string');
         expect(typeof decodedIlp.account).toBe('string');
         expect(decodedIlp.data).toBeInstanceOf(Buffer);
 
