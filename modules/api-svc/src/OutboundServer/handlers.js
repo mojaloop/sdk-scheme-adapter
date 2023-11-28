@@ -546,6 +546,8 @@ const getPartiesByTypeAndId = async (ctx) => {
     const type = ctx.state.path.params.Type;
     const id = ctx.state.path.params.ID;
     const subId = ctx.state.path.params.SubId;
+    const supportedCurrencies = ctx.state.conf.inbound.supportedCurrencies;
+    const kycInformation = ctx.state.conf.inbound.kycInformation;
 
     const args = { type, id, subId };
 
@@ -565,6 +567,10 @@ const getPartiesByTypeAndId = async (ctx) => {
 
         // run model's workflow
         const response = await model.run(args);
+
+        // add DFSP specific information to the response
+        response.party.body = { ...response.party.body, supportedCurrencies, kycInformation };
+
 
         // return the result
         if (response.errorInformation) {
