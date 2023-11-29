@@ -24,6 +24,11 @@ const middlewares = require('./middlewares');
 const { KafkaDomainEventProducer, BC_CONFIG } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
 const { DefaultLogger } = require('@mojaloop/logging-bc-client-lib');
 
+const OUTBOUND_API_VERSION = 'v2_1_0';
+const outboundApiFilePath = `../docs/sdk-scheme-adapter-outbound-${OUTBOUND_API_VERSION}-openapi3-snippets.yaml`;
+const specPath = path.join(path.dirname(require.resolve('@mojaloop/api-snippets')), outboundApiFilePath);
+const apiSpecs = yaml.load(fs.readFileSync(specPath));
+
 const endpointRegex = /\/.*/g;
 const logExcludePaths = ['/'];
 
@@ -38,8 +43,18 @@ class OutboundApi extends EventEmitter {
 
         this._api.use(middlewares.createErrorHandler(this._logger));
         this._api.use(middlewares.createRequestIdGenerator());
-        this._api.use(koaBody({ formidable: { maxFieldsSize: conf.backendApiServerMaxRequestBytes } })); // outbound always expects application/json
-        this._api.use(middlewares.applyState({ cache, wso2, conf, metricsClient, logExcludePaths, eventProducer, eventLogger }));
+        this._api.use(koaBody({
+            formidable: { maxFieldsSize: conf.backendApiServerMaxRequestBytes }
+        })); // outbound always expects application/json
+        this._api.use(middlewares.applyState({
+            cache,
+            wso2,
+            conf,
+            metricsClient,
+            logExcludePaths,
+            eventProducer,
+            eventLogger
+        }));
         this._api.use(middlewares.createLogger(this._logger));
 
         //Note that we strip off any path on peerEndpoint config after the origin.
@@ -98,13 +113,12 @@ class OutboundServer extends EventEmitter {
     }
 
     async start() {
+        const { port } = this._conf.outbound;
         await this._eventProducer?.init();
-        const specPath = path.join(path.dirname(require.resolve('@mojaloop/api-snippets')), '../docs/sdk-scheme-adapter-outbound-v2_0_0-openapi3-snippets.yaml');
-        const apiSpecs = yaml.load(fs.readFileSync(specPath));
         await this._validator.initialise(apiSpecs);
         await this._api.start();
-        await new Promise((resolve) => this._server.listen(this._conf.outbound.port, resolve));
-        this._logger.log(`Serving outbound API on port ${this._conf.outbound.port}`);
+        await new Promise((resolve) => this._server.listen(port, resolve));
+        this._logger.log(`Serving outbound API on port ${port}`);
     }
 
     async stop() {

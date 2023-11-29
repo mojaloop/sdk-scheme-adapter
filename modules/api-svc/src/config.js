@@ -131,6 +131,8 @@ module.exports = {
     fxTransfersEndpoint: env.get('FX_TRANSFERS_ENDPOINT').asString(),
     backendEndpoint: env.get('BACKEND_ENDPOINT').required().asString(),
 
+    getServicesFxpResponse: env.get('GET_SERVICES_FXP_RESPONSE').default('').asArray(),
+
     dfspId: env.get('DFSP_ID').default('mojaloop').asString(),
     ilpSecret: env.get('ILP_SECRET').default('mojaloop-sdk').asString(),
     checkIlp: env.get('CHECK_ILP').default('true').asBool(),
