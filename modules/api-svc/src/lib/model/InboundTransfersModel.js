@@ -39,7 +39,7 @@ class InboundTransfersModel {
         this._allowTransferWithoutQuote = config.allowTransferWithoutQuote;
         this._reserveNotification = config.reserveNotification;
         this._allowDifferentTransferTransactionId = config.allowDifferentTransferTransactionId;
-        this._supportedCurrencies = config.inbound.supportedCurrencies
+        this._supportedCurrencies = config.inbound.supportedCurrencies;
 
         this._mojaloopRequests = new MojaloopRequests({
             logger: this._logger,
