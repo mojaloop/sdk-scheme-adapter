@@ -19,9 +19,11 @@ const { Ilp, MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const shared = require('./lib/shared');
 const PartiesModel = require('./PartiesModel');
 const {
+    AmountTypes,
     BackendError,
-    SDKStateEnum,
     Directions,
+    ErrorMessages,
+    SDKStateEnum,
     States,
     Transitions
 } = require('./common');
@@ -120,8 +122,8 @@ class OutboundTransfersModel {
             init: initState,
             transitions: [
                 { name: Transitions.RESOLVE_PAYEE, from: States.START, to: States.PAYEE_RESOLVED },
-                { name: Transitions.REQUEST_SERVICES_FXP, from: States.PAYEE_RESOLVED, to: States.SERVICES_FXP_REQUESTED },
-                { name: Transitions.REQUEST_FX_QUOTE, from: States.SERVICES_FXP_REQUESTED, to: States.FX_QUOTE_RECEIVED },
+                { name: Transitions.REQUEST_SERVICES_FXP, from: States.PAYEE_RESOLVED, to: States.SERVICES_FXP_RECEIVED },
+                { name: Transitions.REQUEST_FX_QUOTE, from: States.SERVICES_FXP_RECEIVED, to: States.FX_QUOTE_RECEIVED },
                 { name: Transitions.REQUEST_QUOTE,
                     from: [
                         States.FX_QUOTE_RECEIVED,
@@ -132,8 +134,8 @@ class OutboundTransfersModel {
                 { name: Transitions.EXECUTE_FX_TRANSFER, from: States.QUOTE_RECEIVED, to: States.FX_TRANSFER_SUCCEEDED },
                 { name: Transitions.EXECUTE_TRANSFER,
                     from: [
-                      States.FX_TRANSFER_SUCCEEDED,
-                      States.QUOTE_RECEIVED, // if FX isn't required
+                        States.FX_TRANSFER_SUCCEEDED,
+                        States.QUOTE_RECEIVED, // if FX isn't required
                     ],
                     to: States.SUCCEEDED },
                 { name: Transitions.GET_TRANSFER, to: States.SUCCEEDED },
@@ -345,7 +347,11 @@ class OutboundTransfersModel {
                     }
 
                     if (Array.isArray(payee.supportedCurrencies)) {
-                        this.data.needFx = !payee.supportedCurrencies.includes(this.data.currency)
+                        const needFx = !payee.supportedCurrencies.includes(this.data.currency);
+                        if (needFx && this.data.amountType !== AmountTypes.SEND) {
+                            throw new Error(ErrorMessages.unsupportedFxAmountType);
+                        }
+                        this.data.needFx = needFx;
                     }
 
                     return resolve(payee);
@@ -507,13 +513,11 @@ class OutboundTransfersModel {
     }
 
     async _requestFxQuote() {
-        return new Promise(async (resolve, reject) => {
-            // todo: add impl.
-            // 1. build fxQuote payload
-            // 2. subscribe to cache stream by conversionRequestId (to await fxQuotes callback)
-            //   2.a - handle error response as well
-            // 3. send POST fxQuote request to hub
-        })
+        // todo: add impl.
+        // 1. build fxQuote payload
+        // 2. subscribe to cache stream by conversionRequestId (to await fxQuotes callback)
+        //   2.a - handle error response as well
+        // 3. send POST fxQuote request to hub
     }
 
     /**
@@ -527,6 +531,7 @@ class OutboundTransfersModel {
             // create a quote request
             const quote = this._buildQuoteRequest();
             this.data.quoteId = quote.quoteId;
+            // todo: check if we need to add converter field
 
             // listen for events on the quoteId
             const quoteKey = `qt_${quote.quoteId}`;
@@ -953,11 +958,6 @@ class OutboundTransfersModel {
                 resp.currentState = SDKStateEnum.WAITING_FOR_PARTY_ACCEPTANCE;
                 break;
 
-            // todo: think, if we need this resp state
-            // case States.SERVICES_FXP_REQUESTED:
-            //     resp.currentState = SDKStateEnum.SERVICES_FXP_RECEIVED;
-            //     break;
-
             case States.FX_QUOTE_RECEIVED:
                 resp.currentState = SDKStateEnum.WAITING_FOR_CONVERSION_ACCEPTANCE;
                 break;
@@ -1029,7 +1029,7 @@ class OutboundTransfersModel {
     /**
      * Returns a promise that resolves when the state machine has reached a terminal state
      *
-     * @param mergeDate {object} - an object to merge with the model state (data) before running the state machine
+     * @param mergeData {object} - an object to merge with the model state (data) before running the state machine
      */
     async run(mergeData) {
         try {
@@ -1096,7 +1096,7 @@ class OutboundTransfersModel {
                     }
                     break;
 
-                case States.SERVICES_FXP_REQUESTED:
+                case States.SERVICES_FXP_RECEIVED:
                     await this.stateMachine.requestFxQuote();
                     this._logger.log(`fxQuotes request for transfer ${this.data.transferId} has been completed`);
 
@@ -1113,7 +1113,7 @@ class OutboundTransfersModel {
                         await this._save();
                         return this.getResponse();
                     }
-                    await this.stateMachine.executeFxTransfer();
+                    await this.stateMachine.requestQuote();
                     this._logger.log(`Transfer ${this.data.transferId} has been completed`);
                     break;
 
@@ -1158,7 +1158,7 @@ class OutboundTransfersModel {
                     this._logger.log('State machine in aborted state');
                     return this.getResponse();
 
-              // todo: no such state!
+                    // todo: no such state!
                 case 'getTransfer':
                     await this.stateMachine.getTransfer();
                     this._logger.log(`Get transfer ${this.data.transferId} has been completed`);
@@ -1195,6 +1195,5 @@ class OutboundTransfersModel {
         }
     }
 }
-
 
 module.exports = OutboundTransfersModel;

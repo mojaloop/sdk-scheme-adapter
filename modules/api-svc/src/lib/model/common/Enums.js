@@ -49,7 +49,7 @@ const CacheKeyPrefixes = Object.freeze({
 const States = Object.freeze({
     START: 'start',
     PAYEE_RESOLVED: 'payeeResolved',
-    SERVICES_FXP_REQUESTED: 'servicesFxpRequested',
+    SERVICES_FXP_RECEIVED: 'servicesFxpReceived',
     FX_QUOTE_RECEIVED: 'fxQuoteReceived',
     QUOTE_RECEIVED: 'quoteReceived',
     FX_TRANSFER_SUCCEEDED: 'fxTransferSucceeded',
@@ -70,11 +70,22 @@ const Transitions  = Object.freeze({
     ABORT: 'abort'
 });
 
+const ErrorMessages = Object.freeze({
+    unsupportedFxAmountType: 'Unsupported amountType when currency conversion is needed',
+});
+
+const AmountTypes = Object.freeze({
+    SEND: 'SEND',
+    RECEIVE: 'RECEIVE',
+});
+
 module.exports = {
+    AmountTypes,
     CacheKeyPrefixes,
     Directions,
+    ErrorMessages,
     SDKStateEnum,
-    TransactionRequestStateEnum,
     States,
+    TransactionRequestStateEnum,
     Transitions,
 };
