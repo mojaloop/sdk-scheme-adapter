@@ -39,6 +39,7 @@ class InboundTransfersModel {
         this._allowTransferWithoutQuote = config.allowTransferWithoutQuote;
         this._reserveNotification = config.reserveNotification;
         this._allowDifferentTransferTransactionId = config.allowDifferentTransferTransactionId;
+        this._supportedCurrencies = config.inbound.supportedCurrencies
 
         this._mojaloopRequests = new MojaloopRequests({
             logger: this._logger,
@@ -157,7 +158,15 @@ class InboundTransfersModel {
             };
 
             // make a callback to the source fsp with the party info
-            return this._mojaloopRequests.putParties(idType, idValue, idSubValue, mlParty, sourceFspId);
+            const partyInfo = await this._mojaloopRequests.putParties(idType, idValue, idSubValue, mlParty, sourceFspId);
+
+            if (!partyInfo.party.supportedCurrencies) {
+                // add DFSP specific information to the response
+                partyInfo.party.supportedCurrencies = this._supportedCurrencies;
+            }
+
+            return partyInfo;
+
         }
         catch(err) {
             this._logger.push({ err }).log('Error in getParties');
