@@ -717,7 +717,6 @@ describe('outboundModel', () => {
 
         const newPayee = {
             partyIdInfo: {
-                supportedCurrencies: undefined,
                 partySubIdOrType: undefined,
                 partyIdType: 'PASSPORT',
                 partyIdentifier: 'AAABBBCCCDDDEEE',

@@ -37,7 +37,9 @@ const internalPartyToMojaloopParty = (internal, fspId, supportedCurrencies) => {
 
     if (!internal.supportedCurrencies) {
         // add DFSP specific information to the response
-        party.supportedCurrencies = supportedCurrencies || undefined;
+        if (supportedCurrencies) {
+            party.supportedCurrencies = supportedCurrencies;
+        }
     } else {
         party.supportedCurrencies = internal.supportedCurrencies;
     }
