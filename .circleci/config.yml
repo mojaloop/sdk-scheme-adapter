@@ -413,7 +413,7 @@ jobs:
           command: |
             cd test/func
             docker-compose -f ./ttk-tests-docker-compose.yml up --abort-on-container-exit
-            docker compose down
+            docker compose --profile bulk down
       - store_artifacts:
           path: ./test/func/reports
           prefix: test
