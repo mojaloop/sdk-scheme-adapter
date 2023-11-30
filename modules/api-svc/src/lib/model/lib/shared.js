@@ -685,6 +685,43 @@ const mojaloopBulkTransfersResponseToInternal = (external) => {
     return internal;
 };
 
+/**
+ * Converts a Mojaloop FX quote request to internal formProjects a Mojaloop API spec bulk transfer response to internal form
+ *
+ * @returns {object} - the internal form bulk transfer response
+ */
+const mojaloopFxQuoteRequestToInternal = (external) => {
+    // perform payload reformatting here (if needed)
+    return external;
+};
+
+const internalFxQuoteResponseToMojaloop = (beResponse) => {
+    // eslint-disable-next-line no-unused-vars
+    const { homeTransactionId, ...mlResponse } = beResponse;
+    return mlResponse;
+};
+
+const mojaloopFxTransferPrepareToInternal = (external, fxQuote) => {
+    const { homeTransactionId } = fxQuote.response;
+    return {
+        ...external,
+        homeTransactionId,
+    };
+};
+
+const internalFxTransferResponseToMojaloop = (beResponse, fulfilment) => {
+    return {
+        conversionState: beResponse.conversionState,
+        fulfilment: beResponse.fulfilment || fulfilment,
+        completedTimestamp: beResponse.completedTimestamp || new Date(),
+        ...beResponse.extensionList && {
+            extensionList: {
+                extension: beResponse.extensionList,
+            },
+        },
+    };
+};
+
 module.exports = {
     internalPartyToMojaloopParty,
     internalQuoteResponseToMojaloop,
@@ -700,5 +737,10 @@ module.exports = {
     mojaloopBulkPrepareToInternalBulkTransfer,
     mojaloopBulkTransfersResponseToInternal,
     internalBulkTransfersResponseToMojaloop,
-    mojaloopPutTransactionRequestToInternal
+    mojaloopPutTransactionRequestToInternal,
+
+    mojaloopFxQuoteRequestToInternal,
+    mojaloopFxTransferPrepareToInternal,
+    internalFxQuoteResponseToMojaloop,
+    internalFxTransferResponseToMojaloop,
 };

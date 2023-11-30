@@ -24,7 +24,7 @@ module.exports = (handlerMap) => async (ctx, next) => {
     }
     else {
         if (!ctx.state.logExcludePaths.includes(ctx.path)) {
-            ctx.state.logger.push({handler}).log('Found handler');
+            ctx.state.logger.push({ handler }).log('Found handler');
         }
         await handler(ctx);
     }

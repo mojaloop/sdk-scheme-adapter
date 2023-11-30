@@ -6,5 +6,8 @@ reject: [
   ## TODO: The kafka connectivity is not working properly and the following update is causing service crash.
   '@mojaloop/logging-bc-client-lib',
   ## TODO: The new version of npm-check-updates uses new Glob v9.x and it is introducing a dependency Package "path-scurry@1.6.1" which is licensed under "BlueOak-1.0.0" which is not permitted by the Mojaloop License Policy
-  npm-check-updates
+  npm-check-updates,
+  nx,
+  '@mojaloop/central-services-shared'
+  ## for FX impl. we need v18.2.0-snapshot.16 version, not v18.2.0. But npm-check-updates trying to upgrade to v18.2.0
 ]
