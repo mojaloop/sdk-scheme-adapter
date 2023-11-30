@@ -1042,7 +1042,7 @@ class InboundTransfersModel {
         if (!conversionId) {
             throw new Error('No conversionId for making cache key');
         }
-        return `${CacheKeyPrefixes.FX_QUOTE}_${conversionId}`;
+        return `${CacheKeyPrefixes.FX_QUOTE_INBOUND}_${conversionId}`;
     }
 }
 

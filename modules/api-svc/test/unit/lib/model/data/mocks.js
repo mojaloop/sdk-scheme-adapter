@@ -77,6 +77,53 @@ const mockFxTransfersInternalResponse = ({
     conversionState
 });
 
+const coreConnectorPostTransfersPayloadDto = ({
+    homeTransactionId = randomUUID(),
+    fspId = 'PayerFSP',
+    currency = 'BWP',
+    amount = '300'
+} = {}) => Object.freeze({
+    homeTransactionId,
+    from: {
+        fspId,
+        dateOfBirth: '1966-06-16',
+        displayName: 'Keeya',
+        firstName: 'Keeya',
+        idType: 'MSISDN',
+        idValue: '26787654321'
+    },
+    to: {
+        idType: 'MSISDN',
+        idValue: '2551234567890'
+    },
+    amountType: 'SEND',
+    currency,
+    amount
+});
+
+const mockGetPartyResponse = ({
+    supportedCurrencies = ['TZS'],
+    kycInformation = 'Encrypted KYC Data',
+    fspId = 'MobileMoney',
+} = {}) => Object.freeze({
+    party: {
+        partyIdInfo: {
+            partyIdType: 'PERSONAL_ID',
+            partyIdentifier: '123456789',
+            partySubIdOrType: 'PASSPORT',
+            fspId
+        },
+        personalInfo: {
+            complexName: {
+                firstName: 'John',
+                lastName: 'Doe'
+            },
+            kycInformation
+        },
+        supportedCurrencies
+    }
+});
+
 const mockMojaApiResponse = ({
     headers = {},
     body = {}
@@ -88,10 +135,12 @@ const mockMojaApiResponse = ({
 });
 
 module.exports = {
+    coreConnectorPostTransfersPayloadDto,
     mockFxQuotesPayload,
     mockFxQuotesInternalResponse,
     mockFxTransfersPayload,
     mockFxTransfersInternalResponse,
+    mockGetPartyResponse,
     mockMojaApiResponse,
     mockCurrencyAmount,
 };

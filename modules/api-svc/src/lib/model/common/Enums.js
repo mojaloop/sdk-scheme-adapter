@@ -43,7 +43,13 @@ const Directions = Object.freeze({
 });
 
 const CacheKeyPrefixes = Object.freeze({
-    FX_QUOTE: 'fxQuote_in'
+    FX_QUOTE_INBOUND: 'fxQuote_in',
+    FX_QUOTE_CALLBACK_CHANNEL: 'fxQuote_callback',
+});
+
+const CurrencyConverters = Object.freeze({
+    PAYER: 'PAYER',
+    PAYEE: 'PAYEE',
 });
 
 const States = Object.freeze({
@@ -71,6 +77,9 @@ const Transitions  = Object.freeze({
 });
 
 const ErrorMessages = Object.freeze({
+    noFxProviderDetected: 'No FX provider detected',
+    noSupportedCurrencies: 'No payee supportedCurrencies received',
+    responseMissedExpiryDeadline: 'Response missed expiry deadline',
     unsupportedFxAmountType: 'Unsupported amountType when currency conversion is needed',
 });
 
@@ -82,6 +91,7 @@ const AmountTypes = Object.freeze({
 module.exports = {
     AmountTypes,
     CacheKeyPrefixes,
+    CurrencyConverters,
     Directions,
     ErrorMessages,
     SDKStateEnum,

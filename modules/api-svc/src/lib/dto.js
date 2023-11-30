@@ -1,3 +1,5 @@
+/*eslint quote-props: ["error", "as-needed"]*/
+const { randomUUID } = require('node:crypto');
 const { Directions, SDKStateEnum} = require('./model/common');
 
 const quoteRequestStateDto = (request) => ({
@@ -23,7 +25,38 @@ const fxQuoteRequestStateDto = (request) => ({
     initiatedTimestamp: new Date().toISOString(),
 });
 
+/**
+ * @param data {object} - "state" of inbound transaction request
+ */
+const outboundPostFxQuotePayloadDto = (data) => Object.freeze({
+    conversionRequestId: randomUUID(),
+    conversionTerms: {
+        conversionId: data.transferId, // should be the same as commitRequestId from fxTransfer
+        initiatingFsp: data.from.fspId,
+        counterPartyFsp: data.fxProviders[0], // todo: think if we have several FXPs
+        amountType: data.amountType,
+        sourceAmount: {
+            currency: data.currency,
+            amount: data.amount
+        },
+        targetAmount: {
+            currency: data.supportedCurrencies[0], // todo: think if we have several currencies
+        },
+        expiration: data.fxQuoteExpiration,
+    }
+});
+
+/**
+ * @param data {object} - "state" of inbound transaction request
+ */
+const outboundPostFxTransferPayloadDto = (data) => Object.freeze({
+    commitRequestId: data.transferId, // should be the same as conversionTerms.conversionId from fxQuote
+    // todo: add other fields
+});
+
 module.exports = {
     quoteRequestStateDto,
-    fxQuoteRequestStateDto
+    fxQuoteRequestStateDto,
+    outboundPostFxQuotePayloadDto,
+    outboundPostFxTransferPayloadDto,
 };
