@@ -23,6 +23,12 @@ const {
     TransfersModel,
 } = require('../lib/model');
 
+const extractBodyHeadersSourceFspId = ctx => ({
+    sourceFspId: ctx.request.headers['fspiop-source'],
+    body: { ...ctx.request.body },
+    headers: { ...ctx.request.headers },
+});
+
 const createInboundTransfersModel = ctx => new Model({
     ...ctx.state.conf,
     cache: ctx.state.cache,
@@ -956,8 +962,7 @@ const healthCheck = async(ctx) => {
 };
 
 const postFxQuotes = async (ctx) => {
-    const sourceFspId = ctx.request.headers['fspiop-source'];
-    const { body, headers } = ctx.request;
+    const { body, headers, sourceFspId } = extractBodyHeadersSourceFspId(ctx);
     const { logger } = ctx.state;
     const logPrefix = 'Handling POST fxQuotes request';
 
@@ -970,8 +975,7 @@ const postFxQuotes = async (ctx) => {
 };
 
 const postFxTransfers = async (ctx) => {
-    const sourceFspId = ctx.request.headers['fspiop-source'];
-    const { body, headers } = ctx.request;
+    const { body, headers, sourceFspId } = extractBodyHeadersSourceFspId(ctx);
     const { logger } = ctx.state;
     const logPrefix = 'Handling POST fxTransfers request';
 
