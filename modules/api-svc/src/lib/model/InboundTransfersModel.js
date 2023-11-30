@@ -515,17 +515,7 @@ class InboundTransfersModel {
             await this.saveFxState();
 
             const internalRequest = shared.mojaloopFxQuoteRequestToInternal(body);
-            
-            // Check if conversionId exists in cache 
-            if(body.conversionId) {
-                const previousTxnReq = await this.loadFxState(body.conversionId);
-                if(previousTxnReq) {
-                    internalRequest.homeR2PconversionId = previousTxnReq.homeR2PconversionId;
-                } else {
-                    this._logger.error(`No previous transactionRequest found in cache with conversionId: ${internalRequest.conversionId}. Unable to fetch homeR2PconversionId.`);
-                }
-            }
-            
+
             const beResponse = await this._backendRequests.postFxQuotes(internalRequest);
             if (!beResponse) {
                 // make an error callback to the source fsp
