@@ -522,7 +522,7 @@ class InboundTransfersModel {
                 if(previousTxnReq) {
                     internalRequest.homeR2PconversionId = previousTxnReq.homeR2PconversionId;
                 } else {
-                    this._logger.error(`No previous transactionRequest found in cache with conversionId: ${internalRequest.conversionId}. Unable to fetch homeR2PTransactionId.`);
+                    this._logger.error(`No previous transactionRequest found in cache with conversionId: ${internalRequest.conversionId}. Unable to fetch homeR2PconversionId.`);
                 }
             }
             
