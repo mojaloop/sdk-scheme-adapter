@@ -1978,12 +1978,12 @@ __metadata:
   linkType: hard
 
 "@grpc/grpc-js@npm:^1.9.9":
-  version: 1.9.11
-  resolution: "@grpc/grpc-js@npm:1.9.11"
+  version: 1.9.12
+  resolution: "@grpc/grpc-js@npm:1.9.12"
   dependencies:
     "@grpc/proto-loader": ^0.7.8
     "@types/node": ">=12.12.47"
-  checksum: ed11ebcb0f8c34e2ada1d16ac2eef2465e1812871dd42bf40a405dfa06e2bfe895e680aff10644f9d51c33ce1ee1882ee466237ee478365c5ed265c0d7c5c015
+  checksum: 1788bdc7256b003261d5cfd6858fe21c06043742a5f512b9855df66998239d645e6eda1612d17dbffa19a7fcce950cd2ff661e9818ce67ca36198501020da06d
   languageName: node
   linkType: hard
 
@@ -5354,9 +5354,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.30001541":
-  version: 1.0.30001564
-  resolution: "caniuse-lite@npm:1.0.30001564"
-  checksum: 5b53749a2e9057e74c5a129fc214fa4434d3f0c3faadbec176efa03b44e40f9c1ef8ceec979f0dd186f7a142476713129df9263e012a178351ba7807217f157a
+  version: 1.0.30001565
+  resolution: "caniuse-lite@npm:1.0.30001565"
+  checksum: 7621f358d0e1158557430a111ca5506008ae0b2c796039ef53aeebf4e2ba15e5241cb89def21ea3a633b6a609273085835b44a522165d871fa44067cdf29cccd
   languageName: node
   linkType: hard
 
@@ -6779,9 +6779,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.535":
-  version: 1.4.593
-  resolution: "electron-to-chromium@npm:1.4.593"
-  checksum: 8b53c78a77501338635576bccda6852c74d388b6f547f3c0c63c19abdc8cfc0b3dae3b8a4ab438a37c0c53972ba673a5578438f880a8ed45a345e81eae016a1e
+  version: 1.4.595
+  resolution: "electron-to-chromium@npm:1.4.595"
+  checksum: 02f13c7c247883a2e15290360261c8ab9903b4c3dfd977ba9cbd998ba111a9cb2e6bf05e1147ae2a2b141012c476cab5f0b9480d7f53a56d9ba274d46c76ea06
   languageName: node
   linkType: hard
 
@@ -15090,11 +15090,11 @@ __metadata:
   linkType: hard
 
 "undici@npm:^5.27.2":
-  version: 5.28.0
-  resolution: "undici@npm:5.28.0"
+  version: 5.28.1
+  resolution: "undici@npm:5.28.1"
   dependencies:
     "@fastify/busboy": ^2.0.0
-  checksum: 208859e43827f3b1a32f52dbb62b01f66363d84e797016c3143c0c52fb41729670aec74ab2f88f0cf4c69c1f9a69486220cac72695fd25c126d7eb07ccb7c216
+  checksum: dd34d0a0242757ac5673efbaa5e0ae2346a5855d1718ce2bb2dfa891a01fcf72c0b286fdcca602814e4894b154e7eeec015021f27a7751e6eaeb1b4c3a12387a
   languageName: node
   linkType: hard
 
