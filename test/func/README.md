@@ -2,7 +2,7 @@
 
 - Make sure you are in `test/func` directory
 - Run the command `docker compose build`
-- If using bulk, run the command `docker compose -e ENABLE_BACKEND_EVENT_HANDLER=true -e ENABLE_FSPIOP_EVENT_HANDLER=true --profile bulk --profile debug up` (wait till all the services are up)
+- If using bulk, run the command `env ENABLE_BACKEND_EVENT_HANDLER=true env ENABLE_FSPIOP_EVENT_HANDLER=true docker compose --profile bulk --profile debug up` (wait till all the services are up)
 - If not, run the command `docker compose --profile debug up` (wait till all the services are up)
 - Open TTK UI at [localhost:6060](http://localhost:16060) in a browser. If TTK UI does not open, give it some more time to make sure all the services are up and running.
 - Go to Test Runner, Click on Collections Manager and choose `collections/hub/sdk-bulk/basic` folder from the repository (https://github.com/mojaloop/testing-toolkit-test-cases/)
@@ -12,7 +12,7 @@
 # Steps to run end-to-end functional tests with CLI
 - Make sure you are in `test/func` directory
 - Run the command `docker compose build`
-- If using bulk, run the command `docker compose -e ENABLE_BACKEND_EVENT_HANDLER=true -e ENABLE_FSPIOP_EVENT_HANDLER=true --profile bulk up` (wait till all the services are up)
+- If using bulk, run the command `env ENABLE_BACKEND_EVENT_HANDLER=true env ENABLE_FSPIOP_EVENT_HANDLER=true docker compose --profile bulk up` (wait till all the services are up)
 - If not, run the command `docker compose up` (wait till all the services are up)
 - Wait for some time to get all the services running
 - Execute the following command in a separate terminal from `test/func` folder to run the test cases using CLI
