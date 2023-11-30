@@ -516,13 +516,13 @@ class InboundTransfersModel {
 
             const internalRequest = shared.mojaloopFxQuoteRequestToInternal(body);
             
-            // Check if transactionRequestId exists in cache 
-            if(body.transactionRequestId) {
-                const previousTxnReq = await this.loadFxState(body.transactionRequestId);
+            // Check if conversionId exists in cache 
+            if(body.conversionId) {
+                const previousTxnReq = await this.loadFxState(body.conversionId);
                 if(previousTxnReq) {
-                    internalRequest.homeR2PTransactionId = previousTxnReq.homeR2PTransactionId;
+                    internalRequest.homeR2PconversionId = previousTxnReq.homeR2PconversionId;
                 } else {
-                    this._logger.error(`No previous transactionRequest found in cache with transactionRequestId: ${internalRequest.transactionRequestId}. Unable to fetch homeR2PTransactionId.`);
+                    this._logger.error(`No previous transactionRequest found in cache with conversionId: ${internalRequest.conversionId}. Unable to fetch homeR2PTransactionId.`);
                 }
             }
             
