@@ -2536,6 +2536,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mojaloop/api-snippets@npm:^17.3.0-snapshot.0, @mojaloop/api-snippets@npm:v17.3.0-snapshot.0":
+  version: 17.3.0-snapshot.0
+  resolution: "@mojaloop/api-snippets@npm:17.3.0-snapshot.0"
+  dependencies:
+    "@apidevtools/json-schema-ref-parser": ^9.1.2
+    commander: ^11.1.0
+    jest-ts-auto-mock: ^2.1.0
+    js-yaml: ^4.1.0
+    json-refs: ^3.0.15
+    openapi-types: ^12.1.3
+    openapi-typescript: ^6.7.1
+    ts-auto-mock: ^3.7.1
+  checksum: e77beb5d4025d099d0a6157921ccf36c0466677d1a395fed16690a588cdca9e17f341504ead8f3554b529f3c0c93e55eb63390ed547e98c7056ed43802f0faa3
+  languageName: node
+  linkType: hard
+
 "@mojaloop/central-services-error-handling@npm:^12.0.7":
   version: 12.0.7
   resolution: "@mojaloop/central-services-error-handling@npm:12.0.7"
@@ -2572,7 +2588,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-shared@npm:18.2.0, @mojaloop/central-services-shared@npm:^18.2.0":
+"@mojaloop/central-services-shared@npm:^18.2.0":
   version: 18.2.0
   resolution: "@mojaloop/central-services-shared@npm:18.2.0"
   dependencies:
@@ -2614,6 +2630,51 @@ __metadata:
     ajv-keyboards:
       optional: false
   checksum: a54d43571e4f7031374fa754443ad15a6c0c46c653e9367169612cb026657d80a47d601b28885ca73509abc574c3b25fca1579bdf71cf79df57feae17b961855
+  languageName: node
+  linkType: hard
+
+"@mojaloop/central-services-shared@npm:v18.2.0-snapshot.16":
+  version: 18.2.0-snapshot.16
+  resolution: "@mojaloop/central-services-shared@npm:18.2.0-snapshot.16"
+  dependencies:
+    "@hapi/catbox": 12.1.1
+    "@hapi/catbox-memory": 5.0.1
+    axios: 1.6.2
+    clone: 2.1.2
+    dotenv: 16.3.1
+    env-var: 7.4.1
+    event-stream: 4.0.1
+    immutable: 4.3.4
+    lodash: 4.17.21
+    mustache: 4.2.0
+    openapi-backend: 5.10.5
+    raw-body: 2.5.2
+    rc: 1.2.8
+    shins: 2.6.0
+    uuid4: 2.0.3
+    widdershins: ^4.0.1
+    yaml: 2.3.4
+  peerDependencies:
+    "@mojaloop/central-services-error-handling": ">=12.x.x"
+    "@mojaloop/central-services-logger": ">=11.x.x"
+    "@mojaloop/central-services-metrics": ">=12.x.x"
+    "@mojaloop/event-sdk": ">=14.x.x"
+    ajv: 8.x.x
+    ajv-keywords: 5.x.x
+  peerDependenciesMeta:
+    "@mojaloop/central-services-error-handling":
+      optional: false
+    "@mojaloop/central-services-logger":
+      optional: false
+    "@mojaloop/central-services-metrics":
+      optional: false
+    "@mojaloop/event-sdk":
+      optional: false
+    ajv:
+      optional: false
+    ajv-keyboards:
+      optional: false
+  checksum: 81bff2cf3fc537206e63bc27f40f92320d58bb3c557f110312f62e0f7903c811328814bb30e9beab75324ad27cc32572706c23b569892aba5d333570f79123c8
   languageName: node
   linkType: hard
 
@@ -2719,14 +2780,14 @@ __metadata:
     "@babel/core": ^7.23.5
     "@babel/preset-env": ^7.23.5
     "@koa/cors": ^4.0.0
-    "@mojaloop/api-snippets": 17.2.5
+    "@mojaloop/api-snippets": v17.3.0-snapshot.0
     "@mojaloop/central-services-error-handling": ^12.0.7
     "@mojaloop/central-services-logger": ^11.2.2
     "@mojaloop/central-services-metrics": ^12.0.8
-    "@mojaloop/central-services-shared": 18.2.0
+    "@mojaloop/central-services-shared": v18.2.0-snapshot.16
     "@mojaloop/event-sdk": ^14.0.0
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
-    "@mojaloop/sdk-standard-components": ^17.1.3
+    "@mojaloop/sdk-standard-components": v17.2.0-snapshot.4
     "@redocly/openapi-cli": ^1.0.0-beta.94
     "@types/jest": ^29.5.10
     ajv: 8.12.0
@@ -2782,7 +2843,7 @@ __metadata:
     "@types/convict": ^6.1.6
     "@types/express": ^4.17.21
     "@types/jest": ^29.5.10
-    "@types/node": ^20.10.0
+    "@types/node": ^20.10.1
     "@types/node-cache": ^4.2.5
     "@types/supertest": ^2.0.16
     "@types/swagger-ui-express": ^4.1.6
@@ -2820,7 +2881,7 @@ __metadata:
     "@types/convict": ^6.1.6
     "@types/express": ^4.17.21
     "@types/jest": ^29.5.10
-    "@types/node": ^20.10.0
+    "@types/node": ^20.10.1
     "@types/node-cache": ^4.2.5
     "@types/supertest": ^2.0.16
     "@types/swagger-ui-express": ^4.1.6
@@ -2855,7 +2916,7 @@ __metadata:
     "@mojaloop/logging-bc-public-types-lib": ^0.1.23
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.2.103
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": 0.2.15
-    "@types/node": ^20.10.0
+    "@types/node": ^20.10.1
     ajv: ^8.12.0
     eslint: ^8.54.0
     jest: ^29.7.0
@@ -2874,7 +2935,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter@workspace:."
   dependencies:
     "@types/jest": ^29.5.10
-    "@types/node": ^20.10.0
+    "@types/node": ^20.10.1
     "@types/node-cache": ^4.2.5
     "@typescript-eslint/eslint-plugin": ^6.13.1
     "@typescript-eslint/parser": ^6.13.1
@@ -2897,16 +2958,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mojaloop/sdk-standard-components@npm:^17.1.3":
-  version: 17.1.3
-  resolution: "@mojaloop/sdk-standard-components@npm:17.1.3"
+"@mojaloop/sdk-standard-components@npm:v17.2.0-snapshot.4":
+  version: 17.2.0-snapshot.4
+  resolution: "@mojaloop/sdk-standard-components@npm:17.2.0-snapshot.4"
   dependencies:
+    "@mojaloop/api-snippets": ^17.3.0-snapshot.0
     base64url: 3.0.1
     fast-safe-stringify: ^2.1.1
     ilp-packet: 2.2.0
-    jsonwebtoken: 9.0.1
+    jsonwebtoken: 9.0.2
     jws: 4.0.0
-  checksum: cd326735af5eb636a10a596fe9123a2b5b35550b54a3e9b123600754805ba02f454f52e57bd4da92d7f5c2d3dc5a72adfd57e4835b8216225ac51817d4cccba4
+  checksum: 81fd5d19de3ed1ac0831c827dcd8c74356b1bbe55bb2321ee0ec0f4cf1a8e3eda9fb44195a7dbcc54d3f3f3dc043d146e1271409ae0793fcb51408789c012044
   languageName: node
   linkType: hard
 
@@ -3792,7 +3854,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:>=12.12.47, @types/node@npm:^20.10.0, @types/node@npm:^20.5.7":
+"@types/node@npm:>=12.12.47, @types/node@npm:^20.5.7":
   version: 20.10.0
   resolution: "@types/node@npm:20.10.0"
   dependencies:
@@ -3805,6 +3867,15 @@ __metadata:
   version: 14.18.33
   resolution: "@types/node@npm:14.18.33"
   checksum: 4e23f95186d8ae1d38c999bc6b46fe94e790da88744b0a3bfeedcbd0d9ffe2cb0ff39e85f43014f6739e5270292c1a1f6f97a1fc606fd573a0c17fda9a1d42de
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^20.10.1":
+  version: 20.10.1
+  resolution: "@types/node@npm:20.10.1"
+  dependencies:
+    undici-types: ~5.26.4
+  checksum: 9dfdcd2496ce535dba0ae496985d6e991a8a5d70a180db3a94c947a2123d99318a95dce4aa2a192f7e57c3afa3fdb44d6fd63e18efd49568950d6c239dadcc39
   languageName: node
   linkType: hard
 
@@ -5703,7 +5774,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:^11.0.0":
+"commander@npm:^11.0.0, commander@npm:^11.1.0":
   version: 11.1.0
   resolution: "commander@npm:11.1.0"
   checksum: fd1a8557c6b5b622c89ecdfde703242ab7db3b628ea5d1755784c79b8e7cb0d74d65b4a262289b533359cd58e1bfc0bf50245dfbcd2954682a6f367c828b79ef
@@ -10152,15 +10223,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsonwebtoken@npm:9.0.1":
-  version: 9.0.1
-  resolution: "jsonwebtoken@npm:9.0.1"
+"jsonwebtoken@npm:9.0.2":
+  version: 9.0.2
+  resolution: "jsonwebtoken@npm:9.0.2"
   dependencies:
     jws: ^3.2.2
-    lodash: ^4.17.21
+    lodash.includes: ^4.3.0
+    lodash.isboolean: ^3.0.3
+    lodash.isinteger: ^4.0.4
+    lodash.isnumber: ^3.0.3
+    lodash.isplainobject: ^4.0.6
+    lodash.isstring: ^4.0.1
+    lodash.once: ^4.0.0
     ms: ^2.1.1
-    semver: ^7.3.8
-  checksum: 0eafe268896f4e8f9ab1f0f20e8c645721b7a9cddc41c0aba1e58da5c34564e8c9990817c1a5b646d795bcbb1339350826fe57c4569b5379ba9eea4a9aa5bbd0
+    semver: ^7.5.4
+  checksum: fc739a6a8b33f1974f9772dca7f8493ca8df4cc31c5a09dcfdb7cff77447dcf22f4236fb2774ef3fe50df0abeb8e1c6f4c41eba82f500a804ab101e2fbc9d61a
   languageName: node
   linkType: hard
 
@@ -10466,6 +10543,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.includes@npm:^4.3.0":
+  version: 4.3.0
+  resolution: "lodash.includes@npm:4.3.0"
+  checksum: 71092c130515a67ab3bd928f57f6018434797c94def7f46aafa417771e455ce3a4834889f4267b17887d7f75297dfabd96231bf704fd2b8c5096dc4a913568b6
+  languageName: node
+  linkType: hard
+
+"lodash.isboolean@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "lodash.isboolean@npm:3.0.3"
+  checksum: b70068b4a8b8837912b54052557b21fc4774174e3512ed3c5b94621e5aff5eb6c68089d0a386b7e801d679cd105d2e35417978a5e99071750aa2ed90bffd0250
+  languageName: node
+  linkType: hard
+
 "lodash.isequal@npm:^4.5.0":
   version: 4.5.0
   resolution: "lodash.isequal@npm:4.5.0"
@@ -10473,10 +10564,38 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.isinteger@npm:^4.0.4":
+  version: 4.0.4
+  resolution: "lodash.isinteger@npm:4.0.4"
+  checksum: 6034821b3fc61a2ffc34e7d5644bb50c5fd8f1c0121c554c21ac271911ee0c0502274852845005f8651d51e199ee2e0cfebfe40aaa49c7fe617f603a8a0b1691
+  languageName: node
+  linkType: hard
+
 "lodash.ismatch@npm:^4.4.0":
   version: 4.4.0
   resolution: "lodash.ismatch@npm:4.4.0"
   checksum: a393917578842705c7fc1a30fb80613d1ac42d20b67eb26a2a6004d6d61ee90b419f9eb320508ddcd608e328d91eeaa2651411727eaa9a12534ed6ccb02fc705
+  languageName: node
+  linkType: hard
+
+"lodash.isnumber@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "lodash.isnumber@npm:3.0.3"
+  checksum: 913784275b565346255e6ae6a6e30b760a0da70abc29f3e1f409081585875105138cda4a429ff02577e1bc0a7ae2a90e0a3079a37f3a04c3d6c5aaa532f4cab2
+  languageName: node
+  linkType: hard
+
+"lodash.isplainobject@npm:^4.0.6":
+  version: 4.0.6
+  resolution: "lodash.isplainobject@npm:4.0.6"
+  checksum: 29c6351f281e0d9a1d58f1a4c8f4400924b4c79f18dfc4613624d7d54784df07efaff97c1ff2659f3e085ecf4fff493300adc4837553104cef2634110b0d5337
+  languageName: node
+  linkType: hard
+
+"lodash.isstring@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "lodash.isstring@npm:4.0.1"
+  checksum: eaac87ae9636848af08021083d796e2eea3d02e80082ab8a9955309569cb3a463ce97fd281d7dc119e402b2e7d8c54a23914b15d2fc7fff56461511dc8937ba0
   languageName: node
   linkType: hard
 
@@ -10491,6 +10610,13 @@ __metadata:
   version: 4.6.2
   resolution: "lodash.merge@npm:4.6.2"
   checksum: ad580b4bdbb7ca1f7abf7e1bce63a9a0b98e370cf40194b03380a46b4ed799c9573029599caebc1b14e3f24b111aef72b96674a56cfa105e0f5ac70546cdc005
+  languageName: node
+  linkType: hard
+
+"lodash.once@npm:^4.0.0":
+  version: 4.1.1
+  resolution: "lodash.once@npm:4.1.1"
+  checksum: d768fa9f9b4e1dc6453be99b753906f58990e0c45e7b2ca5a3b40a33111e5d17f6edf2f768786e2716af90a8e78f8f91431ab8435f761fef00f9b0c256f6d245
   languageName: node
   linkType: hard
 

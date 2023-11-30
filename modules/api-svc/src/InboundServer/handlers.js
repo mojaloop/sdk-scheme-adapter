@@ -23,6 +23,25 @@ const {
     TransfersModel,
 } = require('../lib/model');
 
+const extractBodyHeadersSourceFspId = ctx => ({
+    sourceFspId: ctx.request.headers['fspiop-source'],
+    body: { ...ctx.request.body },
+    headers: { ...ctx.request.headers },
+});
+
+const createInboundTransfersModel = ctx => new Model({
+    ...ctx.state.conf,
+    cache: ctx.state.cache,
+    logger: ctx.state.logger,
+    wso2: ctx.state.wso2,
+    resourceVersions: ctx.resourceVersions,
+});
+
+const prepareResponse = ctx => {
+    ctx.response.status = ReturnCodes.ACCEPTED.CODE;
+    ctx.response.body = '';
+};
+
 /**
  * Handles a GET /authorizations/{id} request
  */
@@ -568,10 +587,10 @@ const putTransactionRequestsById = async (ctx) => {
                     wso2: ctx.state.wso2,
                     resourceVersions: ctx.resourceVersions,
                 });
-    
+
                 // use the model to handle the request
                 const response = await model.putTransactionRequest(putTransactionRequest, transactionRequestId, sourceFspId);
-    
+
                 // log the result
                 ctx.state.logger.push({ response }).log('Inbound transfers model handled PUT /transactionRequests/{ID} request');
             }
@@ -937,10 +956,35 @@ const putBulkTransfersByIdError = async(ctx) => {
     ctx.response.body = '';
 };
 
-
 const healthCheck = async(ctx) => {
     ctx.response.status = ReturnCodes.OK.CODE;
     ctx.response.body = '';
+};
+
+const postFxQuotes = async (ctx) => {
+    const { body, headers, sourceFspId } = extractBodyHeadersSourceFspId(ctx);
+    const { logger } = ctx.state;
+    const logPrefix = 'Handling POST fxQuotes request';
+
+    const model = createInboundTransfersModel(ctx);
+    model.postFxQuotes({ body, headers }, sourceFspId)
+        .then(response => logger.push({ response }).log(`${logPrefix} is done`))
+        .catch(err => logger.push({ err }).log(`${logPrefix} error`));
+
+    prepareResponse(ctx);
+};
+
+const postFxTransfers = async (ctx) => {
+    const { body, headers, sourceFspId } = extractBodyHeadersSourceFspId(ctx);
+    const { logger } = ctx.state;
+    const logPrefix = 'Handling POST fxTransfers request';
+
+    const model = createInboundTransfersModel(ctx);
+    model.postFxTransfers({ body, headers }, sourceFspId)
+        .then(response => logger.push({ response }).log(`${logPrefix} is done`))
+        .catch(err => logger.push({ err }).log(`${logPrefix} error`));
+
+    prepareResponse(ctx);
 };
 
 module.exports = {
@@ -1033,5 +1077,11 @@ module.exports = {
     },
     '/transactionRequests/{ID}/error': {
         put: putTransactionRequestsByIdError
+    },
+    '/fxQuotes': {
+        post: postFxQuotes
+    },
+    '/fxTransfers': {
+        post: postFxTransfers
     }
 };

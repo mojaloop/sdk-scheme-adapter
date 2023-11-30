@@ -25,7 +25,7 @@
         "GHSA-c2qf-rxjj-qqgw",
         // Issue with protobuffs (https://github.com/advisories/GHSA-h755-8qp9-cq85). No fix available.
         "GHSA-h755-8qp9-cq85",
-        // PostCSS https://github.com/advisories/GHSA-7fh5-64p2-3v2j
-        "GHSA-7fh5-64p2-3v2j"
+        "GHSA-7fh5-64p2-3v2j", // Issue with postcss (https://github.com/advisories/GHSA-7fh5-64p2-3v2j)
+        "GHSA-67hx-6x53-jw92", // Issue with @babel/traverse (https://github.com/advisories/GHSA-67hx-6x53-jw92)
     ]
 }
