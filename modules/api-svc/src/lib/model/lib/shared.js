@@ -20,7 +20,7 @@ const ErrorHandling = require('@mojaloop/central-services-error-handling');
  *
  * @returns {object} - the constructed party object
  */
-const internalPartyToMojaloopParty = (internal, fspId) => {
+const internalPartyToMojaloopParty = (internal, fspId, supportedCurrencies) => {
     const party = {
         partyIdInfo: {
             partyIdType: internal.idType,
@@ -34,6 +34,15 @@ const internalPartyToMojaloopParty = (internal, fspId) => {
             extension: internal.extensionList
         };
     }
+
+    if (!internal.supportedCurrencies) {
+        // add DFSP specific information to the response
+        party.supportedCurrencies = supportedCurrencies || undefined;
+    } else {
+        party.supportedCurrencies = internal.supportedCurrencies;
+    }
+
+
 
     const hasComplexName = !!(internal.firstName || internal.middleName || internal.lastName);
 
@@ -51,6 +60,8 @@ const internalPartyToMojaloopParty = (internal, fspId) => {
     if(internal.lastName) { party.personalInfo.complexName.lastName = internal.lastName; }
 
     if(internal.dateOfBirth) { party.personalInfo.dateOfBirth = internal.dateOfBirth; }
+
+    if(internal.kycInformation) { party.personalInfo.kycInformation = internal.kycInformation; }
 
     if(typeof(internal.merchantClassificationCode) !== 'undefined') {
         party.merchantClassificationCode = internal.merchantClassificationCode;

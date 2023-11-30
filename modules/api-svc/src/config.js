@@ -65,7 +65,6 @@ module.exports = {
     logLevel: env.get('LOG_LEVEL').default('info').asEnum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']),
     inbound: {
         port: env.get('INBOUND_LISTEN_PORT').default('4000').asPortNumber(),
-        supportedCurrencies: env.get('SUPPORTED_CURRENCIES').default('').asArray(),
         tls: {
             mutualTLS: {
                 enabled: env.get('INBOUND_MUTUAL_TLS_ENABLED').default('false').asBool(),
@@ -214,5 +213,6 @@ module.exports = {
     pm4mlEnabled: env.get('PM4ML_ENABLED').default('false').asBool(),
 
     fspiopApiServerMaxRequestBytes: env.get('FSPIOP_API_SERVER_MAX_REQUEST_BYTES').default('209715200').asIntPositive(), // Default is 200mb
-    backendApiServerMaxRequestBytes: env.get('BACKEND_API_SERVER_MAX_REQUEST_BYTES').default('209715200').asIntPositive(), // Default is 200mb
+    backendApiServerMaxRequestBytes: env.get('BACKEND_API_SERVER_MAX_REQUEST_BYTES').default('209715200').asIntPositive(), // Default is 200mb,
+    supportedCurrencies: env.get('SUPPORTED_CURRENCIES').default('').asArray(),
 };
