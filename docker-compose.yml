@@ -131,15 +131,13 @@ services:
 
   # For local development we want to have a kafka-ui
   #
-  kowl:
+  kafka-debug-ui:
     networks:
       - mojaloop-net
-    image: quay.io/cloudhut/kowl:v1.4.0
-    container_name: kowl
+    image: docker.redpanda.com/redpandadata/console:v23.2.17
     deploy:
       replicas: 1
     restart: on-failure
-    hostname: kowl
     ports:
     - "9080:8080"
     environment:

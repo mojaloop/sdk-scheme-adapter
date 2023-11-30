@@ -65,7 +65,7 @@ module.exports = {
     logLevel: env.get('LOG_LEVEL').default('info').asEnum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']),
     inbound: {
         port: env.get('INBOUND_LISTEN_PORT').default('4000').asPortNumber(),
-        supportedCurrencies: (env.get('SUPPORTED_CURRENCIES').asString()).split(','),
+        supportedCurrencies: env.get('SUPPORTED_CURRENCIES').default('').asArray(),
         tls: {
             mutualTLS: {
                 enabled: env.get('INBOUND_MUTUAL_TLS_ENABLED').default('false').asBool(),

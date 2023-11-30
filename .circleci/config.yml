@@ -403,7 +403,7 @@ jobs:
           name: Start docker-compose for SDK and simulators
           command: |
             cd test/func
-            docker-compose up -d
+            docker-compose -e ENABLE_BACKEND_EVENT_HANDLER=true -e ENABLE_FSPIOP_EVENT_HANDLER=true --profile bulk up -d
       - run:
           name: Wait for some time
           command: |
