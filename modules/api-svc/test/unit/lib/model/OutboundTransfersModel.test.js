@@ -1595,11 +1595,16 @@ describe('outboundModel', () => {
 
         test('should process callback for POST fxQuotes request', async () => {
             model._requests.postFxQuotes = jest.fn(async (payload) => {
+                // eslint-disable-next-line no-unused-vars
+                const { conversionRequestId, ...restPayload} = payload;
                 const channel = `${CacheKeyPrefixes.FX_QUOTE_CALLBACK_CHANNEL}_${payload.conversionRequestId}`;
                 const cachedCallbackPayload = {
                     success: true,
                     data: {
-                        body: payload,
+                        body: {
+                            ...restPayload,
+                            condition: 'fxCondition'
+                        },
                         headers: {},
                     }
                 };
