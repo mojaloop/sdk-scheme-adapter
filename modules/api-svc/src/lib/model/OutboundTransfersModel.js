@@ -754,9 +754,10 @@ class OutboundTransfersModel {
             };
         }
 
-        if (this.data.needFx) {
-            quote.converter = CurrencyConverters.PAYER;
-        }
+        // TODO: re-enable this after updating quoting service
+        // if (this.data.needFx) {
+        //     quote.converter = CurrencyConverters.PAYER;
+        // }
 
         return quote;
     }
