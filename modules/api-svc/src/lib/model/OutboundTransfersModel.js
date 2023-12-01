@@ -23,7 +23,7 @@ const {
     AmountTypes,
     BackendError,
     CacheKeyPrefixes,
-    CurrencyConverters,
+    // CurrencyConverters,
     Directions,
     ErrorMessages,
     SDKStateEnum,
