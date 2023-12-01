@@ -45,7 +45,7 @@ const Directions = Object.freeze({
 const CacheKeyPrefixes = Object.freeze({
     FX_QUOTE_INBOUND: 'fxQuote_in',
     FX_QUOTE_CALLBACK_CHANNEL: 'fxQuote_callback',
-    FX_TRANSFER_CALLBACK_CHANNEL: 'fxQuote_callback',
+    FX_TRANSFER_CALLBACK_CHANNEL: 'fxTransfer_callback',
 });
 
 const CurrencyConverters = Object.freeze({

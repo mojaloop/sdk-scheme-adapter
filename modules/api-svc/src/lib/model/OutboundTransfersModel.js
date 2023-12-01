@@ -773,7 +773,7 @@ class OutboundTransfersModel {
                 this.data.fxTransferExpiration = this._getExpirationTimestamp();
                 const payload = dto.outboundPostFxTransferPayloadDto(this.data);
 
-                channel = `${CacheKeyPrefixes.FX_QUOTE_CALLBACK_CHANNEL}_${payload.commitRequestId}`;
+                channel = `${CacheKeyPrefixes.FX_TRANSFER_CALLBACK_CHANNEL}_${payload.commitRequestId}`;
 
                 timer = setTimeout(() => {
                     this.unsubscribeCache(channel, subId);
@@ -1193,6 +1193,7 @@ class OutboundTransfersModel {
                     ...mergeData,
                 };
             }
+
             // run transitions based on incoming state
             switch (this.data.currentState) {
                 case States.START:
@@ -1285,7 +1286,7 @@ class OutboundTransfersModel {
                     }
                     break;
 
-                case States.EXECUTE_FX_TRANSFER:
+                case States.FX_TRANSFER_SUCCEEDED:
                     await this.stateMachine.executeTransfer();
                     this._logger.log(`Transfer ${this.data.transferId} has been completed`);
                     break;
@@ -1317,7 +1318,7 @@ class OutboundTransfersModel {
                 default:
                     // The state is not handled here, throwing an error to avoid an infinite recursion of this function
                     await this._save();
-                    this._logger.error(`State machine in unhandled(${this.data.currentState}) state`);
+                    this._logger.error(`State machine in unhandled (${this.data.currentState}) state`);
                     return;
             }
 
