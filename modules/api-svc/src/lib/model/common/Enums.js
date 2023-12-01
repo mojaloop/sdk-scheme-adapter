@@ -78,6 +78,7 @@ const Transitions  = Object.freeze({
 });
 
 const ErrorMessages = Object.freeze({
+    invalidFulfilment: 'Invalid fulfilment received',
     noFxProviderDetected: 'No FX provider detected',
     noSupportedCurrencies: 'No payee supportedCurrencies received',
     responseMissedExpiryDeadline: 'Response missed expiry deadline',

@@ -763,11 +763,77 @@ class OutboundTransfersModel {
 
 
     async _executeFxTransfer() {
-        // todo: add impl.
-        // 1. build fxTransfer payload
-        // 2. subscribe to cache stream by commitRequestId (to await fxTransfer callback)
-        //   2.a - handle error response as well
-        // 3. send POST fxTransfer request to hub
+        let timer;
+        let channel;
+        let subId;
+
+        // eslint-disable-next-line no-async-promise-executor
+        return new Promise(async (resolve, reject) => {
+            try {
+                this.data.fxTransferExpiration = this._getExpirationTimestamp();
+                const payload = dto.outboundPostFxTransferPayloadDto(this.data);
+
+                channel = `${CacheKeyPrefixes.FX_QUOTE_CALLBACK_CHANNEL}_${payload.commitRequestId}`;
+
+                timer = setTimeout(() => {
+                    this.unsubscribeCache(channel, subId);
+                    const errMessage = `Timeout requesting fxTransfers for transfer ${this.data.transferId}`;
+                    const err = new BackendError(errMessage, 504);
+                    this._logger.push({ err }).log(`fxTransfers payload: ${JSON.stringify(payload)}`);
+                    reject(err);
+                }, this._requestProcessingTimeoutSeconds * 1000);
+
+                subId = await this._cache.subscribe(channel, (cn, msg, subId) => {
+                    try {
+                        clearTimeout(timer);
+                        this.unsubscribeCache(channel, subId);
+
+                        const message = JSON.parse(msg);
+
+                        const { body, headers } = message.data;
+                        this._logger.push({ body }).log('fxTransfers fulfil response received');
+
+                        if (!message.success) {
+                            const error = new BackendError(`Got an error response requesting fxTransfers: ${util.inspect(body, { depth: Infinity })}`, 500);
+                            error.mojaloopError = body;
+                            throw error;
+                        }
+
+                        if (this._rejectExpiredTransferFulfils) {
+                            const now = new Date().toISOString();
+                            if (now > this.data.fxTransferExpiration) {
+                                const errMessage = `${ErrorMessages.responseMissedExpiryDeadline} (fxTransfers fulfil)`;
+                                this._logger.warn(`${errMessage}: system time=${now} > expiration time=${this.data.fxTransferExpiration}`);
+                                throw new BackendError(errMessage, 504);
+                            }
+                        }
+
+                        if (this._checkIlp && !this._ilp.validateFulfil(body.fulfilment, this.data.fxQuoteResponse.body.condition)) {
+                            throw new Error(ErrorMessages.invalidFulfilment);
+                        }
+
+                        this.data.fxTransferResponse = {
+                            body,
+                            headers,
+                        };
+
+                        resolve(payload); // todo: think, what should we return at this point
+                    } catch (err) {
+                        this._logger.push({ err }).log(`error in fxTransfers callback subscription processing: ${err?.message}`);
+                        reject(err);
+                    }
+                });
+
+                const res = await this._requests.postFxTransfers(payload, payload.counterPartyFsp);
+                this.data.fxTransferRequest = res.originalRequest;
+                this._logger.push({ res }).log('fxTransfers request is sent to hub');
+            } catch (err) {
+                this._logger.push({ err }).log(`error in _executeFxTransfer: ${err.message}`);
+                if (timer) clearTimeout(timer);
+                this.unsubscribeCache(channel, subId);
+                reject(err);
+            }
+        });
     }
 
     /**
@@ -1185,13 +1251,20 @@ class OutboundTransfersModel {
                     break;
 
                 case States.FX_QUOTE_RECEIVED:
-                    if (!this.data.acceptFxQuote) {
+                    if (!this.data.acceptConversion) {
                         await this.stateMachine.abort('FX quote rejected by backend');
                         await this._save();
                         return this.getResponse();
                     }
                     await this.stateMachine.requestQuote();
-                    this._logger.log(`Transfer ${this.data.transferId} has been completed`);
+                    this._logger.log(`Quote received for transfer ${this.data.transferId}`);
+
+                    if (this.stateMachine.state === States.QUOTE_RECEIVED && !this._autoAcceptQuotes) {
+                        //we break execution here and return the quote response details to allow asynchronous accept or reject
+                        //of the quote
+                        await this._save();
+                        return this.getResponse();
+                    }
                     break;
 
                 case States.QUOTE_RECEIVED:

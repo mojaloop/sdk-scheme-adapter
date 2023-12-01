@@ -49,10 +49,18 @@ const outboundPostFxQuotePayloadDto = (data) => Object.freeze({
 /**
  * @param data {object} - "state" of inbound transaction request
  */
-const outboundPostFxTransferPayloadDto = (data) => Object.freeze({
-    commitRequestId: data.transferId, // should be the same as conversionTerms.conversionId from fxQuote
-    // todo: add other fields
-});
+const outboundPostFxTransferPayloadDto = (data) => {
+    const { condition, conversionTerms } = data.fxQuoteResponse.body;
+    // eslint-disable-next-line no-unused-vars
+    const { conversionId, charges, extensionList,  ...rest } =  conversionTerms;
+    return Object.freeze({
+        ...rest,
+        condition,
+        commitRequestId: conversionId, // should be the same as conversionTerms.conversionId from fxQuote
+        determiningTransferId: data.transferId,
+        expiration: data.fxTransferExpiration,
+    });
+};
 
 module.exports = {
     quoteRequestStateDto,
