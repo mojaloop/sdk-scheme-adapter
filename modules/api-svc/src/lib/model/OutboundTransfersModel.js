@@ -754,9 +754,10 @@ class OutboundTransfersModel {
             };
         }
 
-        if (this.data.needFx) {
-            quote.converter = CurrencyConverters.PAYER;
-        }
+        // TODO: re-enable this after updating quoting service
+        // if (this.data.needFx) {
+        //     quote.converter = CurrencyConverters.PAYER;
+        // }
 
         return quote;
     }
@@ -1185,13 +1186,20 @@ class OutboundTransfersModel {
                     break;
 
                 case States.FX_QUOTE_RECEIVED:
-                    if (!this.data.acceptFxQuote) {
+                    if (!this.data.acceptConversion) {
                         await this.stateMachine.abort('FX quote rejected by backend');
                         await this._save();
                         return this.getResponse();
                     }
                     await this.stateMachine.requestQuote();
-                    this._logger.log(`Transfer ${this.data.transferId} has been completed`);
+                    this._logger.log(`Quote received for transfer ${this.data.transferId}`);
+
+                    if (this.stateMachine.state === States.QUOTE_RECEIVED && !this._autoAcceptQuotes) {
+                        //we break execution here and return the quote response details to allow asynchronous accept or reject
+                        //of the quote
+                        await this._save();
+                        return this.getResponse();
+                    }
                     break;
 
                 case States.QUOTE_RECEIVED:
