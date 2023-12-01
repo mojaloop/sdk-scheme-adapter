@@ -22,13 +22,14 @@ const PartiesModel = require('~/lib/model').PartiesModel;
 const { MojaloopRequests, Logger } = require('@mojaloop/sdk-standard-components');
 const StateMachine = require('javascript-state-machine');
 
+const mocks = require('./data/mocks');
 const defaultConfig = require('./data/defaultConfig');
 const transferRequest = require('./data/transferRequest');
 const payeeParty = require('./data/payeeParty');
 const quoteResponseTemplate = require('./data/quoteResponse');
 const transferFulfil = require('./data/transferFulfil');
 
-const { SDKStateEnum } = require('../../../../src/lib/model/common');
+const { SDKStateEnum, CacheKeyPrefixes, States } = require('../../../../src/lib/model/common');
 const FSPIOPTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.TransferState;
 
 const genPartyId = (party) => {
@@ -1576,4 +1577,55 @@ describe('outboundModel', () => {
         expect(StateMachine.__instance.state).toBe('quoteReceived');
     });
 
+    describe('FX flow Tests -->', () => {
+        let model;
+
+        beforeEach(() => {
+            model = new Model({
+                cache,
+                logger,
+                metricsClient,
+                ...config,
+            });
+        });
+
+        afterEach(async () => {
+            jest.clearAllMocks();
+        });
+
+        test('should process callback for POST fxQuotes request', async () => {
+            model._requests.postFxQuotes = jest.fn(async (payload) => {
+                // eslint-disable-next-line no-unused-vars
+                const { conversionRequestId, ...restPayload} = payload;
+                const channel = `${CacheKeyPrefixes.FX_QUOTE_CALLBACK_CHANNEL}_${payload.conversionRequestId}`;
+                const cachedCallbackPayload = {
+                    success: true,
+                    data: {
+                        body: {
+                            ...restPayload,
+                            condition: 'fxCondition'
+                        },
+                        headers: {},
+                    }
+                };
+                await cache.publish(channel, JSON.stringify(cachedCallbackPayload));
+                return mocks.mockMojaApiResponse();
+            });
+
+            await model.initialize({
+                ...mocks.coreConnectorPostTransfersPayloadDto(),
+                currentState: States.PAYEE_RESOLVED,
+                needFx: true,
+                supportedCurrencies: ['USD']
+            });
+            expect(model.data.currentState).toBe(States.PAYEE_RESOLVED);
+
+            const result = await model.run();
+            expect(result).toBeTruthy();
+            expect(result.fxQuoteRequest).toBeTruthy();
+            expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_CONVERSION_ACCEPTANCE);
+            expect(model.data.currentState).toBe(States.FX_QUOTE_RECEIVED);
+            // todo: add more tests
+        });
+    });
 });

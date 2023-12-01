@@ -16,11 +16,14 @@ const StateMachine = require('javascript-state-machine');
 const { Enum } = require('@mojaloop/central-services-shared');
 const { Ilp, MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 
+const dto = require('../dto');
 const shared = require('./lib/shared');
 const PartiesModel = require('./PartiesModel');
 const {
     AmountTypes,
     BackendError,
+    CacheKeyPrefixes,
+    CurrencyConverters,
     Directions,
     ErrorMessages,
     SDKStateEnum,
@@ -347,11 +350,15 @@ class OutboundTransfersModel {
                     }
 
                     if (Array.isArray(payee.supportedCurrencies)) {
+                        if (!payee.supportedCurrencies.length) {
+                            throw new Error(ErrorMessages.noSupportedCurrencies);
+                        }
                         const needFx = !payee.supportedCurrencies.includes(this.data.currency);
                         if (needFx && this.data.amountType !== AmountTypes.SEND) {
                             throw new Error(ErrorMessages.unsupportedFxAmountType);
                         }
                         this.data.needFx = needFx;
+                        this.data.supportedCurrencies = payee.supportedCurrencies;
                     }
 
                     return resolve(payee);
@@ -509,15 +516,81 @@ class OutboundTransfersModel {
     async _requestServicesFxp() {
         this.data.fxProviders = this.getServicesFxpResponse;
         // todo: add impl. with real http-request
+        if (!this.data.fxProviders?.length) {
+            throw new Error(ErrorMessages.noFxProviderDetected);
+        }
         return this.data.fxProviders;
     }
 
     async _requestFxQuote() {
-        // todo: add impl.
-        // 1. build fxQuote payload
-        // 2. subscribe to cache stream by conversionRequestId (to await fxQuotes callback)
-        //   2.a - handle error response as well
-        // 3. send POST fxQuote request to hub
+        let timer;
+        let channel;
+        let subId;
+
+        // eslint-disable-next-line no-async-promise-executor
+        return new Promise(async (resolve, reject) => {
+            try {
+                this.data.fxQuoteExpiration = this._getExpirationTimestamp();
+                const payload = dto.outboundPostFxQuotePayloadDto(this.data);
+
+                channel = `${CacheKeyPrefixes.FX_QUOTE_CALLBACK_CHANNEL}_${payload.conversionRequestId}`;
+
+                timer = setTimeout(() => {
+                    this.unsubscribeCache(channel, subId);
+                    const errMessage = `Timeout requesting fxQuote for transfer ${this.data.transferId}`;
+                    const err = new BackendError(errMessage, 504);
+                    this._logger.push({ err }).log(`fxQuote payload: ${JSON.stringify(payload)}`);
+                    reject(err);
+                }, this._requestProcessingTimeoutSeconds * 1000);
+
+                subId = await this._cache.subscribe(channel, (cn, msg, subId) => {
+                    try {
+                        clearTimeout(timer);
+                        this.unsubscribeCache(channel, subId);
+
+                        const message = JSON.parse(msg);
+
+                        const { body, headers } = message.data;
+                        this._logger.push({ body }).log('fxQuote response received');
+
+                        if (!message.success) {
+                            const error = new BackendError(`Got an error response requesting fxQuote: ${util.inspect(body, { depth: Infinity })}`, 500);
+                            error.mojaloopError = body;
+                            throw error;
+                        }
+
+                        if (this._rejectExpiredQuoteResponses) {
+                            const now = new Date().toISOString();
+                            if (now > this.data.fxQuoteExpiration) {
+                                const errMessage = `${ErrorMessages.responseMissedExpiryDeadline} (fxQuote)`;
+                                this._logger.warn(`${errMessage}: system time=${now} > expiration time=${this.data.fxQuoteExpiration}`);
+                                throw new BackendError(errMessage, 504);
+                            }
+                        }
+
+                        this.data.fxQuoteResponse = {
+                            body,
+                            headers,
+                        };
+                        this.data.fxQuoteResponseSource = headers['fspiop-source']; // todo: check what for we need this
+
+                        resolve(payload); // todo: think, what should we return at this point
+                    } catch (err) {
+                        this._logger.push({ err }).log(`error in fxQuote cache subscription processing: ${err?.message}`);
+                        reject(err);
+                    }
+                });
+
+                const res = await this._requests.postFxQuotes(payload, payload.conversionTerms.counterPartyFsp);
+                this.data.fxQuoteRequest = res.originalRequest;
+                this._logger.push({ res }).log('fxQuote request is sent to hub');
+            } catch (err) {
+                this._logger.push({ err }).log(`error in _requestFxQuote: ${err.message}`);
+                if (timer) clearTimeout(timer);
+                this.unsubscribeCache(channel, subId);
+                reject(err);
+            }
+        });
     }
 
     /**
@@ -675,11 +748,16 @@ class OutboundTransfersModel {
         }
 
         // add extensionList if provided
-        if(this.data.quoteRequestExtensions && this.data.quoteRequestExtensions.length > 0) {
+        if (this.data.quoteRequestExtensions?.length) {
             quote.extensionList = {
                 extension: this.data.quoteRequestExtensions
             };
         }
+
+        // TODO: re-enable this after updating quoting service
+        // if (this.data.needFx) {
+        //     quote.converter = CurrencyConverters.PAYER;
+        // }
 
         return quote;
     }
@@ -1108,13 +1186,20 @@ class OutboundTransfersModel {
                     break;
 
                 case States.FX_QUOTE_RECEIVED:
-                    if (!this.data.acceptFxQuote) {
+                    if (!this.data.acceptConversion) {
                         await this.stateMachine.abort('FX quote rejected by backend');
                         await this._save();
                         return this.getResponse();
                     }
                     await this.stateMachine.requestQuote();
-                    this._logger.log(`Transfer ${this.data.transferId} has been completed`);
+                    this._logger.log(`Quote received for transfer ${this.data.transferId}`);
+
+                    if (this.stateMachine.state === States.QUOTE_RECEIVED && !this._autoAcceptQuotes) {
+                        //we break execution here and return the quote response details to allow asynchronous accept or reject
+                        //of the quote
+                        await this._save();
+                        return this.getResponse();
+                    }
                     break;
 
                 case States.QUOTE_RECEIVED:
@@ -1194,6 +1279,17 @@ class OutboundTransfersModel {
             throw err;
         }
     }
+
+    async unsubscribeCache(channelKey, subId) {
+        if (channelKey && subId) {
+            return this._cache.unsubscribe(channelKey, subId)
+                .catch(err => {
+                    this._logger.push({ err }).log(`Unsubscribing cache error [${channelKey} ${subId}]: ${err.stack}`);
+                });
+        }
+    }
+
+
 }
 
 module.exports = OutboundTransfersModel;

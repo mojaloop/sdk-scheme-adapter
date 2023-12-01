@@ -22,6 +22,7 @@ const {
     QuotesModel,
     TransfersModel,
 } = require('../lib/model');
+const { CacheKeyPrefixes } = require('../lib/model/common');
 
 const extractBodyHeadersSourceFspId = ctx => ({
     sourceFspId: ctx.request.headers['fspiop-source'],
@@ -974,6 +975,36 @@ const postFxQuotes = async (ctx) => {
     prepareResponse(ctx);
 };
 
+/**
+ * Create a handler for PUT /fxQuotes/{ID} and PUT /fxQuotes/{ID}/error routes
+ *
+ * @param success {boolean} - false is for handling error callback response
+ */
+const createPutFxQuoteHandler = (success) => async (ctx) => {
+    const { body, headers } = extractBodyHeadersSourceFspId(ctx);
+    const { ID } = ctx.state.path.params;
+
+    const channel = `${CacheKeyPrefixes.FX_QUOTE_CALLBACK_CHANNEL}_${ID}`;
+    await ctx.state.cache.publish(channel, {
+        success,
+        data: { body, headers },
+        type: `fxQuoteResponse${success ? '' : 'Error'}`
+    });
+
+    // todo: think, what does it mean in putQuote handler!
+    //
+    //  duplicate publication until legacy code refactored
+    // await QuotesModel.triggerDeferredJob({
+    //     cache: ctx.state.cache,
+    //     message: data,
+    //     args: {
+    //         quoteId
+    //     }
+    // });
+
+    ctx.response.status = ReturnCodes.OK.CODE;
+};
+
 const postFxTransfers = async (ctx) => {
     const { body, headers, sourceFspId } = extractBodyHeadersSourceFspId(ctx);
     const { logger } = ctx.state;
@@ -1080,6 +1111,12 @@ module.exports = {
     },
     '/fxQuotes': {
         post: postFxQuotes
+    },
+    '/fxQuotes/{ID}': {
+        put: createPutFxQuoteHandler(true)
+    },
+    '/fxQuotes/{ID}/error': {
+        put: createPutFxQuoteHandler(false)
     },
     '/fxTransfers': {
         post: postFxTransfers
