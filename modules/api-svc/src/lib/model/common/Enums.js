@@ -88,6 +88,39 @@ const AmountTypes = Object.freeze({
     RECEIVE: 'RECEIVE',
 });
 
+const States = Object.freeze({
+    START: 'start',
+    PAYEE_RESOLVED: 'payeeResolved',
+    SERVICES_FXP_RECEIVED: 'servicesFxpReceived',
+    FX_QUOTE_RECEIVED: 'fxQuoteReceived',
+    QUOTE_RECEIVED: 'quoteReceived',
+    FX_TRANSFER_SUCCEEDED: 'fxTransferSucceeded',
+    SUCCEEDED: 'succeeded',
+    ERRORED: 'errored',
+    ABORTED: 'aborted',
+});
+
+const Transitions  = Object.freeze({
+    RESOLVE_PAYEE: 'resolvePayee',
+    REQUEST_SERVICES_FXP: 'requestServicesFxp',
+    REQUEST_FX_QUOTE: 'requestFxQuote',
+    REQUEST_QUOTE: 'requestQuote',
+    EXECUTE_FX_TRANSFER: 'executeFxTransfer',
+    EXECUTE_TRANSFER: 'executeTransfer',
+    GET_TRANSFER: 'getTransfer',
+    ERROR: 'error',
+    ABORT: 'abort'
+});
+
+const ErrorMessages = Object.freeze({
+    unsupportedFxAmountType: 'Unsupported amountType when currency conversion is needed',
+});
+
+const AmountTypes = Object.freeze({
+    SEND: 'SEND',
+    RECEIVE: 'RECEIVE',
+});
+
 module.exports = {
     AmountTypes,
     CacheKeyPrefixes,

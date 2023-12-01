@@ -604,6 +604,7 @@ class OutboundTransfersModel {
             // create a quote request
             const quote = this._buildQuoteRequest();
             this.data.quoteId = quote.quoteId;
+            // todo: check if we need to add converter field
 
             // listen for events on the quoteId
             const quoteKey = `qt_${quote.quoteId}`;
