@@ -12,39 +12,41 @@
 
 jest.mock('redis');
 
-const Cache = require('~/lib/cache');
+const { randomUUID } = require('node:crypto');
 const { Logger } = require('@mojaloop/sdk-standard-components');
+const Cache = require('~/lib/cache');
 
-const createCache = async() => {
-    const logger = new Logger.Logger({ context: { app: 'model-unit-tests-cache' }, stringify: () => '' });
+const createCache = async () => {
+    const logger = new Logger.Logger({ context: { app: 'model-unit-tests-cache' } });
     const cache = new Cache({
-      cacheUrl: 'redis://dummy:1234',
-      logger,
+        cacheUrl: 'redis://dummy:1234',
+        logger,
     });
     await cache.connect();
     return cache;
 };
 
-describe('Cache', () => {
+describe('Cache Tests -->', () => {
+    let cache;
     let dummyPubMessage;
 
-    beforeEach(() => {
+    beforeEach(async () => {
+        cache = await createCache();
         dummyPubMessage = JSON.parse(JSON.stringify({
             data: 12345,
             test: '98765'
         }));
     });
 
-    test('Makes connections to redis server for cache operations', async () => {
-        const cache = await createCache();
-        expect(cache).not.toBeFalsy();
+    afterEach(async () => {
         await cache.disconnect();
     });
 
+    test('Makes connections to redis server for cache operations', async () => {
+        expect(cache).not.toBeFalsy();
+    });
 
     test('Makes subscriber callbacks on the correct channels when messages arrive', async () => {
-        const cache = await createCache();
-
         const msg1 = dummyPubMessage;
 
         // make the messages different
@@ -103,13 +105,9 @@ describe('Cache', () => {
         });
 
         await Promise.all([cb1Promise, cb2Promise]);
-
-        await cache.disconnect();
     });
 
-
     test('Unsubscribed callbacks do not get called when messages arrive', async () => {
-        const cache = await createCache();
         const msg1 = dummyPubMessage;
 
         const chan = 'dummychannel1';
@@ -140,6 +138,51 @@ describe('Cache', () => {
                 });
             });
         });
-        await cache.disconnect();
+    });
+
+    test('should subscribe to a channel and get one message', async () => {
+        const channel = `ch-${randomUUID()}`;
+        const message = { id: randomUUID() };
+        const spyOnUnsubscribe = jest.spyOn(cache, 'unsubscribe');
+
+        const subscribing = cache.subscribeToOneMessageWithTimer(channel);
+        cache.publish(channel, message);
+        const result = await subscribing;
+        expect(result).toStrictEqual(message);
+        expect(spyOnUnsubscribe).toHaveBeenCalledTimes(1);
+    });
+
+    test('should return SyntaxError when parsing incorrect JSON message', async () => {
+        const channel = `ch-${randomUUID()}`;
+        const message = '{ id: "123 }';
+        const spyOnUnsubscribe = jest.spyOn(cache, 'unsubscribe');
+
+        const subscribing = cache.subscribeToOneMessageWithTimer(channel);
+        cache.publish(channel, message);
+        const result = await subscribing;
+
+        expect(result).toBeInstanceOf(SyntaxError);
+        expect(result.message).toContain('Unexpected token');
+        expect(spyOnUnsubscribe).toHaveBeenCalledTimes(1);
+    });
+
+    test('should return timeout error and unsubscribe if no message pushed to cache during subscribeTimeoutSeconds-period', async () => {
+        cache.subscribeTimeoutSeconds = 0.1;
+        const unsubscribeSpy = jest.spyOn(cache, 'unsubscribe');
+
+        const result = await cache.subscribeToOneMessageWithTimer(randomUUID());
+        expect(result).toBeInstanceOf(Error);
+        expect(result.message).toBe('Timeout error in subscribeToOneMessageWithTimer');
+        expect(unsubscribeSpy).toHaveBeenCalled();
+    });
+
+    test('should return error if cache.subscribe() throws an error', async () => {
+        const error = new Error('subscribe error');
+        cache.subscribe = jest.fn(async () => { throw error; });
+        const unsubscribeSpy = jest.spyOn(cache, 'unsubscribe');
+
+        const result = await cache.subscribeToOneMessageWithTimer(randomUUID());
+        expect(result).toEqual(error);
+        expect(unsubscribeSpy).not.toHaveBeenCalled();
     });
 });

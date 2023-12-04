@@ -523,74 +523,51 @@ class OutboundTransfersModel {
     }
 
     async _requestFxQuote() {
-        let timer;
-        let channel;
-        let subId;
+        try {
+            this.data.fxQuoteExpiration = this._getExpirationTimestamp();
+            const payload = dto.outboundPostFxQuotePayloadDto(this.data);
+            const channel = `${CacheKeyPrefixes.FX_QUOTE_CALLBACK_CHANNEL}_${payload.conversionRequestId}`;
 
-        // eslint-disable-next-line no-async-promise-executor
-        return new Promise(async (resolve, reject) => {
-            try {
-                this.data.fxQuoteExpiration = this._getExpirationTimestamp();
-                const payload = dto.outboundPostFxQuotePayloadDto(this.data);
+            const subscribing = this._cache.subscribeToOneMessageWithTimer(channel);
 
-                channel = `${CacheKeyPrefixes.FX_QUOTE_CALLBACK_CHANNEL}_${payload.conversionRequestId}`;
+            const resp = await this._requests.postFxQuotes(payload, payload.conversionTerms.counterPartyFsp);
+            const { originalRequest } = resp;
+            this.data.fxQuoteRequest = originalRequest;
+            this._logger.push({ originalRequest }).log('fxQuote request is sent to hub');
 
-                timer = setTimeout(() => {
-                    this.unsubscribeCache(channel, subId);
-                    const errMessage = `Timeout requesting fxQuote for transfer ${this.data.transferId}`;
-                    const err = new BackendError(errMessage, 504);
-                    this._logger.push({ err }).log(`fxQuote payload: ${JSON.stringify(payload)}`);
-                    reject(err);
-                }, this._requestProcessingTimeoutSeconds * 1000);
+            const message = await subscribing;
 
-                subId = await this._cache.subscribe(channel, (cn, msg, subId) => {
-                    try {
-                        clearTimeout(timer);
-                        this.unsubscribeCache(channel, subId);
-
-                        const message = JSON.parse(msg);
-
-                        const { body, headers } = message.data;
-                        this._logger.push({ body }).log('fxQuote response received');
-
-                        if (!message.success) {
-                            const error = new BackendError(`Got an error response requesting fxQuote: ${util.inspect(body, { depth: Infinity })}`, 500);
-                            error.mojaloopError = body;
-                            throw error;
-                        }
-
-                        if (this._rejectExpiredQuoteResponses) {
-                            const now = new Date().toISOString();
-                            if (now > this.data.fxQuoteExpiration) {
-                                const errMessage = `${ErrorMessages.responseMissedExpiryDeadline} (fxQuote)`;
-                                this._logger.warn(`${errMessage}: system time=${now} > expiration time=${this.data.fxQuoteExpiration}`);
-                                throw new BackendError(errMessage, 504);
-                            }
-                        }
-
-                        this.data.fxQuoteResponse = {
-                            body,
-                            headers,
-                        };
-                        this.data.fxQuoteResponseSource = headers['fspiop-source']; // todo: check what for we need this
-
-                        resolve(payload); // todo: think, what should we return at this point
-                    } catch (err) {
-                        this._logger.push({ err }).log(`error in fxQuote cache subscription processing: ${err?.message}`);
-                        reject(err);
-                    }
-                });
-
-                const res = await this._requests.postFxQuotes(payload, payload.conversionTerms.counterPartyFsp);
-                this.data.fxQuoteRequest = res.originalRequest;
-                this._logger.push({ res }).log('fxQuote request is sent to hub');
-            } catch (err) {
-                this._logger.push({ err }).log(`error in _requestFxQuote: ${err.message}`);
-                if (timer) clearTimeout(timer);
-                this.unsubscribeCache(channel, subId);
-                reject(err);
+            if (message instanceof Error) throw message;
+            if (!message.success) {
+                const error = new BackendError(`Got an error response requesting fxQuote: ${util.inspect(body, { depth: Infinity })}`, 500);
+                error.mojaloopError = body;
+                throw error;
             }
-        });
+
+            const { body, headers } = message.data;
+            this._logger.push({ body }).log('fxQuote callback response received');
+
+            if (this._rejectExpiredQuoteResponses) {
+                const now = new Date().toISOString();
+                if (now > this.data.fxQuoteExpiration) {
+                    const errMessage = `${ErrorMessages.responseMissedExpiryDeadline} (fxQuote)`;
+                    this._logger.warn(`${errMessage}: system time=${now} > expiration time=${this.data.fxQuoteExpiration}`);
+                    throw new BackendError(errMessage, 504);
+                }
+            }
+
+            this.data.fxQuoteResponse = {
+                body,
+                headers,
+            };
+            this.data.fxQuoteResponseSource = headers['fspiop-source']; // todo: check what for we need this
+
+            return payload; // think, if we need to return something at this point
+        } catch (err) {
+            this._logger.push({ err }).error(`error in _requestFxQuote: ${err.message}`);
+            throw err;
+            // todo: think, what should we do here
+        }
     }
 
     /**
@@ -764,77 +741,52 @@ class OutboundTransfersModel {
 
 
     async _executeFxTransfer() {
-        let timer;
-        let channel;
-        let subId;
+        try {
+            this.data.fxTransferExpiration = this._getExpirationTimestamp();
+            const payload = dto.outboundPostFxTransferPayloadDto(this.data);
+            const channel = `${CacheKeyPrefixes.FX_TRANSFER_CALLBACK_CHANNEL}_${payload.commitRequestId}`;
 
-        // eslint-disable-next-line no-async-promise-executor
-        return new Promise(async (resolve, reject) => {
-            try {
-                this.data.fxTransferExpiration = this._getExpirationTimestamp();
-                const payload = dto.outboundPostFxTransferPayloadDto(this.data);
+            const subscribing = this._cache.subscribeToOneMessageWithTimer(channel);
 
-                channel = `${CacheKeyPrefixes.FX_TRANSFER_CALLBACK_CHANNEL}_${payload.commitRequestId}`;
+            const { originalRequest } = await this._requests.postFxTransfers(payload, payload.counterPartyFsp);
+            this.data.fxTransferRequest = originalRequest;
+            this._logger.push({ originalRequest }).log('fxTransfers request is sent to hub');
 
-                timer = setTimeout(() => {
-                    this.unsubscribeCache(channel, subId);
-                    const errMessage = `Timeout requesting fxTransfers for transfer ${this.data.transferId}`;
-                    const err = new BackendError(errMessage, 504);
-                    this._logger.push({ err }).log(`fxTransfers payload: ${JSON.stringify(payload)}`);
-                    reject(err);
-                }, this._requestProcessingTimeoutSeconds * 1000);
+            const message = await subscribing;
 
-                subId = await this._cache.subscribe(channel, (cn, msg, subId) => {
-                    try {
-                        clearTimeout(timer);
-                        this.unsubscribeCache(channel, subId);
-
-                        const message = JSON.parse(msg);
-
-                        const { body, headers } = message.data;
-                        this._logger.push({ body }).log('fxTransfers fulfil response received');
-
-                        if (!message.success) {
-                            const error = new BackendError(`Got an error response requesting fxTransfers: ${util.inspect(body, { depth: Infinity })}`, 500);
-                            error.mojaloopError = body;
-                            throw error;
-                        }
-
-                        if (this._rejectExpiredTransferFulfils) {
-                            const now = new Date().toISOString();
-                            if (now > this.data.fxTransferExpiration) {
-                                const errMessage = `${ErrorMessages.responseMissedExpiryDeadline} (fxTransfers fulfil)`;
-                                this._logger.warn(`${errMessage}: system time=${now} > expiration time=${this.data.fxTransferExpiration}`);
-                                throw new BackendError(errMessage, 504);
-                            }
-                        }
-
-                        if (this._checkIlp && !this._ilp.validateFulfil(body.fulfilment, this.data.fxQuoteResponse.body.condition)) {
-                            throw new Error(ErrorMessages.invalidFulfilment);
-                        }
-
-                        this.data.fxTransferResponse = {
-                            body,
-                            headers,
-                        };
-
-                        resolve(payload); // todo: think, what should we return at this point
-                    } catch (err) {
-                        this._logger.push({ err }).log(`error in fxTransfers callback subscription processing: ${err?.message}`);
-                        reject(err);
-                    }
-                });
-
-                const res = await this._requests.postFxTransfers(payload, payload.counterPartyFsp);
-                this.data.fxTransferRequest = res.originalRequest;
-                this._logger.push({ res }).log('fxTransfers request is sent to hub');
-            } catch (err) {
-                this._logger.push({ err }).log(`error in _executeFxTransfer: ${err.message}`);
-                if (timer) clearTimeout(timer);
-                this.unsubscribeCache(channel, subId);
-                reject(err);
+            if (message instanceof Error) throw message;
+            if (!message.success) {
+                const error = new BackendError(`Got an error response requesting fxTransfers: ${util.inspect(body, { depth: Infinity })}`, 500);
+                error.mojaloopError = body;
+                throw error;
             }
-        });
+
+            const { body, headers } = message.data;
+            this._logger.push({ body }).log('fxTransfers fulfil response received');
+
+            if (this._rejectExpiredTransferFulfils) {
+                const now = new Date().toISOString();
+                if (now > this.data.fxTransferExpiration) {
+                    const errMessage = `${ErrorMessages.responseMissedExpiryDeadline} (fxTransfers fulfil)`;
+                    this._logger.warn(`${errMessage}: system time=${now} > expiration time=${this.data.fxTransferExpiration}`);
+                    throw new BackendError(errMessage, 504);
+                }
+            }
+
+            if (this._checkIlp && !this._ilp.validateFulfil(body.fulfilment, this.data.fxQuoteResponse.body.condition)) {
+                throw new Error(ErrorMessages.invalidFulfilment);
+            }
+
+            this.data.fxTransferResponse = {
+                body,
+                headers,
+            };
+
+            return payload; // think, if we need to return something at this point
+        } catch (err) {
+            this._logger.push({ err }).error(`error in _executeFxTransfer: ${err.message}`);
+            throw err;
+        }
     }
 
     /**
@@ -1346,17 +1298,6 @@ class OutboundTransfersModel {
             throw err;
         }
     }
-
-    async unsubscribeCache(channelKey, subId) {
-        if (channelKey && subId) {
-            return this._cache.unsubscribe(channelKey, subId)
-                .catch(err => {
-                    this._logger.push({ err }).log(`Unsubscribing cache error [${channelKey} ${subId}]: ${err.stack}`);
-                });
-        }
-    }
-
-
 }
 
 module.exports = OutboundTransfersModel;

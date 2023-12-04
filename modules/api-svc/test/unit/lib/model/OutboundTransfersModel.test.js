@@ -1629,17 +1629,12 @@ describe('outboundModel', () => {
         });
 
         test('should process callback for POST fxTransfers request', async () => {
-            let postTransferPayload;
-
             model._requests.postFxTransfers = jest.fn(async (payload) => {
                 const channel = `${CacheKeyPrefixes.FX_TRANSFER_CALLBACK_CHANNEL}_${payload.commitRequestId}`;
                 const cachedCallbackPayload = {
                     success: true,
                     data: {
-                        body: {
-                            ...payload,
-                            isTest: true
-                        },
+                        body: { ...payload },
                         headers: {},
                     }
                 };
@@ -1648,7 +1643,6 @@ describe('outboundModel', () => {
             });
 
             model._requests.postTransfers = jest.fn(async (payload) => {
-                postTransferPayload = payload;
                 const channel = `tf_${payload.transferId}`;
                 await cache.publish(channel, JSON.stringify({
                     data: {},
@@ -1680,7 +1674,7 @@ describe('outboundModel', () => {
             expect(result.fxTransferRequest).toBeTruthy();
             expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
             expect(model.data.currentState).toBe(States.SUCCEEDED);
-            expect(postTransferPayload).toBeTruthy();
+            expect(model._requests.postTransfers).toHaveBeenCalledTimes(1);
             // todo: add more checks
         });
     });

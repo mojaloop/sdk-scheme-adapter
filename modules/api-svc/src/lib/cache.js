@@ -33,11 +33,11 @@ class Cache {
         this._logger = config.logger;
         this._url = config.cacheUrl;
 
-        // a redis connection to handle get, set and publish operations
-        this._client = null;
-
         // connection/disconnection logic
         this._connectionState = CONN_ST.DISCONNECTED;
+
+        // a redis connection to handle get, set and publish operations
+        this._client = null;
 
         // a redis connection to handle subscribe operations and published message routing
         // Note that REDIS docs suggest a client that is in SUBSCRIBE mode
@@ -50,6 +50,8 @@ class Cache {
 
         // tag each callback with an Id so we can gracefully unsubscribe and not leak resources
         this._callbackId = 0;
+
+        this.subscribeTimeoutSeconds = config.subscribeTimeoutSeconds ?? 3;
     }
 
     /**
@@ -151,7 +153,7 @@ class Cache {
                 if (this._callbacks[channel]) {
                     for (const [id, cb] of Object.entries(this._callbacks[channel])) {
                         this._logger.log(`Cache message received on channel ${channel}. Making callback with id ${id}`);
-    
+
                         // call the callback with the channel name, message and callbackId...
                         // ...(which is useful for unsubscribe)
                         try {
@@ -174,6 +176,45 @@ class Cache {
         this._logger.log(`Subscribed to cache pub/sub channel ${channel}`);
 
         return id;
+    }
+
+    /**
+     * Subscribes to a channel for some period and always returns resolved promise
+     *
+     * @param {string} channel - The channel name to subscribe to
+     * @param {boolean} [needParse=true] - specify if the message should be parsed before returning
+     *
+     * @returns {Promise} - Promise that resolves with a message or an error
+     */
+    async subscribeToOneMessageWithTimer(channel, needParse = true) {
+        let subId;
+
+        return new Promise((resolve) => {
+            const timer = setTimeout(() => {
+                this.unsubscribeSafely(channel, subId);
+                const errMessage = 'Timeout error in subscribeToOneMessageWithTimer';
+                this._logger.push({ channel, subId }).warn(errMessage);
+                resolve(new Error(errMessage));
+            }, this.subscribeTimeoutSeconds * 1000);
+
+            this.subscribe(channel, (_, message) => {
+                try {
+                    this._logger.push({ channel, message, needParse }).log('subscribeToOneMessageWithTimer is done');
+                    resolve(needParse ? JSON.parse(message) : message);
+                } catch (err) {
+                    this._logger.push({ channel, err }).warn(`error in subscribeToOneMessageWithTimer: ${err.message}`);
+                    resolve(err);
+                } finally {
+                    clearTimeout(timer);
+                    this.unsubscribeSafely(channel, subId);
+                }
+            })
+                .then(id => { subId = id; })
+                .catch(err => {
+                    this._logger.push({ channel, err }).warn(`subscribe error in subscribeToOneMessageWithTimer: ${err.message}`);
+                    resolve(err);
+                });
+        });
     }
 
 
@@ -200,7 +241,16 @@ class Cache {
             throw new Error(`Channel ${channel} does not have a callback with id ${callbackId} subscribed`);
         }
     }
-    
+
+    async unsubscribeSafely(channelKey, subId) {
+        if (channelKey && typeof subId === 'number') {
+            return this.unsubscribe(channelKey, subId)
+                .catch(err => {
+                    this._logger.push({ err }).warn(`Unsubscribing cache error [${channelKey} ${subId}]: ${err.stack}`);
+                });
+        }
+    }
+
     getSubscribers(channel) {
         return this._callbacks[channel];
     }
@@ -242,7 +292,6 @@ class Cache {
 
         return client;
     }
-
 
     /**
       * Publishes the specified message to the specified channel
