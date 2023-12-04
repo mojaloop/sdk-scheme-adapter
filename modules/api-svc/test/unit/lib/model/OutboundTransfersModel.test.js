@@ -1580,6 +1580,67 @@ describe('outboundModel', () => {
     describe('FX flow Tests -->', () => {
         let model;
 
+        const publishAndReply = async (channel, payload) => {
+            await cache.publish(channel, JSON.stringify(payload));
+            return mocks.mockMojaApiResponse();
+        };
+
+        const getPartiesRequest = jest.fn(async (idType, idValue, idSubValue, fspId) => {
+            const channel = `parties-${idType}-${idValue}-${idSubValue}`;
+            await cache.publish(channel, JSON.stringify({
+                body: mocks.mockGetPartyResponse(),
+            }));
+            // todo: putParties message doesn't have "data" field
+            return mocks.mockMojaApiResponse();
+        });
+
+        const postFxQuotesRequest = jest.fn(async (payload) => {
+            // eslint-disable-next-line no-unused-vars
+            const { conversionRequestId, ...restPayload} = payload;
+            const channel = `${CacheKeyPrefixes.FX_QUOTE_CALLBACK_CHANNEL}_${payload.conversionRequestId}`;
+            return publishAndReply(channel, {
+                success: true,
+                data: {
+                    body: {
+                        ...restPayload,
+                        condition: 'fxCondition'
+                    },
+                    headers: {},
+                }
+            });
+        });
+
+        const postQuotesRequest = jest.fn(async (payload) => {
+            const channel = `qt_${payload.quoteId}`;
+            return publishAndReply(channel, {
+                data: {
+                    body: mocks.mockPutQuotesResponse(),
+                    headers: {},
+                },
+                type: 'quoteResponse'
+            });
+
+        });
+
+        const postFxTransfersRequest = jest.fn(async (payload) => {
+            const channel = `${CacheKeyPrefixes.FX_TRANSFER_CALLBACK_CHANNEL}_${payload.commitRequestId}`;
+            return publishAndReply(channel, {
+                success: true,
+                data: {
+                    body: { ...payload },
+                    headers: {},
+                }
+            });
+        });
+
+        const postTransfersRequest = jest.fn(async (payload) => {
+            const channel = `tf_${payload.transferId}`;
+            return publishAndReply(channel, {
+                data: {},
+                type: 'transferFulfil'
+            });
+        });
+
         beforeEach(() => {
             model = new Model({
                 cache,
@@ -1587,6 +1648,12 @@ describe('outboundModel', () => {
                 metricsClient,
                 ...config,
             });
+            model._checkIlp = false;
+            model._requests.getParties = getPartiesRequest;
+            model._requests.postFxQuotes = postFxQuotesRequest;
+            model._requests.postQuotes = postQuotesRequest;
+            model._requests.postFxTransfers = postFxTransfersRequest;
+            model._requests.postTransfers = postTransfersRequest;
         });
 
         afterEach(async () => {
@@ -1594,24 +1661,6 @@ describe('outboundModel', () => {
         });
 
         test('should process callback for POST fxQuotes request', async () => {
-            model._requests.postFxQuotes = jest.fn(async (payload) => {
-                // eslint-disable-next-line no-unused-vars
-                const { conversionRequestId, ...restPayload} = payload;
-                const channel = `${CacheKeyPrefixes.FX_QUOTE_CALLBACK_CHANNEL}_${payload.conversionRequestId}`;
-                const cachedCallbackPayload = {
-                    success: true,
-                    data: {
-                        body: {
-                            ...restPayload,
-                            condition: 'fxCondition'
-                        },
-                        headers: {},
-                    }
-                };
-                await cache.publish(channel, JSON.stringify(cachedCallbackPayload));
-                return mocks.mockMojaApiResponse();
-            });
-
             await model.initialize({
                 ...mocks.coreConnectorPostTransfersPayloadDto(),
                 currentState: States.PAYEE_RESOLVED,
@@ -1625,33 +1674,9 @@ describe('outboundModel', () => {
             expect(result.fxQuoteRequest).toBeTruthy();
             expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_CONVERSION_ACCEPTANCE);
             expect(model.data.currentState).toBe(States.FX_QUOTE_RECEIVED);
-            // todo: add more tests
         });
 
         test('should process callback for POST fxTransfers request', async () => {
-            model._requests.postFxTransfers = jest.fn(async (payload) => {
-                const channel = `${CacheKeyPrefixes.FX_TRANSFER_CALLBACK_CHANNEL}_${payload.commitRequestId}`;
-                const cachedCallbackPayload = {
-                    success: true,
-                    data: {
-                        body: { ...payload },
-                        headers: {},
-                    }
-                };
-                await cache.publish(channel, JSON.stringify(cachedCallbackPayload));
-                return mocks.mockMojaApiResponse();
-            });
-
-            model._requests.postTransfers = jest.fn(async (payload) => {
-                const channel = `tf_${payload.transferId}`;
-                await cache.publish(channel, JSON.stringify({
-                    data: {},
-                    type: 'transferFulfil'
-                }));
-                return mocks.mockMojaApiResponse();
-            });
-            model._checkIlp = false;
-
             await model.initialize({
                 ...mocks.coreConnectorPostTransfersPayloadDto(),
                 currentState: States.QUOTE_RECEIVED,
@@ -1675,7 +1700,33 @@ describe('outboundModel', () => {
             expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
             expect(model.data.currentState).toBe(States.SUCCEEDED);
             expect(model._requests.postTransfers).toHaveBeenCalledTimes(1);
-            // todo: add more checks
+        });
+
+        test('should pass e2e FX transfer flow (no autoAccept... configs)', async () => {
+            model._autoAcceptParty = false;
+            model._autoAcceptQuotes = false;
+            await model.initialize({
+                ...mocks.coreConnectorPostTransfersPayloadDto()
+            });
+            expect(model.data.currentState).toBe(States.START);
+
+            let result = await model.run();
+            expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_PARTY_ACCEPTANCE);
+            expect(model.data.currentState).toBe(States.PAYEE_RESOLVED);
+            expect(model.data.getPartiesRequest).toBeTruthy();
+
+            result = await model.run({ acceptParty: true });
+            expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_CONVERSION_ACCEPTANCE);
+            expect(result.fxQuoteRequest).toBeTruthy();
+            expect(model.data.currentState).toBe(States.FX_QUOTE_RECEIVED);
+
+            result = await model.run({ acceptConversion: true });
+            expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE);
+            expect(model.data.currentState).toBe(States.QUOTE_RECEIVED);
+
+            result = await model.run({ acceptQuote: true });
+            expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
+            expect(model.data.currentState).toBe(States.SUCCEEDED);
         });
     });
 });
