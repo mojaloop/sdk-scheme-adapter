@@ -2816,7 +2816,7 @@ __metadata:
     oauth2-server: ^4.0.0-dev.2
     openapi-jsonschema-parameters: ^12.1.3
     openapi-response-validator: ^12.1.3
-    openapi-typescript: ^6.7.1
+    openapi-typescript: ^6.7.2
     prom-client: ^15.0.0
     promise-timeout: ^1.3.0
     random-word-slugs: ^0.1.7
@@ -12122,6 +12122,22 @@ __metadata:
   bin:
     openapi-typescript: bin/cli.js
   checksum: 2c7f47ad6e11082747fbae35304e2e26072ad317a4066a3bc934caf1a39fb7d34ca3ecb34aabf36162f89fc99ee7ca7cd3c4a9c8bcb079b527cda5ef33c2c6d7
+  languageName: node
+  linkType: hard
+
+"openapi-typescript@npm:^6.7.2":
+  version: 6.7.2
+  resolution: "openapi-typescript@npm:6.7.2"
+  dependencies:
+    ansi-colors: ^4.1.3
+    fast-glob: ^3.3.1
+    js-yaml: ^4.1.0
+    supports-color: ^9.4.0
+    undici: ^5.27.2
+    yargs-parser: ^21.1.1
+  bin:
+    openapi-typescript: bin/cli.js
+  checksum: cec414943b930f60bd3b58fc0f5b996ac54e35261a4bd9a8c25e6a3a3395281f5288cb6231bc74cb8c3b60d58436a510d6628c53198722bd3dc6d1e2e3fe4aef
   languageName: node
   linkType: hard
 

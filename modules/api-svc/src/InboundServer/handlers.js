@@ -980,7 +980,7 @@ const postFxQuotes = async (ctx) => {
  *
  * @param success {boolean} - false is for handling error callback response
  */
-const createPutFxQuoteHandler = (success) => async (ctx) => {
+const createPutFxQuotesHandler = (success) => async (ctx) => {
     const { body, headers } = extractBodyHeadersSourceFspId(ctx);
     const { ID } = ctx.state.path.params;
 
@@ -988,7 +988,7 @@ const createPutFxQuoteHandler = (success) => async (ctx) => {
     await ctx.state.cache.publish(channel, {
         success,
         data: { body, headers },
-        type: `fxQuoteResponse${success ? '' : 'Error'}`
+        type: `fxQuotesResponse${success ? '' : 'Error'}`
     });
 
     // todo: think, what does it mean in putQuote handler!
@@ -1016,6 +1016,36 @@ const postFxTransfers = async (ctx) => {
         .catch(err => logger.push({ err }).log(`${logPrefix} error`));
 
     prepareResponse(ctx);
+};
+
+/**
+ * Create a handler for PUT /fxTransfers/{ID} and PUT /fxTransfers/{ID}/error routes
+ *
+ * @param success {boolean} - false is for handling error callback response
+ */
+const createPutFxTransfersHandler = (success) => async (ctx) => {
+    const { body, headers } = extractBodyHeadersSourceFspId(ctx);
+    const { ID } = ctx.state.path.params;
+
+    const channel = `${CacheKeyPrefixes.FX_TRANSFER_CALLBACK_CHANNEL}_${ID}`;
+    await ctx.state.cache.publish(channel, {
+        success,
+        data: { body, headers },
+        type: `fxTransfersResponse${success ? '' : 'Error'}`
+    });
+
+    // todo: think, what does it mean in putTransfer handler!
+    //
+    //  duplicate publication until legacy code refactored
+    // await TransfersModel.triggerDeferredJob({
+    //     cache: ctx.state.cache,
+    //     message: data,
+    //     args: {
+    //         transferId,
+    //     }
+    // });
+
+    ctx.response.status = ReturnCodes.OK.CODE;
 };
 
 module.exports = {
@@ -1113,12 +1143,18 @@ module.exports = {
         post: postFxQuotes
     },
     '/fxQuotes/{ID}': {
-        put: createPutFxQuoteHandler(true)
+        put: createPutFxQuotesHandler(true)
     },
     '/fxQuotes/{ID}/error': {
-        put: createPutFxQuoteHandler(false)
+        put: createPutFxQuotesHandler(false)
     },
     '/fxTransfers': {
         post: postFxTransfers
+    },
+    '/fxTransfers/{ID}': {
+        put: createPutFxTransfersHandler(true)
+    },
+    '/fxTransfers/{ID}/error': {
+        put: createPutFxTransfersHandler(false)
     }
 };

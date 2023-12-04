@@ -1583,7 +1583,7 @@ describe('outboundModel', () => {
         beforeEach(() => {
             model = new Model({
                 cache,
-                logger,
+                logger: new Logger.Logger({ context: { app: 'outbound-model-fx-flow-unit-tests' } }),
                 metricsClient,
                 ...config,
             });
@@ -1626,6 +1626,62 @@ describe('outboundModel', () => {
             expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_CONVERSION_ACCEPTANCE);
             expect(model.data.currentState).toBe(States.FX_QUOTE_RECEIVED);
             // todo: add more tests
+        });
+
+        test('should process callback for POST fxTransfers request', async () => {
+            let postTransferPayload;
+
+            model._requests.postFxTransfers = jest.fn(async (payload) => {
+                const channel = `${CacheKeyPrefixes.FX_TRANSFER_CALLBACK_CHANNEL}_${payload.commitRequestId}`;
+                const cachedCallbackPayload = {
+                    success: true,
+                    data: {
+                        body: {
+                            ...payload,
+                            isTest: true
+                        },
+                        headers: {},
+                    }
+                };
+                await cache.publish(channel, JSON.stringify(cachedCallbackPayload));
+                return mocks.mockMojaApiResponse();
+            });
+
+            model._requests.postTransfers = jest.fn(async (payload) => {
+                postTransferPayload = payload;
+                const channel = `tf_${payload.transferId}`;
+                await cache.publish(channel, JSON.stringify({
+                    data: {},
+                    type: 'transferFulfil'
+                }));
+                return mocks.mockMojaApiResponse();
+            });
+            model._checkIlp = false;
+
+            await model.initialize({
+                ...mocks.coreConnectorPostTransfersPayloadDto(),
+                currentState: States.QUOTE_RECEIVED,
+                needFx: true,
+                supportedCurrencies: ['USD'],
+                acceptQuote: true,
+                fxQuoteResponse: {
+                    body: mocks.mockFxQuotesPayload(),
+                },
+                quoteResponse: {
+                    body: {
+                        transferAmount: {},
+                    }
+                }
+            });
+            expect(model.data.currentState).toBe(States.QUOTE_RECEIVED);
+
+            const result = await model.run();
+            expect(result).toBeTruthy();
+            expect(result.fxTransferRequest).toBeTruthy();
+            expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
+            expect(model.data.currentState).toBe(States.SUCCEEDED);
+            expect(postTransferPayload).toBeTruthy();
+            // todo: add more checks
         });
     });
 });
