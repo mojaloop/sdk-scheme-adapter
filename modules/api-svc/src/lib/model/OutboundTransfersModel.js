@@ -693,14 +693,11 @@ class OutboundTransfersModel {
      * @returns {object} - the quote request object
      */
     _buildQuoteRequest() {
-        let quote = {
+        const quote = {
             quoteId: uuid(),
             transactionId: this.data.transferId,
             amountType: this.data.amountType,
-            amount: {
-                currency: this.data.currency,
-                amount: this.data.amount
-            },
+            amount: this.defineQuoteAmount(),
             expiration: this._getExpirationTimestamp()
         };
 
@@ -720,7 +717,7 @@ class OutboundTransfersModel {
 
         // geocode
         // note
-        if(this.data.note) {
+        if (this.data.note) {
             quote.note = this.data.note;
         }
 
@@ -737,6 +734,17 @@ class OutboundTransfersModel {
         // }
 
         return quote;
+    }
+
+    defineQuoteAmount() {
+        if (this.data.needFx) {
+            return this.data.fxQuoteResponse.body.conversionTerms.targetAmount;
+        }
+        const { currency, amount } = this.data;
+        return {
+            currency,
+            amount
+        };
     }
 
 

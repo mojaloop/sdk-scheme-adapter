@@ -1578,6 +1578,7 @@ describe('outboundModel', () => {
     });
 
     describe('FX flow Tests -->', () => {
+        const TARGET_AMOUNT = '48000';
         let model;
 
         const publishAndReply = async (channel, payload) => {
@@ -1595,9 +1596,10 @@ describe('outboundModel', () => {
         });
 
         const postFxQuotesRequest = jest.fn(async (payload) => {
+            const channel = `${CacheKeyPrefixes.FX_QUOTE_CALLBACK_CHANNEL}_${payload.conversionRequestId}`;
             // eslint-disable-next-line no-unused-vars
             const { conversionRequestId, ...restPayload} = payload;
-            const channel = `${CacheKeyPrefixes.FX_QUOTE_CALLBACK_CHANNEL}_${payload.conversionRequestId}`;
+            restPayload.conversionTerms.targetAmount.amount = TARGET_AMOUNT; // todo: find a better way
             return publishAndReply(channel, {
                 success: true,
                 data: {
@@ -1723,6 +1725,11 @@ describe('outboundModel', () => {
             result = await model.run({ acceptConversion: true });
             expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE);
             expect(model.data.currentState).toBe(States.QUOTE_RECEIVED);
+            expect(model._requests.postQuotes).toHaveBeenCalledTimes(1);
+
+            const [quote] = model._requests.postQuotes.mock.calls[0];
+            expect(quote.amount.currency).toBe(model.data.supportedCurrencies[0]);
+            expect(quote.amount.amount).toBe(TARGET_AMOUNT);
 
             result = await model.run({ acceptQuote: true });
             expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
