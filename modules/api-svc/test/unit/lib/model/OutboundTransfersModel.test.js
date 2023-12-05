@@ -1713,7 +1713,7 @@ describe('outboundModel', () => {
             let result = await model.run();
             expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_PARTY_ACCEPTANCE);
             expect(model.data.currentState).toBe(States.PAYEE_RESOLVED);
-            expect(model.data.getPartiesRequest).toBeTruthy();
+            expect(model.data.needFx).toBe(true);
 
             result = await model.run({ acceptParty: true });
             expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_CONVERSION_ACCEPTANCE);
