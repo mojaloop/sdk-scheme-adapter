@@ -1,6 +1,8 @@
 /*eslint quote-props: ["error", "as-needed"]*/
 const { randomUUID } = require('node:crypto');
 
+const DEFAULT_ID_VALUE = '2551234567890';
+
 const mockCurrencyAmount = ({
     currency = 'AED',
     amount = '123.45'
@@ -81,7 +83,9 @@ const coreConnectorPostTransfersPayloadDto = ({
     homeTransactionId = randomUUID(),
     fspId = 'PayerFSP',
     currency = 'BWP',
-    amount = '300'
+    amount = '300',
+    idType = 'MSISDN',
+    idValue = DEFAULT_ID_VALUE
 } = {}) => Object.freeze({
     homeTransactionId,
     from: {
@@ -90,28 +94,54 @@ const coreConnectorPostTransfersPayloadDto = ({
         displayName: 'Keeya',
         firstName: 'Keeya',
         idType: 'MSISDN',
-        idValue: '26787654321'
+        idValue: '26787654321',
     },
     to: {
-        idType: 'MSISDN',
-        idValue: '2551234567890'
+        idType,
+        idValue,
     },
     amountType: 'SEND',
     currency,
     amount
 });
 
+const mockPutQuotesResponse = ({
+    currency = 'BWP',
+    amount = '300',
+    ilpPacket = 'This is encoded transaction object...',
+    condition = 'HOr22-H3AfTDHrSkPjJtVPRdKouuMkDXTR4ejlQa8Ks',
+    expiration = new Date().toISOString(),
+} = {}) => Object.freeze({
+    transferAmount: {
+        currency,
+        amount,
+    },
+    payeeReceiveAmount: {
+        currency,
+        amount: '299'
+    },
+    payeeFspFee: {
+        currency,
+        amount: '1'
+    },
+    ilpPacket,
+    condition,
+    expiration,
+});
+
 const mockGetPartyResponse = ({
     supportedCurrencies = ['TZS'],
     kycInformation = 'Encrypted KYC Data',
     fspId = 'MobileMoney',
+    partyIdType = 'MSISDN',
+    partyIdentifier =  DEFAULT_ID_VALUE
 } = {}) => Object.freeze({
     party: {
         partyIdInfo: {
-            partyIdType: 'PERSONAL_ID',
-            partyIdentifier: '123456789',
-            partySubIdOrType: 'PASSPORT',
-            fspId
+            fspId,
+            partyIdType,
+            partyIdentifier,
+            // partySubIdOrType: 'PASSPORT',
         },
         personalInfo: {
             complexName: {
@@ -141,6 +171,7 @@ module.exports = {
     mockFxTransfersPayload,
     mockFxTransfersInternalResponse,
     mockGetPartyResponse,
+    mockPutQuotesResponse,
     mockMojaApiResponse,
     mockCurrencyAmount,
 };

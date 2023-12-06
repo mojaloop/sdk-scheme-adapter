@@ -37,8 +37,8 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@types/node": "^20.10.1",
-    "eslint": "^8.54.0",
+    "@types/node": "^20.10.3",
+    "eslint": "^8.55.0",
     "jest": "^29.7.0",
     "npm-check-updates": "^16.7.10",
     "replace": "^1.2.2",
