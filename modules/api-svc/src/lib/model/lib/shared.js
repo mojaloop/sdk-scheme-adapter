@@ -255,7 +255,7 @@ const internalTransactionRequestResponseToMojaloop = (internal) => {
  *
  * @returns {object}
  */
-const mojaloopPrepareToInternalTransfer = (external, quote, ilp) => {
+const mojaloopPrepareToInternalTransfer = (external, quote, ilp, checkIlp) => {
     let internal = null;
     if(quote) {
         internal = {
@@ -271,7 +271,7 @@ const mojaloopPrepareToInternalTransfer = (external, quote, ilp) => {
             transactionType: quote.request.transactionType.scenario,
             subScenario: quote.request.transactionType.subScenario,
             ilpPacket: {
-                data: ilp.getTransactionObject(external.ilpPacket),
+                data: checkIlp && ilp.getTransactionObject(external.ilpPacket),
             },
             note: quote.request.note
         };
