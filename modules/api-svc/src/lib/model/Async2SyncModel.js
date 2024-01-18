@@ -222,17 +222,18 @@ function generate({
                     modelName,
                     config: { ...config }, // injects config property
                     requests: new MojaloopRequests({
-                        logger: config.logger,
                         peerEndpoint: config.peerEndpoint,
+                        tracestate: config.tracestate,
                         alsEndpoint: config.alsEndpoint,
                         quotesEndpoint: config.quotesEndpoint,
                         transfersEndpoint: config.transfersEndpoint,
                         transactionRequestsEndpoint: config.transactionRequestsEndpoint,
-                        dfspId: config.dfspId,
+                        dfspId: config.dgfspId,
                         tls: {
                             enabled: config.outbound.tls.mutualTLS.enabled,
                             creds: config.outbound.tls.creds,
                         },
+                        logger: config.logger,
                         jwsSign: config.jwsSign,
                         jwsSignPutParties: config.jwsSignPutParties,
                         jwsSigningKey: config.jwsSigningKey,

@@ -546,16 +546,18 @@ const getPartiesByTypeAndId = async (ctx) => {
     const type = ctx.state.path.params.Type;
     const id = ctx.state.path.params.ID;
     const subId = ctx.state.path.params.SubId;
+    const tracestate = ctx.request.headers.tracestate;
 
     const args = { type, id, subId };
 
     try {
         // prepare config
         const modelConfig = {
-            ...ctx.state.conf,
+             ...ctx.state.conf,
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2: ctx.state.wso2,
+            tracestate
         };
 
         const cacheKey = PartiesModel.generateKey(args);
