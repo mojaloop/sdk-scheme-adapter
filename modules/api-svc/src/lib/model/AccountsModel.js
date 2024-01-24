@@ -387,7 +387,7 @@ class AccountsModel {
                 await this._stateMachine.error(err);
 
                 // avoid circular ref between executionState.lastError and err
-                err.executionState = JSON.parse(JSON.stringify(this.getResponse()));
+                err.executionState = structuredClone(this.getResponse());
             }
             throw err;
         }
