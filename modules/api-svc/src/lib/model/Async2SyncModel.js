@@ -228,7 +228,7 @@ function generate({
                         quotesEndpoint: config.quotesEndpoint,
                         transfersEndpoint: config.transfersEndpoint,
                         transactionRequestsEndpoint: config.transactionRequestsEndpoint,
-                        dfspId: config.dgfspId,
+                        dfspId: config.dfspId,
                         tls: {
                             enabled: config.outbound.tls.mutualTLS.enabled,
                             creds: config.outbound.tls.creds,
