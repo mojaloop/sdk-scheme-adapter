@@ -2235,7 +2235,7 @@ __metadata:
     "@mojaloop/central-services-shared": 18.2.0
     "@mojaloop/event-sdk": ^14.0.0
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
-    "@mojaloop/sdk-standard-components": v17.1.4-snapshot.2
+    "@mojaloop/sdk-standard-components": v17.1.4-snapshot.3
     "@redocly/openapi-cli": ^1.0.0-beta.94
     "@types/jest": ^29.5.11
     ajv: 8.12.0
@@ -2406,16 +2406,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mojaloop/sdk-standard-components@npm:v17.1.4-snapshot.2":
-  version: 17.1.4-snapshot.2
-  resolution: "@mojaloop/sdk-standard-components@npm:17.1.4-snapshot.2"
+"@mojaloop/sdk-standard-components@npm:v17.1.4-snapshot.3":
+  version: 17.1.4-snapshot.3
+  resolution: "@mojaloop/sdk-standard-components@npm:17.1.4-snapshot.3"
   dependencies:
     base64url: 3.0.1
     fast-safe-stringify: ^2.1.1
     ilp-packet: 2.2.0
     jsonwebtoken: 9.0.2
     jws: 4.0.0
-  checksum: 836c81eac5ce8a84804fa81b4974e5f8df0651800cda82a164501952db565d42855d0445c1a2c5461aa006f964cde9a464ba4a0a86fec217911146155f30c15a
+  checksum: 413d4828cadfb41f47878fa806cebec6d4c161e32d463e1f5a0cb08754aacfa79729d261f8c6f35e2410851d8cad0aad8cd4d705158632d67c5c47a55570b6d6
   languageName: node
   linkType: hard
 
