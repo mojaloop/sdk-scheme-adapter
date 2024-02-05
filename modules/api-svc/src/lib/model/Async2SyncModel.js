@@ -223,7 +223,6 @@ function generate({
                     config: { ...config }, // injects config property
                     requests: new MojaloopRequests({
                         peerEndpoint: config.peerEndpoint,
-                        tracestate: config.tracestate,
                         alsEndpoint: config.alsEndpoint,
                         quotesEndpoint: config.quotesEndpoint,
                         transfersEndpoint: config.transfersEndpoint,
