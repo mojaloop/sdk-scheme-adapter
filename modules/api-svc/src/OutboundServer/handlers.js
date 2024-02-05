@@ -553,7 +553,7 @@ const getPartiesByTypeAndId = async (ctx) => {
     try {
         // prepare config
         const modelConfig = {
-             ...ctx.state.conf,
+            ...ctx.state.conf,
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2: ctx.state.wso2,
