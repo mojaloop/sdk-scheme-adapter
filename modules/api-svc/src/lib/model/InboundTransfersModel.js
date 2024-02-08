@@ -143,7 +143,7 @@ class InboundTransfersModel {
     /**
      * Queries the backend API for the specified party and makes a callback to the originator with the result
      */
-    async getParties(idType, idValue, idSubValue, sourceFspId, headers = {}) {
+    async getParties(idType, idValue, idSubValue, sourceFspId) {
         try {
             // make a call to the backend to resolve the party lookup
             const response = await this._backendRequests.getParties(idType, idValue, idSubValue);
@@ -158,7 +158,7 @@ class InboundTransfersModel {
             };
 
             // make a callback to the source fsp with the party info
-            return this._mojaloopRequests.putParties(idType, idValue, idSubValue, mlParty, sourceFspId, headers);
+            return this._mojaloopRequests.putParties(idType, idValue, idSubValue, mlParty, sourceFspId);
         }
         catch(err) {
             this._logger.push({ err }).log('Error in getParties');
@@ -173,7 +173,7 @@ class InboundTransfersModel {
      * Asks the backend for a response to an incoming quote request and makes a callback to the originator with
      * the result
      */
-    async quoteRequest(request, sourceFspId, headers = {}) {
+    async quoteRequest(request, sourceFspId) {
         const quoteRequest = request.body;
 
         // keep track of our state.
@@ -213,7 +213,7 @@ class InboundTransfersModel {
             }
 
             // make a call to the backend to ask for a quote response
-            const response = await this._backendRequests.postQuoteRequests(internalForm, headers);
+            const response = await this._backendRequests.postQuoteRequests(internalForm);
             if(!response) {
                 // make an error callback to the source fsp
                 return 'No response from backend';
@@ -244,7 +244,7 @@ class InboundTransfersModel {
             await this._save();
 
             // make a callback to the source fsp with the quote response
-            const res = await this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId, headers);
+            const res = await this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId);
             this.data.quoteResponse = {
                 headers: res.originalRequest.headers,
                 body: res.originalRequest.body,
@@ -423,7 +423,7 @@ class InboundTransfersModel {
             }
 
             // project the incoming transfer prepare into an internal transfer request
-            const internalForm = shared.mojaloopPrepareToInternalTransfer(prepareRequest, quote, this._ilp, config.checkIlp);
+            const internalForm = shared.mojaloopPrepareToInternalTransfer(prepareRequest, quote, this._ilp);
 
             // make a call to the backend to inform it of the incoming transfer
             const response = await this._backendRequests.postTransfers(internalForm);
@@ -452,8 +452,7 @@ class InboundTransfersModel {
             const res = await this._mojaloopRequests.putTransfers(
                 prepareRequest.transferId,
                 mojaloopResponse,
-                sourceFspId,
-                request.headers);
+                sourceFspId);
             this.data.fulfil = {
                 headers: res.originalRequest.headers,
                 body: res.originalRequest.body,

@@ -179,14 +179,14 @@ class Client extends ws {
             case MESSAGE.CONFIGURATION:
                 switch (msg.verb) {
                     case VERB.NOTIFY: {
-                        const dup = structuredClone(this._appConfig); // fast-json-patch explicitly mutates
+                        const dup = JSON.parse(JSON.stringify(this._appConfig)); // fast-json-patch explicitly mutates
                         _.merge(dup, msg.data);
                         this._logger.push({ oldConf: this._appConfig, newConf: dup }).log('Emitting new configuration');
                         this.emit(EVENT.RECONFIGURE, dup);
                         break;
                     }
                     case VERB.PATCH: {
-                        const dup = structuredClone(this._appConfig); // fast-json-patch explicitly mutates
+                        const dup = JSON.parse(JSON.stringify(this._appConfig)); // fast-json-patch explicitly mutates
                         jsonPatch.applyPatch(dup, msg.data);
                         this._logger.push({ oldConf: this._appConfig, newConf: dup }).log('Emitting new configuration');
                         this.emit(EVENT.RECONFIGURE, dup);

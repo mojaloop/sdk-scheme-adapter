@@ -119,7 +119,7 @@ const getPartiesByTypeAndId = async (ctx) => {
             });
 
             // use the model to handle the request
-            const response = await model.getParties(idType, idValue, subIdValue, sourceFspId, ctx.request.header);
+            const response = await model.getParties(idType, idValue, subIdValue, sourceFspId);
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled GET /parties/{idType}/{idValue} request');
@@ -169,7 +169,7 @@ const postQuotes = async (ctx) => {
             });
 
             // use the model to handle the request
-            const response = await model.quoteRequest(quoteRequest, sourceFspId, ctx.request.header);
+            const response = await model.quoteRequest(quoteRequest, sourceFspId);
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled POST /quotes request');
