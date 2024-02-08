@@ -117,7 +117,7 @@ function generate({
                 await this.error(err);
 
                 // avoid circular ref between requestActionState.lastError and err
-                err.requestActionState = structuredClone(this.getResponse());
+                err.requestActionState = JSON.parse(JSON.stringify(this.getResponse()));
             }
             throw err;
         }
