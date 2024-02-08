@@ -1,0 +1,2005 @@
+{
+  "version": "6.0",
+  "nxVersion": "16.5.0",
+  "deps": {
+    "nx": "16.5.0",
+    "tslib": "^2.6.2",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.11.16",
+    "@types/node-cache": "^4.2.5",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "audit-ci": "^6.6.1",
+    "eslint": "^8.56.0",
+    "eslint-config-airbnb-typescript": "^17.1.0",
+    "eslint-plugin-import": "latest",
+    "husky": "^9.0.10",
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.3",
+    "npm-check-updates": "^16.7.10",
+    "replace": "^1.2.2",
+    "standard-version": "^9.5.0",
+    "ts-jest": "^29.1.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "yarn-audit-fix": "^10.0.7"
+  },
+  "pathMappings": {},
+  "nxJsonPlugins": [],
+  "pluginsConfig": {
+    "@nx/js": {
+      "analyzeSourceFiles": false
+    }
+  },
+  "projectFileMap": {
+    "modules-outbound-domain-event-handler": [
+      {
+        "file": "modules/outbound-domain-event-handler/.eslintrc",
+        "hash": "12229904545004110007"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/LICENSE.md",
+        "hash": "12914486055130180922"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/README.md",
+        "hash": "9979827051188748428"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/config/default.json",
+        "hash": "10843958577489289087"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/jest.config.js",
+        "hash": "3153060449509852133"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/package.json",
+        "hash": "8467870312704533531",
+        "deps": [
+          "npm:@mojaloop/api-snippets",
+          "npm:@mojaloop/logging-bc-client-lib",
+          "npm:@mojaloop/logging-bc-public-types-lib",
+          "modules-private-shared-lib",
+          "npm:convict",
+          "npm:express",
+          "npm:openapi-backend",
+          "npm:redis",
+          "npm:swagger-ui-express",
+          "npm:yamljs",
+          "npm:@types/convict",
+          "npm:@types/express",
+          "npm:@types/jest",
+          "npm:@types/node",
+          "npm:@types/node-cache",
+          "npm:@types/supertest",
+          "npm:@types/swagger-ui-express",
+          "npm:@types/yamljs",
+          "npm:@typescript-eslint/eslint-plugin",
+          "npm:@typescript-eslint/parser",
+          "npm:copyfiles",
+          "npm:eslint",
+          "npm:jest",
+          "npm:nodemon",
+          "npm:npm-check-updates",
+          "npm:replace",
+          "npm:standard-version",
+          "npm:ts-jest",
+          "npm:ts-node",
+          "npm:typescript"
+        ]
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/project.json",
+        "hash": "3815068112849274062"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/src/api-server/app.ts",
+        "hash": "8000437452266784557"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/src/api-server/handlers/health.ts",
+        "hash": "8981907330484691210"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/src/api-server/handlers/index.ts",
+        "hash": "8924232057601033938"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/src/api-server/index.ts",
+        "hash": "2010555766947972414"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/src/api-server/interface/api.yaml",
+        "hash": "4045755752520749323"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/src/api-server/models/health.ts",
+        "hash": "15000859594897782067"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/src/api-server/models/index.ts",
+        "hash": "15740313071023563001"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/src/api-server/services/health.ts",
+        "hash": "10527796024144237629"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/src/application/errors.ts",
+        "hash": "1189770664897339956"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/src/application/handler.ts",
+        "hash": "15473173989378573752"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/src/application/handlers/bulk-quotes-callback-received.ts",
+        "hash": "12479181669632995553"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/src/application/handlers/bulk_transfers_callback_received.ts",
+        "hash": "1664325043617753278"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/src/application/handlers/bulk_transfers_processed.ts",
+        "hash": "11079107201125052829"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/src/application/handlers/index.ts",
+        "hash": "83554556986406451"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/src/application/handlers/party-info-callback-received.ts",
+        "hash": "11012965880316157541"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/src/application/handlers/sdk-outbound-bulk-party-info-requested.ts",
+        "hash": "4217684436480148908"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/src/application/handlers/sdk-outbound-bulk-request-received.ts",
+        "hash": "17122316984539160530"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/src/application/handlers/sdk_outbound_bulk_accept_party_info_processed.ts",
+        "hash": "10341357132366199716"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/src/application/handlers/sdk_outbound_bulk_accept_party_info_received.ts",
+        "hash": "4672731566737379428"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/src/application/handlers/sdk_outbound_bulk_accept_quote_processed.ts",
+        "hash": "4688105264484003995"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/src/application/handlers/sdk_outbound_bulk_accept_quote_received.ts",
+        "hash": "10090869116003490452"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/src/application/handlers/sdk_outbound_bulk_response_sent.ts",
+        "hash": "14964522270809978116"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/src/application/handlers/sdk_outbound_bulk_transfers_request_processed.ts",
+        "hash": "14080023414421743343"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/src/application/index.ts",
+        "hash": "13588447350142400956"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/src/shared/config.ts",
+        "hash": "5815777596934016739"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/src/types/domain_event_handler_options.ts",
+        "hash": "2072267829329865334"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/src/types/index.ts",
+        "hash": "3418592697841289310"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/test/unit/api-server/app.test.ts",
+        "hash": "12729273096659462007"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/test/unit/api-server/index.test.ts",
+        "hash": "9403962061852911778"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/test/unit/api-server/routes/health.test.ts",
+        "hash": "5079599180538712316"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/test/unit/application/handlers/bulk-transfers-callback-received.test.ts",
+        "hash": "13043914839867626797"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/test/unit/application/handlers/party-info-callback-received.test.ts",
+        "hash": "17002262204059755561"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/test/unit/application/handlers/sdk-outbound-bulk-party-info-requested.test.ts",
+        "hash": "1074207440984586915"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/test/unit/index.test.ts",
+        "hash": "10921188467037527543"
+      },
+      {
+        "file": "modules/outbound-domain-event-handler/tsconfig.json",
+        "hash": "7455163105823677909"
+      }
+    ],
+    "modules-private-shared-lib": [
+      {
+        "file": "modules/private-shared-lib/.eslintrc",
+        "hash": "12229904545004110007"
+      },
+      {
+        "file": "modules/private-shared-lib/README.md",
+        "hash": "16642269600745030684"
+      },
+      {
+        "file": "modules/private-shared-lib/jest.config.js",
+        "hash": "4416164144544861168"
+      },
+      {
+        "file": "modules/private-shared-lib/package.json",
+        "hash": "16015658517784869341",
+        "deps": [
+          "npm:@mojaloop/api-snippets",
+          "npm:@mojaloop/central-services-shared",
+          "npm:@mojaloop/logging-bc-public-types-lib",
+          "npm:@mojaloop/platform-shared-lib-messaging-types-lib",
+          "npm:@mojaloop/platform-shared-lib-nodejs-kafka-client-lib",
+          "npm:ajv",
+          "npm:redis",
+          "npm:uuid",
+          "npm:@types/node",
+          "npm:eslint",
+          "npm:jest",
+          "npm:npm-check-updates",
+          "npm:replace",
+          "npm:standard-version",
+          "npm:ts-jest",
+          "npm:typescript"
+        ]
+      },
+      {
+        "file": "modules/private-shared-lib/project.json",
+        "hash": "17580705450560641124"
+      },
+      {
+        "file": "modules/private-shared-lib/src/domain/base_aggregate.ts",
+        "hash": "4475412300556542423"
+      },
+      {
+        "file": "modules/private-shared-lib/src/domain/base_entity.ts",
+        "hash": "7476030757197278899"
+      },
+      {
+        "file": "modules/private-shared-lib/src/domain/base_entity_state.ts",
+        "hash": "14840607373673717320"
+      },
+      {
+        "file": "modules/private-shared-lib/src/domain/bulk_batch_entity.ts",
+        "hash": "49976005663828635"
+      },
+      {
+        "file": "modules/private-shared-lib/src/domain/bulk_transaction_entity.ts",
+        "hash": "1772842369257852488"
+      },
+      {
+        "file": "modules/private-shared-lib/src/domain/ientity_state_repository.ts",
+        "hash": "17400699040160858976"
+      },
+      {
+        "file": "modules/private-shared-lib/src/domain/index.ts",
+        "hash": "3180427397167783761"
+      },
+      {
+        "file": "modules/private-shared-lib/src/domain/individual_transfer_entity.ts",
+        "hash": "18118064451572130007"
+      },
+      {
+        "file": "modules/private-shared-lib/src/errors/index.ts",
+        "hash": "5228005425322529134"
+      },
+      {
+        "file": "modules/private-shared-lib/src/errors/validation-errors.ts",
+        "hash": "14930357892739595754"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/base_event.ts",
+        "hash": "14417946307765550203"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/command_event.ts",
+        "hash": "5952500909047965392"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/domain_event.ts",
+        "hash": "6825051994828992435"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/index.ts",
+        "hash": "5247855111785924828"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_command_event/index.ts",
+        "hash": "14076063282410527065"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_command_event/prepare_sdk_outbound_bulk_response.ts",
+        "hash": "8289902250432434352"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_command_event/process_bulk_quotes_callback.ts",
+        "hash": "6288550861445839881"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_command_event/process_bulk_transfers_callback.ts",
+        "hash": "10938000428886023370"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_command_event/process_party_info_callback.ts",
+        "hash": "9735205924332728414"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_command_event/process_sdk_outbound_bulk_accept_party_info.ts",
+        "hash": "14598194737392391514"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_command_event/process_sdk_outbound_bulk_accept_quote.ts",
+        "hash": "3765796570862764167"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_command_event/process_sdk_outbound_bulk_party_info_request.ts",
+        "hash": "6469943487935424567"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_command_event/process_sdk_outbound_bulk_quotes_request.ts",
+        "hash": "6997405724040264298"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_command_event/process_sdk_outbound_bulk_request.ts",
+        "hash": "16093846683807180910"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_command_event/process_sdk_outbound_bulk_response_sent.ts",
+        "hash": "4159462927413578538"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_command_event/process_sdk_outbound_bulk_tranfers_request_complete.ts",
+        "hash": "15992361080304160471"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_command_event/process_sdk_outbound_bulk_transfers_request.ts",
+        "hash": "10387493168751650825"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_domain_event/bulk_quotes_callback_processed.ts",
+        "hash": "3898847134475746340"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_domain_event/bulk_quotes_callback_received.ts",
+        "hash": "12673482828089765910"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_domain_event/bulk_quotes_requested.ts",
+        "hash": "12524180554722107327"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_domain_event/bulk_transfers_callback_processed.ts",
+        "hash": "14642520964518120605"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_domain_event/bulk_transfers_callback_received.ts",
+        "hash": "12739708821600315035"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_domain_event/bulk_transfers_processed.ts",
+        "hash": "4875247112488207074"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_domain_event/bulk_transfers_requested.ts",
+        "hash": "16070785332091505013"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_domain_event/index.ts",
+        "hash": "9496067274622945991"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_domain_event/party_info_callback_processed.ts",
+        "hash": "5364815961114001544"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_domain_event/party_info_callback_received.ts",
+        "hash": "3033463632556691700"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_domain_event/party_info_requested.ts",
+        "hash": "11178017327592849267"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_domain_event/sdk_outbound_bulk_accept_party_info_processed.ts",
+        "hash": "1431960774019548271"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_domain_event/sdk_outbound_bulk_accept_party_info_received.ts",
+        "hash": "5289129741117663478"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_domain_event/sdk_outbound_bulk_accept_party_info_requested.ts",
+        "hash": "5881493809351289954"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_domain_event/sdk_outbound_bulk_accept_quote_processed.ts",
+        "hash": "17561837216444907866"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_domain_event/sdk_outbound_bulk_accept_quote_received.ts",
+        "hash": "13561288261404124582"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_domain_event/sdk_outbound_bulk_accept_quote_requested.ts",
+        "hash": "12380391657989312714"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_domain_event/sdk_outbound_bulk_auto_accept_party_info_requested.ts",
+        "hash": "5909421573298755303"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_domain_event/sdk_outbound_bulk_auto_accept_quote_completed.ts",
+        "hash": "358785779821638609"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_domain_event/sdk_outbound_bulk_party_info_request_processed.ts",
+        "hash": "15614089545233857817"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_domain_event/sdk_outbound_bulk_party_info_requested.ts",
+        "hash": "15825751462421894654"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_domain_event/sdk_outbound_bulk_quotes_request_processed.ts",
+        "hash": "7186159843994433740"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_domain_event/sdk_outbound_bulk_request_received.ts",
+        "hash": "1834131753123964144"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_domain_event/sdk_outbound_bulk_response_prepared.ts",
+        "hash": "15872657134053114165"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_domain_event/sdk_outbound_bulk_response_sent.ts",
+        "hash": "10892383954607074256"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_domain_event/sdk_outbound_bulk_response_set_processed.ts",
+        "hash": "2562809246852393122"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/outbound_domain_event/sdk_outbound_bulk_transfers_request_processed.ts",
+        "hash": "6026442329206879470"
+      },
+      {
+        "file": "modules/private-shared-lib/src/events/todo.txt",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "modules/private-shared-lib/src/index.ts",
+        "hash": "3127995418457880655"
+      },
+      {
+        "file": "modules/private-shared-lib/src/infra/index.ts",
+        "hash": "2330536655569462482"
+      },
+      {
+        "file": "modules/private-shared-lib/src/infra/inmemory_bulk_transaction_repo.ts",
+        "hash": "8469856758948224411"
+      },
+      {
+        "file": "modules/private-shared-lib/src/infra/kafka_command_event_consumer.ts",
+        "hash": "12243947424948728059"
+      },
+      {
+        "file": "modules/private-shared-lib/src/infra/kafka_command_event_producer.ts",
+        "hash": "17846926172528713999"
+      },
+      {
+        "file": "modules/private-shared-lib/src/infra/kafka_domain_event_consumer.ts",
+        "hash": "4694381934449491310"
+      },
+      {
+        "file": "modules/private-shared-lib/src/infra/kafka_domain_event_producer.ts",
+        "hash": "14461017980073723336"
+      },
+      {
+        "file": "modules/private-shared-lib/src/infra/kafka_event_consumer.ts",
+        "hash": "15420477024245927412"
+      },
+      {
+        "file": "modules/private-shared-lib/src/infra/kafka_event_producer.ts",
+        "hash": "3315583031249950414"
+      },
+      {
+        "file": "modules/private-shared-lib/src/infra/redis_bulk_transaction_repo.ts",
+        "hash": "15942206450259683631"
+      },
+      {
+        "file": "modules/private-shared-lib/src/types/bulk_transaction_entity_repo.ts",
+        "hash": "5092988313570363818"
+      },
+      {
+        "file": "modules/private-shared-lib/src/types/events/PartyInfoRequest.ts",
+        "hash": "11508218883249598830"
+      },
+      {
+        "file": "modules/private-shared-lib/src/types/events/PartyResponse.ts",
+        "hash": "16142290878931058511"
+      },
+      {
+        "file": "modules/private-shared-lib/src/types/events/index.ts",
+        "hash": "1831150317243560793"
+      },
+      {
+        "file": "modules/private-shared-lib/src/types/index.ts",
+        "hash": "17141743432251397268"
+      },
+      {
+        "file": "modules/private-shared-lib/src/types/infra/iMessageTypes.ts",
+        "hash": "2189890883819624845"
+      },
+      {
+        "file": "modules/private-shared-lib/src/types/infra/icommand-event-producer.ts",
+        "hash": "16444183891660813170"
+      },
+      {
+        "file": "modules/private-shared-lib/src/types/infra/idomain-event-producer.ts",
+        "hash": "9605194027403944632"
+      },
+      {
+        "file": "modules/private-shared-lib/src/types/infra/ievent-consumer.ts",
+        "hash": "11251270228128414001"
+      },
+      {
+        "file": "modules/private-shared-lib/src/types/infra/ievent-producer.ts",
+        "hash": "3610094197336745229"
+      },
+      {
+        "file": "modules/private-shared-lib/src/types/infra/ikafka_event_consumer_options.ts",
+        "hash": "17557150235487931204"
+      },
+      {
+        "file": "modules/private-shared-lib/src/types/infra/ikafka_event_producer_options.ts",
+        "hash": "6974632369586120561"
+      },
+      {
+        "file": "modules/private-shared-lib/src/types/infra/index.ts",
+        "hash": "701832684226787489"
+      },
+      {
+        "file": "modules/private-shared-lib/src/types/infra/irun_handler.ts",
+        "hash": "12943639500234980303"
+      },
+      {
+        "file": "modules/private-shared-lib/src/utils/crypto.ts",
+        "hash": "8981358700138849109"
+      },
+      {
+        "file": "modules/private-shared-lib/src/utils/enum_utils.ts",
+        "hash": "6600433846599004858"
+      },
+      {
+        "file": "modules/private-shared-lib/src/utils/index.ts",
+        "hash": "1069787457695374875"
+      },
+      {
+        "file": "modules/private-shared-lib/src/values/enums.ts",
+        "hash": "5320284581702338694"
+      },
+      {
+        "file": "modules/private-shared-lib/src/values/index.ts",
+        "hash": "12567793835144186994"
+      },
+      {
+        "file": "modules/private-shared-lib/test/integration/infra/kafka_generic.test.ts",
+        "hash": "2183947303582637584"
+      },
+      {
+        "file": "modules/private-shared-lib/test/integration/infra/kafkajs.test.ts",
+        "hash": "7334749738255174517"
+      },
+      {
+        "file": "modules/private-shared-lib/test/unit/events/command_event.test.ts",
+        "hash": "1968352996151805100"
+      },
+      {
+        "file": "modules/private-shared-lib/test/unit/events/domain_event.test.ts",
+        "hash": "14470013549630994414"
+      },
+      {
+        "file": "modules/private-shared-lib/test/unit/events/outbound_domain_event/party_info_callback_received.test.ts",
+        "hash": "12131081323117850887"
+      },
+      {
+        "file": "modules/private-shared-lib/tsconfig.json",
+        "hash": "15026784373273418195"
+      }
+    ],
+    "modules-api-svc": [
+      {
+        "file": "modules/api-svc/.env.example",
+        "hash": "11722317039529630248"
+      },
+      {
+        "file": "modules/api-svc/.eslintrc.json",
+        "hash": "9709592029084409309"
+      },
+      {
+        "file": "modules/api-svc/LICENSE.md",
+        "hash": "12914486055130180922"
+      },
+      {
+        "file": "modules/api-svc/PROXY.md",
+        "hash": "5636740202912737141"
+      },
+      {
+        "file": "modules/api-svc/README.md",
+        "hash": "6165721462467010215"
+      },
+      {
+        "file": "modules/api-svc/SECURITY.md",
+        "hash": "11798824260023872857"
+      },
+      {
+        "file": "modules/api-svc/audit-resolve.json",
+        "hash": "964691729616098194"
+      },
+      {
+        "file": "modules/api-svc/babel.config.js",
+        "hash": "4559757518125260382"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/secrets/keygen.sh",
+        "hash": "3507012815164446280"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/secrets/privatekey.pem",
+        "hash": "9244027698999663320"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/secrets/publickey.cer",
+        "hash": "785634636321716056"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/secrets/tls/createSecrets.sh",
+        "hash": "7147037732055532321"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/secrets/tls/hub_client.csr",
+        "hash": "5032337763726732732"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/secrets/tls/hub_client_cacert.pem",
+        "hash": "7231132029100341757"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/secrets/tls/hub_client_cakey.key",
+        "hash": "12603373339887568716"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/secrets/tls/hub_client_key.key",
+        "hash": "17198935208355963871"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/secrets/tls/hub_server.csr",
+        "hash": "1655577876679412668"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/secrets/tls/hub_server_cacert.pem",
+        "hash": "8706118123910297157"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/secrets/tls/hub_server_cacert.srl",
+        "hash": "17433538655732739152"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/secrets/tls/hub_server_cakey.key",
+        "hash": "12077845851099172014"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/secrets/tls/hub_server_cert.pem",
+        "hash": "18113077222921014766"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/secrets/tls/hub_server_key.key",
+        "hash": "5000900909223169109"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/secrets/tls/openssl.conf",
+        "hash": "5149444643056096382"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/spec_files/api_definitions/central_admin_9.3/api_spec.yaml",
+        "hash": "17449150704466199432"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/spec_files/api_definitions/central_admin_9.3/response_map.json",
+        "hash": "6505042148219139850"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/spec_files/api_definitions/fspiop_1.0/api_spec.yaml",
+        "hash": "13870394306305640977"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/spec_files/api_definitions/fspiop_1.0/callback_map.json",
+        "hash": "17917264878599192048"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/spec_files/api_definitions/fspiop_1.0/mockRef.json",
+        "hash": "5213131824411587701"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/spec_files/api_definitions/fspiop_1.0/trigger_templates/transaction_request_followup.json",
+        "hash": "1643366988928159105"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/spec_files/api_definitions/fspiop_1.1/api_spec.yaml",
+        "hash": "30060077891308070"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/spec_files/api_definitions/fspiop_1.1/callback_map.json",
+        "hash": "16600242516489448487"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/spec_files/api_definitions/fspiop_1.1/mockRef.json",
+        "hash": "5213131824411587701"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/spec_files/api_definitions/fspiop_1.1/trigger_templates/transaction_request_followup.json",
+        "hash": "14057492448480056565"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/spec_files/api_definitions/settlements_1.0/api_spec.yaml",
+        "hash": "11227576341242407872"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/spec_files/api_definitions/settlements_1.0/mockRef.json",
+        "hash": "6155029958063659051"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/spec_files/api_definitions/settlements_1.0/response_map.json",
+        "hash": "17865060181810587553"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/spec_files/reports/templates/newman/html_template.html",
+        "hash": "16095833153075689446"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/spec_files/reports/templates/newman/pdf_template.html",
+        "hash": "1264047801932003684"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/spec_files/reports/templates/newman/script.js",
+        "hash": "3464105871265875403"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/spec_files/rules_callback/config.json",
+        "hash": "12814475688942430391"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/spec_files/rules_callback/default.json",
+        "hash": "17491816791292632162"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/spec_files/rules_response/config.json",
+        "hash": "16647657237950531501"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/spec_files/rules_response/default.json",
+        "hash": "15243482900589731649"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/spec_files/rules_response/default_pisp_rules.json",
+        "hash": "1625639146054131134"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/spec_files/rules_validation/config.json",
+        "hash": "12814475688942430391"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/spec_files/rules_validation/default.json",
+        "hash": "9515404530800044497"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/spec_files/system_config.json",
+        "hash": "6250390359245221489"
+      },
+      {
+        "file": "modules/api-svc/docker/ml-testing-toolkit/spec_files/user_config.json",
+        "hash": "8940253499898154963"
+      },
+      {
+        "file": "modules/api-svc/docker/wait4/setup_hosts_file.sh",
+        "hash": "17045430357723332852"
+      },
+      {
+        "file": "modules/api-svc/docker/wait4/wait4.config.js",
+        "hash": "5892713276383552550"
+      },
+      {
+        "file": "modules/api-svc/docker/wait4/wait4.js",
+        "hash": "9578415539454958026"
+      },
+      {
+        "file": "modules/api-svc/docs/Mojaloop - Modusbox Onboarding functionality.pdf",
+        "hash": "5763538419380283074"
+      },
+      {
+        "file": "modules/api-svc/jest.config.js",
+        "hash": "14596122962518546410"
+      },
+      {
+        "file": "modules/api-svc/package.json",
+        "hash": "6084935382430987233",
+        "deps": [
+          "npm:@koa/cors",
+          "npm:@mojaloop/api-snippets",
+          "npm:@mojaloop/central-services-error-handling",
+          "npm:@mojaloop/central-services-logger",
+          "npm:@mojaloop/central-services-metrics",
+          "npm:@mojaloop/central-services-shared",
+          "npm:@mojaloop/event-sdk",
+          "modules-private-shared-lib",
+          "npm:@mojaloop/sdk-standard-components",
+          "npm:ajv",
+          "npm:axios",
+          "npm:co-body",
+          "npm:dotenv",
+          "npm:env-var",
+          "npm:express",
+          "npm:fast-json-patch",
+          "npm:javascript-state-machine",
+          "npm:js-yaml",
+          "npm:json-schema-ref-parser",
+          "npm:koa",
+          "npm:koa-body",
+          "npm:lodash",
+          "npm:module-alias",
+          "npm:oauth2-server",
+          "npm:openapi-jsonschema-parameters",
+          "npm:prom-client",
+          "npm:promise-timeout",
+          "npm:random-word-slugs",
+          "npm:redis",
+          "npm:uuidv4",
+          "npm:ws",
+          "npm:@babel/core",
+          "npm:@babel/preset-env",
+          "npm:@redocly/openapi-cli",
+          "npm:@types/jest",
+          "npm:babel-jest",
+          "npm:eslint",
+          "npm:eslint-config-airbnb-base",
+          "npm:eslint-plugin-import",
+          "npm:eslint-plugin-jest",
+          "npm:jest",
+          "npm:jest-junit",
+          "npm:nock",
+          "npm:npm-check-updates",
+          "npm:openapi-response-validator",
+          "npm:openapi-typescript",
+          "npm:redis-mock",
+          "npm:replace",
+          "npm:standard-version",
+          "npm:supertest",
+          "npm:swagger-cli"
+        ]
+      },
+      {
+        "file": "modules/api-svc/project.json",
+        "hash": "17279982756945253167"
+      },
+      {
+        "file": "modules/api-svc/secrets/cacert.pem",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "modules/api-svc/secrets/jwsSigningKey.key",
+        "hash": "12024677725587575352"
+      },
+      {
+        "file": "modules/api-svc/secrets/jwsVerificationKeys/mojaloop-sdk.pem",
+        "hash": "14082826787770301961"
+      },
+      {
+        "file": "modules/api-svc/secrets/jwsVerificationKeys/switch.pem",
+        "hash": "2388131533806296403"
+      },
+      {
+        "file": "modules/api-svc/secrets/servercert.pem",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "modules/api-svc/secrets/serverkey.pem",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "modules/api-svc/sequences.puml",
+        "hash": "11788826146780310823"
+      },
+      {
+        "file": "modules/api-svc/src/BackendEventHandler/handlers/index.js",
+        "hash": "11215205596527195168"
+      },
+      {
+        "file": "modules/api-svc/src/BackendEventHandler/handlers/sdk-outbound-bulk-accept-party-info-requested.js",
+        "hash": "6803498053975181885"
+      },
+      {
+        "file": "modules/api-svc/src/BackendEventHandler/handlers/sdk-outbound-bulk-accept-quote-requested.js",
+        "hash": "16816117295907958531"
+      },
+      {
+        "file": "modules/api-svc/src/BackendEventHandler/handlers/sdk-outbound-bulk-response-prepared.js",
+        "hash": "14049368567241074303"
+      },
+      {
+        "file": "modules/api-svc/src/BackendEventHandler/index.js",
+        "hash": "12180106865618855853"
+      },
+      {
+        "file": "modules/api-svc/src/BackendEventHandler/types/BulkTransactionState.js",
+        "hash": "3468277398993556114"
+      },
+      {
+        "file": "modules/api-svc/src/BackendEventHandler/types/index.js",
+        "hash": "9050987583115198437"
+      },
+      {
+        "file": "modules/api-svc/src/ControlAgent/index.js",
+        "hash": "12876240230429050120"
+      },
+      {
+        "file": "modules/api-svc/src/ControlServer/handlers.js",
+        "hash": "2905090508226046729"
+      },
+      {
+        "file": "modules/api-svc/src/ControlServer/index.js",
+        "hash": "1334460052013344311"
+      },
+      {
+        "file": "modules/api-svc/src/FSPIOPEventHandler/handlers/bulk-quotes-requested.js",
+        "hash": "8968017891556748500"
+      },
+      {
+        "file": "modules/api-svc/src/FSPIOPEventHandler/handlers/bulk-transfers-requested.js",
+        "hash": "201437483854424980"
+      },
+      {
+        "file": "modules/api-svc/src/FSPIOPEventHandler/handlers/index.js",
+        "hash": "12795479081299689034"
+      },
+      {
+        "file": "modules/api-svc/src/FSPIOPEventHandler/handlers/party-info-requested.js",
+        "hash": "17654944628140926398"
+      },
+      {
+        "file": "modules/api-svc/src/FSPIOPEventHandler/index.js",
+        "hash": "7887175107605066513"
+      },
+      {
+        "file": "modules/api-svc/src/InboundServer/api.yaml",
+        "hash": "17574672295742534734"
+      },
+      {
+        "file": "modules/api-svc/src/InboundServer/api_template.yaml",
+        "hash": "15659082685289400473"
+      },
+      {
+        "file": "modules/api-svc/src/InboundServer/handlers.js",
+        "hash": "1867298500398857086"
+      },
+      {
+        "file": "modules/api-svc/src/InboundServer/index.js",
+        "hash": "892240557086071418"
+      },
+      {
+        "file": "modules/api-svc/src/InboundServer/middlewares.js",
+        "hash": "14214798793550376170"
+      },
+      {
+        "file": "modules/api-svc/src/OAuthTestServer/index.js",
+        "hash": "11233140352675580525"
+      },
+      {
+        "file": "modules/api-svc/src/OAuthTestServer/model.js",
+        "hash": "15660605460486640336"
+      },
+      {
+        "file": "modules/api-svc/src/OutboundServer/handlers.js",
+        "hash": "10986302937007465517"
+      },
+      {
+        "file": "modules/api-svc/src/OutboundServer/index.js",
+        "hash": "5415058145560700712"
+      },
+      {
+        "file": "modules/api-svc/src/OutboundServer/middlewares.js",
+        "hash": "6667048564816562837"
+      },
+      {
+        "file": "modules/api-svc/src/TestServer/api.yaml",
+        "hash": "16614042461371149054"
+      },
+      {
+        "file": "modules/api-svc/src/TestServer/handlers.js",
+        "hash": "2905090508226046729"
+      },
+      {
+        "file": "modules/api-svc/src/TestServer/index.js",
+        "hash": "3249790607149654796"
+      },
+      {
+        "file": "modules/api-svc/src/config.js",
+        "hash": "5845752395430639804"
+      },
+      {
+        "file": "modules/api-svc/src/index.js",
+        "hash": "6767736834376191059"
+      },
+      {
+        "file": "modules/api-svc/src/lib/cache.js",
+        "hash": "4254088529380070562"
+      },
+      {
+        "file": "modules/api-svc/src/lib/check.js",
+        "hash": "1641965041157096009"
+      },
+      {
+        "file": "modules/api-svc/src/lib/metrics.js",
+        "hash": "14982151511499645571"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/AccountsModel.js",
+        "hash": "10652840855199294405"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/Async2SyncModel.js",
+        "hash": "13266738069832949116"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/InboundTransfersModel.js",
+        "hash": "4756515796343239158"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/OutboundBulkQuotesModel.js",
+        "hash": "7719461896842142725"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/OutboundBulkTransfersModel.js",
+        "hash": "15549228636144981765"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/OutboundRequestToPayModel.js",
+        "hash": "17581251356054937307"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/OutboundRequestToPayTransferModel.js",
+        "hash": "12682408565696335596"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/OutboundTransfersModel.js",
+        "hash": "2142889991368395535"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/PartiesModel.js",
+        "hash": "18236143803622653765"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/ProxyModel/MatchRules/Expression.js",
+        "hash": "10560638005529810513"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/ProxyModel/MatchRules/Headers.js",
+        "hash": "2405924211533971567"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/ProxyModel/MatchRules/MatchRule.js",
+        "hash": "1376523385236284149"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/ProxyModel/MatchRules/Path.js",
+        "hash": "15917015095692943425"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/ProxyModel/MatchRules/Query.js",
+        "hash": "7436692065215372881"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/ProxyModel/MatchRules/index.js",
+        "hash": "12280385345447476910"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/ProxyModel/Route.js",
+        "hash": "13164269866335729871"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/ProxyModel/configSchema.json",
+        "hash": "5906650176649526743"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/ProxyModel/index.js",
+        "hash": "17101957366746193880"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/QuotesModel.js",
+        "hash": "8550580055188557910"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/TransfersModel.js",
+        "hash": "6974370003505819837"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/common/BackendError.js",
+        "hash": "6303964611635542211"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/common/Enums.js",
+        "hash": "16966686514259692632"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/common/PersistentStateMachine.js",
+        "hash": "446458571399364253"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/common/index.js",
+        "hash": "3806939449533424803"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/index.js",
+        "hash": "5229640175465845640"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/lib/deferredJob.js",
+        "hash": "10069523662123806493"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/lib/index.js",
+        "hash": "6755450110575806742"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/lib/requests/backendRequests.js",
+        "hash": "11695028677979111289"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/lib/requests/common.js",
+        "hash": "1158117970814078824"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/lib/requests/index.js",
+        "hash": "2677661970089107910"
+      },
+      {
+        "file": "modules/api-svc/src/lib/model/lib/shared.js",
+        "hash": "2554701776734269886"
+      },
+      {
+        "file": "modules/api-svc/src/lib/router.js",
+        "hash": "8405769908984430461"
+      },
+      {
+        "file": "modules/api-svc/src/lib/validate.js",
+        "hash": "7265159828091234937"
+      },
+      {
+        "file": "modules/api-svc/test/__mocks__/@mojaloop/sdk-scheme-adapter-private-shared-lib.js",
+        "hash": "17515651868095650615"
+      },
+      {
+        "file": "modules/api-svc/test/__mocks__/@mojaloop/sdk-standard-components.js",
+        "hash": "11565266019203223520"
+      },
+      {
+        "file": "modules/api-svc/test/__mocks__/javascript-state-machine.js",
+        "hash": "789992061041866341"
+      },
+      {
+        "file": "modules/api-svc/test/__mocks__/redis.js",
+        "hash": "6030740093075092049"
+      },
+      {
+        "file": "modules/api-svc/test/__mocks__/uuidv4.js",
+        "hash": "3495043363398036570"
+      },
+      {
+        "file": "modules/api-svc/test/config/integration-pm4ml.env",
+        "hash": "4437052366778476637"
+      },
+      {
+        "file": "modules/api-svc/test/config/integration.env",
+        "hash": "18198315698682474151"
+      },
+      {
+        "file": "modules/api-svc/test/integration-pm4ml/FSPIOPEventHandler/partyInfoRequest.test.js",
+        "hash": "1692738259025898548"
+      },
+      {
+        "file": "modules/api-svc/test/integration-pm4ml/mockServers/index.js",
+        "hash": "9477326328682573743"
+      },
+      {
+        "file": "modules/api-svc/test/integration-pm4ml/mockServers/managementService/config.js",
+        "hash": "2708311647453748159"
+      },
+      {
+        "file": "modules/api-svc/test/integration-pm4ml/mockServers/managementService/index.js",
+        "hash": "9658677536400760509"
+      },
+      {
+        "file": "modules/api-svc/test/integration-pm4ml/mockServers/managementService/initConfig.js",
+        "hash": "6621270494901743585"
+      },
+      {
+        "file": "modules/api-svc/test/integration-pm4ml/mockServers/managementService/lib/randomphrase.js",
+        "hash": "8738662647854454619"
+      },
+      {
+        "file": "modules/api-svc/test/integration-pm4ml/mockServers/managementService/lib/words.json",
+        "hash": "3913839092300301088"
+      },
+      {
+        "file": "modules/api-svc/test/integration-pm4ml/mockServers/managementService/server.js",
+        "hash": "11630692079684473366"
+      },
+      {
+        "file": "modules/api-svc/test/integration/lib/Outbound/data/quotesPostRequest.json",
+        "hash": "8421283468698212215"
+      },
+      {
+        "file": "modules/api-svc/test/integration/lib/Outbound/data/transfersPostRequest.json",
+        "hash": "12297814644748363959"
+      },
+      {
+        "file": "modules/api-svc/test/integration/lib/Outbound/parties.test.js",
+        "hash": "11794912128027360597"
+      },
+      {
+        "file": "modules/api-svc/test/integration/lib/Outbound/quotes.test.js",
+        "hash": "15083355013525442471"
+      },
+      {
+        "file": "modules/api-svc/test/integration/lib/Outbound/simpleTransfers.test.js",
+        "hash": "15606971210296296976"
+      },
+      {
+        "file": "modules/api-svc/test/integration/lib/cache.test.js",
+        "hash": "8791382020303096230"
+      },
+      {
+        "file": "modules/api-svc/test/integration/testEnv.js",
+        "hash": "14951061360911185358"
+      },
+      {
+        "file": "modules/api-svc/test/unit/BackendEventHandler.test.js",
+        "hash": "13750500935076402793"
+      },
+      {
+        "file": "modules/api-svc/test/unit/ControlClient.test.js",
+        "hash": "11910836911994695210"
+      },
+      {
+        "file": "modules/api-svc/test/unit/ControlServer.test.js",
+        "hash": "12388586640938810335"
+      },
+      {
+        "file": "modules/api-svc/test/unit/ControlServer/events.js",
+        "hash": "9249973085702366988"
+      },
+      {
+        "file": "modules/api-svc/test/unit/ControlServer/index.js",
+        "hash": "2066522618550166498"
+      },
+      {
+        "file": "modules/api-svc/test/unit/FSPIOPEventHandler.test.js",
+        "hash": "6180514347337049589"
+      },
+      {
+        "file": "modules/api-svc/test/unit/InboundServer.test.js",
+        "hash": "10632361727855848566"
+      },
+      {
+        "file": "modules/api-svc/test/unit/TestServer.test.js",
+        "hash": "15959154609251733157"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/accounts/accounts.test.js",
+        "hash": "16315506682859513064"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/accounts/data/postAccountsBody.json",
+        "hash": "6265064244914518208"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/accounts/data/postAccountsErrorMojaloopResponse.json",
+        "hash": "2072661237956022035"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/accounts/data/postAccountsErrorTimeoutResponse.json",
+        "hash": "3305065812961316296"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/accounts/data/postAccountsSuccessResponse.json",
+        "hash": "5165349866008525204"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/accounts/data/postAccountsSuccessResponseWithError1.json",
+        "hash": "13963657726723969999"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/accounts/data/postAccountsSuccessResponseWithError2.json",
+        "hash": "11591384204869799046"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/accounts/utils.js",
+        "hash": "11971158239145808717"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/proxy/data/proxyConfig.yaml",
+        "hash": "5885351110396447609"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/proxy/data/requestBody.json",
+        "hash": "6155756754325550192"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/proxy/data/requestHeaders.json",
+        "hash": "10743710183373428598"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/proxy/data/requestQuery.json",
+        "hash": "5033040002488079113"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/proxy/data/responseBody.json",
+        "hash": "17139435300386415732"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/proxy/data/responseHeaders.json",
+        "hash": "7273880489078950759"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/proxy/proxy.test.js",
+        "hash": "2807740800427500294"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/proxy/utils.js",
+        "hash": "6108919793615985509"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/transfers/data/getTransfersCommittedResponse.json",
+        "hash": "14143575737545531214"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/transfers/data/getTransfersErrorNotFound.json",
+        "hash": "4711158786423160890"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/transfers/data/postQuotesBody.json",
+        "hash": "334247343753894127"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/transfers/data/postTransfersBadBody.json",
+        "hash": "7405864313844602923"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/transfers/data/postTransfersBody.json",
+        "hash": "4618437083084917770"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/transfers/data/postTransfersErrorMojaloopResponse.json",
+        "hash": "17732156901898285127"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/transfers/data/postTransfersErrorTimeoutResponse.json",
+        "hash": "3609127776903644263"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/transfers/data/postTransfersSimpleBody.json",
+        "hash": "17874090069524238287"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/transfers/data/postTransfersSuccessResponse.json",
+        "hash": "1871474785737257610"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/transfers/data/putPartiesBody.json",
+        "hash": "3657887600220494817"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/transfers/data/putQuotesBody.json",
+        "hash": "8678175162979965393"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/transfers/data/putTransfersBody.json",
+        "hash": "14336926260221548624"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/transfers/transfers.test.js",
+        "hash": "1220784919253911785"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/transfers/utils.js",
+        "hash": "4126417205978473812"
+      },
+      {
+        "file": "modules/api-svc/test/unit/api/utils.js",
+        "hash": "7070628007854195081"
+      },
+      {
+        "file": "modules/api-svc/test/unit/config.test.js",
+        "hash": "18352475285956938150"
+      },
+      {
+        "file": "modules/api-svc/test/unit/data/commonHttpHeaders.json",
+        "hash": "5672910405007320758"
+      },
+      {
+        "file": "modules/api-svc/test/unit/data/defaultConfig.json",
+        "hash": "2752089002931042472"
+      },
+      {
+        "file": "modules/api-svc/test/unit/data/postQuotesBody.json",
+        "hash": "334247343753894127"
+      },
+      {
+        "file": "modules/api-svc/test/unit/data/putParticipantsBody.json",
+        "hash": "11488627085276964533"
+      },
+      {
+        "file": "modules/api-svc/test/unit/data/putPartiesBody.json",
+        "hash": "3657887600220494817"
+      },
+      {
+        "file": "modules/api-svc/test/unit/data/testFile.json",
+        "hash": "1660406421333371577"
+      },
+      {
+        "file": "modules/api-svc/test/unit/data/testFile.yaml",
+        "hash": "10512683686050017133"
+      },
+      {
+        "file": "modules/api-svc/test/unit/inboundApi/data/mockArguments.json",
+        "hash": "4797223936052065038"
+      },
+      {
+        "file": "modules/api-svc/test/unit/inboundApi/data/mockTransactionRequest.json",
+        "hash": "17275239431203088265"
+      },
+      {
+        "file": "modules/api-svc/test/unit/inboundApi/handlers.test.js",
+        "hash": "6234304745947587235"
+      },
+      {
+        "file": "modules/api-svc/test/unit/index.test.js",
+        "hash": "14811180228751758850"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/cache.test.js",
+        "hash": "3310891250442216929"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/AccountsModel.test.js",
+        "hash": "4213589881558363851"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/InboundTransfersModel.test.js",
+        "hash": "17577349455137832354"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/OutboundBulkQuotesModel.test.js",
+        "hash": "4374841949250316285"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/OutboundBulkTransfersModel.test.js",
+        "hash": "14332166739229240704"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/OutboundRequestToPayModel.test.js",
+        "hash": "9969535508492849716"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/OutboundRequestToPayTransferModel.test.js",
+        "hash": "4279897222410187784"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/OutboundTransfersModel.test.js",
+        "hash": "2594274221269039948"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/PartiesModel.test.js",
+        "hash": "13808094379374472075"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/QuotesModel.test.js",
+        "hash": "12624330235248395274"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/TransfersModel.test.js",
+        "hash": "9222194023783624126"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/common/PersistentStateMachine.test.js",
+        "hash": "2769408861747479886"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/data/authorizationsResponse.json",
+        "hash": "12462332350826359784"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/data/bulkQuoteRequest.json",
+        "hash": "15201688470780199830"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/data/bulkQuoteResponse.json",
+        "hash": "1845445077253943685"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/data/bulkTransactionResponse.json",
+        "hash": "9091190264014370173"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/data/bulkTransferFulfil.json",
+        "hash": "12692377169006016049"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/data/bulkTransferRequest.json",
+        "hash": "3213117496193050852"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/data/defaultConfig.json",
+        "hash": "1068064484352567279"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/data/getBulkTransfersBackendResponse.json",
+        "hash": "3714587790865689866"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/data/getBulkTransfersMojaloopResponse.json",
+        "hash": "11295253444912692627"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/data/getTransfersBackendResponse.json",
+        "hash": "16381395949351266782"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/data/getTransfersMojaloopResponse.json",
+        "hash": "4594619710586302114"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/data/mockArguments.json",
+        "hash": "17115200388849068218"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/data/mockTxnRequestsArguments.json",
+        "hash": "16585808980926612469"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/data/notificationAbortedToPayee.json",
+        "hash": "7136232234201697344"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/data/notificationReservedToPayee.json",
+        "hash": "3873731576913217336"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/data/notificationToPayee.json",
+        "hash": "8545424024571901869"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/data/payeeParty.json",
+        "hash": "1091508997654911185"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/data/putQuotesResponse.json",
+        "hash": "1027066866188610045"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/data/putTransfersResponse.json",
+        "hash": "1641916386272863677"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/data/quoteResponse.json",
+        "hash": "665406302855437334"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/data/requestToPayRequest.json",
+        "hash": "11893857781900915511"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/data/requestToPayTransferRequest.json",
+        "hash": "12542329359668524695"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/data/transactionRequestResponse.json",
+        "hash": "4006191457640277462"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/data/transferFulfil.json",
+        "hash": "12717702356850331699"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/data/transferRequest.json",
+        "hash": "251519519674009780"
+      },
+      {
+        "file": "modules/api-svc/test/unit/lib/model/mockedLibRequests.js",
+        "hash": "7732416695134768474"
+      },
+      {
+        "file": "modules/api-svc/test/unit/mockLogger.js",
+        "hash": "10879409712320156505"
+      },
+      {
+        "file": "modules/api-svc/test/unit/outboundApi/data/bulkQuoteRequest.json",
+        "hash": "5057583456425354086"
+      },
+      {
+        "file": "modules/api-svc/test/unit/outboundApi/data/bulkTransactionRequest.json",
+        "hash": "3705809588900827887"
+      },
+      {
+        "file": "modules/api-svc/test/unit/outboundApi/data/bulkTransferRequest.json",
+        "hash": "11226213609652849349"
+      },
+      {
+        "file": "modules/api-svc/test/unit/outboundApi/data/mockBulkQuoteError.json",
+        "hash": "14842135179503513879"
+      },
+      {
+        "file": "modules/api-svc/test/unit/outboundApi/data/mockBulkTransferError.json",
+        "hash": "14017403501193425760"
+      },
+      {
+        "file": "modules/api-svc/test/unit/outboundApi/data/mockError.json",
+        "hash": "18031003061460377728"
+      },
+      {
+        "file": "modules/api-svc/test/unit/outboundApi/data/mockGetPartiesError.json",
+        "hash": "9660644259679543097"
+      },
+      {
+        "file": "modules/api-svc/test/unit/outboundApi/data/mockRequestToPayError.json",
+        "hash": "16977083794940048014"
+      },
+      {
+        "file": "modules/api-svc/test/unit/outboundApi/data/mockRequestToPayTransferError.json",
+        "hash": "17157821940753045548"
+      },
+      {
+        "file": "modules/api-svc/test/unit/outboundApi/data/requestToPay.json",
+        "hash": "4563879597594631110"
+      },
+      {
+        "file": "modules/api-svc/test/unit/outboundApi/data/requestToPayTransferRequest.json",
+        "hash": "5233025429934231234"
+      },
+      {
+        "file": "modules/api-svc/test/unit/outboundApi/data/transferRequest.json",
+        "hash": "2237869087825200942"
+      },
+      {
+        "file": "modules/api-svc/test/unit/outboundApi/handlers.test.js",
+        "hash": "15724000359297750596"
+      }
+    ],
+    "modules-outbound-command-event-handler": [
+      {
+        "file": "modules/outbound-command-event-handler/.eslintrc",
+        "hash": "12229904545004110007"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/LICENSE.md",
+        "hash": "12914486055130180922"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/README.md",
+        "hash": "9979827051188748428"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/config/default.json",
+        "hash": "16944064662028851032"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/jest.config.js",
+        "hash": "16582181249326122821"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/package.json",
+        "hash": "3472227380272859743",
+        "deps": [
+          "npm:@mojaloop/api-snippets",
+          "npm:@mojaloop/central-services-shared",
+          "npm:@mojaloop/logging-bc-client-lib",
+          "npm:@mojaloop/logging-bc-public-types-lib",
+          "modules-private-shared-lib",
+          "npm:ajv",
+          "npm:convict",
+          "npm:express",
+          "npm:openapi-backend",
+          "npm:redis",
+          "npm:swagger-ui-express",
+          "npm:yamljs",
+          "npm:@types/convict",
+          "npm:@types/express",
+          "npm:@types/jest",
+          "npm:@types/node",
+          "npm:@types/node-cache",
+          "npm:@types/supertest",
+          "npm:@types/swagger-ui-express",
+          "npm:@types/yamljs",
+          "npm:@typescript-eslint/eslint-plugin",
+          "npm:@typescript-eslint/parser",
+          "npm:copyfiles",
+          "npm:eslint",
+          "npm:jest",
+          "npm:nodemon",
+          "npm:npm-check-updates",
+          "npm:replace",
+          "npm:standard-version",
+          "npm:ts-jest",
+          "npm:ts-node",
+          "npm:typescript"
+        ]
+      },
+      {
+        "file": "modules/outbound-command-event-handler/project.json",
+        "hash": "3383715097258306533"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/api-server/app.ts",
+        "hash": "3230250557473352854"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/api-server/handlers/bulk-transactions.ts",
+        "hash": "6815338495400008945"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/api-server/handlers/health.ts",
+        "hash": "12010019306807931746"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/api-server/handlers/index.ts",
+        "hash": "9535554170651403062"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/api-server/index.ts",
+        "hash": "12116420746035375620"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/api-server/interface/api.yaml",
+        "hash": "2565519127176894827"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/api-server/models/bulk-transaction.ts",
+        "hash": "11632803423101501508"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/api-server/models/health.ts",
+        "hash": "4399905922152838494"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/api-server/models/index.ts",
+        "hash": "1524643272549043789"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/api-server/services/bulk-transactions.ts",
+        "hash": "15111689796686869196"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/api-server/services/health.ts",
+        "hash": "9038497977398014253"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/application/errors.ts",
+        "hash": "1189770664897339956"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/application/handler.ts",
+        "hash": "11814354422710367245"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/application/index.ts",
+        "hash": "9065051968475956940"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/domain/bulk_transaction_agg/handlers/index.ts",
+        "hash": "12506724688727566020"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/domain/bulk_transaction_agg/handlers/prepare_sdk_outbound_bulk_response.ts",
+        "hash": "14435599913405848711"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/domain/bulk_transaction_agg/handlers/process_bulk_quotes_callback.ts",
+        "hash": "18100479771891263720"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/domain/bulk_transaction_agg/handlers/process_bulk_transfers_callback.ts",
+        "hash": "3755427874768874225"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/domain/bulk_transaction_agg/handlers/process_party_info_callback.ts",
+        "hash": "16744295672341573992"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/domain/bulk_transaction_agg/handlers/process_sdk_outbound_bulk_accept_party_info.ts",
+        "hash": "9329939678788371604"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/domain/bulk_transaction_agg/handlers/process_sdk_outbound_bulk_accept_quote.ts",
+        "hash": "18083145084267278083"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/domain/bulk_transaction_agg/handlers/process_sdk_outbound_bulk_party_info_request.ts",
+        "hash": "3799321456763355009"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/domain/bulk_transaction_agg/handlers/process_sdk_outbound_bulk_quotes_request.ts",
+        "hash": "2271985297434558569"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/domain/bulk_transaction_agg/handlers/process_sdk_outbound_bulk_request.ts",
+        "hash": "221342096717207803"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/domain/bulk_transaction_agg/handlers/process_sdk_outbound_bulk_response_sent.ts",
+        "hash": "14172386829386392136"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/domain/bulk_transaction_agg/handlers/process_sdk_outbound_bulk_transfers_request.ts",
+        "hash": "16358289236512591810"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/domain/bulk_transaction_agg/index.ts",
+        "hash": "7566937712099785224"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/domain/index.ts",
+        "hash": "8028629375339228940"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/shared/config.ts",
+        "hash": "1283446349970167045"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/types/command_event_handler_options.ts",
+        "hash": "10454461166329984508"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/types/index.ts",
+        "hash": "11497958230463096420"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/src/types/repo_infra_types.ts",
+        "hash": "5257593075318076694"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/test/integration/application/agreement/process_bulk_quotes_callback.test.ts",
+        "hash": "11419677554269025052"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/test/integration/application/agreement/process_sdk_outbound_bulk_quotes_request.test.ts",
+        "hash": "4186310040544527652"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/test/integration/application/discovery/process_bulk_accept_party_info.test.ts",
+        "hash": "4800846011465146227"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/test/integration/application/discovery/process_bulk_party_info_request.test.ts",
+        "hash": "13449081991253527781"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/test/integration/application/discovery/process_bulk_request.test.ts",
+        "hash": "11388652249559420064"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/test/integration/application/discovery/process_party_info_callback.test.ts",
+        "hash": "17551221660211645238"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/test/integration/application/transfers/prepare_sdk_outbound_bulk_response.test.ts",
+        "hash": "5371898985662423978"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/test/integration/application/transfers/process_bulk_response_sent.test.ts",
+        "hash": "13006252160062453254"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/test/integration/application/transfers/process_bulk_transfers_callback.test.ts",
+        "hash": "5176309808808835273"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/test/integration/application/transfers/process_bulk_transfers_request.test.ts",
+        "hash": "7918835957343405514"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/test/integration/application/transfers/process_bulk_transfers_request_complete.test.ts",
+        "hash": "2562222632112874763"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/test/integration/application/transfers/process_prepare_bulk_response.test.ts",
+        "hash": "9848398563918107538"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/test/integration/application/transfers/process_sdk_outbound_bulk_accept_quote.test.ts",
+        "hash": "4093654786023115073"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/test/integration/application/transfers/process_sdk_outbound_bulk_response_sent.test.ts",
+        "hash": "11979781235459596330"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/test/integration/sample_events/process_sdk_outbound_bulk_transfers_request.test.ts",
+        "hash": "62405157852689896"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/test/integration/sample_events/sdk_outbound_bulk_accept_party_info_received.test.ts",
+        "hash": "15280129665775974954"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/test/integration/sample_events/sdk_outbound_bulk_request_received.test.ts",
+        "hash": "8505303486473960190"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/test/unit/api-server/app.test.ts",
+        "hash": "8596393837990537375"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/test/unit/api-server/index.test.ts",
+        "hash": "3768933590197820458"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/test/unit/api-server/routes/health.test.ts",
+        "hash": "18295398514457280494"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/test/unit/data/bulk_transaction_request.ts",
+        "hash": "11037342175971253381"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/test/unit/domain/bulk_transaction_agg/index.test.ts",
+        "hash": "7224963295349462015"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/test/unit/index.test.ts",
+        "hash": "10921188467037527543"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/test/util/generator.ts",
+        "hash": "16665329573320632618"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/test/util/index.ts",
+        "hash": "16549964466631729272"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/test/util/timer.ts",
+        "hash": "7018739136042944242"
+      },
+      {
+        "file": "modules/outbound-command-event-handler/tsconfig.json",
+        "hash": "14462279122925423181"
+      }
+    ]
+  }
+}
