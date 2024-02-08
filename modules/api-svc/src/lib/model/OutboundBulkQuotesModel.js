@@ -478,7 +478,7 @@ class OutboundBulkQuotesModel {
                 await this.stateMachine.error(err);
 
                 // avoid circular ref between bulkQuoteState.lastError and err
-                err.bulkQuoteState = JSON.parse(JSON.stringify(this.getResponse()));
+                err.bulkQuoteState = structuredClonethis.getResponse());
             }
             throw err;
         }

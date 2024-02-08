@@ -470,7 +470,7 @@ class OutboundBulkTransfersModel {
                 await this.stateMachine.error(err);
 
                 // avoid circular ref between bulkTransferState.lastError and err
-                err.bulkTransferState = JSON.parse(JSON.stringify(this.getResponse()));
+                err.bulkTransferState = structuredClone(this.getResponse());
             }
             throw err;
         }
