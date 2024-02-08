@@ -271,7 +271,7 @@ const mojaloopPrepareToInternalTransfer = (external, quote, ilp, checkILP) => {
             transactionType: quote.request.transactionType.scenario,
             subScenario: quote.request.transactionType.subScenario,
             ilpPacket: {
-                data: checkILP ? ilp.getTransactionObject(external.ilpPacket) : '',
+                data: ilp.getTransactionObject(external.ilpPacket),
             },
             note: quote.request.note
         };
