@@ -211,7 +211,7 @@ class Server extends ws.Server {
    * Update outbound tls configuration and broadcast the change
    */
   updateOutboundTLSConfig(outboundTLSConfig) {
-    const newConfig = structuredClone(this._currentConfig);
+    const newConfig = JSON.parse(JSON.stringify(this._currentConfig));
     newConfig.outbound.tls = outboundTLSConfig;
     this.updateNewConfig(newConfig)
   }
