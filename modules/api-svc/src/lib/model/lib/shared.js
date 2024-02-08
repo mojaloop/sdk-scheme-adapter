@@ -255,7 +255,7 @@ const internalTransactionRequestResponseToMojaloop = (internal) => {
  *
  * @returns {object}
  */
-const mojaloopPrepareToInternalTransfer = (external, quote, ilp, checkILP) => {
+const mojaloopPrepareToInternalTransfer = (external, quote, ilp) => {
     let internal = null;
     if(quote) {
         internal = {
