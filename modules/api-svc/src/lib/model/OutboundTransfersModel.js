@@ -1079,7 +1079,7 @@ class OutboundTransfersModel {
                 await this.stateMachine.error(err);
 
                 // avoid circular ref between transferState.lastError and err
-                err.transferState = structuredClone(this.getResponse());
+                err.transferState = JSON.parse(JSON.stringify(this.getResponse()));
                 await this._save();
             }
             throw err;
