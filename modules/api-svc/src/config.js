@@ -148,9 +148,6 @@ module.exports = {
     // enableClearingCheck: env.get('ENABLE_CLEARING_CHECK').default('false').asBool(),
 
     useQuoteSourceFSPAsTransferPayeeFSP: env.get('USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP').default('false').asBool(),
-    
-    // Use to avoid JWS validation. Useful for testing. Ex: using the harness.
-    validateJWS: env.get('VALIDATE_JWS_SIGN').default('true').asBool(),
 
     // Getting secrets from files instead of environment variables reduces the likelihood of
     // accidental leakage.
