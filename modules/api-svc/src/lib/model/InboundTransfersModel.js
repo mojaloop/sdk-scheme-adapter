@@ -423,7 +423,7 @@ class InboundTransfersModel {
             }
 
             // project the incoming transfer prepare into an internal transfer request
-            const internalForm = shared.mojaloopPrepareToInternalTransfer(prepareRequest, quote, this._ilp);
+            const internalForm = shared.mojaloopPrepareToInternalTransfer(prepareRequest, quote, this._ilp, config.checkIlp);
 
             // make a call to the backend to inform it of the incoming transfer
             const response = await this._backendRequests.postTransfers(internalForm);
