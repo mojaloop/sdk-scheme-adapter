@@ -270,7 +270,6 @@ const mojaloopPrepareToInternalTransfer = (external, quote, ilp, checkILP) => {
             amount: quote.request.amount.amount,
             transactionType: quote.request.transactionType.scenario,
             subScenario: quote.request.transactionType.subScenario,
-            ilpPacket: ,
             note: quote.request.note
         };
         if (quote.internalRequest && quote.internalRequest.extensionList && quote.internalRequest.extensionList.extension) {
