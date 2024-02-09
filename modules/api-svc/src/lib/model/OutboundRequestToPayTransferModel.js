@@ -195,7 +195,7 @@ class OutboundRequestToPayTransferModel {
                 await this.stateMachine.error(err);
 
                 // avoid circular ref between transferState.lastError and err
-                err.transferState = JSON.parse(JSON.stringify(this.getResponse()));
+                err.transferState = structuredClone(this.getResponse());
             }
             throw err;
         }
