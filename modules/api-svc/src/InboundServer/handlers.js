@@ -118,7 +118,7 @@ const getPartiesByTypeAndId = async (ctx) => {
                 resourceVersions: ctx.resourceVersions,
             });
 
-            const { tracestate = undefined, traceparent = undefined } = ctx.request.header;
+            const { tracestate = undefined, traceparent = undefined } = ctx.request.header || {};
 
             // use the model to handle the request
             const response = await model.getParties(idType, idValue, subIdValue, sourceFspId, { tracestate, traceparent });
@@ -170,7 +170,7 @@ const postQuotes = async (ctx) => {
                 resourceVersions: ctx.resourceVersions,
             });
 
-            const { tracestate = undefined, traceparent = undefined } = ctx.request.header;
+            const { tracestate = undefined, traceparent = undefined } = ctx.request.header || {};
 
             // use the model to handle the request
             const response = await model.quoteRequest(quoteRequest, sourceFspId, { tracestate, traceparent });
