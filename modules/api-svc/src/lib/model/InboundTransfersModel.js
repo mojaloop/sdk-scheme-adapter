@@ -401,6 +401,10 @@ class InboundTransfersModel {
                 if(!this._allowTransferWithoutQuote) {
                     throw new Error(`Corresponding quote not found for transfer ${prepareRequest.transferId}`);
                 }
+
+                if (!this.data) {
+                    this.data = {};
+                }
             }
 
             // persist our state so we have a record if we crash during processing the prepare
