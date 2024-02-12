@@ -23,7 +23,6 @@ const {
 } = require('@mojaloop/sdk-standard-components');
 const shared = require('./lib/shared');
 const { SDKStateEnum } = require('./common');
-const { config } = require('process');
 const FSPIOPTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.TransferState;
 const FSPIOPBulkTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.BulkTransferState;
 
@@ -143,7 +142,7 @@ class InboundTransfersModel {
     /**
      * Queries the backend API for the specified party and makes a callback to the originator with the result
      */
-    async getParties(idType, idValue, idSubValue, sourceFspId) {
+    async getParties(idType, idValue, idSubValue, sourceFspId, tracestate) {
         try {
             // make a call to the backend to resolve the party lookup
             const response = await this._backendRequests.getParties(idType, idValue, idSubValue);
@@ -158,7 +157,9 @@ class InboundTransfersModel {
             };
 
             // make a callback to the source fsp with the party info
-            return this._mojaloopRequests.putParties(idType, idValue, idSubValue, mlParty, sourceFspId);
+            return tracestate ?
+                this._mojaloopRequests.putParties(idType, idValue, idSubValue, mlParty, sourceFspId) :
+                this._mojaloopRequests.putParties(idType, idValue, idSubValue, mlParty, sourceFspId, { tracestate });
         }
         catch(err) {
             this._logger.push({ err }).log('Error in getParties');
@@ -173,7 +174,7 @@ class InboundTransfersModel {
      * Asks the backend for a response to an incoming quote request and makes a callback to the originator with
      * the result
      */
-    async quoteRequest(request, sourceFspId) {
+    async quoteRequest(request, sourceFspId, tracestate) {
         const quoteRequest = request.body;
 
         // keep track of our state.
@@ -212,8 +213,13 @@ class InboundTransfersModel {
                 }
             }
 
+            let response;
             // make a call to the backend to ask for a quote response
-            const response = await this._backendRequests.postQuoteRequests(internalForm);
+            if (tracestate) {
+                response = await this._backendRequests.postQuoteRequests(internalForm);
+            } else {
+                response = await this._backendRequests.postQuoteRequests(internalForm, { tracestate });
+            }
             if(!response) {
                 // make an error callback to the source fsp
                 return 'No response from backend';
@@ -243,8 +249,14 @@ class InboundTransfersModel {
             };
             await this._save();
 
+            let res;
+
             // make a callback to the source fsp with the quote response
-            const res = await this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId);
+            if (tracestate) {
+                res = await this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId, { tracestate });
+            } else {
+                res = await this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId);
+            }
             this.data.quoteResponse = {
                 headers: res.originalRequest.headers,
                 body: res.originalRequest.body,
@@ -423,7 +435,7 @@ class InboundTransfersModel {
             }
 
             // project the incoming transfer prepare into an internal transfer request
-            const internalForm = shared.mojaloopPrepareToInternalTransfer(prepareRequest, quote, this._ilp, config.checkIlp);
+            const internalForm = shared.mojaloopPrepareToInternalTransfer(prepareRequest, quote, this._ilp, this._checkIlp);
 
             // make a call to the backend to inform it of the incoming transfer
             const response = await this._backendRequests.postTransfers(internalForm);
@@ -448,11 +460,26 @@ class InboundTransfersModel {
                 },
             };
 
+            // Check for performance testing headers and forward them if present
+            const tracestate = request.headers?.tracestate;
+
+            let res;
+
+            if (tracestate) {
+                res = await this._mojaloopRequests.putTransfers(
+                    prepareRequest.transferId,
+                    mojaloopResponse,
+                    sourceFspId,
+                    { tracestate }
+                );
+            } else {
+                res = await this._mojaloopRequests.putTransfers(
+                    prepareRequest.transferId,
+                    mojaloopResponse,
+                    sourceFspId
+                );
+            }
             // make a callback to the source fsp with the transfer fulfilment
-            const res = await this._mojaloopRequests.putTransfers(
-                prepareRequest.transferId,
-                mojaloopResponse,
-                sourceFspId);
             this.data.fulfil = {
                 headers: res.originalRequest.headers,
                 body: res.originalRequest.body,
