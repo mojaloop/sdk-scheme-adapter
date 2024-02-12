@@ -157,9 +157,12 @@ class InboundTransfersModel {
             };
 
             // make a callback to the source fsp with the party info
-            return tracestate ?
-                this._mojaloopRequests.putParties(idType, idValue, idSubValue, mlParty, sourceFspId) :
-                this._mojaloopRequests.putParties(idType, idValue, idSubValue, mlParty, sourceFspId, { tracestate });
+            if (tracestate) {
+                const TRACESTATE_KEY_CALLBACK_START_TS = 'tx_callback_start_ts';
+                tracestate += `,${TRACESTATE_KEY_CALLBACK_START_TS}=${Date.now()}`;
+                return this._mojaloopRequests.putParties(idType, idValue, idSubValue, mlParty, sourceFspId, { tracestate });
+            }
+            return this._mojaloopRequests.putParties(idType, idValue, idSubValue, mlParty, sourceFspId);
         }
         catch(err) {
             this._logger.push({ err }).log('Error in getParties');
@@ -213,13 +216,10 @@ class InboundTransfersModel {
                 }
             }
 
-            let response;
+            
             // make a call to the backend to ask for a quote response
-            if (tracestate) {
-                response = await this._backendRequests.postQuoteRequests(internalForm);
-            } else {
-                response = await this._backendRequests.postQuoteRequests(internalForm, { tracestate });
-            }
+            const response = await this._backendRequests.postQuoteRequests(internalForm);
+
             if(!response) {
                 // make an error callback to the source fsp
                 return 'No response from backend';
@@ -253,6 +253,8 @@ class InboundTransfersModel {
 
             // make a callback to the source fsp with the quote response
             if (tracestate) {
+                const TRACESTATE_KEY_CALLBACK_START_TS = 'tx_callback_start_ts';
+                tracestate += `,${TRACESTATE_KEY_CALLBACK_START_TS}=${Date.now()}`;
                 res = await this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId, { tracestate });
             } else {
                 res = await this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId);
@@ -461,11 +463,13 @@ class InboundTransfersModel {
             };
 
             // Check for performance testing headers and forward them if present
-            const tracestate = request.headers?.tracestate;
+            let tracestate = request.headers?.tracestate;
 
             let res;
 
             if (tracestate) {
+                const TRACESTATE_KEY_CALLBACK_START_TS = 'tx_callback_start_ts';
+                tracestate += `,${TRACESTATE_KEY_CALLBACK_START_TS}=${Date.now()}`;
                 res = await this._mojaloopRequests.putTransfers(
                     prepareRequest.transferId,
                     mojaloopResponse,
