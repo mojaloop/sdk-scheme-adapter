@@ -142,7 +142,7 @@ class InboundTransfersModel {
     /**
      * Queries the backend API for the specified party and makes a callback to the originator with the result
      */
-    async getParties(idType, idValue, idSubValue, sourceFspId, tracestate) {
+    async getParties(idType, idValue, idSubValue, sourceFspId, {tracestate, traceparent}) {
         try {
             // make a call to the backend to resolve the party lookup
             const response = await this._backendRequests.getParties(idType, idValue, idSubValue);
@@ -157,10 +157,10 @@ class InboundTransfersModel {
             };
 
             // make a callback to the source fsp with the party info
-            if (tracestate) {
+            if (tracestate && traceparent) {
                 const TRACESTATE_KEY_CALLBACK_START_TS = 'tx_callback_start_ts';
                 tracestate += `,${TRACESTATE_KEY_CALLBACK_START_TS}=${Date.now()}`;
-                return this._mojaloopRequests.putParties(idType, idValue, idSubValue, mlParty, sourceFspId, { tracestate });
+                return this._mojaloopRequests.putParties(idType, idValue, idSubValue, mlParty, sourceFspId, { tracestate, traceparent });
             }
             return this._mojaloopRequests.putParties(idType, idValue, idSubValue, mlParty, sourceFspId);
         }
@@ -177,7 +177,7 @@ class InboundTransfersModel {
      * Asks the backend for a response to an incoming quote request and makes a callback to the originator with
      * the result
      */
-    async quoteRequest(request, sourceFspId, tracestate) {
+    async quoteRequest(request, sourceFspId, { tracestate, traceparent }) {
         const quoteRequest = request.body;
 
         // keep track of our state.
@@ -252,10 +252,10 @@ class InboundTransfersModel {
             let res;
 
             // make a callback to the source fsp with the quote response
-            if (tracestate) {
+            if (tracestate && traceparent) {
                 const TRACESTATE_KEY_CALLBACK_START_TS = 'tx_callback_start_ts';
                 tracestate += `,${TRACESTATE_KEY_CALLBACK_START_TS}=${Date.now()}`;
-                res = await this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId, { tracestate });
+                res = await this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId, { tracestate, traceparent });
             } else {
                 res = await this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId);
             }
@@ -389,7 +389,7 @@ class InboundTransfersModel {
                 this.data = await this._load(prepareRequest.transferId);
             }
 
-            const quote = this.data.quote;
+            const quote = this.data?.quote;
 
             if(!this.data || !quote) {
                 // If using the sdk-scheme-adapter in place of the deprecated `mojaloop-connector`
@@ -463,18 +463,18 @@ class InboundTransfersModel {
             };
 
             // Check for performance testing headers and forward them if present
-            let tracestate = request.headers?.tracestate;
+            let { tracestate = undefined, traceparent = undefined } = request.headers;
 
             let res;
 
-            if (tracestate) {
+            if (tracestate && traceparent) {
                 const TRACESTATE_KEY_CALLBACK_START_TS = 'tx_callback_start_ts';
                 tracestate += `,${TRACESTATE_KEY_CALLBACK_START_TS}=${Date.now()}`;
                 res = await this._mojaloopRequests.putTransfers(
                     prepareRequest.transferId,
                     mojaloopResponse,
                     sourceFspId,
-                    { tracestate }
+                    { tracestate, traceparent }
                 );
             } else {
                 res = await this._mojaloopRequests.putTransfers(
