@@ -142,7 +142,7 @@ class InboundTransfersModel {
     /**
      * Queries the backend API for the specified party and makes a callback to the originator with the result
      */
-    async getParties(idType, idValue, idSubValue, sourceFspId) {
+    async getParties(idType, idValue, idSubValue, sourceFspId, headers = {}) {
         try {
             // make a call to the backend to resolve the party lookup
             const response = await this._backendRequests.getParties(idType, idValue, idSubValue);
@@ -155,6 +155,14 @@ class InboundTransfersModel {
             const mlParty = {
                 party: shared.internalPartyToMojaloopParty(response, this._dfspId)
             };
+
+            let { tracestate = undefined, traceparent = undefined } = headers;
+
+            if (tracestate && traceparent) {
+                const TRACESTATE_KEY_CALLBACK_START_TS = 'tx_callback_start_ts';
+                tracestate += `,${TRACESTATE_KEY_CALLBACK_START_TS}=${Date.now()}`;
+                return this._mojaloopRequests.putParties(idType, idValue, idSubValue, mlParty, sourceFspId, { tracestate, traceparent });
+            }
 
             // make a callback to the source fsp with the party info
             return this._mojaloopRequests.putParties(idType, idValue, idSubValue, mlParty, sourceFspId);
@@ -172,7 +180,7 @@ class InboundTransfersModel {
      * Asks the backend for a response to an incoming quote request and makes a callback to the originator with
      * the result
      */
-    async quoteRequest(request, sourceFspId) {
+    async quoteRequest(request, sourceFspId, headers = {}) {
         const quoteRequest = request.body;
 
         // keep track of our state.
@@ -213,6 +221,7 @@ class InboundTransfersModel {
 
             // make a call to the backend to ask for a quote response
             const response = await this._backendRequests.postQuoteRequests(internalForm);
+
             if(!response) {
                 // make an error callback to the source fsp
                 return 'No response from backend';
@@ -242,8 +251,19 @@ class InboundTransfersModel {
             };
             await this._save();
 
+            let res;
+
+            let { tracestate = undefined, traceparent = undefined } = headers;
+
+
             // make a callback to the source fsp with the quote response
-            const res = await this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId);
+            if (tracestate && traceparent) {
+                const TRACESTATE_KEY_CALLBACK_START_TS = 'tx_callback_start_ts';
+                tracestate += `,${TRACESTATE_KEY_CALLBACK_START_TS}=${Date.now()}`;
+                res = await this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId, { tracestate, traceparent });
+            } else {
+                res = await this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId);
+            }
             this.data.quoteResponse = {
                 headers: res.originalRequest.headers,
                 body: res.originalRequest.body,
@@ -374,7 +394,7 @@ class InboundTransfersModel {
                 this.data = await this._load(prepareRequest.transferId);
             }
 
-            const quote = this.data.quote;
+            const quote = this.data?.quote;
 
             if(!this.data || !quote) {
                 // If using the sdk-scheme-adapter in place of the deprecated `mojaloop-connector`
@@ -385,6 +405,10 @@ class InboundTransfersModel {
                 // Check whether to allow transfers without a previous quote.
                 if(!this._allowTransferWithoutQuote) {
                     throw new Error(`Corresponding quote not found for transfer ${prepareRequest.transferId}`);
+                }
+
+                if (!this.data) {
+                    this.data = {};
                 }
             }
 
@@ -422,7 +446,7 @@ class InboundTransfersModel {
             }
 
             // project the incoming transfer prepare into an internal transfer request
-            const internalForm = shared.mojaloopPrepareToInternalTransfer(prepareRequest, quote, this._ilp);
+            const internalForm = shared.mojaloopPrepareToInternalTransfer(prepareRequest, quote, this._ilp, this._checkIlp);
 
             // make a call to the backend to inform it of the incoming transfer
             const response = await this._backendRequests.postTransfers(internalForm);

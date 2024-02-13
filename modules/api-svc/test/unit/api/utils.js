@@ -51,7 +51,7 @@ const createValidators = async () => {
 
 const createTestServers = async (config) => {
     const logger = new Logger.Logger({ stringify: () => '' });
-    const defConfig = JSON.parse(JSON.stringify(config));
+    const defConfig = structuredClone(config);
     const cache = new Cache({
         cacheUrl: defConfig.cacheUrl,
         logger: logger.push({ component: 'cache' })
