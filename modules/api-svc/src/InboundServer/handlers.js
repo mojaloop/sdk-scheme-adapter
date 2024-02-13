@@ -118,10 +118,16 @@ const getPartiesByTypeAndId = async (ctx) => {
                 resourceVersions: ctx.resourceVersions,
             });
 
-            const { tracestate = undefined, traceparent = undefined } = ctx.request.header || {};
+            let response;
 
             // use the model to handle the request
-            const response = await model.getParties(idType, idValue, subIdValue, sourceFspId, { tracestate, traceparent });
+            if (ctx.request.header.tracestate && ctx.request.header.traceparent) {
+                const { tracestate, traceparent } = ctx.request.header || {};
+                response = await model.getParties(idType, idValue, subIdValue, sourceFspId, { tracestate, traceparent });
+            } else {
+                response = await model.getParties(idType, idValue, subIdValue, sourceFspId);
+            }
+
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled GET /parties/{idType}/{idValue} request');
@@ -170,10 +176,15 @@ const postQuotes = async (ctx) => {
                 resourceVersions: ctx.resourceVersions,
             });
 
-            const { tracestate = undefined, traceparent = undefined } = ctx.request.header || {};
-
+            let response;
+            
             // use the model to handle the request
-            const response = await model.quoteRequest(quoteRequest, sourceFspId, { tracestate, traceparent });
+            if (ctx.request.header.tracestate && ctx.request.header.traceparent) {
+                const { tracestate, traceparent } = ctx.request.header || {};
+                response = await model.quoteRequest(quoteRequest, sourceFspId, { tracestate, traceparent });
+            } else {
+                response = await model.quoteRequest(quoteRequest, sourceFspId);
+            }
 
             // log the result
             ctx.state.logger.push({ response }).log('Inbound transfers model handled POST /quotes request');
