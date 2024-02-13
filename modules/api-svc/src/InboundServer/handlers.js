@@ -121,8 +121,8 @@ const getPartiesByTypeAndId = async (ctx) => {
             let response;
 
             // use the model to handle the request
-            if (ctx.request.header.tracestate && ctx.request.header.traceparent) {
-                const { tracestate, traceparent } = ctx.request.header || {};
+            if (ctx.request.header?.tracestate && ctx.request.header?.traceparent) {
+                const { tracestate, traceparent } = ctx.request.header;
                 response = await model.getParties(idType, idValue, subIdValue, sourceFspId, { tracestate, traceparent });
             } else {
                 response = await model.getParties(idType, idValue, subIdValue, sourceFspId);
@@ -179,8 +179,8 @@ const postQuotes = async (ctx) => {
             let response;
             
             // use the model to handle the request
-            if (ctx.request.header.tracestate && ctx.request.header.traceparent) {
-                const { tracestate, traceparent } = ctx.request.header || {};
+            if (ctx.request.header?.tracestate && ctx.request.header?.traceparent) {
+                const { tracestate, traceparent } = ctx.request.header;
                 response = await model.quoteRequest(quoteRequest, sourceFspId, { tracestate, traceparent });
             } else {
                 response = await model.quoteRequest(quoteRequest, sourceFspId);
