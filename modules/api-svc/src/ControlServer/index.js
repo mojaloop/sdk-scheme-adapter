@@ -255,7 +255,7 @@ class Server extends ws.Server {
                             client.send(build.CONFIGURATION.NOTIFY(this._appConfig, msg.id));
                             break;
                         case VERB.NOTIFY: {
-                            const dup = JSON.parse(JSON.stringify(this._appConfig)); // fast-json-patch explicitly mutates
+                            const dup = structuredClone(this._appConfig); // fast-json-patch explicitly mutates
                             _.merge(dup, msg.data);
                             this._logger.push({ oldConf: this._appConfig, newConf: dup }).log('Emitting new configuration');
                             this.emit(EVENT.RECONFIGURE, dup);
@@ -264,7 +264,7 @@ class Server extends ws.Server {
                         case VERB.PATCH: {
                             // TODO: validate the incoming patch? Or assume clients have used the
                             // client library?
-                            const dup = JSON.parse(JSON.stringify(this._appConfig)); // fast-json-patch explicitly mutates
+                            const dup = structuredClone(this._appConfig); // fast-json-patch explicitly mutates
                             jsonPatch.applyPatch(dup, msg.data);
                             logger.push({ oldConf: this._appConfig, newConf: dup }).log('Emitting new configuration');
                             this.emit(EVENT.RECONFIGURE, dup);

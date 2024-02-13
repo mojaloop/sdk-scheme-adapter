@@ -24,6 +24,10 @@
         // Some audit issues with api-snippets
         "GHSA-c2qf-rxjj-qqgw",
         // Issue with protobuffs (https://github.com/advisories/GHSA-h755-8qp9-cq85). No fix available.
-        "GHSA-h755-8qp9-cq85"
+        "GHSA-h755-8qp9-cq85",
+        // Issue with PostCSS library (https://github.com/advisories/GHSA-7fh5-64p2-3v2j)
+        "GHSA-7fh5-64p2-3v2j",
+        // SSRF attacks against npm IP (https://github.com/advisories/GHSA-78xj-cgh5-2h22)
+        "GHSA-78xj-cgh5-2h22"
     ]
 }
