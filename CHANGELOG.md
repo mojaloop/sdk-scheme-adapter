@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [23.3.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.1.1...v23.3.0) (2024-02-13)
+
+
+### Features
+
+* **mojaloop/#3670:** add standard components lib update for k6 validation  ([#465](https://github.com/mojaloop/sdk-scheme-adapter/issues/465)) ([9578241](https://github.com/mojaloop/sdk-scheme-adapter/commit/9578241c128f592019df29bcb4b2b8eb46fe311f)), closes [mojaloop/#3670](https://github.com/mojaloop/project/issues/3670)
+
 ### [23.1.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.1.0...v23.1.1) (2023-07-10)
 
 
