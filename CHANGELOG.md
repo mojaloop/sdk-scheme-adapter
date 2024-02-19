@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [23.3.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.3.0...v23.3.1) (2024-02-19)
+
+
+### Chore
+
+* **mojaloop/#3750:** optimize logging ([#467](https://github.com/mojaloop/sdk-scheme-adapter/issues/467)) ([abd88aa](https://github.com/mojaloop/sdk-scheme-adapter/commit/abd88aa537041771997ebb92f050ed7351865932)), closes [mojaloop/#3750](https://github.com/mojaloop/project/issues/3750)
+
 ## [23.3.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.1.1...v23.3.0) (2024-02-13)
 
 
