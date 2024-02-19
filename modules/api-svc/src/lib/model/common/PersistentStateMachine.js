@@ -15,17 +15,17 @@ async function saveToCache() {
     const { data, cache, key, logger } = this.context;
     try {
         const res = await cache.set(key, data);
-        logger.push({ res }).log(`Persisted model in cache: ${key}`);
+        logger.push({ res }).debug(`Persisted model in cache: ${key}`);
     }
     catch(err) {
-        logger.push({ err }).log(`Error saving model: ${key}`);
+        logger.push({ err }).error(`Error saving model: ${key}`);
         throw err;
     }
 }
 
 async function onAfterTransition(transition) {
     const { logger } = this.context;
-    logger.log(`State machine transitioned '${transition.transition}': ${transition.from} -> ${transition.to}`);
+    logger.debug(`State machine transitioned '${transition.transition}': ${transition.from} -> ${transition.to}`);
     this.context.data.currentState = transition.to;
 }
 
@@ -46,7 +46,7 @@ async function create(data, cache, key, logger, stateMachineSpec ) {
     }
 
     stateMachineSpec.data = Object.assign(
-        stateMachineSpec.data || {}, 
+        stateMachineSpec.data || {},
         {
             context: {
                 data, cache, key, logger
@@ -55,9 +55,9 @@ async function create(data, cache, key, logger, stateMachineSpec ) {
     );
 
     stateMachineSpec.methods = Object.assign(
-        stateMachineSpec.methods || {}, 
+        stateMachineSpec.methods || {},
         {
-            onAfterTransition, 
+            onAfterTransition,
             onPendingTransition,
             saveToCache
         }
@@ -75,14 +75,14 @@ async function loadFromCache(cache, key, logger, stateMachineSpec, optCreate) {
         if(!data) {
             throw new Error(`No cached data found for: ${key}`);
         }
-        logger.push({ cache: data }).log('data loaded from cache');
+        logger.push({ cache: data }).debug('data loaded from cache');
 
         // use delegation to allow customization of 'create'
         const createPSM = optCreate || create;
         return createPSM(data, cache, key, logger, stateMachineSpec);
     }
     catch(err) {
-        logger.push({ err }).log(`Error loading data: ${key}`);
+        logger.push({ err }).error(`Error loading data: ${key}`);
         throw err;
     }
 }

@@ -10,7 +10,7 @@
 
 'use strict';
 
-const util = require('util');
+const safeStringify = require('fast-safe-stringify');
 const { uuid } = require('uuidv4');
 const StateMachine = require('javascript-state-machine');
 const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
@@ -77,7 +77,7 @@ class OutboundBulkTransfersModel {
      * Updates the internal state representation to reflect that of the state machine itself
      */
     _afterTransition() {
-        this._logger.log(`State machine transitioned: ${this.data.currentState} -> ${this.stateMachine.state}`);
+        this._logger.debug(`State machine transitioned: ${this.data.currentState} -> ${this.stateMachine.state}`);
         this.data.currentState = this.stateMachine.state;
     }
 
@@ -106,7 +106,7 @@ class OutboundBulkTransfersModel {
      * Handles state machine transitions
      */
     async _handleTransition(lifecycle, ...args) {
-        this._logger.log(`Bulk transfer ${this.data.bulkTransferId} is transitioning from ${lifecycle.from} to ${lifecycle.to} in response to ${lifecycle.transition}`);
+        this._logger.debug(`Bulk transfer ${this.data.bulkTransferId} is transitioning from ${lifecycle.from} to ${lifecycle.to} in response to ${lifecycle.transition}`);
 
         switch(lifecycle.transition) {
             case 'init':
@@ -119,12 +119,12 @@ class OutboundBulkTransfersModel {
                 return this._getBulkTransfer(this.data.bulkTransferId);
 
             case 'error':
-                this._logger.log(`State machine is erroring with error: ${util.inspect(args)}`);
+                this._logger.error(`State machine is erroring with error: ${safeStringify(args)}`);
                 this.data.lastError = args[0] || new Error('unspecified error');
                 break;
 
             default:
-                throw new Error(`Unhandled state transition for bulk transfer ${this.data.bulkTransferId}: ${util.inspect(args)}`);
+                throw new Error(`Unhandled state transition for bulk transfer ${this.data.bulkTransferId}: ${safeStringify(args)}`);
         }
     }
 
@@ -158,11 +158,11 @@ class OutboundBulkTransfersModel {
                             }
                         }
                     } else if (message.type === 'bulkTransferResponseError') {
-                        error = new BackendError(`Got an error response preparing bulk transfer: ${util.inspect(message.data.body, { depth: Infinity })}`, 500);
+                        error = new BackendError(`Got an error response preparing bulk transfer: ${safeStringify(message.data.body, { depth: Infinity })}`, 500);
                         error.mojaloopError = message.data.body;
                     }
                     else {
-                        this._logger.push({ message }).log(`Ignoring cache notification for bulk transfer ${bulkTransferKey}. Unknown message type ${message.type}.`);
+                        this._logger.push({ message }).debug(`Ignoring cache notification for bulk transfer ${bulkTransferKey}. Unknown message type ${message.type}.`);
                         return;
                     }
 
@@ -173,7 +173,7 @@ class OutboundBulkTransfersModel {
                     // no need to await for the unsubscribe to complete.
                     // we dont really care if the unsubscribe fails but we should log it regardless
                     this._cache.unsubscribe(bulkTransferKey, subId).catch(e => {
-                        this._logger.log(`Error unsubscribing (in callback) ${bulkTransferKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                        this._logger.error(`Error unsubscribing (in callback) ${bulkTransferKey} ${subId}: ${e.stack || safeStringify(e)}`);
                     });
 
                     if (error) {
@@ -182,7 +182,7 @@ class OutboundBulkTransfersModel {
 
                     const bulkTransferFulfil = message.data;
                     this.data.bulkTransfersResponse = bulkTransferFulfil.body;
-                    this._logger.push({ bulkTransferFulfil }).log('Bulk transfer fulfils received');
+                    this._logger.push({ bulkTransferFulfil }).debug('Bulk transfer fulfils received');
 
                     return resolve(bulkTransferFulfil);
                 }
@@ -197,7 +197,7 @@ class OutboundBulkTransfersModel {
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this._cache.unsubscribe(bulkTransferKey, subId).catch(e => {
-                    this._logger.log(`Error unsubscribing (in timeout handler) ${bulkTransferKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    this._logger.error(`Error unsubscribing (in timeout handler) ${bulkTransferKey} ${subId}: ${e.stack || safeStringify(e)}`);
                 });
 
                 return reject(err);
@@ -207,7 +207,7 @@ class OutboundBulkTransfersModel {
             // a POST /bulkTransfers request to the switch
             try {
                 const res = await this._requests.postBulkTransfers(bulkTransferPrepare, bulkTransferPrepare.payeeFsp);
-                this._logger.push({ res }).log('Bulk transfer request sent to peer');
+                this._logger.push({ res }).debug('Bulk transfer request sent to peer');
             }
             catch (err) {
                 // cancel the timout and unsubscribe before rejecting the promise
@@ -215,7 +215,7 @@ class OutboundBulkTransfersModel {
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this._cache.unsubscribe(bulkTransferKey, subId).catch(e => {
-                    this._logger.log(`Error unsubscribing (in error handler) ${bulkTransferKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    this._logger.error(`Error unsubscribing (in error handler) ${bulkTransferKey} ${subId}: ${e.stack || safeStringify(e)}`);
                 });
 
                 return reject(err);
@@ -287,10 +287,10 @@ class OutboundBulkTransfersModel {
                     let message = JSON.parse(msg);
 
                     if (message.type === 'bulkTransferResponseError') {
-                        error = new BackendError(`Got an error response retrieving bulk transfer: ${util.inspect(message.data.body, { depth: Infinity })}`, 500);
+                        error = new BackendError(`Got an error response retrieving bulk transfer: ${safeStringify(message.data.body, { depth: Infinity })}`, 500);
                         error.mojaloopError = message.data.body;
                     } else if (message.type !== 'bulkTransferResponse') {
-                        this._logger.push({ message }).log(`Ignoring cache notification for bulk transfer ${bulkTransferKey}. Uknokwn message type ${message.type}.`);
+                        this._logger.push({ message }).debug(`Ignoring cache notification for bulk transfer ${bulkTransferKey}. Uknokwn message type ${message.type}.`);
                         return;
                     }
 
@@ -299,7 +299,7 @@ class OutboundBulkTransfersModel {
 
                     // stop listening for bulk transfer fulfil messages
                     this._cache.unsubscribe(bulkTransferKey, subId).catch(e => {
-                        this._logger.log(`Error unsubscribing (in callback) ${bulkTransferKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                        this._logger.error(`Error unsubscribing (in callback) ${bulkTransferKey} ${subId}: ${e.stack || safeStringify(e)}`);
                     });
 
                     if (error) {
@@ -307,7 +307,7 @@ class OutboundBulkTransfersModel {
                     }
 
                     const fulfils = message.data;
-                    this._logger.push({ fulfils }).log('Bulk transfer fulfils received');
+                    this._logger.push({ fulfils }).debug('Bulk transfer fulfils received');
 
                     return resolve(fulfils);
                 }
@@ -322,7 +322,7 @@ class OutboundBulkTransfersModel {
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this._cache.unsubscribe(bulkTransferKey, subId).catch(e => {
-                    this._logger.log(`Error unsubscribing (in timeout handler) ${bulkTransferKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    this._logger.error(`Error unsubscribing (in timeout handler) ${bulkTransferKey} ${subId}: ${e.stack || safeStringify(e)}`);
                 });
 
                 return reject(err);
@@ -332,15 +332,15 @@ class OutboundBulkTransfersModel {
             // a GET /bulkTransfers/{ID} request to the switch
             try {
                 const res = await this._requests.getBulkTransfers(bulkTransferId);
-                this._logger.push({ peer: res }).log('Bulk transfer lookup sent to peer');
+                this._logger.push({ peer: res }).debug('Bulk transfer lookup sent to peer');
             }
             catch(err) {
-                // cancel the timout and unsubscribe before rejecting the promise
+                // cancel the timeout and unsubscribe before rejecting the promise
                 clearTimeout(timeout);
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this._cache.unsubscribe(bulkTransferKey, subId).catch(e => {
-                    this._logger.log(`Error unsubscribing ${bulkTransferKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    this._logger.error(`Error unsubscribing ${bulkTransferKey} ${subId}: ${e.stack || safeStringify(e)}`);
                 });
 
                 return reject(err);
@@ -380,7 +380,7 @@ class OutboundBulkTransfersModel {
                 break;
 
             default:
-                this._logger.log(`Bulk transfer model response being returned from an unexpected state: ${this.data.currentState}. Returning ERROR_OCCURRED state`);
+                this._logger.debug(`Bulk transfer model response being returned from an unexpected state: ${this.data.currentState}. Returning ERROR_OCCURRED state`);
                 resp.currentState = SDKStateEnum.ERROR_OCCURRED;
                 break;
         }
@@ -395,10 +395,10 @@ class OutboundBulkTransfersModel {
         try {
             this.data.currentState = this.stateMachine.state;
             const res = await this._cache.set(`bulkTransferModel_${this.data.bulkTransferId}`, this.data);
-            this._logger.push({ res }).log('Persisted bulk transfer model in cache');
+            this._logger.push({ res }).debug('Persisted bulk transfer model in cache');
         }
         catch(err) {
-            this._logger.push({ err }).log('Error saving bulk transfer model');
+            this._logger.push({ err }).error('Error saving bulk transfer model');
             throw err;
         }
     }
@@ -416,10 +416,10 @@ class OutboundBulkTransfersModel {
                 throw new Error(`No cached data found for bulkTransferId: ${bulkTransferId}`);
             }
             await this.initialize(data);
-            this._logger.push({ cache: this.data }).log('Bulk transfer model loaded from cached state');
+            this._logger.push({ cache: this.data }).debug('Bulk transfer model loaded from cached state');
         }
         catch(err) {
-            this._logger.push({ err }).log('Error loading bulk transfer model');
+            this._logger.push({ err }).error('Error loading bulk transfer model');
             throw err;
         }
     }
@@ -433,38 +433,38 @@ class OutboundBulkTransfersModel {
             switch(this.data.currentState) {
                 case 'start':
                     await this.stateMachine.executeBulkTransfer();
-                    this._logger.log(`Bulk transfer ${this.data.bulkTransferId} has been completed`);
+                    this._logger.debug(`Bulk transfer ${this.data.bulkTransferId} has been completed`);
                     break;
 
                 case 'getBulkTransfer':
                     await this.stateMachine.getBulkTransfer();
-                    this._logger.log(`Get bulk transfer ${this.data.bulkTransferId} has been completed`);
+                    this._logger.debug(`Get bulk transfer ${this.data.bulkTransferId} has been completed`);
                     break;
 
                 case 'succeeded':
                     // all steps complete so return
-                    this._logger.log('Bulk transfer completed successfully');
+                    this._logger.debug('Bulk transfer completed successfully');
                     await this._save();
                     return this.getResponse();
 
                 case 'errored':
                     // stopped in errored state
-                    this._logger.log('State machine in errored state');
+                    this._logger.error('State machine in errored state');
                     return;
             }
 
             // now call ourselves recursively to deal with the next transition
-            this._logger.log(`Bulk transfer model state machine transition completed in state: ${this.stateMachine.state}. Recursing to handle next transition.`);
+            this._logger.debug(`Bulk transfer model state machine transition completed in state: ${this.stateMachine.state}. Recursing to handle next transition.`);
             return this.run();
         }
         catch(err) {
-            this._logger.log(`Error running transfer model: ${util.inspect(err)}`);
+            this._logger.error(`Error running transfer model: ${safeStringify(err)}`);
 
             // as this function is recursive, we dont want to error the state machine multiple times
             if(this.data.currentState !== 'errored') {
                 // err should not have a bulkTransferState property here!
                 if(err.bulkTransferState) {
-                    this._logger.log(`State machine is broken: ${util.inspect(err)}`);
+                    this._logger.error(`State machine is broken: ${safeStringify(err)}`);
                 }
                 // transition to errored state
                 await this.stateMachine.error(err);

@@ -60,7 +60,7 @@ class WsServer extends ws.Server {
 
         this.on('error', err => {
             this._logger.push({ err })
-                .log('Unhandled websocket error occurred. Shutting down.');
+                .error('Unhandled websocket error occurred. Shutting down.');
             process.exit(1);
         });
 
@@ -70,10 +70,10 @@ class WsServer extends ws.Server {
                 ip: getWsIp(req),
                 remoteAddress: req.socket.remoteAddress,
             });
-            logger.log('Websocket connection received');
+            logger.debug('Websocket connection received');
             this._wsClients.set(socket, req);
             socket.on('close', (code, reason) => {
-                logger.push({ code, reason }).log('Websocket connection closed');
+                logger.push({ code, reason }).debug('Websocket connection closed');
                 this._wsClients.delete(socket);
             });
         });
@@ -101,7 +101,7 @@ class WsServer extends ws.Server {
     // Send the received notification to subscribers where appropriate.
     async _handleCacheKeySet(channel, key, id) {
         const logger = this._logger.push({ key });
-        logger.push({ channel, id }).log('Received Redis keyevent notification');
+        logger.push({ channel, id }).debug('Received Redis keyevent notification');
 
         // Only notify clients of callback and request keyevents, as we don't want to encourage
         // dependency on unintended behaviour (i.e. create a proxy Redis client by sending all
@@ -111,7 +111,7 @@ class WsServer extends ws.Server {
         const allowedPrefixes = [this._cache.CALLBACK_PREFIX, this._cache.REQUEST_PREFIX];
         if (!allowedPrefixes.some((prefix) => key.startsWith(prefix))) {
             logger.push({ allowedPrefixes })
-                .log('Notification not of allowed message type. Ignored.');
+                .debug('Notification not of allowed message type. Ignored.');
             return;
         }
 
@@ -165,7 +165,7 @@ class WsServer extends ws.Server {
                         value: keyData,
                         prefix,
                     })
-                    .log('Pushing notification to subscribed client');
+                    .debug('Pushing notification to subscribed client');
                 socket.send(keyDataStr);
             }
         }
@@ -200,21 +200,21 @@ class TestServer {
 
         await new Promise((resolve) => this._server.listen(this._port, resolve));
 
-        this._logger.log(`Serving test API on port ${this._port}`);
+        this._logger.info(`Serving test API on port ${this._port}`);
     }
 
     async stop() {
         if (this._wsapi) {
-            this._logger.log('Shutting down websocket server');
+            this._logger.info('Shutting down websocket server');
             await this._wsapi.stop();
             this._wsapi = null;
         }
         if (this._server) {
-            this._logger.log('Shutting down http server');
+            this._logger.info('Shutting down http server');
             await new Promise(resolve => this._server.close(resolve));
             this._server = null;
         }
-        this._logger.log('Test server shutdown complete');
+        this._logger.info('Test server shutdown complete');
     }
 }
 

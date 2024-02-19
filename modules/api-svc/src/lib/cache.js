@@ -100,7 +100,7 @@ class Cache {
         const mode = enable ? 'Es$' : '';
         this._logger
             .push({ 'notify-keyspace-events': mode })
-            .log('Configuring Redis to emit keyevent events');
+            .debug('Configuring Redis to emit keyevent events');
         await this._client.configSet('notify-keyspace-events', mode);
     }
 
@@ -150,8 +150,8 @@ class Cache {
                 // we have some callbacks to make
                 if (this._callbacks[channel]) {
                     for (const [id, cb] of Object.entries(this._callbacks[channel])) {
-                        this._logger.log(`Cache message received on channel ${channel}. Making callback with id ${id}`);
-    
+                        this._logger.debug(`Cache message received on channel ${channel}. Making callback with id ${id}`);
+
                         // call the callback with the channel name, message and callbackId...
                         // ...(which is useful for unsubscribe)
                         try {
@@ -159,11 +159,11 @@ class Cache {
                         } catch (err) {
                             this._logger
                                 .push({ callbackId: id, err })
-                                .log('Unhandled error in cache subscription handler');
+                                .error('Unhandled error in cache subscription handler');
                         }
                     }
                 } else {
-                    this._logger.log(`Cache message received on unknown channel ${channel}. Ignoring...`);
+                    this._logger.debug(`Cache message received on unknown channel ${channel}. Ignoring...`);
                 }
             });
         } else {
@@ -171,7 +171,7 @@ class Cache {
         }
 
         // store the callback against the channel/id
-        this._logger.log(`Subscribed to cache pub/sub channel ${channel}`);
+        this._logger.debug(`Subscribed to cache pub/sub channel ${channel}`);
 
         return id;
     }
@@ -186,7 +186,7 @@ class Cache {
     async unsubscribe(channel, callbackId) {
         if(this._callbacks[channel] && this._callbacks[channel][callbackId]) {
             delete this._callbacks[channel][callbackId];
-            this._logger.log(`Cache unsubscribed callbackId ${callbackId} from channel ${channel}`);
+            this._logger.debug(`Cache unsubscribed callbackId ${callbackId} from channel ${channel}`);
 
             if(Object.keys(this._callbacks[channel]).length < 1) {
                 //no more callbacks for this channel
@@ -196,11 +196,11 @@ class Cache {
         } else {
             // we should not be asked to unsubscribe from a subscription we do not have. Raise this as a promise
             // rejection so it can be spotted. It may indiate a logic bug somewhere else
-            this._logger.log(`Cache not subscribed to channel ${channel} for callbackId ${callbackId}`);
+            this._logger.error(`Cache not subscribed to channel ${channel} for callbackId ${callbackId}`);
             throw new Error(`Channel ${channel} does not have a callback with id ${callbackId} subscribed`);
         }
     }
-    
+
     getSubscribers(channel) {
         return this._callbacks[channel];
     }
@@ -214,15 +214,15 @@ class Cache {
         const client = redis.createClient({ url: this._url });
 
         client.on('error', (err) => {
-            this._logger.push({ err }).log('Error from REDIS client getting subscriber');
+            this._logger.push({ err }).error('Error from REDIS client getting subscriber');
         });
 
         client.on('reconnecting', (err) => {
-            this._logger.push({ err }).log('REDIS client Reconnecting');
+            this._logger.push({ err }).debug('REDIS client Reconnecting');
         });
 
         client.on('subscribe', (channel, count) => {
-            this._logger.push({ channel, count }).log('REDIS client subscribe');
+            this._logger.push({ channel, count }).debug('REDIS client subscribe');
             // On a subscribe event, ensure that testFeatures are enabled.
             // This is required here in the advent of a disconnect/reconnect event. Redis client will re-subscribe all subscriptions, but previously enabledTestFeatures will be lost.
             // Handling this on the on subscribe event will ensure its always configured.
@@ -232,11 +232,11 @@ class Cache {
         });
 
         client.on('connect', () => {
-            this._logger.log(`REDIS client connected at: ${this._url}`);
+            this._logger.debug(`REDIS client connected at: ${this._url}`);
         });
 
         client.on('ready', () => {
-            this._logger.log(`Connected to REDIS at: ${this._url}`);
+            this._logger.debug(`Connected to REDIS at: ${this._url}`);
         });
         await client.connect();
 
@@ -309,7 +309,7 @@ class Cache {
                 value = JSON.parse(value);
             }
             catch(err) {
-                this._logger.push({ err }).log('Error parsing JSON cache value');
+                this._logger.push({ err }).error('Error parsing JSON cache value');
             }
         }
         return value;
