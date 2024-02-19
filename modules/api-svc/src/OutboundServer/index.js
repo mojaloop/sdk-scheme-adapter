@@ -104,7 +104,7 @@ class OutboundServer extends EventEmitter {
         await this._validator.initialise(apiSpecs);
         await this._api.start();
         await new Promise((resolve) => this._server.listen(this._conf.outbound.port, resolve));
-        this._logger.log(`Serving outbound API on port ${this._conf.outbound.port}`);
+        this._logger.info(`Serving outbound API on port ${this._conf.outbound.port}`);
     }
 
     async stop() {
@@ -113,7 +113,7 @@ class OutboundServer extends EventEmitter {
         }
         await this._api.stop();
         await this._eventProducer?.destroy();
-        this._logger.log('outbound shut down complete');
+        this._logger.info('outbound shut down complete');
     }
 }
 

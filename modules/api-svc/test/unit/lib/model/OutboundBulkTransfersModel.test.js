@@ -228,13 +228,12 @@ describe('outboundBulkTransferModel', () => {
 
         expect(StateMachine.__instance.state).toBe('start');
 
-        const errMsg = 'Got an error response preparing bulk transfer: { errorInformation:\n   { errorCode: \'4001\',\n     errorDescription: \'Payer FSP insufficient liquidity\' } }';
+        const errMsg = 'Got an error response preparing bulk transfer: {"errorInformation":{"errorCode":"4001","errorDescription":"Payer FSP insufficient liquidity"}}';
 
         try {
             await model.run();
         }
         catch(err) {
-            console.log(err.message)
             expect(err.message.replace(/[ \n]/g,'')).toEqual(errMsg.replace(/[ \n]/g,''));
             expect(err.bulkTransferState).toBeTruthy();
             // TODO: Need to check the lastError functionality in response handling. Commenting until then.

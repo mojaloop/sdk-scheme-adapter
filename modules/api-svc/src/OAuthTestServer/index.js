@@ -51,7 +51,7 @@ class OAuthTestServer {
 
 
         await new Promise((resolve) => this._app.listen(this._port, resolve));
-        this._logger.push({ port: this._port }).log('Serving OAuth2 Test Server');
+        this._logger.push({ port: this._port }).info('Serving OAuth2 Test Server');
     }
 
     async stop() {
@@ -60,7 +60,7 @@ class OAuthTestServer {
         }
         await new Promise(resolve => this._app.close(resolve));
         this._app = null;
-        this._logger.log('OAuth2 Test Server shut down complete');
+        this._logger.info('OAuth2 Test Server shut down complete');
     }
 
     handleResponse(req, res, response) {
