@@ -150,7 +150,7 @@ class Client extends ws {
 
     async send(msg) {
         const data = typeof msg === 'string' ? msg : serialise(msg);
-        this._logger.push({ data }).log('Sending message');
+        this._logger.push({ data }).debug('Sending message');
         return new Promise((resolve) => super.send.call(this, data, resolve));
     }
 
@@ -158,7 +158,7 @@ class Client extends ws {
     async receive() {
         return new Promise((resolve) => this.once('message', (data) => {
             const msg = deserialise(data);
-            this._logger.push({ msg }).log('Received');
+            this._logger.push({ msg }).debug('Received');
             resolve(msg);
         }));
     }
@@ -187,7 +187,7 @@ class Server extends ws.Server {
 
         this.on('error', err => {
             this._logger.push({ err })
-                .log('Unhandled websocket error occurred. Shutting down.');
+                .error('Unhandled websocket error occurred. Shutting down.');
             process.exit(1);
         });
 
@@ -197,18 +197,18 @@ class Server extends ws.Server {
                 ip: getWsIp(req),
                 remoteAddress: req.socket.remoteAddress,
             });
-            logger.log('Websocket connection received');
+            logger.info('Websocket connection received');
             this._clientData.set(socket, { ip: req.connection.remoteAddress, logger });
 
             socket.on('close', (code, reason) => {
-                logger.push({ code, reason }).log('Websocket connection closed');
+                logger.push({ code, reason }).info('Websocket connection closed');
                 this._clientData.delete(socket);
             });
 
             socket.on('message', this._handle(socket, logger));
         });
 
-        this._logger.push(this.address()).log('running on');
+        this._logger.push(this.address()).info('running on');
     }
 
     // Close the server then wait for all the client sockets to close
@@ -218,7 +218,7 @@ class Server extends ws.Server {
             client.terminate();
         }
         await closing;
-        this._logger.log('Control server shutdown complete');
+        this._logger.info('Control server shutdown complete');
     }
 
 
@@ -227,7 +227,7 @@ class Server extends ws.Server {
         const logError = (socket, message) => (err) =>
             this._logger
                 .push({ message, ip: this._clientData.get(socket).ip, err })
-                .log('Error sending reconfigure notification to client');
+                .error('Error sending reconfigure notification to client');
         const sendToAllClients = (msg) => Promise.all(
             [...this.clients.values()].map((socket) =>
                 (new Promise((resolve) => socket.send(msg, resolve))).catch(logError(socket, msg))
@@ -244,10 +244,10 @@ class Server extends ws.Server {
             try {
                 msg = deserialise(data);
             } catch (err) {
-                logger.push({ data }).log('Couldn\'t parse received message');
+                logger.push({ data }).error('Couldn\'t parse received message');
                 client.send(build.ERROR.NOTIFY.JSON_PARSE_ERROR());
             }
-            logger.push({ msg }).log('Handling received message');
+            logger.push({ msg }).debug('Handling received message');
             switch (msg.msg) {
                 case MESSAGE.CONFIGURATION:
                     switch (msg.verb) {
@@ -257,7 +257,7 @@ class Server extends ws.Server {
                         case VERB.NOTIFY: {
                             const dup = structuredClone(this._appConfig); // fast-json-patch explicitly mutates
                             _.merge(dup, msg.data);
-                            this._logger.push({ oldConf: this._appConfig, newConf: dup }).log('Emitting new configuration');
+                            this._logger.push({ oldConf: this._appConfig, newConf: dup }).debug('Emitting new configuration');
                             this.emit(EVENT.RECONFIGURE, dup);
                             break;
                         }
@@ -266,7 +266,7 @@ class Server extends ws.Server {
                             // client library?
                             const dup = structuredClone(this._appConfig); // fast-json-patch explicitly mutates
                             jsonPatch.applyPatch(dup, msg.data);
-                            logger.push({ oldConf: this._appConfig, newConf: dup }).log('Emitting new configuration');
+                            logger.push({ oldConf: this._appConfig, newConf: dup }).debug('Emitting new configuration');
                             this.emit(EVENT.RECONFIGURE, dup);
                             break;
                         }

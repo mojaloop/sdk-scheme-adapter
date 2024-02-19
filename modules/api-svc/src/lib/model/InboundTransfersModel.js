@@ -10,8 +10,7 @@
 
 'use strict';
 
-const util = require('util');
-
+const safeStringify = require('fast-safe-stringify');
 const {
     BackendRequests,
     HTTPResponseError,
@@ -104,9 +103,9 @@ class InboundTransfersModel {
             return this._mojaloopRequests.putAuthorizations(transactionRequestId, mlAuthorization, sourceFspId);
         }
         catch(err) {
-            this._logger.push({ err }).log('Error in getOTP');
+            this._logger.push({ err }).error('Error in getOTP');
             const mojaloopError = await this._handleError(err);
-            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            this._logger.push({ mojaloopError }).debug(`Sending error response to ${sourceFspId}`);
             return this._mojaloopRequests.putAuthorizationsError(transactionRequestId,
                 mojaloopError, sourceFspId);
         }
@@ -130,9 +129,9 @@ class InboundTransfersModel {
                 sourceFspId);
         }
         catch(err) {
-            this._logger.push({ err }).log('Error in getParticipants');
+            this._logger.push({ err }).error('Error in getParticipants');
             const mojaloopError = await this._handleError(err);
-            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            this._logger.push({ mojaloopError }).debug(`Sending error response to ${sourceFspId}`);
             return this._mojaloopRequests.putParticipantsError(idType, idValue, idSubValue,
                 mojaloopError, sourceFspId);
         }
@@ -168,9 +167,9 @@ class InboundTransfersModel {
             return this._mojaloopRequests.putParties(idType, idValue, idSubValue, mlParty, sourceFspId);
         }
         catch(err) {
-            this._logger.push({ err }).log('Error in getParties');
+            this._logger.push({ err }).error('Error in getParties');
             const mojaloopError = await this._handleError(err);
-            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            this._logger.push({ mojaloopError }).debug(`Sending error response to ${sourceFspId}`);
             return this._mojaloopRequests.putPartiesError(idType, idValue, idSubValue,
                 mojaloopError, sourceFspId);
         }
@@ -273,9 +272,9 @@ class InboundTransfersModel {
             return res;
         }
         catch(err) {
-            this._logger.push({ err }).log('Error in quoteRequest');
+            this._logger.push({ err }).error('Error in quoteRequest');
             const mojaloopError = await this._handleError(err);
-            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            this._logger.push({ mojaloopError }).debug(`Sending error response to ${sourceFspId}`);
             return await this._mojaloopRequests.putQuotesError(quoteRequest.quoteId,
                 mojaloopError, sourceFspId);
         }
@@ -310,9 +309,9 @@ class InboundTransfersModel {
             await this._backendRequests.putRequestToPayNotification(internalForm, transactionRequestId);
         }
         catch(err) {
-            this._logger.push({ err }).log('Error in putTransactionRequest');
+            this._logger.push({ err }).error('Error in putTransactionRequest');
             const mojaloopError = await this._handleError(err);
-            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            this._logger.push({ mojaloopError }).debug(`Sending error response to ${sourceFspId}`);
             return await this._mojaloopRequests.putQuotesError(transactionRequestId,
                 mojaloopError, sourceFspId);
         }
@@ -331,7 +330,7 @@ class InboundTransfersModel {
             if (!quoteResponse) {
                 const err = new Error('Quote Id not found');
                 const mojaloopError = await this._handleError(err, Errors.MojaloopApiErrorCodes.QUOTE_ID_NOT_FOUND);
-                this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+                this._logger.push({ mojaloopError }).error(`Sending error response to ${sourceFspId}`);
                 return await this._mojaloopRequests.putQuotesError(quoteId,
                     mojaloopError, sourceFspId);
             }
@@ -339,9 +338,9 @@ class InboundTransfersModel {
             return this._mojaloopRequests.putQuotes(quoteId, quoteResponse, sourceFspId);
         }
         catch(err) {
-            this._logger.push({ err }).log('Error in getQuoteRequest');
+            this._logger.push({ err }).error('Error in getQuoteRequest');
             const mojaloopError = await this._handleError(err);
-            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            this._logger.push({ mojaloopError }).debug(`Sending error response to ${sourceFspId}`);
             return await this._mojaloopRequests.putQuotesError(quoteId,
                 mojaloopError, sourceFspId);
         }
@@ -370,9 +369,9 @@ class InboundTransfersModel {
             return this._mojaloopRequests.putTransactionRequests(transactionRequest.transactionRequestId, mojaloopResponse, sourceFspId);
         }
         catch(err) {
-            this._logger.push({ err }).log('Error in transactionRequest');
+            this._logger.push({ err }).error('Error in transactionRequest');
             const mojaloopError = await this._handleError(err);
-            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            this._logger.push({ mojaloopError }).debug(`Sending error response to ${sourceFspId}`);
             return await this._mojaloopRequests.putTransactionRequestsError(transactionRequest.transactionRequestId,
                 mojaloopError, sourceFspId);
         }
@@ -456,7 +455,7 @@ class InboundTransfersModel {
                 return 'No response from backend';
             }
 
-            this._logger.log(`Transfer accepted by backend returning homeTransactionId: ${response.homeTransactionId} for mojaloop transferId: ${prepareRequest.transferId}`);
+            this._logger.debug(`Transfer accepted by backend returning homeTransactionId: ${response.homeTransactionId} for mojaloop transferId: ${prepareRequest.transferId}`);
             this.data.homeTransactionId = response.homeTransactionId;
 
             // create a  mojaloop transfer fulfil response
@@ -482,9 +481,9 @@ class InboundTransfersModel {
             await this._save();
             return res;
         } catch(err) {
-            this._logger.push({ err }).log('Error in prepareTransfer');
+            this._logger.push({ err }).error('Error in prepareTransfer');
             const mojaloopError = await this._handleError(err);
-            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            this._logger.push({ mojaloopError }).debug(`Sending error response to ${sourceFspId}`);
             return await this._mojaloopRequests.putTransfersError(prepareRequest.transferId,
                 mojaloopError, sourceFspId);
         }
@@ -537,9 +536,9 @@ class InboundTransfersModel {
                 sourceFspId);
         }
         catch (err) {
-            this._logger.push({ err }).log('Error in getTransfers');
+            this._logger.push({ err }).error('Error in getTransfers');
             const mojaloopError = await this._handleError(err);
-            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            this._logger.push({ mojaloopError }).debug(`Sending error response to ${sourceFspId}`);
             return this._mojaloopRequests.putTransfersError(transferId,
                 mojaloopError, sourceFspId);
         }
@@ -615,9 +614,9 @@ class InboundTransfersModel {
             return this._mojaloopRequests.putBulkQuotes(bulkQuoteId, mojaloopResponse, sourceFspId);
         }
         catch (err) {
-            this._logger.push({ err }).log('Error in bulkQuotesRequest');
+            this._logger.push({ err }).error('Error in bulkQuotesRequest');
             const mojaloopError = await this._handleError(err);
-            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            this._logger.push({ mojaloopError }).debug(`Sending error response to ${sourceFspId}`);
             return await this._mojaloopRequests.putBulkQuotesError(bulkQuoteId,
                 mojaloopError, sourceFspId);
         }
@@ -643,9 +642,9 @@ class InboundTransfersModel {
                 sourceFspId);
         }
         catch (err) {
-            this._logger.push({ err }).log('Error in getBulkQuote');
+            this._logger.push({ err }).error('Error in getBulkQuote');
             const mojaloopError = await this._handleError(err);
-            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            this._logger.push({ mojaloopError }).debug(`Sending error response to ${sourceFspId}`);
             return this._mojaloopRequests.putBulkQuotesError(bulkQuoteId,
                 mojaloopError, sourceFspId);
         }
@@ -733,8 +732,8 @@ class InboundTransfersModel {
                         errorInformation: transferError,
                     }))
                 };
-                this._logger.push({ ...individualTransferErrors }).log('Error in prepareBulkTransfers');
-                this._logger.push({ ...individualTransferErrors }).log(`Sending error response to ${sourceFspId}`);
+                this._logger.push({ ...individualTransferErrors }).error('Error in prepareBulkTransfers');
+                this._logger.push({ ...individualTransferErrors }).debug(`Sending error response to ${sourceFspId}`);
 
                 return await this._mojaloopRequests.putBulkTransfersError(bulkPrepareRequest.transferId,
                     mojaloopErrorResponse, sourceFspId);
@@ -751,7 +750,7 @@ class InboundTransfersModel {
                 return 'No response from backend';
             }
 
-            this._logger.log(`Bulk transfer accepted by backend returning homeTransactionId: ${response.homeTransactionId} for mojaloop bulk transferId: ${bulkPrepareRequest.bulkTransferId}`);
+            this._logger.debug(`Bulk transfer accepted by backend returning homeTransactionId: ${response.homeTransactionId} for mojaloop bulk transferId: ${bulkPrepareRequest.bulkTransferId}`);
 
             // create a  mojaloop transfer fulfil response
             const mojaloopResponse = shared.internalBulkTransfersResponseToMojaloop(response, fulfilments);
@@ -760,9 +759,9 @@ class InboundTransfersModel {
             return this._mojaloopRequests.putBulkTransfers(bulkPrepareRequest.bulkTransferId, mojaloopResponse, sourceFspId);
         }
         catch (err) {
-            this._logger.push({ err }).log('Error in prepareBulkTransfers');
+            this._logger.push({ err }).error('Error in prepareBulkTransfers');
             const mojaloopError = await this._handleError(err);
-            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            this._logger.push({ mojaloopError }).debug(`Sending error response to ${sourceFspId}`);
             return await this._mojaloopRequests.putBulkTransfersError(bulkPrepareRequest.bulkTransferId,
                 mojaloopError, sourceFspId);
         }
@@ -820,9 +819,9 @@ class InboundTransfersModel {
                 sourceFspId);
         }
         catch (err) {
-            this._logger.push({ err }).log('Error in getBulkTransfer');
+            this._logger.push({ err }).error('Error in getBulkTransfer');
             const mojaloopError = await this._handleError(err);
-            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            this._logger.push({ mojaloopError }).debug(`Sending error response to ${sourceFspId}`);
             return this._mojaloopRequests.putBulkTransfersError(bulkTransferId,
                 mojaloopError, sourceFspId);
         }
@@ -864,7 +863,7 @@ class InboundTransfersModel {
             const res = await this._backendRequests.putTransfersNotification(this.data, transferId);
             return res;
         } catch (err) {
-            this._logger.push({ err }).log(`Error notifying backend of final transfer state equal to: ${body.transferState}`);
+            this._logger.push({ err }).error(`Error notifying backend of final transfer state equal to: ${body.transferState}`);
         }
     }
 
@@ -902,7 +901,7 @@ class InboundTransfersModel {
         if(this.data) {
             //we have persisted state so update that with this error
             this.data.lastError = {
-                originalError: err.stack || util.inspect(err),
+                originalError: err.stack || safeStringify(err),
                 mojaloopError: mojaloopError,
             };
             this.data.currentState = SDKStateEnum.ERROR_OCCURRED;
@@ -917,10 +916,10 @@ class InboundTransfersModel {
     async _save() {
         try {
             const res = await this._cache.set(`transferModel_in_${this.data.transferId}`, this.data);
-            this._logger.push({ res }).log('Persisted transfer model in cache');
+            this._logger.push({ res }).debug('Persisted transfer model in cache');
         }
         catch(err) {
-            this._logger.push({ err }).log('Error saving transfer model');
+            this._logger.push({ err }).error('Error saving transfer model');
             throw err;
         }
     }
@@ -936,7 +935,7 @@ class InboundTransfersModel {
             return data;
         }
         catch(err) {
-            this._logger.push({ err }).log('Error loading transfer model');
+            this._logger.push({ err }).error('Error loading transfer model');
             throw err;
         }
     }

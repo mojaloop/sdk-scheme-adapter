@@ -93,9 +93,9 @@ describe('OutboundBulkQuotesModel', () => {
         MojaloopRequests.__putBulkQuotesError = jest.fn(() => Promise.resolve());
 
         cache = new Cache({
-                cacheUrl: 'redis://dummy:1234',
-                logger,
-            });
+            cacheUrl: 'redis://dummy:1234',
+            logger,
+        });
         await cache.connect();
     });
 
@@ -234,7 +234,7 @@ describe('OutboundBulkQuotesModel', () => {
 
         expect(StateMachine.__instance.state).toBe('start');
 
-        const errMsg = 'Got an error response requesting bulk quote: { errorInformation:\n   { errorCode: \'3205\', errorDescription: \'Bulk quote ID not found\' } }';
+        const errMsg = 'Got an error response requesting bulk quote: {"errorInformation":{"errorCode":"3205","errorDescription":"Bulk quote ID not found"}}';
 
         try {
             await model.run();

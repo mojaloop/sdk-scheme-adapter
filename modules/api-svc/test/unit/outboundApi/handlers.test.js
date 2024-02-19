@@ -147,7 +147,11 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: { log: () => {} },
+                    logger: {
+                        log: () => {},
+                        debug: () => {},
+                        error: () => {}
+                    },
                 }
             };
 
@@ -175,7 +179,11 @@ describe('Outbound API handlers:', () => {
                     conf: {
                         outboundErrorStatusCodeExtensionKey: 'extErrorKey'  // <- tell the handler to use this extensionList item as source of statusCode
                     },
-                    logger: { log: () => {} },
+                    logger: {
+                        log: () => {},
+                        debug: () => {},
+                        error: () => {}
+                    },
                 }
             };
 
@@ -207,7 +215,11 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: { log: () => {} },
+                    logger: {
+                        log: () => {},
+                        debug: () => {},
+                        error: () => {}
+                    },
                     path: {
                         params: {
                             transferId: '12345'
@@ -239,7 +251,11 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: { log: () => {} },
+                    logger: {
+                        log: () => {},
+                        debug: () => {},
+                        error: () => {}
+                    },
                 }
             };
 
@@ -267,7 +283,11 @@ describe('Outbound API handlers:', () => {
                     conf: {
                         outboundErrorStatusCodeExtensionKey: 'extErrorKey'  // <- tell the handler to use this extensionList item as source of statusCode
                     },
-                    logger: { log: () => {} },
+                    logger: {
+                        log: () => {},
+                        debug: () => {},
+                        error: () => {}
+                    },
                 }
             };
 
@@ -297,7 +317,11 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: { log: () => {} },
+                    logger: {
+                        log: () => {},
+                        debug: () => {},
+                        error: () => {}
+                    },
                 }
             };
 
@@ -325,7 +349,11 @@ describe('Outbound API handlers:', () => {
                     conf: {
                         outboundErrorStatusCodeExtensionKey: 'extErrorKey'  // <- tell the handler to use this extensionList item as source of statusCode
                     },
-                    logger: { log: () => {} },
+                    logger: {
+                        log: () => {},
+                        debug: () => {},
+                        error: () => {}
+                    },
                 }
             };
 
@@ -355,7 +383,11 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: { log: () => {} },
+                    logger: {
+                        log: () => {},
+                        debug: () => {},
+                        error: () => {}
+                    },
                     eventLogger: { info: () => {}},
                     eventProducer: { sendDomainEvent: jest.fn() },
                 }
@@ -394,7 +426,11 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: { log: () => {} },
+                    logger: {
+                        log: () => {},
+                        debug: () => {},
+                        error: () => {}
+                    },
                     eventLogger: { info: () => {}},
                     eventProducer: { sendDomainEvent: jest.fn() },
                     path: {
@@ -436,7 +472,11 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: { log: () => {} },
+                    logger: {
+                        log: () => {},
+                        debug: () => {},
+                        error: () => {}
+                    },
                     eventLogger: { info: () => {}},
                     eventProducer: { sendDomainEvent: jest.fn() },
                     path: {
@@ -470,7 +510,11 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: { log: () => {} },
+                    logger: {
+                        log: () => {},
+                        debug: () => {},
+                        error: () => {}
+                    },
                 }
             };
 
@@ -497,7 +541,11 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: { log: () => {} }
+                    logger: {
+                        log: () => {},
+                        debug: () => {},
+                        error: () => {}
+                    },
                 }
             };
 
