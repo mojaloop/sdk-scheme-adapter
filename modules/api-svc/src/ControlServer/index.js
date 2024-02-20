@@ -201,7 +201,7 @@ class Server extends ws.Server {
             this._clientData.set(socket, { ip: req.connection.remoteAddress, logger });
 
             socket.on('close', (code, reason) => {
-                this._logger.isInfoEnabled() && logger.push({ code, reason }).info('Websocket connection closed');
+                logger.isInfoEnabled() && logger.push({ code, reason }).info('Websocket connection closed');
                 this._clientData.delete(socket);
             });
 
@@ -266,7 +266,7 @@ class Server extends ws.Server {
                             // client library?
                             const dup = structuredClone(this._appConfig); // fast-json-patch explicitly mutates
                             jsonPatch.applyPatch(dup, msg.data);
-                            this._logger.isDebugEnabled() && logger.push({ oldConf: this._appConfig, newConf: dup }).debug('Emitting new configuration');
+                            logger.isDebugEnabled() && logger.push({ oldConf: this._appConfig, newConf: dup }).debug('Emitting new configuration');
                             this.emit(EVENT.RECONFIGURE, dup);
                             break;
                         }
