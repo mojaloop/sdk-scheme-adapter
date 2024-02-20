@@ -2318,14 +2318,14 @@ __metadata:
     "@mojaloop/central-services-shared": 18.2.0
     "@mojaloop/event-sdk": ^14.0.0
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
-    "@mojaloop/sdk-standard-components": v17.3.0
+    "@mojaloop/sdk-standard-components": v17.4.0
     "@redocly/openapi-cli": ^1.0.0-beta.94
     "@types/jest": ^29.5.12
     ajv: 8.12.0
     axios: ^1.6.7
     babel-jest: ^29.7.0
     co-body: ^6.1.0
-    dotenv: ^16.4.4
+    dotenv: ^16.4.5
     env-var: ^7.4.1
     eslint: ^8.56.0
     eslint-config-airbnb-base: ^15.0.0
@@ -2490,16 +2490,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mojaloop/sdk-standard-components@npm:v17.3.0":
-  version: 17.3.0
-  resolution: "@mojaloop/sdk-standard-components@npm:17.3.0"
+"@mojaloop/sdk-standard-components@npm:v17.4.0":
+  version: 17.4.0
+  resolution: "@mojaloop/sdk-standard-components@npm:17.4.0"
   dependencies:
     base64url: 3.0.1
     fast-safe-stringify: ^2.1.1
     ilp-packet: 2.2.0
     jsonwebtoken: 9.0.2
     jws: 4.0.0
-  checksum: c34fae95eb2589a588fdf93ea9525bab2fc22d02507d4ed8e9b9cd6fd5aeccc6288a956f459a00e15599674ca9b67c273d0318026ecfbf1764e68bd14f2722f7
+  checksum: 285ad04124a01e1c30def7493a391c6409abbdb7b6d763a18c5ce637529a3fdccd359a03fb45a0069872fdae634361a800790035cf66cf6145cbb59cb5e01ca9
   languageName: node
   linkType: hard
 
@@ -6213,10 +6213,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:^16.4.4":
-  version: 16.4.4
-  resolution: "dotenv@npm:16.4.4"
-  checksum: fbe0355972634d8843e1804115885e94d70618cfc975eadca67e26b2d71eb46f0ed45c12c2b88fd88cd6b1476a151471227b13311127a3504d10060cc74ce2f7
+"dotenv@npm:^16.4.5":
+  version: 16.4.5
+  resolution: "dotenv@npm:16.4.5"
+  checksum: 301a12c3d44fd49888b74eb9ccf9f07a1f5df43f489e7fcb89647a2edcd84c42d6bc349dc8df099cd18f07c35c7b04685c1a4f3e6a6a9e6b30f8d48c15b7f49c
   languageName: node
   linkType: hard
 
