@@ -241,7 +241,7 @@ class OutboundRequestToPayModel {
             try {
                 const res = await this._requests.getParties(this.data.to.idType, this.data.to.idValue,
                     this.data.to.idSubValue);
-                    this._logger.isDebugEnabled() && this._logger.push({ peer: res }).debug('Party lookup sent to peer');
+                this._logger.isDebugEnabled() && this._logger.push({ peer: res }).debug('Party lookup sent to peer');
             }
             catch(err) {
                 // cancel the timout and unsubscribe before rejecting the promise
