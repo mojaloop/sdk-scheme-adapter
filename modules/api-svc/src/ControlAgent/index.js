@@ -144,7 +144,7 @@ class Client extends ws {
 
     async send(msg) {
         const data = typeof msg === 'string' ? msg : serialise(msg);
-        this._logger.push({ data }).debug('Sending message');
+        this._logger.isDebugEnabled() && this._logger.push({ data }).debug('Sending message');
         return new Promise((resolve) => super.send.call(this, data, resolve));
     }
 
@@ -152,14 +152,14 @@ class Client extends ws {
     async receive() {
         return new Promise((resolve) => this.once('message', (data) => {
             const msg = deserialise(data);
-            this._logger.push({ msg }).debug('Received');
+            this._logger.isDebugEnabled() && this._logger.push({ msg }).debug('Received');
             resolve(msg);
         }));
     }
 
     // Close connection
     async stop() {
-        this._logger.info('Control client shutting down...');
+        this._logger.isInfoEnabled() && this._logger.info('Control client shutting down...');
         this.close();
     }
 
@@ -171,24 +171,24 @@ class Client extends ws {
         try {
             msg = deserialise(data);
         } catch (err) {
-            this._logger.push({ data }).console.error();('Couldn\'t parse received message');
+            this._logger.isErrorEnabled() && this._logger.push({ data }).console.error();('Couldn\'t parse received message');
             this.send(build.ERROR.NOTIFY.JSON_PARSE_ERROR());
         }
-        this._logger.push({ msg }).debug('Handling received message');
+        this._logger.isDebugEnabled() && this._logger.push({ msg }).debug('Handling received message');
         switch (msg.msg) {
             case MESSAGE.CONFIGURATION:
                 switch (msg.verb) {
                     case VERB.NOTIFY: {
                         const dup = JSON.parse(JSON.stringify(this._appConfig)); // fast-json-patch explicitly mutates
                         _.merge(dup, msg.data);
-                        this._logger.push({ oldConf: this._appConfig, newConf: dup }).debug('Emitting new configuration');
+                        this._logger.isDebugEnabled() && this._logger.push({ oldConf: this._appConfig, newConf: dup }).debug('Emitting new configuration');
                         this.emit(EVENT.RECONFIGURE, dup);
                         break;
                     }
                     case VERB.PATCH: {
                         const dup = JSON.parse(JSON.stringify(this._appConfig)); // fast-json-patch explicitly mutates
                         jsonPatch.applyPatch(dup, msg.data);
-                        this._logger.push({ oldConf: this._appConfig, newConf: dup }).debug('Emitting new configuration');
+                        this._logger.isDebugEnabled() && this._logger.push({ oldConf: this._appConfig, newConf: dup }).debug('Emitting new configuration');
                         this.emit(EVENT.RECONFIGURE, dup);
                         break;
                     }

@@ -22,7 +22,7 @@ const { applyState, createErrorHandler, createLogger, createRequestIdGenerator }
  */
 const createRequestValidator = (validator) => async (ctx, next) => {
     if (!ctx.state.logExcludePaths.includes(ctx.path)) {
-        ctx.state.logger.debug('Validating request');
+        ctx.state.logger.isDebugEnabled() && ctx.state.logger.debug('Validating request');
     }
     try {
         const matchedPathObject = validator.validateRequest(ctx, ctx.state.logger);
@@ -30,11 +30,11 @@ const createRequestValidator = (validator) => async (ctx, next) => {
             ...matchedPathObject
         };
         if (!ctx.state.logExcludePaths.includes(ctx.path)) {
-            ctx.state.logger.debug('Request passed validation');
+            ctx.state.logger.isDebugEnabled() && ctx.state.logger.debug('Request passed validation');
         }
         await next();
     } catch (err) {
-        ctx.state.logger.push({ err }).debug('Request failed validation.');
+        ctx.state.logger.isDebugEnabled() && ctx.state.logger.push({ err }).debug('Request failed validation.');
         ctx.response.status = ReturnCodes.BADREQUEST.CODE;
         ctx.response.body = {
             message: `${err.dataPath ? err.dataPath + ' ' : ''}${err.message}`,

@@ -194,11 +194,11 @@ class BackendRequests {
         // Note we do not JWS sign requests with no body i.e. GET requests
 
         try {
-            this.logger.push({ reqOpts }).debug('Executing HTTP GET');
+            this._logger.isDebugEnabled() && this.logger.push({ reqOpts }).debug('Executing HTTP GET');
             return request({...reqOpts, agent: this.agent}).then(throwOrJson);
         }
         catch (e) {
-            this.logger.push({ e }).error('Error attempting HTTP GET');
+            this.logger.isErrorEnabled() && this.logger.push({ e }).error('Error attempting HTTP GET');
             throw e;
         }
     }
@@ -213,7 +213,7 @@ class BackendRequests {
         };
 
         try {
-            this.logger.push({ reqOpts }).debug('Executing HTTP PUT');
+            this._logger.isDebugEnabled() && this.logger.push({ reqOpts }).debug('Executing HTTP PUT');
             return request({...reqOpts, agent: this.agent}).then(throwOrJson);
         }
         catch (e) {
@@ -232,11 +232,11 @@ class BackendRequests {
         };
 
         try {
-            this.logger.push({ reqOpts }).debug('Executing HTTP POST');
+            this._logger.isDebugEnabled() && this.logger.push({ reqOpts }).debug('Executing HTTP POST');
             return request({...reqOpts, agent: this.agent}).then(throwOrJson);
         }
         catch (e) {
-            this.logger.push({ e }).error('Error attempting POST.');
+            this.logger.isErrorEnabled() && this.logger.push({ e }).error('Error attempting POST.');
             throw e;
         }
     }

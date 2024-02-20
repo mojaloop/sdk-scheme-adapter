@@ -150,7 +150,9 @@ describe('Outbound API handlers:', () => {
                     logger: {
                         log: () => {},
                         debug: () => {},
-                        error: () => {}
+                        error: () => {},
+                        isDebugEnabled: () => {},
+                        isErrorEnabled: () => {}
                     },
                 }
             };
@@ -182,7 +184,9 @@ describe('Outbound API handlers:', () => {
                     logger: {
                         log: () => {},
                         debug: () => {},
-                        error: () => {}
+                        error: () => {},
+                        isDebugEnabled: () => {},
+                        isErrorEnabled: () => {}
                     },
                 }
             };
@@ -218,7 +222,9 @@ describe('Outbound API handlers:', () => {
                     logger: {
                         log: () => {},
                         debug: () => {},
-                        error: () => {}
+                        error: () => {},
+                        isDebugEnabled: () => {},
+                        isErrorEnabled: () => {}
                     },
                     path: {
                         params: {
@@ -254,7 +260,9 @@ describe('Outbound API handlers:', () => {
                     logger: {
                         log: () => {},
                         debug: () => {},
-                        error: () => {}
+                        error: () => {},
+                        isDebugEnabled: () => {},
+                        isErrorEnabled: () => {}
                     },
                 }
             };
@@ -286,7 +294,9 @@ describe('Outbound API handlers:', () => {
                     logger: {
                         log: () => {},
                         debug: () => {},
-                        error: () => {}
+                        error: () => {},
+                        isDebugEnabled: () => {},
+                        isErrorEnabled: () => {}
                     },
                 }
             };
@@ -320,7 +330,9 @@ describe('Outbound API handlers:', () => {
                     logger: {
                         log: () => {},
                         debug: () => {},
-                        error: () => {}
+                        error: () => {},
+                        isDebugEnabled: () => {},
+                        isErrorEnabled: () => {}
                     },
                 }
             };
@@ -352,7 +364,9 @@ describe('Outbound API handlers:', () => {
                     logger: {
                         log: () => {},
                         debug: () => {},
-                        error: () => {}
+                        error: () => {},
+                        isDebugEnabled: () => {},
+                        isErrorEnabled: () => {}
                     },
                 }
             };
@@ -386,7 +400,9 @@ describe('Outbound API handlers:', () => {
                     logger: {
                         log: () => {},
                         debug: () => {},
-                        error: () => {}
+                        error: () => {},
+                        isDebugEnabled: () => {},
+                        isErrorEnabled: () => {}
                     },
                     eventLogger: { info: () => {}},
                     eventProducer: { sendDomainEvent: jest.fn() },
@@ -429,7 +445,9 @@ describe('Outbound API handlers:', () => {
                     logger: {
                         log: () => {},
                         debug: () => {},
-                        error: () => {}
+                        error: () => {},
+                        isDebugEnabled: () => {},
+                        isErrorEnabled: () => {}
                     },
                     eventLogger: { info: () => {}},
                     eventProducer: { sendDomainEvent: jest.fn() },
@@ -475,7 +493,9 @@ describe('Outbound API handlers:', () => {
                     logger: {
                         log: () => {},
                         debug: () => {},
-                        error: () => {}
+                        error: () => {},
+                        isDebugEnabled: () => {},
+                        isErrorEnabled: () => {}
                     },
                     eventLogger: { info: () => {}},
                     eventProducer: { sendDomainEvent: jest.fn() },
@@ -513,7 +533,9 @@ describe('Outbound API handlers:', () => {
                     logger: {
                         log: () => {},
                         debug: () => {},
-                        error: () => {}
+                        error: () => {},
+                        isDebugEnabled: () => {},
+                        isErrorEnabled: () => {}
                     },
                 }
             };
@@ -544,7 +566,11 @@ describe('Outbound API handlers:', () => {
                     logger: {
                         log: () => {},
                         debug: () => {},
-                        error: () => {}
+                        error: () => {},
+                        isDebugEnabled: () => {},
+                        isErrorEnabled: () => {},
+                        isDebugEnabled: () => {},
+                        isErrorEnabled: () => {}
                     },
                 }
             };

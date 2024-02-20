@@ -45,11 +45,11 @@ const getAuthorizationsById = async (ctx) => {
             const response = await model.getAuthorizations(authId, sourceFspId);
 
             // log the result
-            ctx.state.logger.push({ response }).debug('Inbound transfers model handled GET /parties/{idType}/{idValue} request');
+            ctx.state.logger.isDebugEnabled() && ctx.state.logger.push({ response }).debug('Inbound transfers model handled GET /parties/{idType}/{idValue} request');
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
-            ctx.state.logger.push({ err }).error('Error handling GET /parties/{idType}/{idValue}');
+            ctx.state.logger.isErrorEnabled() && ctx.state.logger.push({ err }).error('Error handling GET /parties/{idType}/{idValue}');
         }
     })();
 
@@ -83,11 +83,11 @@ const getParticipantsByTypeAndId = async (ctx) => {
             const response = await model.getParticipants(idType, idValue, subIdValue, sourceFspId);
 
             // log the result
-            ctx.state.logger.push({ response }).debug('Inbound transfers model handled GET /participants/{idType}/{idValue}');
+            ctx.state.logger.isDebugEnabled() && ctx.state.logger.push({ response }).debug('Inbound transfers model handled GET /participants/{idType}/{idValue}');
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
-            ctx.state.logger.push({ err }).error('Error handling GET /participants/{idType}/{idValue}');
+            ctx.state.logger.isErrorEnabled() && ctx.state.logger.push({ err }).error('Error handling GET /participants/{idType}/{idValue}');
         }
     })();
 
@@ -130,11 +130,11 @@ const getPartiesByTypeAndId = async (ctx) => {
 
 
             // log the result
-            ctx.state.logger.push({ response }).debug('Inbound transfers model handled GET /parties/{idType}/{idValue} request');
+            ctx.state.logger.isDebugEnabled() && ctx.state.logger.push({ response }).debug('Inbound transfers model handled GET /parties/{idType}/{idValue} request');
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
-            ctx.state.logger.push({ err }).error('Error handling GET /parties/{idType}/{idValue}');
+            ctx.state.logger.isErrorEnabled() && ctx.state.logger.push({ err }).error('Error handling GET /parties/{idType}/{idValue}');
         }
     })();
 
@@ -187,11 +187,11 @@ const postQuotes = async (ctx) => {
             }
 
             // log the result
-            ctx.state.logger.push({ response }).debug('Inbound transfers model handled POST /quotes request');
+            ctx.state.logger.isDebugEnabled() && ctx.state.logger.push({ response }).debug('Inbound transfers model handled POST /quotes request');
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
-            ctx.state.logger.push({ err }).error('Error handling POST /quotes');
+            ctx.state.logger.isErrorEnabled() && ctx.state.logger.push({ err }).error('Error handling POST /quotes');
         }
     })();
 
@@ -227,11 +227,11 @@ const postTransfers = async (ctx) => {
             const response = await model.prepareTransfer(transferRequest, sourceFspId);
 
             // log the result
-            ctx.state.logger.push({ response }).debug('Inbound transfers model handled POST /transfers request');
+            ctx.state.logger.isDebugEnabled() && ctx.state.logger.push({ response }).debug('Inbound transfers model handled POST /transfers request');
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
-            ctx.state.logger.push({ err }).error('Error handling POST /transfers');
+            ctx.state.logger.isErrorEnabled() && ctx.state.logger.push({ err }).error('Error handling POST /transfers');
         }
     })();
 
@@ -263,12 +263,12 @@ const getTransfersById = async (ctx) => {
             const response = await model.getTransfer(transferId, sourceFspId);
 
             // log the result
-            ctx.state.logger.push({response}).
+            ctx.state.logger.isDebugEnabled() && ctx.state.logger.push({response}).
                 debug('Inbound transfers model handled GET /transfers/{ID} request');
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
-            ctx.state.logger.push({ err }).error('Error handling GET /transfers/{ID}');
+            ctx.state.logger.isErrorEnabled() && ctx.state.logger.push({ err }).error('Error handling GET /transfers/{ID}');
         }
     })();
 
@@ -300,11 +300,11 @@ const postTransactionRequests = async (ctx) => {
             const response = await model.transactionRequest(transactionRequest, sourceFspId);
 
             // log the result
-            ctx.state.logger.push({ response }).debug('Inbound transfers model handled POST /transactionRequests request');
+            ctx.state.logger.isDebugEnabled() && ctx.state.logger.push({ response }).debug('Inbound transfers model handled POST /transactionRequests request');
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
-            ctx.state.logger.push({ err }).error('Error handling POST /transactionRequests');
+            ctx.state.logger.isErrorEnabled() && ctx.state.logger.push({ err }).error('Error handling POST /transactionRequests');
         }
     })();
 
@@ -540,11 +540,11 @@ const getQuoteById = async (ctx) => {
             const response = await model.getQuoteRequest(quoteId, sourceFspId);
 
             // log the result
-            ctx.state.logger.push({ response }).debug('Inbound transfers model handled GET /quotes request');
+            ctx.state.logger.isDebugEnabled() && ctx.state.logger.push({ response }).debug('Inbound transfers model handled GET /quotes request');
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
-            ctx.state.logger.push({ err }).error('Error handling GET /quotes');
+            ctx.state.logger.isErrorEnabled() && ctx.state.logger.push({ err }).error('Error handling GET /quotes');
         }
     })();
 
@@ -588,11 +588,11 @@ const putTransactionRequestsById = async (ctx) => {
                 const response = await model.putTransactionRequest(putTransactionRequest, transactionRequestId, sourceFspId);
 
                 // log the result
-                ctx.state.logger.push({ response }).debug('Inbound transfers model handled PUT /transactionRequests/{ID} request');
+                ctx.state.logger.isDebugEnabled() && ctx.state.logger.push({ response }).debug('Inbound transfers model handled PUT /transactionRequests/{ID} request');
             }
             catch(err) {
                 // nothing we can do if an error gets thrown back to us here apart from log it and continue
-                ctx.state.logger.push({ err }).error('Error handling PUT /transactionRequests/{ID}');
+                ctx.state.logger.isErrorEnabled() && ctx.state.logger.push({ err }).error('Error handling PUT /transactionRequests/{ID}');
             }
         })();
     } else {
@@ -675,7 +675,7 @@ const patchTransfersById = async (ctx) => {
     const response = await model.sendNotificationToPayee(req.data, idValue);
 
     // log the result
-    ctx.state.logger.push({response}).
+    ctx.state.logger.isDebugEnabled() && ctx.state.logger.push({response}).
         debug('Inbound transfers model handled PATCH /transfers/{ID} request');
 };
 
@@ -760,12 +760,12 @@ const getBulkQuotesById = async (ctx) => {
             const response = await model.getBulkQuote(bulkQuoteId, sourceFspId);
 
             // log the result
-            ctx.state.logger.push({response}).
+            ctx.state.logger.isDebugEnabled() && ctx.state.logger.push({response}).
                 debug('Inbound transfers model handled GET /bulkQuotes/{ID} request');
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
-            ctx.state.logger.push({ err }).error('Error handling GET /bulkQuotes/{ID}');
+            ctx.state.logger.isErrorEnabled() && ctx.state.logger.push({ err }).error('Error handling GET /bulkQuotes/{ID}');
         }
     })();
 
@@ -796,11 +796,11 @@ const postBulkQuotes = async (ctx) => {
             const response = await model.bulkQuoteRequest(bulkQuoteRequest, sourceFspId);
 
             // log the result
-            ctx.state.logger.push({ response }).debug('Inbound transfers model handled POST /bulkQuotes request');
+            ctx.state.logger.isDebugEnabled() && ctx.state.logger.push({ response }).debug('Inbound transfers model handled POST /bulkQuotes request');
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
-            ctx.state.logger.push({ err }).error('Error handling POST /bulkQuotes');
+            ctx.state.logger.isErrorEnabled() && ctx.state.logger.push({ err }).error('Error handling POST /bulkQuotes');
         }
     })();
 
@@ -867,12 +867,12 @@ const getBulkTransfersById = async (ctx) => {
             const response = await model.getBulkTransfer(bulkTransferId, sourceFspId);
 
             // log the result
-            ctx.state.logger.push({response}).
+            ctx.state.logger.isDebugEnabled() && ctx.state.logger.push({response}).
                 debug('Inbound transfers model handled GET /bulkTransfers/{ID} request');
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
-            ctx.state.logger.push({ err }).error('Error handling GET /bulkTransfers/{ID}');
+            ctx.state.logger.isErrorEnabled() && ctx.state.logger.push({ err }).error('Error handling GET /bulkTransfers/{ID}');
         }
     })();
 
@@ -903,11 +903,11 @@ const postBulkTransfers = async (ctx) => {
             const response = await model.prepareBulkTransfer(bulkPrepareRequest, sourceFspId);
 
             // log the result
-            ctx.state.logger.push({ response }).debug('Inbound transfers model handled POST /bulkTransfers request');
+            ctx.state.logger.isDebugEnabled() && ctx.state.logger.push({ response }).debug('Inbound transfers model handled POST /bulkTransfers request');
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
-            ctx.state.logger.push({ err }).error('Error handling POST /bulkTransfers');
+            ctx.state.logger.isErrorEnabled() && ctx.state.logger.push({ err }).error('Error handling POST /bulkTransfers');
         }
     })();
 
