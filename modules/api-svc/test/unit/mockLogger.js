@@ -16,9 +16,9 @@ function mockLogger(context, keepQuiet) {
         const methods = {
             // log methods
             log: jest.fn(),
-      
+
             configure: jest.fn(),
-      
+
             // generated methods from default levels
             verbose: jest.fn(),
             debug: jest.fn(),
@@ -26,7 +26,15 @@ function mockLogger(context, keepQuiet) {
             error: jest.fn(),
             trace: jest.fn(),
             info: jest.fn(),
-            fatal: jest.fn()
+            fatal: jest.fn(),
+
+            isVerboseEnabled: jest.fn(() => true),
+            isDebugEnabled: jest.fn(() => true),
+            isWarnEnabled: jest.fn(() => true),
+            isErrorEnabled: jest.fn(() => true),
+            isTraceEnabled: jest.fn(() => true),
+            isInfoEnabled: jest.fn(() => true),
+            isFatalEnabled: jest.fn(() => true)
         };
         return {
             ...methods,

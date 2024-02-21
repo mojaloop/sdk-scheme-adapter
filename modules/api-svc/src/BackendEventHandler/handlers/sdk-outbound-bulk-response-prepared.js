@@ -45,6 +45,6 @@ module.exports.handleSDKOutboundBulkResponsePreparedDmEvt = async (
         });
         await options.producer.sendDomainEvent(sdkOutboundBulkResponseSentDmEvt);
     } catch (err) {
-        logger.push({ err }).error('Error in handleSDKOutboundBulkResponsePreparedDmEvt');
+        logger.isErrorEnabled() && logger.push({ err }).error('Error in handleSDKOutboundBulkResponsePreparedDmEvt');
     }
 };
