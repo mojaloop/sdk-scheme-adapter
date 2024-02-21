@@ -15,17 +15,17 @@ async function saveToCache() {
     const { data, cache, key, logger } = this.context;
     try {
         const res = await cache.set(key, data);
-        logger.push({ res }).debug(`Persisted model in cache: ${key}`);
+        logger.isDebugEnabled() && logger.push({ res }).debug(`Persisted model in cache: ${key}`);
     }
     catch(err) {
-        logger.push({ err }).error(`Error saving model: ${key}`);
+        logger.isErrorEnabled() && logger.push({ err }).error(`Error saving model: ${key}`);
         throw err;
     }
 }
 
 async function onAfterTransition(transition) {
     const { logger } = this.context;
-    logger.debug(`State machine transitioned '${transition.transition}': ${transition.from} -> ${transition.to}`);
+    logger.isDebugEnabled() && logger.debug(`State machine transitioned '${transition.transition}': ${transition.from} -> ${transition.to}`);
     this.context.data.currentState = transition.to;
 }
 
@@ -75,14 +75,14 @@ async function loadFromCache(cache, key, logger, stateMachineSpec, optCreate) {
         if(!data) {
             throw new Error(`No cached data found for: ${key}`);
         }
-        logger.push({ cache: data }).debug('data loaded from cache');
+        logger.isDebugEnabled() && logger.push({ cache: data }).debug('data loaded from cache');
 
         // use delegation to allow customization of 'create'
         const createPSM = optCreate || create;
         return createPSM(data, cache, key, logger, stateMachineSpec);
     }
     catch(err) {
-        logger.push({ err }).error(`Error loading data: ${key}`);
+        logger.isErrorEnabled() &&logger.push({ err }).error(`Error loading data: ${key}`);
         throw err;
     }
 }

@@ -59,7 +59,7 @@ class WsServer extends ws.Server {
         this._cache = cache;
 
         this.on('error', err => {
-            this._logger.push({ err })
+            this._logger.isErrorEnabled() && this._logger.push({ err })
                 .error('Unhandled websocket error occurred. Shutting down.');
             process.exit(1);
         });
@@ -70,10 +70,10 @@ class WsServer extends ws.Server {
                 ip: getWsIp(req),
                 remoteAddress: req.socket.remoteAddress,
             });
-            logger.debug('Websocket connection received');
+            logger.isDebugEnabled() && logger.debug('Websocket connection received');
             this._wsClients.set(socket, req);
             socket.on('close', (code, reason) => {
-                logger.push({ code, reason }).debug('Websocket connection closed');
+                logger.isDebugEnabled() && logger.push({ code, reason }).debug('Websocket connection closed');
                 this._wsClients.delete(socket);
             });
         });
@@ -110,7 +110,7 @@ class WsServer extends ws.Server {
         // so we filter them here.
         const allowedPrefixes = [this._cache.CALLBACK_PREFIX, this._cache.REQUEST_PREFIX];
         if (!allowedPrefixes.some((prefix) => key.startsWith(prefix))) {
-            logger.push({ allowedPrefixes })
+            logger.isDebugEnabled() && logger.push({ allowedPrefixes })
                 .debug('Notification not of allowed message type. Ignored.');
             return;
         }
@@ -157,7 +157,7 @@ class WsServer extends ws.Server {
                         id: requestId,
                     });
                 }
-                this._logger
+                this._logger.isDebugEnabled() && this._logger
                     .push({
                         url: req.url,
                         key,
@@ -200,21 +200,21 @@ class TestServer {
 
         await new Promise((resolve) => this._server.listen(this._port, resolve));
 
-        this._logger.info(`Serving test API on port ${this._port}`);
+        this._logger.isInfoEnabled() && this._logger.info(`Serving test API on port ${this._port}`);
     }
 
     async stop() {
         if (this._wsapi) {
-            this._logger.info('Shutting down websocket server');
+            this._logger.isInfoEnabled() && this._logger.info('Shutting down websocket server');
             await this._wsapi.stop();
             this._wsapi = null;
         }
         if (this._server) {
-            this._logger.info('Shutting down http server');
+            this._logger.isInfoEnabled() && this._logger.info('Shutting down http server');
             await new Promise(resolve => this._server.close(resolve));
             this._server = null;
         }
-        this._logger.info('Test server shutdown complete');
+        this._logger.isInfoEnabled() && this._logger.info('Test server shutdown complete');
     }
 }
 
