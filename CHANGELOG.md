@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [23.4.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.3.1...v23.4.0) (2024-02-21)
+
+
+### Features
+
+* **mojaloop/#3750:** add log level enabled checking ([#468](https://github.com/mojaloop/sdk-scheme-adapter/issues/468)) ([345d9fc](https://github.com/mojaloop/sdk-scheme-adapter/commit/345d9fc808f457bd528fdbc1dff65b3c1a2b37ca)), closes [mojaloop/#3750](https://github.com/mojaloop/project/issues/3750)
+
 ### [23.3.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.3.0...v23.3.1) (2024-02-19)
 
 
