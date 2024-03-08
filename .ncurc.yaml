@@ -9,5 +9,7 @@ reject: [
   npm-check-updates,
   ## Updating from version 16.5.0 breaks builds
   nx,
-  '@mojaloop/central-services-shared'
+  '@mojaloop/central-services-shared',
+  # This can be removed after the JWS signing bug in v17.4.0 has been fixed
+  '@mojaloop/sdk-standard-components'
 ]
