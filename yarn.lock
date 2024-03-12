@@ -2532,7 +2532,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/api-snippets@npm:17.4.0, @mojaloop/api-snippets@npm:^17.3.0-snapshot.0, @mojaloop/api-snippets@npm:v17.4.0":
+"@mojaloop/api-snippets@npm:17.4.0, @mojaloop/api-snippets@npm:v17.4.0":
   version: 17.4.0
   resolution: "@mojaloop/api-snippets@npm:17.4.0"
   dependencies:
@@ -2784,7 +2784,7 @@ __metadata:
     "@mojaloop/central-services-shared": 18.2.1-snapshot.1
     "@mojaloop/event-sdk": ^14.0.0
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
-    "@mojaloop/sdk-standard-components": v17.2.0-snapshot.4
+    "@mojaloop/sdk-standard-components": v18.0.0
     "@redocly/openapi-cli": ^1.0.0-beta.94
     "@types/jest": ^29.5.12
     ajv: 8.12.0
@@ -2814,7 +2814,7 @@ __metadata:
     oauth2-server: ^4.0.0-dev.2
     openapi-jsonschema-parameters: ^12.1.3
     openapi-response-validator: ^12.1.3
-    openapi-typescript: ^6.7.4
+    openapi-typescript: ^6.7.5
     prom-client: ^15.1.0
     promise-timeout: ^1.3.0
     random-word-slugs: ^0.1.7
@@ -2956,17 +2956,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mojaloop/sdk-standard-components@npm:v17.2.0-snapshot.4":
-  version: 17.2.0-snapshot.4
-  resolution: "@mojaloop/sdk-standard-components@npm:17.2.0-snapshot.4"
+"@mojaloop/sdk-standard-components@npm:v18.0.0":
+  version: 18.0.0
+  resolution: "@mojaloop/sdk-standard-components@npm:18.0.0"
   dependencies:
-    "@mojaloop/api-snippets": ^17.3.0-snapshot.0
     base64url: 3.0.1
     fast-safe-stringify: ^2.1.1
     ilp-packet: 2.2.0
     jsonwebtoken: 9.0.2
     jws: 4.0.0
-  checksum: 81fd5d19de3ed1ac0831c827dcd8c74356b1bbe55bb2321ee0ec0f4cf1a8e3eda9fb44195a7dbcc54d3f3f3dc043d146e1271409ae0793fcb51408789c012044
+  checksum: 444d599df617102450765eb249a962efae753dfc4b65bea29f4748bd7f5fd5fc6a2906abf968441a6021e5e90d0b6932b44a11e4032cb65a050888188848acad
   languageName: node
   linkType: hard
 
@@ -12277,9 +12276,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openapi-typescript@npm:^6.7.4":
-  version: 6.7.4
-  resolution: "openapi-typescript@npm:6.7.4"
+"openapi-typescript@npm:^6.7.5":
+  version: 6.7.5
+  resolution: "openapi-typescript@npm:6.7.5"
   dependencies:
     ansi-colors: ^4.1.3
     fast-glob: ^3.3.2
@@ -12289,7 +12288,7 @@ __metadata:
     yargs-parser: ^21.1.1
   bin:
     openapi-typescript: bin/cli.js
-  checksum: bb1fa984088f3d0d985cf05dd39c53bf3d11a8d70afc5f2183d2f96c133fc0bc37c3328fc7ca357c5b5e48937b1cae7fe84ed093fbe4f3a70c1952a3761ceec2
+  checksum: f404cf8e5cdc59a6773cfd9adfd3545159a2d59d7393f97d003d9f8be6a28e0a71cfbb502da66bdd7c38ec2ad92b5b570202aa243bda908fafe31ea130c9f976
   languageName: node
   linkType: hard
 
