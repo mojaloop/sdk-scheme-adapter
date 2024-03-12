@@ -127,7 +127,7 @@ class OutboundServer extends EventEmitter {
         }
         await this._api.stop();
         await this._eventProducer?.destroy();
-        this._logger.isInfoEnabled() && this._logger.info('outbound shut down complete');
+        this._logger.isInfoEnabled && this._logger.info('outbound shut down complete');
     }
 }
 

@@ -89,7 +89,7 @@ class Server extends EventEmitter {
             this.wso2,
         );
         this.inboundServer.on('error', (...args) => {
-            this.logger.isErrorEnabled() && this.logger.push({ args }).error('Unhandled error in Inbound Server');
+            this.logger.isErrorEnabled && this.logger.push({ args }).error('Unhandled error in Inbound Server');
             this.emit('error', 'Unhandled error in Inbound Server');
         });
 
@@ -101,7 +101,7 @@ class Server extends EventEmitter {
             this.wso2,
         );
         this.outboundServer.on('error', (...args) => {
-            this.logger.isErrorEnabled() && this.logger.push({ args }).error('Unhandled error in Outbound Server');
+            this.logger.isErrorEnabled && this.logger.push({ args }).error('Unhandled error in Outbound Server');
             this.emit('error', 'Unhandled error in Outbound Server');
         });
 
@@ -332,11 +332,11 @@ class Server extends EventEmitter {
 * Call the Connector Manager in Management API to get the updated config
 */
 async function _GetUpdatedConfigFromMgmtAPI(conf, logger, client) {
-    logger.isInfoEnabled() && logger.info(`Getting updated config from Management API at ${conf.control.mgmtAPIWsUrl}:${conf.control.mgmtAPIWsPort}...`);
+    logger.isInfoEnabled && logger.info(`Getting updated config from Management API at ${conf.control.mgmtAPIWsUrl}:${conf.control.mgmtAPIWsPort}...`);
     const clientSendResponse = await client.send(ControlAgent.build.CONFIGURATION.READ());
-    logger.isInfoEnabled() && logger.info('client send returned:: ', clientSendResponse);
+    logger.isInfoEnabled && logger.info('client send returned:: ', clientSendResponse);
     const responseRead = await client.receive();
-    logger.isInfoEnabled() && logger.info('client receive returned:: ', responseRead);
+    logger.isInfoEnabled && logger.info('client receive returned:: ', responseRead);
     return responseRead.data;
 }
 
@@ -361,25 +361,25 @@ if(require.main === module) {
                 appConfig: config,
             });
             const updatedConfigFromMgmtAPI = await _GetUpdatedConfigFromMgmtAPI(config, logger, controlClient);
-            logger.isInfoEnabled() && logger.info(`updatedConfigFromMgmtAPI: ${JSON.stringify(updatedConfigFromMgmtAPI)}`);
+            logger.isInfoEnabled && logger.info(`updatedConfigFromMgmtAPI: ${JSON.stringify(updatedConfigFromMgmtAPI)}`);
             _.merge(config, updatedConfigFromMgmtAPI);
             controlClient.terminate();
         }
         const svr = new Server(config, logger);
         svr.on('error', (err) => {
-            logger.isErrorEnabled() && logger.push({ err }).error('Unhandled server error');
+            logger.isErrorEnabled && logger.push({ err }).error('Unhandled server error');
             process.exit(1);
         });
 
         // handle SIGTERM to exit gracefully
         process.on('SIGTERM', async () => {
-            logger.isInfoEnabled() && logger.info('SIGTERM received. Shutting down APIs...');
+            logger.isInfoEnabled && logger.info('SIGTERM received. Shutting down APIs...');
             await svr.stop();
             process.exit(0);
         });
 
         svr.start().catch(err => {
-            logger.isErrorEnabled() && logger.push({ err }).error('Error starting server');
+            logger.isErrorEnabled && logger.push({ err }).error('Error starting server');
             process.exit(1);
         });
     })();
