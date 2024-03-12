@@ -2585,6 +2585,51 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mojaloop/central-services-shared@npm:18.2.1-snapshot.1":
+  version: 18.2.1-snapshot.1
+  resolution: "@mojaloop/central-services-shared@npm:18.2.1-snapshot.1"
+  dependencies:
+    "@hapi/catbox": 12.1.1
+    "@hapi/catbox-memory": 5.0.1
+    axios: 1.6.7
+    clone: 2.1.2
+    dotenv: 16.4.5
+    env-var: 7.4.1
+    event-stream: 4.0.1
+    immutable: 4.3.5
+    lodash: 4.17.21
+    mustache: 4.2.0
+    openapi-backend: 5.10.6
+    raw-body: 2.5.2
+    rc: 1.2.8
+    shins: 2.6.0
+    uuid4: 2.0.3
+    widdershins: ^4.0.1
+    yaml: 2.4.0
+  peerDependencies:
+    "@mojaloop/central-services-error-handling": ">=12.x.x"
+    "@mojaloop/central-services-logger": ">=11.x.x"
+    "@mojaloop/central-services-metrics": ">=12.x.x"
+    "@mojaloop/event-sdk": ">=14.x.x"
+    ajv: 8.x.x
+    ajv-keywords: 5.x.x
+  peerDependenciesMeta:
+    "@mojaloop/central-services-error-handling":
+      optional: false
+    "@mojaloop/central-services-logger":
+      optional: false
+    "@mojaloop/central-services-metrics":
+      optional: false
+    "@mojaloop/event-sdk":
+      optional: false
+    ajv:
+      optional: false
+    ajv-keyboards:
+      optional: false
+  checksum: aa9e031baa6810adc2f457399f56322e8241649b69c7859cd8c95ba0f0d424886acb030b3e412c7357f41c40294b2714ae6208350aed5cbc9cddfe1dabf29c94
+  languageName: node
+  linkType: hard
+
 "@mojaloop/central-services-shared@npm:^18.2.0":
   version: 18.2.0
   resolution: "@mojaloop/central-services-shared@npm:18.2.0"
@@ -2627,51 +2672,6 @@ __metadata:
     ajv-keyboards:
       optional: false
   checksum: a54d43571e4f7031374fa754443ad15a6c0c46c653e9367169612cb026657d80a47d601b28885ca73509abc574c3b25fca1579bdf71cf79df57feae17b961855
-  languageName: node
-  linkType: hard
-
-"@mojaloop/central-services-shared@npm:v18.2.0-snapshot.16":
-  version: 18.2.0-snapshot.16
-  resolution: "@mojaloop/central-services-shared@npm:18.2.0-snapshot.16"
-  dependencies:
-    "@hapi/catbox": 12.1.1
-    "@hapi/catbox-memory": 5.0.1
-    axios: 1.6.2
-    clone: 2.1.2
-    dotenv: 16.3.1
-    env-var: 7.4.1
-    event-stream: 4.0.1
-    immutable: 4.3.4
-    lodash: 4.17.21
-    mustache: 4.2.0
-    openapi-backend: 5.10.5
-    raw-body: 2.5.2
-    rc: 1.2.8
-    shins: 2.6.0
-    uuid4: 2.0.3
-    widdershins: ^4.0.1
-    yaml: 2.3.4
-  peerDependencies:
-    "@mojaloop/central-services-error-handling": ">=12.x.x"
-    "@mojaloop/central-services-logger": ">=11.x.x"
-    "@mojaloop/central-services-metrics": ">=12.x.x"
-    "@mojaloop/event-sdk": ">=14.x.x"
-    ajv: 8.x.x
-    ajv-keywords: 5.x.x
-  peerDependenciesMeta:
-    "@mojaloop/central-services-error-handling":
-      optional: false
-    "@mojaloop/central-services-logger":
-      optional: false
-    "@mojaloop/central-services-metrics":
-      optional: false
-    "@mojaloop/event-sdk":
-      optional: false
-    ajv:
-      optional: false
-    ajv-keyboards:
-      optional: false
-  checksum: 81bff2cf3fc537206e63bc27f40f92320d58bb3c557f110312f62e0f7903c811328814bb30e9beab75324ad27cc32572706c23b569892aba5d333570f79123c8
   languageName: node
   linkType: hard
 
@@ -2781,7 +2781,7 @@ __metadata:
     "@mojaloop/central-services-error-handling": ^12.0.7
     "@mojaloop/central-services-logger": ^11.2.2
     "@mojaloop/central-services-metrics": ^12.0.8
-    "@mojaloop/central-services-shared": v18.2.0-snapshot.16
+    "@mojaloop/central-services-shared": 18.2.1-snapshot.1
     "@mojaloop/event-sdk": ^14.0.0
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
     "@mojaloop/sdk-standard-components": v17.2.0-snapshot.4
@@ -4780,7 +4780,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.6.7":
+"axios@npm:1.6.7, axios@npm:^1.6.7":
   version: 1.6.7
   resolution: "axios@npm:1.6.7"
   dependencies:
@@ -6766,7 +6766,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:^16.4.5":
+"dotenv@npm:16.4.5, dotenv@npm:^16.4.5":
   version: 16.4.5
   resolution: "dotenv@npm:16.4.5"
   checksum: 301a12c3d44fd49888b74eb9ccf9f07a1f5df43f489e7fcb89647a2edcd84c42d6bc349dc8df099cd18f07c35c7b04685c1a4f3e6a6a9e6b30f8d48c15b7f49c
@@ -8926,6 +8926,13 @@ __metadata:
   version: 4.3.4
   resolution: "immutable@npm:4.3.4"
   checksum: de3edd964c394bab83432429d3fb0b4816b42f56050f2ca913ba520bd3068ec3e504230d0800332d3abc478616e8f55d3787424a90d0952e6aba864524f1afc3
+  languageName: node
+  linkType: hard
+
+"immutable@npm:4.3.5":
+  version: 4.3.5
+  resolution: "immutable@npm:4.3.5"
+  checksum: 0e25dd5c314421faede9e1122ab26cdb638cc3edc8678c4a75dee104279b12621a30c80a480fae7f68bc7e81672f1e672e454dc0fdc7e6cf0af10809348387b8
   languageName: node
   linkType: hard
 
@@ -12181,7 +12188,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openapi-backend@npm:^5.10.6":
+"openapi-backend@npm:5.10.6, openapi-backend@npm:^5.10.6":
   version: 5.10.6
   resolution: "openapi-backend@npm:5.10.6"
   dependencies:
@@ -15965,6 +15972,15 @@ __metadata:
   version: 2.3.4
   resolution: "yaml@npm:2.3.4"
   checksum: e6d1dae1c6383bcc8ba11796eef3b8c02d5082911c6723efeeb5ba50fc8e881df18d645e64de68e421b577296000bea9c75d6d9097c2f6699da3ae0406c030d8
+  languageName: node
+  linkType: hard
+
+"yaml@npm:2.4.0":
+  version: 2.4.0
+  resolution: "yaml@npm:2.4.0"
+  bin:
+    yaml: bin.mjs
+  checksum: 3c25ebae34ee702af772ebbd1855a980b1487cd21d6220d952592edb4f7d89322aafd14753d99924ba7076eb4c5b3d809c64bb532402b01af280f7af674277f1
   languageName: node
   linkType: hard
 
