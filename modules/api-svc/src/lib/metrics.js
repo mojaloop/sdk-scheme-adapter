@@ -118,12 +118,12 @@ class MetricsServer {
         });
 
         await new Promise((resolve) => this._server.listen(this._port, resolve));
-        this._logger.push({ port: this._port }).log('Serving Metrics');
+        this._logger.isInfoEnabled() && this._logger.push({ port: this._port }).info('Serving Metrics');
     }
 
     async stop() {
         await new Promise(resolve => this._server.close(resolve));
-        this._logger.log('Metrics Server shut down complete');
+        this._logger.isInfoEnabled() && this._logger.info('Metrics Server shut down complete');
     }
 
     setupApi() {

@@ -6,10 +6,10 @@ reject: [
   ## TODO: The kafka connectivity is not working properly and the following update is causing service crash.
   '@mojaloop/logging-bc-client-lib',
   ## TODO: The new version of npm-check-updates uses new Glob v9.x and it is introducing a dependency Package "path-scurry@1.6.1" which is licensed under "BlueOak-1.0.0" which is not permitted by the Mojaloop License Policy
-  npm-check-updates,
-  ## Updating from version 16.5.0 breaks builds
-  nx,
+  'npm-check-updates',
   '@mojaloop/central-services-shared',
   # This can be removed after the JWS signing bug in v17.4.0 has been fixed
-  '@mojaloop/sdk-standard-components'
+  '@mojaloop/sdk-standard-components',
+  ## TODO: The new version of nx causes submodules to be broken.
+  "nx"
 ]

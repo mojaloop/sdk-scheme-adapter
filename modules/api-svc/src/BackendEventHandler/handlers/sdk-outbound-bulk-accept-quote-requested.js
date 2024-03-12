@@ -38,6 +38,6 @@ module.exports.handleSDKOutboundBulkAcceptQuoteRequestedDmEvt = async (
             currentState: BulkTransactionState.WAITING_FOR_QUOTE_ACCEPTANCE,
         });
     } catch (err) {
-        logger.push({ err }).log('Error in handleSDKOutboundBulkAcceptQuoteRequested');
+        logger.isErrorEnabled() && logger.push({ err }).error('Error in handleSDKOutboundBulkAcceptQuoteRequested');
     }
 };

@@ -162,7 +162,7 @@ class InboundServer extends EventEmitter {
         await this._validator.initialise(apiSpecs);
         await this._api.start();
         await new Promise((resolve) => this._server.listen(this._conf.inbound.port, resolve));
-        this._logger.log(`Serving inbound API on port ${this._conf.inbound.port}`);
+        this._logger.isInfoEnabled() && this._logger.info(`Serving inbound API on port ${this._conf.inbound.port}`);
     }
 
     async stop() {
@@ -170,7 +170,7 @@ class InboundServer extends EventEmitter {
             await new Promise(resolve => this._server.close(resolve));
         }
         await this._api.stop();
-        this._logger.log('inbound shut down complete');
+        this._logger.isInfoEnabled() && this._logger.info('inbound shut down complete');
     }
 
     _createServer(tlsEnabled, tlsCreds, handler) {

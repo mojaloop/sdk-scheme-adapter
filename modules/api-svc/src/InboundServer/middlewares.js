@@ -35,7 +35,7 @@ const createErrorHandler = (logger) => async (ctx, next) => {
         await next();
     } catch (err) {
         // TODO: return a 500 here if the response has not already been sent?
-        logger.push({ err }).log('Error caught in catchall');
+        logger.isErrorEnabled() && logger.push({ err }).error('Error caught in catchall');
     }
 };
 
@@ -155,7 +155,7 @@ const cacheRequest = (cache) => async (ctx, next) => {
         };
         const prefix = ctx.method.toLowerCase() === 'put' ? cache.CALLBACK_PREFIX : cache.REQUEST_PREFIX;
         const res = await cache.set(`${prefix}${ctx.state.fspiopId}`, req);
-        ctx.state.logger.push({ res }).log('Caching request');
+        ctx.state.logger.isDebugEnabled() && ctx.state.logger.push({ res }).debug('Caching request');
     }
     await next();
 };
@@ -274,7 +274,7 @@ const createHeaderValidator = (conf, logger) => async (
     }
     catch(err) {
         // error parsing body
-        logger.push({ err }).log('Error parsing body');
+        logger.isErrorEnabled() && logger.push({ err }).error('Error parsing body');
         ctx.response.status = Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX.httpStatusCode;
         ctx.response.body = new Errors.MojaloopFSPIOPError(err, err.message, null,
             Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX).toApiErrorObject();
@@ -304,7 +304,7 @@ const createJwsValidator = (logger, keys, exclusions) => {
             if (exclusions.includes('putParties')
                     && ctx.request.method === 'PUT'
                     && ctx.request.path.startsWith('/parties/')) {
-                logger.log('Skipping jws validation on put parties. config flag is set');
+                logger.isDebugEnabled() && logger.debug('Skipping jws validation on put parties. config flag is set');
                 return await next();
             }
 
@@ -313,13 +313,13 @@ const createJwsValidator = (logger, keys, exclusions) => {
             // there are potential security issues if message origin is used to
             // determine permission sets i.e. what is "readable"
             if(ctx.request.method !== 'GET') {
-                logger.push({ request: ctx.request, body: ctx.request.body }).log('Validating JWS');
+                logger.isDebugEnabled() && logger.push({ request: ctx.request, body: ctx.request.body }).debug('Validating JWS');
                 jwsValidator.validate(ctx.request, logger);
             }
 
         }
         catch(err) {
-            logger.push({ err }).log('Inbound request failed JWS validation');
+            logger.isErrorEnabled() && logger.push({ err }).error('Inbound request failed JWS validation');
 
             ctx.response.status = ReturnCodes.BADREQUEST.CODE;
             ctx.response.body = new Errors.MojaloopFSPIOPError(
@@ -362,18 +362,18 @@ const createLogger = (logger) => async (ctx, next) => {
         path: ctx.path,
         method: ctx.method
     }});
-    await ctx.state.logger.log('Request received');
+    await ctx.state.logger.isDebugEnabled() && ctx.state.logger.debug('Request received');
     // TODO: we need to disable the following log message based on a configurable parameter like DEBUG
     if (!ctx.state.logExcludePaths.includes(ctx.path) && !ctx.path.startsWith('/bulk')) {
-        ctx.state.logger.push({body: ctx.request.body}).log('Request received');
+        ctx.state.logger.push({body: ctx.request.body}).debug('Request received');
     }
     try {
         await next();
     } catch (err) {
-        ctx.state.logger.push(err).log('Error');
+        ctx.state.logger.isErrorEnabled() && ctx.state.logger.push(err).error('Error');
     }
     if (!ctx.state.logExcludePaths.includes(ctx.path)) {
-        await ctx.state.logger.log('Request processed');
+        await ctx.state.logger.isDebugEnabled() && ctx.state.logger.debug('Request processed');
     }
 };
 
@@ -385,7 +385,7 @@ const createLogger = (logger) => async (ctx, next) => {
  */
 const createRequestValidator = (validator) => async (ctx, next) => {
     if (!ctx.state.logExcludePaths.includes(ctx.path)) {
-        ctx.state.logger.log('Validating request');
+        ctx.state.logger.isDebugEnabled() && ctx.state.logger.debug('Validating request');
     }
     try {
         const matchedPathObject = validator.validateRequest(ctx, ctx.state.logger);
@@ -393,11 +393,11 @@ const createRequestValidator = (validator) => async (ctx, next) => {
             ...matchedPathObject
         };
         if (!ctx.state.logExcludePaths.includes(ctx.path)) {
-            ctx.state.logger.log('Request passed validation');
+            ctx.state.logger.isDebugEnabled() && ctx.state.logger.debug('Request passed validation');
         }
         await next();
     } catch (err) {
-        ctx.state.logger.push({ err }).log('Request failed validation.');
+        ctx.state.logger.isErrorEnabled() && ctx.state.logger.push({ err }).error('Request failed validation.');
         // send a mojaloop spec error response
         ctx.response.status = err.httpStatusCode || ReturnCodes.BADREQUEST.CODE;
 

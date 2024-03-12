@@ -2799,6 +2799,7 @@ __metadata:
     eslint-plugin-jest: ^27.9.0
     express: ^4.18.3
     fast-json-patch: ^3.1.1
+    fast-safe-stringify: ^2.1.1
     javascript-state-machine: ^3.1.0
     jest: ^29.7.0
     jest-junit: ^16.0.0
