@@ -52,13 +52,13 @@ class FSPIOPEventHandler {
 
     async start() {
         const config = this._conf;
-        this._logger.isInfoEnabled() && this._logger.info('start');
+        this._logger.isInfoEnabled && this._logger.info('start');
 
         this._consumer = new KafkaDomainEventConsumer(this._messageHandler.bind(this), config.fspiopEventHandler.domainEventConsumer, this._loggerFromLoggingBC);
-        this._logger.isInfoEnabled() && this._logger.info(`Created Message Consumer of type ${this._consumer.constructor.name}`);
+        this._logger.isInfoEnabled && this._logger.info(`Created Message Consumer of type ${this._consumer.constructor.name}`);
 
         this._producer = new KafkaDomainEventProducer(config.fspiopEventHandler.domainEventProducer, this._loggerFromLoggingBC);
-        this._logger.isInfoEnabled() && this._logger.info(`Created Message Producer of type ${this._producer.constructor.name}`);
+        this._logger.isInfoEnabled && this._logger.info(`Created Message Producer of type ${this._producer.constructor.name}`);
         await this._producer.init();
 
         // Create options for handlers
@@ -75,7 +75,7 @@ class FSPIOPEventHandler {
     }
 
     async stop() {
-        this._logger.isInfoEnabled() && this._logger.info('stop');
+        this._logger.isInfoEnabled && this._logger.info('stop');
         await Promise.all([
             this._consumer?.destroy(),
             this._producer?.destroy(),
@@ -83,7 +83,7 @@ class FSPIOPEventHandler {
     }
 
     async _messageHandler(message) {
-        this._logger.isInfoEnabled() && this._logger.info(`Got domain event message: ${message.getName()}`);
+        this._logger.isInfoEnabled && this._logger.info(`Got domain event message: ${message.getName()}`);
         // TODO: Handle errors validation here
         switch (message.getName()) {
             case PartyInfoRequestedDmEvt.name: {
@@ -99,7 +99,7 @@ class FSPIOPEventHandler {
                 break;
             }
             default: {
-                this._logger.isDebugEnabled() && this._logger.debug(`${message?.getName()}:${message?.getKey()} - Skipping unknown domain event`);
+                this._logger.isDebugEnabled && this._logger.debug(`${message?.getName()}:${message?.getKey()} - Skipping unknown domain event`);
                 return;
             }
         }

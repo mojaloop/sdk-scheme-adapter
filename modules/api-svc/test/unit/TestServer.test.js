@@ -50,7 +50,12 @@ describe('Test Server', () => {
             ...JSON.parse(JSON.stringify(defaultConfig)),
             enableTestFeatures: true,
         };
-        cache = new Cache({ cacheUrl: serverConfig.cacheUrl, logger: logger.push({ component: 'cache' }), enableTestFeatures: true });
+        cache = new Cache({
+            cacheUrl: serverConfig.cacheUrl,
+            logger: logger.push({ component: 'cache' }),
+            enableTestFeatures: true,
+            unsubscribeTimeoutMs: serverConfig.unsubscribeTimeoutMs,
+        });
 
         testServer = new TestServer({ logger, cache });
         await testServer.start();
