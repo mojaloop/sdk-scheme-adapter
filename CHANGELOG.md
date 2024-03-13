@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [23.4.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.4.0...v23.4.1) (2024-03-13)
+
+
+### Bug Fixes
+
+* **mojaloop/#3750:** add timer for party lookup in cache ([#471](https://github.com/mojaloop/sdk-scheme-adapter/issues/471)) ([bfd076f](https://github.com/mojaloop/sdk-scheme-adapter/commit/bfd076f97c6b95a6d77509af2591480a6110be82)), closes [mojaloop/#3750](https://github.com/mojaloop/project/issues/3750)
+
 ## [23.4.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.3.1...v23.4.0) (2024-02-21)
 
 
