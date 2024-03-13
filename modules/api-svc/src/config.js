@@ -159,6 +159,7 @@ module.exports = {
     jwsSigningKey: env.get('JWS_SIGNING_KEY_PATH').asFileContent(),
     jwsVerificationKeysDirectory: env.get('JWS_VERIFICATION_KEYS_DIRECTORY').asString(),
     cacheUrl: env.get('CACHE_URL').default('redis://localhost:6379').asUrlString(),
+    unsubscribeTimeoutMs: env.get('UNSUBSCRIBE_TIMEOUT_MS').default('5000').asIntPositive(),
     enableTestFeatures: env.get('ENABLE_TEST_FEATURES').default('false').asBool(),
     oauthTestServer: {
         enabled: env.get('ENABLE_OAUTH_TOKEN_ENDPOINT').default('false').asBool(),

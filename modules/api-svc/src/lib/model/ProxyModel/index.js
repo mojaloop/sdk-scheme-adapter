@@ -72,7 +72,7 @@ class ProxyModel {
         const valid = validate(config);
         if (!valid) {
             const errors = safeStringify(validate.errors);
-            this._logger.isErrorEnabled() && this._logger.push({ errors }).error('Proxy config is invalid');
+            this._logger.isErrorEnabled && this._logger.push({ errors }).error('Proxy config is invalid');
             throw new Error(`Proxy config is invalid: ${errors}`);
         }
     }
@@ -87,7 +87,7 @@ class ProxyModel {
         try {
             return config.routes.map(routeConfig => new Route(routeConfig));
         } catch (e) {
-            this._logger.isErrorEnabled() && this._logger.push({ e }).error('Failed to create route');
+            this._logger.isErrorEnabled && this._logger.push({ e }).error('Failed to create route');
             throw e;
         }
     }
@@ -119,7 +119,7 @@ class ProxyModel {
         }
         const url = this._getMatchingDestination(request);
         if (!url) {
-            this._logger.isDebugEnabled() && this._logger.debug(`No proxy rule found for ${request.url}`);
+            this._logger.isDebugEnabled && this._logger.debug(`No proxy rule found for ${request.url}`);
             return;
         }
         const destReq = {

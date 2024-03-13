@@ -71,6 +71,7 @@ describe('inboundModel', () => {
             cache = new Cache({
                 cacheUrl: 'redis://dummy:1234',
                 logger,
+                unsubscribeTimeoutMs: 5000
             });
             await cache.connect();
 
@@ -139,6 +140,7 @@ describe('inboundModel', () => {
             cache = new Cache({
                 cacheUrl: 'redis://dummy:1234',
                 logger,
+                unsubscribeTimeoutMs: 5000
             });
             await cache.connect();
             // eslint-disable-next-line no-unused-vars
@@ -195,6 +197,7 @@ describe('inboundModel', () => {
             cache = new Cache({
                 cacheUrl: 'redis://dummy:1234',
                 logger,
+                unsubscribeTimeoutMs: 5000
             });
             await cache.connect();
 
@@ -231,6 +234,7 @@ describe('inboundModel', () => {
             cache = new Cache({
                 cacheUrl: 'redis://dummy:1234',
                 logger,
+                unsubscribeTimeoutMs: 5000
             });
             await cache.connect();
 
@@ -272,6 +276,7 @@ describe('inboundModel', () => {
             cache = new Cache({
                 cacheUrl: 'redis://dummy:1234',
                 logger,
+                unsubscribeTimeoutMs: 5000
             });
             await cache.connect();
         });
@@ -550,6 +555,7 @@ describe('inboundModel', () => {
             cache = new Cache({
                 cacheUrl: 'redis://dummy:1234',
                 logger,
+                unsubscribeTimeoutMs: 5000
             });
             await cache.connect();
         });
@@ -729,6 +735,7 @@ describe('inboundModel', () => {
             cache = new Cache({
                 cacheUrl: 'redis://dummy:1234',
                 logger,
+                unsubscribeTimeoutMs: 5000
             });
             await cache.connect();
         });
@@ -811,6 +818,7 @@ describe('inboundModel', () => {
             cache = new Cache({
                 cacheUrl: 'redis://dummy:1234',
                 logger,
+                unsubscribeTimeoutMs: 5000
             });
             await cache.connect();
         });

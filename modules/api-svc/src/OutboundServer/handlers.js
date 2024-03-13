@@ -38,7 +38,7 @@ const { ReturnCodes } = Enum.Http;
  * Error handling logic shared by outbound API handlers
  */
 const handleError = (method, err, ctx, stateField) => {
-    ctx.state.logger.isErrorEnabled() && ctx.state.logger.error(`Error handling ${method}: ${safeStringify(err)}`);
+    ctx.state.logger.isErrorEnabled && ctx.state.logger.error(`Error handling ${method}: ${safeStringify(err)}`);
     ctx.response.status = err.httpStatusCode || ReturnCodes.INTERNALSERVERERRROR.CODE;
     ctx.response.body = {
         message: err.message || 'Unspecified error',
