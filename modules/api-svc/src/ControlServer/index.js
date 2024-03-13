@@ -150,7 +150,7 @@ class Client extends ws {
 
     async send(msg) {
         const data = typeof msg === 'string' ? msg : serialise(msg);
-        this._logger.isDebugEnabled() && this._logger.push({ data }).debug('Sending message');
+        this._logger.isDebugEnabled && this._logger.push({ data }).debug('Sending message');
         return new Promise((resolve) => super.send.call(this, data, resolve));
     }
 
@@ -158,7 +158,7 @@ class Client extends ws {
     async receive() {
         return new Promise((resolve) => this.once('message', (data) => {
             const msg = deserialise(data);
-            this._logger.isDebugEnabled() && this._logger.push({ msg }).debug('Received');
+            this._logger.isDebugEnabled && this._logger.push({ msg }).debug('Received');
             resolve(msg);
         }));
     }
@@ -186,7 +186,7 @@ class Server extends ws.Server {
         this._clientData = new Map();
 
         this.on('error', err => {
-            this._logger.isErrorEnabled() && this._logger.push({ err })
+            this._logger.isErrorEnabled && this._logger.push({ err })
                 .error('Unhandled websocket error occurred. Shutting down.');
             process.exit(1);
         });
@@ -197,18 +197,18 @@ class Server extends ws.Server {
                 ip: getWsIp(req),
                 remoteAddress: req.socket.remoteAddress,
             });
-            logger.isInfoEnabled() && logger.info('Websocket connection received');
+            logger.isInfoEnabled && logger.info('Websocket connection received');
             this._clientData.set(socket, { ip: req.connection.remoteAddress, logger });
 
             socket.on('close', (code, reason) => {
-                logger.isInfoEnabled() && logger.push({ code, reason }).info('Websocket connection closed');
+                logger.isInfoEnabled && logger.push({ code, reason }).info('Websocket connection closed');
                 this._clientData.delete(socket);
             });
 
             socket.on('message', this._handle(socket, logger));
         });
 
-        this._logger.isInfoEnabled() && this._logger.push(this.address()).info('running on');
+        this._logger.isInfoEnabled && this._logger.push(this.address()).info('running on');
     }
 
     // Close the server then wait for all the client sockets to close
@@ -218,14 +218,14 @@ class Server extends ws.Server {
             client.terminate();
         }
         await closing;
-        this._logger.isInfoEnabled() && this._logger.info('Control server shutdown complete');
+        this._logger.isInfoEnabled && this._logger.info('Control server shutdown complete');
     }
 
 
     async notifyClientsOfCurrentConfig() {
         const updateConfMsg = build.CONFIGURATION.NOTIFY(this._appConfig);
         const logError = (socket, message) => (err) =>
-            this._logger.isErrorEnabled() &&  this._logger
+            this._logger.isErrorEnabled &&  this._logger
                 .push({ message, ip: this._clientData.get(socket).ip, err })
                 .error('Error sending reconfigure notification to client');
         const sendToAllClients = (msg) => Promise.all(
@@ -244,10 +244,10 @@ class Server extends ws.Server {
             try {
                 msg = deserialise(data);
             } catch (err) {
-                logger.isErrorEnabled() && logger.push({ data }).error('Couldn\'t parse received message');
+                logger.isErrorEnabled && logger.push({ data }).error('Couldn\'t parse received message');
                 client.send(build.ERROR.NOTIFY.JSON_PARSE_ERROR());
             }
-            logger.isDebugEnabled() && logger.push({ msg }).debug('Handling received message');
+            logger.isDebugEnabled && logger.push({ msg }).debug('Handling received message');
             switch (msg.msg) {
                 case MESSAGE.CONFIGURATION:
                     switch (msg.verb) {
@@ -257,7 +257,7 @@ class Server extends ws.Server {
                         case VERB.NOTIFY: {
                             const dup = structuredClone(this._appConfig); // fast-json-patch explicitly mutates
                             _.merge(dup, msg.data);
-                            this._logger.isDebugEnabled() && this._logger.push({ oldConf: this._appConfig, newConf: dup }).debug('Emitting new configuration');
+                            this._logger.isDebugEnabled && this._logger.push({ oldConf: this._appConfig, newConf: dup }).debug('Emitting new configuration');
                             this.emit(EVENT.RECONFIGURE, dup);
                             break;
                         }
@@ -266,7 +266,7 @@ class Server extends ws.Server {
                             // client library?
                             const dup = structuredClone(this._appConfig); // fast-json-patch explicitly mutates
                             jsonPatch.applyPatch(dup, msg.data);
-                            logger.isDebugEnabled() && logger.push({ oldConf: this._appConfig, newConf: dup }).debug('Emitting new configuration');
+                            logger.isDebugEnabled && logger.push({ oldConf: this._appConfig, newConf: dup }).debug('Emitting new configuration');
                             this.emit(EVENT.RECONFIGURE, dup);
                             break;
                         }

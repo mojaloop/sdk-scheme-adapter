@@ -72,9 +72,10 @@ describe('outboundRequestToPayTransferModel', () => {
         MojaloopRequests.__postTransfers = jest.fn(() => Promise.resolve());
 
         cache = new Cache({
-                cacheUrl: 'redis://dummy:1234',
-                logger,
-            });
+            cacheUrl: 'redis://dummy:1234',
+            logger,
+            unsubscribeTimeoutMs: 5000
+        });
         await cache.connect();
     });
 

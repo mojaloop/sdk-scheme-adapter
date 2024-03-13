@@ -28,6 +28,8 @@
         // Issue with PostCSS library (https://github.com/advisories/GHSA-7fh5-64p2-3v2j)
         "GHSA-7fh5-64p2-3v2j",
         // SSRF attacks against npm IP (https://github.com/advisories/GHSA-78xj-cgh5-2h22)
-        "GHSA-78xj-cgh5-2h22"
+        "GHSA-78xj-cgh5-2h22",
+        // https://github.com/advisories/GHSA-rm97-x556-q36h
+        "GHSA-rm97-x556-q36h",
     ]
 }
