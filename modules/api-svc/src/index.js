@@ -74,7 +74,8 @@ class Server extends EventEmitter {
             auth: new WSO2Auth({
                 ...conf.wso2.auth,
                 logger,
-                tlsCreds: conf.outbound.tls.mutualTLS.enabled && conf.outbound.tls.creds,
+                // tlsCreds: conf.outbound.tls.mutualTLS.enabled && conf.outbound.tls.creds,
+                tlsCreds: { keepAliveMsecs: 1000}, // TODO: remove this tweak once this issue is fixed
             }),
             retryWso2AuthFailureTimes: conf.wso2.requestAuthFailureRetryTimes,
         };
