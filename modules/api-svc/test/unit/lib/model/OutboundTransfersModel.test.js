@@ -168,6 +168,7 @@ describe('outboundModel', () => {
         cache = new Cache({
             cacheUrl: 'redis://dummy:1234',
             logger,
+            unsubscribeTimeoutMs: 5000
         });
         await cache.connect();
     });
@@ -1367,7 +1368,7 @@ describe('outboundModel', () => {
             }
         };
 
-        const errMsg = 'Got an error response resolving party: { errorInformation: { errorCode: \'3204\', errorDescription: \'Party not found\' } }';
+        const errMsg = 'Got an error response resolving party: {"errorInformation":{"errorCode":"3204","errorDescription":"Party not found"}}';
 
         try {
             await model.run();
@@ -1426,7 +1427,7 @@ describe('outboundModel', () => {
 
         expect(StateMachine.__instance.state).toBe('start');
 
-        const errMsg = 'Got an error response requesting quote: { errorInformation:\n   { errorCode: \'3205\', errorDescription: \'Quote ID not found\' } }';
+        const errMsg = 'Got an error response requesting quote: {"errorInformation":{"errorCode":"3205","errorDescription":"Quote ID not found"}}';
 
         try {
             await model.run();
@@ -1489,7 +1490,7 @@ describe('outboundModel', () => {
 
         expect(StateMachine.__instance.state).toBe('start');
 
-        const errMsg = 'Got an error response preparing transfer: { errorInformation:\n   { errorCode: \'4001\',\n     errorDescription: \'Payer FSP insufficient liquidity\' } }';
+        const errMsg = 'Got an error response preparing transfer: {"errorInformation":{"errorCode":"4001","errorDescription":"Payer FSP insufficient liquidity"}}';
 
         try {
             await model.run();

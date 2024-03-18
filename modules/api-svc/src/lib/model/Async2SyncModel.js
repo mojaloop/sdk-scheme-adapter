@@ -9,8 +9,7 @@
  **************************************************************************/
 
 'use strict';
-const util = require('util');
-
+const safeStringify = require('fast-safe-stringify');
 const PSM = require('./common').PersistentStateMachine;
 const { SDKStateEnum } = require('./common');
 const MojaloopRequests = require('@mojaloop/sdk-standard-components').MojaloopRequests;
@@ -96,28 +95,28 @@ function generate({
                 // eslint-disable-next-line no-fallthrough
                 case 'succeeded':
                     // all steps complete so return
-                    logger.log('Action called successfully');
+                    logger.isDebugEnabled && logger.debug('Action called successfully');
                     return this.getResponse();
 
                 case 'errored':
                     // stopped in errored state
-                    logger.log('State machine in errored state');
+                    logger.isErrorEnabled && logger.error('State machine in errored state');
                     return;
             }
         } catch (err) {
-            logger.log(`Error running ${modelName} model: ${util.inspect(err)}`);
+            logger.isErrorEnabled && logger.error(`Error running ${modelName} model: ${safeStringify(err)}`);
 
             // as this function is recursive, we don't want to error the state machine multiple times
             if (data.currentState !== 'errored') {
                 // err should not have a requestActionState property here!
                 if (err.requestActionState) {
-                    logger.log('State machine is broken');
+                    logger.isDebugEnabled && logger.debug('State machine is broken');
                 }
                 // transition to errored state
                 await this.error(err);
 
                 // avoid circular ref between requestActionState.lastError and err
-                err.requestActionState = JSON.parse(JSON.stringify(this.getResponse()));
+                err.requestActionState = structuredClone(this.getResponse());
             }
             throw err;
         }
@@ -144,7 +143,7 @@ function generate({
 
         // handle unexpected state
         if (!resp.currentState) {
-            logger.error(`${modelName} model response being returned from an unexpected state: ${data.currentState}. Returning ERROR_OCCURRED state`);
+            logger.isErrorEnabled && logger.error(`${modelName} model response being returned from an unexpected state: ${data.currentState}. Returning ERROR_OCCURRED state`);
             resp.currentState = mapCurrentState.errored;
         }
 
@@ -159,12 +158,12 @@ function generate({
     async function onRequestAction(fsm, args) {
         const { cache, logger } = this.context;
         const { requests, config } = this.handlersContext;
-        logger.push({ args }).log('onRequestAction - arguments');
+        logger.isDebugEnabled && logger.push({ args }).debug('onRequestAction - arguments');
 
         return deferredJob(cache, channelNameMethod(args))
             .init(async (channel) => {
                 const res = await requestActionMethod(requests, args);
-                logger.push({ res, channel, args }).log('RequestAction call sent to peer, listening on response');
+                logger.isDebugEnabled && logger.push({ res, channel, args }).debug('RequestAction call sent to peer, listening on response');
                 return res;
             })
             .job((message) => {
@@ -172,7 +171,7 @@ function generate({
                     ...reformatMessage(message),
                     currentState: this.state
                 };
-                logger.push({ message }).log('requestActionMethod message received');
+                logger.isDebugEnabled && logger.push({ message }).debug('requestActionMethod message received');
             })
             .wait(config.requestProcessingTimeoutSeconds * 1000);
     }

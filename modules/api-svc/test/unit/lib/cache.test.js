@@ -18,8 +18,9 @@ const { Logger } = require('@mojaloop/sdk-standard-components');
 const createCache = async() => {
     const logger = new Logger.Logger({ context: { app: 'model-unit-tests-cache' }, stringify: () => '' });
     const cache = new Cache({
-      cacheUrl: 'redis://dummy:1234',
-      logger,
+        cacheUrl: 'redis://dummy:1234',
+        logger,
+        unsubscribeTimeoutMs: 5000,
     });
     await cache.connect();
     return cache;

@@ -50,6 +50,9 @@ class Cache {
 
         // tag each callback with an Id so we can gracefully unsubscribe and not leak resources
         this._callbackId = 0;
+
+        this._unsubscribeTimeoutMs = config.unsubscribeTimeoutMs;
+        this._unsubscribeTimeoutMap = {};
     }
 
     /**
@@ -98,9 +101,9 @@ class Cache {
         //   s     Set commands
         //   $     String commands
         const mode = enable ? 'Es$' : '';
-        this._logger
+        this._logger.isDebugEnabled && this._logger
             .push({ 'notify-keyspace-events': mode })
-            .log('Configuring Redis to emit keyevent events');
+            .debug('Configuring Redis to emit keyevent events');
         await this._client.configSet('notify-keyspace-events', mode);
     }
 
@@ -150,20 +153,20 @@ class Cache {
                 // we have some callbacks to make
                 if (this._callbacks[channel]) {
                     for (const [id, cb] of Object.entries(this._callbacks[channel])) {
-                        this._logger.log(`Cache message received on channel ${channel}. Making callback with id ${id}`);
-    
+                        this._logger.isDebugEnabled && this._logger.debug(`Cache message received on channel ${channel}. Making callback with id ${id}`);
+
                         // call the callback with the channel name, message and callbackId...
                         // ...(which is useful for unsubscribe)
                         try {
                             cb(channel, msg, id);
                         } catch (err) {
-                            this._logger
+                            this._logger.isErrorEnabled && this._logger
                                 .push({ callbackId: id, err })
-                                .log('Unhandled error in cache subscription handler');
+                                .error('Unhandled error in cache subscription handler');
                         }
                     }
                 } else {
-                    this._logger.log(`Cache message received on unknown channel ${channel}. Ignoring...`);
+                    this._logger.isDebugEnabled && this._logger.debug(`Cache message received on unknown channel ${channel}. Ignoring...`);
                 }
             });
         } else {
@@ -171,7 +174,7 @@ class Cache {
         }
 
         // store the callback against the channel/id
-        this._logger.log(`Subscribed to cache pub/sub channel ${channel}`);
+        this._logger.isDebugEnabled && this._logger.debug(`Subscribed to cache pub/sub channel ${channel}`);
 
         return id;
     }
@@ -183,24 +186,49 @@ class Cache {
       * @param channel {string} - name of the channel to unsubscribe from
       * @param callbackId {integer} - id of the callback to remove
       */
-    async unsubscribe(channel, callbackId) {
+
+    async unsubscribe(channel, callbackId, useUnsubscribeTimeout=false) {
         if(this._callbacks[channel] && this._callbacks[channel][callbackId]) {
             delete this._callbacks[channel][callbackId];
-            this._logger.log(`Cache unsubscribed callbackId ${callbackId} from channel ${channel}`);
-
-            if(Object.keys(this._callbacks[channel]).length < 1) {
-                //no more callbacks for this channel
+            this._logger.isDebugEnabled && this._logger.debug(`Cache unsubscribed callbackId ${callbackId} from channel ${channel}`);
+            // The unsubscribeTimeout is used to mitigate a believed issue happening in the
+            // parties lookup leg of transfers. When the same party is looked up multiple times in quick
+            // succession, the cache is subscribed to the same channel multiple times. We believe that
+            // requests that have just subscribed to the channel which have not received the message yet
+            // are getting unsubscribed when requests that have completed call `unsubscribe`.
+            // This leads the request state machine to timeout the request, fail and
+            // stall the service. This issue is only affects parties lookup since it is the only
+            // pub/sub that can use the same channel name, primarily in our `ml-core-test-harness` environment.
+            if (Object.keys(this._callbacks[channel]).length < 1 && !useUnsubscribeTimeout){
+                // no more callbacks for this channel
                 delete this._callbacks[channel];
-                await this._subscriptionClient.unsubscribe(channel);
+                if (this._subscriptionClient) {
+                    await this._subscriptionClient.unsubscribe(channel);
+                }
+            }else if(Object.keys(this._callbacks[channel]).length < 1) {
+                if (!this._unsubscribeTimeoutMap[channel]){
+                    this._unsubscribeTimeoutMap[channel] = setTimeout(async () => {
+                        // no more callbacks for this channel
+                        delete this._callbacks[channel];
+                        delete this._unsubscribeTimeoutMap[channel];
+                        if (this._subscriptionClient) {
+                            await this._subscriptionClient.unsubscribe(channel);
+                        }
+                    }, this._unsubscribeTimeoutMs);
+                }
+            } else {
+                if (this._unsubscribeTimeoutMap[channel]) {
+                    this._unsubscribeTimeoutMap[channel].refresh();
+                }
             }
         } else {
             // we should not be asked to unsubscribe from a subscription we do not have. Raise this as a promise
-            // rejection so it can be spotted. It may indiate a logic bug somewhere else
-            this._logger.log(`Cache not subscribed to channel ${channel} for callbackId ${callbackId}`);
+            // rejection so it can be spotted. It may indicate a logic bug somewhere else
+            this._logger.isErrorEnabled && this._logger.error(`Cache not subscribed to channel ${channel} for callbackId ${callbackId}`);
             throw new Error(`Channel ${channel} does not have a callback with id ${callbackId} subscribed`);
         }
     }
-    
+
     getSubscribers(channel) {
         return this._callbacks[channel];
     }
@@ -214,15 +242,15 @@ class Cache {
         const client = redis.createClient({ url: this._url });
 
         client.on('error', (err) => {
-            this._logger.push({ err }).log('Error from REDIS client getting subscriber');
+            this._logger.isErrorEnabled && this._logger.push({ err }).error('Error from REDIS client getting subscriber');
         });
 
         client.on('reconnecting', (err) => {
-            this._logger.push({ err }).log('REDIS client Reconnecting');
+            this._logger.isDebugEnabled &&  this._logger.push({ err }).debug('REDIS client Reconnecting');
         });
 
         client.on('subscribe', (channel, count) => {
-            this._logger.push({ channel, count }).log('REDIS client subscribe');
+            this._logger.isDebugEnabled && this._logger.push({ channel, count }).debug('REDIS client subscribe');
             // On a subscribe event, ensure that testFeatures are enabled.
             // This is required here in the advent of a disconnect/reconnect event. Redis client will re-subscribe all subscriptions, but previously enabledTestFeatures will be lost.
             // Handling this on the on subscribe event will ensure its always configured.
@@ -232,11 +260,11 @@ class Cache {
         });
 
         client.on('connect', () => {
-            this._logger.log(`REDIS client connected at: ${this._url}`);
+            this._logger.isDebugEnabled && this._logger.debug(`REDIS client connected at: ${this._url}`);
         });
 
         client.on('ready', () => {
-            this._logger.log(`Connected to REDIS at: ${this._url}`);
+            this._logger.isDebugEnabled && this._logger.debug(`Connected to REDIS at: ${this._url}`);
         });
         await client.connect();
 
@@ -309,7 +337,7 @@ class Cache {
                 value = JSON.parse(value);
             }
             catch(err) {
-                this._logger.push({ err }).log('Error parsing JSON cache value');
+                this._logger.isErrorEnabled && this._logger.push({ err }).error('Error parsing JSON cache value');
             }
         }
         return value;

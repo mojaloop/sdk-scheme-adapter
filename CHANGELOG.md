@@ -1,4 +1,32 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [23.4.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.4.0...v23.4.1) (2024-03-13)
+
+
+### Bug Fixes
+
+* **mojaloop/#3750:** add timer for party lookup in cache ([#471](https://github.com/mojaloop/sdk-scheme-adapter/issues/471)) ([bfd076f](https://github.com/mojaloop/sdk-scheme-adapter/commit/bfd076f97c6b95a6d77509af2591480a6110be82)), closes [mojaloop/#3750](https://github.com/mojaloop/project/issues/3750)
+
+## [23.4.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.3.1...v23.4.0) (2024-02-21)
+
+
+### Features
+
+* **mojaloop/#3750:** add log level enabled checking ([#468](https://github.com/mojaloop/sdk-scheme-adapter/issues/468)) ([345d9fc](https://github.com/mojaloop/sdk-scheme-adapter/commit/345d9fc808f457bd528fdbc1dff65b3c1a2b37ca)), closes [mojaloop/#3750](https://github.com/mojaloop/project/issues/3750)
+
+### [23.3.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.3.0...v23.3.1) (2024-02-19)
+
+
+### Chore
+
+* **mojaloop/#3750:** optimize logging ([#467](https://github.com/mojaloop/sdk-scheme-adapter/issues/467)) ([abd88aa](https://github.com/mojaloop/sdk-scheme-adapter/commit/abd88aa537041771997ebb92f050ed7351865932)), closes [mojaloop/#3750](https://github.com/mojaloop/project/issues/3750)
+
+## [23.3.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.1.1...v23.3.0) (2024-02-13)
+
+
+### Features
+
+* **mojaloop/#3670:** add standard components lib update for k6 validation  ([#465](https://github.com/mojaloop/sdk-scheme-adapter/issues/465)) ([9578241](https://github.com/mojaloop/sdk-scheme-adapter/commit/9578241c128f592019df29bcb4b2b8eb46fe311f)), closes [mojaloop/#3670](https://github.com/mojaloop/project/issues/3670)
+
 ### [23.1.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.1.0...v23.1.1) (2023-07-10)
 
 
