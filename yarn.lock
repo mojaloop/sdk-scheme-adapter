@@ -2784,7 +2784,7 @@ __metadata:
     "@mojaloop/central-services-shared": 18.3.0
     "@mojaloop/event-sdk": ^14.0.0
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
-    "@mojaloop/sdk-standard-components": "github:mojaloop/sdk-standard-components#feat/IPROD-93"
+    "@mojaloop/sdk-standard-components": 18.0.2-snapshot.0
     "@redocly/openapi-cli": ^1.0.0-beta.94
     "@types/jest": ^29.5.12
     ajv: 8.12.0
@@ -2956,16 +2956,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mojaloop/sdk-standard-components@github:mojaloop/sdk-standard-components#feat/IPROD-93":
-  version: 17.1.4
-  resolution: "@mojaloop/sdk-standard-components@https://github.com/mojaloop/sdk-standard-components.git#commit=b1bd3a6d99320e50ae83f33167add289a6c56d7f"
+"@mojaloop/sdk-standard-components@npm:18.0.2-snapshot.0":
+  version: 18.0.2-snapshot.0
+  resolution: "@mojaloop/sdk-standard-components@npm:18.0.2-snapshot.0"
   dependencies:
     base64url: 3.0.1
     fast-safe-stringify: ^2.1.1
     ilp-packet: 2.2.0
     jsonwebtoken: 9.0.2
     jws: 4.0.0
-  checksum: 126f207147c8be019124dfe58d99036212ebf308a54751e4abd4ba97d141974a7e2d713ee7f518c8615dfc062bd660d74fd96ea48ffb5a326831d98519852d4d
+  checksum: a0d2a2038bdb367066b6e5787dba2fc972199dd4c9237514167f1290d96899140943a3a418522d92c26cfa35e9d58effc925c2970da1507974807db572b94461
   languageName: node
   linkType: hard
 
