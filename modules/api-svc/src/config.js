@@ -87,7 +87,6 @@ module.exports = {
                 cert: env.get('OUT_CLIENT_CERT_PATH').asFileContent(),
                 key: env.get('OUT_CLIENT_KEY_PATH').asFileContent(),
             },
-            useCertFilesForAuth: env.get('OUT_USE_CERT_FILES_FOR_AUTH').default('false').asBool()
         },
     },
     backendEventHandler: {
@@ -176,6 +175,7 @@ module.exports = {
             clientSecret: env.get('OAUTH_CLIENT_SECRET').asString(),
             refreshSeconds: env.get('OAUTH_REFRESH_SECONDS').default('60').asIntPositive(),
         },
+        mTlsEnabled: env.get('OAUTH_MUTUAL_TLS_ENABLED').default('false').asBool(),
         requestAuthFailureRetryTimes: env.get('WSO2_AUTH_FAILURE_REQUEST_RETRIES').default('0').asIntPositive(),
     },
     rejectExpiredQuoteResponses: env.get('REJECT_EXPIRED_QUOTE_RESPONSES').default('false').asBool(),

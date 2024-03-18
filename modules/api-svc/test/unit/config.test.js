@@ -132,7 +132,7 @@ describe('config', () => {
     });
 
     it('should pass outbound tlsCreds as false to WSO2Auth ctor, if OUT_USE_CERT_FILES_FOR_AUTH is false', () => {
-        process.env.OUT_USE_CERT_FILES_FOR_AUTH = 'false';
+        process.env.OAUTH_MUTUAL_TLS_ENABLED = 'false';
         const config = require('~/config');
         createAuthClient(config, {});
         const { tlsCreds } = sdkSC.WSO2Auth.mock.calls[0][0];

@@ -6,7 +6,7 @@ const createAuthClient = (conf, logger) => {
     const auth = new WSO2Auth({
         ...wso2.auth,
         logger,
-        tlsCreds: outbound.tls.useCertFilesForAuth && outbound.tls.creds,
+        tlsCreds: wso2.mTlsEnabled && outbound.tls.creds,
     });
 
     return Object.freeze({

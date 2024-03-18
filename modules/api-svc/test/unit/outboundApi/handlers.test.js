@@ -569,8 +569,6 @@ describe('Outbound API handlers:', () => {
                         error: () => {},
                         isDebugEnabled: () => {},
                         isErrorEnabled: () => {},
-                        isDebugEnabled: () => {},
-                        isErrorEnabled: () => {}
                     },
                 }
             };
