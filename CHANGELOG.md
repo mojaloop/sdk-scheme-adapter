@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [23.5.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.4.1...v23.5.0) (2024-03-19)
+
+
+### Features
+
+* **infitx/iprod-93:** used https.Agent for WSO2 requests in api-svc ([#457](https://github.com/mojaloop/sdk-scheme-adapter/issues/457)) ([150547a](https://github.com/mojaloop/sdk-scheme-adapter/commit/150547a9fdf1a0673c64324960b45ce794ea7382))
+
 ### [23.4.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.4.0...v23.4.1) (2024-03-13)
 
 
