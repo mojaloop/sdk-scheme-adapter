@@ -177,6 +177,7 @@ class Server extends EventEmitter {
                     simulator: process.env['SIM_NAME'],
                     hostname: hostname(),
                 },
+                opts: {levels: SDK_LOGGER_HIERARCHY.slice(SDK_LOGGER_HIERARCHY.indexOf(config.logLevel))},
                 stringify: Logger.buildStringify({ space: this.conf.logIndent }),
             });
         }
