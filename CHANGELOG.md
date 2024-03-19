@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [23.5.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.5.0...v23.5.1) (2024-03-19)
+
+
+### Chore
+
+* **mojaloop/#3815:** fix logger on restart  ([#473](https://github.com/mojaloop/sdk-scheme-adapter/issues/473)) ([5c41284](https://github.com/mojaloop/sdk-scheme-adapter/commit/5c41284692991dac9b12cc36503171aef00f9096))
+
 ## [23.5.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.4.1...v23.5.0) (2024-03-19)
 
 
