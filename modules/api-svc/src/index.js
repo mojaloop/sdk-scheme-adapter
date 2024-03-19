@@ -11,9 +11,10 @@
 'use strict';
 
 const { hostname } = require('os');
-const _ = require('lodash');
-const config = require('./config');
 const EventEmitter = require('events');
+const _ = require('lodash');
+const { Logger } = require('@mojaloop/sdk-standard-components');
+const config = require('./config');
 
 const InboundServer = require('./InboundServer');
 const OutboundServer = require('./OutboundServer');
@@ -32,7 +33,8 @@ const Router = require('./lib/router');
 const Validate = require('./lib/validate');
 const Cache = require('./lib/cache');
 const { SDKStateEnum } = require('./lib/model/common');
-const { Logger, WSO2Auth } = require('@mojaloop/sdk-standard-components');
+const { createAuthClient } = require('./lib/utils');
+
 const LOG_ID = {
     INBOUND:   { app: 'mojaloop-connector-inbound-api' },
     OUTBOUND:  { app: 'mojaloop-connector-outbound-api' },
@@ -68,14 +70,7 @@ class Server extends EventEmitter {
             logger: this.logger.push(LOG_ID.METRICS)
         });
 
-        this.wso2 = {
-            auth: new WSO2Auth({
-                ...conf.wso2.auth,
-                logger,
-                tlsCreds: conf.outbound.tls.mutualTLS.enabled && conf.outbound.tls.creds,
-            }),
-            retryWso2AuthFailureTimes: conf.wso2.requestAuthFailureRetryTimes,
-        };
+        this.wso2 = createAuthClient(conf, logger);
         this.wso2.auth.on('error', (msg) => {
             this.emit('error', 'WSO2 auth error in InboundApi', msg);
         });
@@ -200,12 +195,7 @@ class Server extends EventEmitter {
             || !_.isEqual(this.conf.outbound.tls, newConf.outbound.tls);
         if (updateWSO2) {
             this.wso2.auth.stop();
-            this.wso2.auth = new WSO2Auth({
-                ...newConf.wso2.auth,
-                logger: this.logger,
-                tlsCreds: newConf.outbound.tls.mutualTLS.enabled && newConf.outbound.tls.creds,
-            });
-            this.wso2.retryWso2AuthFailureTimes = newConf.wso2.requestAuthFailureRetryTimes;
+            this.wso2 = createAuthClient(newConf, this.logger);
             this.wso2.auth.on('error', (msg) => {
                 this.emit('error', 'WSO2 auth error in InboundApi', msg);
             });
