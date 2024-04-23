@@ -46,7 +46,7 @@
         "@mojaloop/logging-bc-public-types-lib": "^0.5.4",
         "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^",
         "convict": "^6.2.4",
-        "express": "^4.18.3",
+        "express": "^4.19.2",
         "openapi-backend": "^5.10.6",
         "redis": "^4.6.13",
         "swagger-ui-express": "^5.0.0",
