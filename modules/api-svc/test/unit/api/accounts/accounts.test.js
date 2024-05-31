@@ -14,7 +14,7 @@ jest.unmock('@mojaloop/sdk-standard-components');
 jest.mock('redis');
 
 const redis = require('redis');
-const uuid = require('@mojaloop/central-services-shared').Util.id();
+const uuid = require('@mojaloop/central-services-shared').Util.id;
 const {createValidators, createTestServers, destroyTestServers} = require('../utils');
 const {createPostAccountsTester} = require('./utils');
 
