@@ -2973,6 +2973,7 @@ __metadata:
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.6.2
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": 0.2.15
     "@types/node": ^20.12.13
+    "@types/uuid": ^9.0.8
     ajv: ^8.14.0
     eslint: ^8.57.0
     jest: ^29.7.0
@@ -4022,6 +4023,13 @@ __metadata:
     "@types/express": "*"
     "@types/serve-static": "*"
   checksum: c1c4b58b12f9261af70b6a7e6420649b4f0a0343071ae8b98483c5885cd596f4c25015991f91f3f7c7a0baa461e2d76029d64de79108a89d03f3f83abbe6bc58
+  languageName: node
+  linkType: hard
+
+"@types/uuid@npm:^9.0.8":
+  version: 9.0.8
+  resolution: "@types/uuid@npm:9.0.8"
+  checksum: b8c60b7ba8250356b5088302583d1704a4e1a13558d143c549c408bf8920535602ffc12394ede77f8a8083511b023704bc66d1345792714002bfa261b17c5275
   languageName: node
   linkType: hard
 
