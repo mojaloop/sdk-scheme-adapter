@@ -2899,7 +2899,7 @@ __metadata:
     "@types/convict": ^6.1.6
     "@types/express": ^4.17.21
     "@types/jest": ^29.5.12
-    "@types/node": ^20.12.14
+    "@types/node": ^20.13.0
     "@types/node-cache": ^4.2.5
     "@types/supertest": ^6.0.2
     "@types/swagger-ui-express": ^4.1.6
@@ -2937,7 +2937,7 @@ __metadata:
     "@types/convict": ^6.1.6
     "@types/express": ^4.17.21
     "@types/jest": ^29.5.12
-    "@types/node": ^20.12.14
+    "@types/node": ^20.13.0
     "@types/node-cache": ^4.2.5
     "@types/supertest": ^6.0.2
     "@types/swagger-ui-express": ^4.1.6
@@ -2972,7 +2972,7 @@ __metadata:
     "@mojaloop/logging-bc-public-types-lib": ^0.5.4
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.6.2
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": 0.2.15
-    "@types/node": ^20.12.14
+    "@types/node": ^20.13.0
     "@types/uuid": ^9.0.8
     ajv: ^8.14.0
     eslint: ^8.57.0
@@ -2992,7 +2992,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter@workspace:."
   dependencies:
     "@types/jest": ^29.5.12
-    "@types/node": ^20.12.14
+    "@types/node": ^20.13.0
     "@types/node-cache": ^4.2.5
     "@typescript-eslint/eslint-plugin": ^7.11.0
     "@typescript-eslint/parser": ^7.11.0
@@ -3941,21 +3941,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^20.12.14":
-  version: 20.12.14
-  resolution: "@types/node@npm:20.12.14"
-  dependencies:
-    undici-types: ~5.26.4
-  checksum: f6071bcf87f04f9bcc04d50f5ae2b29bf7d45410390e3ce0a29ed78b2d7420de710f3416f8432541b9f297a344b80c9d570de2848fefe3f801688270fd8ee5a5
-  languageName: node
-  linkType: hard
-
 "@types/node@npm:^20.12.7":
   version: 20.12.13
   resolution: "@types/node@npm:20.12.13"
   dependencies:
     undici-types: ~5.26.4
   checksum: 9ec8971a76b2435379c10689c639ba1bbf4451075709bdf4bf23b7972a63f7d966947914410f2d3711a315e1157d782b76cfadc32944e29db9dd444221aea699
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^20.13.0":
+  version: 20.13.0
+  resolution: "@types/node@npm:20.13.0"
+  dependencies:
+    undici-types: ~5.26.4
+  checksum: 8e061ecd6649bb587b047cee765f530ec43930f30cd47558d9630f5a802d61cf951e9205c610864cfbd58f70478612123e8cb46d58eb4855c695fb8fcaff5b7c
   languageName: node
   linkType: hard
 
