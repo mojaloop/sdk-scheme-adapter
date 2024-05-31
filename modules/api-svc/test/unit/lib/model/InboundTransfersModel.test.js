@@ -14,7 +14,7 @@ jest.mock('redis');
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('~/lib/model/lib/requests',() => require('./mockedLibRequests'));
 
-const { randomUUID } = require('node:crypto');
+const randomUUID = require('@mojaloop/central-services-shared').Util.id();
 const defaultConfig = require('./data/defaultConfig');
 const Model = require('~/lib/model').InboundTransfersModel;
 const mocks = require('./data/mocks');

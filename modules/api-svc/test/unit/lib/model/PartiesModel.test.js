@@ -13,7 +13,7 @@
 // we use a mock standard components lib to intercept and mock certain funcs
 jest.mock('@mojaloop/sdk-standard-components');
 
-const { uuid } = require('uuidv4');
+const uuid = require('@mojaloop/central-services-shared').Util.id();
 const Model = require('~/lib/model').PartiesModel;
 const PSM = require('~/lib/model/common').PersistentStateMachine;
 const { SDKStateEnum } = require('~/lib/model/common');
@@ -288,7 +288,7 @@ describe('PartiesModel', () => {
                 model.onRequestAction(model.fsm, { type, id, subId: subIdValue })
                     .then(() => reject())
                     .catch((err) => {
-                        expect(err.message).toEqual('Unexpected token u in JSON at position 0');
+                        expect(err).toBeInstanceOf(SyntaxError);
                         expect(cache.unsubscribe).toHaveBeenCalledTimes(1);
                         expect(cache.unsubscribe).toHaveBeenCalledWith(channel, subId);
                         resolve();

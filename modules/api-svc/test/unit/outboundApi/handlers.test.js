@@ -23,7 +23,7 @@ const bulkQuoteRequest = require('./data/bulkQuoteRequest');
 const requestToPayPayload = require('./data/requestToPay');
 const requestToPayTransferRequest = require('./data/requestToPayTransferRequest');
 const mockLogger = require('../mockLogger');
-const { uuid } = require('uuidv4');
+const uuid = require('@mojaloop/central-services-shared').Util.id();
 
 jest.mock('~/lib/model');
 

@@ -31,15 +31,15 @@ const {
   PartyInfoRequestedDmEvt,
 } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
 
-const { randomUUID } = require('crypto');
 const axios = require('axios');
 jest.unmock('@mojaloop/sdk-scheme-adapter-private-shared-lib');
 jest.unmock('@mojaloop/sdk-standard-components');
 jest.unmock('redis');
-jest.unmock('uuidv4');
+jest.unmock('@mojaloop/central-services-shared');
 jest.unmock('javascript-state-machine');
 // Tests can timeout in a CI pipeline so giving it leeway
 jest.setTimeout(50000);
+const randomUUID = require('@mojaloop/central-services-shared').Util.id();
 
 const MANAGEMENT_MOCK_SERVER_URL = 'http://localhost:5005';
 const fs = require('fs');
