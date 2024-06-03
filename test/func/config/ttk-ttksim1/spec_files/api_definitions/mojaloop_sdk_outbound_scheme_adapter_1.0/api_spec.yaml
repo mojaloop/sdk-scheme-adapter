@@ -824,7 +824,7 @@ components:
       title: CorrelationId
       type: string
       pattern: >-
-        ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+        ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
       description: >-
         Identifier that correlates all messages of the same sequence. The API
         data type UUID (Universally Unique Identifier) is a JSON String in
@@ -2161,11 +2161,6 @@ components:
         - ACCEPTED - Payer has approved the transaction.
         - REJECTED - Payer has rejected the transaction.
       example: RECEIVED
-    transactionRequestId:
-      description: A Mojaloop API transaction request identifier (UUID).
-      pattern: >-
-        ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
-      type: string
     TransactionRequestResponse:
       title: TransactionRequestResponse
       type: object
@@ -2916,7 +2911,7 @@ components:
       in: path
       required: true
       schema:
-        $ref: '#/components/schemas/transactionRequestId'
+        $ref: '#/components/schemas/CorrelationId'
       description: >-
         Identifier of the merchant request to pay to continue as returned in the
         response to a `POST /requestToPay` request.
