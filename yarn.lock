@@ -2588,7 +2588,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/api-snippets@npm:17.4.0, @mojaloop/api-snippets@npm:v17.4.0":
+"@mojaloop/api-snippets@npm:17.4.0":
   version: 17.4.0
   resolution: "@mojaloop/api-snippets@npm:17.4.0"
   dependencies:
@@ -2602,6 +2602,23 @@ __metadata:
     openapi-typescript: ^6.7.2
     ts-auto-mock: ^3.7.1
   checksum: fcc02405974480d8f7f5e681509b78cd30fea9ab6875a1d364d7c1aaa8f8b14d52498621abb2e248ac610e90cc3a14dc183070e61d09caf14f24ddc94fa42148
+  languageName: node
+  linkType: hard
+
+"@mojaloop/api-snippets@npm:17.5.0-snapshot.0":
+  version: 17.5.0-snapshot.0
+  resolution: "@mojaloop/api-snippets@npm:17.5.0-snapshot.0"
+  dependencies:
+    "@apidevtools/json-schema-ref-parser": ^9.1.2
+    "@redocly/openapi-core": ^1.14.0
+    commander: ^12.1.0
+    jest-ts-auto-mock: ^2.1.0
+    js-yaml: ^4.1.0
+    json-refs: ^3.0.15
+    openapi-types: ^12.1.3
+    openapi-typescript: ^6.7.6
+    ts-auto-mock: ^3.7.3
+  checksum: 68a9a6b9b884a247e92b9a5c70eec9d2b90842739a4080cc6dd4bcba53f9309513da0251c943583d6139dcbd9521b2f48a14bb62a0f62a45d118f76e39642b84
   languageName: node
   linkType: hard
 
@@ -2836,7 +2853,7 @@ __metadata:
     "@babel/core": ^7.24.6
     "@babel/preset-env": ^7.24.6
     "@koa/cors": ^5.0.0
-    "@mojaloop/api-snippets": v17.4.0
+    "@mojaloop/api-snippets": 17.5.0-snapshot.0
     "@mojaloop/central-services-error-handling": ^13.0.1
     "@mojaloop/central-services-logger": ^11.3.1
     "@mojaloop/central-services-metrics": ^12.0.8
@@ -3410,6 +3427,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@redocly/config@npm:^0.5.0":
+  version: 0.5.0
+  resolution: "@redocly/config@npm:0.5.0"
+  checksum: d81aab495af6554e1ddcd3b72625c3145887f2bac996ff5c1b565fad2b8cf2fa31bc7e5dbdcadf0f749d9dc3f9d2068023630a0be086c93014f5dca43e332880
+  languageName: node
+  linkType: hard
+
 "@redocly/openapi-cli@npm:^1.0.0-beta.94":
   version: 1.0.0-beta.94
   resolution: "@redocly/openapi-cli@npm:1.0.0-beta.94"
@@ -3446,6 +3470,24 @@ __metadata:
     pluralize: ^8.0.0
     yaml-ast-parser: 0.0.43
   checksum: 14b40f87185392c74f4290529c5432d9717a554f720783f903cb05328dfe13dbb93b22746b899c420db4d14a41fc67e0106f060a3bb543a64482fe5068ae9ba8
+  languageName: node
+  linkType: hard
+
+"@redocly/openapi-core@npm:^1.14.0":
+  version: 1.14.0
+  resolution: "@redocly/openapi-core@npm:1.14.0"
+  dependencies:
+    "@redocly/ajv": ^8.11.0
+    "@redocly/config": ^0.5.0
+    colorette: ^1.2.0
+    js-levenshtein: ^1.1.6
+    js-yaml: ^4.1.0
+    lodash.isequal: ^4.5.0
+    minimatch: ^5.0.1
+    node-fetch: ^2.6.1
+    pluralize: ^8.0.0
+    yaml-ast-parser: 0.0.43
+  checksum: 2e843e2c1989bc12132e502caaf722e5223dbfa606460ddf219bb2365d2c7cbc91d059681ba0f91a606d9b658e24bc5f72aa785bfda107614c6a4f24e6fe4c4c
   languageName: node
   linkType: hard
 
@@ -5798,6 +5840,13 @@ __metadata:
   version: 11.1.0
   resolution: "commander@npm:11.1.0"
   checksum: fd1a8557c6b5b622c89ecdfde703242ab7db3b628ea5d1755784c79b8e7cb0d74d65b4a262289b533359cd58e1bfc0bf50245dfbcd2954682a6f367c828b79ef
+  languageName: node
+  linkType: hard
+
+"commander@npm:^12.1.0":
+  version: 12.1.0
+  resolution: "commander@npm:12.1.0"
+  checksum: 68e9818b00fc1ed9cdab9eb16905551c2b768a317ae69a5e3c43924c2b20ac9bb65b27e1cab36aeda7b6496376d4da908996ba2c0b5d79463e0fb1e77935d514
   languageName: node
   linkType: hard
 
@@ -14840,6 +14889,18 @@ __metadata:
   peerDependencies:
     typescript: ^5.0.4
   checksum: 191dc10736265b0d977faf6217433ea3a2361b393fa557a7eec030f8f15bf56db75d695a90f53e6b4f09b716d3a8ba81ab9fbd880a6e4c3d4ed18f86f1861a98
+  languageName: node
+  linkType: hard
+
+"ts-auto-mock@npm:^3.7.3":
+  version: 3.7.3
+  resolution: "ts-auto-mock@npm:3.7.3"
+  dependencies:
+    lodash-es: 4.17.21
+    micromatch: 4.0.5
+  peerDependencies:
+    typescript: ^5.0.4
+  checksum: 6dbce9bb9bcb85033d6814e96077e568c2d010247d0ccfd28630f12b1f1cb6ed90bab89e85beaa188c10c00fadd5abf53500b8a1b118baf4a59887ff970bafb9
   languageName: node
   linkType: hard
 
