@@ -2899,7 +2899,7 @@ __metadata:
     "@types/convict": ^6.1.6
     "@types/express": ^4.17.21
     "@types/jest": ^29.5.12
-    "@types/node": ^20.13.0
+    "@types/node": ^20.14.0
     "@types/node-cache": ^4.2.5
     "@types/supertest": ^6.0.2
     "@types/swagger-ui-express": ^4.1.6
@@ -2918,7 +2918,7 @@ __metadata:
     redis: ^4.6.14
     replace: ^1.2.2
     standard-version: ^9.5.0
-    swagger-ui-express: ^5.0.0
+    swagger-ui-express: ^5.0.1
     ts-jest: ^29.1.4
     ts-node: ^10.9.2
     typescript: ^5.4.5
@@ -2937,7 +2937,7 @@ __metadata:
     "@types/convict": ^6.1.6
     "@types/express": ^4.17.21
     "@types/jest": ^29.5.12
-    "@types/node": ^20.13.0
+    "@types/node": ^20.14.0
     "@types/node-cache": ^4.2.5
     "@types/supertest": ^6.0.2
     "@types/swagger-ui-express": ^4.1.6
@@ -2955,7 +2955,7 @@ __metadata:
     redis: ^4.6.14
     replace: ^1.2.2
     standard-version: ^9.5.0
-    swagger-ui-express: ^5.0.0
+    swagger-ui-express: ^5.0.1
     ts-jest: ^29.1.4
     ts-node: ^10.9.2
     typescript: ^5.4.5
@@ -2972,7 +2972,7 @@ __metadata:
     "@mojaloop/logging-bc-public-types-lib": ^0.5.4
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.6.2
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": 0.2.15
-    "@types/node": ^20.13.0
+    "@types/node": ^20.14.0
     "@types/uuid": ^9.0.8
     ajv: ^8.14.0
     eslint: ^8.57.0
@@ -2992,11 +2992,11 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter@workspace:."
   dependencies:
     "@types/jest": ^29.5.12
-    "@types/node": ^20.13.0
+    "@types/node": ^20.14.0
     "@types/node-cache": ^4.2.5
     "@typescript-eslint/eslint-plugin": ^7.11.0
     "@typescript-eslint/parser": ^7.11.0
-    audit-ci: ^6.6.1
+    audit-ci: ^7.0.0
     eslint: ^8.57.0
     eslint-config-airbnb-typescript: ^18.0.0
     eslint-plugin-import: latest
@@ -3950,12 +3950,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^20.13.0":
-  version: 20.13.0
-  resolution: "@types/node@npm:20.13.0"
+"@types/node@npm:^20.14.0":
+  version: 20.14.0
+  resolution: "@types/node@npm:20.14.0"
   dependencies:
     undici-types: ~5.26.4
-  checksum: 8e061ecd6649bb587b047cee765f530ec43930f30cd47558d9630f5a802d61cf951e9205c610864cfbd58f70478612123e8cb46d58eb4855c695fb8fcaff5b7c
+  checksum: b62383ea004deb1b40c0612f373eaf02247381b65a90f7957dc3034dda9b5622ab61b7afafa82f67909667a5cf9ea43a0643b2a78ea295dac8b77e75e11470d7
   languageName: node
   linkType: hard
 
@@ -4225,7 +4225,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"JSONStream@npm:^1.0.4, JSONStream@npm:^1.3.5":
+"JSONStream@npm:^1.0.4":
   version: 1.3.5
   resolution: "JSONStream@npm:1.3.5"
   dependencies:
@@ -4727,21 +4727,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"audit-ci@npm:^6.6.1":
-  version: 6.6.1
-  resolution: "audit-ci@npm:6.6.1"
+"audit-ci@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "audit-ci@npm:7.0.0"
   dependencies:
-    JSONStream: ^1.3.5
     cross-spawn: ^7.0.3
     escape-string-regexp: ^4.0.0
     event-stream: 4.0.1
     jju: ^1.4.0
+    jsonstream-next: ^3.0.0
     readline-transform: 1.0.0
     semver: ^7.0.0
+    tslib: ^2.0.0
     yargs: ^17.0.0
   bin:
     audit-ci: dist/bin.js
-  checksum: d9b43da288f1f2023f9633227d4420e98abe1220669e71c967d182cda891775447e3f103dbc5c563bf8a51461e21f6b003902dd79248cbe195ef4411a7be3408
+  checksum: 8ac6056585ccd00c2d641aae9d57e1c39a1c81a7b97f346e1916a2bc66413cf1b52e8ab38f7a50483211d2d52e2788a196b756df3a338718e7e2f2238addda7e
   languageName: node
   linkType: hard
 
@@ -10234,6 +10235,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jsonstream-next@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "jsonstream-next@npm:3.0.0"
+  dependencies:
+    jsonparse: ^1.2.0
+    through2: ^4.0.2
+  bin:
+    jsonstream-next: bin.js
+  checksum: 651d9d304ae9b23e397f0c1c60d8679daab41f42981eca6eaa61527a2f249d1cc0e8f3b3da2ce686590933ee92301d2092cb4cc65a24206d5a4e4409b77bdc21
+  languageName: node
+  linkType: hard
+
 "jsonwebtoken@npm:9.0.2":
   version: 9.0.2
   resolution: "jsonwebtoken@npm:9.0.2"
@@ -14560,14 +14573,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"swagger-ui-express@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "swagger-ui-express@npm:5.0.0"
+"swagger-ui-express@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "swagger-ui-express@npm:5.0.1"
   dependencies:
     swagger-ui-dist: ">=5.0.0"
   peerDependencies:
     express: ">=4.0.0 || >=5.0.0-beta"
-  checksum: 565b89717315577785edc6d2f4df8ce83207baa2b714264170ffa677522d2103c184091e146b7cce7baf254e96116c5bb2cb1ab907dc1152fdead3090690983b
+  checksum: 792510643eb82541fab5d26cc60f24f44c2a53232e62103ada04689fca36e6b09a5301ba005c5a3dcd62c7b7c3dcc43649f29ed68dc17de35a958fd9cacb30b0
   languageName: node
   linkType: hard
 
@@ -14705,7 +14718,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"through2@npm:^4.0.0":
+"through2@npm:^4.0.0, through2@npm:^4.0.2":
   version: 4.0.2
   resolution: "through2@npm:4.0.2"
   dependencies:
@@ -14939,7 +14952,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:2.6.2, tslib@npm:^2.6.2":
+"tslib@npm:2.6.2, tslib@npm:^2.0.0, tslib@npm:^2.6.2":
   version: 2.6.2
   resolution: "tslib@npm:2.6.2"
   checksum: 329ea56123005922f39642318e3d1f0f8265d1e7fcb92c633e0809521da75eeaca28d2cf96d7248229deb40e5c19adf408259f4b9640afd20d13aecc1430f3ad
