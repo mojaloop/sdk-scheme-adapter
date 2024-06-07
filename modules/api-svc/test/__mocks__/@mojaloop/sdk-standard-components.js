@@ -13,9 +13,13 @@
 const assert = require('assert').strict;
 const util = require('util');
 const { MojaloopRequests, Errors, WSO2Auth, Jws, Logger } = jest.requireActual('@mojaloop/sdk-standard-components');
-const mocks = require('../../unit/lib/model/data/mocks');
 
-const mockMojaResponseFn = async () => mocks.mockMojaApiResponse();
+const mockMojaResponseFn = async () => Object.freeze({
+    originalRequest: {
+        headers: {},
+        body: {},
+    }
+});
 
 class MockMojaloopRequests extends MojaloopRequests {
     constructor(...args) {

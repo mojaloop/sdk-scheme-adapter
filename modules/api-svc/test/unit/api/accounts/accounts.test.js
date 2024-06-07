@@ -14,7 +14,7 @@ jest.unmock('@mojaloop/sdk-standard-components');
 jest.mock('redis');
 
 const redis = require('redis');
-const uuidv4 = require('uuidv4');
+const uuid = require('@mojaloop/central-services-shared').Util.id;
 const {createValidators, createTestServers, destroyTestServers} = require('../utils');
 const {createPostAccountsTester} = require('./utils');
 
@@ -57,7 +57,7 @@ describe('Outbound Accounts API', () => {
 
     describe('POST /accounts', () => {
         beforeEach(() => {
-            uuidv4.__reset();
+            uuid.__reset();
             redisClient.flushdb();
         });
 

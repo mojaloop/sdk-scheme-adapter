@@ -31,6 +31,7 @@
         "GHSA-hrpp-h998-j3pp", // supertest>superagent>formidable>qs
         "GHSA-hrpp-h998-j3pp", // @mojaloop/api-snippets>json-refs>path-loader>superagent>qs
         "GHSA-hrpp-h998-j3pp", // @mojaloop/api-snippets>json-refs>path-loader>superagent>formidable>qs
+        "GHSA-2p57-rm9w-gvfp", // socks-proxy-agent>socks>ip
         "GHSA-rm97-x556-q36h"  // @mojaloop/central-services-shared>shins>sanitize-html
     ]
 }

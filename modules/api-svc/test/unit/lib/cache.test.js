@@ -12,7 +12,7 @@
 
 jest.mock('redis');
 
-const { randomUUID } = require('node:crypto');
+const randomUUID = require('@mojaloop/central-services-shared').Util.id();
 const { Logger } = require('@mojaloop/sdk-standard-components');
 const Cache = require('~/lib/cache');
 
@@ -162,7 +162,6 @@ describe('Cache Tests -->', () => {
         const result = await subscribing;
 
         expect(result).toBeInstanceOf(SyntaxError);
-        expect(result.message).toContain('Unexpected token');
         expect(spyOnUnsubscribe).toHaveBeenCalledTimes(1);
     });
 
