@@ -62,6 +62,7 @@ module.exports = {
         mgmtAPIWsUrl: env.get('MGMT_API_WS_URL').default('127.0.0.1').asString(),
         mgmtAPIWsPort: env.get('MGMT_API_WS_PORT').default('4005').asPortNumber()
     },
+    idGenerator: env.get('ID_GENERATOR').default('{"type":"uuid","version":4}').asJsonObject(),
     logLevel: env.get('LOG_LEVEL').default('info').asEnum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']),
     inbound: {
         port: env.get('INBOUND_LISTEN_PORT').default('4000').asPortNumber(),
