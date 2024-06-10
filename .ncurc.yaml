@@ -9,5 +9,7 @@ reject: [
   'npm-check-updates',
   '@mojaloop/central-services-shared',
   ## TODO: The new version of nx causes submodules to be broken.
-  "nx"
+  "nx",
+  ## TODO: The new version of eslint requires migration of configuration files.
+  "eslint"
 ]

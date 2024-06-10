@@ -14,7 +14,7 @@ jest.mock('redis');
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('~/lib/model/lib/requests',() => require('./mockedLibRequests'));
 
-const { randomUUID } = require('node:crypto');
+const randomUUID = require('@mojaloop/central-services-shared').Util.id({version: 4});
 const defaultConfig = require('./data/defaultConfig');
 const Model = require('~/lib/model').InboundTransfersModel;
 const mocks = require('./data/mocks');
@@ -34,6 +34,7 @@ const notificationAbortedToPayee = require('./data/notificationAbortedToPayee');
 const notificationReservedToPayee = require('./data/notificationReservedToPayee');
 
 const { SDKStateEnum } = require('../../../../src/lib/model/common');
+const { version } = require('os');
 const FSPIOPTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.TransferState;
 const FSPIOPBulkTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.BulkTransferState;
 

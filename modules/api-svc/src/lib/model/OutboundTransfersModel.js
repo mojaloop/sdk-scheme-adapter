@@ -11,9 +11,8 @@
 'use strict';
 
 const safeStringify = require('fast-safe-stringify');
-const { uuid } = require('uuidv4');
 const StateMachine = require('javascript-state-machine');
-const { Enum } = require('@mojaloop/central-services-shared');
+const { Enum, Util: {id: idGenerator} } = require('@mojaloop/central-services-shared');
 const { Ilp, MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 
 const dto = require('../dto');
@@ -38,6 +37,7 @@ const { TransferState } = Enum.Transfers;
  */
 class OutboundTransfersModel {
     constructor(config) {
+        this._idGenerator = idGenerator(config.idGenerator);
         this._cache = config.cache;
         this._logger = config.logger;
         this._requestProcessingTimeoutSeconds = config.requestProcessingTimeoutSeconds;
@@ -180,7 +180,7 @@ class OutboundTransfersModel {
 
         // add a transferId if one is not present e.g. on first submission
         if(!this.data.hasOwnProperty('transferId')) {
-            this.data.transferId = uuid();
+            this.data.transferId = this._idGenerator();
         }
 
         // initialize the transfer state machine to its starting state
@@ -695,7 +695,7 @@ class OutboundTransfersModel {
      */
     _buildQuoteRequest() {
         const quote = {
-            quoteId: uuid(),
+            quoteId: this._idGenerator(),
             transactionId: this.data.transferId,
             amountType: this.data.amountType,
             amount: this.defineQuoteAmount(),
