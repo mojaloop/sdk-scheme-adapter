@@ -34,7 +34,7 @@
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "0.2.15",
     "ajv": "^8.16.0",
     "redis": "^4.6.14",
-    "uuid": "^9.0.1"
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.14.2",
