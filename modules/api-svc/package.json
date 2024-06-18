@@ -93,7 +93,7 @@
     "random-word-slugs": "^0.1.7",
     "redis": "^4.6.13",
     "uuidv4": "^6.2.13",
-    "ws": "^8.16.0"
+    "ws": "^8.17.1"
   },
   "devDependencies": {
     "@babel/core": "^7.24.1",
