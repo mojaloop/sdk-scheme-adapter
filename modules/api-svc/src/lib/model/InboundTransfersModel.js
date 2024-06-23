@@ -155,7 +155,7 @@ class InboundTransfersModel {
                 return 'No response from backend';
             }
 
-            // project our internal party representation into a mojaloop partyies request body
+            // project our internal party representation into a mojaloop parties request body
             const mlParty = {
                 party: shared.internalPartyToMojaloopParty(response, this._dfspId, this._supportedCurrencies)
             };

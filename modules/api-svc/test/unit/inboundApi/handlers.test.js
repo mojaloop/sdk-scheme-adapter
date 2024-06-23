@@ -833,4 +833,262 @@ describe('Inbound API handlers:', () => {
             });
         });
     });
+
+    describe('POST /fxQuotes', () => {
+
+        let mockContext;
+
+        beforeEach(() => {
+            mockContext = {
+                request: {
+                    body: mockArgs.fxQuoteRequest,
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
+                }
+            };
+
+        });
+
+        test('calls `model.fxQuoteRequest` with the expected arguments.', async () => {
+            const fxQuoteRequestSpy = jest.spyOn(Model.prototype, 'postFxQuotes').mockReturnValue(Promise.resolve({ data: {} }));
+
+            await expect(handlers['/fxQuotes'].post(mockContext)).resolves.toBe(undefined);
+
+            expect(fxQuoteRequestSpy).toHaveBeenCalledTimes(1);
+            expect(fxQuoteRequestSpy.mock.calls[0][0]).toStrictEqual(mockContext.request);
+            expect(fxQuoteRequestSpy.mock.calls[0][1]).toBe(mockContext.request.headers['fspiop-source']);
+        });
+
+
+    });
+
+    describe('PUT /fxQuotes/{ID}', () => {
+
+        let mockContext;
+
+        beforeEach(() => {
+            mockContext = {
+                request: {
+                    body: { the: 'mocked-body' },
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    path: {
+                        params: {
+                            'ID': '1234567890'
+                        }
+                    },
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
+                    cache: {
+                        publish: jest.fn(() => Promise.resolve(true))
+                    }
+                }
+            };
+
+        });
+
+        test('calls `ctx.state.cache.publish` with the expected arguments.', async () => {
+            const putFxQuotesByIdSpy = jest.spyOn(mockContext.state.cache, 'publish');
+
+            await expect(handlers['/fxQuotes/{ID}'].put(mockContext)).resolves.toBe(undefined);
+            expect(mockContext.response.status).toBe(200);
+            expect(putFxQuotesByIdSpy).toHaveBeenCalledTimes(1);
+            expect(putFxQuotesByIdSpy.mock.calls[0][1]).toMatchObject({
+                type: 'fxQuotesResponse',
+                data: {
+                    body: mockContext.request.body,
+                    headers: mockContext.request.headers,
+                }
+            });
+        });
+    });
+
+    describe('PUT /fxQuotes/{ID}/error', () => {
+
+        let mockContext;
+
+        beforeEach(() => {
+
+            mockContext = {
+                request: {
+                    body: {
+                        errorInformation: {
+                            errorCode: '5100',
+                            errorDescription: 'Fake error'
+                        }
+                    },
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    path: {
+                        params: {
+                            'ID': '1234567890'
+                        }
+                    },
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
+                    cache: {
+                        publish: async () => Promise.resolve(true)
+                    }
+                }
+            };
+        });
+
+        test('calls `ctx.state.cache.publish` with the expected arguments.', async () => {
+            const putFxQuotesByIdErrorSpy = jest.spyOn(mockContext.state.cache, 'publish');
+
+            await expect(handlers['/fxQuotes/{ID}/error'].put(mockContext)).resolves.toBe(undefined);
+            expect(mockContext.response.status).toBe(200);
+            expect(putFxQuotesByIdErrorSpy).toHaveBeenCalledTimes(1);
+            expect(putFxQuotesByIdErrorSpy.mock.calls[0][1]).toMatchObject({
+                type: 'fxQuotesResponseError',
+                data: {
+                    body: mockContext.request.body,
+                    headers: mockContext.request.headers,
+                }
+            });
+        });
+    });
+
+    describe('POST /fxTransfers', () => {
+
+        let mockContext;
+
+        beforeEach(() => {
+            mockContext = {
+                request: {
+                    body: mockArgs.fxTransfersRequest,
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
+                }
+            };
+
+        });
+
+        test('calls `model.postFxTransfers` with the expected arguments.', async () => {
+            const postFxTransfersSpy = jest.spyOn(Model.prototype, 'postFxTransfers').mockReturnValue(Promise.resolve({ data: {} }));
+
+            await expect(handlers['/fxTransfers'].post(mockContext)).resolves.toBe(undefined);
+
+            expect(postFxTransfersSpy).toHaveBeenCalledTimes(1);
+            expect(postFxTransfersSpy.mock.calls[0][0]).toStrictEqual(mockContext.request);
+            expect(postFxTransfersSpy.mock.calls[0][1]).toBe(mockContext.request.headers['fspiop-source']);
+        });
+
+
+    });
+
+    describe('PUT /fxTransfers/{ID}', () => {
+
+        let mockContext;
+
+        beforeEach(() => {
+            mockContext = {
+                request: {
+                    body: { the: 'mocked-body' },
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    path: {
+                        params: {
+                            'ID': '1234567890'
+                        }
+                    },
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
+                    cache: {
+                        publish: jest.fn(() => Promise.resolve(true))
+                    }
+                }
+            };
+
+        });
+
+        test('calls `ctx.state.cache.publish` with the expected arguments.', async () => {
+            const putFxTransfersByIdSpy = jest.spyOn(mockContext.state.cache, 'publish');
+
+            await expect(handlers['/fxTransfers/{ID}'].put(mockContext)).resolves.toBe(undefined);
+            expect(mockContext.response.status).toBe(200);
+            expect(putFxTransfersByIdSpy).toHaveBeenCalledTimes(1);
+            expect(putFxTransfersByIdSpy.mock.calls[0][1]).toMatchObject({
+                type: 'fxTransfersResponse',
+                data: {
+                    body: mockContext.request.body,
+                    headers: mockContext.request.headers,
+                }
+            });
+        });
+    });
+
+    describe('PUT /fxTransfers/{ID}/error', () => {
+
+        let mockContext;
+
+        beforeEach(() => {
+
+            mockContext = {
+                request: {
+                    body: {
+                        errorInformation: {
+                            errorCode: '5100',
+                            errorDescription: 'Fake error'
+                        }
+                    },
+                    headers: {
+                        'fspiop-source': 'foo'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    path: {
+                        params: {
+                            'ID': '1234567890'
+                        }
+                    },
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
+                    cache: {
+                        publish: async () => Promise.resolve(true)
+                    }
+                }
+            };
+        });
+
+        test('calls `ctx.state.cache.publish` with the expected arguments.', async () => {
+            const putFxTransfersByIdErrorSpy = jest.spyOn(mockContext.state.cache, 'publish');
+
+            await expect(handlers['/fxTransfers/{ID}/error'].put(mockContext)).resolves.toBe(undefined);
+            expect(mockContext.response.status).toBe(200);
+            expect(putFxTransfersByIdErrorSpy).toHaveBeenCalledTimes(1);
+            expect(putFxTransfersByIdErrorSpy.mock.calls[0][1]).toMatchObject({
+                type: 'fxTransfersResponseError',
+                data: {
+                    body: mockContext.request.body,
+                    headers: mockContext.request.headers,
+                }
+            });
+        });
+    });
 });

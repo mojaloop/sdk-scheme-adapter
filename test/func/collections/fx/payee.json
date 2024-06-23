@@ -4,12 +4,12 @@
     "test_cases": [
       {
         "id": 1,
-        "name": "Parites",
+        "name": "Parties",
         "fileInfo": {
           "path": "new-folder/fx-payee.json"
         },
         "meta": {
-          "info": "Parites"
+          "info": "Parties"
         },
         "requests": [
           {

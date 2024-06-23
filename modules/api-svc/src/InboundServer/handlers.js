@@ -983,6 +983,7 @@ const postFxQuotes = async (ctx) => {
     const logPrefix = 'Handling POST fxQuotes request';
 
     const model = createInboundTransfersModel(ctx);
+
     model.postFxQuotes({ body, headers }, sourceFspId)
         .then(response => logger.push({ response }).log(`${logPrefix} is done`))
         .catch(err => logger.push({ err }).log(`${logPrefix} error`));
