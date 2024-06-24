@@ -978,6 +978,7 @@ describe('inboundModel', () => {
                 logger,
                 unsubscribeTimeoutMs: 5000
             });
+            await cache.connect();
             BackendRequests.__postFxTransfers = jest.fn(async () => fxpResponse);
             model = new Model({
                 ...config,
