@@ -21,6 +21,7 @@ const createCache = async () => {
     const cache = new Cache({
         cacheUrl: 'redis://dummy:1234',
         logger,
+        unsubscribeTimeoutMs: 5000,
     });
     await cache.connect();
     return cache;
@@ -43,10 +44,15 @@ describe('Cache Tests -->', () => {
     });
 
     test('Makes connections to redis server for cache operations', async () => {
+        const cache = await createCache();
         expect(cache).not.toBeFalsy();
+        await cache.disconnect();
     });
 
+
     test('Makes subscriber callbacks on the correct channels when messages arrive', async () => {
+        const cache = await createCache();
+
         const msg1 = dummyPubMessage;
 
         // make the messages different
@@ -105,9 +111,13 @@ describe('Cache Tests -->', () => {
         });
 
         await Promise.all([cb1Promise, cb2Promise]);
+
+        await cache.disconnect();
     });
 
+
     test('Unsubscribed callbacks do not get called when messages arrive', async () => {
+        const cache = await createCache();
         const msg1 = dummyPubMessage;
 
         const chan = 'dummychannel1';

@@ -10,8 +10,8 @@
 'use strict';
 
 // we use a mock standard components lib to intercept and mock certain funcs
-jest.mock('redis');
 jest.mock('@mojaloop/sdk-standard-components');
+jest.mock('redis');
 jest.mock('~/lib/model/lib/requests',() => require('./mockedLibRequests'));
 
 const randomUUID = require('@mojaloop/central-services-shared').Util.id({version: 4});
@@ -43,7 +43,6 @@ describe('inboundModel', () => {
     let mockArgs;
     let mockTxnReqArgs;
     let logger;
-    let cache;
 
     beforeAll(async () => {
         logger = new Logger.Logger({ context: { app: 'inbound-model-unit-tests' }, stringify: () => '' });
@@ -55,18 +54,12 @@ describe('inboundModel', () => {
         mockArgs = JSON.parse(JSON.stringify(mockArguments));
         mockArgs.internalQuoteResponse.expiration = new Date(Date.now());
         mockTxnReqArgs = JSON.parse(JSON.stringify(mockTxnReqquestsArguments));
-
-        cache = new Cache({ logger, cacheUrl: 'redis://dummy:1234' });
-        await cache.connect();
-    });
-
-    afterEach(async () => {
-        await cache.disconnect();
     });
 
     describe('quoteRequest', () => {
         let expectedQuoteResponseILP;
         let model;
+        let cache;
 
         beforeEach(async () => {
             expectedQuoteResponseILP = Ilp.__response;
@@ -78,6 +71,13 @@ describe('inboundModel', () => {
                 }
             }));
 
+            cache = new Cache({
+                cacheUrl: 'redis://dummy:1234',
+                logger,
+                unsubscribeTimeoutMs: 5000
+            });
+            await cache.connect();
+
             model = new Model({
                 ...config,
                 cache,
@@ -87,6 +87,7 @@ describe('inboundModel', () => {
 
         afterEach(async () => {
             MojaloopRequests.__putQuotes.mockClear();
+            await cache.disconnect();
         });
 
         test('calls `mojaloopRequests.putQuotes` with the expected arguments.', async () => {
@@ -132,12 +133,19 @@ describe('inboundModel', () => {
     describe('bulkQuoteRequest', () => {
         let expectedQuoteResponseILP;
         let model;
+        let cache;
 
         beforeEach(async () => {
             // eslint-disable-next-line no-unused-vars
             expectedQuoteResponseILP = Ilp.__response;
             BackendRequests.__postBulkQuotes = jest.fn().mockReturnValue(Promise.resolve(mockArgs.internalBulkQuoteResponse));
 
+            cache = new Cache({
+                cacheUrl: 'redis://dummy:1234',
+                logger,
+                unsubscribeTimeoutMs: 5000
+            });
+            await cache.connect();
             // eslint-disable-next-line no-unused-vars
             model = new Model({
                 ...config,
@@ -148,6 +156,7 @@ describe('inboundModel', () => {
 
         afterEach(async () => {
             MojaloopRequests.__putBulkQuotes.mockClear();
+            await cache.disconnect();
         });
 
         test('calls mojaloopRequests.putBulkQuotes with the expected arguments.', async () => {
@@ -183,9 +192,17 @@ describe('inboundModel', () => {
 
     describe('transactionRequest', () => {
         let model;
+        let cache;
 
         beforeEach(async () => {
             BackendRequests.__postTransactionRequests = jest.fn().mockReturnValue(Promise.resolve(mockTxnReqArgs.internalTransactionRequestResponse));
+
+            cache = new Cache({
+                cacheUrl: 'redis://dummy:1234',
+                logger,
+                unsubscribeTimeoutMs: 5000
+            });
+            await cache.connect();
 
             model = new Model({
                 ...config,
@@ -196,6 +213,7 @@ describe('inboundModel', () => {
 
         afterEach(async () => {
             MojaloopRequests.__putTransactionRequests.mockClear();
+            await cache.disconnect();
         });
 
         test('calls `mojaloopRequests.putTransactionRequests` with the expected arguments.', async () => {
@@ -211,9 +229,17 @@ describe('inboundModel', () => {
 
     describe('authorizations', () => {
         let model;
+        let cache;
 
         beforeEach(async () => {
             BackendRequests.__getOTP = jest.fn().mockReturnValue(Promise.resolve(mockArgs.internalGetOTPResponse));
+
+            cache = new Cache({
+                cacheUrl: 'redis://dummy:1234',
+                logger,
+                unsubscribeTimeoutMs: 5000
+            });
+            await cache.connect();
 
             model = new Model({
                 ...config,
@@ -224,6 +250,7 @@ describe('inboundModel', () => {
 
         afterEach(async () => {
             MojaloopRequests.__putAuthorizations.mockClear();
+            await cache.disconnect();
         });
 
         test('calls `mojaloopRequests.putAuthorizations` with the expected arguments.', async () => {
@@ -237,6 +264,8 @@ describe('inboundModel', () => {
     });
 
     describe('transferPrepare:', () => {
+        let cache;
+
         beforeEach(async () => {
             MojaloopRequests.__putTransfersError.mockClear();
             BackendRequests.__postTransfers = jest.fn().mockReturnValue(Promise.resolve({}));
@@ -246,6 +275,17 @@ describe('inboundModel', () => {
                     body: {},
                 }
             }));
+
+            cache = new Cache({
+                cacheUrl: 'redis://dummy:1234',
+                logger,
+                unsubscribeTimeoutMs: 5000
+            });
+            await cache.connect();
+        });
+
+        afterEach(async () => {
+            await cache.disconnect();
         });
 
         test('fail on quote `expiration` deadline.', async () => {
@@ -509,10 +549,23 @@ describe('inboundModel', () => {
     });
 
     describe('prepareBulkTransfer:', () => {
+        let cache;
+
         beforeEach(async () => {
             MojaloopRequests.__putBulkTransfersError.mockClear();
             MojaloopRequests.__putBulkTransfers = jest.fn().mockReturnValue(Promise.resolve({}));
             BackendRequests.__postBulkTransfers = jest.fn().mockReturnValue(Promise.resolve({}));
+
+            cache = new Cache({
+                cacheUrl: 'redis://dummy:1234',
+                logger,
+                unsubscribeTimeoutMs: 5000
+            });
+            await cache.connect();
+        });
+
+        afterEach(async () => {
+            await cache.disconnect();
         });
 
         test('fail on bulk quote `expiration` deadline.', async () => {
@@ -680,6 +733,20 @@ describe('inboundModel', () => {
 
     describe('sendNotificationToPayee:', () => {
         const transferId = '1234';
+        let cache;
+
+        beforeEach(async () => {
+            cache = new Cache({
+                cacheUrl: 'redis://dummy:1234',
+                logger,
+                unsubscribeTimeoutMs: 5000
+            });
+            await cache.connect();
+        });
+
+        afterEach(async () => {
+            await cache.disconnect();
+        });
 
         test('sends notification to fsp backend', async () => {
             BackendRequests.__putTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({}));
@@ -751,6 +818,18 @@ describe('inboundModel', () => {
     });
 
     describe('error handling:', () => {
+        let cache;
+        beforeEach(async () => {
+            cache = new Cache({
+                cacheUrl: 'redis://dummy:1234',
+                logger,
+                unsubscribeTimeoutMs: 5000
+            });
+            await cache.connect();
+        });
+        afterEach(async () => {
+            await cache.disconnect();
+        });
         test('creates mojaloop spec error body when backend returns standard error code', async () => {
             const model = new Model({
                 ...config,
@@ -824,8 +903,15 @@ describe('inboundModel', () => {
     describe('postFxQuotes Method Tests -->', () => {
         let model;
         let fxpResponse;
+        let cache;
 
         beforeEach(async () => {
+            cache = new Cache({
+                cacheUrl: 'redis://dummy:1234',
+                logger,
+                unsubscribeTimeoutMs: 5000
+            });
+            await cache.connect();
             BackendRequests.__postFxQuotes = jest.fn(async () => fxpResponse);
             model = new Model({
                 ...config,
@@ -835,6 +921,7 @@ describe('inboundModel', () => {
         });
 
         afterEach(async () => {
+            await cache.disconnect();
             jest.clearAllMocks();
         });
 
@@ -883,8 +970,14 @@ describe('inboundModel', () => {
     describe('postFxTransfers Method Tests -->', () => {
         let model;
         let fxpResponse;
+        let cache;
 
         beforeEach(async () => {
+            cache = new Cache({
+                cacheUrl: 'redis://dummy:1234',
+                logger,
+                unsubscribeTimeoutMs: 5000
+            });
             BackendRequests.__postFxTransfers = jest.fn(async () => fxpResponse);
             model = new Model({
                 ...config,
@@ -894,6 +987,7 @@ describe('inboundModel', () => {
         });
 
         afterEach(async () => {
+            await cache.disconnect();
             jest.clearAllMocks();
         });
 

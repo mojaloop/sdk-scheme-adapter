@@ -309,7 +309,7 @@ class OutboundTransfersModel {
                     // stop listening for payee resolution messages
                     // no need to await for the unsubscribe to complete.
                     // we dont really care if the unsubscribe fails but we should log it regardless
-                    this._cache.unsubscribe(payeeKey, subId).catch(e => {
+                    this._cache.unsubscribe(payeeKey, subId, true).catch(e => {
                         this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in callback) ${payeeKey} ${subId}: ${e.stack || safeStringify(e)}`);
                     });
 
@@ -373,7 +373,7 @@ class OutboundTransfersModel {
                 const err = new BackendError(`Timeout resolving payee for transfer ${this.data.transferId}`, 504);
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
-                this._cache.unsubscribe(payeeKey, subId).catch(e => {
+                this._cache.unsubscribe(payeeKey, subId, true).catch(e => {
                     this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in timeout handler) ${payeeKey} ${subId}: ${e.stack || safeStringify(e)}`);
                 });
 
@@ -401,7 +401,7 @@ class OutboundTransfersModel {
                 clearTimeout(timeout);
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
-                this._cache.unsubscribe(payeeKey, subId).catch(e => {
+                this._cache.unsubscribe(payeeKey, subId, true).catch(e => {
                     this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing ${payeeKey} ${subId}: ${e.stack || safeStringify(e)}`);
                 });
 

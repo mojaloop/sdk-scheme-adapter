@@ -33,11 +33,11 @@ class Cache {
         this._logger = config.logger;
         this._url = config.cacheUrl;
 
-        // connection/disconnection logic
-        this._connectionState = CONN_ST.DISCONNECTED;
-
         // a redis connection to handle get, set and publish operations
         this._client = null;
+
+        // connection/disconnection logic
+        this._connectionState = CONN_ST.DISCONNECTED;
 
         // a redis connection to handle subscribe operations and published message routing
         // Note that REDIS docs suggest a client that is in SUBSCRIBE mode
@@ -52,6 +52,8 @@ class Cache {
         this._callbackId = 0;
 
         this.subscribeTimeoutSeconds = config.subscribeTimeoutSeconds ?? 3;
+        this._unsubscribeTimeoutMs = config.unsubscribeTimeoutMs;
+        this._unsubscribeTimeoutMap = {};
     }
 
     /**
@@ -224,19 +226,44 @@ class Cache {
       * @param channel {string} - name of the channel to unsubscribe from
       * @param callbackId {integer} - id of the callback to remove
       */
-    async unsubscribe(channel, callbackId) {
+
+    async unsubscribe(channel, callbackId, useUnsubscribeTimeout=false) {
         if(this._callbacks[channel] && this._callbacks[channel][callbackId]) {
             delete this._callbacks[channel][callbackId];
             this._logger.isDebugEnabled && this._logger.debug(`Cache unsubscribed callbackId ${callbackId} from channel ${channel}`);
-
-            if(Object.keys(this._callbacks[channel]).length < 1) {
-                //no more callbacks for this channel
+            // The unsubscribeTimeout is used to mitigate a believed issue happening in the
+            // parties lookup leg of transfers. When the same party is looked up multiple times in quick
+            // succession, the cache is subscribed to the same channel multiple times. We believe that
+            // requests that have just subscribed to the channel which have not received the message yet
+            // are getting unsubscribed when requests that have completed call `unsubscribe`.
+            // This leads the request state machine to timeout the request, fail and
+            // stall the service. This issue is only affects parties lookup since it is the only
+            // pub/sub that can use the same channel name, primarily in our `ml-core-test-harness` environment.
+            if (Object.keys(this._callbacks[channel]).length < 1 && !useUnsubscribeTimeout){
+                // no more callbacks for this channel
                 delete this._callbacks[channel];
-                await this._subscriptionClient.unsubscribe(channel);
+                if (this._subscriptionClient) {
+                    await this._subscriptionClient.unsubscribe(channel);
+                }
+            }else if(Object.keys(this._callbacks[channel]).length < 1) {
+                if (!this._unsubscribeTimeoutMap[channel]){
+                    this._unsubscribeTimeoutMap[channel] = setTimeout(async () => {
+                        // no more callbacks for this channel
+                        delete this._callbacks[channel];
+                        delete this._unsubscribeTimeoutMap[channel];
+                        if (this._subscriptionClient) {
+                            await this._subscriptionClient.unsubscribe(channel);
+                        }
+                    }, this._unsubscribeTimeoutMs);
+                }
+            } else {
+                if (this._unsubscribeTimeoutMap[channel]) {
+                    this._unsubscribeTimeoutMap[channel].refresh();
+                }
             }
         } else {
             // we should not be asked to unsubscribe from a subscription we do not have. Raise this as a promise
-            // rejection so it can be spotted. It may indiate a logic bug somewhere else
+            // rejection so it can be spotted. It may indicate a logic bug somewhere else
             this._logger.isErrorEnabled && this._logger.error(`Cache not subscribed to channel ${channel} for callbackId ${callbackId}`);
             throw new Error(`Channel ${channel} does not have a callback with id ${callbackId} subscribed`);
         }
@@ -292,6 +319,7 @@ class Cache {
 
         return client;
     }
+
 
     /**
       * Publishes the specified message to the specified channel

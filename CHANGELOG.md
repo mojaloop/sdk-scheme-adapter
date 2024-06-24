@@ -1,4 +1,25 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [23.5.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.5.0...v23.5.1) (2024-03-19)
+
+
+### Chore
+
+* **mojaloop/#3815:** fix logger on restart  ([#473](https://github.com/mojaloop/sdk-scheme-adapter/issues/473)) ([5c41284](https://github.com/mojaloop/sdk-scheme-adapter/commit/5c41284692991dac9b12cc36503171aef00f9096))
+
+## [23.5.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.4.1...v23.5.0) (2024-03-19)
+
+
+### Features
+
+* **infitx/iprod-93:** used https.Agent for WSO2 requests in api-svc ([#457](https://github.com/mojaloop/sdk-scheme-adapter/issues/457)) ([150547a](https://github.com/mojaloop/sdk-scheme-adapter/commit/150547a9fdf1a0673c64324960b45ce794ea7382))
+
+### [23.4.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.4.0...v23.4.1) (2024-03-13)
+
+
+### Bug Fixes
+
+* **mojaloop/#3750:** add timer for party lookup in cache ([#471](https://github.com/mojaloop/sdk-scheme-adapter/issues/471)) ([bfd076f](https://github.com/mojaloop/sdk-scheme-adapter/commit/bfd076f97c6b95a6d77509af2591480a6110be82)), closes [mojaloop/#3750](https://github.com/mojaloop/project/issues/3750)
+
 ## [23.4.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.3.1...v23.4.0) (2024-02-21)
 
 

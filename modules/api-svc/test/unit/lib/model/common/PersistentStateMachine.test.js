@@ -72,9 +72,10 @@ describe('PersistentStateMachine', () => {
         data = { the: 'data' };
 
         cache = new Cache({
-                cacheUrl: 'redis://dummy:1234',
-                logger,
-            });
+            cacheUrl: 'redis://dummy:1234',
+            logger,
+            unsubscribeTimeoutMs: 5000
+        });
         // mock cache set & get
         cache.get = jest.fn(async () => data);
         cache.set = jest.fn(async () => 'cache set replies');
