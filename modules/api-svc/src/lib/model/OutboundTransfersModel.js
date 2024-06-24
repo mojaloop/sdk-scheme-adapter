@@ -751,6 +751,7 @@ class OutboundTransfersModel {
 
     async _executeFxTransfer() {
         try {
+
             this.data.fxTransferExpiration = this._getExpirationTimestamp();
             const payload = dto.outboundPostFxTransferPayloadDto(this.data);
             const channel = `${CacheKeyPrefixes.FX_TRANSFER_CALLBACK_CHANNEL}_${payload.commitRequestId}`;
@@ -773,7 +774,6 @@ class OutboundTransfersModel {
                 throw error;
             }
             this._logger.push({ body }).log('fxTransfers fulfil response received');
-
             if (this._rejectExpiredTransferFulfils) {
                 const now = new Date().toISOString();
                 if (now > this.data.fxTransferExpiration) {

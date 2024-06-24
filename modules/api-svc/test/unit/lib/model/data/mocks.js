@@ -35,6 +35,30 @@ const mockFxQuotesPayload = ({
     }
 });
 
+const mockFxQuotesResponse = ({
+    condition = '3scAs9T4nie3OsHy8DqswhOXKiQqoLOMu0Q8q-ob_Kq',
+    conversionId = randomUUID(),
+    determiningTransferId = randomUUID(),
+    initiatingFsp = 'initiatingFsp',
+    counterPartyFsp = 'fxpId',
+    amountType = 'RECEIVE',
+    sourceAmount = mockCurrencyAmount(),
+    targetAmount = mockCurrencyAmount(),
+    expiration = new Date().toISOString(),
+} = {}) => Object.freeze({
+    condition,
+    conversionTerms: {
+        conversionId,
+        determiningTransferId,
+        initiatingFsp,
+        counterPartyFsp,
+        amountType,
+        sourceAmount,
+        targetAmount,
+        expiration
+    }
+});
+
 const mockFxQuotesInternalResponse = ({
     homeTransactionId = randomUUID(),
     fxQuotePayload = mockFxQuotesPayload(),
@@ -174,4 +198,5 @@ module.exports = {
     mockPutQuotesResponse,
     mockMojaApiResponse,
     mockCurrencyAmount,
+    mockFxQuotesResponse
 };
