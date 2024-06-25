@@ -5,7 +5,7 @@ networks:
 
 services:
   ttk-tests:
-    image: mojaloop/ml-testing-toolkit-client-lib:v1.0.0
+    image: mojaloop/ml-testing-toolkit-client-lib:v1.2.2
     user: root
     volumes:
       - "./config/ttk-ttksim1/environments:/opt/app/environments"
