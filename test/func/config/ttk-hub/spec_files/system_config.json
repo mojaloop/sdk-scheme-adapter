@@ -104,29 +104,11 @@
       "folderPath": "als_admin_1.1"
     },
     {
-      "type": "mojaloop_simulator",
-      "version": "0.1",
-      "folderPath": "mojaloop_simulator_0.1"
-    },
-    {
-      "type": "mojaloop_simulator_inbound",
-      "version": "1.4",
-      "folderPath": "mojaloop_simulator_sim_1.4"
-    },
-    {
       "type": "mojaloop_sdk_outbound_scheme_adapter",
       "version": "1.0",
       "folderPath": "mojaloop_sdk_outbound_scheme_adapter_1.0",
       "hostnames": [],
       "prefix": "/sdk-out"
-    },
-    {
-      "type": "payment_manager",
-      "version": "1.4",
-      "folderPath": "payment_manager_1.4",
-      "hostnames": [
-        "pm4ml.hostname.here"
-      ]
     },
     {
       "type": "thirdparty_sdk_outbound",
