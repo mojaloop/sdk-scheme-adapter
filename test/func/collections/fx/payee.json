@@ -17,14 +17,14 @@
             "description": "Get Parties with Supported Currency and KYC",
             "apiVersion": {
               "minorVersion": 1,
-              "majorVersion": 1,
-              "type": "fspiop",
-              "asynchronous": true,
-              "specFile": "spec_files/api_definitions/fspiop_1.1/api_spec.yaml",
-              "callbackMapFile": "spec_files/api_definitions/fspiop_1.1/callback_map.json",
-              "responseMapFile": "spec_files/api_definitions/fspiop_1.1/response_map.json",
-              "jsfRefFile": "spec_files/api_definitions/fspiop_1.1/mockRef.json",
-              "triggerTemplatesFolder": "spec_files/api_definitions/fspiop_1.1/trigger_templates"
+              "majorVersion": 2,
+              "type": "sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets",
+              "asynchronous": false,
+              "specFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/api_spec.yaml",
+              "responseMapFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/response_map.json",
+              "responseMapFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/response_map.json",
+              "jsfRefFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/mockRef.json",
+              "triggerTemplatesFolder": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/trigger_templates"
             },
             "operationPath": "/parties/{Type}/{ID}",
             "path": "/parties/MSISDN/4561131415",
@@ -33,56 +33,42 @@
               "Type": "MSISDN",
               "ID": "4561131415"
             },
-            "url": null,
-            "headers": {
-              "Accept": "application/vnd.interoperability.parties+json;version=1.0",
-              "Date": "{$function.generic.curDate}",
-              "FSPIOP-Source": "testfsp",
-              "Content-Type": "application/vnd.interoperability.parties+json;version=1.0"
-            },
             "tests": {
               "assertions": [
                 {
                   "id": 1,
-                  "description": "Response status to be 202",
+                  "description": "Response status to be 200",
                   "exec": [
-                    "expect(response.status).to.equal(202)"
+                    "expect(response.status).to.equal(200)"
                   ]
                 },
                 {
                   "id": 3,
-                  "description": "Callback Content Length not 0",
+                  "description": "Response Content Length not 0",
                   "exec": [
-                    "expect(callback.headers['Content-Length']).to.not.equal('0')"
+                    "expect(response.headers['Content-Length']).to.not.equal('0')"
                   ]
                 },
                 {
                   "id": 4,
-                  "description": "Callback body should contain party",
+                  "description": "Response body should contain party",
                   "exec": [
-                    "expect(callback.body).to.have.property('party')"
+                    "expect(response.body).to.have.property('party')"
                   ]
                 },
                 {
-                  "id": 7,
-                  "description": "Callback content-type to be parties",
+                  "id": 5,
+                  "description": "Response partyIdInfo (partyIdType, partyIdentifier)",
                   "exec": [
-                    "expect(callback.headers['content-type']).to.equal('application/vnd.interoperability.parties+json;version=1.0')"
-                  ]
-                },
-                {
-                  "id": 8,
-                  "description": "Callback partyIdInfo (partyIdType, partyIdentifier)",
-                  "exec": [
-                    "expect(callback.body.party).to.have.property('supportedCurrencies')",
+                    "expect(response.body.party.body).to.have.property('supportedCurrencies')",
                     ""
                   ]
                 },
                 {
-                  "id": 9,
-                  "description": "Callback personalDetails should contain KYC information",
+                  "id": 6,
+                  "description": "Response personalDetails should contain KYC information",
                   "exec": [
-                    "expect(callback.body.party.personalInfo).to.have.property('kycInformation')",
+                    "expect(response.body.party.body.personalInfo).to.have.property('kycInformation')",
                     ""
                   ]
                 }
