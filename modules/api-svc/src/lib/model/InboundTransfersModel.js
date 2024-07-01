@@ -584,7 +584,7 @@ class InboundTransfersModel {
             const mojaloopError = await this._handleError(err);
             this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
             return this._mojaloopRequests
-                .putFxQuotesError(body.conversionId, mojaloopError, sourceFspId);
+                .putFxQuotesError(body.conversionRequestId, mojaloopError, sourceFspId);
         }
     }
 
