@@ -81,8 +81,8 @@
     "@types/jest": "^29.5.12",
     "@types/node": "^20.14.9",
     "@types/node-cache": "^4.2.5",
-    "@typescript-eslint/eslint-plugin": "^7.14.1",
-    "@typescript-eslint/parser": "^7.14.1",
+    "@typescript-eslint/eslint-plugin": "^7.15.0",
+    "@typescript-eslint/parser": "^7.15.0",
     "audit-ci": "^7.0.1",
     "eslint": "^8.57.0",
     "eslint-config-airbnb-typescript": "^18.0.0",
@@ -95,7 +95,7 @@
     "standard-version": "^9.5.0",
     "ts-jest": "^29.1.5",
     "ts-node": "^10.9.2",
-    "typescript": "^5.5.2",
+    "typescript": "^5.5.3",
     "yarn-audit-fix": "^10.0.7"
   },
   "resolutions": {
