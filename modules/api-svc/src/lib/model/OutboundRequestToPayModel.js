@@ -11,7 +11,7 @@
 'use strict';
 
 const safeStringify = require('fast-safe-stringify');
-const { uuid } = require('uuidv4');
+const idGenerator = require('@mojaloop/central-services-shared').Util.id;
 const StateMachine = require('javascript-state-machine');
 const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const { BackendError } = require('./common');
@@ -22,6 +22,7 @@ const { SDKStateEnum } = require('./common');
 class OutboundRequestToPayModel {
 
     constructor(config) {
+        this._idGenerator = idGenerator(config.idGenerator);
         this._cache = config.cache;
         this._logger = config.logger;
         this._requestProcessingTimeoutSeconds = config.requestProcessingTimeoutSeconds;
@@ -56,7 +57,7 @@ class OutboundRequestToPayModel {
 
         // add a transactionRequestId if one is not present e.g. on first submission
         if(!this.data.hasOwnProperty('transactionRequestId')) {
-            this.data.transactionRequestId = uuid();
+            this.data.transactionRequestId = this._idGenerator();
         }
 
         // initialize the transfer state machine to its starting state

@@ -125,7 +125,13 @@ const assignFspiopIdentifier = () => async (ctx, next) => {
         },
         '/transactionRequests/{ID}': {
             put: () => ctx.state.path.params.ID,
-        }
+        },
+        '/fxQuotes': {
+            post: () => ctx.request.body.conversionRequestId,
+        },
+        '/fxTransfers': {
+            post: () => ctx.request.body.commitRequestId,
+        },
     }[ctx.state.path.pattern];
     if (getters) {
         const getter = getters[ctx.method.toLowerCase()];

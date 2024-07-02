@@ -90,6 +90,24 @@ class BackendRequests {
     }
 
     /**
+     * Executes a POST /fxQuotes request for the specified fxQuotes request
+     *
+     * @returns {object} - JSON response body if one was received
+     */
+    async postFxQuotes(payload) {
+        return this._post('fxQuotes', payload);
+    }
+
+    /**
+     * Executes a POST /fxTransfers request for the specified fxTransfer prepare
+     *
+     * @returns {object} - JSON response body if one was received
+     */
+    async postFxTransfers(payload) {
+        return this._post('fxTransfers', payload);
+    }
+
+    /**
      * Executes a POST /transactionRequests request for the specified transaction request
      *
      * @returns {object} - JSON response body if one was received

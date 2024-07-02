@@ -8,15 +8,12 @@
  *       Paweł Marzec - pawel.marzec@modusbox.com                         *
  **************************************************************************/
 
-'use strict';
-const { SDKStateEnum } = require('./Enums');
-const { TransactionRequestStateEnum } = require('./Enums');
+const Enums = require('./Enums');
 const { BackendError } = require('./BackendError');
 const PersistentStateMachine = require('./PersistentStateMachine');
 
 module.exports = {
+    ...Enums,
     BackendError,
-    SDKStateEnum,
-    TransactionRequestStateEnum,
     PersistentStateMachine
 };

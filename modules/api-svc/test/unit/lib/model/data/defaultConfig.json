@@ -55,5 +55,6 @@
   "logIndent": 2,
   "metrics": {
     "port": 4004
-  }
+  },
+  "getServicesFxpResponse": ["fxp_id"]
 }

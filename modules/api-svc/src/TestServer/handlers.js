@@ -52,6 +52,22 @@ const getCallbackById = async(ctx) => {
     }
 };
 
+/**
+ * Handles a GET /fxQuoteRequests/{ID} request. This is a test support method that allows the caller
+ * to see the body of a previous incoming callback.
+ */
+const getFxQuoteById = async(ctx) => {
+    try {
+        const req = await ctx.state.cache.get(`fxQuote_in_${ctx.state.path.params.ID}`);
+        ctx.response.status = ReturnCodes.OK.CODE;
+        ctx.response.body = req;
+    }
+    catch(err) {
+        ctx.status = ReturnCodes.INTERNALSERVERERRROR.CODE;
+        ctx.response.body = err;
+    }
+};
+
 
 module.exports = {
     '/': {
@@ -62,5 +78,8 @@ module.exports = {
     },
     '/callbacks/{ID}': {
         get: getCallbackById
+    },
+    '/fxQuoteRequests/{ID}': {
+        get: getFxQuoteById
     },
 };

@@ -23,6 +23,9 @@ const router = require('../lib/router');
 const handlers = require('./handlers');
 const middlewares = require('./middlewares');
 
+const specPath = path.join(__dirname, 'api.yaml');
+const apiSpecs = yaml.load(fs.readFileSync(specPath));
+
 const logExcludePaths = ['/'];
 
 class InboundApi extends EventEmitter {
@@ -156,8 +159,6 @@ class InboundServer extends EventEmitter {
 
     async start() {
         assert(!this._server.listening, 'Server already listening');
-        const specPath = path.join(__dirname, 'api.yaml');
-        const apiSpecs = yaml.load(fs.readFileSync(specPath));
         await this._validator.initialise(apiSpecs);
         await this._api.start();
         await new Promise((resolve) => this._server.listen(this._conf.inbound.port, resolve));
