@@ -165,8 +165,10 @@ const cacheRequest = (cache) => async (ctx, next) => {
  * tag each incoming request with a unique identifier
  * @return {Function}
  */
-const createRequestIdGenerator = () => async (ctx, next) => {
+const createRequestIdGenerator = (logger) => async (ctx, next) => {
     ctx.request.id = generateSlug(4);
+    const { id, method, path } = ctx.request;
+    logger.info(`[==> req] ${method?.toUpperCase()} ${path} - requestId: ${id}`);
     await next();
 };
 
