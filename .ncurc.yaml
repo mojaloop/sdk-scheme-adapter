@@ -11,5 +11,7 @@ reject: [
   ## TODO: The new version of nx causes submodules to be broken.
   "nx",
   ## TODO: The new version of eslint requires migration of configuration files.
-  "eslint"
+  "eslint",
+  "@typescript-eslint/eslint-plugin",
+  "@typescript-eslint/parser"
 ]

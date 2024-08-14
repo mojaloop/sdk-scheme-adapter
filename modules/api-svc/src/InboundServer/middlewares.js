@@ -165,8 +165,10 @@ const cacheRequest = (cache) => async (ctx, next) => {
  * tag each incoming request with a unique identifier
  * @return {Function}
  */
-const createRequestIdGenerator = () => async (ctx, next) => {
+const createRequestIdGenerator = (logger) => async (ctx, next) => {
     ctx.request.id = generateSlug(4);
+    const { method, path, id } = ctx.request;
+    logger.info(`[==> req] ${method?.toUpperCase()} ${path} - requestId: ${id}`);
     await next();
 };
 
@@ -193,6 +195,7 @@ const createHeaderValidator = (conf, logger) => async (
 
     // Only validate requests for the requested resources
     if (!resources.includes(resource)) {
+        logger.info(`skip validation for ${resource}`);
         return await next();
     }
 
@@ -207,6 +210,7 @@ const createHeaderValidator = (conf, logger) => async (
                 null,
                 Errors.MojaloopApiErrorCodes.MISSING_ELEMENT
             ).toApiErrorObject();
+            logger.error('accept header is missing');
             return;
         }
         const accept = parseAcceptHeader(resource, request.headers.accept);
@@ -218,6 +222,7 @@ const createHeaderValidator = (conf, logger) => async (
                 null,
                 Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX
             ).toApiErrorObject();
+            logger.error('accept header is invalid');
             return;
         }
         if (!supportedProtocolVersions.some(supportedVer => accept.versions.has(supportedVer))) {
@@ -229,6 +234,7 @@ const createHeaderValidator = (conf, logger) => async (
                 Errors.MojaloopApiErrorCodes.UNACCEPTABLE_VERSION,
                 protocolVersionsMap
             ).toApiErrorObject();
+            logger.error('accept header has unacceptable version');
             return;
         }
     }
@@ -243,6 +249,7 @@ const createHeaderValidator = (conf, logger) => async (
             Errors.MojaloopApiErrorCodes.MISSING_ELEMENT,
             protocolVersionsMap
         ).toApiErrorObject();
+        logger.error('contentType header is undefined');
         return;
     }
 
@@ -255,6 +262,7 @@ const createHeaderValidator = (conf, logger) => async (
             null,
             Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX
         ).toApiErrorObject();
+        logger.error('contentType header is invalid');
         return;
     }
     if (!supportedProtocolVersions.includes(contentType.version)) {
@@ -266,6 +274,7 @@ const createHeaderValidator = (conf, logger) => async (
             Errors.MojaloopApiErrorCodes.UNACCEPTABLE_VERSION,
             protocolVersionsMap
         ).toApiErrorObject();
+        logger.error('contentType header has unacceptable version');
         return;
     }
 
@@ -274,7 +283,7 @@ const createHeaderValidator = (conf, logger) => async (
     }
     catch(err) {
         // error parsing body
-        logger.isErrorEnabled && logger.push({ err }).error('Error parsing body');
+        logger.push({ err }).error('Error parsing body');
         ctx.response.status = Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX.httpStatusCode;
         ctx.response.body = new Errors.MojaloopFSPIOPError(err, err.message, null,
             Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX).toApiErrorObject();
@@ -319,7 +328,7 @@ const createJwsValidator = (logger, keys, exclusions) => {
 
         }
         catch(err) {
-            logger.isErrorEnabled && logger.push({ err }).error('Inbound request failed JWS validation');
+            logger.push({ err }).error('Inbound request failed JWS validation');
 
             ctx.response.status = ReturnCodes.BADREQUEST.CODE;
             ctx.response.body = new Errors.MojaloopFSPIOPError(
@@ -397,7 +406,7 @@ const createRequestValidator = (validator) => async (ctx, next) => {
         }
         await next();
     } catch (err) {
-        ctx.state.logger.isErrorEnabled && ctx.state.logger.push({ err }).error('Request failed validation.');
+        ctx.state.logger.push({ err }).error('Request failed validation.');
         // send a mojaloop spec error response
         ctx.response.status = err.httpStatusCode || ReturnCodes.BADREQUEST.CODE;
 

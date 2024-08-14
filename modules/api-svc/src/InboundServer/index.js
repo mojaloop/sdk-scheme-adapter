@@ -97,7 +97,7 @@ class InboundApi extends EventEmitter {
         const api = new Koa();
 
         api.use(middlewares.createErrorHandler(logger));
-        api.use(middlewares.createRequestIdGenerator());
+        api.use(middlewares.createRequestIdGenerator(logger));
         api.use(middlewares.createHeaderValidator(conf, logger));
         if (conf.validateInboundJws) {
             const jwsExclusions = conf.validateInboundPutPartiesJws ? [] : ['putParties'];

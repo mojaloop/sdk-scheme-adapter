@@ -37,7 +37,7 @@ class TestApi {
         this._api = new Koa();
 
         this._api.use(middlewares.createErrorHandler(logger));
-        this._api.use(middlewares.createRequestIdGenerator());
+        this._api.use(middlewares.createRequestIdGenerator(logger));
         this._api.use(middlewares.applyState({ cache, logExcludePaths }));
         this._api.use(middlewares.createLogger(logger));
 

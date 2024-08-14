@@ -34,6 +34,7 @@ const Validate = require('./lib/validate');
 const Cache = require('./lib/cache');
 const { SDKStateEnum } = require('./lib/model/common');
 const { createAuthClient } = require('./lib/utils');
+const { SDK_LOGGER_HIERARCHY } = require('./constants');
 
 const LOG_ID = {
     INBOUND:   { app: 'mojaloop-connector-inbound-api' },
@@ -46,7 +47,6 @@ const LOG_ID = {
     METRICS:   { app: 'mojaloop-connector-metrics' },
     CACHE:     { component: 'cache' },
 };
-const SDK_LOGGER_HIERARCHY = ['verbose', 'trace', 'debug', 'info', 'warn', 'error', 'fatal'];
 
 const createCache = (config, logger) => new Cache({
     cacheUrl: config.cacheUrl,

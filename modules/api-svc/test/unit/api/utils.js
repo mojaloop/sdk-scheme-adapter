@@ -2,12 +2,12 @@ const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
 const supertest = require('supertest');
-const Validate = require('~/lib/validate');
+const { Logger, WSO2Auth } = require('@mojaloop/sdk-standard-components');
 
+const Validate = require('~/lib/validate');
 const InboundServer = require('~/InboundServer');
 const OutboundServer = require('~/OutboundServer');
 const { MetricsClient } = require('~/lib/metrics');
-const { Logger, WSO2Auth } = require('@mojaloop/sdk-standard-components');
 const Cache = require('~/lib/cache');
 
 const ServerType = {
