@@ -512,15 +512,15 @@ jobs:
           command: *defaults_YarnConfig
       - restore_cache:
           key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
-#      - run:
-#          name: Create dir for test results
-#          command: mkdir -p ./audit/results
+      - run:
+          name: Create dir for test results
+          command: mkdir -p ./audit/results
       - run:
           name: Check for new npm vulnerabilities
-          command: npm run audit:check
-#      - store_artifacts:
-#          path: ./audit/results
-#          prefix: audit
+          command: npm run audit:check -- -o json > ./audit/results/auditResults.json
+      - store_artifacts:
+          path: ./audit/results
+          prefix: audit
 
   audit-licenses:
     executor: default-docker
