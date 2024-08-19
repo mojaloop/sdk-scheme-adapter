@@ -42,7 +42,7 @@ class OutboundApi extends EventEmitter {
         this._metricsClient = metricsClient;
 
         this._api.use(middlewares.createErrorHandler(this._logger));
-        this._api.use(middlewares.createRequestIdGenerator());
+        this._api.use(middlewares.createRequestIdGenerator(this._logger));
         this._api.use(koaBody({
             formidable: { maxFieldsSize: conf.backendApiServerMaxRequestBytes }
         })); // outbound always expects application/json
