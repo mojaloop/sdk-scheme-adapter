@@ -304,6 +304,7 @@ class Server extends EventEmitter {
         await Promise.all([
             oldCache?.disconnect(),
         ]);
+        this.logger.isDebugEnabled && this.logger.debug('Server is restarted');
     }
 
     stop() {
