@@ -181,14 +181,14 @@ class Client extends ws {
                     case VERB.NOTIFY: {
                         const dup = JSON.parse(JSON.stringify(this._appConfig)); // fast-json-patch explicitly mutates
                         _.merge(dup, msg.data);
-                        this._logger.isDebugEnabled && this._logger.push({ oldConf: this._appConfig, newConf: dup }).debug('Emitting new configuration');
+                        this._logger.isDebugEnabled && this._logger.push({ oldConf: this._appConfig, newConf: dup }).debug(`Emitting new agent configuration [${VERB.NOTIFY}]`);
                         this.emit(EVENT.RECONFIGURE, dup);
                         break;
                     }
                     case VERB.PATCH: {
                         const dup = JSON.parse(JSON.stringify(this._appConfig)); // fast-json-patch explicitly mutates
                         jsonPatch.applyPatch(dup, msg.data);
-                        this._logger.isDebugEnabled && this._logger.push({ oldConf: this._appConfig, newConf: dup }).debug('Emitting new configuration');
+                        this._logger.isDebugEnabled && this._logger.push({ oldConf: this._appConfig, newConf: dup }).debug(`Emitting new agent configuration [${VERB.PATCH}]`);
                         this.emit(EVENT.RECONFIGURE, dup);
                         break;
                     }

@@ -167,10 +167,16 @@ class InboundServer extends EventEmitter {
 
     async stop() {
         if (this._server.listening) {
-            await new Promise(resolve => this._server.close(resolve));
+            await new Promise(resolve => {
+                this._server.close(() => {
+                    this._logger.isDebugEnabled && this._logger.debug('inbound API is closed');
+                    resolve();
+                });
+                this._server.closeAllConnections();
+            });
         }
         await this._api.stop();
-        this._logger.isInfoEnabled && this._logger.info('inbound shut down complete');
+        this._logger.isInfoEnabled && this._logger.info('inbound API shut down complete');
     }
 
     _createServer(tlsEnabled, tlsCreds, handler) {
