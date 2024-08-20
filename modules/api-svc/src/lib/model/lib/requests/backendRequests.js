@@ -208,17 +208,8 @@ class BackendRequests {
             uri: buildUrl(this.backendEndpoint, url),
             headers: this._buildHeaders(),
         };
-
         // Note we do not JWS sign requests with no body i.e. GET requests
-
-        try {
-            this.logger.isDebugEnabled && this.logger.push({ reqOpts }).debug('Executing HTTP GET');
-            return request({...reqOpts, agent: this.agent}).then(throwOrJson);
-        }
-        catch (e) {
-            this.logger.isErrorEnabled && this.logger.push({ e }).error('Error attempting HTTP GET');
-            throw e;
-        }
+        return this.sendRequest(reqOpts);
     }
 
 
@@ -229,15 +220,7 @@ class BackendRequests {
             headers: this._buildHeaders(),
             body: JSON.stringify(body)
         };
-
-        try {
-            this.logger.isDebugEnabled && this.logger.push({ reqOpts }).debug('Executing HTTP PUT');
-            return request({...reqOpts, agent: this.agent}).then(throwOrJson);
-        }
-        catch (e) {
-            this.logger.push({ e }).bebug('Error attempting HTTP PUT');
-            throw e;
-        }
+        return this.sendRequest(reqOpts);
     }
 
 
@@ -248,15 +231,17 @@ class BackendRequests {
             headers: this._buildHeaders(),
             body: JSON.stringify(body),
         };
+        return this.sendRequest(reqOpts);
+    }
 
-        try {
-            this.logger.isDebugEnabled && this.logger.push({ reqOpts }).debug('Executing HTTP POST');
-            return request({...reqOpts, agent: this.agent}).then(throwOrJson);
-        }
-        catch (e) {
-            this.logger.isErrorEnabled && this.logger.push({ e }).error('Error attempting POST.');
-            throw e;
-        }
+    async sendRequest(reqOptions) {
+        this.logger.isDebugEnabled && this.logger.push({ reqOptions }).debug(`Executing HTTP ${reqOptions?.method}...`);
+        return request({ ...reqOptions, agent: this.agent })
+            .then(throwOrJson)
+            .catch(e => {
+                this.logger.push({ e }).error(`Error attempting ${reqOptions?.method} ${reqOptions?.uri}`);
+                throw e;
+            });
     }
 }
 
