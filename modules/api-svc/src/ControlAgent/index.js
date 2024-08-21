@@ -27,6 +27,8 @@ const jsonPatch = require('fast-json-patch');
 const { generateSlug } = require('random-word-slugs');
 const _ = require('lodash');
 
+const FORCE_WS_CLOSE_TIMEOUT_SEC = 5000;
+
 /**************************************************************************
  * The message protocol messages, verbs, and errors
  *************************************************************************/
@@ -136,8 +138,8 @@ class Client extends ws {
     static Create(...args) {
         return new Promise((resolve, reject) => {
             const client = new Client(...args);
-            client.on('open', () => resolve(client));
-            client.on('error', (err) => reject(err));
+            client.once('open', () => resolve(client));
+            client.once('error', (err) => reject(err));
             client.on('message', client._handle);
         });
     }
@@ -159,8 +161,27 @@ class Client extends ws {
 
     // Close connection
     async stop() {
-        this._logger.isInfoEnabled && this._logger.info('Control client shutting down...');
-        this.close();
+        this._logger.isDebugEnabled && this._logger.debug('Control client shutting down...');
+        return new Promise((resolve) => {
+            let timer = setTimeout(() => {
+                this._logger.isInfoEnabled && this._logger.info('Control client forced to close');
+                timer = null;
+                resolve(false);
+            }, FORCE_WS_CLOSE_TIMEOUT_SEC);
+
+            this.once('close', () => {
+                this._logger.isInfoEnabled && this._logger.info('Control client is closed');
+                if (timer) clearTimeout(timer);
+                resolve(true);
+            });
+            this.once('error', (error) => {
+                this._logger.isWarnEnabled && this._logger.push({ error }).warn('Control client failed to close');
+                if (timer) clearTimeout(timer);
+                resolve(false);
+            });
+
+            this.close();
+        });
     }
 
     // Handle incoming message from the server.
