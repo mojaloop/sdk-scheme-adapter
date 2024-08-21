@@ -27,7 +27,7 @@ const jsonPatch = require('fast-json-patch');
 const { generateSlug } = require('random-word-slugs');
 const _ = require('lodash');
 
-const FORCE_WS_CLOSE_TIMEOUT_SEC = 5000;
+const FORCE_WS_CLOSE_TIMEOUT_MS = 5000;
 
 /**************************************************************************
  * The message protocol messages, verbs, and errors
@@ -167,7 +167,7 @@ class Client extends ws {
                 this._logger.isInfoEnabled && this._logger.info('Control client forced to close');
                 timer = null;
                 resolve(false);
-            }, FORCE_WS_CLOSE_TIMEOUT_SEC);
+            }, FORCE_WS_CLOSE_TIMEOUT_MS);
 
             this.once('close', () => {
                 this._logger.isInfoEnabled && this._logger.info('Control client is closed');
