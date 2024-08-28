@@ -105,10 +105,25 @@ services:
     depends_on:
       - redis
 
+  ttkfxp-sdk-api-svc:
+    extends:
+      file: common-sdk.yml
+      service: api-svc
+    env_file: ./config/sdk-ttkfxp/api-svc.env
+    networks:
+      - mojaloop-net
+    ports:
+      - "44000:4000"
+      - "44001:4001"
+      - "44002:4002"
+    depends_on:
+      - redis
+
+
   ttk-ttksim1:
     networks:
         - mojaloop-net
-    image: mojaloop/ml-testing-toolkit:v16.1.1
+    image: mojaloop/ml-testing-toolkit:v17.2.2
     container_name: ttk-ttksim1
     user: root
     volumes:
@@ -127,7 +142,7 @@ services:
       retries: 3
 
   ttk-ttksim1-ui:
-    image: mojaloop/ml-testing-toolkit-ui:v15.3.0
+    image: mojaloop/ml-testing-toolkit-ui:v15.5.0
     ports:
       - "16060:6060"
     networks:
@@ -144,7 +159,7 @@ services:
   ttk-ttksim2:
     networks:
         - mojaloop-net
-    image: mojaloop/ml-testing-toolkit:v16.1.1
+    image: mojaloop/ml-testing-toolkit:v17.2.2
     container_name: ttk-ttksim2
     user: root
     volumes:
@@ -157,7 +172,7 @@ services:
     command: npm start
 
   ttk-ttksim2-ui:
-    image: mojaloop/ml-testing-toolkit-ui:v15.3.0
+    image: mojaloop/ml-testing-toolkit-ui:v15.5.0
     ports:
       - "26060:6060"
     networks:
@@ -174,7 +189,7 @@ services:
   ttk-ttksim3:
     networks:
         - mojaloop-net
-    image: mojaloop/ml-testing-toolkit:v16.1.1
+    image: mojaloop/ml-testing-toolkit:v17.2.2
     container_name: ttk-ttksim3
     user: root
     volumes:
@@ -187,7 +202,7 @@ services:
     command: npm start
 
   ttk-ttksim3-ui:
-    image: mojaloop/ml-testing-toolkit-ui:v15.3.0
+    image: mojaloop/ml-testing-toolkit-ui:v15.5.0
     ports:
       - "36060:6060"
     networks:
@@ -201,14 +216,46 @@ services:
     profiles:
       - debug
 
+
+  ttk-ttkfxp:
+    networks:
+        - mojaloop-net
+    image: mojaloop/ml-testing-toolkit:v17.2.2
+    container_name: ttk-ttkfxp
+    user: root
+    volumes:
+      - "./config/ttk-ttkfxp/spec_files:/opt/app/spec_files"
+    ports:
+      - "44040:4040"
+      - "45050:5050"
+    environment:
+      - AUTH_ENABLED=FALSE
+    command: npm start
+
+  ttk-ttkfxp-ui:
+    image: mojaloop/ml-testing-toolkit-ui:v15.5.0
+    ports:
+      - "46060:6060"
+    networks:
+      - mojaloop-net
+    environment:
+      - API_BASE_URL=http://localhost:45050
+      - AUTH_ENABLED=FALSE
+    command:
+      - sh
+      - /usr/share/nginx/start.sh
+    profiles:
+      - debug
+
   ttk-hub:
     networks:
         - mojaloop-net
-    image: mojaloop/ml-testing-toolkit:v16.1.1
+    image: mojaloop/ml-testing-toolkit:v17.2.2
     container_name: ttk-hub
     user: root
     volumes:
       - "./config/ttk-hub/spec_files:/opt/app/spec_files"
+      - "./config/ttk-hub/environments:/opt/app/examples/environments"
     ports:
       - "54040:4040"
       - "55050:5050"
@@ -217,7 +264,7 @@ services:
     command: npm start
 
   ttk-hub-ui:
-    image: mojaloop/ml-testing-toolkit-ui:v15.3.0
+    image: mojaloop/ml-testing-toolkit-ui:v15.5.0
     ports:
       - "56060:6060"
     networks:
@@ -305,30 +352,30 @@ services:
     profiles:
       - debug
 
-  redisinsight:
-    image: redislabs/redisinsight
-    ports:
-      - "9001:8001"
-    networks:
-      - mojaloop-net
-    volumes: []
-    restart: on-failure
-    healthcheck:
-      test: ["CMD" ,"sh", "-c", "curl http://localhost:8001/api/instance/"]
-      timeout: 20s
-      retries: 30
-      start_period: 5s
-      interval: 5s
-    profiles:
-      - debug
+  # redisinsight:
+  #   image: redislabs/redisinsight
+  #   ports:
+  #     - "9001:8001"
+  #   networks:
+  #     - mojaloop-net
+  #   volumes: []
+  #   restart: on-failure
+  #   healthcheck:
+  #     test: ["CMD" ,"sh", "-c", "curl http://localhost:8001/api/instance/"]
+  #     timeout: 20s
+  #     retries: 30
+  #     start_period: 5s
+  #     interval: 5s
+  #   profiles:
+  #     - debug
 
-  init-redisinsight:
-    networks:
-      - mojaloop-net
-    image: curlimages/curl:7.86.0
-    depends_on:
-      redisinsight:
-        condition: service_healthy
-    command: "--location --request POST 'http://redisinsight:8001/api/instance/' --header 'Content-Type: application/json' --data-raw '{\"name\": \"Redis DB\",\"connectionType\": \"STANDALONE\",\"host\": \"redis\",\"port\": 6379}'"
-    profiles:
-      - debug
+  # init-redisinsight:
+  #   networks:
+  #     - mojaloop-net
+  #   image: curlimages/curl:7.86.0
+  #   depends_on:
+  #     redisinsight:
+  #       condition: service_healthy
+  #   command: "--location --request POST 'http://redisinsight:8001/api/instance/' --header 'Content-Type: application/json' --data-raw '{\"name\": \"Redis DB\",\"connectionType\": \"STANDALONE\",\"host\": \"redis\",\"port\": 6379}'"
+  #   profiles:
+  #     - debug

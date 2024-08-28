@@ -10,6 +10,12 @@
 
 'use strict';
 
+process.env.PEER_ENDPOINT = '172.17.0.3:4000';
+process.env.BACKEND_ENDPOINT = '172.17.0.5:4000';
+process.env.CACHE_URL = 'redis://172.17.0.2:6379';
+process.env.MGMT_API_WS_URL = '0.0.0.0';
+process.env.SUPPORTED_CURRENCIES='USD';
+
 const supertest = require('supertest');
 
 const defaultConfig = require('./data/defaultConfig');
@@ -50,7 +56,12 @@ describe('Test Server', () => {
             ...JSON.parse(JSON.stringify(defaultConfig)),
             enableTestFeatures: true,
         };
-        cache = new Cache({ cacheUrl: serverConfig.cacheUrl, logger: logger.push({ component: 'cache' }), enableTestFeatures: true });
+        cache = new Cache({
+            cacheUrl: serverConfig.cacheUrl,
+            logger: logger.push({ component: 'cache' }),
+            enableTestFeatures: true,
+            unsubscribeTimeoutMs: serverConfig.unsubscribeTimeoutMs,
+        });
 
         testServer = new TestServer({ logger, cache });
         await testServer.start();

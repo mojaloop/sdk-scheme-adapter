@@ -2885,7 +2885,7 @@ components:
             - description: Identifies the quote message.
             - example: b51ec534-ee48-4575-b6a9-ead2955b8069
         payee:
-          allOf:  
+          allOf:
             - $ref: "#/components/schemas/Party"
             - description: Information about the Payee in the proposed financial transaction.
         transferAmount:

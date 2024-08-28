@@ -10,6 +10,12 @@
 
 'use strict';
 
+process.env.PEER_ENDPOINT = '172.17.0.3:4000';
+process.env.BACKEND_ENDPOINT = '172.17.0.5:4000';
+process.env.CACHE_URL = 'redis://172.17.0.2:6379';
+process.env.MGMT_API_WS_URL = '0.0.0.0';
+process.env.SUPPORTED_CURRENCIES='USD';
+
 const Cache = jest.createMockFromModule('~/lib/cache');
 
 const PSM = require('~/lib/model').PersistentStateMachine;
@@ -72,9 +78,10 @@ describe('PersistentStateMachine', () => {
         data = { the: 'data' };
 
         cache = new Cache({
-                cacheUrl: 'redis://dummy:1234',
-                logger,
-            });
+            cacheUrl: 'redis://dummy:1234',
+            logger,
+            unsubscribeTimeoutMs: 5000
+        });
         // mock cache set & get
         cache.get = jest.fn(async () => data);
         cache.set = jest.fn(async () => 'cache set replies');

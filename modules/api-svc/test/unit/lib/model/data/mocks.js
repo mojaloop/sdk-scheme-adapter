@@ -1,5 +1,5 @@
 /*eslint quote-props: ["error", "as-needed"]*/
-const { randomUUID } = require('node:crypto');
+const randomUUID = require('@mojaloop/central-services-shared').Util.id();
 
 const DEFAULT_ID_VALUE = '2551234567890';
 
@@ -23,6 +23,30 @@ const mockFxQuotesPayload = ({
     expiration = new Date().toISOString(),
 } = {}) => Object.freeze({
     conversionRequestId,
+    conversionTerms: {
+        conversionId,
+        determiningTransferId,
+        initiatingFsp,
+        counterPartyFsp,
+        amountType,
+        sourceAmount,
+        targetAmount,
+        expiration
+    }
+});
+
+const mockFxQuotesResponse = ({
+    condition = '3scAs9T4nie3OsHy8DqswhOXKiQqoLOMu0Q8q-ob_Kq',
+    conversionId = randomUUID(),
+    determiningTransferId = randomUUID(),
+    initiatingFsp = 'initiatingFsp',
+    counterPartyFsp = 'fxpId',
+    amountType = 'RECEIVE',
+    sourceAmount = mockCurrencyAmount(),
+    targetAmount = mockCurrencyAmount(),
+    expiration = new Date().toISOString(),
+} = {}) => Object.freeze({
+    condition,
     conversionTerms: {
         conversionId,
         determiningTransferId,
@@ -174,4 +198,5 @@ module.exports = {
     mockPutQuotesResponse,
     mockMojaApiResponse,
     mockCurrencyAmount,
+    mockFxQuotesResponse
 };

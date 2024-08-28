@@ -4,33 +4,39 @@
     // Only use one of ["low": true, "moderate": true, "high": true, "critical": true]
     "moderate": true,
     "allowlist": [
-        "GHSA-p9pc-299p-vxgp", // nx>yargs-parser
-        "GHSA-p9pc-299p-vxgp", // nx>yargs>yargs-parser
-        "GHSA-p9pc-299p-vxgp", // @mojaloop/event-sdk>@grpc/proto-loader>yargs>yargs-parser
-        "GHSA-p9pc-299p-vxgp", // @mojaloop/event-sdk>@grpc/grpc-js>@grpc/proto-loader>yargs>yargs-parser
-        "GHSA-p9pc-299p-vxgp", // @mojaloop/central-services-shared>@mojaloop/event-sdk>@grpc/grpc-js>@grpc/proto-loader>yargs>yargs-parser
-        "GHSA-p9pc-299p-vxgp", // @mojaloop/central-services-shared>widdershins>swagger2openapi>oas-validator>oas-resolver>yargs>yargs-parser
-        "GHSA-v88g-cgmw-v5xw", // ajv
-        "GHSA-v88g-cgmw-v5xw", // @mojaloop/central-services-shared>ajv
-        "GHSA-v88g-cgmw-v5xw", // @mojaloop/central-services-shared>openapi-backend>ajv
-        "GHSA-v88g-cgmw-v5xw", // @mojaloop/central-services-shared>openapi-backend>openapi-schema-validator>ajv
-        "GHSA-v88g-cgmw-v5xw", // @mojaloop/central-services-shared>openapi-backend>openapi-schema-validator>ajv-formats>ajv
-        "GHSA-v88g-cgmw-v5xw", // eslint-config-airbnb-typescript>@typescript-eslint/eslint-plugin>@typescript-eslint/parser>eslint>@eslint/eslintrc>ajv
-        "GHSA-v88g-cgmw-v5xw", // eslint-config-airbnb-typescript>@typescript-eslint/eslint-plugin>@typescript-eslint/type-utils>@typescript-eslint/utils>eslint>@eslint/eslintrc>ajv
-        "GHSA-v88g-cgmw-v5xw", // eslint-config-airbnb-typescript>@typescript-eslint/eslint-plugin>@typescript-eslint/type-utils>@typescript-eslint/utils>eslint-utils>eslint>@eslint/eslintrc>ajv
-        "GHSA-phwq-j96m-2c2q", // @mojaloop/central-services-shared>shins>ejs
-        "GHSA-282f-qqgm-c34q", // @mojaloop/central-services-shared>widdershins>swagger2openapi>better-ajv-errors>jsonpointer
-        "GHSA-282f-qqgm-c34q", // @mojaloop/central-services-shared>widdershins>swagger2openapi>oas-validator>better-ajv-errors>jsonpointer
-        "GHSA-mjxr-4v3x-q3m4", // @mojaloop/central-services-shared>shins>sanitize-html
-        "GHSA-rjqq-98f6-6j3r", // @mojaloop/central-services-shared>shins>sanitize-html
-        "GHSA-6vfc-qv3f-vr6c", // @mojaloop/central-services-shared>shins>markdown-it
-        "GHSA-6vfc-qv3f-vr6c", // @mojaloop/central-services-shared>shins>markdown-it-attrs>markdown-it
-        "GHSA-7fh5-64p2-3v2j", // @mojaloop/central-services-shared>shins>sanitize-html>postcss
-        "GHSA-hrpp-h998-j3pp", // openapi-backend>qs
-        "GHSA-hrpp-h998-j3pp", // koa-body>formidable>qs
-        "GHSA-hrpp-h998-j3pp", // supertest>superagent>formidable>qs
-        "GHSA-hrpp-h998-j3pp", // @mojaloop/api-snippets>json-refs>path-loader>superagent>qs
-        "GHSA-hrpp-h998-j3pp", // @mojaloop/api-snippets>json-refs>path-loader>superagent>formidable>qs
-        "GHSA-rm97-x556-q36h"  // @mojaloop/central-services-shared>shins>sanitize-html
+        "GHSA-282f-qqgm-c34q",
+        "GHSA-v88g-cgmw-v5xw",
+        "GHSA-mjxr-4v3x-q3m4",
+        "GHSA-p9pc-299p-vxgp",
+        "GHSA-6vfc-qv3f-vr6c",
+        "GHSA-rjqq-98f6-6j3r",
+        "GHSA-phwq-j96m-2c2q",
+        "GHSA-wc69-rhjr-hc9g",
+        "GHSA-8qr4-xgw6-wmr3",
+        "GHSA-hrpp-h998-j3pp",
+        "GHSA-8cf7-32gw-wr33",
+        // Vulnerabilities for jsonwebtoken in
+        // sdk-standard-components
+        // central-services-error-handling
+        // central-services-shared
+        "GHSA-hjrf-2m68-5959",
+        "GHSA-qwph-4952-7xr6",
+        "GHSA-7fh5-64p2-3v2j",
+        // Some audit issues with api-snippets
+        "GHSA-c2qf-rxjj-qqgw",
+        // Issue with protobuffs (https://github.com/advisories/GHSA-h755-8qp9-cq85). No fix available.
+        "GHSA-h755-8qp9-cq85",
+        // @babel/traverse (https://github.com/advisories/GHSA-67hx-6x53-jw92)
+        "GHSA-67hx-6x53-jw92",
+        // Issue with PostCSS library (https://github.com/advisories/GHSA-7fh5-64p2-3v2j)
+        "GHSA-7fh5-64p2-3v2j",
+        // SSRF attacks against npm IP (https://github.com/advisories/GHSA-78xj-cgh5-2h22)
+        "GHSA-78xj-cgh5-2h22",
+        // https://github.com/advisories/GHSA-rm97-x556-q36h
+        "GHSA-rm97-x556-q36h",
+        "GHSA-wf5p-g6vw-rhxx", // https://github.com/advisories/GHSA-wf5p-g6vw-rhxx
+        "GHSA-2p57-rm9w-gvfp", // https://github.com/advisories/GHSA-2p57-rm9w-gvfp
+        "GHSA-8hc4-vh64-cxmj", // https://github.com/advisories/GHSA-8hc4-vh64-cxmj
+        "GHSA-952p-6rrq-rcjv"  // https://github.com/advisories/GHSA-952p-6rrq-rcjv
     ]
 }

@@ -1,5 +1,6 @@
 /*eslint quote-props: ["error", "as-needed"]*/
-const { randomUUID } = require('node:crypto');
+const config = require('../config');
+const randomUUID = require('@mojaloop/central-services-shared').Util.id(config.idGenerator);
 const { Directions, SDKStateEnum} = require('./model/common');
 
 const quoteRequestStateDto = (request) => ({

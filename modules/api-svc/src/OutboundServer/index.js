@@ -42,7 +42,7 @@ class OutboundApi extends EventEmitter {
         this._metricsClient = metricsClient;
 
         this._api.use(middlewares.createErrorHandler(this._logger));
-        this._api.use(middlewares.createRequestIdGenerator());
+        this._api.use(middlewares.createRequestIdGenerator(this._logger));
         this._api.use(koaBody({
             formidable: { maxFieldsSize: conf.backendApiServerMaxRequestBytes }
         })); // outbound always expects application/json
@@ -118,7 +118,7 @@ class OutboundServer extends EventEmitter {
         await this._validator.initialise(apiSpecs);
         await this._api.start();
         await new Promise((resolve) => this._server.listen(port, resolve));
-        this._logger.log(`Serving outbound API on port ${port}`);
+        this._logger.isInfoEnabled && this._logger.info(`Serving outbound API on port ${this._conf.outbound.port}`);
     }
 
     async stop() {
@@ -127,7 +127,7 @@ class OutboundServer extends EventEmitter {
         }
         await this._api.stop();
         await this._eventProducer?.destroy();
-        this._logger.log('outbound shut down complete');
+        this._logger.isInfoEnabled && this._logger.info('outbound shut down complete');
     }
 }
 

@@ -12,8 +12,8 @@ const { BackendError } = require('../common');
 const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const Ajv = require('ajv');
 const configSchema = require('./configSchema');
-const util = require('util');
 const Route = require('./Route');
+const safeStringify = require('fast-safe-stringify');
 
 /**
  * ProxyModel forwards request to corresponding endpoint based on provided route config
@@ -50,19 +50,19 @@ class ProxyModel {
 
     async _executePostRequest(request) {
         const res = await this._requests.postCustom(request.url, request.body, request.headers, request.query, true);
-        await this._logger.push({statusCode: res.statusCode, headers: res.headers}).log('POST request sent successfully');
+        await this._logger.push({statusCode: res.statusCode, headers: res.headers}).debug('POST request sent successfully');
         return res;
     }
 
     async _executePutRequest(request) {
         const res = await this._requests.putCustom(request.url, request.body, request.headers, request.query, true);
-        await this._logger.push({statusCode: res.statusCode, headers: res.headers}).log('PUT request sent successfully');
+        await this._logger.push({statusCode: res.statusCode, headers: res.headers}).debug('PUT request sent successfully');
         return res;
     }
 
     async _executeGetRequest(request) {
         const res = await this._requests.getCustom(request.url, request.headers, request.query, true);
-        await this._logger.push({statusCode: res.statusCode, headers: res.headers}).log('GET request sent successfully');
+        await this._logger.push({statusCode: res.statusCode, headers: res.headers}).debug('GET request sent successfully');
         return res;
     }
 
@@ -71,8 +71,8 @@ class ProxyModel {
         const validate = ajv.compile(configSchema);
         const valid = validate(config);
         if (!valid) {
-            const errors = util.inspect(validate.errors);
-            this._logger.push({ errors }).error('Proxy config is invalid');
+            const errors = safeStringify(validate.errors);
+            this._logger.isErrorEnabled && this._logger.push({ errors }).error('Proxy config is invalid');
             throw new Error(`Proxy config is invalid: ${errors}`);
         }
     }
@@ -87,7 +87,7 @@ class ProxyModel {
         try {
             return config.routes.map(routeConfig => new Route(routeConfig));
         } catch (e) {
-            this._logger.push({ e }).error('Failed to create route');
+            this._logger.isErrorEnabled && this._logger.push({ e }).error('Failed to create route');
             throw e;
         }
     }
@@ -119,7 +119,7 @@ class ProxyModel {
         }
         const url = this._getMatchingDestination(request);
         if (!url) {
-            this._logger.log(`No proxy rule found for ${request.url}`);
+            this._logger.isDebugEnabled && this._logger.debug(`No proxy rule found for ${request.url}`);
             return;
         }
         const destReq = {

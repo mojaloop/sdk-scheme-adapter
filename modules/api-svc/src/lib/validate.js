@@ -171,7 +171,7 @@ class Validator {
         result.params = Object.assign({}, ...path.match(result.matcher.regex).slice(1).map((m, i) => ({ [result.matcher.params[i]]: m})));
 
         if (!this.logExcludePaths.includes(path)) {
-            logger.push({path, result}).log('Matched path');
+            logger.isDebugEnabled && logger.push({path, result}).debug('Matched path');
         }
         return result;
     }
@@ -188,7 +188,7 @@ class Validator {
         const validationResult = path.methods[ctx.method.toLowerCase()].validator(ctx, path.params);
 
         if (validationResult !== undefined && validationResult.length > 0) {
-            logger.push({ validationResult }).log('Validation result');
+            logger.isDebugEnabled && logger.push({ validationResult }).debug('Validation result');
 
             let err;
             const firstError = validationResult[0];

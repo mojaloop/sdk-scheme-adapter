@@ -10,6 +10,12 @@
 
 'use strict';
 
+process.env.PEER_ENDPOINT = '172.17.0.3:4000';
+process.env.BACKEND_ENDPOINT = '172.17.0.5:4000';
+process.env.CACHE_URL = 'redis://172.17.0.2:6379';
+process.env.MGMT_API_WS_URL = '0.0.0.0';
+process.env.SUPPORTED_CURRENCIES='USD';
+
 const supertest = require('supertest');
 
 const defaultConfig = require('./data/defaultConfig');
@@ -45,7 +51,11 @@ describe('Inbound Server', () => {
             serverConfig.validateInboundJws = validateInboundJws;
             serverConfig.validateInboundPutPartiesJws = validateInboundPutPartiesJws;
             const logger = new Logger.Logger({ stringify: () => '' });
-            const cache = new Cache({ cacheUrl: serverConfig.cacheUrl, logger: logger.push({ component: 'cache' }) });
+            const cache = new Cache({
+                cacheUrl: serverConfig.cacheUrl,
+                logger: logger.push({ component: 'cache' }),
+                unsubscribeTimeoutMs: serverConfig.unsubscribeTimeoutMs,
+            });
             const svr = new InboundServer(serverConfig, logger, cache);
             await svr.start();
             await supertest(svr._server)
@@ -61,7 +71,11 @@ describe('Inbound Server', () => {
 
         async function testPartiesHeaderValidation(contentType, expectedStatusCode, expectedBody = null) {
             const logger = new Logger.Logger({ stringify: () => '' });
-            const cache = new Cache({ cacheUrl: serverConfig.cacheUrl, logger: logger.push({ component: 'cache' }) });
+            const cache = new Cache({
+                cacheUrl: serverConfig.cacheUrl,
+                logger: logger.push({ component: 'cache' }),
+                unsubscribeTimeoutMs: serverConfig.unsubscribeTimeoutMs,
+            });
             const svr = new InboundServer(serverConfig, logger, cache);
             await svr.start();
             const result = await supertest(svr._server)
@@ -141,7 +155,11 @@ describe('Inbound Server', () => {
             serverConfig.validateInboundJws = validateInboundJws;
             serverConfig.validateInboundPutPartiesJws = validateInboundPutPartiesJws;
             const logger = new Logger.Logger({ stringify: () => '' });
-            const cache = new Cache({ cacheUrl: serverConfig.cacheUrl, logger: logger.push({ component: 'cache' }) });
+            const cache = new Cache({
+                cacheUrl: serverConfig.cacheUrl,
+                logger: logger.push({ component: 'cache' }),
+                unsubscribeTimeoutMs: serverConfig.unsubscribeTimeoutMs,
+            });
             const svr = new InboundServer(serverConfig, logger, cache);
             await svr.start();
             await supertest(svr._server)
@@ -158,7 +176,11 @@ describe('Inbound Server', () => {
 
         async function testQuotesHeaderValidation(contentType, expectedStatusCode, expectedBody = null) {
             const logger = new Logger.Logger({ stringify: () => '' });
-            const cache = new Cache({ cacheUrl: serverConfig.cacheUrl, logger: logger.push({ component: 'cache' }) });
+            const cache = new Cache({
+                cacheUrl: serverConfig.cacheUrl,
+                logger: logger.push({ component: 'cache' }),
+                unsubscribeTimeoutMs: serverConfig.unsubscribeTimeoutMs,
+            });
             const svr = new InboundServer(serverConfig, logger, cache);
             await svr.start();
             const result = await supertest(svr._server)
@@ -232,7 +254,11 @@ describe('Inbound Server', () => {
             serverConfig.validateInboundJws = validateInboundJws;
             serverConfig.validateInboundPutPartiesJws = validateInboundPutPartiesJws;
             const logger = new Logger.Logger({ stringify: () => '' });
-            const cache = new Cache({ cacheUrl: serverConfig.cacheUrl, logger: logger.push({ component: 'cache' }) });
+            const cache = new Cache({
+                cacheUrl: serverConfig.cacheUrl,
+                logger: logger.push({ component: 'cache' }),
+                unsubscribeTimeoutMs: serverConfig.unsubscribeTimeoutMs,
+            });
             const svr = new InboundServer(serverConfig, logger, cache);
             await svr.start();
             await supertest(svr._server)
@@ -249,7 +275,11 @@ describe('Inbound Server', () => {
 
         async function testParticipantsHeaderValidation(contentType, expectedStatusCode, expectedBody = null) {
             const logger = new Logger.Logger({ stringify: () => '' });
-            const cache = new Cache({ cacheUrl: serverConfig.cacheUrl, logger: logger.push({ component: 'cache' }) });
+            const cache = new Cache({
+                cacheUrl: serverConfig.cacheUrl,
+                logger: logger.push({ component: 'cache' }),
+                unsubscribeTimeoutMs: serverConfig.unsubscribeTimeoutMs,
+            });
             const svr = new InboundServer(serverConfig, logger, cache);
             await svr.start();
             const result = await supertest(svr._server)
@@ -336,7 +366,11 @@ describe('Inbound Server', () => {
         async function testTlsServer(enableTls) {
             defConfig.inbound.tls.mutualTLS.enabled = enableTls;
             const logger = new Logger.Logger({ stringify: () => '' });
-            const cache = new Cache({ cacheUrl: defConfig.cacheUrl, logger: logger.push({ component: 'cache' }) });
+            const cache = new Cache({
+                cacheUrl: defConfig.cacheUrl,
+                logger: logger.push({ component: 'cache' }),
+                unsubscribeTimeoutMs: defConfig.unsubscribeTimeoutMs,
+            });
             const server = new InboundServer(defConfig, logger, cache);
             await server.start();
             if (enableTls) {
@@ -369,7 +403,11 @@ describe('Inbound Server', () => {
             fs.writeFileSync(mockFilePath, 'foo-key');
             serverConfig.jwsVerificationKeysDirectory = keysDir;
             const logger = new Logger.Logger({ stringify: () => '' });
-            const cache = new Cache({ cacheUrl: serverConfig.cacheUrl, logger: logger.push({ component: 'cache' }) });
+            const cache = new Cache({
+                cacheUrl: serverConfig.cacheUrl,
+                logger: logger.push({ component: 'cache' }),
+                unsubscribeTimeoutMs: serverConfig.unsubscribeTimeoutMs,
+            });
             svr = new InboundServer(serverConfig, logger, cache);
             await svr.start();
         });

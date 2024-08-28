@@ -10,10 +10,16 @@
 
 'use strict';
 
+process.env.PEER_ENDPOINT = '172.17.0.3:4000';
+process.env.BACKEND_ENDPOINT = '172.17.0.5:4000';
+process.env.CACHE_URL = 'redis://172.17.0.2:6379';
+process.env.MGMT_API_WS_URL = '0.0.0.0';
+process.env.SUPPORTED_CURRENCIES='USD';
+
 // we use a mock standard components lib to intercept and mock certain funcs
 jest.mock('@mojaloop/sdk-standard-components');
 
-const { uuid } = require('uuidv4');
+const uuid = require('@mojaloop/central-services-shared').Util.id();
 const Model = require('~/lib/model').TransfersModel;
 const PSM = require('~/lib/model/common').PersistentStateMachine;
 const { SDKStateEnum } = require('~/lib/model/common');
@@ -153,13 +159,13 @@ describe('TransfersModel', () => {
                 model.onRequestAction(model.fsm, { transferId, fspId, transfer })
                     .then(() => {
                         // subscribe should be called only once
-                        expect(cache.subscribe).toBeCalledTimes(1);
+                        expect(cache.subscribe).toHaveBeenCalledTimes(1);
 
                         // subscribe should be done to proper notificationChannel
                         expect(cache.subscribe.mock.calls[0][0]).toEqual(channel);
 
                         // check invocation of request.getParties
-                        expect(MojaloopRequests.__postTransfers).toBeCalledWith(transfer, fspId);
+                        expect(MojaloopRequests.__postTransfers).toHaveBeenCalledWith(transfer, fspId);
 
                         // check that this.context.data is updated
                         expect(model.context.data).toEqual({
@@ -169,11 +175,11 @@ describe('TransfersModel', () => {
                             currentState: 'start'
                         });
                         // handler should be called only once
-                        expect(handler).toBeCalledTimes(1);
+                        expect(handler).toHaveBeenCalledTimes(1);
 
                         // handler should unsubscribe from notification channel
-                        expect(cache.unsubscribe).toBeCalledTimes(1);
-                        expect(cache.unsubscribe).toBeCalledWith(channel, subId);
+                        expect(cache.unsubscribe).toHaveBeenCalledTimes(1);
+                        expect(cache.unsubscribe).toHaveBeenCalledWith(channel, subId);
                         resolve();
                     }).catch((err) => { reject(err); } );
             });
@@ -221,14 +227,14 @@ describe('TransfersModel', () => {
                         expect(cache.subscribe.mock.calls[0][0]).toEqual(channel);
 
                         // check invocation of request.getParties
-                        expect(MojaloopRequests.__postTransfers).toBeCalledWith(transfer, fspId);
+                        expect(MojaloopRequests.__postTransfers).toHaveBeenCalledWith(transfer, fspId);
 
                         // handler should be called only once
-                        expect(handler).toBeCalledTimes(0);
+                        expect(handler).toHaveBeenCalledTimes(0);
 
                         // handler should unsubscribe from notification channel
-                        expect(cache.unsubscribe).toBeCalledTimes(1);
-                        expect(cache.unsubscribe).toBeCalledWith(channel, subId);
+                        expect(cache.unsubscribe).toHaveBeenCalledTimes(1);
+                        expect(cache.unsubscribe).toHaveBeenCalledWith(channel, subId);
                         resolve();
                     });
             });
@@ -266,9 +272,9 @@ describe('TransfersModel', () => {
                 model.onRequestAction(model.fsm, { transferId, fspId, transfer })
                     .then(() => reject())
                     .catch((err) => {
-                        expect(err.message).toEqual('Unexpected token u in JSON at position 0');
-                        expect(cache.unsubscribe).toBeCalledTimes(1);
-                        expect(cache.unsubscribe).toBeCalledWith(channel, subId);
+                        expect(err).toBeInstanceOf(SyntaxError);
+                        expect(cache.unsubscribe).toHaveBeenCalledTimes(1);
+                        expect(cache.unsubscribe).toHaveBeenCalledWith(channel, subId);
                         resolve();
                     });
             });
@@ -302,8 +308,8 @@ describe('TransfersModel', () => {
                 theError = error;
                 expect(theError).toEqual('postTransfers failed');
                 // handler should unsubscribe from notification channel
-                expect(cache.unsubscribe).toBeCalledTimes(1);
-                expect(cache.unsubscribe).toBeCalledWith(channel, subId);
+                expect(cache.unsubscribe).toHaveBeenCalledTimes(1);
+                expect(cache.unsubscribe).toHaveBeenCalledWith(channel, subId);
             }
         });
 
@@ -324,9 +330,9 @@ describe('TransfersModel', () => {
             model.context.data.currentState = 'start';
             const result = await model.run({ transferId, fspId, transfer });
             expect(result).toEqual({the: 'response'});
-            expect(model.requestAction).toBeCalledTimes(1);
-            expect(model.getResponse).toBeCalledTimes(1);
-            expect(model.context.logger.log.mock.calls).toEqual([
+            expect(model.requestAction).toHaveBeenCalledTimes(1);
+            expect(model.getResponse).toHaveBeenCalledTimes(1);
+            expect(model.context.logger.debug.mock.calls).toEqual([
                 ['State machine transitioned \'init\': none -> start'],
                 ['Action called successfully'],
                 [`Persisted model in cache: ${cacheKey}`],
@@ -346,8 +352,8 @@ describe('TransfersModel', () => {
             const result = await model.run({ transferId, fspId, transfer });
 
             expect(result).toEqual({the: 'response'});
-            expect(model.getResponse).toBeCalledTimes(1);
-            expect(model.context.logger.log).toBeCalledWith('Action called successfully');
+            expect(model.getResponse).toHaveBeenCalledTimes(1);
+            expect(model.context.logger.debug).toHaveBeenCalledWith('Action called successfully');
         });
 
         it('errored', async () => {
@@ -364,8 +370,8 @@ describe('TransfersModel', () => {
             const result = await model.run({ transferId, fspId, transfer});
 
             expect(result).toBeFalsy();
-            expect(model.getResponse).not.toBeCalled();
-            expect(model.context.logger.log).toBeCalledWith('State machine in errored state');
+            expect(model.getResponse).not.toHaveBeenCalled();
+            expect(model.context.logger.error).toHaveBeenCalledWith('State machine in errored state');
         });
 
         it('handling errors', async () => {
@@ -418,7 +424,7 @@ describe('TransfersModel', () => {
             expect(theError.message).toEqual('requestAction failed');
 
             // ensure we start transition to errored state
-            expect(model.error).toBeCalledTimes(1);
+            expect(model.error).toHaveBeenCalledTimes(1);
         });
 
         it('should handle input validation for lack of transferId param', async () => {
@@ -465,11 +471,11 @@ describe('TransfersModel', () => {
             expect(typeof model.requestAction).toEqual('function');
 
             // check how cache.get has been called
-            expect(modelConfig.cache.get).toBeCalledWith(key);
+            expect(modelConfig.cache.get).toHaveBeenCalledWith(key);
 
             // check how loadFromCache from parent PSM module was used
-            expect(spyLoadFromCache).toBeCalledTimes(1);
-            expect(spyLoadFromCache).toBeCalledWith(
+            expect(spyLoadFromCache).toHaveBeenCalledTimes(1);
+            expect(spyLoadFromCache).toHaveBeenCalledWith(
                 modelConfig.cache,
                 key,
                 modelConfig.logger,

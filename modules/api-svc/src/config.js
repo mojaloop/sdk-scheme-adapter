@@ -62,6 +62,7 @@ module.exports = {
         mgmtAPIWsUrl: env.get('MGMT_API_WS_URL').default('127.0.0.1').asString(),
         mgmtAPIWsPort: env.get('MGMT_API_WS_PORT').default('4005').asPortNumber()
     },
+    idGenerator: env.get('ID_GENERATOR').default('{"type":"uuid","version":4}').asJsonObject(),
     logLevel: env.get('LOG_LEVEL').default('info').asEnum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']),
     inbound: {
         port: env.get('INBOUND_LISTEN_PORT').default('4000').asPortNumber(),
@@ -163,6 +164,7 @@ module.exports = {
     jwsSigningKey: env.get('JWS_SIGNING_KEY_PATH').asFileContent(),
     jwsVerificationKeysDirectory: env.get('JWS_VERIFICATION_KEYS_DIRECTORY').asString(),
     cacheUrl: env.get('CACHE_URL').default('redis://localhost:6379').asUrlString(),
+    unsubscribeTimeoutMs: env.get('UNSUBSCRIBE_TIMEOUT_MS').default('5000').asIntPositive(),
     enableTestFeatures: env.get('ENABLE_TEST_FEATURES').default('false').asBool(),
     oauthTestServer: {
         enabled: env.get('ENABLE_OAUTH_TOKEN_ENDPOINT').default('false').asBool(),
@@ -178,6 +180,7 @@ module.exports = {
             clientSecret: env.get('OAUTH_CLIENT_SECRET').asString(),
             refreshSeconds: env.get('OAUTH_REFRESH_SECONDS').default('60').asIntPositive(),
         },
+        mTlsEnabled: env.get('OAUTH_MUTUAL_TLS_ENABLED').default('false').asBool(),
         requestAuthFailureRetryTimes: env.get('WSO2_AUTH_FAILURE_REQUEST_RETRIES').default('0').asIntPositive(),
     },
     rejectExpiredQuoteResponses: env.get('REJECT_EXPIRED_QUOTE_RESPONSES').default('false').asBool(),

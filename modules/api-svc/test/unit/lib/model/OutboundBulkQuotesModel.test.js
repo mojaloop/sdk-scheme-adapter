@@ -10,6 +10,12 @@
 
 'use strict';
 
+process.env.PEER_ENDPOINT = '172.17.0.3:4000';
+process.env.BACKEND_ENDPOINT = '172.17.0.5:4000';
+process.env.CACHE_URL = 'redis://172.17.0.2:6379';
+process.env.MGMT_API_WS_URL = '0.0.0.0';
+process.env.SUPPORTED_CURRENCIES='USD';
+
 // we use a mock standard components lib to intercept and mock certain funcs
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('redis');
@@ -93,9 +99,10 @@ describe('OutboundBulkQuotesModel', () => {
         MojaloopRequests.__putBulkQuotesError = jest.fn(() => Promise.resolve());
 
         cache = new Cache({
-                cacheUrl: 'redis://dummy:1234',
-                logger,
-            });
+            cacheUrl: 'redis://dummy:1234',
+            logger,
+            unsubscribeTimeoutMs: 5000
+        });
         await cache.connect();
     });
 
@@ -234,7 +241,7 @@ describe('OutboundBulkQuotesModel', () => {
 
         expect(StateMachine.__instance.state).toBe('start');
 
-        const errMsg = 'Got an error response requesting bulk quote: { errorInformation:\n   { errorCode: \'3205\', errorDescription: \'Bulk quote ID not found\' } }';
+        const errMsg = 'Got an error response requesting bulk quote: {"errorInformation":{"errorCode":"3205","errorDescription":"Bulk quote ID not found"}}';
 
         try {
             await model.run();

@@ -24,6 +24,20 @@
         "TTKSIM3_MSISDN_2_LAST_NAME": "ReceiverLast",
         "TTKSIM3_CURRENCY": "TZS",
         "TTKSIM2_MSISDN_PREFIX": "4561",
-        "TTKSIM3_MSISDN_PREFIX": "5671"
+        "TTKSIM3_MSISDN_PREFIX": "5671",
+        "FXP_TO_PARTY_ID": "2551234567890",
+        "FXP_FROM_PARTY_ID": "9551234567891",
+        "FXP_PAYER_DFSP_ID": "ttksim1",
+        "FXP_PAYEE_DFSP_ID": "ttksim2",
+        "FXP_ID": "ttkfxp",
+        "FXP_TESTFXP1_ID": "testfxp1",
+        "FXP_FXPAYERDFSP_ID": "fxpayerdfsp",
+        "FXP_FXPAYEEDFSP_ID": "fxpayeedfsp",
+        "FXP_EXPIRATION": "2023-12-25T14:17:09.663+01:00",
+        "FXP_SOURCE_CURRENCY": "USD",
+        "FXP_TARGET_CURRENCY": "XOF",
+        "FXP_SOURCE_CURRENCY_ALTERNATIVE": "XXX",
+        "FXP_SOURCE_AMOUNT": "300",
+        "FXP_TARGET_AMOUNT": "48000"
     }
 }

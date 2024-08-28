@@ -65,13 +65,13 @@
   },
   "API_DEFINITIONS": [
     {
-      "type": "fspiop",
+      "type": "fspiop 1.0",
       "version": "1.0",
       "folderPath": "fspiop_1.0",
       "asynchronous": true
     },
     {
-      "type": "fspiop",
+      "type": "fspiop 1.1",
       "version": "1.1",
       "folderPath": "fspiop_1.1",
       "asynchronous": true
@@ -104,16 +104,6 @@
       "folderPath": "als_admin_1.1"
     },
     {
-      "type": "mojaloop_simulator",
-      "version": "0.1",
-      "folderPath": "mojaloop_simulator_0.1"
-    },
-    {
-      "type": "mojaloop_simulator_inbound",
-      "version": "1.4",
-      "folderPath": "mojaloop_simulator_sim_1.4"
-    },
-    {
       "type": "mojaloop_sdk_outbound_scheme_adapter",
       "version": "1.0",
       "folderPath": "mojaloop_sdk_outbound_scheme_adapter_1.0",
@@ -121,23 +111,15 @@
       "prefix": "/sdk-out"
     },
     {
-      "type": "payment_manager",
-      "version": "1.4",
-      "folderPath": "payment_manager_1.4",
-      "hostnames": [
-        "pm4ml.hostname.here"
-      ]
-    },
-    {
-      "type": "fx-api",
-      "version": "2.0",
-      "folderPath": "fx-api_2.0",
-      "asynchronous": true
-    },
-    {
       "type": "thirdparty_sdk_outbound",
       "version": "0.1",
       "folderPath": "thirdparty_sdk_outbound_0.1"
+    },
+    {
+      "type": "fspiop 2.0",
+      "version": "2.0",
+      "folderPath": "fspiop_2.0",
+      "asynchronous": true
     }
   ]
 }

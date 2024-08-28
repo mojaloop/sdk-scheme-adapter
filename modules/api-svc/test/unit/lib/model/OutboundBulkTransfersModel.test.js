@@ -10,6 +10,12 @@
 
 'use strict';
 
+process.env.PEER_ENDPOINT = '172.17.0.3:4000';
+process.env.BACKEND_ENDPOINT = '172.17.0.5:4000';
+process.env.CACHE_URL = 'redis://172.17.0.2:6379';
+process.env.MGMT_API_WS_URL = '0.0.0.0';
+process.env.SUPPORTED_CURRENCIES='USD';
+
 // we use a mock standard components lib to intercept and mock certain funcs
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('redis');
@@ -86,6 +92,7 @@ describe('outboundBulkTransferModel', () => {
         cache = new Cache({
             cacheUrl: 'redis://dummy:1234',
             logger,
+            unsubscribeTimeoutMs: 5000
         });
         await cache.connect();
     });
@@ -228,13 +235,12 @@ describe('outboundBulkTransferModel', () => {
 
         expect(StateMachine.__instance.state).toBe('start');
 
-        const errMsg = 'Got an error response preparing bulk transfer: { errorInformation:\n   { errorCode: \'4001\',\n     errorDescription: \'Payer FSP insufficient liquidity\' } }';
+        const errMsg = 'Got an error response preparing bulk transfer: {"errorInformation":{"errorCode":"4001","errorDescription":"Payer FSP insufficient liquidity"}}';
 
         try {
             await model.run();
         }
         catch(err) {
-            console.log(err.message)
             expect(err.message.replace(/[ \n]/g,'')).toEqual(errMsg.replace(/[ \n]/g,''));
             expect(err.bulkTransferState).toBeTruthy();
             // TODO: Need to check the lastError functionality in response handling. Commenting until then.

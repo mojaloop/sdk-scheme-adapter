@@ -58,13 +58,13 @@ class BackendEventHandler {
 
     async start() {
         const config = this._conf;
-        this._logger.info('start');
+        this._logger.isInfoEnabled && this._logger.info('start');
 
         this._consumer = new KafkaDomainEventConsumer(this._messageHandler.bind(this), config.backendEventHandler.domainEventConsumer, this._loggerFromLoggingBC);
-        this._logger.info(`Created Message Consumer of type ${this._consumer.constructor.name}`);
+        this._logger.isInfoEnabled && this._logger.info(`Created Message Consumer of type ${this._consumer.constructor.name}`);
 
         this._producer = new KafkaDomainEventProducer(config.backendEventHandler.domainEventProducer, this._loggerFromLoggingBC);
-        this._logger.info(`Created Message Producer of type ${this._producer.constructor.name}`);
+        this._logger.isInfoEnabled && this._logger.info(`Created Message Producer of type ${this._producer.constructor.name}`);
         await this._producer.init();
 
         // Create options for handlers
@@ -79,7 +79,7 @@ class BackendEventHandler {
     }
 
     async stop() {
-        this._logger.info('stop');
+        this._logger.isInfoEnabled && this._logger.info('stop');
         await Promise.all([
             this._consumer?.destroy(),
             this._producer?.destroy(),
@@ -88,7 +88,7 @@ class BackendEventHandler {
     }
 
     async _messageHandler(message) {
-        this._logger.info(`Got domain event message: ${message.getName()}`);
+        this._logger.isInfoEnabled && this._logger.info(`Got domain event message: ${message.getName()}`);
         // TODO: Handle errors validation here
         switch (message.getName()) {
             case SDKOutboundBulkAcceptPartyInfoRequestedDmEvt.name: {
@@ -104,7 +104,7 @@ class BackendEventHandler {
                 break;
             }
             default: {
-                this._logger.debug(`${message?.getName()}:${message?.getKey()} - Skipping unknown domain event`);
+                this._logger.isDebugEnabled && this._logger.debug(`${message?.getName()}:${message?.getKey()} - Skipping unknown domain event`);
                 return;
             }
         }

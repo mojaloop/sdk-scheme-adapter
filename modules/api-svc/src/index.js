@@ -11,9 +11,10 @@
 'use strict';
 
 const { hostname } = require('os');
-const _ = require('lodash');
-const config = require('./config');
 const EventEmitter = require('events');
+const _ = require('lodash');
+const { Logger } = require('@mojaloop/sdk-standard-components');
+const config = require('./config');
 
 const InboundServer = require('./InboundServer');
 const OutboundServer = require('./OutboundServer');
@@ -32,7 +33,8 @@ const Router = require('./lib/router');
 const Validate = require('./lib/validate');
 const Cache = require('./lib/cache');
 const { SDKStateEnum } = require('./lib/model/common');
-const { Logger, WSO2Auth } = require('@mojaloop/sdk-standard-components');
+const { createAuthClient } = require('./lib/utils');
+const { SDK_LOGGER_HIERARCHY } = require('./constants');
 
 const LOG_ID = {
     INBOUND:   { app: 'mojaloop-connector-inbound-api' },
@@ -70,14 +72,7 @@ class Server extends EventEmitter {
             logger: this.logger.push(LOG_ID.METRICS)
         });
 
-        this.wso2 = {
-            auth: new WSO2Auth({
-                ...conf.wso2.auth,
-                logger,
-                tlsCreds: conf.outbound.tls.mutualTLS.enabled && conf.outbound.tls.creds,
-            }),
-            retryWso2AuthFailureTimes: conf.wso2.requestAuthFailureRetryTimes,
-        };
+        this.wso2 = createAuthClient(conf, logger);
         this.wso2.auth.on('error', (msg) => {
             this.emit('error', 'WSO2 auth error in InboundApi', msg);
         });
@@ -89,7 +84,7 @@ class Server extends EventEmitter {
             this.wso2,
         );
         this.inboundServer.on('error', (...args) => {
-            this.logger.push({ args }).log('Unhandled error in Inbound Server');
+            this.logger.isErrorEnabled && this.logger.push({ args }).error('Unhandled error in Inbound Server');
             this.emit('error', 'Unhandled error in Inbound Server');
         });
 
@@ -101,7 +96,7 @@ class Server extends EventEmitter {
             this.wso2,
         );
         this.outboundServer.on('error', (...args) => {
-            this.logger.push({ args }).log('Unhandled error in Outbound Server');
+            this.logger.isErrorEnabled && this.logger.push({ args }).error('Unhandled error in Outbound Server');
             this.emit('error', 'Unhandled error in Outbound Server');
         });
 
@@ -181,6 +176,7 @@ class Server extends EventEmitter {
                     simulator: process.env['SIM_NAME'],
                     hostname: hostname(),
                 },
+                opts: {levels: SDK_LOGGER_HIERARCHY.slice(SDK_LOGGER_HIERARCHY.indexOf(config.logLevel))},
                 stringify: Logger.buildStringify({ space: this.conf.logIndent }),
             });
         }
@@ -199,12 +195,7 @@ class Server extends EventEmitter {
             || !_.isEqual(this.conf.outbound.tls, newConf.outbound.tls);
         if (updateWSO2) {
             this.wso2.auth.stop();
-            this.wso2.auth = new WSO2Auth({
-                ...newConf.wso2.auth,
-                logger: this.logger,
-                tlsCreds: newConf.outbound.tls.mutualTLS.enabled && newConf.outbound.tls.creds,
-            });
-            this.wso2.retryWso2AuthFailureTimes = newConf.wso2.requestAuthFailureRetryTimes;
+            this.wso2 = createAuthClient(newConf, this.logger);
             this.wso2.auth.on('error', (msg) => {
                 this.emit('error', 'WSO2 auth error in InboundApi', msg);
             });
@@ -332,11 +323,11 @@ class Server extends EventEmitter {
 * Call the Connector Manager in Management API to get the updated config
 */
 async function _GetUpdatedConfigFromMgmtAPI(conf, logger, client) {
-    logger.log(`Getting updated config from Management API at ${conf.control.mgmtAPIWsUrl}:${conf.control.mgmtAPIWsPort}...`);
+    logger.isInfoEnabled && logger.info(`Getting updated config from Management API at ${conf.control.mgmtAPIWsUrl}:${conf.control.mgmtAPIWsPort}...`);
     const clientSendResponse = await client.send(ControlAgent.build.CONFIGURATION.READ());
-    logger.log('client send returned:: ', clientSendResponse);
+    logger.isInfoEnabled && logger.info('client send returned:: ', clientSendResponse);
     const responseRead = await client.receive();
-    logger.log('client receive returned:: ', responseRead);
+    logger.isInfoEnabled && logger.info('client receive returned:: ', responseRead);
     return responseRead.data;
 }
 
@@ -350,6 +341,7 @@ if(require.main === module) {
                 simulator: process.env['SIM_NAME'],
                 hostname: hostname(),
             },
+            opts: {levels: SDK_LOGGER_HIERARCHY.slice(SDK_LOGGER_HIERARCHY.indexOf(config.logLevel))},
             stringify: Logger.buildStringify({ space: config.logIndent }),
         });
         if(config.pm4mlEnabled) {
@@ -360,25 +352,25 @@ if(require.main === module) {
                 appConfig: config,
             });
             const updatedConfigFromMgmtAPI = await _GetUpdatedConfigFromMgmtAPI(config, logger, controlClient);
-            logger.log(`updatedConfigFromMgmtAPI: ${JSON.stringify(updatedConfigFromMgmtAPI)}`);
+            logger.isInfoEnabled && logger.info(`updatedConfigFromMgmtAPI: ${JSON.stringify(updatedConfigFromMgmtAPI)}`);
             _.merge(config, updatedConfigFromMgmtAPI);
             controlClient.terminate();
         }
         const svr = new Server(config, logger);
         svr.on('error', (err) => {
-            logger.push({ err }).log('Unhandled server error');
+            logger.isErrorEnabled && logger.push({ err }).error('Unhandled server error');
             process.exit(1);
         });
 
         // handle SIGTERM to exit gracefully
         process.on('SIGTERM', async () => {
-            logger.log('SIGTERM received. Shutting down APIs...');
+            logger.isInfoEnabled && logger.info('SIGTERM received. Shutting down APIs...');
             await svr.stop();
             process.exit(0);
         });
 
         svr.start().catch(err => {
-            logger.push({ err }).log('Error starting server');
+            logger.isErrorEnabled && logger.push({ err }).error('Error starting server');
             process.exit(1);
         });
     })();

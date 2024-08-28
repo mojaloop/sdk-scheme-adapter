@@ -57,7 +57,7 @@ module.exports.handleBulkTransfersRequestedDmEvt = async (
 
         await options.producer.sendDomainEvent(bulkTransfersCallbackReceivedDmEvt);
     } catch (err) {
-        logger.push({ err }).log('Error in handleBulkTransfersRequestedDmEvt');
+        logger.isErrorEnabled && logger.push({ err }).error('Error in handleBulkTransfersRequestedDmEvt');
         const bulkTransfersCallbackReceivedDmEvt = new BulkTransfersCallbackReceivedDmEvt({
             bulkId: event.getKey(),
             content: {
