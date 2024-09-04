@@ -75,11 +75,11 @@
   },
   "dependencies": {
     "nx": "16.5.0",
-    "tslib": "^2.6.3"
+    "tslib": "^2.7.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
-    "@types/node": "^22.4.2",
+    "@types/node": "^22.5.3",
     "@types/node-cache": "^4.2.5",
     "@typescript-eslint/eslint-plugin": "^7.15.0",
     "@typescript-eslint/parser": "^7.15.0",
@@ -93,10 +93,10 @@
     "npm-check-updates": "^16.7.10",
     "replace": "^1.2.2",
     "standard-version": "^9.5.0",
-    "ts-jest": "^29.2.4",
+    "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4",
-    "yarn-audit-fix": "^10.0.8"
+    "yarn-audit-fix": "^10.0.9"
   },
   "resolutions": {
     "cacache/tar": "^6.2.1",
