@@ -58,7 +58,7 @@ const throwOrJson = async (res) => {
         // success but no content, return null
         return null;
     }
-    if(res.statusCode < 200 || res.statusCode >= 300) {
+    if (res.statusCode < 200 || res.statusCode >= 300) {
         // not a successful request
         throw new HTTPResponseError({ msg: `Request returned non-success status code ${res.statusCode}`,
             res

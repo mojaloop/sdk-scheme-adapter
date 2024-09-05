@@ -114,6 +114,8 @@ class OutboundTransfersModel {
         };
 
         this.getServicesFxpResponse = config.getServicesFxpResponse; // todo: replace with real request
+
+        this._logger.isDebugEnabled && this._logger.push(config.outbound.tls.creds).debug('OutboundTransfersModel is created with outbound.tls.creds');
     }
 
 
@@ -516,6 +518,8 @@ class OutboundTransfersModel {
     async _requestServicesFxp() {
         this.data.fxProviders = this.getServicesFxpResponse;
         // todo: add impl. with real http-request
+        this._logger.isInfoEnabled && this._logger.push(this.data.fxProviders).info('servicesFxp configured response');
+
         if (!this.data.fxProviders?.length) {
             throw new Error(ErrorMessages.noFxProviderDetected);
         }
