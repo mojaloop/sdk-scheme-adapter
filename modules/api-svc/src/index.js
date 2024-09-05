@@ -168,6 +168,7 @@ class Server extends EventEmitter {
     // todo: clarify, why do we need this method?
     //       (!) lots of code duplication
     async restart(newConf) {
+        this.logger.isDebugEnabled && this.logger.debug('Server is restarting...');
         const updateLogger = !_.isEqual(newConf.logIndent, this.conf.logIndent);
         if (updateLogger) {
             this.logger = new Logger.Logger({
@@ -263,7 +264,11 @@ class Server extends EventEmitter {
                     appConfig: newConf,
                 });
                 this.controlClient.on(ControlAgent.EVENT.RECONFIGURE, this.restart.bind(this));
-                this.controlClient.on('close', () => setTimeout(() => this.restart(_.merge({}, newConf, { control: { stopped: Date.now() } })), RESTART_INTERVAL_MS));
+                this.controlClient.on('close', () => setTimeout(() => {
+                    this.restart(_.merge({}, newConf, {
+                        control: { stopped: Date.now() }
+                    }));
+                }, RESTART_INTERVAL_MS));
             }
         }
 
@@ -294,11 +299,12 @@ class Server extends EventEmitter {
             }
         }
 
-        this.conf = newConf;
+        _.merge(this.conf, newConf);
 
         await Promise.all([
             oldCache?.disconnect(),
         ]);
+        this.logger.isDebugEnabled && this.logger.debug('Server is restarted');
     }
 
     stop() {
