@@ -2277,7 +2277,7 @@ __metadata:
     eslint: ^8.57.0
     eslint-config-airbnb-base: ^15.0.0
     eslint-plugin-import: ^2.30.0
-    eslint-plugin-jest: ^28.8.2
+    eslint-plugin-jest: ^28.8.3
     express: ^4.19.2
     fast-json-patch: ^3.1.1
     fast-safe-stringify: ^2.1.1
@@ -2321,7 +2321,7 @@ __metadata:
     "@types/convict": ^6.1.6
     "@types/express": ^4.17.21
     "@types/jest": ^29.5.12
-    "@types/node": ^22.5.3
+    "@types/node": ^22.5.4
     "@types/node-cache": ^4.2.5
     "@types/supertest": ^6.0.2
     "@types/swagger-ui-express": ^4.1.6
@@ -2359,7 +2359,7 @@ __metadata:
     "@types/convict": ^6.1.6
     "@types/express": ^4.17.21
     "@types/jest": ^29.5.12
-    "@types/node": ^22.5.3
+    "@types/node": ^22.5.4
     "@types/node-cache": ^4.2.5
     "@types/supertest": ^6.0.2
     "@types/swagger-ui-express": ^4.1.6
@@ -2394,7 +2394,7 @@ __metadata:
     "@mojaloop/logging-bc-public-types-lib": ^0.5.4
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.6.2
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": 0.2.15
-    "@types/node": ^22.5.3
+    "@types/node": ^22.5.4
     "@types/uuid": ^10.0.0
     ajv: ^8.17.1
     eslint: ^8.57.0
@@ -2414,7 +2414,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter@workspace:."
   dependencies:
     "@types/jest": ^29.5.12
-    "@types/node": ^22.5.3
+    "@types/node": ^22.5.4
     "@types/node-cache": ^4.2.5
     "@typescript-eslint/eslint-plugin": ^7.15.0
     "@typescript-eslint/parser": ^7.15.0
@@ -3392,7 +3392,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=13.7.0, @types/node@npm:^22.5.3":
+"@types/node@npm:*, @types/node@npm:>=13.7.0":
   version: 22.5.3
   resolution: "@types/node@npm:22.5.3"
   dependencies:
@@ -3405,6 +3405,15 @@ __metadata:
   version: 14.18.63
   resolution: "@types/node@npm:14.18.63"
   checksum: be909061a54931778c71c49dc562586c32f909c4b6197e3d71e6dac726d8bd9fccb9f599c0df99f52742b68153712b5097c0f00cac4e279fa894b0ea6719a8fd
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^22.5.4":
+  version: 22.5.4
+  resolution: "@types/node@npm:22.5.4"
+  dependencies:
+    undici-types: ~6.19.2
+  checksum: 77ac225c38c428200036780036da0bc6764e2721cfa8f528c7e7da7cfefe01a32a5791e28a54efbeedbc977949058d7db902b2e00139298225d4686cee4ae6db
   languageName: node
   linkType: hard
 
@@ -6602,9 +6611,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-jest@npm:^28.8.2":
-  version: 28.8.2
-  resolution: "eslint-plugin-jest@npm:28.8.2"
+"eslint-plugin-jest@npm:^28.8.3":
+  version: 28.8.3
+  resolution: "eslint-plugin-jest@npm:28.8.3"
   dependencies:
     "@typescript-eslint/utils": ^6.0.0 || ^7.0.0 || ^8.0.0
   peerDependencies:
@@ -6616,7 +6625,7 @@ __metadata:
       optional: true
     jest:
       optional: true
-  checksum: ffb7cf1a537b91447a5914704018d0018456d83240b3982cd81d1c8e351bcacd5d71a36e3a92c50da7399b1b3b38370fb16c095bbdf6a282d6c232f665b7ea0e
+  checksum: e371fcbe2127a403824b6c23b66f6b2e2cc54074c3c70a9965d48bdcdfb461670965a7d7cdddab68f09e703d3a09a281d05591b1cb4315f5246d27fd8baa84ac
   languageName: node
   linkType: hard
 

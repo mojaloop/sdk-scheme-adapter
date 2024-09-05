@@ -299,7 +299,7 @@ class Server extends EventEmitter {
             }
         }
 
-        this.conf = newConf;
+        _.merge(this.conf, newConf);
 
         await Promise.all([
             oldCache?.disconnect(),
