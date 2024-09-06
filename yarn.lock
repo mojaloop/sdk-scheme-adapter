@@ -2265,7 +2265,7 @@ __metadata:
     "@mojaloop/central-services-shared": 18.7.3
     "@mojaloop/event-sdk": ^14.1.1
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
-    "@mojaloop/sdk-standard-components": 18.4.0
+    "@mojaloop/sdk-standard-components": 19.0.0-snapshot.1
     "@redocly/openapi-cli": ^1.0.0-beta.94
     "@types/jest": ^29.5.12
     ajv: 8.17.1
@@ -2437,16 +2437,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mojaloop/sdk-standard-components@npm:18.4.0":
-  version: 18.4.0
-  resolution: "@mojaloop/sdk-standard-components@npm:18.4.0"
+"@mojaloop/sdk-standard-components@npm:19.0.0-snapshot.1":
+  version: 19.0.0-snapshot.1
+  resolution: "@mojaloop/sdk-standard-components@npm:19.0.0-snapshot.1"
   dependencies:
     base64url: 3.0.1
     fast-safe-stringify: ^2.1.1
-    ilp-packet: 2.2.0
+    ilp-packet: 3.1.3
     jsonwebtoken: 9.0.2
     jws: 4.0.0
-  checksum: 0b6a4b4d0a14f6736694af9f057b94da0a3a29dc5b739513da058e6cbb7304bf07a947255523fdd45dc0ecae8ebdbc3a32744071b1ebf5d17e722ab055b11876
+  checksum: 561770427f69e7e9cffd4702d76ce3e624626dc81448292181c81995a644b134372041626b2dd3a8ce2f9377e089bc952e449a6be5f023442135b163d13b307c
   languageName: node
   linkType: hard
 
@@ -3352,6 +3352,13 @@ __metadata:
   version: 4.17.7
   resolution: "@types/lodash@npm:4.17.7"
   checksum: 09e58a119cd8a70acfb33f8623dc2fc54f74cdce3b3429b879fc2daac4807fe376190a04b9e024dd300f9a3ee1876d6623979cefe619f70654ca0fe0c47679a7
+  languageName: node
+  linkType: hard
+
+"@types/long@npm:4.0.1":
+  version: 4.0.1
+  resolution: "@types/long@npm:4.0.1"
+  checksum: ff9653c33f5000d0f131fd98a950a0343e2e33107dd067a97ac4a3b9678e1a2e39ea44772ad920f54ef6e8f107f76bc92c2584ba905a0dc4253282a4101166d0
   languageName: node
   linkType: hard
 
@@ -4485,13 +4492,6 @@ __metadata:
   peerDependencies:
     ajv: 4.11.8 - 6
   checksum: bdba953017e5d1323effe91dd766641dfacc7f1b05911969ce70dfdfe1eee42adc3633c70a10879b4ec652cc514cc0ea59c39aeee721abcee21819f10d29fa1e
-  languageName: node
-  linkType: hard
-
-"bignumber.js@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "bignumber.js@npm:5.0.0"
-  checksum: 3c39837967741eb13159d79fefc956dc2ba4be29412f18138b8832d6ff66d127b15efba2f153129de03e8bcc9b2cf52d9ac5ee560fc20d29e6c60a2ab79a9367
   languageName: node
   linkType: hard
 
@@ -8137,15 +8137,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ilp-packet@npm:2.2.0":
-  version: 2.2.0
-  resolution: "ilp-packet@npm:2.2.0"
+"ilp-packet@npm:3.1.3":
+  version: 3.1.3
+  resolution: "ilp-packet@npm:3.1.3"
   dependencies:
-    bignumber.js: ^5.0.0
     extensible-error: ^1.0.2
-    long: ^3.2.0
-    oer-utils: ^1.3.2
-  checksum: 251ac76b0ab11262270b6cb0b6fbeb8df119f37c3b1bd8d55da89c211aed62932f78f9b58b63e546d69183c785dc158dac91aa9ba2898628ba3bec1806001bed
+    oer-utils: ^5.1.2
+  checksum: 410f75c6f62959a6dd4d115044f5201ddb59dcbc393ff42cba4b649a11466f3325b2663e7237986ec5aee53d8a923b74c78c18e5048a1b41adf804d76ccf9a17
   languageName: node
   linkType: hard
 
@@ -10002,10 +10000,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"long@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "long@npm:3.2.0"
-  checksum: bc27bdeab42cb2f25d0a0faf5fbf77b657bd59236ae0ed649c44f91f35e632230ebd0c62d208bb4e9c69ca558a45e9c9c0810e6b5c0380a1754b8f3b5b7b62d7
+"long@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "long@npm:4.0.0"
+  checksum: 16afbe8f749c7c849db1f4de4e2e6a31ac6e617cead3bdc4f9605cb703cd20e1e9fc1a7baba674ffcca57d660a6e5b53a9e236d7b25a295d3855cca79cc06744
   languageName: node
   linkType: hard
 
@@ -11372,10 +11370,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"oer-utils@npm:^1.3.2":
-  version: 1.3.4
-  resolution: "oer-utils@npm:1.3.4"
-  checksum: 96c425a91e56ef91e458d4a89e9b75afdc6ba0ef75037b667e04862cd5225e93f5b29557cde56d76df92ea5c442e0f727607feea8998665ce2aa08ee39b98890
+"oer-utils@npm:^5.1.2":
+  version: 5.1.2
+  resolution: "oer-utils@npm:5.1.2"
+  dependencies:
+    "@types/long": 4.0.1
+    long: ^4.0.0
+  checksum: e4b04ebbd178c6d7deb012b9206acdf059c4c9aabdf05b01a006df58a7810f263bb67e5dc8544565b6c030b709ae20e2a2e7efb0fcd386688e6caa8d6aa1537e
   languageName: node
   linkType: hard
 
