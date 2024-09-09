@@ -1,5 +1,5 @@
 # Arguments
-ARG NODE_VERSION=lts-alpine
+ARG NODE_VERSION=18.20.4-alpine
 
 # NOTE: Ensure you set NODE_VERSION Build Argument as follows...
 #
@@ -11,7 +11,7 @@ ARG NODE_VERSION=lts-alpine
 #
 
 # Build Image
-FROM node:${NODE_VERSION} as builder
+FROM node:${NODE_VERSION} AS builder
 
 ## Install tool dependencies
 RUN apk add --no-cache -t build-dependencies make gcc g++ python3 libtool openssl-dev autoconf automake yarn bash

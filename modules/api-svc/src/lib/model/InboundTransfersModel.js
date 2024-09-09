@@ -495,6 +495,7 @@ class InboundTransfersModel {
             if (!response) {
                 return 'No response from backend';
             }
+            this._logger.isDebugEnabled && this._logger.push({ transferId, response }).debug('getTransfer response');
 
             const ilpPaymentData = {
                 transferId: transferId,
@@ -504,6 +505,7 @@ class InboundTransfersModel {
                 amountType: response.amountType,
                 currency: response.currency,
                 amount: response.amount,
+                expiration: response.expiration,
                 transactionType: response.transactionType,
                 subScenario: response.subScenario,
                 note: response.note,
@@ -527,8 +529,7 @@ class InboundTransfersModel {
             };
 
             // make a callback to the source fsp with the transfer fulfilment
-            return this._mojaloopRequests.putTransfers(transferId, mojaloopResponse,
-                sourceFspId);
+            return this._mojaloopRequests.putTransfers(transferId, mojaloopResponse, sourceFspId);
         }
         catch (err) {
             this._logger.isErrorEnabled && this._logger.push({ err }).error('Error in getTransfers');
@@ -677,9 +678,11 @@ class InboundTransfersModel {
                 const expiration = new Date().getTime() + (this._expirySeconds * 1000);
                 response.expiration = new Date(expiration).toISOString();
             }
+            this._logger.isDebugEnabled && this._logger.push({ response }).debug('backendRequests.postBulkQuotes response');
 
             // project our internal bulk quotes response into mojaloop bulk quotes response form
             const mojaloopResponse = shared.internalBulkQuotesResponseToMojaloop(response);
+            this._logger.isDebugEnabled && this._logger.push({ mojaloopResponse }).debug('internalBulkQuotesResponseToMojaloop response');
 
             // create our ILP packet and condition and tag them on to our internal quote response
             bulkQuoteRequest.individualQuotes.map((quote) => {
@@ -687,7 +690,7 @@ class InboundTransfersModel {
                 const mojaloopIndividualQuote = mojaloopResponse.individualQuoteResults.find(
                     (quoteResult) => quoteResult.quoteId === quote.quoteId
                 );
-                if(!mojaloopIndividualQuote.errorInformation) {
+                if (!mojaloopIndividualQuote.errorInformation) {
                     const quoteRequest = {
                         transactionId: quote.transactionId,
                         quoteId: quote.quoteId,
@@ -695,14 +698,14 @@ class InboundTransfersModel {
                         payer: bulkQuoteRequest.payer,
                         transactionType: quote.transactionType,
                         subScenario: quote.subScenario,
+                        expiration: response.expiration,
                     };
 
                     const quoteResponse = {
                         transferAmount: mojaloopIndividualQuote.transferAmount,
                         note: mojaloopIndividualQuote.note || '',
                     };
-                    const { fulfilment, ilpPacket, condition } = this._ilp.getQuoteResponseIlp(
-                        quoteRequest, quoteResponse);
+                    const { fulfilment, ilpPacket, condition } = this._ilp.getQuoteResponseIlp(quoteRequest, quoteResponse);
 
                     // mutate individual quotes in `mojaloopResponse`
                     mojaloopIndividualQuote.ilpPacket = ilpPacket;
@@ -807,9 +810,8 @@ class InboundTransfersModel {
                 if (quote) {
                     fulfilment = bulkQuote.fulfilments[quote.quoteId];
                     condition = quote.condition;
-                }
-                else {
-                    fulfilment = this._ilp.calculateFulfil(transfer.ilpPacket);
+                } else {
+                    fulfilment = this._ilp.calculateFulfil(transactionObject);
                     condition = this._ilp.calculateConditionFromFulfil(fulfilment);
                 }
 
@@ -818,7 +820,7 @@ class InboundTransfersModel {
                 // check incoming ILP matches our persisted values
                 if (this._checkIlp && (transfer.condition !== condition)) {
                     const transferError = this._handleError(new Error(`ILP condition in bulk transfers prepare for ${transfer.transferId} does not match quote`));
-                    individualTransferErrors.push({ transferId: transfer.transferId, transferError });
+                    individualTransferErrors.push({ transferId: transfer.transferId, transferError, transfer });
                 }
             }
 
@@ -843,11 +845,10 @@ class InboundTransfersModel {
                         errorInformation: transferError,
                     }))
                 };
-                this._logger.isErrorEnabled && this._logger.push({ ...individualTransferErrors }).error('Error in prepareBulkTransfers');
-                this._logger.isDebugEnabled && this._logger.push({ ...individualTransferErrors }).debug(`Sending error response to ${sourceFspId}`);
+                this._logger.isErrorEnabled && this._logger.push({ mojaloopErrorResponse }).error('individualTransferErrors in prepareBulkTransfers');
+                this._logger.isDebugEnabled && this._logger.debug(`Sending error response to ${sourceFspId}`);
 
-                return await this._mojaloopRequests.putBulkTransfersError(bulkPrepareRequest.transferId,
-                    mojaloopErrorResponse, sourceFspId);
+                return await this._mojaloopRequests.putBulkTransfersError(bulkPrepareRequest.bulkTransferId, mojaloopErrorResponse, sourceFspId);
             }
 
             // project the incoming bulk transfer prepare into an internal bulk transfer request
@@ -893,12 +894,14 @@ class InboundTransfersModel {
             let individualTransferResults = [];
 
             for (const transfer of response.internalRequest.individualTransfers) {
+                this._logger.isDebugEnabled && this._logger.push({ transfer }).debug('Processing individual transfer...');
                 const ilpPaymentData = {
                     transferId: transfer.transferId,
                     to: shared.internalPartyToMojaloopParty(transfer.to, transfer.to.fspId),
                     amountType: transfer.amountType,
                     currency: transfer.currency,
                     amount: transfer.amount,
+                    expiration: transfer.expiration,
                     transactionType: transfer.transactionType,
                     subScenario: transfer.subScenario,
                     note: transfer.note,
