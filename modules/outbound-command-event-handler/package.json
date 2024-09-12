@@ -41,15 +41,15 @@
     "snapshot": "standard-version --no-verify --skip.changelog --prerelease snapshot --releaseCommitMessageFormat 'chore(snapshot): {{currentTag}}'"
   },
   "dependencies": {
-    "@mojaloop/api-snippets": "17.5.1",
-    "@mojaloop/central-services-shared": "^18.7.3",
+    "@mojaloop/api-snippets": "17.6.1",
+    "@mojaloop/central-services-shared": "^18.7.5",
     "@mojaloop/logging-bc-client-lib": "^0.1.17",
     "@mojaloop/logging-bc-public-types-lib": "^0.5.4",
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^",
     "ajv": "^8.17.1",
     "convict": "^6.2.4",
-    "express": "^4.19.2",
-    "openapi-backend": "^5.10.6",
+    "express": "^4.21.0",
+    "openapi-backend": "^5.11.0",
     "redis": "^4.7.0",
     "swagger-ui-express": "^5.0.1",
     "yamljs": "^0.3.0"
@@ -74,7 +74,7 @@
     "standard-version": "^9.5.0",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
-    "typescript": "^5.5.4"
+    "typescript": "^5.6.2"
   },
   "nodemonConfig": {
     "watch": [

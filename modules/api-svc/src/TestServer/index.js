@@ -13,7 +13,6 @@ const ws = require('ws');
 
 const http = require('http');
 const yaml = require('js-yaml');
-const fs = require('fs').promises;
 const path = require('path');
 
 const Validate = require('../lib/validate');
@@ -22,6 +21,8 @@ const handlers = require('./handlers');
 const middlewares = require('../InboundServer/middlewares');
 
 const logExcludePaths = ['/'];
+const _validator = new Validate({ logExcludePaths });
+const _initialize = _validator.initialise(yaml.load(require('fs').readFileSync(path.join(__dirname, 'api.yaml'))));
 
 const getWsIp = (req) => [
     req.socket.remoteAddress,
@@ -176,7 +177,6 @@ class TestServer {
     constructor({ port, logger, cache }) {
         this._port = port;
         this._logger = logger;
-        this._validator = new Validate({ logExcludePaths });
         this._api = new TestApi(this._logger.push({ component: 'api' }), this._validator, cache);
         this._server = http.createServer(this._api.callback());
         // TODO: why does this appear to need to be called after creating this._server (try reorder
@@ -188,8 +188,8 @@ class TestServer {
         if (this._server.listening) {
             return;
         }
-        const fileData = await fs.readFile(path.join(__dirname, 'api.yaml'));
-        await this._validator.initialise(yaml.load(fileData));
+
+        await _initialize;
 
         await this._wsapi.start();
 
