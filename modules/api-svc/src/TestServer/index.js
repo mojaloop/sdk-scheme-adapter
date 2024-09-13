@@ -177,7 +177,7 @@ class TestServer {
     constructor({ port, logger, cache }) {
         this._port = port;
         this._logger = logger;
-        this._api = new TestApi(this._logger.push({ component: 'api' }), this._validator, cache);
+        this._api = new TestApi(this._logger.push({ component: 'api' }), _validator, cache);
         this._server = http.createServer(this._api.callback());
         // TODO: why does this appear to need to be called after creating this._server (try reorder
         // it then run the tests)
