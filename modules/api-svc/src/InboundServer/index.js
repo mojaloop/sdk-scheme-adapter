@@ -27,6 +27,8 @@ const specPath = path.join(__dirname, 'api.yaml');
 const apiSpecs = yaml.load(fs.readFileSync(specPath));
 
 const logExcludePaths = ['/'];
+const _validator = new Validate({ logExcludePaths });
+const _initialize = _validator.initialise(apiSpecs);
 
 class InboundApi extends EventEmitter {
     constructor(conf, logger, cache, validator, wso2) {
@@ -138,13 +140,12 @@ class InboundServer extends EventEmitter {
     constructor(conf, logger, cache, wso2) {
         super({ captureExceptions: true });
         this._conf = conf;
-        this._validator = new Validate({ logExcludePaths });
         this._logger = logger;
         this._api = new InboundApi(
             conf,
             this._logger.push({ component: 'api' }),
             cache,
-            this._validator,
+            _validator,
             wso2,
         );
         this._api.on('error', (...args) => {
@@ -159,7 +160,7 @@ class InboundServer extends EventEmitter {
 
     async start() {
         assert(!this._server.listening, 'Server already listening');
-        await this._validator.initialise(apiSpecs);
+        await _initialize;
         await this._api.start();
         await new Promise((resolve) => this._server.listen(this._conf.inbound.port, resolve));
         this._logger.isInfoEnabled && this._logger.info(`Serving inbound API on port ${this._conf.inbound.port}`);
