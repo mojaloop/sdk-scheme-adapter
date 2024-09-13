@@ -2093,9 +2093,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-shared@npm:18.7.5, @mojaloop/central-services-shared@npm:^18.7.5":
-  version: 18.7.5
-  resolution: "@mojaloop/central-services-shared@npm:18.7.5"
+"@mojaloop/central-services-shared@npm:18.7.6, @mojaloop/central-services-shared@npm:^18.7.6":
+  version: 18.7.6
+  resolution: "@mojaloop/central-services-shared@npm:18.7.6"
   dependencies:
     "@hapi/catbox": 12.1.1
     "@hapi/catbox-memory": 5.0.1
@@ -2136,7 +2136,7 @@ __metadata:
       optional: false
     ajv-keyboards:
       optional: false
-  checksum: ec115b1d98a3529bec6bb6ac4bdbc7a55f15319339999a1361cc6d11edd3029761263be700bb4f49f912c3411c6d2e56d734f435a93bce5f59573cd80586e826
+  checksum: e173a6b002a489aa5abc82098d606a924bfbfe92cc92ae1423664933e48e4356653e06924b86d6db4cc6ecf64a3c6f5fdf57a82b16c4598497afe01799d42505
   languageName: node
   linkType: hard
 
@@ -2255,12 +2255,12 @@ __metadata:
     "@mojaloop/central-services-error-handling": ^13.0.1
     "@mojaloop/central-services-logger": ^11.5.1
     "@mojaloop/central-services-metrics": ^12.0.8
-    "@mojaloop/central-services-shared": 18.7.5
+    "@mojaloop/central-services-shared": 18.7.6
     "@mojaloop/event-sdk": ^14.1.1
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
     "@mojaloop/sdk-standard-components": 18.4.0
     "@redocly/openapi-cli": ^1.0.0-beta.94
-    "@types/jest": ^29.5.12
+    "@types/jest": ^29.5.13
     ajv: 8.17.1
     axios: ^1.7.7
     babel-jest: ^29.7.0
@@ -2307,13 +2307,13 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-command-event-handler@workspace:modules/outbound-command-event-handler"
   dependencies:
     "@mojaloop/api-snippets": 17.6.1
-    "@mojaloop/central-services-shared": ^18.7.5
+    "@mojaloop/central-services-shared": ^18.7.6
     "@mojaloop/logging-bc-client-lib": ^0.1.17
     "@mojaloop/logging-bc-public-types-lib": ^0.5.4
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
     "@types/convict": ^6.1.6
     "@types/express": ^4.17.21
-    "@types/jest": ^29.5.12
+    "@types/jest": ^29.5.13
     "@types/node": ^22.5.4
     "@types/node-cache": ^4.2.5
     "@types/supertest": ^6.0.2
@@ -2351,7 +2351,7 @@ __metadata:
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
     "@types/convict": ^6.1.6
     "@types/express": ^4.17.21
-    "@types/jest": ^29.5.12
+    "@types/jest": ^29.5.13
     "@types/node": ^22.5.4
     "@types/node-cache": ^4.2.5
     "@types/supertest": ^6.0.2
@@ -2383,7 +2383,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter-private-shared-lib@workspace:modules/private-shared-lib"
   dependencies:
     "@mojaloop/api-snippets": 17.6.1
-    "@mojaloop/central-services-shared": ^18.7.5
+    "@mojaloop/central-services-shared": ^18.7.6
     "@mojaloop/logging-bc-public-types-lib": ^0.5.4
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.7.1
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": 0.2.15
@@ -2406,7 +2406,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter@workspace:."
   dependencies:
-    "@types/jest": ^29.5.12
+    "@types/jest": ^29.5.13
     "@types/node": ^22.5.4
     "@types/node-cache": ^4.2.5
     "@typescript-eslint/eslint-plugin": ^7.15.0
@@ -3267,13 +3267,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:^29.5.12":
-  version: 29.5.12
-  resolution: "@types/jest@npm:29.5.12"
+"@types/jest@npm:^29.5.13":
+  version: 29.5.13
+  resolution: "@types/jest@npm:29.5.13"
   dependencies:
     expect: ^29.0.0
     pretty-format: ^29.0.0
-  checksum: 19b1efdeed9d9a60a81edc8226cdeae5af7479e493eaed273e01243891c9651f7b8b4c08fc633a7d0d1d379b091c4179bbaa0807af62542325fd72f2dd17ce1c
+  checksum: 875ac23c2398cdcf22aa56c6ba24560f11d2afda226d4fa23936322dde6202f9fdbd2b91602af51c27ecba223d9fc3c1e33c9df7e47b3bf0e2aefc6baf13ce53
   languageName: node
   linkType: hard
 
