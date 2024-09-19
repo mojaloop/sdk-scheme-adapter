@@ -107,6 +107,11 @@ class BackendRequests {
         return this._post('fxTransfers', payload);
     }
 
+    async patchFxTransfersNotification(notification, conversionId) {
+        const url = `fxTransfers/${conversionId}`;
+        return this._patch(url, notification);
+    }
+
     /**
      * Executes a POST /transactionRequests request for the specified transaction request
      *
@@ -230,6 +235,16 @@ class BackendRequests {
             uri: buildUrl(this.backendEndpoint, url),
             headers: this._buildHeaders(),
             body: JSON.stringify(body),
+        };
+        return this.sendRequest(reqOpts);
+    }
+      
+    _patch(url, body) {
+        const reqOpts = {
+            method: 'PATCH',
+            uri : buildUrl(this.backendEndpoint, url),
+            headers: this._buildHeaders(),
+            body: JSON.stringify(body)
         };
         return this.sendRequest(reqOpts);
     }
