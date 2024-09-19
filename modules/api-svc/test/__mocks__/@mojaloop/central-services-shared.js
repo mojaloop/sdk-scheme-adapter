@@ -1,8 +1,9 @@
 const components = jest.requireActual('@mojaloop/central-services-shared');
+const { Util: {id: idGenerator} } = require('@mojaloop/central-services-shared');
 
-let id = 0;
+let id = idGenerator({ type: 'ulid' });
 
-components.Util.id = () => () => `00000000-0000-1000-8000-${(++id).toString().padStart(12, '0')}`;
-components.Util.id.__reset = () => { id = 0; };
+components.Util.id = () => () => id(1);
+components.Util.id.__reset = () => { idGenerator({ type: 'ulid' }); };
 
 module.exports = components;

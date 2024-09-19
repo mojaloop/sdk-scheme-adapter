@@ -2093,9 +2093,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-shared@npm:18.8.0, @mojaloop/central-services-shared@npm:^18.8.0":
-  version: 18.8.0
-  resolution: "@mojaloop/central-services-shared@npm:18.8.0"
+"@mojaloop/central-services-shared@npm:18.9.0, @mojaloop/central-services-shared@npm:^18.9.0":
+  version: 18.9.0
+  resolution: "@mojaloop/central-services-shared@npm:18.9.0"
   dependencies:
     "@hapi/catbox": 12.1.1
     "@hapi/catbox-memory": 5.0.1
@@ -2113,6 +2113,7 @@ __metadata:
     raw-body: 3.0.0
     rc: 1.2.8
     shins: 2.6.0
+    ulidx: 2.4.1
     uuid4: 2.0.3
     widdershins: ^4.0.1
     yaml: 2.5.1
@@ -2136,7 +2137,7 @@ __metadata:
       optional: false
     ajv-keyboards:
       optional: false
-  checksum: e8ea3bd2ae4e593d4ebb0759dd4f42cffc91fc94f9bddb1a997b61e9b1995aa948447f38e929379cf070ed07dbf5c61b0e74d30d57fa18dd86ca479e06c3527f
+  checksum: ea99362a37e61077718900fad618ab600b74edd363e4c4ea9adda70ca0ae39b9b79ec51120d1e6a92f0089df1d81349ac581ddd2019d0f4854bd44e60c08ddbb
   languageName: node
   linkType: hard
 
@@ -2255,7 +2256,7 @@ __metadata:
     "@mojaloop/central-services-error-handling": ^13.0.1
     "@mojaloop/central-services-logger": ^11.5.1
     "@mojaloop/central-services-metrics": ^12.0.8
-    "@mojaloop/central-services-shared": 18.8.0
+    "@mojaloop/central-services-shared": 18.9.0
     "@mojaloop/event-sdk": ^14.1.1
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
     "@mojaloop/sdk-standard-components": 18.4.1
@@ -2307,7 +2308,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-command-event-handler@workspace:modules/outbound-command-event-handler"
   dependencies:
     "@mojaloop/api-snippets": 17.6.1
-    "@mojaloop/central-services-shared": ^18.8.0
+    "@mojaloop/central-services-shared": ^18.9.0
     "@mojaloop/logging-bc-client-lib": ^0.1.17
     "@mojaloop/logging-bc-public-types-lib": ^0.5.4
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
@@ -2327,7 +2328,7 @@ __metadata:
     eslint: ^8.57.0
     express: ^4.21.0
     jest: ^29.7.0
-    nodemon: ^3.1.5
+    nodemon: ^3.1.6
     npm-check-updates: ^16.7.10
     openapi-backend: ^5.11.0
     redis: ^4.7.0
@@ -2364,7 +2365,7 @@ __metadata:
     eslint: ^8.57.0
     express: ^4.21.0
     jest: ^29.7.0
-    nodemon: ^3.1.5
+    nodemon: ^3.1.6
     npm-check-updates: ^16.7.10
     openapi-backend: ^5.11.0
     redis: ^4.7.0
@@ -2383,7 +2384,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter-private-shared-lib@workspace:modules/private-shared-lib"
   dependencies:
     "@mojaloop/api-snippets": 17.6.1
-    "@mojaloop/central-services-shared": ^18.8.0
+    "@mojaloop/central-services-shared": ^18.9.0
     "@mojaloop/logging-bc-public-types-lib": ^0.5.4
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.7.1
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": 0.2.15
@@ -2417,7 +2418,7 @@ __metadata:
     eslint-plugin-import: latest
     husky: ^9.1.6
     jest: ^29.7.0
-    nodemon: ^3.1.5
+    nodemon: ^3.1.6
     npm-check-updates: ^16.7.10
     nx: 16.5.0
     replace: ^1.2.2
@@ -9648,6 +9649,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"layerr@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "layerr@npm:3.0.0"
+  checksum: 5b9518795ef5d447f2b4c66ebab223b0a4fb37505ba27013920f71691726211298e630750d5fa8b03ddb5ce191d24e26d49fa40e0042193ecd680f15d89311f9
+  languageName: node
+  linkType: hard
+
 "lazy-cache@npm:^1.0.3":
   version: 1.0.4
   resolution: "lazy-cache@npm:1.0.4"
@@ -10756,9 +10764,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemon@npm:^3.1.5":
-  version: 3.1.5
-  resolution: "nodemon@npm:3.1.5"
+"nodemon@npm:^3.1.6":
+  version: 3.1.6
+  resolution: "nodemon@npm:3.1.6"
   dependencies:
     chokidar: ^3.5.2
     debug: ^4
@@ -10772,7 +10780,7 @@ __metadata:
     undefsafe: ^2.0.5
   bin:
     nodemon: bin/nodemon.js
-  checksum: 56a41473b4990efebe8341f1da360af49d3b9e62c164d76ef6ec7f81efeca56c990dd4f275f03ddd1afde83d27c1ed3abe9c73d712fbebe08406c459b9f030ab
+  checksum: efa0e5cd34db4d38e6abdb54b468b968bdfa6ea366abb08707e8f4335894730d4f57b826daab995141f4b952aa110b6b3084c25d71a0560c363df3b95d51374d
   languageName: node
   linkType: hard
 
@@ -14321,6 +14329,15 @@ __metadata:
   version: 1.0.2
   resolution: "uglify-to-browserify@npm:1.0.2"
   checksum: cfa7e2c233b33dc952fcf6ddb2a1e04f48b733fc00314d7282447dde0d7cebc7cf0085d4752abbc82127a4b458c2bf66c63bd8a574be3b2faa0effaabd971370
+  languageName: node
+  linkType: hard
+
+"ulidx@npm:2.4.1":
+  version: 2.4.1
+  resolution: "ulidx@npm:2.4.1"
+  dependencies:
+    layerr: ^3.0.0
+  checksum: 76f3c3fe05c9df59aabe513f77b4ecb931ab8801cc8a37e0a8dbfc147f12d3062b2420e221f51b3bf174f0d62cce2faf13262faee6ce85fb5b6ba824fd8679c2
   languageName: node
   linkType: hard
 

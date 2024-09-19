@@ -51,12 +51,5 @@
         }
       }
     }
-  },
-  "/transactionrequests": {
-    "post": {
-      "response": {
-        "bodyOverride": {}
-      }
-    }
   }
 }

@@ -20,7 +20,7 @@ jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('redis');
 jest.mock('~/lib/model/lib/requests',() => require('./mockedLibRequests'));
 
-const randomUUID = require('@mojaloop/central-services-shared').Util.id({version: 4});
+const randomUUID = require('@mojaloop/central-services-shared').Util.id({type: 'ulid'});
 const defaultConfig = require('./data/defaultConfig');
 const Model = require('~/lib/model').InboundTransfersModel;
 const mocks = require('./data/mocks');
