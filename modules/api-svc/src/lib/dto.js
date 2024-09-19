@@ -34,6 +34,7 @@ const outboundPostFxQuotePayloadDto = (data) => Object.freeze({
     conversionTerms: {
         conversionId: randomUUID(), // should be the same as commitRequestId from fxTransfer
         initiatingFsp: data.from.fspId,
+        determiningTransferId: data.transferId,
         counterPartyFsp: data.fxProviders[0], // todo: think if we have several FXPs
         amountType: data.amountType,
         sourceAmount: {
