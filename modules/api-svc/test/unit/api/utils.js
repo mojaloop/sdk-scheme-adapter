@@ -23,7 +23,7 @@ const ServerType = {
 const readApiInfo = async (serverType) => {
     let specPath;
     if (serverType === ServerType.Outbound) {
-        specPath = path.join(path.dirname(require.resolve('@mojaloop/api-snippets')), '../docs/sdk-scheme-adapter-outbound-v2_0_0-openapi3-snippets.yaml');
+        specPath = path.join(path.dirname(require.resolve('@mojaloop/api-snippets')), '../docs/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets.yaml');
     } else if (serverType === ServerType.Inbound) {
         specPath = path.join(__dirname, '../../../src/InboundServer/api.yaml');
     }
