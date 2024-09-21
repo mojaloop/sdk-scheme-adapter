@@ -684,6 +684,17 @@
           "Content-Type": "{$session.negotiatedContentType}",
           "Date": "{$request.headers.date}"
         }
+      },
+      "errorCallback": {
+        "method": "put",
+        "path": "/services/FXP",
+        "pathPattern": "/services/FXP",
+        "headerOverride": {
+          "FSPIOP-Source": "{$request.headers.fspiop-destination}",
+          "FSPIOP-Destination": "{$request.headers.fspiop-source}",
+          "Content-Type": "{$session.negotiatedContentType}",
+          "Date": "{$request.headers.date}"
+        }
       }
     }
   },

@@ -17,19 +17,5 @@
         }
       }
     }
-  },
-  "/transfers": {
-    "post": {
-      "response": {
-        "bodyOverride": {}
-      }
-    }
-  },
-  "/transfers/{transferId}": {
-    "put": {
-      "response": {
-        "bodyOverride": {}
-      }
-    }
   }
 }
