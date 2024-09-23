@@ -938,7 +938,7 @@ class InboundTransfersModel {
         }
     }
 
-    async sendNotificationToBackend(body, conversionId) {
+    async sendFxPatchNotificationToBackend(body, conversionId) {
         try {
             this.data = await this.loadFxState(conversionId);
             
@@ -954,7 +954,7 @@ class InboundTransfersModel {
             }
             else{
                 this.data.currentState = SDKStateEnum.ERROR_OCCURRED;
-                this.data.lastError = 'Final notification state not COMMITTED';
+                this.data.lastError = 'Final notification state not COMMITTED or ABORTED';
             }
 
             await this.saveFxState();

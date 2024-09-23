@@ -1050,7 +1050,7 @@ const patchFxTransfersById = async (ctx) => {
         resourceVersions: ctx.resourceVersions,
     });
     
-    const response = await model.sendNotificationToBackend(req.data, idValue);
+    const response = await model.sendFxPatchNotificationToBackend(req.data, idValue);
     
     // log the result
     ctx.state.logger.isDebugEnabled && ctx.state.logger.push({response}).
