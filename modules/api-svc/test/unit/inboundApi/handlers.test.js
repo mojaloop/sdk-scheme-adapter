@@ -1048,6 +1048,43 @@ describe('Inbound API handlers:', () => {
         });
     });
 
+    describe('PATCH /fxTransfers/{ID}', () => {
+        let mockNotificationMessage;
+
+        beforeEach(() => {
+            mockNotificationMessage = {
+                request: {
+                    headers: {
+
+                    },
+                    body: {
+                        transferState: FSPIOPTransferStateEnum.COMMITTED,
+                        completedTimestamp: '2020-08-18T09:39:33.552Z'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {},
+                    path: {
+                        params: {
+                            'ID': '5678'
+                        }
+                    },
+                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
+                }
+            };
+        });
+
+        test('calls `model.sendNotificationToPayee with expected arguments', async () => {
+            const notificationSpy = jest.spyOn(Model.prototype, 'sendFxPatchNotificationToBackend');
+
+            await expect(handlers['/fxTransfers/{ID}'].patch(mockNotificationMessage)).resolves.toBe(undefined);
+            expect(notificationSpy).toHaveBeenCalledTimes(1);
+            expect(notificationSpy.mock.calls[0][1]).toBe(mockNotificationMessage.state.path.params.ID);
+        });
+
+    });
+
     describe('PUT /fxTransfers/{ID}/error', () => {
 
         let mockContext;
