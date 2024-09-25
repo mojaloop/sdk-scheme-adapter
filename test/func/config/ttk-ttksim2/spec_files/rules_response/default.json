@@ -1332,7 +1332,7 @@
       "params": {
         "body": {
           "homeR2PTransactionId": "cba321",
-          "transactionId": "{$function.generic.generateULID}",
+          "transactionId": "{$function.generic.generateID}",
           "transactionRequestState": "RECEIVED"
         },
         "statusCode": "200",
