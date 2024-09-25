@@ -13,8 +13,9 @@
 const safeStringify = require('fast-safe-stringify');
 const StateMachine = require('javascript-state-machine');
 const { Enum, Util: {id: idGenerator} } = require('@mojaloop/central-services-shared');
-const { Ilp, MojaloopRequests } = require('@mojaloop/sdk-standard-components');
+const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 
+const ilpFactory = require('../ilpFactory');
 const dto = require('../dto');
 const shared = require('./lib/shared');
 const PartiesModel = require('./PartiesModel');
@@ -22,7 +23,6 @@ const {
     AmountTypes,
     BackendError,
     CacheKeyPrefixes,
-    // CurrencyConverters,
     Directions,
     ErrorMessages,
     SDKStateEnum,
@@ -36,7 +36,7 @@ const { TransferState } = Enum.Transfers;
  *  Models the state machine and operations required for performing an outbound transfer
  */
 class OutboundTransfersModel {
-    constructor(config) {
+    constructor(config, headers = {}) {
         this._idGenerator = idGenerator(config.idGenerator);
         this._cache = config.cache;
         this._logger = config.logger;
@@ -78,9 +78,9 @@ class OutboundTransfersModel {
             resourceVersions: config.resourceVersions,
         });
 
-        this._ilp = new Ilp({
+        this._ilp = OutboundTransfersModel.createIlp(headers, {
             secret: config.ilpSecret,
-            logger: this._logger,
+            logger: config.logger,
         });
 
         this.metrics = {
@@ -118,6 +118,10 @@ class OutboundTransfersModel {
         this._logger.isDebugEnabled && this._logger.push(config.outbound.tls.creds).debug('OutboundTransfersModel is created with outbound.tls.creds');
     }
 
+    static createIlp(headers, ilpOptions) {
+        // todo: think, which header to use: content-type OR accept
+        return ilpFactory(headers['accept'], ilpOptions);
+    }
 
     /**
      * Initializes the internal state machine object

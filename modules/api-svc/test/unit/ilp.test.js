@@ -7,7 +7,7 @@ describe('ILP Tests -->', () => {
     let fxpBeResponse;
 
     beforeEach(() => {
-        ilp = new Ilp({
+        ilp = Ilp.ilpFactory(Ilp.ILP_VERSIONS.v4, {
             secret: 'test',
             logger: new Logger.Logger(),
         });

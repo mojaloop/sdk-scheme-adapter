@@ -13,18 +13,18 @@
 const safeStringify = require('fast-safe-stringify');
 const idGenerator = require('@mojaloop/central-services-shared').Util.id;
 const StateMachine = require('javascript-state-machine');
-const { Ilp, MojaloopRequests } = require('@mojaloop/sdk-standard-components');
-const shared = require('./lib/shared');
-const { BackendError } = require('./common');
-const PartiesModel = require('./PartiesModel');
+const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 
-const { SDKStateEnum, TransactionRequestStateEnum } = require('./common');
+const ilpFactory = require('../ilpFactory');
+const shared = require('./lib/shared');
+const PartiesModel = require('./PartiesModel');
+const { BackendError, SDKStateEnum, TransactionRequestStateEnum } = require('./common');
 
 /**
  *  Models the state machine and operations required for performing an outbound transfer
  */
 class OutboundRequestToPayTransferModel {
-    constructor(config) {
+    constructor(config, headers = {}) {
         this._idGenerator = idGenerator(config.idGenerator);
         this._cache = config.cache;
         this._logger = config.logger;
@@ -57,11 +57,16 @@ class OutboundRequestToPayTransferModel {
             wso2: config.wso2,
         });
 
-        this._ilp = new Ilp({
+        this._ilp = OutboundRequestToPayTransferModel.createIlp(headers, {
             secret: config.ilpSecret,
-            logger: this._logger,
+            logger: config.logger,
         });
     }
+
+    static createIlp(headers, ilpOptions) {
+        return ilpFactory(headers['content-type'], ilpOptions);
+    }
+
     /**
      * Initializes the requestToPayTransfer model
      *
@@ -906,9 +911,6 @@ class OutboundRequestToPayTransferModel {
             throw err;
         }
     }
-
-
-
 }
 
 
