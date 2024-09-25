@@ -1067,7 +1067,7 @@ describe('Inbound API handlers:', () => {
                     conf: {},
                     path: {
                         params: {
-                            'ID': '5678'
+                            'ID': '1234'
                         }
                     },
                     logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
@@ -1075,7 +1075,7 @@ describe('Inbound API handlers:', () => {
             };
         });
 
-        test('calls `model.sendNotificationToPayee with expected arguments', async () => {
+        test('calls `model.sendFxPatchNotificationToBackend with expected arguments', async () => {
             const notificationSpy = jest.spyOn(Model.prototype, 'sendFxPatchNotificationToBackend');
 
             await expect(handlers['/fxTransfers/{ID}'].patch(mockNotificationMessage)).resolves.toBe(undefined);
