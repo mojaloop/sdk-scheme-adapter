@@ -857,6 +857,7 @@ describe('inboundModel', () => {
                 cache,
                 logger,
             });
+            model.saveFxState = jest.fn().mockReturnValue(Promise.resolve({}));
 
             await model.sendFxPatchNotificationToBackend(notif.data, conversionId); 
             expect(BackendRequests.__patchFxTransfersNotification).toHaveBeenCalledTimes(1);
@@ -879,6 +880,7 @@ describe('inboundModel', () => {
                 cache,
                 logger,
             });
+            model.saveFxState = jest.fn().mockReturnValue(Promise.resolve({}));
 
             await model.sendFxPatchNotificationToBackend(notif.data, conversionId);
             expect(BackendRequests.__patchFxTransfersNotification).toHaveBeenCalledTimes(1);
@@ -902,6 +904,7 @@ describe('inboundModel', () => {
                 cache,
                 logger,
             });
+            model.saveFxState = jest.fn().mockReturnValue(Promise.resolve({}));
 
             await model.sendFxPatchNotificationToBackend(notif.data, conversionId);
             expect(BackendRequests.__patchFxTransfersNotification).toHaveBeenCalledTimes(1);
