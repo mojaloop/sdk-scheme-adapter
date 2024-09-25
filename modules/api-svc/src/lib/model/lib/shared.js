@@ -37,14 +37,12 @@ const internalPartyToMojaloopParty = (internal, fspId, supportedCurrencies) => {
 
     if (!internal.supportedCurrencies) {
         // add DFSP specific information to the response
-        if (supportedCurrencies) {
+        if (supportedCurrencies?.length > 0) {
             party.supportedCurrencies = supportedCurrencies;
         }
-    } else {
+    } else if (internal.supportedCurrencies?.length > 0) {
         party.supportedCurrencies = internal.supportedCurrencies;
     }
-
-
 
     const hasComplexName = !!(internal.firstName || internal.middleName || internal.lastName);
 

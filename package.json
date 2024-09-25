@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
-  "version": "23.6.0-snapshot.11",
+  "version": "23.6.0-snapshot.15",
   "description": "mojaloop sdk-scheme-adapter",
   "license": "Apache-2.0",
   "homepage": "https://github.com/mojaloop/sdk-scheme-adapter",
@@ -107,7 +107,11 @@
     "shins/yargs-parser": "13.1.2",
     "shins/postcss": "8.4.31",
     "swagger-ui-express/express": "^4.19.2",
-    "shins/express": "^4.19.2"
+    "shins/express": "^4.19.2",
+    "serve-static/send": "0.19.0",
+    "widdershins/yargs-parser": "13.1.2",
+    "widdershins/markdown-it": "12.3.2",
+    "widdershins/swagger2openapi": "7.0.8"
   },
   "standard-version": {
     "scripts": {
