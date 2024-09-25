@@ -896,7 +896,7 @@ describe('inboundModel', () => {
             const expectedRequest = {
                 currentState: SDKStateEnum.ERROR_OCCURRED,
                 finalNotification: notif.data,
-                lastError: 'Final notification state not COMMITTED',
+                lastError: 'Final notification state not COMMITTED or ABORTED',
             };
 
             const model = new Model({
