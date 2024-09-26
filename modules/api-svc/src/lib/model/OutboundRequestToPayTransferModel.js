@@ -55,6 +55,7 @@ class OutboundRequestToPayTransferModel {
             jwsSignPutParties: config.jwsSignPutParties,
             jwsSigningKey: config.jwsSigningKey,
             wso2: config.wso2,
+            resourceVersions: config.resourceVersions,
         });
 
         this._ilp = new Ilp({
