@@ -63,7 +63,7 @@
     "test:coverage-check:affected": "nx affected --parallel --target=test:coverage-check",
     "test:integration": "nx run-many --parallel --all --target=test:integration",
     "test:integration:affected": "nx affected --parallel --target=test:integration",
-    "audit:check": "NODE_OPTIONS=\"--dns-result-order=ipv4first\" yarn dlx audit-ci --config ./audit-ci.jsonc",
+    "audit:check": "yarn dlx audit-ci --config ./audit-ci.jsonc",
     "audit:fix": "yarn-audit-fix",
     "dep:check": "yarn ncu -e 2 && nx run-many --parallel --all --target=dep:check --output-style=static",
     "dep:update": "yarn ncu -u && nx run-many --parallel --all --target=dep:update --output-style=static",
