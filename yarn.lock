@@ -2313,9 +2313,9 @@ __metadata:
     "@mojaloop/logging-bc-public-types-lib": ^0.5.4
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
     "@types/convict": ^6.1.6
-    "@types/express": ^4.17.21
+    "@types/express": ^5.0.0
     "@types/jest": ^29.5.13
-    "@types/node": ^22.7.1
+    "@types/node": ^22.7.2
     "@types/node-cache": ^4.2.5
     "@types/supertest": ^6.0.2
     "@types/swagger-ui-express": ^4.1.6
@@ -2351,9 +2351,9 @@ __metadata:
     "@mojaloop/logging-bc-public-types-lib": ^0.5.4
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
     "@types/convict": ^6.1.6
-    "@types/express": ^4.17.21
+    "@types/express": ^5.0.0
     "@types/jest": ^29.5.13
-    "@types/node": ^22.7.1
+    "@types/node": ^22.7.2
     "@types/node-cache": ^4.2.5
     "@types/supertest": ^6.0.2
     "@types/swagger-ui-express": ^4.1.6
@@ -2388,7 +2388,7 @@ __metadata:
     "@mojaloop/logging-bc-public-types-lib": ^0.5.4
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.7.1
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": 0.2.15
-    "@types/node": ^22.7.1
+    "@types/node": ^22.7.2
     "@types/uuid": ^10.0.0
     ajv: ^8.17.1
     eslint: ^8.57.0
@@ -2408,7 +2408,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter@workspace:."
   dependencies:
     "@types/jest": ^29.5.13
-    "@types/node": ^22.7.1
+    "@types/node": ^22.7.2
     "@types/node-cache": ^4.2.5
     "@typescript-eslint/eslint-plugin": ^7.15.0
     "@typescript-eslint/parser": ^7.15.0
@@ -3211,7 +3211,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express@npm:*, @types/express@npm:^4.17.21":
+"@types/express-serve-static-core@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "@types/express-serve-static-core@npm:5.0.0"
+  dependencies:
+    "@types/node": "*"
+    "@types/qs": "*"
+    "@types/range-parser": "*"
+    "@types/send": "*"
+  checksum: d4e2abfc961a908098290958e43a077504ef669f3ef3c49e871932453d2281e86f5d483ae99ec3aaecd13ada0b18025a99ad5413577660587570c4e21d91c263
+  languageName: node
+  linkType: hard
+
+"@types/express@npm:*":
   version: 4.17.21
   resolution: "@types/express@npm:4.17.21"
   dependencies:
@@ -3220,6 +3232,18 @@ __metadata:
     "@types/qs": "*"
     "@types/serve-static": "*"
   checksum: fb238298630370a7392c7abdc80f495ae6c716723e114705d7e3fb67e3850b3859bbfd29391463a3fb8c0b32051847935933d99e719c0478710f8098ee7091c5
+  languageName: node
+  linkType: hard
+
+"@types/express@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "@types/express@npm:5.0.0"
+  dependencies:
+    "@types/body-parser": "*"
+    "@types/express-serve-static-core": ^5.0.0
+    "@types/qs": "*"
+    "@types/serve-static": "*"
+  checksum: ef68d8e2b7593c930093b1e79bf4df15413773508c9acd6a1a933ed7017f2a4892a8d128b2222d7eab9a3fa43181067a378c2600d9258bd7ae917f170e962df4
   languageName: node
   linkType: hard
 
@@ -3448,12 +3472,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^22.7.1":
-  version: 22.7.1
-  resolution: "@types/node@npm:22.7.1"
+"@types/node@npm:^22.7.2":
+  version: 22.7.2
+  resolution: "@types/node@npm:22.7.2"
   dependencies:
     undici-types: ~6.19.2
-  checksum: 694995bfc4dee0e53ba203d6be098b6aa613ad25da1b3facaab59c689131bb5cafaacad5c466e5358294f2522f1cca954da8f1e849118578cb981fbc03b2902e
+  checksum: 5e753a4a7195a05133e1234e6e2eb68d9f002c5566499dc560e1d7efdcad102f10815ea11f8e206a04b7626876c666227535c755a7d77bc71d73278864b0a652
   languageName: node
   linkType: hard
 
