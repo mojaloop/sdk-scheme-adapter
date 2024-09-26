@@ -30,13 +30,13 @@ const extractBodyHeadersSourceFspId = ctx => ({
     headers: { ...ctx.request.headers },
 });
 
-const createInboundTransfersModel = ctx => new InboundTransfersModel({
+const createInboundTransfersModel = (ctx, headerName = 'content-type') => new InboundTransfersModel({
     ...ctx.state.conf,
     cache: ctx.state.cache,
     logger: ctx.state.logger,
     wso2: ctx.state.wso2,
     resourceVersions: ctx.resourceVersions,
-}, ctx.request.headers);
+}, ctx.request.headers[headerName]);
 
 const prepareResponse = ctx => {
     ctx.response.status = ReturnCodes.ACCEPTED.CODE;
@@ -170,7 +170,7 @@ const postQuotes = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = createInboundTransfersModel(ctx);
+            const model = createInboundTransfersModel(ctx, 'accept');
 
             let response;
 
@@ -506,7 +506,7 @@ const getQuoteById = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = createInboundTransfersModel(ctx);
+            const model = createInboundTransfersModel(ctx, 'accept');
 
             // use the model to handle the request
             const response = await model.getQuoteRequest(quoteId, sourceFspId);
@@ -708,7 +708,7 @@ const getBulkQuotesById = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = createInboundTransfersModel(ctx);
+            const model = createInboundTransfersModel(ctx, 'accept');
 
             // use the model to handle the request
             const response = await model.getBulkQuote(bulkQuoteId, sourceFspId);
@@ -738,7 +738,7 @@ const postBulkQuotes = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = createInboundTransfersModel(ctx);
+            const model = createInboundTransfersModel(ctx, 'accept');
 
             // use the model to handle the request
             const response = await model.bulkQuoteRequest(bulkQuoteRequest, sourceFspId);
@@ -898,7 +898,7 @@ const postFxQuotes = async (ctx) => {
     const { logger } = ctx.state;
     const logPrefix = 'Handling POST fxQuotes request';
 
-    const model = createInboundTransfersModel(ctx);
+    const model = createInboundTransfersModel(ctx, 'accept');
 
     model.postFxQuotes({ body, headers }, sourceFspId)
         .then(response => logger.push({ response }).log(`${logPrefix} is done`))

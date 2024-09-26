@@ -35,20 +35,22 @@ const { Enum } = require('@mojaloop/central-services-shared');
 const { ReturnCodes } = Enum.Http;
 
 
-const createOutboundRequestToPayTransferModel = (ctx) => new OutboundRequestToPayTransferModel({
-    ...ctx.state.conf,
-    cache: ctx.state.cache,
-    logger: ctx.state.logger,
-    wso2: ctx.state.wso2,
-}, ctx.request.headers);
+const createOutboundRequestToPayTransferModel = (ctx, headerName = 'content-type') =>
+    new OutboundRequestToPayTransferModel({
+        ...ctx.state.conf,
+        cache: ctx.state.cache,
+        logger: ctx.state.logger,
+        wso2: ctx.state.wso2,
+    }, ctx.request.headers[headerName]);
 
-const createOutboundTransfersModel = (ctx) => new OutboundTransfersModel({
-    ...ctx.state.conf,
-    cache: ctx.state.cache,
-    logger: ctx.state.logger,
-    wso2: ctx.state.wso2,
-    metricsClient: ctx.state.metricsClient,
-}, ctx.request.headers);
+const createOutboundTransfersModel = (ctx, headerName = 'content-type') =>
+    new OutboundTransfersModel({
+        ...ctx.state.conf,
+        cache: ctx.state.cache,
+        logger: ctx.state.logger,
+        wso2: ctx.state.wso2,
+        metricsClient: ctx.state.metricsClient,
+    }, ctx.request.headers[headerName]);
 
 /**
  * Error handling logic shared by outbound API handlers

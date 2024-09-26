@@ -25,7 +25,7 @@ const shared = require('./lib/shared');
  *  Models the operations required for performing inbound transfers
  */
 class InboundTransfersModel {
-    constructor(config, headers = {}) {
+    constructor(config, headerWithApiVersion = '') {
         this._cache = config.cache;
         this._logger = config.logger;
         this._dfspId = config.dfspId;
@@ -67,15 +67,10 @@ class InboundTransfersModel {
 
         this._checkIlp = config.checkIlp;
 
-        this._ilp = InboundTransfersModel.createIlp(headers, {
+        this._ilp = ilpFactory(headerWithApiVersion, {
             secret: config.ilpSecret,
             logger: config.logger,
         });
-    }
-
-    static createIlp(headers, ilpOptions) {
-        // todo: define which header to use!
-        return ilpFactory(headers['accept'], ilpOptions);
     }
 
     updateStateWithError(err) {

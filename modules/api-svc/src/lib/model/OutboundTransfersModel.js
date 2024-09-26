@@ -36,7 +36,7 @@ const { TransferState } = Enum.Transfers;
  *  Models the state machine and operations required for performing an outbound transfer
  */
 class OutboundTransfersModel {
-    constructor(config, headers = {}) {
+    constructor(config, headerWithApiVersion = '') {
         this._idGenerator = idGenerator(config.idGenerator);
         this._cache = config.cache;
         this._logger = config.logger;
@@ -78,7 +78,7 @@ class OutboundTransfersModel {
             resourceVersions: config.resourceVersions,
         });
 
-        this._ilp = OutboundTransfersModel.createIlp(headers, {
+        this._ilp = ilpFactory(headerWithApiVersion, {
             secret: config.ilpSecret,
             logger: config.logger,
         });
@@ -116,11 +116,6 @@ class OutboundTransfersModel {
         this.getServicesFxpResponse = config.getServicesFxpResponse; // todo: replace with real request
 
         this._logger.isDebugEnabled && this._logger.push(config.outbound.tls.creds).debug('OutboundTransfersModel is created with outbound.tls.creds');
-    }
-
-    static createIlp(headers, ilpOptions) {
-        // todo: think, which header to use: content-type OR accept
-        return ilpFactory(headers['accept'], ilpOptions);
     }
 
     /**

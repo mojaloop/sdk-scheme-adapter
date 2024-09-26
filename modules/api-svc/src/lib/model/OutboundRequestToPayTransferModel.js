@@ -24,7 +24,7 @@ const { BackendError, SDKStateEnum, TransactionRequestStateEnum } = require('./c
  *  Models the state machine and operations required for performing an outbound transfer
  */
 class OutboundRequestToPayTransferModel {
-    constructor(config, headers = {}) {
+    constructor(config, headerWithApiVersion = '') {
         this._idGenerator = idGenerator(config.idGenerator);
         this._cache = config.cache;
         this._logger = config.logger;
@@ -57,14 +57,10 @@ class OutboundRequestToPayTransferModel {
             wso2: config.wso2,
         });
 
-        this._ilp = OutboundRequestToPayTransferModel.createIlp(headers, {
+        this._ilp = ilpFactory(headerWithApiVersion, {
             secret: config.ilpSecret,
             logger: config.logger,
         });
-    }
-
-    static createIlp(headers, ilpOptions) {
-        return ilpFactory(headers['content-type'], ilpOptions);
     }
 
     /**
