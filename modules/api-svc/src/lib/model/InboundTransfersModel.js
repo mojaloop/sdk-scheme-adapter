@@ -813,8 +813,7 @@ class InboundTransfersModel {
                     fulfilment = bulkQuote.fulfilments[quote.quoteId];
                     condition = quote.condition;
                 } else {
-                    fulfilment = this._ilp.calculateFulfil(transactionObject);
-                    condition = this._ilp.calculateConditionFromFulfil(fulfilment);
+                    ({ fulfilment, condition } = this._ilp.getResponseIlp(transactionObject));
                 }
 
                 fulfilments[transfer.transferId] = fulfilment;
