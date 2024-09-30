@@ -2041,9 +2041,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/api-snippets@npm:17.6.2":
-  version: 17.6.2
-  resolution: "@mojaloop/api-snippets@npm:17.6.2"
+"@mojaloop/api-snippets@npm:17.7.0-snapshot.2":
+  version: 17.7.0-snapshot.2
+  resolution: "@mojaloop/api-snippets@npm:17.7.0-snapshot.2"
   dependencies:
     "@apidevtools/json-schema-ref-parser": ^9.1.2
     "@redocly/openapi-core": ^1.5.0
@@ -2054,24 +2054,7 @@ __metadata:
     openapi-types: ^12.1.3
     openapi-typescript: ^7.4.1
     ts-auto-mock: ^3.7.4
-  checksum: 36e4087d99cb426745e40a44d0261bd522761a03b34a304acdebe39d73161ed146b7d3f6e5288429427466512a1599b08626b03b04ba92f92f28abb4f3dc9b72
-  languageName: node
-  linkType: hard
-
-"@mojaloop/api-snippets@npm:17.7.0-snapshot.1":
-  version: 17.7.0-snapshot.1
-  resolution: "@mojaloop/api-snippets@npm:17.7.0-snapshot.1"
-  dependencies:
-    "@apidevtools/json-schema-ref-parser": ^9.1.2
-    "@redocly/openapi-core": ^1.5.0
-    commander: ^12.1.0
-    jest-ts-auto-mock: ^2.1.0
-    js-yaml: ^4.1.0
-    json-refs: ^3.0.15
-    openapi-types: ^12.1.3
-    openapi-typescript: ^7.4.0
-    ts-auto-mock: ^3.7.4
-  checksum: e3373246dc16629fddd2867dbf39d581bfd2881787752e19ea68623258bc6a891aa12c66edfa977ad2de99e2b3c5a7c8574299ad0377d892bd1af2c266540ede
+  checksum: efcd7de347a27fceac3eed5158fee3b9c8d51627ae1135071a26b6fe47055ca013efc6728cece8bd59b087a941318955f087791d6596d478358618bfe3dfe1fb
   languageName: node
   linkType: hard
 
@@ -2269,7 +2252,7 @@ __metadata:
     "@babel/core": ^7.25.2
     "@babel/preset-env": ^7.25.4
     "@koa/cors": ^5.0.0
-    "@mojaloop/api-snippets": 17.7.0-snapshot.1
+    "@mojaloop/api-snippets": 17.7.0-snapshot.2
     "@mojaloop/central-services-error-handling": ^13.0.1
     "@mojaloop/central-services-logger": ^11.5.1
     "@mojaloop/central-services-metrics": ^12.0.8
@@ -2324,7 +2307,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-command-event-handler@workspace:modules/outbound-command-event-handler"
   dependencies:
-    "@mojaloop/api-snippets": 17.6.2
+    "@mojaloop/api-snippets": 17.7.0-snapshot.2
     "@mojaloop/central-services-shared": ^18.9.0
     "@mojaloop/logging-bc-client-lib": ^0.1.17
     "@mojaloop/logging-bc-public-types-lib": ^0.5.4
@@ -2332,7 +2315,7 @@ __metadata:
     "@types/convict": ^6.1.6
     "@types/express": ^5.0.0
     "@types/jest": ^29.5.13
-    "@types/node": ^22.7.2
+    "@types/node": ^22.7.4
     "@types/node-cache": ^4.2.5
     "@types/supertest": ^6.0.2
     "@types/swagger-ui-express": ^4.1.6
@@ -2363,14 +2346,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-domain-event-handler@workspace:modules/outbound-domain-event-handler"
   dependencies:
-    "@mojaloop/api-snippets": 17.6.2
+    "@mojaloop/api-snippets": 17.7.0-snapshot.2
     "@mojaloop/logging-bc-client-lib": ^0.1.17
     "@mojaloop/logging-bc-public-types-lib": ^0.5.4
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
     "@types/convict": ^6.1.6
     "@types/express": ^5.0.0
     "@types/jest": ^29.5.13
-    "@types/node": ^22.7.2
+    "@types/node": ^22.7.4
     "@types/node-cache": ^4.2.5
     "@types/supertest": ^6.0.2
     "@types/swagger-ui-express": ^4.1.6
@@ -2400,12 +2383,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-private-shared-lib@workspace:modules/private-shared-lib"
   dependencies:
-    "@mojaloop/api-snippets": 17.6.2
+    "@mojaloop/api-snippets": 17.7.0-snapshot.2
     "@mojaloop/central-services-shared": ^18.9.0
     "@mojaloop/logging-bc-public-types-lib": ^0.5.4
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.7.1
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": 0.2.15
-    "@types/node": ^22.7.2
+    "@types/node": ^22.7.4
     "@types/uuid": ^10.0.0
     ajv: ^8.17.1
     eslint: ^8.57.0
@@ -2425,7 +2408,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter@workspace:."
   dependencies:
     "@types/jest": ^29.5.13
-    "@types/node": ^22.7.2
+    "@types/node": ^22.7.4
     "@types/node-cache": ^4.2.5
     "@typescript-eslint/eslint-plugin": ^7.15.0
     "@typescript-eslint/parser": ^7.15.0
@@ -2926,25 +2909,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@redocly/openapi-core@npm:^1.16.0, @redocly/openapi-core@npm:^1.5.0":
-  version: 1.22.1
-  resolution: "@redocly/openapi-core@npm:1.22.1"
-  dependencies:
-    "@redocly/ajv": ^8.11.0
-    "@redocly/config": ^0.10.1
-    colorette: ^1.2.0
-    https-proxy-agent: ^7.0.4
-    js-levenshtein: ^1.1.6
-    js-yaml: ^4.1.0
-    lodash.isequal: ^4.5.0
-    minimatch: ^5.0.1
-    node-fetch: ^2.6.1
-    pluralize: ^8.0.0
-    yaml-ast-parser: 0.0.43
-  checksum: 1353c549fa71f2de3f2afb3640179e03b64d8198bec763728ff11c439e6961489b121bbb0404e27601a618a86bc975df3389befdaca790e1bd6d1d20b68861af
-  languageName: node
-  linkType: hard
-
 "@redocly/openapi-core@npm:^1.25.3":
   version: 1.25.3
   resolution: "@redocly/openapi-core@npm:1.25.3"
@@ -2961,6 +2925,25 @@ __metadata:
     pluralize: ^8.0.0
     yaml-ast-parser: 0.0.43
   checksum: 5128c904624a71f518017db7062d9689e0f91e335d4fd2381f8753303625533cb991c1ef4a3cbd857a6cb949bb5e54d6868fb38906991065320c8d54d488fee5
+  languageName: node
+  linkType: hard
+
+"@redocly/openapi-core@npm:^1.5.0":
+  version: 1.22.1
+  resolution: "@redocly/openapi-core@npm:1.22.1"
+  dependencies:
+    "@redocly/ajv": ^8.11.0
+    "@redocly/config": ^0.10.1
+    colorette: ^1.2.0
+    https-proxy-agent: ^7.0.4
+    js-levenshtein: ^1.1.6
+    js-yaml: ^4.1.0
+    lodash.isequal: ^4.5.0
+    minimatch: ^5.0.1
+    node-fetch: ^2.6.1
+    pluralize: ^8.0.0
+    yaml-ast-parser: 0.0.43
+  checksum: 1353c549fa71f2de3f2afb3640179e03b64d8198bec763728ff11c439e6961489b121bbb0404e27601a618a86bc975df3389befdaca790e1bd6d1d20b68861af
   languageName: node
   linkType: hard
 
@@ -3481,12 +3464,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^22.7.2":
-  version: 22.7.2
-  resolution: "@types/node@npm:22.7.2"
+"@types/node@npm:^22.7.4":
+  version: 22.7.4
+  resolution: "@types/node@npm:22.7.4"
   dependencies:
     undici-types: ~6.19.2
-  checksum: 5e753a4a7195a05133e1234e6e2eb68d9f002c5566499dc560e1d7efdcad102f10815ea11f8e206a04b7626876c666227535c755a7d77bc71d73278864b0a652
+  checksum: a3f4154147639369aed08fe6f8d62eff637cf87b187bb252d7bbccdc82884626007af424b08a653c53f2182adfa0340001b4888cb7cbb942cef351210fc742a5
   languageName: node
   linkType: hard
 
@@ -11465,24 +11448,6 @@ __metadata:
   version: 12.1.3
   resolution: "openapi-types@npm:12.1.3"
   checksum: 7fa5547f87a58d2aa0eba6e91d396f42d7d31bc3ae140e61b5d60b47d2fd068b48776f42407d5a8da7280cf31195aa128c2fc285e8bb871d1105edee5647a0bb
-  languageName: node
-  linkType: hard
-
-"openapi-typescript@npm:^7.4.0":
-  version: 7.4.0
-  resolution: "openapi-typescript@npm:7.4.0"
-  dependencies:
-    "@redocly/openapi-core": ^1.16.0
-    ansi-colors: ^4.1.3
-    change-case: ^5.4.4
-    parse-json: ^8.1.0
-    supports-color: ^9.4.0
-    yargs-parser: ^21.1.1
-  peerDependencies:
-    typescript: ^5.x
-  bin:
-    openapi-typescript: bin/cli.js
-  checksum: 8497f4bf1eb19e77d4430f2ff2d9638d18a274e4093832643f5bea36a2adc6f79df3a806f65454991ac5899ae4f6796eaebcadcf0f09ac8e9783c13efcffc935
   languageName: node
   linkType: hard
 
