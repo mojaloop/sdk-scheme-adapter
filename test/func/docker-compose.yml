@@ -123,7 +123,7 @@ services:
   ttk-ttksim1:
     networks:
         - mojaloop-net
-    image: mojaloop/ml-testing-toolkit:v17.2.2
+    image: mojaloop/ml-testing-toolkit:v17.3.0-snapshot.1
     container_name: ttk-ttksim1
     user: root
     volumes:
@@ -159,7 +159,7 @@ services:
   ttk-ttksim2:
     networks:
         - mojaloop-net
-    image: mojaloop/ml-testing-toolkit:v17.2.2
+    image: mojaloop/ml-testing-toolkit:v17.3.0-snapshot.1
     container_name: ttk-ttksim2
     user: root
     volumes:
@@ -189,7 +189,7 @@ services:
   ttk-ttksim3:
     networks:
         - mojaloop-net
-    image: mojaloop/ml-testing-toolkit:v17.2.2
+    image: mojaloop/ml-testing-toolkit:v17.3.0-snapshot.1
     container_name: ttk-ttksim3
     user: root
     volumes:
@@ -220,7 +220,7 @@ services:
   ttk-ttkfxp:
     networks:
         - mojaloop-net
-    image: mojaloop/ml-testing-toolkit:v17.2.2
+    image: mojaloop/ml-testing-toolkit:v17.3.0-snapshot.1
     container_name: ttk-ttkfxp
     user: root
     volumes:
@@ -250,7 +250,7 @@ services:
   ttk-hub:
     networks:
         - mojaloop-net
-    image: mojaloop/ml-testing-toolkit:v17.2.2
+    image: mojaloop/ml-testing-toolkit:v17.3.0-snapshot.1
     container_name: ttk-hub
     user: root
     volumes:

@@ -1272,7 +1272,7 @@
       "params": {
         "body": {
           "homeR2PTransactionId": "cba321",
-          "transactionId": "{$function.generic.generateUUID}",
+          "transactionId": "{$function.generic.generateID}",
           "transactionRequestState": "RECEIVED"
         },
         "statusCode": "200",

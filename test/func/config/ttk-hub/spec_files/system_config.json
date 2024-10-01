@@ -65,15 +65,21 @@
   },
   "API_DEFINITIONS": [
     {
-      "type": "fspiop 1.0",
+      "type": "fspiop",
       "version": "1.0",
       "folderPath": "fspiop_1.0",
       "asynchronous": true
     },
     {
-      "type": "fspiop 1.1",
+      "type": "fspiop",
       "version": "1.1",
       "folderPath": "fspiop_1.1",
+      "asynchronous": true
+    },
+    {
+      "type": "fspiop",
+      "version": "2.0",
+      "folderPath": "fspiop_2.0",
       "asynchronous": true
     },
     {
@@ -114,12 +120,6 @@
       "type": "thirdparty_sdk_outbound",
       "version": "0.1",
       "folderPath": "thirdparty_sdk_outbound_0.1"
-    },
-    {
-      "type": "fspiop 2.0",
-      "version": "2.0",
-      "folderPath": "fspiop_2.0",
-      "asynchronous": true
     }
   ]
 }

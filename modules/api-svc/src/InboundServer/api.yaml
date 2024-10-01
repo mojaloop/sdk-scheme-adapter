@@ -1,11 +1,21 @@
 openapi: 3.0.2
 info:
-  version: '2.0'
+  version: 2.0-draft
   title: Open API for FSP Interoperability (FSPIOP)
   description: >-
-    Based on [API Definition updated on 2020-05-19 Version
+    Revision date: 2023-11-23 Based on [API Definition updated on 2020-05-19
+    Version
     1.1](https://github.com/mojaloop/mojaloop-specification/blob/main/documents/v1.1-document-set/API%20Definition_v1.1.pdf).
 
+    This is implementation friendly version of the API definition.
+
+    It includes the below definitions needed for third-party functionality. -
+    AuthenticationType
+      - U2F enum
+    - AuthenticationValue
+      - oneOf is changed to anyOf
+      - new element is added U2FPinValue
+    - New element U2FPIN
 
     **Note:** The API supports a maximum size of 65536 bytes (64 Kilobytes) in
     the HTTP header.
@@ -2810,14 +2820,12 @@ components:
       title: CorrelationId
       type: string
       pattern: >-
-        ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+        ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
       description: >-
-        Identifier that correlates all messages of the same sequence. The API
-        data type UUID (Universally Unique Identifier) is a JSON String in
-        canonical format, conforming to [RFC
-        4122](https://tools.ietf.org/html/rfc4122), that is restricted by a
-        regular expression for interoperability reasons. A UUID is always 36
-        characters long, 32 hexadecimal symbols and 4 dashes (‘-‘).
+        Identifier that correlates all messages of the same sequence. The
+        supported identifiers formats are for lowercase
+        [UUID](https://datatracker.ietf.org/doc/html/rfc9562) and uppercase
+        [ULID](https://github.com/ulid/spec)
       example: b51ec534-ee48-4575-b6a9-ead2955b8069
     PartyIdType:
       title: PartyIdType
