@@ -19,7 +19,7 @@ process.env.SUPPORTED_CURRENCIES='USD';
 // we use a mock standard components lib to intercept and mock certain funcs
 jest.mock('@mojaloop/sdk-standard-components');
 
-const uuid = require('@mojaloop/central-services-shared').Util.id();
+const uuid = require('@mojaloop/central-services-shared').Util.id({ type: 'ulid' });
 const Model = require('~/lib/model').QuotesModel;
 const PSM = require('~/lib/model/common').PersistentStateMachine;
 const { SDKStateEnum } = require('~/lib/model/common');

@@ -1,7 +1,7 @@
 'use strict';
 
 const axios = require('axios');
-const uuid = require('@mojaloop/central-services-shared').Util.id({version: 4});
+const uuid = require('@mojaloop/central-services-shared').Util.id({type: 'ulid'});
 const env = require('../../testEnv');
 const transfersPostRequest = require('./data/transfersPostRequest.json');
 const { SDKStateEnum } = require('../../../../src/lib/model/common');

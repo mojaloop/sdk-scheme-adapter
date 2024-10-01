@@ -474,7 +474,7 @@
     "description": "post /transactionRequests",
     "apiVersion": {
       "minorVersion": 0,
-      "majorVersion": 1,
+      "majorVersion": 2,
       "type": "fspiop",
       "asynchronous": true
     },
@@ -750,7 +750,7 @@
     "description": "get /transactionRequests/{ID}",
     "apiVersion": {
       "minorVersion": 0,
-      "majorVersion": 1,
+      "majorVersion": 2,
       "type": "fspiop",
       "asynchronous": true
     },
