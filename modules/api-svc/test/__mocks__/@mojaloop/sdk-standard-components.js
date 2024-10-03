@@ -12,7 +12,10 @@
 
 const assert = require('assert').strict;
 const util = require('util');
-const { MojaloopRequests, Errors, WSO2Auth, Jws, Logger } = jest.requireActual('@mojaloop/sdk-standard-components');
+const {
+    MojaloopRequests, Errors, WSO2Auth, Jws, Logger,
+    Ilp: { ILP_VERSIONS }
+} = jest.requireActual('@mojaloop/sdk-standard-components');
 
 const mockMojaResponseFn = async () => Object.freeze({
     originalRequest: {
@@ -84,6 +87,19 @@ MockMojaloopRequests.__postFxTransfers = jest.fn(mockMojaResponseFn);
 MockMojaloopRequests.__putFxTransfers = jest.fn(mockMojaResponseFn);
 MockMojaloopRequests.__putFxTransfersError = jest.fn(mockMojaResponseFn);
 
+const Ilp = {
+    ilpFactory: (version, options) => new MockIlp(options),
+    ILP_VERSIONS
+};
+Ilp.__response = {
+    fulfilment: 'mockGeneratedFulfilment',
+    ilpPacket: 'mockBase64encodedIlpPacket',
+    condition: 'mockGeneratedCondition'
+};
+Ilp.__transactionObject = {
+    transactionId: 'mockTransactionId'
+};
+
 class MockIlp {
     constructor(config) {
         assert(config.logger, 'Must supply a logger to Ilp constructor');
@@ -94,12 +110,12 @@ class MockIlp {
 
     calculateFulfil(ilpPacket) {
         this.logger.log(`Mock ILP not calculating fulfil from ilp packet ${ilpPacket}`);
-        return 'mockGeneratedFulfilment';
+        return Ilp.__response.fulfilment;
     }
 
     calculateConditionFromFulfil(fulfil) {
         this.logger.log(`Mock ILP not calculating condition from fulfil ${fulfil}`);
-        return 'mockGeneratedCondition';
+        return Ilp.__response.condition;
     }
 
     validateFulfil(fulfil, condition) {
@@ -110,7 +126,7 @@ class MockIlp {
     getResponseIlp(...args) {
         this.logger.log(`MockIlp.getResponseIlp called with args: ${util.inspect(args)}`);
 
-        return MockIlp.__response;
+        return Ilp.__response;
     }
 
     getQuoteResponseIlp(...args) {
@@ -129,19 +145,9 @@ class MockIlp {
     getTransactionObject(...args) {
         this.logger.log(`MockIlp.getTrasnactionObject called with args: ${util.inspect(args)}`);
 
-        return MockIlp.__transactionObject;
+        return Ilp.__transactionObject;
     }
 }
-MockIlp.__response = {
-    fulfilment: 'mockGeneratedFulfilment',
-    ilpPacket: 'mockBase64encodedIlpPacket',
-    condition: 'mockGeneratedCondition'
-};
-
-MockIlp.__transactionObject = {
-    transactionId: 'mockTransactionId'
-};
-
 
 class MockJwsValidator extends Jws.validator {
     constructor(config) {
@@ -163,8 +169,8 @@ class MockJwsSigner {
 
 
 module.exports = {
+    Ilp,
     MojaloopRequests: MockMojaloopRequests,
-    Ilp: MockIlp,
     Jws: {
         validator: MockJwsValidator,
         signer: MockJwsSigner

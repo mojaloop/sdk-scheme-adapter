@@ -17,7 +17,7 @@ const { Enum } = require('@mojaloop/central-services-shared');
 const { ReturnCodes } = Enum.Http;
 
 const {
-    InboundTransfersModel: Model,
+    InboundTransfersModel,
     PartiesModel,
     QuotesModel,
     TransfersModel,
@@ -30,13 +30,13 @@ const extractBodyHeadersSourceFspId = ctx => ({
     headers: { ...ctx.request.headers },
 });
 
-const createInboundTransfersModel = ctx => new Model({
+const createInboundTransfersModel = (ctx, headerName = 'content-type') => new InboundTransfersModel({
     ...ctx.state.conf,
     cache: ctx.state.cache,
     logger: ctx.state.logger,
     wso2: ctx.state.wso2,
     resourceVersions: ctx.resourceVersions,
-});
+}, ctx.request.headers[headerName]);
 
 const prepareResponse = ctx => {
     ctx.response.status = ReturnCodes.ACCEPTED.CODE;
@@ -53,13 +53,7 @@ const getAuthorizationsById = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = new Model({
-                ...ctx.state.conf,
-                cache: ctx.state.cache,
-                logger: ctx.state.logger,
-                wso2: ctx.state.wso2,
-                resourceVersions: ctx.resourceVersions,
-            });
+            const model = createInboundTransfersModel(ctx);
 
             // use the model to handle the request
             const response = await model.getAuthorizations(authId, sourceFspId);
@@ -91,13 +85,7 @@ const getParticipantsByTypeAndId = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = new Model({
-                ...ctx.state.conf,
-                cache: ctx.state.cache,
-                logger: ctx.state.logger,
-                wso2: ctx.state.wso2,
-                resourceVersions: ctx.resourceVersions,
-            });
+            const model = createInboundTransfersModel(ctx);
 
             // use the model to handle the request
             const response = await model.getParticipants(idType, idValue, subIdValue, sourceFspId);
@@ -130,13 +118,7 @@ const getPartiesByTypeAndId = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = new Model({
-                ...ctx.state.conf,
-                cache: ctx.state.cache,
-                logger: ctx.state.logger,
-                wso2: ctx.state.wso2,
-                resourceVersions: ctx.resourceVersions,
-            });
+            const model = createInboundTransfersModel(ctx);
 
             let response;
 
@@ -188,13 +170,7 @@ const postQuotes = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = new Model({
-                ...ctx.state.conf,
-                cache: ctx.state.cache,
-                logger: ctx.state.logger,
-                wso2: ctx.state.wso2,
-                resourceVersions: ctx.resourceVersions,
-            });
+            const model = createInboundTransfersModel(ctx, 'accept');
 
             let response;
 
@@ -235,13 +211,7 @@ const postTransfers = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = new Model({
-                ...ctx.state.conf,
-                cache: ctx.state.cache,
-                logger: ctx.state.logger,
-                wso2: ctx.state.wso2,
-                resourceVersions: ctx.resourceVersions,
-            });
+            const model = createInboundTransfersModel(ctx);
 
             // use the model to handle the request
             const response = await model.prepareTransfer(transferRequest, sourceFspId);
@@ -271,13 +241,7 @@ const getTransfersById = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = new Model({
-                ...ctx.state.conf,
-                cache: ctx.state.cache,
-                logger: ctx.state.logger,
-                wso2: ctx.state.wso2,
-                resourceVersions: ctx.resourceVersions,
-            });
+            const model = createInboundTransfersModel(ctx);
 
             // use the model to handle the request
             const response = await model.getTransfer(transferId, sourceFspId);
@@ -308,13 +272,7 @@ const postTransactionRequests = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = new Model({
-                ...ctx.state.conf,
-                cache: ctx.state.cache,
-                logger: ctx.state.logger,
-                wso2: ctx.state.wso2,
-                resourceVersions: ctx.resourceVersions,
-            });
+            const model = createInboundTransfersModel(ctx);
 
             // use the model to handle the request
             const response = await model.transactionRequest(transactionRequest, sourceFspId);
@@ -548,13 +506,7 @@ const getQuoteById = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = new Model({
-                ...ctx.state.conf,
-                cache: ctx.state.cache,
-                logger: ctx.state.logger,
-                wso2: ctx.state.wso2,
-                resourceVersions: ctx.resourceVersions,
-            });
+            const model = createInboundTransfersModel(ctx, 'accept');
 
             // use the model to handle the request
             const response = await model.getQuoteRequest(quoteId, sourceFspId);
@@ -596,13 +548,7 @@ const putTransactionRequestsById = async (ctx) => {
         (async () => {
             try {
                 // use the transfers model to execute asynchronous stages with the switch
-                const model = new Model({
-                    ...ctx.state.conf,
-                    cache: ctx.state.cache,
-                    logger: ctx.state.logger,
-                    wso2: ctx.state.wso2,
-                    resourceVersions: ctx.resourceVersions,
-                });
+                const model = createInboundTransfersModel(ctx);
 
                 // use the model to handle the request
                 const response = await model.putTransactionRequest(putTransactionRequest, transactionRequestId, sourceFspId);
@@ -683,13 +629,7 @@ const patchTransfersById = async (ctx) => {
     const idValue = ctx.state.path.params.ID;
 
     // use the transfers model to execute asynchronous stages with the switch
-    const model = new Model({
-        ...ctx.state.conf,
-        cache: ctx.state.cache,
-        logger: ctx.state.logger,
-        wso2: ctx.state.wso2,
-        resourceVersions: ctx.resourceVersions,
-    });
+    const model = createInboundTransfersModel(ctx);
 
     // sends notification to the payee fsp
     const response = await model.sendNotificationToPayee(req.data, idValue);
@@ -768,13 +708,7 @@ const getBulkQuotesById = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = new Model({
-                ...ctx.state.conf,
-                cache: ctx.state.cache,
-                logger: ctx.state.logger,
-                wso2: ctx.state.wso2,
-                resourceVersions: ctx.resourceVersions,
-            });
+            const model = createInboundTransfersModel(ctx, 'accept');
 
             // use the model to handle the request
             const response = await model.getBulkQuote(bulkQuoteId, sourceFspId);
@@ -804,13 +738,7 @@ const postBulkQuotes = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = new Model({
-                ...ctx.state.conf,
-                cache: ctx.state.cache,
-                logger: ctx.state.logger,
-                wso2: ctx.state.wso2,
-                resourceVersions: ctx.resourceVersions,
-            });
+            const model = createInboundTransfersModel(ctx, 'accept');
 
             // use the model to handle the request
             const response = await model.bulkQuoteRequest(bulkQuoteRequest, sourceFspId);
@@ -875,13 +803,7 @@ const getBulkTransfersById = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = new Model({
-                ...ctx.state.conf,
-                cache: ctx.state.cache,
-                logger: ctx.state.logger,
-                wso2: ctx.state.wso2,
-                resourceVersions: ctx.resourceVersions,
-            });
+            const model = createInboundTransfersModel(ctx);
 
             // use the model to handle the request
             const response = await model.getBulkTransfer(bulkTransferId, sourceFspId);
@@ -911,13 +833,7 @@ const postBulkTransfers = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = new Model({
-                ...ctx.state.conf,
-                cache: ctx.state.cache,
-                logger: ctx.state.logger,
-                wso2: ctx.state.wso2,
-                resourceVersions: ctx.resourceVersions,
-            });
+            const model = createInboundTransfersModel(ctx);
 
             // use the model to handle the request
             const response = await model.prepareBulkTransfer(bulkPrepareRequest, sourceFspId);
@@ -982,7 +898,7 @@ const postFxQuotes = async (ctx) => {
     const { logger } = ctx.state;
     const logPrefix = 'Handling POST fxQuotes request';
 
-    const model = createInboundTransfersModel(ctx);
+    const model = createInboundTransfersModel(ctx, 'accept');
 
     model.postFxQuotes({ body, headers }, sourceFspId)
         .then(response => logger.push({ response }).log(`${logPrefix} is done`))

@@ -34,6 +34,24 @@ const {
 const { Enum } = require('@mojaloop/central-services-shared');
 const { ReturnCodes } = Enum.Http;
 
+
+const createOutboundRequestToPayTransferModel = (ctx, headerName = 'content-type') =>
+    new OutboundRequestToPayTransferModel({
+        ...ctx.state.conf,
+        cache: ctx.state.cache,
+        logger: ctx.state.logger,
+        wso2: ctx.state.wso2,
+    }, ctx.request.headers[headerName]);
+
+const createOutboundTransfersModel = (ctx, headerName = 'content-type') =>
+    new OutboundTransfersModel({
+        ...ctx.state.conf,
+        cache: ctx.state.cache,
+        logger: ctx.state.logger,
+        wso2: ctx.state.wso2,
+        metricsClient: ctx.state.metricsClient,
+    }, ctx.request.headers[headerName]);
+
 /**
  * Error handling logic shared by outbound API handlers
  */
@@ -117,13 +135,7 @@ const postTransfers = async (ctx) => {
         };
 
         // use the transfers model to execute asynchronous stages with the switch
-        const model = new OutboundTransfersModel({
-            ...ctx.state.conf,
-            cache: ctx.state.cache,
-            logger: ctx.state.logger,
-            wso2: ctx.state.wso2,
-            metricsClient: ctx.state.metricsClient,
-        });
+        const model = createOutboundTransfersModel(ctx);
 
         // initialize the transfer model and start it running
         await model.initialize(transferRequest);
@@ -150,13 +162,7 @@ const getTransfers = async (ctx) => {
         };
 
         // use the transfers model to execute asynchronous stages with the switch
-        const model = new OutboundTransfersModel({
-            ...ctx.state.conf,
-            cache: ctx.state.cache,
-            logger: ctx.state.logger,
-            wso2: ctx.state.wso2,
-            metricsClient: ctx.state.metricsClient,
-        });
+        const model = createOutboundTransfersModel(ctx);
 
         // initialize the transfer model and start it running
         await model.initialize(transferRequest);
@@ -179,13 +185,7 @@ const putTransfers = async (ctx) => {
     try {
         // this requires a multi-stage sequence with the switch.
         // use the transfers model to execute asynchronous stages with the switch
-        const model = new OutboundTransfersModel({
-            ...ctx.state.conf,
-            cache: ctx.state.cache,
-            logger: ctx.state.logger,
-            wso2: ctx.state.wso2,
-            metricsClient: ctx.state.metricsClient,
-        });
+        const model = createOutboundTransfersModel(ctx);
 
         // TODO: check the incoming body to reject party or quote when requested to do so
 
@@ -390,12 +390,7 @@ const postRequestToPayTransfer = async (ctx) => {
         };
 
         // use the merchant transfers model to execute asynchronous stages with the switch
-        const model = new OutboundRequestToPayTransferModel({
-            ...ctx.state.conf,
-            cache: ctx.state.cache,
-            logger: ctx.state.logger,
-            wso2: ctx.state.wso2,
-        });
+        const model = createOutboundRequestToPayTransferModel(ctx);
 
         // initialize the transfer model and start it running
         await model.initialize(requestToPayTransferRequest);
@@ -417,12 +412,7 @@ const putRequestToPayTransfer = async (ctx) => {
     try {
         // this requires a multi-stage sequence with the switch.
         // use the transfers model to execute asynchronous stages with the switch
-        const model = new OutboundRequestToPayTransferModel({
-            ...ctx.state.conf,
-            cache: ctx.state.cache,
-            logger: ctx.state.logger,
-            wso2: ctx.state.wso2,
-        });
+        const model = createOutboundRequestToPayTransferModel(ctx);
 
         // TODO: check the incoming body to reject party or quote when requested to do so
         const data = ctx.request.body;
