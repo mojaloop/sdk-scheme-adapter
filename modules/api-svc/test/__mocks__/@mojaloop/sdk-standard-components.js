@@ -14,6 +14,12 @@ const assert = require('assert').strict;
 const util = require('util');
 const { MojaloopRequests, Errors, WSO2Auth, Jws, Logger } = jest.requireActual('@mojaloop/sdk-standard-components');
 
+const mockMojaResponseFn = async () => Object.freeze({
+    originalRequest: {
+        headers: {},
+        body: {},
+    }
+});
 
 class MockMojaloopRequests extends MojaloopRequests {
     constructor(...args) {
@@ -41,6 +47,12 @@ class MockMojaloopRequests extends MojaloopRequests {
         this.putBulkTransfers = MockMojaloopRequests.__putBulkTransfers;
         this.putBulkTransfersError = MockMojaloopRequests.__putBulkTransfersError;
         this.patchTransfers = MockMojaloopRequests.__patchTransfers;
+        this.postFxQuotes = MockMojaloopRequests.__postFxQuotes;
+        this.putFxQuotes = MockMojaloopRequests.__putFxQuotes;
+        this.putFxQuotesError = MockMojaloopRequests.__putFxQuotesError;
+        this.postFxTransfers = MockMojaloopRequests.__postFxTransfers;
+        this.putFxTransfers = MockMojaloopRequests.__putFxTransfers;
+        this.putFxTransfersError = MockMojaloopRequests.__putFxTransfersError;
     }
 }
 MockMojaloopRequests.__postParticipants = jest.fn(() => Promise.resolve());
@@ -65,6 +77,12 @@ MockMojaloopRequests.__postBulkTransfers = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putBulkTransfers = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putBulkTransfersError = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__patchTransfers = jest.fn(() => Promise.resolve());
+MockMojaloopRequests.__postFxQuotes = jest.fn(mockMojaResponseFn);
+MockMojaloopRequests.__putFxQuotes = jest.fn(mockMojaResponseFn);
+MockMojaloopRequests.__putFxQuotesError = jest.fn(mockMojaResponseFn);
+MockMojaloopRequests.__postFxTransfers = jest.fn(mockMojaResponseFn);
+MockMojaloopRequests.__putFxTransfers = jest.fn(mockMojaResponseFn);
+MockMojaloopRequests.__putFxTransfersError = jest.fn(mockMojaResponseFn);
 
 class MockIlp {
     constructor(config) {
@@ -97,6 +115,12 @@ class MockIlp {
 
     getQuoteResponseIlp(...args) {
         this.logger.log(`MockIlp.getQuoteResponseIlp called with args: ${util.inspect(args)}`);
+
+        return this.getResponseIlp(...args);
+    }
+
+    getFxQuoteResponseIlp(...args) {
+        this.logger.log(`MockIlp.getFxQuoteResponseIlp called with args: ${util.inspect(args)}`);
 
         return this.getResponseIlp(...args);
     }

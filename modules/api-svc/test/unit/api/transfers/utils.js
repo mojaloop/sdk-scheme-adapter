@@ -22,7 +22,7 @@ function createGetTransfersTester({ reqInbound, reqOutbound, apiSpecsOutbound })
      * @return {Promise<any>}
      */
     return async (putBodyFn, responseCode, responseBody) => {
-        const TRANSFER_ID = '00000000-0000-1000-8000-000000000001';
+        const TRANSFER_ID = '00000000000000000000000001';
         const endpoint = new URL(`http://${defaultConfig.peerEndpoint}`).host;
         const switchEndpoint = `http://${endpoint}`;
 

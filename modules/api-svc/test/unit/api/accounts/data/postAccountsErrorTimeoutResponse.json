@@ -11,9 +11,9 @@
     "lastError": {
       "httpStatusCode": 504
     },
-    "modelId": "00000000-0000-1000-8000-000000000001",
+    "modelId": "00000000000000000000000001",
     "response": []
   },
-  "message": "Timeout waiting for response to account creation request 00000000-0000-1000-8000-000000000002",
+  "message": "Timeout waiting for response to account creation request 00000000000000000000000002",
   "statusCode": "504"
 }

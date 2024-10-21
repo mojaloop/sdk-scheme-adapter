@@ -10,6 +10,12 @@
 
 'use strict';
 
+process.env.PEER_ENDPOINT = '172.17.0.3:4000';
+process.env.BACKEND_ENDPOINT = '172.17.0.5:4000';
+process.env.CACHE_URL = 'redis://172.17.0.2:6379';
+process.env.MGMT_API_WS_URL = '0.0.0.0';
+process.env.SUPPORTED_CURRENCIES='USD';
+
 // we use a mock standard components lib to intercept and mock certain funcs
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('redis');
@@ -22,13 +28,15 @@ const PartiesModel = require('~/lib/model').PartiesModel;
 const { MojaloopRequests, Logger } = require('@mojaloop/sdk-standard-components');
 const StateMachine = require('javascript-state-machine');
 
+const mocks = require('./data/mocks');
 const defaultConfig = require('./data/defaultConfig');
 const transferRequest = require('./data/transferRequest');
 const payeeParty = require('./data/payeeParty');
 const quoteResponseTemplate = require('./data/quoteResponse');
 const transferFulfil = require('./data/transferFulfil');
 
-const { SDKStateEnum } = require('../../../../src/lib/model/common');
+const { SDKStateEnum, CacheKeyPrefixes, States, ErrorMessages, AmountTypes } = require('../../../../src/lib/model/common');
+const { error } = require('console');
 const FSPIOPTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.TransferState;
 
 const genPartyId = (party) => {
@@ -1577,4 +1585,304 @@ describe('outboundModel', () => {
         expect(StateMachine.__instance.state).toBe('quoteReceived');
     });
 
+    describe('FX flow Tests -->', () => {
+        const TARGET_AMOUNT = '48000';
+        let model;
+
+        const publishAndReply = async (channel, payload) => {
+            await cache.publish(channel, JSON.stringify(payload));
+            return mocks.mockMojaApiResponse();
+        };
+
+        const getPartiesRequest = jest.fn(async (idType, idValue, idSubValue) => {
+            const channel = `parties-${idType}-${idValue}-${idSubValue}`;
+            await cache.publish(channel, JSON.stringify({
+                body: mocks.mockGetPartyResponse(),
+            }));
+            // todo: putParties message doesn't have "data" field
+            return mocks.mockMojaApiResponse();
+        });
+
+
+        const getPartiesNoSupportedCurrenciesRequest = jest.fn(async (idType, idValue, idSubValue) => {
+            const channel = `parties-${idType}-${idValue}-${idSubValue}`;
+            await cache.publish(channel, JSON.stringify({
+                body: mocks.mockGetPartyResponse({supportedCurrencies: ['XXX']}),
+            }));
+            // todo: putParties message doesn't have "data" field
+            return mocks.mockMojaApiResponse();
+        });
+
+
+        const getPartiesEmptySupportedCurrenciesRequest = jest.fn(async (idType, idValue, idSubValue) => {
+            const channel = `parties-${idType}-${idValue}-${idSubValue}`;
+            await cache.publish(channel, JSON.stringify({
+                body: mocks.mockGetPartyResponse({supportedCurrencies: []}),
+            }));
+            // todo: putParties message doesn't have "data" field
+            return mocks.mockMojaApiResponse();
+        });
+
+        const postFxQuotesRequest = jest.fn(async (payload) => {
+            const channel = `${CacheKeyPrefixes.FX_QUOTE_CALLBACK_CHANNEL}_${payload.conversionRequestId}`;
+            // eslint-disable-next-line no-unused-vars
+            const { conversionRequestId, ...restPayload} = payload;
+            restPayload.conversionTerms.targetAmount.amount = TARGET_AMOUNT; // todo: find a better way
+            return publishAndReply(channel, {
+                success: true,
+                data: {
+                    body: {
+                        ...restPayload,
+                        condition: 'fxCondition'
+                    },
+                    headers: {},
+                }
+            });
+        });
+
+        const postQuotesRequest = jest.fn(async (payload) => {
+            const channel = `qt_${payload.quoteId}`;
+            return publishAndReply(channel, {
+                data: {
+                    body: mocks.mockPutQuotesResponse(),
+                    headers: {},
+                },
+                type: 'quoteResponse'
+            });
+
+        });
+
+        const postFxTransfersRequest = jest.fn(async (payload) => {
+            const channel = `${CacheKeyPrefixes.FX_TRANSFER_CALLBACK_CHANNEL}_${payload.commitRequestId}`;
+            return publishAndReply(channel, {
+                success: true,
+                data: {
+                    body: { ...payload },
+                    headers: {},
+                }
+            });
+        });
+
+        const postFxTransfersRequestReturnedInvalidFulfilment = jest.fn(async (payload) => {
+            const channel = `${CacheKeyPrefixes.FX_TRANSFER_CALLBACK_CHANNEL}_${payload.commitRequestId}`;
+            return publishAndReply(channel, {
+                success: true,
+                data: {
+                    body: {
+                        ...mocks.mockFxTransfersInternalResponse(),
+                        fulfilment: 'invalid-fulfilment'
+                    },
+                    headers: {},
+                }
+            });
+        });
+
+        const postTransfersRequest = jest.fn(async (payload) => {
+            const channel = `tf_${payload.transferId}`;
+            return publishAndReply(channel, {
+                data: {},
+                type: 'transferFulfil'
+            });
+        });
+
+        beforeEach(() => {
+            model = new Model({
+                cache,
+                logger: new Logger.Logger({ context: { app: 'outbound-model-fx-flow-unit-tests' } }),
+                metricsClient,
+                ...config,
+            });
+            model._checkIlp = false;
+            model._requests.getParties = getPartiesRequest;
+            model._requests.postFxQuotes = postFxQuotesRequest;
+            model._requests.postQuotes = postQuotesRequest;
+            model._requests.postFxTransfers = postFxTransfersRequest;
+            model._requests.postTransfers = postTransfersRequest;
+        });
+
+        afterEach(async () => {
+            jest.clearAllMocks();
+        });
+
+        test.todo('should throw error if fxp providers found');
+
+        test('should throw error if no supported currencies not specified in config', async () => {
+            model._requests.getParties = getPartiesRequest;
+            await model.initialize({
+                ...mocks.coreConnectorPostTransfersPayloadDto(),
+                currentState: States.START,
+                needFx: true,
+                supportedCurrencies: [],
+            });
+            model.data.amountType = AmountTypes.RECEIVE;
+            expect(model.data.currentState).toBe(States.START);
+            await expect(model.run()).rejects.toThrowError(ErrorMessages.unsupportedFxAmountType);
+        });
+
+        test('should throw error if payee empty supported currencies returned', async () => {
+            model._requests.getParties = getPartiesEmptySupportedCurrenciesRequest;
+            await model.initialize({
+                ...mocks.coreConnectorPostTransfersPayloadDto(),
+                currentState: States.START,
+                needFx: true,
+                supportedCurrencies: ['USD'],
+            });
+            expect(model.data.currentState).toBe(States.START);
+            await expect(model.run()).rejects.toThrowError(ErrorMessages.noSupportedCurrencies);
+        });
+
+        test('should throw error if payee no supported currencies returned and amount type is RECEIVE enum', async () => {
+            model._requests.getParties = getPartiesNoSupportedCurrenciesRequest;
+            await model.initialize({
+                ...mocks.coreConnectorPostTransfersPayloadDto(),
+                currentState: States.START,
+                needFx: true,
+                supportedCurrencies: ['USD'],
+            });
+            model.data.amountType = AmountTypes.RECEIVE;
+            expect(model.data.currentState).toBe(States.START);
+            await expect(model.run()).rejects.toThrowError(ErrorMessages.unsupportedFxAmountType);
+        });
+
+        test('should process callback for POST fxQuotes request', async () => {
+            await model.initialize({
+                ...mocks.coreConnectorPostTransfersPayloadDto(),
+                currentState: States.PAYEE_RESOLVED,
+                needFx: true,
+                supportedCurrencies: ['USD']
+            });
+            expect(model.data.currentState).toBe(States.PAYEE_RESOLVED);
+
+            const result = await model.run();
+            expect(result).toBeTruthy();
+            expect(result.fxQuoteRequest).toBeTruthy();
+            expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_CONVERSION_ACCEPTANCE);
+            expect(model.data.currentState).toBe(States.FX_QUOTE_RECEIVED);
+        });
+
+        test('should throw error on expired quote response when config rejectExpiredQuoteResponses is truthy', async () => {
+            model._rejectExpiredQuoteResponses = true;
+            // replace function to return expired timestamp
+            model._getExpirationTimestamp = () => {
+                let now = new Date();
+                return new Date(now.getTime() - 1000).toISOString();
+            };
+            await model.initialize({
+                ...mocks.coreConnectorPostTransfersPayloadDto(),
+                currentState: States.PAYEE_RESOLVED,
+                needFx: true,
+                supportedCurrencies: ['USD'],
+            });
+            expect(model.data.currentState).toBe(States.PAYEE_RESOLVED);
+            await expect(model.run()).rejects.toThrowError(`${ErrorMessages.responseMissedExpiryDeadline} (fxQuote)`);
+        });
+
+        test('should process callback for POST fxTransfers request', async () => {
+            await model.initialize({
+                ...mocks.coreConnectorPostTransfersPayloadDto(),
+                currentState: States.QUOTE_RECEIVED,
+                needFx: true,
+                supportedCurrencies: ['USD'],
+                acceptQuote: true,
+                fxQuoteResponse: {
+                    body: mocks.mockFxQuotesPayload(),
+                },
+                quoteResponse: {
+                    body: {
+                        transferAmount: {},
+                    }
+                }
+            });
+            expect(model.data.currentState).toBe(States.QUOTE_RECEIVED);
+
+            const result = await model.run();
+            expect(result).toBeTruthy();
+            expect(result.fxTransferRequest).toBeTruthy();
+            expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
+            expect(model.data.currentState).toBe(States.SUCCEEDED);
+            expect(model._requests.postTransfers).toHaveBeenCalledTimes(1);
+        });
+
+        test('should throw error on expired fxtransfer fulfil when config rejectExpiredTransferFulfils is truthy', async () => {
+            model._rejectExpiredTransferFulfils = true;
+            // replace function to return expired timestamp
+            model._getExpirationTimestamp = () => {
+                let now = new Date();
+                return new Date(now.getTime() - 1000).toISOString();
+            };
+            await model.initialize({
+                ...mocks.coreConnectorPostTransfersPayloadDto(),
+                currentState: States.QUOTE_RECEIVED,
+                needFx: true,
+                supportedCurrencies: ['USD'],
+                acceptQuote: true,
+                fxQuoteResponse: {
+                    body: mocks.mockFxQuotesPayload(),
+                },
+                quoteResponse: {
+                    body: {
+                        transferAmount: {},
+                    }
+                }
+            });
+            expect(model.data.currentState).toBe(States.QUOTE_RECEIVED);
+            await expect(model.run()).rejects.toThrowError(`${ErrorMessages.responseMissedExpiryDeadline} (fxTransfers fulfil)`);
+        });
+
+        test('should throw error on invalid transfer fulfil when config checkIlp is truthy', async () => {
+            model._checkIlp = true;
+            model._requests.postFxTransfers = postFxTransfersRequestReturnedInvalidFulfilment;
+            // replace ilp validation function since it's mocked for one test
+            model._ilp = { validateFulfil: jest.fn(() => false) };
+            await model.initialize({
+                ...mocks.coreConnectorPostTransfersPayloadDto(),
+                currentState: States.QUOTE_RECEIVED,
+                needFx: true,
+                supportedCurrencies: ['USD'],
+                acceptQuote: true,
+                fxQuoteResponse: {
+                    body: mocks.mockFxQuotesResponse(),
+                },
+                quoteResponse: {
+                    body: {
+                        transferAmount: {},
+                    }
+                }
+            });
+            expect(model.data.currentState).toBe(States.QUOTE_RECEIVED);
+            await expect(model.run()).rejects.toThrowError(ErrorMessages.invalidFulfilment);
+        });
+
+        test('should pass e2e FX transfer flow (no autoAccept... configs)', async () => {
+            model._autoAcceptParty = false;
+            model._autoAcceptQuotes = false;
+            await model.initialize({
+                ...mocks.coreConnectorPostTransfersPayloadDto()
+            });
+            expect(model.data.currentState).toBe(States.START);
+
+            let result = await model.run();
+            expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_PARTY_ACCEPTANCE);
+            expect(model.data.currentState).toBe(States.PAYEE_RESOLVED);
+            expect(model.data.needFx).toBe(true);
+
+            result = await model.run({ acceptParty: true });
+            expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_CONVERSION_ACCEPTANCE);
+            expect(result.fxQuoteRequest).toBeTruthy();
+            expect(model.data.currentState).toBe(States.FX_QUOTE_RECEIVED);
+
+            result = await model.run({ acceptConversion: true });
+            expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE);
+            expect(model.data.currentState).toBe(States.QUOTE_RECEIVED);
+            expect(model._requests.postQuotes).toHaveBeenCalledTimes(1);
+
+            const [quote] = model._requests.postQuotes.mock.calls[0];
+            expect(quote.amount.currency).toBe(model.data.supportedCurrencies[0]);
+            expect(quote.amount.amount).toBe(TARGET_AMOUNT);
+
+            result = await model.run({ acceptQuote: true });
+            expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
+            expect(model.data.currentState).toBe(States.SUCCEEDED);
+        });
+    });
 });

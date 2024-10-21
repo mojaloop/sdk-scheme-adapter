@@ -1,0 +1,388 @@
+{
+  "options": {},
+  "name": "fx_payer_sdk_unhappy_path",
+  "test_cases": [
+    {
+      "id": 1,
+      "name": "Send a transfer with currency conversion - Fx quote expired",
+      "fileInfo": {
+        "path": "fx/payer_sdk_unhappy_path.json"
+      },
+      "meta": {
+        "info": "Send a transfer with currency conversion - Fx quote expired"
+      },
+      "requests": [
+        {
+          "id": 1,
+          "description": "Initiate a transfer",
+          "apiVersion": {
+            "minorVersion": 1,
+            "majorVersion": 2,
+            "type": "sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets",
+            "asynchronous": false,
+            "specFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/trigger_templates"
+          },
+          "operationPath": "/transfers",
+          "path": "/transfers",
+          "method": "post",
+          "body": {
+            "homeTransactionId": "1234",
+            "from": {
+              "idType": "MSISDN",
+              "idValue": "{$inputs.fromIdValue}",
+              "displayName": "Henrik",
+              "firstName": "Henrik",
+              "middleName": "Johannes",
+              "lastName": "Karlsson",
+              "dateOfBirth": "1966-06-16",
+              "merchantClassificationCode": "123",
+              "fspId": "{$inputs.FXP_FXPAYERDFSP_ID}"
+            },
+            "to": {
+              "idType": "MSISDN",
+              "idValue": "{$inputs.FXP_TO_PARTY_ID}"
+            },
+            "amountType": "SEND",
+            "transactionType": "TRANSFER",
+            "currency": "{$inputs.FXP_SOURCE_CURRENCY}",
+            "amount": "408"
+          },
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Status is 200",
+                "exec": [
+                  "expect(response.status).to.equal(200)"
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Current state should be WAITING_FOR_PARTY_ACCEPTANCE",
+                "exec": [
+                  "expect(response.body.currentState).to.equal('WAITING_FOR_PARTY_ACCEPTANCE')"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": 2,
+          "description": "Accept Party",
+          "apiVersion": {
+            "minorVersion": 1,
+            "majorVersion": 2,
+            "type": "sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets",
+            "asynchronous": false,
+            "specFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/trigger_templates"
+          },
+          "operationPath": "/transfers/{transferId}",
+          "path": "/transfers/{$prev.1.response.body.transferId}",
+          "method": "put",
+          "params": {
+            "transferId": "{$prev.1.response.body.transferId}"
+          },
+          "body": {
+            "acceptParty": true
+          },
+          "disabled": false,
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Status is 504",
+                "exec": [
+                  "expect(response.status).to.equal(504)"
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Response should contain relavant error message",
+                "exec": [
+                  "expect(response.body.message).to.equal('Response missed expiry deadline (fxQuote)')"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Send a transfer with currency conversion - Fx Fulfil Expired Fulfilment",
+      "fileInfo": {
+        "path": "fx/payer_sdk_unhappy_path.json"
+      },
+      "meta": {
+        "info": "Send a transfer with currency conversion - Fx Fulfil Expired Fulfilment"
+      },
+      "requests": [
+        {
+          "id": 1,
+          "description": "Initiate a transfer",
+          "apiVersion": {
+            "minorVersion": 1,
+            "majorVersion": 2,
+            "type": "sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets",
+            "asynchronous": false,
+            "specFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/trigger_templates"
+          },
+          "operationPath": "/transfers",
+          "path": "/transfers",
+          "method": "post",
+          "body": {
+            "homeTransactionId": "1234",
+            "from": {
+              "idType": "MSISDN",
+              "idValue": "{$inputs.fromIdValue}",
+              "displayName": "Henrik",
+              "firstName": "Henrik",
+              "middleName": "Johannes",
+              "lastName": "Karlsson",
+              "dateOfBirth": "1966-06-16",
+              "merchantClassificationCode": "123",
+              "fspId": "{$inputs.FXP_FXPAYERDFSP_ID}"
+            },
+            "to": {
+              "idType": "MSISDN",
+              "idValue": "{$inputs.FXP_TO_PARTY_ID}"
+            },
+            "amountType": "SEND",
+            "transactionType": "TRANSFER",
+            "currency": "{$inputs.FXP_SOURCE_CURRENCY}",
+            "amount": "408408"
+          },
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Status is 200",
+                "exec": [
+                  "expect(response.status).to.equal(200)"
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Current state should be WAITING_FOR_PARTY_ACCEPTANCE",
+                "exec": [
+                  "expect(response.body.currentState).to.equal('WAITING_FOR_PARTY_ACCEPTANCE')"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": 2,
+          "description": "Accept Party",
+          "apiVersion": {
+            "minorVersion": 1,
+            "majorVersion": 2,
+            "type": "sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets",
+            "asynchronous": false,
+            "specFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/trigger_templates"
+          },
+          "operationPath": "/transfers/{transferId}",
+          "path": "/transfers/{$prev.1.response.body.transferId}",
+          "method": "put",
+          "params": {
+            "transferId": "{$prev.1.response.body.transferId}"
+          },
+          "body": {
+            "acceptParty": true
+          },
+          "disabled": false,
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Status is 200",
+                "exec": [
+                  "expect(response.status).to.equal(200)"
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Current state should be WAITING_FOR_CONVERSION_ACCEPTANCE",
+                "exec": [
+                  "expect(response.body.currentState).to.equal('WAITING_FOR_CONVERSION_ACCEPTANCE')"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": 3,
+          "description": "Accept Conversion",
+          "apiVersion": {
+            "minorVersion": 1,
+            "majorVersion": 2,
+            "type": "sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets",
+            "asynchronous": false,
+            "specFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/trigger_templates"
+          },
+          "operationPath": "/transfers/{transferId}",
+          "path": "/transfers/{$prev.1.response.body.transferId}",
+          "method": "put",
+          "params": {
+            "transferId": "{$prev.1.response.body.transferId}"
+          },
+          "body": {
+            "acceptConversion": true
+          },
+          "disabled": false,
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Status is 200",
+                "exec": [
+                  "expect(response.status).to.equal(200)"
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Current state should be WAITING_FOR_QUOTE_ACCEPTANCE",
+                "exec": [
+                  "expect(response.body.currentState).to.equal('WAITING_FOR_QUOTE_ACCEPTANCE')"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": 4,
+          "description": "Accept Quote",
+          "apiVersion": {
+            "minorVersion": 1,
+            "majorVersion": 2,
+            "type": "sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets",
+            "asynchronous": false,
+            "specFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/trigger_templates"
+          },
+          "operationPath": "/transfers/{transferId}",
+          "path": "/transfers/{$prev.1.response.body.transferId}",
+          "method": "put",
+          "params": {
+            "transferId": "{$prev.1.response.body.transferId}"
+          },
+          "body": {
+            "acceptQuote": true
+          },
+          "disabled": false,
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Status is 504",
+                "exec": [
+                  "expect(response.status).to.equal(504)"
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Response should contain relavant error message",
+                "exec": [
+                  "expect(response.body.message).to.equal('Response missed expiry deadline (fxTransfers fulfil)')"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Send a transfer with currency conversion - Source currency Payee does not support",
+      "fileInfo": {
+        "path": "fx/payer_sdk_unhappy_path.json"
+      },
+      "meta": {
+        "info": "Send a transfer with currency conversion - Fx Fulfil Expired Fulfilment"
+      },
+      "requests": [
+        {
+          "id": 1,
+          "description": "Initiate a transfer",
+          "apiVersion": {
+            "minorVersion": 1,
+            "majorVersion": 2,
+            "type": "sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets",
+            "asynchronous": false,
+            "specFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/trigger_templates"
+          },
+          "operationPath": "/transfers",
+          "path": "/transfers",
+          "method": "post",
+          "body": {
+            "homeTransactionId": "1234",
+            "from": {
+              "idType": "MSISDN",
+              "idValue": "{$inputs.fromIdValue}",
+              "displayName": "Henrik",
+              "firstName": "Henrik",
+              "middleName": "Johannes",
+              "lastName": "Karlsson",
+              "dateOfBirth": "1966-06-16",
+              "merchantClassificationCode": "123",
+              "fspId": "{$inputs.FXP_FXPAYERDFSP_ID}"
+            },
+            "to": {
+              "idType": "MSISDN",
+              "idValue": "{$inputs.FXP_TO_PARTY_ID}"
+            },
+            "amountType": "RECEIVE",
+            "transactionType": "TRANSFER",
+            "currency": "{$inputs.FXP_SOURCE_CURRENCY_ALTERNATIVE}",
+            "amount": "{$inputs.FXP_SOURCE_AMOUNT}"
+          },
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Status is 500",
+                "exec": [
+                  "expect(response.status).to.equal(500)"
+                ]
+              },
+              {
+                "id": 2,
+                "description": "Response should contain relavant error message",
+                "exec": [
+                  "expect(response.body.message).to.equal('Unsupported amountType when currency conversion is needed')"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

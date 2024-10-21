@@ -34,6 +34,7 @@ const Validate = require('./lib/validate');
 const Cache = require('./lib/cache');
 const { SDKStateEnum } = require('./lib/model/common');
 const { createAuthClient } = require('./lib/utils');
+const { SDK_LOGGER_HIERARCHY } = require('./constants');
 
 const LOG_ID = {
     INBOUND:   { app: 'mojaloop-connector-inbound-api' },
@@ -46,7 +47,13 @@ const LOG_ID = {
     METRICS:   { app: 'mojaloop-connector-metrics' },
     CACHE:     { component: 'cache' },
 };
-const SDK_LOGGER_HIERARCHY = ['verbose', 'trace', 'debug', 'info', 'warn', 'error', 'fatal'];
+
+const createCache = (config, logger) => new Cache({
+    cacheUrl: config.cacheUrl,
+    logger: logger.push(LOG_ID.CACHE),
+    enableTestFeatures: config.enableTestFeatures,
+    subscribeTimeoutSeconds:  config.requestProcessingTimeoutSeconds,
+});
 
 /**
  * Class that creates and manages http servers that expose the scheme adapter APIs.
@@ -56,12 +63,7 @@ class Server extends EventEmitter {
         super({ captureExceptions: true });
         this.conf = conf;
         this.logger = logger;
-        this.cache = new Cache({
-            cacheUrl: conf.cacheUrl,
-            logger: this.logger.push(LOG_ID.CACHE),
-            enableTestFeatures: conf.enableTestFeatures,
-            unsubscribeTimeoutMs: conf.unsubscribeTimeoutMs,
-        });
+        this.cache = createCache(conf, logger);
 
         this.metricsClient = new MetricsClient();
 
@@ -163,7 +165,10 @@ class Server extends EventEmitter {
         ]);
     }
 
+    // todo: clarify, why do we need this method?
+    //       (!) lots of code duplication
     async restart(newConf) {
+        this.logger.isDebugEnabled && this.logger.debug('Server is restarting...');
         const updateLogger = !_.isEqual(newConf.logIndent, this.conf.logIndent);
         if (updateLogger) {
             this.logger = new Logger.Logger({
@@ -183,12 +188,7 @@ class Server extends EventEmitter {
         if (updateCache) {
             oldCache = this.cache;
             await this.cache.disconnect();
-            this.cache = new Cache({
-                cacheUrl: newConf.cacheUrl,
-                logger: this.logger.push(LOG_ID.CACHE),
-                enableTestFeatures: newConf.enableTestFeatures,
-                unsubscribeTimeoutMs: newConf.unsubscribeTimeoutMs,
-            });
+            this.cache = createCache(newConf, this.logger);
             await this.cache.connect();
         }
 
@@ -214,8 +214,9 @@ class Server extends EventEmitter {
                 this.wso2,
             );
             this.inboundServer.on('error', (...args) => {
-                this.logger.isErrorEnabled && this.logger.push({ args }).error('Unhandled error in Inbound Server');
-                this.emit('error', 'Unhandled error in Inbound Server');
+                const errMessage = 'Unhandled error in Inbound Server';
+                this.logger.push({ args }).log(errMessage);
+                this.emit('error', errMessage);
             });
             await this.inboundServer.start();
         }
@@ -231,8 +232,9 @@ class Server extends EventEmitter {
                 this.wso2,
             );
             this.outboundServer.on('error', (...args) => {
-                this.logger.isErrorEnabled && this.logger.push({ args }).error('Unhandled error in Outbound Server');
-                this.emit('error', 'Unhandled error in Outbound Server');
+                const errMessage = 'Unhandled error in Outbound Server';
+                this.logger.push({ args }).log(errMessage);
+                this.emit('error', errMessage);
             });
             await this.outboundServer.start();
         }
@@ -262,7 +264,11 @@ class Server extends EventEmitter {
                     appConfig: newConf,
                 });
                 this.controlClient.on(ControlAgent.EVENT.RECONFIGURE, this.restart.bind(this));
-                this.controlClient.on('close', () => setTimeout(() => this.restart(_.merge({}, newConf, { control: { stopped: Date.now() } })), RESTART_INTERVAL_MS));
+                this.controlClient.on('close', () => setTimeout(() => {
+                    this.restart(_.merge({}, newConf, {
+                        control: { stopped: Date.now() }
+                    }));
+                }, RESTART_INTERVAL_MS));
             }
         }
 
@@ -293,11 +299,12 @@ class Server extends EventEmitter {
             }
         }
 
-        this.conf = newConf;
+        _.merge(this.conf, newConf);
 
         await Promise.all([
             oldCache?.disconnect(),
         ]);
+        this.logger.isDebugEnabled && this.logger.debug('Server is restarted');
     }
 
     stop() {
