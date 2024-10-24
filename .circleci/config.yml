@@ -30,6 +30,7 @@ defaults_docker_Dependencies: &defaults_docker_Dependencies |
   apk --no-cache add bash bash-doc bash-completion
   apk --no-cache add -t build-dependencies make gcc g++ python3 libtool autoconf automake
   apk --no-cache add librdkafka-dev
+  pip install --upgrade setuptools
 
 ## Default 'default-machine' executor dependencies
 defaults_machine_Dependencies: &defaults_machine_Dependencies |
@@ -40,9 +41,6 @@ defaults_machine_Dependencies: &defaults_machine_Dependencies |
 
   ## Install deps
   sudo apt install -y librdkafka-dev
-  
-  ## fix missing distutil from latest python3 (required by node gyp)
-  pip install --upgrade setuptools
 
 defaults_YarnConfig: &defaults_YarnConfig |
   ## Example configs that could be applied here
