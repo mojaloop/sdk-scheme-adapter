@@ -2642,7 +2642,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-shared@npm:18.11.0":
+"@mojaloop/central-services-shared@npm:18.11.0, @mojaloop/central-services-shared@npm:^18.11.0":
   version: 18.11.0
   resolution: "@mojaloop/central-services-shared@npm:18.11.0"
   dependencies:
@@ -2932,7 +2932,7 @@ __metadata:
   dependencies:
     "@eslint/compat": ^1.2.1
     "@mojaloop/api-snippets": 17.7.2
-    "@mojaloop/central-services-shared": ^18.10.0
+    "@mojaloop/central-services-shared": ^18.11.0
     "@mojaloop/logging-bc-client-lib": ^0.1.17
     "@mojaloop/logging-bc-public-types-lib": ^0.5.4
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
@@ -3009,7 +3009,7 @@ __metadata:
   dependencies:
     "@eslint/compat": ^1.2.1
     "@mojaloop/api-snippets": 17.7.2
-    "@mojaloop/central-services-shared": ^18.10.0
+    "@mojaloop/central-services-shared": ^18.11.0
     "@mojaloop/logging-bc-public-types-lib": ^0.5.4
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.7.1
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": 0.2.15
