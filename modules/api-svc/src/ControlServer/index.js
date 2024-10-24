@@ -243,7 +243,7 @@ class Server extends ws.Server {
             let msg;
             try {
                 msg = deserialise(data);
-            } catch (err) {
+            } catch {
                 logger.isErrorEnabled && logger.push({ data }).error('Couldn\'t parse received message');
                 client.send(build.ERROR.NOTIFY.JSON_PARSE_ERROR());
             }

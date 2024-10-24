@@ -66,7 +66,22 @@ MockMojaloopRequests.__putBulkTransfers = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__putBulkTransfersError = jest.fn(() => Promise.resolve());
 MockMojaloopRequests.__patchTransfers = jest.fn(() => Promise.resolve());
 
-class MockIlp {
+const MockIlp = {
+    ilpFactory: (version, options) => {
+        switch(version) {
+            case 'v1':
+                return new MockIlpV1(options);
+            case 'v4':
+                throw new Error('v4 not supported by mock');
+        }
+    },
+    ILP_VERSIONS: {
+        v1: 'v1',
+        v4: 'v4',
+    }
+};
+
+class MockIlpV1 {
     constructor(config) {
         assert(config.logger, 'Must supply a logger to Ilp constructor');
         this.logger = config.logger;

@@ -28,8 +28,8 @@ import { IMessage, IMessageHeader } from '@module-types';
 import { getEnumValues } from '../utils';
 
 export enum EventType {
-    'DOMAIN_EVENT' = 'DOMAIN_EVENT', // public domain events
-    'COMMAND_EVENT' = 'COMMAND_EVENT', // commands
+    DOMAIN_EVENT = 'DOMAIN_EVENT', // public domain events
+    COMMAND_EVENT = 'COMMAND_EVENT', // commands
 }
 
 // export type TTraceInfo = {

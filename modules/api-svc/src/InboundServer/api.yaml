@@ -2197,7 +2197,7 @@ components:
         API for signature verification, should contain the service URI. Required
         if signature verification is used, for more information, see [the API
         Signature
-        document](https://github.com/mojaloop/docs/tree/master/Specification%20Document%20Set).
+        document](https://github.com/mojaloop/docs/tree/main/Specification%20Document%20Set).
     FSPIOP-HTTP-Method:
       name: FSPIOP-HTTP-Method
       in: header
@@ -2209,7 +2209,7 @@ components:
         by the API for signature verification, should contain the service HTTP
         method. Required if signature verification is used, for more
         information, see [the API Signature
-        document](https://github.com/mojaloop/docs/tree/master/Specification%20Document%20Set).
+        document](https://github.com/mojaloop/docs/tree/main/Specification%20Document%20Set).
     Type:
       name: Type
       in: path

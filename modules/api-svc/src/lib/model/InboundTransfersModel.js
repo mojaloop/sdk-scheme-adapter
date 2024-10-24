@@ -67,7 +67,7 @@ class InboundTransfersModel {
 
         this._checkIlp = config.checkIlp;
 
-        this._ilp = new Ilp({
+        this._ilp = Ilp.ilpFactory(Ilp.ILP_VERSIONS.v1, {
             secret: config.ilpSecret,
             logger: this._logger,
         });
@@ -726,7 +726,7 @@ class InboundTransfersModel {
                 // TODO: Verify and align with actual schema for bulk transfers error endpoint
                 const mojaloopErrorResponse = {
                     bulkTransferState: FSPIOPBulkTransferStateEnum.REJECTED,
-                    // eslint-disable-next-line no-unused-vars
+                     
                     individualTransferResults: individualTransferErrors.map(({ transferId, transferError }) => ({
                         transferId,
                         errorInformation: transferError,

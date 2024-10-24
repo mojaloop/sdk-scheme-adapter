@@ -138,4 +138,15 @@ describe('config', () => {
         const { tlsCreds } = sdkSC.WSO2Auth.mock.calls[0][0];
         expect(tlsCreds).toBe(false);
     });
+
+    it('should read api type string ', () => {
+        process.env.API_TYPE = 'iso20022';
+        const config = require('~/config');
+        expect(config.apiType).toBe('iso20022');
+    });
+
+    it('should default api type string to fspiop', () => {
+        const config = require('~/config');
+        expect(config.apiType).toBe('fspiop');
+    });
 });
