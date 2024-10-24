@@ -40,6 +40,9 @@ defaults_machine_Dependencies: &defaults_machine_Dependencies |
 
   ## Install deps
   sudo apt install -y librdkafka-dev
+  
+  ## fix missing distutil from latest python3 (required by node gyp)
+  pip install --upgrade setuptools
 
 defaults_YarnConfig: &defaults_YarnConfig |
   ## Example configs that could be applied here
