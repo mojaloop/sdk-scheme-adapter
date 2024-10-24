@@ -214,4 +214,10 @@ module.exports = {
 
     fspiopApiServerMaxRequestBytes: env.get('FSPIOP_API_SERVER_MAX_REQUEST_BYTES').default('209715200').asIntPositive(), // Default is 200mb
     backendApiServerMaxRequestBytes: env.get('BACKEND_API_SERVER_MAX_REQUEST_BYTES').default('209715200').asIntPositive(), // Default is 200mb
+
+    // ISO-20022 config options
+    // apiType can be one of:
+    //   - fspiop
+    //   - iso20022
+    apiType: env.get('API_TYPE').default('fspiop').asString(),
 };
