@@ -63,7 +63,9 @@ class OutboundTransfersModel {
             apiType: config.apiType,
         });
 
-        this._ilp = Ilp.ilpFactory(Ilp.ILP_VERSIONS.v1, {
+        // default to ILP 1 unless v4 is set
+        const ilpVersion = config.ilpVersion === '4' ? Ilp.ILP_VERSIONS.v4 : Ilp.ILP_VERSIONS.v1;
+        this._ilp = Ilp.ilpFactory(ilpVersion, {
             secret: config.ilpSecret,
             logger: this._logger,
         });

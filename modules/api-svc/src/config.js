@@ -220,4 +220,10 @@ module.exports = {
     //   - fspiop
     //   - iso20022
     apiType: env.get('API_TYPE').default('fspiop').asString(),
+
+    // ILP version options
+    // ilpVersion can be one of:
+    //    - 1
+    //    - 4
+    ilpVersion: env.get('ILP_VERSION').default('1').asString(),
 };
