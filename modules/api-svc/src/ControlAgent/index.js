@@ -170,7 +170,7 @@ class Client extends ws {
         let msg;
         try {
             msg = deserialise(data);
-        } catch (err) {
+        } catch {
             this._logger.isErrorEnabled && this._logger.push({ data }).console.error();('Couldn\'t parse received message');
             this.send(build.ERROR.NOTIFY.JSON_PARSE_ERROR());
         }

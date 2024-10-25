@@ -56,7 +56,8 @@ class InboundTransfersModel {
             jwsSign: config.jwsSign,
             jwsSigningKey: config.jwsSigningKey,
             wso2: config.wso2,
-            resourceVersions: config.resourceVersions
+            resourceVersions: config.resourceVersions,
+            apiType: config.apiType,
         });
 
         this._backendRequests = new BackendRequests({
@@ -67,7 +68,9 @@ class InboundTransfersModel {
 
         this._checkIlp = config.checkIlp;
 
-        this._ilp = new Ilp({
+        // default to ILP 1 unless v4 is set
+        const ilpVersion = config.ilpVersion === '4' ? Ilp.ILP_VERSIONS.v4 : Ilp.ILP_VERSIONS.v1;
+        this._ilp = Ilp.ilpFactory(ilpVersion, {
             secret: config.ilpSecret,
             logger: this._logger,
         });
@@ -726,7 +729,7 @@ class InboundTransfersModel {
                 // TODO: Verify and align with actual schema for bulk transfers error endpoint
                 const mojaloopErrorResponse = {
                     bulkTransferState: FSPIOPBulkTransferStateEnum.REJECTED,
-                    // eslint-disable-next-line no-unused-vars
+                     
                     individualTransferResults: individualTransferErrors.map(({ transferId, transferError }) => ({
                         transferId,
                         errorInformation: transferError,

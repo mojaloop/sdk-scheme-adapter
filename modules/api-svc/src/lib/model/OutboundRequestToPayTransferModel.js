@@ -56,7 +56,7 @@ class OutboundRequestToPayTransferModel {
             wso2: config.wso2,
         });
 
-        this._ilp = new Ilp({
+        this._ilp = Ilp.ilpFactory(Ilp.ILP_VERSIONS.v1, {
             secret: config.ilpSecret,
             logger: this._logger,
         });

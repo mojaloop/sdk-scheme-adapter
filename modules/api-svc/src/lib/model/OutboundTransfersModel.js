@@ -60,9 +60,12 @@ class OutboundTransfersModel {
             jwsSigningKey: config.jwsSigningKey,
             wso2: config.wso2,
             resourceVersions: config.resourceVersions,
+            apiType: config.apiType,
         });
 
-        this._ilp = new Ilp({
+        // default to ILP 1 unless v4 is set
+        const ilpVersion = config.ilpVersion === '4' ? Ilp.ILP_VERSIONS.v4 : Ilp.ILP_VERSIONS.v1;
+        this._ilp = Ilp.ilpFactory(ilpVersion, {
             secret: config.ilpSecret,
             logger: this._logger,
         });
