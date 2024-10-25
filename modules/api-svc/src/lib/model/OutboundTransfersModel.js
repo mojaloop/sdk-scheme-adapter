@@ -60,6 +60,7 @@ class OutboundTransfersModel {
             jwsSigningKey: config.jwsSigningKey,
             wso2: config.wso2,
             resourceVersions: config.resourceVersions,
+            apiType: config.apiType,
         });
 
         this._ilp = Ilp.ilpFactory(Ilp.ILP_VERSIONS.v1, {
