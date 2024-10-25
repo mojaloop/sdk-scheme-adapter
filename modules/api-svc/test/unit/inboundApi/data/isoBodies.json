@@ -1,0 +1,300 @@
+{
+  "postQuotesRequest": {
+    "GrpHdr": {
+      "MsgId": "01JB220YEG3309KHY7HM0KB9QB",
+      "CreDtTm": "2024-10-25T14:41:55.665Z",
+      "NbOfTxs": "1",
+      "PmtInstrXpryDtTm": "2017-11-15T22:17:28.985-01:00",
+      "SttlmInf": {
+        "SttlmMtd": "CLRG"
+      },
+      "CdtTrfTxInf": {
+        "Purp": {
+          "Prtry": "TRANSFER"
+        }
+      }
+    },
+    "CdtTrfTxInf": {
+      "PmtId": {
+        "TxId": "20508186-1458-4ac0-a824-d4b07e37d7b3",
+        "EndToEndId": "20508186-1458-4ac0-a824-d4b07e37d7b3"
+      },
+      "Cdtr": {
+        "Id": {
+          "PrvtId": {
+            "Othr": {
+              "SchmeNm": {
+                "Prtry": "MSISDN"
+              },
+              "Id": "123456789"
+            }
+          }
+        }
+      },
+      "CdtrAgt": {
+        "FinInstnId": {
+          "Othr": {
+            "Id": "MobileMoney"
+          }
+        }
+      },
+      "Dbtr": {
+        "Id": {
+          "PrvtId": {
+            "Othr": {
+              "SchmeNm": {
+                "Prtry": "MSISDN"
+              },
+              "Id": "9876543"
+            }
+          }
+        }
+      },
+      "DbtrAgt": {
+        "FinInstnId": {
+          "Othr": {
+            "Id": "BankNrOne"
+          }
+        }
+      },
+      "IntrBkSttlmAmt": {
+        "Ccy": "USD",
+        "ActiveCurrencyAndAmount": "100"
+      },
+      "ChrgBr": "DEBT"
+    }
+  },
+  "putQuotesRequest": {
+    "GrpHdr": {
+      "MsgId": "01JB251S2T0QP535QGXNK8ZKSQ",
+      "PmtInstrXpryDtTm": "2024-10-26T15:34:48.665Z",
+      "CreDtTm": "2024-10-25T15:34:48.665Z",
+      "NbOfTxs": "1",
+      "SttlmInf": {
+        "SttlmMtd": "CLRG"
+      }
+    },
+    "CdtTrfTxInf": {
+      "VrfctnOfTerms": {
+        "IlpV4PrepPacket": "DIICawAAAAAAAABkMjAyNDEwMjYxNTM0NDg2NjWhvLmg4HVHKHMRrKx12kSggRgOIFDOOxa8N1HrhYcIrgpnLm1vamFsb29wggIkZXlKMGNtRnVjMkZqZEdsdmJrbGtJam9pTURGS1FqSTFNVkpIVUZkS016RlRSVmREV2xGRFVVTlRTRVVpTENKeGRXOTBaVWxrSWpvaU1ERktRakkxTVZKVFUxWmFVakpLTVZNd1VWUkZPVk01T1RjaUxDSndZWGxsWlNJNmV5SndZWEowZVVsa1NXNW1ieUk2ZXlKd1lYSjBlVWxrVkhsd1pTSTZJalUwTXpJeE1EQXhJaXdpY0dGeWRIbEpaR1Z1ZEdsbWFXVnlJam9pVFZOSlUwUk9JaXdpWm5Od1NXUWlPaUowZEd0d1lYbGxaV1p6Y0NKOWZTd2ljR0Y1WlhJaU9uc2ljR0Z5ZEhsSlpFbHVabThpT25zaWNHRnlkSGxKWkZSNWNHVWlPaUkwTkRFeU16UTFOamM0T1NJc0luQmhjblI1U1dSbGJuUnBabWxsY2lJNklrMVRTVk5FVGlJc0ltWnpjRWxrSWpvaWRIUnJabmh3WVhsbGNpSjlmU3dpWVcxdmRXNTBJanA3SW1OMWNuSmxibU41SWpvaVdGUlRJaXdpWVcxdmRXNTBJam9pTVRBd0luMHNJblJ5WVc1ellXTjBhVzl1Vkhsd1pTSTZJbFJTUVU1VFJrVlNJaXdpWlhod2FYSmhkR2x2YmlJNklqSXdNalF0TVRBdE1qWlVNVFU2TXpRNk5EZ3VOalkxV2lJc0ltNXZkR1VpT201MWJHeDk"
+      },
+      "PmtId": {
+        "TxId": "01JB251RSSVZR2J1S0QTE9S997",
+        "InstrId": "undefined",
+        "EndToEndId": "01JB251RGPWJ31SEWCZQCQCSHE"
+      },
+      "IntrBkSttlmAmt": {
+        "Ccy": "XTS",
+        "ActiveCurrencyAndAmount": "100"
+      },
+      "InstdAmt": {
+        "Ccy": "XTS",
+        "ActiveOrHistoricCurrencyAndAmount": "100"
+      },
+      "ChrgBr": "SHAR",
+      "ChrgsInf": {
+        "Amt": {
+          "Ccy": "XTS",
+          "ActiveOrHistoricCurrencyAndAmount": "0"
+        },
+        "Agt": {
+          "FinInstnId": {
+            "Othr": {
+              "Id": "123456789",
+              "SchmeNm": {
+                "Cd": "BBA",
+                "Prtry": "Party Identification Scheme Name"
+              }
+            }
+          }
+        }
+      },
+      "Cdtr": {
+        "Nm": "undefined",
+        "Id": {
+          "OrgId": {
+            "Othr": {
+              "Id": "undefined",
+              "SchmeNm": {
+                "Prtry": "undefined"
+              }
+            }
+          }
+        }
+      },
+      "Dbtr": {
+        "Nm": "undefined",
+        "Id": {
+          "OrgId": {
+            "Othr": {
+              "Id": "undefined",
+              "SchmeNm": {
+                "Prtry": "undefined"
+              }
+            }
+          }
+        }
+      },
+      "DbtrAgt": {
+        "FinInstnId": {
+          "Othr": {
+            "Id": "undefined",
+            "SchmeNm": {
+              "Cd": "BDID"
+            }
+          }
+        }
+      },
+      "CdtrAgt": {
+        "FinInstnId": {
+          "Othr": {
+            "Id": "undefined",
+            "SchmeNm": {
+              "Cd": "BDID"
+            }
+          }
+        }
+      }
+    }
+  },
+  "putTransfersRequest": {
+    "GrpHdr": {
+      "MsgId": "01JB251SPSN3NERYQ78MREHP9X",
+      "CreDtTm": "2024-10-25T15:34:49.305Z"
+    },
+    "TxInfAndSts": {
+      "StsId": "01JB251SPTD685SBNWGG9KVH58",
+      "OrgnlInstrId": "undefined",
+      "OrgnlEndToEndId": "undefined",
+      "OrgnlTxId": "01JB251RGPWJ31SEWCZQCQCSHE",
+      "OrgnlUETR": "123e4567-e89b-12d3-a456-426614174000",
+      "TxSts": "COMM",
+      "StsRsnInf": {
+        "Rsn": {
+          "Prtry": "COMM"
+        },
+        "AddtlInf": "ADDITIONAL"
+      },
+      "AccptncDtTm": "2024-10-25T15:34:49.305Z",
+      "PrcgDt": {
+        "Dt": "2024-10-25T15:34:49.305Z"
+      },
+      "AcctSvcrRef": "ACCTSVCRREF",
+      "ClrSysRef": "CLRSYSREF",
+      "ExctnConf": "yc8z3j2C5RQofE0XEP5acBylI-hzWK7Zo6KMw2cxElk",
+      "SplmtryData": {
+        "PlcAndNm": "PLACE",
+        "Envlp": {}
+      }
+    }
+  },
+  "postTransfersRequest": {
+    "GrpHdr": {
+      "MsgId": "01JB251SK2SJHT3YZBDACJQVV8",
+      "CreDtTm": "2024-10-25T15:34:49.187Z",
+      "NbOfTxs": "1",
+      "SttlmInf": {
+        "SttlmMtd": "CLRG"
+      },
+      "PmtInstrXpryDtTm": "2024-10-26T15:34:48.665Z"
+    },
+    "CdtTrfTxInf": {
+      "PmtId": {
+        "TxId": "01JB251RGPWJ31SEWCZQCQCSHE"
+      },
+      "ChrgBr": "SHAR",
+      "Cdtr": {
+        "Id": {
+          "OrgId": {
+            "Othr": {
+              "Id": "ttkfxpayee"
+            }
+          }
+        }
+      },
+      "Dbtr": {
+        "Id": {
+          "OrgId": {
+            "Othr": {
+              "Id": "ttkfxpayer"
+            }
+          }
+        }
+      },
+      "CdtrAgt": {
+        "FinInstnId": {
+          "Othr": {
+            "Id": "ttkfxpayee"
+          }
+        }
+      },
+      "DbtrAgt": {
+        "FinInstnId": {
+          "Othr": {
+            "Id": "ttkfxpayer"
+          }
+        }
+      },
+      "IntrBkSttlmAmt": {
+        "Ccy": "XTS",
+        "ActiveCurrencyAndAmount": "100"
+      },
+      "VrfctnOfTerms": {
+        "IlpV4PrepPacket": "DIICawAAAAAAAABkMjAyNDEwMjYxNTM0NDg2NjWhvLmg4HVHKHMRrKx12kSggRgOIFDOOxa8N1HrhYcIrgpnLm1vamFsb29wggIkZXlKMGNtRnVjMkZqZEdsdmJrbGtJam9pTURGS1FqSTFNVkpIVUZkS016RlRSVmREV2xGRFVVTlRTRVVpTENKeGRXOTBaVWxrSWpvaU1ERktRakkxTVZKVFUxWmFVakpLTVZNd1VWUkZPVk01T1RjaUxDSndZWGxsWlNJNmV5SndZWEowZVVsa1NXNW1ieUk2ZXlKd1lYSjBlVWxrVkhsd1pTSTZJalUwTXpJeE1EQXhJaXdpY0dGeWRIbEpaR1Z1ZEdsbWFXVnlJam9pVFZOSlUwUk9JaXdpWm5Od1NXUWlPaUowZEd0d1lYbGxaV1p6Y0NKOWZTd2ljR0Y1WlhJaU9uc2ljR0Z5ZEhsSlpFbHVabThpT25zaWNHRnlkSGxKWkZSNWNHVWlPaUkwTkRFeU16UTFOamM0T1NJc0luQmhjblI1U1dSbGJuUnBabWxsY2lJNklrMVRTVk5FVGlJc0ltWnpjRWxrSWpvaWRIUnJabmh3WVhsbGNpSjlmU3dpWVcxdmRXNTBJanA3SW1OMWNuSmxibU41SWpvaVdGUlRJaXdpWVcxdmRXNTBJam9pTVRBd0luMHNJblJ5WVc1ellXTjBhVzl1Vkhsd1pTSTZJbFJTUVU1VFJrVlNJaXdpWlhod2FYSmhkR2x2YmlJNklqSXdNalF0TVRBdE1qWlVNVFU2TXpRNk5EZ3VOalkxV2lJc0ltNXZkR1VpT201MWJHeDk"
+      }
+    }
+  },
+  "putPartiesRequest": {
+    "Assgnmt": {
+      "MsgId": "01JB251RFZ1TX7WGYSP27XJCD5",
+      "CreDtTm": "2024-10-25T15:34:48.063Z",
+      "Assgnr": {
+        "Agt": {
+          "FinInstnId": {
+            "Othr": {
+              "Id": "ttkfxpayer"
+            }
+          }
+        }
+      },
+      "Assgne": {
+        "Agt": {
+          "FinInstnId": {
+            "Othr": {
+              "Id": "testingtoolkitdfsp"
+            }
+          }
+        }
+      }
+    },
+    "Rpt": {
+      "OrgnlId": "MSISDN/54321001",
+      "Vrfctn": true,
+      "UpdtdPtyAndAcctId": {
+        "Agt": {
+          "FinInstnId": {
+            "Othr": {
+              "Id": "ttkpayeefsp"
+            }
+          }
+        },
+        "Acct": {
+          "Ccy": "XTS"
+        },
+        "Pty": {
+          "Nm": "Test Party",
+          "Id": {
+            "PrvtId": {
+              "Othr": {
+                "Id": "54321001",
+                "SchmeNm": {
+                  "Prtry": "MSISDN"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

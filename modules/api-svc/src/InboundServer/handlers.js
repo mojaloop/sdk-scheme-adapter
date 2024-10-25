@@ -23,6 +23,11 @@ const {
     TransfersModel,
 } = require('../lib/model');
 
+const { TransformFacades } = require('@mojaloop/ml-schema-transformer-lib');
+
+// todo: find a sensible place to put API type consts, probably export them from sdk standard components
+const ISO_API_TYPE = 'iso20022';
+
 /**
  * Handles a GET /authorizations/{id} request
  */
@@ -159,6 +164,13 @@ const postPartiesByTypeAndId = (ctx) => {
  * Handles a POST /quotes request
  */
 const postQuotes = async (ctx) => {
+    if(ctx.state.conf.apiType === ISO_API_TYPE) {
+        // we need to transform the incoming request body from iso20022 to fspiop
+        ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20222 post quotes body to FSPIOP');
+        const target = await TransformFacades.FSPIOPISO20022.quotes.post({ body: ctx.request.body });
+        ctx.request.body = target.body;
+    }
+
     const sourceFspId = ctx.request.headers['fspiop-source'];
     const quoteRequest = {
         body: { ...ctx.request.body },
@@ -206,6 +218,13 @@ const postQuotes = async (ctx) => {
  * Handles a POST /transfers request
  */
 const postTransfers = async (ctx) => {
+    if(ctx.state.conf.apiType === ISO_API_TYPE) {
+        // we need to transform the incoming request body from iso20022 to fspiop
+        ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20222 post transfers body to FSPIOP');
+        const target = await TransformFacades.FSPIOPISO20022.transfers.post({ body: ctx.request.body });
+        ctx.request.body = target.body;
+    }
+
     const sourceFspId = ctx.request.headers['fspiop-source'];
     const transferRequest = {
         body: { ...ctx.request.body },
@@ -433,6 +452,13 @@ const putParticipantsByTypeAndIdError = async(ctx) => {
  * request.
  */
 const putPartiesByTypeAndId = async (ctx) => {
+    if(ctx.state.conf.apiType === ISO_API_TYPE) {
+        // we need to transform the incoming request body from iso20022 to fspiop
+        ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20222 put parties body to FSPIOP');
+        const target = await TransformFacades.FSPIOPISO20022.parties.put({ body: ctx.request.body });
+        ctx.request.body = target.body;
+    }
+
     const idType = ctx.state.path.params.Type;
     const idValue = ctx.state.path.params.ID;
     const idSubValue = ctx.state.path.params.SubId;
@@ -459,6 +485,13 @@ const putPartiesByTypeAndId = async (ctx) => {
  * Handles a PUT /quotes/{ID}. This is a response to a POST /quotes request
  */
 const putQuoteById = async (ctx) => {
+    if(ctx.state.conf.apiType === ISO_API_TYPE) {
+        // we need to transform the incoming request body from iso20022 to fspiop
+        ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20222 put quotes body to FSPIOP');
+        const target = await TransformFacades.FSPIOPISO20022.quotes.put({ body: ctx.request.body });
+        ctx.request.body = target.body;
+    }
+
     // TODO: refactor legacy models to use QuotesModel
     // - OutboundRequestToPayTransferModel
     // - OutboundTransfersModel
@@ -627,6 +660,13 @@ const putTransactionRequestsByIdError = async (ctx) => {
  * Handles a PUT /transfers/{ID}. This is a response to a POST|GET /transfers request
  */
 const putTransfersById = async (ctx) => {
+    if(ctx.state.conf.apiType === ISO_API_TYPE) {
+        // we need to transform the incoming request body from iso20022 to fspiop
+        ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20222 put transfers body to FSPIOP');
+        const target = await TransformFacades.FSPIOPISO20022.transfers.put({ body: ctx.request.body });
+        ctx.request.body = target.body;
+    }
+
     // TODO: refactor legacy models to use TransfersModel
     // - OutboundRequestToPayTransferModel
     // - OutboundTransfersModel
