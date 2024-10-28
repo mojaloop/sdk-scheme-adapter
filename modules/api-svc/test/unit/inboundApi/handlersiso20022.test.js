@@ -26,7 +26,7 @@ const isoBodies = require('./data/isoBodies.json');
 const mockTransactionRequestData = require('./data/mockTransactionRequest');
 const { Logger } = require('@mojaloop/sdk-standard-components');
 
-const FSPIOPTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.TransferState;
+// const FSPIOPTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.TransferState;
 
 describe('Inbound API handlers transforming incoming ISO20022 message bodies', () => {
     let mockArgs;

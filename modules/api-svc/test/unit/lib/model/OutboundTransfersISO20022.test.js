@@ -13,6 +13,12 @@
 
 'use strict';
 
+process.env.PEER_ENDPOINT = '172.17.0.3:4000';
+process.env.BACKEND_ENDPOINT = '172.17.0.5:4000';
+process.env.CACHE_URL = 'redis://172.17.0.2:6379';
+process.env.MGMT_API_WS_URL = '0.0.0.0';
+process.env.SUPPORTED_CURRENCIES='USD';
+
 jest.mock('redis');
 jest.unmock('@mojaloop/sdk-standard-components');
 
@@ -80,9 +86,9 @@ describe('API_TYPE="iso20022"', () => {
         metricsClient._prometheusRegister.clear();
         config.wso2 = {
             auth: {
-                getToken: () => { return '1234'}
+                getToken: () => { return '1234'; }
             }
-        }
+        };
         config.jwsSign = false;
         config.checkIlp = false;
         config.apiType = 'iso20022';
