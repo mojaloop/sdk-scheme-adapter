@@ -11,7 +11,7 @@ ARG NODE_VERSION=lts-alpine
 #
 
 # Build Image
-FROM node:${NODE_VERSION} as builder
+FROM node:${NODE_VERSION} AS builder
 
 ## Install tool dependencies
 RUN apk add --no-cache -t build-dependencies make gcc g++ python3 libtool openssl-dev autoconf automake yarn bash

@@ -912,7 +912,7 @@ class OutboundTransfersModel {
             // a POST /transfers request to the switch
             try {
                 latencyTimerDone = this.metrics.transferLatency.startTimer();
-                const res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource);
+                const res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource, {});
 
                 this.data.prepare = res.originalRequest;
 

@@ -13,6 +13,12 @@
 
 'use strict';
 
+process.env.PEER_ENDPOINT = '172.17.0.3:4000';
+process.env.BACKEND_ENDPOINT = '172.17.0.5:4000';
+process.env.CACHE_URL = 'redis://172.17.0.2:6379';
+process.env.MGMT_API_WS_URL = '0.0.0.0';
+process.env.SUPPORTED_CURRENCIES='USD';
+
 jest.mock('redis');
 jest.unmock('@mojaloop/sdk-standard-components');
 
@@ -23,7 +29,6 @@ const Cache = require('~/lib/cache');
 const { MetricsClient } = require('~/lib/metrics');
 const Model = require('~/lib/model').OutboundTransfersModel;
 const PartiesModel = require('~/lib/model').PartiesModel;
-
 
 const StateMachine = require('javascript-state-machine');
 

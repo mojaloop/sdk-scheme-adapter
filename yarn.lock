@@ -2677,7 +2677,7 @@ __metadata:
     standard-version: ^9.5.0
     ts-jest: ^29.2.5
     typescript: ^5.6.3
-    uuid: ^11.0.1
+    uuid: ^11.0.2
   languageName: unknown
   linkType: soft
 
@@ -15180,12 +15180,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^11.0.1":
-  version: 11.0.1
-  resolution: "uuid@npm:11.0.1"
+"uuid@npm:^11.0.2":
+  version: 11.0.2
+  resolution: "uuid@npm:11.0.2"
   bin:
     uuid: dist/esm/bin/uuid
-  checksum: 6125cb3c7a93497aca3e8548fb670d877165a4f66b6d32af92f5464423cddd9fb942bb8baf3581bc1e29aa569f9d25635f47c3cbe020db31cf5106629b99c5d7
+  checksum: 9b322963db18623d22f46cf98f51b45830f956715577fb24d272ec29324fe919bedbedc6e29627aced490ac3f982ee53c80441651daf4a6ef74f2af58689f2e0
   languageName: node
   linkType: hard
 

@@ -60,7 +60,7 @@ class InboundTransfersModel {
             jwsSigningKey: config.jwsSigningKey,
             wso2: config.wso2,
             resourceVersions: config.resourceVersions,
-            apiType: config.apiType,
+            apiType: config.apiType, // use dynamically
         });
 
         this._backendRequests = new BackendRequests({
@@ -71,6 +71,7 @@ class InboundTransfersModel {
 
         this._checkIlp = config.checkIlp;
 
+        // todo:
         // default to ILP 1 unless v4 is set
         const ilpVersion = config.ilpVersion === '4' ? Ilp.ILP_VERSIONS.v4 : Ilp.ILP_VERSIONS.v1;
         this._ilp = Ilp.ilpFactory(ilpVersion, {
@@ -257,9 +258,9 @@ class InboundTransfersModel {
             if (tracestate && traceparent) {
                 const TRACESTATE_KEY_CALLBACK_START_TS = 'tx_callback_start_ts';
                 tracestate += `,${TRACESTATE_KEY_CALLBACK_START_TS}=${Date.now()}`;
-                res = await this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId, { tracestate, traceparent });
+                res = await this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId, { tracestate, traceparent }, { isoPostQuote: {} });
             } else {
-                res = await this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId);
+                res = await this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId, undefined, { isoPostQuote: {} });
             }
             this.data.quoteResponse = {
                 headers: res.originalRequest.headers,
