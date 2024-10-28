@@ -103,7 +103,7 @@ describe('API_TYPE="iso20022"', () => {
         // mock the final method MojaloopRequests calls to send the http request
         // this allows us to spy on the request body being sent
         jest.spyOn(Object.getPrototypeOf(MojaloopRequests.prototype), '_request').mockImplementation(async (opts, responseType) => {
-            console.log(`_reqeust called ${opts}`);
+            // console.log(`_reqeust called ${opts}`);
             if(opts.uri.includes('parties') && opts.method === 'GET') {
                 //get parties called
                 // simulate a callback with the get party response
