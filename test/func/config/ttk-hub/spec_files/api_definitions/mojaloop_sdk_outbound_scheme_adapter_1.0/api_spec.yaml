@@ -560,7 +560,7 @@ paths:
                     title: CorrelationId
                     type: string
                     pattern: >-
-                      ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                      ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
                     description: >-
                       Identifier that correlates all messages of the same
                       sequence. The API data type UUID (Universally Unique
@@ -648,7 +648,7 @@ paths:
                     title: CorrelationId
                     type: string
                     pattern: >-
-                      ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                      ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
                     description: >-
                       Identifier that correlates all messages of the same
                       sequence. The API data type UUID (Universally Unique
@@ -1063,7 +1063,7 @@ paths:
             title: CorrelationId
             type: string
             pattern: >-
-              ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+              ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
             description: >-
               Identifier that correlates all messages of the same sequence. The
               API data type UUID (Universally Unique Identifier) is a JSON
@@ -1119,7 +1119,7 @@ paths:
                     title: CorrelationId
                     type: string
                     pattern: >-
-                      ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                      ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
                     description: >-
                       Identifier that correlates all messages of the same
                       sequence. The API data type UUID (Universally Unique
@@ -1183,7 +1183,7 @@ paths:
                   title: CorrelationId
                   type: string
                   pattern: >-
-                    ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                    ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
                   description: >-
                     Identifier that correlates all messages of the same
                     sequence. The API data type UUID (Universally Unique
@@ -1612,7 +1612,7 @@ paths:
                             title: CorrelationId
                             type: string
                             pattern: >-
-                              ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                              ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
                             description: >-
                               Identifier that correlates all messages of the
                               same sequence. The API data type UUID (Universally
@@ -1628,7 +1628,7 @@ paths:
                             title: CorrelationId
                             type: string
                             pattern: >-
-                              ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                              ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
                             description: >-
                               Identifier that correlates all messages of the
                               same sequence. The API data type UUID (Universally
@@ -1710,7 +1710,7 @@ paths:
                                   title: CorrelationId
                                   type: string
                                   pattern: >-
-                                    ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                                    ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
                                   description: >-
                                     Identifier that correlates all messages of
                                     the same sequence. The API data type UUID
@@ -1778,7 +1778,7 @@ paths:
             title: CorrelationId
             type: string
             pattern: >-
-              ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+              ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
             description: >-
               Identifier that correlates all messages of the same sequence. The
               API data type UUID (Universally Unique Identifier) is a JSON
@@ -1821,7 +1821,7 @@ paths:
                                 title: CorrelationId
                                 type: string
                                 pattern: >-
-                                  ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                                  ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
                                 description: >-
                                   Identifier that correlates all messages of the
                                   same sequence. The API data type UUID
@@ -1978,7 +1978,7 @@ paths:
                   title: CorrelationId
                   type: string
                   pattern: >-
-                    ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                    ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
                   description: >-
                     Identifier that correlates all messages of the same
                     sequence. The API data type UUID (Universally Unique
@@ -1992,7 +1992,7 @@ paths:
                   title: CorrelationId
                   type: string
                   pattern: >-
-                    ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                    ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
                   description: >-
                     Identifier that correlates all messages of the same
                     sequence. The API data type UUID (Universally Unique
@@ -2020,7 +2020,7 @@ paths:
                         title: CorrelationId
                         type: string
                         pattern: >-
-                          ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                          ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
                         description: >-
                           Identifier that correlates all messages of the same
                           sequence. The API data type UUID (Universally Unique
@@ -2166,7 +2166,7 @@ paths:
             title: CorrelationId
             type: string
             pattern: >-
-              ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+              ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
             description: >-
               Identifier that correlates all messages of the same sequence. The
               API data type UUID (Universally Unique Identifier) is a JSON
@@ -2195,7 +2195,7 @@ paths:
                     title: CorrelationId
                     type: string
                     pattern: >-
-                      ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                      ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
                     description: >-
                       Identifier that correlates all messages of the same
                       sequence. The API data type UUID (Universally Unique
@@ -2271,7 +2271,7 @@ paths:
                   title: CorrelationId
                   type: string
                   pattern: >-
-                    ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                    ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
                   description: >-
                     Identifier that correlates all messages of the same
                     sequence. The API data type UUID (Universally Unique
@@ -2299,7 +2299,7 @@ paths:
                         title: CorrelationId
                         type: string
                         pattern: >-
-                          ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                          ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
                         description: >-
                           Identifier that correlates all messages of the same
                           sequence. The API data type UUID (Universally Unique
@@ -2409,7 +2409,7 @@ paths:
                     title: CorrelationId
                     type: string
                     pattern: >-
-                      ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                      ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
                     description: >-
                       Identifier that correlates all messages of the same
                       sequence. The API data type UUID (Universally Unique
@@ -2463,7 +2463,7 @@ paths:
                           title: CorrelationId
                           type: string
                           pattern: >-
-                            ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                            ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
                           description: >-
                             Identifier that correlates all messages of the same
                             sequence. The API data type UUID (Universally Unique
@@ -2595,7 +2595,7 @@ paths:
             title: CorrelationId
             type: string
             pattern: >-
-              ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+              ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
             description: >-
               Identifier that correlates all messages of the same sequence. The
               API data type UUID (Universally Unique Identifier) is a JSON
@@ -2624,7 +2624,7 @@ paths:
                     title: CorrelationId
                     type: string
                     pattern: >-
-                      ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                      ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
                     description: >-
                       Identifier that correlates all messages of the same
                       sequence. The API data type UUID (Universally Unique
@@ -2834,7 +2834,7 @@ paths:
                           title: CorrelationId
                           type: string
                           pattern: >-
-                            ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                            ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
                           description: >-
                             Identifier that correlates all messages of the same
                             sequence. The API data type UUID (Universally Unique
@@ -2920,7 +2920,7 @@ paths:
                     title: CorrelationId
                     type: string
                     pattern: >-
-                      ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                      ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
                     description: >-
                       Identifier that correlates all messages of the same
                       sequence. The API data type UUID (Universally Unique
@@ -3226,7 +3226,7 @@ paths:
                     title: CorrelationId
                     type: string
                     pattern: >-
-                      ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                      ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
                     description: >-
                       Identifier that correlates all messages of the same
                       sequence. The API data type UUID (Universally Unique
@@ -3310,7 +3310,7 @@ paths:
                     title: CorrelationId
                     type: string
                     pattern: >-
-                      ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                      ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
                     description: >-
                       Identifier that correlates all messages of the same
                       sequence. The API data type UUID (Universally Unique
@@ -3402,7 +3402,7 @@ paths:
             title: CorrelationId
             type: string
             pattern: >-
-              ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+              ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
             description: >-
               Identifier that correlates all messages of the same sequence. The
               API data type UUID (Universally Unique Identifier) is a JSON
@@ -3549,7 +3549,7 @@ paths:
                     title: CorrelationId
                     type: string
                     pattern: >-
-                      ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                      ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
                     description: >-
                       Identifier that correlates all messages of the same
                       sequence. The API data type UUID (Universally Unique
@@ -3837,7 +3837,7 @@ paths:
                       title: CorrelationId
                       type: string
                       pattern: >-
-                        ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                        ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
                       description: >-
                         Identifier that correlates all messages of the same
                         sequence. The API data type UUID (Universally Unique
@@ -3852,7 +3852,7 @@ paths:
                       title: CorrelationId
                       type: string
                       pattern: >-
-                        ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                        ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
                       description: >-
                         Identifier that correlates all messages of the same
                         sequence. The API data type UUID (Universally Unique
@@ -3867,7 +3867,7 @@ paths:
                       title: CorrelationId
                       type: string
                       pattern: >-
-                        ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                        ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
                       description: >-
                         Identifier that correlates all messages of the same
                         sequence. The API data type UUID (Universally Unique
@@ -4118,7 +4118,7 @@ paths:
                       title: CorrelationId
                       type: string
                       pattern: >-
-                        ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                        ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
                       description: >-
                         Identifier that correlates all messages of the same
                         sequence. The API data type UUID (Universally Unique
@@ -4470,7 +4470,7 @@ components:
       title: CorrelationId
       type: string
       pattern: >-
-        ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+        ^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[0-9A-HJKMNP-TV-Z]{26}$
       description: >-
         Identifier that correlates all messages of the same sequence. The API
         data type UUID (Universally Unique Identifier) is a JSON String in

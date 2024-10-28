@@ -937,6 +937,33 @@ class InboundTransfersModel {
         }
     }
 
+    async sendFxPatchNotificationToBackend(body, conversionId) {
+        try {
+            this.data = await this.loadFxState(conversionId);
+            
+            if(!this.data) {
+                this.data = {};
+            }
+            this.data.finalNotification = body;
+            if(body.conversionState === FSPIOPTransferStateEnum.COMMITTED) {
+                this.data.currentState = SDKStateEnum.COMPLETED; 
+            }
+            else if(body.conversionState === FSPIOPTransferStateEnum.ABORTED){
+                this.data.currentState =  SDKStateEnum.ABORTED;
+            }
+            else{
+                this.data.currentState = SDKStateEnum.ERROR_OCCURRED;
+                this.data.lastError = 'Final notification state not COMMITTED or ABORTED';
+            }
+
+            await this.saveFxState();
+
+            const res = await this._backendRequests.patchFxTransfersNotification(this.data,conversionId);
+            return res;
+        } catch (err) {
+            this._logger.isErrorEnabled && this._logger.push({ err }).error(`Error notifying backend of final conversionId state equal to: ${body.conversionState} `);
+        }
+    }
     /**
     * Forwards Switch notification for fulfiled transfer to the DFSP backend, when acting as a payee
     */

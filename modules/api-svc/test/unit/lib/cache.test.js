@@ -12,7 +12,7 @@
 
 jest.mock('redis');
 
-const randomUUID = require('@mojaloop/central-services-shared').Util.id();
+const randomUUID = require('@mojaloop/central-services-shared').Util.id({ type: 'ulid' });
 const { Logger } = require('@mojaloop/sdk-standard-components');
 const Cache = require('~/lib/cache');
 

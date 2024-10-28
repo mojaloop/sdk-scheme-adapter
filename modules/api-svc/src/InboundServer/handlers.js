@@ -950,6 +950,22 @@ const postFxTransfers = async (ctx) => {
     prepareResponse(ctx);
 };
 
+const patchFxTransfersById = async (ctx) => {
+    const req = {
+        headers: { ...ctx.request.headers },
+        data: { ...ctx.request.body }
+    };
+
+    const idValue = ctx.state.path.params.ID;
+
+    const model = createInboundTransfersModel(ctx);
+    const response = await model.sendFxPatchNotificationToBackend(req.data, idValue);
+
+    // log the result
+    ctx.state.logger.isDebugEnabled && ctx.state.logger.push({response}).
+        debug('Inbound Transfers model handled PATCH /fxTransfers/{ID} request');
+};
+
 /**
  * Create a handler for PUT /fxTransfers/{ID} and PUT /fxTransfers/{ID}/error routes
  *
@@ -1084,6 +1100,7 @@ module.exports = {
         post: postFxTransfers
     },
     '/fxTransfers/{ID}': {
+        patch: patchFxTransfersById,
         put: createPutFxTransfersHandler(true)
     },
     '/fxTransfers/{ID}/error': {

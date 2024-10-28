@@ -341,7 +341,7 @@ class Cache {
       * Sets a value in the cache
       *
       * @param key {string} - cache key
-      * @param value {stirng} - cache value
+      * @param value {string} - cache value
       */
     async set(key, value) {
         //if we are given an object, turn it into a string

@@ -320,15 +320,15 @@ body, html {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1; 
+  background: #f1f1f1;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888; 
+  background: #888;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555; 
+  background: #555;
 }
 
 /* The switch - the box around the slider */
@@ -533,7 +533,7 @@ input:checked + .slider:before {
             <div class="tab-pane fade" id="pills-requests" role="tabcard" aria-labelledby="pills-requests-tab">
 
             <button id="topOfRequestsScreen" class="btn btn-outline-success btn-sm backToTop" onclick="topFunction()">Go To Top</button>
-            
+
             <div class="btn-group float-right" role="group" aria-label="Button Group">
                 <button id="openAll" class="btn btn-outline-success btn-sm float-right">Expand Folders</button>
                 <button id="openAllRequests" class="btn btn-outline-success btn-sm float-right">Expand Requests</button>
@@ -541,7 +541,7 @@ input:checked + .slider:before {
                 <button id="closeAllRequests" class="btn btn-outline-success btn-sm float-right">Collapse Requests</button>
             </div>
 
-    <div class="text-uppercase" id="execution-menu">        
+    <div class="text-uppercase" id="execution-menu">
         <nav class="table-responsive">
         <ul class="nav single-line-tabs d-none" id="iterationList">
         </ul>
@@ -794,7 +794,7 @@ input:checked + .slider:before {
                                                     </td>
                                                     {{else}}
                                                     <td class="text-center bg-danger">
-                                                        FAILED 
+                                                        FAILED
                                                     </td>
                                                     </tr><tr><td colspan="2" class="text-center bg-danger">({{resultStatus.message}})</td>
                                                     {{/if}}
@@ -850,12 +850,12 @@ input:checked + .slider:before {
 </html>
 
 
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.2.1/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.datatables.net/v/bs4/dt-1.10.18/datatables.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/remarkable/1.7.1/remarkable.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha384-vk5WoKIaW/vJyUAd9n/wmopsmNhiy+L2Z+SBxGYnUkunIxVxAv/UtMOhba/xskxh"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.2.1/js/bootstrap.bundle.min.js" integrity="sha384-zDnhMsjVZfS3hiP7oCBRmfjkQC4fzxVxFhBx8Hkz2aZX8gEvA/jsP3eXRCvzTofP"></script>
+<script src="https://cdn.datatables.net/v/bs4/dt-1.10.18/datatables.min.js" integrity="sha384-irVvQwWs/Hp0qZ+zYgsJyeyJ9Ckwvv5SnRfouS3VLdrJ25zMiUpCeYOuwjiuB5OT"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js" integrity="sha384-5tfO0soa+FisnuBhaHP2VmPXQG/JZ8dLcRL43IkJFzbsXTXT6zIX8q8sIT0VSe2G"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/remarkable/1.7.1/remarkable.min.js" integrity="sha384-mNZJeVuk4ByLVzakbKaj6Ev9FnP61tJHkwaZS8vSVzcMCx/nb16srtHh5vrIuRzz"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js" integrity="sha384-BlPof9RtjBqeJFskKv3sK3dh4Wk70iKlpIe92FeVN+6qxaGUOUu+mZNpALZ+K7ya"></script>
 <script>hljs.initHighlightingOnLoad();</script>
 
 <script>
@@ -960,7 +960,7 @@ $(".prettyPrint").each(function () {
                 data = JSON.stringify(obj, null, 2);
         }
         else if(isXML(data)) {
-            data = formatXML(data);            
+            data = formatXML(data);
         }
         $(this).text(data);
 });
@@ -1050,9 +1050,9 @@ window.onload = function () {
     elem.style.display = 'none';
   });
 
-   
+
   let totalIterations = 1;
-   
+
 
   let menu = document.querySelector('#execution-menu .nav');
 
@@ -1074,7 +1074,7 @@ window.onload = function () {
       allMenus.forEach(function(elem){
         elem.style.borderBottom = 'none';
       })
-    
+
       this.style.borderBottom = 'solid 3px #032a33';
 
       let items = document.querySelectorAll("." + this.id);

@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
-  "version": "23.6.0-snapshot.15",
+  "version": "23.6.0-snapshot.16",
   "description": "mojaloop sdk-scheme-adapter",
   "license": "Apache-2.0",
   "homepage": "https://github.com/mojaloop/sdk-scheme-adapter",
@@ -75,11 +75,11 @@
   },
   "dependencies": {
     "nx": "16.5.0",
-    "tslib": "^2.7.0"
+    "tslib": "^2.8.0"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.13",
-    "@types/node": "^22.7.4",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.8.1",
     "@types/node-cache": "^4.2.5",
     "@typescript-eslint/eslint-plugin": "^7.15.0",
     "@typescript-eslint/parser": "^7.15.0",
@@ -95,8 +95,8 @@
     "standard-version": "^9.5.0",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
-    "typescript": "^5.6.2",
-    "yarn-audit-fix": "^10.0.9"
+    "typescript": "^5.6.3",
+    "yarn-audit-fix": "^10.1.0"
   },
   "resolutions": {
     "cacache/tar": "^6.2.1",

@@ -1,5 +1,5 @@
 /*eslint quote-props: ["error", "as-needed"]*/
-const randomUUID = require('@mojaloop/central-services-shared').Util.id();
+const randomUUID = require('@mojaloop/central-services-shared').Util.id({type: 'ulid'});
 
 const DEFAULT_ID_VALUE = '2551234567890';
 
