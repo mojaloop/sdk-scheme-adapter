@@ -53,6 +53,7 @@ describe('Inbound API handlers transforming incoming ISO20022 message bodies', (
                 request: {
                     body: isoBodies.postQuotesRequest,
                     headers: {
+                        'content-type': createIsoHeader('quotes'),
                         'fspiop-source': 'foo'
                     }
                 },
@@ -72,7 +73,10 @@ describe('Inbound API handlers transforming incoming ISO20022 message bodies', (
             await expect(handlers['/quotes'].post(mockContext)).resolves.toBe(undefined);
 
             expect(quoteRequestSpy).toHaveBeenCalledTimes(1);
-            expect(quoteRequestSpy.mock.calls[0][0]).toStrictEqual(mockContext.request);
+            expect(quoteRequestSpy.mock.calls[0][0]).toStrictEqual({
+                ...mockContext.request,
+                isoPostQuote: isoBodies.postQuotesRequest
+            });
             expect(quoteRequestSpy.mock.calls[0][0]).not.toEqual(isoBodies.postQuotesRequest);
             expect(quoteRequestSpy.mock.calls[0][1]).toBe(mockContext.request.headers['fspiop-source']);
         });

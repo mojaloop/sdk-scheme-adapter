@@ -1791,7 +1791,8 @@ describe('outboundModel', () => {
                     body: {
                         transferAmount: {},
                     }
-                }
+                },
+                quoteRequest: {}
             });
             expect(model.data.currentState).toBe(States.QUOTE_RECEIVED);
 

@@ -37,9 +37,9 @@ const transferRequest = require('./data/transferRequest');
 const payeeParty = require('./data/payeeParty');
 const quoteResponse = require('./data/quoteResponse');
 const transferFulfil = require('./data/transferFulfil');
+const fspiopPostQuotesRequest = require('../../data/postQuotesBody.json');
 
 const { SDKStateEnum } = require('../../../../src/lib/model/common');
-
 
 const genPartyId = (party) => {
     const { partyIdType, partyIdentifier, partySubIdOrType } = party.body.party.partyIdInfo;
@@ -54,6 +54,14 @@ const genPartyId = (party) => {
 const dummyRequestsModuleResponse = {
     originalRequest: {}
 };
+
+const dummyQuoteRequestsModuleResponse = {
+    originalRequest: {
+        headers: {},
+        body: fspiopPostQuotesRequest
+    }
+};
+
 
 // util function to simulate a party resolution subscription message on a cache client
 const emitPartyCacheMessage = (cache, party) => cache.publish(genPartyId(party), JSON.stringify(party));
@@ -122,7 +130,7 @@ describe('API_TYPE="iso20022"', () => {
 
                 // simulate a callback with the quote response
                 emitQuoteResponseCacheMessage(cache, postQuotesBody.CdtTrfTxInf.PmtId.TxId, quoteResponse);
-                return Promise.resolve(dummyRequestsModuleResponse);
+                return Promise.resolve(dummyQuoteRequestsModuleResponse);
             }
 
             if(opts.uri.includes('transfers') && opts.method === 'POST') {
@@ -134,6 +142,11 @@ describe('API_TYPE="iso20022"', () => {
                 expect(postTransfersBody.CdtTrfTxInf).not.toBeUndefined();
                 expect(postTransfersBody.CdtTrfTxInf.PmtId).not.toBeUndefined();
                 expect(postTransfersBody.CdtTrfTxInf.PmtId.TxId).not.toBeUndefined();
+
+                // Fields that require prior POST quotes context should be present
+                expect(postTransfersBody.CdtTrfTxInf.ChrgBr).toEqual('CRED');
+                expect(postTransfersBody.CdtTrfTxInf.Cdtr).toBeDefined();
+                expect(postTransfersBody.CdtTrfTxInf.Dbtr).toBeDefined();
 
                 // simulate a callback with the transfer fulfilment
                 emitTransferFulfilCacheMessage(cache, postTransfersBody.CdtTrfTxInf.PmtId.TxId, transferFulfil);

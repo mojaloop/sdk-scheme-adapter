@@ -253,9 +253,9 @@ class InboundTransfersModel {
             if (tracestate && traceparent) {
                 const TRACESTATE_KEY_CALLBACK_START_TS = 'tx_callback_start_ts';
                 tracestate += `,${TRACESTATE_KEY_CALLBACK_START_TS}=${Date.now()}`;
-                res = await this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId, { tracestate, traceparent }, { isoPostQuote: {} });
+                res = await this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId, { tracestate, traceparent }, { isoPostQuote: request.isoPostQuote });
             } else {
-                res = await this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId, undefined, { isoPostQuote: {} });
+                res = await this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId, undefined, { isoPostQuote: request.isoPostQuote });
             }
             this.data.quoteResponse = {
                 headers: res.originalRequest.headers,

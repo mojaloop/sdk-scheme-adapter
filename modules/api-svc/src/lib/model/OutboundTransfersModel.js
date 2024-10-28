@@ -14,7 +14,8 @@ const safeStringify = require('fast-safe-stringify');
 const StateMachine = require('javascript-state-machine');
 const { Enum, Util: {id: idGenerator} } = require('@mojaloop/central-services-shared');
 const { Ilp, MojaloopRequests } = require('@mojaloop/sdk-standard-components');
-
+const { TransformFacades } = require('@mojaloop/ml-schema-transformer-lib');
+const { API_TYPES } = require('../../constants');
 const dto = require('../dto');
 const shared = require('./lib/shared');
 const PartiesModel = require('./PartiesModel');
@@ -52,6 +53,7 @@ class OutboundTransfersModel {
         this._multiplePartiesResponse = config.multiplePartiesResponse;
         this._multiplePartiesResponseSeconds = config.multiplePartiesResponseSeconds;
         this._sendFinalNotificationIfRequested = config.sendFinalNotificationIfRequested;
+        this._apiType = config.apiType;
 
         if (this._autoAcceptParty && this._multiplePartiesResponse) {
             throw new Error('Conflicting config options provided: autoAcceptParty and multiplePartiesResponse');
@@ -912,7 +914,15 @@ class OutboundTransfersModel {
             // a POST /transfers request to the switch
             try {
                 latencyTimerDone = this.metrics.transferLatency.startTimer();
-                const res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource, {});
+
+                let res;
+                if (this._apiType  === API_TYPES.iso20022) {
+                    // Pass in quote request as context if needed for ISO20022 message generation
+                    const isoPostQuoteContext = await TransformFacades.FSPIOP.quotes.post({body: this.data.quoteRequest.body});
+                    res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource, {isoPostQuote: isoPostQuoteContext.body});
+                } else {
+                    res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource, {});
+                }
 
                 this.data.prepare = res.originalRequest;
 

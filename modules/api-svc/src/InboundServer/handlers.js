@@ -172,18 +172,21 @@ const postPartiesByTypeAndId = (ctx) => {
  * Handles a POST /quotes request
  */
 const postQuotes = async (ctx) => {
+    let quoteRequest = {};
+
     if (utils.isIsoApi(ctx.request.headers)) {
         // we need to transform the incoming request body from iso20022 to fspiop
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20222 post quotes body to FSPIOP');
+        // store the original request body in the context for later use
+        quoteRequest.isoPostQuote=ctx.request.body;
         const target = await TransformFacades.FSPIOPISO20022.quotes.post({ body: ctx.request.body });
         ctx.request.body = target.body;
     }
 
     const sourceFspId = ctx.request.headers['fspiop-source'];
-    const quoteRequest = {
-        body: { ...ctx.request.body },
-        headers: { ...ctx.request.headers },
-    };
+    quoteRequest.body = { ...ctx.request.body };
+    quoteRequest.headers = { ...ctx.request.headers };
+
     // kick off an asyncronous operation to handle the request
     (async () => {
         try {
