@@ -70,7 +70,7 @@ class InboundTransfersModel {
 
         this._checkIlp = config.checkIlp;
 
-        this._ilp = new Ilp({
+        this._ilp = Ilp.ilpFactory(Ilp.ILP_VERSIONS.v1, {
             secret: config.ilpSecret,
             logger: this._logger,
         });
@@ -941,13 +941,13 @@ class InboundTransfersModel {
     async sendFxPatchNotificationToBackend(body, conversionId) {
         try {
             this.data = await this.loadFxState(conversionId);
-            
+
             if(!this.data) {
                 this.data = {};
             }
             this.data.finalNotification = body;
             if(body.conversionState === FSPIOPTransferStateEnum.COMMITTED) {
-                this.data.currentState = SDKStateEnum.COMPLETED; 
+                this.data.currentState = SDKStateEnum.COMPLETED;
             }
             else if(body.conversionState === FSPIOPTransferStateEnum.ABORTED){
                 this.data.currentState =  SDKStateEnum.ABORTED;

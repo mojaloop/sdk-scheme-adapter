@@ -5,7 +5,7 @@ describe('ILP Tests -->', () => {
     let ilp;
 
     beforeEach(() => {
-        ilp = new Ilp({
+        ilp = Ilp.ilpFactory(Ilp.ILP_VERSIONS.v1, {
             secret: 'test',
             logger: { log: jest.fn() }
         });

@@ -12,7 +12,10 @@
 
 const assert = require('assert').strict;
 const util = require('util');
-const { MojaloopRequests, Errors, WSO2Auth, Jws, Logger } = jest.requireActual('@mojaloop/sdk-standard-components');
+const {
+    MojaloopRequests, Errors, WSO2Auth, Jws, Logger,
+    Ilp: { ILP_VERSIONS }
+} = jest.requireActual('@mojaloop/sdk-standard-components');
 
 const mockMojaResponseFn = async () => Object.freeze({
     originalRequest: {
@@ -84,6 +87,11 @@ MockMojaloopRequests.__postFxTransfers = jest.fn(mockMojaResponseFn);
 MockMojaloopRequests.__putFxTransfers = jest.fn(mockMojaResponseFn);
 MockMojaloopRequests.__putFxTransfersError = jest.fn(mockMojaResponseFn);
 
+const Ilp = {
+    ilpFactory: (version, options) => new MockIlp(options),
+    ILP_VERSIONS
+};
+
 class MockIlp {
     constructor(config) {
         assert(config.logger, 'Must supply a logger to Ilp constructor');
@@ -110,7 +118,7 @@ class MockIlp {
     getResponseIlp(...args) {
         this.logger.log(`MockIlp.getResponseIlp called with args: ${util.inspect(args)}`);
 
-        return MockIlp.__response;
+        return Ilp.__response;
     }
 
     getQuoteResponseIlp(...args) {
@@ -129,16 +137,16 @@ class MockIlp {
     getTransactionObject(...args) {
         this.logger.log(`MockIlp.getTrasnactionObject called with args: ${util.inspect(args)}`);
 
-        return MockIlp.__transactionObject;
+        return Ilp.__transactionObject;
     }
 }
-MockIlp.__response = {
+Ilp.__response = {
     fulfilment: 'mockGeneratedFulfilment',
     ilpPacket: 'mockBase64encodedIlpPacket',
     condition: 'mockGeneratedCondition'
 };
 
-MockIlp.__transactionObject = {
+Ilp.__transactionObject = {
     transactionId: 'mockTransactionId'
 };
 
@@ -163,8 +171,8 @@ class MockJwsSigner {
 
 
 module.exports = {
+    Ilp,
     MojaloopRequests: MockMojaloopRequests,
-    Ilp: MockIlp,
     Jws: {
         validator: MockJwsValidator,
         signer: MockJwsSigner
