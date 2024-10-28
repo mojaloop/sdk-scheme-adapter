@@ -55,6 +55,8 @@ services:
         condition: service_started
       init-kafka:
         condition: service_completed_successfully
+    profiles:
+      - bulk
 
   ttksim1-sdk-outbound-domain-event-handler:
     extends:
@@ -72,6 +74,8 @@ services:
         condition: service_started
       init-kafka:
         condition: service_completed_successfully
+    profiles:
+      - bulk
 
   ttksim2-sdk-api-svc:
     extends:
@@ -101,10 +105,25 @@ services:
     depends_on:
       - redis
 
+  ttkfxp-sdk-api-svc:
+    extends:
+      file: common-sdk.yml
+      service: api-svc
+    env_file: ./config/sdk-ttkfxp/api-svc.env
+    networks:
+      - mojaloop-net
+    ports:
+      - "44000:4000"
+      - "44001:4001"
+      - "44002:4002"
+    depends_on:
+      - redis
+
+
   ttk-ttksim1:
     networks:
         - mojaloop-net
-    image: mojaloop/ml-testing-toolkit:v16.1.1
+    image: mojaloop/ml-testing-toolkit:v17.3.0-snapshot.1
     container_name: ttk-ttksim1
     user: root
     volumes:
@@ -123,7 +142,7 @@ services:
       retries: 3
 
   ttk-ttksim1-ui:
-    image: mojaloop/ml-testing-toolkit-ui:v15.3.0
+    image: mojaloop/ml-testing-toolkit-ui:v15.5.0
     ports:
       - "16060:6060"
     networks:
@@ -140,7 +159,7 @@ services:
   ttk-ttksim2:
     networks:
         - mojaloop-net
-    image: mojaloop/ml-testing-toolkit:v16.1.1
+    image: mojaloop/ml-testing-toolkit:v17.3.0-snapshot.1
     container_name: ttk-ttksim2
     user: root
     volumes:
@@ -153,7 +172,7 @@ services:
     command: npm start
 
   ttk-ttksim2-ui:
-    image: mojaloop/ml-testing-toolkit-ui:v15.3.0
+    image: mojaloop/ml-testing-toolkit-ui:v15.5.0
     ports:
       - "26060:6060"
     networks:
@@ -170,7 +189,7 @@ services:
   ttk-ttksim3:
     networks:
         - mojaloop-net
-    image: mojaloop/ml-testing-toolkit:v16.1.1
+    image: mojaloop/ml-testing-toolkit:v17.3.0-snapshot.1
     container_name: ttk-ttksim3
     user: root
     volumes:
@@ -183,7 +202,7 @@ services:
     command: npm start
 
   ttk-ttksim3-ui:
-    image: mojaloop/ml-testing-toolkit-ui:v15.3.0
+    image: mojaloop/ml-testing-toolkit-ui:v15.5.0
     ports:
       - "36060:6060"
     networks:
@@ -197,14 +216,46 @@ services:
     profiles:
       - debug
 
+
+  ttk-ttkfxp:
+    networks:
+        - mojaloop-net
+    image: mojaloop/ml-testing-toolkit:v17.3.0-snapshot.1
+    container_name: ttk-ttkfxp
+    user: root
+    volumes:
+      - "./config/ttk-ttkfxp/spec_files:/opt/app/spec_files"
+    ports:
+      - "44040:4040"
+      - "45050:5050"
+    environment:
+      - AUTH_ENABLED=FALSE
+    command: npm start
+
+  ttk-ttkfxp-ui:
+    image: mojaloop/ml-testing-toolkit-ui:v15.5.0
+    ports:
+      - "46060:6060"
+    networks:
+      - mojaloop-net
+    environment:
+      - API_BASE_URL=http://localhost:45050
+      - AUTH_ENABLED=FALSE
+    command:
+      - sh
+      - /usr/share/nginx/start.sh
+    profiles:
+      - debug
+
   ttk-hub:
     networks:
         - mojaloop-net
-    image: mojaloop/ml-testing-toolkit:v16.1.1
+    image: mojaloop/ml-testing-toolkit:v17.3.0-snapshot.1
     container_name: ttk-hub
     user: root
     volumes:
       - "./config/ttk-hub/spec_files:/opt/app/spec_files"
+      - "./config/ttk-hub/environments:/opt/app/examples/environments"
     ports:
       - "54040:4040"
       - "55050:5050"
@@ -213,7 +264,7 @@ services:
     command: npm start
 
   ttk-hub-ui:
-    image: mojaloop/ml-testing-toolkit-ui:v15.3.0
+    image: mojaloop/ml-testing-toolkit-ui:v15.5.0
     ports:
       - "56060:6060"
     networks:
@@ -227,43 +278,37 @@ services:
     profiles:
       - debug
 
-  zookeeper:
-    networks:
-      - mojaloop-net
-    image: docker.io/bitnami/zookeeper:3.8
-    container_name: zookeeper
-    ports:
-      - 2181:2181
-    environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
-
   kafka:
     networks:
       - mojaloop-net
     restart: "no"
-    image: docker.io/bitnami/kafka:3.2.0
+    image: docker.io/bitnami/kafka:3.5.0
     container_name: kafka
     ports:
       - "9092:9092"
-      - "9093:9093"
     environment:
+      # BITNAMI_DEBUG: "yes"
       ALLOW_PLAINTEXT_LISTENER: "yes"
-      # KAFKA_ADVERTISED_HOST_NAME: kafka
-      KAFKA_LISTENERS: LISTENER_INTERN://kafka:9093,LISTENER_EXTERN://0.0.0.0:9092
-      KAFKA_ADVERTISED_LISTENERS: LISTENER_INTERN://kafka:9093,LISTENER_EXTERN://127.0.0.1:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_INTERN:PLAINTEXT,LISTENER_EXTERN:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_INTERN
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_CFG_LISTENERS: CONTROLLER://:9093,LISTENER_DOCKER://kafka:29092,LISTENER_EXTERN://:9092
+      KAFKA_CFG_ADVERTISED_LISTENERS: LISTENER_DOCKER://kafka:29092,LISTENER_EXTERN://localhost:9092
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,LISTENER_DOCKER:PLAINTEXT,LISTENER_EXTERN:PLAINTEXT
+      KAFKA_CFG_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_CFG_MESSAGE_MAX_BYTES: 200000000
-    depends_on:
-      - zookeeper
+      KAFKA_CFG_NODE_ID: 1
+      KAFKA_CFG_PROCESS_ROLES: broker,controller
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 1@127.0.0.1:9093
+      KAFKA_ENABLE_KRAFT: "true"
     healthcheck:
       test: ["CMD" ,"/opt/bitnami/kafka/bin/kafka-broker-api-versions.sh","--bootstrap-server","kafka:9092"]
       timeout: 20s
       retries: 10
       start_period: 40s
       interval: 30s
+    profiles:
+      - bulk
 
   init-kafka:
     networks:
@@ -275,22 +320,24 @@ services:
     command: |
       "
       # blocks until kafka is reachable
-      kafka-topics.sh --bootstrap-server kafka:9093 --list
+      kafka-topics.sh --bootstrap-server kafka:29092 --list
 
       echo -e 'Creating kafka topics'
-      kafka-topics.sh --bootstrap-server kafka:9093 --create --if-not-exists --topic ttksim1-topic-sdk-outbound-command-events --replication-factor 1 --partitions 1
-      kafka-topics.sh --bootstrap-server kafka:9093 --create --if-not-exists --topic ttksim1-topic-sdk-outbound-domain-events --replication-factor 1 --partitions 1
-      kafka-topics.sh --bootstrap-server kafka:9093 --create --if-not-exists --topic ttksim2-topic-sdk-outbound-command-events --replication-factor 1 --partitions 1
-      kafka-topics.sh --bootstrap-server kafka:9093 --create --if-not-exists --topic ttksim2-topic-sdk-outbound-domain-events --replication-factor 1 --partitions 1
-      kafka-topics.sh --bootstrap-server kafka:9093 --create --if-not-exists --topic ttksim3-topic-sdk-outbound-command-events --replication-factor 1 --partitions 1
-      kafka-topics.sh --bootstrap-server kafka:9093 --create --if-not-exists --topic ttksim3-topic-sdk-outbound-domain-events --replication-factor 1 --partitions 1
+      kafka-topics.sh --bootstrap-server kafka:29092 --create --if-not-exists --topic ttksim1-topic-sdk-outbound-command-events --replication-factor 1 --partitions 1
+      kafka-topics.sh --bootstrap-server kafka:29092 --create --if-not-exists --topic ttksim1-topic-sdk-outbound-domain-events --replication-factor 1 --partitions 1
+      kafka-topics.sh --bootstrap-server kafka:29092 --create --if-not-exists --topic ttksim2-topic-sdk-outbound-command-events --replication-factor 1 --partitions 1
+      kafka-topics.sh --bootstrap-server kafka:29092 --create --if-not-exists --topic ttksim2-topic-sdk-outbound-domain-events --replication-factor 1 --partitions 1
+      kafka-topics.sh --bootstrap-server kafka:29092 --create --if-not-exists --topic ttksim3-topic-sdk-outbound-command-events --replication-factor 1 --partitions 1
+      kafka-topics.sh --bootstrap-server kafka:29092 --create --if-not-exists --topic ttksim3-topic-sdk-outbound-domain-events --replication-factor 1 --partitions 1
 
       echo -e 'Successfully created the following topics:'
-      kafka-topics.sh --bootstrap-server kafka:9093 --list
+      kafka-topics.sh --bootstrap-server kafka:29092 --list
       "
+    profiles:
+      - bulk
 
-  kowl:
-    image: quay.io/cloudhut/kowl:v1.4.0
+  kafka-debug-ui:
+    image: docker.redpanda.com/redpandadata/console:v2.3.7
     deploy:
       replicas: 1
     restart: on-failure
@@ -299,36 +346,36 @@ services:
     networks:
       - mojaloop-net
     environment:
-      - KAFKA_BROKERS=kafka:9093
+      - KAFKA_BROKERS=kafka:29092
     depends_on:
       - kafka
     profiles:
       - debug
 
-  redisinsight:
-    image: redislabs/redisinsight
-    ports:
-      - "9001:8001"
-    networks:
-      - mojaloop-net
-    volumes: []
-    restart: on-failure
-    healthcheck:
-      test: ["CMD" ,"sh", "-c", "curl http://localhost:8001/api/instance/"]
-      timeout: 20s
-      retries: 30
-      start_period: 5s
-      interval: 5s
-    profiles:
-      - debug
+  # redisinsight:
+  #   image: redislabs/redisinsight
+  #   ports:
+  #     - "9001:8001"
+  #   networks:
+  #     - mojaloop-net
+  #   volumes: []
+  #   restart: on-failure
+  #   healthcheck:
+  #     test: ["CMD" ,"sh", "-c", "curl http://localhost:8001/api/instance/"]
+  #     timeout: 20s
+  #     retries: 30
+  #     start_period: 5s
+  #     interval: 5s
+  #   profiles:
+  #     - debug
 
-  init-redisinsight:
-    networks:
-      - mojaloop-net
-    image: curlimages/curl:7.86.0
-    depends_on:
-      redisinsight:
-        condition: service_healthy
-    command: "--location --request POST 'http://redisinsight:8001/api/instance/' --header 'Content-Type: application/json' --data-raw '{\"name\": \"Redis DB\",\"connectionType\": \"STANDALONE\",\"host\": \"redis\",\"port\": 6379}'"
-    profiles:
-      - debug
+  # init-redisinsight:
+  #   networks:
+  #     - mojaloop-net
+  #   image: curlimages/curl:7.86.0
+  #   depends_on:
+  #     redisinsight:
+  #       condition: service_healthy
+  #   command: "--location --request POST 'http://redisinsight:8001/api/instance/' --header 'Content-Type: application/json' --data-raw '{\"name\": \"Redis DB\",\"connectionType\": \"STANDALONE\",\"host\": \"redis\",\"port\": 6379}'"
+  #   profiles:
+  #     - debug

@@ -12,18 +12,17 @@
 
 const safeStringify = require('fast-safe-stringify');
 const {
-    BackendRequests,
-    HTTPResponseError,
-} = require('./lib/requests');
-const {
     MojaloopRequests,
     Ilp,
     Errors,
 } = require('@mojaloop/sdk-standard-components');
-const shared = require('./lib/shared');
-const { SDKStateEnum } = require('./common');
 const FSPIOPTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.TransferState;
 const FSPIOPBulkTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.BulkTransferState;
+
+const { BackendRequests, HTTPResponseError } = require('./lib/requests');
+const { SDKStateEnum, CacheKeyPrefixes } = require('./common');
+const shared = require('./lib/shared');
+const dto = require('../dto');
 
 /**
  *  Models the operations required for performing inbound transfers
@@ -38,6 +37,7 @@ class InboundTransfersModel {
         this._allowTransferWithoutQuote = config.allowTransferWithoutQuote;
         this._reserveNotification = config.reserveNotification;
         this._allowDifferentTransferTransactionId = config.allowDifferentTransferTransactionId;
+        this._supportedCurrencies = config.supportedCurrencies;
 
         this._mojaloopRequests = new MojaloopRequests({
             logger: this._logger,
@@ -48,6 +48,9 @@ class InboundTransfersModel {
             bulkTransfersEndpoint: config.bulkTransfersEndpoint,
             transactionRequestsEndpoint: config.transactionRequestsEndpoint,
             bulkQuotesEndpoint: config.bulkQuotesEndpoint,
+            // todo: extend BaseRequestConfigType in sdk-standard-comps
+            fxQuotesEndpoint: config.fxQuotesEndpoint,
+            fxTransfersEndpoint: config.fxTransfersEndpoint,
             dfspId: config.dfspId,
             tls: {
                 enabled: config.outbound.tls.mutualTLS.enabled,
@@ -79,7 +82,9 @@ class InboundTransfersModel {
     updateStateWithError(err) {
         this.data.lastError = err;
         this.data.currentState = SDKStateEnum.ERROR_OCCURRED;
-        return this._save();
+        return this.data.transferId // if no transferId - we are in fxQuote flow
+            ? this._save()
+            : this.saveFxState();
     }
 
     /**
@@ -153,9 +158,9 @@ class InboundTransfersModel {
                 return 'No response from backend';
             }
 
-            // project our internal party representation into a mojaloop partyies request body
+            // project our internal party representation into a mojaloop parties request body
             const mlParty = {
-                party: shared.internalPartyToMojaloopParty(response, this._dfspId)
+                party: shared.internalPartyToMojaloopParty(response, this._dfspId, this._supportedCurrencies)
             };
 
             let { tracestate = undefined, traceparent = undefined } = headers;
@@ -167,7 +172,10 @@ class InboundTransfersModel {
             }
 
             // make a callback to the source fsp with the party info
-            return this._mojaloopRequests.putParties(idType, idValue, idSubValue, mlParty, sourceFspId);
+            const partyInfo = await this._mojaloopRequests.putParties(idType, idValue, idSubValue, mlParty, sourceFspId);
+
+            return partyInfo;
+
         }
         catch(err) {
             this._logger.isErrorEnabled && this._logger.push({ err }).error('Error in getParties');
@@ -190,20 +198,7 @@ class InboundTransfersModel {
         // handle an incoming request and send a response asynchronously, but we hold onto
         // some state across async ops
 
-        this.data = {
-            // transferId: this follows the slightly dodgy assumption that transferId will be same as this transactionId.
-            // so far this has held in moja implementations but may not always be the case. regardless, future FSPIOP API
-            // versions MUST deal with this cleanly so we can expect to eliminate this assumption at some point.
-            transferId: quoteRequest.transactionId,
-            direction: 'INBOUND',
-            quoteRequest: {
-                headers: request.headers,
-                body: request.body
-            },
-            currentState: SDKStateEnum.QUOTE_REQUEST_RECEIVED,
-            initiatedTimestamp: new Date().toISOString(),
-        };
-
+        this.data = dto.quoteRequestStateDto(request);
         // persist the transfer record in the cache. if we crash after this at least we will
         // have a record of the request in the cache.
         await this._save();
@@ -547,6 +542,122 @@ class InboundTransfersModel {
         }
     }
 
+    async postFxQuotes(request, sourceFspId) {
+        const { body } = request;
+        try {
+            this.data = dto.fxQuoteRequestStateDto(request);
+            await this.saveFxState();
+
+            const internalRequest = shared.mojaloopFxQuoteRequestToInternal(body);
+
+            const beResponse = await this._backendRequests.postFxQuotes(internalRequest);
+            if (!beResponse) {
+                // make an error callback to the source fsp
+                return 'No response from FX backend';
+            }
+
+            const mojaloopResponse = shared.internalFxQuoteResponseToMojaloop(beResponse);
+            // create our ILP packet and condition and tag them on to our internal fxQuote response
+            const { fulfilment, condition } = this._ilp.getFxQuoteResponseIlp(body, mojaloopResponse);
+
+            mojaloopResponse.condition = condition;
+
+            this.data.fxQuote = {
+                request,
+                internalRequest,
+                response: beResponse,
+                mojaloopResponse,
+                fulfilment
+                // todo: think, if we need to store ilpPacket as well
+            };
+            await this.saveFxState();
+
+            const res = await this._mojaloopRequests.putFxQuotes(body.conversionRequestId, mojaloopResponse, sourceFspId);
+
+            this.data.fxQuoteResponse = {
+                headers: res.originalRequest.headers,
+                body: res.originalRequest.body,
+            };
+            this.data.currentState = SDKStateEnum.FX_QUOTE_WAITING_FOR_ACCEPTANCE;
+            await this.saveFxState();
+
+            return res;
+        } catch (err) {
+            this._logger.push({ err }).log('Error in postFxQuotes');
+            const mojaloopError = await this._handleError(err);
+            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            return this._mojaloopRequests
+                .putFxQuotesError(body.conversionRequestId, mojaloopError, sourceFspId);
+        }
+    }
+
+    async postFxTransfers(request, sourceFspId) {
+        const { body } = request;
+        try {
+            // todo: assume commitRequestId from fxTransfer should be same as conversionTerms.conversionId from fxQuotes
+            this.data = await this.loadFxState(body.commitRequestId);
+
+            if (!this.data?.fxQuote) {
+                throw new Error(`Corresponding fxQuote not found for commitRequestId ${body.commitRequestId}`);
+            }
+            const { fxQuote } = this.data;
+
+            this.data.fxPrepare = request;
+            this.data.currentState = SDKStateEnum.FX_PREPARE_RECEIVED;
+            await this.saveFxState();
+
+            const { fulfilment } = fxQuote;
+            const { condition } = fxQuote.mojaloopResponse;
+
+            // check incoming ILP matches our persisted values
+            if (this._checkIlp && (body.condition !== condition)) {
+                throw new Error(`ILP condition in fxTransfer prepare for ${body.commitRequestId} does not match fxQuote`);
+            }
+
+            if (this._rejectTransfersOnExpiredQuotes) {
+                const now = new Date().toISOString();
+                const { expiration } = fxQuote.mojaloopResponse;
+                if (now > expiration) {
+                    const error = Errors.MojaloopApiErrorObjectFromCode(Errors.MojaloopApiErrorCodes.QUOTE_EXPIRED);
+                    this._logger.error(`Error in prepareFxTransfer: fxQuote expired for fxTransfer ${body.commitRequestId}, system time=${now} > fxQuote time=${expiration}`);
+                    await this.updateStateWithError(error);
+                    // todo: maybe, throw error here, and process it in catch block?
+                    return this._mojaloopRequests.putFxTransfersError(body.commitRequestId, error, sourceFspId);
+                }
+            }
+
+            const internalForm = shared.mojaloopFxTransferPrepareToInternal(body, fxQuote);
+
+            const beResponse = await this._backendRequests.postFxTransfers(internalForm);
+            if (!beResponse) {
+                // make an error callback to the source fsp
+                return 'No response from FX backend';
+            }
+
+            this._logger.log(`fxTransfer accepted by backend returning homeTransactionId: ${beResponse.homeTransactionId} for mojaloop commitRequestId: ${body.commitRequestId}`);
+            this.data.homeTransactionId = beResponse.homeTransactionId;
+
+            // create a  mojaloop fxTransfer fulfil response
+            const mojaloopResponse = shared.internalFxTransferResponseToMojaloop(beResponse, fulfilment);
+            const res = await this._mojaloopRequests.putFxTransfers(body.commitRequestId, mojaloopResponse, sourceFspId);
+
+            this.data.fulfil = {
+                headers: res.originalRequest.headers,
+                body: res.originalRequest.body,
+            };
+            this.data.currentState = beResponse.conversionState;
+            await this.saveFxState();
+
+            return res;
+        } catch (err) {
+            this._logger.push({ err }).log('Error in postFxTransfer');
+            const mojaloopError = await this._handleError(err);
+            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            return this._mojaloopRequests
+                .putFxTransfersError(body.commitRequestId, mojaloopError, sourceFspId);
+        }
+    }
+
     /**
      * Asks the backend for a response to an incoming bulk quotes request and makes a callback to the originator with
      * the results.
@@ -729,7 +840,7 @@ class InboundTransfersModel {
                 // TODO: Verify and align with actual schema for bulk transfers error endpoint
                 const mojaloopErrorResponse = {
                     bulkTransferState: FSPIOPBulkTransferStateEnum.REJECTED,
-                     
+
                     individualTransferResults: individualTransferErrors.map(({ transferId, transferError }) => ({
                         transferId,
                         errorInformation: transferError,
@@ -830,6 +941,33 @@ class InboundTransfersModel {
         }
     }
 
+    async sendFxPatchNotificationToBackend(body, conversionId) {
+        try {
+            this.data = await this.loadFxState(conversionId);
+
+            if(!this.data) {
+                this.data = {};
+            }
+            this.data.finalNotification = body;
+            if(body.conversionState === FSPIOPTransferStateEnum.COMMITTED) {
+                this.data.currentState = SDKStateEnum.COMPLETED;
+            }
+            else if(body.conversionState === FSPIOPTransferStateEnum.ABORTED){
+                this.data.currentState =  SDKStateEnum.ABORTED;
+            }
+            else{
+                this.data.currentState = SDKStateEnum.ERROR_OCCURRED;
+                this.data.lastError = 'Final notification state not COMMITTED or ABORTED';
+            }
+
+            await this.saveFxState();
+
+            const res = await this._backendRequests.patchFxTransfersNotification(this.data,conversionId);
+            return res;
+        } catch (err) {
+            this._logger.isErrorEnabled && this._logger.push({ err }).error(`Error notifying backend of final conversionId state equal to: ${body.conversionState} `);
+        }
+    }
     /**
     * Forwards Switch notification for fulfiled transfer to the DFSP backend, when acting as a payee
     */
@@ -857,7 +995,7 @@ class InboundTransfersModel {
             else {
                 // if the final notification has anything other than COMMITTED as the final state, set an error
                 // in the transfer state.
-                this.data.currentState = SDKStateEnum.ERROR_OCCURED;
+                this.data.currentState = SDKStateEnum.ERROR_OCCURRED;
                 this.data.lastError = 'Final notification state not COMMITTED';
             }
 
@@ -901,15 +1039,18 @@ class InboundTransfersModel {
                 }
             }
         }
-        if(this.data) {
+        if (this.data) {
             //we have persisted state so update that with this error
             this.data.lastError = {
                 originalError: err.stack || safeStringify(err),
                 mojaloopError: mojaloopError,
             };
             this.data.currentState = SDKStateEnum.ERROR_OCCURRED;
-            await this._save();
+            this.data.transferId
+                ? await this._save()
+                : await this.saveFxState();
         }
+
         return mojaloopError;
     }
 
@@ -942,7 +1083,30 @@ class InboundTransfersModel {
             throw err;
         }
     }
+
+    // todo: combine with this._save
+    async saveFxState() { // fxQuote + fxTransfer
+        const key = this.makeFxQuoteCacheKey(this.data?.conversionId);
+        const res = await this._cache.set(key, this.data);
+        this._logger.push({ key, res }).log('fxState is saved in cache');
+    }
+
+    // todo: combine with this._load
+    async loadFxState(conversionId) {
+        const key = this.makeFxQuoteCacheKey(conversionId);
+        const data = await this._cache.get(key);
+        this._logger.push({ key, data }).log('fxState is loaded from cache');
+        return data;
+    }
+
+    makeFxQuoteCacheKey(conversionId) {
+        if (!conversionId) {
+            throw new Error('No conversionId for making cache key');
+        }
+        return `${CacheKeyPrefixes.FX_QUOTE_INBOUND}_${conversionId}`;
+    }
 }
 
 
 module.exports = InboundTransfersModel;
+

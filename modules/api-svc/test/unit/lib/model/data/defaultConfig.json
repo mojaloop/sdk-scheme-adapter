@@ -56,5 +56,6 @@
   "metrics": {
     "port": 4004
   },
+  "getServicesFxpResponse": ["fxp_id"],
   "apiType": "fspiop"
 }

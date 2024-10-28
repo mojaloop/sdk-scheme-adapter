@@ -22,6 +22,26 @@ const {
     QuotesModel,
     TransfersModel,
 } = require('../lib/model');
+const { CacheKeyPrefixes } = require('../lib/model/common');
+
+const extractBodyHeadersSourceFspId = ctx => ({
+    sourceFspId: ctx.request.headers['fspiop-source'],
+    body: { ...ctx.request.body },
+    headers: { ...ctx.request.headers },
+});
+
+const createInboundTransfersModel = ctx => new Model({
+    ...ctx.state.conf,
+    cache: ctx.state.cache,
+    logger: ctx.state.logger,
+    wso2: ctx.state.wso2,
+    resourceVersions: ctx.resourceVersions,
+});
+
+const prepareResponse = ctx => {
+    ctx.response.status = ReturnCodes.ACCEPTED.CODE;
+    ctx.response.body = '';
+};
 
 const { TransformFacades } = require('@mojaloop/ml-schema-transformer-lib');
 
@@ -992,10 +1012,119 @@ const putBulkTransfersByIdError = async(ctx) => {
     ctx.response.body = '';
 };
 
-
 const healthCheck = async(ctx) => {
     ctx.response.status = ReturnCodes.OK.CODE;
     ctx.response.body = '';
+};
+
+const postFxQuotes = async (ctx) => {
+    const { body, headers, sourceFspId } = extractBodyHeadersSourceFspId(ctx);
+    const { logger } = ctx.state;
+    const logPrefix = 'Handling POST fxQuotes request';
+
+    const model = createInboundTransfersModel(ctx);
+
+    model.postFxQuotes({ body, headers }, sourceFspId)
+        .then(response => logger.push({ response }).log(`${logPrefix} is done`))
+        .catch(err => logger.push({ err }).log(`${logPrefix} error`));
+
+    prepareResponse(ctx);
+};
+
+/**
+ * Create a handler for PUT /fxQuotes/{ID} and PUT /fxQuotes/{ID}/error routes
+ *
+ * @param success {boolean} - false is for handling error callback response
+ */
+const createPutFxQuotesHandler = (success) => async (ctx) => {
+    const { body, headers } = extractBodyHeadersSourceFspId(ctx);
+    const { ID } = ctx.state.path.params;
+
+    const channel = `${CacheKeyPrefixes.FX_QUOTE_CALLBACK_CHANNEL}_${ID}`;
+    await ctx.state.cache.publish(channel, {
+        success,
+        data: { body, headers },
+        type: `fxQuotesResponse${success ? '' : 'Error'}`
+    });
+
+    // todo: think, what does it mean in putQuote handler!
+    //
+    //  duplicate publication until legacy code refactored
+    // await QuotesModel.triggerDeferredJob({
+    //     cache: ctx.state.cache,
+    //     message: data,
+    //     args: {
+    //         quoteId
+    //     }
+    // });
+
+    ctx.response.status = ReturnCodes.OK.CODE;
+};
+
+const postFxTransfers = async (ctx) => {
+    const { body, headers, sourceFspId } = extractBodyHeadersSourceFspId(ctx);
+    const { logger } = ctx.state;
+    const logPrefix = 'Handling POST fxTransfers request';
+
+    const model = createInboundTransfersModel(ctx);
+    model.postFxTransfers({ body, headers }, sourceFspId)
+        .then(response => logger.push({ response }).log(`${logPrefix} is done`))
+        .catch(err => logger.push({ err }).log(`${logPrefix} error`));
+
+    prepareResponse(ctx);
+};
+
+const patchFxTransfersById = async (ctx) => {
+    const req = {
+        headers: { ...ctx.request.headers },
+        data: { ...ctx.request.body }
+    };
+    
+    const idValue = ctx.state.path.params.ID;
+    
+    const model = new Model({
+        ...ctx.state.conf,
+        cache: ctx.state.cache,
+        logger: ctx.state.logger,
+        wso2: ctx.state.wso2,
+        resourceVersions: ctx.resourceVersions,
+    });
+    
+    const response = await model.sendFxPatchNotificationToBackend(req.data, idValue);
+    
+    // log the result
+    ctx.state.logger.isDebugEnabled && ctx.state.logger.push({response}).
+        debug('Inbound Transfers model handled PATCH /fxTransfers/{ID} request');
+};
+
+/**
+ * Create a handler for PUT /fxTransfers/{ID} and PUT /fxTransfers/{ID}/error routes
+ *
+ * @param success {boolean} - false is for handling error callback response
+ */
+const createPutFxTransfersHandler = (success) => async (ctx) => {
+    const { body, headers } = extractBodyHeadersSourceFspId(ctx);
+    const { ID } = ctx.state.path.params;
+
+    const channel = `${CacheKeyPrefixes.FX_TRANSFER_CALLBACK_CHANNEL}_${ID}`;
+    await ctx.state.cache.publish(channel, {
+        success,
+        data: { body, headers },
+        type: `fxTransfersResponse${success ? '' : 'Error'}`
+    });
+
+    // todo: think, what does it mean in putTransfer handler!
+    //
+    //  duplicate publication until legacy code refactored
+    // await TransfersModel.triggerDeferredJob({
+    //     cache: ctx.state.cache,
+    //     message: data,
+    //     args: {
+    //         transferId,
+    //     }
+    // });
+
+    ctx.response.status = ReturnCodes.OK.CODE;
 };
 
 module.exports = {
@@ -1088,5 +1217,24 @@ module.exports = {
     },
     '/transactionRequests/{ID}/error': {
         put: putTransactionRequestsByIdError
+    },
+    '/fxQuotes': {
+        post: postFxQuotes
+    },
+    '/fxQuotes/{ID}': {
+        put: createPutFxQuotesHandler(true)
+    },
+    '/fxQuotes/{ID}/error': {
+        put: createPutFxQuotesHandler(false)
+    },
+    '/fxTransfers': {
+        post: postFxTransfers
+    },
+    '/fxTransfers/{ID}': {
+        patch: patchFxTransfersById,
+        put: createPutFxTransfersHandler(true)
+    },
+    '/fxTransfers/{ID}/error': {
+        put: createPutFxTransfersHandler(false)
     }
 };

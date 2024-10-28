@@ -62,6 +62,7 @@ module.exports = {
         mgmtAPIWsUrl: env.get('MGMT_API_WS_URL').default('127.0.0.1').asString(),
         mgmtAPIWsPort: env.get('MGMT_API_WS_PORT').default('4005').asPortNumber()
     },
+    idGenerator: env.get('ID_GENERATOR').default('{"type":"ulid"}').asJsonObject(),
     logLevel: env.get('LOG_LEVEL').default('info').asEnum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']),
     inbound: {
         port: env.get('INBOUND_LISTEN_PORT').default('4000').asPortNumber(),
@@ -127,7 +128,11 @@ module.exports = {
     transactionRequestsEndpoint: env.get('TRANSACTION_REQUESTS_ENDPOINT').asString(),
     transfersEndpoint: env.get('TRANSFERS_ENDPOINT').asString(),
     bulkTransfersEndpoint: env.get('BULK_TRANSFERS_ENDPOINT').asString(),
+    fxQuotesEndpoint: env.get('FX_QUOTES_ENDPOINT').asString(),
+    fxTransfersEndpoint: env.get('FX_TRANSFERS_ENDPOINT').asString(),
     backendEndpoint: env.get('BACKEND_ENDPOINT').required().asString(),
+
+    getServicesFxpResponse: env.get('GET_SERVICES_FXP_RESPONSE').default('').asArray(),
 
     dfspId: env.get('DFSP_ID').default('mojaloop').asString(),
     ilpSecret: env.get('ILP_SECRET').default('mojaloop-sdk').asString(),
@@ -213,7 +218,8 @@ module.exports = {
     pm4mlEnabled: env.get('PM4ML_ENABLED').default('false').asBool(),
 
     fspiopApiServerMaxRequestBytes: env.get('FSPIOP_API_SERVER_MAX_REQUEST_BYTES').default('209715200').asIntPositive(), // Default is 200mb
-    backendApiServerMaxRequestBytes: env.get('BACKEND_API_SERVER_MAX_REQUEST_BYTES').default('209715200').asIntPositive(), // Default is 200mb
+    backendApiServerMaxRequestBytes: env.get('BACKEND_API_SERVER_MAX_REQUEST_BYTES').default('209715200').asIntPositive(), // Default is 200mb,
+    supportedCurrencies: env.get('SUPPORTED_CURRENCIES').default('').asArray(),
 
     // ISO-20022 config options
     // apiType can be one of:

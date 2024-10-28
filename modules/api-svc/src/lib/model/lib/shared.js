@@ -20,7 +20,7 @@ const ErrorHandling = require('@mojaloop/central-services-error-handling');
  *
  * @returns {object} - the constructed party object
  */
-const internalPartyToMojaloopParty = (internal, fspId) => {
+const internalPartyToMojaloopParty = (internal, fspId, supportedCurrencies) => {
     const party = {
         partyIdInfo: {
             partyIdType: internal.idType,
@@ -33,6 +33,15 @@ const internalPartyToMojaloopParty = (internal, fspId) => {
         party.partyIdInfo.extensionList = {
             extension: internal.extensionList
         };
+    }
+
+    if (!internal.supportedCurrencies) {
+        // add DFSP specific information to the response
+        if (supportedCurrencies?.length > 0) {
+            party.supportedCurrencies = supportedCurrencies;
+        }
+    } else if (internal.supportedCurrencies?.length > 0) {
+        party.supportedCurrencies = internal.supportedCurrencies;
     }
 
     const hasComplexName = !!(internal.firstName || internal.middleName || internal.lastName);
@@ -51,6 +60,8 @@ const internalPartyToMojaloopParty = (internal, fspId) => {
     if(internal.lastName) { party.personalInfo.complexName.lastName = internal.lastName; }
 
     if(internal.dateOfBirth) { party.personalInfo.dateOfBirth = internal.dateOfBirth; }
+
+    if(internal.kycInformation) { party.personalInfo.kycInformation = internal.kycInformation; }
 
     if(typeof(internal.merchantClassificationCode) !== 'undefined') {
         party.merchantClassificationCode = internal.merchantClassificationCode;
@@ -685,6 +696,43 @@ const mojaloopBulkTransfersResponseToInternal = (external) => {
     return internal;
 };
 
+/**
+ * Converts a Mojaloop FX quote request to internal formProjects a Mojaloop API spec bulk transfer response to internal form
+ *
+ * @returns {object} - the internal form bulk transfer response
+ */
+const mojaloopFxQuoteRequestToInternal = (external) => {
+    // perform payload reformatting here (if needed)
+    return external;
+};
+
+const internalFxQuoteResponseToMojaloop = (beResponse) => {
+    // eslint-disable-next-line no-unused-vars
+    const { homeTransactionId, ...mlResponse } = beResponse;
+    return mlResponse;
+};
+
+const mojaloopFxTransferPrepareToInternal = (external, fxQuote) => {
+    const { homeTransactionId } = fxQuote.response;
+    return {
+        ...external,
+        homeTransactionId,
+    };
+};
+
+const internalFxTransferResponseToMojaloop = (beResponse, fulfilment) => {
+    return {
+        conversionState: beResponse.conversionState,
+        fulfilment: beResponse.fulfilment || fulfilment,
+        completedTimestamp: beResponse.completedTimestamp || new Date(),
+        ...beResponse.extensionList && {
+            extensionList: {
+                extension: beResponse.extensionList,
+            },
+        },
+    };
+};
+
 module.exports = {
     internalPartyToMojaloopParty,
     internalQuoteResponseToMojaloop,
@@ -700,5 +748,10 @@ module.exports = {
     mojaloopBulkPrepareToInternalBulkTransfer,
     mojaloopBulkTransfersResponseToInternal,
     internalBulkTransfersResponseToMojaloop,
-    mojaloopPutTransactionRequestToInternal
+    mojaloopPutTransactionRequestToInternal,
+
+    mojaloopFxQuoteRequestToInternal,
+    mojaloopFxTransferPrepareToInternal,
+    internalFxQuoteResponseToMojaloop,
+    internalFxTransferResponseToMojaloop,
 };

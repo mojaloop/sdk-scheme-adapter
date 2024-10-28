@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
-  "version": "23.5.1",
+  "version": "23.6.0-snapshot.16",
   "description": "mojaloop sdk-scheme-adapter",
   "license": "Apache-2.0",
   "homepage": "https://github.com/mojaloop/sdk-scheme-adapter",
@@ -37,6 +37,12 @@
     "build:no-cache": "nx run-many --all --target=build --skip-nx-cache",
     "build:openapi": "yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run build:openapi",
     "build:openapi:inbound": "yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run build:openapi:inbound",
+    "docker:build": "docker build --build-arg NODE_VERSION=\"$(cat .nvmrc)-alpine\" -t mojaloop/sdk-scheme-adapter:local -f ./Dockerfile .",
+    "docker:up": "docker-compose up",
+    "docker:stop": "docker-compose stop",
+    "docker:rm": "docker-compose rm -f -v",
+    "docker:down": "docker-compose down -v",
+    "docker:clean": "docker-compose down --rmi local",
     "validate:api": "yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run validate:api",
     "validate:api-sequence-diagram": "node ./scripts/validate-api-sequence-diagram.js",
     "watch": "nx run-many --parallel --all --target=watch",
@@ -58,6 +64,7 @@
     "test:integration": "nx run-many --parallel --all --target=test:integration",
     "test:integration:affected": "nx affected --parallel --target=test:integration",
     "audit:check": "yarn dlx audit-ci --config ./audit-ci.jsonc",
+    "audit:fix": "yarn-audit-fix",
     "dep:check": "yarn ncu -e 2 && nx run-many --parallel --all --target=dep:check --output-style=static",
     "dep:update": "yarn ncu -u && nx run-many --parallel --all --target=dep:update --output-style=static",
     "release": "yarn run release:modules -- --skip.tag --skip.commit && standard-version --commit-all --no-verify --releaseCommitMessageFormat 'chore(release): {{currentTag}} [skip ci]'",
@@ -90,6 +97,21 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3",
     "yarn-audit-fix": "^10.1.0"
+  },
+  "resolutions": {
+    "cacache/tar": "^6.2.1",
+    "shins/ejs": "^3.1.7",
+    "shins/sanitize-html": "2.12.1",
+    "shins/jsonpointer": "5.0.0",
+    "shins/markdown-it": "12.3.2",
+    "shins/yargs-parser": "13.1.2",
+    "shins/postcss": "8.4.31",
+    "swagger-ui-express/express": "^4.19.2",
+    "shins/express": "^4.19.2",
+    "serve-static/send": "0.19.0",
+    "widdershins/yargs-parser": "13.1.2",
+    "widdershins/markdown-it": "12.3.2",
+    "widdershins/swagger2openapi": "7.0.8"
   },
   "standard-version": {
     "scripts": {
