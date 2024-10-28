@@ -26,13 +26,15 @@ const Model = require('~/lib/model').InboundTransfersModel;
 const QuotesModel = require('~/lib/model').QuotesModel;
 const PartiesModel = require('~/lib/model').PartiesModel;
 const TransfersModel = require('~/lib/model').TransfersModel;
+const { ISO_20022_HEADER_PART } = require('../../../src/constants');
 
 const mockArguments = require('./data/mockArguments');
 const isoBodies = require('./data/isoBodies.json');
 const mockTransactionRequestData = require('./data/mockTransactionRequest');
 const { Logger } = require('@mojaloop/sdk-standard-components');
 
-// const FSPIOPTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.TransferState;
+const createIsoHeader = (resource, version = '2.0') =>
+    `application/vnd.interoperability.${ISO_20022_HEADER_PART}.${resource}+json;version=${version}`;
 
 describe('Inbound API handlers transforming incoming ISO20022 message bodies', () => {
     let mockArgs;
@@ -244,14 +246,12 @@ describe('Inbound API handlers transforming incoming ISO20022 message bodies', (
                 request: {
                     body: isoBodies.putTransfersRequest,
                     headers: {
-                        'fspiop-source': 'foo'
+                        'fspiop-source': 'foo',
+                        'content-type': createIsoHeader('transfers')
                     }
                 },
                 response: {},
                 state: {
-                    conf: {
-                        apiType: 'iso20022',
-                    },
                     path: {
                         params: {
                             'ID': '1234567890'

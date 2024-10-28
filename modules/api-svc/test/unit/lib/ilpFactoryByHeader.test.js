@@ -2,9 +2,9 @@ jest.deepUnmock('@mojaloop/sdk-standard-components');
 
 const { Ilp: { ILP_VERSIONS }, Logger } = require('@mojaloop/sdk-standard-components');
 const { ISO_20022_HEADER_PART } = require('../../../src/constants');
-const ilpFactory = require('../../../src/lib/ilpFactory');
+const ilpFactory = require('../../../src/lib/ilpFactoryByHeader');
 
-describe('ilpFactory Tests -->', () => {
+describe('ilpFactoryByHeader Tests -->', () => {
     const ilpOptions = {
         secret: 'test',
         logger: new Logger.Logger()

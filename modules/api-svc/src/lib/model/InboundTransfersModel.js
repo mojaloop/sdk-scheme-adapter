@@ -11,24 +11,22 @@
 'use strict';
 
 const safeStringify = require('fast-safe-stringify');
-const {
-    MojaloopRequests,
-    Ilp,
-    Errors,
-} = require('@mojaloop/sdk-standard-components');
+const { MojaloopRequests, Errors } = require('@mojaloop/sdk-standard-components');
 const FSPIOPTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.TransferState;
 const FSPIOPBulkTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.BulkTransferState;
 
+const { API_TYPES } = require('../../constants');
+const ilpFactoryByHeader = require('../ilpFactoryByHeader');
+const dto = require('../dto');
+const shared = require('./lib/shared');
 const { BackendRequests, HTTPResponseError } = require('./lib/requests');
 const { SDKStateEnum, CacheKeyPrefixes } = require('./common');
-const shared = require('./lib/shared');
-const dto = require('../dto');
 
 /**
  *  Models the operations required for performing inbound transfers
  */
 class InboundTransfersModel {
-    constructor(config) {
+    constructor(config, headerWithApiVersion = '', apiType = API_TYPES.fspiop) {
         this._cache = config.cache;
         this._logger = config.logger;
         this._dfspId = config.dfspId;
@@ -60,7 +58,7 @@ class InboundTransfersModel {
             jwsSigningKey: config.jwsSigningKey,
             wso2: config.wso2,
             resourceVersions: config.resourceVersions,
-            apiType: config.apiType, // use dynamically
+            apiType,
         });
 
         this._backendRequests = new BackendRequests({
@@ -71,12 +69,9 @@ class InboundTransfersModel {
 
         this._checkIlp = config.checkIlp;
 
-        // todo:
-        // default to ILP 1 unless v4 is set
-        const ilpVersion = config.ilpVersion === '4' ? Ilp.ILP_VERSIONS.v4 : Ilp.ILP_VERSIONS.v1;
-        this._ilp = Ilp.ilpFactory(ilpVersion, {
+        this._ilp = ilpFactoryByHeader(headerWithApiVersion, {
             secret: config.ilpSecret,
-            logger: this._logger,
+            logger: config.logger,
         });
     }
 
@@ -499,6 +494,7 @@ class InboundTransfersModel {
             if (!response) {
                 return 'No response from backend';
             }
+            this._logger.isDebugEnabled && this._logger.push({ transferId, response }).debug('getTransfer response');
 
             const ilpPaymentData = {
                 transferId: transferId,
@@ -506,6 +502,7 @@ class InboundTransfersModel {
                 from: shared.internalPartyToMojaloopParty(response.from, response.from.fspId),
                 to: shared.internalPartyToMojaloopParty(response.to, response.to.fspId),
                 amountType: response.amountType,
+                expiration: response.expiration,
                 currency: response.currency,
                 amount: response.amount,
                 transactionType: response.transactionType,
@@ -699,6 +696,7 @@ class InboundTransfersModel {
                         payer: bulkQuoteRequest.payer,
                         transactionType: quote.transactionType,
                         subScenario: quote.subScenario,
+                        expiration: response.expiration,
                     };
 
                     const quoteResponse = {
@@ -903,6 +901,7 @@ class InboundTransfersModel {
                     amountType: transfer.amountType,
                     currency: transfer.currency,
                     amount: transfer.amount,
+                    expiration: transfer.expiration,
                     transactionType: transfer.transactionType,
                     subScenario: transfer.subScenario,
                     note: transfer.note,

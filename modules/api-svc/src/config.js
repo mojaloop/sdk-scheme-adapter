@@ -221,13 +221,13 @@ module.exports = {
     backendApiServerMaxRequestBytes: env.get('BACKEND_API_SERVER_MAX_REQUEST_BYTES').default('209715200').asIntPositive(), // Default is 200mb,
     supportedCurrencies: env.get('SUPPORTED_CURRENCIES').default('').asArray(),
 
-    // ISO-20022 config options
+    // ISO-20022 config options (only for outbound server)
     // apiType can be one of:
     //   - fspiop
     //   - iso20022
     apiType: env.get('API_TYPE').default('fspiop').asString(),
 
-    // ILP version options
+    // ILP version options (only for outbound server)
     // ilpVersion can be one of:
     //    - 1
     //    - 4

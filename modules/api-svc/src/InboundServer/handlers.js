@@ -14,15 +14,16 @@
 'use strict';
 
 const { Enum } = require('@mojaloop/central-services-shared');
-const { ReturnCodes } = Enum.Http;
-
 const {
-    InboundTransfersModel: Model,
+    InboundTransfersModel,
     PartiesModel,
     QuotesModel,
     TransfersModel,
 } = require('../lib/model');
 const { CacheKeyPrefixes } = require('../lib/model/common');
+const utils = require('../lib/utils');
+
+const { ReturnCodes } = Enum.Http;
 
 const extractBodyHeadersSourceFspId = ctx => ({
     sourceFspId: ctx.request.headers['fspiop-source'],
@@ -30,13 +31,21 @@ const extractBodyHeadersSourceFspId = ctx => ({
     headers: { ...ctx.request.headers },
 });
 
-const createInboundTransfersModel = ctx => new Model({
+/**
+ * @param {Object} ctx - the Koa context object
+ * @param {'content-type' | 'accept'} headerNameForIlp - see the comment: https://infitx-technologies.atlassian.net/browse/CSI-194?focusedCommentId=11047
+ *    For selecting ILP version logic:
+ *      - On POST /quotes inbound request, SDK should generate the ILP packet based on the ‘accept’ header because it needs to include the ilpPacket in the PUT /quotes callback payload
+ *      - On POST /transfers inbound request, we are calling ILP class functions and decoding ILP packet in some scenarios. At these places, we need to call ILP decoding functions (also may be fulfilment condition validation functions) based on the header ‘content-type’ because the ILP packet is from the request payload in this case.
+ * @returns {InboundTransfersModel}
+ */
+const createInboundTransfersModel = (ctx, headerNameForIlp = 'content-type') => new InboundTransfersModel({
     ...ctx.state.conf,
     cache: ctx.state.cache,
     logger: ctx.state.logger,
     wso2: ctx.state.wso2,
     resourceVersions: ctx.resourceVersions,
-});
+}, ctx.request.headers[headerNameForIlp], utils.defineInboundApiType(ctx.request.headers));
 
 const prepareResponse = ctx => {
     ctx.response.status = ReturnCodes.ACCEPTED.CODE;
@@ -44,9 +53,6 @@ const prepareResponse = ctx => {
 };
 
 const { TransformFacades } = require('@mojaloop/ml-schema-transformer-lib');
-
-// todo: find a sensible place to put API type consts, probably export them from sdk standard components
-const ISO_API_TYPE = 'iso20022';
 
 /**
  * Handles a GET /authorizations/{id} request
@@ -58,13 +64,7 @@ const getAuthorizationsById = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = new Model({
-                ...ctx.state.conf,
-                cache: ctx.state.cache,
-                logger: ctx.state.logger,
-                wso2: ctx.state.wso2,
-                resourceVersions: ctx.resourceVersions,
-            });
+            const model = createInboundTransfersModel(ctx);
 
             // use the model to handle the request
             const response = await model.getAuthorizations(authId, sourceFspId);
@@ -96,13 +96,7 @@ const getParticipantsByTypeAndId = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = new Model({
-                ...ctx.state.conf,
-                cache: ctx.state.cache,
-                logger: ctx.state.logger,
-                wso2: ctx.state.wso2,
-                resourceVersions: ctx.resourceVersions,
-            });
+            const model = createInboundTransfersModel(ctx);
 
             // use the model to handle the request
             const response = await model.getParticipants(idType, idValue, subIdValue, sourceFspId);
@@ -135,13 +129,7 @@ const getPartiesByTypeAndId = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = new Model({
-                ...ctx.state.conf,
-                cache: ctx.state.cache,
-                logger: ctx.state.logger,
-                wso2: ctx.state.wso2,
-                resourceVersions: ctx.resourceVersions,
-            });
+            const model = createInboundTransfersModel(ctx);
 
             let response;
 
@@ -184,7 +172,7 @@ const postPartiesByTypeAndId = (ctx) => {
  * Handles a POST /quotes request
  */
 const postQuotes = async (ctx) => {
-    if(ctx.state.conf.apiType === ISO_API_TYPE) {
+    if (utils.isIsoApi(ctx.request.headers)) {
         // we need to transform the incoming request body from iso20022 to fspiop
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20222 post quotes body to FSPIOP');
         const target = await TransformFacades.FSPIOPISO20022.quotes.post({ body: ctx.request.body });
@@ -200,13 +188,7 @@ const postQuotes = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = new Model({
-                ...ctx.state.conf,
-                cache: ctx.state.cache,
-                logger: ctx.state.logger,
-                wso2: ctx.state.wso2,
-                resourceVersions: ctx.resourceVersions,
-            });
+            const model = createInboundTransfersModel(ctx, 'accept');
 
             let response;
 
@@ -238,7 +220,7 @@ const postQuotes = async (ctx) => {
  * Handles a POST /transfers request
  */
 const postTransfers = async (ctx) => {
-    if(ctx.state.conf.apiType === ISO_API_TYPE) {
+    if (utils.isIsoApi(ctx.request.headers)) {
         // we need to transform the incoming request body from iso20022 to fspiop
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20222 post transfers body to FSPIOP');
         const target = await TransformFacades.FSPIOPISO20022.transfers.post({ body: ctx.request.body });
@@ -254,13 +236,7 @@ const postTransfers = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = new Model({
-                ...ctx.state.conf,
-                cache: ctx.state.cache,
-                logger: ctx.state.logger,
-                wso2: ctx.state.wso2,
-                resourceVersions: ctx.resourceVersions,
-            });
+            const model = createInboundTransfersModel(ctx);
 
             // use the model to handle the request
             const response = await model.prepareTransfer(transferRequest, sourceFspId);
@@ -290,13 +266,7 @@ const getTransfersById = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = new Model({
-                ...ctx.state.conf,
-                cache: ctx.state.cache,
-                logger: ctx.state.logger,
-                wso2: ctx.state.wso2,
-                resourceVersions: ctx.resourceVersions,
-            });
+            const model = createInboundTransfersModel(ctx);
 
             // use the model to handle the request
             const response = await model.getTransfer(transferId, sourceFspId);
@@ -327,13 +297,7 @@ const postTransactionRequests = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = new Model({
-                ...ctx.state.conf,
-                cache: ctx.state.cache,
-                logger: ctx.state.logger,
-                wso2: ctx.state.wso2,
-                resourceVersions: ctx.resourceVersions,
-            });
+            const model = createInboundTransfersModel(ctx);
 
             // use the model to handle the request
             const response = await model.transactionRequest(transactionRequest, sourceFspId);
@@ -472,7 +436,7 @@ const putParticipantsByTypeAndIdError = async(ctx) => {
  * request.
  */
 const putPartiesByTypeAndId = async (ctx) => {
-    if(ctx.state.conf.apiType === ISO_API_TYPE) {
+    if (utils.isIsoApi(ctx.request.headers)) {
         // we need to transform the incoming request body from iso20022 to fspiop
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20222 put parties body to FSPIOP');
         const target = await TransformFacades.FSPIOPISO20022.parties.put({ body: ctx.request.body });
@@ -505,7 +469,7 @@ const putPartiesByTypeAndId = async (ctx) => {
  * Handles a PUT /quotes/{ID}. This is a response to a POST /quotes request
  */
 const putQuoteById = async (ctx) => {
-    if(ctx.state.conf.apiType === ISO_API_TYPE) {
+    if (utils.isIsoApi(ctx.request.headers)) {
         // we need to transform the incoming request body from iso20022 to fspiop
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20222 put quotes body to FSPIOP');
         const target = await TransformFacades.FSPIOPISO20022.quotes.put({ body: ctx.request.body });
@@ -581,13 +545,7 @@ const getQuoteById = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = new Model({
-                ...ctx.state.conf,
-                cache: ctx.state.cache,
-                logger: ctx.state.logger,
-                wso2: ctx.state.wso2,
-                resourceVersions: ctx.resourceVersions,
-            });
+            const model = createInboundTransfersModel(ctx, 'accept');
 
             // use the model to handle the request
             const response = await model.getQuoteRequest(quoteId, sourceFspId);
@@ -629,13 +587,7 @@ const putTransactionRequestsById = async (ctx) => {
         (async () => {
             try {
                 // use the transfers model to execute asynchronous stages with the switch
-                const model = new Model({
-                    ...ctx.state.conf,
-                    cache: ctx.state.cache,
-                    logger: ctx.state.logger,
-                    wso2: ctx.state.wso2,
-                    resourceVersions: ctx.resourceVersions,
-                });
+                const model = createInboundTransfersModel(ctx);
 
                 // use the model to handle the request
                 const response = await model.putTransactionRequest(putTransactionRequest, transactionRequestId, sourceFspId);
@@ -680,7 +632,7 @@ const putTransactionRequestsByIdError = async (ctx) => {
  * Handles a PUT /transfers/{ID}. This is a response to a POST|GET /transfers request
  */
 const putTransfersById = async (ctx) => {
-    if(ctx.state.conf.apiType === ISO_API_TYPE) {
+    if (utils.isIsoApi(ctx.request.headers)) {
         // we need to transform the incoming request body from iso20022 to fspiop
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20222 put transfers body to FSPIOP');
         const target = await TransformFacades.FSPIOPISO20022.transfers.put({ body: ctx.request.body });
@@ -723,13 +675,7 @@ const patchTransfersById = async (ctx) => {
     const idValue = ctx.state.path.params.ID;
 
     // use the transfers model to execute asynchronous stages with the switch
-    const model = new Model({
-        ...ctx.state.conf,
-        cache: ctx.state.cache,
-        logger: ctx.state.logger,
-        wso2: ctx.state.wso2,
-        resourceVersions: ctx.resourceVersions,
-    });
+    const model = createInboundTransfersModel(ctx);
 
     // sends notification to the payee fsp
     const response = await model.sendNotificationToPayee(req.data, idValue);
@@ -808,13 +754,7 @@ const getBulkQuotesById = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = new Model({
-                ...ctx.state.conf,
-                cache: ctx.state.cache,
-                logger: ctx.state.logger,
-                wso2: ctx.state.wso2,
-                resourceVersions: ctx.resourceVersions,
-            });
+            const model = createInboundTransfersModel(ctx);
 
             // use the model to handle the request
             const response = await model.getBulkQuote(bulkQuoteId, sourceFspId);
@@ -844,13 +784,7 @@ const postBulkQuotes = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = new Model({
-                ...ctx.state.conf,
-                cache: ctx.state.cache,
-                logger: ctx.state.logger,
-                wso2: ctx.state.wso2,
-                resourceVersions: ctx.resourceVersions,
-            });
+            const model = createInboundTransfersModel(ctx);
 
             // use the model to handle the request
             const response = await model.bulkQuoteRequest(bulkQuoteRequest, sourceFspId);
@@ -915,13 +849,7 @@ const getBulkTransfersById = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = new Model({
-                ...ctx.state.conf,
-                cache: ctx.state.cache,
-                logger: ctx.state.logger,
-                wso2: ctx.state.wso2,
-                resourceVersions: ctx.resourceVersions,
-            });
+            const model = createInboundTransfersModel(ctx);
 
             // use the model to handle the request
             const response = await model.getBulkTransfer(bulkTransferId, sourceFspId);
@@ -951,13 +879,7 @@ const postBulkTransfers = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = new Model({
-                ...ctx.state.conf,
-                cache: ctx.state.cache,
-                logger: ctx.state.logger,
-                wso2: ctx.state.wso2,
-                resourceVersions: ctx.resourceVersions,
-            });
+            const model = createInboundTransfersModel(ctx);
 
             // use the model to handle the request
             const response = await model.prepareBulkTransfer(bulkPrepareRequest, sourceFspId);
@@ -1022,7 +944,7 @@ const postFxQuotes = async (ctx) => {
     const { logger } = ctx.state;
     const logPrefix = 'Handling POST fxQuotes request';
 
-    const model = createInboundTransfersModel(ctx);
+    const model = createInboundTransfersModel(ctx, 'accept');
 
     model.postFxQuotes({ body, headers }, sourceFspId)
         .then(response => logger.push({ response }).log(`${logPrefix} is done`))
@@ -1079,19 +1001,12 @@ const patchFxTransfersById = async (ctx) => {
         headers: { ...ctx.request.headers },
         data: { ...ctx.request.body }
     };
-    
     const idValue = ctx.state.path.params.ID;
-    
-    const model = new Model({
-        ...ctx.state.conf,
-        cache: ctx.state.cache,
-        logger: ctx.state.logger,
-        wso2: ctx.state.wso2,
-        resourceVersions: ctx.resourceVersions,
-    });
-    
+
+    const model = createInboundTransfersModel(ctx);
+
     const response = await model.sendFxPatchNotificationToBackend(req.data, idValue);
-    
+
     // log the result
     ctx.state.logger.isDebugEnabled && ctx.state.logger.push({response}).
         debug('Inbound Transfers model handled PATCH /fxTransfers/{ID} request');

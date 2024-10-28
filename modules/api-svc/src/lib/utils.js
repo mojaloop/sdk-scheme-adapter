@@ -1,4 +1,5 @@
 const { WSO2Auth } = require('@mojaloop/sdk-standard-components');
+const { API_TYPES, ISO_20022_HEADER_PART } = require('../constants');
 
 const createAuthClient = (conf, logger) => {
     const { wso2, outbound } = conf;
@@ -15,6 +16,15 @@ const createAuthClient = (conf, logger) => {
     });
 };
 
+// think a better way of detecting API_TYPE of inbound request
+const isIsoApi = (headers = {}) => headers['content-type']?.includes(ISO_20022_HEADER_PART);
+
+const defineInboundApiType = (headers) => isIsoApi(headers)
+    ? API_TYPES.iso20022
+    : API_TYPES.fspiop;
+
 module.exports = {
     createAuthClient,
+    isIsoApi,
+    defineInboundApiType,
 };
