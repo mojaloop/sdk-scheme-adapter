@@ -8,5 +8,6 @@ reject: [
   ## TODO: The new version of npm-check-updates uses new Glob v9.x and it is introducing a dependency Package "path-scurry@1.6.1" which is licensed under "BlueOak-1.0.0" which is not permitted by the Mojaloop License Policy
   npm-check-updates,
   ## TODO: The new version of nx causes submodules to be broken.
-  "nx"
+  "nx",
+  "@mojaloop/sdk-standard-components" ## version 19.3.0 causes some unit-tests to fail.
 ]
