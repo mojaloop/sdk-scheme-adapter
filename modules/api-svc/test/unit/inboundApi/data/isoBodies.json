@@ -296,5 +296,152 @@
         }
       }
     }
+  },
+  "postFxQuotesRequest": {
+    "GrpHdr": {
+      "MsgId": "01JBBR5QFCNE449GET1WJNT95Q",
+      "CreDtTm": "2024-10-29T09:02:10.925Z",
+      "NbOfTxs": "1",
+      "SttlmInf": {
+        "SttlmMtd": "CLRG"
+      },
+      "PmtInstrXpryDtTm": "2024-10-29T09:07:10.917Z"
+    },
+    "CdtTrfTxInf": {
+      "PmtId": {
+        "TxId": "01JBBR5QF122E3A219VTE1J43A",
+        "InstrId": "01JBBR5QF43G7R0KC81HVPP1M0",
+        "EndToEndId": "01JBBR5QF43G7R0KC81HVPP1M1"
+      },
+      "Dbtr": {
+        "FinInstnId": {
+          "Othr": {
+            "Id": "pinkbank"
+          }
+        }
+      },
+      "UndrlygCstmrCdtTrf": {
+        "Dbtr": {
+          "Id": {
+            "OrgId": {
+              "Othr": {
+                "Id": "pinkbank"
+              }
+            }
+          }
+        },
+        "DbtrAgt": {
+          "FinInstnId": {
+            "Othr": {
+              "Id": "pinkbank"
+            }
+          }
+        },
+        "Cdtr": {
+          "Id": {
+            "OrgId": {
+              "Othr": {
+                "Id": "redbank"
+              }
+            }
+          }
+        },
+        "CdtrAgt": {
+          "FinInstnId": {
+            "Othr": {
+              "Id": "redbank"
+            }
+          }
+        },
+        "InstdAmt": {
+          "Ccy": "USD",
+          "ActiveOrHistoricCurrencyAndAmount": 300
+        }
+      },
+      "Cdtr": {
+        "FinInstnId": {
+          "Othr": {
+            "Id": "redbank"
+          }
+        }
+      },
+      "IntrBkSttlmAmt": {
+        "Ccy": "ZMW",
+        "ActiveCurrencyAndAmount": 0
+      },
+      "ChrgBr": "CRED"
+    }
+  },
+  "postFxTransfersRequest": {
+    "GrpHdr": {
+      "MsgId": 20191113001,
+      "CreDtTm": "2019-11-13T10:00:00",
+      "NbOfTxs": 1,
+      "CtrlSum": 1000,
+      "InitgPty": {
+        "Nm": "Initiating Party Name",
+        "Id": {
+          "OrgId": {
+            "Othr": {
+              "Id": 123456789,
+              "SchmeNm": {
+                "Cd": "BBA"
+              }
+            }
+          }
+        }
+      },
+      "FwdgAgt": {
+        "FinInstnId": {
+          "BICFI": "BBBBBBBB"
+        }
+      },
+      "DbtrAgt": {
+        "FinInstnId": {
+          "BICFI": "AAAAAAAA"
+        }
+      },
+      "CdtrAgt": {
+        "FinInstnId": {
+          "BICFI": "CCCCCCCC"
+        }
+      }
+    },
+    "CdtTrfTxInf": {
+      "PmtId": {
+        "InstrId": 20191113001,
+        "EndToEndId": 20191113001
+      },
+      "PmtTpInf": {
+        "InstrPrty": "NORM",
+        "CtgyPurp": {
+          "Cd": "SUPP"
+        }
+      },
+      "InstrForCdtrAgt": {
+        "Cd": "/ACC/123456789"
+      },
+      "IntrBkSttlmAmt": {
+        "Amt": 1000,
+        "Ccy": "EUR"
+      },
+      "ChrgBr": "SHAR",
+      "CdtrAgt": {
+        "FinInstnId": {
+          "BICFI": "CCCCCCCC"
+        }
+      },
+      "Cdtr": {
+        "Nm": "Creditor Name"
+      },
+      "CdtrAcct": {
+        "Id": {
+          "IBAN": "BE71096123456769"
+        }
+      },
+      "RmtInf": {
+        "Ustrd": "Payment for invoice 12345"
+      }
+    }
   }
 }

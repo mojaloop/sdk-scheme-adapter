@@ -33,6 +33,8 @@ const isoBodies = require('./data/isoBodies.json');
 const mockTransactionRequestData = require('./data/mockTransactionRequest');
 const { Logger } = require('@mojaloop/sdk-standard-components');
 
+const logger = new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' } });
+
 const createIsoHeader = (resource, version = '2.0') =>
     `application/vnd.interoperability.${ISO_20022_HEADER_PART}.${resource}+json;version=${version}`;
 
@@ -290,6 +292,77 @@ describe('Inbound API handlers transforming incoming ISO20022 message bodies', (
                     transferId: mockContext.state.path.params.ID
                 }
             });
+        });
+    });
+
+    describe('POST /fxQuotes Tests', () => {
+        let mockContext;
+
+        beforeEach(() => {
+            mockContext = {
+                request: {
+                    body: isoBodies.postFxQuotesRequest,
+                    headers: {
+                        'fspiop-source': 'foo',
+                        'content-type': createIsoHeader('fxQuotes'),
+                        accept: createIsoHeader('fxQuotes')
+                    }
+                },
+                response: {},
+                state: {
+                    logger,
+                    cache: {
+                        publish: jest.fn(async () => true)
+                    }
+                }
+            };
+        });
+
+        test('should call "postFxQuotes" with the expected arguments.', async () => {
+            const fxQuotesRequestSpy = jest.fn(async () => {});
+            // jest.spyOn returns undefined, and thus .then() is not a function
+            Model.prototype.postFxQuotes = fxQuotesRequestSpy;
+
+            await expect(handlers['/fxQuotes'].post(mockContext)).resolves.toBe(undefined);
+
+            expect(fxQuotesRequestSpy).toHaveBeenCalledTimes(1);
+            expect(fxQuotesRequestSpy.mock.calls[0][0]).not.toBeUndefined();
+            expect(fxQuotesRequestSpy.mock.calls[0][0]).not.toEqual(isoBodies.postFxQuotesRequest);
+        });
+    });
+
+    describe('POST /fxTransfers Tests', () => {
+        let mockContext;
+
+        beforeEach(() => {
+            mockContext = {
+                request: {
+                    body: isoBodies.postFxTransfersRequest,
+                    headers: {
+                        'fspiop-source': 'foo',
+                        'content-type': createIsoHeader('fxTransfers')
+                    }
+                },
+                response: {},
+                state: {
+                    logger,
+                    cache: {
+                        publish: jest.fn(async () => true)
+                    }
+                }
+            };
+        });
+
+        test('should call "postFxTransfers" with the expected arguments.', async () => {
+            const fxTransfersRequestSpy = jest.fn(async () => {});
+            // jest.spyOn returns undefined, and thus .then() is not a function
+            Model.prototype.postFxTransfers = fxTransfersRequestSpy;
+
+            await expect(handlers['/fxTransfers'].post(mockContext)).resolves.toBe(undefined);
+
+            expect(fxTransfersRequestSpy).toHaveBeenCalledTimes(1);
+            expect(fxTransfersRequestSpy.mock.calls[0][0]).not.toBeUndefined();
+            expect(fxTransfersRequestSpy.mock.calls[0][0]).not.toEqual(isoBodies.postFxTransfersRequest);
         });
     });
 });

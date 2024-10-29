@@ -176,7 +176,7 @@ const postQuotes = async (ctx) => {
 
     if (utils.isIsoApi(ctx.request.headers)) {
         // we need to transform the incoming request body from iso20022 to fspiop
-        ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20222 post quotes body to FSPIOP');
+        ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 post quotes body to FSPIOP');
         // store the original request body in the context for later use
         quoteRequest.isoPostQuote=ctx.request.body;
         const target = await TransformFacades.FSPIOPISO20022.quotes.post({ body: ctx.request.body });
@@ -225,7 +225,7 @@ const postQuotes = async (ctx) => {
 const postTransfers = async (ctx) => {
     if (utils.isIsoApi(ctx.request.headers)) {
         // we need to transform the incoming request body from iso20022 to fspiop
-        ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20222 post transfers body to FSPIOP');
+        ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 post transfers body to FSPIOP');
         const target = await TransformFacades.FSPIOPISO20022.transfers.post({ body: ctx.request.body });
         ctx.request.body = target.body;
     }
@@ -441,7 +441,7 @@ const putParticipantsByTypeAndIdError = async(ctx) => {
 const putPartiesByTypeAndId = async (ctx) => {
     if (utils.isIsoApi(ctx.request.headers)) {
         // we need to transform the incoming request body from iso20022 to fspiop
-        ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20222 put parties body to FSPIOP');
+        ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 put parties body to FSPIOP');
         const target = await TransformFacades.FSPIOPISO20022.parties.put({ body: ctx.request.body });
         ctx.request.body = target.body;
     }
@@ -474,7 +474,7 @@ const putPartiesByTypeAndId = async (ctx) => {
 const putQuoteById = async (ctx) => {
     if (utils.isIsoApi(ctx.request.headers)) {
         // we need to transform the incoming request body from iso20022 to fspiop
-        ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20222 put quotes body to FSPIOP');
+        ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 put quotes body to FSPIOP');
         const target = await TransformFacades.FSPIOPISO20022.quotes.put({ body: ctx.request.body });
         ctx.request.body = target.body;
     }
@@ -637,7 +637,7 @@ const putTransactionRequestsByIdError = async (ctx) => {
 const putTransfersById = async (ctx) => {
     if (utils.isIsoApi(ctx.request.headers)) {
         // we need to transform the incoming request body from iso20022 to fspiop
-        ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20222 put transfers body to FSPIOP');
+        ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 put transfers body to FSPIOP');
         const target = await TransformFacades.FSPIOPISO20022.transfers.put({ body: ctx.request.body });
         ctx.request.body = target.body;
     }
@@ -943,6 +943,12 @@ const healthCheck = async(ctx) => {
 };
 
 const postFxQuotes = async (ctx) => {
+    if (utils.isIsoApi(ctx.request.headers)) {
+        ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 post fxQuotes body to FSPIOP');
+        const target = await TransformFacades.FSPIOPISO20022.fxQuotes.post({ body: ctx.request.body });
+        ctx.request.body = target.body;
+    }
+
     const { body, headers, sourceFspId } = extractBodyHeadersSourceFspId(ctx);
     const { logger } = ctx.state;
     const logPrefix = 'Handling POST fxQuotes request';
@@ -987,6 +993,12 @@ const createPutFxQuotesHandler = (success) => async (ctx) => {
 };
 
 const postFxTransfers = async (ctx) => {
+    if (utils.isIsoApi(ctx.request.headers)) {
+        ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 post fxTransfers body to FSPIOP');
+        const target = await TransformFacades.FSPIOPISO20022.fxTransfers.post({ body: ctx.request.body });
+        ctx.request.body = target.body;
+    }
+
     const { body, headers, sourceFspId } = extractBodyHeadersSourceFspId(ctx);
     const { logger } = ctx.state;
     const logPrefix = 'Handling POST fxTransfers request';
