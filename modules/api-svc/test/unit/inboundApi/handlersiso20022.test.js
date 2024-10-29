@@ -21,32 +21,20 @@ process.env.SUPPORTED_CURRENCIES='USD';
 
 jest.mock('~/lib/model');
 
+const { Logger } = require('@mojaloop/sdk-standard-components');
 const handlers = require('~/InboundServer/handlers');
 const Model = require('~/lib/model').InboundTransfersModel;
 const QuotesModel = require('~/lib/model').QuotesModel;
 const PartiesModel = require('~/lib/model').PartiesModel;
 const TransfersModel = require('~/lib/model').TransfersModel;
-const { ISO_20022_HEADER_PART } = require('../../../src/constants');
 
-const mockArguments = require('./data/mockArguments');
+const { API_TYPES } = require('../../../src/constants');
+const { createIsoHeader } = require('../../utils');
 const isoBodies = require('./data/isoBodies.json');
-const mockTransactionRequestData = require('./data/mockTransactionRequest');
-const { Logger } = require('@mojaloop/sdk-standard-components');
 
 const logger = new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' } });
 
-const createIsoHeader = (resource, version = '2.0') =>
-    `application/vnd.interoperability.${ISO_20022_HEADER_PART}.${resource}+json;version=${version}`;
-
 describe('Inbound API handlers transforming incoming ISO20022 message bodies', () => {
-    let mockArgs;
-    let mockTransactionRequest;
-
-    beforeEach(() => {
-        mockArgs = JSON.parse(JSON.stringify(mockArguments));
-        mockTransactionRequest = JSON.parse(JSON.stringify(mockTransactionRequestData));
-    });
-
     describe('POST /quotes', () => {
         let mockContext;
 
@@ -55,16 +43,16 @@ describe('Inbound API handlers transforming incoming ISO20022 message bodies', (
                 request: {
                     body: isoBodies.postQuotesRequest,
                     headers: {
-                        'content-type': createIsoHeader('quotes'),
-                        'fspiop-source': 'foo'
+                        'fspiop-source': 'foo',
+                        'content-type': createIsoHeader('quotes')
                     }
                 },
                 response: {},
                 state: {
                     conf: {
-                        apiType: 'iso20222',
+                        isIsoApi: true,
                     },
-                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
+                    logger,
                 }
             };
         });
@@ -98,7 +86,7 @@ describe('Inbound API handlers transforming incoming ISO20022 message bodies', (
                 response: {},
                 state: {
                     conf: {
-                        apiType: 'iso20022',
+                        isIsoApi: true,
                     },
                     path: {
                         params: {
@@ -146,7 +134,7 @@ describe('Inbound API handlers transforming incoming ISO20022 message bodies', (
                 response: {},
                 state: {
                     conf: {
-                        apiType: 'iso20022',
+                        isIsoApi: true,
                     },
                     path: {
                         params: {
@@ -222,7 +210,7 @@ describe('Inbound API handlers transforming incoming ISO20022 message bodies', (
                 response: {},
                 state: {
                     conf: {
-                        apiType: 'iso20022',
+                        isIsoApi: true,
                     },
                     logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
                     cache: {
@@ -258,12 +246,15 @@ describe('Inbound API handlers transforming incoming ISO20022 message bodies', (
                 },
                 response: {},
                 state: {
+                    conf: {
+                        isIsoApi: true,
+                    },
                     path: {
                         params: {
                             'ID': '1234567890'
                         }
                     },
-                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
+                    logger,
                     cache: {
                         publish: jest.fn(() => Promise.resolve(true))
                     }
@@ -311,6 +302,9 @@ describe('Inbound API handlers transforming incoming ISO20022 message bodies', (
                 response: {},
                 state: {
                     logger,
+                    conf: {
+                        isIsoApi: true,
+                    },
                     cache: {
                         publish: jest.fn(async () => true)
                     }
@@ -346,6 +340,9 @@ describe('Inbound API handlers transforming incoming ISO20022 message bodies', (
                 response: {},
                 state: {
                     logger,
+                    conf: {
+                        isIsoApi: true,
+                    },
                     cache: {
                         publish: jest.fn(async () => true)
                     }

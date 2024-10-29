@@ -188,6 +188,7 @@ const createHeaderValidator = (conf, logger) => async (
     resources = defaultProtocolResources,
     supportedProtocolVersions = defaultProtocolVersions
 ) => {
+    const apiType = conf.apiType;
     const request = ctx.request;
 
     // First, extract the resource type from the path
@@ -213,7 +214,7 @@ const createHeaderValidator = (conf, logger) => async (
             logger.error('accept header is missing');
             return;
         }
-        const accept = parseAcceptHeader(resource, request.headers.accept);
+        const accept = parseAcceptHeader(resource, request.headers.accept, apiType);
         if (!accept.valid) {
             ctx.response.status = Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX.httpStatusCode;
             ctx.response.body = new Errors.MojaloopFSPIOPError(
@@ -253,7 +254,7 @@ const createHeaderValidator = (conf, logger) => async (
         return;
     }
 
-    const contentType = parseContentTypeHeader(resource, request.headers['content-type']);
+    const contentType = parseContentTypeHeader(resource, request.headers['content-type'], apiType);
     if (!contentType.valid) {
         ctx.response.status = Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX.httpStatusCode;
         ctx.response.body = new Errors.MojaloopFSPIOPError(

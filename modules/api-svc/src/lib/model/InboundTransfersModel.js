@@ -15,7 +15,6 @@ const { MojaloopRequests, Errors } = require('@mojaloop/sdk-standard-components'
 const FSPIOPTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.TransferState;
 const FSPIOPBulkTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.BulkTransferState;
 
-const { API_TYPES } = require('../../constants');
 const ilpFactoryByHeader = require('../ilpFactoryByHeader');
 const dto = require('../dto');
 const shared = require('./lib/shared');
@@ -26,7 +25,7 @@ const { SDKStateEnum, CacheKeyPrefixes } = require('./common');
  *  Models the operations required for performing inbound transfers
  */
 class InboundTransfersModel {
-    constructor(config, headerWithApiVersion = '', apiType = API_TYPES.fspiop) {
+    constructor(config, headerWithApiVersion = '') {
         this._cache = config.cache;
         this._logger = config.logger;
         this._dfspId = config.dfspId;
@@ -58,7 +57,7 @@ class InboundTransfersModel {
             jwsSigningKey: config.jwsSigningKey,
             wso2: config.wso2,
             resourceVersions: config.resourceVersions,
-            apiType,
+            apiType: config.apiType,
         });
 
         this._backendRequests = new BackendRequests({
@@ -73,6 +72,7 @@ class InboundTransfersModel {
             secret: config.ilpSecret,
             logger: config.logger,
         });
+        // todo: rethink how to generate ILP (based on config)
     }
 
     updateStateWithError(err) {

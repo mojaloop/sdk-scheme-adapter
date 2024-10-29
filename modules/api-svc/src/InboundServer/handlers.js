@@ -21,7 +21,6 @@ const {
     TransfersModel,
 } = require('../lib/model');
 const { CacheKeyPrefixes } = require('../lib/model/common');
-const utils = require('../lib/utils');
 
 const { ReturnCodes } = Enum.Http;
 
@@ -45,7 +44,8 @@ const createInboundTransfersModel = (ctx, headerNameForIlp = 'content-type') => 
     logger: ctx.state.logger,
     wso2: ctx.state.wso2,
     resourceVersions: ctx.resourceVersions,
-}, ctx.request.headers[headerNameForIlp], utils.defineInboundApiType(ctx.request.headers));
+}, ctx.request.headers[headerNameForIlp]);
+// todo: think, if we need to define ILP version based on header (seems, no. Use env var)
 
 const prepareResponse = ctx => {
     ctx.response.status = ReturnCodes.ACCEPTED.CODE;
@@ -174,7 +174,7 @@ const postPartiesByTypeAndId = (ctx) => {
 const postQuotes = async (ctx) => {
     let quoteRequest = {};
 
-    if (utils.isIsoApi(ctx.request.headers)) {
+    if (ctx.state.conf.isIsoApi) {
         // we need to transform the incoming request body from iso20022 to fspiop
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 post quotes body to FSPIOP');
         // store the original request body in the context for later use
@@ -223,7 +223,7 @@ const postQuotes = async (ctx) => {
  * Handles a POST /transfers request
  */
 const postTransfers = async (ctx) => {
-    if (utils.isIsoApi(ctx.request.headers)) {
+    if (ctx.state.conf.isIsoApi) {
         // we need to transform the incoming request body from iso20022 to fspiop
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 post transfers body to FSPIOP');
         const target = await TransformFacades.FSPIOPISO20022.transfers.post({ body: ctx.request.body });
@@ -439,7 +439,7 @@ const putParticipantsByTypeAndIdError = async(ctx) => {
  * request.
  */
 const putPartiesByTypeAndId = async (ctx) => {
-    if (utils.isIsoApi(ctx.request.headers)) {
+    if (ctx.state.conf.isIsoApi) {
         // we need to transform the incoming request body from iso20022 to fspiop
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 put parties body to FSPIOP');
         const target = await TransformFacades.FSPIOPISO20022.parties.put({ body: ctx.request.body });
@@ -472,7 +472,7 @@ const putPartiesByTypeAndId = async (ctx) => {
  * Handles a PUT /quotes/{ID}. This is a response to a POST /quotes request
  */
 const putQuoteById = async (ctx) => {
-    if (utils.isIsoApi(ctx.request.headers)) {
+    if (ctx.state.conf.isIsoApi) {
         // we need to transform the incoming request body from iso20022 to fspiop
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 put quotes body to FSPIOP');
         const target = await TransformFacades.FSPIOPISO20022.quotes.put({ body: ctx.request.body });
@@ -510,7 +510,7 @@ const putQuoteById = async (ctx) => {
  * Handles a PUT /quotes/{ID}/error request. This is an error response to a POST /quotes request
  */
 const putQuotesByIdError = async (ctx) => {
-    if (utils.isIsoApi(ctx.request.headers)) {
+    if (ctx.state.conf.isIsoApi) {
         // we need to transform the incoming request body from iso20022 to fspiop
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 putError quotes body to FSPIOP');
         const target = await TransformFacades.FSPIOPISO20022.quotes.putError({ body: ctx.request.body });
@@ -642,7 +642,7 @@ const putTransactionRequestsByIdError = async (ctx) => {
  * Handles a PUT /transfers/{ID}. This is a response to a POST|GET /transfers request
  */
 const putTransfersById = async (ctx) => {
-    if (utils.isIsoApi(ctx.request.headers)) {
+    if (ctx.state.conf.isIsoApi) {
         // we need to transform the incoming request body from iso20022 to fspiop
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 put transfers body to FSPIOP');
         const target = await TransformFacades.FSPIOPISO20022.transfers.put({ body: ctx.request.body });
@@ -699,7 +699,7 @@ const patchTransfersById = async (ctx) => {
  * Handles a PUT /parties/{Type}/{ID}/error request. This is an error response to a GET /parties/{Type}/{ID} request
  */
 const putPartiesByTypeAndIdError = async(ctx) => {
-    if (utils.isIsoApi(ctx.request.headers)) {
+    if (ctx.state.conf.isIsoApi) {
         // we need to transform the incoming request body from iso20022 to fspiop
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 putError parties body to FSPIOP');
         const target = await TransformFacades.FSPIOPISO20022.parties.putError({ body: ctx.request.body });
@@ -735,7 +735,7 @@ const putPartiesByTypeAndIdError = async(ctx) => {
  * Handles a PUT /transfers/{ID}/error. This is an error response to a POST /transfers request
  */
 const putTransfersByIdError = async (ctx) => {
-    if (utils.isIsoApi(ctx.request.headers)) {
+    if (ctx.state.conf.isIsoApi) {
         // we need to transform the incoming request body from iso20022 to fspiop
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 putError transfers body to FSPIOP');
         const target = await TransformFacades.FSPIOPISO20022.transfers.putError({ body: ctx.request.body });
@@ -964,7 +964,7 @@ const healthCheck = async(ctx) => {
 };
 
 const postFxQuotes = async (ctx) => {
-    if (utils.isIsoApi(ctx.request.headers)) {
+    if (ctx.state.conf.isIsoApi) {
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 post fxQuotes body to FSPIOP');
         const target = await TransformFacades.FSPIOPISO20022.fxQuotes.post({ body: ctx.request.body });
         ctx.request.body = target.body;
@@ -989,7 +989,7 @@ const postFxQuotes = async (ctx) => {
  * @param success {boolean} - false is for handling error callback response
  */
 const createPutFxQuotesHandler = (success) => async (ctx) => {
-    if (utils.isIsoApi(ctx.request.headers)) {
+    if (ctx.state.conf.isIsoApi) {
         const method = success ? 'put' : 'putError';
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug(`Transforming incoming ISO20022 ${method} fxQuotes body to FSPIOP`);
         const target = await TransformFacades.FSPIOPISO20022.fxQuotes[method]({ body: ctx.request.body });
@@ -1021,7 +1021,7 @@ const createPutFxQuotesHandler = (success) => async (ctx) => {
 };
 
 const postFxTransfers = async (ctx) => {
-    if (utils.isIsoApi(ctx.request.headers)) {
+    if (ctx.state.conf.isIsoApi) {
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 post fxTransfers body to FSPIOP');
         const target = await TransformFacades.FSPIOPISO20022.fxTransfers.post({ body: ctx.request.body });
         ctx.request.body = target.body;
@@ -1061,7 +1061,7 @@ const patchFxTransfersById = async (ctx) => {
  * @param success {boolean} - false is for handling error callback response
  */
 const createPutFxTransfersHandler = (success) => async (ctx) => {
-    if (utils.isIsoApi(ctx.request.headers)) {
+    if (ctx.state.conf.isIsoApi) {
         const method = success ? 'put' : 'putError';
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug(`Transforming incoming ISO20022 ${method} fxTransfers body to FSPIOP`);
         const target = await TransformFacades.FSPIOPISO20022.fxTransfers[method]({ body: ctx.request.body });

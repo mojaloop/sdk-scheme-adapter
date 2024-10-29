@@ -15,19 +15,24 @@ process.env.BACKEND_ENDPOINT = '172.17.0.5:4000';
 process.env.CACHE_URL = 'redis://172.17.0.2:6379';
 process.env.MGMT_API_WS_URL = '0.0.0.0';
 process.env.SUPPORTED_CURRENCIES='USD';
+// process.env.API_TYPE='iso20022';
 
 const supertest = require('supertest');
 
+const { ISO_20022_HEADER_PART} = require('../../src/constants');
+// const utils = require('../utils');
 const defaultConfig = require('./data/defaultConfig');
 const putPartiesBody = require('./data/putPartiesBody');
 const postQuotesBody = require('./data/postQuotesBody');
 const putParticipantsBody = require('./data/putParticipantsBody');
 const commonHttpHeaders = require('./data/commonHttpHeaders');
+const isoBodies = require('./inboundApi/data/isoBodies.json');
 
-jest.mock('~/lib/cache');
 jest.mock('@mojaloop/sdk-standard-components');
+jest.mock('~/lib/cache');
 jest.mock('~/lib/model/lib/requests', () => require('./lib/model/mockedLibRequests'));
 
+const InboundServer = require('~/InboundServer');
 const Cache = require('~/lib/cache');
 const { Jws, Logger } = require('@mojaloop/sdk-standard-components');
 const path = require('path');
@@ -36,7 +41,7 @@ const os = require('os');
 const http = require('http');
 const https = require('https');
 
-const InboundServer = require('~/InboundServer');
+const logger = new Logger.Logger();
 
 describe('Inbound Server', () => {
     describe('PUT /parties', () => {
@@ -50,7 +55,6 @@ describe('Inbound Server', () => {
         async function testPartiesJwsValidation(validateInboundJws, validateInboundPutPartiesJws, expectedValidationCalls) {
             serverConfig.validateInboundJws = validateInboundJws;
             serverConfig.validateInboundPutPartiesJws = validateInboundPutPartiesJws;
-            const logger = new Logger.Logger({ stringify: () => '' });
             const cache = new Cache({
                 cacheUrl: serverConfig.cacheUrl,
                 logger: logger.push({ component: 'cache' }),
@@ -70,17 +74,19 @@ describe('Inbound Server', () => {
         }
 
         async function testPartiesHeaderValidation(contentType, expectedStatusCode, expectedBody = null) {
-            const logger = new Logger.Logger({ stringify: () => '' });
             const cache = new Cache({
                 cacheUrl: serverConfig.cacheUrl,
                 logger: logger.push({ component: 'cache' }),
                 unsubscribeTimeoutMs: serverConfig.unsubscribeTimeoutMs,
             });
+            const body = contentType.includes(ISO_20022_HEADER_PART)
+                ? isoBodies.putPartiesRequest
+                : putPartiesBody;
             const svr = new InboundServer(serverConfig, logger, cache);
             await svr.start();
             const result = await supertest(svr._server)
                 .put('/parties/MSISDN/123456789')
-                .send(putPartiesBody)
+                .send(body)
                 .set(commonHttpHeaders)
                 .set('content-type', contentType)
                 .set('fspiop-http-method', 'PUT')
@@ -109,6 +115,12 @@ describe('Inbound Server', () => {
         test('processes parties request with valid content-type headers successfully', async () => {
             await testPartiesHeaderValidation('application/vnd.interoperability.parties+json;version=1.1', 200);
         });
+
+        // todo: think, how to run this test for ISO mode (in a separate file?)
+        // test('should process ISO parties request with valid content-type headers ', async () => {
+        //     const header = utils.createIsoHeader('parties');
+        //     await testPartiesHeaderValidation(header, 200);
+        // });
 
         test('returns error on invalid parties content-type headers', async () => {
             await testPartiesHeaderValidation(
@@ -154,7 +166,6 @@ describe('Inbound Server', () => {
         async function testQuotesJwsValidation(validateInboundJws, validateInboundPutPartiesJws, expectedValidationCalls) {
             serverConfig.validateInboundJws = validateInboundJws;
             serverConfig.validateInboundPutPartiesJws = validateInboundPutPartiesJws;
-            const logger = new Logger.Logger({ stringify: () => '' });
             const cache = new Cache({
                 cacheUrl: serverConfig.cacheUrl,
                 logger: logger.push({ component: 'cache' }),
@@ -175,7 +186,6 @@ describe('Inbound Server', () => {
         }
 
         async function testQuotesHeaderValidation(contentType, expectedStatusCode, expectedBody = null) {
-            const logger = new Logger.Logger({ stringify: () => '' });
             const cache = new Cache({
                 cacheUrl: serverConfig.cacheUrl,
                 logger: logger.push({ component: 'cache' }),
@@ -253,7 +263,6 @@ describe('Inbound Server', () => {
         async function testParticipantsJwsValidation(validateInboundJws, validateInboundPutPartiesJws, expectedValidationCalls) {
             serverConfig.validateInboundJws = validateInboundJws;
             serverConfig.validateInboundPutPartiesJws = validateInboundPutPartiesJws;
-            const logger = new Logger.Logger({ stringify: () => '' });
             const cache = new Cache({
                 cacheUrl: serverConfig.cacheUrl,
                 logger: logger.push({ component: 'cache' }),
@@ -274,7 +283,6 @@ describe('Inbound Server', () => {
         }
 
         async function testParticipantsHeaderValidation(contentType, expectedStatusCode, expectedBody = null) {
-            const logger = new Logger.Logger({ stringify: () => '' });
             const cache = new Cache({
                 cacheUrl: serverConfig.cacheUrl,
                 logger: logger.push({ component: 'cache' }),
@@ -365,7 +373,6 @@ describe('Inbound Server', () => {
 
         async function testTlsServer(enableTls) {
             defConfig.inbound.tls.mutualTLS.enabled = enableTls;
-            const logger = new Logger.Logger({ stringify: () => '' });
             const cache = new Cache({
                 cacheUrl: defConfig.cacheUrl,
                 logger: logger.push({ component: 'cache' }),
@@ -402,7 +409,6 @@ describe('Inbound Server', () => {
             const mockFilePath = path.join(keysDir, 'mojaloop-sdk.pem');
             fs.writeFileSync(mockFilePath, 'foo-key');
             serverConfig.jwsVerificationKeysDirectory = keysDir;
-            const logger = new Logger.Logger({ stringify: () => '' });
             const cache = new Cache({
                 cacheUrl: serverConfig.cacheUrl,
                 logger: logger.push({ component: 'cache' }),

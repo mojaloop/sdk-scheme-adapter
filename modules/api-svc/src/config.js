@@ -11,8 +11,9 @@
 
 const fs = require('fs');
 require('dotenv').config();
-const { from } = require('env-var');
 const yaml = require('js-yaml');
+const { from } = require('env-var');
+const { API_TYPES } = require('./constants');
 
 function getFileContent (path) {
     if (!fs.existsSync(path)) {
@@ -55,6 +56,13 @@ const env = from(process.env, {
     asYamlConfig: (path) => yaml.load(getFileContent(path)),
     asResourceVersions: (resourceString) => parseResourceVersions(resourceString),
 });
+
+// ISO-20022 config options
+// apiType can be one of:
+//   - fspiop
+//   - iso20022
+const apiType = env.get('API_TYPE').default(API_TYPES.fspiop).asString();
+const isIsoApi = apiType === API_TYPES.iso20022;
 
 module.exports = {
     __parseResourceVersion: parseResourceVersions,
@@ -221,13 +229,11 @@ module.exports = {
     backendApiServerMaxRequestBytes: env.get('BACKEND_API_SERVER_MAX_REQUEST_BYTES').default('209715200').asIntPositive(), // Default is 200mb,
     supportedCurrencies: env.get('SUPPORTED_CURRENCIES').default('').asArray(),
 
-    // ISO-20022 config options (only for outbound server)
-    // apiType can be one of:
-    //   - fspiop
-    //   - iso20022
-    apiType: env.get('API_TYPE').default('fspiop').asString(),
+    apiType,
+    isIsoApi,
+    inboundOpenApiFilename: isIsoApi ? 'api_iso20022.yaml' : 'api.yaml',
 
-    // ILP version options (only for outbound server)
+    // ILP version options
     // ilpVersion can be one of:
     //    - 1
     //    - 4
