@@ -2447,9 +2447,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/ml-schema-transformer-lib@npm:^2.3.0":
-  version: 2.3.0
-  resolution: "@mojaloop/ml-schema-transformer-lib@npm:2.3.0"
+"@mojaloop/ml-schema-transformer-lib@npm:^2.3.1":
+  version: 2.3.1
+  resolution: "@mojaloop/ml-schema-transformer-lib@npm:2.3.1"
   dependencies:
     "@mojaloop/central-services-error-handling": ^13.0.2
     "@mojaloop/central-services-logger": ^11.5.1
@@ -2460,7 +2460,7 @@ __metadata:
   dependenciesMeta:
     "@rollup/rollup-linux-x64-musl":
       optional: true
-  checksum: 7378c665d05bf47e1dd4a63db1f9c7bfb3a2cf8a98b27feffea1a2bd46f5a567f23c007503c03bed7724285308a3d159386ed6fe3d92f3b32b322cb63b6923c9
+  checksum: ff27ef9766d9f26b3fa828a8b529b09b17c08c414bb090db87aa4e1d7f0bc24dc9a1b01cf8c4148d731add16fef643893bb22461c647f8c4c25b56f355cb58c7
   languageName: node
   linkType: hard
 
@@ -2513,9 +2513,9 @@ __metadata:
     "@mojaloop/central-services-metrics": ^12.0.8
     "@mojaloop/central-services-shared": 18.11.0
     "@mojaloop/event-sdk": ^14.1.1
-    "@mojaloop/ml-schema-transformer-lib": ^2.3.0
+    "@mojaloop/ml-schema-transformer-lib": ^2.3.1
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
-    "@mojaloop/sdk-standard-components": ^19.3.3
+    "@mojaloop/sdk-standard-components": ^19.3.4
     "@redocly/openapi-cli": ^1.0.0-beta.94
     "@types/jest": ^29.5.14
     ajv: 8.17.1
@@ -2692,18 +2692,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mojaloop/sdk-standard-components@npm:^19.3.3":
-  version: 19.3.3
-  resolution: "@mojaloop/sdk-standard-components@npm:19.3.3"
+"@mojaloop/sdk-standard-components@npm:^19.3.4":
+  version: 19.3.4
+  resolution: "@mojaloop/sdk-standard-components@npm:19.3.4"
   dependencies:
-    "@mojaloop/ml-schema-transformer-lib": ^2.3.0
+    "@mojaloop/ml-schema-transformer-lib": ^2.3.1
     base64url: 3.0.1
     fast-safe-stringify: ^2.1.1
     ilp-packet: 3.1.3
     ilp-packet-v1: 2.2.0
     jsonwebtoken: 9.0.2
     jws: 4.0.0
-  checksum: 9711acda844c6590c3fce83b5d89f399c576cdeb1dbf7a98f93973ee52ca367393b53b0bbd5e09689e8b0dcd174a564f474a79f9e5b3bb557772d356b8e5a511
+  checksum: 10b6a333f5abd146d1c61cef16be0ed340a3135184a41f60a8059603529c1e184fdb0cd58c25cdb8ad679a8a1903b4134e083df30f93dc2cabeb996c1bc23ce1
   languageName: node
   linkType: hard
 
