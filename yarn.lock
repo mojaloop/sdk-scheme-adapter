@@ -2464,6 +2464,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mojaloop/ml-schema-transformer-lib@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "@mojaloop/ml-schema-transformer-lib@npm:2.1.1"
+  dependencies:
+    "@mojaloop/central-services-error-handling": ^13.0.2
+    "@mojaloop/central-services-logger": ^11.5.1
+    "@mojaloop/central-services-shared": ^18.11.0
+    "@rollup/rollup-linux-x64-musl": 4.24.3
+    ilp-packet: 2.2.0
+    map-transform-cjs: ^0.2.0
+  dependenciesMeta:
+    "@rollup/rollup-linux-x64-musl":
+      optional: true
+  checksum: a8d310adff3f64150c1285866912181668546bf8b280fd470e47b4f76bc0cd467661ffa398a9805f8601e21657762b191f434983926112d78f539fc32dc90a42
+  languageName: node
+  linkType: hard
+
 "@mojaloop/platform-shared-lib-messaging-types-lib@npm:^0.7.1":
   version: 0.7.1
   resolution: "@mojaloop/platform-shared-lib-messaging-types-lib@npm:0.7.1"
@@ -2513,9 +2530,9 @@ __metadata:
     "@mojaloop/central-services-metrics": ^12.0.8
     "@mojaloop/central-services-shared": 18.11.0
     "@mojaloop/event-sdk": ^14.1.1
-    "@mojaloop/ml-schema-transformer-lib": ^2.1.0
+    "@mojaloop/ml-schema-transformer-lib": ^2.1.1
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
-    "@mojaloop/sdk-standard-components": 19.3.1-snapshot.0
+    "@mojaloop/sdk-standard-components": 19.3.1
     "@redocly/openapi-cli": ^1.0.0-beta.94
     "@types/jest": ^29.5.14
     ajv: 8.17.1
@@ -2692,9 +2709,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mojaloop/sdk-standard-components@npm:19.3.1-snapshot.0":
-  version: 19.3.1-snapshot.0
-  resolution: "@mojaloop/sdk-standard-components@npm:19.3.1-snapshot.0"
+"@mojaloop/sdk-standard-components@npm:19.3.1":
+  version: 19.3.1
+  resolution: "@mojaloop/sdk-standard-components@npm:19.3.1"
   dependencies:
     "@mojaloop/ml-schema-transformer-lib": ^2.1.0
     base64url: 3.0.1
@@ -2703,7 +2720,7 @@ __metadata:
     ilp-packet-v1: 2.2.0
     jsonwebtoken: 9.0.2
     jws: 4.0.0
-  checksum: d601e1b22e9bd38bf31cbcbe6119440ecb5937a9c57a6743464b8e6c4eeb3aabe689bfb16ddb2fcdc802a3011ffb09c807f4b40cfde49785103a20d874ff728d
+  checksum: 1719c0a4ebfa79930475c8127e2cdf52d11beb48d14693d2e2e0c62199239b8dcbc2fad86de6fcb5c8b35139803f8f13a404c5c45381eb49225359a91180c112
   languageName: node
   linkType: hard
 
@@ -3213,6 +3230,13 @@ __metadata:
 "@rollup/rollup-linux-x64-musl@npm:4.24.2":
   version: 4.24.2
   resolution: "@rollup/rollup-linux-x64-musl@npm:4.24.2"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@rollup/rollup-linux-x64-musl@npm:4.24.3":
+  version: 4.24.3
+  resolution: "@rollup/rollup-linux-x64-musl@npm:4.24.3"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
