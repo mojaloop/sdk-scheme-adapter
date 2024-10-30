@@ -2447,23 +2447,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/ml-schema-transformer-lib@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "@mojaloop/ml-schema-transformer-lib@npm:2.1.0"
-  dependencies:
-    "@mojaloop/central-services-error-handling": ^13.0.2
-    "@mojaloop/central-services-logger": ^11.5.1
-    "@mojaloop/central-services-shared": ^18.11.0
-    "@rollup/rollup-linux-x64-musl": 4.24.2
-    ilp-packet: 2.2.0
-    map-transform-cjs: ^0.2.0
-  dependenciesMeta:
-    "@rollup/rollup-linux-x64-musl":
-      optional: true
-  checksum: ef26d4058837c389e958d6829ba5af470589e4b7ea817d91609282231586de0c128f774fb2d5a983de1afcdb8d0229d5601dc6c899e35952695be91ebcc41442
-  languageName: node
-  linkType: hard
-
 "@mojaloop/ml-schema-transformer-lib@npm:^2.2.2":
   version: 2.2.2
   resolution: "@mojaloop/ml-schema-transformer-lib@npm:2.2.2"
@@ -2532,7 +2515,7 @@ __metadata:
     "@mojaloop/event-sdk": ^14.1.1
     "@mojaloop/ml-schema-transformer-lib": ^2.2.2
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
-    "@mojaloop/sdk-standard-components": 19.3.1
+    "@mojaloop/sdk-standard-components": ^19.3.2
     "@redocly/openapi-cli": ^1.0.0-beta.94
     "@types/jest": ^29.5.14
     ajv: 8.17.1
@@ -2709,18 +2692,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mojaloop/sdk-standard-components@npm:19.3.1":
-  version: 19.3.1
-  resolution: "@mojaloop/sdk-standard-components@npm:19.3.1"
+"@mojaloop/sdk-standard-components@npm:^19.3.2":
+  version: 19.3.2
+  resolution: "@mojaloop/sdk-standard-components@npm:19.3.2"
   dependencies:
-    "@mojaloop/ml-schema-transformer-lib": ^2.1.0
+    "@mojaloop/ml-schema-transformer-lib": ^2.2.2
     base64url: 3.0.1
     fast-safe-stringify: ^2.1.1
     ilp-packet: 3.1.3
     ilp-packet-v1: 2.2.0
     jsonwebtoken: 9.0.2
     jws: 4.0.0
-  checksum: 1719c0a4ebfa79930475c8127e2cdf52d11beb48d14693d2e2e0c62199239b8dcbc2fad86de6fcb5c8b35139803f8f13a404c5c45381eb49225359a91180c112
+  checksum: 3fa83214d727f01ca2a9a9117a2c8b9418eafb26e7f4a617b2639e25a296dfaed3c3b257a3929b561d2dc10e240f4e0b9beb88e56809fdf314882d0301013e31
   languageName: node
   linkType: hard
 
@@ -3224,13 +3207,6 @@ __metadata:
     pluralize: ^8.0.0
     yaml-ast-parser: 0.0.43
   checksum: 1353c549fa71f2de3f2afb3640179e03b64d8198bec763728ff11c439e6961489b121bbb0404e27601a618a86bc975df3389befdaca790e1bd6d1d20b68861af
-  languageName: node
-  linkType: hard
-
-"@rollup/rollup-linux-x64-musl@npm:4.24.2":
-  version: 4.24.2
-  resolution: "@rollup/rollup-linux-x64-musl@npm:4.24.2"
-  conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
