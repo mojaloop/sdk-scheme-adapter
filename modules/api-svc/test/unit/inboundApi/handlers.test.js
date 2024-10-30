@@ -149,6 +149,7 @@ describe('Inbound API handlers:', () => {
                 message: {
                     body: mockContext.request.body,
                     headers: mockContext.request.headers,
+                    originalIso20022QuoteResponse: expect.anything()
                 },
                 args: {
                     quoteId: mockContext.state.path.params.ID

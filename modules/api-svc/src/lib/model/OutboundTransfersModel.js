@@ -14,7 +14,6 @@ const safeStringify = require('fast-safe-stringify');
 const StateMachine = require('javascript-state-machine');
 const { Enum, Util: {id: idGenerator} } = require('@mojaloop/central-services-shared');
 const { Ilp, MojaloopRequests } = require('@mojaloop/sdk-standard-components');
-const { TransformFacades } = require('@mojaloop/ml-schema-transformer-lib');
 const { API_TYPES } = require('../../constants');
 const dto = require('../dto');
 const shared = require('./lib/shared');
@@ -639,10 +638,10 @@ class OutboundTransfersModel {
                     if (error) {
                         return reject(error);
                     }
-
                     this.data.quoteResponse = {
                         headers: message.data.headers,
-                        body: message.data.body
+                        body: message.data.body,
+                        originalIso20022QuoteResponse: message.data.originalIso20022QuoteResponse,
                     };
                     this._logger.push({ quoteResponse: this.data.quoteResponse.body }).debug('Quote response received');
 
@@ -918,8 +917,9 @@ class OutboundTransfersModel {
                 let res;
                 if (this._apiType  === API_TYPES.iso20022) {
                     // Pass in quote request as context if needed for ISO20022 message generation
-                    const isoPostQuoteContext = await TransformFacades.FSPIOP.quotes.post({body: this.data.quoteRequest.body});
-                    res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource, {isoPostQuote: isoPostQuoteContext.body});
+                    res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource, {
+                        isoPostQuoteResponse: this.data.quoteResponse.originalIso20022QuoteResponse
+                    });
                 } else {
                     res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource, {});
                 }

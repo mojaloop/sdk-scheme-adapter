@@ -25,6 +25,9 @@ const {
     defaultProtocolVersions,
     errorMessages
 } = require('@mojaloop/central-services-shared').Util.Hapi.FSPIOPHeaderValidation;
+const { TransformFacades } = require('@mojaloop/ml-schema-transformer-lib');
+const Config = require('../config');
+const { API_TYPES } = require('../constants');
 
 /**
  * Log raw to console as a last resort
@@ -101,7 +104,7 @@ const assignFspiopIdentifier = () => async (ctx, next) => {
             put: () => ctx.state.path.params.ID,
         },
         '/quotes': {
-            post: () => ctx.request.body.quoteId,
+            post: () => ctx.request.body.quoteId || ctx.request.body.CdtTrfTxInf.PmtId.TxId,
         },
         '/quotes/{ID}': {
             put: () => ctx.state.path.params.ID,
@@ -110,7 +113,7 @@ const assignFspiopIdentifier = () => async (ctx, next) => {
             put: () => ctx.state.path.params.ID,
         },
         '/transfers': {
-            post: () => ctx.request.body.transferId,
+            post: () => ctx.request.body.transferId || ctx.request.body.CdtTrfTxInf.PmtId.TxId,
         },
         '/transfers/{ID}': {
             get: () => ctx.state.path.params.ID,
@@ -127,15 +130,37 @@ const assignFspiopIdentifier = () => async (ctx, next) => {
             put: () => ctx.state.path.params.ID,
         },
         '/fxQuotes': {
-            post: () => ctx.request.body.conversionRequestId,
+            post: () => ctx.request.body.conversionRequestId || ctx.request.body.CdtTrfTxInf.PmtId.TxId,
         },
         '/fxTransfers': {
-            post: () => ctx.request.body.commitRequestId,
+            post: () => ctx.request.body.commitRequestId || ctx.request.body.CdtTrfTxInf.PmtId.TxId,
         },
     }[ctx.state.path.pattern];
     if (getters) {
         const getter = getters[ctx.method.toLowerCase()];
         if (getter) {
+            if (Config.apiType === API_TYPES.iso20022
+                && ctx.method.toLowerCase() !== 'get'
+                && ctx.method.toLowerCase() !== 'delete'
+            ) {
+                try {
+                    let transformOpts = {
+                        headers: ctx.request.headers,
+                        body: ctx.request.body,
+                        params: ctx.state.path.params
+                    };
+                    const isError = ctx.state.path.pattern.endsWith('error');
+                    const resourceType = ctx.state.path.pattern.split('/')[1];
+                    const fspiopBody = (await TransformFacades.FSPIOPISO20022[resourceType][ctx.method.toLowerCase() + (isError ? 'Error' : '')](transformOpts)).body;
+                    ctx.state.transformedFspiopPayload = {
+                        headers: ctx.request.headers,
+                        body: fspiopBody
+                    };
+                } catch {
+                    // silently fail if the transform fails
+                    ctx.state.logger.isWarnEnabled && ctx.state.logger.push({ resource: ctx.state.path.pattern }).warn('Transform failed');
+                }
+            }
             ctx.state.fspiopId = getter(ctx.request);
         }
     }
@@ -149,10 +174,19 @@ const assignFspiopIdentifier = () => async (ctx, next) => {
  */
 const cacheRequest = (cache) => async (ctx, next) => {
     if (ctx.state.fspiopId) {
-        const req = {
-            headers: ctx.request.headers,
-            data: ctx.request.body,
-        };
+        let req;
+        if (Config.apiType === API_TYPES.iso20022 && ctx.state.transformedFspiopPayload){
+            req = {
+                headers: ctx.state.transformedFspiopPayload.headers || ctx.request.headers,
+                data: ctx.state.transformedFspiopPayload.body || ctx.request.body,
+            };
+        } else {
+            req = {
+                headers: ctx.request.headers,
+                data: ctx.request.body,
+            };
+        }
+
         const prefix = ctx.method.toLowerCase() === 'put' ? cache.CALLBACK_PREFIX : cache.REQUEST_PREFIX;
         const res = await cache.set(`${prefix}${ctx.state.fspiopId}`, req);
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push({ res }).debug('Caching request');

@@ -248,6 +248,9 @@ function createPostTransfersTester(
         if(body.prepare) {
             delete body.prepare;
         }
+        if(body.quoteResponse?.originalIso20022QuoteResponse) {
+            delete body.quoteResponse.originalIso20022QuoteResponse;
+        }
         expect(body).toEqual(responseBody);
         const responseValidator = new OpenAPIResponseValidator(apiSpecsOutbound.paths['/transfers'].post);
         const err = responseValidator.validateResponse(responseCode, body);

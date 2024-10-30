@@ -112,6 +112,7 @@ describe('Inbound API handlers transforming incoming ISO20022 message bodies', (
                 message: {
                     body: mockContext.request.body,
                     headers: mockContext.request.headers,
+                    originalIso20022QuoteResponse: expect.anything()
                 },
                 args: {
                     quoteId: mockContext.state.path.params.ID
