@@ -2515,7 +2515,7 @@ __metadata:
     "@mojaloop/event-sdk": ^14.1.1
     "@mojaloop/ml-schema-transformer-lib": ^2.3.1
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
-    "@mojaloop/sdk-standard-components": 19.3.4
+    "@mojaloop/sdk-standard-components": ^19.3.4
     "@redocly/openapi-cli": ^1.0.0-beta.94
     "@types/jest": ^29.5.14
     ajv: 8.17.1
@@ -2692,7 +2692,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mojaloop/sdk-standard-components@npm:19.3.4":
+"@mojaloop/sdk-standard-components@npm:^19.3.4":
   version: 19.3.4
   resolution: "@mojaloop/sdk-standard-components@npm:19.3.4"
   dependencies:
