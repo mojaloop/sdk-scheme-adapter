@@ -473,6 +473,7 @@ const putPartiesByTypeAndId = async (ctx) => {
  */
 const putQuoteById = async (ctx) => {
     if (ctx.state.conf.isIsoApi) {
+        ctx.request.originalIso20022QuoteResponse = ctx.request.body;
         // we need to transform the incoming request body from iso20022 to fspiop
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 put quotes body to FSPIOP');
         const target = await TransformFacades.FSPIOPISO20022.quotes.put({ body: ctx.request.body });
@@ -486,7 +487,8 @@ const putQuoteById = async (ctx) => {
     const quoteId = ctx.state.path.params.ID;
     const data = {
         body: { ...ctx.request.body },
-        headers: { ...ctx.request.headers }
+        headers: { ...ctx.request.headers },
+        originalIso20022QuoteResponse: { ...ctx.request.originalIso20022QuoteResponse }
     };
     await ctx.state.cache.publish(`qt_${quoteId}`, {
         type: 'quoteResponse',

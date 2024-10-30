@@ -37,7 +37,6 @@ const transferRequest = require('./data/transferRequest');
 const payeeParty = require('./data/payeeParty');
 const quoteResponse = require('./data/quoteResponse');
 const transferFulfil = require('./data/transferFulfil');
-const fspiopPostQuotesRequest = require('../../data/postQuotesBody.json');
 
 const { SDKStateEnum } = require('../../../../src/lib/model/common');
 
@@ -52,17 +51,84 @@ const genPartyId = (party) => {
 
 
 const dummyRequestsModuleResponse = {
-    originalRequest: {}
-};
+    originalRequest: {},
 
-const dummyQuoteRequestsModuleResponse = {
-    originalRequest: {
-        headers: {},
-        body: fspiopPostQuotesRequest
+};
+const originalIso20022QuoteResponse = {
+    "GrpHdr": {
+      "MsgId": "01JBFFD18ZTQSVVYQ419WNFB22",
+      "CreDtTm": "2024-10-30T19:45:50.879Z",
+      "NbOfTxs": "1",
+      "SttlmInf": {
+        "SttlmMtd": "CLRG"
+      },
+      "PmtInstrXpryDtTm": "2024-10-30T19:46:50.878Z"
+    },
+    "CdtTrfTxInf": {
+      "PmtId": {
+        "TxId": "01JBFFD182CCQ9X0RG143CZM0A"
+      },
+      "Dbtr": {
+        "Id": {
+          "PrvtId": {
+            "Othr": {
+              "SchmeNm": {
+                "Prtry": "MSISDN"
+              },
+              "Id": "44123456789"
+            }
+          }
+        }
+      },
+      "DbtrAgt": {
+        "FinInstnId": {
+          "Othr": {
+            "Id": "testingtoolkitdfsp"
+          }
+        }
+      },
+      "Cdtr": {
+        "Id": {
+          "PrvtId": {
+            "Othr": {
+              "SchmeNm": {
+                "Prtry": "MSISDN"
+              },
+              "Id": "27713803912"
+            }
+          }
+        }
+      },
+      "CdtrAgt": {
+        "FinInstnId": {
+          "Othr": {
+            "Id": "payeefsp"
+          }
+        }
+      },
+      "ChrgBr": "DEBT",
+      "IntrBkSttlmAmt": {
+        "Ccy": "XXX",
+        "ActiveCurrencyAndAmount": "100"
+      },
+      "ChrgsInf": {
+        "Amt": {
+          "Ccy": "XXX",
+          "ActiveOrHistoricCurrencyAndAmount": "5"
+        },
+        "Agt": {
+          "FinInstnId": {
+            "Othr": {
+              "Id": "payeefsp"
+            }
+          }
+        }
+      },
+      "VrfctnOfTerms": {
+        "IlpV4PrepPacket": "DIICtgAAAAAAAABkMjAyNDEwMzAxOTQ2NTA4NzgZAqBJ87fHeZXM6R20d_r-M9YFc7soJySdK1G02BVlPQpnLm1vamFsb29wggJvZXlKeGRXOTBaVWxrSWpvaU1ERktRa1pHUkRFNE1rTkRVVGxZTUZKSE1UUXpRMXBOTUVFaUxDSjBjbUZ1YzJGamRHbHZia2xrSWpvaU1ERktRa1pHUkRFNE1rTkRVVGxZTUZKSE1UUXpRMXBOTUVJaUxDSjBjbUZ1YzJGamRHbHZibFI1Y0dVaU9uc2ljMk5sYm1GeWFXOGlPaUpVVWtGT1UwWkZVaUlzSW1sdWFYUnBZWFJ2Y2lJNklsQkJXVVZTSWl3aWFXNXBkR2xoZEc5eVZIbHdaU0k2SWtKVlUwbE9SVk5USW4wc0luQmhlV1ZsSWpwN0luQmhjblI1U1dSSmJtWnZJanA3SW5CaGNuUjVTV1JVZVhCbElqb2lUVk5KVTBST0lpd2ljR0Z5ZEhsSlpHVnVkR2xtYVdWeUlqb2lNamMzTVRNNE1ETTVNVElpTENKbWMzQkpaQ0k2SW5CaGVXVmxabk53SW4xOUxDSndZWGxsY2lJNmV5SndZWEowZVVsa1NXNW1ieUk2ZXlKd1lYSjBlVWxrVkhsd1pTSTZJazFUU1ZORVRpSXNJbkJoY25SNVNXUmxiblJwWm1sbGNpSTZJalEwTVRJek5EVTJOemc1SWl3aVpuTndTV1FpT2lKMFpYTjBhVzVuZEc5dmJHdHBkR1JtYzNBaWZYMHNJbVY0Y0dseVlYUnBiMjRpT2lJeU1ESTBMVEV3TFRNd1ZERTVPalEyT2pVd0xqZzNPRm9pTENKaGJXOTFiblFpT25zaVlXMXZkVzUwSWpvaU1UQXdJaXdpWTNWeWNtVnVZM2tpT2lKWVdGZ2lmWDA"
+      }
     }
-};
-
-
+}
 // util function to simulate a party resolution subscription message on a cache client
 const emitPartyCacheMessage = (cache, party) => cache.publish(genPartyId(party), JSON.stringify(party));
 
@@ -129,8 +195,10 @@ describe('API_TYPE="iso20022"', () => {
                 expect(postQuotesBody.CdtTrfTxInf.PmtId.TxId).not.toBeUndefined();
 
                 // simulate a callback with the quote response
-                emitQuoteResponseCacheMessage(cache, postQuotesBody.CdtTrfTxInf.PmtId.TxId, quoteResponse);
-                return Promise.resolve(dummyQuoteRequestsModuleResponse);
+                const quoteResponseCopy = JSON.parse(JSON.stringify(quoteResponse));
+                quoteResponseCopy.data.originalIso20022QuoteResponse = originalIso20022QuoteResponse;
+                emitQuoteResponseCacheMessage(cache, postQuotesBody.CdtTrfTxInf.PmtId.TxId, quoteResponseCopy);
+                return Promise.resolve(dummyRequestsModuleResponse);
             }
 
             if(opts.uri.includes('transfers') && opts.method === 'POST') {
@@ -143,8 +211,8 @@ describe('API_TYPE="iso20022"', () => {
                 expect(postTransfersBody.CdtTrfTxInf.PmtId).not.toBeUndefined();
                 expect(postTransfersBody.CdtTrfTxInf.PmtId.TxId).not.toBeUndefined();
 
-                // Fields that require prior POST quotes context should be present
-                expect(postTransfersBody.CdtTrfTxInf.ChrgBr).toEqual('CRED');
+                // Fields that require prior POST quotes response $context should be present
+                expect(postTransfersBody.CdtTrfTxInf.ChrgBr).toEqual('DEBT');
                 expect(postTransfersBody.CdtTrfTxInf.Cdtr).toBeDefined();
                 expect(postTransfersBody.CdtTrfTxInf.Dbtr).toBeDefined();
 
