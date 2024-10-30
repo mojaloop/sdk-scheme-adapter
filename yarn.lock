@@ -2464,9 +2464,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/ml-schema-transformer-lib@npm:^2.2.1":
-  version: 2.2.1
-  resolution: "@mojaloop/ml-schema-transformer-lib@npm:2.2.1"
+"@mojaloop/ml-schema-transformer-lib@npm:^2.2.2":
+  version: 2.2.2
+  resolution: "@mojaloop/ml-schema-transformer-lib@npm:2.2.2"
   dependencies:
     "@mojaloop/central-services-error-handling": ^13.0.2
     "@mojaloop/central-services-logger": ^11.5.1
@@ -2477,7 +2477,7 @@ __metadata:
   dependenciesMeta:
     "@rollup/rollup-linux-x64-musl":
       optional: true
-  checksum: 7db75a73397900086666d336faaf44754bcafed6c55c4b8530fa1a147f823797d61abedd04873eaa6fe5f406ac78d41cdfe19640c1b32a31abb240479da9648e
+  checksum: 60f4dffa29fa514918442b9d1e62fd0ee3b45c30993f2ff2dece69d824186f6c0c641878b6ea8ab3500473cee0965248b748e7308dff0e3dd64f259e5b6069f8
   languageName: node
   linkType: hard
 
@@ -2530,7 +2530,7 @@ __metadata:
     "@mojaloop/central-services-metrics": ^12.0.8
     "@mojaloop/central-services-shared": 18.11.0
     "@mojaloop/event-sdk": ^14.1.1
-    "@mojaloop/ml-schema-transformer-lib": ^2.2.1
+    "@mojaloop/ml-schema-transformer-lib": ^2.2.2
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
     "@mojaloop/sdk-standard-components": 19.3.1
     "@redocly/openapi-cli": ^1.0.0-beta.94
