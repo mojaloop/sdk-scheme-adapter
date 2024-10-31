@@ -68,12 +68,12 @@ export class OutboundEventHandler implements IRunHandler {
 
     private _commandEventHandlerOptions: ICommandEventHandlerOptions;
 
-     
+    /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */
     constructor(options: IOutboundEventHandlerOptions) {
         this._bulkTransactionEntityStateRepo = options.bulkTransactionEntityRepo;
     }
 
-     
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     async start(appConfig: ICommandEventHandlerConfig, logger: ILogger): Promise<void> {
         this._logger = logger.createChild(this.constructor.name);
         this._logger.info('start');
@@ -82,7 +82,7 @@ export class OutboundEventHandler implements IRunHandler {
         this._consumer = new KafkaCommandEventConsumer(this._messageHandler.bind(this), consumerOptions, logger);
         logger.info(`Created Message Consumer of type ${this._consumer.constructor.name}`);
 
-         
+        /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
         await this._consumer.init();
         await this._consumer.start();
 

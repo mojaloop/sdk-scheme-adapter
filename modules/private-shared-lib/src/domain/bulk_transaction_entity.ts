@@ -110,7 +110,7 @@ export class BulkTransactionEntity extends BaseEntity<BulkTransactionState> {
         return new BulkTransactionEntity(initialState);
     }
 
-     
+    /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */
     constructor(initialState: BulkTransactionState) {
         super(initialState);
     }
