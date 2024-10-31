@@ -32,20 +32,15 @@ const extractBodyHeadersSourceFspId = ctx => ({
 
 /**
  * @param {Object} ctx - the Koa context object
- * @param {'content-type' | 'accept'} headerNameForIlp - see the comment: https://infitx-technologies.atlassian.net/browse/CSI-194?focusedCommentId=11047
- *    For selecting ILP version logic:
- *      - On POST /quotes inbound request, SDK should generate the ILP packet based on the ‘accept’ header because it needs to include the ilpPacket in the PUT /quotes callback payload
- *      - On POST /transfers inbound request, we are calling ILP class functions and decoding ILP packet in some scenarios. At these places, we need to call ILP decoding functions (also may be fulfilment condition validation functions) based on the header ‘content-type’ because the ILP packet is from the request payload in this case.
  * @returns {InboundTransfersModel}
  */
-const createInboundTransfersModel = (ctx, headerNameForIlp = 'content-type') => new InboundTransfersModel({
+const createInboundTransfersModel = (ctx) => new InboundTransfersModel({
     ...ctx.state.conf,
     cache: ctx.state.cache,
     logger: ctx.state.logger,
     wso2: ctx.state.wso2,
     resourceVersions: ctx.resourceVersions,
-}, ctx.request.headers[headerNameForIlp]);
-// todo: think, if we need to define ILP version based on header (seems, no. Use env var)
+});
 
 const prepareResponse = ctx => {
     ctx.response.status = ReturnCodes.ACCEPTED.CODE;
@@ -191,7 +186,7 @@ const postQuotes = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = createInboundTransfersModel(ctx, 'accept');
+            const model = createInboundTransfersModel(ctx);
 
             let response;
 
@@ -557,7 +552,7 @@ const getQuoteById = async (ctx) => {
     (async () => {
         try {
             // use the transfers model to execute asynchronous stages with the switch
-            const model = createInboundTransfersModel(ctx, 'accept');
+            const model = createInboundTransfersModel(ctx);
 
             // use the model to handle the request
             const response = await model.getQuoteRequest(quoteId, sourceFspId);
@@ -976,7 +971,7 @@ const postFxQuotes = async (ctx) => {
     const { logger } = ctx.state;
     const logPrefix = 'Handling POST fxQuotes request';
 
-    const model = createInboundTransfersModel(ctx, 'accept');
+    const model = createInboundTransfersModel(ctx);
 
     model.postFxQuotes({ body, headers }, sourceFspId)
         .then(response => logger.push({ response }).log(`${logPrefix} is done`))
