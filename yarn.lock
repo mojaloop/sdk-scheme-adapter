@@ -2447,7 +2447,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/ml-schema-transformer-lib@npm:2.3.3, @mojaloop/ml-schema-transformer-lib@npm:^2.3.3":
+"@mojaloop/ml-schema-transformer-lib@npm:2.3.4":
+  version: 2.3.4
+  resolution: "@mojaloop/ml-schema-transformer-lib@npm:2.3.4"
+  dependencies:
+    "@mojaloop/central-services-error-handling": ^13.0.2
+    "@mojaloop/central-services-logger": ^11.5.1
+    "@mojaloop/central-services-shared": ^18.11.0
+    "@rollup/rollup-linux-x64-musl": 4.24.3
+    ilp-packet: 2.2.0
+    map-transform-cjs: ^0.2.0
+  dependenciesMeta:
+    "@rollup/rollup-linux-x64-musl":
+      optional: true
+  checksum: d421e7035fb3d6dde8cf4706eb4a0ad349e7ecec06ff73e87d19d32fcfa123c561383288324586cfb88825a9ba28ea1ca25ae508f39abf9e9fe7cfc9467774b8
+  languageName: node
+  linkType: hard
+
+"@mojaloop/ml-schema-transformer-lib@npm:^2.3.3":
   version: 2.3.3
   resolution: "@mojaloop/ml-schema-transformer-lib@npm:2.3.3"
   dependencies:
@@ -2513,7 +2530,7 @@ __metadata:
     "@mojaloop/central-services-metrics": ^12.0.8
     "@mojaloop/central-services-shared": 18.11.0
     "@mojaloop/event-sdk": ^14.1.1
-    "@mojaloop/ml-schema-transformer-lib": 2.3.3
+    "@mojaloop/ml-schema-transformer-lib": 2.3.4
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
     "@mojaloop/sdk-standard-components": 19.3.5
     "@redocly/openapi-cli": ^1.0.0-beta.94
@@ -2573,7 +2590,7 @@ __metadata:
     "@types/convict": ^6.1.6
     "@types/express": ^5.0.0
     "@types/jest": ^29.5.14
-    "@types/node": ^22.8.4
+    "@types/node": ^22.8.5
     "@types/node-cache": ^4.2.5
     "@types/supertest": ^6.0.2
     "@types/swagger-ui-express": 4.1.7
@@ -2611,7 +2628,7 @@ __metadata:
     "@types/convict": ^6.1.6
     "@types/express": ^5.0.0
     "@types/jest": ^29.5.14
-    "@types/node": ^22.8.4
+    "@types/node": ^22.8.5
     "@types/node-cache": ^4.2.5
     "@types/supertest": ^6.0.2
     "@types/swagger-ui-express": ^4.1.7
@@ -2647,7 +2664,7 @@ __metadata:
     "@mojaloop/logging-bc-public-types-lib": ^0.5.4
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.7.1
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": 0.2.15
-    "@types/node": ^22.8.4
+    "@types/node": ^22.8.5
     "@types/uuid": ^10.0.0
     "@typescript-eslint/eslint-plugin": ^8.12.2
     "@typescript-eslint/parser": ^8.12.2
@@ -2669,7 +2686,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter@workspace:."
   dependencies:
     "@types/jest": ^29.5.14
-    "@types/node": ^22.8.4
+    "@types/node": ^22.8.5
     "@types/node-cache": ^4.2.5
     "@typescript-eslint/eslint-plugin": ^8.12.2
     "@typescript-eslint/parser": ^8.12.2
@@ -3748,12 +3765,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^22.8.4":
-  version: 22.8.4
-  resolution: "@types/node@npm:22.8.4"
+"@types/node@npm:^22.8.5":
+  version: 22.8.5
+  resolution: "@types/node@npm:22.8.5"
   dependencies:
     undici-types: ~6.19.8
-  checksum: 1e55594ce7942e259919283e6bb9ee814f184afcd545956d95163dd3b1d4b1923dba97e0c258c5a9dd2c96b2e754fa9ae42994437a564255c8907ae7cdc25b4b
+  checksum: c5c3466047c2cc5f70824a89aa3873fb21abc231d7d52672ea157c01e5acbbca9831362c1d2df589f9ea10a3bdfade867ec647850d9dcf88dce7119885cb8d22
   languageName: node
   linkType: hard
 

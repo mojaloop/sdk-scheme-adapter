@@ -26,6 +26,7 @@ const {
     errorMessages
 } = require('@mojaloop/central-services-shared').Util.Hapi.FSPIOPHeaderValidation;
 const { TransformFacades } = require('@mojaloop/ml-schema-transformer-lib');
+const { transformHeadersIsoToFspiop } = require('../lib/utils');
 const Config = require('../config');
 const { API_TYPES } = require('../constants');
 
@@ -144,7 +145,7 @@ const assignFspiopIdentifier = () => async (ctx, next) => {
                 && ctx.method.toLowerCase() !== 'delete'
             ) {
                 try {
-                    let transformOpts = {
+                    const transformOpts = {
                         headers: ctx.request.headers,
                         body: ctx.request.body,
                         params: ctx.state.path.params
@@ -152,8 +153,9 @@ const assignFspiopIdentifier = () => async (ctx, next) => {
                     const isError = ctx.state.path.pattern.endsWith('error');
                     const resourceType = ctx.state.path.pattern.split('/')[1];
                     const fspiopBody = (await TransformFacades.FSPIOPISO20022[resourceType][ctx.method.toLowerCase() + (isError ? 'Error' : '')](transformOpts)).body;
+                    const fspiopHeaders = transformHeadersIsoToFspiop(ctx.request.headers);
                     ctx.state.transformedFspiopPayload = {
-                        headers: ctx.request.headers,
+                        headers: fspiopHeaders,
                         body: fspiopBody
                     };
                 } catch {

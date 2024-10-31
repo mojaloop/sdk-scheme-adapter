@@ -127,7 +127,7 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         return this._state.acceptQuote;
     }
 
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+     
     static CreateFromRequest(
         request: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionIndividualTransfer,
     ): IndividualTransferEntity {
@@ -232,7 +232,7 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         };
     }
 
-    /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */
+     
     constructor(initialState: IndividualTransferState) {
         IndividualTransferEntity._validateRequest(initialState.request);
         super(initialState);

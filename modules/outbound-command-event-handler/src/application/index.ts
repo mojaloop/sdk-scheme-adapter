@@ -69,7 +69,7 @@ import Config from '../shared/config';
         await apiServer.startServer();
     }
     // lets clean up all consumers here
-    /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
+     
     const killProcess = async (): Promise<void> => {
         logger.info('Exiting process...');
         logger.info('Destroying handlers...');
@@ -82,6 +82,6 @@ import Config from '../shared/config';
         logger.info('Exit complete!');
         process.exit(0);
     };
-    /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
+     
     process.on('SIGINT', killProcess);
 })();
