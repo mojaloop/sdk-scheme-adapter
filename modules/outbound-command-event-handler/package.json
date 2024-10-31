@@ -41,7 +41,7 @@
     "snapshot": "standard-version --no-verify --skip.changelog --prerelease snapshot --releaseCommitMessageFormat 'chore(snapshot): {{currentTag}}'"
   },
   "dependencies": {
-    "@mojaloop/api-snippets": "17.7.3",
+    "@mojaloop/api-snippets": "17.7.4",
     "@mojaloop/central-services-shared": "^18.11.0",
     "@mojaloop/logging-bc-client-lib": "^0.1.17",
     "@mojaloop/logging-bc-public-types-lib": "^0.5.4",
@@ -59,7 +59,7 @@
     "@types/convict": "^6.1.6",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.14",
-    "@types/node": "^22.8.5",
+    "@types/node": "^22.8.6",
     "@types/node-cache": "^4.2.5",
     "@types/supertest": "^6.0.2",
     "@types/swagger-ui-express": "4.1.7",
