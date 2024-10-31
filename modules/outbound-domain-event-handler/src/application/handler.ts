@@ -78,7 +78,7 @@ export class OutboundEventHandler implements IRunHandler {
 
     private _domainEventHandlerOptions: IDomainEventHandlerOptions;
 
-    /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */ 
+    /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */
     constructor(options: IOutboundEventHandlerOptions) {
         this._bulkTransactionEntityStateRepo = options.bulkTransactionEntityRepo;
     }
