@@ -68,7 +68,7 @@ export class OutboundDomainEventHandlerAPIServer {
             );
             this._serverInstance = this._app.listen(this._port, () => {
                 this._logger.info(`API Server is running on port ${this._port}`);
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion 
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 resolve(this._app!);
             });
         });
