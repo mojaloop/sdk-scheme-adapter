@@ -142,8 +142,6 @@ const assignFspiopIdentifier = () => async (ctx, next) => {
         const getter = getters[ctx.method.toLowerCase()];
         if (getter) {
             if (Config.apiType === API_TYPES.iso20022
-                && ctx.method.toLowerCase() !== 'get'
-                && ctx.method.toLowerCase() !== 'delete'
             ) {
                 try {
                     const transformOpts = {
@@ -153,7 +151,11 @@ const assignFspiopIdentifier = () => async (ctx, next) => {
                     };
                     const isError = ctx.state.path.pattern.endsWith('error');
                     const resourceType = ctx.state.path.pattern.split('/')[1];
-                    const fspiopBody = (await TransformFacades.FSPIOPISO20022[resourceType][ctx.method.toLowerCase() + (isError ? 'Error' : '')](transformOpts)).body;
+                    let fspiopBody = {};
+                    if (ctx.method.toLowerCase() !== 'get' &&
+                        ctx.method.toLowerCase() !== 'delete') {
+                        fspiopBody = (await TransformFacades.FSPIOPISO20022[resourceType][ctx.method.toLowerCase() + (isError ? 'Error' : '')](transformOpts)).body;
+                    }
                     const fspiopHeaders = transformHeadersIsoToFspiop(ctx.request.headers);
                     ctx.state.transformedFspiopPayload = {
                         headers: fspiopHeaders,
