@@ -44,7 +44,7 @@ const createErrorHandler = (logger) => async (ctx, next) => {
 
 
 /**
- * tag each incoming request with the FSPIOP identifier from it's path or body
+ * tag each incoming request with the FSPIOP identifier from its path or body
  * @return {Function}
  */
 const assignFspiopIdentifier = () => async (ctx, next) => {
@@ -136,6 +136,7 @@ const assignFspiopIdentifier = () => async (ctx, next) => {
             post: () => ctx.request.body.commitRequestId || ctx.request.body.CdtTrfTxInf.PmtId.TxId,
         },
     }[ctx.state.path.pattern];
+
     if (getters) {
         const getter = getters[ctx.method.toLowerCase()];
         if (getter) {

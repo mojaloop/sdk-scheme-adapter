@@ -11,11 +11,10 @@
 'use strict';
 
 const safeStringify = require('fast-safe-stringify');
-const { MojaloopRequests, Errors } = require('@mojaloop/sdk-standard-components');
+const { MojaloopRequests, Ilp, Errors } = require('@mojaloop/sdk-standard-components');
 const FSPIOPTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.TransferState;
 const FSPIOPBulkTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.BulkTransferState;
 
-const ilpFactoryByHeader = require('../ilpFactoryByHeader');
 const dto = require('../dto');
 const shared = require('./lib/shared');
 const { BackendRequests, HTTPResponseError } = require('./lib/requests');
@@ -25,7 +24,7 @@ const { SDKStateEnum, CacheKeyPrefixes } = require('./common');
  *  Models the operations required for performing inbound transfers
  */
 class InboundTransfersModel {
-    constructor(config, headerWithApiVersion = '') {
+    constructor(config) {
         this._cache = config.cache;
         this._logger = config.logger;
         this._dfspId = config.dfspId;
@@ -68,11 +67,11 @@ class InboundTransfersModel {
 
         this._checkIlp = config.checkIlp;
 
-        this._ilp = ilpFactoryByHeader(headerWithApiVersion, {
+        const ilpVersion = config.ilpVersion === '4' ? Ilp.ILP_VERSIONS.v4 : Ilp.ILP_VERSIONS.v1;
+        this._ilp = Ilp.ilpFactory(ilpVersion, {
             secret: config.ilpSecret,
             logger: config.logger,
         });
-        // todo: rethink how to generate ILP (based on config)
     }
 
     updateStateWithError(err) {
