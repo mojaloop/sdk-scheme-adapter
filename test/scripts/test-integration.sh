@@ -13,8 +13,12 @@ run_int_tests() {
   popd
 }
 
-echo "Running outbound-domain integration tests"
-run_int_tests outbound-domain-event-handler
+docker-compose up -d
+yarn run wait-4-docker
+
+# no integration tests for inbound-domain-event-handler
+# echo "Running outbound-domain integration tests"
+# run_int_tests outbound-domain-event-handler
 
 echo "Running outbound-command integration tests"
 run_int_tests outbound-command-event-handler
