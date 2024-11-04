@@ -57,7 +57,7 @@
     "test:unit": "nx run-many --parallel --all --target=test:unit -- --detectOpenHandles",
     "test:unit:no-cache": "yarn run test:unit --skip-nx-cache",
     "test:unit:affected": "nx affected --parallel --target=test:unit",
-    "test:xunit": "yarn install && nx run-many --parallel --all --target=test:xunit -- --detectOpenHandles",
+    "test:xunit": "yarn install --immutable && yarn run build && nx run-many --parallel --all --target=test:xunit -- --detectOpenHandles",
     "test:coverage": "nx run-many --parallel --all --target=test:coverage",
     "test:coverage:affected": "nx affected --parallel --target=test:coverage",
     "test:coverage-check": "nx run-many --parallel --all --target=test:coverage-check",
