@@ -32,6 +32,7 @@
     "lint:fix": "eslint ./src/ --fix",
     "copy-files": "npx copyfiles -u 1 src/**/*.yaml dist/",
     "test:unit": "jest --passWithNoTests --testMatch '**/test/unit/**/*.test.ts'",
+    "test:xunit": "JEST_JUNIT_OUTPUT_DIR=../test/reports/ JEST_JUNIT_OUTPUT_NAME=xunit-command.xml yarn run test:unit -- --reporters=jest-junit",
     "test:integration": "jest --runInBand --passWithNoTests --testMatch '**/test/integration/**/*.test.ts' ",
     "test:coverage": "jest --passWithNoTests --coverage --testMatch '**/test/unit/**/*.test.ts'",
     "test:coverage-check": "jest --coverage --testMatch '**/test/unit/**/*.test.ts'",
