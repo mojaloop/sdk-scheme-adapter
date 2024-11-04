@@ -13,7 +13,10 @@ run_int_tests() {
   popd
 }
 
+docker load -i /tmp/docker-image.tar
 docker-compose up -d
+docker-compose ps
+
 yarn run wait-4-docker
 
 # no integration tests for inbound-domain-event-handler
@@ -24,6 +27,11 @@ echo "Running outbound-command integration tests"
 run_int_tests outbound-command-event-handler
 
 echo "Execute PM4ML Integration Tests"
+
+docker-compose down
+docker-compose up -d --wait --file docker-compose-pm4ml.yml
+docker-compose ps
+
 pushd modules/api-sv
 yarn run test:integration-pm4ml
 popd
