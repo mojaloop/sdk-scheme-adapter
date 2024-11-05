@@ -365,7 +365,7 @@ class InboundTransfersModel {
             this._logger.push({ err }).error('Error in transactionRequest');
             const mojaloopError = await this._handleError(err);
             this._logger.isDebugEnabled && this._logger.push({ mojaloopError }).debug(`Sending error response to ${sourceFspId}`);
-            return await this._mojaloopRequests.putTransactionRequestsError(transactionRequest.transactionRequestId,
+            return this._mojaloopRequests.putTransactionRequestsError(transactionRequest.transactionRequestId,
                 mojaloopError, sourceFspId);
         }
     }
