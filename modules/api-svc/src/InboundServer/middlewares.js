@@ -14,7 +14,7 @@ const { Enum } = require('@mojaloop/central-services-shared');
 const { ReturnCodes } = Enum.Http;
 
 const { generateSlug } = require('random-word-slugs');
-const { Jws, Errors } = require('@mojaloop/sdk-standard-components');
+const { Jws, Errors, common } = require('@mojaloop/sdk-standard-components');
 const {
     parseAcceptHeader,
     parseContentTypeHeader,
@@ -28,7 +28,7 @@ const {
 const { TransformFacades } = require('@mojaloop/ml-schema-transformer-lib');
 const { transformHeadersIsoToFspiop } = require('../lib/utils');
 const Config = require('../config');
-const { API_TYPES, ONLY_FSPIOP_RESOURCES } = require('../constants');
+const { API_TYPES } = require('../constants');
 
 /**
  * Log raw to console as a last resort
@@ -238,7 +238,7 @@ const createHeaderValidator = (conf, logger) => async (
         return await next();
     }
 
-    const apiType = defineApiType(resource, conf);
+    const apiType = common.defineApiType(resource, conf.apiType);
 
     // Always validate the accept header for a get request, or optionally if it has been
     // supplied
@@ -483,14 +483,6 @@ const createResponseBodyHandler = () => async (ctx, next) => {
     }
     return await next();
 };
-
-const defineApiType = (resource, config) => {
-    if (ONLY_FSPIOP_RESOURCES.includes(resource)) {
-        return API_TYPES.fspiop;
-    }
-    return config.apiType;
-};
-
 
 module.exports = {
     applyState,
