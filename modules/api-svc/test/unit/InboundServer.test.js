@@ -15,12 +15,10 @@ process.env.BACKEND_ENDPOINT = '172.17.0.5:4000';
 process.env.CACHE_URL = 'redis://172.17.0.2:6379';
 process.env.MGMT_API_WS_URL = '0.0.0.0';
 process.env.SUPPORTED_CURRENCIES='USD';
-// process.env.API_TYPE='iso20022';
 
 const supertest = require('supertest');
 
 const { ISO_20022_HEADER_PART} = require('../../src/constants');
-// const utils = require('../utils');
 const defaultConfig = require('./data/defaultConfig');
 const putPartiesBody = require('./data/putPartiesBody');
 const postQuotesBody = require('./data/postQuotesBody');
@@ -115,12 +113,6 @@ describe('Inbound Server', () => {
         test('processes parties request with valid content-type headers successfully', async () => {
             await testPartiesHeaderValidation('application/vnd.interoperability.parties+json;version=1.1', 200);
         });
-
-        // todo: think, how to run this test for ISO mode (in a separate file?)
-        // test('should process ISO parties request with valid content-type headers ', async () => {
-        //     const header = utils.createIsoHeader('parties');
-        //     await testPartiesHeaderValidation(header, 200);
-        // });
 
         test('returns error on invalid parties content-type headers', async () => {
             await testPartiesHeaderValidation(
@@ -396,7 +388,6 @@ describe('Inbound Server', () => {
         test('Inbound server should use HTTP if inbound mTLS disabled', () =>
             testTlsServer(false));
     });
-
 
     describe('JWS verification keys', () => {
         let svr;

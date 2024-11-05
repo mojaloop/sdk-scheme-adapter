@@ -75,16 +75,16 @@
   },
   "dependencies": {
     "nx": "16.5.0",
-    "tslib": "^2.8.0"
+    "tslib": "^2.8.1"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
-    "@types/node": "^22.8.6",
+    "@types/node": "^22.9.0",
     "@types/node-cache": "^4.2.5",
-    "@typescript-eslint/eslint-plugin": "^8.12.2",
-    "@typescript-eslint/parser": "^8.12.2",
+    "@typescript-eslint/eslint-plugin": "^8.13.0",
+    "@typescript-eslint/parser": "^8.13.0",
     "audit-ci": "^7.1.0",
-    "eslint": "^9.13.0",
+    "eslint": "^9.14.0",
     "eslint-config-airbnb-typescript": "^18.0.0",
     "eslint-plugin-import": "latest",
     "husky": "^9.1.6",

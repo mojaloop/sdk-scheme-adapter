@@ -28,8 +28,10 @@ const transformHeadersIsoToFspiop = (isoHeaders) => {
     const headersToTransform = ['content-type', 'accept'];
     const fspiopHeaders = {};
 
-    Object.keys(isoHeaders).forEach((key) => { 
-        fspiopHeaders[key] = headersToTransform.includes(key.toLowerCase()) ? transformIsoHeader(isoHeaders[key], key) : isoHeaders[key];
+    Object.keys(isoHeaders).forEach((key) => {
+        fspiopHeaders[key] = headersToTransform.includes(key.toLowerCase())
+            ? transformIsoHeader(isoHeaders[key], key)
+            : isoHeaders[key];
     });
 
     return fspiopHeaders;
