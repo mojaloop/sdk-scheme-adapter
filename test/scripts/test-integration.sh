@@ -25,9 +25,15 @@ run_int_tests outbound-command-event-handler
 
 echo "Execute PM4ML Integration Tests"
 
+cd docker/haproxy/tls
+sh createSecrets.sh
+cd $CIRCLE_WORKING_DIRECTORY
+
 docker-compose down
-docker-compose --wait -f docker-compose-pm4ml.yml up -d
+docker-compose -f ./docker-compose.yml -f ./docker-compose.pm4ml.yml up -d
 docker-compose ps
+
+yarn run wait-4-docker
 
 pushd modules/api-svc
 yarn run test:integration-pm4ml
