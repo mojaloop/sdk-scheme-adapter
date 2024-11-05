@@ -26,6 +26,8 @@
 Object.assign(process.env, {
     API_TYPE: 'iso20022',
     ILP_VERSION: '4',
+    PEER_ENDPOINT: 'localhost:4000',
+    BACKEND_ENDPOINT: 'localhost:4000',
 });
 
 jest.mock('../../src/lib/cache');
