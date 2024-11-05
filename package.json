@@ -60,7 +60,7 @@
     "test:xunit": "yarn install --immutable && yarn run build && nx run-many --parallel --all --target=test:xunit -- --detectOpenHandles",
     "test:coverage": "nx run-many --parallel --all --target=test:coverage",
     "test:coverage:affected": "nx affected --parallel --target=test:coverage",
-    "test:coverage-check": "nx run-many --parallel --all --target=test:coverage-check",
+    "test:coverage-check": "yarn install --immutable && yarn run build && nx run-many --parallel --all --target=test:coverage-check",
     "test:coverage-check:affected": "nx affected --parallel --target=test:coverage-check",
     "test:functional": "./test/scripts/test-functional.sh",
     "test:integration": "./test/scripts/test-integration.sh",
