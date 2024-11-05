@@ -13,7 +13,7 @@
 const assert = require('assert').strict;
 const util = require('util');
 const {
-    MojaloopRequests, Errors, WSO2Auth, Jws, Logger,
+    MojaloopRequests, Errors, WSO2Auth, Jws, Logger, common,
     Ilp: { ILP_VERSIONS }
 } = jest.requireActual('@mojaloop/sdk-standard-components');
 
@@ -187,4 +187,5 @@ module.exports = {
     Errors,
     WSO2Auth,
     Logger,
+    common,
 };
