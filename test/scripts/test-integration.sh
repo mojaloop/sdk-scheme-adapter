@@ -26,7 +26,7 @@ run_int_tests outbound-command-event-handler
 echo "Execute PM4ML Integration Tests"
 
 docker-compose down
-docker-compose up -d --wait --file docker-compose-pm4ml.yml
+docker-compose --wait -f docker-compose-pm4ml.yml up -d
 docker-compose ps
 
 pushd modules/api-svc
