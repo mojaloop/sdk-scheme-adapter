@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
-  "version": "23.6.0-orb.1",
+  "version": "23.6.0-snapshot.31",
   "description": "mojaloop sdk-scheme-adapter",
   "license": "Apache-2.0",
   "homepage": "https://github.com/mojaloop/sdk-scheme-adapter",
@@ -60,7 +60,8 @@
     "test:xunit": "yarn install --immutable && yarn run build && nx run-many --parallel --all --target=test:xunit -- --detectOpenHandles",
     "test:coverage": "nx run-many --parallel --all --target=test:coverage",
     "test:coverage:affected": "nx affected --parallel --target=test:coverage",
-    "test:coverage-check": "yarn install --immutable && yarn run build && nx run-many --parallel --all --target=test:coverage-check -- --detectOpenHandles",
+    "test:coverage-check": "yarn install --immutable && yarn run build && yarn run test:coverage-check-dev",
+    "test:coverage-check-dev": "nx run-many --parallel --all --target=test:coverage-check -- --detectOpenHandles",
     "test:coverage-check:affected": "nx affected --parallel --target=test:coverage-check",
     "test:functional": "./test/scripts/test-functional.sh",
     "test:integration": "./test/scripts/test-integration.sh",
