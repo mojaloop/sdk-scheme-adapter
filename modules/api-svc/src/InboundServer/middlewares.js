@@ -28,7 +28,7 @@ const {
 const { TransformFacades } = require('@mojaloop/ml-schema-transformer-lib');
 const { transformHeadersIsoToFspiop } = require('../lib/utils');
 const Config = require('../config');
-const { API_TYPES } = require('../constants');
+const { API_TYPES, ONLY_FSPIOP_RESOURCES } = require('../constants');
 
 /**
  * Log raw to console as a last resort
@@ -227,7 +227,6 @@ const createHeaderValidator = (conf, logger) => async (
     resources = defaultProtocolResources,
     supportedProtocolVersions = defaultProtocolVersions
 ) => {
-    const apiType = conf.apiType;
     const request = ctx.request;
 
     // First, extract the resource type from the path
@@ -238,6 +237,8 @@ const createHeaderValidator = (conf, logger) => async (
         logger.info(`skip validation for ${resource}`);
         return await next();
     }
+
+    const apiType = defineApiType(resource, conf);
 
     // Always validate the accept header for a get request, or optionally if it has been
     // supplied
@@ -305,6 +306,7 @@ const createHeaderValidator = (conf, logger) => async (
         logger.error('contentType header is invalid');
         return;
     }
+
     if (!supportedProtocolVersions.includes(contentType.version)) {
         ctx.response.status = Errors.MojaloopApiErrorCodes.UNACCEPTABLE_VERSION.httpStatusCode;
         ctx.response.body = new Errors.MojaloopFSPIOPError(
@@ -480,6 +482,13 @@ const createResponseBodyHandler = () => async (ctx, next) => {
         ctx.response.body = '';
     }
     return await next();
+};
+
+const defineApiType = (resource, config) => {
+    if (ONLY_FSPIOP_RESOURCES.includes(resource)) {
+        return API_TYPES.fspiop;
+    }
+    return config.apiType;
 };
 
 
