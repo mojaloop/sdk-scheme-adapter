@@ -5,7 +5,7 @@ run_int_tests() {
   pushd modules/$1
   yarn run start & echo $! > /tmp/sdk-scheme-adapter.pid
   sleep 10
-  yarn run test:integration
+  npm run test:integration
   kill $(cat /tmp/sdk-scheme-adapter.pid)
   popd
 }
