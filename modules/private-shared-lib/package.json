@@ -18,6 +18,7 @@
   "scripts": {
     "build": "tsc",
     "test:unit": "jest --passWithNoTests --testMatch '**/test/unit/**/*.test.ts'",
+    "test:xunit": "JEST_JUNIT_OUTPUT_DIR=../test/reports/ JEST_JUNIT_OUTPUT_NAME=xunit-lib.xml yarn run test:unit -- --reporters=jest-junit",
     "lint": "eslint --debug ./src/",
     "lint:fix": "eslint ./src/ --fix",
     "clean:dist": "rm -Rf dist",
