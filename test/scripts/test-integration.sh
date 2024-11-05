@@ -1,14 +1,11 @@
 #!/bin/bash
 set -xe
 
-echo "Validating OpenAPI specs"
-yarn run build:openapi && yarn run validate:api
-
 run_int_tests() {
   pushd modules/$1
   yarn run start & echo $! > /tmp/sdk-scheme-adapter.pid
   sleep 10
-  yarn run test:integration-dev
+  yarn run test:integration
   kill $(cat /tmp/sdk-scheme-adapter.pid)
   popd
 }
@@ -32,6 +29,9 @@ docker-compose down
 docker-compose up -d --wait --file docker-compose-pm4ml.yml
 docker-compose ps
 
-pushd modules/api-sv
+pushd modules/api-svc
 yarn run test:integration-pm4ml
 popd
+
+echo "Validating OpenAPI specs"
+yarn run build:openapi && yarn run validate:api
