@@ -4,8 +4,6 @@ services:
 
   sdk-scheme-adapter-api-svc:
     env_file: ./modules/api-svc/test/config/integration-pm4ml.env
-    environment:
-      - NODE_TLS_REJECT_UNAUTHORIZED=0
     depends_on:
       - mock-management-svc
     command: yarn nx run modules-api-svc:start
