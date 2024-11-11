@@ -198,6 +198,7 @@ module.exports = {
     requestProcessingTimeoutSeconds: env.get('REQUEST_PROCESSING_TIMEOUT_SECONDS').default('30').asIntPositive(),
 
     logIndent: env.get('LOG_INDENT').default('2').asIntPositive(),
+    isJsonOutput:  env.get('LOG_IS_JSON_OUTPUT').default('false').asBool(),
 
     allowTransferWithoutQuote: env.get('ALLOW_TRANSFER_WITHOUT_QUOTE').default('false').asBool(),
 

@@ -48,6 +48,19 @@ const LOG_ID = {
     CACHE:     { component: 'cache' },
 };
 
+const createLogger = () => new Logger.Logger({
+    context: {
+        // If we're running from a Mojaloop helm chart deployment, we'll have a SIM_NAME
+        simulator: process.env['SIM_NAME'],
+        hostname: hostname(),
+    },
+    opts: {
+        levels: SDK_LOGGER_HIERARCHY.slice(SDK_LOGGER_HIERARCHY.indexOf(config.logLevel)),
+        isJsonOutput: config.isJsonOutput,
+    },
+    // stringify: Logger.buildStringify({ space: this.conf.logIndent }),
+});
+
 const createCache = (config, logger) => new Cache({
     cacheUrl: config.cacheUrl,
     logger: logger.push(LOG_ID.CACHE),
@@ -171,15 +184,7 @@ class Server extends EventEmitter {
         this.logger.isDebugEnabled && this.logger.debug('Server is restarting...');
         const updateLogger = !_.isEqual(newConf.logIndent, this.conf.logIndent);
         if (updateLogger) {
-            this.logger = new Logger.Logger({
-                context: {
-                    // If we're running from a Mojaloop helm chart deployment, we'll have a SIM_NAME
-                    simulator: process.env['SIM_NAME'],
-                    hostname: hostname(),
-                },
-                opts: {levels: SDK_LOGGER_HIERARCHY.slice(SDK_LOGGER_HIERARCHY.indexOf(config.logLevel))},
-                stringify: Logger.buildStringify({ space: this.conf.logIndent }),
-            });
+            this.logger = createLogger();
         }
 
         let oldCache;
@@ -341,15 +346,8 @@ if(require.main === module) {
     (async () => {
         // this module is main i.e. we were started as a server;
         // not used in unit test or "require" scenarios
-        const logger = new Logger.Logger({
-            context: {
-                // If we're running from a Mojaloop helm chart deployment, we'll have a SIM_NAME
-                simulator: process.env['SIM_NAME'],
-                hostname: hostname(),
-            },
-            opts: {levels: SDK_LOGGER_HIERARCHY.slice(SDK_LOGGER_HIERARCHY.indexOf(config.logLevel))},
-            stringify: Logger.buildStringify({ space: config.logIndent }),
-        });
+        const logger = createLogger();
+
         if(config.pm4mlEnabled) {
             const controlClient = await ControlAgent.Client.Create({
                 address: config.control.mgmtAPIWsUrl,
@@ -365,7 +363,7 @@ if(require.main === module) {
         const svr = new Server(config, logger);
         svr.on('error', (err) => {
             logger.isErrorEnabled && logger.push({ err }).error('Unhandled server error');
-            process.exit(1);
+            process.exit(2);
         });
 
         // handle SIGTERM to exit gracefully
