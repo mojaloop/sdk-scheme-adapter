@@ -55,80 +55,80 @@ const dummyRequestsModuleResponse = {
 
 };
 const originalIso20022QuoteResponse = {
-    "GrpHdr": {
-      "MsgId": "01JBFFD18ZTQSVVYQ419WNFB22",
-      "CreDtTm": "2024-10-30T19:45:50.879Z",
-      "NbOfTxs": "1",
-      "SttlmInf": {
-        "SttlmMtd": "CLRG"
-      },
-      "PmtInstrXpryDtTm": "2024-10-30T19:46:50.878Z"
-    },
-    "CdtTrfTxInf": {
-      "PmtId": {
-        "TxId": "01JBFFD182CCQ9X0RG143CZM0A"
-      },
-      "Dbtr": {
-        "Id": {
-          "PrvtId": {
-            "Othr": {
-              "SchmeNm": {
-                "Prtry": "MSISDN"
-              },
-              "Id": "44123456789"
-            }
-          }
-        }
-      },
-      "DbtrAgt": {
-        "FinInstnId": {
-          "Othr": {
-            "Id": "testingtoolkitdfsp"
-          }
-        }
-      },
-      "Cdtr": {
-        "Id": {
-          "PrvtId": {
-            "Othr": {
-              "SchmeNm": {
-                "Prtry": "MSISDN"
-              },
-              "Id": "27713803912"
-            }
-          }
-        }
-      },
-      "CdtrAgt": {
-        "FinInstnId": {
-          "Othr": {
-            "Id": "payeefsp"
-          }
-        }
-      },
-      "ChrgBr": "DEBT",
-      "IntrBkSttlmAmt": {
-        "Ccy": "XXX",
-        "ActiveCurrencyAndAmount": "100"
-      },
-      "ChrgsInf": {
-        "Amt": {
-          "Ccy": "XXX",
-          "ActiveOrHistoricCurrencyAndAmount": "5"
+    'GrpHdr': {
+        'MsgId': '01JBFFD18ZTQSVVYQ419WNFB22',
+        'CreDtTm': '2024-10-30T19:45:50.879Z',
+        'NbOfTxs': '1',
+        'SttlmInf': {
+            'SttlmMtd': 'CLRG'
         },
-        "Agt": {
-          "FinInstnId": {
-            "Othr": {
-              "Id": "payeefsp"
+        'PmtInstrXpryDtTm': '2024-10-30T19:46:50.878Z'
+    },
+    'CdtTrfTxInf': {
+        'PmtId': {
+            'TxId': '01JBFFD182CCQ9X0RG143CZM0A'
+        },
+        'Dbtr': {
+            'Id': {
+                'PrvtId': {
+                    'Othr': {
+                        'SchmeNm': {
+                            'Prtry': 'MSISDN'
+                        },
+                        'Id': '44123456789'
+                    }
+                }
             }
-          }
+        },
+        'DbtrAgt': {
+            'FinInstnId': {
+                'Othr': {
+                    'Id': 'testingtoolkitdfsp'
+                }
+            }
+        },
+        'Cdtr': {
+            'Id': {
+                'PrvtId': {
+                    'Othr': {
+                        'SchmeNm': {
+                            'Prtry': 'MSISDN'
+                        },
+                        'Id': '27713803912'
+                    }
+                }
+            }
+        },
+        'CdtrAgt': {
+            'FinInstnId': {
+                'Othr': {
+                    'Id': 'payeefsp'
+                }
+            }
+        },
+        'ChrgBr': 'DEBT',
+        'IntrBkSttlmAmt': {
+            'Ccy': 'XXX',
+            'ActiveCurrencyAndAmount': '100'
+        },
+        'ChrgsInf': {
+            'Amt': {
+                'Ccy': 'XXX',
+                'ActiveOrHistoricCurrencyAndAmount': '5'
+            },
+            'Agt': {
+                'FinInstnId': {
+                    'Othr': {
+                        'Id': 'payeefsp'
+                    }
+                }
+            }
+        },
+        'VrfctnOfTerms': {
+            'IlpV4PrepPacket': 'DIICtgAAAAAAAABkMjAyNDEwMzAxOTQ2NTA4NzgZAqBJ87fHeZXM6R20d_r-M9YFc7soJySdK1G02BVlPQpnLm1vamFsb29wggJvZXlKeGRXOTBaVWxrSWpvaU1ERktRa1pHUkRFNE1rTkRVVGxZTUZKSE1UUXpRMXBOTUVFaUxDSjBjbUZ1YzJGamRHbHZia2xrSWpvaU1ERktRa1pHUkRFNE1rTkRVVGxZTUZKSE1UUXpRMXBOTUVJaUxDSjBjbUZ1YzJGamRHbHZibFI1Y0dVaU9uc2ljMk5sYm1GeWFXOGlPaUpVVWtGT1UwWkZVaUlzSW1sdWFYUnBZWFJ2Y2lJNklsQkJXVVZTSWl3aWFXNXBkR2xoZEc5eVZIbHdaU0k2SWtKVlUwbE9SVk5USW4wc0luQmhlV1ZsSWpwN0luQmhjblI1U1dSSmJtWnZJanA3SW5CaGNuUjVTV1JVZVhCbElqb2lUVk5KVTBST0lpd2ljR0Z5ZEhsSlpHVnVkR2xtYVdWeUlqb2lNamMzTVRNNE1ETTVNVElpTENKbWMzQkpaQ0k2SW5CaGVXVmxabk53SW4xOUxDSndZWGxsY2lJNmV5SndZWEowZVVsa1NXNW1ieUk2ZXlKd1lYSjBlVWxrVkhsd1pTSTZJazFUU1ZORVRpSXNJbkJoY25SNVNXUmxiblJwWm1sbGNpSTZJalEwTVRJek5EVTJOemc1SWl3aVpuTndTV1FpT2lKMFpYTjBhVzVuZEc5dmJHdHBkR1JtYzNBaWZYMHNJbVY0Y0dseVlYUnBiMjRpT2lJeU1ESTBMVEV3TFRNd1ZERTVPalEyT2pVd0xqZzNPRm9pTENKaGJXOTFiblFpT25zaVlXMXZkVzUwSWpvaU1UQXdJaXdpWTNWeWNtVnVZM2tpT2lKWVdGZ2lmWDA'
         }
-      },
-      "VrfctnOfTerms": {
-        "IlpV4PrepPacket": "DIICtgAAAAAAAABkMjAyNDEwMzAxOTQ2NTA4NzgZAqBJ87fHeZXM6R20d_r-M9YFc7soJySdK1G02BVlPQpnLm1vamFsb29wggJvZXlKeGRXOTBaVWxrSWpvaU1ERktRa1pHUkRFNE1rTkRVVGxZTUZKSE1UUXpRMXBOTUVFaUxDSjBjbUZ1YzJGamRHbHZia2xrSWpvaU1ERktRa1pHUkRFNE1rTkRVVGxZTUZKSE1UUXpRMXBOTUVJaUxDSjBjbUZ1YzJGamRHbHZibFI1Y0dVaU9uc2ljMk5sYm1GeWFXOGlPaUpVVWtGT1UwWkZVaUlzSW1sdWFYUnBZWFJ2Y2lJNklsQkJXVVZTSWl3aWFXNXBkR2xoZEc5eVZIbHdaU0k2SWtKVlUwbE9SVk5USW4wc0luQmhlV1ZsSWpwN0luQmhjblI1U1dSSmJtWnZJanA3SW5CaGNuUjVTV1JVZVhCbElqb2lUVk5KVTBST0lpd2ljR0Z5ZEhsSlpHVnVkR2xtYVdWeUlqb2lNamMzTVRNNE1ETTVNVElpTENKbWMzQkpaQ0k2SW5CaGVXVmxabk53SW4xOUxDSndZWGxsY2lJNmV5SndZWEowZVVsa1NXNW1ieUk2ZXlKd1lYSjBlVWxrVkhsd1pTSTZJazFUU1ZORVRpSXNJbkJoY25SNVNXUmxiblJwWm1sbGNpSTZJalEwTVRJek5EVTJOemc1SWl3aVpuTndTV1FpT2lKMFpYTjBhVzVuZEc5dmJHdHBkR1JtYzNBaWZYMHNJbVY0Y0dseVlYUnBiMjRpT2lJeU1ESTBMVEV3TFRNd1ZERTVPalEyT2pVd0xqZzNPRm9pTENKaGJXOTFiblFpT25zaVlXMXZkVzUwSWpvaU1UQXdJaXdpWTNWeWNtVnVZM2tpT2lKWVdGZ2lmWDA"
-      }
     }
-}
+};
 // util function to simulate a party resolution subscription message on a cache client
 const emitPartyCacheMessage = (cache, party) => cache.publish(genPartyId(party), JSON.stringify(party));
 
@@ -171,7 +171,6 @@ describe('API_TYPE="iso20022"', () => {
 
     test('executes all three transfer stages sending ISO20022 request bodies to the peer when API_TYPE="iso20022"', async () => {
         let postQuotesBody;
-        let postTransfersBody;
 
         // mock the final method MojaloopRequests calls to send the http request
         // this allows us to spy on the request body being sent
@@ -188,7 +187,7 @@ describe('API_TYPE="iso20022"', () => {
                 // post quotes called
                 expect(opts.body).not.toBeUndefined();
 
-                postQuotesBody = JSON.parse(opts.body);
+                postQuotesBody = opts.body;
 
                 expect(postQuotesBody.CdtTrfTxInf).not.toBeUndefined();
                 expect(postQuotesBody.CdtTrfTxInf.PmtId).not.toBeUndefined();
@@ -205,7 +204,7 @@ describe('API_TYPE="iso20022"', () => {
                 // transfer prepare called
                 expect(opts.body).not.toBeUndefined();
 
-                let postTransfersBody = JSON.parse(opts.body);
+                let postTransfersBody = opts.body;
 
                 expect(postTransfersBody.CdtTrfTxInf).not.toBeUndefined();
                 expect(postTransfersBody.CdtTrfTxInf.PmtId).not.toBeUndefined();

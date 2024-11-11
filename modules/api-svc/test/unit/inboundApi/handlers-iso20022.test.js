@@ -19,17 +19,16 @@ process.env.CACHE_URL = 'redis://172.17.0.2:6379';
 process.env.MGMT_API_WS_URL = '0.0.0.0';
 process.env.SUPPORTED_CURRENCIES='USD';
 
-jest.mock('~/lib/model');
+jest.mock('../../../src/lib/model');
 
 const { Logger } = require('@mojaloop/sdk-standard-components');
-const handlers = require('~/InboundServer/handlers');
-const Model = require('~/lib/model').InboundTransfersModel;
-const QuotesModel = require('~/lib/model').QuotesModel;
-const PartiesModel = require('~/lib/model').PartiesModel;
-const TransfersModel = require('~/lib/model').TransfersModel;
+const handlers = require('../../../src/InboundServer/handlers');
+const Model = require('../../../src/lib/model').InboundTransfersModel;
+const QuotesModel = require('../../../src/lib/model').QuotesModel;
+const PartiesModel = require('../../../src/lib/model').PartiesModel;
+const TransfersModel = require('../../../src/lib/model').TransfersModel;
 
-const { API_TYPES } = require('../../../src/constants');
-const { createIsoHeader } = require('../../utils');
+const { createIsoHeader } = require('../../helpers');
 const isoBodies = require('./data/isoBodies.json');
 
 const logger = new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' } });

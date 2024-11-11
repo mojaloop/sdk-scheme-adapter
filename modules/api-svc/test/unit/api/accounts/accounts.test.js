@@ -44,10 +44,6 @@ describe('Outbound Accounts API', () => {
         redisClient = redis.createClient(defaultConfig);
     });
 
-    afterAll(async () => {
-        await redisClient.disconnect();
-    });
-
     beforeEach(async () => {
         serversInfo = await createTestServers(defaultConfig);
         testPostAccounts = createPostAccountsTester({
@@ -59,6 +55,10 @@ describe('Outbound Accounts API', () => {
 
     afterEach(async () => {
         await destroyTestServers(serversInfo);
+    });
+
+    afterAll(async () => {
+        await redisClient.disconnect();
     });
 
     describe('POST /accounts', () => {
@@ -74,22 +74,18 @@ describe('Outbound Accounts API', () => {
                 })),
                 currency: body.currency,
             });
-            return testPostAccounts(putBodyFn, 200,
-                postAccountsSuccessResponse);
+            return testPostAccounts(putBodyFn, 200, postAccountsSuccessResponse);
         });
 
-        test(
-            'should return success response with error info on invalid currency (1)',
-            () => {
-                const putBodyFn = (body) => ({
-                    partyList: body.partyList.map(party => ({
-                        partyId: party,
-                    })),
-                    currency: undefined,
-                });
-                return testPostAccounts(putBodyFn, 200,
-                    postAccountsSuccessResponseWithError1);
+        test('should return success response with error info on invalid currency (1)', () => {
+            const putBodyFn = (body) => ({
+                partyList: body.partyList.map(party => ({
+                    partyId: party,
+                })),
+                currency: undefined,
             });
+            return testPostAccounts(putBodyFn, 200, postAccountsSuccessResponseWithError1);
+        });
 
         test(
             'should return success response with error info on errorInformation presence (2)',

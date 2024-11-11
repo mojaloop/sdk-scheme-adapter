@@ -39,7 +39,7 @@ const { Logger } = require('@mojaloop/sdk-standard-components');
 const InboundServer = require('../../src/InboundServer');
 const Cache = require('../../src/lib/cache');
 const config = require('../../src/config');
-const utils = require('../utils');
+const helpers = require('../helpers');
 const isoBodies = require('./inboundApi/data/isoBodies');
 const commonHttpHeaders = require('./data/commonHttpHeaders');
 const transactionRequestResponse = require('./lib/model/data/transactionRequestResponse');
@@ -48,7 +48,7 @@ const logger = new Logger.Logger();
 
 const createIsoHeaders = resource => ({
     ...commonHttpHeaders,
-    'content-type': utils.createIsoHeader(resource)
+    'content-type': helpers.createIsoHeader(resource)
 });
 
 describe('Inbound Server ISO-20022 Tests -->', () => {
@@ -99,7 +99,7 @@ describe('Inbound Server ISO-20022 Tests -->', () => {
             test('should pass validation for PUT /transactionRequests request with FSPIOP header', async () => {
                 const fspiopHeaders = {
                     ...commonHttpHeaders,
-                    'content-type': utils.createFspiopHeader(resource, '2.0'),
+                    'content-type': helpers.createFspiopHeader(resource, '2.0'),
                 };
                 const mockReq = createPutRequestDetails(fspiopHeaders);
 
