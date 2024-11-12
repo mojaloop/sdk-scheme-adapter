@@ -38,7 +38,7 @@ However, take note of the default argument in the [Dockerfile](./Dockerfile) for
 ARG NODE_VERSION=lts-alpine
 ```
 
-It is recommend that you set the `NODE_VERSION` argument against the version set in the local [.nvmrc](./.nvmrc).
+It is recommended that you set the `NODE_VERSION` argument against the version set in the local [.nvmrc](./.nvmrc).
 
 This can be done using the following command:
 
