@@ -10,10 +10,6 @@ run_int_tests() {
   popd
 }
 
-docker -v
-docker compose version
-docker-compose -v
-
 docker load -i /tmp/docker-image.tar
 docker compose up -d
 docker compose ps
@@ -29,9 +25,9 @@ run_int_tests outbound-command-event-handler
 
 echo "Execute PM4ML Integration Tests"
 
-cd docker/haproxy/tls
+pushd docker/haproxy/tls
 sh createSecrets.sh
-cd $CIRCLE_WORKING_DIRECTORY
+popd
 
 docker compose down
 docker compose -f ./docker-compose.yml -f ./docker-compose.pm4ml.yml up -d
