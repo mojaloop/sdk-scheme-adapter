@@ -10,9 +10,13 @@ run_int_tests() {
   popd
 }
 
+docker -v
+docker compose version
+docker-compose -v
+
 docker load -i /tmp/docker-image.tar
-docker-compose up -d
-docker-compose ps
+docker compose up -d
+docker compose ps
 
 yarn run wait-4-docker
 
@@ -29,9 +33,9 @@ cd docker/haproxy/tls
 sh createSecrets.sh
 cd $CIRCLE_WORKING_DIRECTORY
 
-docker-compose down
-docker-compose -f ./docker-compose.yml -f ./docker-compose.pm4ml.yml up -d
-docker-compose ps
+docker compose down
+docker compose -f ./docker-compose.yml -f ./docker-compose.pm4ml.yml up -d
+docker compose ps
 
 yarn run wait-4-docker
 
