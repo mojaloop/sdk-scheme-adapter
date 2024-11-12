@@ -14,15 +14,16 @@ const { hostname } = require('os');
 const EventEmitter = require('events');
 const _ = require('lodash');
 const { Logger } = require('@mojaloop/sdk-standard-components');
-const config = require('./config');
+const { name, version } = require('../../../package.json');
 
+const config = require('./config');
 const InboundServer = require('./InboundServer');
 const OutboundServer = require('./OutboundServer');
 const OAuthTestServer = require('./OAuthTestServer');
 const { BackendEventHandler } = require('./BackendEventHandler');
 const { FSPIOPEventHandler } = require('./FSPIOPEventHandler');
-const TestServer = require('./TestServer');
 const { MetricsServer, MetricsClient } = require('./lib/metrics');
+const TestServer = require('./TestServer');
 const ControlAgent = require('./ControlAgent');
 
 // import things we want to expose e.g. for unit tests and users who dont want to use the entire
@@ -342,13 +343,13 @@ async function _GetUpdatedConfigFromMgmtAPI(conf, logger, client) {
     return responseRead.data;
 }
 
-if(require.main === module) {
+if (require.main === module) {
     (async () => {
         // this module is main i.e. we were started as a server;
         // not used in unit test or "require" scenarios
         const logger = createLogger();
 
-        if(config.pm4mlEnabled) {
+        if (config.pm4mlEnabled) {
             const controlClient = await ControlAgent.Client.Create({
                 address: config.control.mgmtAPIWsUrl,
                 port: config.control.mgmtAPIWsPort,
@@ -356,13 +357,13 @@ if(require.main === module) {
                 appConfig: config,
             });
             const updatedConfigFromMgmtAPI = await _GetUpdatedConfigFromMgmtAPI(config, logger, controlClient);
-            logger.isInfoEnabled && logger.info(`updatedConfigFromMgmtAPI: ${JSON.stringify(updatedConfigFromMgmtAPI)}`);
+            logger.isInfoEnabled && logger.push({ updatedConfigFromMgmtAPI }).info('updatedConfigFromMgmtAPI:');
             _.merge(config, updatedConfigFromMgmtAPI);
             controlClient.terminate();
         }
         const svr = new Server(config, logger);
         svr.on('error', (err) => {
-            logger.isErrorEnabled && logger.push({ err }).error('Unhandled server error');
+            logger.push({ err }).error('Unhandled server error');
             process.exit(2);
         });
 
@@ -373,10 +374,12 @@ if(require.main === module) {
             process.exit(0);
         });
 
-        svr.start().catch(err => {
-            logger.isErrorEnabled && logger.push({ err }).error('Error starting server');
+        await svr.start().catch(err => {
+            logger.push({ err }).error('Error starting server');
             process.exit(1);
         });
+
+        logger.isInfoEnabled && logger.push({ name, version }).info('SDK server is started!');
     })();
 }
 
