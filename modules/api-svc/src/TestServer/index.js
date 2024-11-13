@@ -44,7 +44,7 @@ class TestApi {
 
         this._api.use(middlewares.createRequestValidator(validator));
         this._api.use(router(handlers));
-        this._api.use(middlewares.createResponseBodyHandler());
+        this._api.use(middlewares.createResponseBodyHandler(logger));
     }
 
     callback() {
