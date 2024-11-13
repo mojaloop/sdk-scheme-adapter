@@ -49,17 +49,17 @@ const LOG_ID = {
     CACHE:     { component: 'cache' },
 };
 
-const createLogger = () => new Logger.Logger({
+const createLogger = (conf) => new Logger.Logger({
     context: {
         // If we're running from a Mojaloop helm chart deployment, we'll have a SIM_NAME
         simulator: process.env['SIM_NAME'],
         hostname: hostname(),
     },
     opts: {
-        levels: SDK_LOGGER_HIERARCHY.slice(SDK_LOGGER_HIERARCHY.indexOf(config.logLevel)),
-        isJsonOutput: config.isJsonOutput,
+        levels: SDK_LOGGER_HIERARCHY.slice(SDK_LOGGER_HIERARCHY.indexOf(conf.logLevel)),
+        isJsonOutput: conf.isJsonOutput,
     },
-    // stringify: Logger.buildStringify({ space: this.conf.logIndent }),
+    stringify: Logger.buildStringify({ isJsonOutput: conf.isJsonOutput }),
 });
 
 const createCache = (config, logger) => new Cache({
@@ -183,9 +183,9 @@ class Server extends EventEmitter {
     //       (!) lots of code duplication
     async restart(newConf) {
         this.logger.isDebugEnabled && this.logger.debug('Server is restarting...');
-        const updateLogger = !_.isEqual(newConf.logIndent, this.conf.logIndent);
+        const updateLogger = !_.isEqual(newConf.isJsonOutput, this.conf.isJsonOutput);
         if (updateLogger) {
-            this.logger = createLogger();
+            this.logger = createLogger(newConf);
         }
 
         let oldCache;
@@ -347,7 +347,7 @@ if (require.main === module) {
     (async () => {
         // this module is main i.e. we were started as a server;
         // not used in unit test or "require" scenarios
-        const logger = createLogger();
+        const logger = createLogger(config);
 
         if (config.pm4mlEnabled) {
             const controlClient = await ControlAgent.Client.Create({
