@@ -1692,15 +1692,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/compat@npm:^1.2.2":
-  version: 1.2.2
-  resolution: "@eslint/compat@npm:1.2.2"
+"@eslint/compat@npm:^1.2.3":
+  version: 1.2.3
+  resolution: "@eslint/compat@npm:1.2.3"
   peerDependencies:
     eslint: ^9.10.0
   peerDependenciesMeta:
     eslint:
       optional: true
-  checksum: 02708de14b32870f44b4fbb78d1bf9e7fb8741a3038bcaea91239a161a0884b676b4c9b5a2346a145d76981710427f5a2d56f65e5bc0579bd288286e88f43ee2
+  checksum: 71b328099365fd24d6f16fb7dc64c117d74a42c3622605351b66c5eab5027e00f7d8a8a3f42c45221e8ad41221b598e3865078eb11171a2d6d3296a1626c4d9b
   languageName: node
   linkType: hard
 
@@ -2503,7 +2503,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/ml-schema-transformer-lib@npm:2.3.4, @mojaloop/ml-schema-transformer-lib@npm:^2.3.4":
+"@mojaloop/ml-schema-transformer-lib@npm:2.4.0":
+  version: 2.4.0
+  resolution: "@mojaloop/ml-schema-transformer-lib@npm:2.4.0"
+  dependencies:
+    "@mojaloop/central-services-error-handling": ^13.0.2
+    "@mojaloop/central-services-logger": ^11.5.1
+    "@mojaloop/central-services-shared": ^18.11.1
+    "@rollup/rollup-linux-x64-musl": 4.26.0
+    ilp-packet: 2.2.0
+    map-transform-cjs: ^0.2.0
+  dependenciesMeta:
+    "@rollup/rollup-linux-x64-musl":
+      optional: true
+  checksum: 3b2be2229c5a104bded8fe07a96513f25a6c5cbcb6f093fed63abe92f3f9c8d5f2ee65576f6e687533130ea9a83c8b1da755643763c07f754661ae660b7d6f11
+  languageName: node
+  linkType: hard
+
+"@mojaloop/ml-schema-transformer-lib@npm:^2.3.4":
   version: 2.3.4
   resolution: "@mojaloop/ml-schema-transformer-lib@npm:2.3.4"
   dependencies:
@@ -2569,7 +2586,7 @@ __metadata:
     "@mojaloop/central-services-metrics": ^12.1.0
     "@mojaloop/central-services-shared": 18.11.1
     "@mojaloop/event-sdk": ^14.1.1
-    "@mojaloop/ml-schema-transformer-lib": 2.3.4
+    "@mojaloop/ml-schema-transformer-lib": 2.4.0
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
     "@mojaloop/sdk-standard-components": 19.5.0-snapshot.12
     "@redocly/openapi-cli": ^1.0.0-beta.94
@@ -2620,7 +2637,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-command-event-handler@workspace:modules/outbound-command-event-handler"
   dependencies:
-    "@eslint/compat": ^1.2.2
+    "@eslint/compat": ^1.2.3
     "@mojaloop/api-snippets": 17.7.4
     "@mojaloop/central-services-shared": ^18.11.1
     "@mojaloop/logging-bc-client-lib": ^0.1.17
@@ -2697,7 +2714,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-private-shared-lib@workspace:modules/private-shared-lib"
   dependencies:
-    "@eslint/compat": ^1.2.2
+    "@eslint/compat": ^1.2.3
     "@mojaloop/api-snippets": 17.7.4
     "@mojaloop/central-services-shared": ^18.11.1
     "@mojaloop/logging-bc-public-types-lib": ^0.5.4
@@ -3297,6 +3314,13 @@ __metadata:
 "@rollup/rollup-linux-x64-musl@npm:4.24.3":
   version: 4.24.3
   resolution: "@rollup/rollup-linux-x64-musl@npm:4.24.3"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@rollup/rollup-linux-x64-musl@npm:4.26.0":
+  version: 4.26.0
+  resolution: "@rollup/rollup-linux-x64-musl@npm:4.26.0"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard

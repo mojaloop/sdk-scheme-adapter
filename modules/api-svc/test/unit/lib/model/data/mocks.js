@@ -1,5 +1,6 @@
 /*eslint quote-props: ["error", "as-needed"]*/
-const randomUUID = require('@mojaloop/central-services-shared').Util.id({type: 'ulid'});
+const randomUUID = require('@mojaloop/central-services-shared').Util.id({ type: 'ulid' });
+const { AmountTypes } = require('../../../../../src/lib/model/common');
 
 const DEFAULT_ID_VALUE = '2551234567890';
 
@@ -17,7 +18,7 @@ const mockFxQuotesPayload = ({
     determiningTransferId = randomUUID(),
     initiatingFsp = 'initiatingFsp',
     counterPartyFsp = 'fxpId',
-    amountType = 'RECEIVE',
+    amountType = AmountTypes.SEND,
     sourceAmount = mockCurrencyAmount(),
     targetAmount = mockCurrencyAmount(),
     expiration = new Date().toISOString(),
@@ -41,7 +42,7 @@ const mockFxQuotesResponse = ({
     determiningTransferId = randomUUID(),
     initiatingFsp = 'initiatingFsp',
     counterPartyFsp = 'fxpId',
-    amountType = 'RECEIVE',
+    amountType = AmountTypes.SEND,
     sourceAmount = mockCurrencyAmount(),
     targetAmount = mockCurrencyAmount(),
     expiration = new Date().toISOString(),
@@ -108,6 +109,7 @@ const coreConnectorPostTransfersPayloadDto = ({
     fspId = 'PayerFSP',
     currency = 'BWP',
     amount = '300',
+    amountType = AmountTypes.SEND,
     idType = 'MSISDN',
     idValue = DEFAULT_ID_VALUE
 } = {}) => Object.freeze({
@@ -124,7 +126,7 @@ const coreConnectorPostTransfersPayloadDto = ({
         idType,
         idValue,
     },
-    amountType: 'SEND',
+    amountType,
     currency,
     amount
 });

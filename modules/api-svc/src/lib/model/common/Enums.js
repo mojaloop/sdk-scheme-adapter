@@ -48,9 +48,21 @@ const CacheKeyPrefixes = Object.freeze({
     FX_TRANSFER_CALLBACK_CHANNEL: 'fxTransfer_callback',
 });
 
-const CurrencyConverters = Object.freeze({
+const CurrencyConverters = Object.freeze({ // think, if we need it?
     PAYER: 'PAYER',
     PAYEE: 'PAYEE',
+});
+
+const Initiator = Object.freeze({
+    PAYER: 'PAYER',
+    PAYEE: 'PAYEE',
+});
+
+const InitiatorType = Object.freeze({
+    CONSUMER: 'CONSUMER',
+    AGENT: 'AGENT',
+    BUSINESS: 'BUSINESS',
+    DEVICE: 'DEVICE',
 });
 
 const States = Object.freeze({
@@ -82,7 +94,8 @@ const ErrorMessages = Object.freeze({
     noFxProviderDetected: 'No FX provider detected',
     noSupportedCurrencies: 'No payee supportedCurrencies received',
     responseMissedExpiryDeadline: 'Response missed expiry deadline',
-    unsupportedFxAmountType: 'Unsupported amountType when currency conversion is needed',
+    quoteRejectedByBackend: 'Quote rejected by backend',
+    fxQuoteRejectedByBackend: 'FX quote rejected by backend',
 });
 
 const AmountTypes = Object.freeze({
@@ -96,6 +109,8 @@ module.exports = {
     CurrencyConverters,
     Directions,
     ErrorMessages,
+    Initiator,
+    InitiatorType,
     SDKStateEnum,
     States,
     TransactionRequestStateEnum,
