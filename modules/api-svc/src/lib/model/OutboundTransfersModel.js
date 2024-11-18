@@ -25,7 +25,7 @@ const {
     Directions,
     ErrorMessages,
     Initiator,
-    InitiatorType,
+    InitiatorTypes,
     SDKStateEnum,
     States,
     Transitions
@@ -741,7 +741,7 @@ class OutboundTransfersModel {
             // TODO: defaulting to CONSUMER initiator type should
             // be replaced with a required element on the incoming
             // API request
-            initiatorType: this.data.from.type || InitiatorType.CONSUMER
+            initiatorType: this.data.from.type || InitiatorTypes.CONSUMER
         };
 
         // geocode
@@ -1175,7 +1175,7 @@ class OutboundTransfersModel {
      *
      * @param mergeData {object} - an object to merge with the model state (data) before running the state machine
      */
-    async run(mergeData) {
+    async run(mergeData = null) {
         try {
             // if we were passed a mergeData object...
             // merge it with our existing state, overwriting any existing matching root level keys
@@ -1204,6 +1204,7 @@ class OutboundTransfersModel {
                         // we already have the payee DFSP and we have bee asked to skip party resolution
                         this._logger.isDebugEnabled && this._logger.debug(`Skipping payee resolution for transfer ${this.data.transferId} as to.fspId was provided and skipPartyLookup is truthy`);
                         this.data.currentState = States.PAYEE_RESOLVED;
+                        // (!) this.data.currentState and this.stateMachine.state are different now!
                         break;
                     }
 
@@ -1251,6 +1252,7 @@ class OutboundTransfersModel {
 
                     if ([States.QUOTE_RECEIVED, States.FX_QUOTE_RECEIVED].includes(this.stateMachine.state)) {
                         //we break execution here and return the quotes/fxQuote response details to allow asynchronous accept or reject
+                        this._logger.isDebugEnabled && this._logger.debug(`Transfer ${this.data.transferId} waits for async accept or reject`);
                         await this._save();
                         return this.getResponse();
                     }
@@ -1323,8 +1325,8 @@ class OutboundTransfersModel {
 
                 case States.ABORTED:
                     // stopped in aborted state
-                    await this._save();
                     this._logger.isWarnEnabled && this._logger.warn('State machine in aborted state');
+                    await this._save();
                     return this.getResponse();
 
                     // todo: no such state!
@@ -1350,7 +1352,7 @@ class OutboundTransfersModel {
             // as this function is recursive, we dont want to error the state machine multiple times
             if (this.data.currentState !== States.ERRORED) {
                 // err should not have a transferState property here!
-                if(err.transferState) {
+                if (err.transferState) {
                     this._logger.isErrorEnabled && this._logger.error(`State machine is broken: ${safeStringify(err)}`);
                 }
                 // transition to errored state

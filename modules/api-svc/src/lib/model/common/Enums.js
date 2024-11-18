@@ -58,7 +58,7 @@ const Initiator = Object.freeze({
     PAYEE: 'PAYEE',
 });
 
-const InitiatorType = Object.freeze({
+const InitiatorTypes = Object.freeze({
     CONSUMER: 'CONSUMER',
     AGENT: 'AGENT',
     BUSINESS: 'BUSINESS',
@@ -110,7 +110,7 @@ module.exports = {
     Directions,
     ErrorMessages,
     Initiator,
-    InitiatorType,
+    InitiatorTypes,
     SDKStateEnum,
     States,
     TransactionRequestStateEnum,
