@@ -188,7 +188,6 @@ describe('API_TYPE="iso20022"', () => {
                 // post quotes called
                 expect(opts.body).not.toBeUndefined();
 
-                // postQuotesBody = JSON.parse(opts.body);
                 postQuotesBody = opts.body;
 
                 expect(postQuotesBody.CdtTrfTxInf).not.toBeUndefined();
@@ -206,7 +205,6 @@ describe('API_TYPE="iso20022"', () => {
                 // transfer prepare called
                 expect(opts.body).not.toBeUndefined();
 
-                // let postTransfersBody = JSON.parse(opts.body);
                 let postTransfersBody = opts.body;
 
                 expect(postTransfersBody.CdtTrfTxInf).not.toBeUndefined();
