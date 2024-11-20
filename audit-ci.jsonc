@@ -50,6 +50,5 @@
         "GHSA-rv95-896h-c2vc",
         "GHSA-3xgq-45jj-v275", // https://github.com/advisories/GHSA-3xgq-45jj-v275
         "GHSA-7q7g-4xm8-89cq" // https://github.com/advisories/GHSA-7q7g-4xm8-89cq
-
     ]
 }

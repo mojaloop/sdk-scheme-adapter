@@ -72,7 +72,7 @@
     "@mojaloop/event-sdk": "^14.1.1",
     "@mojaloop/ml-schema-transformer-lib": "2.4.1",
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^",
-    "@mojaloop/sdk-standard-components": "19.5.0-snapshot.12",
+    "@mojaloop/sdk-standard-components": "19.5.1",
     "ajv": "8.17.1",
     "axios": "^1.7.7",
     "co-body": "^6.2.0",
