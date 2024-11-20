@@ -14,15 +14,16 @@ const { hostname } = require('os');
 const EventEmitter = require('events');
 const _ = require('lodash');
 const { Logger } = require('@mojaloop/sdk-standard-components');
-const config = require('./config');
+const { name, version } = require('../../../package.json');
 
+const config = require('./config');
 const InboundServer = require('./InboundServer');
 const OutboundServer = require('./OutboundServer');
 const OAuthTestServer = require('./OAuthTestServer');
 const { BackendEventHandler } = require('./BackendEventHandler');
 const { FSPIOPEventHandler } = require('./FSPIOPEventHandler');
-const TestServer = require('./TestServer');
 const { MetricsServer, MetricsClient } = require('./lib/metrics');
+const TestServer = require('./TestServer');
 const ControlAgent = require('./ControlAgent');
 
 // import things we want to expose e.g. for unit tests and users who dont want to use the entire
@@ -47,6 +48,19 @@ const LOG_ID = {
     METRICS:   { app: 'mojaloop-connector-metrics' },
     CACHE:     { component: 'cache' },
 };
+
+const createLogger = (conf) => new Logger.Logger({
+    context: {
+        // If we're running from a Mojaloop helm chart deployment, we'll have a SIM_NAME
+        simulator: process.env['SIM_NAME'],
+        hostname: hostname(),
+    },
+    opts: {
+        levels: SDK_LOGGER_HIERARCHY.slice(SDK_LOGGER_HIERARCHY.indexOf(conf.logLevel)),
+        isJsonOutput: conf.isJsonOutput,
+    },
+    stringify: Logger.buildStringify({ isJsonOutput: conf.isJsonOutput }),
+});
 
 const createCache = (config, logger) => new Cache({
     cacheUrl: config.cacheUrl,
@@ -169,17 +183,9 @@ class Server extends EventEmitter {
     //       (!) lots of code duplication
     async restart(newConf) {
         this.logger.isDebugEnabled && this.logger.debug('Server is restarting...');
-        const updateLogger = !_.isEqual(newConf.logIndent, this.conf.logIndent);
+        const updateLogger = !_.isEqual(newConf.isJsonOutput, this.conf.isJsonOutput);
         if (updateLogger) {
-            this.logger = new Logger.Logger({
-                context: {
-                    // If we're running from a Mojaloop helm chart deployment, we'll have a SIM_NAME
-                    simulator: process.env['SIM_NAME'],
-                    hostname: hostname(),
-                },
-                opts: {levels: SDK_LOGGER_HIERARCHY.slice(SDK_LOGGER_HIERARCHY.indexOf(config.logLevel))},
-                stringify: Logger.buildStringify({ space: this.conf.logIndent }),
-            });
+            this.logger = createLogger(newConf);
         }
 
         let oldCache;
@@ -337,20 +343,13 @@ async function _GetUpdatedConfigFromMgmtAPI(conf, logger, client) {
     return responseRead.data;
 }
 
-if(require.main === module) {
+if (require.main === module) {
     (async () => {
         // this module is main i.e. we were started as a server;
         // not used in unit test or "require" scenarios
-        const logger = new Logger.Logger({
-            context: {
-                // If we're running from a Mojaloop helm chart deployment, we'll have a SIM_NAME
-                simulator: process.env['SIM_NAME'],
-                hostname: hostname(),
-            },
-            opts: {levels: SDK_LOGGER_HIERARCHY.slice(SDK_LOGGER_HIERARCHY.indexOf(config.logLevel))},
-            stringify: Logger.buildStringify({ space: config.logIndent }),
-        });
-        if(config.pm4mlEnabled) {
+        const logger = createLogger(config);
+
+        if (config.pm4mlEnabled) {
             const controlClient = await ControlAgent.Client.Create({
                 address: config.control.mgmtAPIWsUrl,
                 port: config.control.mgmtAPIWsPort,
@@ -358,14 +357,14 @@ if(require.main === module) {
                 appConfig: config,
             });
             const updatedConfigFromMgmtAPI = await _GetUpdatedConfigFromMgmtAPI(config, logger, controlClient);
-            logger.isInfoEnabled && logger.info(`updatedConfigFromMgmtAPI: ${JSON.stringify(updatedConfigFromMgmtAPI)}`);
+            logger.isInfoEnabled && logger.push({ updatedConfigFromMgmtAPI }).info('updatedConfigFromMgmtAPI:');
             _.merge(config, updatedConfigFromMgmtAPI);
             controlClient.terminate();
         }
         const svr = new Server(config, logger);
         svr.on('error', (err) => {
-            logger.isErrorEnabled && logger.push({ err }).error('Unhandled server error');
-            process.exit(1);
+            logger.push({ err }).error('Unhandled server error');
+            process.exit(2);
         });
 
         // handle SIGTERM to exit gracefully
@@ -375,10 +374,12 @@ if(require.main === module) {
             process.exit(0);
         });
 
-        svr.start().catch(err => {
-            logger.isErrorEnabled && logger.push({ err }).error('Error starting server');
+        await svr.start().catch(err => {
+            logger.push({ err }).error('Error starting server');
             process.exit(1);
         });
+
+        logger.isInfoEnabled && logger.push({ name, version }).info('SDK server is started!');
     })();
 }
 

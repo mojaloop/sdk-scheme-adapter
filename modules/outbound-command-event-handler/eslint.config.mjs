@@ -71,10 +71,6 @@ export default [{
             ignoreRestArgs: true,
         }],
 
-        "indent": ["error", 4, {
-            SwitchCase: 1,
-        }],
-
         "react/jsx-filename-extension": [0, {
             extensions: [".js", ".jsx"],
         }],

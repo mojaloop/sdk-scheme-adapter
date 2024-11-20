@@ -206,8 +206,9 @@ const cacheRequest = (cache) => async (ctx, next) => {
  */
 const createRequestIdGenerator = (logger) => async (ctx, next) => {
     ctx.request.id = generateSlug(4);
+    ctx.state.receivedAt = Date.now();
     const { method, path, id } = ctx.request;
-    logger.info(`[==> req] ${method?.toUpperCase()} ${path} - requestId: ${id}`);
+    logger.isInfoEnabled && logger.info(`[==> req] ${method?.toUpperCase()} ${path} - requestId: ${id}`);
     await next();
 };
 
@@ -477,10 +478,16 @@ const createRequestValidator = (validator) => async (ctx, next) => {
  * does not respect this convention and requires a 200.
  * @return {Function}
  */
-const createResponseBodyHandler = () => async (ctx, next) => {
+const createResponseBodyHandler = (logger) => async (ctx, next) => {
     if (ctx.response.body === undefined) {
         ctx.response.body = '';
     }
+
+    const { method, path, id } = ctx.request;
+    const { status = 'n/a' } = ctx.response;
+    const processTime = ((Date.now() - ctx.state.receivedAt) / 1000).toFixed(1);
+    logger.isInfoEnabled && logger.info(`[<== ${status}][${processTime}sec] ${method?.toUpperCase()} ${path} - requestId: ${id}`);
+
     return await next();
 };
 
