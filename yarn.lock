@@ -2337,7 +2337,56 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-shared@npm:18.11.1, @mojaloop/central-services-shared@npm:^18.11.1":
+"@mojaloop/central-services-shared@npm:18.11.0":
+  version: 18.11.0
+  resolution: "@mojaloop/central-services-shared@npm:18.11.0"
+  dependencies:
+    "@hapi/catbox": 12.1.1
+    "@hapi/catbox-memory": 5.0.1
+    "@mojaloop/inter-scheme-proxy-cache-lib": 2.3.0
+    axios: 1.7.7
+    clone: 2.1.2
+    dotenv: 16.4.5
+    env-var: 7.5.0
+    event-stream: 4.0.1
+    fast-safe-stringify: ^2.1.1
+    immutable: 4.3.7
+    ioredis: ^5.4.1
+    lodash: 4.17.21
+    mustache: 4.2.0
+    openapi-backend: 5.11.0
+    raw-body: 3.0.0
+    rc: 1.2.8
+    shins: 2.6.0
+    ulidx: 2.4.1
+    uuid4: 2.0.3
+    widdershins: ^4.0.1
+    yaml: 2.6.0
+  peerDependencies:
+    "@mojaloop/central-services-error-handling": ">=13.x.x"
+    "@mojaloop/central-services-logger": ">=11.5.x"
+    "@mojaloop/central-services-metrics": ">=12.x.x"
+    "@mojaloop/event-sdk": ">=14.1.1"
+    ajv: 8.x.x
+    ajv-keywords: 5.x.x
+  peerDependenciesMeta:
+    "@mojaloop/central-services-error-handling":
+      optional: false
+    "@mojaloop/central-services-logger":
+      optional: false
+    "@mojaloop/central-services-metrics":
+      optional: false
+    "@mojaloop/event-sdk":
+      optional: false
+    ajv:
+      optional: false
+    ajv-keyboards:
+      optional: false
+  checksum: 0284a543f524524847964fccbee87208eed5b74e8827ced8435b2b9faa0ca242fc0d295087d518759a99bc850b0c4d690cbb52b89d2804326519f0058ba533a3
+  languageName: node
+  linkType: hard
+
+"@mojaloop/central-services-shared@npm:^18.11.0, @mojaloop/central-services-shared@npm:^18.11.1":
   version: 18.11.1
   resolution: "@mojaloop/central-services-shared@npm:18.11.1"
   dependencies:
@@ -2518,7 +2567,7 @@ __metadata:
     "@mojaloop/central-services-error-handling": ^13.0.2
     "@mojaloop/central-services-logger": ^11.5.1
     "@mojaloop/central-services-metrics": ^12.1.0
-    "@mojaloop/central-services-shared": 18.11.1
+    "@mojaloop/central-services-shared": 18.11.0
     "@mojaloop/event-sdk": ^14.1.1
     "@mojaloop/ml-schema-transformer-lib": 2.4.1
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
@@ -2573,7 +2622,7 @@ __metadata:
   dependencies:
     "@eslint/compat": ^1.2.3
     "@mojaloop/api-snippets": 17.7.4
-    "@mojaloop/central-services-shared": ^18.11.1
+    "@mojaloop/central-services-shared": ^18.11.0
     "@mojaloop/logging-bc-client-lib": ^0.1.17
     "@mojaloop/logging-bc-public-types-lib": ^0.5.4
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
@@ -2650,7 +2699,7 @@ __metadata:
   dependencies:
     "@eslint/compat": ^1.2.3
     "@mojaloop/api-snippets": 17.7.4
-    "@mojaloop/central-services-shared": ^18.11.1
+    "@mojaloop/central-services-shared": ^18.11.0
     "@mojaloop/logging-bc-public-types-lib": ^0.5.4
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.7.1
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": 0.2.15
@@ -6025,6 +6074,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cookie@npm:^0.5.0":
+  version: 0.5.0
+  resolution: "cookie@npm:0.5.0"
+  checksum: 1f4bd2ca5765f8c9689a7e8954183f5332139eb72b6ff783d8947032ec1fdf43109852c178e21a953a30c0dd42257828185be01b49d1eb1a67fd054ca588a180
+  languageName: node
+  linkType: hard
+
 "cookie@npm:^1.0.1":
   version: 1.0.1
   resolution: "cookie@npm:1.0.1"
@@ -8638,6 +8694,13 @@ __metadata:
     extensible-error: ^1.0.2
     oer-utils: ^5.1.2
   checksum: 410f75c6f62959a6dd4d115044f5201ddb59dcbc393ff42cba4b649a11466f3325b2663e7237986ec5aee53d8a923b74c78c18e5048a1b41adf804d76ccf9a17
+  languageName: node
+  linkType: hard
+
+"immutable@npm:4.3.7":
+  version: 4.3.7
+  resolution: "immutable@npm:4.3.7"
+  checksum: 1c50eb053bb300796551604afff554066f041aa8e15926cf98f6d11d9736b62ad12531c06515dd96375258653878b4736f8051cd20b640f5f976d09fa640e3ec
   languageName: node
   linkType: hard
 
@@ -11936,6 +11999,24 @@ __metadata:
     is-docker: ^2.1.1
     is-wsl: ^2.2.0
   checksum: 6388bfff21b40cb9bd8f913f9130d107f2ed4724ea81a8fd29798ee322b361ca31fa2cdfb491a5c31e43a3996cfe9566741238c7a741ada8d7af1cb78d85cf26
+  languageName: node
+  linkType: hard
+
+"openapi-backend@npm:5.11.0":
+  version: 5.11.0
+  resolution: "openapi-backend@npm:5.11.0"
+  dependencies:
+    "@apidevtools/json-schema-ref-parser": ^11.1.0
+    ajv: ^8.6.2
+    bath-es5: ^3.0.3
+    cookie: ^0.5.0
+    dereference-json-schema: ^0.2.1
+    lodash: ^4.17.15
+    mock-json-schema: ^1.0.7
+    openapi-schema-validator: ^12.0.0
+    openapi-types: ^12.0.2
+    qs: ^6.9.3
+  checksum: 8efcd315b542adb1912088e24fe2fbd1197e529623f392aa50c72bb431cbdf0e1e806c36fbbaf8d42bb3575e6e19a76042596b493616abeddc754c058f1cb4eb
   languageName: node
   linkType: hard
 
