@@ -116,6 +116,7 @@ class InboundApi extends EventEmitter {
         }
         api.use(router(handlers));
         api.use(middlewares.createResponseBodyHandler());
+        api.use(middlewares.createResponseLogging(logger));
 
         api.context.resourceVersions = conf.resourceVersions;
 

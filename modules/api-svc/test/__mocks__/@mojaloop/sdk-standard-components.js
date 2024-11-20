@@ -13,6 +13,7 @@
 const assert = require('assert').strict;
 const util = require('util');
 const {
+    axios,
     MojaloopRequests, Errors, WSO2Auth, Jws, Logger, common,
     Ilp: { ILP_VERSIONS }
 } = jest.requireActual('@mojaloop/sdk-standard-components');
@@ -178,6 +179,7 @@ class MockJwsSigner {
 
 
 module.exports = {
+    axios,
     Ilp,
     MojaloopRequests: MockMojaloopRequests,
     Jws: {

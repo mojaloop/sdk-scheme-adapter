@@ -20,13 +20,14 @@ process.env.SUPPORTED_CURRENCIES='USD';
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('redis');
 
-const Cache = require('~/lib/cache');
-const { MetricsClient } = require('~/lib/metrics');
+const { MojaloopRequests, Logger } = require('@mojaloop/sdk-standard-components');
+const FSPIOPTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.TransferState;
+const StateMachine = require('javascript-state-machine');
+
 const Model = require('~/lib/model').OutboundTransfersModel;
 const PartiesModel = require('~/lib/model').PartiesModel;
-
-const { MojaloopRequests, Logger } = require('@mojaloop/sdk-standard-components');
-const StateMachine = require('javascript-state-machine');
+const Cache = require('~/lib/cache');
+const { MetricsClient } = require('~/lib/metrics');
 
 const mocks = require('./data/mocks');
 const defaultConfig = require('./data/defaultConfig');
@@ -36,8 +37,6 @@ const quoteResponseTemplate = require('./data/quoteResponse');
 const transferFulfil = require('./data/transferFulfil');
 
 const { SDKStateEnum, CacheKeyPrefixes, States, ErrorMessages, AmountTypes } = require('../../../../src/lib/model/common');
-const { error } = require('console');
-const FSPIOPTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.TransferState;
 
 const genPartyId = (party) => {
     const { partyIdType, partyIdentifier, partySubIdOrType } = party.body.party.partyIdInfo;
@@ -62,7 +61,7 @@ const dummyRequestsModuleResponse = {
     originalRequest: {}
 };
 
-describe('outboundModel', () => {
+describe('OutboundTransfersModel Tests', () => {
     let quoteResponse;
     let config;
     let logger;
@@ -444,7 +443,6 @@ describe('outboundModel', () => {
         expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
         expect(StateMachine.__instance.state).toBe('succeeded');
     });
-
 
     test('resolves payee and halts when AUTO_ACCEPT_PARTY is false', async () => {
         config.autoAcceptParty = false;
@@ -996,7 +994,7 @@ describe('outboundModel', () => {
         result = await model.run({ acceptQuote: false });
 
         expect(result.currentState).toBe(SDKStateEnum.ABORTED);
-        expect(result.abortedReason).toBe('Quote rejected by backend');
+        expect(result.abortedReason).toBe(ErrorMessages.quoteRejectedByBackend);
         expect(StateMachine.__instance.state).toBe('aborted');
     });
 
@@ -1086,14 +1084,14 @@ describe('outboundModel', () => {
         result = await model.run({ acceptQuote: false });
 
         expect(result.currentState).toBe(SDKStateEnum.ABORTED);
-        expect(result.abortedReason).toBe('Quote rejected by backend');
+        expect(result.abortedReason).toBe(ErrorMessages.quoteRejectedByBackend);
         expect(StateMachine.__instance.state).toBe('aborted');
 
         // now run the model again. this should get the same result as previous one
         result = await model.run({ acceptQuote: false });
 
         expect(result.currentState).toBe(SDKStateEnum.ABORTED);
-        expect(result.abortedReason).toBe('Quote rejected by backend');
+        expect(result.abortedReason).toBe(ErrorMessages.quoteRejectedByBackend);
         expect(StateMachine.__instance.state).toBe('aborted');
     });
 
@@ -1551,40 +1549,6 @@ describe('outboundModel', () => {
         expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_outbound_party_lookup_latency'));
     });
 
-    test('skips resolving party when to.fspid is specified and skipPartyLookup is truthy', async () => {
-        config.autoAcceptParty = false;
-        config.autoAcceptQuotes = false;
-
-        let model = new Model({
-            cache,
-            logger,
-            metricsClient,
-            ...config,
-        });
-
-        let req = JSON.parse(JSON.stringify(transferRequest));
-        const testFspId = 'TESTDESTFSPID';
-        req.to.fspId = testFspId;
-        req.skipPartyLookup = true;
-
-        await model.initialize(req);
-
-        expect(StateMachine.__instance.state).toBe('start');
-
-        // start the model running
-        let resultPromise = model.run();
-
-        // now we started the model running we simulate a callback with the quote response
-        cache.publish(`qt_${model.data.quoteId}`, JSON.stringify(quoteResponse));
-
-        // wait for the model to reach a terminal state
-        let result = await resultPromise;
-
-        // check we stopped at quoteReceived state
-        expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE);
-        expect(StateMachine.__instance.state).toBe('quoteReceived');
-    });
-
     describe('FX flow Tests -->', () => {
         const TARGET_AMOUNT = '48000';
         let model;
@@ -1594,34 +1558,13 @@ describe('outboundModel', () => {
             return mocks.mockMojaApiResponse();
         };
 
-        const getPartiesRequest = jest.fn(async (idType, idValue, idSubValue) => {
-            const channel = `parties-${idType}-${idValue}-${idSubValue}`;
-            await cache.publish(channel, JSON.stringify({
-                body: mocks.mockGetPartyResponse(),
-            }));
-            // todo: putParties message doesn't have "data" field
-            return mocks.mockMojaApiResponse();
-        });
-
-
-        const getPartiesNoSupportedCurrenciesRequest = jest.fn(async (idType, idValue, idSubValue) => {
-            const channel = `parties-${idType}-${idValue}-${idSubValue}`;
-            await cache.publish(channel, JSON.stringify({
-                body: mocks.mockGetPartyResponse({supportedCurrencies: ['XXX']}),
-            }));
-            // todo: putParties message doesn't have "data" field
-            return mocks.mockMojaApiResponse();
-        });
-
-
-        const getPartiesEmptySupportedCurrenciesRequest = jest.fn(async (idType, idValue, idSubValue) => {
-            const channel = `parties-${idType}-${idValue}-${idSubValue}`;
-            await cache.publish(channel, JSON.stringify({
-                body: mocks.mockGetPartyResponse({supportedCurrencies: []}),
-            }));
-            // todo: putParties message doesn't have "data" field
-            return mocks.mockMojaApiResponse();
-        });
+        const makeGetPartiesCallbackResponse = (body = mocks.mockGetPartyResponse())  =>
+            jest.fn(async (idType, idValue, idSubValue) => {
+                const channel = `parties-${idType}-${idValue}-${idSubValue}`;
+                await cache.publish(channel, JSON.stringify({ body }));
+                // note, putParties message doesn't have "data" field
+                return mocks.mockMojaApiResponse();
+            });
 
         const postFxQuotesRequest = jest.fn(async (payload) => {
             const channel = `${CacheKeyPrefixes.FX_QUOTE_CALLBACK_CHANNEL}_${payload.conversionRequestId}`;
@@ -1693,7 +1636,7 @@ describe('outboundModel', () => {
                 ...config,
             });
             model._checkIlp = false;
-            model._requests.getParties = getPartiesRequest;
+            model._requests.getParties = makeGetPartiesCallbackResponse();
             model._requests.postFxQuotes = postFxQuotesRequest;
             model._requests.postQuotes = postQuotesRequest;
             model._requests.postFxTransfers = postFxTransfersRequest;
@@ -1706,42 +1649,36 @@ describe('outboundModel', () => {
 
         test.todo('should throw error if fxp providers found');
 
-        test('should throw error if no supported currencies not specified in config', async () => {
-            model._requests.getParties = getPartiesRequest;
-            await model.initialize({
-                ...mocks.coreConnectorPostTransfersPayloadDto(),
-                currentState: States.START,
-                needFx: true,
-                supportedCurrencies: [],
-            });
-            model.data.amountType = AmountTypes.RECEIVE;
-            expect(model.data.currentState).toBe(States.START);
-            await expect(model.run()).rejects.toThrowError(ErrorMessages.unsupportedFxAmountType);
-        });
-
         test('should throw error if payee empty supported currencies returned', async () => {
-            model._requests.getParties = getPartiesEmptySupportedCurrenciesRequest;
+            const partyWithEmptySupportedCurrencies = mocks.mockGetPartyResponse({
+                supportedCurrencies: []
+            });
+            model._requests.getParties = makeGetPartiesCallbackResponse(partyWithEmptySupportedCurrencies);
             await model.initialize({
                 ...mocks.coreConnectorPostTransfersPayloadDto(),
                 currentState: States.START,
-                needFx: true,
-                supportedCurrencies: ['USD'],
             });
             expect(model.data.currentState).toBe(States.START);
-            await expect(model.run()).rejects.toThrowError(ErrorMessages.noSupportedCurrencies);
+            await expect(model.run())
+                .rejects.toThrowError(ErrorMessages.noSupportedCurrencies);
         });
 
-        test('should throw error if payee no supported currencies returned and amount type is RECEIVE enum', async () => {
-            model._requests.getParties = getPartiesNoSupportedCurrenciesRequest;
-            await model.initialize({
-                ...mocks.coreConnectorPostTransfersPayloadDto(),
-                currentState: States.START,
-                needFx: true,
-                supportedCurrencies: ['USD'],
+        test('should wait for acceptQuotes callback if FX is needed and amountType is RECEIVE', async () => {
+            const amountType = AmountTypes.RECEIVE;
+            const partyWithAnotherCurrency = mocks.mockGetPartyResponse({
+                supportedCurrencies: ['XXX']
             });
-            model.data.amountType = AmountTypes.RECEIVE;
+            model._requests.getParties = makeGetPartiesCallbackResponse(partyWithAnotherCurrency);
+            model._autoAcceptQuotes = false;
+            await model.initialize({
+                ...mocks.coreConnectorPostTransfersPayloadDto({ amountType }),
+                currentState: States.START,
+            });
             expect(model.data.currentState).toBe(States.START);
-            await expect(model.run()).rejects.toThrowError(ErrorMessages.unsupportedFxAmountType);
+
+            const result = await model.run();
+            expect(result.needFx).toBe(true);
+            expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE);
         });
 
         test('should process callback for POST fxQuotes request', async () => {
@@ -1854,11 +1791,12 @@ describe('outboundModel', () => {
             await expect(model.run()).rejects.toThrowError(ErrorMessages.invalidFulfilment);
         });
 
-        test('should pass e2e FX transfer flow (no autoAccept... configs)', async () => {
+        test('should pass e2e FX transfer SEND flow (no autoAccept... configs)', async () => {
             model._autoAcceptParty = false;
             model._autoAcceptQuotes = false;
+
             await model.initialize({
-                ...mocks.coreConnectorPostTransfersPayloadDto()
+                ...mocks.coreConnectorPostTransfersPayloadDto({ amountType: AmountTypes.SEND })
             });
             expect(model.data.currentState).toBe(States.START);
 
@@ -1882,6 +1820,34 @@ describe('outboundModel', () => {
             expect(quote.amount.amount).toBe(TARGET_AMOUNT);
 
             result = await model.run({ acceptQuote: true });
+            expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
+            expect(model.data.currentState).toBe(States.SUCCEEDED);
+        });
+
+        test('should pass e2e FX transfer RECEIVE flow (no autoAccept... configs)', async () => {
+            model._autoAcceptParty = false;
+            model._autoAcceptQuotes = false;
+            await model.initialize({
+                ...mocks.coreConnectorPostTransfersPayloadDto({ amountType: AmountTypes.RECEIVE })
+            });
+            expect(model.data.currentState).toBe(States.START);
+
+            let result = await model.run();
+            expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_PARTY_ACCEPTANCE);
+            expect(model.data.currentState).toBe(States.PAYEE_RESOLVED);
+            expect(model.data.needFx).toBe(true);
+
+            result = await model.run({ acceptParty: true });
+            expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE);
+            expect(result.quoteResponse).toBeTruthy();
+            expect(model.data.currentState).toBe(States.QUOTE_RECEIVED);
+
+            result = await model.run({ acceptQuote: true });
+            expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_CONVERSION_ACCEPTANCE);
+            expect(result.fxQuoteResponse).toBeTruthy();
+            expect(model.data.currentState).toBe(States.FX_QUOTE_RECEIVED);
+
+            result = await model.run({ acceptConversion: true });
             expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
             expect(model.data.currentState).toBe(States.SUCCEEDED);
         });

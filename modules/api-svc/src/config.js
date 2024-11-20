@@ -187,6 +187,7 @@ module.exports = {
             clientKey: env.get('OAUTH_CLIENT_KEY').asString(),
             clientSecret: env.get('OAUTH_CLIENT_SECRET').asString(),
             refreshSeconds: env.get('OAUTH_REFRESH_SECONDS').default('60').asIntPositive(),
+            refreshRetrySeconds: env.get('OAUTH_REFRESH_RETRY_SECONDS').default('10').asIntPositive(),
         },
         mTlsEnabled: env.get('OAUTH_MUTUAL_TLS_ENABLED').default('false').asBool(),
         requestAuthFailureRetryTimes: env.get('WSO2_AUTH_FAILURE_REQUEST_RETRIES').default('0').asIntPositive(),
@@ -198,6 +199,7 @@ module.exports = {
     requestProcessingTimeoutSeconds: env.get('REQUEST_PROCESSING_TIMEOUT_SECONDS').default('30').asIntPositive(),
 
     logIndent: env.get('LOG_INDENT').default('2').asIntPositive(),
+    isJsonOutput:  env.get('LOG_IS_JSON_OUTPUT').default('false').asBool(),
 
     allowTransferWithoutQuote: env.get('ALLOW_TRANSFER_WITHOUT_QUOTE').default('false').asBool(),
 
