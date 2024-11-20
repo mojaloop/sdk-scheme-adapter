@@ -1,2 +1,3 @@
 yarn dep:check
+yarn audit:check
 yarn lint

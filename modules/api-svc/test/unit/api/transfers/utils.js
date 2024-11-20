@@ -1,8 +1,8 @@
-const nock = require('nock');
+const { mockAxios, jsonContentTypeHeader} = require('../../../helpers');
+
 const OpenAPIResponseValidator = require('openapi-response-validator').default;
 
 const { Logger } = require('@mojaloop/sdk-standard-components');
-const defaultConfig = require('../../data/defaultConfig');
 const postTransfersSimpleBody = require('./data/postTransfersSimpleBody');
 
 /**
@@ -23,8 +23,6 @@ function createGetTransfersTester({ reqInbound, reqOutbound, apiSpecsOutbound })
      */
     return async (putBodyFn, responseCode, responseBody) => {
         const TRANSFER_ID = '00000000000000000000000001';
-        const endpoint = new URL(`http://${defaultConfig.peerEndpoint}`).host;
-        const switchEndpoint = `http://${endpoint}`;
 
         const sendPutTransfers = async () => {
             const putBody = await Promise.resolve(putBodyFn());
@@ -41,11 +39,11 @@ function createGetTransfersTester({ reqInbound, reqOutbound, apiSpecsOutbound })
                 .expect(200);
         };
 
-        await nock(switchEndpoint)
-            .get(`/transfers/${TRANSFER_ID}`)
-            .reply(202, () => {
-                sendPutTransfers().then();
-            });
+        mockAxios.reset();
+        mockAxios.onGet(`/transfers/${TRANSFER_ID}`).reply(() => {
+            sendPutTransfers().then();
+            return [202, null, jsonContentTypeHeader];
+        });
 
         const res = await reqOutbound.get(`/transfers/${TRANSFER_ID}`);
         const {body} = res;
@@ -114,7 +112,7 @@ function createGetTransfersTester({ reqInbound, reqOutbound, apiSpecsOutbound })
 function createPostTransfersTester(
     { requestValidatorInbound, reqInbound, reqOutbound, apiSpecsOutbound }) {
 
-    const logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests' }, stringify: () => '' });
+    const logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests' } });
 
     /**
      *
@@ -135,6 +133,7 @@ function createPostTransfersTester(
     return async (bodyFn, responseCode, responseBody) => {
         let pendingRequest = Promise.resolve();
         let currentRequest = Promise.resolve();
+
         const handleRequest = async (req) => {
             const urlPath = req.path;
             const body = req.body && JSON.parse(req.body);
@@ -177,27 +176,25 @@ function createPostTransfersTester(
             return currentRequest;
         };
 
-        function handleNockRequest(uri, body) {
+        function handleMockRequest(reqConfig) {
             pendingRequest = handleRequest({
-                method: this.method.toLowerCase(),
-                path: uri,
-                body,
-                headers: this.req.headers,
-            }).then();
+                method: reqConfig.method,
+                path: reqConfig.url,
+                body: reqConfig.data,
+                headers: reqConfig.headers,
+            });
+            return [202, null, jsonContentTypeHeader];
         }
 
-        const endpoint = new URL(`http://${defaultConfig.peerEndpoint}`).host;
-        const switchEndpoint = `http://${endpoint}`;
-
-        const nockMock = nock(switchEndpoint);
+        mockAxios.reset();
         if (bodyFn.parties) {
-            nockMock.get(/^\/parties\//).reply(202, handleNockRequest);
+            mockAxios.onGet(/^\/parties\//).reply(handleMockRequest);
         }
         if (bodyFn.quotes) {
-            nockMock.post('/quotes').reply(202, handleNockRequest);
+            mockAxios.onPost('/quotes').reply(handleMockRequest);
         }
         if (bodyFn.transfers) {
-            nockMock.post('/transfers').reply(202, handleNockRequest);
+            mockAxios.onPost('/transfers').reply(handleMockRequest);
         }
 
         const res = await reqOutbound.post('/transfers').send(postTransfersSimpleBody);
