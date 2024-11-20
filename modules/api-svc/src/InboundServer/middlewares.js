@@ -207,8 +207,10 @@ const cacheRequest = (cache) => async (ctx, next) => {
 const createRequestIdGenerator = (logger) => async (ctx, next) => {
     ctx.request.id = generateSlug(4);
     ctx.state.receivedAt = Date.now();
-    const { method, path, id } = ctx.request;
-    logger.isInfoEnabled && logger.info(`[==> req] ${method?.toUpperCase()} ${path} - requestId: ${id}`);
+    const { method, path, id, headers } = ctx.request;
+    logger.isInfoEnabled && logger
+        .push({ method, path, id, headers })
+        .info(`[==> req] ${method?.toUpperCase()} ${path} - requestId: ${id}`);
     await next();
 };
 
@@ -478,11 +480,14 @@ const createRequestValidator = (validator) => async (ctx, next) => {
  * does not respect this convention and requires a 200.
  * @return {Function}
  */
-const createResponseBodyHandler = (logger) => async (ctx, next) => {
+const createResponseBodyHandler = () => async (ctx, next) => {
     if (ctx.response.body === undefined) {
         ctx.response.body = '';
     }
+    return await next();
+};
 
+const createResponseLogging = (logger) => async (ctx, next) => {
     const { method, path, id } = ctx.request;
     const { status = 'n/a' } = ctx.response;
     const processTime = ((Date.now() - ctx.state.receivedAt) / 1000).toFixed(1);
@@ -490,6 +495,7 @@ const createResponseBodyHandler = (logger) => async (ctx, next) => {
 
     return await next();
 };
+
 
 module.exports = {
     applyState,
@@ -502,4 +508,5 @@ module.exports = {
     createLogger,
     createRequestValidator,
     createResponseBodyHandler,
+    createResponseLogging,
 };
