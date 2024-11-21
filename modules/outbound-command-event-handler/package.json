@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter-outbound-command-event-handler",
-  "version": "0.2.20-snapshot.49",
+  "version": "0.2.20-snapshot.52",
   "description": "Mojaloop sdk scheme adapter command event handler",
   "license": "Apache-2.0",
   "homepage": "https://github.com/mojaloop/sdk-scheme-adapter/",
@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "@mojaloop/api-snippets": "17.7.4",
-    "@mojaloop/central-services-shared": "^18.11.1",
+    "@mojaloop/central-services-shared": "^18.11.2",
     "@mojaloop/logging-bc-client-lib": "^0.1.17",
     "@mojaloop/logging-bc-public-types-lib": "^0.5.4",
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^",

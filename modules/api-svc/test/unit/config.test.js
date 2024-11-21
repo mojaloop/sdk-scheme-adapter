@@ -150,4 +150,9 @@ describe('config', () => {
         const config = require('~/config');
         expect(config.apiType).toBe('fspiop');
     });
+
+    it('should have default resources version', () => {
+        const config = require('~/config');
+        expect(config.resourceVersions.parties.acceptVersion).toBe('2');
+    });
 });
