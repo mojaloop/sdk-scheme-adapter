@@ -13,7 +13,7 @@ const fs = require('fs');
 require('dotenv').config();
 const yaml = require('js-yaml');
 const { from } = require('env-var');
-const { API_TYPES } = require('./constants');
+const { API_TYPES, RESOURCE_VERSIONS_STRING } = require('./constants');
 
 function getFileContent (path) {
     if (!fs.existsSync(path)) {
@@ -214,7 +214,7 @@ module.exports = {
     sendFinalNotificationIfRequested: env.get('SEND_FINAL_NOTIFICATION_IF_REQUESTED').default('false').asBool(),
 
     // resourceVersions config should be string in format: "resourceOneName=1.0,resourceTwoName=1.1"
-    resourceVersions: env.get('RESOURCE_VERSIONS').default('').asResourceVersions(),
+    resourceVersions: env.get('RESOURCE_VERSIONS').default(RESOURCE_VERSIONS_STRING).asResourceVersions(),
 
     metrics: {
         port: env.get('METRICS_SERVER_LISTEN_PORT').default('4004').asPortNumber()
