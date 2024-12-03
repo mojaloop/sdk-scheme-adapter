@@ -575,6 +575,11 @@ class InboundTransfersModel {
                 headers: res.originalRequest.headers,
                 body: res.originalRequest.body,
             };
+            this._logger.log('=======================================');
+            this._logger.log(`Data from the fxQuoteResponse headers are ${res.originalRequest.headers}`);
+            this._logger.log('=======================================');
+
+            
             this.data.currentState = SDKStateEnum.FX_QUOTE_WAITING_FOR_ACCEPTANCE;
             await this.saveFxState();
 
@@ -642,6 +647,11 @@ class InboundTransfersModel {
                 headers: res.originalRequest.headers,
                 body: res.originalRequest.body,
             };
+            this._logger.log('=======================================');
+            this._logger.log(`Data from the pustFxTransfers headers are ${res.originalRequest.headers}`);
+            this._logger.log('=======================================');
+
+
             this.data.currentState = beResponse.conversionState;
             await this.saveFxState();
 
