@@ -240,4 +240,7 @@ module.exports = {
     //    - 1
     //    - 4
     ilpVersion: env.get('ILP_VERSION').default('1').asString(),
+    
+    // Disable or Enable the extension list caching
+    enableExtensionListCaching: env.get('ENABLE_EXTENSION_LIST_CACHE').default('false').asBool(),
 };
