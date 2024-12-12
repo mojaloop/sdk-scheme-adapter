@@ -68,6 +68,7 @@ class InboundTransfersModel {
         this._checkIlp = config.checkIlp;
 
         const ilpVersion = config.ilpVersion === '4' ? Ilp.ILP_VERSIONS.v4 : Ilp.ILP_VERSIONS.v1;
+        this._enableExtensionListCaching = config.enableExtensionListCaching;
         this._ilp = Ilp.ilpFactory(ilpVersion, {
             secret: config.ilpSecret,
             logger: config.logger,
@@ -456,7 +457,7 @@ class InboundTransfersModel {
                 completedTimestamp: response.completedTimestamp || new Date(),
                 transferState: response.transferState || (this._reserveNotification ? FSPIOPTransferStateEnum.RESERVED : FSPIOPTransferStateEnum.COMMITTED),
                 fulfilment: response.fulfilment || fulfilment,
-                ...response.extensionList && {
+                ...response.extensionList && this._enableExtensionListCaching && {
                     extensionList: {
                         extension: response.extensionList,
                     },
@@ -519,7 +520,7 @@ class InboundTransfersModel {
                 completedTimestamp: response.timestamp,
                 transferState: response.transferState,
                 fulfilment,
-                ...response.extensions && {
+                ...response.extensions && this._enableExtensionListCaching && {
                     extensionList: {
                         extension: response.extensions,
                     },
@@ -921,7 +922,7 @@ class InboundTransfersModel {
                 }
                 const transferResult = { transferId: transfer.transferId, fulfilment };
                 transfer.errorInformation && (transferResult.errorInformation = transfer.errorInformation);
-                transfer.extensionList && (transferResult.extensionList = transfer.extensionList);
+                transfer.extensionList && this._enableExtensionListCaching && (transferResult.extensionList = transfer.extensionList);
                 individualTransferResults.push(transferResult);
             }
 
@@ -930,7 +931,7 @@ class InboundTransfersModel {
                 completedTimestamp: response.timestamp,
                 bulkTransferState: response.bulkTransferState,
                 individualTransferResults,
-                ...response.extensions && {
+                ...response.extensions && this._enableExtensionListCaching && {
                     extensionList: {
                         extension: response.extensions,
                     },

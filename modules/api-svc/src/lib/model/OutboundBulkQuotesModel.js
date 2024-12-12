@@ -32,6 +32,7 @@ class OutboundBulkQuotesModel {
         this._dfspId = config.dfspId;
         this._expirySeconds = config.expirySeconds;
         this._rejectExpiredQuoteResponses = config.rejectExpiredQuoteResponses;
+        this._enableExtensionListCaching = config.enableExtensionListCaching;
 
         this._requests = new MojaloopRequests({
             logger: this._logger,
@@ -239,7 +240,7 @@ class OutboundBulkQuotesModel {
 
         this.data.geoCode && (bulkQuoteRequest.geoCode = this.data.geoCode);
 
-        if (this.data.extensions && this.data.extensions.length > 0) {
+        if (this.data.extensions && this.data.extensions.length > 0 && this._enableExtensionListCaching) {
             bulkQuoteRequest.extensionList = {
                 extension: this.data.extensions
             };
@@ -270,7 +271,7 @@ class OutboundBulkQuotesModel {
 
             individualQuote.note && (quote.note = individualQuote.note);
 
-            if (individualQuote.extensions && individualQuote.extensions.length > 0) {
+            if (individualQuote.extensions && individualQuote.extensions.length > 0 && this._enableExtensionListCaching) {
                 bulkQuoteRequest.extensionList = {
                     extension: individualQuote.extensions
                 };
