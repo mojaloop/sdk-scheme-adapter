@@ -30,6 +30,7 @@ class OutboundBulkTransfersModel {
         this._dfspId = config.dfspId;
         this._expirySeconds = config.expirySeconds;
         this._rejectExpiredTransferFulfils = config.rejectExpiredTransferFulfils;
+        this._enableExtensionListCaching = config.enableExtensionListCaching;
 
         this._requests = new MojaloopRequests({
             logger: this._logger,
@@ -239,7 +240,7 @@ class OutboundBulkTransfersModel {
         };
 
         // add extensionList if provided
-        if (this.data.extensions && this.data.extensions.length > 0) {
+        if (this.data.extensions && this.data.extensions.length > 0 && this._enableExtensionListCaching) {
             bulkTransferRequest.extensionList = {
                 extension: this.data.extensions
             };
@@ -260,7 +261,7 @@ class OutboundBulkTransfersModel {
                 condition: individualTransfer.condition,
             };
 
-            if (individualTransfer.extensions && individualTransfer.extensions.length > 0) {
+            if (individualTransfer.extensions && individualTransfer.extensions.length > 0 && this._enableExtensionListCaching) {
                 bulkTransferRequest.extensionList = {
                     extension: individualTransfer.extensions
                 };

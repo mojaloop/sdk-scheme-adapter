@@ -54,6 +54,7 @@ class OutboundTransfersModel {
         this._multiplePartiesResponseSeconds = config.multiplePartiesResponseSeconds;
         this._sendFinalNotificationIfRequested = config.sendFinalNotificationIfRequested;
         this._apiType = config.apiType;
+        this._enableExtensionList = config.enableExtensionListCaching;
 
         if (this._autoAcceptParty && this._multiplePartiesResponse) {
             throw new Error('Conflicting config options provided: autoAcceptParty and multiplePartiesResponse');
@@ -362,7 +363,8 @@ class OutboundTransfersModel {
                     // now we got the payee, add the details to our data so we can use it
                     // in the quote request
                     this.data.to.fspId = payee.partyIdInfo.fspId;
-                    if(payee.partyIdInfo.extensionList) {
+                    
+                    if(payee.partyIdInfo.extensionList && this._enableExtensionList) {
                         this.data.to.extensionList  = payee.partyIdInfo.extensionList.extension;
                     }
                     if(payee.personalInfo) {
@@ -483,7 +485,7 @@ class OutboundTransfersModel {
                 // in the quote request
                 const to = {};
                 to.fspId = payee.partyIdInfo.fspId;
-                if(payee.partyIdInfo.extensionList) {
+                if(payee.partyIdInfo.extensionList && this._enableExtensionList) {
                     to.extensionList  = payee.partyIdInfo.extensionList.extension;
                 }
                 if(payee.personalInfo) {
@@ -751,7 +753,7 @@ class OutboundTransfersModel {
         }
 
         // add extensionList if provided
-        if (this.data.quoteRequestExtensions?.length) {
+        if (this.data.quoteRequestExtensions?.length && this._enableExtensionList) {
             quote.extensionList = {
                 extension: this.data.quoteRequestExtensions
             };
@@ -1065,7 +1067,7 @@ class OutboundTransfersModel {
 
         // add extensions list if provided
         const { transferRequestExtensions } = this.data;
-        if(transferRequestExtensions && transferRequestExtensions.length > 0) {
+        if(transferRequestExtensions && transferRequestExtensions.length > 0 && this._enableExtensionList) {
             prepare.extensionList = {
                 extension: transferRequestExtensions,
             };

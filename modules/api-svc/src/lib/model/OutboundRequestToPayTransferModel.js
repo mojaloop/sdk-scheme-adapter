@@ -38,6 +38,7 @@ class OutboundRequestToPayTransferModel {
         this._autoAcceptR2PDeviceOTP = config.autoAcceptR2PDeviceOTP;
         this._useQuoteSourceFSPAsTransferPayeeFSP = config.useQuoteSourceFSPAsTransferPayeeFSP;
         this._checkIlp = config.checkIlp;
+        this._enableExtensionListCaching = config.enableExtensionListCaching;
 
         this._requests = new MojaloopRequests({
             logger: this._logger,
@@ -601,7 +602,7 @@ class OutboundRequestToPayTransferModel {
         }
 
         // add extensionList if provided
-        if(this.data.quoteRequestExtensions && this.data.quoteRequestExtensions.length > 0) {
+        if(this.data.quoteRequestExtensions && this.data.quoteRequestExtensions.length > 0 && this._enableExtensionListCaching) {
             quote.extensionList = {
                 extension: this.data.quoteRequestExtensions
             };
@@ -813,7 +814,7 @@ class OutboundRequestToPayTransferModel {
 
         // add extensions list if provided
         const { transferRequestExtensions } = this.data;
-        if(transferRequestExtensions && transferRequestExtensions.length > 0) {
+        if(transferRequestExtensions && transferRequestExtensions.length > 0 && this._enableExtensionListCaching) {
             prepare.extensionList = {
                 extension: transferRequestExtensions,
             };
