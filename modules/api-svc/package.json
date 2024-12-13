@@ -64,10 +64,10 @@
   },
   "dependencies": {
     "@koa/cors": "^5.0.0",
-    "@mojaloop/api-snippets": "17.7.4",
+    "@mojaloop/api-snippets": "17.7.7",
     "@mojaloop/central-services-error-handling": "^13.0.2",
     "@mojaloop/central-services-logger": "^11.5.1",
-    "@mojaloop/central-services-metrics": "^12.4.1",
+    "@mojaloop/central-services-metrics": "^12.4.2",
     "@mojaloop/central-services-shared": "18.14.1",
     "@mojaloop/event-sdk": "^14.1.1",
     "@mojaloop/ml-schema-transformer-lib": "2.4.1",

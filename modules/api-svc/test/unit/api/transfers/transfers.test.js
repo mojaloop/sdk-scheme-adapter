@@ -146,8 +146,7 @@ describe('Outbound Transfers API', () => {
                     }),
                 },
             };
-            return testPostTransfers(putBodyFn, 500,
-                postTransfersErrorMojaloopResponse);
+            return testPostTransfers(putBodyFn, 500, postTransfersErrorMojaloopResponse);
         });
     });
 
