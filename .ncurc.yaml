@@ -9,8 +9,6 @@ reject: [
   'npm-check-updates',
   ## TODO: The new version of nx causes submodules to be broken.
   "nx",
-  ## TODO: The new version of eslint requires migration of configuration files.
-  "eslint",
-  "@typescript-eslint/eslint-plugin",
-  "@typescript-eslint/parser"
+  ## esLint 9.15.0 caused the error: TypeError: Error while loading rule '@typescript-eslint/no-unused-expressions': Cannot read properties of undefined (reading 'allowShortCircuit')
+  "eslint"
 ]

@@ -1,7 +1,6 @@
-const nock = require('nock');
-const crypto = require('crypto');
+const crypto = require('node:crypto');
 
-const defaultConfig = require('../../data/defaultConfig');
+const { mockAxios, jsonContentTypeHeader} = require('../../../helpers');
 const requestBody = require('./data/requestBody');
 const requestHeaders = require('./data/requestHeaders');
 const requestQuery = require('./data/requestQuery');
@@ -30,22 +29,14 @@ function createProxyTester({ reqOutbound }) {
      *
      * @return {Promise<any>}
      */
-    return async ({sdkUrlPath, switchUrlPath, method, shouldForward, query, headers, binary}) => {
-        const endpoint = new URL(`http://${defaultConfig.peerEndpoint}`).host;
-        const switchEndpoint = `http://${endpoint}`;
+    return async ({ sdkUrlPath, method, shouldForward, query, headers, binary }) => {
         const responseBody = binary ? responseBodyBinary : responseBodyJSON;
-        nock(switchEndpoint, {
-            reqheaders: {
-                ...requestHeaders,
-                ...headers,
-            },
-        })
-            .intercept(switchUrlPath, method.toUpperCase())
-            .query({
-                ...requestQuery,
-                ...query,
-            })
-            .reply(200, responseBody, responseHeaders);
+        const resHeaders = binary ? responseHeaders : { ...responseHeaders, ...jsonContentTypeHeader };
+
+        mockAxios.reset();
+        mockAxios.onAny().reply(() => {
+            return [200, responseBody, resHeaders];
+        });
 
         const res = await reqOutbound[method.toLowerCase()](sdkUrlPath)
             .query({

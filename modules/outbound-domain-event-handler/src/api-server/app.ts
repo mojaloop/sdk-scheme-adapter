@@ -52,12 +52,12 @@ export const CreateExpressServer =
         const swaggerSpec = YAML.load(openApiSpecFilePath);
         app.use(
             '/docs',
-            swaggerUi.serve,
+            swaggerUi.serve as any,
             swaggerUi.setup(undefined, {
                 swaggerOptions: {
                     spec: swaggerSpec,
                 },
-            }),
+            }) as any,
         );
 
         // API middle-wares

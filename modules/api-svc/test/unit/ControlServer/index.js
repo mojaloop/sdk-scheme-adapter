@@ -113,8 +113,7 @@ class Server extends ws.Server {
         this._clientData = new Map();
 
         this.on('error', err => {
-            this._logger.push({ err })
-                .log('Unhandled websocket error occurred. Shutting down.');
+            this._logger.push({ err }).error('Unhandled websocket error occurred. Shutting down.');
             process.exit(1);
         });
 
@@ -155,7 +154,7 @@ class Server extends ws.Server {
             try {
                 msg = deserialise(data);
             } catch (err) {
-                logger.push({ data }).log('Couldn\'t parse received message');
+                logger.push({ data, err }).log('Couldn\'t parse received message');
                 client.send(build.ERROR.NOTIFY.JSON_PARSE_ERROR());
             }
             logger.push({ msg }).log('Handling received message');

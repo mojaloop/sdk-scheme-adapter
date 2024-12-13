@@ -11,8 +11,9 @@
 
 const fs = require('fs');
 require('dotenv').config();
-const { from } = require('env-var');
 const yaml = require('js-yaml');
+const { from } = require('env-var');
+const { API_TYPES, RESOURCE_VERSIONS_STRING } = require('./constants');
 
 function getFileContent (path) {
     if (!fs.existsSync(path)) {
@@ -55,6 +56,13 @@ const env = from(process.env, {
     asYamlConfig: (path) => yaml.load(getFileContent(path)),
     asResourceVersions: (resourceString) => parseResourceVersions(resourceString),
 });
+
+// ISO-20022 config options
+// apiType can be one of:
+//   - fspiop
+//   - iso20022
+const apiType = env.get('API_TYPE').default(API_TYPES.fspiop).asString();
+const isIsoApi = apiType === API_TYPES.iso20022;
 
 module.exports = {
     __parseResourceVersion: parseResourceVersions,
@@ -179,6 +187,7 @@ module.exports = {
             clientKey: env.get('OAUTH_CLIENT_KEY').asString(),
             clientSecret: env.get('OAUTH_CLIENT_SECRET').asString(),
             refreshSeconds: env.get('OAUTH_REFRESH_SECONDS').default('60').asIntPositive(),
+            refreshRetrySeconds: env.get('OAUTH_REFRESH_RETRY_SECONDS').default('10').asIntPositive(),
         },
         mTlsEnabled: env.get('OAUTH_MUTUAL_TLS_ENABLED').default('false').asBool(),
         requestAuthFailureRetryTimes: env.get('WSO2_AUTH_FAILURE_REQUEST_RETRIES').default('0').asIntPositive(),
@@ -190,6 +199,7 @@ module.exports = {
     requestProcessingTimeoutSeconds: env.get('REQUEST_PROCESSING_TIMEOUT_SECONDS').default('30').asIntPositive(),
 
     logIndent: env.get('LOG_INDENT').default('2').asIntPositive(),
+    isJsonOutput:  env.get('LOG_IS_JSON_OUTPUT').default('false').asBool(),
 
     allowTransferWithoutQuote: env.get('ALLOW_TRANSFER_WITHOUT_QUOTE').default('false').asBool(),
 
@@ -204,7 +214,7 @@ module.exports = {
     sendFinalNotificationIfRequested: env.get('SEND_FINAL_NOTIFICATION_IF_REQUESTED').default('false').asBool(),
 
     // resourceVersions config should be string in format: "resourceOneName=1.0,resourceTwoName=1.1"
-    resourceVersions: env.get('RESOURCE_VERSIONS').default('').asResourceVersions(),
+    resourceVersions: env.get('RESOURCE_VERSIONS').default(RESOURCE_VERSIONS_STRING).asResourceVersions(),
 
     metrics: {
         port: env.get('METRICS_SERVER_LISTEN_PORT').default('4004').asPortNumber()
@@ -220,4 +230,14 @@ module.exports = {
     fspiopApiServerMaxRequestBytes: env.get('FSPIOP_API_SERVER_MAX_REQUEST_BYTES').default('209715200').asIntPositive(), // Default is 200mb
     backendApiServerMaxRequestBytes: env.get('BACKEND_API_SERVER_MAX_REQUEST_BYTES').default('209715200').asIntPositive(), // Default is 200mb,
     supportedCurrencies: env.get('SUPPORTED_CURRENCIES').default('').asArray(),
+
+    apiType,
+    isIsoApi,
+    inboundOpenApiFilename: isIsoApi ? 'api_iso20022.yaml' : 'api.yaml',
+
+    // ILP version options
+    // ilpVersion can be one of:
+    //    - 1
+    //    - 4
+    ilpVersion: env.get('ILP_VERSION').default('1').asString(),
 };

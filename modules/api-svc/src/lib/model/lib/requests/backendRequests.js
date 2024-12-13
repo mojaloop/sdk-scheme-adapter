@@ -12,7 +12,7 @@
 
 const http = require('http');
 const { request } = require('@mojaloop/sdk-standard-components');
-const { buildUrl, throwOrJson, HTTPResponseError } = require('./common');
+const { buildUrl, HTTPResponseError } = require('./common');
 
 
 /**
@@ -21,7 +21,7 @@ const { buildUrl, throwOrJson, HTTPResponseError } = require('./common');
 class BackendRequests {
     constructor(config) {
         this.config = config;
-        this.logger = config.logger;
+        this.logger = config.logger.push({ component: BackendRequests.name });
 
         // FSPID of THIS DFSP
         this.dfspId = config.dfspId;
@@ -238,7 +238,7 @@ class BackendRequests {
         };
         return this.sendRequest(reqOpts);
     }
-      
+
     _patch(url, body) {
         const reqOpts = {
             method: 'PATCH',
@@ -250,13 +250,23 @@ class BackendRequests {
     }
 
     async sendRequest(reqOptions) {
-        this.logger.isDebugEnabled && this.logger.push({ reqOptions }).debug(`Executing HTTP ${reqOptions?.method}...`);
-        return request({ ...reqOptions, agent: this.agent })
-            .then(throwOrJson)
-            .catch(e => {
-                this.logger.push({ e }).error(`Error attempting ${reqOptions?.method} ${reqOptions?.uri}`);
-                throw e;
+        try {
+            this.logger.isVerboseEnabled && this.logger.push({ reqOptions }).verbose(`Executing HTTP ${reqOptions?.method}...`);
+            const res = await request({ ...reqOptions, agent: this.agent });
+
+            const data = (res.headers['content-length'] === '0' || res.statusCode === 204)
+                ? null
+                : res.data;
+            this.logger.isVerboseEnabled && this.logger.push({ data }).verbose('Received HTTP response data');
+            return data;
+        } catch (err) {
+            this.logger.push({ err }).error(`Error attempting ${reqOptions?.method} ${reqOptions?.uri}`);
+            const { data, headers, status } = err.response || err;
+            throw new HTTPResponseError({
+                res: { data, headers, status },
+                msg: err?.message
             });
+        }
     }
 }
 

@@ -445,7 +445,7 @@ const internalBulkQuotesResponseToMojaloop = (internal) => {
                     mojaloopApiErrorCode,
                     null,
                 );
-            } catch (e) {
+            } catch  {
                 // If error status code isn't FSPIOP conforming, create generic
                 // FSPIOP error and include backend code and message in FSPIOP message.
                 error = new ErrorHandling.Factory.FSPIOPError(
@@ -553,7 +553,7 @@ const internalBulkTransfersResponseToMojaloop = (internal, fulfilments) => {
                         errorInformation: error.toApiErrorObject().errorInformation,
                     };
 
-                } catch (e) {
+                } catch {
                     // If error status code isn't FSPIOP conforming, create generic
                     // FSPIOP error and include backend code and message in FSPIOP message.
                     error = new ErrorHandling.Factory.FSPIOPError(

@@ -12,7 +12,6 @@
 
 'use strict';
 
-
 const safeStringify = require('fast-safe-stringify');
 const {
     AccountsModel,
@@ -106,6 +105,15 @@ const handleRequestQuotesInformationError = (method, err, ctx) =>
 const handleRequestSimpleTransfersInformationError = (method, err, ctx) =>
     handleError(method, err, ctx, 'requestSimpleTransfersInformationState');
 
+
+const createOutboundTransfersModel = (ctx) => new OutboundTransfersModel({
+    ...ctx.state.conf,
+    cache: ctx.state.cache,
+    logger: ctx.state.logger,
+    wso2: ctx.state.wso2,
+    metricsClient: ctx.state.metricsClient,
+});
+
 /**
  * Handler for outbound transfer request initiation
  */
@@ -117,13 +125,7 @@ const postTransfers = async (ctx) => {
         };
 
         // use the transfers model to execute asynchronous stages with the switch
-        const model = new OutboundTransfersModel({
-            ...ctx.state.conf,
-            cache: ctx.state.cache,
-            logger: ctx.state.logger,
-            wso2: ctx.state.wso2,
-            metricsClient: ctx.state.metricsClient,
-        });
+        const model = createOutboundTransfersModel(ctx);
 
         // initialize the transfer model and start it running
         await model.initialize(transferRequest);
@@ -150,13 +152,7 @@ const getTransfers = async (ctx) => {
         };
 
         // use the transfers model to execute asynchronous stages with the switch
-        const model = new OutboundTransfersModel({
-            ...ctx.state.conf,
-            cache: ctx.state.cache,
-            logger: ctx.state.logger,
-            wso2: ctx.state.wso2,
-            metricsClient: ctx.state.metricsClient,
-        });
+        const model = createOutboundTransfersModel(ctx);
 
         // initialize the transfer model and start it running
         await model.initialize(transferRequest);
@@ -179,13 +175,7 @@ const putTransfers = async (ctx) => {
     try {
         // this requires a multi-stage sequence with the switch.
         // use the transfers model to execute asynchronous stages with the switch
-        const model = new OutboundTransfersModel({
-            ...ctx.state.conf,
-            cache: ctx.state.cache,
-            logger: ctx.state.logger,
-            wso2: ctx.state.wso2,
-            metricsClient: ctx.state.metricsClient,
-        });
+        const model = createOutboundTransfersModel(ctx);
 
         // TODO: check the incoming body to reject party or quote when requested to do so
 

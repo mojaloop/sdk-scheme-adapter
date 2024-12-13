@@ -50,27 +50,7 @@ const buildUrl = (...args) => {
 };
 
 
-const throwOrJson = async (res) => {
-    // TODO: will a 503 or 500 with content-length zero generate an error?
-    // or a 404 for that matter?!
-
-    if (res.headers['content-length'] === '0' || res.statusCode === 204) {
-        // success but no content, return null
-        return null;
-    }
-    if (res.statusCode < 200 || res.statusCode >= 300) {
-        // not a successful request
-        throw new HTTPResponseError({ msg: `Request returned non-success status code ${res.statusCode}`,
-            res
-        });
-    }
-
-    return res.data;
-};
-
-
 module.exports = {
     HTTPResponseError,
     buildUrl,
-    throwOrJson,
 };

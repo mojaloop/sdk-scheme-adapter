@@ -57,7 +57,6 @@ describe('Proxy', () => {
             method: 'POST',
             query: {},
             headers: {},
-            switchUrlPath: '/switch-path-test-1',
             shouldForward: true,
         }));
 
@@ -67,7 +66,6 @@ describe('Proxy', () => {
             method: 'PUT',
             query: {},
             headers: {},
-            switchUrlPath: '/switch-path-test-1',
             shouldForward: true,
         }));
 
@@ -77,7 +75,6 @@ describe('Proxy', () => {
             method: 'GET',
             query: {},
             headers: {},
-            switchUrlPath: '/switch-path-test-1',
             shouldForward: true,
         }));
 
@@ -87,7 +84,6 @@ describe('Proxy', () => {
             method: 'POST',
             query: {},
             headers: {},
-            switchUrlPath: '/switch-path-test-1',
             shouldForward: false,
         }));
 
@@ -97,7 +93,6 @@ describe('Proxy', () => {
             method: 'POST',
             query: {},
             headers: {},
-            switchUrlPath: '/switch-path-test-2',
             shouldForward: true,
         }));
 
@@ -107,7 +102,6 @@ describe('Proxy', () => {
             method: 'POST',
             query: { testParam3: 'testValue3' },
             headers: {},
-            switchUrlPath: '/switch-path-test-3-1',
             shouldForward: true,
         }));
 
@@ -117,7 +111,6 @@ describe('Proxy', () => {
             method: 'POST',
             query: { testParam3: 'testValue4' },
             headers: {},
-            switchUrlPath: '/switch-path-test-3-1',
             shouldForward: false,
         }));
 
@@ -130,7 +123,6 @@ describe('Proxy', () => {
                 customHeader2: 'customValue2',
                 customHeader3: 'other value'
             },
-            switchUrlPath: '/switch-path-test-4',
             shouldForward: true,
         }));
 
@@ -142,7 +134,6 @@ describe('Proxy', () => {
             headers: {
                 customHeader2: 'customValue2',
             },
-            switchUrlPath: '/switch-path-test-4',
             shouldForward: false,
         }));
 
@@ -155,7 +146,6 @@ describe('Proxy', () => {
                 someHeader1: 'someCustomValue',
                 someHeader2: 'customValue5',
             },
-            switchUrlPath: '/switch-path-test-5',
             shouldForward: true,
         }));
 
@@ -167,7 +157,6 @@ describe('Proxy', () => {
             headers: {
                 requiredName: 'yes',
             },
-            switchUrlPath: '/switch-path-test-8',
             shouldForward: true,
         }));
 
@@ -179,7 +168,6 @@ describe('Proxy', () => {
             headers: {
                 requiredName: 'no',
             },
-            switchUrlPath: '/switch-path-test-8',
             shouldForward: false,
         }));
 
@@ -191,7 +179,6 @@ describe('Proxy', () => {
             headers: {
                 requiredName: 'no',
             },
-            switchUrlPath: '/switch-path-test-8',
             shouldForward: true,
         }));
 
@@ -205,7 +192,6 @@ describe('Proxy', () => {
                 SomeHKEY82: 'some val',
                 'content-type': 'application/json',
             },
-            switchUrlPath: '/switch-path-test-8',
             shouldForward: true,
         }));
 
@@ -219,7 +205,6 @@ describe('Proxy', () => {
                 SomeHKEY82: 'some val',
                 'content-type': 'application/json',
             },
-            switchUrlPath: '/switch-path-test-8',
             shouldForward: true,
             binary: true,
         }));

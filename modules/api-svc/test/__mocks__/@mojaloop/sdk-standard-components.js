@@ -13,7 +13,8 @@
 const assert = require('assert').strict;
 const util = require('util');
 const {
-    MojaloopRequests, Errors, WSO2Auth, Jws, Logger,
+    axios,
+    MojaloopRequests, Errors, WSO2Auth, Jws, Logger, common,
     Ilp: { ILP_VERSIONS }
 } = jest.requireActual('@mojaloop/sdk-standard-components');
 
@@ -88,11 +89,18 @@ MockMojaloopRequests.__putFxTransfers = jest.fn(mockMojaResponseFn);
 MockMojaloopRequests.__putFxTransfersError = jest.fn(mockMojaResponseFn);
 
 const Ilp = {
-    ilpFactory: (version, options) => new MockIlp(options),
+    ilpFactory: (version, options) => {
+        switch(version) {
+            case 'v1':
+                return new MockIlpV1(options);
+            case 'v4':
+                throw new Error('v4 not supported by mock');
+        }
+    },
     ILP_VERSIONS
 };
 
-class MockIlp {
+class MockIlpV1 {
     constructor(config) {
         assert(config.logger, 'Must supply a logger to Ilp constructor');
         this.logger = config.logger;
@@ -171,6 +179,7 @@ class MockJwsSigner {
 
 
 module.exports = {
+    axios,
     Ilp,
     MojaloopRequests: MockMojaloopRequests,
     Jws: {
@@ -180,4 +189,5 @@ module.exports = {
     Errors,
     WSO2Auth,
     Logger,
+    common,
 };

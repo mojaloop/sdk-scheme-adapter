@@ -11,8 +11,13 @@
 const { Enum } = require('@mojaloop/central-services-shared');
 const { ReturnCodes } = Enum.Http;
 const { ProxyModel } = require('../lib/model');
-const { applyState, createErrorHandler, createLogger, createRequestIdGenerator } =
-    require('../InboundServer/middlewares');
+const {
+    applyState,
+    createErrorHandler,
+    createLogger,
+    createRequestIdGenerator,
+    createResponseLogging,
+} = require('../InboundServer/middlewares');
 
 
 /**
@@ -72,4 +77,5 @@ module.exports = {
     createLogger,
     createRequestValidator,
     createProxy,
+    createResponseLogging,
 };

@@ -23,7 +23,8 @@ const router = require('../lib/router');
 const handlers = require('./handlers');
 const middlewares = require('./middlewares');
 
-const specPath = path.join(__dirname, 'api.yaml');
+const { inboundOpenApiFilename } = require('../config');
+const specPath = path.resolve(__dirname, inboundOpenApiFilename);
 const apiSpecs = yaml.load(fs.readFileSync(specPath));
 
 const logExcludePaths = ['/'];
@@ -115,6 +116,7 @@ class InboundApi extends EventEmitter {
         }
         api.use(router(handlers));
         api.use(middlewares.createResponseBodyHandler());
+        api.use(middlewares.createResponseLogging(logger));
 
         api.context.resourceVersions = conf.resourceVersions;
 

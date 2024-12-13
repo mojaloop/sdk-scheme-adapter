@@ -18,7 +18,7 @@ module.exports = Object.fromEntries(
         try {
             f.bind(assert)(...args);
             return true;
-        } catch (err) {
+        } catch {
             return false;
         }
     }])
