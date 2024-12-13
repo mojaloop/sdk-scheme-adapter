@@ -213,7 +213,7 @@ const createRequestIdGenerator = (logger) => async (ctx, next) => {
 
     if (shouldLog(ctx.path, logger)) {
         const { method, path, id, headers } = ctx.request;
-        logger.isInfoEnabled && logger
+        logger
             .push({ method, path, id, headers })
             .info(`[==> req] ${method?.toUpperCase()} ${path} - requestId: ${id}`);
     }
