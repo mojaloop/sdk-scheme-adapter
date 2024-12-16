@@ -36,6 +36,10 @@
       "ttksim3": {
         "defaultEndpoint": "http://ttksim3-sdk-api-svc:4000",
         "endpoints": []
+      },
+      "ttkfxp": {
+        "defaultEndpoint": "http://ttkfxp-sdk-api-svc:4000",
+        "endpoints": []
       }
     }
   },

@@ -85,6 +85,12 @@
       "folderPath": "mojaloop_sdk_outbound_scheme_adapter_1.0",
       "hostnames": [],
       "prefix": "/sdk-out"
+    },
+    {
+      "type": "fspiop",
+      "version": "2.0",
+      "folderPath": "fspiop_2.0",
+      "asynchronous": true
     }
   ]
 }

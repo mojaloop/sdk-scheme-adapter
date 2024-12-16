@@ -11,7 +11,7 @@
 'use strict';
 
 const safeStringify = require('fast-safe-stringify');
-const { uuid } = require('uuidv4');
+const idGenerator = require('@mojaloop/central-services-shared').Util.id;
 const StateMachine = require('javascript-state-machine');
 const { Ilp, MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const shared = require('./lib/shared');
@@ -25,6 +25,7 @@ const { SDKStateEnum, TransactionRequestStateEnum } = require('./common');
  */
 class OutboundRequestToPayTransferModel {
     constructor(config) {
+        this._idGenerator = idGenerator(config.idGenerator);
         this._cache = config.cache;
         this._logger = config.logger;
         this._requestProcessingTimeoutSeconds = config.requestProcessingTimeoutSeconds;
@@ -54,9 +55,10 @@ class OutboundRequestToPayTransferModel {
             jwsSignPutParties: config.jwsSignPutParties,
             jwsSigningKey: config.jwsSigningKey,
             wso2: config.wso2,
+            resourceVersions: config.resourceVersions,
         });
 
-        this._ilp = new Ilp({
+        this._ilp = Ilp.ilpFactory(Ilp.ILP_VERSIONS.v1, {
             secret: config.ilpSecret,
             logger: this._logger,
         });
@@ -71,7 +73,7 @@ class OutboundRequestToPayTransferModel {
 
         // add a transferId if one is not present e.g. on first submission
         if(!this.data.hasOwnProperty('transferId')) {
-            this.data.transferId = uuid();
+            this.data.transferId = this._idGenerator();
         }
 
         // initialize the transfer state machine to its starting state
@@ -571,7 +573,7 @@ class OutboundRequestToPayTransferModel {
      */
     _buildQuoteRequest() {
         let quote = {
-            quoteId: uuid(),
+            quoteId: this._idGenerator(),
             transactionId: this.data.transferId,
             transactionRequestId: this.data.transactionRequestId,
             amountType: this.data.amountType,

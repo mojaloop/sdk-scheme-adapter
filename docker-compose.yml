@@ -60,7 +60,7 @@ services:
         aliases:
           - ttkbackendsim
           - ttkhubsim
-    image: mojaloop/ml-testing-toolkit:v15.0.0
+    image: mojaloop/ml-testing-toolkit:v17.2.2
     volumes:
       - "./docker/ml-testing-toolkit/spec_files:/opt/app/spec_files"
       - "./docker/ml-testing-toolkit/secrets:/opt/app/secrets"
@@ -71,11 +71,12 @@ services:
     environment:
       - AUTH_ENABLED=FALSE
     command: npm start
+    user: root
 
   # For local development we want to have ttk-ui
   #
   mojaloop-testing-toolkit-ui:
-    image: mojaloop/ml-testing-toolkit-ui:v15.0.0
+    image: mojaloop/ml-testing-toolkit-ui:v15.5.0
     ports:
       - "6060:6060"
     networks:
@@ -86,6 +87,7 @@ services:
     command:
       - sh
       - /usr/share/nginx/start.sh
+    user: root
 
   kafka:
     networks:
@@ -131,15 +133,13 @@ services:
 
   # For local development we want to have a kafka-ui
   #
-  kowl:
+  kafka-debug-ui:
     networks:
       - mojaloop-net
-    image: quay.io/cloudhut/kowl:v1.4.0
-    container_name: kowl
+    image: docker.redpanda.com/redpandadata/console:v23.2.17
     deploy:
       replicas: 1
     restart: on-failure
-    hostname: kowl
     ports:
     - "9080:8080"
     environment:

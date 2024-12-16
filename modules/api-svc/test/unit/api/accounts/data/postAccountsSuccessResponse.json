@@ -7,7 +7,7 @@
     }
   ],
   "currentState": "COMPLETED",
-  "modelId": "00000000-0000-1000-8000-000000000001",
+  "modelId": "00000000000000000000000001",
   "postAccountsResponse": {
     "body": {
       "currency": "USD",

@@ -90,6 +90,29 @@ class BackendRequests {
     }
 
     /**
+     * Executes a POST /fxQuotes request for the specified fxQuotes request
+     *
+     * @returns {object} - JSON response body if one was received
+     */
+    async postFxQuotes(payload) {
+        return this._post('fxQuotes', payload);
+    }
+
+    /**
+     * Executes a POST /fxTransfers request for the specified fxTransfer prepare
+     *
+     * @returns {object} - JSON response body if one was received
+     */
+    async postFxTransfers(payload) {
+        return this._post('fxTransfers', payload);
+    }
+
+    async patchFxTransfersNotification(notification, conversionId) {
+        const url = `fxTransfers/${conversionId}`;
+        return this._patch(url, notification);
+    }
+
+    /**
      * Executes a POST /transactionRequests request for the specified transaction request
      *
      * @returns {object} - JSON response body if one was received
@@ -190,17 +213,8 @@ class BackendRequests {
             uri: buildUrl(this.backendEndpoint, url),
             headers: this._buildHeaders(),
         };
-
         // Note we do not JWS sign requests with no body i.e. GET requests
-
-        try {
-            this.logger.isDebugEnabled && this.logger.push({ reqOpts }).debug('Executing HTTP GET');
-            return request({...reqOpts, agent: this.agent}).then(throwOrJson);
-        }
-        catch (e) {
-            this.logger.isErrorEnabled && this.logger.push({ e }).error('Error attempting HTTP GET');
-            throw e;
-        }
+        return this.sendRequest(reqOpts);
     }
 
 
@@ -211,15 +225,7 @@ class BackendRequests {
             headers: this._buildHeaders(),
             body: JSON.stringify(body)
         };
-
-        try {
-            this.logger.isDebugEnabled && this.logger.push({ reqOpts }).debug('Executing HTTP PUT');
-            return request({...reqOpts, agent: this.agent}).then(throwOrJson);
-        }
-        catch (e) {
-            this.logger.push({ e }).bebug('Error attempting HTTP PUT');
-            throw e;
-        }
+        return this.sendRequest(reqOpts);
     }
 
 
@@ -230,15 +236,27 @@ class BackendRequests {
             headers: this._buildHeaders(),
             body: JSON.stringify(body),
         };
+        return this.sendRequest(reqOpts);
+    }
+      
+    _patch(url, body) {
+        const reqOpts = {
+            method: 'PATCH',
+            uri : buildUrl(this.backendEndpoint, url),
+            headers: this._buildHeaders(),
+            body: JSON.stringify(body)
+        };
+        return this.sendRequest(reqOpts);
+    }
 
-        try {
-            this.logger.isDebugEnabled && this.logger.push({ reqOpts }).debug('Executing HTTP POST');
-            return request({...reqOpts, agent: this.agent}).then(throwOrJson);
-        }
-        catch (e) {
-            this.logger.isErrorEnabled && this.logger.push({ e }).error('Error attempting POST.');
-            throw e;
-        }
+    async sendRequest(reqOptions) {
+        this.logger.isDebugEnabled && this.logger.push({ reqOptions }).debug(`Executing HTTP ${reqOptions?.method}...`);
+        return request({ ...reqOptions, agent: this.agent })
+            .then(throwOrJson)
+            .catch(e => {
+                this.logger.push({ e }).error(`Error attempting ${reqOptions?.method} ${reqOptions?.uri}`);
+                throw e;
+            });
     }
 }
 

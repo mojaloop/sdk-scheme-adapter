@@ -1,0 +1,52 @@
+{
+  "VERSION": 1,
+  "CALLBACK_ENDPOINT": "http://ttkfxp-sdk-api-svc:4001",
+  "MONITORING_LOG_INCLUDE_PAYLOAD": true,
+  "CALLBACK_RESOURCE_ENDPOINTS": {
+    "enabled": false,
+    "endpoints": []
+  },
+  "HUB_ONLY_MODE": false,
+  "ENDPOINTS_DFSP_WISE": {
+    "dfsps": {}
+  },
+  "SEND_CALLBACK_ENABLE": true,
+  "FSPID": "switch",
+  "DEFAULT_USER_FSPID": "userdfsp",
+  "TRANSFERS_VALIDATION_WITH_PREVIOUS_QUOTES": false,
+  "TRANSFERS_VALIDATION_ILP_PACKET": false,
+  "TRANSFERS_VALIDATION_CONDITION": false,
+  "ILP_SECRET": "secret",
+  "VERSIONING_SUPPORT_ENABLE": true,
+  "VALIDATE_INBOUND_JWS": false,
+  "VALIDATE_INBOUND_PUT_PARTIES_JWS": false,
+  "JWS_SIGN": false,
+  "JWS_SIGN_PUT_PARTIES": false,
+  "CLIENT_MUTUAL_TLS_ENABLED": false,
+  "ADVANCED_FEATURES_ENABLED": true,
+  "CALLBACK_TIMEOUT": 60000,
+  "DEFAULT_REQUEST_TIMEOUT": 60000,
+  "SCRIPT_TIMEOUT": 60000,
+  "LOG_SERVER_UI_URL": "http://url-here",
+  "UI_CONFIGURATION": {
+    "MOBILE_SIMULATOR": {
+      "HUB_CONSOLE_ENABLED": true
+    }
+  },
+  "CLIENT_TLS_CREDS": [],
+  "GITHUB_CONFIG": {
+    "TEST_CASES_REPO_OWNER": "mojaloop",
+    "TEST_CASES_REPO_NAME": "testing-toolkit-test-cases",
+    "TEST_CASES_REPO_DEFAULT_RELEASE_TAG": "latest",
+    "TEST_CASES_REPO_BASE_PATH": "collections/dfsp",
+    "TEST_CASES_REPO_HUB_GP_PATH": "collections/hub/golden_path",
+    "TEST_CASES_REPO_HUB_PROVISIONING_PATH": "collections/hub/provisioning"
+  },
+  "DEFAULT_ENVIRONMENT_FILE_NAME": "dfsp_local_environment.json",
+  "LABELS": [],
+  "INSTANCE_NAME": "TTK Sim3",
+  "UI_THEME": {
+    "HEADER_COLOR": "rgb(204, 153, 0)",
+    "TITLE_COLOR": "#fff"
+  }
+}
