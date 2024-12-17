@@ -14,7 +14,6 @@ const safeStringify = require('fast-safe-stringify');
 const { MojaloopRequests, Ilp, Errors } = require('@mojaloop/sdk-standard-components');
 const FSPIOPTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.TransferState;
 const FSPIOPBulkTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.BulkTransferState;
-const { TransformFacades } = require('@mojaloop/ml-schema-transformer-lib');
 
 const dto = require('../dto');
 const shared = require('./lib/shared');
