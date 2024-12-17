@@ -560,8 +560,14 @@ class OutboundTransfersModel {
             const subscribing = this._cache.subscribeToOneMessageWithTimer(channel);
 
             const resp = await this._requests.postFxQuotes(payload, payload.conversionTerms.counterPartyFsp);
+            
             const { originalRequest } = resp;
-            this.data.fxQuoteRequest = originalRequest;
+            // Setting the fxQuoteRequest to have the fspiop payload 
+            // If ISO20022 is required then use originalRequest
+            this.data.fxQuoteRequest = {
+                body: payload,
+                headers: originalRequest.headers
+            };
             this._logger.debug('fxQuote request is sent to hub');
 
             const message = await subscribing;
@@ -575,7 +581,7 @@ class OutboundTransfersModel {
                 throw error;
             }
 
-            this._logger.push({ body, originalRequest }).verbose('fxQuote callback response received');
+            // this._logger.push({ body, originalRequest }).verbose('fxQuote callback response received');
 
             if (this._rejectExpiredQuoteResponses) {
                 const now = new Date().toISOString();
@@ -658,6 +664,8 @@ class OutboundTransfersModel {
                     if (error) {
                         return reject(error);
                     }
+                    // originalIso20022QuoteResponse is being sent as post transfers payload to hub
+                    // Can't remove this at the moment
                     this.data.quoteResponse = {
                         headers: message.data.headers,
                         body: message.data.body,
@@ -696,7 +704,10 @@ class OutboundTransfersModel {
                 latencyTimerDone = this.metrics.quoteRequestLatency.startTimer();
                 const res = await this._requests.postQuotes(quote, this.data.to.fspId);
 
-                this.data.quoteRequest = res.originalRequest;
+                this.data.quoteRequest = {
+                    body: quote,
+                    headers: res.originalRequest.headers
+                };
 
                 this.metrics.quoteRequests.inc();
                 this._logger.isDebugEnabled && this._logger.push({ res }).debug('Quote request sent to peer');
@@ -788,7 +799,7 @@ class OutboundTransfersModel {
             const subscribing = this._cache.subscribeToOneMessageWithTimer(channel);
 
             const { originalRequest } = await this._requests.postFxTransfers(payload, payload.counterPartyFsp);
-            this.data.fxTransferRequest = originalRequest;
+            this.data.fxTransferRequest = { body: payload , headers: originalRequest.headers };
             this._logger.push({ originalRequest }).verbose('fxTransfers request is sent to hub');
 
             const message = await subscribing;
@@ -945,7 +956,10 @@ class OutboundTransfersModel {
                     res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource, {});
                 }
 
-                this.data.prepare = res.originalRequest;
+                this.data.prepare = {
+                    body: prepare,
+                    headers: res.originalRequest.headers
+                };
 
                 this.metrics.transferPrepares.inc();
                 this._logger.isDebugEnabled && this._logger.push({ res }).debug('Transfer prepare sent to peer');
