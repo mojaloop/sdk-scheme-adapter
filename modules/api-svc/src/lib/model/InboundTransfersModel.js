@@ -258,7 +258,7 @@ class InboundTransfersModel {
             }
             this.data.quoteResponse = {
                 headers: res.originalRequest.headers,
-                body: mojaloopResponse,
+                body: JSON.stringify(mojaloopResponse),
             };
             this.data.currentState = SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE;
             await this._save();
@@ -469,7 +469,7 @@ class InboundTransfersModel {
 
             this.data.fulfil = {
                 headers: res.originalRequest.headers,
-                body: mojaloopResponse,
+                body: JSON.stringify(mojaloopResponse),
             };
             this.data.currentState = response.transferState || (this._reserveNotification ? SDKStateEnum.RESERVED : SDKStateEnum.COMPLETED);
             await this._save();
@@ -574,7 +574,7 @@ class InboundTransfersModel {
 
             this.data.fxQuoteResponse = {
                 headers: res.originalRequest.headers,
-                body: mojaloopResponse,
+                body: JSON.stringify(mojaloopResponse),
             };
             
             this.data.currentState = SDKStateEnum.FX_QUOTE_WAITING_FOR_ACCEPTANCE;
@@ -642,7 +642,7 @@ class InboundTransfersModel {
 
             this.data.fulfil = {
                 headers: res.originalRequest.headers,
-                body: mojaloopResponse,
+                body: JSON.stringify(mojaloopResponse),
             };
 
             this.data.currentState = beResponse.conversionState;
