@@ -58,6 +58,8 @@ class OutboundTransfersModel {
         if (this._autoAcceptParty && this._multiplePartiesResponse) {
             throw new Error('Conflicting config options provided: autoAcceptParty and multiplePartiesResponse');
         }
+        
+        this._cacheTtl = config.redisCacheTtl;
 
         this._requests = new MojaloopRequests({
             logger: this._logger,
@@ -1152,7 +1154,7 @@ class OutboundTransfersModel {
     async _save() {
         try {
             this.data.currentState = this.stateMachine.state;
-            const res = await this._cache.set(`transferModel_out_${this.data.transferId}`, this.data, 3600);
+            const res = await this._cache.set(`transferModel_out_${this.data.transferId}`, this.data, this._cacheTtl);
             this._logger.isDebugEnabled && this._logger.push({ res }).debug('Persisted transfer model in cache');
         }
         catch (err) {

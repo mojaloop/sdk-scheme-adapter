@@ -72,6 +72,7 @@ class InboundTransfersModel {
             secret: config.ilpSecret,
             logger: config.logger,
         });
+        this._cacheTtl = config.redisCacheTtl;
     }
 
     updateStateWithError(err) {
@@ -1061,7 +1062,7 @@ class InboundTransfersModel {
      */
     async _save() {
         try {
-            const res = await this._cache.set(`transferModel_in_${this.data.transferId}`, this.data, 3600);
+            const res = await this._cache.set(`transferModel_in_${this.data.transferId}`, this.data, this._cacheTtl);
             this._logger.push({ res }).debug('Persisted transfer model in cache');
         }
         catch(err) {
@@ -1089,7 +1090,7 @@ class InboundTransfersModel {
     // todo: combine with this._save
     async saveFxState() { // fxQuote + fxTransfer
         const key = this.makeFxQuoteCacheKey(this.data?.conversionId);
-        const res = await this._cache.set(key, this.data, 3600);
+        const res = await this._cache.set(key, this.data, this._cacheTtl);
         this._logger.push({ key, res }).log('fxState is saved in cache');
     }
 
