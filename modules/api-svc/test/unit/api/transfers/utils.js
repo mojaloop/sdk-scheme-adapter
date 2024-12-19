@@ -109,9 +109,9 @@ function createGetTransfersTester({ reqInbound, reqOutbound, apiSpecsOutbound })
  * @param apiSpecsOutbound
  * @returns Function(bodyFn:object, responseCode:number, responseBody:object) => Promise
  */
-function createPostTransfersTester(
-    { requestValidatorInbound, reqInbound, reqOutbound, apiSpecsOutbound }) {
-
+function createPostTransfersTester({
+    requestValidatorInbound, reqInbound, reqOutbound, apiSpecsOutbound
+}) {
     const logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests' } });
 
     /**
@@ -252,6 +252,7 @@ function createPostTransfersTester(
         const responseValidator = new OpenAPIResponseValidator(apiSpecsOutbound.paths['/transfers'].post);
         const err = responseValidator.validateResponse(responseCode, body);
         if (err) {
+            logger.push({ err }).error('validateResponse error');
             throw err;
         }
         await pendingRequest;

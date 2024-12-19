@@ -8,13 +8,12 @@
  *       James Bush - james.bush@modusbox.com                             *
  **************************************************************************/
 
+const { env } = require('node:process');
 const coBody = require('co-body');
-
-const { Enum } = require('@mojaloop/central-services-shared');
-const { ReturnCodes } = Enum.Http;
-
 const { generateSlug } = require('random-word-slugs');
+
 const { Jws, Errors, common } = require('@mojaloop/sdk-standard-components');
+const { ReturnCodes } = require('@mojaloop/central-services-shared').Enum.Http;
 const {
     parseAcceptHeader,
     parseContentTypeHeader,
@@ -26,9 +25,13 @@ const {
     errorMessages
 } = require('@mojaloop/central-services-shared').Util.Hapi.FSPIOPHeaderValidation;
 const { TransformFacades } = require('@mojaloop/ml-schema-transformer-lib');
+
 const { transformHeadersIsoToFspiop } = require('../lib/utils');
-const Config = require('../config');
 const { API_TYPES } = require('../constants');
+const Config = require('../config');
+
+const INTERNAL_ROUTES = env.LOG_INTERNAL_ROUTES ? env.LOG_INTERNAL_ROUTES.split(',') : ['/health', '/metrics', '/ready'];
+const shouldLog = (path, log) => log.isInfoEnabled && !INTERNAL_ROUTES.includes(path);
 
 /**
  * Log raw to console as a last resort
@@ -207,10 +210,14 @@ const cacheRequest = (cache) => async (ctx, next) => {
 const createRequestIdGenerator = (logger) => async (ctx, next) => {
     ctx.request.id = generateSlug(4);
     ctx.state.receivedAt = Date.now();
-    const { method, path, id, headers } = ctx.request;
-    logger.isInfoEnabled && logger
-        .push({ method, path, id, headers })
-        .info(`[==> req] ${method?.toUpperCase()} ${path} - requestId: ${id}`);
+
+    if (shouldLog(ctx.path, logger)) {
+        const { method, path, id, headers } = ctx.request;
+        logger
+            .push({ method, path, id, headers })
+            .info(`[==> req] ${method?.toUpperCase()} ${path} - requestId: ${id}`);
+    }
+
     await next();
 };
 
@@ -488,10 +495,12 @@ const createResponseBodyHandler = () => async (ctx, next) => {
 };
 
 const createResponseLogging = (logger) => async (ctx, next) => {
-    const { method, path, id } = ctx.request;
-    const { status = 'n/a' } = ctx.response;
-    const processTime = ((Date.now() - ctx.state.receivedAt) / 1000).toFixed(1);
-    logger.isInfoEnabled && logger.info(`[<== ${status}][${processTime}sec] ${method?.toUpperCase()} ${path} - requestId: ${id}`);
+    if (shouldLog(ctx.path, logger)) {
+        const { method, path, id } = ctx.request;
+        const { status = 'n/a' } = ctx.response;
+        const processTime = ((Date.now() - ctx.state.receivedAt) / 1000).toFixed(1);
+        logger.info(`[<== ${status}] ${method?.toUpperCase()} ${path} [${processTime}sec] - requestId: ${id}`);
+    }
 
     return await next();
 };
