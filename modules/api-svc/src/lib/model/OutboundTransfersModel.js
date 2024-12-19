@@ -1152,7 +1152,7 @@ class OutboundTransfersModel {
     async _save() {
         try {
             this.data.currentState = this.stateMachine.state;
-            const res = await this._cache.set(`transferModel_out_${this.data.transferId}`, this.data);
+            const res = await this._cache.set(`transferModel_out_${this.data.transferId}`, this.data, 3600);
             this._logger.isDebugEnabled && this._logger.push({ res }).debug('Persisted transfer model in cache');
         }
         catch (err) {
