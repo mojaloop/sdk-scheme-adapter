@@ -1176,12 +1176,21 @@ class OutboundTransfersModel {
         // deep cloning to avoid side effects
         let modifiedData = JSON.parse(JSON.stringify(data));
         // Removing iso quote response and extension lists
-        if(modifiedData.to && modifiedData.to.extensionList)
-            modifiedData.to.extensionList = null;
-        if(modifiedData.quoteRequestExtensions)
-            modifiedData.quoteRequestExtensions = null;
+        if(modifiedData.getPartiesResponse && modifiedData.getPartiesResponse.body && modifiedData.getPartiesResponse.body.extensionList)
+            modifiedData.getPartiesResponse.body.extensionList = undefined;
+        if(modifiedData.fxQuoteResponse && modifiedData.fxQuoteResponse.body && modifiedData.fxQuoteResponse.body.extensionList)
+            modifiedData.fxQuoteResponse.body.extensionList = undefined;
         if(modifiedData.quoteResponse && modifiedData.quoteResponse.originalIso20022QuoteResponse){
             modifiedData.quoteResponse.originalIso20022QuoteResponse = undefined; 
+        }
+        if(modifiedData.quoteResponse && modifiedData.quoteResponse.body && modifiedData.quoteResponse.body.extensionList){
+            modifiedData.quoteResponse.body.extensionList = undefined;
+        }
+        if(modifiedData.fxTransferResponse && modifiedData.fxTransferResponse.body && modifiedData.fxTransferResponse.body.extensionList){
+            modifiedData.fxTransferResponse.body.extensionList = undefined;
+        }
+        if(modifiedData.fulfil && modifiedData.fulfil.body && modifiedData.fulfil.body.extensionList){
+            modifiedData.fulfil.body.extensionList = undefined;
         }
         return modifiedData;
     }

@@ -174,7 +174,7 @@ const postQuotes = async (ctx) => {
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 post quotes body to FSPIOP');
         // store the original request body in the context for later use
         quoteRequest.isoPostQuote = ctx.request.body;
-        const target = await TransformFacades.FSPIOPISO20022.quotes.post({ body: ctx.request.body });
+        const target = await TransformFacades.FSPIOPISO20022.quotes.post({ body: ctx.request.body }, { rollUpUnmappedAsExtensions: true });
         ctx.request.body = target.body;
     }
 
@@ -221,7 +221,7 @@ const postTransfers = async (ctx) => {
     if (ctx.state.conf.isIsoApi) {
         // we need to transform the incoming request body from iso20022 to fspiop
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 post transfers body to FSPIOP');
-        const target = await TransformFacades.FSPIOPISO20022.transfers.post({ body: ctx.request.body });
+        const target = await TransformFacades.FSPIOPISO20022.transfers.post({ body: ctx.request.body }, { rollUpUnmappedAsExtensions: true });
         ctx.request.body = target.body;
     }
 
@@ -437,7 +437,7 @@ const putPartiesByTypeAndId = async (ctx) => {
     if (ctx.state.conf.isIsoApi) {
         // we need to transform the incoming request body from iso20022 to fspiop
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 put parties body to FSPIOP');
-        const target = await TransformFacades.FSPIOPISO20022.parties.put({ body: ctx.request.body });
+        const target = await TransformFacades.FSPIOPISO20022.parties.put({ body: ctx.request.body }, { rollUpUnmappedAsExtensions: true });
         ctx.request.body = target.body;
     }
 
@@ -471,7 +471,7 @@ const putQuoteById = async (ctx) => {
         ctx.request.originalIso20022QuoteResponse = ctx.request.body;
         // we need to transform the incoming request body from iso20022 to fspiop
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 put quotes body to FSPIOP');
-        const target = await TransformFacades.FSPIOPISO20022.quotes.put({ body: ctx.request.body });
+        const target = await TransformFacades.FSPIOPISO20022.quotes.put({ body: ctx.request.body }, { rollUpUnmappedAsExtensions: true });
         ctx.request.body = target.body;
     }
 
@@ -510,7 +510,7 @@ const putQuotesByIdError = async (ctx) => {
     if (ctx.state.conf.isIsoApi) {
         // we need to transform the incoming request body from iso20022 to fspiop
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 putError quotes body to FSPIOP');
-        const target = await TransformFacades.FSPIOPISO20022.quotes.putError({ body: ctx.request.body });
+        const target = await TransformFacades.FSPIOPISO20022.quotes.putError({ body: ctx.request.body }, { rollUpUnmappedAsExtensions: true });
         ctx.request.body = target.body;
     }
 
@@ -642,7 +642,7 @@ const putTransfersById = async (ctx) => {
     if (ctx.state.conf.isIsoApi) {
         // we need to transform the incoming request body from iso20022 to fspiop
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 put transfers body to FSPIOP');
-        const target = await TransformFacades.FSPIOPISO20022.transfers.put({ body: ctx.request.body });
+        const target = await TransformFacades.FSPIOPISO20022.transfers.put({ body: ctx.request.body }, { rollUpUnmappedAsExtensions: true });
         ctx.request.body = target.body;
     }
 
@@ -699,7 +699,7 @@ const putPartiesByTypeAndIdError = async(ctx) => {
     if (ctx.state.conf.isIsoApi) {
         // we need to transform the incoming request body from iso20022 to fspiop
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 putError parties body to FSPIOP');
-        const target = await TransformFacades.FSPIOPISO20022.parties.putError({ body: ctx.request.body });
+        const target = await TransformFacades.FSPIOPISO20022.parties.putError({ body: ctx.request.body }, { rollUpUnmappedAsExtensions: true });
         ctx.request.body = target.body;
     }
 
@@ -735,7 +735,7 @@ const putTransfersByIdError = async (ctx) => {
     if (ctx.state.conf.isIsoApi) {
         // we need to transform the incoming request body from iso20022 to fspiop
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 putError transfers body to FSPIOP');
-        const target = await TransformFacades.FSPIOPISO20022.transfers.putError({ body: ctx.request.body });
+        const target = await TransformFacades.FSPIOPISO20022.transfers.putError({ body: ctx.request.body }, { rollUpUnmappedAsExtensions: true });
         ctx.request.body = target.body;
     }
 
@@ -963,7 +963,7 @@ const healthCheck = async(ctx) => {
 const postFxQuotes = async (ctx) => {
     if (ctx.state.conf.isIsoApi) {
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 post fxQuotes body to FSPIOP');
-        const target = await TransformFacades.FSPIOPISO20022.fxQuotes.post({ body: ctx.request.body });
+        const target = await TransformFacades.FSPIOPISO20022.fxQuotes.post({ body: ctx.request.body }, { rollUpUnmappedAsExtensions: true });
         ctx.request.body = target.body;
     }
 
@@ -989,7 +989,7 @@ const createPutFxQuotesHandler = (success) => async (ctx) => {
     if (ctx.state.conf.isIsoApi) {
         const method = success ? 'put' : 'putError';
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug(`Transforming incoming ISO20022 ${method} fxQuotes body to FSPIOP`);
-        const target = await TransformFacades.FSPIOPISO20022.fxQuotes[method]({ body: ctx.request.body });
+        const target = await TransformFacades.FSPIOPISO20022.fxQuotes[method]({ body: ctx.request.body }, { rollUpUnmappedAsExtensions: true });
         ctx.request.body = target.body;
     }
 
@@ -1020,7 +1020,7 @@ const createPutFxQuotesHandler = (success) => async (ctx) => {
 const postFxTransfers = async (ctx) => {
     if (ctx.state.conf.isIsoApi) {
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 post fxTransfers body to FSPIOP');
-        const target = await TransformFacades.FSPIOPISO20022.fxTransfers.post({ body: ctx.request.body });
+        const target = await TransformFacades.FSPIOPISO20022.fxTransfers.post({ body: ctx.request.body }, { rollUpUnmappedAsExtensions: true });
         ctx.request.body = target.body;
     }
 
@@ -1061,7 +1061,7 @@ const createPutFxTransfersHandler = (success) => async (ctx) => {
     if (ctx.state.conf.isIsoApi) {
         const method = success ? 'put' : 'putError';
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug(`Transforming incoming ISO20022 ${method} fxTransfers body to FSPIOP`);
-        const target = await TransformFacades.FSPIOPISO20022.fxTransfers[method]({ body: ctx.request.body });
+        const target = await TransformFacades.FSPIOPISO20022.fxTransfers[method]({ body: ctx.request.body }, { rollUpUnmappedAsExtensions: true });
         ctx.request.body = target.body;
     }
 
