@@ -344,14 +344,17 @@ class Cache {
       * @param value {string} - cache value
       * @param ttl {number} - cache ttl in seconds
       */
-    async set(key, value, ttl=0) {
+    async set(key, value, ttl=0 ) {
         //if we are given an object, turn it into a string
         if(typeof(value) !== 'string') {
             value = JSON.stringify(value);
         }
-        await this._client.set(key, value);
+        // If ttl is positive i.e >0 then set expiry time as ttl in seconds
         if(ttl > 0)
-            await this._client.expire(key, ttl);
+            await this._client.set(key, value, { 'EX': ttl });
+        else 
+            await this._client.set(key, value);
+        
     }
 
     /**

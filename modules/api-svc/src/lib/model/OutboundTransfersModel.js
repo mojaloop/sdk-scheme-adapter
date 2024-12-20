@@ -1155,12 +1155,35 @@ class OutboundTransfersModel {
         try {
             this.data.currentState = this.stateMachine.state;
             const res = await this._cache.set(`transferModel_out_${this.data.transferId}`, this.data, this._cacheTtl);
+            // function to modify this.data before saving to cache for UI.
+            const modifiedData = this._modifyDataForUi(this.data);
+            // save to a UI key, using a modifiedData, as we don't want any side effects to happen on original data
+            // No ttl set as it will persist throughout the session
+            await this._cache.set(`transferUI_out_${this.data.transferId}`, modifiedData);
             this._logger.isDebugEnabled && this._logger.push({ res }).debug('Persisted transfer model in cache');
         }
         catch (err) {
             this._logger.isErrorEnabled && this._logger.push({ err, data: this.data }).error('Error saving transfer model');
             throw err;
         }
+    }
+    
+    /**
+     * Modifies the data being stored in the cache for UI before it is store.
+     * Works on a copy of original object to avoid side effects
+     */
+    _modifyDataForUi( data ){
+        // deep cloning to avoid side effects
+        let modifiedData = JSON.parse(JSON.stringify(data));
+        // Removing iso quote response and extension lists
+        if(modifiedData.to && modifiedData.to.extensionList)
+            modifiedData.to.extensionList = null;
+        if(modifiedData.quoteRequestExtensions)
+            modifiedData.quoteRequestExtensions = null;
+        if(modifiedData.quoteResponse && modifiedData.quoteResponse.originalIso20022QuoteResponse){
+            modifiedData.quoteResponse.originalIso20022QuoteResponse = undefined; 
+        }
+        return modifiedData;
     }
 
 
