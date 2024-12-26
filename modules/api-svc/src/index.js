@@ -343,44 +343,46 @@ async function _GetUpdatedConfigFromMgmtAPI(conf, logger, client) {
     return responseRead.data;
 }
 
+async function start(config) {
+    const logger = createLogger(config);
+
+    if (config.pm4mlEnabled) {
+        const controlClient = await ControlAgent.Client.Create({
+            address: config.control.mgmtAPIWsUrl,
+            port: config.control.mgmtAPIWsPort,
+            logger: logger,
+            appConfig: config,
+        });
+        const updatedConfigFromMgmtAPI = await _GetUpdatedConfigFromMgmtAPI(config, logger, controlClient);
+        logger.isInfoEnabled && logger.push({ updatedConfigFromMgmtAPI }).info('updatedConfigFromMgmtAPI:');
+        _.merge(config, updatedConfigFromMgmtAPI);
+        controlClient.terminate();
+    }
+    const svr = new Server(config, logger);
+    svr.on('error', (err) => {
+        logger.push({ err }).error('Unhandled server error');
+        process.exit(2);
+    });
+
+    // handle SIGTERM to exit gracefully
+    process.on('SIGTERM', async () => {
+        logger.isInfoEnabled && logger.info('SIGTERM received. Shutting down APIs...');
+        await svr.stop();
+        process.exit(0);
+    });
+
+    await svr.start().catch(err => {
+        logger.push({ err }).error('Error starting server');
+        process.exit(1);
+    });
+
+    logger.isInfoEnabled && logger.push({ name, version }).info('SDK server is started!');
+}
+
 if (require.main === module) {
-    (async () => {
-        // this module is main i.e. we were started as a server;
-        // not used in unit test or "require" scenarios
-        const logger = createLogger(config);
-
-        if (config.pm4mlEnabled) {
-            const controlClient = await ControlAgent.Client.Create({
-                address: config.control.mgmtAPIWsUrl,
-                port: config.control.mgmtAPIWsPort,
-                logger: logger,
-                appConfig: config,
-            });
-            const updatedConfigFromMgmtAPI = await _GetUpdatedConfigFromMgmtAPI(config, logger, controlClient);
-            logger.isInfoEnabled && logger.push({ updatedConfigFromMgmtAPI }).info('updatedConfigFromMgmtAPI:');
-            _.merge(config, updatedConfigFromMgmtAPI);
-            controlClient.terminate();
-        }
-        const svr = new Server(config, logger);
-        svr.on('error', (err) => {
-            logger.push({ err }).error('Unhandled server error');
-            process.exit(2);
-        });
-
-        // handle SIGTERM to exit gracefully
-        process.on('SIGTERM', async () => {
-            logger.isInfoEnabled && logger.info('SIGTERM received. Shutting down APIs...');
-            await svr.stop();
-            process.exit(0);
-        });
-
-        await svr.start().catch(err => {
-            logger.push({ err }).error('Error starting server');
-            process.exit(1);
-        });
-
-        logger.isInfoEnabled && logger.push({ name, version }).info('SDK server is started!');
-    })();
+    // this module is main i.e. we were started as a server;
+    // not used in unit test or "require" scenarios
+    start(config);
 }
 
 
@@ -395,4 +397,6 @@ module.exports = {
     Server,
     Validate,
     SDKStateEnum,
+    start,
+    config,
 };
