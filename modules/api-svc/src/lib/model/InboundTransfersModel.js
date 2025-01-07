@@ -258,7 +258,7 @@ class InboundTransfersModel {
             }
             this.data.quoteResponse = {
                 headers: res.originalRequest.headers,
-                body: res.originalRequest.body,
+                body: mojaloopResponse,
             };
             this.data.currentState = SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE;
             await this._save();
@@ -466,9 +466,10 @@ class InboundTransfersModel {
             // make a callback to the source fsp with the transfer fulfilment
             const res = await this._mojaloopRequests.putTransfers(prepareRequest.transferId, mojaloopResponse,
                 sourceFspId);
+
             this.data.fulfil = {
                 headers: res.originalRequest.headers,
-                body: res.originalRequest.body,
+                body: mojaloopResponse,
             };
             this.data.currentState = response.transferState || (this._reserveNotification ? SDKStateEnum.RESERVED : SDKStateEnum.COMPLETED);
             await this._save();
@@ -573,12 +574,8 @@ class InboundTransfersModel {
 
             this.data.fxQuoteResponse = {
                 headers: res.originalRequest.headers,
-                body: res.originalRequest.body,
+                body: mojaloopResponse,
             };
-            this._logger.log('=======================================');
-            this._logger.log(`Data from the fxQuoteResponse headers are ${res.originalRequest.headers}`);
-            this._logger.log('=======================================');
-
             
             this.data.currentState = SDKStateEnum.FX_QUOTE_WAITING_FOR_ACCEPTANCE;
             await this.saveFxState();
@@ -645,12 +642,8 @@ class InboundTransfersModel {
 
             this.data.fulfil = {
                 headers: res.originalRequest.headers,
-                body: res.originalRequest.body,
+                body: mojaloopResponse,
             };
-            this._logger.log('=======================================');
-            this._logger.log(`Data from the pustFxTransfers headers are ${res.originalRequest.headers}`);
-            this._logger.log('=======================================');
-
 
             this.data.currentState = beResponse.conversionState;
             await this.saveFxState();
