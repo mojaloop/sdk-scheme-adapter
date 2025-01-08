@@ -12,6 +12,6 @@ module.exports = class DfspRequests extends MojaloopRequests {
                 if (result['fspiop-source']) result['fspiop-source'] = id;
                 return result;
             }
-        }
+        };
     }
-}
+};
