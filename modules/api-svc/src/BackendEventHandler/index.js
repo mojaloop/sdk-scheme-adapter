@@ -74,8 +74,8 @@ class BackendEventHandler {
             backendRequests: this._backendRequests,
         };
 
-        // await this._consumer.init();
-        // await this._consumer.start();
+        await this._consumer.init();
+        await this._consumer.start();
     }
 
     async stop() {
