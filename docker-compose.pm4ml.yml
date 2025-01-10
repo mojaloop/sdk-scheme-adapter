@@ -5,7 +5,10 @@ services:
   sdk-scheme-adapter-api-svc:
     env_file: ./modules/api-svc/test/config/integration-pm4ml.env
     depends_on:
-      - mock-management-svc
+      mock-management-svc:
+        condition: service_healthy
+      init-kafka:
+        condition: service_completed_successfully
     command: yarn nx run modules-api-svc:start
 
   mock-management-svc:

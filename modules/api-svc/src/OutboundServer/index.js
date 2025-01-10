@@ -74,7 +74,13 @@ class OutboundApi extends EventEmitter {
         }
 
         this._api.use(middlewares.createRequestValidator(validator));
-        this._api.use(router(handlers));
+        function mount(routes) {
+            if (!conf.multiDfsp) return routes;
+            return Object.fromEntries(Object.entries(routes).map(([path, route]) => {
+                return [`/{dfspId}${path}`, route];
+            }));
+        }
+        this._api.use(router(mount(handlers)));
 
         this._api.use(middlewares.createResponseLogging(this._logger));
     }
