@@ -5,9 +5,10 @@ run_int_tests() {
   pushd modules/$1
   yarn run start & echo $! > /tmp/sdk-scheme-adapter.pid
   sleep 10
-  yarn run test:integration
+  yarn run test:integration || (popd && docker compose logs && false)
   kill $(cat /tmp/sdk-scheme-adapter.pid)
   popd
+  docker compose logs
 }
 
 docker load -i /tmp/docker-image.tar
@@ -38,8 +39,9 @@ log_pid=$(docker logs -f "$(docker ps -qf "name=sdk-scheme-adapter-api-svc")" > 
 yarn run wait-4-docker
 
 pushd modules/api-svc
-yarn run test:integration-pm4ml
+yarn run test:integration-pm4ml || (popd && docker compose -f ./docker-compose.yml -f ./docker-compose.pm4ml.yml logs && false)
 popd
+docker compose -f ./docker-compose.yml -f ./docker-compose.pm4ml.yml logs
 kill "$log_pid"
 
 echo "Validating OpenAPI specs"
