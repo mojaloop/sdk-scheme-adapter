@@ -5,7 +5,7 @@ run_int_tests() {
   pushd modules/$1
   yarn run start & echo $! > /tmp/sdk-scheme-adapter.pid
   sleep 10
-  yarn run test:integration
+  yarn run test:integration || (docker compose logs && false)
   kill $(cat /tmp/sdk-scheme-adapter.pid)
   popd
 }
@@ -38,7 +38,7 @@ log_pid=$(docker logs -f "$(docker ps -qf "name=sdk-scheme-adapter-api-svc")" > 
 yarn run wait-4-docker
 
 pushd modules/api-svc
-yarn run test:integration-pm4ml
+yarn run test:integration-pm4ml || (docker compose -f ./docker-compose.yml -f ./docker-compose.pm4ml.yml logs && false)
 popd
 kill "$log_pid"
 
