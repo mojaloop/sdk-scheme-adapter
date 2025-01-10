@@ -1448,15 +1448,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/compat@npm:^1.2.4":
-  version: 1.2.4
-  resolution: "@eslint/compat@npm:1.2.4"
+"@eslint/compat@npm:^1.2.5":
+  version: 1.2.5
+  resolution: "@eslint/compat@npm:1.2.5"
   peerDependencies:
     eslint: ^9.10.0
   peerDependenciesMeta:
     eslint:
       optional: true
-  checksum: d68b0e5d4f2890c86b439cd2e4c0f9c6e7eae09230a69cf80a0b647f7242ed5c662cc286a06d6eb06d95e3def62ed26e9e1eac494538d58b4e2cfc355d37c176
+  checksum: 267afd3dc8fd70562c728ba4714678b7b76f9aaa8615c461f24346a5362cf0b41a736a2a97205e53dab8cef95de9dc14528184f74cf4e5dc712981f2c12848e6
   languageName: node
   linkType: hard
 
@@ -1532,13 +1532,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@grpc/grpc-js@npm:^1.10.9":
-  version: 1.12.2
-  resolution: "@grpc/grpc-js@npm:1.12.2"
+"@grpc/grpc-js@npm:^1.12.5":
+  version: 1.12.5
+  resolution: "@grpc/grpc-js@npm:1.12.5"
   dependencies:
     "@grpc/proto-loader": ^0.7.13
     "@js-sdsl/ordered-map": ^4.4.2
-  checksum: ee51317f92ec5331931b68bf3a4e485a6f7a715609b8aaa29573b3a2b211d5f37c48cda084e25e2bf21142925f8ec9ca49a9e613cbbe06b73785150825d171df
+  checksum: 415bad10412b713f1f4094e6af3d2067d03794540fecc16cd3cdcd6079e4a632178da25485dfef9a07add8bf498cfccf1a54f8184d671eb256932c47cfe7f785
   languageName: node
   linkType: hard
 
@@ -2094,61 +2094,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mojaloop/central-services-logger@npm:^11.5.2":
+  version: 11.5.2
+  resolution: "@mojaloop/central-services-logger@npm:11.5.2"
+  dependencies:
+    parse-strings-in-object: 2.0.0
+    rc: 1.2.8
+    safe-stable-stringify: ^2.5.0
+    winston: 3.17.0
+  checksum: c46e4b339f8f57acff98b375e123a8a1e89a348787b4417dbe11f07bf855d09190fd2a1731ce94046bce79d50f3566f5069982e9a969c7260b90aff1f7eab899
+  languageName: node
+  linkType: hard
+
 "@mojaloop/central-services-metrics@npm:^12.4.3":
   version: 12.4.3
   resolution: "@mojaloop/central-services-metrics@npm:12.4.3"
   dependencies:
     prom-client: 15.1.3
   checksum: f79dc271cc956a60bc89c5f38ddaa6f17dcfe5ded9e444530ae09fd2aa6407366016ffc77389f41d1c0e6a0756568d4e23369040a104676072bac0ef4c98d909
-  languageName: node
-  linkType: hard
-
-"@mojaloop/central-services-shared@npm:^18.11.1":
-  version: 18.11.2
-  resolution: "@mojaloop/central-services-shared@npm:18.11.2"
-  dependencies:
-    "@hapi/catbox": 12.1.1
-    "@hapi/catbox-memory": 5.0.1
-    "@mojaloop/inter-scheme-proxy-cache-lib": 2.3.0
-    axios: 1.7.7
-    clone: 2.1.2
-    dotenv: 16.4.5
-    env-var: 7.5.0
-    event-stream: 4.0.1
-    fast-safe-stringify: ^2.1.1
-    immutable: 5.0.3
-    ioredis: ^5.4.1
-    lodash: 4.17.21
-    mustache: 4.2.0
-    openapi-backend: 5.11.1
-    raw-body: 3.0.0
-    rc: 1.2.8
-    shins: 2.6.0
-    ulidx: 2.4.1
-    uuid4: 2.0.3
-    widdershins: ^4.0.1
-    yaml: 2.6.1
-  peerDependencies:
-    "@mojaloop/central-services-error-handling": ">=13.x.x"
-    "@mojaloop/central-services-logger": ">=11.5.x"
-    "@mojaloop/central-services-metrics": ">=12.x.x"
-    "@mojaloop/event-sdk": ">=14.1.1"
-    ajv: 8.x.x
-    ajv-keywords: 5.x.x
-  peerDependenciesMeta:
-    "@mojaloop/central-services-error-handling":
-      optional: false
-    "@mojaloop/central-services-logger":
-      optional: false
-    "@mojaloop/central-services-metrics":
-      optional: false
-    "@mojaloop/event-sdk":
-      optional: false
-    ajv:
-      optional: false
-    ajv-keyboards:
-      optional: false
-  checksum: 5d07802ddb16fccdb07ccfc6af7514deb146c0201b91b3d67955fec693981a2a9a877b5e5ed149f4db9ff2e65525df3a14c08dbe8a5825f48aa2b9568f4c3ebe
   languageName: node
   linkType: hard
 
@@ -2201,24 +2164,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/event-sdk@npm:^14.1.1":
-  version: 14.1.1
-  resolution: "@mojaloop/event-sdk@npm:14.1.1"
+"@mojaloop/event-sdk@npm:^14.1.2":
+  version: 14.1.2
+  resolution: "@mojaloop/event-sdk@npm:14.1.2"
   dependencies:
-    "@grpc/grpc-js": ^1.10.9
+    "@grpc/grpc-js": ^1.12.5
     "@grpc/proto-loader": 0.7.13
     brototype: 0.0.6
     error-callsites: 2.0.4
     lodash: 4.17.21
     moment: 2.30.1
     parse-strings-in-object: 2.0.0
-    protobufjs: 7.3.0
+    protobufjs: 7.4.0
     rc: 1.2.8
     serialize-error: 8.1.0
     traceparent: 1.0.0
-    tslib: 2.6.3
+    tslib: 2.8.1
     uuid4: 2.0.3
-    winston: 3.13.0
+    winston: 3.17.0
   peerDependencies:
     "@mojaloop/central-services-logger": ">=11.x.x"
     "@mojaloop/central-services-stream": ">=11.2.4"
@@ -2227,20 +2190,7 @@ __metadata:
       optional: false
     "@mojaloop/central-services-stream":
       optional: true
-  checksum: 563e4f8df826967eeb1a944801acfa7cacab18194b98154df745da2cc43f297f629667bf0cb5d8caad04be21158c84399bb01622502b88e36ab7ee83ef713f9a
-  languageName: node
-  linkType: hard
-
-"@mojaloop/inter-scheme-proxy-cache-lib@npm:2.3.0":
-  version: 2.3.0
-  resolution: "@mojaloop/inter-scheme-proxy-cache-lib@npm:2.3.0"
-  dependencies:
-    "@mojaloop/central-services-logger": 11.5.1
-    ajv: ^8.17.1
-    convict: ^6.2.4
-    fast-safe-stringify: ^2.1.1
-    ioredis: ^5.4.1
-  checksum: a6452486634c6a12f9eff524d8cae9a1197a870434b91c9874617e045ede8d4af6cf1900ffdb53699317bdde54d6777a4ecca9bbf6f5dafb510e0fa7d9f94be7
+  checksum: 17ea7e27ea498fbad5ef4e022e83476d31da84e4fe17f2ae9c8a010bde82d2f92d04e433387d8a2ac9f0efa5d1a7e79332201ff92d050eb05f891b1786d6f0a1
   languageName: node
   linkType: hard
 
@@ -2272,23 +2222,6 @@ __metadata:
   version: 0.5.4
   resolution: "@mojaloop/logging-bc-public-types-lib@npm:0.5.4"
   checksum: 68e130dacacc25c3cb126ad04f385a010d9d6f0ab2649bf2a8307a1461c6f0e8099061136d443301d7768a04d8cb5259d90288b74af1bf795a2078e9e8251e36
-  languageName: node
-  linkType: hard
-
-"@mojaloop/ml-schema-transformer-lib@npm:^2.4.1":
-  version: 2.4.1
-  resolution: "@mojaloop/ml-schema-transformer-lib@npm:2.4.1"
-  dependencies:
-    "@mojaloop/central-services-error-handling": ^13.0.2
-    "@mojaloop/central-services-logger": ^11.5.1
-    "@mojaloop/central-services-shared": ^18.11.1
-    "@rollup/rollup-linux-x64-musl": 4.27.2
-    ilp-packet: 2.2.0
-    map-transform-cjs: ^0.2.0
-  dependenciesMeta:
-    "@rollup/rollup-linux-x64-musl":
-      optional: true
-  checksum: 0c8bdfda124281c3181aa9935ef8f6e9ec34268bb99de96746999063e95679f42dade9ab9bba1af35bb3aeee19139bf65812986ed8cb42267df0b7cc8c3370fe
   languageName: node
   linkType: hard
 
@@ -2343,14 +2276,14 @@ __metadata:
     "@koa/cors": ^5.0.0
     "@mojaloop/api-snippets": 17.7.8
     "@mojaloop/central-services-error-handling": ^13.0.3
-    "@mojaloop/central-services-logger": ^11.5.1
+    "@mojaloop/central-services-logger": ^11.5.2
     "@mojaloop/central-services-metrics": ^12.4.3
     "@mojaloop/central-services-shared": ^18.15.1
-    "@mojaloop/event-sdk": ^14.1.1
+    "@mojaloop/event-sdk": ^14.1.2
     "@mojaloop/logging-bc-client-lib": 0.5.8
     "@mojaloop/ml-schema-transformer-lib": ^2.5.1
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
-    "@mojaloop/sdk-standard-components": ^19.6.2
+    "@mojaloop/sdk-standard-components": ^19.6.3
     "@redocly/openapi-cli": ^1.0.0-beta.94
     "@types/jest": ^29.5.14
     ajv: 8.17.1
@@ -2400,7 +2333,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-command-event-handler@workspace:modules/outbound-command-event-handler"
   dependencies:
-    "@eslint/compat": ^1.2.4
+    "@eslint/compat": ^1.2.5
     "@mojaloop/api-snippets": 17.7.8
     "@mojaloop/central-services-shared": ^18.15.1
     "@mojaloop/logging-bc-client-lib": ^0.5.8
@@ -2431,7 +2364,7 @@ __metadata:
     swagger-ui-express: ^5.0.1
     ts-jest: ^29.2.5
     ts-node: ^10.9.2
-    typescript: ^5.7.2
+    typescript: ^5.7.3
     yamljs: ^0.3.0
   languageName: unknown
   linkType: soft
@@ -2468,7 +2401,7 @@ __metadata:
     swagger-ui-express: ^5.0.1
     ts-jest: ^29.2.5
     ts-node: ^10.9.2
-    typescript: ^5.7.2
+    typescript: ^5.7.3
     yamljs: ^0.3.0
   languageName: unknown
   linkType: soft
@@ -2477,7 +2410,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-private-shared-lib@workspace:modules/private-shared-lib"
   dependencies:
-    "@eslint/compat": ^1.2.4
+    "@eslint/compat": ^1.2.5
     "@mojaloop/api-snippets": 17.7.8
     "@mojaloop/central-services-shared": ^18.15.1
     "@mojaloop/logging-bc-public-types-lib": ^0.5.4
@@ -2496,8 +2429,8 @@ __metadata:
     standard-version: ^9.5.0
     ts-jest: ^29.2.5
     tslib: ^2.8.1
-    typescript: ^5.7.2
-    uuid: ^11.0.4
+    typescript: ^5.7.3
+    uuid: ^11.0.5
   languageName: unknown
   linkType: soft
 
@@ -2524,16 +2457,16 @@ __metadata:
     ts-jest: ^29.2.5
     ts-node: ^10.9.2
     tslib: ^2.8.1
-    typescript: ^5.7.2
+    typescript: ^5.7.3
     yarn-audit-fix: ^10.1.1
   languageName: unknown
   linkType: soft
 
-"@mojaloop/sdk-standard-components@npm:^19.6.2":
-  version: 19.6.2
-  resolution: "@mojaloop/sdk-standard-components@npm:19.6.2"
+"@mojaloop/sdk-standard-components@npm:^19.6.3":
+  version: 19.6.3
+  resolution: "@mojaloop/sdk-standard-components@npm:19.6.3"
   dependencies:
-    "@mojaloop/ml-schema-transformer-lib": ^2.4.1
+    "@mojaloop/ml-schema-transformer-lib": ^2.5.1
     axios: 1.7.9
     axios-retry: 4.5.0
     base64url: 3.0.1
@@ -2542,7 +2475,7 @@ __metadata:
     ilp-packet-v1: 2.2.0
     jsonwebtoken: 9.0.2
     jws: 4.0.0
-  checksum: 4688b1392c5a4586959d65484984689e1605dfb01f4faebd20b3d2e1f1707d862eae6e8d6b9dd9bfb401aa3583999953ea3e2f49538f459000d07c2a1ce2e6b3
+  checksum: a4f5af3bda72742e6b3b4cddfb0eb7fbe54e9c71ce0a8fdc77f4c37196e6fff73ad63d1420158b6333d3969d0a40be24d72fa7cccddd1b5277072d51516e3b59
   languageName: node
   linkType: hard
 
@@ -3033,13 +2966,6 @@ __metadata:
     pluralize: ^8.0.0
     yaml-ast-parser: 0.0.43
   checksum: ac70a427d96bcbe96a63291768f65aefcf565c0a4c4343d4b3a177823c87a8e00338286e6c45b56bdf5553eb08dff703146c90194e217683033fdf8fb1bb1922
-  languageName: node
-  linkType: hard
-
-"@rollup/rollup-linux-x64-musl@npm:4.27.2":
-  version: 4.27.2
-  resolution: "@rollup/rollup-linux-x64-musl@npm:4.27.2"
-  conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
@@ -4429,17 +4355,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:1.7.7, axios@npm:^1.0.0":
-  version: 1.7.7
-  resolution: "axios@npm:1.7.7"
-  dependencies:
-    follow-redirects: ^1.15.6
-    form-data: ^4.0.0
-    proxy-from-env: ^1.1.0
-  checksum: 882d4fe0ec694a07c7f5c1f68205eb6dc5a62aecdb632cc7a4a3d0985188ce3030e0b277e1a8260ac3f194d314ae342117660a151fabffdc5081ca0b5a8b47fe
-  languageName: node
-  linkType: hard
-
 "axios@npm:1.7.9, axios@npm:^1.7.9":
   version: 1.7.9
   resolution: "axios@npm:1.7.9"
@@ -4448,6 +4363,17 @@ __metadata:
     form-data: ^4.0.0
     proxy-from-env: ^1.1.0
   checksum: cb8ce291818effda09240cb60f114d5625909b345e10f389a945320e06acf0bc949d0f8422d25720f5dd421362abee302c99f5e97edec4c156c8939814b23d19
+  languageName: node
+  linkType: hard
+
+"axios@npm:^1.0.0":
+  version: 1.7.7
+  resolution: "axios@npm:1.7.7"
+  dependencies:
+    follow-redirects: ^1.15.6
+    form-data: ^4.0.0
+    proxy-from-env: ^1.1.0
+  checksum: 882d4fe0ec694a07c7f5c1f68205eb6dc5a62aecdb632cc7a4a3d0985188ce3030e0b277e1a8260ac3f194d314ae342117660a151fabffdc5081ca0b5a8b47fe
   languageName: node
   linkType: hard
 
@@ -6228,13 +6154,6 @@ __metadata:
   bin:
     dottojs: ./bin/dot-packer
   checksum: 9a2ecf7b5ff8c5121481702e9fdc7eb802ebf5b9e318a73631f70cb9484c7bb6973322912c173f5fa52d1f9408eaef4d6468e9ef8af3899664f4d42091f5f868
-  languageName: node
-  linkType: hard
-
-"dotenv@npm:16.4.5":
-  version: 16.4.5
-  resolution: "dotenv@npm:16.4.5"
-  checksum: 301a12c3d44fd49888b74eb9ccf9f07a1f5df43f489e7fcb89647a2edcd84c42d6bc349dc8df099cd18f07c35c7b04685c1a4f3e6a6a9e6b30f8d48c15b7f49c
   languageName: node
   linkType: hard
 
@@ -12272,27 +12191,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"protobufjs@npm:7.3.0":
-  version: 7.3.0
-  resolution: "protobufjs@npm:7.3.0"
-  dependencies:
-    "@protobufjs/aspromise": ^1.1.2
-    "@protobufjs/base64": ^1.1.2
-    "@protobufjs/codegen": ^2.0.4
-    "@protobufjs/eventemitter": ^1.1.0
-    "@protobufjs/fetch": ^1.1.0
-    "@protobufjs/float": ^1.0.2
-    "@protobufjs/inquire": ^1.1.0
-    "@protobufjs/path": ^1.1.2
-    "@protobufjs/pool": ^1.1.0
-    "@protobufjs/utf8": ^1.1.0
-    "@types/node": ">=13.7.0"
-    long: ^5.0.0
-  checksum: bc7008ec736b0ab68677ced957b7ccbfc96ccd31f10d8a09d41408d8bf432a6132387acca71e657c652d98aaf7bd2a373f355a377762cff1ed04f0def8477c69
-  languageName: node
-  linkType: hard
-
-"protobufjs@npm:^7.2.5":
+"protobufjs@npm:7.4.0, protobufjs@npm:^7.2.5":
   version: 7.4.0
   resolution: "protobufjs@npm:7.4.0"
   dependencies:
@@ -12999,7 +12898,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"safe-stable-stringify@npm:^2.3.1, safe-stable-stringify@npm:^2.4.3":
+"safe-stable-stringify@npm:^2.3.1, safe-stable-stringify@npm:^2.4.3, safe-stable-stringify@npm:^2.5.0":
   version: 2.5.0
   resolution: "safe-stable-stringify@npm:2.5.0"
   checksum: d3ce103ed43c6c2f523e39607208bfb1c73aa48179fc5be53c3aa97c118390bffd4d55e012f5393b982b65eb3e0ee954dd57b547930d3f242b0053dcdb923d17
@@ -14334,14 +14233,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:2.6.3":
-  version: 2.6.3
-  resolution: "tslib@npm:2.6.3"
-  checksum: 74fce0e100f1ebd95b8995fbbd0e6c91bdd8f4c35c00d4da62e285a3363aaa534de40a80db30ecfd388ed7c313c42d930ee0eaf108e8114214b180eec3dbe6f5
-  languageName: node
-  linkType: hard
-
-"tslib@npm:^2.0.0, tslib@npm:^2.3.0, tslib@npm:^2.4.0, tslib@npm:^2.8.1":
+"tslib@npm:2.8.1, tslib@npm:^2.0.0, tslib@npm:^2.3.0, tslib@npm:^2.4.0, tslib@npm:^2.8.1":
   version: 2.8.1
   resolution: "tslib@npm:2.8.1"
   checksum: e4aba30e632b8c8902b47587fd13345e2827fa639e7c3121074d5ee0880723282411a8838f830b55100cbe4517672f84a2472667d355b81e8af165a55dc6203a
@@ -14516,23 +14408,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^5.7.2":
-  version: 5.7.2
-  resolution: "typescript@npm:5.7.2"
+"typescript@npm:^5.7.3":
+  version: 5.7.3
+  resolution: "typescript@npm:5.7.3"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: b55300c4cefee8ee380d14fa9359ccb41ff8b54c719f6bc49b424899d662a5ce62ece390ce769568c7f4d14af844085255e63788740084444eb12ef423b13433
+  checksum: 6c38b1e989918e576f0307e6ee013522ea480dfce5f3ca85c9b2d8adb1edeffd37f4f30cd68de0c38a44563d12ba922bdb7e36aa2dac9c51de5d561e6e9a2e9c
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^5.7.2#~builtin<compat/typescript>":
-  version: 5.7.2
-  resolution: "typescript@patch:typescript@npm%3A5.7.2#~builtin<compat/typescript>::version=5.7.2&hash=14eedb"
+"typescript@patch:typescript@^5.7.3#~builtin<compat/typescript>":
+  version: 5.7.3
+  resolution: "typescript@patch:typescript@npm%3A5.7.3#~builtin<compat/typescript>::version=5.7.3&hash=14eedb"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 803430c6da2ba73c25a21880d8d4f08a56d9d2444e6db2ea949ac4abceeece8e4a442b7b9b585db7d8a0b47ebda2060e45fe8ee8b8aca23e27ec1d4844987ee6
+  checksum: 633cd749d6cd7bc842c6b6245847173bba99742a60776fae3c0fbcc0d1733cd51a733995e5f4dadd8afb0e64e57d3c7dbbeae953a072ee303940eca69e22f311
   languageName: node
   linkType: hard
 
@@ -14810,12 +14702,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^11.0.4":
-  version: 11.0.4
-  resolution: "uuid@npm:11.0.4"
+"uuid@npm:^11.0.5":
+  version: 11.0.5
+  resolution: "uuid@npm:11.0.5"
   bin:
     uuid: dist/esm/bin/uuid
-  checksum: 88860d20dafa648642581b2e7bb364588149df50d41c812100839aec095593fcc8548fde6929605efd42f556455cf5683e3bad9e9e311f4b62d7efbb68598d3e
+  checksum: 8a8ed824c77ccc9387eed3049e75268a862379f0d41222716020743c438f31e9acfbe6495bd4cb1a7727c91fcf5ae20be40b306826a62c96f9ff42db48e8ed93
   languageName: node
   linkType: hard
 
@@ -15049,7 +14941,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"winston-transport@npm:^4.5.0, winston-transport@npm:^4.7.0":
+"winston-transport@npm:^4.5.0, winston-transport@npm:^4.7.0, winston-transport@npm:^4.9.0":
   version: 4.9.0
   resolution: "winston-transport@npm:4.9.0"
   dependencies:
@@ -15057,25 +14949,6 @@ __metadata:
     readable-stream: ^3.6.2
     triple-beam: ^1.3.0
   checksum: f5fd06a27def7597229925ba2b8b9ffa61b5b8748f994c8325064744e4e36dfea19868a16c16b3806f9b98bb7da67c25f08ae6fba3bdc6db4a9555673474a972
-  languageName: node
-  linkType: hard
-
-"winston@npm:3.13.0":
-  version: 3.13.0
-  resolution: "winston@npm:3.13.0"
-  dependencies:
-    "@colors/colors": ^1.6.0
-    "@dabh/diagnostics": ^2.0.2
-    async: ^3.2.3
-    is-stream: ^2.0.0
-    logform: ^2.4.0
-    one-time: ^1.0.0
-    readable-stream: ^3.4.0
-    safe-stable-stringify: ^2.3.1
-    stack-trace: 0.0.x
-    triple-beam: ^1.3.0
-    winston-transport: ^4.7.0
-  checksum: 66f9fbbadb58e1632701e9c89391f217310c9455462148e163e060dcd25aed21351b0413bdbbf90e5c5fe9bc945fc5de6f53875ac7c7ef3061133a354fc678c0
   languageName: node
   linkType: hard
 
@@ -15095,6 +14968,25 @@ __metadata:
     triple-beam: ^1.3.0
     winston-transport: ^4.7.0
   checksum: 9021637d3ab1d1e639d64e7217ed5ae63fb0e5325defdbce439f708e9b4e26c7a31eb4a731106790aa8ac6f80a3a89242de18d1991ab3838f9d84e55101f4607
+  languageName: node
+  linkType: hard
+
+"winston@npm:3.17.0":
+  version: 3.17.0
+  resolution: "winston@npm:3.17.0"
+  dependencies:
+    "@colors/colors": ^1.6.0
+    "@dabh/diagnostics": ^2.0.2
+    async: ^3.2.3
+    is-stream: ^2.0.0
+    logform: ^2.7.0
+    one-time: ^1.0.0
+    readable-stream: ^3.4.0
+    safe-stable-stringify: ^2.3.1
+    stack-trace: 0.0.x
+    triple-beam: ^1.3.0
+    winston-transport: ^4.9.0
+  checksum: ba772c25937007cea6cdeddc931de18a1ea336ae7b3aff2c15de762de5c559b2d310ca2e7a911c209711d325e47d653485e33271ddfb27cd73179e35c7d52267
   languageName: node
   linkType: hard
 
@@ -15293,15 +15185,6 @@ __metadata:
   version: 0.0.43
   resolution: "yaml-ast-parser@npm:0.0.43"
   checksum: fb5df4c067b6ccbd00953a46faf6ff27f0e290d623c712dc41f330251118f110e22cfd184bbff498bd969cbcda3cd27e0f9d0adb9e6d90eb60ccafc0d8e28077
-  languageName: node
-  linkType: hard
-
-"yaml@npm:2.6.1":
-  version: 2.6.1
-  resolution: "yaml@npm:2.6.1"
-  bin:
-    yaml: bin.mjs
-  checksum: 5cf2627f121dcf04ccdebce8e6cbac7c9983d465c4eab314f6fbdc13cda8a07f4e8f9c2252a382b30bcabe05ee3c683647293afd52eb37cbcefbdc7b6ebde9ee
   languageName: node
   linkType: hard
 
