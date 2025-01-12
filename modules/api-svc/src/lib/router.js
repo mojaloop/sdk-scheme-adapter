@@ -36,4 +36,4 @@ module.exports = (routes, config) => {
     return router(Object.fromEntries(Object.entries(routes).map(([path, route]) => {
         return [`/{dfspId}${path}`, route];
     })));
-}
+};
