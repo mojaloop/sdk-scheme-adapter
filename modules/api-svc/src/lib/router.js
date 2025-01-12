@@ -13,7 +13,7 @@
 const { Enum } = require('@mojaloop/central-services-shared');
 const { ReturnCodes } = Enum.Http;
 
-module.exports = (handlerMap) => async (ctx, next) => {
+const router = (handlerMap) => async (ctx, next) => {
     const handlers = handlerMap[ctx.state.path.pattern];
     const handler = handlers ? handlers[ctx.method.toLowerCase()] : undefined;
     if (!handlers || !handler) {
@@ -30,3 +30,10 @@ module.exports = (handlerMap) => async (ctx, next) => {
     }
     await next();
 };
+
+module.exports = (routes, config) => {
+    if (!config?.multiDfsp) return router(routes);
+    return router(Object.fromEntries(Object.entries(routes).map(([path, route]) => {
+        return [`/{dfspId}${path}`, route];
+    })));
+}
