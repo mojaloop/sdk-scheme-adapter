@@ -125,6 +125,7 @@ class Server extends EventEmitter {
 
         if (this.conf.enableTestFeatures) {
             this.testServer = new TestServer({
+                config: this.conf,
                 port: this.conf.test.port,
                 logger: this.logger.push(LOG_ID.TEST),
                 cache: this.cache,
