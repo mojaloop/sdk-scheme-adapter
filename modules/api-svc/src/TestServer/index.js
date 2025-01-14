@@ -22,7 +22,6 @@ const middlewares = require('../InboundServer/middlewares');
 
 const logExcludePaths = ['/'];
 const _validator = new Validate({ logExcludePaths });
-const _initialize = _validator.initialise(yaml.load(require('fs').readFileSync(path.join(__dirname, 'api.yaml'))));
 
 const getWsIp = (req) => [
     req.socket.remoteAddress,
@@ -34,7 +33,7 @@ const getWsIp = (req) => [
 ];
 
 class TestApi {
-    constructor(logger, validator, cache) {
+    constructor(logger, validator, cache, conf) {
         this._api = new Koa();
 
         this._api.use(middlewares.createErrorHandler(logger));
@@ -43,7 +42,7 @@ class TestApi {
         this._api.use(middlewares.createLogger(logger));
 
         this._api.use(middlewares.createRequestValidator(validator));
-        this._api.use(router(handlers));
+        this._api.use(router(handlers, conf));
         this._api.use(middlewares.createResponseBodyHandler());
         this._api.use(middlewares.createResponseLogging(logger));
     }
@@ -175,10 +174,11 @@ class WsServer extends ws.Server {
 }
 
 class TestServer {
-    constructor({ port, logger, cache }) {
+    constructor({ port, logger, cache, config }) {
+        this._initialize = _validator.initialise(yaml.load(require('fs').readFileSync(path.join(__dirname, 'api.yaml'))), config);
         this._port = port;
         this._logger = logger;
-        this._api = new TestApi(this._logger.push({ component: 'api' }), _validator, cache);
+        this._api = new TestApi(this._logger.push({ component: 'api' }), _validator, cache, config);
         this._server = http.createServer(this._api.callback());
         // TODO: why does this appear to need to be called after creating this._server (try reorder
         // it then run the tests)
@@ -190,7 +190,7 @@ class TestServer {
             return;
         }
 
-        await _initialize;
+        await this._initialize;
 
         await this._wsapi.start();
 

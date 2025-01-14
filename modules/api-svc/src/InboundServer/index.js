@@ -29,13 +29,13 @@ const apiSpecs = yaml.load(fs.readFileSync(specPath));
 
 const logExcludePaths = ['/'];
 const _validator = new Validate({ logExcludePaths });
-const _initialize = _validator.initialise(apiSpecs);
 
 class InboundApi extends EventEmitter {
     constructor(conf, logger, cache, validator, wso2) {
         super({ captureExceptions: true });
         this._conf = conf;
         this._cache = cache;
+        this._initialize = _validator.initialise(apiSpecs, conf);
 
         if (conf.validateInboundJws) {
             // peerJWSKey is a special config option specifically for Payment Manager for Mojaloop
@@ -114,7 +114,7 @@ class InboundApi extends EventEmitter {
         if (conf.enableTestFeatures) {
             api.use(middlewares.cacheRequest(cache));
         }
-        api.use(router(handlers));
+        api.use(router(handlers, conf));
         api.use(middlewares.createResponseBodyHandler());
         api.use(middlewares.createResponseLogging(logger));
 
@@ -162,7 +162,7 @@ class InboundServer extends EventEmitter {
 
     async start() {
         assert(!this._server.listening, 'Server already listening');
-        await _initialize;
+        await this._initialize;
         await this._api.start();
         await new Promise((resolve) => this._server.listen(this._conf.inbound.port, resolve));
         this._logger.isInfoEnabled && this._logger.info(`Serving inbound API on port ${this._conf.inbound.port}`);
