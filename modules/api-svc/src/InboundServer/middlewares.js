@@ -240,7 +240,7 @@ const createHeaderValidator = (conf, logger) => async (
     const request = ctx.request;
 
     // First, extract the resource type from the path
-    const resource = request.path.replace(/^\//, '').split('/')[0];
+    const resource = request.path.replace(/^\//, '').split('/')[conf.multiDfsp ? 1 : 0];
 
     // Only validate requests for the requested resources
     if (!resources.includes(resource)) {
