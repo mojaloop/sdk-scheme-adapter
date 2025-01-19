@@ -16,6 +16,7 @@
     "/dist"
   ],
   "scripts": {
+    "_phase:build": "npm run build",
     "build": "tsc",
     "test:unit": "jest --passWithNoTests --testMatch '**/test/unit/**/*.test.ts'",
     "test:xunit": "JEST_JUNIT_OUTPUT_DIR=../test/reports/ JEST_JUNIT_OUTPUT_NAME=xunit-lib.xml yarn run test:unit -- --reporters=jest-junit",
