@@ -89,14 +89,14 @@ const extractBody = rqBody => {
 //     }
 //   }
 // }
-const transformApiDoc = apiDoc => ({
+const transformApiDoc = (apiDoc, conf) => ({
     ...apiDoc,
     // TODO: as we now discard most of the extra information, it probably makes sense to explicitly
     // return the object form we're interested in, rather than do all of this awkward object
     // mapping. I.e.:
     // return { get: { validator: [Function validator] }, put: { validator: [Function validator] } };
     paths: Object.assign(...Object.entries(apiDoc.paths).map(([pathName, pathValue]) => ({
-        [pathName]: Object.assign(
+        [conf?.multiDfsp ? `/{dfspId}${pathName}` : pathName]: Object.assign(
             ...Object.entries(pathValue)
                 .filter(([method,]) => httpMethods.includes(method))
                 .map(([method, methodValue]) => {
@@ -135,12 +135,12 @@ class Validator {
     // apiDoc
     //   POJO representing apiDoc API spec. Example:
     //   const v = new Validator(require('./apiDoc.json'));
-    async initialise(apiDoc) {
+    async initialise(apiDoc, conf) {
         // Dereferencing the api doc makes it much easier to work with. Specifically, it allows us
         // to compile a validator for each path.
         const pojoApiDoc = await jsrp.dereference(apiDoc);
 
-        this.apiDoc = transformApiDoc(pojoApiDoc);
+        this.apiDoc = transformApiDoc(pojoApiDoc, conf);
         const pathParamMatch = /\{[^{}]+\}/g;
         this.paths = Object.entries(this.apiDoc.paths).map(([path, pathSpec]) => ({
             pattern: path,

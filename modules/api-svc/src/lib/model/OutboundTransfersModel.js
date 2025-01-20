@@ -567,7 +567,7 @@ class OutboundTransfersModel {
             // Setting the fxQuoteRequest to have the fspiop payload 
             // If ISO20022 is required then use originalRequest
             this.data.fxQuoteRequest = {
-                body: JSON.stringify(payload),
+                body: payload,
                 headers: originalRequest.headers
             };
             this._logger.debug('fxQuote request is sent to hub');

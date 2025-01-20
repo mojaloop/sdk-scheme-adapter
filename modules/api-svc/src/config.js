@@ -143,6 +143,7 @@ module.exports = {
     getServicesFxpResponse: env.get('GET_SERVICES_FXP_RESPONSE').default('').asArray(),
 
     dfspId: env.get('DFSP_ID').default('mojaloop').asString(),
+    multiDfsp: env.get('MULTI_DFSP').default('false').asBool(),
     ilpSecret: env.get('ILP_SECRET').default('mojaloop-sdk').asString(),
     checkIlp: env.get('CHECK_ILP').default('true').asBool(),
     expirySeconds: env.get('EXPIRY_SECONDS').default('60').asIntPositive(),

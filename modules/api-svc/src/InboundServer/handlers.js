@@ -36,6 +36,10 @@ const extractBodyHeadersSourceFspId = ctx => ({
  */
 const createInboundTransfersModel = (ctx) => new InboundTransfersModel({
     ...ctx.state.conf,
+    ...ctx.state.path?.params?.dfspId && {
+        dfspId: ctx.state.path.params.dfspId,
+        backendEndpoint: `${ctx.state.conf.backendEndpoint}/${ctx.state.path.params.dfspId}`
+    },
     cache: ctx.state.cache,
     logger: ctx.state.logger,
     wso2: ctx.state.wso2,

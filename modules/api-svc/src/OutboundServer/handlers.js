@@ -108,6 +108,7 @@ const handleRequestSimpleTransfersInformationError = (method, err, ctx) =>
 
 const createOutboundTransfersModel = (ctx) => new OutboundTransfersModel({
     ...ctx.state.conf,
+    ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
     cache: ctx.state.cache,
     logger: ctx.state.logger,
     wso2: ctx.state.wso2,
@@ -206,6 +207,7 @@ const postBulkTransfers = async (ctx) => {
         // use the bulk transfers model to execute asynchronous stages with the switch
         const model = new OutboundBulkTransfersModel({
             ...ctx.state.conf,
+            ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2: ctx.state.wso2,
@@ -237,6 +239,7 @@ const getBulkTransfers = async (ctx) => {
         // use the bulk transfers model to execute asynchronous stages with the switch
         const model = new OutboundBulkTransfersModel({
             ...ctx.state.conf,
+            ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2: ctx.state.wso2,
@@ -321,6 +324,7 @@ const postBulkQuotes = async (ctx) => {
         // use the bulk quotes model to execute asynchronous request with the switch
         const model = new OutboundBulkQuotesModel({
             ...ctx.state.conf,
+            ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2: ctx.state.wso2,
@@ -352,6 +356,7 @@ const getBulkQuoteById = async (ctx) => {
         // use the bulk quotes model to execute asynchronous stages with the switch
         const model = new OutboundBulkQuotesModel({
             ...ctx.state.conf,
+            ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2: ctx.state.wso2,
@@ -382,6 +387,7 @@ const postRequestToPayTransfer = async (ctx) => {
         // use the merchant transfers model to execute asynchronous stages with the switch
         const model = new OutboundRequestToPayTransferModel({
             ...ctx.state.conf,
+            ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2: ctx.state.wso2,
@@ -409,6 +415,7 @@ const putRequestToPayTransfer = async (ctx) => {
         // use the transfers model to execute asynchronous stages with the switch
         const model = new OutboundRequestToPayTransferModel({
             ...ctx.state.conf,
+            ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2: ctx.state.wso2,
@@ -442,6 +449,7 @@ const postAccounts = async (ctx) => {
     try {
         const model = new AccountsModel({
             ...ctx.state.conf,
+            ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2: ctx.state.wso2,
@@ -474,6 +482,7 @@ const postRequestToPay = async (ctx) => {
         // use the transfers model to execute asynchronous stages with the switch
         const model = new OutboundRequestToPayModel({
             ...ctx.state.conf,
+            ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2: ctx.state.wso2,
@@ -502,6 +511,7 @@ const putRequestToPay = async (ctx) => {
         // use the transfers model to execute asynchronous stages with the switch
         const model = new OutboundRequestToPayModel({
             ...ctx.state.conf,
+            ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2: ctx.state.wso2,
@@ -543,6 +553,7 @@ const getPartiesByTypeAndId = async (ctx) => {
         // prepare config
         const modelConfig = {
             ...ctx.state.conf,
+            ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2: ctx.state.wso2,
@@ -577,6 +588,7 @@ const postQuotes = async (ctx) => {
         // prepare config
         const modelConfig = {
             ...ctx.state.conf,
+            ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2: ctx.state.wso2,
@@ -607,6 +619,7 @@ const postSimpleTransfers = async (ctx) => {
         // prepare config
         const modelConfig = {
             ...ctx.state.conf,
+            ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2: ctx.state.wso2,
