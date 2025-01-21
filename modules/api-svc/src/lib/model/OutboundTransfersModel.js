@@ -59,6 +59,8 @@ class OutboundTransfersModel {
             throw new Error('Conflicting config options provided: autoAcceptParty and multiplePartiesResponse');
         }
 
+        this._cacheTtl = config.redisCacheTtl;
+
         this._requests = new MojaloopRequests({
             logger: this._logger,
             peerEndpoint: config.peerEndpoint,
@@ -560,9 +562,9 @@ class OutboundTransfersModel {
             const subscribing = this._cache.subscribeToOneMessageWithTimer(channel);
 
             const resp = await this._requests.postFxQuotes(payload, payload.conversionTerms.counterPartyFsp);
-            
+
             const { originalRequest } = resp;
-            // Setting the fxQuoteRequest to have the fspiop payload 
+            // Setting the fxQuoteRequest to have the fspiop payload
             // If ISO20022 is required then use originalRequest
             this.data.fxQuoteRequest = {
                 body: payload,
@@ -1152,13 +1154,45 @@ class OutboundTransfersModel {
     async _save() {
         try {
             this.data.currentState = this.stateMachine.state;
-            const res = await this._cache.set(`transferModel_out_${this.data.transferId}`, this.data);
+            const res = await this._cache.set(`transferModel_out_${this.data.transferId}`, this.data, this._cacheTtl);
+            // function to modify this.data before saving to cache for UI.
+            const modifiedData = this._modifyDataForUi(this.data);
+            // save to a UI key, using a modifiedData, as we don't want any side effects to happen on original data
+            // No ttl set as it will persist throughout the session
+            await this._cache.set(`transferUI_out_${this.data.transferId}`, modifiedData);
             this._logger.isDebugEnabled && this._logger.push({ res }).debug('Persisted transfer model in cache');
         }
         catch (err) {
             this._logger.isErrorEnabled && this._logger.push({ err, data: this.data }).error('Error saving transfer model');
             throw err;
         }
+    }
+
+    /**
+     * Modifies the data being stored in the cache for UI before it is stored.
+     * Works on a copy of original object to avoid side effects
+     */
+    _modifyDataForUi( data ){
+        // deep cloning to avoid side effects
+        let modifiedData = JSON.parse(JSON.stringify(data));
+        // Removing iso quote response and extension lists
+        if(modifiedData.getPartiesResponse && modifiedData.getPartiesResponse.body && modifiedData.getPartiesResponse.body.extensionList)
+            modifiedData.getPartiesResponse.body.extensionList = undefined;
+        if(modifiedData.fxQuoteResponse && modifiedData.fxQuoteResponse.body && modifiedData.fxQuoteResponse.body.extensionList)
+            modifiedData.fxQuoteResponse.body.extensionList = undefined;
+        if(modifiedData.quoteResponse && modifiedData.quoteResponse.originalIso20022QuoteResponse){
+            modifiedData.quoteResponse.originalIso20022QuoteResponse = undefined;
+        }
+        if(modifiedData.quoteResponse && modifiedData.quoteResponse.body && modifiedData.quoteResponse.body.extensionList){
+            modifiedData.quoteResponse.body.extensionList = undefined;
+        }
+        if(modifiedData.fxTransferResponse && modifiedData.fxTransferResponse.body && modifiedData.fxTransferResponse.body.extensionList){
+            modifiedData.fxTransferResponse.body.extensionList = undefined;
+        }
+        if(modifiedData.fulfil && modifiedData.fulfil.body && modifiedData.fulfil.body.extensionList){
+            modifiedData.fulfil.body.extensionList = undefined;
+        }
+        return modifiedData;
     }
 
 
