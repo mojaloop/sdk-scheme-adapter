@@ -64,7 +64,7 @@
   },
   "dependencies": {
     "@koa/cors": "^5.0.0",
-   "@mojaloop/api-snippets": "17.7.8",
+    "@mojaloop/api-snippets": "17.7.8",
     "@mojaloop/central-services-error-handling": "^13.0.3",
     "@mojaloop/central-services-logger": "^11.5.2",
     "@mojaloop/central-services-metrics": "^12.4.3",

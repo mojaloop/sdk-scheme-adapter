@@ -58,7 +58,7 @@ class OutboundTransfersModel {
         if (this._autoAcceptParty && this._multiplePartiesResponse) {
             throw new Error('Conflicting config options provided: autoAcceptParty and multiplePartiesResponse');
         }
-        
+
         this._cacheTtl = config.redisCacheTtl;
 
         this._requests = new MojaloopRequests({
@@ -562,9 +562,9 @@ class OutboundTransfersModel {
             const subscribing = this._cache.subscribeToOneMessageWithTimer(channel);
 
             const resp = await this._requests.postFxQuotes(payload, payload.conversionTerms.counterPartyFsp);
-            
+
             const { originalRequest } = resp;
-            // Setting the fxQuoteRequest to have the fspiop payload 
+            // Setting the fxQuoteRequest to have the fspiop payload
             // If ISO20022 is required then use originalRequest
             this.data.fxQuoteRequest = {
                 body: payload,
@@ -1167,9 +1167,9 @@ class OutboundTransfersModel {
             throw err;
         }
     }
-    
+
     /**
-     * Modifies the data being stored in the cache for UI before it is store.
+     * Modifies the data being stored in the cache for UI before it is stored.
      * Works on a copy of original object to avoid side effects
      */
     _modifyDataForUi( data ){
@@ -1181,7 +1181,7 @@ class OutboundTransfersModel {
         if(modifiedData.fxQuoteResponse && modifiedData.fxQuoteResponse.body && modifiedData.fxQuoteResponse.body.extensionList)
             modifiedData.fxQuoteResponse.body.extensionList = undefined;
         if(modifiedData.quoteResponse && modifiedData.quoteResponse.originalIso20022QuoteResponse){
-            modifiedData.quoteResponse.originalIso20022QuoteResponse = undefined; 
+            modifiedData.quoteResponse.originalIso20022QuoteResponse = undefined;
         }
         if(modifiedData.quoteResponse && modifiedData.quoteResponse.body && modifiedData.quoteResponse.body.extensionList){
             modifiedData.quoteResponse.body.extensionList = undefined;
