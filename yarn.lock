@@ -1556,6 +1556,43 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hapi/accept@npm:^6.0.3":
+  version: 6.0.3
+  resolution: "@hapi/accept@npm:6.0.3"
+  dependencies:
+    "@hapi/boom": ^10.0.1
+    "@hapi/hoek": ^11.0.2
+  checksum: 93eca11dfaac7808dccd8b55d89247c2dfd68be7ea4fcfefb8634501ece72080fea128e68fc900c3dde7e26073ba2bb5ba63031db34dd0c21fb4ac9ef75577a3
+  languageName: node
+  linkType: hard
+
+"@hapi/address@npm:^4.0.1":
+  version: 4.1.0
+  resolution: "@hapi/address@npm:4.1.0"
+  dependencies:
+    "@hapi/hoek": ^9.0.0
+  checksum: 01e8257c9428be2a2a0441b24dcab2396a6ca20f53799fd921035b45f9f62a6014f1a0dfaf2dd10912a8b0098a9ba53c3f0863a67e7acbadddeb3d2785591cfc
+  languageName: node
+  linkType: hard
+
+"@hapi/ammo@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "@hapi/ammo@npm:6.0.1"
+  dependencies:
+    "@hapi/hoek": ^11.0.2
+  checksum: 40f9eb53e06129522fafe21ef89328e67f6ceb1b0ba9b2a1ae5fd21cfb170f2e4f4f6cc4077cadb761cc5c18a0ec9616e06f71faf72d629fb6b2cc2f14c49d79
+  languageName: node
+  linkType: hard
+
+"@hapi/b64@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "@hapi/b64@npm:6.0.1"
+  dependencies:
+    "@hapi/hoek": ^11.0.2
+  checksum: faf98e40a084ac4c5659ebfa17dc01fe06576a7f0e1843da337b61b957a60a5aa5c45f9f98df6f2c2425d3d832c32661fc9def778153f6421be596626a811e1b
+  languageName: node
+  linkType: hard
+
 "@hapi/boom@npm:9.x.x":
   version: 9.1.4
   resolution: "@hapi/boom@npm:9.1.4"
@@ -1565,7 +1602,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hapi/boom@npm:^10.0.1":
+"@hapi/boom@npm:^10.0.0, @hapi/boom@npm:^10.0.1":
   version: 10.0.1
   resolution: "@hapi/boom@npm:10.0.1"
   dependencies:
@@ -1574,10 +1611,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hapi/bounce@npm:^3.0.1, @hapi/bounce@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "@hapi/bounce@npm:3.0.2"
+  dependencies:
+    "@hapi/boom": ^10.0.1
+    "@hapi/hoek": ^11.0.2
+  checksum: 078d8c8a64f57fac9a66986040ab32b5f7ee6d50109efc0d304ba868967c8ef0eb73ae37be4e3b14330c6d7db475e2a4fda94f3b8b00ecedb6d6f6aa621a7e04
+  languageName: node
+  linkType: hard
+
 "@hapi/bourne@npm:^3.0.0":
   version: 3.0.0
   resolution: "@hapi/bourne@npm:3.0.0"
   checksum: 7174cab6c33191918fcdb1953fe3169a1106e6ac79a67ef5fd08b351f0813f8f608170f2239786cbe5519e03cdfe5ab748ea1635caa06dcd5802410295514ef8
+  languageName: node
+  linkType: hard
+
+"@hapi/call@npm:^9.0.1":
+  version: 9.0.1
+  resolution: "@hapi/call@npm:9.0.1"
+  dependencies:
+    "@hapi/boom": ^10.0.1
+    "@hapi/hoek": ^11.0.2
+  checksum: bee8e3448728e2a506c0f18c2cbc5519681fb5586fbda25c83f84ae4867cdb27ab4bbcb7c9dbb2b8be3210823197c93fd16d2d8af54c65741f5dd1d05728cf07
   languageName: node
   linkType: hard
 
@@ -1591,7 +1648,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hapi/catbox@npm:12.1.1":
+"@hapi/catbox-memory@npm:^6.0.2":
+  version: 6.0.2
+  resolution: "@hapi/catbox-memory@npm:6.0.2"
+  dependencies:
+    "@hapi/boom": ^10.0.1
+    "@hapi/hoek": ^11.0.2
+  checksum: 699cb98bf8b877058ec3ca84e195d664f37906157ba3ef85026c69ab9340cbdc928e2ce0dcffa65484486084005c926d6c889991ecfac3d14659fb4b5abf2463
+  languageName: node
+  linkType: hard
+
+"@hapi/catbox@npm:12.1.1, @hapi/catbox@npm:^12.1.1":
   version: 12.1.1
   resolution: "@hapi/catbox@npm:12.1.1"
   dependencies:
@@ -1603,17 +1670,161 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hapi/hoek@npm:9.x.x":
+"@hapi/content@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "@hapi/content@npm:6.0.0"
+  dependencies:
+    "@hapi/boom": ^10.0.0
+  checksum: cf104c76ce0a2c658304a700b44d2418dd02f0b2a55892ff840e163283bf2ef26b5504ca4006e43be2dba1c3bbe686009cbcc137d3143b211e62079dbed75420
+  languageName: node
+  linkType: hard
+
+"@hapi/cryptiles@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "@hapi/cryptiles@npm:6.0.1"
+  dependencies:
+    "@hapi/boom": ^10.0.1
+  checksum: decf96ee619a4435b48a6e046f197ff8befd6c0990e48fd905df45962f9cd75924f9992ff538f61051c8b7a2e41be08d59974a61c7a3433184dee13f0598c0c6
+  languageName: node
+  linkType: hard
+
+"@hapi/file@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@hapi/file@npm:3.0.0"
+  checksum: f4f05677ee898adc05ac5b937b4eb8f45f1e44cec183d9ed211f1f7314f907daa1e59c8d437fd4695468f0d86d38fe007b9a2cfff63826a1966a55a4e0692ea4
+  languageName: node
+  linkType: hard
+
+"@hapi/formula@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@hapi/formula@npm:2.0.0"
+  checksum: 902da057c53027d9356de15e53a8af9ea4795d3fb78c066668b36cfca54abd2d707860469618448e7de02eb8364ead86e53b839dbd363e1aeb65ee9a195e5fad
+  languageName: node
+  linkType: hard
+
+"@hapi/hapi@npm:21.3.12":
+  version: 21.3.12
+  resolution: "@hapi/hapi@npm:21.3.12"
+  dependencies:
+    "@hapi/accept": ^6.0.3
+    "@hapi/ammo": ^6.0.1
+    "@hapi/boom": ^10.0.1
+    "@hapi/bounce": ^3.0.2
+    "@hapi/call": ^9.0.1
+    "@hapi/catbox": ^12.1.1
+    "@hapi/catbox-memory": ^6.0.2
+    "@hapi/heavy": ^8.0.1
+    "@hapi/hoek": ^11.0.6
+    "@hapi/mimos": ^7.0.1
+    "@hapi/podium": ^5.0.1
+    "@hapi/shot": ^6.0.1
+    "@hapi/somever": ^4.1.1
+    "@hapi/statehood": ^8.1.1
+    "@hapi/subtext": ^8.1.0
+    "@hapi/teamwork": ^6.0.0
+    "@hapi/topo": ^6.0.2
+    "@hapi/validate": ^2.0.1
+  checksum: e833a841905e4d4493f8f932b144a6f36569b66d5628da0db3bfafaa3c31e5716d36369374edc85aba4bd91563b0e404e5a158fca2da7f96ab2f5a70d5bc934e
+  languageName: node
+  linkType: hard
+
+"@hapi/heavy@npm:^8.0.1":
+  version: 8.0.1
+  resolution: "@hapi/heavy@npm:8.0.1"
+  dependencies:
+    "@hapi/boom": ^10.0.1
+    "@hapi/hoek": ^11.0.2
+    "@hapi/validate": ^2.0.1
+  checksum: 4dee0af41dfdb75cc2b2fe67c051e473181617fe5a6f5a7e52c6d77eec141655128ecac85f21a207d46257774f3d9811f10ffe5ee6818ffbf674bd644b0690c2
+  languageName: node
+  linkType: hard
+
+"@hapi/hoek@npm:9.x.x, @hapi/hoek@npm:^9.0.0":
   version: 9.3.0
   resolution: "@hapi/hoek@npm:9.3.0"
   checksum: 4771c7a776242c3c022b168046af4e324d116a9d2e1d60631ee64f474c6e38d1bb07092d898bf95c7bc5d334c5582798a1456321b2e53ca817d4e7c88bc25b43
   languageName: node
   linkType: hard
 
-"@hapi/hoek@npm:^11.0.2":
+"@hapi/hoek@npm:^11.0.2, @hapi/hoek@npm:^11.0.6":
   version: 11.0.7
   resolution: "@hapi/hoek@npm:11.0.7"
   checksum: 3da5546649c0fa2bb264ce4b2aea8dc13d6fbdd9179bba553c90ab8fb7bd56413d2237d60c0b97c1e747216597eeb13694a947325bfff62ae3725209ec8bb8c6
+  languageName: node
+  linkType: hard
+
+"@hapi/iron@npm:^7.0.1":
+  version: 7.0.1
+  resolution: "@hapi/iron@npm:7.0.1"
+  dependencies:
+    "@hapi/b64": ^6.0.1
+    "@hapi/boom": ^10.0.1
+    "@hapi/bourne": ^3.0.0
+    "@hapi/cryptiles": ^6.0.1
+    "@hapi/hoek": ^11.0.2
+  checksum: 7b3842e02b94938c6ce7d96e05114eeb1dae6168dc3fbee4d922d23b618a1af135a15a1f06714216a43ff5d6c62a78e97488f217ae9c06c7a6ef083bd9d5b400
+  languageName: node
+  linkType: hard
+
+"@hapi/joi-date@npm:2.0.1":
+  version: 2.0.1
+  resolution: "@hapi/joi-date@npm:2.0.1"
+  dependencies:
+    moment: 2.x.x
+  checksum: 1250ae2cd00a766e70d0a817c3fffe49d505604aa3de104ff4ef481e94585c7148fb5c19f8dd59bcb7fb7805456f38ce66f8b415477cd247a9a028b0acb967e8
+  languageName: node
+  linkType: hard
+
+"@hapi/joi@npm:17.1.1":
+  version: 17.1.1
+  resolution: "@hapi/joi@npm:17.1.1"
+  dependencies:
+    "@hapi/address": ^4.0.1
+    "@hapi/formula": ^2.0.0
+    "@hapi/hoek": ^9.0.0
+    "@hapi/pinpoint": ^2.0.0
+    "@hapi/topo": ^5.0.0
+  checksum: 803d77e19e26802860de22b8d1ae3435679844202703d20bfd6246a8c6aa00143ce48d0e8beecf55812334e8e89ac04b79301264d4a3f87c980eb0c0646b33ab
+  languageName: node
+  linkType: hard
+
+"@hapi/mimos@npm:^7.0.1":
+  version: 7.0.1
+  resolution: "@hapi/mimos@npm:7.0.1"
+  dependencies:
+    "@hapi/hoek": ^11.0.2
+    mime-db: ^1.52.0
+  checksum: 6c945e23ac0df2df440733b6b7f5abc17e8f889a8092661bc95386a6ea3e9e6d0da22ce07f14d906233162f2c4de80285ade5c3a57fa739b19a8e2c8df28b1d3
+  languageName: node
+  linkType: hard
+
+"@hapi/nigel@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "@hapi/nigel@npm:5.0.1"
+  dependencies:
+    "@hapi/hoek": ^11.0.2
+    "@hapi/vise": ^5.0.1
+  checksum: 76f9f2d04b0309030d6d5c8b47d33aa06f99408e57654e8ae30ccc4f2a4919b7ef8d84030b22225bfec3d58f9a0746f2574e38d103dad34968c569a105809085
+  languageName: node
+  linkType: hard
+
+"@hapi/pez@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "@hapi/pez@npm:6.1.0"
+  dependencies:
+    "@hapi/b64": ^6.0.1
+    "@hapi/boom": ^10.0.1
+    "@hapi/content": ^6.0.0
+    "@hapi/hoek": ^11.0.2
+    "@hapi/nigel": ^5.0.1
+  checksum: ae3cfede61189e865bb05ea438e947c93695ce3de05b2fb168fa621c220eec86554a7f5905243b940ca19ccd4a8111fc142963ce7819654284404203a303519d
+  languageName: node
+  linkType: hard
+
+"@hapi/pinpoint@npm:^2.0.0":
+  version: 2.0.1
+  resolution: "@hapi/pinpoint@npm:2.0.1"
+  checksum: 8a1bb399f7cf48948669fdc80dff83892ed56eb62eee2cca128fc8b0683733b16e274b395eddfae6154a698aa57c66a3905ceaa3119c59de29751d4601831057
   languageName: node
   linkType: hard
 
@@ -1628,6 +1839,67 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hapi/podium@npm:^5.0.1":
+  version: 5.0.2
+  resolution: "@hapi/podium@npm:5.0.2"
+  dependencies:
+    "@hapi/hoek": ^11.0.2
+    "@hapi/teamwork": ^6.0.0
+    "@hapi/validate": ^2.0.1
+  checksum: f8342416061f3b1f264b2dd882f3b645c71484028d94812d222f080955e38b4fae05fa52b454dea518dcd1219d6ec87b29e4cd35fd5422eaf84dac8bf200ad55
+  languageName: node
+  linkType: hard
+
+"@hapi/shot@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "@hapi/shot@npm:6.0.1"
+  dependencies:
+    "@hapi/hoek": ^11.0.2
+    "@hapi/validate": ^2.0.1
+  checksum: 889b939f382221492011db6761d94bec5f51792804bbef80547e7417b2b9b97751a7d89f5f281e3c2e25b6da9827ba70694fd19c1dc95b28ce2bd67d7aa1fd90
+  languageName: node
+  linkType: hard
+
+"@hapi/somever@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "@hapi/somever@npm:4.1.1"
+  dependencies:
+    "@hapi/bounce": ^3.0.1
+    "@hapi/hoek": ^11.0.2
+  checksum: 62747a40a737288fa1f241aa09315b49ef03739e5febf7147909c12e9ad88b5e7debbc548cf5e05f25266331db88fa8bed9286bf706194dd209a6b814b7a48cb
+  languageName: node
+  linkType: hard
+
+"@hapi/statehood@npm:^8.1.1":
+  version: 8.1.1
+  resolution: "@hapi/statehood@npm:8.1.1"
+  dependencies:
+    "@hapi/boom": ^10.0.1
+    "@hapi/bounce": ^3.0.1
+    "@hapi/bourne": ^3.0.0
+    "@hapi/cryptiles": ^6.0.1
+    "@hapi/hoek": ^11.0.2
+    "@hapi/iron": ^7.0.1
+    "@hapi/validate": ^2.0.1
+  checksum: d371efa9144d29c43c120dc1372382ce7226db8724320d002c14e0e3931f9e2070b122c11dc20423425662e909ebf15c03dc7fd32a979d277c513ce0505b6bd7
+  languageName: node
+  linkType: hard
+
+"@hapi/subtext@npm:^8.1.0":
+  version: 8.1.0
+  resolution: "@hapi/subtext@npm:8.1.0"
+  dependencies:
+    "@hapi/boom": ^10.0.1
+    "@hapi/bourne": ^3.0.0
+    "@hapi/content": ^6.0.0
+    "@hapi/file": ^3.0.0
+    "@hapi/hoek": ^11.0.2
+    "@hapi/pez": ^6.1.0
+    "@hapi/wreck": ^18.0.1
+  checksum: 7f1697e9b4cefe4553b411b18b402dce2f01ae4873a1e7f06e91125cfce22a25e468749651c17b5dcd1fc416ae853c4ba954beee9ceacb56662c895bb9661a5b
+  languageName: node
+  linkType: hard
+
 "@hapi/teamwork@npm:^6.0.0":
   version: 6.0.0
   resolution: "@hapi/teamwork@npm:6.0.0"
@@ -1635,7 +1907,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hapi/topo@npm:^6.0.1":
+"@hapi/topo@npm:^5.0.0":
+  version: 5.1.0
+  resolution: "@hapi/topo@npm:5.1.0"
+  dependencies:
+    "@hapi/hoek": ^9.0.0
+  checksum: 604dfd5dde76d5c334bd03f9001fce69c7ce529883acf92da96f4fe7e51221bf5e5110e964caca287a6a616ba027c071748ab636ff178ad750547fba611d6014
+  languageName: node
+  linkType: hard
+
+"@hapi/topo@npm:^6.0.1, @hapi/topo@npm:^6.0.2":
   version: 6.0.2
   resolution: "@hapi/topo@npm:6.0.2"
   dependencies:
@@ -1651,6 +1932,26 @@ __metadata:
     "@hapi/hoek": ^11.0.2
     "@hapi/topo": ^6.0.1
   checksum: a1996828ab241a7e9bca984b2f84a8c81a56f2a572471cf5c5ed0112eceba7b0d14e1d7995b01e1e8a0e7e10356920fd3636d4212642c4aba6a20d41ff42c8c2
+  languageName: node
+  linkType: hard
+
+"@hapi/vise@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "@hapi/vise@npm:5.0.1"
+  dependencies:
+    "@hapi/hoek": ^11.0.2
+  checksum: d5474d38b04d20a168cee6fec7c5f4620819d243253ef663fa95ec25342c53153cba9f9606edc09ae677adf9fe9046fc43da2d95c35d1b6ec17a42429c897390
+  languageName: node
+  linkType: hard
+
+"@hapi/wreck@npm:^18.0.1":
+  version: 18.1.0
+  resolution: "@hapi/wreck@npm:18.1.0"
+  dependencies:
+    "@hapi/boom": ^10.0.1
+    "@hapi/bourne": ^3.0.0
+    "@hapi/hoek": ^11.0.2
+  checksum: 08e20e829a46fcdd1595b7181d3c0f94bc1cd2966aaf272138a6b80fa5266852295189295169903be20ef53bb35ba7b9a9080ce7e1147116ffce4db492b99bec
   languageName: node
   linkType: hard
 
@@ -2115,7 +2416,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-shared@npm:^18.14.2, @mojaloop/central-services-shared@npm:^18.15.1":
+"@mojaloop/central-services-shared@npm:^18.14.2":
   version: 18.15.1
   resolution: "@mojaloop/central-services-shared@npm:18.15.1"
   dependencies:
@@ -2161,6 +2462,58 @@ __metadata:
     ajv-keyboards:
       optional: false
   checksum: 2399c08dc2ce620e421119e914cca273ac1a9c80e5a77184a2e9642ac89000b639527b002f4d46fb8ef5a70d273b9239cddf0356aeb0265ea1c00df7e901bffb
+  languageName: node
+  linkType: hard
+
+"@mojaloop/central-services-shared@npm:^18.15.2":
+  version: 18.15.2
+  resolution: "@mojaloop/central-services-shared@npm:18.15.2"
+  dependencies:
+    "@hapi/catbox": 12.1.1
+    "@hapi/catbox-memory": 5.0.1
+    "@hapi/hapi": 21.3.12
+    "@hapi/joi": 17.1.1
+    "@hapi/joi-date": 2.0.1
+    "@mojaloop/inter-scheme-proxy-cache-lib": 2.3.1
+    axios: 1.7.9
+    clone: 2.1.2
+    dotenv: 16.4.7
+    env-var: 7.5.0
+    event-stream: 4.0.1
+    fast-safe-stringify: ^2.1.1
+    immutable: 5.0.3
+    ioredis: ^5.4.2
+    lodash: 4.17.21
+    mustache: 4.2.0
+    openapi-backend: 5.11.1
+    raw-body: 3.0.0
+    rc: 1.2.8
+    shins: 2.6.0
+    ulidx: 2.4.1
+    uuid4: 2.0.3
+    widdershins: ^4.0.1
+    yaml: 2.7.0
+  peerDependencies:
+    "@mojaloop/central-services-error-handling": ">=13.x.x"
+    "@mojaloop/central-services-logger": ">=11.5.x"
+    "@mojaloop/central-services-metrics": ">=12.x.x"
+    "@mojaloop/event-sdk": ">=14.1.1"
+    ajv: 8.x.x
+    ajv-keywords: 5.x.x
+  peerDependenciesMeta:
+    "@mojaloop/central-services-error-handling":
+      optional: false
+    "@mojaloop/central-services-logger":
+      optional: false
+    "@mojaloop/central-services-metrics":
+      optional: false
+    "@mojaloop/event-sdk":
+      optional: false
+    ajv:
+      optional: false
+    ajv-keyboards:
+      optional: false
+  checksum: 909c97719305beaffc673d8788ed6abb900c029b4c7e334cb1cfccf48b6f0ac3203b12d5f5d9e0ba2ec55e68cb2fb7bfcbcf55497ea3daeeead26fd2df507b21
   languageName: node
   linkType: hard
 
@@ -2278,7 +2631,7 @@ __metadata:
     "@mojaloop/central-services-error-handling": ^13.0.3
     "@mojaloop/central-services-logger": ^11.5.2
     "@mojaloop/central-services-metrics": ^12.4.3
-    "@mojaloop/central-services-shared": ^18.15.1
+    "@mojaloop/central-services-shared": ^18.15.2
     "@mojaloop/event-sdk": ^14.1.2
     "@mojaloop/logging-bc-client-lib": 0.5.8
     "@mojaloop/ml-schema-transformer-lib": ^2.5.1
@@ -2335,7 +2688,7 @@ __metadata:
   dependencies:
     "@eslint/compat": ^1.2.5
     "@mojaloop/api-snippets": 17.7.8
-    "@mojaloop/central-services-shared": ^18.15.1
+    "@mojaloop/central-services-shared": ^18.15.2
     "@mojaloop/logging-bc-client-lib": ^0.5.8
     "@mojaloop/logging-bc-public-types-lib": ^0.5.4
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
@@ -2347,8 +2700,8 @@ __metadata:
     "@types/supertest": ^6.0.2
     "@types/swagger-ui-express": 4.1.7
     "@types/yamljs": ^0.2.34
-    "@typescript-eslint/eslint-plugin": ^8.20.0
-    "@typescript-eslint/parser": ^8.20.0
+    "@typescript-eslint/eslint-plugin": ^8.21.0
+    "@typescript-eslint/parser": ^8.21.0
     ajv: ^8.17.1
     convict: ^6.2.4
     copyfiles: ^2.4.1
@@ -2385,8 +2738,8 @@ __metadata:
     "@types/supertest": ^6.0.2
     "@types/swagger-ui-express": ^4.1.7
     "@types/yamljs": ^0.2.34
-    "@typescript-eslint/eslint-plugin": ^8.20.0
-    "@typescript-eslint/parser": ^8.20.0
+    "@typescript-eslint/eslint-plugin": ^8.21.0
+    "@typescript-eslint/parser": ^8.21.0
     convict: ^6.2.4
     copyfiles: ^2.4.1
     eslint: ^9.15.0
@@ -2412,14 +2765,14 @@ __metadata:
   dependencies:
     "@eslint/compat": ^1.2.5
     "@mojaloop/api-snippets": 17.7.8
-    "@mojaloop/central-services-shared": ^18.15.1
+    "@mojaloop/central-services-shared": ^18.15.2
     "@mojaloop/logging-bc-public-types-lib": ^0.5.4
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.7.1
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": 0.5.18
     "@types/node": ^22.10.7
     "@types/uuid": ^10.0.0
-    "@typescript-eslint/eslint-plugin": ^8.20.0
-    "@typescript-eslint/parser": ^8.20.0
+    "@typescript-eslint/eslint-plugin": ^8.21.0
+    "@typescript-eslint/parser": ^8.21.0
     ajv: ^8.17.1
     eslint: ^9.15.0
     jest: ^29.7.0
@@ -2441,8 +2794,8 @@ __metadata:
     "@types/jest": ^29.5.14
     "@types/node": ^22.10.7
     "@types/node-cache": ^4.2.5
-    "@typescript-eslint/eslint-plugin": ^8.20.0
-    "@typescript-eslint/parser": ^8.20.0
+    "@typescript-eslint/eslint-plugin": ^8.21.0
+    "@typescript-eslint/parser": ^8.21.0
     audit-ci: ^7.1.0
     eslint: ^9.15.0
     eslint-config-airbnb-typescript: ^18.0.0
@@ -3645,15 +3998,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/eslint-plugin@npm:^8.20.0":
-  version: 8.20.0
-  resolution: "@typescript-eslint/eslint-plugin@npm:8.20.0"
+"@typescript-eslint/eslint-plugin@npm:^8.21.0":
+  version: 8.21.0
+  resolution: "@typescript-eslint/eslint-plugin@npm:8.21.0"
   dependencies:
     "@eslint-community/regexpp": ^4.10.0
-    "@typescript-eslint/scope-manager": 8.20.0
-    "@typescript-eslint/type-utils": 8.20.0
-    "@typescript-eslint/utils": 8.20.0
-    "@typescript-eslint/visitor-keys": 8.20.0
+    "@typescript-eslint/scope-manager": 8.21.0
+    "@typescript-eslint/type-utils": 8.21.0
+    "@typescript-eslint/utils": 8.21.0
+    "@typescript-eslint/visitor-keys": 8.21.0
     graphemer: ^1.4.0
     ignore: ^5.3.1
     natural-compare: ^1.4.0
@@ -3662,23 +4015,23 @@ __metadata:
     "@typescript-eslint/parser": ^8.0.0 || ^8.0.0-alpha.0
     eslint: ^8.57.0 || ^9.0.0
     typescript: ">=4.8.4 <5.8.0"
-  checksum: f029bfcce3dc12d7b539f86142857d680e06d798eca213d9fb564685d12b479205b7f40b4996e30e3f7301c7bb6d15484741352f54ddd00d74a07ea2aca53cf6
+  checksum: 93a5302b8b46485e9016912758604b49d6abea4ae4d02c9d76f3b8125d5f20e92cacb2f8b21ad68b338e15246d1fcf6f5ccba1aee52281f2ffa6894988d4b135
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:^8.20.0":
-  version: 8.20.0
-  resolution: "@typescript-eslint/parser@npm:8.20.0"
+"@typescript-eslint/parser@npm:^8.21.0":
+  version: 8.21.0
+  resolution: "@typescript-eslint/parser@npm:8.21.0"
   dependencies:
-    "@typescript-eslint/scope-manager": 8.20.0
-    "@typescript-eslint/types": 8.20.0
-    "@typescript-eslint/typescript-estree": 8.20.0
-    "@typescript-eslint/visitor-keys": 8.20.0
+    "@typescript-eslint/scope-manager": 8.21.0
+    "@typescript-eslint/types": 8.21.0
+    "@typescript-eslint/typescript-estree": 8.21.0
+    "@typescript-eslint/visitor-keys": 8.21.0
     debug: ^4.3.4
   peerDependencies:
     eslint: ^8.57.0 || ^9.0.0
     typescript: ">=4.8.4 <5.8.0"
-  checksum: 00b265ed42ee1d8eb715f9978d701be0958baf7a5be9de74a1b58c09c78e3558e1e6352c4476ec8ea376c28f1437de0b58b3e1e2a9975c489f2ecd369a9050eb
+  checksum: 55f6b265a304bfdb7945db2ad494551ef22e93684b9fd2f12a6c22907b39702e51389dd64c9a22cc532ee0a6a8b4ff2f4936bbc6695d909a074d36783cef8e40
   languageName: node
   linkType: hard
 
@@ -3692,28 +4045,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/scope-manager@npm:8.20.0":
-  version: 8.20.0
-  resolution: "@typescript-eslint/scope-manager@npm:8.20.0"
+"@typescript-eslint/scope-manager@npm:8.21.0":
+  version: 8.21.0
+  resolution: "@typescript-eslint/scope-manager@npm:8.21.0"
   dependencies:
-    "@typescript-eslint/types": 8.20.0
-    "@typescript-eslint/visitor-keys": 8.20.0
-  checksum: d90d89f3dc8394e44652526b88c81a977b251702a9dc5be89ac0bf7412d79d18879e03c2d6018980a09bc7c50d28dbf91ba06e056e081e6000783d69bd280761
+    "@typescript-eslint/types": 8.21.0
+    "@typescript-eslint/visitor-keys": 8.21.0
+  checksum: 967f120ee984cbaef2afa8a0e58931ad9aa97cf2c62d4af2f1a844dd11d93e932cdde9bb8b870fddae95afe3c0673d6a4edac9c25cc4b6fb8d2e67114b15f4f1
   languageName: node
   linkType: hard
 
-"@typescript-eslint/type-utils@npm:8.20.0":
-  version: 8.20.0
-  resolution: "@typescript-eslint/type-utils@npm:8.20.0"
+"@typescript-eslint/type-utils@npm:8.21.0":
+  version: 8.21.0
+  resolution: "@typescript-eslint/type-utils@npm:8.21.0"
   dependencies:
-    "@typescript-eslint/typescript-estree": 8.20.0
-    "@typescript-eslint/utils": 8.20.0
+    "@typescript-eslint/typescript-estree": 8.21.0
+    "@typescript-eslint/utils": 8.21.0
     debug: ^4.3.4
     ts-api-utils: ^2.0.0
   peerDependencies:
     eslint: ^8.57.0 || ^9.0.0
     typescript: ">=4.8.4 <5.8.0"
-  checksum: 705a166dc2846f7fe79a123ee623da213a20289fba9c0cbbcc894fe7caaa1d4ddc81bf54db9dc918c29a34294a05768c38a4f00762ba3745e0e94e2e2963f104
+  checksum: 717d8d41ab91da84ae1ef26b74bc05294984ce535e36583438c82dad91ee94a3b4f4e10ef9b92d50a45331d40e7d0dca0e1b9f121183ab33a483796383d912a0
   languageName: node
   linkType: hard
 
@@ -3724,10 +4077,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/types@npm:8.20.0":
-  version: 8.20.0
-  resolution: "@typescript-eslint/types@npm:8.20.0"
-  checksum: 4cb0af48411f282db33e7110e2f97de874c637e7b90ded91b77304e96f49663ca4b7308afc569bdd93766fe5f2c194686e32078d5513b5ba4e7d56191998190c
+"@typescript-eslint/types@npm:8.21.0":
+  version: 8.21.0
+  resolution: "@typescript-eslint/types@npm:8.21.0"
+  checksum: b7d40d38124db69a72af51c61c17978f03d0b451ef99bcc73f591644a46491136615cfd5d1543fe3d01a68cb7478b488c2d10a5a9e466809a007c5508bd9e412
   languageName: node
   linkType: hard
 
@@ -3750,12 +4103,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/typescript-estree@npm:8.20.0":
-  version: 8.20.0
-  resolution: "@typescript-eslint/typescript-estree@npm:8.20.0"
+"@typescript-eslint/typescript-estree@npm:8.21.0":
+  version: 8.21.0
+  resolution: "@typescript-eslint/typescript-estree@npm:8.21.0"
   dependencies:
-    "@typescript-eslint/types": 8.20.0
-    "@typescript-eslint/visitor-keys": 8.20.0
+    "@typescript-eslint/types": 8.21.0
+    "@typescript-eslint/visitor-keys": 8.21.0
     debug: ^4.3.4
     fast-glob: ^3.3.2
     is-glob: ^4.0.3
@@ -3764,22 +4117,22 @@ __metadata:
     ts-api-utils: ^2.0.0
   peerDependencies:
     typescript: ">=4.8.4 <5.8.0"
-  checksum: 9690df2d4ec90966b8d5752ad0f1658a951fe76ea3cae8e6935e698715a25c1eb0b118fa8e044065f04ea9f6bef41d991de5298590ef2a4aa98d435bf1df6e15
+  checksum: 4fb0166352f2ea24b17b8c88b4d4d7b21cf3bc516fd4713a828640439b4abc04ec337bd7d37e3030aec11fd049434406970639c7f8fbd077cad080be3ba45c59
   languageName: node
   linkType: hard
 
-"@typescript-eslint/utils@npm:8.20.0":
-  version: 8.20.0
-  resolution: "@typescript-eslint/utils@npm:8.20.0"
+"@typescript-eslint/utils@npm:8.21.0":
+  version: 8.21.0
+  resolution: "@typescript-eslint/utils@npm:8.21.0"
   dependencies:
     "@eslint-community/eslint-utils": ^4.4.0
-    "@typescript-eslint/scope-manager": 8.20.0
-    "@typescript-eslint/types": 8.20.0
-    "@typescript-eslint/typescript-estree": 8.20.0
+    "@typescript-eslint/scope-manager": 8.21.0
+    "@typescript-eslint/types": 8.21.0
+    "@typescript-eslint/typescript-estree": 8.21.0
   peerDependencies:
     eslint: ^8.57.0 || ^9.0.0
     typescript: ">=4.8.4 <5.8.0"
-  checksum: 5c9d72eb0d4014e41de1faa4597371f19362ce47a491359be408bfba899277f8d5660f014651f7bd41435158ae4655ade205e92f175e2355ca51a07af35a53ed
+  checksum: 0c22254b99ccaa8548e91f98debedfd7756f42036a5eabb58a633208b04949da96c46b712b9a5408be776a8f0dbe1d9d7eb6a2f895253d2dbeccb47941be97db
   languageName: node
   linkType: hard
 
@@ -3810,13 +4163,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/visitor-keys@npm:8.20.0":
-  version: 8.20.0
-  resolution: "@typescript-eslint/visitor-keys@npm:8.20.0"
+"@typescript-eslint/visitor-keys@npm:8.21.0":
+  version: 8.21.0
+  resolution: "@typescript-eslint/visitor-keys@npm:8.21.0"
   dependencies:
-    "@typescript-eslint/types": 8.20.0
+    "@typescript-eslint/types": 8.21.0
     eslint-visitor-keys: ^4.2.0
-  checksum: d0bf89e431a686197c517fbb7d63ce4c8ef31e6629a545fd08198c67810ddd68c047c01fcfed8ffc3fe438654a2647b3dedf28f04beac23a65614b2e788d929a
+  checksum: 07b5c8689c5e0163543d8ef23556ec93088dfa6b98cada5b9047dd9e99b6db74c052eb9b2b8e9d27ea21798ee1078b0533129e2d164fb7ee90ed210ddd6726b8
   languageName: node
   linkType: hard
 
@@ -10379,7 +10732,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mime-db@npm:>= 1.43.0 < 2":
+"mime-db@npm:>= 1.43.0 < 2, mime-db@npm:^1.52.0":
   version: 1.53.0
   resolution: "mime-db@npm:1.53.0"
   checksum: 3fd9380bdc0b085d0b56b580e4f89ca4fc3b823722310d795c248f0806b9a80afd5d8f4347f015ad943b9ecfa7cc0b71dffa0db96fa776d01a13474821a2c7fb
@@ -10665,7 +11018,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moment@npm:2.30.1":
+"moment@npm:2.30.1, moment@npm:2.x.x":
   version: 2.30.1
   resolution: "moment@npm:2.30.1"
   checksum: 859236bab1e88c3e5802afcf797fc801acdbd0ee509d34ea3df6eea21eb6bcc2abd4ae4e4e64aa7c986aa6cba563c6e62806218e6412a765010712e5fa121ba6
