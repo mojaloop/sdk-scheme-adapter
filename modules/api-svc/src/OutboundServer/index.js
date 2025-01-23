@@ -32,6 +32,7 @@ const apiSpecs = yaml.load(fs.readFileSync(specPath));
 const endpointRegex = /\/.*/g;
 const logExcludePaths = ['/'];
 const _validator = new Validate({ logExcludePaths });
+let _initialize;
 
 class OutboundApi extends EventEmitter {
     constructor(conf, logger, cache, validator, metricsClient, wso2, eventProducer, eventLogger) {
@@ -41,7 +42,7 @@ class OutboundApi extends EventEmitter {
         this._conf = conf;
         this._cache = cache;
         this._metricsClient = metricsClient;
-        this._initialize = _validator.initialise(apiSpecs, conf);
+        _initialize ||= _validator.initialise(apiSpecs, conf);
 
         this._api.use(middlewares.createErrorHandler(this._logger));
         this._api.use(middlewares.createRequestIdGenerator(this._logger));
@@ -118,7 +119,7 @@ class OutboundServer extends EventEmitter {
     async start() {
         const { port } = this._conf.outbound;
         await this._eventProducer?.init();
-        await this._initialize;
+        await _initialize;
         await this._api.start();
         await new Promise((resolve) => this._server.listen(port, resolve));
         this._logger.isInfoEnabled && this._logger.info(`Serving outbound API on port ${this._conf.outbound.port}`);

@@ -22,6 +22,7 @@ const middlewares = require('../InboundServer/middlewares');
 
 const logExcludePaths = ['/'];
 const _validator = new Validate({ logExcludePaths });
+let _initialize;
 
 const getWsIp = (req) => [
     req.socket.remoteAddress,
@@ -175,7 +176,7 @@ class WsServer extends ws.Server {
 
 class TestServer {
     constructor({ port, logger, cache, config }) {
-        this._initialize = _validator.initialise(yaml.load(require('fs').readFileSync(path.join(__dirname, 'api.yaml'))), config);
+        _initialize ||= _validator.initialise(yaml.load(require('fs').readFileSync(path.join(__dirname, 'api.yaml'))), config);
         this._port = port;
         this._logger = logger;
         this._api = new TestApi(this._logger.push({ component: 'api' }), _validator, cache, config);
@@ -190,7 +191,7 @@ class TestServer {
             return;
         }
 
-        await this._initialize;
+        await _initialize;
 
         await this._wsapi.start();
 
