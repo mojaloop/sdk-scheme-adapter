@@ -44,7 +44,6 @@ class InboundTransfersModel {
             bulkTransfersEndpoint: config.bulkTransfersEndpoint,
             transactionRequestsEndpoint: config.transactionRequestsEndpoint,
             bulkQuotesEndpoint: config.bulkQuotesEndpoint,
-            // todo: extend BaseRequestConfigType in sdk-standard-comps
             fxQuotesEndpoint: config.fxQuotesEndpoint,
             fxTransfersEndpoint: config.fxTransfersEndpoint,
             dfspId: config.dfspId,
@@ -577,7 +576,7 @@ class InboundTransfersModel {
                 headers: res.originalRequest.headers,
                 body: mojaloopResponse,
             };
-            
+
             this.data.currentState = SDKStateEnum.FX_QUOTE_WAITING_FOR_ACCEPTANCE;
             await this.saveFxState();
 

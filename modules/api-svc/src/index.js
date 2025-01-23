@@ -208,6 +208,7 @@ class Server extends EventEmitter {
             await this.wso2.auth.start();
         }
 
+        this._logger.isDebugEnabled && this._logger.push({ oldConf: this.conf.inbound, newConf: newConf.inbound }).debug('Inbound server configuration');
         const updateInboundServer = !_.isEqual(this.conf.inbound, newConf.inbound)
             || !_.isEqual(this.conf.outbound, newConf.outbound);
         if (updateInboundServer) {
@@ -226,6 +227,7 @@ class Server extends EventEmitter {
             await this.inboundServer.start();
         }
 
+        this._logger.isDebugEnabled && this._logger.push({ oldConf: this.conf.outbound, newConf: newConf.outbound }).debug('Outbound server configuration');
         const updateOutboundServer = !_.isEqual(this.conf.outbound, newConf.outbound);
         if (updateOutboundServer) {
             await this.outboundServer.stop();
