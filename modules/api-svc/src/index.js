@@ -180,8 +180,6 @@ class Server extends EventEmitter {
         ]);
     }
 
-    // todo: clarify, why do we need this method?
-    //       (!) lots of code duplication
     async restart(newConf) {
         this.logger.isDebugEnabled && this.logger.debug('Server is restarting...');
         const updateLogger = !_.isEqual(newConf.isJsonOutput, this.conf.isJsonOutput);

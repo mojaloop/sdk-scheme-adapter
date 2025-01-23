@@ -28,6 +28,7 @@ const fxQuoteRequestStateDto = (request) => ({
 
 /**
  * @param data {object} - "state" of inbound transaction request
+ * Supports only single FXP and currency for now
  */
 const outboundPostFxQuotePayloadDto = (data) => Object.freeze({
     conversionRequestId: randomUUID(),
@@ -35,14 +36,14 @@ const outboundPostFxQuotePayloadDto = (data) => Object.freeze({
         conversionId: randomUUID(), // should be the same as commitRequestId from fxTransfer
         initiatingFsp: data.from.fspId,
         determiningTransferId: data.transferId,
-        counterPartyFsp: data.fxProviders[0], // todo: think if we have several FXPs
+        counterPartyFsp: data.fxProviders[0],
         amountType: data.amountType,
         sourceAmount: {
             currency: data.currency,
             amount: data.amount
         },
         targetAmount: {
-            currency: data.supportedCurrencies[0], // todo: think if we have several currencies
+            currency: data.supportedCurrencies[0],
         },
         expiration: data.fxQuoteExpiration,
     }

@@ -58,6 +58,55 @@ paths:
       responses:
         '200':
           description: Ok
+  /participants/{ID}/error:
+    put:
+      description: >-
+        If there is an error during FSP information creation in the server, the
+        error callback `PUT /participants/{ID}/error` is used. The `{ID}` in the
+        URI should contain the requestId that was used for the creation of the
+        participant information.
+      summary: Return bulk participant information error
+      tags:
+        - participants
+      operationId: ParticipantsByIDAndError
+      parameters:
+        - $ref: '#/components/parameters/ID'
+        - $ref: '#/components/parameters/Content-Length'
+        - $ref: '#/components/parameters/Content-Type'
+        - $ref: '#/components/parameters/Date'
+        - $ref: '#/components/parameters/X-Forwarded-For'
+        - $ref: '#/components/parameters/FSPIOP-Source'
+        - $ref: '#/components/parameters/FSPIOP-Destination'
+        - $ref: '#/components/parameters/FSPIOP-Encryption'
+        - $ref: '#/components/parameters/FSPIOP-Signature'
+        - $ref: '#/components/parameters/FSPIOP-URI'
+        - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+      requestBody:
+        description: Details of the error returned.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorInformationObject'
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '406':
+          $ref: '#/components/responses/406'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
   /participants/{Type}/{ID}:
     parameters:
       - $ref: '#/components/parameters/Type'
@@ -576,55 +625,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ParticipantsIDPutResponse'
-      responses:
-        '200':
-          $ref: '#/components/responses/200'
-        '400':
-          $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-        '405':
-          $ref: '#/components/responses/405'
-        '406':
-          $ref: '#/components/responses/406'
-        '501':
-          $ref: '#/components/responses/501'
-        '503':
-          $ref: '#/components/responses/503'
-  /participants/{ID}/error:
-    put:
-      description: >-
-        If there is an error during FSP information creation in the server, the
-        error callback `PUT /participants/{ID}/error` is used. The `{ID}` in the
-        URI should contain the requestId that was used for the creation of the
-        participant information.
-      summary: Return bulk participant information error
-      tags:
-        - participants
-      operationId: ParticipantsByIDAndError
-      parameters:
-        - $ref: '#/components/parameters/ID'
-        - $ref: '#/components/parameters/Content-Length'
-        - $ref: '#/components/parameters/Content-Type'
-        - $ref: '#/components/parameters/Date'
-        - $ref: '#/components/parameters/X-Forwarded-For'
-        - $ref: '#/components/parameters/FSPIOP-Source'
-        - $ref: '#/components/parameters/FSPIOP-Destination'
-        - $ref: '#/components/parameters/FSPIOP-Encryption'
-        - $ref: '#/components/parameters/FSPIOP-Signature'
-        - $ref: '#/components/parameters/FSPIOP-URI'
-        - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
-      requestBody:
-        description: Details of the error returned.
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ErrorInformationObject'
       responses:
         '200':
           $ref: '#/components/responses/200'
