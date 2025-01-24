@@ -29,7 +29,7 @@ pushd docker/haproxy/tls
 sh createSecrets.sh
 popd
 
-docker compose down
+docker compose down -v --timeout 30
 docker compose -f ./docker-compose.yml -f ./docker-compose.pm4ml.yml up -d
 docker compose ps
 
