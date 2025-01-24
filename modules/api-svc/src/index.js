@@ -156,7 +156,7 @@ class Server extends EventEmitter {
         // We only start the control client if we're running within Mojaloop Payment Manager.
         // The control server is the Payment Manager Management API Service.
         // We only start the client to connect to and listen to the Management API service for
-        // management protocol messages e.g configuration changes, certicate updates etc.
+        // management protocol messages e.g configuration changes, certificate updates etc.
         if (this.conf.pm4mlEnabled) {
             const RESTART_INTERVAL_MS = 10000;
             this.controlClient = await ControlAgent.Client.Create({
@@ -166,7 +166,12 @@ class Server extends EventEmitter {
                 appConfig: this.conf,
             });
             this.controlClient.on(ControlAgent.EVENT.RECONFIGURE, this.restart.bind(this));
-            this.controlClient.on('close', () => setTimeout(() => this.restart(_.merge({}, this.conf, { control: { stopped: Date.now() } })), RESTART_INTERVAL_MS));
+            this.controlClient.on('close', () => setTimeout(() => {
+                this.logger.push({ currentConf: this.conf }).debug('Control client closed. Restarting server...');
+                this.restart(_.merge({}, this.conf, {
+                    control: { stopped: Date.now() }
+                }));
+            }, RESTART_INTERVAL_MS));
         }
 
         await Promise.all([
@@ -272,6 +277,7 @@ class Server extends EventEmitter {
                 });
                 this.controlClient.on(ControlAgent.EVENT.RECONFIGURE, this.restart.bind(this));
                 this.controlClient.on('close', () => setTimeout(() => {
+                    this.logger.push({ newConf }).debug('Control client closed. Restarting server...');
                     this.restart(_.merge({}, newConf, {
                         control: { stopped: Date.now() }
                     }));
