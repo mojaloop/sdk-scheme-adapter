@@ -2395,15 +2395,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-logger@npm:^11.5.2":
-  version: 11.5.2
-  resolution: "@mojaloop/central-services-logger@npm:11.5.2"
+"@mojaloop/central-services-logger@npm:^11.5.3":
+  version: 11.5.3
+  resolution: "@mojaloop/central-services-logger@npm:11.5.3"
   dependencies:
     parse-strings-in-object: 2.0.0
     rc: 1.2.8
     safe-stable-stringify: ^2.5.0
     winston: 3.17.0
-  checksum: c46e4b339f8f57acff98b375e123a8a1e89a348787b4417dbe11f07bf855d09190fd2a1731ce94046bce79d50f3566f5069982e9a969c7260b90aff1f7eab899
+  checksum: c03cde581fdb9bcd7ceabcdd9e1c09975803c8a275b5e77d9ddac839fe34c02124591acbe600d290df38be728c9cf43229bfc9782031b78f81743d035e05a8b1
   languageName: node
   linkType: hard
 
@@ -2629,7 +2629,7 @@ __metadata:
     "@koa/cors": ^5.0.0
     "@mojaloop/api-snippets": 17.7.9
     "@mojaloop/central-services-error-handling": ^13.0.3
-    "@mojaloop/central-services-logger": ^11.5.2
+    "@mojaloop/central-services-logger": ^11.5.3
     "@mojaloop/central-services-metrics": ^12.4.3
     "@mojaloop/central-services-shared": ^18.15.2
     "@mojaloop/event-sdk": ^14.1.2
