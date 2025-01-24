@@ -58,6 +58,103 @@ paths:
       responses:
         '200':
           description: Ok
+  /participants:
+    post:
+      description: >-
+        The HTTP request `POST /participants` is used to create information in
+        the server regarding the provided list of identities. This request
+        should be used for bulk creation of FSP information for more than one
+        Party. The optional currency parameter should indicate that each
+        provided Party supports the currency.
+      summary: Create bulk participant information
+      tags:
+        - participants
+      operationId: Participants1
+      parameters:
+        - $ref: '#/components/parameters/Accept'
+        - $ref: '#/components/parameters/Content-Length'
+        - $ref: '#/components/parameters/Content-Type'
+        - $ref: '#/components/parameters/Date'
+        - $ref: '#/components/parameters/X-Forwarded-For'
+        - $ref: '#/components/parameters/FSPIOP-Source'
+        - $ref: '#/components/parameters/FSPIOP-Destination'
+        - $ref: '#/components/parameters/FSPIOP-Encryption'
+        - $ref: '#/components/parameters/FSPIOP-Signature'
+        - $ref: '#/components/parameters/FSPIOP-URI'
+        - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+      requestBody:
+        description: Participant information to be created.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParticipantsPostRequest'
+      responses:
+        '202':
+          $ref: '#/components/responses/202'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '406':
+          $ref: '#/components/responses/406'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+  /participants/{ID}:
+    put:
+      description: >-
+        The callback `PUT /participants/{ID}` is used to inform the client of
+        the result of the creation of the provided list of identities.
+      summary: Return bulk participant information
+      tags:
+        - participants
+      operationId: putParticipantsByID
+      parameters:
+        - $ref: '#/components/parameters/ID'
+        - $ref: '#/components/parameters/Content-Length'
+        - $ref: '#/components/parameters/Content-Type'
+        - $ref: '#/components/parameters/Date'
+        - $ref: '#/components/parameters/X-Forwarded-For'
+        - $ref: '#/components/parameters/FSPIOP-Source'
+        - $ref: '#/components/parameters/FSPIOP-Destination'
+        - $ref: '#/components/parameters/FSPIOP-Encryption'
+        - $ref: '#/components/parameters/FSPIOP-Signature'
+        - $ref: '#/components/parameters/FSPIOP-URI'
+        - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+      requestBody:
+        description: Participant information returned.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParticipantsIDPutResponse'
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '406':
+          $ref: '#/components/responses/406'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
   /participants/{ID}/error:
     put:
       description: >-
@@ -528,103 +625,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ErrorInformationObject'
-      responses:
-        '200':
-          $ref: '#/components/responses/200'
-        '400':
-          $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-        '405':
-          $ref: '#/components/responses/405'
-        '406':
-          $ref: '#/components/responses/406'
-        '501':
-          $ref: '#/components/responses/501'
-        '503':
-          $ref: '#/components/responses/503'
-  /participants:
-    post:
-      description: >-
-        The HTTP request `POST /participants` is used to create information in
-        the server regarding the provided list of identities. This request
-        should be used for bulk creation of FSP information for more than one
-        Party. The optional currency parameter should indicate that each
-        provided Party supports the currency.
-      summary: Create bulk participant information
-      tags:
-        - participants
-      operationId: Participants1
-      parameters:
-        - $ref: '#/components/parameters/Accept'
-        - $ref: '#/components/parameters/Content-Length'
-        - $ref: '#/components/parameters/Content-Type'
-        - $ref: '#/components/parameters/Date'
-        - $ref: '#/components/parameters/X-Forwarded-For'
-        - $ref: '#/components/parameters/FSPIOP-Source'
-        - $ref: '#/components/parameters/FSPIOP-Destination'
-        - $ref: '#/components/parameters/FSPIOP-Encryption'
-        - $ref: '#/components/parameters/FSPIOP-Signature'
-        - $ref: '#/components/parameters/FSPIOP-URI'
-        - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
-      requestBody:
-        description: Participant information to be created.
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ParticipantsPostRequest'
-      responses:
-        '202':
-          $ref: '#/components/responses/202'
-        '400':
-          $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-        '405':
-          $ref: '#/components/responses/405'
-        '406':
-          $ref: '#/components/responses/406'
-        '501':
-          $ref: '#/components/responses/501'
-        '503':
-          $ref: '#/components/responses/503'
-  /participants/{ID}:
-    put:
-      description: >-
-        The callback `PUT /participants/{ID}` is used to inform the client of
-        the result of the creation of the provided list of identities.
-      summary: Return bulk participant information
-      tags:
-        - participants
-      operationId: putParticipantsByID
-      parameters:
-        - $ref: '#/components/parameters/ID'
-        - $ref: '#/components/parameters/Content-Length'
-        - $ref: '#/components/parameters/Content-Type'
-        - $ref: '#/components/parameters/Date'
-        - $ref: '#/components/parameters/X-Forwarded-For'
-        - $ref: '#/components/parameters/FSPIOP-Source'
-        - $ref: '#/components/parameters/FSPIOP-Destination'
-        - $ref: '#/components/parameters/FSPIOP-Encryption'
-        - $ref: '#/components/parameters/FSPIOP-Signature'
-        - $ref: '#/components/parameters/FSPIOP-URI'
-        - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
-      requestBody:
-        description: Participant information returned.
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ParticipantsIDPutResponse'
       responses:
         '200':
           $ref: '#/components/responses/200'
@@ -3519,6 +3519,27 @@ components:
       description: >-
         The API data type UndefinedEnum is a JSON String consisting of 1 to 32
         uppercase characters including an underscore character (_).
+    ParticipantsPostRequest:
+      title: ParticipantsPostRequest
+      type: object
+      description: The object sent in the POST /participants request.
+      properties:
+        requestId:
+          $ref: '#/components/schemas/CorrelationId'
+        partyList:
+          type: array
+          items:
+            $ref: '#/components/schemas/PartyIdInfo'
+          minItems: 1
+          maxItems: 10000
+          description: >-
+            List of PartyIdInfo elements that the client would like to update or
+            create FSP information about.
+        currency:
+          $ref: '#/components/schemas/Currency'
+      required:
+        - requestId
+        - partyList
     ErrorCode:
       title: ErrorCode
       type: string
@@ -3561,61 +3582,6 @@ components:
       properties:
         errorInformation:
           $ref: '#/components/schemas/ErrorInformation'
-    ParticipantsTypeIDPutResponse:
-      title: ParticipantsTypeIDPutResponse
-      type: object
-      description: >-
-        The object sent in the PUT /participants/{Type}/{ID}/{SubId} and
-        /participants/{Type}/{ID} callbacks.
-      properties:
-        fspId:
-          $ref: '#/components/schemas/FspId'
-    ParticipantsTypeIDSubIDPostRequest:
-      title: ParticipantsTypeIDSubIDPostRequest
-      type: object
-      description: >-
-        The object sent in the POST /participants/{Type}/{ID}/{SubId} and
-        /participants/{Type}/{ID} requests. An additional optional ExtensionList
-        element has been added as part of v1.1 changes.
-      properties:
-        fspId:
-          $ref: '#/components/schemas/FspId'
-        currency:
-          $ref: '#/components/schemas/Currency'
-        extensionList:
-          $ref: '#/components/schemas/ExtensionList'
-      required:
-        - fspId
-    ErrorInformationObject:
-      title: ErrorInformationObject
-      type: object
-      description: Data model for the complex type object that contains ErrorInformation.
-      properties:
-        errorInformation:
-          $ref: '#/components/schemas/ErrorInformation'
-      required:
-        - errorInformation
-    ParticipantsPostRequest:
-      title: ParticipantsPostRequest
-      type: object
-      description: The object sent in the POST /participants request.
-      properties:
-        requestId:
-          $ref: '#/components/schemas/CorrelationId'
-        partyList:
-          type: array
-          items:
-            $ref: '#/components/schemas/PartyIdInfo'
-          minItems: 1
-          maxItems: 10000
-          description: >-
-            List of PartyIdInfo elements that the client would like to update or
-            create FSP information about.
-        currency:
-          $ref: '#/components/schemas/Currency'
-      required:
-        - requestId
-        - partyList
     PartyResult:
       title: PartyResult
       type: object
@@ -3645,6 +3611,40 @@ components:
           $ref: '#/components/schemas/Currency'
       required:
         - partyList
+    ErrorInformationObject:
+      title: ErrorInformationObject
+      type: object
+      description: Data model for the complex type object that contains ErrorInformation.
+      properties:
+        errorInformation:
+          $ref: '#/components/schemas/ErrorInformation'
+      required:
+        - errorInformation
+    ParticipantsTypeIDPutResponse:
+      title: ParticipantsTypeIDPutResponse
+      type: object
+      description: >-
+        The object sent in the PUT /participants/{Type}/{ID}/{SubId} and
+        /participants/{Type}/{ID} callbacks.
+      properties:
+        fspId:
+          $ref: '#/components/schemas/FspId'
+    ParticipantsTypeIDSubIDPostRequest:
+      title: ParticipantsTypeIDSubIDPostRequest
+      type: object
+      description: >-
+        The object sent in the POST /participants/{Type}/{ID}/{SubId} and
+        /participants/{Type}/{ID} requests. An additional optional ExtensionList
+        element has been added as part of v1.1 changes.
+      properties:
+        fspId:
+          $ref: '#/components/schemas/FspId'
+        currency:
+          $ref: '#/components/schemas/Currency'
+        extensionList:
+          $ref: '#/components/schemas/ExtensionList'
+      required:
+        - fspId
     PartiesTypeIDPutResponse:
       title: PartiesTypeIDPutResponse
       type: object
@@ -4589,20 +4589,28 @@ components:
       required:
         - providers
   parameters:
-    Type:
-      name: Type
-      in: path
+    Accept:
+      name: Accept
+      in: header
       required: true
       schema:
         type: string
-      description: The type of the party identifier. For example, `MSISDN`, `PERSONAL_ID`.
-    ID:
-      name: ID
-      in: path
-      required: true
+      description: >-
+        The `Accept` header field indicates the version of the API the client
+        would like the server to use.
+    Content-Length:
+      name: Content-Length
+      in: header
+      required: false
       schema:
-        type: string
-      description: The identifier value.
+        type: integer
+      description: >-
+        The `Content-Length` header field indicates the anticipated size of the
+        payload body. Only sent if there is a body.
+
+
+        **Note:** The API supports a maximum size of 5242880 bytes (5
+        Megabytes).
     Content-Type:
       name: Content-Type
       in: header
@@ -4704,28 +4712,20 @@ components:
         method. Required if signature verification is used, for more
         information, see [the API Signature
         document](https://github.com/mojaloop/docs/tree/main/Specification%20Document%20Set).
-    Accept:
-      name: Accept
-      in: header
+    ID:
+      name: ID
+      in: path
       required: true
       schema:
         type: string
-      description: >-
-        The `Accept` header field indicates the version of the API the client
-        would like the server to use.
-    Content-Length:
-      name: Content-Length
-      in: header
-      required: false
+      description: The identifier value.
+    Type:
+      name: Type
+      in: path
+      required: true
       schema:
-        type: integer
-      description: >-
-        The `Content-Length` header field indicates the anticipated size of the
-        payload body. Only sent if there is a body.
-
-
-        **Note:** The API supports a maximum size of 5242880 bytes (5
-        Megabytes).
+        type: string
+      description: The type of the party identifier. For example, `MSISDN`, `PERSONAL_ID`.
     SubId:
       name: SubId
       in: path
