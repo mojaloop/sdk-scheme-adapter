@@ -13,6 +13,7 @@
 const { hostname } = require('os');
 const EventEmitter = require('events');
 const _ = require('lodash');
+const equal = require('deep-equal');
 const { Logger } = require('@mojaloop/sdk-standard-components');
 const { name, version } = require('../../../package.json');
 
@@ -215,8 +216,10 @@ class Server extends EventEmitter {
 
         this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.inbound, newConf: newConf.inbound }).debug('Inbound server configuration');
         this.logger.isDebugEnabled && this.logger.push({ inboundConfChanged: !_.isEqual(this.conf.inbound, newConf.inbound) }).debug('Inbound server configuration changed');
-        const oldConf = structuredClone(this.conf);
-        const newConfClone = structuredClone(newConf);
+        this.logger.isDebugEnabled && this.logger.push({ inboundConfChanged: !equal(this.conf.inbound, newConf.inbound) }).debug('deep-equal Inbound server configuration changed');
+
+        const oldConf = _.cloneDeep(this.conf);
+        const newConfClone = _.cloneDeep(newConf);
         const updateInboundServer = !_.isEqual(oldConf.inbound, newConfClone.inbound)
             || !_.isEqual(oldConf.outbound, newConfClone.outbound);
         if (updateInboundServer) {
@@ -237,7 +240,7 @@ class Server extends EventEmitter {
 
         this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.outbound, newConf: newConf.outbound }).debug('Outbound server configuration');
         this.logger.isDebugEnabled && this.logger.push({ outboundConfChanged: !_.isEqual(this.conf.outbound, newConf.outbound) }).debug('Outbound server configuration changed');
-        const updateOutboundServer = !_.isEqual(this.conf.outbound, newConf.outbound);
+        const updateOutboundServer = !_.isEqual(oldConf.outbound, newConfClone.outbound);
         if (updateOutboundServer) {
             await this.outboundServer.stop();
             this.outboundServer = new OutboundServer(
