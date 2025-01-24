@@ -13,7 +13,6 @@
 const { hostname } = require('os');
 const EventEmitter = require('events');
 const _ = require('lodash');
-const equal = require('deep-equal');
 const { Logger } = require('@mojaloop/sdk-standard-components');
 const { name, version } = require('../../../package.json');
 
@@ -159,7 +158,7 @@ class Server extends EventEmitter {
         // We only start the client to connect to and listen to the Management API service for
         // management protocol messages e.g configuration changes, certificate updates etc.
         if (this.conf.pm4mlEnabled) {
-            const RESTART_INTERVAL_MS = 15000;
+            const RESTART_INTERVAL_MS = 10000;
             this.controlClient = await ControlAgent.Client.Create({
                 address: this.conf.control.mgmtAPIWsUrl,
                 port: this.conf.control.mgmtAPIWsPort,
@@ -215,9 +214,6 @@ class Server extends EventEmitter {
         }
 
         this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.inbound, newConf: newConf.inbound }).debug('Inbound server configuration');
-        this.logger.isDebugEnabled && this.logger.push({ inboundConfChanged: !_.isEqual(this.conf.inbound, newConf.inbound) }).debug('Inbound server configuration changed');
-        this.logger.isDebugEnabled && this.logger.push({ inboundConfChanged: !equal(this.conf.inbound, newConf.inbound) }).debug('deep-equal Inbound server configuration changed');
-
         const updateInboundServer = !_.isEqual(this.conf.inbound, newConf.inbound)
             || !_.isEqual(this.conf.outbound, newConf.outbound);
         if (updateInboundServer) {
@@ -237,7 +233,6 @@ class Server extends EventEmitter {
         }
 
         this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.outbound, newConf: newConf.outbound }).debug('Outbound server configuration');
-        this.logger.isDebugEnabled && this.logger.push({ outboundConfChanged: !_.isEqual(this.conf.outbound, newConf.outbound) }).debug('Outbound server configuration changed');
         const updateOutboundServer = !_.isEqual(this.conf.outbound, newConf.outbound);
         if (updateOutboundServer) {
             await this.outboundServer.stop();
@@ -273,7 +268,7 @@ class Server extends EventEmitter {
         if (updateControlClient) {
             await this.controlClient?.stop();
             if (this.conf.pm4mlEnabled) {
-                const RESTART_INTERVAL_MS = 15000;
+                const RESTART_INTERVAL_MS = 10000;
                 this.controlClient = await ControlAgent.Client.Create({
                     address: newConf.control.mgmtAPIWsUrl,
                     port: newConf.control.mgmtAPIWsPort,

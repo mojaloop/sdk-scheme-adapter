@@ -1007,17 +1007,6 @@ const createPutFxQuotesHandler = (success) => async (ctx) => {
         type: `fxQuotesResponse${success ? '' : 'Error'}`
     });
 
-    // todo: think, what does it mean in putQuote handler!
-    //
-    //  duplicate publication until legacy code refactored
-    // await QuotesModel.triggerDeferredJob({
-    //     cache: ctx.state.cache,
-    //     message: data,
-    //     args: {
-    //         quoteId
-    //     }
-    // });
-
     ctx.response.status = ReturnCodes.OK.CODE;
 };
 
@@ -1078,17 +1067,6 @@ const createPutFxTransfersHandler = (success) => async (ctx) => {
         data: { body, headers },
         type: `fxTransfersResponse${success ? '' : 'Error'}`
     });
-
-    // todo: think, what does it mean in putTransfer handler!
-    //
-    //  duplicate publication until legacy code refactored
-    // await TransfersModel.triggerDeferredJob({
-    //     cache: ctx.state.cache,
-    //     message: data,
-    //     args: {
-    //         transferId,
-    //     }
-    // });
 
     ctx.response.status = ReturnCodes.OK.CODE;
 };
