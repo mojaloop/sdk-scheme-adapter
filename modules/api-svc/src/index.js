@@ -215,8 +215,10 @@ class Server extends EventEmitter {
 
         this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.inbound, newConf: newConf.inbound }).debug('Inbound server configuration');
         this.logger.isDebugEnabled && this.logger.push({ inboundConfChanged: !_.isEqual(this.conf.inbound, newConf.inbound) }).debug('Inbound server configuration changed');
-        const updateInboundServer = !_.isEqual(this.conf.inbound, newConf.inbound)
-            || !_.isEqual(this.conf.outbound, newConf.outbound);
+        const oldConf = structuredClone(this.conf);
+        const newConfClone = structuredClone(newConf);
+        const updateInboundServer = !_.isEqual(oldConf.inbound, newConfClone.inbound)
+            || !_.isEqual(oldConf.outbound, newConfClone.outbound);
         if (updateInboundServer) {
             await this.inboundServer.stop();
             this.inboundServer = new InboundServer(
