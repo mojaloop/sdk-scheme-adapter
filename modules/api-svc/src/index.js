@@ -218,10 +218,8 @@ class Server extends EventEmitter {
         this.logger.isDebugEnabled && this.logger.push({ inboundConfChanged: !_.isEqual(this.conf.inbound, newConf.inbound) }).debug('Inbound server configuration changed');
         this.logger.isDebugEnabled && this.logger.push({ inboundConfChanged: !equal(this.conf.inbound, newConf.inbound) }).debug('deep-equal Inbound server configuration changed');
 
-        const oldConf = _.cloneDeep(this.conf);
-        const newConfClone = _.cloneDeep(newConf);
-        const updateInboundServer = !_.isEqual(oldConf.inbound, newConfClone.inbound)
-            || !_.isEqual(oldConf.outbound, newConfClone.outbound);
+        const updateInboundServer = !_.isEqual(this.conf.inbound, newConf.inbound)
+            || !_.isEqual(this.conf.outbound, newConf.outbound);
         if (updateInboundServer) {
             await this.inboundServer.stop();
             this.inboundServer = new InboundServer(
@@ -240,7 +238,7 @@ class Server extends EventEmitter {
 
         this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.outbound, newConf: newConf.outbound }).debug('Outbound server configuration');
         this.logger.isDebugEnabled && this.logger.push({ outboundConfChanged: !_.isEqual(this.conf.outbound, newConf.outbound) }).debug('Outbound server configuration changed');
-        const updateOutboundServer = !_.isEqual(oldConf.outbound, newConfClone.outbound);
+        const updateOutboundServer = !_.isEqual(this.conf.outbound, newConf.outbound);
         if (updateOutboundServer) {
             await this.outboundServer.stop();
             this.outboundServer = new OutboundServer(
@@ -319,7 +317,7 @@ class Server extends EventEmitter {
             }
         }
 
-        _.merge(this.conf, newConf);
+        this.conf = newConf;
 
         await Promise.all([
             oldCache?.disconnect(),
