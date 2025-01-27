@@ -11,7 +11,7 @@
 'use strict';
 
 const safeStringify = require('fast-safe-stringify');
-const { uuid } = require('uuidv4');
+const idGenerator = require('@mojaloop/central-services-shared').Util.id;
 const StateMachine = require('javascript-state-machine');
 const { MojaloopRequests, Errors } = require('@mojaloop/sdk-standard-components');
 const { BackendError } = require('./common');
@@ -24,6 +24,7 @@ const { SDKStateEnum } = require('./common');
  */
 class AccountsModel {
     constructor(config) {
+        this._idGenerator = idGenerator(config.idGenerator);
         this._cache = config.cache;
         this._logger = config.logger;
         this._requestProcessingTimeoutSeconds = config.requestProcessingTimeoutSeconds;
@@ -40,6 +41,8 @@ class AccountsModel {
             jwsSign: config.jwsSign,
             jwsSigningKey: config.jwsSigningKey,
             wso2: config.wso2,
+            resourceVersions: config.resourceVersions,
+            apiType: config.apiType
         });
     }
 
@@ -89,7 +92,7 @@ class AccountsModel {
 
         // add a modelId if one is not present e.g. on first submission
         if(!this._data.hasOwnProperty('modelId')) {
-            this._data.modelId = uuid();
+            this._data.modelId = this._idGenerator();
         }
 
         // initialize the transfer state machine to its starting state
@@ -252,7 +255,7 @@ class AccountsModel {
                 req.currency === account.currency && (req.partyList.length < MAX_ITEMS_PER_REQUEST));
             if (!request) {
                 request = {
-                    requestId: uuid(),
+                    requestId: this._idGenerator(),
                     partyList: [],
                     currency: account.currency,
                 };

@@ -1,0 +1,282 @@
+[
+  {
+    "ruleId": 2,
+    "priority": 1,
+    "description": "FXP - post /fxQuotes - fxQuotes response after expiration",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 2,
+      "type": "sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets",
+      "asynchronous": false,
+      "prefix": "/backend",
+      "specFile": "spec_files/api_definitions/sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets_2.1/api_spec.yaml",
+      "callbackMapFile": "spec_files/api_definitions/sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets_2.1/callback_map.json",
+      "responseMapFile": "spec_files/api_definitions/sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets_2.1/response_map.json",
+      "jsfRefFile": "spec_files/api_definitions/sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets_2.1/mockRef.json",
+      "triggerTemplatesFolder": "spec_files/api_definitions/sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets_2.1/trigger_templates"
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "body",
+          "operator": "numericEqual",
+          "value": "408",
+          "path": "conversionTerms.sourceAmount.amount"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/fxQuotes"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "homeTransactionId": "homeTransactionId-123",
+          "conversionTerms": {
+            "conversionId": "{$request.body.conversionTerms.conversionId}",
+            "determiningTransferId": "b51ec534-ee48-4575-b6a9-ead2955b8069",
+            "initiatingFsp": "{$request.body.conversionTerms.initiatingFsp}",
+            "counterPartyFsp": "{$request.body.conversionTerms.counterPartyFsp}",
+            "amountType": "SEND",
+            "sourceAmount": {
+              "currency": "{$request.body.conversionTerms.sourceAmount.currency}",
+              "amount": "408"
+            },
+            "targetAmount": {
+              "currency": "{$request.body.conversionTerms.targetAmount.currency}",
+              "amount": "{$environment.targetAmountValue}"
+            },
+            "expiration": "{$request.body.conversionTerms.expiration}",
+            "charges": [
+              {
+                "chargeType": "string",
+                "sourceAmount": {
+                  "currency": "{$request.body.conversionTerms.sourceAmount.currency}",
+                  "amount": "33"
+                },
+                "targetAmount": {
+                  "currency": "{$request.body.conversionTerms.targetAmount.currency}",
+                  "amount": "6000"
+                }
+              }
+            ]
+          }
+        },
+        "statusCode": "200",
+        "scripts": {
+          "exec": [
+            "const fxQuoteBody = JSON.parse(request.body)",
+            "environment.sourceAmountValue = fxQuoteBody.conversionTerms.sourceAmount.amount || 300",
+            "environment.targetAmountValue = fxQuoteBody.conversionTerms.targetAmount.amount || 48000"
+          ],
+          "scriptingEngine": "javascript"
+        },
+        "delay": 8000
+      },
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 4,
+    "priority": 1,
+    "description": "FXP - post /fxTransfers response - Fx transfer response after expiration",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 2,
+      "type": "sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets",
+      "asynchronous": false,
+      "prefix": "/backend",
+      "specFile": "spec_files/api_definitions/sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets_2.1/api_spec.yaml",
+      "callbackMapFile": "spec_files/api_definitions/sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets_2.1/callback_map.json",
+      "responseMapFile": "spec_files/api_definitions/sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets_2.1/response_map.json",
+      "jsfRefFile": "spec_files/api_definitions/sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets_2.1/mockRef.json",
+      "triggerTemplatesFolder": "spec_files/api_definitions/sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets_2.1/trigger_templates"
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "body",
+          "operator": "numericEqual",
+          "value": "408408",
+          "path": "sourceAmount.amount"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/fxTransfers"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "homeTransactionId": "{$request.body.homeTransactionId}",
+          "completedTimestamp": "{$environment.completedTimestamp}",
+          "conversionState": "RESERVED"
+        },
+        "statusCode": "200",
+        "scripts": {
+          "exec": [
+            "environment.completedTimestamp = new Date().toISOString()"
+          ],
+          "scriptingEngine": "javascript"
+        },
+        "delay": 8000
+      },
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 1,
+    "priority": 2,
+    "description": "FXP - post /fxQuotes ",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 2,
+      "type": "sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets",
+      "asynchronous": false,
+      "prefix": "/backend",
+      "specFile": "spec_files/api_definitions/sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets_2.1/api_spec.yaml",
+      "callbackMapFile": "spec_files/api_definitions/sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets_2.1/callback_map.json",
+      "responseMapFile": "spec_files/api_definitions/sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets_2.1/response_map.json",
+      "jsfRefFile": "spec_files/api_definitions/sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets_2.1/mockRef.json",
+      "triggerTemplatesFolder": "spec_files/api_definitions/sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets_2.1/trigger_templates"
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/fxQuotes"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "homeTransactionId": "homeTransactionId-123",
+          "conversionTerms": {
+            "conversionId": "{$request.body.conversionTerms.conversionId}",
+            "determiningTransferId": "b51ec534-ee48-4575-b6a9-ead2955b8069",
+            "initiatingFsp": "{$request.body.conversionTerms.initiatingFsp}",
+            "counterPartyFsp": "{$request.body.conversionTerms.counterPartyFsp}",
+            "amountType": "SEND",
+            "sourceAmount": {
+              "currency": "{$request.body.conversionTerms.sourceAmount.currency}",
+              "amount": "{$environment.sourceAmountValue}"
+            },
+            "targetAmount": {
+              "currency": "{$request.body.conversionTerms.targetAmount.currency}",
+              "amount": "{$environment.targetAmountValue}"
+            },
+            "expiration": "{$request.body.conversionTerms.expiration}",
+            "charges": [
+              {
+                "chargeType": "string",
+                "sourceAmount": {
+                  "currency": "{$request.body.conversionTerms.sourceAmount.currency}",
+                  "amount": "33"
+                },
+                "targetAmount": {
+                  "currency": "{$request.body.conversionTerms.targetAmount.currency}",
+                  "amount": "6000"
+                }
+              }
+            ]
+          }
+        },
+        "statusCode": "200",
+        "scripts": {
+          "exec": [
+            "const fxQuoteBody = JSON.parse(request.body)",
+            "environment.sourceAmountValue = fxQuoteBody.conversionTerms.sourceAmount.amount || 300",
+            "environment.targetAmountValue = fxQuoteBody.conversionTerms.targetAmount.amount || 48000"
+          ],
+          "scriptingEngine": "javascript"
+        }
+      },
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  },
+  {
+    "ruleId": 3,
+    "priority": 2,
+    "description": "FXP - post /fxTransfers response",
+    "apiVersion": {
+      "minorVersion": 1,
+      "majorVersion": 2,
+      "type": "sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets",
+      "asynchronous": false,
+      "prefix": "/backend",
+      "specFile": "spec_files/api_definitions/sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets_2.1/api_spec.yaml",
+      "callbackMapFile": "spec_files/api_definitions/sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets_2.1/callback_map.json",
+      "responseMapFile": "spec_files/api_definitions/sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets_2.1/response_map.json",
+      "jsfRefFile": "spec_files/api_definitions/sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets_2.1/mockRef.json",
+      "triggerTemplatesFolder": "spec_files/api_definitions/sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets_2.1/trigger_templates"
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/fxTransfers"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "method": null,
+      "path": null,
+      "params": {
+        "body": {
+          "homeTransactionId": "{$request.body.homeTransactionId}",
+          "completedTimestamp": "{$environment.completedTimestamp}",
+          "conversionState": "RESERVED"
+        },
+        "statusCode": "200",
+        "scripts": {
+          "exec": [
+            "environment.completedTimestamp = new Date().toISOString()"
+          ],
+          "scriptingEngine": "javascript"
+        }
+      },
+      "type": "FIXED_RESPONSE"
+    },
+    "type": "response",
+    "version": 1
+  }
+]

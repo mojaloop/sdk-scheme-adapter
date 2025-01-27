@@ -11,7 +11,7 @@
 'use strict';
 
 const safeStringify = require('fast-safe-stringify');
-const { uuid } = require('uuidv4');
+const idGenerator = require('@mojaloop/central-services-shared').Util.id;
 const StateMachine = require('javascript-state-machine');
 const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const shared = require('./lib/shared');
@@ -25,6 +25,7 @@ const { SDKStateEnum } = require('./common');
  */
 class OutboundBulkQuotesModel {
     constructor(config) {
+        this._idGenerator = idGenerator(config.idGenerator);
         this._cache = config.cache;
         this._logger = config.logger;
         this._requestProcessingTimeoutSeconds = config.requestProcessingTimeoutSeconds;
@@ -92,7 +93,7 @@ class OutboundBulkQuotesModel {
 
         // add a bulkQuoteId if one is not present e.g. on first submission
         if(!this.data.hasOwnProperty('bulkQuoteId')) {
-            this.data.bulkQuoteId = uuid();
+            this.data.bulkQuoteId = this._idGenerator();
         }
 
         // initialize the state machine to its starting state
@@ -245,7 +246,7 @@ class OutboundBulkQuotesModel {
         }
 
         bulkQuoteRequest.individualQuotes = this.data.individualQuotes.map((individualQuote) => {
-            const quoteId = individualQuote.quoteId || uuid();
+            const quoteId = individualQuote.quoteId || this._idGenerator();
             const quote = {
                 quoteId: quoteId,
                 transactionId: individualQuote.transactionId || quoteId,

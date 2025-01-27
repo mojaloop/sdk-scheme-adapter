@@ -15,6 +15,27 @@ const createAuthClient = (conf, logger) => {
     });
 };
 
+const transformIsoHeader = (headerValue, headerKey) => {
+    if (headerKey.toLowerCase() === 'content-type' || headerKey.toLowerCase() === 'accept') {
+        return headerValue.replace('.iso20022', '');
+    }
+    return headerValue;
+};
+
+const transformHeadersIsoToFspiop = (isoHeaders) => {
+    const headersToTransform = ['content-type', 'accept'];
+    const fspiopHeaders = {};
+
+    Object.keys(isoHeaders).forEach((key) => {
+        fspiopHeaders[key] = headersToTransform.includes(key.toLowerCase())
+            ? transformIsoHeader(isoHeaders[key], key)
+            : isoHeaders[key];
+    });
+
+    return fspiopHeaders;
+};
+
 module.exports = {
     createAuthClient,
+    transformHeadersIsoToFspiop
 };

@@ -42,8 +42,8 @@
       "partyIdentifier": "123456789"
     }
   },
-  "quoteId": "00000000-0000-1000-8000-000000000002",
-  "transactionId": "00000000-0000-1000-8000-000000000001",
+  "quoteId": "00000000000000000000000002",
+  "transactionId": "00000000000000000000000001",
   "transactionType": {
     "initiator": "PAYER",
     "initiatorType": "CONSUMER",

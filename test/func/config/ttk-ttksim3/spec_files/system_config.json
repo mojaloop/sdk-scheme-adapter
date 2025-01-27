@@ -65,18 +65,11 @@
   },
   "API_DEFINITIONS": [
     {
-      "type": "mojaloop_simulator_inbound",
-      "version": "1.4",
-      "folderPath": "mojaloop_simulator_sim_1.4",
-      "asynchronous": true
-    },
-    {
-      "type": "scheme_adapter_outbound",
-      "version": "1.0",
-      "folderPath": "mojaloop_sdk_outbound_scheme_adapter_1.0",
-      "hostnames": [],
-      "prefix": "/sdk-out",
-      "asynchronous": true
+      "type": "sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets",
+      "version": "2.1",
+      "folderPath": "sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets_2.1",
+      "asynchronous": false,
+      "prefix": "/backend"
     }
   ]
 }
