@@ -9,7 +9,7 @@
         "url": "https://github.com/mojaloop/sdk-scheme-adapter/issues#readme"
     },
     "contributors": [
-        "Shashikant Hirugade <shashikant.hirugade@modusbox.com>"
+        "Shashikant Hirugade <shashikant.hirugade@mojaloop.io>"
     ],
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
