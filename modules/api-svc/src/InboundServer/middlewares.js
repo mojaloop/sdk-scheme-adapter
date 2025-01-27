@@ -8,13 +8,12 @@
  *       James Bush - james.bush@modusbox.com                             *
  **************************************************************************/
 
+const { env } = require('node:process');
 const coBody = require('co-body');
-
-const { Enum } = require('@mojaloop/central-services-shared');
-const { ReturnCodes } = Enum.Http;
-
 const { generateSlug } = require('random-word-slugs');
-const { Jws, Errors } = require('@mojaloop/sdk-standard-components');
+
+const { Jws, Errors, common } = require('@mojaloop/sdk-standard-components');
+const { ReturnCodes } = require('@mojaloop/central-services-shared').Enum.Http;
 const {
     parseAcceptHeader,
     parseContentTypeHeader,
@@ -25,6 +24,14 @@ const {
     defaultProtocolVersions,
     errorMessages
 } = require('@mojaloop/central-services-shared').Util.Hapi.FSPIOPHeaderValidation;
+const { TransformFacades } = require('@mojaloop/ml-schema-transformer-lib');
+
+const { transformHeadersIsoToFspiop } = require('../lib/utils');
+const { API_TYPES } = require('../constants');
+const Config = require('../config');
+
+const INTERNAL_ROUTES = env.LOG_INTERNAL_ROUTES ? env.LOG_INTERNAL_ROUTES.split(',') : ['/health', '/metrics', '/ready'];
+const shouldLog = (path, log) => log.isInfoEnabled && !INTERNAL_ROUTES.includes(path);
 
 /**
  * Log raw to console as a last resort
@@ -41,7 +48,7 @@ const createErrorHandler = (logger) => async (ctx, next) => {
 
 
 /**
- * tag each incoming request with the FSPIOP identifier from it's path or body
+ * tag each incoming request with the FSPIOP identifier from its path or body
  * @return {Function}
  */
 const assignFspiopIdentifier = () => async (ctx, next) => {
@@ -101,7 +108,7 @@ const assignFspiopIdentifier = () => async (ctx, next) => {
             put: () => ctx.state.path.params.ID,
         },
         '/quotes': {
-            post: () => ctx.request.body.quoteId,
+            post: () => ctx.request.body.quoteId || ctx.request.body.CdtTrfTxInf.PmtId.TxId,
         },
         '/quotes/{ID}': {
             put: () => ctx.state.path.params.ID,
@@ -110,7 +117,7 @@ const assignFspiopIdentifier = () => async (ctx, next) => {
             put: () => ctx.state.path.params.ID,
         },
         '/transfers': {
-            post: () => ctx.request.body.transferId,
+            post: () => ctx.request.body.transferId || ctx.request.body.CdtTrfTxInf.PmtId.TxId,
         },
         '/transfers/{ID}': {
             get: () => ctx.state.path.params.ID,
@@ -125,11 +132,43 @@ const assignFspiopIdentifier = () => async (ctx, next) => {
         },
         '/transactionRequests/{ID}': {
             put: () => ctx.state.path.params.ID,
-        }
+        },
+        '/fxQuotes': {
+            post: () => ctx.request.body.conversionRequestId || ctx.request.body.CdtTrfTxInf.PmtId.TxId,
+        },
+        '/fxTransfers': {
+            post: () => ctx.request.body.commitRequestId || ctx.request.body.CdtTrfTxInf.PmtId.TxId,
+        },
     }[ctx.state.path.pattern];
+
     if (getters) {
         const getter = getters[ctx.method.toLowerCase()];
         if (getter) {
+            if (Config.apiType === API_TYPES.iso20022
+            ) {
+                try {
+                    const transformOpts = {
+                        headers: ctx.request.headers,
+                        body: ctx.request.body,
+                        params: ctx.state.path.params
+                    };
+                    const isError = ctx.state.path.pattern.endsWith('error');
+                    const resourceType = ctx.state.path.pattern.split('/')[1];
+                    let fspiopBody = {};
+                    if (ctx.method.toLowerCase() !== 'get' &&
+                        ctx.method.toLowerCase() !== 'delete') {
+                        fspiopBody = (await TransformFacades.FSPIOPISO20022[resourceType][ctx.method.toLowerCase() + (isError ? 'Error' : '')](transformOpts)).body;
+                    }
+                    const fspiopHeaders = transformHeadersIsoToFspiop(ctx.request.headers);
+                    ctx.state.transformedFspiopPayload = {
+                        headers: fspiopHeaders,
+                        body: fspiopBody
+                    };
+                } catch {
+                    // silently fail if the transform fails
+                    ctx.state.logger.isWarnEnabled && ctx.state.logger.push({ resource: ctx.state.path.pattern }).warn('Transform failed');
+                }
+            }
             ctx.state.fspiopId = getter(ctx.request);
         }
     }
@@ -143,10 +182,19 @@ const assignFspiopIdentifier = () => async (ctx, next) => {
  */
 const cacheRequest = (cache) => async (ctx, next) => {
     if (ctx.state.fspiopId) {
-        const req = {
-            headers: ctx.request.headers,
-            data: ctx.request.body,
-        };
+        let req;
+        if (Config.apiType === API_TYPES.iso20022 && ctx.state.transformedFspiopPayload){
+            req = {
+                headers: ctx.state.transformedFspiopPayload.headers || ctx.request.headers,
+                data: ctx.state.transformedFspiopPayload.body || ctx.request.body,
+            };
+        } else {
+            req = {
+                headers: ctx.request.headers,
+                data: ctx.request.body,
+            };
+        }
+
         const prefix = ctx.method.toLowerCase() === 'put' ? cache.CALLBACK_PREFIX : cache.REQUEST_PREFIX;
         const res = await cache.set(`${prefix}${ctx.state.fspiopId}`, req);
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push({ res }).debug('Caching request');
@@ -159,8 +207,17 @@ const cacheRequest = (cache) => async (ctx, next) => {
  * tag each incoming request with a unique identifier
  * @return {Function}
  */
-const createRequestIdGenerator = () => async (ctx, next) => {
+const createRequestIdGenerator = (logger) => async (ctx, next) => {
     ctx.request.id = generateSlug(4);
+    ctx.state.receivedAt = Date.now();
+
+    if (shouldLog(ctx.path, logger)) {
+        const { method, path, id, headers } = ctx.request;
+        logger
+            .push({ method, path, id, headers })
+            .info(`[==> req] ${method?.toUpperCase()} ${path} - requestId: ${id}`);
+    }
+
     await next();
 };
 
@@ -183,12 +240,15 @@ const createHeaderValidator = (conf, logger) => async (
     const request = ctx.request;
 
     // First, extract the resource type from the path
-    const resource = request.path.replace(/^\//, '').split('/')[0];
+    const resource = request.path.replace(/^\//, '').split('/')[conf.multiDfsp ? 1 : 0];
 
     // Only validate requests for the requested resources
     if (!resources.includes(resource)) {
+        logger.info(`skip validation for ${resource}`);
         return await next();
     }
+
+    const apiType = common.defineApiType(resource, conf.apiType);
 
     // Always validate the accept header for a get request, or optionally if it has been
     // supplied
@@ -201,9 +261,10 @@ const createHeaderValidator = (conf, logger) => async (
                 null,
                 Errors.MojaloopApiErrorCodes.MISSING_ELEMENT
             ).toApiErrorObject();
+            logger.error('accept header is missing');
             return;
         }
-        const accept = parseAcceptHeader(resource, request.headers.accept);
+        const accept = parseAcceptHeader(resource, request.headers.accept, apiType);
         if (!accept.valid) {
             ctx.response.status = Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX.httpStatusCode;
             ctx.response.body = new Errors.MojaloopFSPIOPError(
@@ -212,6 +273,7 @@ const createHeaderValidator = (conf, logger) => async (
                 null,
                 Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX
             ).toApiErrorObject();
+            logger.error('accept header is invalid');
             return;
         }
         if (!supportedProtocolVersions.some(supportedVer => accept.versions.has(supportedVer))) {
@@ -223,6 +285,7 @@ const createHeaderValidator = (conf, logger) => async (
                 Errors.MojaloopApiErrorCodes.UNACCEPTABLE_VERSION,
                 protocolVersionsMap
             ).toApiErrorObject();
+            logger.error('accept header has unacceptable version');
             return;
         }
     }
@@ -237,10 +300,11 @@ const createHeaderValidator = (conf, logger) => async (
             Errors.MojaloopApiErrorCodes.MISSING_ELEMENT,
             protocolVersionsMap
         ).toApiErrorObject();
+        logger.error('contentType header is undefined');
         return;
     }
 
-    const contentType = parseContentTypeHeader(resource, request.headers['content-type']);
+    const contentType = parseContentTypeHeader(resource, request.headers['content-type'], apiType);
     if (!contentType.valid) {
         ctx.response.status = Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX.httpStatusCode;
         ctx.response.body = new Errors.MojaloopFSPIOPError(
@@ -249,8 +313,10 @@ const createHeaderValidator = (conf, logger) => async (
             null,
             Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX
         ).toApiErrorObject();
+        logger.error('contentType header is invalid');
         return;
     }
+
     if (!supportedProtocolVersions.includes(contentType.version)) {
         ctx.response.status = Errors.MojaloopApiErrorCodes.UNACCEPTABLE_VERSION.httpStatusCode;
         ctx.response.body = new Errors.MojaloopFSPIOPError(
@@ -260,6 +326,7 @@ const createHeaderValidator = (conf, logger) => async (
             Errors.MojaloopApiErrorCodes.UNACCEPTABLE_VERSION,
             protocolVersionsMap
         ).toApiErrorObject();
+        logger.error('contentType header has unacceptable version');
         return;
     }
 
@@ -268,7 +335,7 @@ const createHeaderValidator = (conf, logger) => async (
     }
     catch(err) {
         // error parsing body
-        logger.isErrorEnabled && logger.push({ err }).error('Error parsing body');
+        logger.push({ err }).error('Error parsing body');
         ctx.response.status = Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX.httpStatusCode;
         ctx.response.body = new Errors.MojaloopFSPIOPError(err, err.message, null,
             Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX).toApiErrorObject();
@@ -313,7 +380,7 @@ const createJwsValidator = (logger, keys, exclusions) => {
 
         }
         catch(err) {
-            logger.isErrorEnabled && logger.push({ err }).error('Inbound request failed JWS validation');
+            logger.push({ err }).error('Inbound request failed JWS validation');
 
             ctx.response.status = ReturnCodes.BADREQUEST.CODE;
             ctx.response.body = new Errors.MojaloopFSPIOPError(
@@ -391,7 +458,7 @@ const createRequestValidator = (validator) => async (ctx, next) => {
         }
         await next();
     } catch (err) {
-        ctx.state.logger.isErrorEnabled && ctx.state.logger.push({ err }).error('Request failed validation.');
+        ctx.state.logger.push({ err }).error('Request failed validation.');
         // send a mojaloop spec error response
         ctx.response.status = err.httpStatusCode || ReturnCodes.BADREQUEST.CODE;
 
@@ -427,6 +494,17 @@ const createResponseBodyHandler = () => async (ctx, next) => {
     return await next();
 };
 
+const createResponseLogging = (logger) => async (ctx, next) => {
+    if (shouldLog(ctx.path, logger)) {
+        const { method, path, id } = ctx.request;
+        const { status = 'n/a' } = ctx.response;
+        const processTime = ((Date.now() - ctx.state.receivedAt) / 1000).toFixed(1);
+        logger.info(`[<== ${status}] ${method?.toUpperCase()} ${path} [${processTime}sec] - requestId: ${id}`);
+    }
+
+    return await next();
+};
+
 
 module.exports = {
     applyState,
@@ -439,4 +517,5 @@ module.exports = {
     createLogger,
     createRequestValidator,
     createResponseBodyHandler,
+    createResponseLogging,
 };

@@ -10,11 +10,17 @@
 
 'use strict';
 
+process.env.PEER_ENDPOINT = '172.17.0.3:4000';
+process.env.BACKEND_ENDPOINT = '172.17.0.5:4000';
+process.env.CACHE_URL = 'redis://172.17.0.2:6379';
+process.env.MGMT_API_WS_URL = '0.0.0.0';
+process.env.SUPPORTED_CURRENCIES='USD';
+
 jest.unmock('@mojaloop/sdk-standard-components');
 jest.mock('redis');
 
 const redis = require('redis');
-const uuidv4 = require('uuidv4');
+const uuid = require('@mojaloop/central-services-shared').Util.id;
 const {createValidators, createTestServers, destroyTestServers} = require('../utils');
 const {createPostTransfersTester, createGetTransfersTester} = require('./utils');
 
@@ -73,7 +79,7 @@ describe('Outbound Transfers API', () => {
 
     describe('POST /transfers', () => {
         beforeEach(() => {
-            uuidv4.__reset();
+            uuid.__reset();
             redisClient.flushdb();
         });
 
@@ -140,15 +146,14 @@ describe('Outbound Transfers API', () => {
                     }),
                 },
             };
-            return testPostTransfers(putBodyFn, 500,
-                postTransfersErrorMojaloopResponse);
+            return testPostTransfers(putBodyFn, 500, postTransfersErrorMojaloopResponse);
         });
     });
 
 
     describe('GET /transfers', () => {
         beforeEach(() => {
-            uuidv4.__reset();
+            uuid.__reset();
             redisClient.flushdb();
         });
 

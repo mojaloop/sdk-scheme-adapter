@@ -10,11 +10,17 @@
 
 'use strict';
 
+process.env.PEER_ENDPOINT = '172.17.0.3:4000';
+process.env.BACKEND_ENDPOINT = '172.17.0.5:4000';
+process.env.CACHE_URL = 'redis://172.17.0.2:6379';
+process.env.MGMT_API_WS_URL = '0.0.0.0';
+process.env.SUPPORTED_CURRENCIES='USD';
+
 jest.unmock('@mojaloop/sdk-standard-components');
 jest.mock('redis');
 
 const redis = require('redis');
-const uuidv4 = require('uuidv4');
+const uuid = require('@mojaloop/central-services-shared').Util.id;
 const {createValidators, createTestServers, destroyTestServers} = require('../utils');
 const {createPostAccountsTester} = require('./utils');
 
@@ -38,10 +44,6 @@ describe('Outbound Accounts API', () => {
         redisClient = redis.createClient(defaultConfig);
     });
 
-    afterAll(async () => {
-        await redisClient.disconnect();
-    });
-
     beforeEach(async () => {
         serversInfo = await createTestServers(defaultConfig);
         testPostAccounts = createPostAccountsTester({
@@ -55,9 +57,13 @@ describe('Outbound Accounts API', () => {
         await destroyTestServers(serversInfo);
     });
 
+    afterAll(async () => {
+        await redisClient.disconnect();
+    });
+
     describe('POST /accounts', () => {
         beforeEach(() => {
-            uuidv4.__reset();
+            uuid.__reset();
             redisClient.flushdb();
         });
 
@@ -68,22 +74,18 @@ describe('Outbound Accounts API', () => {
                 })),
                 currency: body.currency,
             });
-            return testPostAccounts(putBodyFn, 200,
-                postAccountsSuccessResponse);
+            return testPostAccounts(putBodyFn, 200, postAccountsSuccessResponse);
         });
 
-        test(
-            'should return success response with error info on invalid currency (1)',
-            () => {
-                const putBodyFn = (body) => ({
-                    partyList: body.partyList.map(party => ({
-                        partyId: party,
-                    })),
-                    currency: undefined,
-                });
-                return testPostAccounts(putBodyFn, 200,
-                    postAccountsSuccessResponseWithError1);
+        test('should return success response with error info on invalid currency (1)', () => {
+            const putBodyFn = (body) => ({
+                partyList: body.partyList.map(party => ({
+                    partyId: party,
+                })),
+                currency: undefined,
             });
+            return testPostAccounts(putBodyFn, 200, postAccountsSuccessResponseWithError1);
+        });
 
         test(
             'should return success response with error info on errorInformation presence (2)',
@@ -114,6 +116,9 @@ describe('Outbound Accounts API', () => {
                 postAccountsErrorTimeoutResponse);
         });
 
+        // PUT /participants/{ID}/error needs to be higher in api.yaml
+        // than PUT /participants/{Type}/{ID}. Not sure why that is the case
+        // in the test harness atm.
         test('should return mojaloop error response', () => {
             const putBodyFn = () => ({
                 errorInformation: {

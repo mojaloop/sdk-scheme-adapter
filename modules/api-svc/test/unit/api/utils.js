@@ -2,12 +2,12 @@ const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
 const supertest = require('supertest');
-const Validate = require('~/lib/validate');
+const { Logger, WSO2Auth } = require('@mojaloop/sdk-standard-components');
 
+const Validate = require('~/lib/validate');
 const InboundServer = require('~/InboundServer');
 const OutboundServer = require('~/OutboundServer');
 const { MetricsClient } = require('~/lib/metrics');
-const { Logger, WSO2Auth } = require('@mojaloop/sdk-standard-components');
 const Cache = require('~/lib/cache');
 
 const ServerType = {
@@ -23,7 +23,7 @@ const ServerType = {
 const readApiInfo = async (serverType) => {
     let specPath;
     if (serverType === ServerType.Outbound) {
-        specPath = path.join(path.dirname(require.resolve('@mojaloop/api-snippets')), '../docs/sdk-scheme-adapter-outbound-v2_0_0-openapi3-snippets.yaml');
+        specPath = path.join(path.dirname(require.resolve('@mojaloop/api-snippets')), '../docs/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets.yaml');
     } else if (serverType === ServerType.Inbound) {
         specPath = path.join(__dirname, '../../../src/InboundServer/api.yaml');
     }

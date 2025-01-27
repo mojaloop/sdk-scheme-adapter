@@ -52,6 +52,22 @@ paths:
             application/json:
               schema:
                 type: object
+  '/fxQuoteRequests/{ID}':
+    get:
+      description: Test support method. Allows the caller to see the body of a previous request
+      summary: getFxQuoteById
+      tags:
+        - test
+      operationId: getFxQuoteById
+      parameters:
+        - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                type: object
 components:
   parameters:
     ID:

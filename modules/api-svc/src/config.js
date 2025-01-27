@@ -11,8 +11,9 @@
 
 const fs = require('fs');
 require('dotenv').config();
-const { from } = require('env-var');
 const yaml = require('js-yaml');
+const { from } = require('env-var');
+const { API_TYPES, RESOURCE_VERSIONS_STRING } = require('./constants');
 
 function getFileContent (path) {
     if (!fs.existsSync(path)) {
@@ -56,12 +57,20 @@ const env = from(process.env, {
     asResourceVersions: (resourceString) => parseResourceVersions(resourceString),
 });
 
+// ISO-20022 config options
+// apiType can be one of:
+//   - fspiop
+//   - iso20022
+const apiType = env.get('API_TYPE').default(API_TYPES.fspiop).asString();
+const isIsoApi = apiType === API_TYPES.iso20022;
+
 module.exports = {
     __parseResourceVersion: parseResourceVersions,
     control: {
         mgmtAPIWsUrl: env.get('MGMT_API_WS_URL').default('127.0.0.1').asString(),
         mgmtAPIWsPort: env.get('MGMT_API_WS_PORT').default('4005').asPortNumber()
     },
+    idGenerator: env.get('ID_GENERATOR').default('{"type":"ulid"}').asJsonObject(),
     logLevel: env.get('LOG_LEVEL').default('info').asEnum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']),
     inbound: {
         port: env.get('INBOUND_LISTEN_PORT').default('4000').asPortNumber(),
@@ -127,9 +136,14 @@ module.exports = {
     transactionRequestsEndpoint: env.get('TRANSACTION_REQUESTS_ENDPOINT').asString(),
     transfersEndpoint: env.get('TRANSFERS_ENDPOINT').asString(),
     bulkTransfersEndpoint: env.get('BULK_TRANSFERS_ENDPOINT').asString(),
+    fxQuotesEndpoint: env.get('FX_QUOTES_ENDPOINT').asString(),
+    fxTransfersEndpoint: env.get('FX_TRANSFERS_ENDPOINT').asString(),
     backendEndpoint: env.get('BACKEND_ENDPOINT').required().asString(),
 
+    getServicesFxpResponse: env.get('GET_SERVICES_FXP_RESPONSE').default('').asArray(),
+
     dfspId: env.get('DFSP_ID').default('mojaloop').asString(),
+    multiDfsp: env.get('MULTI_DFSP').default('false').asBool(),
     ilpSecret: env.get('ILP_SECRET').default('mojaloop-sdk').asString(),
     checkIlp: env.get('CHECK_ILP').default('true').asBool(),
     expirySeconds: env.get('EXPIRY_SECONDS').default('60').asIntPositive(),
@@ -174,6 +188,7 @@ module.exports = {
             clientKey: env.get('OAUTH_CLIENT_KEY').asString(),
             clientSecret: env.get('OAUTH_CLIENT_SECRET').asString(),
             refreshSeconds: env.get('OAUTH_REFRESH_SECONDS').default('60').asIntPositive(),
+            refreshRetrySeconds: env.get('OAUTH_REFRESH_RETRY_SECONDS').default('10').asIntPositive(),
         },
         mTlsEnabled: env.get('OAUTH_MUTUAL_TLS_ENABLED').default('false').asBool(),
         requestAuthFailureRetryTimes: env.get('WSO2_AUTH_FAILURE_REQUEST_RETRIES').default('0').asIntPositive(),
@@ -185,6 +200,7 @@ module.exports = {
     requestProcessingTimeoutSeconds: env.get('REQUEST_PROCESSING_TIMEOUT_SECONDS').default('30').asIntPositive(),
 
     logIndent: env.get('LOG_INDENT').default('2').asIntPositive(),
+    isJsonOutput:  env.get('LOG_IS_JSON_OUTPUT').default('false').asBool(),
 
     allowTransferWithoutQuote: env.get('ALLOW_TRANSFER_WITHOUT_QUOTE').default('false').asBool(),
 
@@ -199,7 +215,7 @@ module.exports = {
     sendFinalNotificationIfRequested: env.get('SEND_FINAL_NOTIFICATION_IF_REQUESTED').default('false').asBool(),
 
     // resourceVersions config should be string in format: "resourceOneName=1.0,resourceTwoName=1.1"
-    resourceVersions: env.get('RESOURCE_VERSIONS').default('').asResourceVersions(),
+    resourceVersions: env.get('RESOURCE_VERSIONS').default(RESOURCE_VERSIONS_STRING).asResourceVersions(),
 
     metrics: {
         port: env.get('METRICS_SERVER_LISTEN_PORT').default('4004').asPortNumber()
@@ -213,5 +229,20 @@ module.exports = {
     pm4mlEnabled: env.get('PM4ML_ENABLED').default('false').asBool(),
 
     fspiopApiServerMaxRequestBytes: env.get('FSPIOP_API_SERVER_MAX_REQUEST_BYTES').default('209715200').asIntPositive(), // Default is 200mb
-    backendApiServerMaxRequestBytes: env.get('BACKEND_API_SERVER_MAX_REQUEST_BYTES').default('209715200').asIntPositive(), // Default is 200mb
+    backendApiServerMaxRequestBytes: env.get('BACKEND_API_SERVER_MAX_REQUEST_BYTES').default('209715200').asIntPositive(), // Default is 200mb,
+    supportedCurrencies: env.get('SUPPORTED_CURRENCIES').default('').asArray(),
+
+    apiType,
+    isIsoApi,
+    inboundOpenApiFilename: isIsoApi ? 'api_iso20022.yaml' : 'api.yaml',
+
+    // ILP version options
+    // ilpVersion can be one of:
+    //    - 1
+    //    - 4
+    ilpVersion: env.get('ILP_VERSION').default('1').asString(),
+
+    // Redis key ttl when stored in the cache, if value is used as zero it will
+    // persist throughout the session , value used is in seconds
+    redisCacheTtl: env.get('REDIS_CACHE_TTL').default('0').asInt()
 };

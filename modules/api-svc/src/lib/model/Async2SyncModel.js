@@ -235,7 +235,8 @@ function generate({
                         jwsSign: config.jwsSign,
                         jwsSignPutParties: config.jwsSignPutParties,
                         jwsSigningKey: config.jwsSigningKey,
-                        wso2: config.wso2
+                        wso2: config.wso2,
+                        apiType: config.apiType
                     })
                 }
             }

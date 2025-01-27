@@ -5,7 +5,7 @@
     "description": "get /parties/{Type}/{ID}",
     "apiVersion": {
       "minorVersion": 0,
-      "majorVersion": 1,
+      "majorVersion": 2,
       "type": "fspiop",
       "asynchronous": true
     },
@@ -51,7 +51,7 @@
     "description": "get /parties/{Type}/{ID}",
     "apiVersion": {
       "minorVersion": 0,
-      "majorVersion": 1,
+      "majorVersion": 2,
       "type": "fspiop",
       "asynchronous": true
     },
@@ -97,7 +97,7 @@
     "description": "get /parties/{Type}/{ID} for partynotfound",
     "apiVersion": {
       "minorVersion": 0,
-      "majorVersion": 1,
+      "majorVersion": 2,
       "type": "fspiop",
       "asynchronous": true
     },
@@ -137,7 +137,7 @@
     "description": "get /parties/{Type}/{ID} for partynotfound",
     "apiVersion": {
       "minorVersion": 0,
-      "majorVersion": 1,
+      "majorVersion": 2,
       "type": "fspiop",
       "asynchronous": true
     },
@@ -177,7 +177,7 @@
     "description": "put /parties/{Type}/{ID}",
     "apiVersion": {
       "minorVersion": 0,
-      "majorVersion": 1,
+      "majorVersion": 2,
       "type": "fspiop",
       "asynchronous": true
     },
@@ -211,7 +211,7 @@
     "description": "put /parties/{Type}/{ID}/error",
     "apiVersion": {
       "minorVersion": 0,
-      "majorVersion": 1,
+      "majorVersion": 2,
       "type": "fspiop",
       "asynchronous": true
     },
@@ -245,7 +245,7 @@
     "description": "post /bulkQuotes to ttksim2",
     "apiVersion": {
       "minorVersion": 0,
-      "majorVersion": 1,
+      "majorVersion": 2,
       "type": "fspiop",
       "asynchronous": true
     },
@@ -285,7 +285,7 @@
     "description": "post /bulkQuotes to ttksim3",
     "apiVersion": {
       "minorVersion": 0,
-      "majorVersion": 1,
+      "majorVersion": 2,
       "type": "fspiop",
       "asynchronous": true
     },
@@ -325,7 +325,7 @@
     "description": "put /bulkQuotes",
     "apiVersion": {
       "minorVersion": 0,
-      "majorVersion": 1,
+      "majorVersion": 2,
       "type": "fspiop",
       "asynchronous": true
     },
@@ -365,7 +365,7 @@
     "description": "put /bulkQuotes/{ID}/error",
     "apiVersion": {
       "minorVersion": 0,
-      "majorVersion": 1,
+      "majorVersion": 2,
       "type": "fspiop",
       "asynchronous": true
     },
@@ -405,7 +405,7 @@
     "description": "post /bulkTransfers to ttksim2",
     "apiVersion": {
       "minorVersion": 0,
-      "majorVersion": 1,
+      "majorVersion": 2,
       "type": "fspiop",
       "asynchronous": true
     },
@@ -445,7 +445,7 @@
     "description": "post /bulkTransfers to ttksim3",
     "apiVersion": {
       "minorVersion": 0,
-      "majorVersion": 1,
+      "majorVersion": 2,
       "type": "fspiop",
       "asynchronous": true
     },
@@ -485,7 +485,7 @@
     "description": "put /bulkTransfers",
     "apiVersion": {
       "minorVersion": 0,
-      "majorVersion": 1,
+      "majorVersion": 2,
       "type": "fspiop",
       "asynchronous": true
     },
@@ -525,7 +525,7 @@
     "description": "put /bulkTransfers/{ID}/error",
     "apiVersion": {
       "minorVersion": 0,
-      "majorVersion": 1,
+      "majorVersion": 2,
       "type": "fspiop",
       "asynchronous": true
     },
@@ -565,7 +565,7 @@
     "description": "post /quotes to ttksim2",
     "apiVersion": {
       "minorVersion": 0,
-      "majorVersion": 1,
+      "majorVersion": 2,
       "type": "fspiop",
       "asynchronous": true
     },
@@ -605,7 +605,7 @@
     "description": "put /quotes/{ID}",
     "apiVersion": {
       "minorVersion": 0,
-      "majorVersion": 1,
+      "majorVersion": 2,
       "type": "fspiop",
       "asynchronous": true
     },
@@ -645,7 +645,7 @@
     "description": "post /transfers to ttksim2",
     "apiVersion": {
       "minorVersion": 0,
-      "majorVersion": 1,
+      "majorVersion": 2,
       "type": "fspiop",
       "asynchronous": true
     },
@@ -685,7 +685,7 @@
     "description": "put /transfers/{ID}",
     "apiVersion": {
       "minorVersion": 0,
-      "majorVersion": 1,
+      "majorVersion": 2,
       "type": "fspiop",
       "asynchronous": true
     },
@@ -725,7 +725,7 @@
     "description": "post /transactionRequests to ttksim2",
     "apiVersion": {
       "minorVersion": 0,
-      "majorVersion": 1,
+      "majorVersion": 2,
       "type": "fspiop",
       "asynchronous": true
     },
@@ -765,7 +765,7 @@
     "description": "put /transactionRequests/{ID}",
     "apiVersion": {
       "minorVersion": 0,
-      "majorVersion": 1,
+      "majorVersion": 2,
       "type": "fspiop",
       "asynchronous": true
     },
@@ -805,7 +805,7 @@
     "description": "post /transactionrequests",
     "apiVersion": {
       "minorVersion": 4,
-      "majorVersion": 1,
+      "majorVersion": 2,
       "type": "mojaloop_simulator_inbound",
       "specFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/api_spec.yaml",
       "callbackMapFile": "spec_files/api_definitions/mojaloop_simulator_sim_1.4/callback_map.json",
@@ -849,7 +849,7 @@
     "description": "post /quotes to ttksim1",
     "apiVersion": {
       "minorVersion": 0,
-      "majorVersion": 1,
+      "majorVersion": 2,
       "type": "fspiop",
       "asynchronous": true
     },
@@ -889,7 +889,7 @@
     "description": "put /quotes/{ID}",
     "apiVersion": {
       "minorVersion": 0,
-      "majorVersion": 1,
+      "majorVersion": 2,
       "type": "fspiop",
       "asynchronous": true
     },
@@ -929,7 +929,7 @@
     "description": "post /transfers to ttksim1",
     "apiVersion": {
       "minorVersion": 0,
-      "majorVersion": 1,
+      "majorVersion": 2,
       "type": "fspiop",
       "asynchronous": true
     },
@@ -969,7 +969,7 @@
     "description": "put /transfers/{ID}",
     "apiVersion": {
       "minorVersion": 0,
-      "majorVersion": 1,
+      "majorVersion": 2,
       "type": "fspiop",
       "asynchronous": true
     },
@@ -990,6 +990,286 @@
           "fact": "method",
           "operator": "equal",
           "value": "put"
+        }
+      ]
+    },
+    "event": {
+      "params": {
+        "to": "ttksim2",
+        "dfspId": "ttksim2"
+      },
+      "type": "FORWARD"
+    },
+    "type": "forward",
+    "version": 1
+  },
+  {
+    "ruleId": 26,
+    "priority": 1,
+    "description": "post /fxQuotes",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 2,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "headers",
+          "operator": "equal",
+          "value": "ttkfxp",
+          "path": "fspiop-destination"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/fxQuotes"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "params": {
+        "to": "ttkfxp",
+        "dfspId": "ttkfxp"
+      },
+      "type": "FORWARD"
+    },
+    "type": "forward",
+    "version": 1
+  },
+  {
+    "ruleId": 27,
+    "priority": 1,
+    "description": "put /fxQuotes/{ID}",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 2,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "headers",
+          "operator": "equal",
+          "value": "ttksim1",
+          "path": "fspiop-destination"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/fxQuotes/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "put"
+        }
+      ]
+    },
+    "event": {
+      "params": {
+        "to": "ttksim1",
+        "dfspId": "ttksim1"
+      },
+      "type": "FORWARD"
+    },
+    "type": "forward",
+    "version": 1
+  },
+  {
+    "ruleId": 28,
+    "priority": 1,
+    "description": "put /fxQuotes/{ID}/error",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 2,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "headers",
+          "operator": "equal",
+          "value": "ttksim1",
+          "path": "fspiop-destination"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/fxQuotes/{ID}/error"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "put"
+        }
+      ]
+    },
+    "event": {
+      "params": {
+        "to": "ttksim1",
+        "dfspId": "ttksim1"
+      },
+      "type": "FORWARD"
+    },
+    "type": "forward",
+    "version": 1
+  },
+  {
+    "ruleId": 29,
+    "priority": 1,
+    "description": "post /fxTransfers",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 2,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "headers",
+          "operator": "equal",
+          "value": "ttkfxp",
+          "path": "fspiop-destination"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/fxTransfers"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "post"
+        }
+      ]
+    },
+    "event": {
+      "params": {
+        "to": "ttkfxp",
+        "dfspId": "ttkfxp"
+      },
+      "type": "FORWARD"
+    },
+    "type": "forward",
+    "version": 1
+  },
+  {
+    "ruleId": 27,
+    "priority": 1,
+    "description": "put /fxTransfers/{ID}",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 2,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "headers",
+          "operator": "equal",
+          "value": "ttksim1",
+          "path": "fspiop-destination"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/fxTransfers/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "put"
+        }
+      ]
+    },
+    "event": {
+      "params": {
+        "to": "ttksim1",
+        "dfspId": "ttksim1"
+      },
+      "type": "FORWARD"
+    },
+    "type": "forward",
+    "version": 1
+  },
+  {
+    "ruleId": 28,
+    "priority": 1,
+    "description": "put /fxTransfers/{ID}/error",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 2,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "headers",
+          "operator": "equal",
+          "value": "ttksim1",
+          "path": "fspiop-destination"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/fxTransfers/{ID}/error"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "put"
+        }
+      ]
+    },
+    "event": {
+      "params": {
+        "to": "ttksim1",
+        "dfspId": "ttksim1"
+      },
+      "type": "FORWARD"
+    },
+    "type": "forward",
+    "version": 1
+  },
+  {
+    "ruleId": 29,
+    "priority": 1,
+    "description": "get /parties/{Type}/{ID}",
+    "apiVersion": {
+      "minorVersion": 0,
+      "majorVersion": 2,
+      "type": "fspiop",
+      "asynchronous": true
+    },
+    "conditions": {
+      "all": [
+        {
+          "fact": "pathParams",
+          "operator": "equal",
+          "value": "2551234567890",
+          "path": "ID"
+        },
+        {
+          "fact": "operationPath",
+          "operator": "equal",
+          "value": "/parties/{Type}/{ID}"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "get"
         }
       ]
     },

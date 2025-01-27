@@ -13,7 +13,6 @@ const ws = require('ws');
 
 const http = require('http');
 const yaml = require('js-yaml');
-const fs = require('fs').promises;
 const path = require('path');
 
 const Validate = require('../lib/validate');
@@ -22,6 +21,8 @@ const handlers = require('./handlers');
 const middlewares = require('../InboundServer/middlewares');
 
 const logExcludePaths = ['/'];
+const _validator = new Validate({ logExcludePaths });
+let _initialize;
 
 const getWsIp = (req) => [
     req.socket.remoteAddress,
@@ -33,17 +34,18 @@ const getWsIp = (req) => [
 ];
 
 class TestApi {
-    constructor(logger, validator, cache) {
+    constructor(logger, validator, cache, conf) {
         this._api = new Koa();
 
         this._api.use(middlewares.createErrorHandler(logger));
-        this._api.use(middlewares.createRequestIdGenerator());
+        this._api.use(middlewares.createRequestIdGenerator(logger));
         this._api.use(middlewares.applyState({ cache, logExcludePaths }));
         this._api.use(middlewares.createLogger(logger));
 
         this._api.use(middlewares.createRequestValidator(validator));
-        this._api.use(router(handlers));
+        this._api.use(router(handlers, conf));
         this._api.use(middlewares.createResponseBodyHandler());
+        this._api.use(middlewares.createResponseLogging(logger));
     }
 
     callback() {
@@ -173,11 +175,11 @@ class WsServer extends ws.Server {
 }
 
 class TestServer {
-    constructor({ port, logger, cache }) {
+    constructor({ port, logger, cache, config }) {
+        _initialize ||= _validator.initialise(yaml.load(require('fs').readFileSync(path.join(__dirname, 'api.yaml'))), config);
         this._port = port;
         this._logger = logger;
-        this._validator = new Validate({ logExcludePaths });
-        this._api = new TestApi(this._logger.push({ component: 'api' }), this._validator, cache);
+        this._api = new TestApi(this._logger.push({ component: 'api' }), _validator, cache, config);
         this._server = http.createServer(this._api.callback());
         // TODO: why does this appear to need to be called after creating this._server (try reorder
         // it then run the tests)
@@ -188,8 +190,8 @@ class TestServer {
         if (this._server.listening) {
             return;
         }
-        const fileData = await fs.readFile(path.join(__dirname, 'api.yaml'));
-        await this._validator.initialise(yaml.load(fileData));
+
+        await _initialize;
 
         await this._wsapi.start();
 

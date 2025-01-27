@@ -30,7 +30,7 @@ import { BulkBatchState, BulkTransactionState, IndividualTransferState } from '@
 import { IBulkTransactionEntityRepo } from '@module-types';
 
 export class InMemoryBulkTransactionStateRepo implements IBulkTransactionEntityRepo {
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+     
     private _data: any;
 
     private readonly _logger: ILogger;

@@ -34,6 +34,7 @@ describe('config', () => {
         process.env.BACKEND_ENDPOINT = '172.17.0.5:4000';
         process.env.CACHE_URL = 'redis://172.17.0.2:6379';
         process.env.MGMT_API_WS_URL = '0.0.0.0';
+        process.env.SUPPORTED_CURRENCIES = 'USD';
         certDir = fs.mkdtempSync(path.join(os.tmpdir(), 'jest-'));
     });
 
@@ -137,5 +138,21 @@ describe('config', () => {
         createAuthClient(config, {});
         const { tlsCreds } = sdkSC.WSO2Auth.mock.calls[0][0];
         expect(tlsCreds).toBe(false);
+    });
+
+    it('should read api type string ', () => {
+        process.env.API_TYPE = 'iso20022';
+        const config = require('~/config');
+        expect(config.apiType).toBe('iso20022');
+    });
+
+    it('should default api type string to fspiop', () => {
+        const config = require('~/config');
+        expect(config.apiType).toBe('fspiop');
+    });
+
+    it('should have default resources version', () => {
+        const config = require('~/config');
+        expect(config.resourceVersions.parties.acceptVersion).toBe('2');
     });
 });

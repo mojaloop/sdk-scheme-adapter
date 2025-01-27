@@ -51,6 +51,7 @@ class Cache {
         // tag each callback with an Id so we can gracefully unsubscribe and not leak resources
         this._callbackId = 0;
 
+        this.subscribeTimeoutSeconds = config.subscribeTimeoutSeconds ?? 3;
         this._unsubscribeTimeoutMs = config.unsubscribeTimeoutMs;
         this._unsubscribeTimeoutMap = {};
     }
@@ -179,6 +180,45 @@ class Cache {
         return id;
     }
 
+    /**
+     * Subscribes to a channel for some period and always returns resolved promise
+     *
+     * @param {string} channel - The channel name to subscribe to
+     * @param {boolean} [needParse=true] - specify if the message should be parsed before returning
+     *
+     * @returns {Promise} - Promise that resolves with a message or an error
+     */
+    async subscribeToOneMessageWithTimer(channel, needParse = true) {
+        let subId;
+
+        return new Promise((resolve) => {
+            const timer = setTimeout(() => {
+                this.unsubscribeSafely(channel, subId);
+                const errMessage = 'Timeout error in subscribeToOneMessageWithTimer';
+                this._logger.push({ channel, subId }).warn(errMessage);
+                resolve(new Error(errMessage));
+            }, this.subscribeTimeoutSeconds * 1000);
+
+            this.subscribe(channel, (_, message) => {
+                try {
+                    this._logger.push({ channel, message, needParse }).log('subscribeToOneMessageWithTimer is done');
+                    resolve(needParse ? JSON.parse(message) : message);
+                } catch (err) {
+                    this._logger.push({ channel, err }).warn(`error in subscribeToOneMessageWithTimer: ${err.message}`);
+                    resolve(err);
+                } finally {
+                    clearTimeout(timer);
+                    this.unsubscribeSafely(channel, subId);
+                }
+            })
+                .then(id => { subId = id; })
+                .catch(err => {
+                    this._logger.push({ channel, err }).warn(`subscribe error in subscribeToOneMessageWithTimer: ${err.message}`);
+                    resolve(err);
+                });
+        });
+    }
+
 
     /**
       * Unsubscribes a callback from a channel
@@ -226,6 +266,15 @@ class Cache {
             // rejection so it can be spotted. It may indicate a logic bug somewhere else
             this._logger.isErrorEnabled && this._logger.error(`Cache not subscribed to channel ${channel} for callbackId ${callbackId}`);
             throw new Error(`Channel ${channel} does not have a callback with id ${callbackId} subscribed`);
+        }
+    }
+
+    async unsubscribeSafely(channelKey, subId) {
+        if (channelKey && typeof subId === 'number') {
+            return this.unsubscribe(channelKey, subId)
+                .catch(err => {
+                    this._logger.push({ err }).warn(`Unsubscribing cache error [${channelKey} ${subId}]: ${err.stack}`);
+                });
         }
     }
 
@@ -292,14 +341,20 @@ class Cache {
       * Sets a value in the cache
       *
       * @param key {string} - cache key
-      * @param value {stirng} - cache value
+      * @param value {string} - cache value
+      * @param ttl {number} - cache ttl in seconds
       */
-    async set(key, value) {
+    async set(key, value, ttl=0 ) {
         //if we are given an object, turn it into a string
         if(typeof(value) !== 'string') {
             value = JSON.stringify(value);
         }
-        await this._client.set(key, value);
+        // If ttl is positive i.e >0 then set expiry time as ttl in seconds
+        if(ttl > 0)
+            await this._client.set(key, value, { 'EX': ttl });
+        else 
+            await this._client.set(key, value);
+        
     }
 
     /**

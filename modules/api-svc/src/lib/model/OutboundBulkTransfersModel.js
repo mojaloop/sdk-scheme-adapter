@@ -11,7 +11,7 @@
 'use strict';
 
 const safeStringify = require('fast-safe-stringify');
-const { uuid } = require('uuidv4');
+const idGenerator = require('@mojaloop/central-services-shared').Util.id;
 const StateMachine = require('javascript-state-machine');
 const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const { BackendError } = require('./common');
@@ -23,6 +23,7 @@ const { SDKStateEnum } = require('./common');
  */
 class OutboundBulkTransfersModel {
     constructor(config) {
+        this._idGenerator = idGenerator(config.idGenerator);
         this._cache = config.cache;
         this._logger = config.logger;
         this._requestProcessingTimeoutSeconds = config.requestProcessingTimeoutSeconds;
@@ -91,7 +92,7 @@ class OutboundBulkTransfersModel {
 
         // add a bulkTransferId if one is not present e.g. on first submission
         if(!this.data.hasOwnProperty('bulkTransferId')) {
-            this.data.bulkTransferId = uuid();
+            this.data.bulkTransferId = this._idGenerator();
         }
 
         // initialize the bulk transfer state machine to its starting state
@@ -247,7 +248,7 @@ class OutboundBulkTransfersModel {
         bulkTransferRequest.individualTransfers = this.data.individualTransfers.map((individualTransfer) => {
             if (bulkTransferRequest.payeeFsp !== individualTransfer.to.fspId) throw new BackendError('payee fsps are not the same into the whole bulk', 500);
 
-            const transferId = individualTransfer.transferId || uuid();
+            const transferId = individualTransfer.transferId || this._idGenerator();
 
             const transferPrepare = {
                 transferId: transferId,

@@ -1,7 +1,6 @@
-const nock = require('nock');
 const OpenAPIResponseValidator = require('openapi-response-validator').default;
 
-const defaultConfig = require('../../data/defaultConfig');
+const { mockAxios, jsonContentTypeHeader} = require('../../../helpers');
 const postAccountsBody = require('./data/postAccountsBody');
 
 /**
@@ -22,8 +21,6 @@ function createPostAccountsTester({ reqInbound, reqOutbound, apiSpecsOutbound })
      */
     return async (putBodyFn, responseCode, responseBody) => {
         let pendingRequest = Promise.resolve();
-        const endpoint = new URL(`http://${defaultConfig.alsEndpoint}`).host;
-        const switchEndpoint = `http://${endpoint}`;
 
         const sendPutParticipants = async (requestBody) => {
             const body = JSON.parse(requestBody);
@@ -41,11 +38,11 @@ function createPostAccountsTester({ reqInbound, reqOutbound, apiSpecsOutbound })
                 .expect(200);
         };
 
-        await nock(switchEndpoint)
-            .post('/participants')
-            .reply(202, (_, requestBody) => {
-                pendingRequest = sendPutParticipants(requestBody).then();
-            });
+        mockAxios.reset();
+        mockAxios.onPost('/participants').reply((reqConfig) => {
+            pendingRequest = sendPutParticipants(reqConfig.data);
+            return [202, null, jsonContentTypeHeader];
+        });
 
         const res = await reqOutbound.post('/accounts').send(postAccountsBody);
         const {body} = res;

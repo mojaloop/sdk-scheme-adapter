@@ -14,15 +14,16 @@ const { hostname } = require('os');
 const EventEmitter = require('events');
 const _ = require('lodash');
 const { Logger } = require('@mojaloop/sdk-standard-components');
-const config = require('./config');
+const { name, version } = require('../../../package.json');
 
+const config = require('./config');
 const InboundServer = require('./InboundServer');
 const OutboundServer = require('./OutboundServer');
 const OAuthTestServer = require('./OAuthTestServer');
 const { BackendEventHandler } = require('./BackendEventHandler');
 const { FSPIOPEventHandler } = require('./FSPIOPEventHandler');
-const TestServer = require('./TestServer');
 const { MetricsServer, MetricsClient } = require('./lib/metrics');
+const TestServer = require('./TestServer');
 const ControlAgent = require('./ControlAgent');
 
 // import things we want to expose e.g. for unit tests and users who dont want to use the entire
@@ -34,6 +35,7 @@ const Validate = require('./lib/validate');
 const Cache = require('./lib/cache');
 const { SDKStateEnum } = require('./lib/model/common');
 const { createAuthClient } = require('./lib/utils');
+const { SDK_LOGGER_HIERARCHY } = require('./constants');
 
 const LOG_ID = {
     INBOUND:   { app: 'mojaloop-connector-inbound-api' },
@@ -46,7 +48,26 @@ const LOG_ID = {
     METRICS:   { app: 'mojaloop-connector-metrics' },
     CACHE:     { component: 'cache' },
 };
-const SDK_LOGGER_HIERARCHY = ['verbose', 'trace', 'debug', 'info', 'warn', 'error', 'fatal'];
+
+const createLogger = (conf) => new Logger.Logger({
+    context: {
+        // If we're running from a Mojaloop helm chart deployment, we'll have a SIM_NAME
+        simulator: process.env['SIM_NAME'],
+        hostname: hostname(),
+    },
+    opts: {
+        levels: SDK_LOGGER_HIERARCHY.slice(SDK_LOGGER_HIERARCHY.indexOf(conf.logLevel)),
+        isJsonOutput: conf.isJsonOutput,
+    },
+    stringify: Logger.buildStringify({ isJsonOutput: conf.isJsonOutput }),
+});
+
+const createCache = (config, logger) => new Cache({
+    cacheUrl: config.cacheUrl,
+    logger: logger.push(LOG_ID.CACHE),
+    enableTestFeatures: config.enableTestFeatures,
+    subscribeTimeoutSeconds:  config.requestProcessingTimeoutSeconds,
+});
 
 /**
  * Class that creates and manages http servers that expose the scheme adapter APIs.
@@ -56,12 +77,7 @@ class Server extends EventEmitter {
         super({ captureExceptions: true });
         this.conf = conf;
         this.logger = logger;
-        this.cache = new Cache({
-            cacheUrl: conf.cacheUrl,
-            logger: this.logger.push(LOG_ID.CACHE),
-            enableTestFeatures: conf.enableTestFeatures,
-            unsubscribeTimeoutMs: conf.unsubscribeTimeoutMs,
-        });
+        this.cache = createCache(conf, logger);
 
         this.metricsClient = new MetricsClient();
 
@@ -109,6 +125,7 @@ class Server extends EventEmitter {
 
         if (this.conf.enableTestFeatures) {
             this.testServer = new TestServer({
+                config: this.conf,
                 port: this.conf.test.port,
                 logger: this.logger.push(LOG_ID.TEST),
                 cache: this.cache,
@@ -139,7 +156,7 @@ class Server extends EventEmitter {
         // We only start the control client if we're running within Mojaloop Payment Manager.
         // The control server is the Payment Manager Management API Service.
         // We only start the client to connect to and listen to the Management API service for
-        // management protocol messages e.g configuration changes, certicate updates etc.
+        // management protocol messages e.g configuration changes, certificate updates etc.
         if (this.conf.pm4mlEnabled) {
             const RESTART_INTERVAL_MS = 10000;
             this.controlClient = await ControlAgent.Client.Create({
@@ -149,7 +166,12 @@ class Server extends EventEmitter {
                 appConfig: this.conf,
             });
             this.controlClient.on(ControlAgent.EVENT.RECONFIGURE, this.restart.bind(this));
-            this.controlClient.on('close', () => setTimeout(() => this.restart(_.merge({}, this.conf, { control: { stopped: Date.now() } })), RESTART_INTERVAL_MS));
+            this.controlClient.on('close', () => setTimeout(() => {
+                this.logger.push({ currentConf: this.conf }).debug('Control client closed. Restarting server...');
+                this.restart(_.merge({}, this.conf, {
+                    control: { stopped: Date.now() }
+                }));
+            }, RESTART_INTERVAL_MS));
         }
 
         await Promise.all([
@@ -164,17 +186,10 @@ class Server extends EventEmitter {
     }
 
     async restart(newConf) {
-        const updateLogger = !_.isEqual(newConf.logIndent, this.conf.logIndent);
+        this.logger.isDebugEnabled && this.logger.debug('Server is restarting...');
+        const updateLogger = !_.isEqual(newConf.isJsonOutput, this.conf.isJsonOutput);
         if (updateLogger) {
-            this.logger = new Logger.Logger({
-                context: {
-                    // If we're running from a Mojaloop helm chart deployment, we'll have a SIM_NAME
-                    simulator: process.env['SIM_NAME'],
-                    hostname: hostname(),
-                },
-                opts: {levels: SDK_LOGGER_HIERARCHY.slice(SDK_LOGGER_HIERARCHY.indexOf(config.logLevel))},
-                stringify: Logger.buildStringify({ space: this.conf.logIndent }),
-            });
+            this.logger = createLogger(newConf);
         }
 
         let oldCache;
@@ -183,12 +198,7 @@ class Server extends EventEmitter {
         if (updateCache) {
             oldCache = this.cache;
             await this.cache.disconnect();
-            this.cache = new Cache({
-                cacheUrl: newConf.cacheUrl,
-                logger: this.logger.push(LOG_ID.CACHE),
-                enableTestFeatures: newConf.enableTestFeatures,
-                unsubscribeTimeoutMs: newConf.unsubscribeTimeoutMs,
-            });
+            this.cache = createCache(newConf, this.logger);
             await this.cache.connect();
         }
 
@@ -203,6 +213,7 @@ class Server extends EventEmitter {
             await this.wso2.auth.start();
         }
 
+        this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.inbound, newConf: newConf.inbound }).debug('Inbound server configuration');
         const updateInboundServer = !_.isEqual(this.conf.inbound, newConf.inbound)
             || !_.isEqual(this.conf.outbound, newConf.outbound);
         if (updateInboundServer) {
@@ -214,12 +225,14 @@ class Server extends EventEmitter {
                 this.wso2,
             );
             this.inboundServer.on('error', (...args) => {
-                this.logger.isErrorEnabled && this.logger.push({ args }).error('Unhandled error in Inbound Server');
-                this.emit('error', 'Unhandled error in Inbound Server');
+                const errMessage = 'Unhandled error in Inbound Server';
+                this.logger.push({ args }).log(errMessage);
+                this.emit('error', errMessage);
             });
             await this.inboundServer.start();
         }
 
+        this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.outbound, newConf: newConf.outbound }).debug('Outbound server configuration');
         const updateOutboundServer = !_.isEqual(this.conf.outbound, newConf.outbound);
         if (updateOutboundServer) {
             await this.outboundServer.stop();
@@ -231,8 +244,9 @@ class Server extends EventEmitter {
                 this.wso2,
             );
             this.outboundServer.on('error', (...args) => {
-                this.logger.isErrorEnabled && this.logger.push({ args }).error('Unhandled error in Outbound Server');
-                this.emit('error', 'Unhandled error in Outbound Server');
+                const errMessage = 'Unhandled error in Outbound Server';
+                this.logger.push({ args }).log(errMessage);
+                this.emit('error', errMessage);
             });
             await this.outboundServer.start();
         }
@@ -262,7 +276,12 @@ class Server extends EventEmitter {
                     appConfig: newConf,
                 });
                 this.controlClient.on(ControlAgent.EVENT.RECONFIGURE, this.restart.bind(this));
-                this.controlClient.on('close', () => setTimeout(() => this.restart(_.merge({}, newConf, { control: { stopped: Date.now() } })), RESTART_INTERVAL_MS));
+                this.controlClient.on('close', () => setTimeout(() => {
+                    this.logger.push({ newConf }).debug('Control client closed. Restarting server...');
+                    this.restart(_.merge({}, newConf, {
+                        control: { stopped: Date.now() }
+                    }));
+                }, RESTART_INTERVAL_MS));
             }
         }
 
@@ -298,6 +317,7 @@ class Server extends EventEmitter {
         await Promise.all([
             oldCache?.disconnect(),
         ]);
+        this.logger.isDebugEnabled && this.logger.debug('Server is restarted');
     }
 
     stop() {
@@ -330,49 +350,46 @@ async function _GetUpdatedConfigFromMgmtAPI(conf, logger, client) {
     return responseRead.data;
 }
 
-if(require.main === module) {
-    (async () => {
-        // this module is main i.e. we were started as a server;
-        // not used in unit test or "require" scenarios
-        const logger = new Logger.Logger({
-            context: {
-                // If we're running from a Mojaloop helm chart deployment, we'll have a SIM_NAME
-                simulator: process.env['SIM_NAME'],
-                hostname: hostname(),
-            },
-            opts: {levels: SDK_LOGGER_HIERARCHY.slice(SDK_LOGGER_HIERARCHY.indexOf(config.logLevel))},
-            stringify: Logger.buildStringify({ space: config.logIndent }),
-        });
-        if(config.pm4mlEnabled) {
-            const controlClient = await ControlAgent.Client.Create({
-                address: config.control.mgmtAPIWsUrl,
-                port: config.control.mgmtAPIWsPort,
-                logger: logger,
-                appConfig: config,
-            });
-            const updatedConfigFromMgmtAPI = await _GetUpdatedConfigFromMgmtAPI(config, logger, controlClient);
-            logger.isInfoEnabled && logger.info(`updatedConfigFromMgmtAPI: ${JSON.stringify(updatedConfigFromMgmtAPI)}`);
-            _.merge(config, updatedConfigFromMgmtAPI);
-            controlClient.terminate();
-        }
-        const svr = new Server(config, logger);
-        svr.on('error', (err) => {
-            logger.isErrorEnabled && logger.push({ err }).error('Unhandled server error');
-            process.exit(1);
-        });
+async function start(config) {
+    const logger = createLogger(config);
 
-        // handle SIGTERM to exit gracefully
-        process.on('SIGTERM', async () => {
-            logger.isInfoEnabled && logger.info('SIGTERM received. Shutting down APIs...');
-            await svr.stop();
-            process.exit(0);
+    if (config.pm4mlEnabled) {
+        const controlClient = await ControlAgent.Client.Create({
+            address: config.control.mgmtAPIWsUrl,
+            port: config.control.mgmtAPIWsPort,
+            logger: logger,
+            appConfig: config,
         });
+        const updatedConfigFromMgmtAPI = await _GetUpdatedConfigFromMgmtAPI(config, logger, controlClient);
+        logger.isInfoEnabled && logger.push({ updatedConfigFromMgmtAPI }).info('updatedConfigFromMgmtAPI:');
+        _.merge(config, updatedConfigFromMgmtAPI);
+        controlClient.terminate();
+    }
+    const svr = new Server(config, logger);
+    svr.on('error', (err) => {
+        logger.push({ err }).error('Unhandled server error');
+        process.exit(2);
+    });
 
-        svr.start().catch(err => {
-            logger.isErrorEnabled && logger.push({ err }).error('Error starting server');
-            process.exit(1);
-        });
-    })();
+    // handle SIGTERM to exit gracefully
+    process.on('SIGTERM', async () => {
+        logger.isInfoEnabled && logger.info('SIGTERM received. Shutting down APIs...');
+        await svr.stop();
+        process.exit(0);
+    });
+
+    await svr.start().catch(err => {
+        logger.push({ err }).error('Error starting server');
+        process.exit(1);
+    });
+
+    logger.isInfoEnabled && logger.push({ name, version }).info('SDK server is started!');
+}
+
+if (require.main === module) {
+    // this module is main i.e. we were started as a server;
+    // not used in unit test or "require" scenarios
+    start(config);
 }
 
 
@@ -387,4 +404,6 @@ module.exports = {
     Server,
     Validate,
     SDKStateEnum,
+    start,
+    config,
 };
