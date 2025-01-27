@@ -1,4 +1,24 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [24.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.5.1...v24.0.0) (2025-01-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* add iso 20022 compatibility (#527)
+
+### Features
+
+* add iso 20022 compatibility ([#527](https://github.com/mojaloop/sdk-scheme-adapter/issues/527)) ([3665d58](https://github.com/mojaloop/sdk-scheme-adapter/commit/3665d5841a3f6a67ca95d3bc43f2e673133f7261)), closes [#458](https://github.com/mojaloop/sdk-scheme-adapter/issues/458)
+
+
+### Chore
+
+* **deps:** bump @babel/traverse from 7.20.1 to 7.24.1 ([#475](https://github.com/mojaloop/sdk-scheme-adapter/issues/475)) ([35b17c8](https://github.com/mojaloop/sdk-scheme-adapter/commit/35b17c8f825411c3f70b7fe5282cd9fae40feb93))
+* **deps:** bump ip from 2.0.0 to 2.0.1 ([#478](https://github.com/mojaloop/sdk-scheme-adapter/issues/478)) ([bcffbb9](https://github.com/mojaloop/sdk-scheme-adapter/commit/bcffbb946bd7651a58a8f4b13689abce8a7df8f9))
+* **deps:** bump tar from 6.1.12 to 6.2.1 ([#479](https://github.com/mojaloop/sdk-scheme-adapter/issues/479)) ([5540e2b](https://github.com/mojaloop/sdk-scheme-adapter/commit/5540e2beb6cb0b6d0260a2bf9e8f28dfab4a02bc))
+* **deps:** bump undici from 5.28.3 to 5.28.4 ([#474](https://github.com/mojaloop/sdk-scheme-adapter/issues/474)) ([631ca31](https://github.com/mojaloop/sdk-scheme-adapter/commit/631ca311bc25faf3d26e2f590bcc83abeb444faf))
+* **moja-tools-bot:** update license md file ([#501](https://github.com/mojaloop/sdk-scheme-adapter/issues/501)) ([82e4ecb](https://github.com/mojaloop/sdk-scheme-adapter/commit/82e4ecb4eda82be8c0a435914577c1d1ad33d497))
+
 ### [23.5.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.5.0...v23.5.1) (2024-03-19)
 
 
