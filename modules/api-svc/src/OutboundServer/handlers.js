@@ -1,19 +1,35 @@
-/**************************************************************************
- *  (C) Copyright ModusBox Inc. 2019 - All rights reserved.               *
- *                                                                        *
- *  This file is made available under the terms of the license agreement  *
- *  specified in the corresponding source code repository.                *
- *                                                                        *
- *  ORIGINAL AUTHOR:                                                      *
- *       James Bush - james.bush@modusbox.com                             *
- *  CONTRIBUTORS:                                                         *
- *       Steven Oderayi - steven.oderayi@modusbox.com                     *
- **************************************************************************/
+/*****
+ License
+ --------------
+ Copyright © 2020-2025 Mojaloop Foundation
+ The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
 
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+ Contributors
+ --------------
+ This is the official list of the Mojaloop project contributors for this file.
+ Names of the original copyright holders (individuals or organizations)
+ should be listed with a '*' in the first column. People who have
+ contributed from an organization can be listed under the organization
+ that actually holds the copyright for their contributions (see the
+ Mojaloop Foundation for an example). Those individuals should have
+ their names indented and be marked with a '-'. Email address can be added
+ optionally within square brackets <email>.
+
+ * Mojaloop Foundation
+ - James Bush <jbush@mojaloop.io>
+
+ * Infitx
+ - Steven Oderayi <steven.oderayi@infitx.com>
+
+ --------------
+ ******/
 'use strict';
 
-
-const util = require('util');
+const safeStringify = require('fast-safe-stringify');
 const {
     AccountsModel,
     OutboundTransfersModel,
@@ -38,7 +54,7 @@ const { ReturnCodes } = Enum.Http;
  * Error handling logic shared by outbound API handlers
  */
 const handleError = (method, err, ctx, stateField) => {
-    ctx.state.logger.log(`Error handling ${method}: ${util.inspect(err)}`);
+    ctx.state.logger.isErrorEnabled && ctx.state.logger.error(`Error handling ${method}: ${safeStringify(err)}`);
     ctx.response.status = err.httpStatusCode || ReturnCodes.INTERNALSERVERERRROR.CODE;
     ctx.response.body = {
         message: err.message || 'Unspecified error',
@@ -106,6 +122,16 @@ const handleRequestQuotesInformationError = (method, err, ctx) =>
 const handleRequestSimpleTransfersInformationError = (method, err, ctx) =>
     handleError(method, err, ctx, 'requestSimpleTransfersInformationState');
 
+
+const createOutboundTransfersModel = (ctx) => new OutboundTransfersModel({
+    ...ctx.state.conf,
+    ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
+    cache: ctx.state.cache,
+    logger: ctx.state.logger,
+    wso2: ctx.state.wso2,
+    metricsClient: ctx.state.metricsClient,
+});
+
 /**
  * Handler for outbound transfer request initiation
  */
@@ -117,13 +143,7 @@ const postTransfers = async (ctx) => {
         };
 
         // use the transfers model to execute asynchronous stages with the switch
-        const model = new OutboundTransfersModel({
-            ...ctx.state.conf,
-            cache: ctx.state.cache,
-            logger: ctx.state.logger,
-            wso2: ctx.state.wso2,
-            metricsClient: ctx.state.metricsClient,
-        });
+        const model = createOutboundTransfersModel(ctx);
 
         // initialize the transfer model and start it running
         await model.initialize(transferRequest);
@@ -150,13 +170,7 @@ const getTransfers = async (ctx) => {
         };
 
         // use the transfers model to execute asynchronous stages with the switch
-        const model = new OutboundTransfersModel({
-            ...ctx.state.conf,
-            cache: ctx.state.cache,
-            logger: ctx.state.logger,
-            wso2: ctx.state.wso2,
-            metricsClient: ctx.state.metricsClient,
-        });
+        const model = createOutboundTransfersModel(ctx);
 
         // initialize the transfer model and start it running
         await model.initialize(transferRequest);
@@ -179,13 +193,7 @@ const putTransfers = async (ctx) => {
     try {
         // this requires a multi-stage sequence with the switch.
         // use the transfers model to execute asynchronous stages with the switch
-        const model = new OutboundTransfersModel({
-            ...ctx.state.conf,
-            cache: ctx.state.cache,
-            logger: ctx.state.logger,
-            wso2: ctx.state.wso2,
-            metricsClient: ctx.state.metricsClient,
-        });
+        const model = createOutboundTransfersModel(ctx);
 
         // TODO: check the incoming body to reject party or quote when requested to do so
 
@@ -216,6 +224,7 @@ const postBulkTransfers = async (ctx) => {
         // use the bulk transfers model to execute asynchronous stages with the switch
         const model = new OutboundBulkTransfersModel({
             ...ctx.state.conf,
+            ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2: ctx.state.wso2,
@@ -247,6 +256,7 @@ const getBulkTransfers = async (ctx) => {
         // use the bulk transfers model to execute asynchronous stages with the switch
         const model = new OutboundBulkTransfersModel({
             ...ctx.state.conf,
+            ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2: ctx.state.wso2,
@@ -331,6 +341,7 @@ const postBulkQuotes = async (ctx) => {
         // use the bulk quotes model to execute asynchronous request with the switch
         const model = new OutboundBulkQuotesModel({
             ...ctx.state.conf,
+            ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2: ctx.state.wso2,
@@ -362,6 +373,7 @@ const getBulkQuoteById = async (ctx) => {
         // use the bulk quotes model to execute asynchronous stages with the switch
         const model = new OutboundBulkQuotesModel({
             ...ctx.state.conf,
+            ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2: ctx.state.wso2,
@@ -392,6 +404,7 @@ const postRequestToPayTransfer = async (ctx) => {
         // use the merchant transfers model to execute asynchronous stages with the switch
         const model = new OutboundRequestToPayTransferModel({
             ...ctx.state.conf,
+            ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2: ctx.state.wso2,
@@ -419,6 +432,7 @@ const putRequestToPayTransfer = async (ctx) => {
         // use the transfers model to execute asynchronous stages with the switch
         const model = new OutboundRequestToPayTransferModel({
             ...ctx.state.conf,
+            ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2: ctx.state.wso2,
@@ -427,7 +441,7 @@ const putRequestToPayTransfer = async (ctx) => {
         // TODO: check the incoming body to reject party or quote when requested to do so
         const data = ctx.request.body;
         // load the transfer model from cache and start it running again
-        await model.load(ctx.state.path.params.requestToPayTransactionId);
+        await model.load(ctx.state.path.params.transactionRequestId);
         let response;
         if(data.acceptQuote === true || data.acceptOTP === true) {
             response = await model.run();
@@ -452,6 +466,7 @@ const postAccounts = async (ctx) => {
     try {
         const model = new AccountsModel({
             ...ctx.state.conf,
+            ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2: ctx.state.wso2,
@@ -484,6 +499,7 @@ const postRequestToPay = async (ctx) => {
         // use the transfers model to execute asynchronous stages with the switch
         const model = new OutboundRequestToPayModel({
             ...ctx.state.conf,
+            ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2: ctx.state.wso2,
@@ -499,6 +515,42 @@ const postRequestToPay = async (ctx) => {
 
     } catch(err) {
         return handleRequestToPayError('requestToPayInboundRequest', err, ctx);
+    }
+};
+
+/**
+ * Handler for resuming outbound requestToPay in scenarios where two-step transfers are enabled
+ * by disabling the autoAcceptParty SDK option
+ */
+const putRequestToPay = async (ctx) => {
+    try {
+        // this requires a multi-stage sequence with the switch.
+        // use the transfers model to execute asynchronous stages with the switch
+        const model = new OutboundRequestToPayModel({
+            ...ctx.state.conf,
+            ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            wso2: ctx.state.wso2,
+        });
+
+        // TODO: check the incoming body to reject party or quote when requested to do so
+        const data = ctx.request.body;
+        // load the transfer model from cache and start it running again
+        await model.load(ctx.state.path.params.transactionRequestId);
+        let response;
+        if(data.acceptParty === true) {
+            response = await model.run();
+        } else {
+            response = await model.rejectRequestToPay();
+        }
+
+        // return the result
+        ctx.response.status = ReturnCodes.OK.CODE;
+        ctx.response.body = response;
+    }
+    catch(err) {
+        return handleTransferError('putRequestToPay', err, ctx);
     }
 };
 
@@ -518,9 +570,10 @@ const getPartiesByTypeAndId = async (ctx) => {
         // prepare config
         const modelConfig = {
             ...ctx.state.conf,
+            ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            wso2Auth: ctx.state.wso2Auth,
+            wso2: ctx.state.wso2,
         };
 
         const cacheKey = PartiesModel.generateKey(args);
@@ -552,9 +605,10 @@ const postQuotes = async (ctx) => {
         // prepare config
         const modelConfig = {
             ...ctx.state.conf,
+            ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            wso2Auth: ctx.state.wso2Auth,
+            wso2: ctx.state.wso2,
         };
 
         const cacheKey = QuotesModel.generateKey(args);
@@ -582,9 +636,10 @@ const postSimpleTransfers = async (ctx) => {
         // prepare config
         const modelConfig = {
             ...ctx.state.conf,
+            ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            wso2Auth: ctx.state.wso2Auth,
+            wso2: ctx.state.wso2,
         };
 
         const cacheKey = TransfersModel.generateKey(args);
@@ -637,10 +692,13 @@ module.exports = {
     '/requestToPay': {
         post: postRequestToPay
     },
+    '/requestToPay/{transactionRequestId}': {
+        put: putRequestToPay
+    },
     '/requestToPayTransfer': {
         post: postRequestToPayTransfer
     },
-    '/requestToPayTransfer/{requestToPayTransactionId}': {
+    '/requestToPayTransfer/{transactionRequestId}': {
         put: putRequestToPayTransfer
     },
     '/parties/{Type}/{ID}': {

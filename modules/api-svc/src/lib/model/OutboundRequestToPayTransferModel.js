@@ -1,30 +1,47 @@
-/**************************************************************************
- *  (C) Copyright ModusBox Inc. 2019 - All rights reserved.               *
- *                                                                        *
- *  This file is made available under the terms of the license agreement  *
- *  specified in the corresponding source code repository.                *
- *                                                                        *
- *  ORIGINAL AUTHOR:                                                      *
- *       James Bush - james.bush@modusbox.com                             *
- **************************************************************************/
+/*****
+ License
+ --------------
+ Copyright © 2020-2025 Mojaloop Foundation
+ The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
 
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+ Contributors
+ --------------
+ This is the official list of the Mojaloop project contributors for this file.
+ Names of the original copyright holders (individuals or organizations)
+ should be listed with a '*' in the first column. People who have
+ contributed from an organization can be listed under the organization
+ that actually holds the copyright for their contributions (see the
+ Mojaloop Foundation for an example). Those individuals should have
+ their names indented and be marked with a '-'. Email address can be added
+ optionally within square brackets <email>.
+
+ * Mojaloop Foundation
+ - James Bush <jbush@mojaloop.io>
+
+ --------------
+ ******/
 'use strict';
 
-const util = require('util');
-const { uuid } = require('uuidv4');
+const safeStringify = require('fast-safe-stringify');
+const idGenerator = require('@mojaloop/central-services-shared').Util.id;
 const StateMachine = require('javascript-state-machine');
 const { Ilp, MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const shared = require('./lib/shared');
 const { BackendError } = require('./common');
 const PartiesModel = require('./PartiesModel');
 
-const { SDKStateEnum } = require('./common');
+const { SDKStateEnum, TransactionRequestStateEnum } = require('./common');
 
 /**
  *  Models the state machine and operations required for performing an outbound transfer
  */
 class OutboundRequestToPayTransferModel {
     constructor(config) {
+        this._idGenerator = idGenerator(config.idGenerator);
         this._cache = config.cache;
         this._logger = config.logger;
         this._requestProcessingTimeoutSeconds = config.requestProcessingTimeoutSeconds;
@@ -34,7 +51,6 @@ class OutboundRequestToPayTransferModel {
         this._rejectExpiredTransferFulfils = config.rejectExpiredTransferFulfils;
         this._autoAcceptQuotes = config.autoAcceptQuotes;
         this._autoAcceptR2PBusinessQuotes = config.autoAcceptR2PBusinessQuotes;
-        this._autoAcceptR2PDeviceQuotes = config.autoAcceptR2PDeviceQuotes;
         this._autoAcceptR2PDeviceOTP = config.autoAcceptR2PDeviceOTP;
         this._useQuoteSourceFSPAsTransferPayeeFSP = config.useQuoteSourceFSPAsTransferPayeeFSP;
         this._checkIlp = config.checkIlp;
@@ -44,6 +60,7 @@ class OutboundRequestToPayTransferModel {
             peerEndpoint: config.peerEndpoint,
             quotesEndpoint: config.quotesEndpoint,
             authorizationsEndpoint: config.authorizationsEndpoint,
+            transactionRequestsEndpoint: config.transactionRequestsEndpoint,
             transfersEndpoint: config.transfersEndpoint,
             dfspId: config.dfspId,
             tls: {
@@ -54,9 +71,10 @@ class OutboundRequestToPayTransferModel {
             jwsSignPutParties: config.jwsSignPutParties,
             jwsSigningKey: config.jwsSigningKey,
             wso2: config.wso2,
+            resourceVersions: config.resourceVersions,
         });
 
-        this._ilp = new Ilp({
+        this._ilp = Ilp.ilpFactory(Ilp.ILP_VERSIONS.v1, {
             secret: config.ilpSecret,
             logger: this._logger,
         });
@@ -71,7 +89,7 @@ class OutboundRequestToPayTransferModel {
 
         // add a transferId if one is not present e.g. on first submission
         if(!this.data.hasOwnProperty('transferId')) {
-            this.data.transferId = uuid();
+            this.data.transferId = this._idGenerator();
         }
 
         // initialize the transfer state machine to its starting state
@@ -92,6 +110,7 @@ class OutboundRequestToPayTransferModel {
             transitions: [
                 { name: 'requestQuote', from: 'start', to: 'quoteReceived' },
                 { name: 'requestOTP', from: 'quoteReceived', to: 'otpReceived' },
+                { name: 'skipOTP', from: 'quoteReceived', to: 'otpReceived' },
                 { name: 'executeTransfer', from: 'otpReceived', to: 'succeeded' },
                 { name: 'error', from: '*', to: 'errored' },
             ],
@@ -120,8 +139,11 @@ class OutboundRequestToPayTransferModel {
                 case 'start':
                     // next transition is to requestQuote
                     await this.stateMachine.requestQuote();
-                    this._logger.log(`Quote received for transfer ${this.data.transferId}`);
-                    if(this.stateMachine.state === 'quoteReceived' && this.data.initiatorType === 'BUSINESS' && !this._autoAcceptR2PBusinessQuotes) {
+                    this._logger.isDebugEnabled && this._logger.debug(`Quote received for transfer ${this.data.transferId}`);
+                    if(
+                        (this.stateMachine.state === 'quoteReceived' && this.data.initiatorType !== 'BUSINESS')
+                        || (this.data.initiatorType === 'BUSINESS' && !this._autoAcceptR2PBusinessQuotes)
+                    ) {
                         //we break execution here and return the quote response details to allow asynchronous accept or reject
                         //of the quote
                         await this._save();
@@ -130,10 +152,23 @@ class OutboundRequestToPayTransferModel {
                     break;
 
                 case 'quoteReceived':
+                    if (!this.data.authenticationType) {
+                        // Skipping otp step
+                        this._logger.isDebugEnabled && this._logger.debug(`Skipping authorization for transactionRequestId: ${this.data.transactionRequestId} as authenticationType is not provided`);
+                        // this.data.currentState = 'otpReceived'
+                        await this.stateMachine.skipOTP();
+                        break;
+                    } else if (this.data.authenticationType === 'OTP') {
+                        await this.stateMachine.requestOTP();
+                    } else {
+                        // await this.stateMachine.error(err);
+                        await this.stateMachine.error('authenticationType is not supported');
+                        await this._save();
+                        return this.getResponse();
+                    }
                     // next transition is requestOTP
-                    await this.stateMachine.requestOTP();
                     if(this.data.initiatorType !== 'BUSINESS') {
-                        this._logger.log(`OTP received for transactionId: ${this.data.requestToPayTransactionId} and transferId: ${this.data.transferId}`);
+                        this._logger.isDebugEnabled && this._logger.debug(`OTP received for transactionRequestId: ${this.data.transactionRequestId} and transferId: ${this.data.transferId}`);
                         if(this.stateMachine.state === 'otpReceived' && !this._autoAcceptR2PDeviceOTP) {
                             //we break execution here and return the otp response details to allow asynchronous accept or reject
                             //of the quote
@@ -146,39 +181,39 @@ class OutboundRequestToPayTransferModel {
                 case 'otpReceived':
                     // next transition is executeTransfer
                     await this.stateMachine.executeTransfer();
-                    this._logger.log(`Transfer ${this.data.transferId} has been completed`);
+                    this._logger.isDebugEnabled && this._logger.debug(`Transfer ${this.data.transferId} has been completed`);
                     break;
 
                 case 'succeeded':
                     // all steps complete so return
-                    this._logger.log('Transfer completed successfully');
+                    this._logger.isDebugEnabled && this._logger.debug('Transfer completed successfully');
                     await this._save();
                     return this.getResponse();
 
                 case 'errored':
                     // stopped in errored state
-                    this._logger.log('State machine in errored state');
+                    this._logger.isErrorEnabled && this._logger.error('State machine in errored state');
                     return;
             }
 
             // now call ourslves recursively to deal with the next transition
-            this._logger.log(`RequestToPay Transfer model state machine transition completed in state: ${this.stateMachine.state}. Recusring to handle next transition.`);
+            this._logger.isDebugEnabled && this._logger.debug(`RequestToPay Transfer model state machine transition completed in state: ${this.stateMachine.state}. Recusring to handle next transition.`);
             return this.run();
         }
         catch(err) {
-            this._logger.log(`Error running transfer model: ${util.inspect(err)}`);
+            this._logger.isErrorEnabled && this._logger.error(`Error running transfer model: ${safeStringify(err)}`);
 
             // as this function is recursive, we dont want to error the state machine multiple times
             if(this.data.currentState !== 'errored') {
                 // err should not have a transferState property here!
                 if(err.transferState) {
-                    this._logger.log(`State machine is broken: ${util.inspect(err)}`);
+                    this._logger.isErrorEnabled && this._logger.error(`State machine is broken: ${safeStringify(err)}`);
                 }
                 // transition to errored state
                 await this.stateMachine.error(err);
 
                 // avoid circular ref between transferState.lastError and err
-                err.transferState = JSON.parse(JSON.stringify(this.getResponse()));
+                err.transferState = structuredClone(this.getResponse());
             }
             throw err;
         }
@@ -189,7 +224,7 @@ class OutboundRequestToPayTransferModel {
      * Updates the internal state representation to reflect that of the state machine itself
      */
     _afterTransition() {
-        this._logger.log(`State machine transitioned: ${this.data.currentState} -> ${this.stateMachine.state}`);
+        this._logger.isDebugEnabled && this._logger.debug(`State machine transitioned: ${this.data.currentState} -> ${this.stateMachine.state}`);
         this.data.currentState = this.stateMachine.state;
     }
 
@@ -197,7 +232,7 @@ class OutboundRequestToPayTransferModel {
      * Handles state machine transitions
      */
     async _handleTransition(lifecycle, ...args) {
-        this._logger.log(`Transfer ${this.data.transferId} is transitioning from ${lifecycle.from} to ${lifecycle.to} in response to ${lifecycle.transition}`);
+        this._logger.isDebugEnabled && this._logger.debug(`Transfer ${this.data.transferId} is transitioning from ${lifecycle.from} to ${lifecycle.to} in response to ${lifecycle.transition}`);
 
         switch(lifecycle.transition) {
             case 'init':
@@ -212,17 +247,21 @@ class OutboundRequestToPayTransferModel {
                 // request an OTP
                 return this._requestOTP();
 
+            case 'skipOTP':
+                // Skip OTP request
+                return;
+
             case 'executeTransfer':
                 // prepare a transfer and wait for fulfillment
                 return this._executeTransfer();
 
             case 'error':
-                this._logger.log(`State machine is erroring with error: ${util.inspect(args)}`);
+                this._logger.isErrorEnabled && this._logger.error(`State machine is erroring with error: ${safeStringify(args)}`);
                 this.data.lastError = args[0] || new Error('unspecified error');
                 break;
 
             default:
-                throw new Error(`Unhandled state transition for transfer ${this.data.transferId}: ${util.inspect(args)}`);
+                throw new Error(`Unhandled state transition for transfer ${this.data.transferId}: ${safeStringify(args)}`);
         }
     }
 
@@ -231,12 +270,12 @@ class OutboundRequestToPayTransferModel {
      * sent because the OTP did not match.
      */
     async rejectRequestToPay() {
-        const authResponse = {
-            responseType: 'REJECTED'
+        const mojaloopResponse = {
+            transactionRequestState: TransactionRequestStateEnum.REJECTED
         };
-        await this._requests.putAuthorizations(this.data.requestToPayTransactionId,JSON.stringify(authResponse),this.data.to.fspId);
+        await this._requests.putTransactionRequests(this.data.transactionRequestId, JSON.stringify(mojaloopResponse), this.data.to.fspId);
         const response = {
-            status : `${this.data.requestToPayTransactionId} has been REJECTED`
+            status : `${this.data.transactionRequestId} has been ${TransactionRequestStateEnum.REJECTED}`
         };
         return JSON.stringify(response);
     }
@@ -263,7 +302,7 @@ class OutboundRequestToPayTransferModel {
                     let payee = JSON.parse(msg);
                     if(payee.body && payee.body.errorInformation) {
                         // this is an error response to our GET /parties request
-                        const err = new BackendError(`Got an error response resolving party: ${util.inspect(payee.body)}`, 500);
+                        const err = new BackendError(`Got an error response resolving party: ${safeStringify(payee.body)}`, 500);
                         err.mojaloopError = payee.body;
 
                         // cancel the timeout handler
@@ -275,7 +314,7 @@ class OutboundRequestToPayTransferModel {
                         // we should never get a non-error response without a party, but just in case...
                         // cancel the timeout handler
                         clearTimeout(timeout);
-                        return reject(new Error(`Resolved payee has no party object: ${util.inspect(payee)}`));
+                        return reject(new Error(`Resolved payee has no party object: ${safeStringify(payee)}`));
                     }
 
                     payee = payee.party;
@@ -283,13 +322,13 @@ class OutboundRequestToPayTransferModel {
                     // cancel the timeout handler
                     clearTimeout(timeout);
 
-                    this._logger.push({ payee }).log('Payee resolved');
+                    this._logger.isDebugEnabled && this._logger.push({ payee }).debug('Payee resolved');
 
                     // stop listening for payee resolution messages
                     // no need to await for the unsubscribe to complete.
                     // we dont really care if the unsubscribe fails but we should log it regardless
                     this._cache.unsubscribe(payeeKey, subId).catch(e => {
-                        this._logger.log(`Error unsubscribing (in callback) ${payeeKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                        this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in callback) ${payeeKey} ${subId}: ${e.stack || safeStringify(e)}`);
                     });
 
                     // check we got the right payee and info we need
@@ -309,7 +348,7 @@ class OutboundRequestToPayTransferModel {
                     }
 
                     if(!payee.partyIdInfo.fspId) {
-                        const err = new Error(`Expecting resolved payee party to have an FSPID: ${util.inspect(payee.partyIdInfo)}`);
+                        const err = new Error(`Expecting resolved payee party to have an FSPID: ${safeStringify(payee.partyIdInfo)}`);
                         return reject(err);
                     }
 
@@ -339,7 +378,7 @@ class OutboundRequestToPayTransferModel {
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this._cache.unsubscribe(payeeKey, subId).catch(e => {
-                    this._logger.log(`Error unsubscribing (in timeout handler) ${payeeKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in timeout handler) ${payeeKey} ${subId}: ${e.stack || safeStringify(e)}`);
                 });
 
                 return reject(err);
@@ -350,7 +389,7 @@ class OutboundRequestToPayTransferModel {
             try {
                 const res = await this._requests.getParties(this.data.to.idType, this.data.to.idValue,
                     this.data.to.idSubValue);
-                this._logger.push({ peer: res }).log('Party lookup sent to peer');
+                this._logger.isDebugEnabled && this._logger.push({ peer: res }).debug('Party lookup sent to peer');
             }
             catch(err) {
                 // cancel the timout and unsubscribe before rejecting the promise
@@ -358,7 +397,7 @@ class OutboundRequestToPayTransferModel {
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this._cache.unsubscribe(payeeKey, subId).catch(e => {
-                    this._logger.log(`Error unsubscribing ${payeeKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing ${payeeKey} ${subId}: ${e.stack || safeStringify(e)}`);
                 });
 
                 return reject(err);
@@ -394,15 +433,15 @@ class OutboundRequestToPayTransferModel {
                             if (now > quote.expiration) {
                                 const msg = 'Quote response missed expiry deadline';
                                 error = new BackendError(msg, 504);
-                                this._logger.error(`${msg}: system time=${now} > expiration time=${quote.expiration}`);
+                                this._logger.isErrorEnabled && this._logger.error(`${msg}: system time=${now} > expiration time=${quote.expiration}`);
                             }
                         }
                     } else if (message.type === 'quoteResponseError') {
-                        error = new BackendError(`Got an error response requesting quote: ${util.inspect(message.data.body)}`, 500);
+                        error = new BackendError(`Got an error response requesting quote: ${safeStringify(message.data.body)}`, 500);
                         error.mojaloopError = message.data.body;
                     }
                     else {
-                        this._logger.push({ message }).log(`Ignoring cache notification for quote ${quoteKey}. Unknown message type ${message.type}.`);
+                        this._logger.isDebugEnabled && this._logger.push({ message }).debug(`Ignoring cache notification for quote ${quoteKey}. Unknown message type ${message.type}.`);
                         return;
                     }
 
@@ -413,7 +452,7 @@ class OutboundRequestToPayTransferModel {
                     // no need to await for the unsubscribe to complete.
                     // we dont really care if the unsubscribe fails but we should log it regardless
                     this._cache.unsubscribe(quoteKey, subId).catch(e => {
-                        this._logger.log(`Error unsubscribing (in callback) ${quoteKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                        this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in callback) ${quoteKey} ${subId}: ${e.stack || safeStringify(e)}`);
                     });
 
                     if (error) {
@@ -422,9 +461,12 @@ class OutboundRequestToPayTransferModel {
 
                     const quoteResponseBody = message.data.body;
                     const quoteResponseHeaders = message.data.headers;
-                    this._logger.push({ quoteResponseBody }).log('Quote response received');
+                    this._logger.isDebugEnabled && this._logger.push({ quoteResponseBody }).debug('Quote response received');
 
-                    this.data.quoteResponse = quoteResponseBody;
+                    this.data.quoteResponse = {
+                        body: quoteResponseBody,
+                        headers: quoteResponseHeaders
+                    };
                     this.data.quoteResponseSource = quoteResponseHeaders['fspiop-source'];
 
                     return resolve(quote);
@@ -440,7 +482,7 @@ class OutboundRequestToPayTransferModel {
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this._cache.unsubscribe(quoteKey, subId).catch(e => {
-                    this._logger.log(`Error unsubscribing (in timeout handler) ${quoteKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in timeout handler) ${quoteKey} ${subId}: ${e.stack || safeStringify(e)}`);
                 });
 
                 return reject(err);
@@ -450,7 +492,7 @@ class OutboundRequestToPayTransferModel {
             // a POST /quotes request to the switch
             try {
                 const res = await this._requests.postQuotes(quote, this.data.to.fspId);
-                this._logger.push({ res }).log('Quote request sent to peer');
+                this._logger.isDebugEnabled && this._logger.push({ res }).debug('Quote request sent to peer');
             }
             catch(err) {
                 // cancel the timout and unsubscribe before rejecting the promise
@@ -458,7 +500,7 @@ class OutboundRequestToPayTransferModel {
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this._cache.unsubscribe(quoteKey, subId).catch(e => {
-                    this._logger.log(`Error unsubscribing (in error handler) ${quoteKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in error handler) ${quoteKey} ${subId}: ${e.stack || safeStringify(e)}`);
                 });
 
                 return reject(err);
@@ -478,12 +520,12 @@ class OutboundRequestToPayTransferModel {
             if( this.data.initiatorType && this.data.initiatorType === 'BUSINESS') return resolve();
 
             // listen for events on the quoteId
-            const otpKey = `otp_${this.data.requestToPayTransactionId}`;
+            const otpKey = `otp_${this.data.transactionRequestId}`;
 
             // hook up a subscriber to handle response messages
             const subId = await this._cache.subscribe(otpKey, (cn, msg, subId) => {
                 try {
-                    let otpResponse = JSON.parse(msg);
+                    let authorizationResponse = JSON.parse(msg);
 
                     // cancel the timeout handler
                     clearTimeout(timeout);
@@ -492,15 +534,15 @@ class OutboundRequestToPayTransferModel {
                     // no need to await for the unsubscribe to complete.
                     // we dont really care if the unsubscribe fails but we should log it regardless
                     this._cache.unsubscribe(otpKey, subId).catch(e => {
-                        this._logger.log(`Error unsubscribing (in callback) ${otpKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                        this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in callback) ${otpKey} ${subId}: ${e.stack || safeStringify(e)}`);
                     });
 
-                    const otpResponseBody = otpResponse.data;
-                    this._logger.push({ otpResponseBody }).log('OTP response received');
+                    const authorizationResponseBody = authorizationResponse.data;
+                    this._logger.push({ authorizationResponseBody }).debug('OTP response received');
 
-                    this.data.otpResponse = otpResponseBody;
+                    this.data.authorizationResponse = authorizationResponseBody;
 
-                    return resolve(otpResponse);
+                    return resolve(authorizationResponse);
                 }
                 catch(err) {
                     return reject(err);
@@ -513,7 +555,7 @@ class OutboundRequestToPayTransferModel {
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this._cache.unsubscribe(otpKey, subId).catch(e => {
-                    this._logger.log(`Error unsubscribing (in timeout handler) ${otpKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in timeout handler) ${otpKey} ${subId}: ${e.stack || safeStringify(e)}`);
                 });
 
                 return reject(err);
@@ -522,8 +564,8 @@ class OutboundRequestToPayTransferModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a POST /authorizations request to the switch
             try {
-                const res = await this._requests.getAuthorizations(this.data.requestToPayTransactionId,`authenticationType=OTP&retriesLeft=1&amount=${this.data.amount}&currency=${this.data.currency}`,this.data.to.fspId);
-                this._logger.push({ res }).log('Authorizations request sent to peer');
+                const res = await this._requests.getAuthorizations(this.data.transactionRequestId,`authenticationType=OTP&retriesLeft=1&amount=${this.data.amount}&currency=${this.data.currency}`,this.data.to.fspId);
+                this._logger.isDebugEnabled && this._logger.push({ res }).debug('Authorizations request sent to peer');
             }
             catch(err) {
                 // cancel the timout and unsubscribe before rejecting the promise
@@ -531,7 +573,7 @@ class OutboundRequestToPayTransferModel {
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this._cache.unsubscribe(otpKey, subId).catch(e => {
-                    this._logger.log(`Error unsubscribing (in error handler) ${otpKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in error handler) ${otpKey} ${subId}: ${e.stack || safeStringify(e)}`);
                 });
 
                 return reject(err);
@@ -547,9 +589,9 @@ class OutboundRequestToPayTransferModel {
      */
     _buildQuoteRequest() {
         let quote = {
-            quoteId: uuid(),
+            quoteId: this._idGenerator(),
             transactionId: this.data.transferId,
-            transactionRequestId: this.data.requestToPayTransactionId,
+            transactionRequestId: this.data.transactionRequestId,
             amountType: this.data.amountType,
             amount: {
                 currency: this.data.currency,
@@ -563,6 +605,7 @@ class OutboundRequestToPayTransferModel {
 
         quote.transactionType = {
             scenario: this.data.scenario,
+            subScenario: this.data.subScenario,
             initiator: this.data.initiator,
             initiatorType: this.data.initiatorType
         };
@@ -608,15 +651,15 @@ class OutboundRequestToPayTransferModel {
                             const now = new Date().toISOString();
                             if (now > prepare.expiration) {
                                 const msg = 'Transfer fulfil missed expiry deadline';
-                                this._logger.error(`${msg}: system time=${now} > expiration=${prepare.expiration}`);
+                                this._logger.isErrorEnabled && this._logger.error(`${msg}: system time=${now} > expiration=${prepare.expiration}`);
                                 error = new BackendError(msg, 504);
                             }
                         }
                     } else if (message.type === 'transferError') {
-                        error = new BackendError(`Got an error response preparing transfer: ${util.inspect(message.data.body)}`, 500);
+                        error = new BackendError(`Got an error response preparing transfer: ${safeStringify(message.data.body)}`, 500);
                         error.mojaloopError = message.data.body;
                     } else {
-                        this._logger.push({ message }).log(`Ignoring cache notification for transfer ${transferKey}. Uknokwn message type ${message.type}.`);
+                        this._logger.isDebugEnabled && this._logger.push({ message }).debug(`Ignoring cache notification for transfer ${transferKey}. Unknown message type ${message.type}.`);
                         return;
                     }
 
@@ -625,7 +668,7 @@ class OutboundRequestToPayTransferModel {
 
                     // stop listening for transfer fulfil messages
                     this._cache.unsubscribe(transferKey, subId).catch(e => {
-                        this._logger.log(`Error unsubscribing (in callback) ${transferKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                        this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in callback) ${transferKey} ${subId}: ${e.stack || safeStringify(e)}`);
                     });
 
                     if (error) {
@@ -633,10 +676,10 @@ class OutboundRequestToPayTransferModel {
                     }
 
                     const fulfil = message.data;
-                    this._logger.push({ fulfil }).log('Transfer fulfil received');
+                    this._logger.isDebugEnabled && this._logger.push({ fulfil }).debug('Transfer fulfil received');
                     this.data.fulfil = fulfil;
 
-                    if(this._checkIlp && !this._ilp.validateFulfil(fulfil.fulfilment, this.data.quoteResponse.condition)) {
+                    if(this._checkIlp && !this._ilp.validateFulfil(fulfil.body.fulfilment, this.data.quoteResponse.body.condition)) {
                         throw new Error('Invalid fulfilment received from peer DFSP.');
                     }
 
@@ -653,7 +696,7 @@ class OutboundRequestToPayTransferModel {
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this._cache.unsubscribe(transferKey, subId).catch(e => {
-                    this._logger.log(`Error unsubscribing (in timeout handler) ${transferKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in timeout handler) ${transferKey} ${subId}: ${e.stack || safeStringify(e)}`);
                 });
 
                 return reject(err);
@@ -663,7 +706,7 @@ class OutboundRequestToPayTransferModel {
             // a POST /transfers request to the switch
             try {
                 const res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource);
-                this._logger.push({ res }).log('Transfer prepare sent to peer');
+                this._logger.isDebugEnabled && this._logger.push({ res }).debug('Transfer prepare sent to peer');
             }
             catch(err) {
                 // cancel the timout and unsubscribe before rejecting the promise
@@ -671,7 +714,7 @@ class OutboundRequestToPayTransferModel {
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this._cache.unsubscribe(transferKey, subId).catch(e => {
-                    this._logger.log(`Error unsubscribing (in error handler) ${transferKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in error handler) ${transferKey} ${subId}: ${e.stack || safeStringify(e)}`);
                 });
 
                 return reject(err);
@@ -694,10 +737,10 @@ class OutboundRequestToPayTransferModel {
                     let message = JSON.parse(msg);
 
                     if (message.type === 'transferError') {
-                        error = new BackendError(`Got an error response retrieving transfer: ${util.inspect(message.data.body)}`, 500);
+                        error = new BackendError(`Got an error response retrieving transfer: ${safeStringify(message.data.body)}`, 500);
                         error.mojaloopError = message.data.body;
                     } else if (message.type !== 'transferFulfil') {
-                        this._logger.push({ message }).log(`Ignoring cache notification for transfer ${transferKey}. Uknokwn message type ${message.type}.`);
+                        this._logger.isErrorEnabled && this._logger.push({ message }).error(`Ignoring cache notification for transfer ${transferKey}. Unknown message type ${message.type}.`);
                         return;
                     }
 
@@ -706,7 +749,7 @@ class OutboundRequestToPayTransferModel {
 
                     // stop listening for transfer fulfil messages
                     this._cache.unsubscribe(transferKey, subId).catch(e => {
-                        this._logger.log(`Error unsubscribing (in callback) ${transferKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                        this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in callback) ${transferKey} ${subId}: ${e.stack || safeStringify(e)}`);
                     });
 
                     if (error) {
@@ -714,7 +757,7 @@ class OutboundRequestToPayTransferModel {
                     }
 
                     const fulfil = message.data;
-                    this._logger.push({ fulfil }).log('Transfer fulfil received');
+                    this._logger.isDebugEnabled && this._logger.push({ fulfil }).debug('Transfer fulfil received');
                     this.data.fulfil = fulfil;
 
                     return resolve(this.data);
@@ -730,7 +773,7 @@ class OutboundRequestToPayTransferModel {
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this._cache.unsubscribe(transferKey, subId).catch(e => {
-                    this._logger.log(`Error unsubscribing (in timeout handler) ${transferKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in timeout handler) ${transferKey} ${subId}: ${e.stack || safeStringify(e)}`);
                 });
 
                 return reject(err);
@@ -740,7 +783,7 @@ class OutboundRequestToPayTransferModel {
             // a GET /transfers request to the switch
             try {
                 const res = await this._requests.getTransfers(this.data.transferId);
-                this._logger.push({ peer: res }).log('Transfer lookup sent to peer');
+                this._logger.isDebugEnabled && this._logger.push({ peer: res }).debug('Transfer lookup sent to peer');
             }
             catch(err) {
                 // cancel the timout and unsubscribe before rejecting the promise
@@ -748,7 +791,7 @@ class OutboundRequestToPayTransferModel {
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this._cache.unsubscribe(transferKey, subId).catch(e => {
-                    this._logger.log(`Error unsubscribing ${transferKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing ${transferKey} ${subId}: ${e.stack || safeStringify(e)}`);
                 });
 
                 return reject(err);
@@ -772,11 +815,11 @@ class OutboundRequestToPayTransferModel {
                 // rather than the original request. In Forex cases we may have requested
                 // a RECEIVE amount in a currency we cannot send. FXP should always give us
                 // a quote response with transferAmount in the correct currency.
-                currency: this.data.quoteResponse.transferAmount.currency,
-                amount: this.data.quoteResponse.transferAmount.amount
+                currency: this.data.quoteResponse.body.transferAmount.currency,
+                amount: this.data.quoteResponse.body.transferAmount.amount
             },
-            ilpPacket: this.data.quoteResponse.ilpPacket,
-            condition: this.data.quoteResponse.condition,
+            ilpPacket: this.data.quoteResponse.body.ilpPacket,
+            condition: this.data.quoteResponse.body.condition,
             expiration: this._getExpirationTimestamp()
         };
 
@@ -824,7 +867,7 @@ class OutboundRequestToPayTransferModel {
                 break;
 
             case 'otpReceived':
-                resp.currentState = SDKStateEnum.WAITING_FOR_OTP_ACCEPTANCE;
+                resp.currentState = SDKStateEnum.WAITING_FOR_AUTH_ACCEPTANCE;
                 break;
 
             case 'succeeded':
@@ -836,7 +879,7 @@ class OutboundRequestToPayTransferModel {
                 break;
 
             default:
-                this._logger.log(`Transfer model response being returned from an unexpected state: ${this.data.currentState}. Returning ERROR_OCCURRED state`);
+                this._logger.isDebugEnabled && this._logger.debug(`Transfer model response being returned from an unexpected state: ${this.data.currentState}. Returning ERROR_OCCURRED state`);
                 resp.currentState = SDKStateEnum.ERROR_OCCURRED;
                 break;
         }
@@ -851,11 +894,11 @@ class OutboundRequestToPayTransferModel {
     async _save() {
         try {
             this.data.currentState = this.stateMachine.state;
-            const res = await this._cache.set(`requestToPayTransferModel_${this.data.requestToPayTransactionId}`, this.data);
-            this._logger.push({ res }).log('Persisted transfer model in cache');
+            const res = await this._cache.set(`requestToPayTransferModel_${this.data.transactionRequestId}`, this.data);
+            this._logger.isDebugEnabled && this._logger.push({ res }).debug('Persisted transfer model in cache');
         }
         catch(err) {
-            this._logger.push({ err }).log('Error saving transfer model');
+            this._logger.isErrorEnabled && this._logger.push({ err }).error('Error saving transfer model');
             throw err;
         }
     }
@@ -866,17 +909,17 @@ class OutboundRequestToPayTransferModel {
      *
      * @param transferId {string} - UUID transferId of the model to load from cache
      */
-    async load(requestToPayTransactionId) {
+    async load(transactionRequestId) {
         try {
-            const data = await this._cache.get(`requestToPayTransferModel_${requestToPayTransactionId}`);
+            const data = await this._cache.get(`requestToPayTransferModel_${transactionRequestId}`);
             if(!data) {
-                throw new Error(`No cached data found for requestToPayTransactionId: ${requestToPayTransactionId}`);
+                throw new Error(`No cached data found for transactionRequestId: ${transactionRequestId}`);
             }
             await this.initialize(data);
-            this._logger.push({ cache: this.data }).log('RequestToPay Transfer model loaded from cached state');
+            this._logger.isDebugEnabled && this._logger.push({ cache: this.data }).debug('RequestToPay Transfer model loaded from cached state');
         }
         catch(err) {
-            this._logger.push({ err }).log('Error loading transfer model');
+            this._logger.isErrorEnabled && this._logger.push({ err }).error('Error loading transfer model');
             throw err;
         }
     }

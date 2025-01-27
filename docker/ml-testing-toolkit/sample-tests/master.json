@@ -1,0 +1,28 @@
+{
+  "order": [
+    {
+      "name": "inbound-transaction-requests.json",
+      "type": "file"
+    },
+    {
+      "name": "outbound-request-to-pay.json",
+      "type": "file"
+    },
+    {
+      "name": "outbound-transfer.json",
+      "type": "file"
+    },
+    {
+      "name": "test_outbound_p2p_and_bulk.json",
+      "type": "file"
+    },
+    {
+      "name": "outbound-request-to-pay-transfer.json",
+      "type": "file"
+    },
+    {
+      "name": "outbound-request-to-pay-transfer-otp.json",
+      "type": "file"
+    }
+  ]
+}

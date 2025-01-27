@@ -1,13 +1,31 @@
-/**************************************************************************
- *  (C) Copyright ModusBox Inc. 2020 - All rights reserved.               *
- *                                                                        *
- *  This file is made available under the terms of the license agreement  *
- *  specified in the corresponding source code repository.                *
- *                                                                        *
- *  ORIGINAL AUTHOR:                                                      *
- *       Paweł Marzec - pawel.marzec@modusbox.com                         *
- **************************************************************************/
+/*****
+ License
+ --------------
+ Copyright © 2020-2025 Mojaloop Foundation
+ The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
 
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+ Contributors
+ --------------
+ This is the official list of the Mojaloop project contributors for this file.
+ Names of the original copyright holders (individuals or organizations)
+ should be listed with a '*' in the first column. People who have
+ contributed from an organization can be listed under the organization
+ that actually holds the copyright for their contributions (see the
+ Mojaloop Foundation for an example). Those individuals should have
+ their names indented and be marked with a '-'. Email address can be added
+ optionally within square brackets <email>.
+
+ * Mojaloop Foundation
+ - Name Surname <name.surname@mojaloop.io>
+
+ * Modusbox
+ - Paweł Marzec <pawel.marzec@modusbox.com>
+ --------------
+ ******/
 'use strict';
 const StateMachine = require('javascript-state-machine');
 
@@ -15,17 +33,17 @@ async function saveToCache() {
     const { data, cache, key, logger } = this.context;
     try {
         const res = await cache.set(key, data);
-        logger.push({ res }).log(`Persisted model in cache: ${key}`);
+        logger.isDebugEnabled && logger.push({ res }).debug(`Persisted model in cache: ${key}`);
     }
     catch(err) {
-        logger.push({ err }).log(`Error saving model: ${key}`);
+        logger.isErrorEnabled && logger.push({ err }).error(`Error saving model: ${key}`);
         throw err;
     }
 }
 
 async function onAfterTransition(transition) {
     const { logger } = this.context;
-    logger.log(`State machine transitioned '${transition.transition}': ${transition.from} -> ${transition.to}`);
+    logger.isDebugEnabled && logger.debug(`State machine transitioned '${transition.transition}': ${transition.from} -> ${transition.to}`);
     this.context.data.currentState = transition.to;
 }
 
@@ -46,7 +64,7 @@ async function create(data, cache, key, logger, stateMachineSpec ) {
     }
 
     stateMachineSpec.data = Object.assign(
-        stateMachineSpec.data || {}, 
+        stateMachineSpec.data || {},
         {
             context: {
                 data, cache, key, logger
@@ -55,9 +73,9 @@ async function create(data, cache, key, logger, stateMachineSpec ) {
     );
 
     stateMachineSpec.methods = Object.assign(
-        stateMachineSpec.methods || {}, 
+        stateMachineSpec.methods || {},
         {
-            onAfterTransition, 
+            onAfterTransition,
             onPendingTransition,
             saveToCache
         }
@@ -75,14 +93,14 @@ async function loadFromCache(cache, key, logger, stateMachineSpec, optCreate) {
         if(!data) {
             throw new Error(`No cached data found for: ${key}`);
         }
-        logger.push({ cache: data }).log('data loaded from cache');
+        logger.isDebugEnabled && logger.push({ cache: data }).debug('data loaded from cache');
 
         // use delegation to allow customization of 'create'
         const createPSM = optCreate || create;
         return createPSM(data, cache, key, logger, stateMachineSpec);
     }
     catch(err) {
-        logger.push({ err }).log(`Error loading data: ${key}`);
+        logger.isErrorEnabled &&logger.push({ err }).error(`Error loading data: ${key}`);
         throw err;
     }
 }

@@ -1,21 +1,48 @@
-/**************************************************************************
- *  (C) Copyright ModusBox Inc. 2019 - All rights reserved.               *
- *                                                                        *
- *  This file is made available under the terms of the license agreement  *
- *  specified in the corresponding source code repository.                *
- *                                                                        *
- *  ORIGINAL AUTHOR:                                                      *
- *       Vassilis Barzokas - vassilis.barzokas@modusbox.com               *
- **************************************************************************/
+/*****
+ License
+ --------------
+ Copyright © 2020-2025 Mojaloop Foundation
+ The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+ Contributors
+ --------------
+ This is the official list of the Mojaloop project contributors for this file.
+ Names of the original copyright holders (individuals or organizations)
+ should be listed with a '*' in the first column. People who have
+ contributed from an organization can be listed under the organization
+ that actually holds the copyright for their contributions (see the
+ Mojaloop Foundation for an example). Those individuals should have
+ their names indented and be marked with a '-'. Email address can be added
+ optionally within square brackets <email>.
+
+ * Mojaloop Foundation
+ - Name Surname <name.surname@mojaloop.io>
+
+ * Modusbox
+ - Vassilis Barzokas <vassilis.barzokas@modusbox.com>
+ --------------
+ ******/
 'use strict';
+
+process.env.PEER_ENDPOINT = '172.17.0.3:4000';
+process.env.BACKEND_ENDPOINT = '172.17.0.5:4000';
+process.env.CACHE_URL = 'redis://172.17.0.2:6379';
+process.env.MGMT_API_WS_URL = '0.0.0.0';
+process.env.SUPPORTED_CURRENCIES='USD';
 
 // we use a mock standard components lib to intercept and mock certain funcs
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('redis');
 jest.mock('~/lib/model/lib/requests',() => require('./mockedLibRequests'));
 
+const randomUUID = require('@mojaloop/central-services-shared').Util.id({type: 'ulid'});
 const defaultConfig = require('./data/defaultConfig');
 const Model = require('~/lib/model').InboundTransfersModel;
+const mocks = require('./data/mocks');
 const mockArguments = require('./data/mockArguments');
 const mockTxnReqquestsArguments = require('./data/mockTxnRequestsArguments');
 const { MojaloopRequests, Ilp, Logger } = require('@mojaloop/sdk-standard-components');
@@ -30,8 +57,12 @@ const getBulkTransfersMojaloopResponse = require('./data/getBulkTransfersMojaloo
 const notificationToPayee = require('./data/notificationToPayee');
 const notificationAbortedToPayee = require('./data/notificationAbortedToPayee');
 const notificationReservedToPayee = require('./data/notificationReservedToPayee');
+const fxNotificationToBackend = require('./data/fxNotificationToBackend.json');
+const fxNotificationAbortedToBackend = require('./data/fxNotificationAbortedToBackend.json');
+const fxNotificationReservedToBackend = require('./data/fxNotificationReservedToBackend.json');
 
 const { SDKStateEnum } = require('../../../../src/lib/model/common');
+const { version } = require('os');
 const FSPIOPTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.TransferState;
 const FSPIOPBulkTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.BulkTransferState;
 
@@ -71,6 +102,7 @@ describe('inboundModel', () => {
             cache = new Cache({
                 cacheUrl: 'redis://dummy:1234',
                 logger,
+                unsubscribeTimeoutMs: 5000
             });
             await cache.connect();
 
@@ -139,6 +171,7 @@ describe('inboundModel', () => {
             cache = new Cache({
                 cacheUrl: 'redis://dummy:1234',
                 logger,
+                unsubscribeTimeoutMs: 5000
             });
             await cache.connect();
             // eslint-disable-next-line no-unused-vars
@@ -195,6 +228,7 @@ describe('inboundModel', () => {
             cache = new Cache({
                 cacheUrl: 'redis://dummy:1234',
                 logger,
+                unsubscribeTimeoutMs: 5000
             });
             await cache.connect();
 
@@ -231,6 +265,7 @@ describe('inboundModel', () => {
             cache = new Cache({
                 cacheUrl: 'redis://dummy:1234',
                 logger,
+                unsubscribeTimeoutMs: 5000
             });
             await cache.connect();
 
@@ -272,6 +307,7 @@ describe('inboundModel', () => {
             cache = new Cache({
                 cacheUrl: 'redis://dummy:1234',
                 logger,
+                unsubscribeTimeoutMs: 5000
             });
             await cache.connect();
         });
@@ -289,6 +325,7 @@ describe('inboundModel', () => {
                 rejectTransfersOnExpiredQuotes: true,
             });
             cache.set(`transferModel_in_${TRANSFER_ID}`, {
+                transferId: TRANSFER_ID,
                 quote: {
                     mojaloopResponse: {
                         expiration: new Date(new Date().getTime() - 1000).toISOString(),
@@ -550,6 +587,7 @@ describe('inboundModel', () => {
             cache = new Cache({
                 cacheUrl: 'redis://dummy:1234',
                 logger,
+                unsubscribeTimeoutMs: 5000
             });
             await cache.connect();
         });
@@ -729,6 +767,7 @@ describe('inboundModel', () => {
             cache = new Cache({
                 cacheUrl: 'redis://dummy:1234',
                 logger,
+                unsubscribeTimeoutMs: 5000
             });
             await cache.connect();
         });
@@ -786,6 +825,7 @@ describe('inboundModel', () => {
             const notif = JSON.parse(JSON.stringify(notificationReservedToPayee));
 
             const expectedRequest = {
+                currentState: SDKStateEnum.ERROR_OCCURRED,
                 finalNotification: notif.data,
                 lastError: 'Final notification state not COMMITTED',
             };
@@ -805,12 +845,102 @@ describe('inboundModel', () => {
 
     });
 
+    describe('sendFxPatchNotificationToBackend:', () => {
+        const conversionId = '1234';
+        let cache;
+
+        beforeEach(async () => {
+            cache = new Cache({
+                cacheUrl: 'redis://dummy:1234',
+                logger,
+                unsubscribeTimeoutMs: 5000
+            });
+            await cache.connect();
+        });
+
+        afterEach(async () => {
+            await cache.disconnect();
+        });
+
+        test('sends notification to fsp backend', async () => {
+            BackendRequests.__patchFxTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({}));
+            const notif = JSON.parse(JSON.stringify(fxNotificationToBackend));
+
+            const expectedRequest = {
+                currentState: SDKStateEnum.COMPLETED,
+                finalNotification: notif.data,
+            };
+
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+            });
+            model.saveFxState = jest.fn().mockReturnValue(Promise.resolve({}));
+
+            await model.sendFxPatchNotificationToBackend(notif.data, conversionId);
+            expect(BackendRequests.__patchFxTransfersNotification).toHaveBeenCalledTimes(1);
+            const call = BackendRequests.__patchFxTransfersNotification.mock.calls[0];
+            expect(call[0]).toEqual(expectedRequest);
+            expect(call[1]).toEqual(conversionId);
+        });
+
+        test('sends ABORTED notification to fsp backend', async () => {
+            BackendRequests.__patchFxTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({}));
+            const notif = JSON.parse(JSON.stringify(fxNotificationAbortedToBackend));
+
+            const expectedRequest = {
+                currentState: SDKStateEnum.ABORTED,
+                finalNotification: notif.data,
+            };
+
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+            });
+            model.saveFxState = jest.fn().mockReturnValue(Promise.resolve({}));
+
+            await model.sendFxPatchNotificationToBackend(notif.data, conversionId);
+            expect(BackendRequests.__patchFxTransfersNotification).toHaveBeenCalledTimes(1);
+            const call = BackendRequests.__patchFxTransfersNotification.mock.calls[0];
+            expect(call[0]).toEqual(expectedRequest);
+            expect(call[1]).toEqual(conversionId);
+        });
+
+        test('sends RESERVED notification to fsp backend', async () => {
+            BackendRequests.__patchFxTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({}));
+            const notif = JSON.parse(JSON.stringify(fxNotificationReservedToBackend));
+
+            const expectedRequest = {
+                currentState: SDKStateEnum.ERROR_OCCURRED,
+                finalNotification: notif.data,
+                lastError: 'Final notification state not COMMITTED or ABORTED',
+            };
+
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+            });
+            model.saveFxState = jest.fn().mockReturnValue(Promise.resolve({}));
+
+            await model.sendFxPatchNotificationToBackend(notif.data, conversionId);
+            expect(BackendRequests.__patchFxTransfersNotification).toHaveBeenCalledTimes(1);
+            const call = BackendRequests.__patchFxTransfersNotification.mock.calls[0];
+            expect(call[0]).toEqual(expectedRequest);
+            expect(call[1]).toEqual(conversionId);
+        });
+
+    });
+
     describe('error handling:', () => {
         let cache;
         beforeEach(async () => {
             cache = new Cache({
                 cacheUrl: 'redis://dummy:1234',
                 logger,
+                unsubscribeTimeoutMs: 5000
             });
             await cache.connect();
         });
@@ -885,5 +1015,132 @@ describe('inboundModel', () => {
             // error message should be custom
             expect(err.errorInformation.errorDescription).toEqual(customMessage);
         });
+    });
+
+    describe('postFxQuotes Method Tests -->', () => {
+        let model;
+        let fxpResponse;
+        let cache;
+
+        beforeEach(async () => {
+            cache = new Cache({
+                cacheUrl: 'redis://dummy:1234',
+                logger,
+                unsubscribeTimeoutMs: 5000
+            });
+            await cache.connect();
+            BackendRequests.__postFxQuotes = jest.fn(async () => fxpResponse);
+            model = new Model({
+                ...config,
+                cache,
+                logger,
+            });
+        });
+
+        afterEach(async () => {
+            await cache.disconnect();
+            jest.clearAllMocks();
+        });
+
+        test('should send PUT /fxQuotes callback request with the expected values', async () => {
+            const conversionRequestId = randomUUID();
+            const initiatingFsp = 'dfsp_1';
+            const body = mocks.mockFxQuotesPayload({
+                conversionRequestId,
+                initiatingFsp
+            });
+            fxpResponse = mocks.mockFxQuotesInternalResponse();
+
+            const res = await model.postFxQuotes({ body }, initiatingFsp);
+            expect(res).toEqual(mocks.mockMojaApiResponse());
+            expect(model.data.currentState).toBe(SDKStateEnum.FX_QUOTE_WAITING_FOR_ACCEPTANCE);
+            expect(model.data.fxQuote.fulfilment).toBeTruthy();
+
+            expect(BackendRequests.__postFxQuotes).toHaveBeenCalledTimes(1);
+            expect(MojaloopRequests.__putFxQuotes).toHaveBeenCalledTimes(1);
+
+            const putArgs = MojaloopRequests.__putFxQuotes.mock.calls[0];
+            expect(putArgs[0]).toBe(conversionRequestId);
+            expect(putArgs[1].condition).toBe(Ilp.__response.condition);
+            expect(putArgs[1].homeTransactionId).toBeUndefined();
+            expect(putArgs[2]).toBe(initiatingFsp);
+        });
+
+        test('should save fxQuote data in cache', async () => {
+            const conversionId = randomUUID();
+            const initiatingFsp = 'dfsp_123';
+            const body = mocks.mockFxQuotesPayload({
+                conversionId,
+                initiatingFsp
+            });
+
+            let data = await model.loadFxState(conversionId);
+            expect(data).toBeNull();
+
+            await model.postFxQuotes({ body }, initiatingFsp);
+            data = await model.loadFxState(conversionId);
+            expect(data).toBeDefined();
+        });
+        // todo: add error case tests
+    });
+
+    describe('postFxTransfers Method Tests -->', () => {
+        let model;
+        let fxpResponse;
+        let cache;
+
+        beforeEach(async () => {
+            cache = new Cache({
+                cacheUrl: 'redis://dummy:1234',
+                logger,
+                unsubscribeTimeoutMs: 5000
+            });
+            await cache.connect();
+            BackendRequests.__postFxTransfers = jest.fn(async () => fxpResponse);
+            model = new Model({
+                ...config,
+                cache,
+                logger,
+            });
+        });
+
+        afterEach(async () => {
+            await cache.disconnect();
+            jest.clearAllMocks();
+        });
+
+        test('should send PUT /fxTransfers callback request with the expected values', async () => {
+            const commitRequestId = randomUUID();
+            const initiatingFsp = 'dfsp_1';
+            const { condition } = Ilp.__response;
+            const body = mocks.mockFxTransfersPayload({
+                commitRequestId,
+                initiatingFsp,
+                condition,
+            });
+            fxpResponse = mocks.mockFxTransfersInternalResponse();
+
+            const fxQuoteBody = mocks.mockFxQuotesPayload({
+                conversionId: commitRequestId,
+                initiatingFsp
+            });
+            await model.postFxQuotes({ body: fxQuoteBody }, initiatingFsp);
+            expect(model.data).toBeTruthy();
+
+            await model.postFxTransfers({ body }, initiatingFsp);
+            expect(model.data.currentState).toBe(fxpResponse.conversionState);
+            expect(model.data.fulfil).toBeDefined();
+
+            expect(BackendRequests.__postFxTransfers).toHaveBeenCalledTimes(1);
+            expect(MojaloopRequests.__putFxTransfers).toHaveBeenCalledTimes(1);
+
+            // eslint-disable-next-line no-unused-vars
+            const { homeTransactionId, ...callbackPayload } = fxpResponse;
+            const putArgs = MojaloopRequests.__putFxTransfers.mock.calls[0];
+            expect(putArgs[0]).toBe(commitRequestId);
+            expect(putArgs[1]).toEqual(callbackPayload);
+            expect(putArgs[2]).toBe(initiatingFsp);
+        });
+        // todo: add error case tests
     });
 });

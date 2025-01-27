@@ -1,7 +1,7 @@
 {
   "VERSION": 1,
   "CALLBACK_ENDPOINT": "http://ttksim2-sdk-api-svc:4001",
-  "MONITORING_LOG_INCLUDE_PAYLOAD": false,
+  "MONITORING_LOG_INCLUDE_PAYLOAD": true,
   "CALLBACK_RESOURCE_ENDPOINTS": {
     "enabled": false,
     "endpoints": []
@@ -43,5 +43,10 @@
     "TEST_CASES_REPO_HUB_PROVISIONING_PATH": "collections/hub/provisioning"
   },
   "DEFAULT_ENVIRONMENT_FILE_NAME": "dfsp_local_environment.json",
-  "LABELS": []
+  "LABELS": [],
+  "INSTANCE_NAME": "TTK Sim2",
+  "UI_THEME": {
+    "HEADER_COLOR": "rgb(51, 153, 51)",
+    "TITLE_COLOR": "#fff"
+  }
 }

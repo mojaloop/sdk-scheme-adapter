@@ -1198,6 +1198,27 @@ paths:
       parameters:
         #Headers
         - $ref: "#/components/parameters/Accept"
+        ## Adding the following query parameters for testing as TTK is enforcing query params validation which should be fixed in TTK
+        - name: authenticationType
+          in: query
+          description: authenticationType
+          schema:
+            type: string
+        - name: retriesLeft
+          in: query
+          description: retriesLeft
+          schema:
+            type: integer
+        - name: amount
+          in: query
+          description: amount
+          schema:
+            type: string
+        - name: currency
+          in: query
+          description: currency
+          schema:
+            type: string
       responses:
         202:
           $ref: "#/components/responses/202"
@@ -2885,7 +2906,7 @@ components:
             - description: Identifies the quote message.
             - example: b51ec534-ee48-4575-b6a9-ead2955b8069
         payee:
-          allOf:  
+          allOf:
             - $ref: "#/components/schemas/Party"
             - description: Information about the Payee in the proposed financial transaction.
         transferAmount:

@@ -1,13 +1,29 @@
-/**************************************************************************
- *  (C) Copyright ModusBox Inc. 2019 - All rights reserved.               *
- *                                                                        *
- *  This file is made available under the terms of the license agreement  *
- *  specified in the corresponding source code repository.                *
- *                                                                        *
- *  ORIGINAL AUTHOR:                                                      *
- *       James Bush - james.bush@modusbox.com                             *
- **************************************************************************/
+/*****
+ License
+ --------------
+ Copyright © 2020-2025 Mojaloop Foundation
+ The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
 
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+ Contributors
+ --------------
+ This is the official list of the Mojaloop project contributors for this file.
+ Names of the original copyright holders (individuals or organizations)
+ should be listed with a '*' in the first column. People who have
+ contributed from an organization can be listed under the organization
+ that actually holds the copyright for their contributions (see the
+ Mojaloop Foundation for an example). Those individuals should have
+ their names indented and be marked with a '-'. Email address can be added
+ optionally within square brackets <email>.
+
+ * Mojaloop Foundation
+ - James Bush <jbush@mojaloop.io>
+
+ --------------
+ ******/
 'use strict';
 
 const { Errors } = require('@mojaloop/sdk-standard-components');
@@ -20,7 +36,7 @@ const ErrorHandling = require('@mojaloop/central-services-error-handling');
  *
  * @returns {object} - the constructed party object
  */
-const internalPartyToMojaloopParty = (internal, fspId) => {
+const internalPartyToMojaloopParty = (internal, fspId, supportedCurrencies) => {
     const party = {
         partyIdInfo: {
             partyIdType: internal.idType,
@@ -33,6 +49,15 @@ const internalPartyToMojaloopParty = (internal, fspId) => {
         party.partyIdInfo.extensionList = {
             extension: internal.extensionList
         };
+    }
+
+    if (!internal.supportedCurrencies) {
+        // add DFSP specific information to the response
+        if (supportedCurrencies?.length > 0) {
+            party.supportedCurrencies = supportedCurrencies;
+        }
+    } else if (internal.supportedCurrencies?.length > 0) {
+        party.supportedCurrencies = internal.supportedCurrencies;
     }
 
     const hasComplexName = !!(internal.firstName || internal.middleName || internal.lastName);
@@ -51,6 +76,8 @@ const internalPartyToMojaloopParty = (internal, fspId) => {
     if(internal.lastName) { party.personalInfo.complexName.lastName = internal.lastName; }
 
     if(internal.dateOfBirth) { party.personalInfo.dateOfBirth = internal.dateOfBirth; }
+
+    if(internal.kycInformation) { party.personalInfo.kycInformation = internal.kycInformation; }
 
     if(typeof(internal.merchantClassificationCode) !== 'undefined') {
         party.merchantClassificationCode = internal.merchantClassificationCode;
@@ -127,12 +154,14 @@ const mojaloopQuoteRequestToInternal = (external) => {
     const internal = {
         quoteId: external.quoteId,
         transactionId: external.transactionId,
+        transactionRequestId: external.transactionRequestId,
         to: mojaloopPartyToInternalParty(external.payee),
         from: mojaloopPartyToInternalParty(external.payer),
         amountType: external.amountType,
         amount: external.amount.amount,
         currency: external.amount.currency,
         transactionType: external.transactionType.scenario,
+        subScenario: external.transactionType.subScenario,
         initiator: external.transactionType.initiator,
         initiatorType: external.transactionType.initiatorType
     };
@@ -158,6 +187,18 @@ const mojaloopQuoteRequestToInternal = (external) => {
         internal.extensionList = external.extensionList;
     }
 
+    return internal;
+};
+
+/**
+ * Projects a Mojaloop API spec PutTransactionRequest request to internal form
+ *
+ * @returns {object} - the internal form PutTransactionRequest
+ */
+const mojaloopPutTransactionRequestToInternal = (external) => {
+    const internal = {
+        transactionRequestState: external.transactionRequestState
+    };
     return internal;
 };
 
@@ -241,11 +282,13 @@ const internalTransactionRequestResponseToMojaloop = (internal) => {
  *
  * @returns {object}
  */
-const mojaloopPrepareToInternalTransfer = (external, quote, ilp) => {
+const mojaloopPrepareToInternalTransfer = (external, quote, ilp, checkILP) => {
     let internal = null;
     if(quote) {
         internal = {
             transferId: external.transferId,
+            transactionRequestId: quote.request.transactionRequestId,
+            homeR2PTransactionId: quote.internalRequest.homeR2PTransactionId,
             quote: quote.response,
             from: quote.internalRequest.from,
             to: quote.internalRequest.to,
@@ -253,13 +296,14 @@ const mojaloopPrepareToInternalTransfer = (external, quote, ilp) => {
             currency: quote.request.amount.currency,
             amount: quote.request.amount.amount,
             transactionType: quote.request.transactionType.scenario,
-            ilpPacket: {
-                data: ilp.getTransactionObject(external.ilpPacket),
-            },
+            subScenario: quote.request.transactionType.subScenario,
             note: quote.request.note
         };
         if (quote.internalRequest && quote.internalRequest.extensionList && quote.internalRequest.extensionList.extension) {
             internal.quoteRequestExtensions = { ...quote.internalRequest.extensionList.extension };
+        }
+        if (checkILP) {
+            internal.ilpPacket = { data: ilp.getTransactionObject(external.ilpPacket) };
         }
     } else {
         internal = {
@@ -286,8 +330,10 @@ const mojaloopTransactionRequestToInternal = (external) => {
         amount: external.amount.amount,
         currency: external.amount.currency,
         transactionType: external.transactionType.scenario,
+        subScenario: external.transactionType.subScenario,
         initiator: external.transactionType.initiator,
-        initiatorType: external.transactionType.initiatorType
+        initiatorType: external.transactionType.initiatorType,
+        authenticationType: external.authenticationType
     };
 
     return internal;
@@ -325,6 +371,7 @@ const mojaloopBulkQuotesRequestToInternal = (external) => {
             amount: quote.amount.amount,
             currency: quote.amount.currency,
             transactionType: quote.transactionType.scenario,
+            subScenario: quote.transactionType.subScenario,
             initiator: quote.transactionType.initiator,
             initiatorType: quote.transactionType.initiatorType
         };
@@ -414,7 +461,7 @@ const internalBulkQuotesResponseToMojaloop = (internal) => {
                     mojaloopApiErrorCode,
                     null,
                 );
-            } catch (e) {
+            } catch  {
                 // If error status code isn't FSPIOP conforming, create generic
                 // FSPIOP error and include backend code and message in FSPIOP message.
                 error = new ErrorHandling.Factory.FSPIOPError(
@@ -522,7 +569,7 @@ const internalBulkTransfersResponseToMojaloop = (internal, fulfilments) => {
                         errorInformation: error.toApiErrorObject().errorInformation,
                     };
 
-                } catch (e) {
+                } catch {
                     // If error status code isn't FSPIOP conforming, create generic
                     // FSPIOP error and include backend code and message in FSPIOP message.
                     error = new ErrorHandling.Factory.FSPIOPError(
@@ -600,6 +647,7 @@ const mojaloopBulkPrepareToInternalBulkTransfer = (external, bulkQuotes, ilp) =>
                 to: internalQuote.to,
                 amountType: internalQuote.amountType,
                 transactionType: internalQuote.transactionType,
+                subScenario: internalQuote.subScenario,
                 note: internalQuote.note
             };
         });
@@ -664,6 +712,43 @@ const mojaloopBulkTransfersResponseToInternal = (external) => {
     return internal;
 };
 
+/**
+ * Converts a Mojaloop FX quote request to internal formProjects a Mojaloop API spec bulk transfer response to internal form
+ *
+ * @returns {object} - the internal form bulk transfer response
+ */
+const mojaloopFxQuoteRequestToInternal = (external) => {
+    // perform payload reformatting here (if needed)
+    return external;
+};
+
+const internalFxQuoteResponseToMojaloop = (beResponse) => {
+    // eslint-disable-next-line no-unused-vars
+    const { homeTransactionId, ...mlResponse } = beResponse;
+    return mlResponse;
+};
+
+const mojaloopFxTransferPrepareToInternal = (external, fxQuote) => {
+    const { homeTransactionId } = fxQuote.response;
+    return {
+        ...external,
+        homeTransactionId,
+    };
+};
+
+const internalFxTransferResponseToMojaloop = (beResponse, fulfilment) => {
+    return {
+        conversionState: beResponse.conversionState,
+        fulfilment: beResponse.fulfilment || fulfilment,
+        completedTimestamp: beResponse.completedTimestamp || new Date(),
+        ...beResponse.extensionList && {
+            extensionList: {
+                extension: beResponse.extensionList,
+            },
+        },
+    };
+};
+
 module.exports = {
     internalPartyToMojaloopParty,
     internalQuoteResponseToMojaloop,
@@ -678,5 +763,11 @@ module.exports = {
     internalBulkQuotesResponseToMojaloop,
     mojaloopBulkPrepareToInternalBulkTransfer,
     mojaloopBulkTransfersResponseToInternal,
-    internalBulkTransfersResponseToMojaloop
+    internalBulkTransfersResponseToMojaloop,
+    mojaloopPutTransactionRequestToInternal,
+
+    mojaloopFxQuoteRequestToInternal,
+    mojaloopFxTransferPrepareToInternal,
+    internalFxQuoteResponseToMojaloop,
+    internalFxTransferResponseToMojaloop,
 };

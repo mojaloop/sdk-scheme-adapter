@@ -1,21 +1,44 @@
-/**************************************************************************
- *  (C) Copyright ModusBox Inc. 2019 - All rights reserved.               *
- *                                                                        *
- *  This file is made available under the terms of the license agreement  *
- *  specified in the corresponding source code repository.                *
- *                                                                        *
- *  ORIGINAL AUTHOR:                                                      *
- *       James Bush - james.bush@modusbox.com                             *
- **************************************************************************/
+/*****
+ License
+ --------------
+ Copyright © 2020-2025 Mojaloop Foundation
+ The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+ Contributors
+ --------------
+ This is the official list of the Mojaloop project contributors for this file.
+ Names of the original copyright holders (individuals or organizations)
+ should be listed with a '*' in the first column. People who have
+ contributed from an organization can be listed under the organization
+ that actually holds the copyright for their contributions (see the
+ Mojaloop Foundation for an example). Those individuals should have
+ their names indented and be marked with a '-'. Email address can be added
+ optionally within square brackets <email>.
+
+ * Mojaloop Foundation
+ - James Bush <jbush@mojaloop.io>
+
+ --------------
+ ******/
 
 const fs  = require('fs');
 const path = require('path');
 const os = require('os');
+const sdkSC = require('@mojaloop/sdk-standard-components');
+const { createAuthClient } = require('../../src/lib/utils');
 
 const outErrorStatusKey = 'outErrorStatusKey';
 
 jest.mock('dotenv', () => ({
     config: jest.fn(),
+}));
+
+jest.mock('@mojaloop/sdk-standard-components', () => ({
+    WSO2Auth: jest.fn(),
 }));
 
 describe('config', () => {
@@ -28,6 +51,7 @@ describe('config', () => {
         process.env.BACKEND_ENDPOINT = '172.17.0.5:4000';
         process.env.CACHE_URL = 'redis://172.17.0.2:6379';
         process.env.MGMT_API_WS_URL = '0.0.0.0';
+        process.env.SUPPORTED_CURRENCIES = 'USD';
         certDir = fs.mkdtempSync(path.join(os.tmpdir(), 'jest-'));
     });
 
@@ -95,7 +119,6 @@ describe('config', () => {
     });
 
     it('should transform correctly resources versions to config', () => {
-
         const resourceVersions = {
             resourceOneName: {
                 acceptVersion: '1',
@@ -116,4 +139,37 @@ describe('config', () => {
         expect(() => parseResourceVersion('resourceOneName=1.0;resourceTwoName=1.1')).toThrowError(new Error('Resource versions format should be in format: "resourceOneName=1.0,resourceTwoName=1.1"'));
     });
 
+    it('should return outbound.tls.creds with keys if OUTBOUND_MUTUAL_TLS_USE_FILES is true', () => {
+        process.env.OUTBOUND_MUTUAL_TLS_USE_FILES = 'true';
+        const config = require('~/config');
+        expect(config.outbound.tls.creds).toStrictEqual({
+            ca: undefined,
+            cert: undefined,
+            key: undefined,
+        });
+    });
+
+    it('should pass outbound tlsCreds as false to WSO2Auth ctor, if OUT_USE_CERT_FILES_FOR_AUTH is false', () => {
+        process.env.OAUTH_MUTUAL_TLS_ENABLED = 'false';
+        const config = require('~/config');
+        createAuthClient(config, {});
+        const { tlsCreds } = sdkSC.WSO2Auth.mock.calls[0][0];
+        expect(tlsCreds).toBe(false);
+    });
+
+    it('should read api type string ', () => {
+        process.env.API_TYPE = 'iso20022';
+        const config = require('~/config');
+        expect(config.apiType).toBe('iso20022');
+    });
+
+    it('should default api type string to fspiop', () => {
+        const config = require('~/config');
+        expect(config.apiType).toBe('fspiop');
+    });
+
+    it('should have default resources version', () => {
+        const config = require('~/config');
+        expect(config.resourceVersions.parties.acceptVersion).toBe('2');
+    });
 });

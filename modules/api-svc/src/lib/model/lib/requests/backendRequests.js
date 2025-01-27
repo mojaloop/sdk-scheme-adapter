@@ -1,18 +1,34 @@
-/**************************************************************************
- *  (C) Copyright ModusBox Inc. 2019 - All rights reserved.               *
- *                                                                        *
- *  This file is made available under the terms of the license agreement  *
- *  specified in the corresponding source code repository.                *
- *                                                                        *
- *  ORIGINAL AUTHOR:                                                      *
- *       James Bush - james.bush@modusbox.com                             *
- **************************************************************************/
+/*****
+ License
+ --------------
+ Copyright © 2020-2025 Mojaloop Foundation
+ The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
 
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+ Contributors
+ --------------
+ This is the official list of the Mojaloop project contributors for this file.
+ Names of the original copyright holders (individuals or organizations)
+ should be listed with a '*' in the first column. People who have
+ contributed from an organization can be listed under the organization
+ that actually holds the copyright for their contributions (see the
+ Mojaloop Foundation for an example). Those individuals should have
+ their names indented and be marked with a '-'. Email address can be added
+ optionally within square brackets <email>.
+
+ * Mojaloop Foundation
+ - James Bush <jbush@mojaloop.io>
+
+ --------------
+ ******/
 'use strict';
 
 const http = require('http');
 const { request } = require('@mojaloop/sdk-standard-components');
-const { buildUrl, throwOrJson, HTTPResponseError } = require('./common');
+const { buildUrl, HTTPResponseError } = require('./common');
 
 
 /**
@@ -21,7 +37,7 @@ const { buildUrl, throwOrJson, HTTPResponseError } = require('./common');
 class BackendRequests {
     constructor(config) {
         this.config = config;
-        this.logger = config.logger;
+        this.logger = config.logger.push({ component: BackendRequests.name });
 
         // FSPID of THIS DFSP
         this.dfspId = config.dfspId;
@@ -90,6 +106,29 @@ class BackendRequests {
     }
 
     /**
+     * Executes a POST /fxQuotes request for the specified fxQuotes request
+     *
+     * @returns {object} - JSON response body if one was received
+     */
+    async postFxQuotes(payload) {
+        return this._post('fxQuotes', payload);
+    }
+
+    /**
+     * Executes a POST /fxTransfers request for the specified fxTransfer prepare
+     *
+     * @returns {object} - JSON response body if one was received
+     */
+    async postFxTransfers(payload) {
+        return this._post('fxTransfers', payload);
+    }
+
+    async patchFxTransfersNotification(notification, conversionId) {
+        const url = `fxTransfers/${conversionId}`;
+        return this._patch(url, notification);
+    }
+
+    /**
      * Executes a POST /transactionRequests request for the specified transaction request
      *
      * @returns {object} - JSON response body if one was received
@@ -148,6 +187,17 @@ class BackendRequests {
     }
 
     /**
+     * Executes a PUT /requestToPay/{ID} request to forward notification for success
+     *
+     * @returns {object} - JSON response body if one was received
+     */
+
+    async putRequestToPayNotification(notifcation, transactionRequestId) {
+        const url = `requestToPay/${transactionRequestId}`;
+        return this._put(url, notifcation);
+    }
+
+    /**
      * Executes a PUT /bulkTransactions/{ID} request
      *
      * @returns {object} - JSON response body if one was received
@@ -179,17 +229,8 @@ class BackendRequests {
             uri: buildUrl(this.backendEndpoint, url),
             headers: this._buildHeaders(),
         };
-
         // Note we do not JWS sign requests with no body i.e. GET requests
-
-        try {
-            this.logger.push({ reqOpts }).log('Executing HTTP GET');
-            return request({...reqOpts, agent: this.agent}).then(throwOrJson);
-        }
-        catch (e) {
-            this.logger.push({ e }).log('Error attempting HTTP GET');
-            throw e;
-        }
+        return this.sendRequest(reqOpts);
     }
 
 
@@ -200,15 +241,7 @@ class BackendRequests {
             headers: this._buildHeaders(),
             body: JSON.stringify(body)
         };
-
-        try {
-            this.logger.push({ reqOpts }).log('Executing HTTP PUT');
-            return request({...reqOpts, agent: this.agent}).then(throwOrJson);
-        }
-        catch (e) {
-            this.logger.push({ e }).log('Error attempting HTTP PUT');
-            throw e;
-        }
+        return this.sendRequest(reqOpts);
     }
 
 
@@ -219,14 +252,36 @@ class BackendRequests {
             headers: this._buildHeaders(),
             body: JSON.stringify(body),
         };
+        return this.sendRequest(reqOpts);
+    }
 
+    _patch(url, body) {
+        const reqOpts = {
+            method: 'PATCH',
+            uri : buildUrl(this.backendEndpoint, url),
+            headers: this._buildHeaders(),
+            body: JSON.stringify(body)
+        };
+        return this.sendRequest(reqOpts);
+    }
+
+    async sendRequest(reqOptions) {
         try {
-            this.logger.push({ reqOpts }).log('Executing HTTP POST');
-            return request({...reqOpts, agent: this.agent}).then(throwOrJson);
-        }
-        catch (e) {
-            this.logger.push({ e }).log('Error attempting POST.');
-            throw e;
+            this.logger.isVerboseEnabled && this.logger.push({ reqOptions }).verbose(`Executing HTTP ${reqOptions?.method}...`);
+            const res = await request({ ...reqOptions, agent: this.agent });
+
+            const data = (res.headers['content-length'] === '0' || res.statusCode === 204)
+                ? null
+                : res.data;
+            this.logger.isVerboseEnabled && this.logger.push({ data }).verbose('Received HTTP response data');
+            return data;
+        } catch (err) {
+            this.logger.push({ err }).error(`Error attempting ${reqOptions?.method} ${reqOptions?.uri}`);
+            const { data, headers, status } = err.response || err;
+            throw new HTTPResponseError({
+                res: { data, headers, status },
+                msg: err?.message
+            });
         }
     }
 }

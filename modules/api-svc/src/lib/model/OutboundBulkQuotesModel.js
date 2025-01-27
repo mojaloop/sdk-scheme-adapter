@@ -1,17 +1,35 @@
-/**************************************************************************
- *  (C) Copyright ModusBox Inc. 2020 - All rights reserved.               *
- *                                                                        *
- *  This file is made available under the terms of the license agreement  *
- *  specified in the corresponding source code repository.                *
- *                                                                        *
- *  ORIGINAL AUTHOR:                                                      *
- *       Steven Oderayi - steven.oderayi@modusbox.com                     *
- **************************************************************************/
+/*****
+ License
+ --------------
+ Copyright © 2020-2025 Mojaloop Foundation
+ The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
 
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+ Contributors
+ --------------
+ This is the official list of the Mojaloop project contributors for this file.
+ Names of the original copyright holders (individuals or organizations)
+ should be listed with a '*' in the first column. People who have
+ contributed from an organization can be listed under the organization
+ that actually holds the copyright for their contributions (see the
+ Mojaloop Foundation for an example). Those individuals should have
+ their names indented and be marked with a '-'. Email address can be added
+ optionally within square brackets <email>.
+
+ * Mojaloop Foundation
+ - Name Surname <name.surname@mojaloop.io>
+
+ * Infitx
+ - Steven Oderayi <steven.oderayi@infitx.com>
+ --------------
+ ******/
 'use strict';
 
-const util = require('util');
-const { uuid } = require('uuidv4');
+const safeStringify = require('fast-safe-stringify');
+const idGenerator = require('@mojaloop/central-services-shared').Util.id;
 const StateMachine = require('javascript-state-machine');
 const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const shared = require('./lib/shared');
@@ -25,6 +43,7 @@ const { SDKStateEnum } = require('./common');
  */
 class OutboundBulkQuotesModel {
     constructor(config) {
+        this._idGenerator = idGenerator(config.idGenerator);
         this._cache = config.cache;
         this._logger = config.logger;
         this._requestProcessingTimeoutSeconds = config.requestProcessingTimeoutSeconds;
@@ -78,7 +97,7 @@ class OutboundBulkQuotesModel {
      * Updates the internal state representation to reflect that of the state machine itself
      */
     _afterTransition() {
-        this._logger.log(`State machine transitioned: ${this.data.currentState} -> ${this.stateMachine.state}`);
+        this._logger.isDebugEnabled && this._logger.debug(`State machine transitioned: ${this.data.currentState} -> ${this.stateMachine.state}`);
         this.data.currentState = this.stateMachine.state;
     }
 
@@ -92,7 +111,7 @@ class OutboundBulkQuotesModel {
 
         // add a bulkQuoteId if one is not present e.g. on first submission
         if(!this.data.hasOwnProperty('bulkQuoteId')) {
-            this.data.bulkQuoteId = uuid();
+            this.data.bulkQuoteId = this._idGenerator();
         }
 
         // initialize the state machine to its starting state
@@ -107,7 +126,7 @@ class OutboundBulkQuotesModel {
      * Handles state machine transitions
      */
     async _handleTransition(lifecycle, ...args) {
-        this._logger.log(`Bulk quote ${this.data.bulkQuoteId} is transitioning from ${lifecycle.from} to ${lifecycle.to} in response to ${lifecycle.transition}`);
+        this._logger.isDebugEnabled && this._logger.debug(`Bulk quote ${this.data.bulkQuoteId} is transitioning from ${lifecycle.from} to ${lifecycle.to} in response to ${lifecycle.transition}`);
 
         switch(lifecycle.transition) {
             case 'init':
@@ -120,12 +139,12 @@ class OutboundBulkQuotesModel {
                 return this._getBulkQuote(this.data.bulkQuoteId);
 
             case 'error':
-                this._logger.log(`State machine is erroring with error: ${util.inspect(args)}`);
+                this._logger.isErrorEnabled && this._logger.error(`State machine is erroring with error: ${safeStringify(args)}`);
                 this.data.lastError = args[0] || new Error('unspecified error');
                 break;
 
             default:
-                throw new Error(`Unhandled state transition for bulk quote ${this.data.bulkQuoteId}: ${util.inspect(args)}`);
+                throw new Error(`Unhandled state transition for bulk quote ${this.data.bulkQuoteId}: ${safeStringify(args)}`);
         }
     }
 
@@ -155,15 +174,15 @@ class OutboundBulkQuotesModel {
                             if (now > bulkQuote.expiration) {
                                 const msg = 'Bulk quote response missed expiry deadline';
                                 error = new BackendError(msg, 504);
-                                this._logger.error(`${msg}: system time=${now} > expiration time=${bulkQuote.expiration}`);
+                                this._logger.isErrorEnabled && this._logger.error(`${msg}: system time=${now} > expiration time=${bulkQuote.expiration}`);
                             }
                         }
                     } else if (message.type === 'bulkQuoteResponseError') {
-                        error = new BackendError(`Got an error response requesting bulk quote: ${util.inspect(message.data.body, { depth: Infinity })}`, 500);
+                        error = new BackendError(`Got an error response requesting bulk quote: ${safeStringify(message.data.body, { depth: Infinity })}`, 500);
                         error.mojaloopError = message.data.body;
                     }
                     else {
-                        this._logger.push({ message }).log(`Ignoring cache notification for bulk quote ${bulkQuoteKey}. Unknown message type ${message.type}.`);
+                        this._logger.isDebugEnabled && this._logger.push({ message }).debug(`Ignoring cache notification for bulk quote ${bulkQuoteKey}. Unknown message type ${message.type}.`);
                         return;
                     }
 
@@ -174,7 +193,7 @@ class OutboundBulkQuotesModel {
                     // no need to await for the unsubscribe to complete.
                     // we dont really care if the unsubscribe fails but we should log it regardless
                     this._cache.unsubscribe(bulkQuoteKey, subId).catch(e => {
-                        this._logger.log(`Error unsubscribing (in callback) ${bulkQuoteKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                        this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in callback) ${bulkQuoteKey} ${subId}: ${e.stack || safeStringify(e)}`);
                     });
 
                     if (error) {
@@ -183,7 +202,7 @@ class OutboundBulkQuotesModel {
 
                     const bulkQuoteResponseBody = message.data;
                     this.data.bulkQuotesResponse = bulkQuoteResponseBody.body;
-                    this._logger.push({ bulkQuoteResponseBody }).log('Bulk quote response received');
+                    this._logger.push({ bulkQuoteResponseBody }).debug('Bulk quote response received');
 
                     return resolve(bulkQuoteResponseBody);
                 }
@@ -198,7 +217,7 @@ class OutboundBulkQuotesModel {
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this._cache.unsubscribe(bulkQuoteKey, subId).catch(e => {
-                    this._logger.log(`Error unsubscribing (in timeout handler) ${bulkQuoteKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in timeout handler) ${bulkQuoteKey} ${subId}: ${e.stack || safeStringify(e)}`);
                 });
 
                 return reject(err);
@@ -208,7 +227,7 @@ class OutboundBulkQuotesModel {
             // a POST /bulkQuotes request to the switch
             try {
                 const res = await this._requests.postBulkQuotes(bulkQuote, this.data.individualQuotes[0].to.fspId);
-                this._logger.push({ res }).log('Bulk quote request sent to peer');
+                this._logger.isDebugEnabled && this._logger.push({ res }).debug('Bulk quote request sent to peer');
             }
             catch (err) {
                 // cancel the timout and unsubscribe before rejecting the promise
@@ -216,7 +235,7 @@ class OutboundBulkQuotesModel {
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this._cache.unsubscribe(bulkQuoteKey, subId).catch(e => {
-                    this._logger.log(`Error unsubscribing (in error handler) ${bulkQuoteKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in error handler) ${bulkQuoteKey} ${subId}: ${e.stack || safeStringify(e)}`);
                 });
 
                 return reject(err);
@@ -245,7 +264,7 @@ class OutboundBulkQuotesModel {
         }
 
         bulkQuoteRequest.individualQuotes = this.data.individualQuotes.map((individualQuote) => {
-            const quoteId = individualQuote.quoteId || uuid();
+            const quoteId = individualQuote.quoteId || this._idGenerator();
             const quote = {
                 quoteId: quoteId,
                 transactionId: individualQuote.transactionId || quoteId,
@@ -257,6 +276,7 @@ class OutboundBulkQuotesModel {
                 },
                 transactionType: {
                     scenario: individualQuote.transactionType,
+                    subScenario: individualQuote.subScenario,
                     // TODO: support payee initiated txns?
                     initiator: 'PAYER',
                     // TODO: defaulting to CONSUMER initiator type should
@@ -295,10 +315,10 @@ class OutboundBulkQuotesModel {
                     let message = JSON.parse(msg);
 
                     if (message.type === 'bulkQuoteError') {
-                        error = new BackendError(`Got an error response retrieving bulk quote: ${util.inspect(message.data.body, { depth: Infinity })}`, 500);
+                        error = new BackendError(`Got an error response retrieving bulk quote: ${safeStringify(message.data.body, { depth: Infinity })}`, 500);
                         error.mojaloopError = message.data.body;
                     } else if (message.type !== 'bulkQuoteResponse') {
-                        this._logger.push({ message }).log(`Ignoring cache notification for bulk quote ${bulkQuoteKey}. Uknokwn message type ${message.type}.`);
+                        this._logger.isDebugEnabled && this._logger.push({ message }).debug(`Ignoring cache notification for bulk quote ${bulkQuoteKey}. Unknown message type ${message.type}.`);
                         return;
                     }
 
@@ -307,7 +327,7 @@ class OutboundBulkQuotesModel {
 
                     // stop listening for bulk quote response messages
                     this._cache.unsubscribe(bulkQuoteKey, subId).catch(e => {
-                        this._logger.log(`Error unsubscribing (in callback) ${bulkQuoteKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                        this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in callback) ${bulkQuoteKey} ${subId}: ${e.stack || safeStringify(e)}`);
                     });
 
                     if (error) {
@@ -315,7 +335,7 @@ class OutboundBulkQuotesModel {
                     }
 
                     const bulkQuote = message.data;
-                    this._logger.push({ bulkQuote }).log('Bulk quote response received');
+                    this._logger.isDebugEnabled && this._logger.push({ bulkQuote }).debug('Bulk quote response received');
 
                     return resolve(bulkQuote);
                 }
@@ -330,7 +350,7 @@ class OutboundBulkQuotesModel {
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this._cache.unsubscribe(bulkQuoteKey, subId).catch(e => {
-                    this._logger.log(`Error unsubscribing (in timeout handler) ${bulkQuoteKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in timeout handler) ${bulkQuoteKey} ${subId}: ${e.stack || safeStringify(e)}`);
                 });
 
                 return reject(err);
@@ -340,7 +360,7 @@ class OutboundBulkQuotesModel {
             // a GET /bulkQuotes/{ID} request to the switch
             try {
                 const res = await this._requests.getBulkQuotes(bulkQuoteId);
-                this._logger.push({ peer: res }).log('Bulk quote lookup sent to peer');
+                this._logger.isDebugEnabled && this._logger.push({ peer: res }).debug('Bulk quote lookup sent to peer');
             }
             catch(err) {
                 // cancel the timout and unsubscribe before rejecting the promise
@@ -348,7 +368,7 @@ class OutboundBulkQuotesModel {
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this._cache.unsubscribe(bulkQuoteKey, subId).catch(e => {
-                    this._logger.log(`Error unsubscribing ${bulkQuoteKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing ${bulkQuoteKey} ${subId}: ${e.stack || safeStringify(e)}`);
                 });
 
                 return reject(err);
@@ -388,7 +408,7 @@ class OutboundBulkQuotesModel {
                 break;
 
             default:
-                this._logger.log(`Bulk quote model response being returned from an unexpected state: ${this.data.currentState}. Returning ERROR_OCCURRED state`);
+                this._logger.isErrorEnabled && this._logger.error(`Bulk quote model response being returned from an unexpected state: ${this.data.currentState}. Returning ERROR_OCCURRED state`);
                 resp.currentState = SDKStateEnum.ERROR_OCCURRED;
                 break;
         }
@@ -403,10 +423,10 @@ class OutboundBulkQuotesModel {
         try {
             this.data.currentState = this.stateMachine.state;
             const res = await this._cache.set(`bulkQuoteModel_${this.data.bulkQuoteId}`, this.data);
-            this._logger.push({ res }).log('Persisted bulk quote model in cache');
+            this._logger.isDebugEnabled && this._logger.push({ res }).debug('Persisted bulk quote model in cache');
         }
         catch(err) {
-            this._logger.push({ err }).log('Error saving bulk quote model');
+            this._logger.push({ err }).error('Error saving bulk quote model');
             throw err;
         }
     }
@@ -423,10 +443,10 @@ class OutboundBulkQuotesModel {
                 throw new Error(`No cached data found for bulkQuoteId: ${bulkQuoteId}`);
             }
             await this.initialize(data);
-            this._logger.push({ cache: this.data }).log('Bulk quote model loaded from cached state');
+            this._logger.isDebugEnabled && this._logger.push({ cache: this.data }).debug('Bulk quote model loaded from cached state');
         }
         catch(err) {
-            this._logger.push({ err }).log('Error loading bulk quote model');
+            this._logger.push({ err }).error('Error loading bulk quote model');
             throw err;
         }
     }
@@ -440,44 +460,44 @@ class OutboundBulkQuotesModel {
             switch(this.data.currentState) {
                 case 'start':
                     await this.stateMachine.requestBulkQuote();
-                    this._logger.log(`Quotes resolved for bulk quote ${this.data.bulkQuoteId}`);
+                    this._logger.isDebugEnabled && this._logger.debug(`Quotes resolved for bulk quote ${this.data.bulkQuoteId}`);
                     break;
 
                 case 'getBulkQuote':
                     await this.stateMachine.getBulkQuote();
-                    this._logger.log(`Get bulk quote ${this.data.bulkQuoteId} has been completed`);
+                    this._logger.isDebugEnabled && this._logger.debug(`Get bulk quote ${this.data.bulkQuoteId} has been completed`);
                     break;
 
                 case 'succeeded':
                     // all steps complete so return
-                    this._logger.log('Bulk quoting completed successfully');
+                    this._logger.isDebugEnabled && this._logger.debug('Bulk quoting completed successfully');
                     await this._save();
                     return this.getResponse();
 
                 case 'errored':
                     // stopped in errored state
-                    this._logger.log('State machine in errored state');
+                    this._logger.isErrorEnabled && this._logger.error('State machine in errored state');
                     return;
             }
 
             // now call ourselves recursively to deal with the next transition
-            this._logger.log(`Bulk quote model state machine transition completed in state: ${this.stateMachine.state}. Recursing to handle next transition.`);
+            this._logger.isDebugEnabled && this._logger.debug(`Bulk quote model state machine transition completed in state: ${this.stateMachine.state}. Recursing to handle next transition.`);
             return this.run();
         }
         catch(err) {
-            this._logger.log(`Error running bulk quote model: ${util.inspect(err)}`);
+            this._logger.isErrorEnabled && this._logger.error(`Error running bulk quote model: ${safeStringify(err)}`);
 
             // as this function is recursive, we dont want to error the state machine multiple times
             if(this.data.currentState !== 'errored') {
                 // err should not have a bulkQuoteState property here!
                 if(err.bulkQuoteState) {
-                    this._logger.log(`State machine is broken: ${util.inspect(err)}`);
+                    this._logger.isErrorEnabled && this._logger.error(`State machine is broken: ${safeStringify(err)}`);
                 }
                 // transition to errored state
                 await this.stateMachine.error(err);
 
                 // avoid circular ref between bulkQuoteState.lastError and err
-                err.bulkQuoteState = JSON.parse(JSON.stringify(this.getResponse()));
+                err.bulkQuoteState = structuredClone(this.getResponse());
             }
             throw err;
         }

@@ -12,7 +12,11 @@
     "userSettings": 1
   },
   "DB": {
-    "URI": "mongodb://ttk:ttk@localhost:27017/ttk"
+    "HOST": "localhost",
+    "PORT": 27017,
+    "USER": "ttk",
+    "PASSWORD": "ttk",
+    "DATABASE": "ttk"
   },
   "OAUTH": {
     "AUTH_ENABLED": false,
@@ -73,6 +77,25 @@
       "hostnames": [],
       "prefix": "/sdk-out",
       "asynchronous": true
+    },
+    {
+      "type": "fspiop",
+      "version": "2.0",
+      "folderPath": "fspiop_2.0",
+      "asynchronous": true
+    },
+    {
+      "type": "sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets",
+      "version": "2.1",
+      "folderPath": "sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets_2.1",
+      "asynchronous": false,
+      "prefix": "/backend"
+    },
+    {
+      "type": "sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets",
+      "version": "2.1",
+      "folderPath": "sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1",
+      "asynchronous": false
     }
   ]
 }

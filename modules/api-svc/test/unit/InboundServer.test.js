@@ -1,27 +1,53 @@
-/**************************************************************************
- *  (C) Copyright ModusBox Inc. 2019 - All rights reserved.               *
- *                                                                        *
- *  This file is made available under the terms of the license agreement  *
- *  specified in the corresponding source code repository.                *
- *                                                                        *
- *  ORIGINAL AUTHOR:                                                      *
- *       James Bush - james.bush@modusbox.com                             *
- **************************************************************************/
+/*****
+ License
+ --------------
+ Copyright © 2020-2025 Mojaloop Foundation
+ The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+ Contributors
+ --------------
+ This is the official list of the Mojaloop project contributors for this file.
+ Names of the original copyright holders (individuals or organizations)
+ should be listed with a '*' in the first column. People who have
+ contributed from an organization can be listed under the organization
+ that actually holds the copyright for their contributions (see the
+ Mojaloop Foundation for an example). Those individuals should have
+ their names indented and be marked with a '-'. Email address can be added
+ optionally within square brackets <email>.
+
+ * Mojaloop Foundation
+ - James Bush <jbush@mojaloop.io>
+
+ --------------
+ ******/
 
 'use strict';
 
+process.env.PEER_ENDPOINT = '172.17.0.3:4000';
+process.env.BACKEND_ENDPOINT = '172.17.0.5:4000';
+process.env.CACHE_URL = 'redis://172.17.0.2:6379';
+process.env.MGMT_API_WS_URL = '0.0.0.0';
+process.env.SUPPORTED_CURRENCIES='USD';
+
 const supertest = require('supertest');
 
+const { ISO_20022_HEADER_PART} = require('../../src/constants');
 const defaultConfig = require('./data/defaultConfig');
 const putPartiesBody = require('./data/putPartiesBody');
 const postQuotesBody = require('./data/postQuotesBody');
 const putParticipantsBody = require('./data/putParticipantsBody');
 const commonHttpHeaders = require('./data/commonHttpHeaders');
+const isoBodies = require('./inboundApi/data/isoBodies.json');
 
-jest.mock('~/lib/cache');
 jest.mock('@mojaloop/sdk-standard-components');
+jest.mock('~/lib/cache');
 jest.mock('~/lib/model/lib/requests', () => require('./lib/model/mockedLibRequests'));
 
+const InboundServer = require('~/InboundServer');
 const Cache = require('~/lib/cache');
 const { Jws, Logger } = require('@mojaloop/sdk-standard-components');
 const path = require('path');
@@ -30,7 +56,7 @@ const os = require('os');
 const http = require('http');
 const https = require('https');
 
-const InboundServer = require('~/InboundServer');
+const logger = new Logger.Logger();
 
 describe('Inbound Server', () => {
     describe('PUT /parties', () => {
@@ -44,8 +70,11 @@ describe('Inbound Server', () => {
         async function testPartiesJwsValidation(validateInboundJws, validateInboundPutPartiesJws, expectedValidationCalls) {
             serverConfig.validateInboundJws = validateInboundJws;
             serverConfig.validateInboundPutPartiesJws = validateInboundPutPartiesJws;
-            const logger = new Logger.Logger({ stringify: () => '' });
-            const cache = new Cache({ cacheUrl: serverConfig.cacheUrl, logger: logger.push({ component: 'cache' }) });
+            const cache = new Cache({
+                cacheUrl: serverConfig.cacheUrl,
+                logger: logger.push({ component: 'cache' }),
+                unsubscribeTimeoutMs: serverConfig.unsubscribeTimeoutMs,
+            });
             const svr = new InboundServer(serverConfig, logger, cache);
             await svr.start();
             await supertest(svr._server)
@@ -60,13 +89,19 @@ describe('Inbound Server', () => {
         }
 
         async function testPartiesHeaderValidation(contentType, expectedStatusCode, expectedBody = null) {
-            const logger = new Logger.Logger({ stringify: () => '' });
-            const cache = new Cache({ cacheUrl: serverConfig.cacheUrl, logger: logger.push({ component: 'cache' }) });
+            const cache = new Cache({
+                cacheUrl: serverConfig.cacheUrl,
+                logger: logger.push({ component: 'cache' }),
+                unsubscribeTimeoutMs: serverConfig.unsubscribeTimeoutMs,
+            });
+            const body = contentType.includes(ISO_20022_HEADER_PART)
+                ? isoBodies.putPartiesRequest
+                : putPartiesBody;
             const svr = new InboundServer(serverConfig, logger, cache);
             await svr.start();
             const result = await supertest(svr._server)
                 .put('/parties/MSISDN/123456789')
-                .send(putPartiesBody)
+                .send(body)
                 .set(commonHttpHeaders)
                 .set('content-type', contentType)
                 .set('fspiop-http-method', 'PUT')
@@ -140,8 +175,11 @@ describe('Inbound Server', () => {
         async function testQuotesJwsValidation(validateInboundJws, validateInboundPutPartiesJws, expectedValidationCalls) {
             serverConfig.validateInboundJws = validateInboundJws;
             serverConfig.validateInboundPutPartiesJws = validateInboundPutPartiesJws;
-            const logger = new Logger.Logger({ stringify: () => '' });
-            const cache = new Cache({ cacheUrl: serverConfig.cacheUrl, logger: logger.push({ component: 'cache' }) });
+            const cache = new Cache({
+                cacheUrl: serverConfig.cacheUrl,
+                logger: logger.push({ component: 'cache' }),
+                unsubscribeTimeoutMs: serverConfig.unsubscribeTimeoutMs,
+            });
             const svr = new InboundServer(serverConfig, logger, cache);
             await svr.start();
             await supertest(svr._server)
@@ -157,8 +195,11 @@ describe('Inbound Server', () => {
         }
 
         async function testQuotesHeaderValidation(contentType, expectedStatusCode, expectedBody = null) {
-            const logger = new Logger.Logger({ stringify: () => '' });
-            const cache = new Cache({ cacheUrl: serverConfig.cacheUrl, logger: logger.push({ component: 'cache' }) });
+            const cache = new Cache({
+                cacheUrl: serverConfig.cacheUrl,
+                logger: logger.push({ component: 'cache' }),
+                unsubscribeTimeoutMs: serverConfig.unsubscribeTimeoutMs,
+            });
             const svr = new InboundServer(serverConfig, logger, cache);
             await svr.start();
             const result = await supertest(svr._server)
@@ -231,8 +272,11 @@ describe('Inbound Server', () => {
         async function testParticipantsJwsValidation(validateInboundJws, validateInboundPutPartiesJws, expectedValidationCalls) {
             serverConfig.validateInboundJws = validateInboundJws;
             serverConfig.validateInboundPutPartiesJws = validateInboundPutPartiesJws;
-            const logger = new Logger.Logger({ stringify: () => '' });
-            const cache = new Cache({ cacheUrl: serverConfig.cacheUrl, logger: logger.push({ component: 'cache' }) });
+            const cache = new Cache({
+                cacheUrl: serverConfig.cacheUrl,
+                logger: logger.push({ component: 'cache' }),
+                unsubscribeTimeoutMs: serverConfig.unsubscribeTimeoutMs,
+            });
             const svr = new InboundServer(serverConfig, logger, cache);
             await svr.start();
             await supertest(svr._server)
@@ -248,8 +292,11 @@ describe('Inbound Server', () => {
         }
 
         async function testParticipantsHeaderValidation(contentType, expectedStatusCode, expectedBody = null) {
-            const logger = new Logger.Logger({ stringify: () => '' });
-            const cache = new Cache({ cacheUrl: serverConfig.cacheUrl, logger: logger.push({ component: 'cache' }) });
+            const cache = new Cache({
+                cacheUrl: serverConfig.cacheUrl,
+                logger: logger.push({ component: 'cache' }),
+                unsubscribeTimeoutMs: serverConfig.unsubscribeTimeoutMs,
+            });
             const svr = new InboundServer(serverConfig, logger, cache);
             await svr.start();
             const result = await supertest(svr._server)
@@ -335,8 +382,11 @@ describe('Inbound Server', () => {
 
         async function testTlsServer(enableTls) {
             defConfig.inbound.tls.mutualTLS.enabled = enableTls;
-            const logger = new Logger.Logger({ stringify: () => '' });
-            const cache = new Cache({ cacheUrl: defConfig.cacheUrl, logger: logger.push({ component: 'cache' }) });
+            const cache = new Cache({
+                cacheUrl: defConfig.cacheUrl,
+                logger: logger.push({ component: 'cache' }),
+                unsubscribeTimeoutMs: defConfig.unsubscribeTimeoutMs,
+            });
             const server = new InboundServer(defConfig, logger, cache);
             await server.start();
             if (enableTls) {
@@ -356,7 +406,6 @@ describe('Inbound Server', () => {
             testTlsServer(false));
     });
 
-
     describe('JWS verification keys', () => {
         let svr;
         let keysDir;
@@ -368,8 +417,11 @@ describe('Inbound Server', () => {
             const mockFilePath = path.join(keysDir, 'mojaloop-sdk.pem');
             fs.writeFileSync(mockFilePath, 'foo-key');
             serverConfig.jwsVerificationKeysDirectory = keysDir;
-            const logger = new Logger.Logger({ stringify: () => '' });
-            const cache = new Cache({ cacheUrl: serverConfig.cacheUrl, logger: logger.push({ component: 'cache' }) });
+            const cache = new Cache({
+                cacheUrl: serverConfig.cacheUrl,
+                logger: logger.push({ component: 'cache' }),
+                unsubscribeTimeoutMs: serverConfig.unsubscribeTimeoutMs,
+            });
             svr = new InboundServer(serverConfig, logger, cache);
             await svr.start();
         });

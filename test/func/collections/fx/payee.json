@@ -1,0 +1,81 @@
+{
+    "options": {},
+    "name": "FX Payee",
+    "test_cases": [
+      {
+        "id": 1,
+        "name": "Parties",
+        "fileInfo": {
+          "path": "new-folder/fx-payee.json"
+        },
+        "meta": {
+          "info": "Parties"
+        },
+        "requests": [
+          {
+            "id": 1,
+            "description": "Get Parties with Supported Currency and KYC",
+            "apiVersion": {
+              "minorVersion": 1,
+              "majorVersion": 2,
+              "type": "sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets",
+              "asynchronous": false,
+              "specFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/api_spec.yaml",
+              "responseMapFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/response_map.json",
+              "responseMapFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/response_map.json",
+              "jsfRefFile": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/mockRef.json",
+              "triggerTemplatesFolder": "spec_files/api_definitions/sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1/trigger_templates"
+            },
+            "operationPath": "/parties/{Type}/{ID}",
+            "path": "/parties/MSISDN/4561131415",
+            "method": "get",
+            "params": {
+              "Type": "MSISDN",
+              "ID": "4561131415"
+            },
+            "tests": {
+              "assertions": [
+                {
+                  "id": 1,
+                  "description": "Response status to be 200",
+                  "exec": [
+                    "expect(response.status).to.equal(200)"
+                  ]
+                },
+                {
+                  "id": 3,
+                  "description": "Response Content Length not 0",
+                  "exec": [
+                    "expect(response.headers['Content-Length']).to.not.equal('0')"
+                  ]
+                },
+                {
+                  "id": 4,
+                  "description": "Response body should contain party",
+                  "exec": [
+                    "expect(response.body).to.have.property('party')"
+                  ]
+                },
+                {
+                  "id": 5,
+                  "description": "Response partyIdInfo (partyIdType, partyIdentifier)",
+                  "exec": [
+                    "expect(response.body.party.body).to.have.property('supportedCurrencies')",
+                    ""
+                  ]
+                },
+                {
+                  "id": 6,
+                  "description": "Response personalDetails should contain KYC information",
+                  "exec": [
+                    "expect(response.body.party.body.personalInfo).to.have.property('kycInformation')",
+                    ""
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }

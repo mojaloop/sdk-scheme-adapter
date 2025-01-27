@@ -1,35 +1,59 @@
-/**************************************************************************
- *  (C) Copyright ModusBox Inc. 2019 - All rights reserved.               *
- *                                                                        *
- *  This file is made available under the terms of the license agreement  *
- *  specified in the corresponding source code repository.                *
- *                                                                        *
- *  ORIGINAL AUTHOR:                                                      *
- *       James Bush - james.bush@modusbox.com                             *
- **************************************************************************/
+/*****
+ License
+ --------------
+ Copyright © 2020-2025 Mojaloop Foundation
+ The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+ Contributors
+ --------------
+ This is the official list of the Mojaloop project contributors for this file.
+ Names of the original copyright holders (individuals or organizations)
+ should be listed with a '*' in the first column. People who have
+ contributed from an organization can be listed under the organization
+ that actually holds the copyright for their contributions (see the
+ Mojaloop Foundation for an example). Those individuals should have
+ their names indented and be marked with a '-'. Email address can be added
+ optionally within square brackets <email>.
+
+ * Mojaloop Foundation
+ - James Bush <jbush@mojaloop.io>
+
+ --------------
+ ******/
 
 'use strict';
+
+process.env.PEER_ENDPOINT = '172.17.0.3:4000';
+process.env.BACKEND_ENDPOINT = '172.17.0.5:4000';
+process.env.CACHE_URL = 'redis://172.17.0.2:6379';
+process.env.MGMT_API_WS_URL = '0.0.0.0';
+process.env.SUPPORTED_CURRENCIES='USD';
 
 // we use a mock standard components lib to intercept and mock certain funcs
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('redis');
 
-const Cache = require('~/lib/cache');
-const { MetricsClient } = require('~/lib/metrics');
-const Model = require('~/lib/model').OutboundTransfersModel;
-const PartiesModel = require('~/lib/model').PartiesModel;
-
 const { MojaloopRequests, Logger } = require('@mojaloop/sdk-standard-components');
+const FSPIOPTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.TransferState;
 const StateMachine = require('javascript-state-machine');
 
+const Model = require('~/lib/model').OutboundTransfersModel;
+const PartiesModel = require('~/lib/model').PartiesModel;
+const Cache = require('~/lib/cache');
+const { MetricsClient } = require('~/lib/metrics');
+
+const mocks = require('./data/mocks');
 const defaultConfig = require('./data/defaultConfig');
 const transferRequest = require('./data/transferRequest');
 const payeeParty = require('./data/payeeParty');
 const quoteResponseTemplate = require('./data/quoteResponse');
 const transferFulfil = require('./data/transferFulfil');
 
-const { SDKStateEnum } = require('../../../../src/lib/model/common');
-const FSPIOPTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.TransferState;
+const { SDKStateEnum, CacheKeyPrefixes, States, ErrorMessages, AmountTypes } = require('../../../../src/lib/model/common');
 
 const genPartyId = (party) => {
     const { partyIdType, partyIdentifier, partySubIdOrType } = party.body.party.partyIdInfo;
@@ -54,7 +78,7 @@ const dummyRequestsModuleResponse = {
     originalRequest: {}
 };
 
-describe('outboundModel', () => {
+describe('OutboundTransfersModel Tests', () => {
     let quoteResponse;
     let config;
     let logger;
@@ -168,6 +192,7 @@ describe('outboundModel', () => {
         cache = new Cache({
             cacheUrl: 'redis://dummy:1234',
             logger,
+            unsubscribeTimeoutMs: 5000
         });
         await cache.connect();
     });
@@ -435,7 +460,6 @@ describe('outboundModel', () => {
         expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
         expect(StateMachine.__instance.state).toBe('succeeded');
     });
-
 
     test('resolves payee and halts when AUTO_ACCEPT_PARTY is false', async () => {
         config.autoAcceptParty = false;
@@ -987,7 +1011,7 @@ describe('outboundModel', () => {
         result = await model.run({ acceptQuote: false });
 
         expect(result.currentState).toBe(SDKStateEnum.ABORTED);
-        expect(result.abortedReason).toBe('Quote rejected by backend');
+        expect(result.abortedReason).toBe(ErrorMessages.quoteRejectedByBackend);
         expect(StateMachine.__instance.state).toBe('aborted');
     });
 
@@ -1077,14 +1101,14 @@ describe('outboundModel', () => {
         result = await model.run({ acceptQuote: false });
 
         expect(result.currentState).toBe(SDKStateEnum.ABORTED);
-        expect(result.abortedReason).toBe('Quote rejected by backend');
+        expect(result.abortedReason).toBe(ErrorMessages.quoteRejectedByBackend);
         expect(StateMachine.__instance.state).toBe('aborted');
 
         // now run the model again. this should get the same result as previous one
         result = await model.run({ acceptQuote: false });
 
         expect(result.currentState).toBe(SDKStateEnum.ABORTED);
-        expect(result.abortedReason).toBe('Quote rejected by backend');
+        expect(result.abortedReason).toBe(ErrorMessages.quoteRejectedByBackend);
         expect(StateMachine.__instance.state).toBe('aborted');
     });
 
@@ -1367,7 +1391,7 @@ describe('outboundModel', () => {
             }
         };
 
-        const errMsg = 'Got an error response resolving party: { errorInformation: { errorCode: \'3204\', errorDescription: \'Party not found\' } }';
+        const errMsg = 'Got an error response resolving party: {"errorInformation":{"errorCode":"3204","errorDescription":"Party not found"}}';
 
         try {
             await model.run();
@@ -1426,7 +1450,7 @@ describe('outboundModel', () => {
 
         expect(StateMachine.__instance.state).toBe('start');
 
-        const errMsg = 'Got an error response requesting quote: { errorInformation:\n   { errorCode: \'3205\', errorDescription: \'Quote ID not found\' } }';
+        const errMsg = 'Got an error response requesting quote: {"errorInformation":{"errorCode":"3205","errorDescription":"Quote ID not found"}}';
 
         try {
             await model.run();
@@ -1489,7 +1513,7 @@ describe('outboundModel', () => {
 
         expect(StateMachine.__instance.state).toBe('start');
 
-        const errMsg = 'Got an error response preparing transfer: { errorInformation:\n   { errorCode: \'4001\',\n     errorDescription: \'Payer FSP insufficient liquidity\' } }';
+        const errMsg = 'Got an error response preparing transfer: {"errorInformation":{"errorCode":"4001","errorDescription":"Payer FSP insufficient liquidity"}}';
 
         try {
             await model.run();
@@ -1542,38 +1566,307 @@ describe('outboundModel', () => {
         expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_outbound_party_lookup_latency'));
     });
 
-    test('skips resolving party when to.fspid is specified and skipPartyLookup is truthy', async () => {
-        config.autoAcceptParty = false;
-        config.autoAcceptQuotes = false;
+    describe('FX flow Tests -->', () => {
+        const TARGET_AMOUNT = '48000';
+        let model;
 
-        let model = new Model({
-            cache,
-            logger,
-            metricsClient,
-            ...config,
+        const publishAndReply = async (channel, payload) => {
+            await cache.publish(channel, JSON.stringify(payload));
+            return mocks.mockMojaApiResponse();
+        };
+
+        const makeGetPartiesCallbackResponse = (body = mocks.mockGetPartyResponse())  =>
+            jest.fn(async (idType, idValue, idSubValue) => {
+                const channel = `parties-${idType}-${idValue}-${idSubValue}`;
+                await cache.publish(channel, JSON.stringify({ body }));
+                // note, putParties message doesn't have "data" field
+                return mocks.mockMojaApiResponse();
+            });
+
+        const postFxQuotesRequest = jest.fn(async (payload) => {
+            const channel = `${CacheKeyPrefixes.FX_QUOTE_CALLBACK_CHANNEL}_${payload.conversionRequestId}`;
+            // eslint-disable-next-line no-unused-vars
+            const { conversionRequestId, ...restPayload} = payload;
+            restPayload.conversionTerms.targetAmount.amount = TARGET_AMOUNT; // todo: find a better way
+            return publishAndReply(channel, {
+                success: true,
+                data: {
+                    body: {
+                        ...restPayload,
+                        condition: 'fxCondition'
+                    },
+                    headers: {},
+                }
+            });
         });
 
-        let req = JSON.parse(JSON.stringify(transferRequest));
-        const testFspId = 'TESTDESTFSPID';
-        req.to.fspId = testFspId;
-        req.skipPartyLookup = true;
+        const postQuotesRequest = jest.fn(async (payload) => {
+            const channel = `qt_${payload.quoteId}`;
+            return publishAndReply(channel, {
+                data: {
+                    body: mocks.mockPutQuotesResponse(),
+                    headers: {},
+                },
+                type: 'quoteResponse'
+            });
 
-        await model.initialize(req);
+        });
 
-        expect(StateMachine.__instance.state).toBe('start');
+        const postFxTransfersRequest = jest.fn(async (payload) => {
+            const channel = `${CacheKeyPrefixes.FX_TRANSFER_CALLBACK_CHANNEL}_${payload.commitRequestId}`;
+            return publishAndReply(channel, {
+                success: true,
+                data: {
+                    body: { ...payload },
+                    headers: {},
+                }
+            });
+        });
 
-        // start the model running
-        let resultPromise = model.run();
+        const postFxTransfersRequestReturnedInvalidFulfilment = jest.fn(async (payload) => {
+            const channel = `${CacheKeyPrefixes.FX_TRANSFER_CALLBACK_CHANNEL}_${payload.commitRequestId}`;
+            return publishAndReply(channel, {
+                success: true,
+                data: {
+                    body: {
+                        ...mocks.mockFxTransfersInternalResponse(),
+                        fulfilment: 'invalid-fulfilment'
+                    },
+                    headers: {},
+                }
+            });
+        });
 
-        // now we started the model running we simulate a callback with the quote response
-        cache.publish(`qt_${model.data.quoteId}`, JSON.stringify(quoteResponse));
+        const postTransfersRequest = jest.fn(async (payload) => {
+            const channel = `tf_${payload.transferId}`;
+            return publishAndReply(channel, {
+                data: {},
+                type: 'transferFulfil'
+            });
+        });
 
-        // wait for the model to reach a terminal state
-        let result = await resultPromise;
+        beforeEach(() => {
+            model = new Model({
+                cache,
+                logger: new Logger.Logger({ context: { app: 'outbound-model-fx-flow-unit-tests' } }),
+                metricsClient,
+                ...config,
+            });
+            model._checkIlp = false;
+            model._requests.getParties = makeGetPartiesCallbackResponse();
+            model._requests.postFxQuotes = postFxQuotesRequest;
+            model._requests.postQuotes = postQuotesRequest;
+            model._requests.postFxTransfers = postFxTransfersRequest;
+            model._requests.postTransfers = postTransfersRequest;
+        });
 
-        // check we stopped at quoteReceived state
-        expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE);
-        expect(StateMachine.__instance.state).toBe('quoteReceived');
+        afterEach(async () => {
+            jest.clearAllMocks();
+        });
+
+        test.todo('should throw error if fxp providers found');
+
+        test('should throw error if payee empty supported currencies returned', async () => {
+            const partyWithEmptySupportedCurrencies = mocks.mockGetPartyResponse({
+                supportedCurrencies: []
+            });
+            model._requests.getParties = makeGetPartiesCallbackResponse(partyWithEmptySupportedCurrencies);
+            await model.initialize({
+                ...mocks.coreConnectorPostTransfersPayloadDto(),
+                currentState: States.START,
+            });
+            expect(model.data.currentState).toBe(States.START);
+            await expect(model.run())
+                .rejects.toThrowError(ErrorMessages.noSupportedCurrencies);
+        });
+
+        test('should wait for acceptQuotes callback if FX is needed and amountType is RECEIVE', async () => {
+            const amountType = AmountTypes.RECEIVE;
+            const partyWithAnotherCurrency = mocks.mockGetPartyResponse({
+                supportedCurrencies: ['XXX']
+            });
+            model._requests.getParties = makeGetPartiesCallbackResponse(partyWithAnotherCurrency);
+            model._autoAcceptQuotes = false;
+            await model.initialize({
+                ...mocks.coreConnectorPostTransfersPayloadDto({ amountType }),
+                currentState: States.START,
+            });
+            expect(model.data.currentState).toBe(States.START);
+
+            const result = await model.run();
+            expect(result.needFx).toBe(true);
+            expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE);
+        });
+
+        test('should process callback for POST fxQuotes request', async () => {
+            await model.initialize({
+                ...mocks.coreConnectorPostTransfersPayloadDto(),
+                currentState: States.PAYEE_RESOLVED,
+                needFx: true,
+                supportedCurrencies: ['USD']
+            });
+            expect(model.data.currentState).toBe(States.PAYEE_RESOLVED);
+
+            const result = await model.run();
+            expect(result).toBeTruthy();
+            expect(result.fxQuoteRequest).toBeTruthy();
+            expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_CONVERSION_ACCEPTANCE);
+            expect(model.data.currentState).toBe(States.FX_QUOTE_RECEIVED);
+        });
+
+        test('should throw error on expired quote response when config rejectExpiredQuoteResponses is truthy', async () => {
+            model._rejectExpiredQuoteResponses = true;
+            // replace function to return expired timestamp
+            model._getExpirationTimestamp = () => {
+                let now = new Date();
+                return new Date(now.getTime() - 1000).toISOString();
+            };
+            await model.initialize({
+                ...mocks.coreConnectorPostTransfersPayloadDto(),
+                currentState: States.PAYEE_RESOLVED,
+                needFx: true,
+                supportedCurrencies: ['USD'],
+            });
+            expect(model.data.currentState).toBe(States.PAYEE_RESOLVED);
+            await expect(model.run()).rejects.toThrowError(`${ErrorMessages.responseMissedExpiryDeadline} (fxQuote)`);
+        });
+
+        test('should process callback for POST fxTransfers request', async () => {
+            await model.initialize({
+                ...mocks.coreConnectorPostTransfersPayloadDto(),
+                currentState: States.QUOTE_RECEIVED,
+                needFx: true,
+                supportedCurrencies: ['USD'],
+                acceptQuote: true,
+                fxQuoteResponse: {
+                    body: mocks.mockFxQuotesPayload(),
+                },
+                quoteResponse: {
+                    body: {
+                        transferAmount: {},
+                    }
+                },
+                quoteRequest: {}
+            });
+            expect(model.data.currentState).toBe(States.QUOTE_RECEIVED);
+
+            const result = await model.run();
+            expect(result).toBeTruthy();
+            expect(result.fxTransferRequest).toBeTruthy();
+            expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
+            expect(model.data.currentState).toBe(States.SUCCEEDED);
+            expect(model._requests.postTransfers).toHaveBeenCalledTimes(1);
+        });
+
+        test('should throw error on expired fxtransfer fulfil when config rejectExpiredTransferFulfils is truthy', async () => {
+            model._rejectExpiredTransferFulfils = true;
+            // replace function to return expired timestamp
+            model._getExpirationTimestamp = () => {
+                let now = new Date();
+                return new Date(now.getTime() - 1000).toISOString();
+            };
+            await model.initialize({
+                ...mocks.coreConnectorPostTransfersPayloadDto(),
+                currentState: States.QUOTE_RECEIVED,
+                needFx: true,
+                supportedCurrencies: ['USD'],
+                acceptQuote: true,
+                fxQuoteResponse: {
+                    body: mocks.mockFxQuotesPayload(),
+                },
+                quoteResponse: {
+                    body: {
+                        transferAmount: {},
+                    }
+                }
+            });
+            expect(model.data.currentState).toBe(States.QUOTE_RECEIVED);
+            await expect(model.run()).rejects.toThrowError(`${ErrorMessages.responseMissedExpiryDeadline} (fxTransfers fulfil)`);
+        });
+
+        test('should throw error on invalid transfer fulfil when config checkIlp is truthy', async () => {
+            model._checkIlp = true;
+            model._requests.postFxTransfers = postFxTransfersRequestReturnedInvalidFulfilment;
+            // replace ilp validation function since it's mocked for one test
+            model._ilp = { validateFulfil: jest.fn(() => false) };
+            await model.initialize({
+                ...mocks.coreConnectorPostTransfersPayloadDto(),
+                currentState: States.QUOTE_RECEIVED,
+                needFx: true,
+                supportedCurrencies: ['USD'],
+                acceptQuote: true,
+                fxQuoteResponse: {
+                    body: mocks.mockFxQuotesResponse(),
+                },
+                quoteResponse: {
+                    body: {
+                        transferAmount: {},
+                    }
+                }
+            });
+            expect(model.data.currentState).toBe(States.QUOTE_RECEIVED);
+            await expect(model.run()).rejects.toThrowError(ErrorMessages.invalidFulfilment);
+        });
+
+        test('should pass e2e FX transfer SEND flow (no autoAccept... configs)', async () => {
+            model._autoAcceptParty = false;
+            model._autoAcceptQuotes = false;
+
+            await model.initialize({
+                ...mocks.coreConnectorPostTransfersPayloadDto({ amountType: AmountTypes.SEND })
+            });
+            expect(model.data.currentState).toBe(States.START);
+
+            let result = await model.run();
+            expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_PARTY_ACCEPTANCE);
+            expect(model.data.currentState).toBe(States.PAYEE_RESOLVED);
+            expect(model.data.needFx).toBe(true);
+
+            result = await model.run({ acceptParty: true });
+            expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_CONVERSION_ACCEPTANCE);
+            expect(result.fxQuoteRequest).toBeTruthy();
+            expect(model.data.currentState).toBe(States.FX_QUOTE_RECEIVED);
+
+            result = await model.run({ acceptConversion: true });
+            expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE);
+            expect(model.data.currentState).toBe(States.QUOTE_RECEIVED);
+            expect(model._requests.postQuotes).toHaveBeenCalledTimes(1);
+
+            const [quote] = model._requests.postQuotes.mock.calls[0];
+            expect(quote.amount.currency).toBe(model.data.supportedCurrencies[0]);
+            expect(quote.amount.amount).toBe(TARGET_AMOUNT);
+
+            result = await model.run({ acceptQuote: true });
+            expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
+            expect(model.data.currentState).toBe(States.SUCCEEDED);
+        });
+
+        test('should pass e2e FX transfer RECEIVE flow (no autoAccept... configs)', async () => {
+            model._autoAcceptParty = false;
+            model._autoAcceptQuotes = false;
+            await model.initialize({
+                ...mocks.coreConnectorPostTransfersPayloadDto({ amountType: AmountTypes.RECEIVE })
+            });
+            expect(model.data.currentState).toBe(States.START);
+
+            let result = await model.run();
+            expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_PARTY_ACCEPTANCE);
+            expect(model.data.currentState).toBe(States.PAYEE_RESOLVED);
+            expect(model.data.needFx).toBe(true);
+
+            result = await model.run({ acceptParty: true });
+            expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE);
+            expect(result.quoteResponse).toBeTruthy();
+            expect(model.data.currentState).toBe(States.QUOTE_RECEIVED);
+
+            result = await model.run({ acceptQuote: true });
+            expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_CONVERSION_ACCEPTANCE);
+            expect(result.fxQuoteResponse).toBeTruthy();
+            expect(model.data.currentState).toBe(States.FX_QUOTE_RECEIVED);
+
+            result = await model.run({ acceptConversion: true });
+            expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
+            expect(model.data.currentState).toBe(States.SUCCEEDED);
+        });
     });
-
 });

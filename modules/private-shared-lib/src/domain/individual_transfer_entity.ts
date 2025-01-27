@@ -1,24 +1,28 @@
 /*****
  License
  --------------
- Copyright © 2017 Bill & Melinda Gates Foundation
- The Mojaloop files are made available by the Bill & Melinda Gates Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
+ Copyright © 2020-2025 Mojaloop Foundation
+ The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
+
  http://www.apache.org/licenses/LICENSE-2.0
+
  Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
  Contributors
  --------------
- This is the official list (alphabetical ordering) of the Mojaloop project contributors for this file.
+ This is the official list of the Mojaloop project contributors for this file.
  Names of the original copyright holders (individuals or organizations)
  should be listed with a '*' in the first column. People who have
  contributed from an organization can be listed under the organization
  that actually holds the copyright for their contributions (see the
- Gates Foundation organization for an example). Those individuals should have
+ Mojaloop Foundation for an example). Those individuals should have
  their names indented and be marked with a '-'. Email address can be added
  optionally within square brackets <email>.
- * Gates Foundation
- - Name Surname <name.surname@gatesfoundation.com>
- * Modusbox
- - Vijay Kumar Guthi <vijaya.guthi@modusbox.com>
+
+ * Mojaloop Foundation
+ - Name Surname <name.surname@mojaloop.io>
+ * Infitx
+ - Vijay Kumar Guthi <vijaya.guthi@infitx.com>
  --------------
  ******/
 
@@ -127,7 +131,7 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         return this._state.acceptQuote;
     }
 
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+
     static CreateFromRequest(
         request: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionIndividualTransfer,
     ): IndividualTransferEntity {
@@ -206,8 +210,7 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         return this._state.partyResponse?.party?.partyIdInfo?.fspId;
     }
 
-    // TODO: Refactor SDKSchemeAdapter.V2_0_0.Inbound -> DFSP.V2_0_0.Inbound
-    toIndividualTransferResult(): SDKSchemeAdapter.V2_0_0.Inbound.Types.bulkTransactionIndividualTransferResult {
+    toIndividualTransferResult(): SDKSchemeAdapter.V2_0_0.Backend.Types.bulkTransactionIndividualTransferResult {
         // TODO: Should we infer the FSPIOP-transferState for the individualTransfer based on the SDK-IndividualTransferInternalState? See comments below in the Fulfil mapping.
         // eslint-disable-next-line max-len
         const transferState = (this.transferState === IndividualTransferInternalState.TRANSFERS_SUCCESS) ? CentralServicedSharedEnum.Transfers.TransferState.COMMITTED : CentralServicedSharedEnum.Transfers.TransferState.ABORTED;
@@ -233,7 +236,6 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         };
     }
 
-    /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */
     constructor(initialState: IndividualTransferState) {
         IndividualTransferEntity._validateRequest(initialState.request);
         super(initialState);

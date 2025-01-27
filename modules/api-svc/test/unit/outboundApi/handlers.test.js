@@ -1,14 +1,37 @@
-/**************************************************************************
- *  (C) Copyright ModusBox Inc. 2019 - All rights reserved.               *
- *                                                                        *
- *  This file is made available under the terms of the license agreement  *
- *  specified in the corresponding source code repository.                *
- *                                                                        *
- *  ORIGINAL AUTHOR:                                                      *
- *       James Bush - james.bush@modusbox.com                             *
- **************************************************************************/
+/*****
+ License
+ --------------
+ Copyright © 2020-2025 Mojaloop Foundation
+ The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+ Contributors
+ --------------
+ This is the official list of the Mojaloop project contributors for this file.
+ Names of the original copyright holders (individuals or organizations)
+ should be listed with a '*' in the first column. People who have
+ contributed from an organization can be listed under the organization
+ that actually holds the copyright for their contributions (see the
+ Mojaloop Foundation for an example). Those individuals should have
+ their names indented and be marked with a '-'. Email address can be added
+ optionally within square brackets <email>.
+
+ * Mojaloop Foundation
+ - James Bush <jbush@mojaloop.io>
+
+ --------------
+ ******/
 
 'use strict';
+
+process.env.PEER_ENDPOINT = '172.17.0.3:4000';
+process.env.BACKEND_ENDPOINT = '172.17.0.5:4000';
+process.env.CACHE_URL = 'redis://172.17.0.2:6379';
+process.env.MGMT_API_WS_URL = '0.0.0.0';
+process.env.SUPPORTED_CURRENCIES='USD';
 
 const mockError = require('./data/mockError');
 const mockBulkQuoteError = require('./data/mockBulkQuoteError');
@@ -23,7 +46,7 @@ const bulkQuoteRequest = require('./data/bulkQuoteRequest');
 const requestToPayPayload = require('./data/requestToPay');
 const requestToPayTransferRequest = require('./data/requestToPayTransferRequest');
 const mockLogger = require('../mockLogger');
-const { uuid } = require('uuidv4');
+const uuid = require('@mojaloop/central-services-shared').Util.id({type: 'ulid'});
 
 jest.mock('~/lib/model');
 
@@ -147,7 +170,13 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: { log: () => {} },
+                    logger: {
+                        log: () => {},
+                        debug: () => {},
+                        error: () => {},
+                        isDebugEnabled: () => {},
+                        isErrorEnabled: () => {}
+                    },
                 }
             };
 
@@ -175,7 +204,13 @@ describe('Outbound API handlers:', () => {
                     conf: {
                         outboundErrorStatusCodeExtensionKey: 'extErrorKey'  // <- tell the handler to use this extensionList item as source of statusCode
                     },
-                    logger: { log: () => {} },
+                    logger: {
+                        log: () => {},
+                        debug: () => {},
+                        error: () => {},
+                        isDebugEnabled: () => {},
+                        isErrorEnabled: () => {}
+                    },
                 }
             };
 
@@ -207,7 +242,13 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: { log: () => {} },
+                    logger: {
+                        log: () => {},
+                        debug: () => {},
+                        error: () => {},
+                        isDebugEnabled: () => {},
+                        isErrorEnabled: () => {}
+                    },
                     path: {
                         params: {
                             transferId: '12345'
@@ -239,7 +280,13 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: { log: () => {} },
+                    logger: {
+                        log: () => {},
+                        debug: () => {},
+                        error: () => {},
+                        isDebugEnabled: () => {},
+                        isErrorEnabled: () => {}
+                    },
                 }
             };
 
@@ -267,7 +314,13 @@ describe('Outbound API handlers:', () => {
                     conf: {
                         outboundErrorStatusCodeExtensionKey: 'extErrorKey'  // <- tell the handler to use this extensionList item as source of statusCode
                     },
-                    logger: { log: () => {} },
+                    logger: {
+                        log: () => {},
+                        debug: () => {},
+                        error: () => {},
+                        isDebugEnabled: () => {},
+                        isErrorEnabled: () => {}
+                    },
                 }
             };
 
@@ -297,7 +350,13 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: { log: () => {} },
+                    logger: {
+                        log: () => {},
+                        debug: () => {},
+                        error: () => {},
+                        isDebugEnabled: () => {},
+                        isErrorEnabled: () => {}
+                    },
                 }
             };
 
@@ -325,7 +384,13 @@ describe('Outbound API handlers:', () => {
                     conf: {
                         outboundErrorStatusCodeExtensionKey: 'extErrorKey'  // <- tell the handler to use this extensionList item as source of statusCode
                     },
-                    logger: { log: () => {} },
+                    logger: {
+                        log: () => {},
+                        debug: () => {},
+                        error: () => {},
+                        isDebugEnabled: () => {},
+                        isErrorEnabled: () => {}
+                    },
                 }
             };
 
@@ -355,7 +420,13 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: { log: () => {} },
+                    logger: {
+                        log: () => {},
+                        debug: () => {},
+                        error: () => {},
+                        isDebugEnabled: () => {},
+                        isErrorEnabled: () => {}
+                    },
                     eventLogger: { info: () => {}},
                     eventProducer: { sendDomainEvent: jest.fn() },
                 }
@@ -394,7 +465,13 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: { log: () => {} },
+                    logger: {
+                        log: () => {},
+                        debug: () => {},
+                        error: () => {},
+                        isDebugEnabled: () => {},
+                        isErrorEnabled: () => {}
+                    },
                     eventLogger: { info: () => {}},
                     eventProducer: { sendDomainEvent: jest.fn() },
                     path: {
@@ -436,7 +513,13 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: { log: () => {} },
+                    logger: {
+                        log: () => {},
+                        debug: () => {},
+                        error: () => {},
+                        isDebugEnabled: () => {},
+                        isErrorEnabled: () => {}
+                    },
                     eventLogger: { info: () => {}},
                     eventProducer: { sendDomainEvent: jest.fn() },
                     path: {
@@ -470,7 +553,13 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: { log: () => {} },
+                    logger: {
+                        log: () => {},
+                        debug: () => {},
+                        error: () => {},
+                        isDebugEnabled: () => {},
+                        isErrorEnabled: () => {}
+                    },
                 }
             };
 
@@ -497,7 +586,13 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: { log: () => {} }
+                    logger: {
+                        log: () => {},
+                        debug: () => {},
+                        error: () => {},
+                        isDebugEnabled: () => {},
+                        isErrorEnabled: () => {},
+                    },
                 }
             };
 
@@ -520,7 +615,7 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    wso2Auth: 'mocked wso2Auth',
+                    wso2: 'mocked wso2',
                     logger: mockLogger({ app: 'outbound-api-handlers-test'}),
                     cache: { the: 'mocked cache' },
                     path: {
@@ -554,7 +649,7 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                wso2Auth: state.wso2Auth
+                wso2: state.wso2
             };
             expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
 
@@ -576,7 +671,7 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    wso2Auth: 'mocked wso2Auth',
+                    wso2: 'mocked wso2',
                     logger: mockLogger({ app: 'outbound-api-handlers-test'}),
                     cache: { the: 'mocked cache' },
                     path: {
@@ -610,7 +705,7 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                wso2Auth: state.wso2Auth
+                wso2: state.wso2
             };
             expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
 
@@ -632,7 +727,7 @@ describe('Outbound API handlers:', () => {
             response: {},
             state: {
                 conf: {},
-                wso2Auth: 'mocked wso2Auth',
+                wso2: 'mocked wso2',
                 logger: mockLogger({ app: 'outbound-api-handlers-test'}),
                 cache: {
                     subscribe: jest.fn(() => Promise.resolve())
@@ -668,7 +763,7 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                wso2Auth: state.wso2Auth
+                wso2: state.wso2
             };
             expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
 
@@ -702,7 +797,7 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                wso2Auth: state.wso2Auth
+                wso2: state.wso2
             };
             expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
 
@@ -740,7 +835,7 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                wso2Auth: state.wso2Auth
+                wso2: state.wso2
             };
             expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
 
@@ -781,7 +876,7 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                wso2Auth: state.wso2Auth
+                wso2: state.wso2
             };
             expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
 
@@ -815,7 +910,7 @@ describe('Outbound API handlers:', () => {
             response: {},
             state: {
                 conf: {},
-                wso2Auth: 'mocked wso2Auth',
+                wso2: 'mocked wso2',
                 logger: mockLogger({ app: 'outbound-api-handlers-test' }),
                 cache: {
                     subscribe: jest.fn(() => Promise.resolve())
@@ -844,7 +939,7 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                wso2Auth: state.wso2Auth
+                wso2: state.wso2
             };
             expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
 
@@ -881,7 +976,7 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                wso2Auth: state.wso2Auth
+                wso2: state.wso2
             };
             expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
 
@@ -914,7 +1009,7 @@ describe('Outbound API handlers:', () => {
             response: {},
             state: {
                 conf: {},
-                wso2Auth: 'mocked wso2Auth',
+                wso2: 'mocked wso2',
                 logger: mockLogger({ app: 'outbound-api-handlers-test' }),
                 cache: {
                     subscribe: jest.fn(() => Promise.resolve())
@@ -943,7 +1038,7 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                wso2Auth: state.wso2Auth
+                wso2: state.wso2
             };
             expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
 
@@ -980,7 +1075,7 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                wso2Auth: state.wso2Auth
+                wso2: state.wso2
             };
             expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
 

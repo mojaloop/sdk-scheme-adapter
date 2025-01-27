@@ -1,38 +1,63 @@
-/**************************************************************************
- *  (C) Copyright ModusBox Inc. 2019 - All rights reserved.               *
- *                                                                        *
- *  This file is made available under the terms of the license agreement  *
- *  specified in the corresponding source code repository.                *
- *                                                                        *
- *  ORIGINAL AUTHOR:                                                      *
- *       James Bush - james.bush@modusbox.com                             *
- **************************************************************************/
+/*****
+ License
+ --------------
+ Copyright © 2020-2025 Mojaloop Foundation
+ The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+ Contributors
+ --------------
+ This is the official list of the Mojaloop project contributors for this file.
+ Names of the original copyright holders (individuals or organizations)
+ should be listed with a '*' in the first column. People who have
+ contributed from an organization can be listed under the organization
+ that actually holds the copyright for their contributions (see the
+ Mojaloop Foundation for an example). Those individuals should have
+ their names indented and be marked with a '-'. Email address can be added
+ optionally within square brackets <email>.
+
+ * Mojaloop Foundation
+ - James Bush <jbush@mojaloop.io>
+
+ --------------
+ ******/
 
 'use strict';
 
 jest.mock('redis');
 
-const Cache = require('~/lib/cache');
+const randomUUID = require('@mojaloop/central-services-shared').Util.id({ type: 'ulid' });
 const { Logger } = require('@mojaloop/sdk-standard-components');
+const Cache = require('~/lib/cache');
 
-const createCache = async() => {
-    const logger = new Logger.Logger({ context: { app: 'model-unit-tests-cache' }, stringify: () => '' });
+const createCache = async () => {
+    const logger = new Logger.Logger({ context: { app: 'model-unit-tests-cache' } });
     const cache = new Cache({
-      cacheUrl: 'redis://dummy:1234',
-      logger,
+        cacheUrl: 'redis://dummy:1234',
+        logger,
+        unsubscribeTimeoutMs: 5000,
     });
     await cache.connect();
     return cache;
 };
 
-describe('Cache', () => {
+describe('Cache Tests -->', () => {
+    let cache;
     let dummyPubMessage;
 
-    beforeEach(() => {
+    beforeEach(async () => {
+        cache = await createCache();
         dummyPubMessage = JSON.parse(JSON.stringify({
             data: 12345,
             test: '98765'
         }));
+    });
+
+    afterEach(async () => {
+        await cache.disconnect();
     });
 
     test('Makes connections to redis server for cache operations', async () => {
@@ -140,6 +165,50 @@ describe('Cache', () => {
                 });
             });
         });
-        await cache.disconnect();
+    });
+
+    test('should subscribe to a channel and get one message', async () => {
+        const channel = `ch-${randomUUID()}`;
+        const message = { id: randomUUID() };
+        const spyOnUnsubscribe = jest.spyOn(cache, 'unsubscribe');
+
+        const subscribing = cache.subscribeToOneMessageWithTimer(channel);
+        cache.publish(channel, message);
+        const result = await subscribing;
+        expect(result).toStrictEqual(message);
+        expect(spyOnUnsubscribe).toHaveBeenCalledTimes(1);
+    });
+
+    test('should return SyntaxError when parsing incorrect JSON message', async () => {
+        const channel = `ch-${randomUUID()}`;
+        const message = '{ id: "123 }';
+        const spyOnUnsubscribe = jest.spyOn(cache, 'unsubscribe');
+
+        const subscribing = cache.subscribeToOneMessageWithTimer(channel);
+        cache.publish(channel, message);
+        const result = await subscribing;
+
+        expect(result).toBeInstanceOf(SyntaxError);
+        expect(spyOnUnsubscribe).toHaveBeenCalledTimes(1);
+    });
+
+    test('should return timeout error and unsubscribe if no message pushed to cache during subscribeTimeoutSeconds-period', async () => {
+        cache.subscribeTimeoutSeconds = 0.1;
+        const unsubscribeSpy = jest.spyOn(cache, 'unsubscribe');
+
+        const result = await cache.subscribeToOneMessageWithTimer(randomUUID());
+        expect(result).toBeInstanceOf(Error);
+        expect(result.message).toBe('Timeout error in subscribeToOneMessageWithTimer');
+        expect(unsubscribeSpy).toHaveBeenCalled();
+    });
+
+    test('should return error if cache.subscribe() throws an error', async () => {
+        const error = new Error('subscribe error');
+        cache.subscribe = jest.fn(async () => { throw error; });
+        const unsubscribeSpy = jest.spyOn(cache, 'unsubscribe');
+
+        const result = await cache.subscribeToOneMessageWithTimer(randomUUID());
+        expect(result).toEqual(error);
+        expect(unsubscribeSpy).not.toHaveBeenCalled();
     });
 });

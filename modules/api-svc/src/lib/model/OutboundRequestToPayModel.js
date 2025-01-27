@@ -1,17 +1,35 @@
-/**************************************************************************
- *  (C) Copyright ModusBox Inc. 2019 - All rights reserved.               *
- *                                                                        *
- *  This file is made available under the terms of the license agreement  *
- *  specified in the corresponding source code repository.                *
- *                                                                        *
- *  ORIGINAL AUTHOR:                                                      *
- *       Murthy Kakarlamudi - murthy@modusbox.com                         *
- **************************************************************************/
+/*****
+ License
+ --------------
+ Copyright © 2020-2025 Mojaloop Foundation
+ The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
 
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+ Contributors
+ --------------
+ This is the official list of the Mojaloop project contributors for this file.
+ Names of the original copyright holders (individuals or organizations)
+ should be listed with a '*' in the first column. People who have
+ contributed from an organization can be listed under the organization
+ that actually holds the copyright for their contributions (see the
+ Mojaloop Foundation for an example). Those individuals should have
+ their names indented and be marked with a '-'. Email address can be added
+ optionally within square brackets <email>.
+
+ * Mojaloop Foundation
+ - Name Surname <name.surname@mojaloop.io>
+
+ * Modusbox
+ - Murthy Kakarlamudi <murthy@modusbox.com>
+ --------------
+ ******/
 'use strict';
 
-const util = require('util');
-const { uuid } = require('uuidv4');
+const safeStringify = require('fast-safe-stringify');
+const idGenerator = require('@mojaloop/central-services-shared').Util.id;
 const StateMachine = require('javascript-state-machine');
 const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const { BackendError } = require('./common');
@@ -22,17 +40,19 @@ const { SDKStateEnum } = require('./common');
 class OutboundRequestToPayModel {
 
     constructor(config) {
+        this._idGenerator = idGenerator(config.idGenerator);
         this._cache = config.cache;
         this._logger = config.logger;
         this._requestProcessingTimeoutSeconds = config.requestProcessingTimeoutSeconds;
         this._dfspId = config.dfspId;
         this._expirySeconds = config.expirySeconds;
-        this._autoAcceptParty = config.autoAcceptParty;
+        this._autoAcceptR2PParty = config.autoAcceptR2PParty;
 
         this._requests = new MojaloopRequests({
             logger: this._logger,
             peerEndpoint: config.peerEndpoint,
             alsEndpoint: config.alsEndpoint,
+            transactionRequestsEndpoint: config.transactionRequestsEndpoint,
             dfspId: config.dfspId,
             tls: {
                 enabled: config.outbound.tls.mutualTLS.enabled,
@@ -42,6 +62,7 @@ class OutboundRequestToPayModel {
             jwsSignPutParties: config.jwsSignPutParties,
             jwsSigningKey: config.jwsSigningKey,
             wso2: config.wso2,
+            resourceVersions: config.resourceVersions,
         });
     }
 
@@ -55,7 +76,7 @@ class OutboundRequestToPayModel {
 
         // add a transactionRequestId if one is not present e.g. on first submission
         if(!this.data.hasOwnProperty('transactionRequestId')) {
-            this.data.transactionRequestId = uuid();
+            this.data.transactionRequestId = this._idGenerator();
         }
 
         // initialize the transfer state machine to its starting state
@@ -99,7 +120,7 @@ class OutboundRequestToPayModel {
      * Handles state machine transitions
      */
     async _handleTransition(lifecycle, ...args) {
-        this._logger.log(`Request To Pay ${this.data.transactionRequestId} is transitioning from ${lifecycle.from} to ${lifecycle.to} in response to ${lifecycle.transition}`);
+        this._logger.isDebugEnabled && this._logger.debug(`Request To Pay ${this.data.transactionRequestId} is transitioning from ${lifecycle.from} to ${lifecycle.to} in response to ${lifecycle.transition}`);
 
         switch(lifecycle.transition) {
             case 'init':
@@ -115,12 +136,12 @@ class OutboundRequestToPayModel {
                 return this._executeTransactionRequest();
 
             case 'error':
-                this._logger.log(`State machine is erroring with error: ${util.inspect(args)}`);
+                this._logger.isErrorEnabled && this._logger.error(`State machine is erroring with error: ${safeStringify(args)}`);
                 this.data.lastError = args[0] || new Error('unspecified error');
                 break;
 
             default:
-                throw new Error(`Unhandled state transition for transfer ${this.data.transferId}: ${util.inspect(args)}`);
+                throw new Error(`Unhandled state transition for transfer ${this.data.transferId}: ${safeStringify(args)}`);
         }
     }
 
@@ -128,7 +149,7 @@ class OutboundRequestToPayModel {
      * Updates the internal state representation to reflect that of the state machine itself
      */
     _afterTransition() {
-        this._logger.log(`State machine transitioned: ${this.data.currentState} -> ${this.stateMachine.state}`);
+        this._logger.isDebugEnabled && this._logger.debug(`State machine transitioned: ${this.data.currentState} -> ${this.stateMachine.state}`);
         this.data.currentState = this.stateMachine.state;
     }
 
@@ -153,7 +174,7 @@ class OutboundRequestToPayModel {
                     this.data.getPartiesResponse = JSON.parse(msg);
                     if(this.data.getPartiesResponse.body.errorInformation) {
                         // this is an error response to our GET /parties request
-                        const err = new BackendError(`Got an error response resolving party: ${util.inspect(this.data.getPartiesResponse.body, { depth: Infinity })}`, 500);
+                        const err = new BackendError(`Got an error response resolving party: ${safeStringify(this.data.getPartiesResponse.body, { depth: Infinity })}`, 500);
                         err.mojaloopError = this.data.getPartiesResponse.body;
                         // cancel the timeout handler
                         clearTimeout(timeout);
@@ -165,7 +186,7 @@ class OutboundRequestToPayModel {
                         // we should never get a non-error response without a party, but just in case...
                         // cancel the timeout handler
                         clearTimeout(timeout);
-                        return reject(new Error(`Resolved payee has no party object: ${util.inspect(payee)}`));
+                        return reject(new Error(`Resolved payee has no party object: ${safeStringify(payee)}`));
                     }
 
                     payee = payee.party;
@@ -173,13 +194,13 @@ class OutboundRequestToPayModel {
                     // cancel the timeout handler
                     clearTimeout(timeout);
 
-                    this._logger.push({ payee }).log('Payee resolved');
+                    this._logger.isDebugEnabled && this._logger.push({ payee }).debug('Payee resolved');
 
                     // stop listening for payee resolution messages
                     // no need to await for the unsubscribe to complete.
                     // we dont really care if the unsubscribe fails but we should log it regardless
                     this._cache.unsubscribe(payeeKey, subId).catch(e => {
-                        this._logger.log(`Error unsubscribing (in callback) ${payeeKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                        this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in callback) ${payeeKey} ${subId}: ${e.stack || safeStringify(e)}`);
                     });
 
                     // check we got the right payee and info we need
@@ -199,7 +220,7 @@ class OutboundRequestToPayModel {
                     }
 
                     if(!payee.partyIdInfo.fspId) {
-                        const err = new Error(`Expecting resolved payee party to have an FSPID: ${util.inspect(payee.partyIdInfo)}`);
+                        const err = new Error(`Expecting resolved payee party to have an FSPID: ${safeStringify(payee.partyIdInfo)}`);
                         return reject(err);
                     }
 
@@ -229,7 +250,7 @@ class OutboundRequestToPayModel {
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this._cache.unsubscribe(payeeKey, subId).catch(e => {
-                    this._logger.log(`Error unsubscribing (in timeout handler) ${payeeKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in timeout handler) ${payeeKey} ${subId}: ${e.stack || safeStringify(e)}`);
                 });
 
                 return reject(err);
@@ -240,7 +261,7 @@ class OutboundRequestToPayModel {
             try {
                 const res = await this._requests.getParties(this.data.to.idType, this.data.to.idValue,
                     this.data.to.idSubValue);
-                this._logger.push({ peer: res }).log('Party lookup sent to peer');
+                this._logger.isDebugEnabled && this._logger.push({ peer: res }).debug('Party lookup sent to peer');
             }
             catch(err) {
                 // cancel the timout and unsubscribe before rejecting the promise
@@ -248,7 +269,7 @@ class OutboundRequestToPayModel {
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this._cache.unsubscribe(payeeKey, subId).catch(e => {
-                    this._logger.log(`Error unsubscribing ${payeeKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing ${payeeKey} ${subId}: ${e.stack || safeStringify(e)}`);
                 });
 
                 return reject(err);
@@ -270,20 +291,17 @@ class OutboundRequestToPayModel {
                     let error;
                     let message = JSON.parse(msg);
 
-                    // if (message.type === 'transactionRequestFail') {
-                    //     error = new BackendError(`Got an error response processing transaction request: ${util.inspect(message.data)}`, 500);
-                    //     error.mojaloopError = message.data;
-                    // } else {
-                    //     this._logger.push({ message }).log(`Ignoring cache notification for transfer ${transactionRequestKey}. Uknokwn message type ${message.type}.`);
-                    //     return;
-                    // }
+                    if (message.type === 'transactionRequestResponseError') {
+                        error = new BackendError(`Got an error response processing transaction request: ${safeStringify(message.data)}`, 500);
+                        error.mojaloopError = message.data;
+                    }
 
                     // cancel the timeout handler
                     clearTimeout(timeout);
 
                     // stop listening for transfer fulfil messages
                     this._cache.unsubscribe(transactionRequestKey, subId).catch(e => {
-                        this._logger.log(`Error unsubscribing (in callback) ${transactionRequestKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                        this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in callback) ${transactionRequestKey} ${subId}: ${e.stack || safeStringify(e)}`);
                     });
 
                     if (error) {
@@ -291,9 +309,8 @@ class OutboundRequestToPayModel {
                     }
 
                     const transactionRequestResponse = message.data;
-                    this._logger.push({ transactionRequestResponse }).log('Transaction Request Response received');
-                    this.data.requestToPayState = transactionRequestResponse.transactionRequestState;
-
+                    this._logger.push({ transactionRequestResponse }).debug('Transaction Request Response received');
+                    this.data.transactionRequestResponse = transactionRequestResponse;
 
                     return resolve(transactionRequestResponse);
                 }
@@ -308,7 +325,7 @@ class OutboundRequestToPayModel {
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this._cache.unsubscribe(transactionRequestKey, subId).catch(e => {
-                    this._logger.log(`Error unsubscribing (in timeout handler) ${transactionRequestKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in timeout handler) ${transactionRequestKey} ${subId}: ${e.stack || safeStringify(e)}`);
                 });
 
                 return reject(err);
@@ -318,7 +335,7 @@ class OutboundRequestToPayModel {
             // a POST /transfers request to the switch
             try {
                 const res = await this._requests.postTransactionRequests(transactionRequest, this.data.to.fspId);
-                this._logger.push({ res }).log('Transfer prepare sent to peer');
+                this._logger.isDebugEnabled && this._logger.push({ res }).debug('Transfer prepare sent to peer');
             }
             catch(err) {
                 // cancel the timout and unsubscribe before rejecting the promise
@@ -326,7 +343,7 @@ class OutboundRequestToPayModel {
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this._cache.unsubscribe(transactionRequestKey, subId).catch(e => {
-                    this._logger.log(`Error unsubscribing (in error handler) ${transactionRequestKey} ${subId}: ${e.stack || util.inspect(e)}`);
+                    this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in error handler) ${transactionRequestKey} ${subId}: ${e.stack || safeStringify(e)}`);
                 });
 
                 return reject(err);
@@ -367,10 +384,12 @@ class OutboundRequestToPayModel {
                 amount: this.data.amount
             },
             transactionType: {
-                scenario: this.data.scenario,
-                initiator: this.data.initiator,
-                initiatorType: this.data.initiatorType
-            }
+                scenario: this.data.transactionType,
+                subScenario: this.data.subScenario,
+                initiator: 'PAYEE',
+                initiatorType: this.data.from.type || 'CONSUMER'
+            },
+            authenticationType: this.data.authenticationType
         };
 
         // add extensions list if provided
@@ -395,10 +414,10 @@ class OutboundRequestToPayModel {
                 throw new Error(`No cached data found for transactionRequestId: ${transactionRequestId}`);
             }
             await this.initialize(data);
-            this._logger.push({ cache: this.data }).log('TransactionRequest model loaded from cached state');
+            this._logger.isDebugEnabled && this._logger.push({ cache: this.data }).debug('TransactionRequest model loaded from cached state');
         }
         catch(err) {
-            this._logger.push({ err }).log('Error loading transfer model');
+            this._logger.isErrorEnabled && this._logger.push({ err }).error('Error loading transfer model');
             throw err;
         }
     }
@@ -413,8 +432,8 @@ class OutboundRequestToPayModel {
                 case 'start':
                     // next transition is to resolvePayee
                     await this.stateMachine.resolvePayee();
-                    this._logger.log(`Payee resolved for transfer ${this.data.transferId}`);
-                    if(this.stateMachine.state === 'payeeResolved' && !this._autoAcceptParty) {
+                    this._logger.isDebugEnabled && this._logger.debug(`Payee resolved for transfer ${this.data.transferId}`);
+                    if(this.stateMachine.state === 'payeeResolved' && !this._autoAcceptR2PParty) {
                         //we break execution here and return the resolved party details to allow asynchronous accept or reject
                         //of the resolved party
                         await this._save();
@@ -425,39 +444,39 @@ class OutboundRequestToPayModel {
                 case 'payeeResolved':
                     // next transition is to requestQuote
                     await this.stateMachine.executeTransactionRequest();
-                    this._logger.log(`Transaction Request for ${this.data.transactionRequestId} has been completed`);
+                    this._logger.isDebugEnabled && this._logger.debug(`Transaction Request for ${this.data.transactionRequestId} has been completed`);
                     break;
 
                 case 'succeeded':
                     // all steps complete so return
-                    this._logger.log('Transaction Request completed successfully');
+                    this._logger.isDebugEnabled && this._logger.debug('Transaction Request completed successfully');
                     await this._save();
                     return this.getResponse();
 
                 case 'errored':
                     // stopped in errored state
-                    this._logger.log('State machine in errored state');
+                    this._logger.isErrorEnabled && this._logger.error('State machine in errored state');
                     return;
             }
 
-            // now call ourslves recursively to deal with the next transition
-            this._logger.log(`Transfer model state machine transition completed in state: ${this.stateMachine.state}. Recusring to handle next transition.`);
+            // now call ourselves recursively to deal with the next transition
+            this._logger.isDebugEnabled && this._logger.debug(`Transfer model state machine transition completed in state: ${this.stateMachine.state}. Recursing to handle next transition.`);
             return this.run();
         }
         catch(err) {
-            this._logger.log(`Error running transfer model: ${util.inspect(err)}`);
+            this._logger.isErrorEnabled && this._logger.error(`Error running transfer model: ${safeStringify(err)}`);
 
             // as this function is recursive, we dont want to error the state machine multiple times
             if(this.data.currentState !== 'errored') {
-                // err should not have a transferState property here!
-                if(err.transferState) {
-                    this._logger.log(`State machine is broken: ${util.inspect(err)}`);
+                // err should not have a lastError property here!
+                if(err.lastError) {
+                    this._logger.isErrorEnabled && this._logger.error(`State machine is broken: ${safeStringify(err)}`);
                 }
                 // transition to errored state
                 await this.stateMachine.error(err);
 
                 // avoid circular ref between transferState.lastError and err
-                err.transferState = JSON.parse(JSON.stringify(this.getResponse()));
+                err.lastError = structuredClone(this.getResponse());
             }
             throw err;
         }
@@ -480,6 +499,7 @@ class OutboundRequestToPayModel {
 
             case 'succeeded':
                 resp.currentState = SDKStateEnum.COMPLETED;
+                resp.transactionRequestId = this.data.transactionRequestId;
                 break;
 
             case 'errored':
@@ -487,7 +507,7 @@ class OutboundRequestToPayModel {
                 break;
 
             default:
-                this._logger.log(`Transaction Request model response being returned from an unexpected state: ${this.data.currentState}. Returning ERROR_OCCURRED state`);
+                this._logger.isDebugEnabled && this._logger.debug(`Transaction Request model response being returned from an unexpected state: ${this.data.currentState}. Returning ERROR_OCCURRED state`);
                 resp.currentState = SDKStateEnum.ERROR_OCCURRED;
                 break;
         }
@@ -502,10 +522,10 @@ class OutboundRequestToPayModel {
         try {
             this.data.currentState = this.stateMachine.state;
             const res = await this._cache.set(`txnReqModel_${this.data.transactionRequestId}`, this.data);
-            this._logger.push({ res }).log('Persisted transaction request model in cache');
+            this._logger.isDebugEnabled && this._logger.push({ res }).debug('Persisted transaction request model in cache');
         }
         catch(err) {
-            this._logger.push({ err }).log('Error saving transfer model');
+            this._logger.isErrorEnabled && this._logger.push({ err }).error('Error saving transfer model');
             throw err;
         }
     }

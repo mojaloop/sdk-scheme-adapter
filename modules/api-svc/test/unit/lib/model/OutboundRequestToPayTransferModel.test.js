@@ -1,14 +1,38 @@
-/**************************************************************************
- *  (C) Copyright ModusBox Inc. 2019 - All rights reserved.               *
- *                                                                        *
- *  This file is made available under the terms of the license agreement  *
- *  specified in the corresponding source code repository.                *
- *                                                                        *
- *  ORIGINAL AUTHOR:                                                      *
- *       Murthy Kakarlamudi - murthy@modusbox.com                           *
- **************************************************************************/
+/*****
+ License
+ --------------
+ Copyright © 2020-2025 Mojaloop Foundation
+ The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
 
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+ Contributors
+ --------------
+ This is the official list of the Mojaloop project contributors for this file.
+ Names of the original copyright holders (individuals or organizations)
+ should be listed with a '*' in the first column. People who have
+ contributed from an organization can be listed under the organization
+ that actually holds the copyright for their contributions (see the
+ Mojaloop Foundation for an example). Those individuals should have
+ their names indented and be marked with a '-'. Email address can be added
+ optionally within square brackets <email>.
+
+ * Mojaloop Foundation
+ - Name Surname <name.surname@mojaloop.io>
+
+ * Modusbox
+ - Murthy Kakarlamudi <murthy@modusbox.com>
+ --------------
+ ******/
 'use strict';
+
+process.env.PEER_ENDPOINT = '172.17.0.3:4000';
+process.env.BACKEND_ENDPOINT = '172.17.0.5:4000';
+process.env.CACHE_URL = 'redis://172.17.0.2:6379';
+process.env.MGMT_API_WS_URL = '0.0.0.0';
+process.env.SUPPORTED_CURRENCIES='USD';
 
 // we use a mock standard components lib to intercept and mock certain funcs
 jest.mock('@mojaloop/sdk-standard-components');
@@ -31,7 +55,7 @@ const transferFulfil = require('./data/transferFulfil');
 const emitQuoteResponseCacheMessage = (cache, quoteId, quoteResponse) => cache.publish(`qt_${quoteId}`, JSON.stringify(quoteResponse));
 
 // util function to simulate a authorizations response subscription message on a cache client
-const emitAuthorizationsResponseCacheMessage = (cache, authorizationsResponse) => cache.publish(`otp_${requestToPayTransferRequest.requestToPayTransactionId}`, JSON.stringify(authorizationsResponse));
+const emitAuthorizationsResponseCacheMessage = (cache, authorizationsResponse) => cache.publish(`otp_${requestToPayTransferRequest.transactionRequestId}`, JSON.stringify(authorizationsResponse));
 
 
 // util function to simulate a transfer fulfilment subscription message on a cache client
@@ -72,9 +96,10 @@ describe('outboundRequestToPayTransferModel', () => {
         MojaloopRequests.__postTransfers = jest.fn(() => Promise.resolve());
 
         cache = new Cache({
-                cacheUrl: 'redis://dummy:1234',
-                logger,
-            });
+            cacheUrl: 'redis://dummy:1234',
+            logger,
+            unsubscribeTimeoutMs: 5000
+        });
         await cache.connect();
     });
 
@@ -94,10 +119,195 @@ describe('outboundRequestToPayTransferModel', () => {
     });
 
 
-    test('executes all three transfer stages without halting when AUTO_ACCEPT_QUOTES and AUTO_ACCEPT_PARTY are true', async () => {
-        config.autoAcceptR2PDeviceOTP = true;
-        config.autoAcceptR2PDeviceQuotes = true;
-        config.autoAcceptQuotes = true;
+    test('If initiatorType is BUSINESS, executes all three transfer stages without halting when AUTO_ACCEPT_R2P_BUSINESS_QUOTES is true', async () => {
+        config.autoAcceptR2PBusinessQuotes = true;
+
+        MojaloopRequests.__postQuotes = jest.fn((postQuotesBody) => {
+            // ensure that the `MojaloopRequests.postQuotes` method has been called with correct arguments
+            // including extension list
+            const extensionList = postQuotesBody.extensionList.extension;
+            expect(extensionList).toBeTruthy();
+            expect(extensionList.length).toBe(2);
+            expect(extensionList[0]).toEqual({ key: 'qkey1', value: 'qvalue1' });
+            expect(extensionList[1]).toEqual({ key: 'qkey2', value: 'qvalue2' });
+
+            // simulate a callback with the quote response
+            emitQuoteResponseCacheMessage(cache, postQuotesBody.quoteId, quoteResponse);
+            return Promise.resolve();
+        });
+
+        MojaloopRequests.__postTransfers = jest.fn((postTransfersBody, destFspId) => {
+            //ensure that the `MojaloopRequests.postTransfers` method has been called with the correct arguments
+            // set as the destination FSPID, picked up from the header's value `fspiop-source`
+            expect(model.data.quoteResponseSource).toBe(quoteResponse.data.headers['fspiop-source']);
+
+            const extensionList = postTransfersBody.extensionList.extension;
+            expect(extensionList).toBeTruthy();
+            expect(extensionList.length).toBe(2);
+            expect(extensionList[0]).toEqual({ key: 'tkey1', value: 'tvalue1' });
+            expect(extensionList[1]).toEqual({ key: 'tkey2', value: 'tvalue2' });
+
+            expect(destFspId).toBe(quoteResponse.data.headers['fspiop-source']);
+            expect(quoteResponse.data.headers['fspiop-source']).not.toBe(model.data.to.fspId);
+
+            // simulate a callback with the transfer fulfilment
+            emitTransferFulfilCacheMessage(cache, postTransfersBody.transferId, transferFulfil);
+            return Promise.resolve();
+        });
+
+        const model = new Model({
+            cache,
+            logger,
+            ...config,
+        });
+
+        await model.initialize(JSON.parse(JSON.stringify({
+            ...requestToPayTransferRequest,
+            initiatorType: 'BUSINESS'
+        })));
+
+        expect(StateMachine.__instance.state).toBe('start');
+
+        // start the model running
+        const result = await model.run();
+
+        expect(MojaloopRequests.__postQuotes).toHaveBeenCalledTimes(1);
+        expect(MojaloopRequests.__postTransfers).toHaveBeenCalledTimes(1);
+
+        // check we stopped at payeeResolved state
+        expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
+        expect(StateMachine.__instance.state).toBe('succeeded');
+    });
+
+    test('If initiatorType is BUSINESS, halts and resumes after quotes stage when AUTO_ACCEPT_R2P_BUSINESS_QUOTES is false', async () => {
+        config.autoAcceptR2PBusinessQuotes = false;
+
+        MojaloopRequests.__postQuotes = jest.fn((postQuotesBody) => {
+            // ensure that the `MojaloopRequests.postQuotes` method has been called with correct arguments
+            // including extension list
+            const extensionList = postQuotesBody.extensionList.extension;
+            expect(extensionList).toBeTruthy();
+            expect(extensionList.length).toBe(2);
+            expect(extensionList[0]).toEqual({ key: 'qkey1', value: 'qvalue1' });
+            expect(extensionList[1]).toEqual({ key: 'qkey2', value: 'qvalue2' });
+
+            // simulate a callback with the quote response
+            emitQuoteResponseCacheMessage(cache, postQuotesBody.quoteId, quoteResponse);
+            return Promise.resolve();
+        });
+
+        MojaloopRequests.__postTransfers = jest.fn((postTransfersBody, destFspId) => {
+            //ensure that the `MojaloopRequests.postTransfers` method has been called with the correct arguments
+            // set as the destination FSPID, picked up from the header's value `fspiop-source`
+            expect(model.data.quoteResponseSource).toBe(quoteResponse.data.headers['fspiop-source']);
+
+            const extensionList = postTransfersBody.extensionList.extension;
+            expect(extensionList).toBeTruthy();
+            expect(extensionList.length).toBe(2);
+            expect(extensionList[0]).toEqual({ key: 'tkey1', value: 'tvalue1' });
+            expect(extensionList[1]).toEqual({ key: 'tkey2', value: 'tvalue2' });
+
+            expect(destFspId).toBe(quoteResponse.data.headers['fspiop-source']);
+            expect(quoteResponse.data.headers['fspiop-source']).not.toBe(model.data.to.fspId);
+
+            // simulate a callback with the transfer fulfilment
+            emitTransferFulfilCacheMessage(cache, postTransfersBody.transferId, transferFulfil);
+            return Promise.resolve();
+        });
+
+        const model = new Model({
+            cache,
+            logger,
+            ...config,
+        });
+
+        await model.initialize(JSON.parse(JSON.stringify({
+            ...requestToPayTransferRequest,
+            initiatorType: 'BUSINESS'
+        })));
+
+        expect(StateMachine.__instance.state).toBe('start');
+
+        // start the model running
+        const result = await model.run();
+
+        expect(MojaloopRequests.__postQuotes).toHaveBeenCalledTimes(1);
+        expect(MojaloopRequests.__postTransfers).toHaveBeenCalledTimes(0);
+        expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE);
+        expect(result.fulfil).toBe(undefined);
+        expect(StateMachine.__instance.state).toBe('quoteReceived');
+
+        // start the model running
+        const result2 = await model.run();
+        expect(MojaloopRequests.__postTransfers).toHaveBeenCalledTimes(1);
+        expect(result2.currentState).toBe(SDKStateEnum.COMPLETED);
+        expect(result2.fulfil.body.transferState).toBe('COMMITTED');
+        expect(StateMachine.__instance.state).toBe('succeeded');
+    });
+
+    test('If initiatorType is BUSINESS, autoAcceptR2PDeviceOTP has no effect and executes all three transfer stages without halting when AUTO_ACCEPT_R2P_BUSINESS_QUOTES is true', async () => {
+        config.autoAcceptR2PDeviceOTP = false;
+        config.autoAcceptR2PBusinessQuotes = true;
+
+        MojaloopRequests.__postQuotes = jest.fn((postQuotesBody) => {
+            // ensure that the `MojaloopRequests.postQuotes` method has been called with correct arguments
+            // including extension list
+            const extensionList = postQuotesBody.extensionList.extension;
+            expect(extensionList).toBeTruthy();
+            expect(extensionList.length).toBe(2);
+            expect(extensionList[0]).toEqual({ key: 'qkey1', value: 'qvalue1' });
+            expect(extensionList[1]).toEqual({ key: 'qkey2', value: 'qvalue2' });
+
+            // simulate a callback with the quote response
+            emitQuoteResponseCacheMessage(cache, postQuotesBody.quoteId, quoteResponse);
+            return Promise.resolve();
+        });
+
+        MojaloopRequests.__postTransfers = jest.fn((postTransfersBody, destFspId) => {
+            //ensure that the `MojaloopRequests.postTransfers` method has been called with the correct arguments
+            // set as the destination FSPID, picked up from the header's value `fspiop-source`
+            expect(model.data.quoteResponseSource).toBe(quoteResponse.data.headers['fspiop-source']);
+
+            const extensionList = postTransfersBody.extensionList.extension;
+            expect(extensionList).toBeTruthy();
+            expect(extensionList.length).toBe(2);
+            expect(extensionList[0]).toEqual({ key: 'tkey1', value: 'tvalue1' });
+            expect(extensionList[1]).toEqual({ key: 'tkey2', value: 'tvalue2' });
+
+            expect(destFspId).toBe(quoteResponse.data.headers['fspiop-source']);
+            expect(quoteResponse.data.headers['fspiop-source']).not.toBe(model.data.to.fspId);
+
+            // simulate a callback with the transfer fulfilment
+            emitTransferFulfilCacheMessage(cache, postTransfersBody.transferId, transferFulfil);
+            return Promise.resolve();
+        });
+
+        const model = new Model({
+            cache,
+            logger,
+            ...config,
+        });
+
+        await model.initialize(JSON.parse(JSON.stringify({
+            ...requestToPayTransferRequest,
+            initiatorType: 'BUSINESS'
+        })));
+
+        expect(StateMachine.__instance.state).toBe('start');
+
+        // start the model running
+        const result = await model.run();
+
+        expect(MojaloopRequests.__postQuotes).toHaveBeenCalledTimes(1);
+        expect(MojaloopRequests.__postTransfers).toHaveBeenCalledTimes(1);
+
+        // check we stopped at payeeResolved state
+        expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
+        expect(StateMachine.__instance.state).toBe('succeeded');
+    });
+
+    test('If initiatorType is not BUSINESS, halts and resumes after quotes stage when AUTO_ACCEPT_R2P_DEVICE_OTP is false and authenticationType is null', async () => {
+        config.autoAcceptR2PDeviceOTP = false;
 
         MojaloopRequests.__getAuthorizations = jest.fn(() => {
             emitAuthorizationsResponseCacheMessage(cache, authorizationsResponse);
@@ -143,7 +353,11 @@ describe('outboundRequestToPayTransferModel', () => {
             ...config,
         });
 
-        await model.initialize(JSON.parse(JSON.stringify(requestToPayTransferRequest)));
+        await model.initialize(JSON.parse(JSON.stringify({
+            ...requestToPayTransferRequest,
+            initiatorType: 'DEVICE',
+            authenticationType: null
+        })));
 
         expect(StateMachine.__instance.state).toBe('start');
 
@@ -151,95 +365,173 @@ describe('outboundRequestToPayTransferModel', () => {
         const result = await model.run();
 
         expect(MojaloopRequests.__postQuotes).toHaveBeenCalledTimes(1);
-        expect(MojaloopRequests.__getAuthorizations).toHaveBeenCalledTimes(1);
-        expect(MojaloopRequests.__postTransfers).toHaveBeenCalledTimes(1);
+        expect(MojaloopRequests.__getAuthorizations).toHaveBeenCalledTimes(0);
+        expect(MojaloopRequests.__postTransfers).toHaveBeenCalledTimes(0);
+        expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE);
+        expect(result.fulfil).toBe(undefined);
+        expect(StateMachine.__instance.state).toBe('quoteReceived');
 
-        // check we stopped at payeeResolved state
-        expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
+        // start the model running
+        const result2 = await model.run();
+        expect(MojaloopRequests.__postTransfers).toHaveBeenCalledTimes(1);
+        expect(result2.currentState).toBe(SDKStateEnum.COMPLETED);
+        expect(result2.fulfil.body.transferState).toBe('COMMITTED');
         expect(StateMachine.__instance.state).toBe('succeeded');
     });
 
-    // test('halts and resumes after quotes and otp stages when AUTO_ACCEPT_QUOTES is false and AUTO_ACCEPT_OTP is false', async () => {
+    test('If initiatorType is not BUSINESS, halts and resumes after quotes stage when AUTO_ACCEPT_R2P_DEVICE_OTP is true and authenticationType is OTP', async () => {
+        config.autoAcceptR2PDeviceOTP = true;
 
-    //     config.autoAcceptR2PDeviceOTP = false;
-    //     config.autoAcceptR2PDeviceQuotes = false;
+        MojaloopRequests.__getAuthorizations = jest.fn(() => {
+            emitAuthorizationsResponseCacheMessage(cache, authorizationsResponse);
+            return Promise.resolve();
+        });
 
-    //     let model = new Model({
-    //         cache,
-    //         logger,
-    //         ...config,
-    //     });
+        MojaloopRequests.__postQuotes = jest.fn((postQuotesBody) => {
+            // ensure that the `MojaloopRequests.postQuotes` method has been called with correct arguments
+            // including extension list
+            const extensionList = postQuotesBody.extensionList.extension;
+            expect(extensionList).toBeTruthy();
+            expect(extensionList.length).toBe(2);
+            expect(extensionList[0]).toEqual({ key: 'qkey1', value: 'qvalue1' });
+            expect(extensionList[1]).toEqual({ key: 'qkey2', value: 'qvalue2' });
 
-    //     await model.initialize(JSON.parse(JSON.stringify(requestToPayTransferRequest)));
+            // simulate a callback with the quote response
+            emitQuoteResponseCacheMessage(cache, postQuotesBody.quoteId, quoteResponse);
+            return Promise.resolve();
+        });
 
-    //     expect(StateMachine.__instance.state).toBe('start');
+        MojaloopRequests.__postTransfers = jest.fn((postTransfersBody, destFspId) => {
+            //ensure that the `MojaloopRequests.postTransfers` method has been called with the correct arguments
+            // set as the destination FSPID, picked up from the header's value `fspiop-source`
+            expect(model.data.quoteResponseSource).toBe(quoteResponse.data.headers['fspiop-source']);
 
-    //     // start the model running
-    //     let resultPromise = model.run();
+            const extensionList = postTransfersBody.extensionList.extension;
+            expect(extensionList).toBeTruthy();
+            expect(extensionList.length).toBe(2);
+            expect(extensionList[0]).toEqual({ key: 'tkey1', value: 'tvalue1' });
+            expect(extensionList[1]).toEqual({ key: 'tkey2', value: 'tvalue2' });
 
-    //     // now we started the model running we simulate a callback with the quote response
-    //     cache.publish(`qt_${model.data.quoteId}`, JSON.stringify(quoteResponse));
+            expect(destFspId).toBe(quoteResponse.data.headers['fspiop-source']);
+            expect(quoteResponse.data.headers['fspiop-source']).not.toBe(model.data.to.fspId);
 
-    //     // wait for the model to reach a terminal state
-    //     let result = await resultPromise;
+            // simulate a callback with the transfer fulfilment
+            emitTransferFulfilCacheMessage(cache, postTransfersBody.transferId, transferFulfil);
+            return Promise.resolve();
+        });
 
-    //     // check we stopped at quoteReceived state
-    //     expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE);
-    //     expect(StateMachine.__instance.state).toBe('quoteReceived');
+        const model = new Model({
+            cache,
+            logger,
+            ...config,
+        });
 
-    //     const requestToPayTransactionId = requestToPayTransferRequest.requestToPayTransactionId;
+        await model.initialize(JSON.parse(JSON.stringify({
+            ...requestToPayTransferRequest,
+            initiatorType: 'DEVICE',
+            authenticationType: 'OTP'
+        })));
 
-    //     // load a new model from the saved state
-    //     model = new Model({
-    //         cache,
-    //         logger,
-    //         ...config,
-    //     });
+        expect(StateMachine.__instance.state).toBe('start');
 
-    //     await model.load(requestToPayTransactionId);
+        // start the model running
+        const result = await model.run();
 
-    //     // check the model loaded to the correct state
-    //     expect(StateMachine.__instance.state).toBe('quoteReceived');
+        expect(MojaloopRequests.__postQuotes).toHaveBeenCalledTimes(1);
+        expect(MojaloopRequests.__getAuthorizations).toHaveBeenCalledTimes(0);
+        expect(MojaloopRequests.__postTransfers).toHaveBeenCalledTimes(0);
+        expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE);
+        expect(result.fulfil).toBe(undefined);
+        expect(StateMachine.__instance.state).toBe('quoteReceived');
 
-    //     // now run the model again. this should trigger transition to quote request
-    //     resultPromise = model.run();
+        // start the model running
+        const result2 = await model.run();
+        expect(MojaloopRequests.__getAuthorizations).toHaveBeenCalledTimes(1);
+        expect(MojaloopRequests.__postTransfers).toHaveBeenCalledTimes(1);
+        expect(result2.currentState).toBe(SDKStateEnum.COMPLETED);
+        expect(result2.fulfil.body.transferState).toBe('COMMITTED');
+        expect(StateMachine.__instance.state).toBe('succeeded');
+    });
 
-    //     // now we started the model running we simulate a callback with the otp response
-    //     cache.publish(`otp_${requestToPayTransactionId}`, JSON.stringify(authorizationsResponse));
+    test('If initiatorType is not BUSINESS, halts and resumes after quotes and otp stages when AUTO_ACCEPT_R2P_DEVICE_OTP is false and authenticationType is OTP', async () => {
+        config.autoAcceptR2PDeviceOTP = false;
 
-    //     // wait for the model to reach a terminal state
-    //     result = await resultPromise;
+        MojaloopRequests.__getAuthorizations = jest.fn(() => {
+            emitAuthorizationsResponseCacheMessage(cache, authorizationsResponse);
+            return Promise.resolve();
+        });
 
-    //     // check we stopped at quoteReceived state
-    //     expect(result.currentState).toBe('WAITING_FOR_OTP_ACCEPTANCE');
-    //     expect(StateMachine.__instance.state).toBe('otpReceived');
+        MojaloopRequests.__postQuotes = jest.fn((postQuotesBody) => {
+            // ensure that the `MojaloopRequests.postQuotes` method has been called with correct arguments
+            // including extension list
+            const extensionList = postQuotesBody.extensionList.extension;
+            expect(extensionList).toBeTruthy();
+            expect(extensionList.length).toBe(2);
+            expect(extensionList[0]).toEqual({ key: 'qkey1', value: 'qvalue1' });
+            expect(extensionList[1]).toEqual({ key: 'qkey2', value: 'qvalue2' });
 
-    //     // load a new model from the saved state
-    //     model = new Model({
-    //         cache,
-    //         logger,
-    //         ...config,
-    //     });
+            // simulate a callback with the quote response
+            emitQuoteResponseCacheMessage(cache, postQuotesBody.quoteId, quoteResponse);
+            return Promise.resolve();
+        });
 
-    //     await model.load(requestToPayTransactionId);
+        MojaloopRequests.__postTransfers = jest.fn((postTransfersBody, destFspId) => {
+            //ensure that the `MojaloopRequests.postTransfers` method has been called with the correct arguments
+            // set as the destination FSPID, picked up from the header's value `fspiop-source`
+            expect(model.data.quoteResponseSource).toBe(quoteResponse.data.headers['fspiop-source']);
 
-    //     // check the model loaded to the correct state
-    //     expect(StateMachine.__instance.state).toBe('otpReceived');
+            const extensionList = postTransfersBody.extensionList.extension;
+            expect(extensionList).toBeTruthy();
+            expect(extensionList.length).toBe(2);
+            expect(extensionList[0]).toEqual({ key: 'tkey1', value: 'tvalue1' });
+            expect(extensionList[1]).toEqual({ key: 'tkey2', value: 'tvalue2' });
 
-    //     // now run the model again. this should trigger transition to quote request
-    //     resultPromise = model.run();
+            expect(destFspId).toBe(quoteResponse.data.headers['fspiop-source']);
+            expect(quoteResponse.data.headers['fspiop-source']).not.toBe(model.data.to.fspId);
 
-    //     // now we started the model running we simulate a callback with the transfer fulfilment
-    //     cache.publish(`tf_${model.data.transferId}`, JSON.stringify(transferFulfil));
+            // simulate a callback with the transfer fulfilment
+            emitTransferFulfilCacheMessage(cache, postTransfersBody.transferId, transferFulfil);
+            return Promise.resolve();
+        });
 
-    //     // wait for the model to reach a terminal state
-    //     result = await resultPromise;
+        const model = new Model({
+            cache,
+            logger,
+            ...config,
+        });
 
-    //     // check we stopped at quoteReceived state
-    //     expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
-    //     expect(StateMachine.__instance.state).toBe('succeeded');
+        await model.initialize(JSON.parse(JSON.stringify({
+            ...requestToPayTransferRequest,
+            initiatorType: 'DEVICE',
+            authenticationType: 'OTP'
+        })));
 
-    // });
+        expect(StateMachine.__instance.state).toBe('start');
 
+        // start the model running
+        const result = await model.run();
+
+        expect(MojaloopRequests.__postQuotes).toHaveBeenCalledTimes(1);
+        expect(MojaloopRequests.__getAuthorizations).toHaveBeenCalledTimes(0);
+        expect(MojaloopRequests.__postTransfers).toHaveBeenCalledTimes(0);
+        expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE);
+        expect(result.fulfil).toBe(undefined);
+        expect(StateMachine.__instance.state).toBe('quoteReceived');
+
+        // start the model for continuation
+        const result2 = await model.run();
+        expect(MojaloopRequests.__getAuthorizations).toHaveBeenCalledTimes(1);
+        expect(MojaloopRequests.__postTransfers).toHaveBeenCalledTimes(0);
+        expect(result2.currentState).toBe(SDKStateEnum.WAITING_FOR_AUTH_ACCEPTANCE);
+        expect(result2.authorizationResponse.responseType).toBe('ENTERED');
+        expect(StateMachine.__instance.state).toBe('otpReceived');
+
+        // start the model for continuation
+        const result3 = await model.run();
+        expect(MojaloopRequests.__postTransfers).toHaveBeenCalledTimes(1);
+        expect(result3.currentState).toBe(SDKStateEnum.COMPLETED);
+        expect(result3.fulfil.body.transferState).toBe('COMMITTED');
+        expect(StateMachine.__instance.state).toBe('succeeded');
+    });
 
 });

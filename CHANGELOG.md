@@ -1,4 +1,183 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.0.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.0.0...v24.0.1) (2025-01-27)
+
+
+### Chore
+
+* audit fix ([#533](https://github.com/mojaloop/sdk-scheme-adapter/issues/533)) ([2c29417](https://github.com/mojaloop/sdk-scheme-adapter/commit/2c29417f04ff44524c729958eb6d72d8dd7eee7e))
+* update licenses and deps ([#532](https://github.com/mojaloop/sdk-scheme-adapter/issues/532)) ([ee9c68f](https://github.com/mojaloop/sdk-scheme-adapter/commit/ee9c68f53fd240c4fcb55eef917f386ba92aff9d))
+
+## [24.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.5.1...v24.0.0) (2025-01-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* add iso 20022 compatibility (#527)
+
+### Features
+
+* add iso 20022 compatibility ([#527](https://github.com/mojaloop/sdk-scheme-adapter/issues/527)) ([3665d58](https://github.com/mojaloop/sdk-scheme-adapter/commit/3665d5841a3f6a67ca95d3bc43f2e673133f7261)), closes [#458](https://github.com/mojaloop/sdk-scheme-adapter/issues/458)
+
+
+### Chore
+
+* **deps:** bump @babel/traverse from 7.20.1 to 7.24.1 ([#475](https://github.com/mojaloop/sdk-scheme-adapter/issues/475)) ([35b17c8](https://github.com/mojaloop/sdk-scheme-adapter/commit/35b17c8f825411c3f70b7fe5282cd9fae40feb93))
+* **deps:** bump ip from 2.0.0 to 2.0.1 ([#478](https://github.com/mojaloop/sdk-scheme-adapter/issues/478)) ([bcffbb9](https://github.com/mojaloop/sdk-scheme-adapter/commit/bcffbb946bd7651a58a8f4b13689abce8a7df8f9))
+* **deps:** bump tar from 6.1.12 to 6.2.1 ([#479](https://github.com/mojaloop/sdk-scheme-adapter/issues/479)) ([5540e2b](https://github.com/mojaloop/sdk-scheme-adapter/commit/5540e2beb6cb0b6d0260a2bf9e8f28dfab4a02bc))
+* **deps:** bump undici from 5.28.3 to 5.28.4 ([#474](https://github.com/mojaloop/sdk-scheme-adapter/issues/474)) ([631ca31](https://github.com/mojaloop/sdk-scheme-adapter/commit/631ca311bc25faf3d26e2f590bcc83abeb444faf))
+* **moja-tools-bot:** update license md file ([#501](https://github.com/mojaloop/sdk-scheme-adapter/issues/501)) ([82e4ecb](https://github.com/mojaloop/sdk-scheme-adapter/commit/82e4ecb4eda82be8c0a435914577c1d1ad33d497))
+
+### [23.5.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.5.0...v23.5.1) (2024-03-19)
+
+
+### Chore
+
+* **mojaloop/#3815:** fix logger on restart  ([#473](https://github.com/mojaloop/sdk-scheme-adapter/issues/473)) ([5c41284](https://github.com/mojaloop/sdk-scheme-adapter/commit/5c41284692991dac9b12cc36503171aef00f9096))
+
+## [23.5.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.4.1...v23.5.0) (2024-03-19)
+
+
+### Features
+
+* **infitx/iprod-93:** used https.Agent for WSO2 requests in api-svc ([#457](https://github.com/mojaloop/sdk-scheme-adapter/issues/457)) ([150547a](https://github.com/mojaloop/sdk-scheme-adapter/commit/150547a9fdf1a0673c64324960b45ce794ea7382))
+
+### [23.4.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.4.0...v23.4.1) (2024-03-13)
+
+
+### Bug Fixes
+
+* **mojaloop/#3750:** add timer for party lookup in cache ([#471](https://github.com/mojaloop/sdk-scheme-adapter/issues/471)) ([bfd076f](https://github.com/mojaloop/sdk-scheme-adapter/commit/bfd076f97c6b95a6d77509af2591480a6110be82)), closes [mojaloop/#3750](https://github.com/mojaloop/project/issues/3750)
+
+## [23.4.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.3.1...v23.4.0) (2024-02-21)
+
+
+### Features
+
+* **mojaloop/#3750:** add log level enabled checking ([#468](https://github.com/mojaloop/sdk-scheme-adapter/issues/468)) ([345d9fc](https://github.com/mojaloop/sdk-scheme-adapter/commit/345d9fc808f457bd528fdbc1dff65b3c1a2b37ca)), closes [mojaloop/#3750](https://github.com/mojaloop/project/issues/3750)
+
+### [23.3.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.3.0...v23.3.1) (2024-02-19)
+
+
+### Chore
+
+* **mojaloop/#3750:** optimize logging ([#467](https://github.com/mojaloop/sdk-scheme-adapter/issues/467)) ([abd88aa](https://github.com/mojaloop/sdk-scheme-adapter/commit/abd88aa537041771997ebb92f050ed7351865932)), closes [mojaloop/#3750](https://github.com/mojaloop/project/issues/3750)
+
+## [23.3.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.1.1...v23.3.0) (2024-02-13)
+
+
+### Features
+
+* **mojaloop/#3670:** add standard components lib update for k6 validation  ([#465](https://github.com/mojaloop/sdk-scheme-adapter/issues/465)) ([9578241](https://github.com/mojaloop/sdk-scheme-adapter/commit/9578241c128f592019df29bcb4b2b8eb46fe311f)), closes [mojaloop/#3670](https://github.com/mojaloop/project/issues/3670)
+
+### [23.1.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.1.0...v23.1.1) (2023-07-10)
+
+
+### Bug Fixes
+
+* protobuff vuln issue ([#455](https://github.com/mojaloop/sdk-scheme-adapter/issues/455)) ([fa600ad](https://github.com/mojaloop/sdk-scheme-adapter/commit/fa600ad0d84b5586cc1d1b2747fc6eca51ac8050)), closes [#3386](https://github.com/mojaloop/sdk-scheme-adapter/issues/3386)
+
+
+### Chore
+
+* fix to snapshot version ([#456](https://github.com/mojaloop/sdk-scheme-adapter/issues/456)) ([e5c47c9](https://github.com/mojaloop/sdk-scheme-adapter/commit/e5c47c9cb47fd618dfc2274a057108fb561432f6))
+* **mojaloop/#3386:** sdk nodejs maintenance upgrade ([#453](https://github.com/mojaloop/sdk-scheme-adapter/issues/453)) ([9ac931a](https://github.com/mojaloop/sdk-scheme-adapter/commit/9ac931ae17f7f30c3ef9e25e57f0830d57349e34)), closes [mojaloop/#3386](https://github.com/mojaloop/project/issues/3386)
+
+## [23.1.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.0.2...v23.1.0) (2023-07-07)
+
+
+### Features
+
+* **mojaloop/#3264:** tls cert reload issue ([#454](https://github.com/mojaloop/sdk-scheme-adapter/issues/454)) ([d5fa071](https://github.com/mojaloop/sdk-scheme-adapter/commit/d5fa071013580ae951a0c81968400b0131828322)), closes [mojaloop/#3264](https://github.com/mojaloop/project/issues/3264)
+
+### [23.0.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.0.1...v23.0.2) (2023-06-15)
+
+### [23.0.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v23.0.0...v23.0.1) (2023-06-15)
+
+
+### Bug Fixes
+
+* **mojaloop/#3382:** sdk-scheme-adapter config.trxReqEndpoint is not being set ([#451](https://github.com/mojaloop/sdk-scheme-adapter/issues/451)) ([c29a81d](https://github.com/mojaloop/sdk-scheme-adapter/commit/c29a81db5cdb673c21a96c0185eade9cb4b36e3c)), closes [mojaloop/#3382](https://github.com/mojaloop/project/issues/3382)
+
+
+### Documentation
+
+* update CHANGELOG.md [skip ci] ([#450](https://github.com/mojaloop/sdk-scheme-adapter/issues/450)) ([3b302be](https://github.com/mojaloop/sdk-scheme-adapter/commit/3b302bef13cecf16659f77ffa5aaf60eed8ee623))
+
+## [23.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v22.0.2...v23.0.0) (2023-06-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* **mojaloop/3344:** Changes to the RequestToPay and RequestToPayTransfer operations to ensure alignment with the FSPIOP v1.1 specifications, see [SDK Backend API](https://github.com/mojaloop/api-snippets/compare/v17.1.0...v17.2.0#diff-10028ebe8e69dc8dabdda64ce187e7e7aa953456b9f925a41bf7fdc91d0d8695), [SDK Outbound API](https://github.com/mojaloop/api-snippets/compare/v17.1.0...v17.2.0#diff-18017d197f177e339457590d33522aad3ebb5181d6ea64c17325de039904bd8c), and [Design Documentation](https://github.com/mojaloop/documentation/pull/413) for more information.
+
+### Features
+
+* **mojaloop/3344:** enhance SDK Scheme Adaptor to support the request to Pay use case ([#446](https://github.com/mojaloop/sdk-scheme-adapter/issues/446)) ([388f1df](https://github.com/mojaloop/sdk-scheme-adapter/commit/388f1dfb2db963a262cf26744d16b44434120536)), closes [mojaloop/#3344](https://github.com/mojaloop/project/issues/3344)
+
+### Maintenance
+* fix: updates for nx v16 changes ([#449](https://github.com/mojaloop/sdk-scheme-adapter/pull/449))
+
+### [22.0.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v22.0.1...v22.0.2) (2023-04-27)
+
+
+### Bug Fixes
+
+* **mojaloop/3285:** request to pay scenario field format ([#442](https://github.com/mojaloop/sdk-scheme-adapter/issues/442)) ([7121e12](https://github.com/mojaloop/sdk-scheme-adapter/commit/7121e1257db9aac7f2d5fbdd1c9f49cda5c7002e))
+
+### [22.0.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v22.0.0...v22.0.1) (2023-02-28)
+
+
+### Bug Fixes
+
+* **mojaloop/3137:** bulk transactions sdk crash ([#440](https://github.com/mojaloop/sdk-scheme-adapter/issues/440)) ([acb7a01](https://github.com/mojaloop/sdk-scheme-adapter/commit/acb7a0172a3a43d0cc20350622ae68162f4b9252))
+
+## [22.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.6.1...v22.0.0) (2023-02-17)
+
+
+### Bug Fixes
+
+* **mojaloop/3132:** wso2 auth fix fspiop handler ([#437](https://github.com/mojaloop/sdk-scheme-adapter/issues/437)) ([4260361](https://github.com/mojaloop/sdk-scheme-adapter/commit/4260361f537606de15d114da3aa897e6124e1a34))
+
+### [21.6.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.6.0...v21.6.1) (2023-02-14)
+
+
+### Bug Fixes
+
+* **mojaloop/2891:** fix outbound fspiop headers ([#436](https://github.com/mojaloop/sdk-scheme-adapter/issues/436)) ([bfce0b0](https://github.com/mojaloop/sdk-scheme-adapter/commit/bfce0b097d40d565da47b5c56a0e7a84ff47fb1d))
+
+## [21.6.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.5.2...v21.6.0) (2023-01-19)
+
+
+### Features
+
+* **mojaloop/#3053:** add support for subscenarios to backend, outboud and ilp ([#430](https://github.com/mojaloop/sdk-scheme-adapter/issues/430)) ([f6c739a](https://github.com/mojaloop/sdk-scheme-adapter/commit/f6c739a93ab6e64a0bd824ed31fc45e1ec56c948)), closes [mojaloop/#3053](https://github.com/mojaloop/project/issues/3053)
+
+### [21.5.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.5.1...v21.5.2) (2022-12-16)
+
+
+### Chore
+
+* **mojaloop/#3074:** sync DFSP backend api with api-snippets ([#428](https://github.com/mojaloop/sdk-scheme-adapter/issues/428)) ([edf601e](https://github.com/mojaloop/sdk-scheme-adapter/commit/edf601ea407c5d8624c3cc2d8ff96e012805a71e)), closes [mojaloop/#3074](https://github.com/mojaloop/project/issues/3074)
+
+### [21.5.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.5.0...v21.5.1) (2022-12-14)
+
+
+### Chore
+
+* sort SDK backend api and upgrade dependencies ([#429](https://github.com/mojaloop/sdk-scheme-adapter/issues/429)) ([75bb92a](https://github.com/mojaloop/sdk-scheme-adapter/commit/75bb92a99512e7879003ddd5bbc11b7ba5206814))
+
+## [21.5.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.4.0...v21.5.0) (2022-11-24)
+
+
+### Features
+
+* **mojaloop/3023:** align ttk func tests from ttk testcases repo ([#425](https://github.com/mojaloop/sdk-scheme-adapter/issues/425)) ([973faa7](https://github.com/mojaloop/sdk-scheme-adapter/commit/973faa7bd09e69608b324fb754c20d2a0719da85))
+
+
+### Chore
+
+* **mojaloop/#3018:** update documentation for transferId refactor [skip ci] ([#424](https://github.com/mojaloop/sdk-scheme-adapter/issues/424)) ([9680e32](https://github.com/mojaloop/sdk-scheme-adapter/commit/9680e325830f557fa778d31e1610a86901361af1)), closes [mojaloop/#3018](https://github.com/mojaloop/project/issues/3018)
+
 ## [21.4.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v21.3.5...v21.4.0) (2022-11-12)
 
 

@@ -1,12 +1,29 @@
-/**************************************************************************
- *  (C) Copyright ModusBox Inc. 2020 - All rights reserved.               *
- *                                                                        *
- *  This file is made available under the terms of the license agreement  *
- *  specified in the corresponding source code repository.                *
- *                                                                        *
- *  ORIGINAL AUTHOR:                                                      *
- *       Matt Kingston - matt.kingston@modusbox.com                       *
- **************************************************************************/
+/*****
+ License
+ --------------
+ Copyright © 2020-2025 Mojaloop Foundation
+ The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+ Contributors
+ --------------
+ This is the official list of the Mojaloop project contributors for this file.
+ Names of the original copyright holders (individuals or organizations)
+ should be listed with a '*' in the first column. People who have
+ contributed from an organization can be listed under the organization
+ that actually holds the copyright for their contributions (see the
+ Mojaloop Foundation for an example). Those individuals should have
+ their names indented and be marked with a '-'. Email address can be added
+ optionally within square brackets <email>.
+
+ * Mojaloop Foundation
+ - Name Surname <name.surname@mojaloop.io>
+
+ --------------
+ ******/
 
 // This server has deliberately been written separate from any other server in the SDK. There is
 // some reasonable argument that it could be part of the outbound or test server. It has not been
@@ -26,6 +43,8 @@ const ws = require('ws');
 const jsonPatch = require('fast-json-patch');
 const { generateSlug } = require('random-word-slugs');
 const _ = require('lodash');
+
+const FORCE_WS_CLOSE_TIMEOUT_MS = 5000;
 
 /**************************************************************************
  * The message protocol messages, verbs, and errors
@@ -136,15 +155,15 @@ class Client extends ws {
     static Create(...args) {
         return new Promise((resolve, reject) => {
             const client = new Client(...args);
-            client.on('open', () => resolve(client));
-            client.on('error', (err) => reject(err));
+            client.once('open', () => resolve(client));
+            client.once('error', (err) => reject(err));
             client.on('message', client._handle);
         });
     }
 
     async send(msg) {
         const data = typeof msg === 'string' ? msg : serialise(msg);
-        this._logger.push({ data }).log('Sending message');
+        this._logger.isDebugEnabled && this._logger.push({ data }).debug('Sending message');
         return new Promise((resolve) => super.send.call(this, data, resolve));
     }
 
@@ -152,15 +171,34 @@ class Client extends ws {
     async receive() {
         return new Promise((resolve) => this.once('message', (data) => {
             const msg = deserialise(data);
-            this._logger.push({ msg }).log('Received');
+            this._logger.isDebugEnabled && this._logger.push({ msg }).debug('Received');
             resolve(msg);
         }));
     }
 
     // Close connection
     async stop() {
-        this._logger.log('Control client shutting down...');
-        this.close();
+        this._logger.isDebugEnabled && this._logger.debug('Control client shutting down...');
+        return new Promise((resolve) => {
+            let timer = setTimeout(() => {
+                this._logger.isInfoEnabled && this._logger.info('Control client forced to close');
+                timer = null;
+                resolve(false);
+            }, FORCE_WS_CLOSE_TIMEOUT_MS);
+
+            this.once('close', () => {
+                this._logger.isInfoEnabled && this._logger.info('Control client is closed');
+                if (timer) clearTimeout(timer);
+                resolve(true);
+            });
+            this.once('error', (error) => {
+                this._logger.isWarnEnabled && this._logger.push({ error }).warn('Control client failed to close');
+                if (timer) clearTimeout(timer);
+                resolve(false);
+            });
+
+            this.close();
+        });
     }
 
     // Handle incoming message from the server.
@@ -170,25 +208,25 @@ class Client extends ws {
         let msg;
         try {
             msg = deserialise(data);
-        } catch (err) {
-            this._logger.push({ data }).log('Couldn\'t parse received message');
+        } catch {
+            this._logger.isErrorEnabled && this._logger.push({ data }).console.error();('Couldn\'t parse received message');
             this.send(build.ERROR.NOTIFY.JSON_PARSE_ERROR());
         }
-        this._logger.push({ msg }).log('Handling received message');
+        this._logger.isDebugEnabled && this._logger.push({ msg }).debug('Handling received message');
         switch (msg.msg) {
             case MESSAGE.CONFIGURATION:
                 switch (msg.verb) {
                     case VERB.NOTIFY: {
                         const dup = JSON.parse(JSON.stringify(this._appConfig)); // fast-json-patch explicitly mutates
                         _.merge(dup, msg.data);
-                        this._logger.push({ oldConf: this._appConfig, newConf: dup }).log('Emitting new configuration');
+                        this._logger.isDebugEnabled && this._logger.push({ oldConf: this._appConfig, newConf: dup }).debug(`Emitting new agent configuration [${VERB.NOTIFY}]`);
                         this.emit(EVENT.RECONFIGURE, dup);
                         break;
                     }
                     case VERB.PATCH: {
                         const dup = JSON.parse(JSON.stringify(this._appConfig)); // fast-json-patch explicitly mutates
                         jsonPatch.applyPatch(dup, msg.data);
-                        this._logger.push({ oldConf: this._appConfig, newConf: dup }).log('Emitting new configuration');
+                        this._logger.isDebugEnabled && this._logger.push({ oldConf: this._appConfig, newConf: dup }).debug(`Emitting new agent configuration [${VERB.PATCH}]`);
                         this.emit(EVENT.RECONFIGURE, dup);
                         break;
                     }

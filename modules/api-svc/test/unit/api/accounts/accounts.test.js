@@ -1,20 +1,45 @@
-/**************************************************************************
- *  (C) Copyright ModusBox Inc. 2019 - All rights reserved.               *
- *                                                                        *
- *  This file is made available under the terms of the license agreement  *
- *  specified in the corresponding source code repository.                *
- *                                                                        *
- *  ORIGINAL AUTHOR:                                                      *
- *       Yevhen Kyriukha - yevhen.kyriukha@modusbox.com                   *
- **************************************************************************/
+/*****
+ License
+ --------------
+ Copyright © 2020-2025 Mojaloop Foundation
+ The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+ Contributors
+ --------------
+ This is the official list of the Mojaloop project contributors for this file.
+ Names of the original copyright holders (individuals or organizations)
+ should be listed with a '*' in the first column. People who have
+ contributed from an organization can be listed under the organization
+ that actually holds the copyright for their contributions (see the
+ Mojaloop Foundation for an example). Those individuals should have
+ their names indented and be marked with a '-'. Email address can be added
+ optionally within square brackets <email>.
+
+ * Mojaloop Foundation
+ - Name Surname <name.surname@mojaloop.io>
+
+ * Modusbox
+ - Yevhen Kyriukha - <yevhen.kyriukha@modusbox.com>
+ --------------
+ ******/
 
 'use strict';
+
+process.env.PEER_ENDPOINT = '172.17.0.3:4000';
+process.env.BACKEND_ENDPOINT = '172.17.0.5:4000';
+process.env.CACHE_URL = 'redis://172.17.0.2:6379';
+process.env.MGMT_API_WS_URL = '0.0.0.0';
+process.env.SUPPORTED_CURRENCIES='USD';
 
 jest.unmock('@mojaloop/sdk-standard-components');
 jest.mock('redis');
 
 const redis = require('redis');
-const uuidv4 = require('uuidv4');
+const uuid = require('@mojaloop/central-services-shared').Util.id;
 const {createValidators, createTestServers, destroyTestServers} = require('../utils');
 const {createPostAccountsTester} = require('./utils');
 
@@ -38,10 +63,6 @@ describe('Outbound Accounts API', () => {
         redisClient = redis.createClient(defaultConfig);
     });
 
-    afterAll(async () => {
-        await redisClient.disconnect();
-    });
-
     beforeEach(async () => {
         serversInfo = await createTestServers(defaultConfig);
         testPostAccounts = createPostAccountsTester({
@@ -55,9 +76,13 @@ describe('Outbound Accounts API', () => {
         await destroyTestServers(serversInfo);
     });
 
+    afterAll(async () => {
+        await redisClient.disconnect();
+    });
+
     describe('POST /accounts', () => {
         beforeEach(() => {
-            uuidv4.__reset();
+            uuid.__reset();
             redisClient.flushdb();
         });
 
@@ -68,22 +93,18 @@ describe('Outbound Accounts API', () => {
                 })),
                 currency: body.currency,
             });
-            return testPostAccounts(putBodyFn, 200,
-                postAccountsSuccessResponse);
+            return testPostAccounts(putBodyFn, 200, postAccountsSuccessResponse);
         });
 
-        test(
-            'should return success response with error info on invalid currency (1)',
-            () => {
-                const putBodyFn = (body) => ({
-                    partyList: body.partyList.map(party => ({
-                        partyId: party,
-                    })),
-                    currency: undefined,
-                });
-                return testPostAccounts(putBodyFn, 200,
-                    postAccountsSuccessResponseWithError1);
+        test('should return success response with error info on invalid currency (1)', () => {
+            const putBodyFn = (body) => ({
+                partyList: body.partyList.map(party => ({
+                    partyId: party,
+                })),
+                currency: undefined,
             });
+            return testPostAccounts(putBodyFn, 200, postAccountsSuccessResponseWithError1);
+        });
 
         test(
             'should return success response with error info on errorInformation presence (2)',
@@ -114,6 +135,9 @@ describe('Outbound Accounts API', () => {
                 postAccountsErrorTimeoutResponse);
         });
 
+        // PUT /participants/{ID}/error needs to be higher in api.yaml
+        // than PUT /participants/{Type}/{ID}. Not sure why that is the case
+        // in the test harness atm.
         test('should return mojaloop error response', () => {
             const putBodyFn = () => ({
                 errorInformation: {

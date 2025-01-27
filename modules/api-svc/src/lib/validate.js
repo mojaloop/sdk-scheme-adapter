@@ -1,13 +1,31 @@
-/**************************************************************************
- *  (C) Copyright ModusBox Inc. 2019 - All rights reserved.               *
- *                                                                        *
- *  This file is made available under the terms of the license agreement  *
- *  specified in the corresponding source code repository.                *
- *                                                                        *
- *  ORIGINAL AUTHOR:                                                      *
- *       Matt Kingston - matt.kingston@modusbox.com                       *
- **************************************************************************/
+/*****
+ License
+ --------------
+ Copyright © 2020-2025 Mojaloop Foundation
+ The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
 
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+ Contributors
+ --------------
+ This is the official list of the Mojaloop project contributors for this file.
+ Names of the original copyright holders (individuals or organizations)
+ should be listed with a '*' in the first column. People who have
+ contributed from an organization can be listed under the organization
+ that actually holds the copyright for their contributions (see the
+ Mojaloop Foundation for an example). Those individuals should have
+ their names indented and be marked with a '-'. Email address can be added
+ optionally within square brackets <email>.
+
+ * Mojaloop Foundation
+ - Name Surname <name.surname@mojaloop.io>
+
+ * Modusbox
+ - Matt Kingston <matt.kingston@modusbox.com>
+ --------------
+ ******/
 'use strict';
 
 
@@ -89,14 +107,14 @@ const extractBody = rqBody => {
 //     }
 //   }
 // }
-const transformApiDoc = apiDoc => ({
+const transformApiDoc = (apiDoc, conf) => ({
     ...apiDoc,
     // TODO: as we now discard most of the extra information, it probably makes sense to explicitly
     // return the object form we're interested in, rather than do all of this awkward object
     // mapping. I.e.:
     // return { get: { validator: [Function validator] }, put: { validator: [Function validator] } };
     paths: Object.assign(...Object.entries(apiDoc.paths).map(([pathName, pathValue]) => ({
-        [pathName]: Object.assign(
+        [conf?.multiDfsp ? `/{dfspId}${pathName}` : pathName]: Object.assign(
             ...Object.entries(pathValue)
                 .filter(([method,]) => httpMethods.includes(method))
                 .map(([method, methodValue]) => {
@@ -135,12 +153,12 @@ class Validator {
     // apiDoc
     //   POJO representing apiDoc API spec. Example:
     //   const v = new Validator(require('./apiDoc.json'));
-    async initialise(apiDoc) {
+    async initialise(apiDoc, conf) {
         // Dereferencing the api doc makes it much easier to work with. Specifically, it allows us
         // to compile a validator for each path.
         const pojoApiDoc = await jsrp.dereference(apiDoc);
 
-        this.apiDoc = transformApiDoc(pojoApiDoc);
+        this.apiDoc = transformApiDoc(pojoApiDoc, conf);
         const pathParamMatch = /\{[^{}]+\}/g;
         this.paths = Object.entries(this.apiDoc.paths).map(([path, pathSpec]) => ({
             pattern: path,
@@ -171,7 +189,7 @@ class Validator {
         result.params = Object.assign({}, ...path.match(result.matcher.regex).slice(1).map((m, i) => ({ [result.matcher.params[i]]: m})));
 
         if (!this.logExcludePaths.includes(path)) {
-            logger.push({path, result}).log('Matched path');
+            logger.isDebugEnabled && logger.push({path, result}).debug('Matched path');
         }
         return result;
     }
@@ -188,7 +206,7 @@ class Validator {
         const validationResult = path.methods[ctx.method.toLowerCase()].validator(ctx, path.params);
 
         if (validationResult !== undefined && validationResult.length > 0) {
-            logger.push({ validationResult }).log('Validation result');
+            logger.isDebugEnabled && logger.push({ validationResult }).debug('Validation result');
 
             let err;
             const firstError = validationResult[0];

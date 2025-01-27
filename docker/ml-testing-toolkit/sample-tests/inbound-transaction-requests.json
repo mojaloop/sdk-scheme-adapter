@@ -1,0 +1,71 @@
+{
+  "test_cases": [
+    {
+      "id": 1,
+      "name": "FSPIOP Post Transaction Requests",
+      "requests": [
+        {
+          "id": 1,
+          "description": "POST /transactionRequests",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "fspiop",
+            "asynchronous": true,
+            "specFile": "spec_files/api_definitions/fspiop_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/fspiop_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/fspiop_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/fspiop_1.0/mockRef.json",
+            "triggerTemplatesFolder": "spec_files/api_definitions/fspiop_1.0/trigger_templates"
+          },
+          "operationPath": "/transactionRequests",
+          "path": "/transactionRequests",
+          "method": "post",
+          "url": "http://host.docker.internal:4000",
+          "body": {
+            "transactionRequestId": "{$function.generic.generateUUID}",
+            "payer": {
+              "partyIdType": "MSISDN",
+              "partyIdentifier": "25644444444",
+              "fspId": "mojaloop-sdk"
+            },
+            "payee": {
+              "partyIdInfo": {
+                "partyIdType": "MSISDN",
+                "partyIdentifier": "1234567890",
+                "fspId": "switch"
+              },
+              "personalInfo": {
+                "complexName": {
+                  "firstName": "Justin",
+                  "middleName": "Pierre",
+                  "lastName": "Trudeau"
+                },
+                "dateOfBirth": "1980-01-01"
+              }
+            },
+            "amount": {
+              "currency": "USD",
+              "amount": "10"
+            },
+            "transactionType": {
+              "scenario": "TRANSFER",
+              "initiator": "PAYEE",
+              "initiatorType": "CONSUMER"
+            },
+            "authenticationType": "OTP"
+          },
+          "headers": {
+            "Accept": "application/vnd.interoperability.transactionRequests+json;version=1",
+            "Content-Type": "application/vnd.interoperability.transactionRequests+json;version=1.0",
+            "Date": "{$function.generic.curDate}",
+            "FSPIOP-Source": ""
+          }
+        }
+      ],
+      "fileInfo": {
+        "path": "sample-tests/inbound-transaction-requests.json"
+      }
+    }
+  ]
+}

@@ -1,18 +1,34 @@
-/**************************************************************************
- *  (C) Copyright ModusBox Inc. 2019 - All rights reserved.               *
- *                                                                        *
- *  This file is made available under the terms of the license agreement  *
- *  specified in the corresponding source code repository.                *
- *                                                                        *
- *  ORIGINAL AUTHOR:                                                      *
- *       James Bush - james.bush@modusbox.com                             *
- **************************************************************************/
+/*****
+ License
+ --------------
+ Copyright © 2020-2025 Mojaloop Foundation
+ The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
 
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+ Contributors
+ --------------
+ This is the official list of the Mojaloop project contributors for this file.
+ Names of the original copyright holders (individuals or organizations)
+ should be listed with a '*' in the first column. People who have
+ contributed from an organization can be listed under the organization
+ that actually holds the copyright for their contributions (see the
+ Mojaloop Foundation for an example). Those individuals should have
+ their names indented and be marked with a '-'. Email address can be added
+ optionally within square brackets <email>.
+
+ * Mojaloop Foundation
+ - James Bush <jbush@mojaloop.io>
+
+ --------------
+ ******/
 'use strict';
 
 
-const util = require('util');
 const respErrSym = Symbol('ResponseErrorDataSym');
+const safeStringify = require('fast-safe-stringify');
 
 
 /**
@@ -29,7 +45,7 @@ class HTTPResponseError extends Error {
     }
 
     toString() {
-        return util.inspect(this[respErrSym]);
+        return safeStringify(this[respErrSym]);
     }
 
     toJSON() {
@@ -50,27 +66,7 @@ const buildUrl = (...args) => {
 };
 
 
-const throwOrJson = async (res) => {
-    // TODO: will a 503 or 500 with content-length zero generate an error?
-    // or a 404 for that matter?!
-
-    if (res.headers['content-length'] === '0' || res.statusCode === 204) {
-        // success but no content, return null
-        return null;
-    }
-    if(res.statusCode < 200 || res.statusCode >= 300) {
-        // not a successful request
-        throw new HTTPResponseError({ msg: `Request returned non-success status code ${res.statusCode}`,
-            res
-        });
-    }
-
-    return res.data;
-};
-
-
 module.exports = {
     HTTPResponseError,
     buildUrl,
-    throwOrJson,
 };

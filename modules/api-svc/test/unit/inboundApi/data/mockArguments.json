@@ -25,6 +25,40 @@
       "merchantClassificationCode": "123"
     }
   },
+  "fxQuoteRequest": {
+    "conversionRequestId": "fake-id",
+    "conversionTerms": {
+      "conversionId": "fake-id",
+      "initiatingFsp": "test-fsp1",
+      "counterPartyFsp": "test-fsp2",
+      "amountType": "SEND",
+      "sourceAmount": {
+        "currency": "USD",
+        "amount": 10
+      },
+      "targetAmount": {
+        "currency": "XOF"
+      },
+      "expiration": "2019-06-04T04:02:10.378Z"
+    }
+  },
+  "fxTransfersRequest": {
+    "commitRequestId": "fake-id",
+    "determiningTransferId": "fake-id",
+    "initiatingFsp": "test-fsp1",
+    "counterPartyFsp": "test-fsp2",
+    "amountType": "SEND",
+    "sourceAmount": {
+      "currency": "USD",
+      "amount": 10
+    },
+    "targetAmount": {
+      "currency": "XOF",
+      "amount": 20
+    },
+    "condition": "fake-condition",
+    "expiration": "2019-06-04T04:02:10.378Z"
+  },
   "bulkQuoteRequest": {
     "bulkQuoteId": "fake-bulk-quote-id",
     "payer": {
@@ -71,7 +105,8 @@
         "transactionType": {
           "scenario": "TRANSFER",
           "initiator": "PAYER",
-          "initiatorType": "CONSUMER"
+          "initiatorType": "CONSUMER",
+          "subScenario": "SUBSCENARIO"
         }
       }
     ],

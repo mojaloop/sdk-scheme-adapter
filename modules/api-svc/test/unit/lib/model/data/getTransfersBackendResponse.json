@@ -27,7 +27,8 @@
   "transactionType": {
     "initiator": "PAYER",
     "initiatorType": "CONSUMER",
-    "scenario": "TRANSFER"
+    "scenario": "TRANSFER",
+    "subScenario": "SUBSCENARIO"
   },
   "transferState": "COMMITTED",
   "timestamp": "2019-11-15T14:16:09.663"

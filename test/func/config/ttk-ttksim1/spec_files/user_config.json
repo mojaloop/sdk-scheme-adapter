@@ -42,6 +42,11 @@
     "TEST_CASES_REPO_HUB_GP_PATH": "collections/hub/golden_path",
     "TEST_CASES_REPO_HUB_PROVISIONING_PATH": "collections/hub/provisioning"
   },
-  "DEFAULT_ENVIRONMENT_FILE_NAME": "dfsp_local_environment.json",
-  "LABELS": []
+  "DEFAULT_ENVIRONMENT_FILE_NAME": "hub_local_environment.json",
+  "LABELS": [],
+  "INSTANCE_NAME": "TTK Sim1",
+  "UI_THEME": {
+    "HEADER_COLOR": "rgb(204, 51, 255)",
+    "TITLE_COLOR": "#fff"
+  }
 }

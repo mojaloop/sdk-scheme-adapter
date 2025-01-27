@@ -1,6 +1,7 @@
 {
   "VERSION": 1,
   "CALLBACK_ENDPOINT": "http://localhost:4040",
+  "MONITORING_LOG_INCLUDE_PAYLOAD": true,
   "CALLBACK_RESOURCE_ENDPOINTS": {
     "enabled": false,
     "endpoints": [
@@ -34,6 +35,10 @@
       },
       "ttksim3": {
         "defaultEndpoint": "http://ttksim3-sdk-api-svc:4000",
+        "endpoints": []
+      },
+      "ttkfxp": {
+        "defaultEndpoint": "http://ttkfxp-sdk-api-svc:4000",
         "endpoints": []
       }
     }
@@ -104,7 +109,7 @@
       "color": "blue"
     }
   ],
-  "INSTANCE_NAME": "Mojaloop Testing Toolkit",
+  "INSTANCE_NAME": "TTK Hub",
   "UI_THEME": {
     "HEADER_COLOR": "rgb(41, 62, 93)",
     "TITLE_COLOR": "#fff"

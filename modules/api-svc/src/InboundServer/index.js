@@ -1,13 +1,29 @@
-/**************************************************************************
- *  (C) Copyright ModusBox Inc. 2019 - All rights reserved.               *
- *                                                                        *
- *  This file is made available under the terms of the license agreement  *
- *  specified in the corresponding source code repository.                *
- *                                                                        *
- *  ORIGINAL AUTHOR:                                                      *
- *       James Bush - james.bush@modusbox.com                             *
- **************************************************************************/
+/*****
+ License
+ --------------
+ Copyright © 2020-2025 Mojaloop Foundation
+ The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
 
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+ Contributors
+ --------------
+ This is the official list of the Mojaloop project contributors for this file.
+ Names of the original copyright holders (individuals or organizations)
+ should be listed with a '*' in the first column. People who have
+ contributed from an organization can be listed under the organization
+ that actually holds the copyright for their contributions (see the
+ Mojaloop Foundation for an example). Those individuals should have
+ their names indented and be marked with a '-'. Email address can be added
+ optionally within square brackets <email>.
+
+ * Mojaloop Foundation
+ - James Bush <james.bus@mojaloop.io>
+
+ --------------
+ ******/
 const Koa = require('koa');
 
 const assert = require('assert').strict;
@@ -23,13 +39,20 @@ const router = require('../lib/router');
 const handlers = require('./handlers');
 const middlewares = require('./middlewares');
 
+const { inboundOpenApiFilename } = require('../config');
+const specPath = path.resolve(__dirname, inboundOpenApiFilename);
+const apiSpecs = yaml.load(fs.readFileSync(specPath));
+
 const logExcludePaths = ['/'];
+const _validator = new Validate({ logExcludePaths });
+let _initialize;
 
 class InboundApi extends EventEmitter {
     constructor(conf, logger, cache, validator, wso2) {
         super({ captureExceptions: true });
         this._conf = conf;
         this._cache = cache;
+        _initialize ||= _validator.initialise(apiSpecs, conf);
 
         if (conf.validateInboundJws) {
             // peerJWSKey is a special config option specifically for Payment Manager for Mojaloop
@@ -94,7 +117,7 @@ class InboundApi extends EventEmitter {
         const api = new Koa();
 
         api.use(middlewares.createErrorHandler(logger));
-        api.use(middlewares.createRequestIdGenerator());
+        api.use(middlewares.createRequestIdGenerator(logger));
         api.use(middlewares.createHeaderValidator(conf, logger));
         if (conf.validateInboundJws) {
             const jwsExclusions = conf.validateInboundPutPartiesJws ? [] : ['putParties'];
@@ -108,8 +131,9 @@ class InboundApi extends EventEmitter {
         if (conf.enableTestFeatures) {
             api.use(middlewares.cacheRequest(cache));
         }
-        api.use(router(handlers));
+        api.use(router(handlers, conf));
         api.use(middlewares.createResponseBodyHandler());
+        api.use(middlewares.createResponseLogging(logger));
 
         api.context.resourceVersions = conf.resourceVersions;
 
@@ -135,13 +159,12 @@ class InboundServer extends EventEmitter {
     constructor(conf, logger, cache, wso2) {
         super({ captureExceptions: true });
         this._conf = conf;
-        this._validator = new Validate({ logExcludePaths });
         this._logger = logger;
         this._api = new InboundApi(
             conf,
             this._logger.push({ component: 'api' }),
             cache,
-            this._validator,
+            _validator,
             wso2,
         );
         this._api.on('error', (...args) => {
@@ -156,20 +179,24 @@ class InboundServer extends EventEmitter {
 
     async start() {
         assert(!this._server.listening, 'Server already listening');
-        const specPath = path.join(__dirname, 'api.yaml');
-        const apiSpecs = yaml.load(fs.readFileSync(specPath));
-        await this._validator.initialise(apiSpecs);
+        await _initialize;
         await this._api.start();
         await new Promise((resolve) => this._server.listen(this._conf.inbound.port, resolve));
-        this._logger.log(`Serving inbound API on port ${this._conf.inbound.port}`);
+        this._logger.isInfoEnabled && this._logger.info(`Serving inbound API on port ${this._conf.inbound.port}`);
     }
 
     async stop() {
         if (this._server.listening) {
-            await new Promise(resolve => this._server.close(resolve));
+            await new Promise(resolve => {
+                this._server.close(() => {
+                    this._logger.isDebugEnabled && this._logger.debug('inbound API is closed');
+                    resolve();
+                });
+                this._server.closeAllConnections();
+            });
         }
         await this._api.stop();
-        this._logger.log('inbound shut down complete');
+        this._logger.isInfoEnabled && this._logger.info('inbound API shut down complete');
     }
 
     _createServer(tlsEnabled, tlsCreds, handler) {

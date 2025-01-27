@@ -1,18 +1,36 @@
-/**************************************************************************
- *  (C) Copyright ModusBox Inc. 2019 - All rights reserved.               *
- *                                                                        *
- *  This file is made available under the terms of the license agreement  *
- *  specified in the corresponding source code repository.                *
- *                                                                        *
- *  ORIGINAL AUTHOR:                                                      *
- *       James Bush - james.bush@modusbox.com                             *
- **************************************************************************/
+/*****
+ License
+ --------------
+ Copyright © 2020-2025 Mojaloop Foundation
+ The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+ Contributors
+ --------------
+ This is the official list of the Mojaloop project contributors for this file.
+ Names of the original copyright holders (individuals or organizations)
+ should be listed with a '*' in the first column. People who have
+ contributed from an organization can be listed under the organization
+ that actually holds the copyright for their contributions (see the
+ Mojaloop Foundation for an example). Those individuals should have
+ their names indented and be marked with a '-'. Email address can be added
+ optionally within square brackets <email>.
+
+ * Mojaloop Foundation
+ - James Bush <jbush@mojaloop.io>
+
+ --------------
+ ******/
 'use strict';
 
 const fs = require('fs');
 require('dotenv').config();
-const { from } = require('env-var');
 const yaml = require('js-yaml');
+const { from } = require('env-var');
+const { API_TYPES, RESOURCE_VERSIONS_STRING } = require('./constants');
 
 function getFileContent (path) {
     if (!fs.existsSync(path)) {
@@ -56,12 +74,20 @@ const env = from(process.env, {
     asResourceVersions: (resourceString) => parseResourceVersions(resourceString),
 });
 
+// ISO-20022 config options
+// apiType can be one of:
+//   - fspiop
+//   - iso20022
+const apiType = env.get('API_TYPE').default(API_TYPES.fspiop).asString();
+const isIsoApi = apiType === API_TYPES.iso20022;
+
 module.exports = {
     __parseResourceVersion: parseResourceVersions,
     control: {
         mgmtAPIWsUrl: env.get('MGMT_API_WS_URL').default('127.0.0.1').asString(),
         mgmtAPIWsPort: env.get('MGMT_API_WS_PORT').default('4005').asPortNumber()
     },
+    idGenerator: env.get('ID_GENERATOR').default('{"type":"ulid"}').asJsonObject(),
     logLevel: env.get('LOG_LEVEL').default('info').asEnum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']),
     inbound: {
         port: env.get('INBOUND_LISTEN_PORT').default('4000').asPortNumber(),
@@ -127,9 +153,14 @@ module.exports = {
     transactionRequestsEndpoint: env.get('TRANSACTION_REQUESTS_ENDPOINT').asString(),
     transfersEndpoint: env.get('TRANSFERS_ENDPOINT').asString(),
     bulkTransfersEndpoint: env.get('BULK_TRANSFERS_ENDPOINT').asString(),
+    fxQuotesEndpoint: env.get('FX_QUOTES_ENDPOINT').asString(),
+    fxTransfersEndpoint: env.get('FX_TRANSFERS_ENDPOINT').asString(),
     backendEndpoint: env.get('BACKEND_ENDPOINT').required().asString(),
 
+    getServicesFxpResponse: env.get('GET_SERVICES_FXP_RESPONSE').default('').asArray(),
+
     dfspId: env.get('DFSP_ID').default('mojaloop').asString(),
+    multiDfsp: env.get('MULTI_DFSP').default('false').asBool(),
     ilpSecret: env.get('ILP_SECRET').default('mojaloop-sdk').asString(),
     checkIlp: env.get('CHECK_ILP').default('true').asBool(),
     expirySeconds: env.get('EXPIRY_SECONDS').default('60').asIntPositive(),
@@ -139,8 +170,8 @@ module.exports = {
 
     autoAcceptQuotes: env.get('AUTO_ACCEPT_QUOTES').default('true').asBool(),
     autoAcceptParty: env.get('AUTO_ACCEPT_PARTY').default('true').asBool(),
+    autoAcceptR2PParty: env.get('AUTO_ACCEPT_R2P_PARTY').default('false').asBool(),
     autoAcceptR2PBusinessQuotes: env.get('AUTO_ACCEPT_R2P_BUSINESS_QUOTES').default('false').asBool(),
-    autoAcceptR2PDeviceQuotes: env.get('AUTO_ACCEPT_R2P_DEVICE_QUOTES').default('true').asBool(),
     autoAcceptR2PDeviceOTP: env.get('AUTO_ACCEPT_R2P_DEVICE_OTP').default('false').asBool(),
     autoAcceptParticipantsPut: env.get('AUTO_ACCEPT_PARTICIPANTS_PUT').default('false').asBool(),
 
@@ -159,6 +190,7 @@ module.exports = {
     jwsSigningKey: env.get('JWS_SIGNING_KEY_PATH').asFileContent(),
     jwsVerificationKeysDirectory: env.get('JWS_VERIFICATION_KEYS_DIRECTORY').asString(),
     cacheUrl: env.get('CACHE_URL').default('redis://localhost:6379').asUrlString(),
+    unsubscribeTimeoutMs: env.get('UNSUBSCRIBE_TIMEOUT_MS').default('5000').asIntPositive(),
     enableTestFeatures: env.get('ENABLE_TEST_FEATURES').default('false').asBool(),
     oauthTestServer: {
         enabled: env.get('ENABLE_OAUTH_TOKEN_ENDPOINT').default('false').asBool(),
@@ -173,7 +205,9 @@ module.exports = {
             clientKey: env.get('OAUTH_CLIENT_KEY').asString(),
             clientSecret: env.get('OAUTH_CLIENT_SECRET').asString(),
             refreshSeconds: env.get('OAUTH_REFRESH_SECONDS').default('60').asIntPositive(),
+            refreshRetrySeconds: env.get('OAUTH_REFRESH_RETRY_SECONDS').default('10').asIntPositive(),
         },
+        mTlsEnabled: env.get('OAUTH_MUTUAL_TLS_ENABLED').default('false').asBool(),
         requestAuthFailureRetryTimes: env.get('WSO2_AUTH_FAILURE_REQUEST_RETRIES').default('0').asIntPositive(),
     },
     rejectExpiredQuoteResponses: env.get('REJECT_EXPIRED_QUOTE_RESPONSES').default('false').asBool(),
@@ -183,6 +217,7 @@ module.exports = {
     requestProcessingTimeoutSeconds: env.get('REQUEST_PROCESSING_TIMEOUT_SECONDS').default('30').asIntPositive(),
 
     logIndent: env.get('LOG_INDENT').default('2').asIntPositive(),
+    isJsonOutput:  env.get('LOG_IS_JSON_OUTPUT').default('false').asBool(),
 
     allowTransferWithoutQuote: env.get('ALLOW_TRANSFER_WITHOUT_QUOTE').default('false').asBool(),
 
@@ -197,7 +232,7 @@ module.exports = {
     sendFinalNotificationIfRequested: env.get('SEND_FINAL_NOTIFICATION_IF_REQUESTED').default('false').asBool(),
 
     // resourceVersions config should be string in format: "resourceOneName=1.0,resourceTwoName=1.1"
-    resourceVersions: env.get('RESOURCE_VERSIONS').default('').asResourceVersions(),
+    resourceVersions: env.get('RESOURCE_VERSIONS').default(RESOURCE_VERSIONS_STRING).asResourceVersions(),
 
     metrics: {
         port: env.get('METRICS_SERVER_LISTEN_PORT').default('4004').asPortNumber()
@@ -211,5 +246,20 @@ module.exports = {
     pm4mlEnabled: env.get('PM4ML_ENABLED').default('false').asBool(),
 
     fspiopApiServerMaxRequestBytes: env.get('FSPIOP_API_SERVER_MAX_REQUEST_BYTES').default('209715200').asIntPositive(), // Default is 200mb
-    backendApiServerMaxRequestBytes: env.get('BACKEND_API_SERVER_MAX_REQUEST_BYTES').default('209715200').asIntPositive(), // Default is 200mb
+    backendApiServerMaxRequestBytes: env.get('BACKEND_API_SERVER_MAX_REQUEST_BYTES').default('209715200').asIntPositive(), // Default is 200mb,
+    supportedCurrencies: env.get('SUPPORTED_CURRENCIES').default('').asArray(),
+
+    apiType,
+    isIsoApi,
+    inboundOpenApiFilename: isIsoApi ? 'api_iso20022.yaml' : 'api.yaml',
+
+    // ILP version options
+    // ilpVersion can be one of:
+    //    - 1
+    //    - 4
+    ilpVersion: env.get('ILP_VERSION').default('1').asString(),
+
+    // Redis key ttl when stored in the cache, if value is used as zero it will
+    // persist throughout the session , value used is in seconds
+    redisCacheTtl: env.get('REDIS_CACHE_TTL').default('0').asInt()
 };

@@ -17,10 +17,11 @@
         "currency": "USD",
         "amount": "100",
         "transactionType": "TRANSFER",
+        "subScenario": "SUBSCENARIO",
         "note": "test payment",
         "homeTransactionId": "123ABC",
         "transferId": "5a2ad5dc-4ab1-4a22-8c5b-62f75252a8d5",
-        "currentState": "ERROR_OCCURRED"  
+        "currentState": "ERROR_OCCURRED"
       }
     ],
     "lastError": {
@@ -40,6 +41,6 @@
           }
         }
       }
-    } 
+    }
   }
 }

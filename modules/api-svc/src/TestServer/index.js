@@ -1,19 +1,34 @@
-/**************************************************************************
- *  (C) Copyright ModusBox Inc. 2019 - All rights reserved.               *
- *                                                                        *
- *  This file is made available under the terms of the license agreement  *
- *  specified in the corresponding source code repository.                *
- *                                                                        *
- *  ORIGINAL AUTHOR:                                                      *
- *       James Bush - james.bush@modusbox.com                             *
- **************************************************************************/
+/*****
+ License
+ --------------
+ Copyright © 2020-2025 Mojaloop Foundation
+ The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
 
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+ Contributors
+ --------------
+ This is the official list of the Mojaloop project contributors for this file.
+ Names of the original copyright holders (individuals or organizations)
+ should be listed with a '*' in the first column. People who have
+ contributed from an organization can be listed under the organization
+ that actually holds the copyright for their contributions (see the
+ Mojaloop Foundation for an example). Those individuals should have
+ their names indented and be marked with a '-'. Email address can be added
+ optionally within square brackets <email>.
+
+ * Mojaloop Foundation
+ - James Bush <jbush@mojaloop.io>
+
+ --------------
+ ******/
 const Koa = require('koa');
 const ws = require('ws');
 
 const http = require('http');
 const yaml = require('js-yaml');
-const fs = require('fs').promises;
 const path = require('path');
 
 const Validate = require('../lib/validate');
@@ -22,6 +37,8 @@ const handlers = require('./handlers');
 const middlewares = require('../InboundServer/middlewares');
 
 const logExcludePaths = ['/'];
+const _validator = new Validate({ logExcludePaths });
+let _initialize;
 
 const getWsIp = (req) => [
     req.socket.remoteAddress,
@@ -33,17 +50,18 @@ const getWsIp = (req) => [
 ];
 
 class TestApi {
-    constructor(logger, validator, cache) {
+    constructor(logger, validator, cache, conf) {
         this._api = new Koa();
 
         this._api.use(middlewares.createErrorHandler(logger));
-        this._api.use(middlewares.createRequestIdGenerator());
+        this._api.use(middlewares.createRequestIdGenerator(logger));
         this._api.use(middlewares.applyState({ cache, logExcludePaths }));
         this._api.use(middlewares.createLogger(logger));
 
         this._api.use(middlewares.createRequestValidator(validator));
-        this._api.use(router(handlers));
+        this._api.use(router(handlers, conf));
         this._api.use(middlewares.createResponseBodyHandler());
+        this._api.use(middlewares.createResponseLogging(logger));
     }
 
     callback() {
@@ -59,8 +77,8 @@ class WsServer extends ws.Server {
         this._cache = cache;
 
         this.on('error', err => {
-            this._logger.push({ err })
-                .log('Unhandled websocket error occurred. Shutting down.');
+            this._logger.isErrorEnabled && this._logger.push({ err })
+                .error('Unhandled websocket error occurred. Shutting down.');
             process.exit(1);
         });
 
@@ -70,10 +88,10 @@ class WsServer extends ws.Server {
                 ip: getWsIp(req),
                 remoteAddress: req.socket.remoteAddress,
             });
-            logger.log('Websocket connection received');
+            logger.isDebugEnabled && logger.debug('Websocket connection received');
             this._wsClients.set(socket, req);
             socket.on('close', (code, reason) => {
-                logger.push({ code, reason }).log('Websocket connection closed');
+                logger.isDebugEnabled && logger.push({ code, reason }).debug('Websocket connection closed');
                 this._wsClients.delete(socket);
             });
         });
@@ -101,7 +119,7 @@ class WsServer extends ws.Server {
     // Send the received notification to subscribers where appropriate.
     async _handleCacheKeySet(channel, key, id) {
         const logger = this._logger.push({ key });
-        logger.push({ channel, id }).log('Received Redis keyevent notification');
+        logger.push({ channel, id }).debug('Received Redis keyevent notification');
 
         // Only notify clients of callback and request keyevents, as we don't want to encourage
         // dependency on unintended behaviour (i.e. create a proxy Redis client by sending all
@@ -110,8 +128,8 @@ class WsServer extends ws.Server {
         // so we filter them here.
         const allowedPrefixes = [this._cache.CALLBACK_PREFIX, this._cache.REQUEST_PREFIX];
         if (!allowedPrefixes.some((prefix) => key.startsWith(prefix))) {
-            logger.push({ allowedPrefixes })
-                .log('Notification not of allowed message type. Ignored.');
+            logger.isDebugEnabled && logger.push({ allowedPrefixes })
+                .debug('Notification not of allowed message type. Ignored.');
             return;
         }
 
@@ -157,7 +175,7 @@ class WsServer extends ws.Server {
                         id: requestId,
                     });
                 }
-                this._logger
+                this._logger.isDebugEnabled && this._logger
                     .push({
                         url: req.url,
                         key,
@@ -165,7 +183,7 @@ class WsServer extends ws.Server {
                         value: keyData,
                         prefix,
                     })
-                    .log('Pushing notification to subscribed client');
+                    .debug('Pushing notification to subscribed client');
                 socket.send(keyDataStr);
             }
         }
@@ -173,11 +191,11 @@ class WsServer extends ws.Server {
 }
 
 class TestServer {
-    constructor({ port, logger, cache }) {
+    constructor({ port, logger, cache, config }) {
+        _initialize ||= _validator.initialise(yaml.load(require('fs').readFileSync(path.join(__dirname, 'api.yaml'))), config);
         this._port = port;
         this._logger = logger;
-        this._validator = new Validate({ logExcludePaths });
-        this._api = new TestApi(this._logger.push({ component: 'api' }), this._validator, cache);
+        this._api = new TestApi(this._logger.push({ component: 'api' }), _validator, cache, config);
         this._server = http.createServer(this._api.callback());
         // TODO: why does this appear to need to be called after creating this._server (try reorder
         // it then run the tests)
@@ -188,8 +206,8 @@ class TestServer {
         if (this._server.listening) {
             return;
         }
-        const fileData = await fs.readFile(path.join(__dirname, 'api.yaml'));
-        await this._validator.initialise(yaml.load(fileData));
+
+        await _initialize;
 
         await this._wsapi.start();
 
@@ -200,21 +218,21 @@ class TestServer {
 
         await new Promise((resolve) => this._server.listen(this._port, resolve));
 
-        this._logger.log(`Serving test API on port ${this._port}`);
+        this._logger.isInfoEnabled && this._logger.info(`Serving test API on port ${this._port}`);
     }
 
     async stop() {
         if (this._wsapi) {
-            this._logger.log('Shutting down websocket server');
+            this._logger.isInfoEnabled && this._logger.info('Shutting down websocket server');
             await this._wsapi.stop();
             this._wsapi = null;
         }
         if (this._server) {
-            this._logger.log('Shutting down http server');
+            this._logger.isInfoEnabled && this._logger.info('Shutting down http server');
             await new Promise(resolve => this._server.close(resolve));
             this._server = null;
         }
-        this._logger.log('Test server shutdown complete');
+        this._logger.isInfoEnabled && this._logger.info('Test server shutdown complete');
     }
 }
 
