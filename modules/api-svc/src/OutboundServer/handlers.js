@@ -20,7 +20,7 @@
  optionally within square brackets <email>.
 
  * Mojaloop Foundation
- - James Bush <james.bush@mojaloop.io>
+ - James Bush <jbush@mojaloop.io>
 
  * Infitx
  - Steven Oderayi <steven.oderayi@infitx.com>
