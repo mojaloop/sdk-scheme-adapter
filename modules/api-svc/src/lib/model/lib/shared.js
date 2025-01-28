@@ -300,7 +300,7 @@ const mojaloopPrepareToInternalTransfer = (external, quote, ilp, checkILP) => {
             note: quote.request.note
         };
         if (quote.internalRequest && quote.internalRequest.extensionList && quote.internalRequest.extensionList.extension) {
-            internal.quoteRequestExtensions = { ...quote.internalRequest.extensionList.extension };
+            internal.quoteRequestExtensions = [ ...quote.internalRequest.extensionList.extension ];
         }
         if (checkILP) {
             internal.ilpPacket = { data: ilp.getTransactionObject(external.ilpPacket) };
