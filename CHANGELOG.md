@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.0.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.0.1...v24.0.2) (2025-01-28)
+
+
+### Bug Fixes
+
+* **csi-1130:** quote request extensions ([#535](https://github.com/mojaloop/sdk-scheme-adapter/issues/535)) ([b301893](https://github.com/mojaloop/sdk-scheme-adapter/commit/b301893af9666eab0d91ef69942714ae5751c1d2))
+
 ### [24.0.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.0.0...v24.0.1) (2025-01-27)
 
 
