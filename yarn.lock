@@ -2446,7 +2446,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-logger@npm:^11.5.4":
+"@mojaloop/central-services-logger@npm:^11.5.3, @mojaloop/central-services-logger@npm:^11.5.4":
   version: 11.5.4
   resolution: "@mojaloop/central-services-logger@npm:11.5.4"
   dependencies:
@@ -2516,7 +2516,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-shared@npm:^18.16.2":
+"@mojaloop/central-services-shared@npm:^18.16.0, @mojaloop/central-services-shared@npm:^18.16.2":
   version: 18.16.2
   resolution: "@mojaloop/central-services-shared@npm:18.16.2"
   dependencies:
@@ -2646,6 +2646,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mojaloop/ml-schema-transformer-lib@npm:^2.5.2":
+  version: 2.5.2
+  resolution: "@mojaloop/ml-schema-transformer-lib@npm:2.5.2"
+  dependencies:
+    "@mojaloop/central-services-error-handling": ^13.0.4
+    "@mojaloop/central-services-logger": ^11.5.3
+    "@mojaloop/central-services-shared": ^18.16.0
+    "@rollup/rollup-linux-x64-musl": 4.32.0
+    ilp-packet: 2.2.0
+    map-transform-cjs: ^0.2.0
+  dependenciesMeta:
+    "@rollup/rollup-linux-x64-musl":
+      optional: true
+  checksum: e9f2011e63aa70da04402d5be57f6678d8d626efbce056255366b2e17e3272008bbf28de71071178705f4fd0738f7e134dd4ce7b4d67184a3e998d5378e9ce23
+  languageName: node
+  linkType: hard
+
 "@mojaloop/platform-shared-lib-messaging-types-lib@npm:^0.7.1":
   version: 0.7.1
   resolution: "@mojaloop/platform-shared-lib-messaging-types-lib@npm:0.7.1"
@@ -2685,7 +2702,7 @@ __metadata:
     "@mojaloop/central-services-shared": ^18.16.2
     "@mojaloop/event-sdk": ^14.1.3
     "@mojaloop/logging-bc-client-lib": 0.5.8
-    "@mojaloop/ml-schema-transformer-lib": ^2.5.1
+    "@mojaloop/ml-schema-transformer-lib": ^2.5.2
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
     "@mojaloop/sdk-standard-components": ^19.6.4
     "@redocly/openapi-cli": ^1.0.0-beta.95
@@ -3376,6 +3393,13 @@ __metadata:
 "@rollup/rollup-linux-x64-musl@npm:4.28.1":
   version: 4.28.1
   resolution: "@rollup/rollup-linux-x64-musl@npm:4.28.1"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@rollup/rollup-linux-x64-musl@npm:4.32.0":
+  version: 4.32.0
+  resolution: "@rollup/rollup-linux-x64-musl@npm:4.32.0"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
