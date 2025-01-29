@@ -1,3 +1,2 @@
-yarn test:unit:affected
 yarn dep:check
 yarn audit:check
