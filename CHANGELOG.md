@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.0.3](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.0.2...v24.0.3) (2025-01-29)
+
+
+### Chore
+
+* maintenance updates pi26 ([#536](https://github.com/mojaloop/sdk-scheme-adapter/issues/536)) ([e69f239](https://github.com/mojaloop/sdk-scheme-adapter/commit/e69f239e206fc674588521accff62e316da3471a))
+
 ### [24.0.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.0.1...v24.0.2) (2025-01-28)
 
 
