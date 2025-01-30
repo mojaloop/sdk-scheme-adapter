@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.0.4](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.0.3...v24.0.4) (2025-01-30)
+
+
+### Bug Fixes
+
+* make the npm option in package json public ([#537](https://github.com/mojaloop/sdk-scheme-adapter/issues/537)) ([3562070](https://github.com/mojaloop/sdk-scheme-adapter/commit/3562070712bb28c60eecb52aa450e5fd590a87a6))
+
 ### [24.0.3](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.0.2...v24.0.3) (2025-01-29)
 
 
