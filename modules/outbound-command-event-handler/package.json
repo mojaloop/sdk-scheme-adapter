@@ -4,7 +4,6 @@
   "description": "Mojaloop sdk scheme adapter command event handler",
   "license": "Apache-2.0",
   "homepage": "https://github.com/mojaloop/sdk-scheme-adapter/",
-  "private": true,
   "bugs": {
     "url": "https://github.com/mojaloop/sdk-scheme-adapter/issues#readme"
   },
@@ -43,7 +42,7 @@
   },
   "dependencies": {
     "@mojaloop/api-snippets": "17.7.9",
-    "@mojaloop/central-services-shared": "^18.16.2",
+    "@mojaloop/central-services-shared": "^18.17.0",
     "@mojaloop/logging-bc-client-lib": "^0.5.8",
     "@mojaloop/logging-bc-public-types-lib": "^0.5.4",
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^",
