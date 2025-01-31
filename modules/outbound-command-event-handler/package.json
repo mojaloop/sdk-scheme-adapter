@@ -41,7 +41,7 @@
     "snapshot": "standard-version --no-verify --skip.changelog --prerelease snapshot --releaseCommitMessageFormat 'chore(snapshot): {{currentTag}}'"
   },
   "dependencies": {
-    "@mojaloop/api-snippets": "17.7.9",
+    "@mojaloop/api-snippets": "17.7.10",
     "@mojaloop/central-services-shared": "^18.17.0",
     "@mojaloop/logging-bc-client-lib": "^0.5.8",
     "@mojaloop/logging-bc-public-types-lib": "^0.5.4",
@@ -55,7 +55,7 @@
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
-    "@eslint/compat": "^1.2.5",
+    "@eslint/compat": "^1.2.6",
     "@types/convict": "^6.1.6",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.14",
