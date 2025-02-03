@@ -118,7 +118,7 @@ describe('inboundModel', () => {
             await cache.disconnect();
         });
 
-        test.only('calls `mojaloopRequests.putQuotes` with the expected arguments.', async () => {
+        test('calls `mojaloopRequests.putQuotes` with the expected arguments.', async () => {
             await model.quoteRequest(mockArgs.quoteRequest, mockArgs.fspId);
 
             expect(BackendRequests.__postQuoteRequests).toHaveBeenCalledTimes(1);
