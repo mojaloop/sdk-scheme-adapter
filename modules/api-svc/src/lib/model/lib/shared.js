@@ -184,7 +184,7 @@ const mojaloopQuoteRequestToInternal = (external) => {
     }
 
     if(external.extensionList) {
-        internal.extensionList = external.extensionList;
+        internal.extensionList = external.extensionList.extension;
     }
 
     return internal;
@@ -245,7 +245,7 @@ const internalQuoteResponseToMojaloop = (internal) => {
     }
 
     if(internal.extensionList) {
-        external.extensionList = internal.extensionList;
+        external.extensionList = { extension: internal.extensionList };
     }
 
     return external;
@@ -299,8 +299,8 @@ const mojaloopPrepareToInternalTransfer = (external, quote, ilp, checkILP) => {
             subScenario: quote.request.transactionType.subScenario,
             note: quote.request.note
         };
-        if (quote.internalRequest && quote.internalRequest.extensionList && quote.internalRequest.extensionList.extension) {
-            internal.quoteRequestExtensions = [ ...quote.internalRequest.extensionList.extension ];
+        if (quote.internalRequest && quote.internalRequest.extensionList) {
+            internal.quoteRequestExtensions = [ ...quote.internalRequest.extensionList ];
         }
         if (checkILP) {
             internal.ilpPacket = { data: ilp.getTransactionObject(external.ilpPacket) };
