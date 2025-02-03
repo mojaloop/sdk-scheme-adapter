@@ -2289,9 +2289,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/api-snippets@npm:17.7.10":
-  version: 17.7.10
-  resolution: "@mojaloop/api-snippets@npm:17.7.10"
+"@mojaloop/api-snippets@npm:17.7.11":
+  version: 17.7.11
+  resolution: "@mojaloop/api-snippets@npm:17.7.11"
   dependencies:
     "@apidevtools/json-schema-ref-parser": ^9.1.2
     "@redocly/openapi-core": ^1.5.0
@@ -2300,9 +2300,9 @@ __metadata:
     js-yaml: ^4.1.0
     json-refs: ^3.0.15
     openapi-types: ^12.1.3
-    openapi-typescript: ^7.6.0
+    openapi-typescript: ^7.6.1
     ts-auto-mock: ^3.7.4
-  checksum: c6ef7d14af03564c459a2bc4532481fc7e7c8f80f5662e611612b55a4ab2253e7de386d0e5ebb5d4bf8f9daa75ed0419bab476c3ae188bd0c2f158d0fac61540
+  checksum: 4b69b4ff2a94d666b8861f2e60f8266db8dcc05b5b84aab16ea7fff617766ef7d5170cae83171ba54e5fc8b894235d7d8c0c055252b628daf4624d0c95883ad4
   languageName: node
   linkType: hard
 
@@ -2563,7 +2563,7 @@ __metadata:
     "@babel/core": ^7.26.7
     "@babel/preset-env": ^7.26.7
     "@koa/cors": ^5.0.0
-    "@mojaloop/api-snippets": 17.7.10
+    "@mojaloop/api-snippets": 17.7.11
     "@mojaloop/central-services-error-handling": ^13.0.4
     "@mojaloop/central-services-logger": ^11.5.4
     "@mojaloop/central-services-metrics": ^12.4.4
@@ -2623,7 +2623,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-command-event-handler@workspace:modules/outbound-command-event-handler"
   dependencies:
     "@eslint/compat": ^1.2.6
-    "@mojaloop/api-snippets": 17.7.10
+    "@mojaloop/api-snippets": 17.7.11
     "@mojaloop/central-services-shared": ^18.17.0
     "@mojaloop/logging-bc-client-lib": ^0.5.8
     "@mojaloop/logging-bc-public-types-lib": ^0.5.4
@@ -2662,7 +2662,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-domain-event-handler@workspace:modules/outbound-domain-event-handler"
   dependencies:
-    "@mojaloop/api-snippets": 17.7.10
+    "@mojaloop/api-snippets": 17.7.11
     "@mojaloop/logging-bc-client-lib": ^0.5.8
     "@mojaloop/logging-bc-public-types-lib": ^0.5.4
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
@@ -2700,7 +2700,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter-private-shared-lib@workspace:modules/private-shared-lib"
   dependencies:
     "@eslint/compat": ^1.2.6
-    "@mojaloop/api-snippets": 17.7.10
+    "@mojaloop/api-snippets": 17.7.11
     "@mojaloop/central-services-shared": ^18.17.0
     "@mojaloop/logging-bc-public-types-lib": ^0.5.4
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.7.1
@@ -3223,24 +3223,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@redocly/openapi-core@npm:^1.27.2, @redocly/openapi-core@npm:^1.5.0":
-  version: 1.27.2
-  resolution: "@redocly/openapi-core@npm:1.27.2"
-  dependencies:
-    "@redocly/ajv": ^8.11.2
-    "@redocly/config": ^0.20.1
-    colorette: ^1.2.0
-    https-proxy-agent: ^7.0.4
-    js-levenshtein: ^1.1.6
-    js-yaml: ^4.1.0
-    minimatch: ^5.0.1
-    node-fetch: ^2.6.1
-    pluralize: ^8.0.0
-    yaml-ast-parser: 0.0.43
-  checksum: b5135f1d85adbf2f8bf3f47733070e728f6b90bd830b91f5e49fec6f76e04742446152dd0f6a16ebe43b0b8fac70843f8f747b06a35e95f9a9a3f7ae9ef69045
-  languageName: node
-  linkType: hard
-
 "@redocly/openapi-core@npm:^1.28.0":
   version: 1.28.0
   resolution: "@redocly/openapi-core@npm:1.28.0"
@@ -3255,6 +3237,24 @@ __metadata:
     pluralize: ^8.0.0
     yaml-ast-parser: 0.0.43
   checksum: 83f9fa2ed3fa5021e9433cc251a4e511302cb62489acb020bc8596fe484782a9fe494808ee1c50df256e505895450a4dd759749a7f925c621ba310eb6a14f107
+  languageName: node
+  linkType: hard
+
+"@redocly/openapi-core@npm:^1.5.0":
+  version: 1.27.2
+  resolution: "@redocly/openapi-core@npm:1.27.2"
+  dependencies:
+    "@redocly/ajv": ^8.11.2
+    "@redocly/config": ^0.20.1
+    colorette: ^1.2.0
+    https-proxy-agent: ^7.0.4
+    js-levenshtein: ^1.1.6
+    js-yaml: ^4.1.0
+    minimatch: ^5.0.1
+    node-fetch: ^2.6.1
+    pluralize: ^8.0.0
+    yaml-ast-parser: 0.0.43
+  checksum: b5135f1d85adbf2f8bf3f47733070e728f6b90bd830b91f5e49fec6f76e04742446152dd0f6a16ebe43b0b8fac70843f8f747b06a35e95f9a9a3f7ae9ef69045
   languageName: node
   linkType: hard
 
@@ -11908,24 +11908,6 @@ __metadata:
   version: 12.1.3
   resolution: "openapi-types@npm:12.1.3"
   checksum: 7fa5547f87a58d2aa0eba6e91d396f42d7d31bc3ae140e61b5d60b47d2fd068b48776f42407d5a8da7280cf31195aa128c2fc285e8bb871d1105edee5647a0bb
-  languageName: node
-  linkType: hard
-
-"openapi-typescript@npm:^7.6.0":
-  version: 7.6.0
-  resolution: "openapi-typescript@npm:7.6.0"
-  dependencies:
-    "@redocly/openapi-core": ^1.27.2
-    ansi-colors: ^4.1.3
-    change-case: ^5.4.4
-    parse-json: ^8.1.0
-    supports-color: ^9.4.0
-    yargs-parser: ^21.1.1
-  peerDependencies:
-    typescript: ^5.x
-  bin:
-    openapi-typescript: bin/cli.js
-  checksum: f222c4064debeb363b3e252a2407403a9b00121ee415b6af7ca35af651c0e3ecd489d256db57243b643f605b42a62b3de25f0b2afa81b7487db2ff6b83112074
   languageName: node
   linkType: hard
 
