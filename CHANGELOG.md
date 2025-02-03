@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [25.0.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.0.4...v25.0.0) (2025-02-03)
+
+
+### Bug Fixes
+
+* **csi-1159:** post /quoterequest payload's extensionlist internal form fix ([#539](https://github.com/mojaloop/sdk-scheme-adapter/issues/539)) ([4877f9f](https://github.com/mojaloop/sdk-scheme-adapter/commit/4877f9fbbf4d263525a78f5fc7262126e7fb5c37))
+
 ### [24.0.4](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.0.3...v24.0.4) (2025-01-30)
 
 
