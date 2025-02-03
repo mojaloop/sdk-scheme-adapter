@@ -89,16 +89,16 @@
     "initiator": "PAYER",
     "initiatorType": "CONSUMER",
     "expiration": "2019-06-04T04:02:10.378Z",
-    "extensionList": {
-      "extension": [{
-          "key": "qkey1",
-          "value": "qvalue1"
-      }, {
-          "key": "qkey2",
-          "value": "qvalue2"
-      }]
-    }
-  },
+    "extensionList": [
+      {
+        "key": "qkey1",
+        "value": "qvalue1"
+      }, 
+      {
+        "key": "qkey2",
+        "value": "qvalue2"
+      }
+    ],
   "internalQuoteResponse": {
     "transferAmount": 500,
     "transferAmountCurrency": "XOF",

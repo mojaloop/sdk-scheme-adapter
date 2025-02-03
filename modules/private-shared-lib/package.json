@@ -29,7 +29,7 @@
     "snapshot": "standard-version --no-verify --skip.changelog --prerelease snapshot --releaseCommitMessageFormat 'chore(snapshot): {{currentTag}}'"
   },
   "dependencies": {
-    "@mojaloop/api-snippets": "17.7.9",
+    "@mojaloop/api-snippets": "17.7.10",
     "@mojaloop/central-services-shared": "^18.17.0",
     "@mojaloop/logging-bc-public-types-lib": "^0.5.4",
     "@mojaloop/platform-shared-lib-messaging-types-lib": "^0.7.1",
@@ -39,8 +39,8 @@
     "uuid": "^11.0.5"
   },
   "devDependencies": {
-    "@eslint/compat": "^1.2.5",
-    "@types/node": "^22.12.0",
+    "@eslint/compat": "^1.2.6",
+    "@types/node": "^22.13.0",
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^8.22.0",
     "@typescript-eslint/parser": "^8.22.0",
