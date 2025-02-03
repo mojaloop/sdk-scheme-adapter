@@ -101,98 +101,98 @@
         "key": "qkey2",
         "value": "qvalue2"
       }
-    ],
-    "internalQuoteResponse": {
-      "transferAmount": 500,
-      "transferAmountCurrency": "XOF",
-      "payeeReceiveAmount": 490,
-      "payeeFspFee": 10,
-      "payeeFspCommission": 0,
-      "condition": "fH9pAYDQbmoZLPbvv3CSW2RfjU4jvM4ApG_fqGnR7Xs",
-      "expiration": "2019-11-12T09:02:10.378Z",
-      "isValid": 1,
-      "extensionList": [
-        {
-          "key": "qkey1",
-          "value": "qvalue1"
-        },
-        {
-          "key": "qkey2",
-          "value": "qvalue2"
-        }
-      ]
-    },
-    "internalGetOTPResponse": {
-      "value": "123456"
-    },
-    "fspId": "fake-fsp-id",
-    "bulkQuoteRequest": {
-      "bulkQuoteId": "fake-bulk-quote-id",
-      "payer": {
-        "partyIdInfo": {
-          "partyIdType": "MSISDN",
-          "partyIdentifier": "17855501914",
-          "fspId": "mojaloop-sdk"
-        },
-        "personalInfo": {
-          "complexName": {
-            "firstName": "John",
-            "lastName": "Doe"
-          },
-          "dateOfBirth": "2010-10-10"
-        },
-        "name": "John Doe",
-        "merchantClassificationCode": "123"
+    ]
+  },
+  "internalQuoteResponse": {
+    "transferAmount": 500,
+    "transferAmountCurrency": "XOF",
+    "payeeReceiveAmount": 490,
+    "payeeFspFee": 10,
+    "payeeFspCommission": 0,
+    "condition": "fH9pAYDQbmoZLPbvv3CSW2RfjU4jvM4ApG_fqGnR7Xs",
+    "expiration": "2019-11-12T09:02:10.378Z",
+    "isValid": 1,
+    "extensionList": [
+      {
+        "key": "qkey1",
+        "value": "qvalue1"
       },
-      "expiration": "2019-06-04T04:02:10.378Z",
-      "individualQuotes": [
-        {
-          "quoteId": "fake-quote-id",
-          "transactionId": "fake-transaction-id",
-          "payee": {
-            "partyIdInfo": {
-              "partyIdType": "PERSONAL_ID",
-              "partyIdentifier": "123456789",
-              "partySubIdOrType": "PASSPORT",
-              "fspId": "goldenpayeefsp"
-            },
-            "personalInfo": {
-              "complexName": {
-                "firstName": "Jane",
-                "lastName": "Doe"
-              },
-              "dateOfBirth": "2010-10-10"
-            },
-            "name": "Jane Doe",
-            "merchantClassificationCode": "456"
-          },
-          "amountType": "SEND",
-          "amount": {
-            "currency": "XOF",
-            "amount": 10
-          },
-          "transactionType": {
-            "scenario": "TRANSFER",
-            "subScenario": "SUBSCENARIO",
-            "initiator": "PAYER",
-            "initiatorType": "CONSUMER"
-          }
-        }
-      ]
+      {
+        "key": "qkey2",
+        "value": "qvalue2"
+      }
+    ]
+  },
+  "internalGetOTPResponse": {
+    "value": "123456"
+  },
+  "fspId": "fake-fsp-id",
+  "bulkQuoteRequest": {
+    "bulkQuoteId": "fake-bulk-quote-id",
+    "payer": {
+      "partyIdInfo": {
+        "partyIdType": "MSISDN",
+        "partyIdentifier": "17855501914",
+        "fspId": "mojaloop-sdk"
+      },
+      "personalInfo": {
+        "complexName": {
+          "firstName": "John",
+          "lastName": "Doe"
+        },
+        "dateOfBirth": "2010-10-10"
+      },
+      "name": "John Doe",
+      "merchantClassificationCode": "123"
     },
-    "internalBulkQuoteResponse": {
-      "expiration": "2019-11-12T09:02:10.378Z",
-      "individualQuoteResults": [
-        {
-          "quoteId": "fake-quote-id",
-          "transferAmount": 500,
-          "transferAmountCurrency": "XOF",
-          "payeeReceiveAmount": 490,
-          "payeeFspFee": 10,
-          "payeeFspCommission": 0,
-          "condition": "fH9pAYDQbmoZLPbvv3CSW2RfjU4jvM4ApG_fqGnR7Xs"
+    "expiration": "2019-06-04T04:02:10.378Z",
+    "individualQuotes": [
+      {
+        "quoteId": "fake-quote-id",
+        "transactionId": "fake-transaction-id",
+        "payee": {
+          "partyIdInfo": {
+            "partyIdType": "PERSONAL_ID",
+            "partyIdentifier": "123456789",
+            "partySubIdOrType": "PASSPORT",
+            "fspId": "goldenpayeefsp"
+          },
+          "personalInfo": {
+            "complexName": {
+              "firstName": "Jane",
+              "lastName": "Doe"
+            },
+            "dateOfBirth": "2010-10-10"
+          },
+          "name": "Jane Doe",
+          "merchantClassificationCode": "456"
+        },
+        "amountType": "SEND",
+        "amount": {
+          "currency": "XOF",
+          "amount": 10
+        },
+        "transactionType": {
+          "scenario": "TRANSFER",
+          "subScenario": "SUBSCENARIO",
+          "initiator": "PAYER",
+          "initiatorType": "CONSUMER"
         }
-      ]
-    }
+      }
+    ]
+  },
+  "internalBulkQuoteResponse": {
+    "expiration": "2019-11-12T09:02:10.378Z",
+    "individualQuoteResults": [
+      {
+        "quoteId": "fake-quote-id",
+        "transferAmount": 500,
+        "transferAmountCurrency": "XOF",
+        "payeeReceiveAmount": 490,
+        "payeeFspFee": 10,
+        "payeeFspCommission": 0,
+        "condition": "fH9pAYDQbmoZLPbvv3CSW2RfjU4jvM4ApG_fqGnR7Xs"
+      }
+    ]
   }
 }

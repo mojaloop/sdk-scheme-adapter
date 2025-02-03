@@ -132,7 +132,7 @@ describe('inboundModel', () => {
 
             // check the extension list gets translated correctly to the mojaloop form
             expect(MojaloopRequests.__putQuotes.mock.calls[0][1].extensionList)
-                .toStrictEqual(mockArgs.internalQuoteResponse.extensionList);
+                .toStrictEqual({ extension: [ ...mockArgs.internalQuoteResponse.extensionList ] });
         });
 
         test('adds a custom `expiration` property in case it is not defined.', async() => {
