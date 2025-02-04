@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.0.6](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.0.5...v24.0.6) (2025-02-04)
+
+
+### Chore
+
+* update build orb version to 1.0.50 ([#541](https://github.com/mojaloop/sdk-scheme-adapter/issues/541)) ([78a78c9](https://github.com/mojaloop/sdk-scheme-adapter/commit/78a78c98e392ba0dd932ab192c4b4a4f0e9fc1ae))
+
 ### [24.0.5](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.0.4...v24.0.5) (2025-02-03)
 
 
