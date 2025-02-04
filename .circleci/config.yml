@@ -5,6 +5,7 @@ orbs:
 workflows:
   setup:
     jobs:
+      - checkout
       - build/workflow:
           context: org-global
           filters:
