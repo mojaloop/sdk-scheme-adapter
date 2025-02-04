@@ -1,11 +1,10 @@
 version: 2.1
 setup: true
 orbs:
-  build: mojaloop/build@1.0.49
+  build: mojaloop/build@1.0.50
 workflows:
   setup:
     jobs:
-      - checkout
       - build/workflow:
           context: org-global
           filters:
