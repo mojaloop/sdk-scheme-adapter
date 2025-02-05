@@ -113,6 +113,7 @@ const ErrorMessages = Object.freeze({
     responseMissedExpiryDeadline: 'Response missed expiry deadline',
     quoteRejectedByBackend: 'Quote rejected by backend',
     fxQuoteRejectedByBackend: 'FX quote rejected by backend',
+    invalidAmountType: 'Invalid amountType',
 });
 
 const AmountTypes = Object.freeze({

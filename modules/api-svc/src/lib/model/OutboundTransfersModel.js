@@ -70,6 +70,7 @@ class OutboundTransfersModel {
         this._multiplePartiesResponseSeconds = config.multiplePartiesResponseSeconds;
         this._sendFinalNotificationIfRequested = config.sendFinalNotificationIfRequested;
         this._apiType = config.apiType;
+        this._supportedCurrencies = config.supportedCurrencies;
 
         if (this._autoAcceptParty && this._multiplePartiesResponse) {
             throw new Error('Conflicting config options provided: autoAcceptParty and multiplePartiesResponse');
@@ -397,8 +398,15 @@ class OutboundTransfersModel {
                             throw new Error(ErrorMessages.noSupportedCurrencies);
                         }
 
-                        this.data.needFx = !payee.supportedCurrencies.includes(this.data.currency);
-                        this.data.supportedCurrencies = payee.supportedCurrencies;
+                        if (this.data.amountType == 'SEND') {
+                            this.data.needFx = !payee.supportedCurrencies.includes(this.data.currency);
+                            this.data.supportedCurrencies = payee.supportedCurrencies;
+                        } else if (this.data.amountType == 'RECEIVE') {
+                            this.data.needFx = !this._supportedCurrencies.includes(this.data.currency);
+                            this.data.supportedCurrencies = this._supportedCurrencies;
+                        } else {
+                            throw new Error(ErrorMessages.invalidAmountType + ': ' + this.data.amountType);
+                        }
                     }
 
                     this._logger.isVerboseEnabled && this._logger.push({
