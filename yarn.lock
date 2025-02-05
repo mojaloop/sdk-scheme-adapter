@@ -2316,6 +2316,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mojaloop/central-services-error-handling@npm:^13.0.5":
+  version: 13.0.5
+  resolution: "@mojaloop/central-services-error-handling@npm:13.0.5"
+  dependencies:
+    fast-safe-stringify: 2.1.1
+    lodash: 4.17.21
+  checksum: 504635a52b2c5ec9203ae6a7f8f5528ec4ccd8a17c83ef7788b08c609a37922637136f2c493594fcb1612407d2833fd8736b82f6888b349d9d219334b04df89b
+  languageName: node
+  linkType: hard
+
 "@mojaloop/central-services-logger@npm:11.5.1":
   version: 11.5.1
   resolution: "@mojaloop/central-services-logger@npm:11.5.1"
@@ -2564,7 +2574,7 @@ __metadata:
     "@babel/preset-env": ^7.26.7
     "@koa/cors": ^5.0.0
     "@mojaloop/api-snippets": 17.7.11
-    "@mojaloop/central-services-error-handling": ^13.0.4
+    "@mojaloop/central-services-error-handling": ^13.0.5
     "@mojaloop/central-services-logger": ^11.5.4
     "@mojaloop/central-services-metrics": ^12.4.4
     "@mojaloop/central-services-shared": ^18.17.0
