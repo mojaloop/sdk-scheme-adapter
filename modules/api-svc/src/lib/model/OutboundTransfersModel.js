@@ -392,18 +392,35 @@ class OutboundTransfersModel {
                         }
                         this.data.to.dateOfBirth = payee.personalInfo.dateOfBirth;
                     }
-                    const supportedCurrencies = this.data.amountType === AmountTypes.SEND 
-                        ? payee.supportedCurrencies 
-                        : this._supportedCurrencies;
-
-                    if (Array.isArray(supportedCurrencies)) {
-                        if (!supportedCurrencies.length) {
+                    
+                    if (Array.isArray(payee.supportedCurrencies)) {
+                        if (!payee.supportedCurrencies.length) {
                             throw new Error(ErrorMessages.noSupportedCurrencies);
                         }
-
-                        this.data.needFx = !supportedCurrencies.includes(this.data.currency);
-                        this.data.supportedCurrencies = supportedCurrencies;
+                        
+                        if (this.data.amountType === AmountTypes.SEND) {
+                            this.data.needFx = !payee.supportedCurrencies.includes(this.data.currency);
+                            this.data.supportedCurrencies = payee.supportedCurrencies;
+                        } else {
+                            if (!this._supportedCurrencies.includes(this.data.currency)) {
+                                this.data.needFx = true;
+                                this.data.supportedCurrencies = this._supportedCurrencies;
+                            } 
+                        }
                     }
+                    
+                    // const supportedCurrencies = this.data.amountType === AmountTypes.SEND 
+                    //     ? payee.supportedCurrencies 
+                    //     : this._supportedCurrencies;
+
+                    // if (Array.isArray(supportedCurrencies)) {
+                    //     if (!supportedCurrencies.length) {
+                    //         throw new Error(ErrorMessages.noSupportedCurrencies);
+                    //     }
+
+                    //     this.data.needFx = !supportedCurrencies.includes(this.data.currency);
+                    //     this.data.supportedCurrencies = supportedCurrencies;
+                    // }
 
                     this._logger.isVerboseEnabled && this._logger.push({
                         transferId: this.data.transferId,
