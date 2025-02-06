@@ -1220,20 +1220,41 @@ class OutboundTransfersModel {
      * @param {string} amountType - Type of the amount being transferred (SEND/RECEIVE)
      * @returns {boolean} - true if FX is needed, false if not
      */
+    // _isFxNeeded(payerCurrencies, payeeCurrencies, amountCurrency, amountType) {
+    //     if (amountType === AmountTypes.SEND) {
+    //         if (!payeeCurrencies.includes(amountCurrency)) {
+    //             return true;
+    //         }
+    //     }
+    //     // Check if any of the payee's supported currencies exist in the 
+    //     // payer's supported currencies (intersection)
+    //     for (let payeeCurrency of payeeCurrencies) {
+    //         if (payerCurrencies.includes(payeeCurrency)) {
+    //             return false;
+    //         }
+    //     }
+    //     return true;
+    // }
     _isFxNeeded(payerCurrencies, payeeCurrencies, amountCurrency, amountType) {
+        if (payerCurrencies.includes(amountCurrency) && payeeCurrencies.includes(amountCurrency)) {
+            return false;
+        }
+        const intersection = payerCurrencies.filter(currency => payeeCurrencies.includes(currency));
+        if(intersection.length > 0 && !intersection.includes(amountCurrency)) {
+            return true;
+        }
         if (amountType === AmountTypes.SEND) {
             if (!payeeCurrencies.includes(amountCurrency)) {
                 return true;
             }
         }
-        // Check if any of the payee's supported currencies exist in the 
-        // payer's supported currencies (intersection)
-        for (let payeeCurrency of payeeCurrencies) {
-            if (payerCurrencies.includes(payeeCurrency)) {
-                return false;
+        if (amountType === AmountTypes.RECEIVE) {
+            if (!payerCurrencies.includes(amountCurrency)) {
+                return true;
             }
         }
-        return true;
+        
+        return false;
     }
 
 
