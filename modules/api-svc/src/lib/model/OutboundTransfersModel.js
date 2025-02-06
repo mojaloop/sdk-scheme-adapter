@@ -1220,21 +1220,6 @@ class OutboundTransfersModel {
      * @param {string} amountType - Type of the amount being transferred (SEND/RECEIVE)
      * @returns {boolean} - true if FX is needed, false if not
      */
-    // _isFxNeeded(payerCurrencies, payeeCurrencies, amountCurrency, amountType) {
-    //     if (amountType === AmountTypes.SEND) {
-    //         if (!payeeCurrencies.includes(amountCurrency)) {
-    //             return true;
-    //         }
-    //     }
-    //     // Check if any of the payee's supported currencies exist in the 
-    //     // payer's supported currencies (intersection)
-    //     for (let payeeCurrency of payeeCurrencies) {
-    //         if (payerCurrencies.includes(payeeCurrency)) {
-    //             return false;
-    //         }
-    //     }
-    //     return true;
-    // }
     _isFxNeeded(payerCurrencies, payeeCurrencies, amountCurrency, amountType) {
         if (payerCurrencies.includes(amountCurrency) && payeeCurrencies.includes(amountCurrency)) {
             return false;
@@ -1253,10 +1238,9 @@ class OutboundTransfersModel {
                 return true;
             }
         }
-        
+
         return false;
     }
-
 
     /**
      * Loads a transfer model from cache for resumption of the transfer process
