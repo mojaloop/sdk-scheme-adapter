@@ -356,7 +356,7 @@
                 "id": 2,
                 "description": "Current state should be WAITING_FOR_CONVERSION_ACCEPTANCE",
                 "exec": [
-                  "//expect(response.body.currentState).to.equal('WAITING_FOR_CONVERSION_ACCEPTANCE')"
+                  "expect(response.body.currentState).to.equal('WAITING_FOR_CONVERSION_ACCEPTANCE')"
                 ]
               }
             ]

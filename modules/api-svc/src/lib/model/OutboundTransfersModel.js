@@ -1228,15 +1228,13 @@ class OutboundTransfersModel {
         if(intersection.length > 0 && !intersection.includes(amountCurrency)) {
             return true;
         }
-        if (amountType === AmountTypes.SEND) {
-            if (!payeeCurrencies.includes(amountCurrency)) {
-                return true;
-            }
-        }
         if (amountType === AmountTypes.RECEIVE) {
             if (!payerCurrencies.includes(amountCurrency)) {
                 return true;
             }
+        }
+        if (!payeeCurrencies.includes(amountCurrency)) {
+            return true;
         }
 
         return false;
