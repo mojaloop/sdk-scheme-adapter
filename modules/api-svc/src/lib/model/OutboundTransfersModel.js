@@ -408,19 +408,6 @@ class OutboundTransfersModel {
                             } 
                         }
                     }
-                    
-                    // const supportedCurrencies = this.data.amountType === AmountTypes.SEND 
-                    //     ? payee.supportedCurrencies 
-                    //     : this._supportedCurrencies;
-
-                    // if (Array.isArray(supportedCurrencies)) {
-                    //     if (!supportedCurrencies.length) {
-                    //         throw new Error(ErrorMessages.noSupportedCurrencies);
-                    //     }
-
-                    //     this.data.needFx = !supportedCurrencies.includes(this.data.currency);
-                    //     this.data.supportedCurrencies = supportedCurrencies;
-                    // }
 
                     this._logger.isVerboseEnabled && this._logger.push({
                         transferId: this.data.transferId,
