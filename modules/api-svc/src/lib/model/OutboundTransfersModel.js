@@ -399,7 +399,7 @@ class OutboundTransfersModel {
                         }
 
                         this.data.supportedCurrencies = payee.supportedCurrencies;
-                        this.data.needFx = this._isFxNeeded(this._supportedCurrencies, payee.supportedCurrencies);
+                        this.data.needFx = this._isFxNeeded(this._supportedCurrencies, payee.supportedCurrencies, this.data.currency, this.data.amountType);
                     }
 
                     this._logger.isVerboseEnabled && this._logger.push({
@@ -1216,10 +1216,18 @@ class OutboundTransfersModel {
      * 
      * @param {Array} payerCurrencies - Array of supported currencies for the payer
      * @param {Array} payeeCurrencies - Array of supported currencies for the payee
+     * @param {string} amountCurrency - Currency of the amount being transferred
+     * @param {string} amountType - Type of the amount being transferred (SEND/RECEIVE)
      * @returns {boolean} - true if FX is needed, false if not
      */
-    _isFxNeeded(payerCurrencies, payeeCurrencies) {
-        // Check if any of the payee's supported currencies exist in the payer's supported currencies (intersection)
+    _isFxNeeded(payerCurrencies, payeeCurrencies, amountCurrency, amountType) {
+        if (amountType === AmountTypes.SEND) {
+            if (!payeeCurrencies.includes(amountCurrency)) {
+                return true;
+            }
+        }
+        // Check if any of the payee's supported currencies exist in the 
+        // payer's supported currencies (intersection)
         for (let payeeCurrency of payeeCurrencies) {
             if (payerCurrencies.includes(payeeCurrency)) {
                 return false;
