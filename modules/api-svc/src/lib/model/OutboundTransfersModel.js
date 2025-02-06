@@ -397,16 +397,9 @@ class OutboundTransfersModel {
                         if (!payee.supportedCurrencies.length) {
                             throw new Error(ErrorMessages.noSupportedCurrencies);
                         }
-                        
-                        if (this.data.amountType === AmountTypes.SEND) {
-                            this.data.needFx = !payee.supportedCurrencies.includes(this.data.currency);
-                            this.data.supportedCurrencies = payee.supportedCurrencies;
-                        } else {
-                            if (!this._supportedCurrencies.includes(this.data.currency)) {
-                                this.data.needFx = true;
-                                this.data.supportedCurrencies = this._supportedCurrencies;
-                            } 
-                        }
+
+                        this.data.supportedCurrencies = payee.supportedCurrencies;
+                        this.data.needFx = this._isFxNeeded(this._supportedCurrencies, payee.supportedCurrencies);
                     }
 
                     this._logger.isVerboseEnabled && this._logger.push({
@@ -1216,6 +1209,23 @@ class OutboundTransfersModel {
             modifiedData.fulfil.body.extensionList = undefined;
         }
         return modifiedData;
+    }
+
+    /**
+     * Determines if FX is needed for the transfer
+     * 
+     * @param {Array} payerCurrencies - Array of supported currencies for the payer
+     * @param {Array} payeeCurrencies - Array of supported currencies for the payee
+     * @returns {boolean} - true if FX is needed, false if not
+     */
+    _isFxNeeded(payerCurrencies, payeeCurrencies) {
+        // Check if any of the payee's supported currencies exist in the payer's supported currencies (intersection)
+        for (let payeeCurrency of payeeCurrencies) {
+            if (payerCurrencies.includes(payeeCurrency)) {
+                return false;
+            }
+        }
+        return true;
     }
 
 
