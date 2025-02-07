@@ -112,7 +112,7 @@ const ErrorMessages = Object.freeze({
     noSupportedCurrencies: 'No payee supportedCurrencies received',
     responseMissedExpiryDeadline: 'Response missed expiry deadline',
     quoteRejectedByBackend: 'Quote rejected by backend',
-    fxQuoteRejectedByBackend: 'FX quote rejected by backend',
+    fxQuoteRejectedByBackend: 'FX quote rejected by backend'
 });
 
 const AmountTypes = Object.freeze({

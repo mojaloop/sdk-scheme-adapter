@@ -1,5 +1,3 @@
-version: '3.7'
-
 services:
 
   sdk-scheme-adapter-api-svc:

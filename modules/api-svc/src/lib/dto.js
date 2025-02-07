@@ -27,7 +27,7 @@
 /*eslint quote-props: ["error", "as-needed"]*/
 const config = require('../config');
 const randomUUID = require('@mojaloop/central-services-shared').Util.id(config.idGenerator);
-const { Directions, SDKStateEnum} = require('./model/common');
+const { Directions, SDKStateEnum, AmountTypes } = require('./model/common');
 
 const quoteRequestStateDto = (request) => ({
     // transferId: this follows the slightly dodgy assumption that transferId will be same as this transactionId.
@@ -56,24 +56,41 @@ const fxQuoteRequestStateDto = (request) => ({
  * @param data {object} - "state" of inbound transaction request
  * Supports only single FXP and currency for now
  */
-const outboundPostFxQuotePayloadDto = (data) => Object.freeze({
-    conversionRequestId: randomUUID(),
-    conversionTerms: {
-        conversionId: randomUUID(), // should be the same as commitRequestId from fxTransfer
-        initiatingFsp: data.from.fspId,
-        determiningTransferId: data.transferId,
-        counterPartyFsp: data.fxProviders[0],
-        amountType: data.amountType,
-        sourceAmount: {
+const outboundPostFxQuotePayloadDto = (data) => {
+    let sourceAmount, targetAmount;
+    
+    sourceAmount = {
+        currency: data.currency,
+        amount: data.amount
+    };
+    targetAmount = {
+        currency: data.supportedCurrencies[0],
+    };
+
+    if (data.amountType === AmountTypes.RECEIVE && !config.supportedCurrencies.includes(data.currency)) {
+        sourceAmount = {
+            currency: config.supportedCurrencies[0],
+        };
+        targetAmount = {
             currency: data.currency,
             amount: data.amount
-        },
-        targetAmount: {
-            currency: data.supportedCurrencies[0],
-        },
-        expiration: data.fxQuoteExpiration,
+        };
     }
-});
+
+    return Object.freeze({
+        conversionRequestId: randomUUID(),
+        conversionTerms: {
+            conversionId: randomUUID(), // should be the same as commitRequestId from fxTransfer
+            initiatingFsp: data.from.fspId,
+            determiningTransferId: data.transferId,
+            counterPartyFsp: data.fxProviders[0],
+            amountType: data.amountType,
+            sourceAmount,
+            targetAmount,
+            expiration: data.fxQuoteExpiration,
+        }
+    });
+};
 
 /**
  * @param data {object} - "state" of inbound transaction request
