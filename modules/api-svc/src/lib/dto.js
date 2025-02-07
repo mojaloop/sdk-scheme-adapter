@@ -58,18 +58,18 @@ const fxQuoteRequestStateDto = (request) => ({
  */
 const outboundPostFxQuotePayloadDto = (data) => {
     let sourceAmount, targetAmount;
+    
+    sourceAmount = {
+        currency: data.currency,
+        amount: data.amount
+    };
+    targetAmount = {
+        currency: data.supportedCurrencies[0],
+    };
 
-    if (data.amountType === AmountTypes.SEND) {
+    if (data.amountType === AmountTypes.RECEIVE && !config.supportedCurrencies.includes(data.currency)) {
         sourceAmount = {
-            currency: data.currency,
-            amount: data.amount
-        };
-        targetAmount = {
-            currency: data.supportedCurrencies[0],
-        };
-    } else {
-        sourceAmount = {
-            currency: data.supportedCurrencies[0],
+            currency: config.supportedCurrencies[0],
         };
         targetAmount = {
             currency: data.currency,
