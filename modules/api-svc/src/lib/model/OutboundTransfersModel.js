@@ -398,8 +398,14 @@ class OutboundTransfersModel {
                             throw new Error(ErrorMessages.noSupportedCurrencies);
                         }
 
-                        this.data.supportedCurrencies = payee.supportedCurrencies;
                         this.data.needFx = this._isFxNeeded(this._supportedCurrencies, payee.supportedCurrencies, this.data.currency, this.data.amountType);
+                        this.data.supportedCurrencies = payee.supportedCurrencies;
+                        
+                        if (this.data.amountType == AmountTypes.RECEIVE) {
+                            if ( !this._supportedCurrencies.includes(this.data.currency) ) {
+                                this.data.supportedCurrencies = this._supportedCurrencies;
+                            }
+                        }
                     }
 
                     this._logger.isVerboseEnabled && this._logger.push({
