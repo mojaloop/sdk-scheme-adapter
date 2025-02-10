@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.0.7](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.0.6...v24.0.7) (2025-02-10)
+
+
+### Bug Fixes
+
+* **csi-1191:** log server restarts more accurately ([#543](https://github.com/mojaloop/sdk-scheme-adapter/issues/543)) ([c325ed0](https://github.com/mojaloop/sdk-scheme-adapter/commit/c325ed0d8a0902831f3f1b2dc5868d76025faa33))
+
 ### [24.0.6](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.0.5...v24.0.6) (2025-02-04)
 
 
