@@ -65,7 +65,7 @@
   "dependencies": {
     "@koa/cors": "^5.0.0",
     "@mojaloop/api-snippets": "17.7.11",
-    "@mojaloop/central-services-error-handling": "^13.0.4",
+    "@mojaloop/central-services-error-handling": "^13.0.5",
     "@mojaloop/central-services-logger": "^11.5.4",
     "@mojaloop/central-services-metrics": "^12.4.4",
     "@mojaloop/central-services-shared": "^18.17.0",
@@ -100,8 +100,8 @@
     "ws": "^8.18.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.26.7",
-    "@babel/preset-env": "^7.26.7",
+    "@babel/core": "^7.26.8",
+    "@babel/preset-env": "^7.26.8",
     "@redocly/openapi-cli": "^1.0.0-beta.95",
     "@types/jest": "^29.5.14",
     "axios-mock-adapter": "^2.1.0",
