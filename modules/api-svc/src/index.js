@@ -202,10 +202,13 @@ class Server extends EventEmitter {
     }
 
     async restart(newConf) {
+        const restartActionsTaken = {};
+
         this.logger.isDebugEnabled && this.logger.debug('Server is restarting...');
         const updateLogger = !_.isEqual(newConf.isJsonOutput, this.conf.isJsonOutput);
         if (updateLogger) {
             this.logger = createLogger(newConf);
+            restartActionsTaken.updateLogger = true;
         }
 
         let oldCache;
@@ -216,6 +219,7 @@ class Server extends EventEmitter {
             await this.cache.disconnect();
             this.cache = createCache(newConf, this.logger);
             await this.cache.connect();
+            restartActionsTaken.updateCache = true;
         }
 
         const updateWSO2 = !_.isEqual(this.conf.wso2, newConf.wso2)
@@ -227,6 +231,7 @@ class Server extends EventEmitter {
                 this.emit('error', 'WSO2 auth error in InboundApi', msg);
             });
             await this.wso2.auth.start();
+            restartActionsTaken.updateWSO2 = true;
         }
 
         this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.inbound, newConf: newConf.inbound }).debug('Inbound server configuration');
@@ -246,6 +251,7 @@ class Server extends EventEmitter {
                 this.emit('error', errMessage);
             });
             await this.inboundServer.start();
+            restartActionsTaken.updateInboundServer = true;
         }
 
         this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.outbound, newConf: newConf.outbound }).debug('Outbound server configuration');
@@ -265,6 +271,7 @@ class Server extends EventEmitter {
                 this.emit('error', errMessage);
             });
             await this.outboundServer.start();
+            restartActionsTaken.updateOutboundServer = true;
         }
 
         const updateFspiopEventHandler = !_.isEqual(this.conf.outbound, newConf.outbound)
@@ -278,6 +285,7 @@ class Server extends EventEmitter {
                 wso2: this.wso2,
             });
             await this.fspiopEventHandler.start();
+            restartActionsTaken.updateFspiopEventHandler = true;
         }
 
         const updateControlClient = !_.isEqual(this.conf.control, newConf.control);
@@ -298,6 +306,7 @@ class Server extends EventEmitter {
                         control: { stopped: Date.now() }
                     }));
                 }, RESTART_INTERVAL_MS));
+                restartActionsTaken.updateControlClient = true;
             }
         }
 
@@ -312,6 +321,7 @@ class Server extends EventEmitter {
                     logger: this.logger.push(LOG_ID.OAUTHTEST),
                 });
                 await this.oauthTestServer.start();
+                restartActionsTaken.updateOAuthTestServer = true;
             }
         }
 
@@ -325,6 +335,7 @@ class Server extends EventEmitter {
                     cache: this.cache,
                 });
                 await this.testServer.start();
+                restartActionsTaken.updateTestServer = true;
             }
         }
 
@@ -333,7 +344,12 @@ class Server extends EventEmitter {
         await Promise.all([
             oldCache?.disconnect(),
         ]);
-        this.logger.isDebugEnabled && this.logger.debug('Server is restarted');
+
+        if (Object.keys(restartActionsTaken).length > 0) {
+            this.logger.isDebugEnabled && this.logger.debug('Server is restarted', { restartActionsTaken });
+        } else {
+            this.logger.isDebugEnabled && this.logger.debug('Server not restarted, no config changes detected');
+        }
     }
 
     stop() {
