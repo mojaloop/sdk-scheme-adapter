@@ -70,6 +70,7 @@ class OutboundTransfersModel {
         this._multiplePartiesResponseSeconds = config.multiplePartiesResponseSeconds;
         this._sendFinalNotificationIfRequested = config.sendFinalNotificationIfRequested;
         this._apiType = config.apiType;
+        this._supportedCurrencies = config.supportedCurrencies;
 
         if (this._autoAcceptParty && this._multiplePartiesResponse) {
             throw new Error('Conflicting config options provided: autoAcceptParty and multiplePartiesResponse');
@@ -391,13 +392,13 @@ class OutboundTransfersModel {
                         }
                         this.data.to.dateOfBirth = payee.personalInfo.dateOfBirth;
                     }
-
+                    
                     if (Array.isArray(payee.supportedCurrencies)) {
                         if (!payee.supportedCurrencies.length) {
                             throw new Error(ErrorMessages.noSupportedCurrencies);
                         }
 
-                        this.data.needFx = !payee.supportedCurrencies.includes(this.data.currency);
+                        this.data.needFx = this._isFxNeeded(this._supportedCurrencies, payee.supportedCurrencies, this.data.currency, this.data.amountType);
                         this.data.supportedCurrencies = payee.supportedCurrencies;
                     }
 
@@ -1210,6 +1211,34 @@ class OutboundTransfersModel {
         return modifiedData;
     }
 
+    /**
+     * Determines if FX is needed for the transfer
+     * 
+     * @param {Array} payerCurrencies - Array of supported currencies for the payer
+     * @param {Array} payeeCurrencies - Array of supported currencies for the payee
+     * @param {string} amountCurrency - Currency of the amount being transferred
+     * @param {string} amountType - Type of the amount being transferred (SEND/RECEIVE)
+     * @returns {boolean} - true if FX is needed, false if not
+     */
+    _isFxNeeded(payerCurrencies, payeeCurrencies, amountCurrency, amountType) {
+        if (payerCurrencies.includes(amountCurrency) && payeeCurrencies.includes(amountCurrency)) {
+            return false;
+        }
+        const intersection = payerCurrencies.filter(currency => payeeCurrencies.includes(currency));
+        if(intersection.length > 0 && !intersection.includes(amountCurrency)) {
+            return true;
+        }
+        if (amountType === AmountTypes.RECEIVE) {
+            if (!payerCurrencies.includes(amountCurrency)) {
+                return true;
+            }
+        }
+        if (!payeeCurrencies.includes(amountCurrency)) {
+            return true;
+        }
+
+        return false;
+    }
 
     /**
      * Loads a transfer model from cache for resumption of the transfer process
