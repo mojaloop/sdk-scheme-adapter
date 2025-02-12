@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.0.8](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.0.7...v24.0.8) (2025-02-12)
+
+
+### Bug Fixes
+
+* **csi-1170:** fix fxQuote with RECEIVE amountType ([#542](https://github.com/mojaloop/sdk-scheme-adapter/issues/542)) ([b9b1c8e](https://github.com/mojaloop/sdk-scheme-adapter/commit/b9b1c8e8c4d1decbd624cbd20534f069b4f25952))
+
 ### [24.0.7](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.0.6...v24.0.7) (2025-02-10)
 
 
