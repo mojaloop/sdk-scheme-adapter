@@ -1,6 +1,7 @@
 networks:
   mojaloop-net:
     name: mojaloop-net
+    external: true
 
 services:
   ttk-tests:
