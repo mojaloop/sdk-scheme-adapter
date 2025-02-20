@@ -1240,7 +1240,13 @@
           "quoteId": "{$request.body.quoteId}",
           "transactionId": "{$request.body.transactionId}",
           "transferAmount": "{$request.body.amount}",
-          "transferAmountCurrency": "{$request.body.currency}"
+          "transferAmountCurrency": "{$request.body.currency}",
+          "extensionList": [
+            {
+              "key": "CdtTrfTxInf.InstrForCdtrAgt.InstrInf",
+              "value": "Additional KYC details"
+            }
+          ]
         },
         "statusCode": "200",
         "scripts": {

@@ -1673,13 +1673,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@grpc/grpc-js@npm:^1.12.5":
-  version: 1.12.5
-  resolution: "@grpc/grpc-js@npm:1.12.5"
+"@grpc/grpc-js@npm:^1.12.6":
+  version: 1.12.6
+  resolution: "@grpc/grpc-js@npm:1.12.6"
   dependencies:
     "@grpc/proto-loader": ^0.7.13
     "@js-sdsl/ordered-map": ^4.4.2
-  checksum: 415bad10412b713f1f4094e6af3d2067d03794540fecc16cd3cdcd6079e4a632178da25485dfef9a07add8bf498cfccf1a54f8184d671eb256932c47cfe7f785
+  checksum: eec210e6895be95f0784eec7704128d75655cee528ae6ead7e4bbc2c2d18d7a1e3938c2d2a8256a2dbbd4a75b95909c6b2e29ff21419e3609e93dfdb6213afe3
   languageName: node
   linkType: hard
 
@@ -2635,11 +2635,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/event-sdk@npm:^14.1.3":
-  version: 14.1.3
-  resolution: "@mojaloop/event-sdk@npm:14.1.3"
+"@mojaloop/event-sdk@npm:^14.1.4":
+  version: 14.1.4
+  resolution: "@mojaloop/event-sdk@npm:14.1.4"
   dependencies:
-    "@grpc/grpc-js": ^1.12.5
+    "@grpc/grpc-js": ^1.12.6
     "@grpc/proto-loader": 0.7.13
     brototype: 0.0.6
     error-callsites: 2.0.4
@@ -2661,7 +2661,7 @@ __metadata:
       optional: false
     "@mojaloop/central-services-stream":
       optional: true
-  checksum: 8df6a1a39e1f60b8add67df17715a8d14eb766068883bc5d4be427fb6db6cc277276e05dd710cabb4d4acdcbc3d1f1d2a2fe404f1ab266645cda5f5bf691ddde
+  checksum: 5cab6c2ceec88a102cdb493c7d91b70122f76adb82d549c00f18447663e47ca18b2dba8adc3fda981cf040347c8958acddf0074fb1dc3bc556e34b59040314b9
   languageName: node
   linkType: hard
 
@@ -2750,11 +2750,11 @@ __metadata:
     "@mojaloop/central-services-logger": ^11.5.5
     "@mojaloop/central-services-metrics": ^12.4.5
     "@mojaloop/central-services-shared": ^18.18.0
-    "@mojaloop/event-sdk": ^14.1.3
+    "@mojaloop/event-sdk": ^14.1.4
     "@mojaloop/logging-bc-client-lib": 0.5.8
     "@mojaloop/ml-schema-transformer-lib": ^2.5.2
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
-    "@mojaloop/sdk-standard-components": ^19.6.4
+    "@mojaloop/sdk-standard-components": 19.6.5-snapshot.0
     "@redocly/openapi-cli": ^1.0.0-beta.95
     "@types/jest": ^29.5.14
     ajv: 8.17.1
@@ -2933,7 +2933,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mojaloop/sdk-standard-components@npm:19.6.4, @mojaloop/sdk-standard-components@npm:^19.6.4":
+"@mojaloop/sdk-standard-components@npm:19.6.4":
   version: 19.6.4
   resolution: "@mojaloop/sdk-standard-components@npm:19.6.4"
   dependencies:
@@ -2947,6 +2947,23 @@ __metadata:
     jsonwebtoken: 9.0.2
     jws: 4.0.0
   checksum: 7d42500cce27cfeac6fabfcc86d9658e102c9da28107c744d99edc5e53721a6e92fa4189037c5d87c42e54e04e8a4156eb90f36317b0b09c6b2efd17b0041521
+  languageName: node
+  linkType: hard
+
+"@mojaloop/sdk-standard-components@npm:19.6.5-snapshot.0":
+  version: 19.6.5-snapshot.0
+  resolution: "@mojaloop/sdk-standard-components@npm:19.6.5-snapshot.0"
+  dependencies:
+    "@mojaloop/ml-schema-transformer-lib": ^2.5.2
+    axios: 1.7.9
+    axios-retry: 4.5.0
+    base64url: 3.0.1
+    fast-safe-stringify: ^2.1.1
+    ilp-packet: 3.1.3
+    ilp-packet-v1: 2.2.0
+    jsonwebtoken: 9.0.2
+    jws: 4.0.0
+  checksum: 7753f9b9957b62295e5a13897a1687e3fdad9bc578fb517c3f278b06fa02de4ba17d0bfc66a65de326df8a5f8653131c51230fa977b38853d30c84de596c02be
   languageName: node
   linkType: hard
 
