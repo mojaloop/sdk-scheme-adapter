@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [24.1.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.0.8...v24.1.0) (2025-02-21)
+
+
+### Features
+
+* pass kyc data to transfers ([#545](https://github.com/mojaloop/sdk-scheme-adapter/issues/545)) ([298de0d](https://github.com/mojaloop/sdk-scheme-adapter/commit/298de0d89bceb287501d6efcc5794a0bd2cc466f))
+
 ### [24.0.8](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.0.7...v24.0.8) (2025-02-12)
 
 
