@@ -59,7 +59,7 @@
         "@types/node": "^22.13.4",
         "@types/node-cache": "^4.2.5",
         "@types/supertest": "^6.0.2",
-        "@types/swagger-ui-express": "^4.1.7",
+        "@types/swagger-ui-express": "^4.1.8",
         "@types/yamljs": "^0.2.34",
         "@typescript-eslint/eslint-plugin": "^8.24.1",
         "@typescript-eslint/parser": "^8.24.1",

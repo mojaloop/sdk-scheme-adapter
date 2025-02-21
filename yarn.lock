@@ -2583,9 +2583,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-shared@npm:^18.18.0":
-  version: 18.18.0
-  resolution: "@mojaloop/central-services-shared@npm:18.18.0"
+"@mojaloop/central-services-shared@npm:^18.18.1":
+  version: 18.18.1
+  resolution: "@mojaloop/central-services-shared@npm:18.18.1"
   dependencies:
     "@hapi/catbox": 12.1.1
     "@hapi/catbox-memory": 5.0.1
@@ -2631,7 +2631,7 @@ __metadata:
       optional: false
     ajv-keyboards:
       optional: false
-  checksum: 5b03977f4a24b944f38f30b47ab715163feb80ada7fb78651e8aaedcfe44b128d94f58fc40c4170f81dacf3df81ec203eae7e8ad665b96230f6c025cc2a651db
+  checksum: 704023ed978e96fe7d635b3c0aa27e09f243d48f774c13e4c7f446ccf292d35a286e40a2d039106b5611457b9bdde223dd8b3fd864d85d397947c44cd1517ce8
   languageName: node
   linkType: hard
 
@@ -2696,7 +2696,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/ml-schema-transformer-lib@npm:^2.5.1, @mojaloop/ml-schema-transformer-lib@npm:^2.5.2":
+"@mojaloop/ml-schema-transformer-lib@npm:^2.5.1":
   version: 2.5.2
   resolution: "@mojaloop/ml-schema-transformer-lib@npm:2.5.2"
   dependencies:
@@ -2710,6 +2710,23 @@ __metadata:
     "@rollup/rollup-linux-x64-musl":
       optional: true
   checksum: e9f2011e63aa70da04402d5be57f6678d8d626efbce056255366b2e17e3272008bbf28de71071178705f4fd0738f7e134dd4ce7b4d67184a3e998d5378e9ce23
+  languageName: node
+  linkType: hard
+
+"@mojaloop/ml-schema-transformer-lib@npm:^2.5.3":
+  version: 2.5.3
+  resolution: "@mojaloop/ml-schema-transformer-lib@npm:2.5.3"
+  dependencies:
+    "@mojaloop/central-services-error-handling": ^13.0.6
+    "@mojaloop/central-services-logger": ^11.5.5
+    "@mojaloop/central-services-shared": ^18.18.1
+    "@rollup/rollup-linux-x64-musl": 4.34.8
+    ilp-packet: 2.2.0
+    map-transform-cjs: ^0.2.0
+  dependenciesMeta:
+    "@rollup/rollup-linux-x64-musl":
+      optional: true
+  checksum: f459689d3c5dcdef073f5fc555790b40e14fdd6b24a9619f7742d53e43226a18be1a1ef5bdd78c95181bc5a6bf6dc371efa64e5ec2a88ae83521acb2acd3f618
   languageName: node
   linkType: hard
 
@@ -2749,12 +2766,12 @@ __metadata:
     "@mojaloop/central-services-error-handling": ^13.0.6
     "@mojaloop/central-services-logger": ^11.5.5
     "@mojaloop/central-services-metrics": ^12.4.5
-    "@mojaloop/central-services-shared": ^18.18.0
+    "@mojaloop/central-services-shared": ^18.18.1
     "@mojaloop/event-sdk": ^14.1.4
     "@mojaloop/logging-bc-client-lib": 0.5.8
-    "@mojaloop/ml-schema-transformer-lib": ^2.5.2
+    "@mojaloop/ml-schema-transformer-lib": ^2.5.3
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
-    "@mojaloop/sdk-standard-components": 19.6.5
+    "@mojaloop/sdk-standard-components": 19.6.6
     "@redocly/openapi-cli": ^1.0.0-beta.95
     "@types/jest": ^29.5.14
     ajv: 8.17.1
@@ -2796,7 +2813,7 @@ __metadata:
     supertest: ^7.0.0
     swagger-cli: ^4.0.4
     uuidv4: ^6.2.13
-    ws: ^8.18.0
+    ws: ^8.18.1
   languageName: unknown
   linkType: soft
 
@@ -2806,7 +2823,7 @@ __metadata:
   dependencies:
     "@eslint/compat": ^1.2.6
     "@mojaloop/api-snippets": 17.8.0
-    "@mojaloop/central-services-shared": ^18.18.0
+    "@mojaloop/central-services-shared": ^18.18.1
     "@mojaloop/logging-bc-client-lib": ^0.5.8
     "@mojaloop/logging-bc-public-types-lib": ^0.5.4
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
@@ -2816,7 +2833,7 @@ __metadata:
     "@types/node": ^22.13.4
     "@types/node-cache": ^4.2.5
     "@types/supertest": ^6.0.2
-    "@types/swagger-ui-express": 4.1.7
+    "@types/swagger-ui-express": 4.1.8
     "@types/yamljs": ^0.2.34
     "@typescript-eslint/eslint-plugin": ^8.24.1
     "@typescript-eslint/parser": ^8.24.1
@@ -2854,7 +2871,7 @@ __metadata:
     "@types/node": ^22.13.4
     "@types/node-cache": ^4.2.5
     "@types/supertest": ^6.0.2
-    "@types/swagger-ui-express": ^4.1.7
+    "@types/swagger-ui-express": ^4.1.8
     "@types/yamljs": ^0.2.34
     "@typescript-eslint/eslint-plugin": ^8.24.1
     "@typescript-eslint/parser": ^8.24.1
@@ -2883,7 +2900,7 @@ __metadata:
   dependencies:
     "@eslint/compat": ^1.2.6
     "@mojaloop/api-snippets": 17.8.0
-    "@mojaloop/central-services-shared": ^18.18.0
+    "@mojaloop/central-services-shared": ^18.18.1
     "@mojaloop/logging-bc-public-types-lib": ^0.5.4
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.7.1
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": 0.5.18
@@ -2950,11 +2967,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/sdk-standard-components@npm:19.6.5":
-  version: 19.6.5
-  resolution: "@mojaloop/sdk-standard-components@npm:19.6.5"
+"@mojaloop/sdk-standard-components@npm:19.6.6":
+  version: 19.6.6
+  resolution: "@mojaloop/sdk-standard-components@npm:19.6.6"
   dependencies:
-    "@mojaloop/ml-schema-transformer-lib": ^2.5.2
+    "@mojaloop/ml-schema-transformer-lib": ^2.5.3
     axios: 1.7.9
     axios-retry: 4.5.0
     base64url: 3.0.1
@@ -2963,7 +2980,7 @@ __metadata:
     ilp-packet-v1: 2.2.0
     jsonwebtoken: 9.0.2
     jws: 4.0.0
-  checksum: 4088204a4c65538ae89dc2c0655c2856f9716640651a91ba34b1ff28bae4901fe250d963e3f5cc74acdf242cb5f3f03fe852e5aa2aa8a7da6b1ea6e3971abec3
+  checksum: 016d0ea60ed6cdec419a05be46474b68d358426a68790b7f04b81c21535c02902dd506b8e6a77f45bec973ab194ff3df874f6c3eaca3f06da051237394d53201
   languageName: node
   linkType: hard
 
@@ -3460,6 +3477,13 @@ __metadata:
 "@rollup/rollup-linux-x64-musl@npm:4.32.0":
   version: 4.32.0
   resolution: "@rollup/rollup-linux-x64-musl@npm:4.32.0"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@rollup/rollup-linux-x64-musl@npm:4.34.8":
+  version: 4.34.8
+  resolution: "@rollup/rollup-linux-x64-musl@npm:4.34.8"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
@@ -4095,13 +4119,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/swagger-ui-express@npm:4.1.7, @types/swagger-ui-express@npm:^4.1.7":
-  version: 4.1.7
-  resolution: "@types/swagger-ui-express@npm:4.1.7"
+"@types/swagger-ui-express@npm:4.1.8, @types/swagger-ui-express@npm:^4.1.8":
+  version: 4.1.8
+  resolution: "@types/swagger-ui-express@npm:4.1.8"
   dependencies:
     "@types/express": "*"
     "@types/serve-static": "*"
-  checksum: c9b285018e0ac60cd1adba32ff4f03e97f74abd5d7dbce06029e3a99e0c226bdd48eae22b15dc9782f318e43669a5edef4d72200b3a359fb9651b6b4ce1623b0
+  checksum: bf4d84fb21c11e820238685cdc102f8d5e82d4382df9450a358bf80f70f5f0699c87645a291c52beee1eba5c0ee594e03714b236f1a0737272941a8708218f8f
   languageName: node
   linkType: hard
 
@@ -15917,9 +15941,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.18.0":
-  version: 8.18.0
-  resolution: "ws@npm:8.18.0"
+"ws@npm:^8.18.1":
+  version: 8.18.1
+  resolution: "ws@npm:8.18.1"
   peerDependencies:
     bufferutil: ^4.0.1
     utf-8-validate: ">=5.0.2"
@@ -15928,7 +15952,7 @@ __metadata:
       optional: true
     utf-8-validate:
       optional: true
-  checksum: 91d4d35bc99ff6df483bdf029b9ea4bfd7af1f16fc91231a96777a63d263e1eabf486e13a2353970efc534f9faa43bdbf9ee76525af22f4752cbc5ebda333975
+  checksum: 4658357185d891bc45cc2d42a84f9e192d047e8476fb5cba25b604f7d75ca87ca0dd54cd0b2cc49aeee57c79045a741cb7d0b14501953ac60c790cd105c42f23
   languageName: node
   linkType: hard
 

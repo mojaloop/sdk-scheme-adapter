@@ -68,12 +68,12 @@
     "@mojaloop/central-services-error-handling": "^13.0.6",
     "@mojaloop/central-services-logger": "^11.5.5",
     "@mojaloop/central-services-metrics": "^12.4.5",
-    "@mojaloop/central-services-shared": "^18.18.0",
+    "@mojaloop/central-services-shared": "^18.18.1",
     "@mojaloop/event-sdk": "^14.1.4",
     "@mojaloop/logging-bc-client-lib": "0.5.8",
-    "@mojaloop/ml-schema-transformer-lib": "^2.5.2",
+    "@mojaloop/ml-schema-transformer-lib": "^2.5.3",
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^",
-    "@mojaloop/sdk-standard-components": "19.6.5",
+    "@mojaloop/sdk-standard-components": "19.6.6",
     "ajv": "8.17.1",
     "axios": "^1.7.9",
     "body-parser": "^1.20.3",
@@ -97,7 +97,7 @@
     "random-word-slugs": "^0.1.7",
     "redis": "^4.7.0",
     "uuidv4": "^6.2.13",
-    "ws": "^8.18.0"
+    "ws": "^8.18.1"
   },
   "devDependencies": {
     "@babel/core": "^7.26.9",
