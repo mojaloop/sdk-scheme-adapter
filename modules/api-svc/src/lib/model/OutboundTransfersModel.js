@@ -1103,6 +1103,29 @@ class OutboundTransfersModel {
             };
         }
 
+        if (this._apiType  === API_TYPES.iso20022) {
+            // Append keys from quoteResponse extensionList with specific prefixes
+            const quoteResponseExtensions = this.data.quoteResponse.body.extensionList?.extension;
+            if (quoteResponseExtensions) {
+                const prefixes = [
+                    'CdtTrfTxInf.Cdtr.',
+                    'CdtTrfTxInf.CdtrAcct.',
+                    'CdtTrfTxInf.CdtrAgt.',
+                    'CdtTrfTxInf.InstrForCdtrAgt.',
+                    'CdtTrfTxInf.InstrForNxtAgt.'
+                ];
+                const filteredExtensions = quoteResponseExtensions.filter(ext => 
+                    prefixes.some(prefix => ext.key.startsWith(prefix))
+                );
+                if (filteredExtensions.length > 0) {
+                    if (!prepare.extensionList) {
+                        prepare.extensionList = { extension: [] };
+                    }
+                    prepare.extensionList.extension.push(...filteredExtensions);
+                }
+            }
+        }
+
         return prepare;
     }
 
@@ -1275,7 +1298,7 @@ class OutboundTransfersModel {
                 // first remove any merge keys that we do not want to allow to be changed
                 // note that we could do this in the swagger also. this is to put a responsibility
                 // on this model to defend itself.
-                const permittedMergeKeys = ['acceptParty', 'acceptConversion', 'acceptQuote', 'amount', 'to'];
+                const permittedMergeKeys = ['acceptParty', 'acceptConversion', 'acceptQuote', 'acceptQuoteOrConversion', 'amount', 'to'];
                 Object.keys(mergeData).forEach(k => {
                     if(permittedMergeKeys.indexOf(k) === -1) {
                         delete mergeData[k]; // try to avoid mutation of parameters
@@ -1352,7 +1375,9 @@ class OutboundTransfersModel {
                 }
 
                 case States.FX_QUOTE_RECEIVED: {
-                    if (!this.data.acceptConversion) {
+                    if ((this.data.acceptConversion !== undefined && this.data.acceptConversion === false) ||
+                        (this.data.acceptQuoteOrConversion !== undefined && this.data.acceptQuoteOrConversion === false) ||
+                        (this.data.acceptConversion === undefined && this.data.acceptQuoteOrConversion === undefined)) {
                         await this.stateMachine.abort(ErrorMessages.fxQuoteRejectedByBackend);
                         await this._save();
                         return this.getResponse();
@@ -1374,7 +1399,10 @@ class OutboundTransfersModel {
                 }
 
                 case States.QUOTE_RECEIVED: {
-                    if (!this._autoAcceptQuotes && !this.data.acceptQuote) {
+                    if (!this._autoAcceptQuotes &&
+                        ((this.data.acceptQuote !== undefined && this.data.acceptQuote === false) ||
+                        (this.data.acceptQuoteOrConversion !== undefined && this.data.acceptQuoteOrConversion === false) ||
+                        (this.data.acceptQuote === undefined && this.data.acceptQuoteOrConversion === undefined))) {
                         // resuming after a party resolution halt, backend did not accept the party.
                         await this.stateMachine.abort(ErrorMessages.quoteRejectedByBackend);
                         await this._save();

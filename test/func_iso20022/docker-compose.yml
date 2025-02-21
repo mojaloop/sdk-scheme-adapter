@@ -1,0 +1,164 @@
+networks:
+  mojaloop-net:
+    name: mojaloop-net
+
+services:
+
+  redis:
+    networks:
+        - mojaloop-net
+    image: "redis:5.0.4-alpine"
+    cap_add:
+      - NET_ADMIN
+    # ports:
+    #   - "6379:6379"
+    healthcheck:
+      test: ["CMD" ,"sh", "-c", "redis-cli","ping"]
+      timeout: 20s
+      retries: 10
+      start_period: 40s
+      interval: 30s
+
+  ttksim1-sdk-api-svc:
+    extends:
+      file: common-sdk.yml
+      service: api-svc
+    networks:
+      - mojaloop-net
+    env_file: ./config/sdk-ttksim1/api-svc.env
+    command: yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run start:debug
+    ports:
+      - "14000:4000"
+      - "14001:4001"
+      - "14002:4002"
+      - "19221:9229"
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  ttksim2-sdk-api-svc:
+    extends:
+      file: common-sdk.yml
+      service: api-svc
+    env_file: ./config/sdk-ttksim2/api-svc.env
+    networks:
+      - mojaloop-net
+    ports:
+      - "24000:4000"
+      - "24001:4001"
+      - "24002:4002"
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  ttkfxp-sdk-api-svc:
+    extends:
+      file: common-sdk.yml
+      service: api-svc
+    env_file: ./config/sdk-ttkfxp/api-svc.env
+    networks:
+      - mojaloop-net
+    ports:
+      - "44000:4000"
+      - "44001:4001"
+      - "44002:4002"
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  ttk-ttksim1:
+    networks:
+        - mojaloop-net
+    image: mojaloop/ml-testing-toolkit:v18.7.4
+    container_name: ttk-ttksim1
+    user: root
+    volumes:
+      - "./config/ttk-ttksim1/spec_files:/opt/app/spec_files"
+      - "./config/ttk-ttksim1/environments:/opt/app/examples/environments"
+    ports:
+      - "14040:4040"
+      - "15050:5050"
+    environment:
+      - AUTH_ENABLED=FALSE
+    command: npm start
+    healthcheck:
+      test: ["CMD-SHELL", "nc localhost 4040"]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+
+  ttk-ttksim1-ui:
+    image: mojaloop/ml-testing-toolkit-ui:v16.1.1
+    ports:
+      - "16060:6060"
+    networks:
+      - mojaloop-net
+    environment:
+      - API_BASE_URL=http://localhost:15050
+      - AUTH_ENABLED=FALSE
+    command:
+      - sh
+      - /usr/share/nginx/start.sh
+    profiles:
+      - debug
+
+  ttk-ttksim2:
+    networks:
+        - mojaloop-net
+    image: mojaloop/ml-testing-toolkit:v18.7.4
+    container_name: ttk-ttksim2
+    user: root
+    volumes:
+      - "./config/ttk-ttksim2/spec_files:/opt/app/spec_files"
+    ports:
+      - "24040:4040"
+      - "25050:5050"
+    environment:
+      - AUTH_ENABLED=FALSE
+    command: npm start
+
+  ttk-ttksim2-ui:
+    image: mojaloop/ml-testing-toolkit-ui:v16.1.1
+    ports:
+      - "26060:6060"
+    networks:
+      - mojaloop-net
+    environment:
+      - API_BASE_URL=http://localhost:25050
+      - AUTH_ENABLED=FALSE
+    command:
+      - sh
+      - /usr/share/nginx/start.sh
+    profiles:
+      - debug
+
+  ttk-ttkfxp:
+    networks:
+        - mojaloop-net
+    image: mojaloop/ml-testing-toolkit:v18.7.4
+    container_name: ttk-ttkfxp
+    user: root
+    volumes:
+      - "./config/ttk-ttkfxp/spec_files:/opt/app/spec_files"
+    ports:
+      - "44040:4040"
+      - "45050:5050"
+    environment:
+      - AUTH_ENABLED=FALSE
+    command: npm start
+
+  ttk-ttkfxp-ui:
+    image: mojaloop/ml-testing-toolkit-ui:v16.1.1
+    ports:
+      - "46060:6060"
+    networks:
+      - mojaloop-net
+    environment:
+      - API_BASE_URL=http://localhost:45050
+      - AUTH_ENABLED=FALSE
+    command:
+      - sh
+      - /usr/share/nginx/start.sh
+    profiles:
+      - debug
+

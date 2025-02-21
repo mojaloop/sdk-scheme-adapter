@@ -313,6 +313,10 @@ const mojaloopPrepareToInternalTransfer = (external, quote, ilp, checkILP) => {
         };
     }
 
+    if(external.extensionList) {
+        internal.extensionList = external.extensionList.extension;
+    }
+
     return internal;
 };
 
