@@ -1243,8 +1243,8 @@
           "transferAmountCurrency": "{$request.body.currency}",
           "extensionList": [
             {
-              "key": "CdtTrfTxInf.InstrForCdtrAgt.InstrInf",
-              "value": "Additional KYC details"
+              "key": "CdtTrfTxInf.Cdtr.CtctDtls.EmailAdr",
+              "value": "sample_payee@email.com"
             }
           ]
         },
