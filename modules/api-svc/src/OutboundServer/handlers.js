@@ -125,11 +125,19 @@ const handleRequestSimpleTransfersInformationError = (method, err, ctx) =>
 
 const createOutboundTransfersModel = (ctx) => new OutboundTransfersModel({
     ...ctx.state.conf,
-    ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
+    ...(ctx.state.path?.params?.dfspId && { dfspId: ctx.state.path.params.dfspId }),
     cache: ctx.state.cache,
     logger: ctx.state.logger,
     wso2: ctx.state.wso2,
     metricsClient: ctx.state.metricsClient,
+});
+
+const createOutboundBulkTransfersModel = (ctx) => new OutboundBulkTransfersModel({
+    ...ctx.state.conf,
+    ...(ctx.state.path?.params?.dfspId && { dfspId: ctx.state.path.params.dfspId }),
+    cache: ctx.state.cache,
+    logger: ctx.state.logger,
+    wso2: ctx.state.wso2,
 });
 
 /**
@@ -222,13 +230,7 @@ const postBulkTransfers = async (ctx) => {
         };
 
         // use the bulk transfers model to execute asynchronous stages with the switch
-        const model = new OutboundBulkTransfersModel({
-            ...ctx.state.conf,
-            ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
-            cache: ctx.state.cache,
-            logger: ctx.state.logger,
-            wso2: ctx.state.wso2,
-        });
+        const model = createOutboundBulkTransfersModel(ctx);
 
         await model.initialize(bulkTransferRequest);
         const response = await model.run();
@@ -254,13 +256,7 @@ const getBulkTransfers = async (ctx) => {
         };
 
         // use the bulk transfers model to execute asynchronous stages with the switch
-        const model = new OutboundBulkTransfersModel({
-            ...ctx.state.conf,
-            ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
-            cache: ctx.state.cache,
-            logger: ctx.state.logger,
-            wso2: ctx.state.wso2,
-        });
+        const model = createOutboundBulkTransfersModel(ctx);
 
         await model.initialize(bulkTransferRequest);
         const response = await model.getBulkTransfer();

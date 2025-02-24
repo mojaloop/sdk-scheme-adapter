@@ -586,7 +586,7 @@ class OutboundTransfersModel {
                 body: payload,
                 headers: originalRequest.headers
             };
-            this._logger.isVerboseEnabled && this._logger.push(payload).verbose('fxQuote request is sent to hub');
+            this._logger.isVerboseEnabled && this._logger.push({ fxQuotePayload: payload }).verbose('fxQuote request is sent to hub');
 
             const message = await subscribing;
 
