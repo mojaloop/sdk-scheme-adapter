@@ -210,7 +210,7 @@ class OutboundTransfersModel {
      * Updates the internal state representation to reflect that of the state machine itself
      */
     _afterTransition() {
-        this._logger.isDebugEnabled && this._logger.debug(`State machine transitioned: ${this.data.currentState} -> ${this.stateMachine.state}`);
+        this._logger.isVerboseEnabled && this._logger.verbose(`State machine transitioned: ${this.data.currentState} -> ${this.stateMachine.state} for transfer ${this.data.transferId}`);
         this.data.currentState = this.stateMachine.state;
     }
 
@@ -348,7 +348,7 @@ class OutboundTransfersModel {
                     // cancel the timeout handler
                     clearTimeout(timeout);
 
-                    this._logger.isDebugEnabled && this._logger.push({ payee }).debug('Payee resolved');
+                    this._logger.isVerboseEnabled && this._logger.push({ payee }).verbose('Payee resolved');
 
                     // stop listening for payee resolution messages
                     // no need to await for the unsubscribe to complete.
@@ -392,7 +392,7 @@ class OutboundTransfersModel {
                         }
                         this.data.to.dateOfBirth = payee.personalInfo.dateOfBirth;
                     }
-                    
+
                     if (Array.isArray(payee.supportedCurrencies)) {
                         if (!payee.supportedCurrencies.length) {
                             throw new Error(ErrorMessages.noSupportedCurrencies);
@@ -586,7 +586,7 @@ class OutboundTransfersModel {
                 body: payload,
                 headers: originalRequest.headers
             };
-            this._logger.debug('fxQuote request is sent to hub');
+            this._logger.isVerboseEnabled && this._logger.push(payload).verbose('fxQuote request is sent to hub');
 
             const message = await subscribing;
 
@@ -665,7 +665,7 @@ class OutboundTransfersModel {
                         error.mojaloopError = message.data.body;
                     }
                     else {
-                        this._logger.isDebugEnabled && this._logger.push({ message }).debug(`Ignoring cache notification for quote ${quoteKey}. Unknown message type ${message.type}.`);
+                        this._logger.isVerboseEnabled && this._logger.push({ quoteKey, message }).verbose(`Ignoring cache notification for quote ${quoteKey}. Unknown message type ${message.type}.`);
                         return;
                     }
 
@@ -689,7 +689,7 @@ class OutboundTransfersModel {
                         body: message.data.body,
                         originalIso20022QuoteResponse: message.data.originalIso20022QuoteResponse,
                     };
-                    this._logger.push({ quoteResponse: this.data.quoteResponse.body }).debug('Quote response received');
+                    this._logger.isVerboseEnabled && this._logger.push({ quoteResponse: this.data.quoteResponse.body }).verbose('Quote response received');
 
                     this.data.quoteResponseSource = this.data.quoteResponse.headers['fspiop-source'];
 
@@ -897,7 +897,7 @@ class OutboundTransfersModel {
                         error = new BackendError(`Got an error response preparing transfer: ${safeStringify(message.data.body, { depth: Infinity })}`, 500);
                         error.mojaloopError = message.data.body;
                     } else {
-                        this._logger.isDebugEnabled && this._logger.push({ message }).debug(`Ignoring cache notification for transfer ${transferKey}. Unknown message type ${message.type}.`);
+                        this._logger.isVerboseEnabled && this._logger.push({ message }).verbose(`Ignoring cache notification for transfer ${transferKey}. Unknown message type ${message.type}.`);
                         return;
                     }
 
@@ -914,7 +914,7 @@ class OutboundTransfersModel {
                     }
 
                     const fulfil = message.data;
-                    this._logger.isDebugEnabled && this._logger.push({ fulfil: fulfil.body }).debug('Transfer fulfil received');
+                    this._logger.isInfoEnabled && this._logger.push({ fulfil: fulfil.body }).info('Transfer fulfil received');
                     this.data.fulfil = fulfil;
                     if(this._checkIlp && !this._ilp.validateFulfil(fulfil.body.fulfilment, this.data.quoteResponse.body.condition)) {
                         throw new Error('Invalid fulfilment received from peer DFSP.');
@@ -934,7 +934,7 @@ class OutboundTransfersModel {
                         const res = this._requests.patchTransfers(this.data.transferId,
                             patchNotification, this.data.quoteResponseSource);
                         this.data.patch = res.originalRequest;
-                        this._logger.isDebugEnabled && this._logger.debug(`PATCH final notification sent to peer for transfer ${this.data.transferId}`);
+                        this._logger.isInfoEnabled && this._logger.info(`PATCH final notification sent to peer for transfer ${this.data.transferId}`);
                     }
                     return resolve(fulfil.body);
                 }
@@ -980,7 +980,7 @@ class OutboundTransfersModel {
                 };
 
                 this.metrics.transferPrepares.inc();
-                this._logger.isDebugEnabled && this._logger.push({ res }).debug('Transfer prepare sent to peer');
+                this._logger.isVerboseEnabled && this._logger.push({ prepare, res }).verbose('Transfer prepare sent to peer');
             }
             catch(err) {
                 // cancel the timeout and unsubscribe before rejecting the promise
@@ -1013,7 +1013,7 @@ class OutboundTransfersModel {
                         error = new BackendError(`Got an error response retrieving transfer: ${safeStringify(message.data.body, { depth: Infinity })}`, 500);
                         error.mojaloopError = message.data.body;
                     } else if (message.type !== 'transferFulfil') {
-                        this._logger.isDebugEnabled && this._logger.push({ message }).debug(`Ignoring cache notification for transfer ${transferKey}. Uknokwn message type ${message.type}.`);
+                        this._logger.isVerboseEnabled && this._logger.push({ message }).verbose(`Ignoring cache notification for transfer ${transferKey}. Unknown message type ${message.type}.`);
                         return;
                     }
                     // cancel the timeout handler
@@ -1026,7 +1026,7 @@ class OutboundTransfersModel {
                         return reject(error);
                     }
                     const fulfil = message.data;
-                    this._logger.isDebugEnabled && this._logger.push({ fulfil: fulfil.body }).debug('Transfer fulfil received');
+                    this._logger.isVerboseEnabled && this._logger.push({ fulfil: fulfil.body }).verbose('Transfer fulfil received');
                     this.data.fulfil = fulfil;
                     return resolve(this.data.fulfil);
                 }
@@ -1051,7 +1051,7 @@ class OutboundTransfersModel {
             // a GET /transfers request to the switch
             try {
                 const res = await this._requests.getTransfers(this.data.transferId);
-                this._logger.isDebugEnabled && this._logger.push({ peer: res }).debug('Transfer lookup sent to peer');
+                this._logger.isVerboseEnabled && this._logger.push({ peer: res }).verbose(`getTransfers ${this.data.transferId} sent to peer`);
             }
             catch(err) {
                 // cancel the timout and unsubscribe before rejecting the promise
@@ -1114,7 +1114,7 @@ class OutboundTransfersModel {
                     'CdtTrfTxInf.InstrForCdtrAgt.',
                     'CdtTrfTxInf.InstrForNxtAgt.'
                 ];
-                const filteredExtensions = quoteResponseExtensions.filter(ext => 
+                const filteredExtensions = quoteResponseExtensions.filter(ext =>
                     prefixes.some(prefix => ext.key.startsWith(prefix))
                 );
                 if (filteredExtensions.length > 0) {
@@ -1236,7 +1236,7 @@ class OutboundTransfersModel {
 
     /**
      * Determines if FX is needed for the transfer
-     * 
+     *
      * @param {Array} payerCurrencies - Array of supported currencies for the payer
      * @param {Array} payeeCurrencies - Array of supported currencies for the payee
      * @param {string} amountCurrency - Currency of the amount being transferred
@@ -1291,6 +1291,8 @@ class OutboundTransfersModel {
      * @param mergeData {object} - an object to merge with the model state (data) before running the state machine
      */
     async run(mergeData = null) {
+        const log = this._logger.push({ transferId: this.data?.transferId });
+
         try {
             // if we were passed a mergeData object...
             // merge it with our existing state, overwriting any existing matching root level keys
@@ -1317,7 +1319,7 @@ class OutboundTransfersModel {
 
                     if (typeof(this.data.to.fspId) !== 'undefined' && this.data.skipPartyLookup) {
                         // we already have the payee DFSP and we have bee asked to skip party resolution
-                        this._logger.isDebugEnabled && this._logger.debug(`Skipping payee resolution for transfer ${this.data.transferId} as to.fspId was provided and skipPartyLookup is truthy`);
+                        log.isInfoEnabled && log.info('Skipping payee resolution for transfer as to.fspId was provided and skipPartyLookup is truthy');
                         this.data.currentState = States.PAYEE_RESOLVED;
                         // (!) this.data.currentState and this.stateMachine.state are different now!
                         break;
@@ -1325,10 +1327,10 @@ class OutboundTransfersModel {
 
                     // next transition is to resolvePayee
                     await this.stateMachine.resolvePayee();
-                    this._logger.isDebugEnabled && this._logger.debug(`Payee resolved for transfer ${this.data.transferId}`);
+                    log.isInfoEnabled && log.info('Payee resolved for transfer');
 
                     if (this.stateMachine.state === States.PAYEE_RESOLVED && !this._autoAcceptParty) {
-                        this._logger.isDebugEnabled && this._logger.debug(`Transfer ${this.data.transferId} waits for async acceptParty`);
+                        log.isInfoEnabled && log.info('Transfer waits for async acceptParty');
                         await this._save();
                         return this.getResponse();
                     }
@@ -1337,20 +1339,23 @@ class OutboundTransfersModel {
                 case States.PAYEE_RESOLVED:
                     if (!this._autoAcceptParty && !this.data.acceptParty && !this.data.skipPartyLookup) {
                         // resuming after a party resolution halt, backend did not accept the party.
-                        await this.stateMachine.abort('Payee rejected by backend');
+                        const abortMessage = 'Payee rejected by backend';
+                        log.isInfoEnabled && log.info(abortMessage);
+                        await this.stateMachine.abort(abortMessage);
                         await this._save();
                         return this.getResponse();
                     }
 
                     if (this.data.needFx) {
                         await this.stateMachine.requestServicesFxp();
-                        this._logger.verbose(`Services FXP received for transfer ${this.data.transferId}`);
+                        log.isInfoEnabled && log.info('Services FXP received for transfer');
                     } else {
                         await this.stateMachine.requestQuote();
-                        this._logger.verbose(`Quote received for transfer ${this.data.transferId}`);
+                        log.isInfoEnabled && log.info('Quote received for transfer');
                         if (this.stateMachine.state === States.QUOTE_RECEIVED && !this._autoAcceptQuotes) {
                             //we break execution here and return the quote response details to allow asynchronous accept or reject
                             //of the quote
+                            log.isInfoEnabled && log.info('Transfer waits for async accept or reject of quotes');
                             await this._save();
                             return this.getResponse();
                         }
@@ -1363,11 +1368,11 @@ class OutboundTransfersModel {
                         : Transitions.REQUEST_QUOTE;
 
                     await this.stateMachine[transition]();
-                    this._logger.verbose(`${transition} for transfer ${this.data.transferId} has been completed`);
+                    log.isInfoEnabled && log.info(`Transition ${transition} for transfer has been completed`);
 
                     if ([States.QUOTE_RECEIVED, States.FX_QUOTE_RECEIVED].includes(this.stateMachine.state)) {
                         //we break execution here and return the quotes/fxQuote response details to allow asynchronous accept or reject
-                        this._logger.isDebugEnabled && this._logger.debug(`Transfer ${this.data.transferId} waits for async accept or reject`);
+                        log.isInfoEnabled && log.info(`Transfer waits for async accept or reject of ${transition}`);
                         await this._save();
                         return this.getResponse();
                     }
@@ -1378,7 +1383,9 @@ class OutboundTransfersModel {
                     if ((this.data.acceptConversion !== undefined && this.data.acceptConversion === false) ||
                         (this.data.acceptQuoteOrConversion !== undefined && this.data.acceptQuoteOrConversion === false) ||
                         (this.data.acceptConversion === undefined && this.data.acceptQuoteOrConversion === undefined)) {
-                        await this.stateMachine.abort(ErrorMessages.fxQuoteRejectedByBackend);
+                        const abortMessage = ErrorMessages.fxQuoteRejectedByBackend;
+                        log.isInfoEnabled && log.info(abortMessage);
+                        await this.stateMachine.abort(abortMessage);
                         await this._save();
                         return this.getResponse();
                     }
@@ -1388,10 +1395,10 @@ class OutboundTransfersModel {
                         : Transitions.EXECUTE_FX_TRANSFER;
 
                     await this.stateMachine[transition]();
-                    this._logger.isVerboseEnabled && this._logger.verbose(`${transition} for transfer ${this.data.transferId} is done`);
+                    log.isInfoEnabled && log.info(`Transition ${transition} for transfer is done`);
 
                     if (this.stateMachine.state === States.QUOTE_RECEIVED && !this._autoAcceptQuotes) {
-                        this._logger.isDebugEnabled && this._logger.debug(`Transfer ${this.data.transferId} waits for async acceptQuotes`);
+                        log.isInfoEnabled && log.info('Transfer waits for async acceptQuotes');
                         await this._save();
                         return this.getResponse();
                     }
@@ -1404,7 +1411,9 @@ class OutboundTransfersModel {
                         (this.data.acceptQuoteOrConversion !== undefined && this.data.acceptQuoteOrConversion === false) ||
                         (this.data.acceptQuote === undefined && this.data.acceptQuoteOrConversion === undefined))) {
                         // resuming after a party resolution halt, backend did not accept the party.
-                        await this.stateMachine.abort(ErrorMessages.quoteRejectedByBackend);
+                        const abortMessage = ErrorMessages.quoteRejectedByBackend;
+                        log.isInfoEnabled && log.info(abortMessage);
+                        await this.stateMachine.abort(abortMessage);
                         await this._save();
                         return this.getResponse();
                     }
@@ -1416,10 +1425,10 @@ class OutboundTransfersModel {
                             : Transitions.REQUEST_FX_QUOTE);
 
                     await this.stateMachine[transition]();
-                    this._logger.verbose(`${transition} for transfer ${this.data.transferId} has been completed`);
+                    log.isInfoEnabled && log.info(`Transition ${transition} for transfer has been completed`);
 
                     if (this.stateMachine.state === States.FX_QUOTE_RECEIVED) { // todo: think, if we need to add _autoAcceptConversion
-                        this._logger.isDebugEnabled && this._logger.debug(`Transfer ${this.data.transferId} waits for acceptConversion...`);
+                        log.isInfoEnabled && log.info('Transfer waits for async acceptConversion');
                         await this._save();
                         return this.getResponse();
                     }
@@ -1428,52 +1437,51 @@ class OutboundTransfersModel {
 
                 case States.FX_TRANSFER_SUCCEEDED:
                     await this.stateMachine.executeTransfer();
-                    this._logger.verbose(`Transfer ${this.data.transferId} has been completed`);
+                    log.isInfoEnabled && log.info('FxTransfer has been completed');
                     break;
 
                 case States.SUCCEEDED:
                     // all steps complete so return
-                    this._logger.isInfoEnabled && this._logger.info(`Transfer ${this.data.transferId} completed successfully`);
+                    log.isInfoEnabled && log.info('Transfer completed successfully');
                     await this._save();
                     return this.getResponse();
 
                 case States.ERRORED:
                     // stopped in errored state
                     await this._save();
-                    this._logger.isErrorEnabled && this._logger.error('State machine in errored state');
+                    log.isErrorEnabled && log.error('State machine in errored state');
                     return;
 
                 case States.ABORTED:
                     // stopped in aborted state
-                    this._logger.isWarnEnabled && this._logger.warn('State machine in aborted state');
+                    log.isWarnEnabled && log.warn('State machine in aborted state');
                     await this._save();
                     return this.getResponse();
 
                     // todo: no such state!
                 case 'getTransfer':
                     await this.stateMachine.getTransfer();
-                    this._logger.verbose(`Get transfer ${this.data.transferId} has been completed`);
+                    log.isInfoEnabled && log.info('getTransfer has been completed');
                     break;
 
                 default:
                     // The state is not handled here, throwing an error to avoid an infinite recursion of this function
                     await this._save();
-                    this._logger.isErrorEnabled && this._logger.error(`State machine in unhandled(${this.data.currentState}) state`);
+                    log.isErrorEnabled && log.error(`State machine in unhandled state: ${this.data.currentState}`);
                     return;
             }
 
             // now call ourselves recursively to deal with the next transition
-            this._logger.isDebugEnabled && this._logger.debug(`Transfer model state machine transition completed in state: ${this.stateMachine.state}. Recursing to handle next transition.`);
+            log.isVerboseEnabled && log.verbose(`Transfer model state machine transition completed in state: ${this.stateMachine.state}. Recursing to handle next transition.`);
             return this.run();
-        }
-        catch (err) {
-            this._logger.isErrorEnabled && this._logger.error(`error running outbound transfer model ${this.data.transferId}: ${err?.message}`);
+        } catch (err) {
+            log.isErrorEnabled && log.push({ err }).error(`error running outbound transfer model: ${err?.message}`);
 
             // as this function is recursive, we dont want to error the state machine multiple times
             if (this.data.currentState !== States.ERRORED) {
                 // err should not have a transferState property here!
                 if (err.transferState) {
-                    this._logger.isErrorEnabled && this._logger.error(`State machine is broken: ${safeStringify(err)}`);
+                    log.isWarnEnabled && log.warn(`State machine is broken: ${safeStringify(err)}`);
                 }
                 // transition to errored state
                 await this.stateMachine.error(err);

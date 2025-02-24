@@ -29,7 +29,6 @@
  ******/
 'use strict';
 
-const safeStringify = require('fast-safe-stringify');
 const {
     AccountsModel,
     OutboundTransfersModel,
@@ -54,7 +53,7 @@ const { ReturnCodes } = Enum.Http;
  * Error handling logic shared by outbound API handlers
  */
 const handleError = (method, err, ctx, stateField) => {
-    ctx.state.logger.isErrorEnabled && ctx.state.logger.error(`Error handling ${method}: ${safeStringify(err)}`);
+    ctx.state.logger.push({ err, stateField }).error(`Error handling ${method}`);
     ctx.response.status = err.httpStatusCode || ReturnCodes.INTERNALSERVERERRROR.CODE;
     ctx.response.body = {
         message: err.message || 'Unspecified error',
@@ -72,6 +71,7 @@ const handleError = (method, err, ctx, stateField) => {
         // the structure of the response object in depth to ascertain an underlying mojaloop API error code.
         const errorInformation = err[stateField].lastError.mojaloopError.errorInformation;
         ctx.response.body.statusCode = errorInformation.errorCode;
+        ctx.state.logger.warn('errorInformation - ', errorInformation);
 
         // if we have been configured to use an error extensionList item as status code, look for it and use
         // it if it is present...

@@ -33,6 +33,7 @@ process.env.CACHE_URL = 'redis://172.17.0.2:6379';
 process.env.MGMT_API_WS_URL = '0.0.0.0';
 process.env.SUPPORTED_CURRENCIES='USD';
 
+const uuid = require('@mojaloop/central-services-shared').Util.id({ type: 'ulid' });
 const mockError = require('./data/mockError');
 const mockBulkQuoteError = require('./data/mockBulkQuoteError');
 const mockBulkTransferError = require('./data/mockBulkTransferError');
@@ -46,7 +47,6 @@ const bulkQuoteRequest = require('./data/bulkQuoteRequest');
 const requestToPayPayload = require('./data/requestToPay');
 const requestToPayTransferRequest = require('./data/requestToPayTransferRequest');
 const mockLogger = require('../mockLogger');
-const uuid = require('@mojaloop/central-services-shared').Util.id({type: 'ulid'});
 
 jest.mock('~/lib/model');
 
@@ -170,13 +170,7 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: {
-                        log: () => {},
-                        debug: () => {},
-                        error: () => {},
-                        isDebugEnabled: () => {},
-                        isErrorEnabled: () => {}
-                    },
+                    logger: mockLogger(),
                 }
             };
 
@@ -204,13 +198,7 @@ describe('Outbound API handlers:', () => {
                     conf: {
                         outboundErrorStatusCodeExtensionKey: 'extErrorKey'  // <- tell the handler to use this extensionList item as source of statusCode
                     },
-                    logger: {
-                        log: () => {},
-                        debug: () => {},
-                        error: () => {},
-                        isDebugEnabled: () => {},
-                        isErrorEnabled: () => {}
-                    },
+                    logger: mockLogger(),
                 }
             };
 
@@ -242,13 +230,7 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: {
-                        log: () => {},
-                        debug: () => {},
-                        error: () => {},
-                        isDebugEnabled: () => {},
-                        isErrorEnabled: () => {}
-                    },
+                    logger: mockLogger(),
                     path: {
                         params: {
                             transferId: '12345'
@@ -280,13 +262,7 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: {
-                        log: () => {},
-                        debug: () => {},
-                        error: () => {},
-                        isDebugEnabled: () => {},
-                        isErrorEnabled: () => {}
-                    },
+                    logger: mockLogger(),
                 }
             };
 
@@ -314,13 +290,7 @@ describe('Outbound API handlers:', () => {
                     conf: {
                         outboundErrorStatusCodeExtensionKey: 'extErrorKey'  // <- tell the handler to use this extensionList item as source of statusCode
                     },
-                    logger: {
-                        log: () => {},
-                        debug: () => {},
-                        error: () => {},
-                        isDebugEnabled: () => {},
-                        isErrorEnabled: () => {}
-                    },
+                    logger: mockLogger(),
                 }
             };
 
@@ -350,13 +320,7 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: {
-                        log: () => {},
-                        debug: () => {},
-                        error: () => {},
-                        isDebugEnabled: () => {},
-                        isErrorEnabled: () => {}
-                    },
+                    logger: mockLogger(),
                 }
             };
 
@@ -384,13 +348,7 @@ describe('Outbound API handlers:', () => {
                     conf: {
                         outboundErrorStatusCodeExtensionKey: 'extErrorKey'  // <- tell the handler to use this extensionList item as source of statusCode
                     },
-                    logger: {
-                        log: () => {},
-                        debug: () => {},
-                        error: () => {},
-                        isDebugEnabled: () => {},
-                        isErrorEnabled: () => {}
-                    },
+                    logger: mockLogger(),
                 }
             };
 
@@ -420,13 +378,7 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: {
-                        log: () => {},
-                        debug: () => {},
-                        error: () => {},
-                        isDebugEnabled: () => {},
-                        isErrorEnabled: () => {}
-                    },
+                    logger: mockLogger(),
                     eventLogger: { info: () => {}},
                     eventProducer: { sendDomainEvent: jest.fn() },
                 }
@@ -465,13 +417,7 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: {
-                        log: () => {},
-                        debug: () => {},
-                        error: () => {},
-                        isDebugEnabled: () => {},
-                        isErrorEnabled: () => {}
-                    },
+                    logger: mockLogger(),
                     eventLogger: { info: () => {}},
                     eventProducer: { sendDomainEvent: jest.fn() },
                     path: {
@@ -513,13 +459,7 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: {
-                        log: () => {},
-                        debug: () => {},
-                        error: () => {},
-                        isDebugEnabled: () => {},
-                        isErrorEnabled: () => {}
-                    },
+                    logger: mockLogger(),
                     eventLogger: { info: () => {}},
                     eventProducer: { sendDomainEvent: jest.fn() },
                     path: {
@@ -553,13 +493,7 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: {
-                        log: () => {},
-                        debug: () => {},
-                        error: () => {},
-                        isDebugEnabled: () => {},
-                        isErrorEnabled: () => {}
-                    },
+                    logger: mockLogger(),
                 }
             };
 
@@ -586,13 +520,7 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    logger: {
-                        log: () => {},
-                        debug: () => {},
-                        error: () => {},
-                        isDebugEnabled: () => {},
-                        isErrorEnabled: () => {},
-                    },
+                    logger: mockLogger(),
                 }
             };
 

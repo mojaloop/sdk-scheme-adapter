@@ -26,10 +26,11 @@
  ******/
 'use strict';
 
-const fs = require('fs');
 require('dotenv').config();
+const fs = require('node:fs');
 const yaml = require('js-yaml');
 const { from } = require('env-var');
+const { Logger } = require('@mojaloop/sdk-standard-components').Logger;
 const { API_TYPES, RESOURCE_VERSIONS_STRING } = require('./constants');
 
 function getFileContent (path) {
@@ -88,7 +89,7 @@ module.exports = {
         mgmtAPIWsPort: env.get('MGMT_API_WS_PORT').default('4005').asPortNumber()
     },
     idGenerator: env.get('ID_GENERATOR').default('{"type":"ulid"}').asJsonObject(),
-    logLevel: env.get('LOG_LEVEL').default('info').asEnum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']),
+    logLevel: env.get('LOG_LEVEL').default('info').asEnum(Logger.logLevels),
     inbound: {
         port: env.get('INBOUND_LISTEN_PORT').default('4000').asPortNumber(),
         tls: {
