@@ -2531,7 +2531,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-shared@npm:18.18.2, @mojaloop/central-services-shared@npm:^18.18.2":
+"@mojaloop/central-services-shared@npm:18.18.2":
   version: 18.18.2
   resolution: "@mojaloop/central-services-shared@npm:18.18.2"
   dependencies:
@@ -2684,6 +2684,58 @@ __metadata:
     ajv-keyboards:
       optional: false
   checksum: 704023ed978e96fe7d635b3c0aa27e09f243d48f774c13e4c7f446ccf292d35a286e40a2d039106b5611457b9bdde223dd8b3fd864d85d397947c44cd1517ce8
+  languageName: node
+  linkType: hard
+
+"@mojaloop/central-services-shared@npm:^18.19.0":
+  version: 18.19.0
+  resolution: "@mojaloop/central-services-shared@npm:18.19.0"
+  dependencies:
+    "@hapi/catbox": 12.1.1
+    "@hapi/catbox-memory": 5.0.1
+    "@hapi/hapi": 21.3.12
+    "@hapi/joi-date": 2.0.1
+    "@mojaloop/inter-scheme-proxy-cache-lib": 2.3.3
+    "@mojaloop/sdk-standard-components": 19.7.0
+    axios: 1.7.9
+    clone: 2.1.2
+    dotenv: 16.4.7
+    env-var: 7.5.0
+    event-stream: 4.0.1
+    fast-safe-stringify: 2.1.1
+    immutable: 5.0.3
+    ioredis: 5.5.0
+    joi: 17.13.3
+    lodash: 4.17.21
+    mustache: 4.2.0
+    openapi-backend: 5.11.1
+    raw-body: 3.0.0
+    rc: 1.2.8
+    shins: 2.6.0
+    ulidx: 2.4.1
+    uuid4: 2.0.3
+    widdershins: 4.0.1
+    yaml: 2.7.0
+  peerDependencies:
+    "@mojaloop/central-services-error-handling": ">=13.x.x"
+    "@mojaloop/central-services-metrics": ">=12.x.x"
+    "@mojaloop/event-sdk": ">=14.1.1"
+    ajv: 8.x.x
+    ajv-keywords: 5.x.x
+  peerDependenciesMeta:
+    "@mojaloop/central-services-error-handling":
+      optional: false
+    "@mojaloop/central-services-logger":
+      optional: false
+    "@mojaloop/central-services-metrics":
+      optional: false
+    "@mojaloop/event-sdk":
+      optional: false
+    ajv:
+      optional: false
+    ajv-keyboards:
+      optional: false
+  checksum: 2d984e3fba231def4042df75bfa7d8550bc71d35419b1c8bb648d90340edbf767914206b4a0cac4777726b8eaa0f1de3dd285145e9af9d7ac1334707d45f6d7f
   languageName: node
   linkType: hard
 
@@ -2848,7 +2900,7 @@ __metadata:
     "@mojaloop/central-services-error-handling": ^13.0.6
     "@mojaloop/central-services-logger": ^11.5.5
     "@mojaloop/central-services-metrics": ^12.4.5
-    "@mojaloop/central-services-shared": ^18.18.2
+    "@mojaloop/central-services-shared": ^18.19.0
     "@mojaloop/event-sdk": ^14.1.5
     "@mojaloop/logging-bc-client-lib": 0.5.8
     "@mojaloop/ml-schema-transformer-lib": ^2.5.4
@@ -2905,7 +2957,7 @@ __metadata:
   dependencies:
     "@eslint/compat": ^1.2.7
     "@mojaloop/api-snippets": 17.8.0
-    "@mojaloop/central-services-shared": ^18.18.2
+    "@mojaloop/central-services-shared": ^18.19.0
     "@mojaloop/logging-bc-client-lib": ^0.5.8
     "@mojaloop/logging-bc-public-types-lib": ^0.5.4
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
@@ -2982,7 +3034,7 @@ __metadata:
   dependencies:
     "@eslint/compat": ^1.2.7
     "@mojaloop/api-snippets": 17.8.0
-    "@mojaloop/central-services-shared": ^18.18.2
+    "@mojaloop/central-services-shared": ^18.19.0
     "@mojaloop/logging-bc-public-types-lib": ^0.5.4
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.7.1
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": 0.5.18
