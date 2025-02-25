@@ -448,43 +448,44 @@ class OutboundBulkTransfersModel {
      * Returns a promise that resolves when the state machine has reached a terminal state
      */
     async run() {
+        const log = this._logger.push({ bulkTransferId: this.data.bulkTransferId });
         try {
             // run transitions based on incoming state
             switch(this.data.currentState) {
                 case 'start':
                     await this.stateMachine.executeBulkTransfer();
-                    this._logger.isDebugEnabled && this._logger.debug(`Bulk transfer ${this.data.bulkTransferId} has been completed`);
+                    log.isInfoEnabled && log.info('Bulk transfer has been started');
                     break;
 
                 case 'getBulkTransfer':
                     await this.stateMachine.getBulkTransfer();
-                    this._logger.isDebugEnabled && this._logger.debug(`Get bulk transfer ${this.data.bulkTransferId} has been completed`);
+                    log.isInfoEnabled && log.info('Get bulk transfer has been completed');
                     break;
 
                 case 'succeeded':
                     // all steps complete so return
-                    this._logger.isDebugEnabled && this._logger.debug('Bulk transfer completed successfully');
+                    log.isInfoEnabled && log.info('Bulk transfer completed successfully');
                     await this._save();
                     return this.getResponse();
 
                 case 'errored':
                     // stopped in errored state
-                    this._logger.isErrorEnabled && this._logger.error('State machine in errored state');
+                    log.isWarnEnabled && log.warn('State machine in errored state');
                     return;
             }
 
             // now call ourselves recursively to deal with the next transition
-            this._logger.isDebugEnabled && this._logger.debug(`Bulk transfer model state machine transition completed in state: ${this.stateMachine.state}. Recursing to handle next transition.`);
+            log.isVerboseEnabled && log.verbose(`Bulk transfer model state machine transition completed in state: ${this.stateMachine.state}. Recursing to handle next transition.`);
             return this.run();
         }
         catch(err) {
-            this._logger.isErrorEnabled && this._logger.error(`Error running transfer model: ${safeStringify(err)}`);
+            log.isErrorEnabled && log.push({ err }).error(`Error running bulk transfer model: ${err.message}`);
 
             // as this function is recursive, we dont want to error the state machine multiple times
             if(this.data.currentState !== 'errored') {
                 // err should not have a bulkTransferState property here!
                 if(err.bulkTransferState) {
-                    this._logger.isErrorEnabled && this._logger.error(`State machine is broken: ${safeStringify(err)}`);
+                    log.isWarnEnabled && log.warn('State machine is broken');
                 }
                 // transition to errored state
                 await this.stateMachine.error(err);
