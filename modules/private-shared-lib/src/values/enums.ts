@@ -21,9 +21,6 @@
 
  * Mojaloop Foundation
  - Name Surname <name.surname@mojaloop.io>
-
- * Gates Foundation
- - Name Surname <name.surname@gatesfoundation.com>
  * Infitx
  - Vijay Kumar Guthi <vijaya.guthi@infitx.com>
 
