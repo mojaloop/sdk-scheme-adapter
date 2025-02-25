@@ -376,9 +376,9 @@ class Server extends EventEmitter {
 async function _GetUpdatedConfigFromMgmtAPI(conf, logger, client) {
     logger.isInfoEnabled && logger.info(`Getting updated config from Management API at ${conf.control.mgmtAPIWsUrl}:${conf.control.mgmtAPIWsPort}...`);
     const clientSendResponse = await client.send(ControlAgent.build.CONFIGURATION.READ());
-    logger.isInfoEnabled && logger.info('client send returned:: ', clientSendResponse);
+    logger.isDebugEnabled && logger.debug('client send returned:: ', clientSendResponse);
     const responseRead = await client.receive();
-    logger.isInfoEnabled && logger.info('client receive returned:: ', responseRead);
+    logger.isDebugEnabled && logger.debug('client receive returned:: ', responseRead);
     return responseRead.data;
 }
 
@@ -387,13 +387,13 @@ async function start(config) {
 
     if (config.pm4mlEnabled) {
         const controlClient = await ControlAgent.Client.Create({
+            appConfig: config,
             address: config.control.mgmtAPIWsUrl,
             port: config.control.mgmtAPIWsPort,
-            logger: logger,
-            appConfig: config,
+            logger,
         });
         const updatedConfigFromMgmtAPI = await _GetUpdatedConfigFromMgmtAPI(config, logger, controlClient);
-        logger.isInfoEnabled && logger.push({ updatedConfigFromMgmtAPI }).info('updatedConfigFromMgmtAPI:');
+        logger.isInfoEnabled && logger.push({ updatedConfigFromMgmtAPIKeys: Object.keys(updatedConfigFromMgmtAPI) }).info('updatedConfigFromMgmtAPI keys:');
         _.merge(config, updatedConfigFromMgmtAPI);
         controlClient.terminate();
     }

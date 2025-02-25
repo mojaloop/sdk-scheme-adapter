@@ -29,7 +29,6 @@
  ******/
 'use strict';
 
-const safeStringify = require('fast-safe-stringify');
 const {
     AccountsModel,
     OutboundTransfersModel,
@@ -54,7 +53,7 @@ const { ReturnCodes } = Enum.Http;
  * Error handling logic shared by outbound API handlers
  */
 const handleError = (method, err, ctx, stateField) => {
-    ctx.state.logger.isErrorEnabled && ctx.state.logger.error(`Error handling ${method}: ${safeStringify(err)}`);
+    ctx.state.logger.push({ err, stateField }).error(`Error handling ${method}`);
     ctx.response.status = err.httpStatusCode || ReturnCodes.INTERNALSERVERERRROR.CODE;
     ctx.response.body = {
         message: err.message || 'Unspecified error',
@@ -72,6 +71,7 @@ const handleError = (method, err, ctx, stateField) => {
         // the structure of the response object in depth to ascertain an underlying mojaloop API error code.
         const errorInformation = err[stateField].lastError.mojaloopError.errorInformation;
         ctx.response.body.statusCode = errorInformation.errorCode;
+        ctx.state.logger.warn('errorInformation - ', errorInformation);
 
         // if we have been configured to use an error extensionList item as status code, look for it and use
         // it if it is present...
@@ -125,11 +125,19 @@ const handleRequestSimpleTransfersInformationError = (method, err, ctx) =>
 
 const createOutboundTransfersModel = (ctx) => new OutboundTransfersModel({
     ...ctx.state.conf,
-    ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
+    ...(ctx.state.path?.params?.dfspId && { dfspId: ctx.state.path.params.dfspId }),
     cache: ctx.state.cache,
     logger: ctx.state.logger,
     wso2: ctx.state.wso2,
     metricsClient: ctx.state.metricsClient,
+});
+
+const createOutboundBulkTransfersModel = (ctx) => new OutboundBulkTransfersModel({
+    ...ctx.state.conf,
+    ...(ctx.state.path?.params?.dfspId && { dfspId: ctx.state.path.params.dfspId }),
+    cache: ctx.state.cache,
+    logger: ctx.state.logger,
+    wso2: ctx.state.wso2,
 });
 
 /**
@@ -222,13 +230,7 @@ const postBulkTransfers = async (ctx) => {
         };
 
         // use the bulk transfers model to execute asynchronous stages with the switch
-        const model = new OutboundBulkTransfersModel({
-            ...ctx.state.conf,
-            ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
-            cache: ctx.state.cache,
-            logger: ctx.state.logger,
-            wso2: ctx.state.wso2,
-        });
+        const model = createOutboundBulkTransfersModel(ctx);
 
         await model.initialize(bulkTransferRequest);
         const response = await model.run();
@@ -254,13 +256,7 @@ const getBulkTransfers = async (ctx) => {
         };
 
         // use the bulk transfers model to execute asynchronous stages with the switch
-        const model = new OutboundBulkTransfersModel({
-            ...ctx.state.conf,
-            ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
-            cache: ctx.state.cache,
-            logger: ctx.state.logger,
-            wso2: ctx.state.wso2,
-        });
+        const model = createOutboundBulkTransfersModel(ctx);
 
         await model.initialize(bulkTransferRequest);
         const response = await model.getBulkTransfer();

@@ -426,16 +426,19 @@ class OutboundRequestToPayModel {
      * Returns a promise that resolves when the state machine has reached a terminal state
      */
     async run() {
+        const { transferId, transactionRequestId } = this.data;
+        const log = this._logger.push({ transferId, transactionRequestId });
         try {
             // run transitions based on incoming state
             switch(this.data.currentState) {
                 case 'start':
                     // next transition is to resolvePayee
                     await this.stateMachine.resolvePayee();
-                    this._logger.isDebugEnabled && this._logger.debug(`Payee resolved for transfer ${this.data.transferId}`);
+                    log.isInfoEnabled && log.info('Payee resolved for RequestToPay transfer');
                     if(this.stateMachine.state === 'payeeResolved' && !this._autoAcceptR2PParty) {
                         //we break execution here and return the resolved party details to allow asynchronous accept or reject
                         //of the resolved party
+                        log.isInfoEnabled && log.info('Waiting for asynchronous accept or reject of resolved party');
                         await this._save();
                         return this.getResponse();
                     }
@@ -444,12 +447,12 @@ class OutboundRequestToPayModel {
                 case 'payeeResolved':
                     // next transition is to requestQuote
                     await this.stateMachine.executeTransactionRequest();
-                    this._logger.isDebugEnabled && this._logger.debug(`Transaction Request for ${this.data.transactionRequestId} has been completed`);
+                    log.isInfoEnabled && log.info('Transaction Request has been completed');
                     break;
 
                 case 'succeeded':
                     // all steps complete so return
-                    this._logger.isDebugEnabled && this._logger.debug('Transaction Request completed successfully');
+                    log.isInfoEnabled && log.info('Transaction Request completed successfully');
                     await this._save();
                     return this.getResponse();
 
@@ -460,17 +463,17 @@ class OutboundRequestToPayModel {
             }
 
             // now call ourselves recursively to deal with the next transition
-            this._logger.isDebugEnabled && this._logger.debug(`Transfer model state machine transition completed in state: ${this.stateMachine.state}. Recursing to handle next transition.`);
+            log.isVerboseEnabled && log.verbose(`RequestToPay model state machine transition completed in state: ${this.stateMachine.state}. Recursing to handle next transition.`);
             return this.run();
         }
         catch(err) {
-            this._logger.isErrorEnabled && this._logger.error(`Error running transfer model: ${safeStringify(err)}`);
+            log.isErrorEnabled && log.error(`Error running RequestToPay model: ${err?.message}`);
 
             // as this function is recursive, we dont want to error the state machine multiple times
             if(this.data.currentState !== 'errored') {
                 // err should not have a lastError property here!
                 if(err.lastError) {
-                    this._logger.isErrorEnabled && this._logger.error(`State machine is broken: ${safeStringify(err)}`);
+                    log.isWarnEnabled && log.warn('State machine is broken');
                 }
                 // transition to errored state
                 await this.stateMachine.error(err);
