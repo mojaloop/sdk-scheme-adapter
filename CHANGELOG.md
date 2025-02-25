@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.1.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.1.0...v24.1.1) (2025-02-25)
+
+
+### Chore
+
+* **csi-1237:** improved logging ([#546](https://github.com/mojaloop/sdk-scheme-adapter/issues/546)) ([41af8db](https://github.com/mojaloop/sdk-scheme-adapter/commit/41af8dbc23412514a241c635888920ff27edfa6e))
+
 ## [24.1.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.0.8...v24.1.0) (2025-02-21)
 
 
