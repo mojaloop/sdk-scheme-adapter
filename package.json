@@ -102,6 +102,7 @@
     "yarn-audit-fix": "10.1.1"
   },
   "overrides": {
+    "body-parser": "1.20.3",
     "shins": {
       "path-to-regexp": "0.1.12",
       "yargs-parser": "21.1.1"
@@ -113,8 +114,10 @@
     "yargs-parser": "21.1.1"
   },
   "resolutions": {
+    "body-parser": "1.20.3",
     "cacache/tar": "6.2.1",
-    "shins/ejs": "3.1.7",
+    "path-to-regexp": "0.1.12",
+    "shins/ejs": "3.1.10",
     "shins/sanitize-html": "2.12.1",
     "shins/jsonpointer": "5.0.0",
     "shins/markdown-it": "12.3.2",
