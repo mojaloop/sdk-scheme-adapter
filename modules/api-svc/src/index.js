@@ -26,10 +26,8 @@
  ******/
 'use strict';
 
-const { hostname } = require('os');
-const EventEmitter = require('events');
+const EventEmitter = require('node:events');
 const _ = require('lodash');
-const { Logger } = require('@mojaloop/sdk-standard-components');
 const { name, version } = require('../../../package.json');
 
 const config = require('./config');
@@ -50,8 +48,7 @@ const Router = require('./lib/router');
 const Validate = require('./lib/validate');
 const Cache = require('./lib/cache');
 const { SDKStateEnum } = require('./lib/model/common');
-const { createAuthClient } = require('./lib/utils');
-const { SDK_LOGGER_HIERARCHY } = require('./constants');
+const { createAuthClient, createLogger } = require('./lib/utils');
 
 const LOG_ID = {
     INBOUND:   { app: 'mojaloop-connector-inbound-api' },
@@ -64,19 +61,6 @@ const LOG_ID = {
     METRICS:   { app: 'mojaloop-connector-metrics' },
     CACHE:     { component: 'cache' },
 };
-
-const createLogger = (conf) => new Logger.Logger({
-    context: {
-        // If we're running from a Mojaloop helm chart deployment, we'll have a SIM_NAME
-        simulator: process.env['SIM_NAME'],
-        hostname: hostname(),
-    },
-    opts: {
-        levels: SDK_LOGGER_HIERARCHY.slice(SDK_LOGGER_HIERARCHY.indexOf(conf.logLevel)),
-        isJsonOutput: conf.isJsonOutput,
-    },
-    stringify: Logger.buildStringify({ isJsonOutput: conf.isJsonOutput }),
-});
 
 const createCache = (config, logger) => new Cache({
     cacheUrl: config.cacheUrl,
@@ -397,6 +381,7 @@ async function start(config) {
         _.merge(config, updatedConfigFromMgmtAPI);
         controlClient.terminate();
     }
+
     const svr = new Server(config, logger);
     svr.on('error', (err) => {
         logger.push({ err }).error('Unhandled server error');
@@ -405,7 +390,7 @@ async function start(config) {
 
     // handle SIGTERM to exit gracefully
     process.on('SIGTERM', async () => {
-        logger.isInfoEnabled && logger.info('SIGTERM received. Shutting down APIs...');
+        logger.info('SIGTERM received. Shutting down SDK...');
         await svr.stop();
         process.exit(0);
     });
@@ -415,7 +400,7 @@ async function start(config) {
         process.exit(1);
     });
 
-    logger.isInfoEnabled && logger.push({ name, version }).info('SDK server is started!');
+    logger.push({ name, version }).info('SDK server is started!');
 }
 
 if (require.main === module) {
