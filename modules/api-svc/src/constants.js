@@ -38,11 +38,8 @@ const API_TYPES = Object.freeze({
     iso20022: 'iso20022',
 });
 
-const SDK_LOGGER_HIERARCHY = ['verbose', 'trace', 'debug', 'info', 'warn', 'error', 'fatal'];
-
 module.exports = {
     API_TYPES,
     ISO_20022_HEADER_PART,
     RESOURCE_VERSIONS_STRING,
-    SDK_LOGGER_HIERARCHY,
 };
