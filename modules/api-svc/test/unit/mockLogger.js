@@ -54,10 +54,13 @@ function mockLogger(context, keepQuiet) {
             isInfoEnabled: jest.fn(() => true),
             isFatalEnabled: jest.fn(() => true)
         };
-        return {
+
+        const mockLogger = ({
             ...methods,
-            push: jest.fn(() => methods)
-        };
+            push: jest.fn(() => mockLogger)
+        });
+
+        return mockLogger;
     }
     return new Logger.Logger();
 }
