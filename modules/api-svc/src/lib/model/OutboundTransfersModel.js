@@ -26,10 +26,12 @@
  ******/
 'use strict';
 
+const { randomBytes} = require('node:crypto');
 const safeStringify = require('fast-safe-stringify');
 const StateMachine = require('javascript-state-machine');
 const { Enum, Util: {id: idGenerator} } = require('@mojaloop/central-services-shared');
 const { Ilp, MojaloopRequests } = require('@mojaloop/sdk-standard-components');
+
 const { API_TYPES } = require('../../constants');
 const dto = require('../dto');
 const shared = require('./lib/shared');
@@ -435,8 +437,13 @@ class OutboundTransfersModel {
             // a GET /parties request to the switch
             try {
                 latencyTimerDone = this.metrics.partyLookupLatency.startTimer();
-                const res = await this._requests.getParties(this.data.to.idType, this.data.to.idValue,
-                    this.data.to.idSubValue, this.data.to.fspId);
+                const res = await this._requests.getParties(
+                    this.data.to.idType,
+                    this.data.to.idValue,
+                    this.data.to.idSubValue,
+                    this.data.to.fspId,
+                    this.#createOtelHeaders()
+                );
 
                 this.data.getPartiesRequest = res.originalRequest;
 
@@ -545,8 +552,13 @@ class OutboundTransfersModel {
             // a GET /parties request to the switch
             try {
                 latencyTimerDone = this.metrics.partyLookupLatency.startTimer();
-                const res = await this._requests.getParties(this.data.to.idType, this.data.to.idValue,
-                    this.data.to.idSubValue);
+                const res = await this._requests.getParties(
+                    this.data.to.idType,
+                    this.data.to.idValue,
+                    this.data.to.idSubValue,
+                    undefined,
+                    this.#createOtelHeaders()
+                );
                 this.data.getPartiesRequest = res.originalRequest;
                 this.metrics.partyLookupRequests.inc();
                 this._logger.isErrorEnabled && this._logger.push({ peer: res }).error('Party lookup sent to peer');
@@ -577,7 +589,11 @@ class OutboundTransfersModel {
 
             const subscribing = this._cache.subscribeToOneMessageWithTimer(channel);
 
-            const resp = await this._requests.postFxQuotes(payload, payload.conversionTerms.counterPartyFsp);
+            const resp = await this._requests.postFxQuotes(
+                payload,
+                payload.conversionTerms.counterPartyFsp,
+                this.#createOtelHeaders()
+            );
 
             const { originalRequest } = resp;
             // Setting the fxQuoteRequest to have the fspiop payload
@@ -720,7 +736,7 @@ class OutboundTransfersModel {
             // a POST /quotes request to the switch
             try {
                 latencyTimerDone = this.metrics.quoteRequestLatency.startTimer();
-                const res = await this._requests.postQuotes(quote, this.data.to.fspId);
+                const res = await this._requests.postQuotes(quote, this.data.to.fspId, this.#createOtelHeaders());
 
                 this.data.quoteRequest = {
                     body: quote,
@@ -816,7 +832,7 @@ class OutboundTransfersModel {
 
             const subscribing = this._cache.subscribeToOneMessageWithTimer(channel);
 
-            const { originalRequest } = await this._requests.postFxTransfers(payload, payload.counterPartyFsp);
+            const { originalRequest } = await this._requests.postFxTransfers(payload, payload.counterPartyFsp, this.#createOtelHeaders());
             this.data.fxTransferRequest = { body: payload , headers: originalRequest.headers };
             this._logger.push({ originalRequest }).verbose('fxTransfers request is sent to hub');
 
@@ -931,8 +947,12 @@ class OutboundTransfersModel {
                             completedTimestamp: (new Date()).toISOString(),
                             transferState: TransferState.COMMITTED,
                         };
-                        const res = this._requests.patchTransfers(this.data.transferId,
-                            patchNotification, this.data.quoteResponseSource);
+                        const res = this._requests.patchTransfers(
+                            this.data.transferId,
+                            patchNotification,
+                            this.data.quoteResponseSource,
+                            this.#createOtelHeaders()
+                        );
                         this.data.patch = res.originalRequest;
                         this._logger.isInfoEnabled && this._logger.info(`PATCH final notification sent to peer for transfer ${this.data.transferId}`);
                     }
@@ -963,15 +983,16 @@ class OutboundTransfersModel {
             // a POST /transfers request to the switch
             try {
                 latencyTimerDone = this.metrics.transferLatency.startTimer();
+                const headers = this.#createOtelHeaders();
 
                 let res;
                 if (this._apiType  === API_TYPES.iso20022) {
                     // Pass in quote request as context if needed for ISO20022 message generation
-                    res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource, {
+                    res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource, headers, {
                         isoPostQuoteResponse: this.data.quoteResponse.originalIso20022QuoteResponse
                     });
                 } else {
-                    res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource, {});
+                    res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource, headers);
                 }
 
                 this.data.prepare = {
@@ -1050,7 +1071,7 @@ class OutboundTransfersModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a GET /transfers request to the switch
             try {
-                const res = await this._requests.getTransfers(this.data.transferId);
+                const res = await this._requests.getTransfers(this.data.transferId, undefined, this.#createOtelHeaders());
                 this._logger.isVerboseEnabled && this._logger.push({ peer: res }).verbose(`getTransfers ${this.data.transferId} sent to peer`);
             }
             catch(err) {
@@ -1492,6 +1513,17 @@ class OutboundTransfersModel {
             }
             throw err;
         }
+    }
+
+    #createOtelHeaders() {
+        // todo: add possibility to generate traceId based on transferId
+        const traceId = randomBytes(16).toString('hex');
+        const spanId = randomBytes(8).toString('hex');
+        const flags = '01';
+
+        return Object.freeze({
+            traceparent: `00-${traceId}-${spanId}-${flags}`,
+        });
     }
 }
 

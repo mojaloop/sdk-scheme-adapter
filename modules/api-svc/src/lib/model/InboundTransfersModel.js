@@ -595,9 +595,9 @@ class InboundTransfersModel {
 
             return res;
         } catch (err) {
-            this._logger.push({ err }).log('Error in postFxQuotes');
+            this._logger.push({ err }).error('Error in postFxQuotes');
             const mojaloopError = await this._handleError(err);
-            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            this._logger.push({ mojaloopError }).info(`Sending error response to ${sourceFspId}`);
             return this._mojaloopRequests
                 .putFxQuotesError(body.conversionRequestId, mojaloopError, sourceFspId);
         }
@@ -646,7 +646,7 @@ class InboundTransfersModel {
                 return 'No response from FX backend';
             }
 
-            this._logger.log(`fxTransfer accepted by backend returning homeTransactionId: ${beResponse.homeTransactionId} for mojaloop commitRequestId: ${body.commitRequestId}`);
+            this._logger.info(`fxTransfer accepted by backend returning homeTransactionId: ${beResponse.homeTransactionId} for mojaloop commitRequestId: ${body.commitRequestId}`);
             this.data.homeTransactionId = beResponse.homeTransactionId;
 
             // create a  mojaloop fxTransfer fulfil response
@@ -663,9 +663,9 @@ class InboundTransfersModel {
 
             return res;
         } catch (err) {
-            this._logger.push({ err }).log('Error in postFxTransfer');
+            this._logger.push({ err }).error('Error in postFxTransfer');
             const mojaloopError = await this._handleError(err);
-            this._logger.push({ mojaloopError }).log(`Sending error response to ${sourceFspId}`);
+            this._logger.push({ mojaloopError }).info(`Sending error response to ${sourceFspId}`);
             return this._mojaloopRequests
                 .putFxTransfersError(body.commitRequestId, mojaloopError, sourceFspId);
         }

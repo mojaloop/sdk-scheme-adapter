@@ -231,7 +231,7 @@ class Server extends EventEmitter {
             );
             this.inboundServer.on('error', (...args) => {
                 const errMessage = 'Unhandled error in Inbound Server';
-                this.logger.push({ args }).log(errMessage);
+                this.logger.push({ args }).error(errMessage);
                 this.emit('error', errMessage);
             });
             await this.inboundServer.start();
@@ -251,7 +251,7 @@ class Server extends EventEmitter {
             );
             this.outboundServer.on('error', (...args) => {
                 const errMessage = 'Unhandled error in Outbound Server';
-                this.logger.push({ args }).log(errMessage);
+                this.logger.push({ args }).error(errMessage);
                 this.emit('error', errMessage);
             });
             await this.outboundServer.start();

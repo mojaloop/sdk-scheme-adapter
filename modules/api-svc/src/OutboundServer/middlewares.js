@@ -33,6 +33,7 @@ const {
     createLogger,
     createRequestIdGenerator,
     createResponseLogging,
+    logResponse,
 } = require('../InboundServer/middlewares');
 
 
@@ -42,25 +43,29 @@ const {
  * @return {Function}
  */
 const createRequestValidator = (validator) => async (ctx, next) => {
+    const { logger } = ctx.state;
+
     if (!ctx.state.logExcludePaths.includes(ctx.path)) {
-        ctx.state.logger.isDebugEnabled && ctx.state.logger.debug('Validating request');
+        logger.isDebugEnabled && logger.debug('Validating request');
     }
     try {
-        const matchedPathObject = validator.validateRequest(ctx, ctx.state.logger);
+        const matchedPathObject = validator.validateRequest(ctx, logger);
         ctx.state.path = {
             ...matchedPathObject
         };
         if (!ctx.state.logExcludePaths.includes(ctx.path)) {
-            ctx.state.logger.isDebugEnabled && ctx.state.logger.debug('Request passed validation');
+            logger.isDebugEnabled && logger.debug('Request validation passed');
         }
         await next();
     } catch (err) {
-        ctx.state.logger.isDebugEnabled && ctx.state.logger.push({ err }).debug('Request failed validation.');
+        const { method, path, id } = ctx.request;
+        logger.isWarnEnabled && logger.push({ err, method, path, id }).warn('Request validation failed');
         ctx.response.status = ReturnCodes.BADREQUEST.CODE;
         ctx.response.body = {
             message: `${err.dataPath ? err.dataPath + ' ' : ''}${err.message}`,
             statusCode: 400
         };
+        logResponse(ctx);
     }
 };
 

@@ -520,8 +520,11 @@ describe('OutboundTransfersModel Tests', () => {
         expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_PARTY_ACCEPTANCE);
         expect(StateMachine.__instance.state).toBe('payeeResolved');
 
+        const otelHeaders = expect.objectContaining({
+            traceparent: expect.any(String)
+        })
         // check getParties mojaloop requests method was called with the correct arguments
-        expect(MojaloopRequests.__getParties).toHaveBeenCalledWith(req.to.idType, req.to.idValue, req.to.idSubValue, testFspId);
+        expect(MojaloopRequests.__getParties).toHaveBeenCalledWith(req.to.idType, req.to.idValue, req.to.idSubValue, testFspId, otelHeaders);
     });
 
     test('resolves multiple payees and halts', async () => {

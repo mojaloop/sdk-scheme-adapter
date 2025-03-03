@@ -996,8 +996,8 @@ const postFxQuotes = async (ctx) => {
     const model = createInboundTransfersModel(ctx);
 
     model.postFxQuotes({ body, headers }, sourceFspId)
-        .then(response => logger.push({ response }).log(`${logPrefix} is done`))
-        .catch(err => logger.push({ err }).log(`${logPrefix} error`));
+        .then(response => logger.push({ response }).verbose(`${logPrefix} is done`))
+        .catch(err => logger.push({ err }).error(`${logPrefix} error`));
 
     prepareResponse(ctx);
 };
@@ -1041,8 +1041,8 @@ const postFxTransfers = async (ctx) => {
 
     const model = createInboundTransfersModel(ctx);
     model.postFxTransfers({ body, headers }, sourceFspId)
-        .then(response => logger.push({ response }).log(`${logPrefix} is done`))
-        .catch(err => logger.push({ err }).log(`${logPrefix} error`));
+        .then(response => logger.push({ response }).verbose(`${logPrefix} is done`))
+        .catch(err => logger.push({ err }).error(`${logPrefix} error`));
 
     prepareResponse(ctx);
 };

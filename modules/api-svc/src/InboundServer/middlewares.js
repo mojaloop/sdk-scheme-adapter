@@ -247,12 +247,13 @@ const createRequestIdGenerator = (logger) => async (ctx, next) => {
  * @return {Function}
  */
 //
-const createHeaderValidator = (conf, logger) => async (
+const createHeaderValidator = (conf) => async (
     ctx,
     next,
     resources = defaultProtocolResources,
     supportedProtocolVersions = defaultProtocolVersions
 ) => {
+    const { logger } = ctx.state;
     const request = ctx.request;
 
     // First, extract the resource type from the path
@@ -369,6 +370,7 @@ const createHeaderValidator = (conf, logger) => async (
  * @return {Function}
  */
 const createJwsValidator = (logger, keys, exclusions) => {
+    // todo: take logger from ctx
     const jwsValidator = new Jws.validator({
         logger: logger,
         validationKeys: keys,
@@ -381,7 +383,7 @@ const createJwsValidator = (logger, keys, exclusions) => {
             if (exclusions.includes('putParties')
                     && ctx.request.method === 'PUT'
                     && ctx.request.path.startsWith('/parties/')) {
-                logger.isDebugEnabled && logger.debug('Skipping jws validation on put parties. config flag is set');
+                logger.isInfoEnabled && logger.info('Skipping jws validation on put parties. config flag is set');
                 return await next();
             }
 
@@ -389,7 +391,7 @@ const createJwsValidator = (logger, keys, exclusions) => {
             // todo: validate this requirement. No state is mutated by GETs but
             // there are potential security issues if message origin is used to
             // determine permission sets i.e. what is "readable"
-            if(ctx.request.method !== 'GET') {
+            if (ctx.request.method !== 'GET') {
                 logger.isDebugEnabled && logger.push({ request: ctx.request, body: ctx.request.body }).debug('Validating JWS');
                 jwsValidator.validate(ctx.request, logger);
             }
@@ -439,19 +441,8 @@ const createLogger = (logger) => async (ctx, next) => {
         path: ctx.path,
         method: ctx.method
     }});
-    await ctx.state.logger.isDebugEnabled && ctx.state.logger.debug('Request received');
-    // TODO: we need to disable the following log message based on a configurable parameter like DEBUG
-    if (!ctx.state.logExcludePaths.includes(ctx.path) && !ctx.path.startsWith('/bulk')) {
-        ctx.state.logger.push({body: ctx.request.body}).debug('Request received');
-    }
-    try {
-        await next();
-    } catch (err) {
-        ctx.state.logger.isErrorEnabled && ctx.state.logger.push(err).error('Error');
-    }
-    if (!ctx.state.logExcludePaths.includes(ctx.path)) {
-        await ctx.state.logger.isDebugEnabled && ctx.state.logger.debug('Request processed');
-    }
+
+    await next();
 };
 
 
@@ -510,17 +501,20 @@ const createResponseBodyHandler = () => async (ctx, next) => {
     return await next();
 };
 
-const createResponseLogging = (logger) => async (ctx, next) => {
-    if (shouldLog(ctx.path, logger)) {
+
+const logResponse = (ctx) => {
+    if (shouldLog(ctx.path, ctx.state.logger)) {
         const { method, path, id } = ctx.request;
         const { status = 'n/a' } = ctx.response;
         const processTime = ((Date.now() - ctx.state.receivedAt) / 1000).toFixed(1);
-        logger.info(`[<== ${status}] ${method?.toUpperCase()} ${path} [${processTime}sec] - requestId: ${id}`);
+        ctx.state.logger.info(`[<== ${status}] ${method?.toUpperCase()} ${path} [${processTime}sec] - requestId: ${id}`);
     }
-
-    return await next();
 };
 
+const createResponseLogging = () => async (ctx, next) => {
+    logResponse(ctx);
+    return await next();
+};
 
 module.exports = {
     applyState,
@@ -534,4 +528,5 @@ module.exports = {
     createRequestValidator,
     createResponseBodyHandler,
     createResponseLogging,
+    logResponse,
 };
