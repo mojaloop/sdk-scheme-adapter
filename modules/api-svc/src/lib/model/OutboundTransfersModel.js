@@ -988,11 +988,11 @@ class OutboundTransfersModel {
                 let res;
                 if (this._apiType  === API_TYPES.iso20022) {
                     // Pass in quote request as context if needed for ISO20022 message generation
-                    res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource, headers, {
+                    res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource, {
                         isoPostQuoteResponse: this.data.quoteResponse.originalIso20022QuoteResponse
-                    });
+                    }, headers);
                 } else {
-                    res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource, headers);
+                    res = await this._requests.postTransfers(prepare, this.data.quoteResponseSource, undefined, headers);
                 }
 
                 this.data.prepare = {
