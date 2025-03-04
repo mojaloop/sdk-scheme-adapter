@@ -150,8 +150,7 @@ describe('Outbound Transfers API', () => {
                             2000)),
                 },
             };
-            return testPostTransfers(putBodyFn, 504,
-                postTransfersErrorTimeoutResponse);
+            return testPostTransfers(putBodyFn, 504, postTransfersErrorTimeoutResponse);
         });
 
         test('should return mojaloop error response on party resolution', () => {

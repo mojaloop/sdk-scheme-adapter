@@ -26,10 +26,10 @@
  ******/
 'use strict';
 
-const { randomBytes} = require('node:crypto');
+const { randomBytes } = require('node:crypto');
 const safeStringify = require('fast-safe-stringify');
 const StateMachine = require('javascript-state-machine');
-const { Enum, Util: {id: idGenerator} } = require('@mojaloop/central-services-shared');
+const { Enum, Util: { id: idGenerator } } = require('@mojaloop/central-services-shared');
 const { Ilp, MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 
 const { API_TYPES } = require('../../constants');
@@ -228,6 +228,7 @@ class OutboundTransfersModel {
         // add a transferId if one is not present e.g. on first submission
         if(!this.data.hasOwnProperty('transferId')) {
             this.data.transferId = this._idGenerator();
+            this.#generateTraceId();
         }
 
         // initialize the transfer state machine to its starting state
@@ -1516,14 +1517,20 @@ class OutboundTransfersModel {
     }
 
     #createOtelHeaders() {
-        // todo: add possibility to generate traceId based on transferId
-        const traceId = randomBytes(16).toString('hex');
+        const { traceId } = this.data;
         const spanId = randomBytes(8).toString('hex');
         const flags = '01';
 
         return Object.freeze({
             traceparent: `00-${traceId}-${spanId}-${flags}`,
         });
+    }
+
+    #generateTraceId() {
+        // todo: add possibility to generate traceId based on transferId
+        this.data.traceId = randomBytes(16).toString('hex');
+        this._logger.isVerboseEnabled && this._logger.verbose(`generated traceId: ${this.data.traceId}`);
+        return this.data.traceId;
     }
 }
 
