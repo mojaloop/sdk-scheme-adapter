@@ -7,11 +7,11 @@ services:
   sdk-scheme-adapter-api-svc:
     networks:
         - mojaloop-net
-    image: mojaloop/sdk-scheme-adapter:local
+    image: mojaloop/sdk-scheme-adapter:v24.2.0-csi-1210.0
     container_name: sdk-scheme-adapter-api-svc
-    build:
-      context: ./
-      dockerfile: ./Dockerfile
+#    build:
+#      context: ./
+#      dockerfile: ./Dockerfile
     env_file: ./modules/api-svc/test/config/integration.env
     ports:
       - "4000:4000"
