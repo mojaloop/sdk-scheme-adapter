@@ -74,6 +74,7 @@ class AccountsModel {
             init: initState,
             transitions: [
                 { name: 'createAccounts', from: 'start', to: 'succeeded' },
+                { name: 'deleteAccount', to: 'succeeded' },
                 { name: 'error', from: '*', to: 'errored' },
             ],
             methods: {
@@ -140,6 +141,9 @@ class AccountsModel {
             case 'createAccounts':
                 return this._createAccounts();
 
+            case 'deleteAccount':
+                return this._deleteAccount();
+
             case 'error':
                 this._logger.isErrorEnabled && this._logger.error(`State machine is erroring with error: ${safeStringify(args)}`);
                 this._data.lastError = args[0] || new BackendError('unspecified error', 500);
@@ -150,6 +154,13 @@ class AccountsModel {
         }
     }
 
+    async _createAccounts() {
+        const requests = this._buildRequests();
+        for await (let request of requests) {
+            const response = await this._executeCreateAccountsRequest(request);
+            this._data.response.push(...this._buildClientResponse(response));
+        }
+    }
 
     async _executeCreateAccountsRequest(request) {
         const accountRequest = request;
@@ -230,13 +241,91 @@ class AccountsModel {
         });
     }
 
-
-    async _createAccounts() {
+    async _deleteAccount() {
         const requests = this._buildRequests();
         for await (let request of requests) {
-            const response = await this._executeCreateAccountsRequest(request);
+            const response = await this._executeDeleteAccountRequest(request);
             this._data.response.push(...this._buildClientResponse(response));
         }
+    }
+
+    async _executeDeleteAccountRequest(request) {
+        const accountRequest = request;
+
+        // eslint-disable-next-line no-async-promise-executor
+        return new Promise(async (resolve, reject) => {
+            const requestKey = `ac_${accountRequest.requestId}`;
+
+            const subId = await this._cache.subscribe(requestKey, async (cn, msg, subId) => {
+                try {
+                    let error;
+                    const message = JSON.parse(msg);
+                    this._data.deleteAccountsResponse = message.data;
+
+                    if (message.type === 'accountsDeletionErrorResponse') {
+                        error = new BackendError(`Got an error response deleting account: ${safeStringify(this._data.deleteAccountsResponse.body)}`, 500);
+                        error.mojaloopError = this._data.deleteAccountsResponse.body;
+                    } else if (message.type !== 'accountDeletionSuccessfulResponse') {
+                        this._logger.push(safeStringify(this._data.deleteAccountsResponse)).debug(
+                            `Ignoring cache notification for request ${requestKey}. ` +
+                            `Unknown message type ${message.type}.`
+                        );
+                        return;
+                    }
+
+                    // cancel the timeout handler
+                    clearTimeout(timeout);
+
+                    // stop listening for account creation response messages.
+                    // no need to await for the unsubscribe to complete.
+                    // we dont really care if the unsubscribe fails but we should log it regardless
+                    this._cache.unsubscribe(requestKey, subId).catch(e => {
+                        this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in callback) ${requestKey} ${subId}: ${e.stack || safeStringify(e)}`);
+                    });
+
+                    if (error) {
+                        return reject(error);
+                    }
+
+                    const response = this._data.deleteAccountsResponse;
+                    this._logger.isDebugEnabled && this._logger.push({ response }).debug('Account deletion response received');
+                    return resolve(response);
+                }
+                catch(err) {
+                    return reject(err);
+                }
+            });
+
+            // set up a timeout for the request
+            const timeout = setTimeout(() => {
+                const err = new BackendError(`Timeout waiting for response to account deletion request ${accountRequest.requestId}`, 504);
+
+                // we dont really care if the unsubscribe fails but we should log it regardless
+                this._cache.unsubscribe(requestKey, subId).catch(e => {
+                    this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in timeout handler) ${requestKey} ${subId}: ${e.stack || safeStringify(e)}`);
+                });
+
+                return reject(err);
+            }, this._requestProcessingTimeoutSeconds * 1000);
+
+            // now we have a timeout handler and a cache subscriber hooked up we can fire off
+            // a DELETE /participants/{TYPE}/{ID}/{SubId} request to the switch
+            try {
+                const res = await this._requests.deleteParticipant(accountRequest);
+                this._logger.isDebugEnabled && this._logger.push({ res }).debug('Account deletion request sent to peer');
+            }
+            catch(err) {
+                // cancel the timout and unsubscribe before rejecting the promise
+                clearTimeout(timeout);
+
+                // we dont really care if the unsubscribe fails but we should log it regardless
+                this._cache.unsubscribe(requestKey, subId).catch(e => {
+                    this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in error handler) ${requestKey} ${subId}: ${e.stack || safeStringify(e)}`);
+                });
+
+                return reject(err);
+            }
+        });
     }
 
     _buildClientResponse(response) {

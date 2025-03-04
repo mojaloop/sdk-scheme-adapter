@@ -92,7 +92,6 @@ class OutboundApi extends EventEmitter {
 
         this._api.use(middlewares.createRequestValidator(validator));
         this._api.use(router(handlers, conf));
-
         this._api.use(middlewares.createResponseLogging(this._logger));
     }
 
