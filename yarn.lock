@@ -2589,7 +2589,7 @@ __metadata:
     "@mojaloop/logging-bc-client-lib": 0.5.8
     "@mojaloop/ml-schema-transformer-lib": 2.5.6
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
-    "@mojaloop/sdk-standard-components": 19.8.0-snapshot.3
+    "@mojaloop/sdk-standard-components": 19.8.0-snapshot.4
     "@opentelemetry/api": ^1.9.0
     "@opentelemetry/auto-instrumentations-node": ^0.56.1
     "@opentelemetry/context-base": ^0.17.0
@@ -2806,9 +2806,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/sdk-standard-components@npm:19.8.0-snapshot.3":
-  version: 19.8.0-snapshot.3
-  resolution: "@mojaloop/sdk-standard-components@npm:19.8.0-snapshot.3"
+"@mojaloop/sdk-standard-components@npm:19.8.0-snapshot.4":
+  version: 19.8.0-snapshot.4
+  resolution: "@mojaloop/sdk-standard-components@npm:19.8.0-snapshot.4"
   dependencies:
     "@mojaloop/ml-schema-transformer-lib": 2.5.4
     axios: 1.8.1
@@ -2819,7 +2819,7 @@ __metadata:
     ilp-packet-v1: 2.2.0
     jsonwebtoken: 9.0.2
     jws: 4.0.0
-  checksum: b986e502d7a3c15878fc29d93402271041af61d85c7a4bdbd5da1f26c04185c2a64ab4aebb5eb02f2d566cc1b1827b8f39edc26864adab87df450290e2d39c52
+  checksum: 71296babd75191988de95f3307e9d3e333bc2363caf227cddd21cb824ad459423c4608be3143574a44a9550fa26483a4399e6f3f46d4fbbe649e43ebfa158b19
   languageName: node
   linkType: hard
 
