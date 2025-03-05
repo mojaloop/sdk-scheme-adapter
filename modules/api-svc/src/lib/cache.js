@@ -217,7 +217,7 @@ class Cache {
 
             this.subscribe(channel, (_, message) => {
                 try {
-                    this._logger.push({ channel, message, needParse }).log('subscribeToOneMessageWithTimer is done');
+                    this._logger.push({ channel, message, needParse }).debug('subscribeToOneMessageWithTimer is done');
                     resolve(needParse ? JSON.parse(message) : message);
                 } catch (err) {
                     this._logger.push({ channel, err }).warn(`error in subscribeToOneMessageWithTimer: ${err.message}`);

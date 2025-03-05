@@ -85,6 +85,18 @@ describe('OutboundTransfersModel Tests', () => {
     let cache;
     let metricsClient;
 
+    const createAndInitModel = async (customConfig = {}) => {
+        const model = new Model({
+            cache,
+            logger,
+            metricsClient,
+            ...config,
+            ...customConfig
+        });
+        await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
+        return model;
+    };
+
     /**
      *
      * @param {Object} opts
@@ -202,16 +214,19 @@ describe('OutboundTransfersModel Tests', () => {
     });
 
     test('initializes to starting state', async () => {
-        const model = new Model({
-            cache,
-            logger,
-            metricsClient,
-            ...config,
-        });
-
-        await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
+        const model = await createAndInitModel();
         expect(StateMachine.__instance.state).toBe('start');
+        expect(model.data.transferId).toEqual(expect.any(String));
+        expect(model.data.traceId).toEqual(expect.any(String));
+        expect(model.data.traceId.length).toBe(32);
     });
+
+    // test('should generate traceId based on transferId value', async () => {
+    //     const model = await createAndInitModel();
+    //     expect(model.data.transferId.length).toBe(26);
+    //     expect(model.data.traceId.length).toBe(32);
+    //     // todo: check traceID value
+    // });
 
     test('executes all three transfer stages without halting when AUTO_ACCEPT_PARTY and AUTO_ACCEPT_QUOTES are true', async () => {
         config.autoAcceptParty = true;
@@ -520,8 +535,11 @@ describe('OutboundTransfersModel Tests', () => {
         expect(result.currentState).toBe(SDKStateEnum.WAITING_FOR_PARTY_ACCEPTANCE);
         expect(StateMachine.__instance.state).toBe('payeeResolved');
 
+        const otelHeaders = expect.objectContaining({
+            traceparent: expect.any(String)
+        });
         // check getParties mojaloop requests method was called with the correct arguments
-        expect(MojaloopRequests.__getParties).toHaveBeenCalledWith(req.to.idType, req.to.idValue, req.to.idSubValue, testFspId);
+        expect(MojaloopRequests.__getParties).toHaveBeenCalledWith(req.to.idType, req.to.idValue, req.to.idSubValue, testFspId, otelHeaders);
     });
 
     test('resolves multiple payees and halts', async () => {
