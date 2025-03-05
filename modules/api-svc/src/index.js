@@ -166,12 +166,37 @@ class Server extends EventEmitter {
                 appConfig: this.conf,
             });
             this.controlClient.on(ControlAgent.EVENT.RECONFIGURE, this.restart.bind(this));
-            this.controlClient.on('close', () => setTimeout(() => {
-                this.logger.push({ currentConf: this.conf }).debug('Control client closed. Restarting server...');
-                this.restart(_.merge({}, this.conf, {
-                    control: { stopped: Date.now() }
-                }));
-            }, RESTART_INTERVAL_MS));
+
+            let pingTimeout;
+            const PING_INTERVAL_MS = 30000;
+            const LATENCY_ASSUMPTION = 2000;
+
+            const schedulePing = () => {
+                clearTimeout(pingTimeout);
+                pingTimeout = setTimeout(() => {
+                    this.logger.error('Ping timeout, possible broken connection. Restarting server...');
+                    this.restart(_.merge({}, this.conf, {
+                        control: { stopped: Date.now() }
+                    }));
+                }, PING_INTERVAL_MS + LATENCY_ASSUMPTION);
+            };
+
+            this.controlClient.on('ping', () => {
+                this.logger.debug('Received ping from control server');
+                schedulePing();
+            });
+
+            this.controlClient.on('close', () => {
+                clearTimeout(pingTimeout);
+                setTimeout(() => {
+                    this.logger.push({ currentConf: this.conf }).debug('Control client closed. Restarting server...');
+                    this.restart(_.merge({}, this.conf, {
+                        control: { stopped: Date.now() }
+                    }));
+                }, RESTART_INTERVAL_MS);
+            });
+
+            schedulePing();
         }
 
         await Promise.all([
@@ -284,12 +309,37 @@ class Server extends EventEmitter {
                     appConfig: newConf,
                 });
                 this.controlClient.on(ControlAgent.EVENT.RECONFIGURE, this.restart.bind(this));
-                this.controlClient.on('close', () => setTimeout(() => {
-                    this.logger.push({ newConf }).debug('Control client closed. Restarting server...');
-                    this.restart(_.merge({}, newConf, {
-                        control: { stopped: Date.now() }
-                    }));
-                }, RESTART_INTERVAL_MS));
+
+                let pingTimeout;
+                const PING_INTERVAL_MS = 30000;
+                const LATENCY_ASSUMPTION = 2000;
+
+                const schedulePing = () => {
+                    clearTimeout(pingTimeout);
+                    pingTimeout = setTimeout(() => {
+                        this.logger.error('Ping timeout, possible broken connection. Restarting server...');
+                        this.restart(_.merge({}, this.conf, {
+                            control: { stopped: Date.now() }
+                        }));
+                    }, PING_INTERVAL_MS + LATENCY_ASSUMPTION);
+                };
+
+                this.controlClient.on('ping', () => {
+                    this.logger.debug('Received ping from control server');
+                    schedulePing();
+                });
+
+                this.controlClient.on('close', () => {
+                    clearTimeout(pingTimeout);
+                    setTimeout(() => {
+                        this.logger.push({ currentConf: this.conf }).debug('Control client closed. Restarting server...');
+                        this.restart(_.merge({}, this.conf, {
+                            control: { stopped: Date.now() }
+                        }));
+                    }, RESTART_INTERVAL_MS);
+                });
+
+                schedulePing();
                 restartActionsTaken.updateControlClient = true;
             }
         }
