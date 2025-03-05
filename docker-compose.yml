@@ -19,9 +19,12 @@ services:
       - "4002:4002"
       - "9229:9229"
     depends_on:
-      - redis
-      - ml-testing-toolkit
-      - kafka
+      redis:
+        condition: service_healthy
+      ml-testing-toolkit:
+        condition: service_started
+      kafka:
+        condition: service_healthy
     command: yarn nx run modules-api-svc:start
     volumes:
       - ./docker/wait4:/tmp/wait4
@@ -144,7 +147,8 @@ services:
     environment:
       - KAFKA_BROKERS=kafka:29092
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
     profiles:
       - debug
 
@@ -153,7 +157,8 @@ services:
       - mojaloop-net
     image: docker.io/bitnami/kafka:3.4.0
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
     entrypoint: [ '/bin/sh', '-c' ]
     command: |
       "
