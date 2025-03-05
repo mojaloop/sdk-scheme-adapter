@@ -313,7 +313,7 @@ class Server extends EventEmitter {
                     clearTimeout(this.pingTimeout);
                     this.pingTimeout = setTimeout(() => {
                         this.logger.error('Ping timeout, possible broken connection. Restarting server...');
-                        this.restart(_.merge({}, this.conf, {
+                        this.restart(_.merge({}, newConf, {
                             control: { stopped: Date.now() }
                         }));
                     }, PING_INTERVAL_MS + this.conf.control.mgmtAPILatencyAssumption);
@@ -327,8 +327,8 @@ class Server extends EventEmitter {
                 this.controlClient.on('close', () => {
                     clearTimeout(this.pingTimeout);
                     setTimeout(() => {
-                        this.logger.push({ currentConf: this.conf }).debug('Control client closed. Restarting server...');
-                        this.restart(_.merge({}, this.conf, {
+                        this.logger.push({ newConf }).debug('Control client closed. Restarting server...');
+                        this.restart(_.merge({}, newConf, {
                             control: { stopped: Date.now() }
                         }));
                     }, RESTART_INTERVAL_MS);
