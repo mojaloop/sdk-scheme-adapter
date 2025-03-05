@@ -32,6 +32,7 @@ const util = require('util');
 const {
     axios,
     MojaloopRequests, Errors, WSO2Auth, Jws, Logger, common,
+    httpRequester,
     Ilp: { ILP_VERSIONS }
 } = jest.requireActual('@mojaloop/sdk-standard-components');
 
@@ -190,7 +191,7 @@ class MockJwsSigner {
     constructor(config) {
         assert(config.logger, 'Must supply a logger to JWS signer constructor');
         this.config = config;
-        config.logger.log(`MockJwsSigner constructed with config: ${util.inspect(config)}`);
+        config.logger.info(`MockJwsSigner constructed with config: ${util.inspect(config)}`);
     }
 }
 
@@ -198,6 +199,7 @@ class MockJwsSigner {
 module.exports = {
     axios,
     Ilp,
+    httpRequester,
     MojaloopRequests: MockMojaloopRequests,
     Jws: {
         validator: MockJwsValidator,

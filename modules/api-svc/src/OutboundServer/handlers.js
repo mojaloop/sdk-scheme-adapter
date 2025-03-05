@@ -71,7 +71,7 @@ const handleError = (method, err, ctx, stateField) => {
         // the structure of the response object in depth to ascertain an underlying mojaloop API error code.
         const errorInformation = err[stateField].lastError.mojaloopError.errorInformation;
         ctx.response.body.statusCode = errorInformation.errorCode;
-        ctx.state.logger.warn('errorInformation - ', errorInformation);
+        ctx.state.logger.push({ errorInformation }).warn('errorInformation:');
 
         // if we have been configured to use an error extensionList item as status code, look for it and use
         // it if it is present...
