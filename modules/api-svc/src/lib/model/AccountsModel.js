@@ -249,7 +249,7 @@ class AccountsModel {
             ...this._data.accountSubIdOrType && { idSubValue: this._data.accountSubIdOrType },
         };
         const response = await this._executeDeleteAccountRequest(request);
-        this._data.response.push(...this._buildClientResponse(response));
+        this._data.response.push(...this._buildClientResponse(response, 'deleteAccount'));
     }
 
     async _executeDeleteAccountRequest(request) {
@@ -266,7 +266,7 @@ class AccountsModel {
                     const message = JSON.parse(msg);
                     this._data.deleteAccountsResponse = message.data;
 
-                    if (message.type === 'accountsDeletionErrorResponse') {
+                    if (message.type === 'accountDeletionErrorResponse') {
                         error = new BackendError(`Got an error response deleting account: ${safeStringify(this._data.deleteAccountsResponse.body)}`, 500);
                         error.mojaloopError = this._data.deleteAccountsResponse.body;
                     } else if (message.type !== 'accountDeletionSuccessfulResponse') {
@@ -333,7 +333,20 @@ class AccountsModel {
         });
     }
 
-    _buildClientResponse(response) {
+    _buildClientResponse(response, responseType='createAccounts') {
+        if (responseType == 'deleteAccount') {
+            if (response.body.errorInformation) {
+                return [{
+                    error: {
+                        statusCode: response.body.errorInformation.errorCode,
+                        message: response.body.errorInformation.errorDescription,
+                    },
+                }];
+            } else {
+                return [{ ...response.body }];
+            }
+        }
+
         return response.body.partyList.map(party => ({
             idType: party.partyId.partyIdType,
             idValue: party.partyId.partyIdentifier,
