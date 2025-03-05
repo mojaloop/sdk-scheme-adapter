@@ -173,7 +173,7 @@ class Server extends EventEmitter {
             const schedulePing = () => {
                 clearTimeout(this.pingTimeout);
                 this.pingTimeout = setTimeout(() => {
-                    this.logger.push({ currentConf: this.conf }).error('Ping timeout, possible broken connection. Restarting server...');
+                    this.logger.error('Ping timeout, possible broken connection. Restarting server...');
                     this.restart(_.merge({}, this.conf, {
                         control: { stopped: Date.now() }
                     }));
@@ -188,7 +188,7 @@ class Server extends EventEmitter {
             this.controlClient.on('close', () => {
                 clearTimeout(this.pingTimeout);
                 setTimeout(() => {
-                    this.logger.push({ currentConf: this.conf }).debug('Control client closed. Restarting server...');
+                    this.logger.debug('Control client closed. Restarting server...');
                     this.restart(_.merge({}, this.conf, {
                         control: { stopped: Date.now() }
                     }));
@@ -312,7 +312,7 @@ class Server extends EventEmitter {
                 const schedulePing = () => {
                     clearTimeout(this.pingTimeout);
                     this.pingTimeout = setTimeout(() => {
-                        this.logger.push({ newConf }).error('Ping timeout, possible broken connection. Restarting server...');
+                        this.logger.error('Ping timeout, possible broken connection. Restarting server...');
                         this.restart(_.merge({}, newConf, {
                             control: { stopped: Date.now() }
                         }));
@@ -327,7 +327,7 @@ class Server extends EventEmitter {
                 this.controlClient.on('close', () => {
                     clearTimeout(this.pingTimeout);
                     setTimeout(() => {
-                        this.logger.push({ newConf }).debug('Control client closed. Restarting server...');
+                        this.logger.debug('Control client closed. Restarting server...');
                         this.restart(_.merge({}, newConf, {
                             control: { stopped: Date.now() }
                         }));
