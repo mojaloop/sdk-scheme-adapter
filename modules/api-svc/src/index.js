@@ -169,7 +169,6 @@ class Server extends EventEmitter {
 
             let pingTimeout;
             const PING_INTERVAL_MS = 30000;
-            const LATENCY_ASSUMPTION = 2000;
 
             const schedulePing = () => {
                 clearTimeout(pingTimeout);
@@ -178,7 +177,7 @@ class Server extends EventEmitter {
                     this.restart(_.merge({}, this.conf, {
                         control: { stopped: Date.now() }
                     }));
-                }, PING_INTERVAL_MS + LATENCY_ASSUMPTION);
+                }, PING_INTERVAL_MS + this.conf.control.mgmtAPILatencyAssumption);
             };
 
             this.controlClient.on('ping', () => {
@@ -312,7 +311,6 @@ class Server extends EventEmitter {
 
                 let pingTimeout;
                 const PING_INTERVAL_MS = 30000;
-                const LATENCY_ASSUMPTION = 2000;
 
                 const schedulePing = () => {
                     clearTimeout(pingTimeout);
@@ -321,7 +319,7 @@ class Server extends EventEmitter {
                         this.restart(_.merge({}, this.conf, {
                             control: { stopped: Date.now() }
                         }));
-                    }, PING_INTERVAL_MS + LATENCY_ASSUMPTION);
+                    }, PING_INTERVAL_MS + this.conf.control.mgmtAPILatencyAssumption);
                 };
 
                 this.controlClient.on('ping', () => {
