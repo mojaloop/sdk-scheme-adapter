@@ -26,6 +26,7 @@
  ******/
 
 const { hostname } = require('node:os');
+const { randomBytes } = require('node:crypto');
 const { WSO2Auth, Logger } = require('@mojaloop/sdk-standard-components');
 
 const SDK_LOGGER_HIERARCHY = Logger.Logger.logLevels.reverse();
@@ -79,8 +80,15 @@ const transformHeadersIsoToFspiop = (isoHeaders) => {
     return fspiopHeaders;
 };
 
+const generateTraceparent = (traceId = randomBytes(16).toString('hex')) => {
+    const spanId = randomBytes(8).toString('hex');
+    const flags = '01';
+    return `00-${traceId}-${spanId}-${flags}`;
+};
+
 module.exports = {
     createAuthClient,
     createLogger,
+    generateTraceparent,
     transformHeadersIsoToFspiop
 };

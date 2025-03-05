@@ -33,6 +33,7 @@ const { Enum, Util: { id: idGenerator } } = require('@mojaloop/central-services-
 const { Ilp, MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 
 const { API_TYPES } = require('../../constants');
+const { generateTraceparent } = require('../../lib/utils');
 const dto = require('../dto');
 const shared = require('./lib/shared');
 const PartiesModel = require('./PartiesModel');
@@ -1233,7 +1234,7 @@ class OutboundTransfersModel {
      * Modifies the data being stored in the cache for UI before it is stored.
      * Works on a copy of original object to avoid side effects
      */
-    _modifyDataForUi( data ){
+    _modifyDataForUi(data) {
         // deep cloning to avoid side effects
         let modifiedData = JSON.parse(JSON.stringify(data));
         // Removing iso quote response and extension lists
@@ -1516,21 +1517,18 @@ class OutboundTransfersModel {
         }
     }
 
-    #createOtelHeaders() {
-        const { traceId } = this.data;
-        const spanId = randomBytes(8).toString('hex');
-        const flags = '01';
-
-        return Object.freeze({
-            traceparent: `00-${traceId}-${spanId}-${flags}`,
-        });
-    }
-
     #generateTraceId() {
         // todo: add possibility to generate traceId based on transferId
         this.data.traceId = randomBytes(16).toString('hex');
-        this._logger.isVerboseEnabled && this._logger.verbose(`generated traceId: ${this.data.traceId}`);
-        return this.data.traceId;
+        const { traceId, transferId } = this.data;
+        this._logger.isInfoEnabled && this._logger.push({ traceId, transferId }).info('traceId is generated');
+        return traceId;
+    }
+
+    #createOtelHeaders() {
+        return Object.freeze({
+            traceparent: generateTraceparent(this.data.traceId),
+        });
     }
 }
 
