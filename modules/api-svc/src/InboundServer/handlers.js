@@ -32,6 +32,7 @@
 'use strict';
 
 const { Enum } = require('@mojaloop/central-services-shared');
+const ErrorHandler = require('@mojaloop/central-services-error-handling');
 const {
     InboundTransfersModel,
     PartiesModel,
@@ -41,6 +42,7 @@ const {
 const { CacheKeyPrefixes } = require('../lib/model/common');
 
 const { ReturnCodes } = Enum.Http;
+const { FSPIOPErrorCodes } = ErrorHandler.Enums;
 
 const extractBodyHeadersSourceFspId = ctx => ({
     sourceFspId: ctx.request.headers['fspiop-source'],
@@ -413,10 +415,18 @@ const putParticipantsByTypeAndId = async (ctx) => {
         };
 
         // publish an event onto the cache for subscribers to action
-        const cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
-        await ctx.state.cache.publish(cacheId, {
-            data
-        });
+        let cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
+        const message = { data };
+        
+        // We need to determine if this callback is a response to either a GET/POST /participants 
+        // or DELETE /participants/{Type}/{ID}/{SubId} request
+        // Delete callback payload is unique, only { fspId } is expected in body
+        if (data.body && Object.keys(data.body).length === 1 && data.body.fspId) {
+            cacheId = `ad_${cacheId}`;
+            message.type = 'accountDeletionSuccessfulResponse';
+        }
+
+        await ctx.state.cache.publish(cacheId, message);
         ctx.response.status = ReturnCodes.OK.CODE;
     } else {
         // SDK does not make participants requests so we should not expect any calls to this method
@@ -427,7 +437,9 @@ const putParticipantsByTypeAndId = async (ctx) => {
 
 
 /**
- * Handles a PUT /participants/{Type}/{ID}/{SubId}/error request. This is an error response to a GET /participants/{Type}/{ID}/{SubId} request
+ * Handles a PUT /participants/{Type}/{ID}/{SubId}/error request. 
+ * This is an error response to a GET /participants/{Type}/{ID}/{SubId} or 
+ * DELETE /participants/{Type}/{ID}/{SubId} request
  */
 const putParticipantsByTypeAndIdError = async(ctx) => {
     const idType = ctx.state.path.params.Type;
@@ -441,10 +453,20 @@ const putParticipantsByTypeAndIdError = async(ctx) => {
     // note that we publish the event the same way we publish a success PUT
     // the subscriber will notice the body contains an errorInformation property
     // and recognise it as an error response
-    const cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
-    await ctx.state.cache.publish(cacheId, {
-        data
-    });
+    let cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
+    const message = { data };
+
+    // We need to determine if this callback is a response to either a GET /participants/{Type}/{ID}/{SubId}
+    // or DELETE /participants/{Type}/{ID}/{SubId} request. For normal delete error, 3040 is expected
+    // Others error cases, e.g party not found, will not be handled  since there is no way of telling the source
+    // request for the error. This can be resolved in futuer PRs
+    // by having e2e request id or looking into the existing cache subscriptions.
+    if (data.body && data.body.errorInformation?.errorCode === FSPIOPErrorCodes.DELETE_PARTY_INFO_ERROR.code) {
+        cacheId = `ad_${cacheId}`;
+        message.type = 'accountDeletionErrorResponse';
+    }
+
+    await ctx.state.cache.publish(cacheId, message);
 
     ctx.response.status = ReturnCodes.OK.CODE;
     ctx.response.body = '';
@@ -1123,6 +1145,9 @@ module.exports = {
     '/participants/{Type}/{ID}': {
         put: putParticipantsByTypeAndId,
         get: getParticipantsByTypeAndId
+    },
+    '/participants/{Type}/{ID}/error': {
+        put: putParticipantsByTypeAndIdError
     },
     '/participants/{Type}/{ID}/{SubId}': {
         put: putParticipantsByTypeAndId,
