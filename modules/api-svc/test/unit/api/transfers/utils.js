@@ -226,6 +226,7 @@ function createPostTransfersTester({
             if(body.transferState.prepare) {
                 delete body.transferState.prepare;
             }
+            delete body.transferState.traceId;
         }
         if(body.quoteResponse) {
             delete body.quoteResponse.headers;
@@ -248,6 +249,8 @@ function createPostTransfersTester({
         if(body.quoteResponse?.originalIso20022QuoteResponse) {
             delete body.quoteResponse.originalIso20022QuoteResponse;
         }
+        delete body.traceId;
+
         expect(body).toEqual(responseBody);
         const responseValidator = new OpenAPIResponseValidator(apiSpecsOutbound.paths['/transfers'].post);
         const err = responseValidator.validateResponse(responseCode, body);
