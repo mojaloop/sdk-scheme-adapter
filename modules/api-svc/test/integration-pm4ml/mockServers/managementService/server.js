@@ -113,6 +113,7 @@ class Server extends ws.Server {
   _clientData;
   _currentConfig;
   _isConfigUpdated;
+  _heartbeatInterval;
 
   constructor(opts) {
     super({ clientTracking: true, port: opts.port });
@@ -134,7 +135,14 @@ class Server extends ws.Server {
         remoteAddress: req.socket.remoteAddress,
       });
       logger.log('Websocket connection received');
-      this._clientData.set(socket, { ip: req.connection.remoteAddress, logger });
+      this._clientData.set(socket, { ip: req.connection.remoteAddress, logger, isAlive: true });
+
+      socket.on('pong', () => {
+        const clientData = this._clientData.get(socket);
+        if (clientData) {
+          clientData.isAlive = true;
+        }
+      });
 
       socket.on('close', (code, reason) => {
         logger.push({ code, reason }).log('Websocket connection closed');
@@ -144,6 +152,31 @@ class Server extends ws.Server {
       socket.on('message', this._handle(socket, logger));
     });
     this._logger.push(this.address()).log('running on');
+    this._startHeartbeat();
+  }
+
+  _startHeartbeat() {
+    this._heartbeatInterval = setInterval(() => {
+      this.clients.forEach((client) => {
+        const clientData = this._clientData.get(client);
+        if (clientData && !clientData.isAlive) {
+          client.terminate();
+          this._clientData.delete(client);
+          return;
+        }
+        if (clientData) {
+          clientData.isAlive = false;
+        }
+        client.ping();
+      });
+    }, 30000);
+  }
+
+  _stopHeartbeat() {
+    if (this._heartbeatInterval) {
+      clearInterval(this._heartbeatInterval);
+      this._heartbeatInterval = null;
+    }
   }
 
   _setConfig(newConfig) {
@@ -158,6 +191,7 @@ class Server extends ws.Server {
 
   // Close the server then wait for all the client sockets to close
   async stop() {
+    this._stopHeartbeat();
     const closing = new Promise((resolve) => this.close(resolve));
     for (const client of this.clients) {
       client.terminate();
