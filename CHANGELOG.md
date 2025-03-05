@@ -1,4 +1,18 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [24.2.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.1.3...v24.2.0) (2025-03-05)
+
+
+### Features
+
+* add code to restart sdk on broken control client connection ([#555](https://github.com/mojaloop/sdk-scheme-adapter/issues/555)) ([4ce10e8](https://github.com/mojaloop/sdk-scheme-adapter/commit/4ce10e8c1385471e1cf33fc0abe923210167a099))
+* **csi-1210:** added OTel header to Outbound/Inbound TransfersModel ([#552](https://github.com/mojaloop/sdk-scheme-adapter/issues/552)) ([cbbd0b7](https://github.com/mojaloop/sdk-scheme-adapter/commit/cbbd0b7e0e26eb85d04178a1e8cdb2120b9f4f6f))
+
+
+### Chore
+
+* add better service checks to docker compose ([#556](https://github.com/mojaloop/sdk-scheme-adapter/issues/556)) ([ba0d7f0](https://github.com/mojaloop/sdk-scheme-adapter/commit/ba0d7f04ba7a138363c85edad5ba0bef0b7e5302))
+* add heartbeat to test server ([#557](https://github.com/mojaloop/sdk-scheme-adapter/issues/557)) ([5d7b628](https://github.com/mojaloop/sdk-scheme-adapter/commit/5d7b6284e93c081359089f6865c726f05d2f44b9))
+
 ### [24.1.3](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.1.2...v24.1.3) (2025-02-25)
 
 
