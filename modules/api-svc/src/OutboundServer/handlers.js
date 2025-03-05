@@ -500,8 +500,9 @@ const deleteAccountByTypeAndId = async (ctx) => {
 
         const args = {
             currentState: 'deleteAccount',
-            accountType: ctx.state.path.params.accountType,
-            accountId: ctx.state.path.params.accountId,
+            accountIdType: ctx.state.path.params.Type,
+            accountIdValue: ctx.state.path.params.ID,
+            accountSubIdOrType: ctx.state.path.params.SubId,
         };
 
         // initialize the accounts model and run it

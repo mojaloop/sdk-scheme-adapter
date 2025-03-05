@@ -32,6 +32,7 @@
 'use strict';
 
 const { Enum } = require('@mojaloop/central-services-shared');
+const ErrorHandler = require('@mojaloop/central-services-error-handling');
 const {
     InboundTransfersModel,
     PartiesModel,
@@ -41,6 +42,7 @@ const {
 const { CacheKeyPrefixes } = require('../lib/model/common');
 
 const { ReturnCodes } = Enum.Http;
+const { FSPIOPErrorCodes } = ErrorHandler.Enums;
 
 const extractBodyHeadersSourceFspId = ctx => ({
     sourceFspId: ctx.request.headers['fspiop-source'],
@@ -413,7 +415,16 @@ const putParticipantsByTypeAndId = async (ctx) => {
         };
 
         // publish an event onto the cache for subscribers to action
-        const cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
+        let cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
+        
+        // We need to determine if this callback is a response to either a GET/POST /participants 
+        // or DELETE /participants/{Type}/{ID}/{SubId} request
+        // Delete callback payload is unique, only { fspId } is expected in body
+        if (data.body && Object.keys(data.body).length === 1 && data.body.fspId) {
+            cacheId = `ad_${cacheId}`;
+            data.type = 'accountsDeletionSuccessfulResponse';
+        }
+
         await ctx.state.cache.publish(cacheId, {
             data
         });
@@ -441,7 +452,16 @@ const putParticipantsByTypeAndIdError = async(ctx) => {
     // note that we publish the event the same way we publish a success PUT
     // the subscriber will notice the body contains an errorInformation property
     // and recognise it as an error response
-    const cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
+    let cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
+
+    // We need to determine if this callback is a response to either a GET/POST /participants 
+    // or DELETE /participants/{Type}/{ID}/{SubId} request
+    // Delete callback payload is unique, only { fspId } is expected in body
+    if (data.body && data.body.errorInformation?.errorCode === FSPIOPErrorCodes.DELETE_PARTY_INFO_ERROR.code) {
+        cacheId = `ad_${cacheId}`;
+        data.type = 'accountsDeletionErrorResponse';
+    }
+
     await ctx.state.cache.publish(cacheId, {
         data
     });

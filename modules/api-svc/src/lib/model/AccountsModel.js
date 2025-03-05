@@ -242,19 +242,23 @@ class AccountsModel {
     }
 
     async _deleteAccount() {
-        const requests = this._buildRequests();
-        for await (let request of requests) {
-            const response = await this._executeDeleteAccountRequest(request);
-            this._data.response.push(...this._buildClientResponse(response));
-        }
+        const request = {
+            requestId: this._idGenerator(),
+            idType: this._data.accountIdType,
+            idValue: this._data.accountIdValue,
+            ...this._data.accountSubIdOrType && { idSubValue: this._data.accountSubIdOrType },
+        };
+        const response = await this._executeDeleteAccountRequest(request);
+        this._data.response.push(...this._buildClientResponse(response));
     }
 
     async _executeDeleteAccountRequest(request) {
-        const accountRequest = request;
+        const accountDeletionRequest = request;
 
         // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
-            const requestKey = `ac_${accountRequest.requestId}`;
+            const { idType, idValue, idSubValue } = accountDeletionRequest;
+            const requestKey = `ad_${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
 
             const subId = await this._cache.subscribe(requestKey, async (cn, msg, subId) => {
                 try {
@@ -298,7 +302,7 @@ class AccountsModel {
 
             // set up a timeout for the request
             const timeout = setTimeout(() => {
-                const err = new BackendError(`Timeout waiting for response to account deletion request ${accountRequest.requestId}`, 504);
+                const err = new BackendError(`Timeout waiting for response to account deletion request ${accountDeletionRequest.requestId}`, 504);
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this._cache.unsubscribe(requestKey, subId).catch(e => {
@@ -311,7 +315,8 @@ class AccountsModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a DELETE /participants/{TYPE}/{ID}/{SubId} request to the switch
             try {
-                const res = await this._requests.deleteParticipant(accountRequest);
+                const { idType, idValue, idSubValue } = accountDeletionRequest;
+                const res = await this._requests.deleteParticipants(idType, idValue, idSubValue);
                 this._logger.isDebugEnabled && this._logger.push({ res }).debug('Account deletion request sent to peer');
             }
             catch(err) {
@@ -465,6 +470,11 @@ class AccountsModel {
                     // }
                     break;
                 }
+
+                case 'deleteAccount':
+                    await this._stateMachine.deleteAccount();
+
+                    break;
 
                 case 'succeeded':
                     // all steps complete so return
