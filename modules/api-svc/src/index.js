@@ -62,6 +62,8 @@ const LOG_ID = {
     CACHE:     { component: 'cache' },
 };
 
+const PING_INTERVAL_MS = 30000;
+
 const createCache = (config, logger) => new Cache({
     cacheUrl: config.cacheUrl,
     logger: logger.push(LOG_ID.CACHE),
@@ -78,6 +80,7 @@ class Server extends EventEmitter {
         this.conf = conf;
         this.logger = logger;
         this.cache = createCache(conf, logger);
+        this.pingTimeout;
 
         this.metricsClient = new MetricsClient();
 
@@ -167,12 +170,9 @@ class Server extends EventEmitter {
             });
             this.controlClient.on(ControlAgent.EVENT.RECONFIGURE, this.restart.bind(this));
 
-            let pingTimeout;
-            const PING_INTERVAL_MS = 30000;
-
             const schedulePing = () => {
-                clearTimeout(pingTimeout);
-                pingTimeout = setTimeout(() => {
+                clearTimeout(this.pingTimeout);
+                this.pingTimeout = setTimeout(() => {
                     this.logger.error('Ping timeout, possible broken connection. Restarting server...');
                     this.restart(_.merge({}, this.conf, {
                         control: { stopped: Date.now() }
@@ -186,7 +186,7 @@ class Server extends EventEmitter {
             });
 
             this.controlClient.on('close', () => {
-                clearTimeout(pingTimeout);
+                clearTimeout(this.pingTimeout);
                 setTimeout(() => {
                     this.logger.push({ currentConf: this.conf }).debug('Control client closed. Restarting server...');
                     this.restart(_.merge({}, this.conf, {
@@ -309,12 +309,9 @@ class Server extends EventEmitter {
                 });
                 this.controlClient.on(ControlAgent.EVENT.RECONFIGURE, this.restart.bind(this));
 
-                let pingTimeout;
-                const PING_INTERVAL_MS = 30000;
-
                 const schedulePing = () => {
-                    clearTimeout(pingTimeout);
-                    pingTimeout = setTimeout(() => {
+                    clearTimeout(this.pingTimeout);
+                    this.pingTimeout = setTimeout(() => {
                         this.logger.error('Ping timeout, possible broken connection. Restarting server...');
                         this.restart(_.merge({}, this.conf, {
                             control: { stopped: Date.now() }
@@ -328,7 +325,7 @@ class Server extends EventEmitter {
                 });
 
                 this.controlClient.on('close', () => {
-                    clearTimeout(pingTimeout);
+                    clearTimeout(this.pingTimeout);
                     setTimeout(() => {
                         this.logger.push({ currentConf: this.conf }).debug('Control client closed. Restarting server...');
                         this.restart(_.merge({}, this.conf, {
@@ -385,6 +382,7 @@ class Server extends EventEmitter {
     }
 
     stop() {
+        clearTimeout(this.pingTimeout);
         this.wso2.auth.stop();
         this.controlClient?.removeAllListeners();
         this.inboundServer.removeAllListeners();
