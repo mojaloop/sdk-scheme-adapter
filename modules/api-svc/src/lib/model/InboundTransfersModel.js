@@ -212,16 +212,21 @@ class InboundTransfersModel {
         // have a record of the request in the cache.
         await this._save();
 
+        const log = this._logger.push({
+            transferId: this.data.transferId,
+            quoteId: quoteRequest.quoteId
+        });
+
         try {
             const internalForm = shared.mojaloopQuoteRequestToInternal(quoteRequest);
 
             // Check the transactionRequestId exists in cache
             if(quoteRequest.transactionRequestId) {
                 const previousTxnReq = await this._cache.get(`txnReqModel_${quoteRequest.transactionRequestId}`);
-                if(previousTxnReq) {
+                if (previousTxnReq) {
                     internalForm.homeR2PTransactionId = previousTxnReq.homeR2PTransactionId;
                 } else {
-                    this._logger.isErrorEnabled && this._logger.error(`No previous transactionRequest found in cache with transactionRequestId: ${quoteRequest.transactionRequestId}. Unable to fetch homeR2PTransactionId.`);
+                    log.isErrorEnabled && log.error(`No previous transactionRequest found in cache with transactionRequestId: ${quoteRequest.transactionRequestId}. Unable to fetch homeR2PTransactionId.`);
                 }
             }
 
@@ -263,18 +268,18 @@ class InboundTransfersModel {
             const res = await this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId, headers, { isoPostQuote: request.isoPostQuote });
 
             this.data.quoteResponse = {
-                headers: res.originalRequest.headers,
+                headers: res.originalRequest?.headers,
                 body: mojaloopResponse,
             };
             this.data.currentState = SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE;
-
             await this._save();
+
+            log.isInfoEnabled && log.info('quoteRequest is done');
             return res;
-        }
-        catch (err) {
-            this._logger.push({ err }).error('Error in quoteRequest');
+        }  catch (err) {
+            log.push({ err }).error('Error in quoteRequest');
             const mojaloopError = await this._handleError(err);
-            this._logger.isInfoEnabled && this._logger.push({ mojaloopError }).info(`Sending error response to ${sourceFspId}`);
+            log.isInfoEnabled && log.push({ mojaloopError }).info(`Sending error response to ${sourceFspId}`);
             return this._mojaloopRequests.putQuotesError(quoteRequest.quoteId, mojaloopError, sourceFspId, headers);
         }
     }
@@ -307,7 +312,7 @@ class InboundTransfersModel {
             // make a call to the backend about this notification anyway
             await this._backendRequests.putRequestToPayNotification(internalForm, transactionRequestId);
         }
-        catch(err) {
+        catch (err) {
             this._logger.push({ err, transactionRequestId }).error('Error in putTransactionRequest');
             const mojaloopError = await this._handleError(err);
             this._logger.isInfoEnabled && this._logger.push({ mojaloopError }).info(`Sending error response to ${sourceFspId}`);
