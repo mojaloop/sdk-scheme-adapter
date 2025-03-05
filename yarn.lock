@@ -2589,7 +2589,7 @@ __metadata:
     "@mojaloop/logging-bc-client-lib": 0.5.8
     "@mojaloop/ml-schema-transformer-lib": 2.5.6
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
-    "@mojaloop/sdk-standard-components": v19.9.0-snapshot.2
+    "@mojaloop/sdk-standard-components": v19.9.0
     "@redocly/openapi-cli": 1.0.0-beta.95
     "@types/jest": 29.5.14
     ajv: 8.17.1
@@ -2802,9 +2802,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/sdk-standard-components@npm:v19.9.0-snapshot.2":
-  version: 19.9.0-snapshot.2
-  resolution: "@mojaloop/sdk-standard-components@npm:19.9.0-snapshot.2"
+"@mojaloop/sdk-standard-components@npm:v19.9.0":
+  version: 19.9.0
+  resolution: "@mojaloop/sdk-standard-components@npm:19.9.0"
   dependencies:
     "@mojaloop/ml-schema-transformer-lib": 2.5.6
     axios: 1.8.1
@@ -2815,7 +2815,7 @@ __metadata:
     ilp-packet-v1: 2.2.0
     jsonwebtoken: 9.0.2
     jws: 4.0.0
-  checksum: 9986c1c6805d466e7386c16e87b42f3ee9df23da9159073e4766564e93f1716e7b59f6942692938f6f43a742ac4ccb457106f389ce3b2d79be79f99c276e6dae
+  checksum: 042cb3fcccdcfca36f8a7ef826f3c3849c447e21554d4af7a5661e058f5ae26d7314f688938689e592147ab30a18b858ff0d362f75cbde669234cf5383a83dc7
   languageName: node
   linkType: hard
 
