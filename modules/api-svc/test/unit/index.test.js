@@ -73,6 +73,7 @@ describe('Server', () => {
         conf.control.mgmtAPIWsUrl = 'localhost';
         conf.control.mgmtAPIWsPort = 4005;
         conf.control.port = conf.control.mgmtAPIWsPort;
+        conf.control.mgmtAPILatencyAssumption = 2000;
         controlServer = new TestControlServer.Server({ logger, appConfig: conf });
         server = new index.Server(conf, logger);
         server.restart = jest.fn();

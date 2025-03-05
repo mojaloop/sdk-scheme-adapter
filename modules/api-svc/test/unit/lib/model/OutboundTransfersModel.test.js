@@ -221,13 +221,6 @@ describe('OutboundTransfersModel Tests', () => {
         expect(model.data.traceId.length).toBe(32);
     });
 
-    // test('should generate traceId based on transferId value', async () => {
-    //     const model = await createAndInitModel();
-    //     expect(model.data.transferId.length).toBe(26);
-    //     expect(model.data.traceId.length).toBe(32);
-    //     // todo: check traceID value
-    // });
-
     test('executes all three transfer stages without halting when AUTO_ACCEPT_PARTY and AUTO_ACCEPT_QUOTES are true', async () => {
         config.autoAcceptParty = true;
         config.autoAcceptQuotes = true;
