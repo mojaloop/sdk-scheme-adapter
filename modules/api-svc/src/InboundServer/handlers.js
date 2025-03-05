@@ -616,10 +616,7 @@ const putTransactionRequestsById = async (ctx) => {
 
                 // use the model to handle the request
                 const response = await model.putTransactionRequest(
-                    putTransactionRequest,
-                    transactionRequestId,
-                    sourceFspId,
-                    extractTraceHeaders(ctx)
+                    putTransactionRequest, transactionRequestId, sourceFspId, extractTraceHeaders(ctx)
                 );
 
                 // log the result
