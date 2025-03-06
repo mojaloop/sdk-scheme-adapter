@@ -40,11 +40,11 @@ process.env.SUPPORTED_CURRENCIES='USD';
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('redis');
 
+const StateMachine = require('javascript-state-machine');
+const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
+const { createLogger } = require('~/lib/logger');
 const Cache = require('~/lib/cache');
 const Model = require('~/lib/model').OutboundBulkQuotesModel;
-
-const { MojaloopRequests, Logger } = require('@mojaloop/sdk-standard-components');
-const StateMachine = require('javascript-state-machine');
 
 const { SDKStateEnum } = require('../../../../src/lib/model/common');
 
@@ -107,7 +107,7 @@ describe('OutboundBulkQuotesModel', () => {
     }
 
     beforeAll(async () => {
-        logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests-cache' }, stringify: () => '' });
+        logger = createLogger({ context: { app: 'outbound-model-unit-tests-cache' }, stringify: () => '' });
         bulkQuoteResponse = JSON.parse(JSON.stringify(bulkQuoteResponseTemplate));
     });
 

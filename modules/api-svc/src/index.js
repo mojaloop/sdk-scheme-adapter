@@ -48,7 +48,8 @@ const Router = require('./lib/router');
 const Validate = require('./lib/validate');
 const Cache = require('./lib/cache');
 const { SDKStateEnum } = require('./lib/model/common');
-const { createAuthClient, createLogger } = require('./lib/utils');
+const { createAuthClient } = require('./lib/utils');
+const { createLogger } = require('./lib/logger');
 
 const LOG_ID = {
     INBOUND:   { app: 'mojaloop-connector-inbound-api' },

@@ -20,49 +20,35 @@
  optionally within square brackets <email>.
 
  * Mojaloop Foundation
- - Name Surname <name.surname@mojaloop.io>
+ * Eugen Klymniuk <eugen.klymniuk@infitx.com>
 
- * Modusbox
- - Paweł Marzec <pawel.marzec@modusbox.com>
  --------------
  ******/
 
-const { createLogger } = require('../../src/lib/logger');
+const { hostname } = require('node:os');
+const { Logger } = require('@mojaloop/sdk-standard-components');
 
-function mockLogger(context, keepQuiet) {
-    // if keepQuite is undefined then be quiet
-    if (keepQuiet || typeof keepQuiet === 'undefined') {
-        const methods = {
-            // log methods
-            log: jest.fn(),
+const SDK_LOGGER_HIERARCHY = Logger.Logger.logLevels.reverse();
 
-            configure: jest.fn(),
+const createLogger = (conf = {}) => {
+    const {
+        logLevel = 'info',
+        isJsonOutput = false,
+        context = {
+            // If we're running from a Mojaloop helm chart deployment, we'll have a SIM_NAME
+            simulator: process.env['SIM_NAME'],
+            hostname: hostname(),
+        },
+        opts = {
+            levels: SDK_LOGGER_HIERARCHY.slice(SDK_LOGGER_HIERARCHY.indexOf(logLevel)),
+            isJsonOutput,
+        },
+        stringify = Logger.buildStringify({ isJsonOutput })
+    } = conf;
 
-            // generated methods from default levels
-            verbose: jest.fn(),
-            debug: jest.fn(),
-            warn: jest.fn(),
-            error: jest.fn(),
-            trace: jest.fn(),
-            info: jest.fn(),
-            fatal: jest.fn(),
+    return new Logger.Logger({ context, opts, stringify });
+};
 
-            isVerboseEnabled: jest.fn(() => true),
-            isDebugEnabled: jest.fn(() => true),
-            isWarnEnabled: jest.fn(() => true),
-            isErrorEnabled: jest.fn(() => true),
-            isTraceEnabled: jest.fn(() => true),
-            isInfoEnabled: jest.fn(() => true),
-            isFatalEnabled: jest.fn(() => true)
-        };
-        const mockLogger = ({
-            ...methods,
-            push: jest.fn(() => mockLogger)
-        });
-
-        return mockLogger;
-    }
-    return createLogger();
-}
-
-module.exports = mockLogger;
+module.exports = {
+    createLogger
+};

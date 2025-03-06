@@ -38,11 +38,12 @@ process.env.SUPPORTED_CURRENCIES='USD';
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('redis');
 
+const StateMachine = require('javascript-state-machine');
+const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
+const { createLogger } = require('~/lib/logger');
 const Cache = require('~/lib/cache');
 const Model = require('~/lib/model').OutboundRequestToPayTransferModel;
 
-const { MojaloopRequests, Logger } = require('@mojaloop/sdk-standard-components');
-const StateMachine = require('javascript-state-machine');
 const { SDKStateEnum } = require('../../../../src/lib/model/common');
 
 const defaultConfig = require('./data/defaultConfig');
@@ -56,7 +57,6 @@ const emitQuoteResponseCacheMessage = (cache, quoteId, quoteResponse) => cache.p
 
 // util function to simulate a authorizations response subscription message on a cache client
 const emitAuthorizationsResponseCacheMessage = (cache, authorizationsResponse) => cache.publish(`otp_${requestToPayTransferRequest.transactionRequestId}`, JSON.stringify(authorizationsResponse));
-
 
 // util function to simulate a transfer fulfilment subscription message on a cache client
 const emitTransferFulfilCacheMessage = (cache, transferId, fulfil) => cache.publish(`tf_${transferId}`, JSON.stringify(fulfil));
@@ -81,7 +81,7 @@ describe('outboundRequestToPayTransferModel', () => {
 
 
     beforeAll(async () => {
-        logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests-cache' }, stringify: () => '' });
+        logger = createLogger({ context: { app: 'outbound-model-unit-tests-cache' }, stringify: () => '' });
         quoteResponse = JSON.parse(JSON.stringify(quoteResponseTemplate));
     });
 

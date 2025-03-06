@@ -43,7 +43,8 @@ const Cache = require('~/lib/cache');
 const { AccountsModel } = require('~/lib/model');
 
 const StateMachine = require('javascript-state-machine');
-const { MojaloopRequests, Logger } = require('@mojaloop/sdk-standard-components');
+const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
+const { createLogger } = require('~/lib/logger');
 const { SDKStateEnum } = require('../../../../src/lib/model/common');
 
 const defaultConfig = require('./data/defaultConfig');
@@ -114,7 +115,7 @@ describe('AccountsModel', () => {
     }
 
     beforeAll(() => {
-        logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests-cache' }, stringify: () => '' });
+        logger = createLogger({ context: { app: 'outbound-model-unit-tests-cache' }, stringify: () => '' });
     });
 
     beforeEach(async () => {
