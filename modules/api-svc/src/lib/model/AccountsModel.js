@@ -188,7 +188,7 @@ class AccountsModel {
             deleteAccount: {
                 actionName: 'Account deletion',
                 actionText: 'deleting account',
-                responseProp: 'deleteAccountsResponse',
+                responseProp: 'deleteAccountResponse',
                 errorType: 'accountDeletionErrorResponse',
                 successType: 'accountDeletionSuccessfulResponse',
                 makeCacheKey: (req) => `ad_${req.idType}_${req.idValue}` + (req.idSubValue ? `_${req.idSubValue}` : ''),

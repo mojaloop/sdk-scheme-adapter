@@ -41,7 +41,7 @@
     "snapshot": "standard-version --no-verify --skip.changelog --prerelease snapshot --releaseCommitMessageFormat 'chore(snapshot): {{currentTag}}'"
   },
   "dependencies": {
-    "@mojaloop/api-snippets": "17.8.0",
+    "@mojaloop/api-snippets": "18.0.0-snapshot.4",
     "@mojaloop/central-services-shared": "18.21.0",
     "@mojaloop/logging-bc-client-lib": "0.5.8",
     "@mojaloop/logging-bc-public-types-lib": "0.5.4",
