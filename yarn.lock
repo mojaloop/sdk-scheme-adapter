@@ -1695,6 +1695,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hapi/hapi@npm:21.4.0":
+  version: 21.4.0
+  resolution: "@hapi/hapi@npm:21.4.0"
+  dependencies:
+    "@hapi/accept": ^6.0.3
+    "@hapi/ammo": ^6.0.1
+    "@hapi/boom": ^10.0.1
+    "@hapi/bounce": ^3.0.2
+    "@hapi/call": ^9.0.1
+    "@hapi/catbox": ^12.1.1
+    "@hapi/catbox-memory": ^6.0.2
+    "@hapi/heavy": ^8.0.1
+    "@hapi/hoek": ^11.0.6
+    "@hapi/mimos": ^7.0.1
+    "@hapi/podium": ^5.0.1
+    "@hapi/shot": ^6.0.1
+    "@hapi/somever": ^4.1.1
+    "@hapi/statehood": ^8.2.0
+    "@hapi/subtext": ^8.1.0
+    "@hapi/teamwork": ^6.0.0
+    "@hapi/topo": ^6.0.2
+    "@hapi/validate": ^2.0.1
+  checksum: 4e6ccd65bac9bd82975dd08e826848cf7490058b8b42f4d6efda5af67ac36ceb42bc3091caaeb33a04a223d1c8d0240ed6f1d7361a7c4f874e1cfbb2d154b87b
+  languageName: node
+  linkType: hard
+
 "@hapi/heavy@npm:^8.0.1":
   version: 8.0.1
   resolution: "@hapi/heavy@npm:8.0.1"
@@ -1818,6 +1844,21 @@ __metadata:
     "@hapi/iron": ^7.0.1
     "@hapi/validate": ^2.0.1
   checksum: d371efa9144d29c43c120dc1372382ce7226db8724320d002c14e0e3931f9e2070b122c11dc20423425662e909ebf15c03dc7fd32a979d277c513ce0505b6bd7
+  languageName: node
+  linkType: hard
+
+"@hapi/statehood@npm:^8.2.0":
+  version: 8.2.0
+  resolution: "@hapi/statehood@npm:8.2.0"
+  dependencies:
+    "@hapi/boom": ^10.0.1
+    "@hapi/bounce": ^3.0.1
+    "@hapi/bourne": ^3.0.0
+    "@hapi/cryptiles": ^6.0.1
+    "@hapi/hoek": ^11.0.2
+    "@hapi/iron": ^7.0.1
+    "@hapi/validate": ^2.0.1
+  checksum: 0ebe5fa44e184b7bc35149688d698c59a179116d2886a3725d48b5d72550725dadce10e03cb5fe79197299f07cd8f0ba821d917a100a9d3e86ddcbd2ea8510ec
   languageName: node
   linkType: hard
 
@@ -2453,9 +2494,61 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/event-sdk@npm:14.1.5":
-  version: 14.1.5
-  resolution: "@mojaloop/event-sdk@npm:14.1.5"
+"@mojaloop/central-services-shared@npm:18.22.0":
+  version: 18.22.0
+  resolution: "@mojaloop/central-services-shared@npm:18.22.0"
+  dependencies:
+    "@hapi/catbox": 12.1.1
+    "@hapi/catbox-memory": 5.0.1
+    "@hapi/hapi": 21.4.0
+    "@hapi/joi-date": 2.0.1
+    "@mojaloop/inter-scheme-proxy-cache-lib": 2.3.7
+    "@mojaloop/sdk-standard-components": 19.9.0
+    axios: 1.8.1
+    clone: 2.1.2
+    dotenv: 16.4.7
+    env-var: 7.5.0
+    event-stream: 4.0.1
+    fast-safe-stringify: 2.1.1
+    immutable: 5.0.3
+    ioredis: 5.6.0
+    joi: 17.13.3
+    lodash: 4.17.21
+    mustache: 4.2.0
+    openapi-backend: 5.11.1
+    raw-body: 3.0.0
+    rc: 1.2.8
+    shins: 2.6.0
+    ulidx: 2.4.1
+    uuid4: 2.0.3
+    widdershins: 4.0.1
+    yaml: 2.7.0
+  peerDependencies:
+    "@mojaloop/central-services-error-handling": ">=13.x.x"
+    "@mojaloop/central-services-metrics": ">=12.x.x"
+    "@mojaloop/event-sdk": ">=14.1.1"
+    ajv: 8.x.x
+    ajv-keywords: 5.x.x
+  peerDependenciesMeta:
+    "@mojaloop/central-services-error-handling":
+      optional: false
+    "@mojaloop/central-services-logger":
+      optional: false
+    "@mojaloop/central-services-metrics":
+      optional: false
+    "@mojaloop/event-sdk":
+      optional: false
+    ajv:
+      optional: false
+    ajv-keyboards:
+      optional: false
+  checksum: 3f556c382b7d46dc6cf0e6e045462523c9013f3f31548992ae2d236de6abc725dcd0dc271b341aa1eae02716ff1fa6b8618e3bd3f55d78f810c9b08bd1d4ecf0
+  languageName: node
+  linkType: hard
+
+"@mojaloop/event-sdk@npm:14.2.0":
+  version: 14.2.0
+  resolution: "@mojaloop/event-sdk@npm:14.2.0"
   dependencies:
     "@grpc/grpc-js": 1.12.6
     "@grpc/proto-loader": 0.7.13
@@ -2466,10 +2559,10 @@ __metadata:
     parse-strings-in-object: 2.0.0
     protobufjs: 7.4.0
     rc: 1.2.8
+    safe-stable-stringify: 2.5.0
     serialize-error: 8.1.0
     traceparent: 1.0.0
     tslib: 2.8.1
-    uuid4: 2.0.3
     winston: 3.17.0
   peerDependencies:
     "@mojaloop/central-services-logger": 11.5.5
@@ -2479,7 +2572,7 @@ __metadata:
       optional: false
     "@mojaloop/central-services-stream":
       optional: true
-  checksum: 9d5836df5ad30cc7da6474326de7f612b40814566d97395a85fd2070fc59c15910ca15e865948abfbe8f963de9b0535dcecbf3b7b61bf4fd5a278d32e3d86be7
+  checksum: da4de597ef1e889c6e445efabb394405d8501c6909fa527307e2e0680764929b899cfae305beb07150e333674cfb41ece3a3859559516cc1b8f2b9a4dc774b7f
   languageName: node
   linkType: hard
 
@@ -2493,6 +2586,19 @@ __metadata:
     fast-safe-stringify: 2.1.1
     ioredis: 5.5.0
   checksum: f1f9e228ecd9e0c2e203b468d9056e7d69ba067c39fd0a4107e90253d182a4e8b0b64e668ba1e55eed83230f42e145422980b0c3d197aefd0f54eca262396f59
+  languageName: node
+  linkType: hard
+
+"@mojaloop/inter-scheme-proxy-cache-lib@npm:2.3.7":
+  version: 2.3.7
+  resolution: "@mojaloop/inter-scheme-proxy-cache-lib@npm:2.3.7"
+  dependencies:
+    "@mojaloop/central-services-logger": 11.5.5
+    ajv: 8.17.1
+    convict: 6.2.4
+    fast-safe-stringify: 2.1.1
+    ioredis: 5.5.0
+  checksum: 37fe9b388c556d3b97e610c2ff20cbf023973a13f5a99ff3919990e971241aef71789167c40be348905f60f0c864963892e98c19caadc0dbe495ca497c341ba1
   languageName: node
   linkType: hard
 
@@ -2584,8 +2690,8 @@ __metadata:
     "@mojaloop/central-services-error-handling": 13.0.7
     "@mojaloop/central-services-logger": 11.5.5
     "@mojaloop/central-services-metrics": 12.4.5
-    "@mojaloop/central-services-shared": 18.21.0
-    "@mojaloop/event-sdk": 14.1.5
+    "@mojaloop/central-services-shared": 18.22.0
+    "@mojaloop/event-sdk": 14.2.0
     "@mojaloop/logging-bc-client-lib": 0.5.8
     "@mojaloop/ml-schema-transformer-lib": 2.5.6
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
@@ -8797,6 +8903,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ioredis@npm:5.6.0":
+  version: 5.6.0
+  resolution: "ioredis@npm:5.6.0"
+  dependencies:
+    "@ioredis/commands": ^1.1.1
+    cluster-key-slot: ^1.1.0
+    debug: ^4.3.4
+    denque: ^2.1.0
+    lodash.defaults: ^4.2.0
+    lodash.isarguments: ^3.1.0
+    redis-errors: ^1.2.0
+    redis-parser: ^3.0.0
+    standard-as-callback: ^2.1.0
+  checksum: b085cec251581224c6b9e3e4b0c1f92f99a272976ebcad552bc9d0c63d31abbe0208294b3acedeae4f29759ff3821478727207a47597e2ba081b1036fbc69181
+  languageName: node
+  linkType: hard
+
 "ip-address@npm:^9.0.5":
   version: 9.0.5
   resolution: "ip-address@npm:9.0.5"
@@ -13532,7 +13655,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"safe-stable-stringify@npm:^2.3.1, safe-stable-stringify@npm:^2.5.0":
+"safe-stable-stringify@npm:2.5.0, safe-stable-stringify@npm:^2.3.1, safe-stable-stringify@npm:^2.5.0":
   version: 2.5.0
   resolution: "safe-stable-stringify@npm:2.5.0"
   checksum: d3ce103ed43c6c2f523e39607208bfb1c73aa48179fc5be53c3aa97c118390bffd4d55e012f5393b982b65eb3e0ee954dd57b547930d3f242b0053dcdb923d17
