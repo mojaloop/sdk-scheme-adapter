@@ -11,7 +11,6 @@
 const ws = require('ws');
 const jsonPatch = require('fast-json-patch');
 const randomPhrase = require('./lib/randomphrase');
-const { Logger } = require('@mojaloop/sdk-standard-components');
 
 const INIT_CONFIG = require('./initConfig')
 
