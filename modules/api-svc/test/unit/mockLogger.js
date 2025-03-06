@@ -45,7 +45,8 @@ function mockLogger(context, keepQuiet) {
             error: jest.fn(),
             trace: jest.fn(),
             info: jest.fn(),
-            fatal: jest.fn(),
+            // fatal: jest.fn(),
+            // todo: add all methods from ContextLogger
 
             isVerboseEnabled: jest.fn(() => true),
             isDebugEnabled: jest.fn(() => true),
@@ -53,11 +54,12 @@ function mockLogger(context, keepQuiet) {
             isErrorEnabled: jest.fn(() => true),
             isTraceEnabled: jest.fn(() => true),
             isInfoEnabled: jest.fn(() => true),
-            isFatalEnabled: jest.fn(() => true)
+            // isFatalEnabled: jest.fn(() => true)
         };
         const mockLogger = ({
             ...methods,
-            push: jest.fn(() => mockLogger)
+            push: jest.fn(() => mockLogger),
+            child: jest.fn(() => mockLogger)
         });
 
         return mockLogger;

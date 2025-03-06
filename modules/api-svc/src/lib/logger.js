@@ -26,29 +26,46 @@
  ******/
 
 const { hostname } = require('node:os');
-const { Logger } = require('@mojaloop/sdk-standard-components');
+const { ContextLogger } = require('@mojaloop/central-services-logger/src/contextLogger');
+const { allLevels } = require('@mojaloop/central-services-logger/src/lib/constants');
 
-const SDK_LOGGER_HIERARCHY = Logger.Logger.logLevels.reverse();
+const LOG_LEVELS = Object.keys(allLevels);
 
 const createLogger = (conf = {}) => {
     const {
-        logLevel = 'info',
-        isJsonOutput = false,
         context = {
             // If we're running from a Mojaloop helm chart deployment, we'll have a SIM_NAME
             simulator: process.env['SIM_NAME'],
             hostname: hostname(),
         },
-        opts = {
-            levels: SDK_LOGGER_HIERARCHY.slice(SDK_LOGGER_HIERARCHY.indexOf(logLevel)),
-            isJsonOutput,
-        },
-        stringify = Logger.buildStringify({ isJsonOutput })
+        isJsonOutput = false,
     } = conf;
 
-    return new Logger.Logger({ context, opts, stringify });
+    return new SdkLogger(context, { jsonOutput: isJsonOutput });
 };
 
+class SdkLogger extends ContextLogger {
+    // todo: - update ContextLogger.child() to be able to use it in SdkLogger
+    //       - add log() method to ContextLogger
+    //       - think about adding logLevel to ContextLoggerOptions
+    //       - export logLevels from ContextLogger (?)
+    child(context) {
+        const { mlLogger } = this;
+        const childContext = this.createContext(context);
+        return new SdkLogger(Object.assign({}, this.context, childContext), { mlLogger });
+    }
+
+    push(context) {
+        return this.child(context);
+    }
+
+    log(message, meta = null) {
+        this.silly(message, meta);
+    }
+}
+
 module.exports = {
-    createLogger
+    createLogger,
+    SdkLogger,
+    LOG_LEVELS,
 };

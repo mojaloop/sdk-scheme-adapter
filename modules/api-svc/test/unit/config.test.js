@@ -39,7 +39,7 @@ jest.mock('dotenv', () => ({
 
 jest.mock('@mojaloop/sdk-standard-components', () => ({
     WSO2Auth: jest.fn(),
-    Logger: jest.requireActual('@mojaloop/sdk-standard-components').Logger,
+    // Logger: jest.requireActual('@mojaloop/sdk-standard-components').Logger,
 }));
 
 describe('config', () => {

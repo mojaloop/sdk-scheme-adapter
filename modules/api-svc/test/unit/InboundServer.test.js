@@ -57,7 +57,7 @@ const os = require('os');
 const http = require('http');
 const https = require('https');
 
-const logger = createLogger({});
+const logger = createLogger();
 
 describe('Inbound Server', () => {
     describe('PUT /parties', () => {

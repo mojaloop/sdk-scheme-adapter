@@ -14,7 +14,7 @@ const logger = createLogger({
 
 const managementServer = new ManagementService.Server({
     port: Config.server.port,
-    logger: logger,
+    logger,
 });
 
 // Test API Server

@@ -20,35 +20,28 @@
  optionally within square brackets <email>.
 
  * Mojaloop Foundation
- - James Bush <jbush@mojaloop.io>
+ * Eugen Klymniuk <eugen.klymniuk@infitx.com>
 
  --------------
  ******/
-'use strict';
 
-require('dotenv').config();
-const fs = require('fs');
-const { from } = require('env-var');
-const { LOG_LEVELS } = require('../../../../src/lib/logger');
+const { createLogger, SdkLogger } = require('../../../src/lib/logger');
 
-function getFileContent (path) {
-    if (!fs.existsSync(path)) {
-        throw new Error('File doesn\'t exist');
-    }
-    return fs.readFileSync(path);
-}
+describe('SdkLogger Tests -->', () => {
+    test('should have log() method', () => {
+        const logger = createLogger();
+        expect(typeof logger.log).toBe('function');
+    });
 
-const env = from(process.env, {
-    asFileContent: (path) => getFileContent(path),
-    asFileListContent: (pathList) => pathList.split(',').map((path) => getFileContent(path)),
+    test('should have push() method', () => {
+        const logger = createLogger();
+        expect(typeof logger.push).toBe('function');
+    });
+
+    test('should return SdkLogger instance from push() method', () => {
+        const logger = createLogger();
+        const log = logger.push({ context: 'test' });
+        expect(log).toBeInstanceOf(SdkLogger);
+    });
 });
 
-module.exports = {
-    logLevel: env.get('LOG_LEVEL').default('info').asEnum(LOG_LEVELS),
-    server: {
-        port: env.get('SERVER_LISTEN_PORT').default('4005').asPortNumber(),
-    },
-    testAPIServer: {
-        port: env.get('TEST_LISTEN_PORT').default('5005').asPortNumber(),
-    },
-};
