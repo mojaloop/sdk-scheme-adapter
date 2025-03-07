@@ -26,10 +26,7 @@
  ******/
 
 const { hostname } = require('node:os');
-const { ContextLogger } = require('@mojaloop/central-services-logger/src/contextLogger');
-const { allLevels } = require('@mojaloop/central-services-logger/src/lib/constants');
-
-const LOG_LEVELS = Object.keys(allLevels);
+const { SdkLogger, LOG_LEVELS } = require('@mojaloop/sdk-standard-components').Logger;
 
 const createLogger = (conf = {}) => {
     const {
@@ -44,28 +41,7 @@ const createLogger = (conf = {}) => {
     return new SdkLogger(context, { jsonOutput: isJsonOutput });
 };
 
-class SdkLogger extends ContextLogger {
-    // todo: - update ContextLogger.child() to be able to use it in SdkLogger
-    //       - add log() method to ContextLogger
-    //       - think about adding logLevel to ContextLoggerOptions
-    //       - export logLevels from ContextLogger (?)
-    child(context) {
-        const { mlLogger } = this;
-        const childContext = this.createContext(context);
-        return new SdkLogger(Object.assign({}, this.context, childContext), { mlLogger });
-    }
-
-    push(context) {
-        return this.child(context);
-    }
-
-    log(message, meta = null) {
-        this.silly(message, meta);
-    }
-}
-
 module.exports = {
     createLogger,
-    SdkLogger,
     LOG_LEVELS,
 };
