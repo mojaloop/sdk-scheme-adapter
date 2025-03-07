@@ -2494,9 +2494,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-shared@npm:18.22.0":
-  version: 18.22.0
-  resolution: "@mojaloop/central-services-shared@npm:18.22.0"
+"@mojaloop/central-services-shared@npm:18.22.1":
+  version: 18.22.1
+  resolution: "@mojaloop/central-services-shared@npm:18.22.1"
   dependencies:
     "@hapi/catbox": 12.1.1
     "@hapi/catbox-memory": 5.0.1
@@ -2504,7 +2504,7 @@ __metadata:
     "@hapi/joi-date": 2.0.1
     "@mojaloop/inter-scheme-proxy-cache-lib": 2.3.7
     "@mojaloop/sdk-standard-components": 19.9.0
-    axios: 1.8.1
+    axios: 1.8.2
     clone: 2.1.2
     dotenv: 16.4.7
     env-var: 7.5.0
@@ -2542,13 +2542,13 @@ __metadata:
       optional: false
     ajv-keyboards:
       optional: false
-  checksum: 3f556c382b7d46dc6cf0e6e045462523c9013f3f31548992ae2d236de6abc725dcd0dc271b341aa1eae02716ff1fa6b8618e3bd3f55d78f810c9b08bd1d4ecf0
+  checksum: 27182cd5be860a5e622aba6c8a7521afc4c32b6511ec38d620e420fd8a505847eefc819d09980d86a7bb00e011b594abb747e61fd465038806ee08b52c1bdcfa
   languageName: node
   linkType: hard
 
-"@mojaloop/event-sdk@npm:14.2.0":
-  version: 14.2.0
-  resolution: "@mojaloop/event-sdk@npm:14.2.0"
+"@mojaloop/event-sdk@npm:14.3.0":
+  version: 14.3.0
+  resolution: "@mojaloop/event-sdk@npm:14.3.0"
   dependencies:
     "@grpc/grpc-js": 1.12.6
     "@grpc/proto-loader": 0.7.13
@@ -2572,7 +2572,7 @@ __metadata:
       optional: false
     "@mojaloop/central-services-stream":
       optional: true
-  checksum: da4de597ef1e889c6e445efabb394405d8501c6909fa527307e2e0680764929b899cfae305beb07150e333674cfb41ece3a3859559516cc1b8f2b9a4dc774b7f
+  checksum: 6173c7d96f64ecafb48e77842945cf7292c83f2f30deb96c9a2faf43936eef0800cbacf431c46993e545cacf138a56fa485f2560d721857a07f12eeb0a86b994
   languageName: node
   linkType: hard
 
@@ -2690,8 +2690,8 @@ __metadata:
     "@mojaloop/central-services-error-handling": 13.0.7
     "@mojaloop/central-services-logger": 11.5.5
     "@mojaloop/central-services-metrics": 12.4.5
-    "@mojaloop/central-services-shared": 18.22.0
-    "@mojaloop/event-sdk": 14.2.0
+    "@mojaloop/central-services-shared": 18.22.1
+    "@mojaloop/event-sdk": 14.3.0
     "@mojaloop/logging-bc-client-lib": 0.5.8
     "@mojaloop/ml-schema-transformer-lib": 2.5.6
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
@@ -2699,7 +2699,7 @@ __metadata:
     "@redocly/openapi-cli": 1.0.0-beta.95
     "@types/jest": 29.5.14
     ajv: 8.17.1
-    axios: 1.8.1
+    axios: 1.8.2
     axios-mock-adapter: 2.1.0
     babel-jest: 29.7.0
     body-parser: 1.20.3
@@ -2747,7 +2747,7 @@ __metadata:
   dependencies:
     "@eslint/compat": 1.2.7
     "@mojaloop/api-snippets": 17.8.0
-    "@mojaloop/central-services-shared": 18.22.0
+    "@mojaloop/central-services-shared": 18.22.1
     "@mojaloop/logging-bc-client-lib": 0.5.8
     "@mojaloop/logging-bc-public-types-lib": 0.5.4
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
@@ -2824,7 +2824,7 @@ __metadata:
   dependencies:
     "@eslint/compat": 1.2.7
     "@mojaloop/api-snippets": 17.8.0
-    "@mojaloop/central-services-shared": 18.22.0
+    "@mojaloop/central-services-shared": 18.22.1
     "@mojaloop/logging-bc-public-types-lib": 0.5.4
     "@mojaloop/platform-shared-lib-messaging-types-lib": 0.7.1
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": 0.5.18
