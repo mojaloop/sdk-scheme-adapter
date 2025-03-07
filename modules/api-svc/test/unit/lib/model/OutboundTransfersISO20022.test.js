@@ -35,15 +35,14 @@ process.env.SUPPORTED_CURRENCIES='USD';
 jest.mock('redis');
 jest.unmock('@mojaloop/sdk-standard-components');
 
-const { Logger } = require('@mojaloop/sdk-standard-components');
+const StateMachine = require('javascript-state-machine');
 const { MojaloopRequests } = jest.requireActual('@mojaloop/sdk-standard-components');
 
 const Cache = require('~/lib/cache');
-const { MetricsClient } = require('~/lib/metrics');
 const Model = require('~/lib/model').OutboundTransfersModel;
 const PartiesModel = require('~/lib/model').PartiesModel;
-
-const StateMachine = require('javascript-state-machine');
+const { createLogger } = require('~/lib/logger');
+const { MetricsClient } = require('~/lib/metrics');
 
 const defaultConfig = require('./data/defaultConfig');
 const transferRequest = require('./data/transferRequest');
@@ -160,7 +159,7 @@ describe('API_TYPE="iso20022"', () => {
 
     beforeEach(async () => {
         config = JSON.parse(JSON.stringify(defaultConfig));
-        logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests-cache' }, stringify: () => '' });
+        logger = createLogger({ context: { app: 'outbound-model-unit-tests-cache' }, stringify: () => '' });
         cache = new Cache({
             cacheUrl: 'redis://dummy:1234',
             logger,
@@ -187,7 +186,7 @@ describe('API_TYPE="iso20022"', () => {
 
         // mock the final method MojaloopRequests calls to send the http request
         // this allows us to spy on the request body being sent
-        jest.spyOn(Object.getPrototypeOf(MojaloopRequests.prototype), '_request').mockImplementation(async (opts, responseType) => {
+        jest.spyOn(Object.getPrototypeOf(MojaloopRequests.prototype), '_request').mockImplementation(async (opts) => {
             // console.log(`_reqeust called ${opts}`);
             if(opts.uri.includes('parties') && opts.method === 'GET') {
                 //get parties called

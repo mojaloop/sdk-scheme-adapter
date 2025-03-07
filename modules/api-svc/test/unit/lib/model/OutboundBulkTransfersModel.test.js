@@ -43,8 +43,9 @@ jest.mock('redis');
 const Cache = require('~/lib/cache');
 const Model = require('~/lib/model').OutboundBulkTransfersModel;
 
-const { MojaloopRequests, Logger } = require('@mojaloop/sdk-standard-components');
 const StateMachine = require('javascript-state-machine');
+const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
+const { createLogger } = require('~/lib/logger');
 const { SDKStateEnum } = require('../../../../src/lib/model/common');
 
 const defaultConfig = require('./data/defaultConfig');
@@ -102,7 +103,7 @@ describe('outboundBulkTransferModel', () => {
     }
 
     beforeAll(async () => {
-        logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests-cache' }, stringify: () => '' });
+        logger = createLogger({ context: { app: 'outbound-model-unit-tests-cache' }, stringify: () => '' });
     });
 
     beforeEach(async () => {

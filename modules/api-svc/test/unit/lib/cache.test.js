@@ -30,11 +30,11 @@
 jest.mock('redis');
 
 const randomUUID = require('@mojaloop/central-services-shared').Util.id({ type: 'ulid' });
-const { Logger } = require('@mojaloop/sdk-standard-components');
 const Cache = require('~/lib/cache');
+const { createLogger } = require('~/lib/logger');
 
 const createCache = async () => {
-    const logger = new Logger.Logger({ context: { app: 'model-unit-tests-cache' } });
+    const logger = createLogger({ context: { app: 'model-unit-tests-cache' } });
     const cache = new Cache({
         cacheUrl: 'redis://dummy:1234',
         logger,
