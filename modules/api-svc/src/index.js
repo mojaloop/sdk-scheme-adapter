@@ -69,10 +69,8 @@ class Server extends EventEmitter {
         this.conf = conf;
         this.logger = logger;
         this.cache = createCache(conf);
-        this.pingTimeout;
 
         this.metricsClient = new MetricsClient();
-
         this.metricsServer = new MetricsServer({
             port: this.conf.metrics.port,
             logger: this.logger
