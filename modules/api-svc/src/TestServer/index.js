@@ -194,12 +194,12 @@ class TestServer {
     constructor({ port, logger, cache, config }) {
         _initialize ||= _validator.initialise(yaml.load(require('fs').readFileSync(path.join(__dirname, 'api.yaml'))), config);
         this._port = port;
-        this._logger = logger;
-        this._api = new TestApi(this._logger.push({ component: 'api' }), _validator, cache, config);
+        this._logger = logger.push({ app: this.constructor.name });
+        this._api = new TestApi(this._logger.push({ component: 'TestApi' }), _validator, cache, config);
         this._server = http.createServer(this._api.callback());
         // TODO: why does this appear to need to be called after creating this._server (try reorder
         // it then run the tests)
-        this._wsapi = new WsServer(this._logger.push({ component: 'websocket-server' }), cache);
+        this._wsapi = new WsServer(this._logger.push({ component: 'WsServer' }), cache);
     }
 
     async start() {

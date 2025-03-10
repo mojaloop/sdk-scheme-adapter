@@ -25,25 +25,8 @@
  --------------
  ******/
 
-const { hostname } = require('node:os');
 const { randomBytes } = require('node:crypto');
-const { WSO2Auth, Logger } = require('@mojaloop/sdk-standard-components');
-
-const SDK_LOGGER_HIERARCHY = Logger.Logger.logLevels.reverse();
-
-const createLogger = (conf) => new Logger.Logger({
-    context: {
-    // If we're running from a Mojaloop helm chart deployment, we'll have a SIM_NAME
-        simulator: process.env['SIM_NAME'],
-        hostname: hostname(),
-    },
-    opts: {
-        // todo: should be done inside Logger code
-        levels: SDK_LOGGER_HIERARCHY.slice(SDK_LOGGER_HIERARCHY.indexOf(conf.logLevel)),
-        isJsonOutput: conf.isJsonOutput,
-    },
-    stringify: Logger.buildStringify({ isJsonOutput: conf.isJsonOutput }),
-});
+const { WSO2Auth } = require('@mojaloop/sdk-standard-components');
 
 const createAuthClient = (conf, logger) => {
     const { wso2, outbound } = conf;
@@ -88,7 +71,6 @@ const generateTraceparent = (traceId = randomBytes(16).toString('hex')) => {
 
 module.exports = {
     createAuthClient,
-    createLogger,
     generateTraceparent,
     transformHeadersIsoToFspiop
 };

@@ -37,17 +37,15 @@ jest.mock('../../src/lib/cache');
 jest.mock('../../src/lib/model/lib/requests', () => require('./lib/model/mockedLibRequests'));
 
 const supertest = require('supertest');
-const { Logger } = require('@mojaloop/sdk-standard-components');
-
 const InboundServer = require('../../src/InboundServer');
 const Cache = require('../../src/lib/cache');
 const config = require('../../src/config');
 const helpers = require('../helpers');
+const { logger } = require('../../src/lib/logger');
+
 const isoBodies = require('./inboundApi/data/isoBodies');
 const commonHttpHeaders = require('./data/commonHttpHeaders');
 const transactionRequestResponse = require('./lib/model/data/transactionRequestResponse');
-
-const logger = new Logger.Logger();
 
 const createIsoHeaders = resource => ({
     ...commonHttpHeaders,

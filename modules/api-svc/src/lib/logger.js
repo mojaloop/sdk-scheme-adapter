@@ -20,53 +20,30 @@
  optionally within square brackets <email>.
 
  * Mojaloop Foundation
- - Name Surname <name.surname@mojaloop.io>
+ * Eugen Klymniuk <eugen.klymniuk@infitx.com>
 
- * Crosslake
- - Lewis Daly <lewisd@crosslaketech.com>
  --------------
  ******/
-'use strict';
 
-jest.dontMock('redis');
+const { hostname } = require('node:os');
+const { loggerFactory, LOG_LEVELS } = require('@mojaloop/sdk-standard-components').Logger;
 
-const Cache = require('~/lib/cache');
-const { logger } = require('~/lib/logger');
-const env = require('../testEnv');
+const createLogger = (conf = {}) => {
+    const {
+        context = {
+            // If we're running from a Mojaloop helm chart deployment, we'll have a SIM_NAME
+            simulator: process.env['SIM_NAME'],
+            hostname: hostname(),
+        },
+        isJsonOutput = false,
+    } = conf;
 
-const defaultCacheConfig = {
-    cacheUrl: env.redisUrl,
-    logger: null
+    return loggerFactory({ context, isJsonOutput });
 };
 
-const createCache = async (config) => {
-    config.logger = logger.push({ context: { app: 'mojaloop-sdk-inboundCache' } });
-    const cache = new Cache(config);
-    await cache.connect();
+const logger = createLogger(); // global logger
 
-    return cache;
+module.exports = {
+    logger,
+    LOG_LEVELS,
 };
-
-describe('Cache', () => {
-    let cache;
-
-    beforeEach(async () => {
-        cache = await createCache(defaultCacheConfig);
-    });
-
-    afterEach(async () => {
-        await cache.disconnect();
-    });
-
-    test('Sets and retrieves an object in the cache', async () => {
-        // Arrange
-        const value = {test: true};
-
-        // Act
-        await cache.set('keyA', JSON.stringify(value));
-        const result = await cache.get('keyA');
-
-        // Assert
-        expect(result).toStrictEqual(value);
-    });
-});

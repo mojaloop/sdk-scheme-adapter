@@ -26,9 +26,10 @@
  ******/
 'use strict';
 
-const fs = require('fs');
 require('dotenv').config();
+const fs = require('fs');
 const { from } = require('env-var');
+const { LOG_LEVELS } = require('../../../../src/lib/logger');
 
 function getFileContent (path) {
     if (!fs.existsSync(path)) {
@@ -43,7 +44,7 @@ const env = from(process.env, {
 });
 
 module.exports = {
-    logLevel: env.get('LOG_LEVEL').default('info').asEnum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']),
+    logLevel: env.get('LOG_LEVEL').default('info').asEnum(LOG_LEVELS),
     server: {
         port: env.get('SERVER_LISTEN_PORT').default('4005').asPortNumber(),
     },

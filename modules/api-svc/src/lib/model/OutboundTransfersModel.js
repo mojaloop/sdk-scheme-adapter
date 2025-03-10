@@ -59,7 +59,7 @@ class OutboundTransfersModel {
     constructor(config) {
         this._idGenerator = idGenerator(config.idGenerator);
         this._cache = config.cache;
-        this._logger = config.logger.push({ component: OutboundTransfersModel.name });
+        this._logger = config.logger.push({ component: this.constructor.name });
         this._requestProcessingTimeoutSeconds = config.requestProcessingTimeoutSeconds;
         this._dfspId = config.dfspId;
         this._expirySeconds = config.expirySeconds;
