@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
-  "version": "24.2.0",
+  "version": "24.2.1-snapshot.0",
   "description": "mojaloop sdk-scheme-adapter",
   "license": "Apache-2.0",
   "homepage": "https://github.com/mojaloop/sdk-scheme-adapter",
