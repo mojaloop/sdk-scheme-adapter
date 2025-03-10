@@ -46,7 +46,7 @@ const {
 class FSPIOPEventHandler {
     constructor({ config, logger, cache, wso2 }) {
         this._conf = config;
-        this._logger = logger;
+        this._logger = logger.push({ component: this.constructor.name });
         this._cache = cache;
         this._wso2 = wso2;
 

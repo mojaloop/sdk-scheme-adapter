@@ -46,7 +46,7 @@ class Cache {
             throw new Error('Cache config requires cacheUrl and logger properties');
         }
 
-        this._logger = config.logger;
+        this._logger = config.logger.push({ component: this.constructor.name });
         this._url = config.cacheUrl;
 
         // a redis connection to handle get, set and publish operations

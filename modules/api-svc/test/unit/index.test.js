@@ -25,26 +25,22 @@
  --------------
  ******/
 
-'use strict';
-
-jest.mock('dotenv', () => ({
-    config: jest.fn()
-}));
-
-const promClient = require('prom-client');
-const defaultConfig = require('./data/defaultConfig.json');
-const { Logger } = require('@mojaloop/sdk-standard-components');
-
-const TestControlServer = require('./ControlServer');
-
-
 process.env.PEER_ENDPOINT = '172.17.0.3:4000';
 process.env.BACKEND_ENDPOINT = '172.17.0.5:4000';
 process.env.CACHE_URL = 'redis://172.17.0.2:6379';
 process.env.MGMT_API_WS_URL = '0.0.0.0';
 process.env.SUPPORTED_CURRENCIES='USD';
 
-const index = require('~/index.js');
+jest.mock('dotenv', () => ({
+    config: jest.fn()
+}));
+
+const promClient = require('prom-client');
+const index = require('~/index');
+const { logger } = require('~/lib/logger');
+
+const defaultConfig = require('./data/defaultConfig.json');
+const TestControlServer = require('./ControlServer');
 
 describe('index.js', () => {
     beforeEach(() => {
@@ -62,11 +58,10 @@ describe('index.js', () => {
 });
 
 describe('Server', () => {
-    let server, controlServer, conf, logger;
+    let server, controlServer, conf;
 
     beforeEach(async () => {
         promClient.register.clear();
-        logger = new Logger.Logger({ stringify: () => '' });
         conf = JSON.parse(JSON.stringify(defaultConfig));
         conf.enableTestFeatures = true;
         conf.pm4mlEnabled = true;

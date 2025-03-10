@@ -2,12 +2,13 @@ const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
 const supertest = require('supertest');
-const { Logger, WSO2Auth } = require('@mojaloop/sdk-standard-components');
+const { WSO2Auth } = require('@mojaloop/sdk-standard-components');
 
+const { logger } = require('~/lib/logger');
+const { MetricsClient } = require('~/lib/metrics');
 const Validate = require('~/lib/validate');
 const InboundServer = require('~/InboundServer');
 const OutboundServer = require('~/OutboundServer');
-const { MetricsClient } = require('~/lib/metrics');
 const Cache = require('~/lib/cache');
 
 const ServerType = {
@@ -50,7 +51,6 @@ const createValidators = async () => {
 };
 
 const createTestServers = async (config) => {
-    const logger = new Logger.Logger({ stringify: () => '' });
     const defConfig = structuredClone(config);
     const cache = new Cache({
         cacheUrl: defConfig.cacheUrl,

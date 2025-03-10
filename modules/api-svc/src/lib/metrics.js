@@ -113,12 +113,12 @@ class MetricsClient {
 class MetricsServer {
     /**
       * @param {number} port metrics server listen port
-      * @param {Logger} logger Logger
+      * @param {Logger} logger SdkLogger
       * @param {Object} prometheusClient Prometheus client instance
       */
     constructor({ port, logger }) {
         this._port = port;
-        this._logger = logger;
+        this._logger = logger.push({ component: this.constructor.name });
         this._prometheusClient = PrometheusClient;
         this._prometheusRegister = PrometheusClient.register;
         this._api = this.setupApi();

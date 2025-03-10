@@ -28,7 +28,7 @@
 const { BackendEventHandler } = require('../../src/BackendEventHandler');
 const { BackendRequests } = require('../../src/lib/model/lib/requests');
 const { SDKStateEnum } = require('../../src/lib/model/common');
-const { Logger } = require('@mojaloop/sdk-standard-components');
+const { logger } = require('../../src/lib/logger');
 const config = require('./data/defaultConfig.json');
 const bulkTransactionResponse = require('./lib/model/data/bulkTransactionResponse.json');
 const {
@@ -41,8 +41,6 @@ const {
     KafkaDomainEventConsumer,
     KafkaDomainEventProducer,
 } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
-
-const logger = new Logger.Logger({ context: { app: 'BackendEventHandler' }, stringify: () => '' });
 
 describe('BackendEventHandler', () => {
     const putBulkTransactions = jest.spyOn(BackendRequests.prototype, 'putBulkTransactions').mockImplementation(async () => ({}));

@@ -21,17 +21,15 @@ process.env.SUPPORTED_CURRENCIES='USD';
 
 jest.mock('../../../src/lib/model');
 
-const { Logger } = require('@mojaloop/sdk-standard-components');
 const handlers = require('../../../src/InboundServer/handlers');
 const Model = require('../../../src/lib/model').InboundTransfersModel;
 const QuotesModel = require('../../../src/lib/model').QuotesModel;
 const PartiesModel = require('../../../src/lib/model').PartiesModel;
 const TransfersModel = require('../../../src/lib/model').TransfersModel;
+const { logger } = require('../../../src/lib/logger');
 
 const { createIsoHeader } = require('../../helpers');
 const isoBodies = require('./data/isoBodies.json');
-
-const logger = new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' } });
 
 describe('Inbound API handlers transforming incoming ISO20022 message bodies', () => {
     describe('POST /quotes', () => {
@@ -92,7 +90,7 @@ describe('Inbound API handlers transforming incoming ISO20022 message bodies', (
                             'ID': '1234567890'
                         }
                     },
-                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
+                    logger,
                     cache: {
                         publish: jest.fn(() => Promise.resolve(true))
                     }
@@ -142,7 +140,7 @@ describe('Inbound API handlers transforming incoming ISO20022 message bodies', (
                             'ID': '1234567890'
                         }
                     },
-                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
+                    logger,
                     cache: {
                         publish: jest.fn(() => Promise.resolve(true))
                     }
@@ -212,7 +210,7 @@ describe('Inbound API handlers transforming incoming ISO20022 message bodies', (
                     conf: {
                         isIsoApi: true,
                     },
-                    logger: new Logger.Logger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' }),
+                    logger,
                     cache: {
                         publish: jest.fn(() => Promise.resolve(true))
                     }

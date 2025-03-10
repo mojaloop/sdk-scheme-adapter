@@ -44,7 +44,7 @@ const TRACESTATE_KEY_CALLBACK_START_TS = 'tx_callback_start_ts';
 class InboundTransfersModel {
     constructor(config) {
         this._cache = config.cache;
-        this._logger = config.logger;
+        this._logger = config.logger.push({ component: this.constructor.name });
         this._dfspId = config.dfspId;
         this._expirySeconds = config.expirySeconds;
         this._rejectTransfersOnExpiredQuotes = config.rejectTransfersOnExpiredQuotes;
