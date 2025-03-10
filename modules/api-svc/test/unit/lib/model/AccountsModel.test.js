@@ -44,7 +44,7 @@ const { AccountsModel } = require('~/lib/model');
 
 const StateMachine = require('javascript-state-machine');
 const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
-const { createLogger } = require('~/lib/logger');
+const { logger } = require('~/lib/logger');
 const { SDKStateEnum } = require('../../../../src/lib/model/common');
 
 const defaultConfig = require('./data/defaultConfig');
@@ -67,7 +67,6 @@ function generateAccounts(count, currencies) {
 
 
 describe('AccountsModel', () => {
-    let logger;
     let cache;
 
     async function testCreateAccount(count, currencies) {
@@ -113,10 +112,6 @@ describe('AccountsModel', () => {
         expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
         expect(StateMachine.__instance.state).toBe('succeeded');
     }
-
-    beforeAll(() => {
-        logger = createLogger({ context: { app: 'outbound-model-unit-tests-cache' }, stringify: () => '' });
-    });
 
     beforeEach(async () => {
         cache = new Cache({

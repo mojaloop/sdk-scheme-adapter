@@ -29,14 +29,14 @@
 jest.unmock('@mojaloop/sdk-standard-components');
 
 const { mockAxios } = require('../../../../../helpers');
-const { createLogger } = require('~/lib/logger');
+const { logger } = require('~/lib/logger');
 
 const { BackendRequests, HTTPResponseError } = require('../../../../../../src/lib/model/lib/requests');
 const defaultConfig = require('../../data/defaultConfig');
 
 const config = {
     ...defaultConfig,
-    logger: createLogger(),
+    logger,
 };
 
 describe('backendRequests Tests -->', () => {

@@ -42,7 +42,7 @@ jest.mock('redis');
 
 const StateMachine = require('javascript-state-machine');
 const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
-const { createLogger } = require('~/lib/logger');
+const { logger } = require('~/lib/logger');
 const Cache = require('~/lib/cache');
 const Model = require('~/lib/model').OutboundBulkQuotesModel;
 
@@ -60,7 +60,6 @@ const emitBulkQuoteResponseCacheMessage = (cache, bulkQuoteId, bulkQuoteResponse
 describe('OutboundBulkQuotesModel', () => {
     let bulkQuoteResponse;
     let config;
-    let logger;
     let cache;
 
     /**
@@ -107,7 +106,6 @@ describe('OutboundBulkQuotesModel', () => {
     }
 
     beforeAll(async () => {
-        logger = createLogger({ context: { app: 'outbound-model-unit-tests-cache' }, stringify: () => '' });
         bulkQuoteResponse = JSON.parse(JSON.stringify(bulkQuoteResponseTemplate));
     });
 

@@ -45,7 +45,7 @@ const Model = require('~/lib/model').OutboundBulkTransfersModel;
 
 const StateMachine = require('javascript-state-machine');
 const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
-const { createLogger } = require('~/lib/logger');
+const { logger } = require('~/lib/logger');
 const { SDKStateEnum } = require('../../../../src/lib/model/common');
 
 const defaultConfig = require('./data/defaultConfig');
@@ -57,7 +57,6 @@ const emitBulkTransferFulfilCacheMessage = (cache, bulkTransferId, fulfils) => c
 
 describe('outboundBulkTransferModel', () => {
     let config;
-    let logger;
     let cache;
 
     /**
@@ -101,10 +100,6 @@ describe('outboundBulkTransferModel', () => {
             await expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
         }
     }
-
-    beforeAll(async () => {
-        logger = createLogger({ context: { app: 'outbound-model-unit-tests-cache' }, stringify: () => '' });
-    });
 
     beforeEach(async () => {
         config = JSON.parse(JSON.stringify(defaultConfig));

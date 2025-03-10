@@ -2695,7 +2695,7 @@ __metadata:
     "@mojaloop/logging-bc-client-lib": 0.5.8
     "@mojaloop/ml-schema-transformer-lib": 2.5.6
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
-    "@mojaloop/sdk-standard-components": 19.10.0-snapshot.1
+    "@mojaloop/sdk-standard-components": 19.10.0-snapshot.2
     "@redocly/openapi-cli": 1.0.0-beta.95
     "@types/jest": 29.5.14
     ajv: 8.17.1
@@ -2874,9 +2874,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mojaloop/sdk-standard-components@npm:19.10.0-snapshot.1":
-  version: 19.10.0-snapshot.1
-  resolution: "@mojaloop/sdk-standard-components@npm:19.10.0-snapshot.1"
+"@mojaloop/sdk-standard-components@npm:19.10.0-snapshot.2":
+  version: 19.10.0-snapshot.2
+  resolution: "@mojaloop/sdk-standard-components@npm:19.10.0-snapshot.2"
   dependencies:
     "@mojaloop/central-services-logger": 11.5.5
     "@mojaloop/ml-schema-transformer-lib": 2.5.6
@@ -2888,7 +2888,7 @@ __metadata:
     ilp-packet-v1: 2.2.0
     jsonwebtoken: 9.0.2
     jws: 4.0.0
-  checksum: 90ec21d0f6baa93e92836fcac9158f0c336f926ebdd0b8bdc865c634450c0267c5785d41fba81e3860c7cb66cdec74439be265e785fc161ce91bd893bc01526f
+  checksum: c7ec67c802e70cb333f1ffe84d0fd8c8921e69cdf98798138fcb00f88c24fd76b404d6874b3680e683e8e2c0a8364f79b1acc0f4bcfdf33959299786a4ff73b3
   languageName: node
   linkType: hard
 

@@ -31,7 +31,7 @@
 jest.dontMock('redis');
 
 const Cache = require('~/lib/cache');
-const { createLogger } = require('~/lib/logger');
+const { logger } = require('~/lib/logger');
 const env = require('../testEnv');
 
 const defaultCacheConfig = {
@@ -40,7 +40,7 @@ const defaultCacheConfig = {
 };
 
 const createCache = async (config) => {
-    config.logger = createLogger({ context: { app: 'mojaloop-sdk-inboundCache' } });
+    config.logger = logger.push({ context: { app: 'mojaloop-sdk-inboundCache' } });
     const cache = new Cache(config);
     await cache.connect();
 

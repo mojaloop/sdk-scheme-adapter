@@ -40,7 +40,7 @@ jest.mock('redis');
 
 const StateMachine = require('javascript-state-machine');
 const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
-const { createLogger } = require('~/lib/logger');
+const { logger } = require('~/lib/logger');
 const Cache = require('~/lib/cache');
 const Model = require('~/lib/model').OutboundRequestToPayTransferModel;
 
@@ -64,7 +64,6 @@ const emitTransferFulfilCacheMessage = (cache, transferId, fulfil) => cache.publ
 describe('outboundRequestToPayTransferModel', () => {
     let quoteResponse;
     let config;
-    let logger;
     let cache;
 
     /**
@@ -81,7 +80,6 @@ describe('outboundRequestToPayTransferModel', () => {
 
 
     beforeAll(async () => {
-        logger = createLogger({ context: { app: 'outbound-model-unit-tests-cache' }, stringify: () => '' });
         quoteResponse = JSON.parse(JSON.stringify(quoteResponseTemplate));
     });
 

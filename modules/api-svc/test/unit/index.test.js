@@ -37,7 +37,7 @@ jest.mock('dotenv', () => ({
 
 const promClient = require('prom-client');
 const index = require('~/index');
-const { createLogger } = require('~/lib/logger');
+const { logger } = require('~/lib/logger');
 
 const defaultConfig = require('./data/defaultConfig.json');
 const TestControlServer = require('./ControlServer');
@@ -58,11 +58,10 @@ describe('index.js', () => {
 });
 
 describe('Server', () => {
-    let server, controlServer, conf, logger;
+    let server, controlServer, conf;
 
     beforeEach(async () => {
         promClient.register.clear();
-        logger = createLogger({ stringify: () => '' });
         conf = JSON.parse(JSON.stringify(defaultConfig));
         conf.enableTestFeatures = true;
         conf.pm4mlEnabled = true;

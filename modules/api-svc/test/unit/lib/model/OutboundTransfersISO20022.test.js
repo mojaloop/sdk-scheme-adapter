@@ -41,7 +41,7 @@ const { MojaloopRequests } = jest.requireActual('@mojaloop/sdk-standard-componen
 const Cache = require('~/lib/cache');
 const Model = require('~/lib/model').OutboundTransfersModel;
 const PartiesModel = require('~/lib/model').PartiesModel;
-const { createLogger } = require('~/lib/logger');
+const { logger } = require('~/lib/logger');
 const { MetricsClient } = require('~/lib/metrics');
 
 const defaultConfig = require('./data/defaultConfig');
@@ -154,12 +154,10 @@ const emitTransferFulfilCacheMessage = (cache, transferId, fulfil) => cache.publ
 describe('API_TYPE="iso20022"', () => {
     let config;
     let cache;
-    let logger;
     let metricsClient;
 
     beforeEach(async () => {
         config = JSON.parse(JSON.stringify(defaultConfig));
-        logger = createLogger({ context: { app: 'outbound-model-unit-tests-cache' }, stringify: () => '' });
         cache = new Cache({
             cacheUrl: 'redis://dummy:1234',
             logger,

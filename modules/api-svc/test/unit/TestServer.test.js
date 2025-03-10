@@ -42,7 +42,7 @@ const WebSocket = require('ws');
 const TestServer = require('~/TestServer');
 const Cache = require('~/lib/cache');
 const InboundServer = require('~/InboundServer');
-const { createLogger } = require('~/lib/logger');
+const { logger } = require('~/lib/logger');
 
 const defaultConfig = require('./data/defaultConfig');
 const putPartiesBody = require('./data/putPartiesBody');
@@ -60,13 +60,10 @@ const createWsClient = async (port, path) => {
 };
 
 describe('Test Server', () => {
-    let testServer, inboundServer, inboundReq, testReq, serverConfig, wsClients, testServerPort,
-        logger, cache;
+    let testServer, inboundServer, inboundReq, testReq, serverConfig, wsClients, testServerPort, cache;
 
     beforeEach(async () => {
         Cache.mockClear();
-
-        logger = createLogger({ stringify: () => '' });
 
         serverConfig = {
             ...JSON.parse(JSON.stringify(defaultConfig)),

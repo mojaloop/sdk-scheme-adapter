@@ -41,7 +41,7 @@ jest.mock('~/lib/model/lib/requests',() => require('./mockedLibRequests'));
 
 const randomUUID = require('@mojaloop/central-services-shared').Util.id({type: 'ulid'});
 const { MojaloopRequests, Ilp } = require('@mojaloop/sdk-standard-components');
-const { createLogger } = require('~/lib/logger');
+const { logger } = require('~/lib/logger');
 const { BackendRequests, HTTPResponseError } = require('~/lib/model/lib/requests');
 const Cache = require('~/lib/cache');
 const shared = require('~/lib/model/lib/shared');
@@ -72,11 +72,6 @@ describe('inboundModel', () => {
     let config;
     let mockArgs;
     let mockTxnReqArgs;
-    let logger;
-
-    beforeAll(async () => {
-        logger = createLogger({ context: { app: 'inbound-model-unit-tests' }, stringify: () => '' });
-    });
 
     beforeEach(async () => {
         config = JSON.parse(JSON.stringify(defaultConfig));

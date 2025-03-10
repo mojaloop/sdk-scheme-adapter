@@ -48,7 +48,7 @@ jest.mock('~/lib/cache');
 jest.mock('~/lib/model/lib/requests', () => require('./lib/model/mockedLibRequests'));
 
 const { Jws } = require('@mojaloop/sdk-standard-components');
-const { createLogger } = require('~/lib/logger');
+const { logger } = require('~/lib/logger');
 const InboundServer = require('~/InboundServer');
 const Cache = require('~/lib/cache');
 const path = require('path');
@@ -56,8 +56,6 @@ const fs = require('fs');
 const os = require('os');
 const http = require('http');
 const https = require('https');
-
-const logger = createLogger();
 
 describe('Inbound Server', () => {
     describe('PUT /parties', () => {

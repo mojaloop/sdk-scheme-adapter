@@ -45,7 +45,7 @@ const Model = require('~/lib/model').OutboundTransfersModel;
 const PartiesModel = require('~/lib/model').PartiesModel;
 const Cache = require('~/lib/cache');
 const { MetricsClient } = require('~/lib/metrics');
-const { createLogger } = require('~/lib/logger');
+const { logger } = require('~/lib/logger');
 
 const mocks = require('./data/mocks');
 const defaultConfig = require('./data/defaultConfig');
@@ -82,7 +82,6 @@ const dummyRequestsModuleResponse = {
 describe('OutboundTransfersModel Tests', () => {
     let quoteResponse;
     let config;
-    let logger;
     let cache;
     let metricsClient;
 
@@ -179,7 +178,6 @@ describe('OutboundTransfersModel Tests', () => {
     }
 
     beforeAll(async () => {
-        logger = createLogger({ context: { app: 'outbound-model-unit-tests-cache' }, stringify: () => '' });
         quoteResponse = JSON.parse(JSON.stringify(quoteResponseTemplate));
         metricsClient = new MetricsClient();
     });
@@ -1660,7 +1658,7 @@ describe('OutboundTransfersModel Tests', () => {
         beforeEach(() => {
             model = new Model({
                 cache,
-                logger: createLogger({ context: { app: 'outbound-model-fx-flow-unit-tests' } }),
+                logger,
                 metricsClient,
                 ...config,
             });

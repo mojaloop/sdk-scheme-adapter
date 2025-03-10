@@ -24,12 +24,10 @@ const Model = require('~/lib/model').InboundTransfersModel;
 const QuotesModel = require('~/lib/model').QuotesModel;
 const PartiesModel = require('~/lib/model').PartiesModel;
 const TransfersModel = require('~/lib/model').TransfersModel;
-const { createLogger } = require('~/lib/logger');
+const { logger } = require('~/lib/logger');
 
 const mockArguments = require('./data/mockArguments');
 const mockTransactionRequestData = require('./data/mockTransactionRequest');
-
-const logger = createLogger({ context: { app: 'inbound-handlers-unit-test' }, stringify: () => '' });
 
 describe('Inbound API handlers:', () => {
     let mockArgs;

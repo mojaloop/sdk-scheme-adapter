@@ -28,7 +28,7 @@
 jest.mock('~/lib/cache');
 
 const ControlAgent = require('~/ControlAgent');
-const { createLogger } = require('~/lib/logger');
+const { logger } = require('~/lib/logger');
 const TestControlServer = require('./ControlServer');
 
 // TODO:
@@ -55,12 +55,11 @@ describe('ControlAgent', () => {
     });
 
     describe('API', () => {
-        let server, logger, client;
+        let server, client;
         const appConfig = { control: { port: 4005 }, what: 'ever' };
         const changedConfig = { ...appConfig, some: 'thing' };
 
         beforeAll(async () => {
-            logger = createLogger({ stringify: () => '' });
             server = new TestControlServer.Server({ logger, appConfig });
             client = await ControlAgent.Client.Create({
                 address: 'localhost',

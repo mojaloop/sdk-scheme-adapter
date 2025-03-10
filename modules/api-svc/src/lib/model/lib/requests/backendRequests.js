@@ -37,7 +37,7 @@ const { buildUrl, HTTPResponseError } = require('./common');
 class BackendRequests {
     constructor(config) {
         this.config = config;
-        this.logger = config.logger.push({ component: BackendRequests.name });
+        this.logger = config.logger.push({ component: this.constructor.name });
         this.requester = createHttpRequester({ logger: this.logger });
 
         // FSPID of THIS DFSP
