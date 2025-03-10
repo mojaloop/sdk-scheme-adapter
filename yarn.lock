@@ -2695,7 +2695,7 @@ __metadata:
     "@mojaloop/logging-bc-client-lib": 0.5.8
     "@mojaloop/ml-schema-transformer-lib": 2.5.6
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
-    "@mojaloop/sdk-standard-components": 19.10.0-snapshot.0
+    "@mojaloop/sdk-standard-components": 19.10.0-snapshot.1
     "@redocly/openapi-cli": 1.0.0-beta.95
     "@types/jest": 29.5.14
     ajv: 8.17.1
@@ -2754,7 +2754,7 @@ __metadata:
     "@types/convict": 6.1.6
     "@types/express": 5.0.0
     "@types/jest": 29.5.14
-    "@types/node": 22.13.9
+    "@types/node": 22.13.10
     "@types/node-cache": 4.2.5
     "@types/supertest": 6.0.2
     "@types/swagger-ui-express": 4.1.8
@@ -2792,7 +2792,7 @@ __metadata:
     "@types/convict": 6.1.6
     "@types/express": 5.0.0
     "@types/jest": 29.5.14
-    "@types/node": 22.13.9
+    "@types/node": 22.13.10
     "@types/node-cache": 4.2.5
     "@types/supertest": 6.0.2
     "@types/swagger-ui-express": 4.1.8
@@ -2828,7 +2828,7 @@ __metadata:
     "@mojaloop/logging-bc-public-types-lib": 0.5.4
     "@mojaloop/platform-shared-lib-messaging-types-lib": 0.7.1
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": 0.5.18
-    "@types/node": 22.13.9
+    "@types/node": 22.13.10
     "@types/uuid": 10.0.0
     "@typescript-eslint/eslint-plugin": 8.26.0
     "@typescript-eslint/parser": 8.26.0
@@ -2851,7 +2851,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter@workspace:."
   dependencies:
     "@types/jest": 29.5.14
-    "@types/node": 22.13.9
+    "@types/node": 22.13.10
     "@types/node-cache": 4.2.5
     "@typescript-eslint/eslint-plugin": 8.26.0
     "@typescript-eslint/parser": 8.26.0
@@ -2874,9 +2874,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mojaloop/sdk-standard-components@npm:19.10.0-snapshot.0":
-  version: 19.10.0-snapshot.0
-  resolution: "@mojaloop/sdk-standard-components@npm:19.10.0-snapshot.0"
+"@mojaloop/sdk-standard-components@npm:19.10.0-snapshot.1":
+  version: 19.10.0-snapshot.1
+  resolution: "@mojaloop/sdk-standard-components@npm:19.10.0-snapshot.1"
   dependencies:
     "@mojaloop/central-services-logger": 11.5.5
     "@mojaloop/ml-schema-transformer-lib": 2.5.6
@@ -2888,7 +2888,7 @@ __metadata:
     ilp-packet-v1: 2.2.0
     jsonwebtoken: 9.0.2
     jws: 4.0.0
-  checksum: a4b2556870999c412f9b89fa397763c01da826297f3831f01bbe9c348620e4d038f91a3ae1c9a2cd58446f48a1df8ba41cf08254289d649f76750ea3f9c74748
+  checksum: 90ec21d0f6baa93e92836fcac9158f0c336f926ebdd0b8bdc865c634450c0267c5785d41fba81e3860c7cb66cdec74439be265e785fc161ce91bd893bc01526f
   languageName: node
   linkType: hard
 
@@ -3959,12 +3959,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:22.13.9":
-  version: 22.13.9
-  resolution: "@types/node@npm:22.13.9"
+"@types/node@npm:22.13.10":
+  version: 22.13.10
+  resolution: "@types/node@npm:22.13.10"
   dependencies:
     undici-types: ~6.20.0
-  checksum: d36ae841fa20aa01aefecfeb9363cbc9a5d7ede711fd6bdd9e872975987d6ce2720d4196c8cc7d2c53b3353a121250f96550873f18a73477de86b4198b25bab5
+  checksum: 1cd6b899df728732c60c0defad63e26ca18d87a3b81bd75666fe9aed6cdf9e488433976b22ffcabfdeef9d351cf8ff94853b0686e6708ef62065482ccf5b0a6e
   languageName: node
   linkType: hard
 

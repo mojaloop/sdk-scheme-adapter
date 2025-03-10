@@ -26,7 +26,7 @@
  ******/
 
 const { hostname } = require('node:os');
-const { SdkLogger, LOG_LEVELS } = require('@mojaloop/sdk-standard-components').Logger;
+const { loggerFactory, LOG_LEVELS } = require('@mojaloop/sdk-standard-components').Logger;
 
 const createLogger = (conf = {}) => {
     const {
@@ -38,7 +38,7 @@ const createLogger = (conf = {}) => {
         isJsonOutput = false,
     } = conf;
 
-    return new SdkLogger(context, { jsonOutput: isJsonOutput });
+    return loggerFactory({ context, isJsonOutput });
 };
 
 module.exports = {
