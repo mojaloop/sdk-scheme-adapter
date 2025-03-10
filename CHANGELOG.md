@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [24.3.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.2.0...v24.3.0) (2025-03-10)
+
+
+### Features
+
+* **csi-1253:** switched to use ContextLogger ([#558](https://github.com/mojaloop/sdk-scheme-adapter/issues/558)) ([5861cf6](https://github.com/mojaloop/sdk-scheme-adapter/commit/5861cf686a7e4de900d77f453f0e17b293471ef0))
+
 ## [24.2.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.1.3...v24.2.0) (2025-03-05)
 
 
