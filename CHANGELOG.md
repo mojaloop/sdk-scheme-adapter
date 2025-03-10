@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.3.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.3.1...v24.3.2) (2025-03-10)
+
+
+### Chore
+
+* fix axios high vulnerability ([#561](https://github.com/mojaloop/sdk-scheme-adapter/issues/561)) ([f118cc4](https://github.com/mojaloop/sdk-scheme-adapter/commit/f118cc48fda089e4f21fdd26a190eea0df1f5318))
+
 ### [24.3.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.3.0...v24.3.1) (2025-03-10)
 
 
