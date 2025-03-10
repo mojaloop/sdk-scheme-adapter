@@ -53,7 +53,7 @@ let _initialize;
 class OutboundApi extends EventEmitter {
     constructor(conf, logger, cache, validator, metricsClient, wso2, eventProducer, eventLogger) {
         super({ captureExceptions: true });
-        this._logger = logger;
+        this._logger = logger.push({ component: this.constructor.name });
         this._api = new Koa();
         this._conf = conf;
         this._cache = cache;
@@ -109,7 +109,7 @@ class OutboundServer extends EventEmitter {
     constructor(conf, logger, cache, metricsClient, wso2) {
         super({ captureExceptions: true });
         this._conf = conf;
-        this._logger = logger;
+        this._logger = logger.push({ app: this.constructor.name });
         this._server = null;
         if (conf.backendEventHandler.enabled) {
             this._eventLogger = new DefaultLogger(BC_CONFIG.bcName, 'backend-api-handler', '0.0.1', conf.logLevel);
@@ -118,7 +118,7 @@ class OutboundServer extends EventEmitter {
         }
         this._api = new OutboundApi(
             conf,
-            this._logger.push({ component: 'api' }),
+            this._logger,
             cache,
             _validator,
             metricsClient,

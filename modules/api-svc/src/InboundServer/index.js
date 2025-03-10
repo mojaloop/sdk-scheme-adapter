@@ -62,7 +62,7 @@ class InboundApi extends EventEmitter {
         }
         this._api = InboundApi._SetupApi({
             conf,
-            logger,
+            logger: logger.push({ component: this.constructor.name }),
             validator,
             cache,
             jwsVerificationKeys: this._jwsVerificationKeys,
@@ -159,10 +159,10 @@ class InboundServer extends EventEmitter {
     constructor(conf, logger, cache, wso2) {
         super({ captureExceptions: true });
         this._conf = conf;
-        this._logger = logger;
+        this._logger = logger.push({ app: this.constructor.name });
         this._api = new InboundApi(
             conf,
-            this._logger.push({ component: 'api' }),
+            this._logger,
             cache,
             _validator,
             wso2,

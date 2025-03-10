@@ -41,13 +41,11 @@ const InboundServer = require('../../src/InboundServer');
 const Cache = require('../../src/lib/cache');
 const config = require('../../src/config');
 const helpers = require('../helpers');
-const { createLogger } = require('../../src/lib/logger');
+const { logger } = require('../../src/lib/logger');
 
 const isoBodies = require('./inboundApi/data/isoBodies');
 const commonHttpHeaders = require('./data/commonHttpHeaders');
 const transactionRequestResponse = require('./lib/model/data/transactionRequestResponse');
-
-const logger = createLogger();
 
 const createIsoHeaders = resource => ({
     ...commonHttpHeaders,

@@ -26,7 +26,7 @@
  ******/
 
 const { Ilp } = jest.requireActual('@mojaloop/sdk-standard-components');
-const { createLogger } = require('../../src/lib/logger');
+const { logger } = require('../../src/lib/logger');
 const mocks = require('./lib/model/data/mocks');
 
 describe('ILP Tests -->', () => {
@@ -37,7 +37,7 @@ describe('ILP Tests -->', () => {
     beforeEach(() => {
         ilp = Ilp.ilpFactory(Ilp.ILP_VERSIONS.v4, {
             secret: 'test',
-            logger: createLogger(),
+            logger,
         });
         fxQuotesPayload = mocks.mockFxQuotesPayload();
         fxpBeResponse = mocks.mockFxQuotesInternalResponse();

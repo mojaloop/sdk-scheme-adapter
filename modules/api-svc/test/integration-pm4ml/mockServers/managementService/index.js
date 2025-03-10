@@ -1,16 +1,9 @@
 const express = require('express');
-const { createLogger } = require('../../../../src/lib/logger');
+const { logger } = require('../../../../src/lib/logger');
 const Config = require('./config');
 const ManagementService = require('./server');
 
 const app = express();
-
-const logger = createLogger({
-    context: {
-        simulator: 'test',
-        hostname: 'test',
-    }
-});
 
 const managementServer = new ManagementService.Server({
     port: Config.server.port,

@@ -41,7 +41,9 @@ const createLogger = (conf = {}) => {
     return loggerFactory({ context, isJsonOutput });
 };
 
+const logger = createLogger(); // global logger
+
 module.exports = {
-    createLogger,
+    logger,
     LOG_LEVELS,
 };

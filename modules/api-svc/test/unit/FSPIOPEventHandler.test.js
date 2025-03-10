@@ -42,7 +42,7 @@ const {
 } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
 
 const { FSPIOPEventHandler } = require('../../src/FSPIOPEventHandler');
-const { createLogger } = require('../../src/lib/logger');
+const { logger } = require('../../src/lib/logger');
 const {
     OutboundBulkQuotesModel,
     PartiesModel,
@@ -52,8 +52,6 @@ const {
 
 const bulkQuoteRequest = require('../unit/lib/model/data/bulkQuoteRequest.json');
 const config = require('./data/defaultConfig.json');
-
-const logger = createLogger({ context: { app: 'FSPIOPEventHandler' }, stringify: () => '' });
 
 describe('FSPIOPEventHandler', () => {
     let fspiopEventHandler;

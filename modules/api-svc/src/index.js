@@ -49,25 +49,13 @@ const Validate = require('./lib/validate');
 const Cache = require('./lib/cache');
 const { SDKStateEnum } = require('./lib/model/common');
 const { createAuthClient } = require('./lib/utils');
-const { createLogger } = require('./lib/logger');
-
-const LOG_ID = {
-    INBOUND:   { app: 'mojaloop-connector-inbound-api' },
-    OUTBOUND:  { app: 'mojaloop-connector-outbound-api' },
-    BACKEND_EVENT_HANDLER:  { app: 'backend-event-handler' },
-    FSPIOP_EVENT_HANDLER:  { app: 'fspiop-event-handler' },
-    TEST:      { app: 'mojaloop-connector-test-api' },
-    OAUTHTEST: { app: 'mojaloop-connector-oauth-test-server' },
-    CONTROL:   { app: 'mojaloop-connector-control-client' },
-    METRICS:   { app: 'mojaloop-connector-metrics' },
-    CACHE:     { component: 'cache' },
-};
+const { logger } = require('./lib/logger');
 
 const PING_INTERVAL_MS = 30000;
 
-const createCache = (config, logger) => new Cache({
+const createCache = (config) => new Cache({
+    logger,
     cacheUrl: config.cacheUrl,
-    logger: logger.push(LOG_ID.CACHE),
     enableTestFeatures: config.enableTestFeatures,
     subscribeTimeoutSeconds:  config.requestProcessingTimeoutSeconds,
 });
@@ -80,14 +68,14 @@ class Server extends EventEmitter {
         super({ captureExceptions: true });
         this.conf = conf;
         this.logger = logger;
-        this.cache = createCache(conf, logger);
+        this.cache = createCache(conf);
         this.pingTimeout;
 
         this.metricsClient = new MetricsClient();
 
         this.metricsServer = new MetricsServer({
             port: this.conf.metrics.port,
-            logger: this.logger.push(LOG_ID.METRICS)
+            logger: this.logger
         });
 
         this.wso2 = createAuthClient(conf, logger);
@@ -97,7 +85,7 @@ class Server extends EventEmitter {
 
         this.inboundServer = new InboundServer(
             this.conf,
-            this.logger.push(LOG_ID.INBOUND),
+            this.logger,
             this.cache,
             this.wso2,
         );
@@ -108,7 +96,7 @@ class Server extends EventEmitter {
 
         this.outboundServer = new OutboundServer(
             this.conf,
-            this.logger.push(LOG_ID.OUTBOUND),
+            this.logger,
             this.cache,
             this.metricsClient,
             this.wso2,
@@ -123,7 +111,7 @@ class Server extends EventEmitter {
                 clientKey: this.conf.oauthTestServer.clientKey,
                 clientSecret: this.conf.oauthTestServer.clientSecret,
                 port: this.conf.oauthTestServer.listenPort,
-                logger: this.logger.push(LOG_ID.OAUTHTEST),
+                logger: this.logger,
             });
         }
 
@@ -131,7 +119,7 @@ class Server extends EventEmitter {
             this.testServer = new TestServer({
                 config: this.conf,
                 port: this.conf.test.port,
-                logger: this.logger.push(LOG_ID.TEST),
+                logger: this.logger,
                 cache: this.cache,
             });
         }
@@ -139,14 +127,14 @@ class Server extends EventEmitter {
         if (this.conf.backendEventHandler.enabled) {
             this.backendEventHandler = new BackendEventHandler({
                 config: this.conf,
-                logger: this.logger.push(LOG_ID.BACKEND_EVENT_HANDLER),
+                logger: this.logger,
             });
         }
 
         if (this.conf.fspiopEventHandler.enabled) {
             this.fspiopEventHandler = new FSPIOPEventHandler({
                 config: this.conf,
-                logger: this.logger.push(LOG_ID.FSPIOP_EVENT_HANDLER),
+                logger: this.logger,
                 cache: this.cache,
                 wso2: this.wso2,
             });
@@ -166,7 +154,7 @@ class Server extends EventEmitter {
             this.controlClient = await ControlAgent.Client.Create({
                 address: this.conf.control.mgmtAPIWsUrl,
                 port: this.conf.control.mgmtAPIWsPort,
-                logger: this.logger.push(LOG_ID.CONTROL),
+                logger: this.logger,
                 appConfig: this.conf,
             });
             this.controlClient.on(ControlAgent.EVENT.RECONFIGURE, this.restart.bind(this));
@@ -212,13 +200,7 @@ class Server extends EventEmitter {
 
     async restart(newConf) {
         const restartActionsTaken = {};
-
         this.logger.isDebugEnabled && this.logger.debug('Server is restarting...');
-        const updateLogger = !_.isEqual(newConf.isJsonOutput, this.conf.isJsonOutput);
-        if (updateLogger) {
-            this.logger = createLogger(newConf);
-            restartActionsTaken.updateLogger = true;
-        }
 
         let oldCache;
         const updateCache = !_.isEqual(this.conf.cacheUrl, newConf.cacheUrl)
@@ -226,7 +208,7 @@ class Server extends EventEmitter {
         if (updateCache) {
             oldCache = this.cache;
             await this.cache.disconnect();
-            this.cache = createCache(newConf, this.logger);
+            this.cache = createCache(newConf);
             await this.cache.connect();
             restartActionsTaken.updateCache = true;
         }
@@ -250,7 +232,7 @@ class Server extends EventEmitter {
             await this.inboundServer.stop();
             this.inboundServer = new InboundServer(
                 newConf,
-                this.logger.push(LOG_ID.INBOUND),
+                this.logger,
                 this.cache,
                 this.wso2,
             );
@@ -269,7 +251,7 @@ class Server extends EventEmitter {
             await this.outboundServer.stop();
             this.outboundServer = new OutboundServer(
                 newConf,
-                this.logger.push(LOG_ID.OUTBOUND),
+                this.logger,
                 this.cache,
                 this.metricsClient,
                 this.wso2,
@@ -289,7 +271,7 @@ class Server extends EventEmitter {
             await this.fspiopEventHandler.stop();
             this.fspiopEventHandler = new FSPIOPEventHandler({
                 config: newConf,
-                logger: this.logger.push(LOG_ID.FSPIOP_EVENT_HANDLER),
+                logger: this.logger,
                 cache: this.cache,
                 wso2: this.wso2,
             });
@@ -305,7 +287,7 @@ class Server extends EventEmitter {
                 this.controlClient = await ControlAgent.Client.Create({
                     address: newConf.control.mgmtAPIWsUrl,
                     port: newConf.control.mgmtAPIWsPort,
-                    logger: this.logger.push(LOG_ID.CONTROL),
+                    logger: this.logger,
                     appConfig: newConf,
                 });
                 this.controlClient.on(ControlAgent.EVENT.RECONFIGURE, this.restart.bind(this));
@@ -348,7 +330,7 @@ class Server extends EventEmitter {
                     clientKey: newConf.oauthTestServer.clientKey,
                     clientSecret: newConf.oauthTestServer.clientSecret,
                     port: newConf.oauthTestServer.listenPort,
-                    logger: this.logger.push(LOG_ID.OAUTHTEST),
+                    logger: this.logger,
                 });
                 await this.oauthTestServer.start();
                 restartActionsTaken.updateOAuthTestServer = true;
@@ -361,7 +343,7 @@ class Server extends EventEmitter {
             if (this.conf.enableTestFeatures) {
                 this.testServer = new TestServer({
                     port: newConf.test.port,
-                    logger: this.logger.push(LOG_ID.TEST),
+                    logger: this.logger,
                     cache: this.cache,
                 });
                 await this.testServer.start();
@@ -371,14 +353,12 @@ class Server extends EventEmitter {
 
         this.conf = newConf;
 
-        await Promise.all([
-            oldCache?.disconnect(),
-        ]);
+        await oldCache?.disconnect();
 
         if (Object.keys(restartActionsTaken).length > 0) {
-            this.logger.isDebugEnabled && this.logger.debug('Server is restarted', { restartActionsTaken });
+            this.logger.info('Server is restarted', { restartActionsTaken });
         } else {
-            this.logger.isDebugEnabled && this.logger.debug('Server not restarted, no config changes detected');
+            this.logger.verbose('Server not restarted, no config changes detected');
         }
     }
 
@@ -414,8 +394,6 @@ async function _GetUpdatedConfigFromMgmtAPI(conf, logger, client) {
 }
 
 async function start(config) {
-    const logger = createLogger(config);
-
     if (config.pm4mlEnabled) {
         const controlClient = await ControlAgent.Client.Create({
             appConfig: config,
@@ -447,7 +425,7 @@ async function start(config) {
         process.exit(1);
     });
 
-    logger.push({ name, version }).info('SDK server is started!');
+    logger.info('SDK server is started!', { name, version });
 }
 
 if (require.main === module) {

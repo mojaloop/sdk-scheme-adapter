@@ -2,7 +2,7 @@ const { mockAxios, jsonContentTypeHeader} = require('../../../helpers');
 
 const OpenAPIResponseValidator = require('openapi-response-validator').default;
 
-const { createLogger } = require('../../../../src/lib/logger');
+const { logger } = require('../../../../src/lib/logger');
 const postTransfersSimpleBody = require('./data/postTransfersSimpleBody');
 
 /**
@@ -112,7 +112,6 @@ function createGetTransfersTester({ reqInbound, reqOutbound, apiSpecsOutbound })
 function createPostTransfersTester({
     requestValidatorInbound, reqInbound, reqOutbound, apiSpecsOutbound
 }) {
-    const logger =createLogger({ context: { app: 'outbound-model-unit-tests' } });
 
     /**
      *

@@ -27,7 +27,7 @@
  --------------
  ******/
 
-const { createLogger } = require('../../src/lib/logger');
+const { logger } = require('../../src/lib/logger');
 
 function mockLogger(context, keepQuiet) {
     // if keepQuite is undefined then be quiet
@@ -64,7 +64,7 @@ function mockLogger(context, keepQuiet) {
 
         return mockLogger;
     }
-    return createLogger();
+    return logger.push({ component: 'mockLogger' });
 }
 
 module.exports = mockLogger;

@@ -26,12 +26,10 @@ const Model = require('../../../src/lib/model').InboundTransfersModel;
 const QuotesModel = require('../../../src/lib/model').QuotesModel;
 const PartiesModel = require('../../../src/lib/model').PartiesModel;
 const TransfersModel = require('../../../src/lib/model').TransfersModel;
-const { createLogger } = require('../../../src/lib/logger');
+const { logger } = require('../../../src/lib/logger');
 
 const { createIsoHeader } = require('../../helpers');
 const isoBodies = require('./data/isoBodies.json');
-
-const logger = createLogger({ context: { app: 'inbound-handlers-unit-test' } });
 
 describe('Inbound API handlers transforming incoming ISO20022 message bodies', () => {
     describe('POST /quotes', () => {
