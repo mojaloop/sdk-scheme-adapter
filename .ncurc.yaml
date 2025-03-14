@@ -11,5 +11,5 @@ reject: [
   "nx",
   ## esLint 9.15.0 caused the error: TypeError: Error while loading rule '@typescript-eslint/no-unused-expressions': Cannot read properties of undefined (reading 'allowShortCircuit')
   "eslint",
-  "@mojaloop/sdk-standard-components" # Need to use snapshot version for now until PR is merged
+  "@mojaloop/sdk-standard-components" # Need to use snapshot version for now until pending PR is merged
 ]

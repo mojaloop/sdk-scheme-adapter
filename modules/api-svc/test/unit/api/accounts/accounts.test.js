@@ -53,8 +53,6 @@ const postAccountsErrorTimeoutResponse = require('./data/postAccountsErrorTimeou
 const postAccountsErrorMojaloopResponse = require('./data/postAccountsErrorMojaloopResponse');
 const deleteAccountSuccessResponse = require('./data/deleteAccountSuccessResponse');
 
-jest.setTimeout(3600000); // 1 hour in milliseconds
-
 describe('Outbound Accounts API', () => {
     let testPostAccounts;
     let testDeleteAccount;
