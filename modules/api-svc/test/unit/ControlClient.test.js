@@ -24,11 +24,12 @@
 
  --------------
  ******/
-const ControlAgent = require('~/ControlAgent');
-const TestControlServer = require('./ControlServer');
-const { Logger } = require('@mojaloop/sdk-standard-components');
 
 jest.mock('~/lib/cache');
+
+const ControlAgent = require('~/ControlAgent');
+const { logger } = require('~/lib/logger');
+const TestControlServer = require('./ControlServer');
 
 // TODO:
 // - diff against master to determine what else needs testing
@@ -54,12 +55,11 @@ describe('ControlAgent', () => {
     });
 
     describe('API', () => {
-        let server, logger, client;
+        let server, client;
         const appConfig = { control: { port: 4005 }, what: 'ever' };
         const changedConfig = { ...appConfig, some: 'thing' };
 
         beforeAll(async () => {
-            logger = new Logger.Logger({ stringify: () => '' });
             server = new TestControlServer.Server({ logger, appConfig });
             client = await ControlAgent.Client.Create({
                 address: 'localhost',

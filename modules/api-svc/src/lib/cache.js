@@ -46,7 +46,7 @@ class Cache {
             throw new Error('Cache config requires cacheUrl and logger properties');
         }
 
-        this._logger = config.logger;
+        this._logger = config.logger.push({ component: this.constructor.name });
         this._url = config.cacheUrl;
 
         // a redis connection to handle get, set and publish operations
@@ -217,7 +217,7 @@ class Cache {
 
             this.subscribe(channel, (_, message) => {
                 try {
-                    this._logger.push({ channel, message, needParse }).log('subscribeToOneMessageWithTimer is done');
+                    this._logger.push({ channel, message, needParse }).debug('subscribeToOneMessageWithTimer is done');
                     resolve(needParse ? JSON.parse(message) : message);
                 } catch (err) {
                     this._logger.push({ channel, err }).warn(`error in subscribeToOneMessageWithTimer: ${err.message}`);

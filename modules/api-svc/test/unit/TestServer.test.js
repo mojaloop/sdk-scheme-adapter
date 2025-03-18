@@ -33,23 +33,22 @@ process.env.CACHE_URL = 'redis://172.17.0.2:6379';
 process.env.MGMT_API_WS_URL = '0.0.0.0';
 process.env.SUPPORTED_CURRENCIES='USD';
 
+jest.mock('@mojaloop/sdk-standard-components');
+jest.mock('~/lib/cache');
+jest.mock('~/lib/model/lib/requests', () => require('./lib/model/mockedLibRequests'));
+
 const supertest = require('supertest');
+const WebSocket = require('ws');
+const TestServer = require('~/TestServer');
+const Cache = require('~/lib/cache');
+const InboundServer = require('~/InboundServer');
+const { logger } = require('~/lib/logger');
 
 const defaultConfig = require('./data/defaultConfig');
 const putPartiesBody = require('./data/putPartiesBody');
 const postQuotesBody = require('./data/postQuotesBody');
 const putParticipantsBody = require('./data/putParticipantsBody');
 const commonHttpHeaders = require('./data/commonHttpHeaders');
-const WebSocket = require('ws');
-const { Logger } = require('@mojaloop/sdk-standard-components');
-
-jest.mock('~/lib/cache');
-jest.mock('@mojaloop/sdk-standard-components');
-jest.mock('~/lib/model/lib/requests', () => require('./lib/model/mockedLibRequests'));
-
-const Cache = require('~/lib/cache');
-const InboundServer = require('~/InboundServer');
-const TestServer = require('~/TestServer');
 
 const createWsClient = async (port, path) => {
     const result = new WebSocket(`ws://127.0.0.1:${port}${path}`);
@@ -61,13 +60,10 @@ const createWsClient = async (port, path) => {
 };
 
 describe('Test Server', () => {
-    let testServer, inboundServer, inboundReq, testReq, serverConfig, wsClients, testServerPort,
-        logger, cache;
+    let testServer, inboundServer, inboundReq, testReq, serverConfig, wsClients, testServerPort, cache;
 
     beforeEach(async () => {
         Cache.mockClear();
-
-        logger = new Logger.Logger({ stringify: () => '' });
 
         serverConfig = {
             ...JSON.parse(JSON.stringify(defaultConfig)),

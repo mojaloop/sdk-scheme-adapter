@@ -47,7 +47,7 @@ class OAuthTestServer {
      */
     constructor({ port, clientKey, clientSecret, logger }) {
         this._port = port;
-        this._logger = logger;
+        this._logger = logger.push({ component: this.constructor.name });
         this._clientKey = clientKey;
         this._clientSecret = clientSecret;
     }

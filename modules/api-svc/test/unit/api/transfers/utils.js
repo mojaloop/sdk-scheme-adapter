@@ -2,7 +2,7 @@ const { mockAxios, jsonContentTypeHeader} = require('../../../helpers');
 
 const OpenAPIResponseValidator = require('openapi-response-validator').default;
 
-const { Logger } = require('@mojaloop/sdk-standard-components');
+const { logger } = require('../../../../src/lib/logger');
 const postTransfersSimpleBody = require('./data/postTransfersSimpleBody');
 
 /**
@@ -112,7 +112,6 @@ function createGetTransfersTester({ reqInbound, reqOutbound, apiSpecsOutbound })
 function createPostTransfersTester({
     requestValidatorInbound, reqInbound, reqOutbound, apiSpecsOutbound
 }) {
-    const logger = new Logger.Logger({ context: { app: 'outbound-model-unit-tests' } });
 
     /**
      *
@@ -226,6 +225,7 @@ function createPostTransfersTester({
             if(body.transferState.prepare) {
                 delete body.transferState.prepare;
             }
+            delete body.transferState.traceId;
         }
         if(body.quoteResponse) {
             delete body.quoteResponse.headers;
@@ -248,6 +248,8 @@ function createPostTransfersTester({
         if(body.quoteResponse?.originalIso20022QuoteResponse) {
             delete body.quoteResponse.originalIso20022QuoteResponse;
         }
+        delete body.traceId;
+
         expect(body).toEqual(responseBody);
         const responseValidator = new OpenAPIResponseValidator(apiSpecsOutbound.paths['/transfers'].post);
         const err = responseValidator.validateResponse(responseCode, body);

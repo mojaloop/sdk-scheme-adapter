@@ -40,15 +40,19 @@ jest.mock('redis');
 jest.mock('~/lib/model/lib/requests',() => require('./mockedLibRequests'));
 
 const randomUUID = require('@mojaloop/central-services-shared').Util.id({type: 'ulid'});
-const defaultConfig = require('./data/defaultConfig');
-const Model = require('~/lib/model').InboundTransfersModel;
-const mocks = require('./data/mocks');
-const mockArguments = require('./data/mockArguments');
-const mockTxnReqquestsArguments = require('./data/mockTxnRequestsArguments');
-const { MojaloopRequests, Ilp, Logger } = require('@mojaloop/sdk-standard-components');
+const { MojaloopRequests, Ilp } = require('@mojaloop/sdk-standard-components');
+const { logger } = require('~/lib/logger');
 const { BackendRequests, HTTPResponseError } = require('~/lib/model/lib/requests');
 const Cache = require('~/lib/cache');
 const shared = require('~/lib/model/lib/shared');
+const Model = require('~/lib/model').InboundTransfersModel;
+
+const { SDKStateEnum } = require('../../../../src/lib/model/common');
+
+const defaultConfig = require('./data/defaultConfig');
+const mocks = require('./data/mocks');
+const mockArguments = require('./data/mockArguments');
+const mockTxnReqquestsArguments = require('./data/mockTxnRequestsArguments');
 
 const getTransfersBackendResponse = require('./data/getTransfersBackendResponse');
 const getTransfersMojaloopResponse = require('./data/getTransfersMojaloopResponse');
@@ -61,8 +65,6 @@ const fxNotificationToBackend = require('./data/fxNotificationToBackend.json');
 const fxNotificationAbortedToBackend = require('./data/fxNotificationAbortedToBackend.json');
 const fxNotificationReservedToBackend = require('./data/fxNotificationReservedToBackend.json');
 
-const { SDKStateEnum } = require('../../../../src/lib/model/common');
-const { version } = require('os');
 const FSPIOPTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.TransferState;
 const FSPIOPBulkTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.BulkTransferState;
 
@@ -70,11 +72,6 @@ describe('inboundModel', () => {
     let config;
     let mockArgs;
     let mockTxnReqArgs;
-    let logger;
-
-    beforeAll(async () => {
-        logger = new Logger.Logger({ context: { app: 'inbound-model-unit-tests' }, stringify: () => '' });
-    });
 
     beforeEach(async () => {
         config = JSON.parse(JSON.stringify(defaultConfig));

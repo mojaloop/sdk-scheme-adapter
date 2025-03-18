@@ -26,7 +26,8 @@
  - Paweł Marzec <pawel.marzec@modusbox.com>
  --------------
  ******/
-const { Logger } = require('@mojaloop/sdk-standard-components');
+
+const { logger } = require('../../src/lib/logger');
 
 function mockLogger(context, keepQuiet) {
     // if keepQuite is undefined then be quiet
@@ -44,7 +45,8 @@ function mockLogger(context, keepQuiet) {
             error: jest.fn(),
             trace: jest.fn(),
             info: jest.fn(),
-            fatal: jest.fn(),
+            // fatal: jest.fn(),
+            // todo: add all methods from ContextLogger
 
             isVerboseEnabled: jest.fn(() => true),
             isDebugEnabled: jest.fn(() => true),
@@ -52,14 +54,17 @@ function mockLogger(context, keepQuiet) {
             isErrorEnabled: jest.fn(() => true),
             isTraceEnabled: jest.fn(() => true),
             isInfoEnabled: jest.fn(() => true),
-            isFatalEnabled: jest.fn(() => true)
+            // isFatalEnabled: jest.fn(() => true)
         };
-        return {
+        const mockLogger = ({
             ...methods,
-            push: jest.fn(() => methods)
-        };
+            push: jest.fn(() => mockLogger),
+            child: jest.fn(() => mockLogger)
+        });
+
+        return mockLogger;
     }
-    return new Logger.Logger();
+    return logger.push({ component: 'mockLogger' });
 }
 
 module.exports = mockLogger;

@@ -372,7 +372,8 @@ describe('PartiesModel', () => {
             expect(result).toEqual({the: 'response'});
             expect(model.requestAction).toHaveBeenCalledTimes(1);
             expect(model.getResponse).toHaveBeenCalledTimes(1);
-            expect(model.context.logger.debug.mock.calls).toEqual([
+            const lastLogCalls = model.context.logger.debug.mock.calls.slice(-3)
+            expect(lastLogCalls).toEqual([
                 ['State machine transitioned \'init\': none -> start'],
                 ['Action called successfully'],
                 [`Persisted model in cache: ${cacheKey}`],

@@ -50,7 +50,7 @@ class BackendEventHandler {
     constructor({ config, logger }) {
         this._conf = config;
 
-        this._logger = logger;
+        this._logger = logger.push({ component: this.constructor.name });
         this._loggerFromLoggingBC = new DefaultLogger(BC_CONFIG.bcName, 'backend-event-handler', '0.0.1', config.logLevel);
 
         this._backendRequests = new BackendRequests({

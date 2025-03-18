@@ -62,7 +62,7 @@ class InboundApi extends EventEmitter {
         }
         this._api = InboundApi._SetupApi({
             conf,
-            logger,
+            logger: logger.push({ component: this.constructor.name }),
             validator,
             cache,
             jwsVerificationKeys: this._jwsVerificationKeys,
@@ -118,14 +118,14 @@ class InboundApi extends EventEmitter {
 
         api.use(middlewares.createErrorHandler(logger));
         api.use(middlewares.createRequestIdGenerator(logger));
-        api.use(middlewares.createHeaderValidator(conf, logger));
+        api.use(middlewares.createLogger(logger));
+        api.use(middlewares.createHeaderValidator(conf));
         if (conf.validateInboundJws) {
             const jwsExclusions = conf.validateInboundPutPartiesJws ? [] : ['putParties'];
             api.use(middlewares.createJwsValidator(logger, jwsVerificationKeys, jwsExclusions));
         }
 
         api.use(middlewares.applyState({ cache, wso2, conf, logExcludePaths }));
-        api.use(middlewares.createLogger(logger));
         api.use(middlewares.createRequestValidator(validator));
         api.use(middlewares.assignFspiopIdentifier());
         if (conf.enableTestFeatures) {
@@ -133,7 +133,7 @@ class InboundApi extends EventEmitter {
         }
         api.use(router(handlers, conf));
         api.use(middlewares.createResponseBodyHandler());
-        api.use(middlewares.createResponseLogging(logger));
+        api.use(middlewares.createResponseLogging());
 
         api.context.resourceVersions = conf.resourceVersions;
 
@@ -159,10 +159,10 @@ class InboundServer extends EventEmitter {
     constructor(conf, logger, cache, wso2) {
         super({ captureExceptions: true });
         this._conf = conf;
-        this._logger = logger;
+        this._logger = logger.push({ app: this.constructor.name });
         this._api = new InboundApi(
             conf,
-            this._logger.push({ component: 'api' }),
+            this._logger,
             cache,
             _validator,
             wso2,

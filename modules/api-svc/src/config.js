@@ -30,7 +30,7 @@ require('dotenv').config();
 const fs = require('node:fs');
 const yaml = require('js-yaml');
 const { from } = require('env-var');
-const { Logger } = require('@mojaloop/sdk-standard-components').Logger;
+const { LOG_LEVELS } = require('./lib/logger');
 const { API_TYPES, RESOURCE_VERSIONS_STRING } = require('./constants');
 
 function getFileContent (path) {
@@ -86,10 +86,11 @@ module.exports = {
     __parseResourceVersion: parseResourceVersions,
     control: {
         mgmtAPIWsUrl: env.get('MGMT_API_WS_URL').default('127.0.0.1').asString(),
-        mgmtAPIWsPort: env.get('MGMT_API_WS_PORT').default('4005').asPortNumber()
+        mgmtAPIWsPort: env.get('MGMT_API_WS_PORT').default('4005').asPortNumber(),
+        mgmtAPILatencyAssumption: env.get('MGMT_API_LATENCY_ASSUMPTION').default('2000').asIntPositive(),
     },
     idGenerator: env.get('ID_GENERATOR').default('{"type":"ulid"}').asJsonObject(),
-    logLevel: env.get('LOG_LEVEL').default('info').asEnum(Logger.logLevels),
+    logLevel: env.get('LOG_LEVEL').default('info').asEnum(LOG_LEVELS),
     inbound: {
         port: env.get('INBOUND_LISTEN_PORT').default('4000').asPortNumber(),
         tls: {

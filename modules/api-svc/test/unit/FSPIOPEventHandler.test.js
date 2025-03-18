@@ -33,10 +33,6 @@ process.env.CACHE_URL = 'redis://172.17.0.2:6379';
 process.env.MGMT_API_WS_URL = '0.0.0.0';
 process.env.SUPPORTED_CURRENCIES='USD';
 
-const { FSPIOPEventHandler } = require('../../src/FSPIOPEventHandler');
-const bulkQuoteRequest = require('../unit/lib/model/data/bulkQuoteRequest.json');
-const { Logger } = require('@mojaloop/sdk-standard-components');
-const config = require('./data/defaultConfig.json');
 const {
     PartyInfoRequestedDmEvt,
     BulkQuotesRequestedDmEvt,
@@ -45,6 +41,8 @@ const {
     KafkaDomainEventProducer,
 } = require('@mojaloop/sdk-scheme-adapter-private-shared-lib');
 
+const { FSPIOPEventHandler } = require('../../src/FSPIOPEventHandler');
+const { logger } = require('../../src/lib/logger');
 const {
     OutboundBulkQuotesModel,
     PartiesModel,
@@ -52,7 +50,8 @@ const {
     SDKStateEnum
 } = require('../../src/lib/model');
 
-const logger = new Logger.Logger({ context: { app: 'FSPIOPEventHandler' }, stringify: () => '' });
+const bulkQuoteRequest = require('../unit/lib/model/data/bulkQuoteRequest.json');
+const config = require('./data/defaultConfig.json');
 
 describe('FSPIOPEventHandler', () => {
     let fspiopEventHandler;

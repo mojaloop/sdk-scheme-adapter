@@ -143,7 +143,7 @@ class Client extends ws {
      */
     constructor({ address = 'localhost', port, logger, appConfig }) {
         super(`ws://${address}:${port}`);
-        this._logger = logger;
+        this._logger = logger.push({ component: 'ControlClient' });
         this._appConfig = appConfig;
     }
 
