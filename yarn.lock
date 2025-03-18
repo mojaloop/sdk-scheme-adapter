@@ -1751,32 +1751,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hapi/hapi@npm:21.3.12":
-  version: 21.3.12
-  resolution: "@hapi/hapi@npm:21.3.12"
-  dependencies:
-    "@hapi/accept": ^6.0.3
-    "@hapi/ammo": ^6.0.1
-    "@hapi/boom": ^10.0.1
-    "@hapi/bounce": ^3.0.2
-    "@hapi/call": ^9.0.1
-    "@hapi/catbox": ^12.1.1
-    "@hapi/catbox-memory": ^6.0.2
-    "@hapi/heavy": ^8.0.1
-    "@hapi/hoek": ^11.0.6
-    "@hapi/mimos": ^7.0.1
-    "@hapi/podium": ^5.0.1
-    "@hapi/shot": ^6.0.1
-    "@hapi/somever": ^4.1.1
-    "@hapi/statehood": ^8.1.1
-    "@hapi/subtext": ^8.1.0
-    "@hapi/teamwork": ^6.0.0
-    "@hapi/topo": ^6.0.2
-    "@hapi/validate": ^2.0.1
-  checksum: e833a841905e4d4493f8f932b144a6f36569b66d5628da0db3bfafaa3c31e5716d36369374edc85aba4bd91563b0e404e5a158fca2da7f96ab2f5a70d5bc934e
-  languageName: node
-  linkType: hard
-
 "@hapi/hapi@npm:21.4.0":
   version: 21.4.0
   resolution: "@hapi/hapi@npm:21.4.0"
@@ -1911,21 +1885,6 @@ __metadata:
     "@hapi/bounce": ^3.0.1
     "@hapi/hoek": ^11.0.2
   checksum: 62747a40a737288fa1f241aa09315b49ef03739e5febf7147909c12e9ad88b5e7debbc548cf5e05f25266331db88fa8bed9286bf706194dd209a6b814b7a48cb
-  languageName: node
-  linkType: hard
-
-"@hapi/statehood@npm:^8.1.1":
-  version: 8.1.1
-  resolution: "@hapi/statehood@npm:8.1.1"
-  dependencies:
-    "@hapi/boom": ^10.0.1
-    "@hapi/bounce": ^3.0.1
-    "@hapi/bourne": ^3.0.0
-    "@hapi/cryptiles": ^6.0.1
-    "@hapi/hoek": ^11.0.2
-    "@hapi/iron": ^7.0.1
-    "@hapi/validate": ^2.0.1
-  checksum: d371efa9144d29c43c120dc1372382ce7226db8724320d002c14e0e3931f9e2070b122c11dc20423425662e909ebf15c03dc7fd32a979d277c513ce0505b6bd7
   languageName: node
   linkType: hard
 
@@ -2431,16 +2390,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-error-handling@npm:13.0.6":
-  version: 13.0.6
-  resolution: "@mojaloop/central-services-error-handling@npm:13.0.6"
-  dependencies:
-    fast-safe-stringify: 2.1.1
-    lodash: 4.17.21
-  checksum: 26f32fda64852de7fd2595c1b32fce3e8897a154d1e5bb4c04acf64e0a60369f3f4dde29bb367375e90aebe50a97d2d9157820dff1cee9e2cc84cabcae2955c9
-  languageName: node
-  linkType: hard
-
 "@mojaloop/central-services-error-handling@npm:13.0.7":
   version: 13.0.7
   resolution: "@mojaloop/central-services-error-handling@npm:13.0.7"
@@ -2475,116 +2424,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mojaloop/central-services-logger@npm:11.7.0":
+  version: 11.7.0
+  resolution: "@mojaloop/central-services-logger@npm:11.7.0"
+  dependencies:
+    "@opentelemetry/api": 1.9.0
+    parse-strings-in-object: 2.0.0
+    rc: 1.2.8
+    safe-stable-stringify: ^2.5.0
+    triple-beam: 1.4.1
+    winston: 3.17.0
+  checksum: 386d66860767b04e7fa3068f056e26c2aa7e345aa6dc6b9b13243c9eb29d48b5c52ea2cc6e1ee2a173c842822f5dca11d25c45a44f10b8add7063a8b4bc5f156
+  languageName: node
+  linkType: hard
+
 "@mojaloop/central-services-metrics@npm:12.5.0":
   version: 12.5.0
   resolution: "@mojaloop/central-services-metrics@npm:12.5.0"
   dependencies:
     prom-client: 15.1.3
   checksum: 812240df405d6f900949d0a6bb249d890560fbb28c44d0470f44ed85c5e9f382ccce1ab6ecd8f3f779f0599d3ceae78a5f770d67deef43e097c54f4ce8793039
-  languageName: node
-  linkType: hard
-
-"@mojaloop/central-services-shared@npm:18.18.2":
-  version: 18.18.2
-  resolution: "@mojaloop/central-services-shared@npm:18.18.2"
-  dependencies:
-    "@hapi/catbox": 12.1.1
-    "@hapi/catbox-memory": 5.0.1
-    "@hapi/hapi": 21.3.12
-    "@hapi/joi-date": 2.0.1
-    "@mojaloop/inter-scheme-proxy-cache-lib": 2.3.3
-    "@mojaloop/sdk-standard-components": 19.6.6
-    axios: 1.7.9
-    clone: 2.1.2
-    dotenv: 16.4.7
-    env-var: 7.5.0
-    event-stream: 4.0.1
-    fast-safe-stringify: 2.1.1
-    immutable: 5.0.3
-    ioredis: 5.5.0
-    joi: 17.13.3
-    lodash: 4.17.21
-    mustache: 4.2.0
-    openapi-backend: 5.11.1
-    raw-body: 3.0.0
-    rc: 1.2.8
-    shins: 2.6.0
-    ulidx: 2.4.1
-    uuid4: 2.0.3
-    widdershins: 4.0.1
-    yaml: 2.7.0
-  peerDependencies:
-    "@mojaloop/central-services-error-handling": ">=13.x.x"
-    "@mojaloop/central-services-metrics": ">=12.x.x"
-    "@mojaloop/event-sdk": ">=14.1.1"
-    ajv: 8.x.x
-    ajv-keywords: 5.x.x
-  peerDependenciesMeta:
-    "@mojaloop/central-services-error-handling":
-      optional: false
-    "@mojaloop/central-services-logger":
-      optional: false
-    "@mojaloop/central-services-metrics":
-      optional: false
-    "@mojaloop/event-sdk":
-      optional: false
-    ajv:
-      optional: false
-    ajv-keyboards:
-      optional: false
-  checksum: a820a25d551c72a0190c4e9b874f09573982e1de74192dfbf9ab6d9fcd6e0defceac1f26e9557d1865e46a3425758cdaa26cebb15a824f84975b0c2572c9f01f
-  languageName: node
-  linkType: hard
-
-"@mojaloop/central-services-shared@npm:18.21.0":
-  version: 18.21.0
-  resolution: "@mojaloop/central-services-shared@npm:18.21.0"
-  dependencies:
-    "@hapi/catbox": 12.1.1
-    "@hapi/catbox-memory": 5.0.1
-    "@hapi/hapi": 21.3.12
-    "@hapi/joi-date": 2.0.1
-    "@mojaloop/inter-scheme-proxy-cache-lib": 2.3.3
-    "@mojaloop/sdk-standard-components": 19.7.1
-    axios: 1.8.1
-    clone: 2.1.2
-    dotenv: 16.4.7
-    env-var: 7.5.0
-    event-stream: 4.0.1
-    fast-safe-stringify: 2.1.1
-    immutable: 5.0.3
-    ioredis: 5.5.0
-    joi: 17.13.3
-    lodash: 4.17.21
-    mustache: 4.2.0
-    openapi-backend: 5.11.1
-    raw-body: 3.0.0
-    rc: 1.2.8
-    shins: 2.6.0
-    ulidx: 2.4.1
-    uuid4: 2.0.3
-    widdershins: 4.0.1
-    yaml: 2.7.0
-  peerDependencies:
-    "@mojaloop/central-services-error-handling": ">=13.x.x"
-    "@mojaloop/central-services-metrics": ">=12.x.x"
-    "@mojaloop/event-sdk": ">=14.1.1"
-    ajv: 8.x.x
-    ajv-keywords: 5.x.x
-  peerDependenciesMeta:
-    "@mojaloop/central-services-error-handling":
-      optional: false
-    "@mojaloop/central-services-logger":
-      optional: false
-    "@mojaloop/central-services-metrics":
-      optional: false
-    "@mojaloop/event-sdk":
-      optional: false
-    ajv:
-      optional: false
-    ajv-keyboards:
-      optional: false
-  checksum: d6c57dbf15dcf9608ad41841231a36dfd88a386566b1250258ca1407546e4f6ceec12e63f0ba50ce9d9597b4eec4e69d8950cbdbbd00d2e85ab021ec3727515d
   languageName: node
   linkType: hard
 
@@ -2720,19 +2579,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/inter-scheme-proxy-cache-lib@npm:2.3.3":
-  version: 2.3.3
-  resolution: "@mojaloop/inter-scheme-proxy-cache-lib@npm:2.3.3"
-  dependencies:
-    "@mojaloop/central-services-logger": 11.5.5
-    ajv: 8.17.1
-    convict: 6.2.4
-    fast-safe-stringify: 2.1.1
-    ioredis: 5.5.0
-  checksum: f1f9e228ecd9e0c2e203b468d9056e7d69ba067c39fd0a4107e90253d182a4e8b0b64e668ba1e55eed83230f42e145422980b0c3d197aefd0f54eca262396f59
-  languageName: node
-  linkType: hard
-
 "@mojaloop/inter-scheme-proxy-cache-lib@npm:2.3.7":
   version: 2.3.7
   resolution: "@mojaloop/inter-scheme-proxy-cache-lib@npm:2.3.7"
@@ -2768,40 +2614,6 @@ __metadata:
   version: 0.5.4
   resolution: "@mojaloop/logging-bc-public-types-lib@npm:0.5.4"
   checksum: 68e130dacacc25c3cb126ad04f385a010d9d6f0ab2649bf2a8307a1461c6f0e8099061136d443301d7768a04d8cb5259d90288b74af1bf795a2078e9e8251e36
-  languageName: node
-  linkType: hard
-
-"@mojaloop/ml-schema-transformer-lib@npm:2.5.4, @mojaloop/ml-schema-transformer-lib@npm:^2.5.3":
-  version: 2.5.4
-  resolution: "@mojaloop/ml-schema-transformer-lib@npm:2.5.4"
-  dependencies:
-    "@mojaloop/central-services-error-handling": 13.0.6
-    "@mojaloop/central-services-logger": 11.5.5
-    "@mojaloop/central-services-shared": 18.18.2
-    "@rollup/rollup-linux-x64-musl": 4.34.8
-    ilp-packet: 2.2.0
-    map-transform-cjs: 0.2.0
-  dependenciesMeta:
-    "@rollup/rollup-linux-x64-musl":
-      optional: true
-  checksum: 2ce61a546ee632b24221d5b36d6de032c05d0f7be8ad96c2f3b6e71c3798abbb103431b9793f6ee1f6f85a0fe2d76051f36df27286fc7d69ae71d156a8bd3777
-  languageName: node
-  linkType: hard
-
-"@mojaloop/ml-schema-transformer-lib@npm:2.5.6":
-  version: 2.5.6
-  resolution: "@mojaloop/ml-schema-transformer-lib@npm:2.5.6"
-  dependencies:
-    "@mojaloop/central-services-error-handling": 13.0.7
-    "@mojaloop/central-services-logger": 11.5.5
-    "@mojaloop/central-services-shared": 18.21.0
-    "@rollup/rollup-linux-x64-musl": 4.34.9
-    ilp-packet: 2.2.0
-    map-transform-cjs: 0.2.0
-  dependenciesMeta:
-    "@rollup/rollup-linux-x64-musl":
-      optional: true
-  checksum: 3556a96a406df4d95d92f878df9ce5736eab34125fbc3a98095e0474ce55b1c674555ea1a8d4b406ff43bd865e8bf514bc6405f8b2f1a5372a59252844472f7a
   languageName: node
   linkType: hard
 
@@ -2863,7 +2675,7 @@ __metadata:
     "@mojaloop/logging-bc-client-lib": 0.5.8
     "@mojaloop/ml-schema-transformer-lib": 2.5.8
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
-    "@mojaloop/sdk-standard-components": 19.8.0-snapshot.7
+    "@mojaloop/sdk-standard-components": 19.11.0-snapshot.0
     "@redocly/openapi-cli": 1.0.0-beta.95
     "@types/jest": 29.5.14
     ajv: 8.17.1
@@ -3042,29 +2854,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mojaloop/sdk-standard-components@npm:19.6.6":
-  version: 19.6.6
-  resolution: "@mojaloop/sdk-standard-components@npm:19.6.6"
+"@mojaloop/sdk-standard-components@npm:19.11.0-snapshot.0":
+  version: 19.11.0-snapshot.0
+  resolution: "@mojaloop/sdk-standard-components@npm:19.11.0-snapshot.0"
   dependencies:
-    "@mojaloop/ml-schema-transformer-lib": ^2.5.3
-    axios: 1.7.9
-    axios-retry: 4.5.0
-    base64url: 3.0.1
-    fast-safe-stringify: ^2.1.1
-    ilp-packet: 3.1.3
-    ilp-packet-v1: 2.2.0
-    jsonwebtoken: 9.0.2
-    jws: 4.0.0
-  checksum: 016d0ea60ed6cdec419a05be46474b68d358426a68790b7f04b81c21535c02902dd506b8e6a77f45bec973ab194ff3df874f6c3eaca3f06da051237394d53201
-  languageName: node
-  linkType: hard
-
-"@mojaloop/sdk-standard-components@npm:19.7.1":
-  version: 19.7.1
-  resolution: "@mojaloop/sdk-standard-components@npm:19.7.1"
-  dependencies:
-    "@mojaloop/ml-schema-transformer-lib": 2.5.4
-    axios: 1.8.1
+    "@mojaloop/central-services-logger": 11.7.0
+    "@mojaloop/ml-schema-transformer-lib": 2.5.8
+    axios: 1.8.3
     axios-retry: 4.5.0
     base64url: 3.0.1
     fast-safe-stringify: 2.1.1
@@ -3072,24 +2868,7 @@ __metadata:
     ilp-packet-v1: 2.2.0
     jsonwebtoken: 9.0.2
     jws: 4.0.0
-  checksum: 6b413699eae0335928e542dbe1a54ee923b1774a38eb7939f6ed92e4f52c42d7dd521d371eccd19ba3b2bb8ef0c8a193078d9751588332f74c5a4d70cd518197
-  languageName: node
-  linkType: hard
-
-"@mojaloop/sdk-standard-components@npm:19.8.0-snapshot.7":
-  version: 19.8.0-snapshot.7
-  resolution: "@mojaloop/sdk-standard-components@npm:19.8.0-snapshot.7"
-  dependencies:
-    "@mojaloop/ml-schema-transformer-lib": 2.5.6
-    axios: 1.8.1
-    axios-retry: 4.5.0
-    base64url: 3.0.1
-    fast-safe-stringify: 2.1.1
-    ilp-packet: 3.1.3
-    ilp-packet-v1: 2.2.0
-    jsonwebtoken: 9.0.2
-    jws: 4.0.0
-  checksum: e0c40a31eb80b6e3320e0e2e0cd4e985f38f5bcad0e8f001760edf7c96e506be9a532688dab805348874ea5c70172653446b393941d65aa9661c4961c5710d46
+  checksum: 1e3e9b3ff82c8913122c9b917b897dbb611c3dfe7692f0a1d83a7ebe4ce5deae12a744cd3b849c073e7955e4038e169e4bf36bb0de2df7ad9b9e49af7940967e
   languageName: node
   linkType: hard
 
@@ -3309,7 +3088,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@opentelemetry/api@npm:^1.4.0":
+"@opentelemetry/api@npm:1.9.0, @opentelemetry/api@npm:^1.4.0":
   version: 1.9.0
   resolution: "@opentelemetry/api@npm:1.9.0"
   checksum: 9e88e59d53ced668f3daaecfd721071c5b85a67dd386f1c6f051d1be54375d850016c881f656ffbe9a03bedae85f7e89c2f2b635313f9c9b195ad033cdc31020
@@ -3562,20 +3341,6 @@ __metadata:
     pluralize: ^8.0.0
     yaml-ast-parser: 0.0.43
   checksum: bce3703b7948b4580ae3eb9a66316a7cace482906ed42d58987dbf467cb604ad6c673cca8e78f310cdabc4896ed0d17061e03ada26f3cb9a2ae543f21c66587f
-  languageName: node
-  linkType: hard
-
-"@rollup/rollup-linux-x64-musl@npm:4.34.8":
-  version: 4.34.8
-  resolution: "@rollup/rollup-linux-x64-musl@npm:4.34.8"
-  conditions: os=linux & cpu=x64 & libc=musl
-  languageName: node
-  linkType: hard
-
-"@rollup/rollup-linux-x64-musl@npm:4.34.9":
-  version: 4.34.9
-  resolution: "@rollup/rollup-linux-x64-musl@npm:4.34.9"
-  conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
@@ -15126,7 +14891,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"triple-beam@npm:^1.3.0":
+"triple-beam@npm:1.4.1, triple-beam@npm:^1.3.0":
   version: 1.4.1
   resolution: "triple-beam@npm:1.4.1"
   checksum: 2e881a3e8e076b6f2b85b9ec9dd4a900d3f5016e6d21183ed98e78f9abcc0149e7d54d79a3f432b23afde46b0885bdcdcbff789f39bc75de796316961ec07f61
