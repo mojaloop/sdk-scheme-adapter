@@ -165,9 +165,9 @@ class AccountsModel {
     async _deleteAccount() {
         const request = {
             requestId: this._idGenerator(),
-            idType: this._data.accountIdType,
-            idValue: this._data.accountIdValue,
-            ...this._data.accountSubIdOrType && { idSubValue: this._data.accountSubIdOrType },
+            idType: this._data.idType,
+            idValue: this._data.idValue,
+            ...this._data.subIdOrType && { idSubValue: this._data.subIdOrType },
         };
         const response = await this._executeAccountsRequest(request, 'deleteAccount');
         this._data.response.push(...this._buildClientResponse(response, 'deleteAccount'));
