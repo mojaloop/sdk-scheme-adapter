@@ -41,7 +41,7 @@ jest.mock('redis');
 const redis = require('redis');
 const uuid = require('@mojaloop/central-services-shared').Util.id;
 const {createValidators, createTestServers, destroyTestServers} = require('../utils');
-const {createPostAccountsTester} = require('./utils');
+const {createPostAccountsTester, createDeleteAccountTester} = require('./utils');
 
 const defaultConfig = require('../../data/defaultConfig');
 
@@ -51,9 +51,11 @@ const postAccountsSuccessResponseWithError1 = require('./data/postAccountsSucces
 const postAccountsSuccessResponseWithError2 = require('./data/postAccountsSuccessResponseWithError2');
 const postAccountsErrorTimeoutResponse = require('./data/postAccountsErrorTimeoutResponse');
 const postAccountsErrorMojaloopResponse = require('./data/postAccountsErrorMojaloopResponse');
+const deleteAccountSuccessResponse = require('./data/deleteAccountSuccessResponse');
 
 describe('Outbound Accounts API', () => {
     let testPostAccounts;
+    let testDeleteAccount;
     let validatorsInfo;
     let serversInfo;
     let redisClient;
@@ -147,6 +149,30 @@ describe('Outbound Accounts API', () => {
             });
             return testPostAccounts(putBodyFn, 500,
                 postAccountsErrorMojaloopResponse);
+        });
+    });
+
+    describe('DELETE /accounts/{Type}/{ID}/{SubId}', () => {
+        const reqParams = {
+            Type: 'MSISDN',
+            ID: '123456789'
+        }
+        beforeEach(() => {
+            uuid.__reset();
+            redisClient.flushdb();
+            testDeleteAccount = createDeleteAccountTester({
+                reqInbound: serversInfo.reqInbound,
+                reqOutbound: serversInfo.reqOutbound,
+                reqParams,
+                apiSpecsOutbound: validatorsInfo.apiSpecsOutbound,
+            });
+        });
+
+        test('should return success response', () => {
+            const putBodyFn = (body) => ({
+                fspId: 'mojaloop-sdk',
+            });
+            return testDeleteAccount(putBodyFn, 200, deleteAccountSuccessResponse);
         });
     });
 });

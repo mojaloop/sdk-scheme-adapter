@@ -41,10 +41,10 @@
     "snapshot": "standard-version --no-verify --skip.changelog --prerelease snapshot --releaseCommitMessageFormat 'chore(snapshot): {{currentTag}}'"
   },
   "dependencies": {
-    "@mojaloop/api-snippets": "17.8.0",
-    "@mojaloop/central-services-shared": "18.22.1",
+    "@mojaloop/api-snippets": "17.9.0",
+    "@mojaloop/central-services-shared": "18.23.0",
     "@mojaloop/logging-bc-client-lib": "0.5.8",
-    "@mojaloop/logging-bc-public-types-lib": "0.5.4",
+    "@mojaloop/logging-bc-public-types-lib": "0.5.5",
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^",
     "ajv": "8.17.1",
     "convict": "6.2.4",
