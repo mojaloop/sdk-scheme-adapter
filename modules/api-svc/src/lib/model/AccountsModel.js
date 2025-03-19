@@ -74,6 +74,7 @@ class AccountsModel {
             init: initState,
             transitions: [
                 { name: 'createAccounts', from: 'start', to: 'succeeded' },
+                { name: 'deleteAccount', to: 'succeeded' },
                 { name: 'error', from: '*', to: 'errored' },
             ],
             methods: {
@@ -140,6 +141,9 @@ class AccountsModel {
             case 'createAccounts':
                 return this._createAccounts();
 
+            case 'deleteAccount':
+                return this._deleteAccount();
+
             case 'error':
                 this._logger.isErrorEnabled && this._logger.error(`State machine is erroring with error: ${safeStringify(args)}`);
                 this._data.lastError = args[0] || new BackendError('unspecified error', 500);
@@ -150,25 +154,64 @@ class AccountsModel {
         }
     }
 
+    async _createAccounts() {
+        const requests = this._buildRequests();
+        for await (let request of requests) {
+            const response = await this._executeAccountsRequest(request, 'createAccounts');
+            this._data.response.push(...this._buildClientResponse(response));
+        }
+    }
 
-    async _executeCreateAccountsRequest(request) {
+    async _deleteAccount() {
+        const request = {
+            requestId: this._idGenerator(),
+            idType: this._data.idType,
+            idValue: this._data.idValue,
+            ...this._data.subIdOrType && { idSubValue: this._data.subIdOrType },
+        };
+        const response = await this._executeAccountsRequest(request, 'deleteAccount');
+        this._data.response.push(...this._buildClientResponse(response, 'deleteAccount'));
+    }
+
+    async _executeAccountsRequest(request, requestType='createAccounts') {
         const accountRequest = request;
+        const processesData = {
+            createAccounts: {
+                actionName: 'Account creation',
+                actionText: 'creating accounts',
+                responseProp: 'postAccountsResponse',
+                errorType: 'accountsCreationErrorResponse',
+                successType: 'accountsCreationSuccessfulResponse',
+                makeCacheKey: (req) => `ac_${req.requestId}`,
+                sendRequest: this._requests.postParticipants.bind(this._requests)
+            },
+            deleteAccount: {
+                actionName: 'Account deletion',
+                actionText: 'deleting account',
+                responseProp: 'deleteAccountResponse',
+                errorType: 'accountDeletionErrorResponse',
+                successType: 'accountDeletionSuccessfulResponse',
+                makeCacheKey: (req) => `ad_${req.idType}_${req.idValue}` + (req.idSubValue ? `_${req.idSubValue}` : ''),
+                sendRequest: (req) => this._requests.deleteParticipants(req.idType, req.idValue, req.idSubValue)
+            }
+        };
 
         // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
-            const requestKey = `ac_${accountRequest.requestId}`;
+            const { actionName, responseProp, actionText, errorType, successType, makeCacheKey, sendRequest } = processesData[requestType];
+            const requestKey = makeCacheKey(accountRequest);
 
             const subId = await this._cache.subscribe(requestKey, async (cn, msg, subId) => {
                 try {
                     let error;
                     const message = JSON.parse(msg);
-                    this._data.postAccountsResponse = message.data;
+                    this._data[responseProp] = message.data;
 
-                    if (message.type === 'accountsCreationErrorResponse') {
-                        error = new BackendError(`Got an error response creating accounts: ${safeStringify(this._data.postAccountsResponse.body)}`, 500);
-                        error.mojaloopError = this._data.postAccountsResponse.body;
-                    } else if (message.type !== 'accountsCreationSuccessfulResponse') {
-                        this._logger.push(safeStringify(this._data.postAccountsResponse)).debug(
+                    if (message.type === errorType) {
+                        error = new BackendError(`Got an error response ${actionText}: ${safeStringify(this._data[responseProp].body)}`, 500);
+                        error.mojaloopError = this._data[responseProp].body;
+                    } else if (message.type !== successType) {
+                        this._logger.push(safeStringify(this._data[responseProp])).debug(
                             `Ignoring cache notification for request ${requestKey}. ` +
                             `Unknown message type ${message.type}.`
                         );
@@ -189,8 +232,8 @@ class AccountsModel {
                         return reject(error);
                     }
 
-                    const response = this._data.postAccountsResponse;
-                    this._logger.isDebugEnabled && this._logger.push({ response }).debug('Account creation response received');
+                    const response = this._data[responseProp];
+                    this._logger.isDebugEnabled && this._logger.push({ response }).debug(`${actionName} response received`);
                     return resolve(response);
                 }
                 catch(err) {
@@ -200,7 +243,7 @@ class AccountsModel {
 
             // set up a timeout for the request
             const timeout = setTimeout(() => {
-                const err = new BackendError(`Timeout waiting for response to account creation request ${accountRequest.requestId}`, 504);
+                const err = new BackendError(`Timeout waiting for response to ${actionName.toLowerCase()} request ${accountRequest.requestId}`, 504);
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this._cache.unsubscribe(requestKey, subId).catch(e => {
@@ -210,11 +253,9 @@ class AccountsModel {
                 return reject(err);
             }, this._requestProcessingTimeoutSeconds * 1000);
 
-            // now we have a timeout handler and a cache subscriber hooked up we can fire off
-            // a POST /participants request to the switch
             try {
-                const res = await this._requests.postParticipants(accountRequest);
-                this._logger.isDebugEnabled && this._logger.push({ res }).debug('Account creation request sent to peer');
+                const res = await sendRequest(accountRequest);
+                this._logger.isDebugEnabled && this._logger.push({ res }).debug(`${actionName} request sent to peer`);
             }
             catch(err) {
                 // cancel the timout and unsubscribe before rejecting the promise
@@ -230,16 +271,20 @@ class AccountsModel {
         });
     }
 
-
-    async _createAccounts() {
-        const requests = this._buildRequests();
-        for await (let request of requests) {
-            const response = await this._executeCreateAccountsRequest(request);
-            this._data.response.push(...this._buildClientResponse(response));
+    _buildClientResponse(response, responseType='createAccounts') {
+        if (responseType == 'deleteAccount') {
+            if (response.body.errorInformation) {
+                return [{
+                    error: {
+                        statusCode: response.body.errorInformation.errorCode,
+                        message: response.body.errorInformation.errorDescription,
+                    },
+                }];
+            } else {
+                return [{ ...response.body }];
+            }
         }
-    }
 
-    _buildClientResponse(response) {
         return response.body.partyList.map(party => ({
             idType: party.partyId.partyIdType,
             idValue: party.partyId.partyIdentifier,
@@ -376,6 +421,11 @@ class AccountsModel {
                     // }
                     break;
                 }
+
+                case 'deleteAccount':
+                    await this._stateMachine.deleteAccount();
+
+                    break;
 
                 case 'succeeded':
                     // all steps complete so return

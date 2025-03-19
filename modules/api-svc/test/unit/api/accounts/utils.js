@@ -10,7 +10,7 @@ const postAccountsBody = require('./data/postAccountsBody');
  * @param apiSpecsOutbound
  * @returns Function(putBodyFn:function, responseCode:number, responseBody:object) => Promise
  */
-function createPostAccountsTester({ reqInbound, reqOutbound, apiSpecsOutbound }) {
+function createPostAccountsTester({ reqInbound, reqOutbound, apiSpecsOutbound, reqParams = {} }, requestType=undefined) {
     /**
      *
      * @param putBodyFn {function}
@@ -38,13 +38,39 @@ function createPostAccountsTester({ reqInbound, reqOutbound, apiSpecsOutbound })
                 .expect(200);
         };
 
-        mockAxios.reset();
-        mockAxios.onPost('/participants').reply((reqConfig) => {
-            pendingRequest = sendPutParticipants(reqConfig.data);
-            return [202, null, jsonContentTypeHeader];
-        });
+        const sendPutParticipantsForDelete = async (requestBody) => {
+            const body = JSON.parse(requestBody);
+            const putBody = await Promise.resolve(putBodyFn(body));
+            let putUrl = `/participants/${reqParams.Type}/${reqParams.ID}`;
+            if (putBody.errorInformation) {
+                putUrl += '/error';
+            }
 
-        const res = await reqOutbound.post('/accounts').send(postAccountsBody);
+            return reqInbound.put(putUrl)
+                .send(putBody)
+                .set('Date', new Date().toISOString())
+                .set('content-type', 'application/vnd.interoperability.participants+json;version=1.1')
+                .set('fspiop-source', 'mojaloop-sdk')
+                .expect(200);
+        };
+
+        mockAxios.reset();
+
+        if (requestType === 'deleteAccount') {
+            mockAxios.onDelete(`/participants/${reqParams.Type}/${reqParams.ID}`).reply((reqConfig) => {
+                pendingRequest = sendPutParticipantsForDelete('{ "fspId": "mojaloop-sdk" }');
+                return [202, null, jsonContentTypeHeader];
+            });
+        } else {
+            mockAxios.onPost('/participants').reply((reqConfig) => {
+                pendingRequest = sendPutParticipants(reqConfig.data);
+                return [202, null, jsonContentTypeHeader];
+            });
+        }
+
+        let res = requestType === 'deleteAccount' 
+            ? await reqOutbound.delete(`/accounts/${reqParams.Type}/${reqParams.ID}`) 
+            : await reqOutbound.post('/accounts').send(postAccountsBody);
         const {body} = res;
         expect(res.statusCode).toEqual(responseCode);
 
@@ -61,8 +87,15 @@ function createPostAccountsTester({ reqInbound, reqOutbound, apiSpecsOutbound })
             delete body.postAccountsResponse.headers;
         }
 
+        if(body.deleteAccountResponse) {
+            delete body.deleteAccountResponse.headers;
+        }
+
         expect(body).toEqual(responseBody);
-        const responseValidator = new OpenAPIResponseValidator(apiSpecsOutbound.paths['/accounts'].post);
+
+        const responseValidator = requestType === 'deleteAccount' 
+            ? new OpenAPIResponseValidator(apiSpecsOutbound.paths['/accounts/{Type}/{ID}'].delete)
+            : new OpenAPIResponseValidator(apiSpecsOutbound.paths['/accounts'].post);
         const err = responseValidator.validateResponse(responseCode, body);
         if (err) {
             throw err;
@@ -71,6 +104,11 @@ function createPostAccountsTester({ reqInbound, reqOutbound, apiSpecsOutbound })
     };
 }
 
+const createDeleteAccountTester = ({ reqInbound, reqOutbound, reqParams, apiSpecsOutbound }) => {
+    return createPostAccountsTester({ reqInbound, reqOutbound, reqParams, apiSpecsOutbound }, 'deleteAccount');
+}
+
 module.exports = {
     createPostAccountsTester,
+    createDeleteAccountTester,
 };

@@ -29,9 +29,9 @@
     "snapshot": "standard-version --no-verify --skip.changelog --prerelease snapshot --releaseCommitMessageFormat 'chore(snapshot): {{currentTag}}'"
   },
   "dependencies": {
-    "@mojaloop/api-snippets": "17.8.0",
-    "@mojaloop/central-services-shared": "18.22.1",
-    "@mojaloop/logging-bc-public-types-lib": "0.5.4",
+    "@mojaloop/api-snippets": "17.9.0",
+    "@mojaloop/central-services-shared": "18.23.0",
+    "@mojaloop/logging-bc-public-types-lib": "0.5.5",
     "@mojaloop/platform-shared-lib-messaging-types-lib": "0.7.1",
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "0.5.18",
     "ajv": "8.17.1",

@@ -409,10 +409,18 @@ const putParticipantsByTypeAndId = async (ctx) => {
         };
 
         // publish an event onto the cache for subscribers to action
-        const cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
-        await ctx.state.cache.publish(cacheId, {
-            data
-        });
+        let cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
+        const message = { data };
+        
+        // We need to determine if this callback is a response to either a GET/POST /participants 
+        // or DELETE /participants/{Type}/{ID}/{SubId} request
+        const adCacheId = `ad_${cacheId}`;
+        if (ctx.state.cache._callbacks[adCacheId]) {
+            cacheId = adCacheId;
+            message.type = 'accountDeletionSuccessfulResponse';
+        }
+
+        await ctx.state.cache.publish(cacheId, message);
         ctx.response.status = ReturnCodes.OK.CODE;
     } else {
         // SDK does not make participants requests so we should not expect any calls to this method
@@ -423,7 +431,9 @@ const putParticipantsByTypeAndId = async (ctx) => {
 
 
 /**
- * Handles a PUT /participants/{Type}/{ID}/{SubId}/error request. This is an error response to a GET /participants/{Type}/{ID}/{SubId} request
+ * Handles a PUT /participants/{Type}/{ID}/{SubId}/error request. 
+ * This is an error response to a GET /participants/{Type}/{ID}/{SubId} or 
+ * DELETE /participants/{Type}/{ID}/{SubId} request
  */
 const putParticipantsByTypeAndIdError = async(ctx) => {
     const idType = ctx.state.path.params.Type;
@@ -437,10 +447,18 @@ const putParticipantsByTypeAndIdError = async(ctx) => {
     // note that we publish the event the same way we publish a success PUT
     // the subscriber will notice the body contains an errorInformation property
     // and recognise it as an error response
-    const cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
-    await ctx.state.cache.publish(cacheId, {
-        data
-    });
+    let cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
+    const message = { data };
+
+    // We need to determine if this callback is a response to either a GET/POST /participants 
+    // or DELETE /participants/{Type}/{ID}/{SubId} request
+    const adCacheId = `ad_${cacheId}`;
+    if (ctx.state.cache._callbacks[adCacheId]) {
+        cacheId = adCacheId;
+        message.type = 'accountDeletionErrorResponse';
+    }
+
+    await ctx.state.cache.publish(cacheId, message);
 
     ctx.response.status = ReturnCodes.OK.CODE;
     ctx.response.body = '';
@@ -1121,6 +1139,9 @@ module.exports = {
     '/participants/{Type}/{ID}': {
         put: putParticipantsByTypeAndId,
         get: getParticipantsByTypeAndId
+    },
+    '/participants/{Type}/{ID}/error': {
+        put: putParticipantsByTypeAndIdError
     },
     '/participants/{Type}/{ID}/{SubId}': {
         put: putParticipantsByTypeAndId,

@@ -485,6 +485,39 @@ const postAccounts = async (ctx) => {
     }
 };
 
+/**
+ * Handler for outbound accounts deletion request
+ */
+const deleteAccountByTypeAndId = async (ctx) => {
+    try {
+        const model = new AccountsModel({
+            ...ctx.state.conf,
+            ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
+            cache: ctx.state.cache,
+            logger: ctx.state.logger,
+            wso2: ctx.state.wso2,
+        });
+
+        const args = {
+            currentState: 'deleteAccount',
+            idType: ctx.state.path.params.Type,
+            idValue: ctx.state.path.params.ID,
+            subIdOrType: ctx.state.path.params.SubId,
+        };
+
+        // initialize the accounts model and run it
+        await model.initialize(args);
+        const response = await model.run();
+
+        // return the result
+        ctx.response.status = ReturnCodes.OK.CODE;
+        ctx.response.body = response;
+    }
+    catch(err) {
+        return handleAccountsError('deleteAccountByTypeAndId', err, ctx);
+    }
+};
+
 const postRequestToPay = async (ctx) => {
     try {
         // this requires a multi-stage sequence with the switch.
@@ -683,7 +716,13 @@ module.exports = {
         get: getBulkQuoteById,
     },
     '/accounts': {
-        post: postAccounts
+        post: postAccounts,
+    },
+    '/accounts/{Type}/{ID}': {
+        delete: deleteAccountByTypeAndId,
+    },
+    '/accounts/{Type}/{ID}/{SubId}': {
+        delete: deleteAccountByTypeAndId,
     },
     '/requestToPay': {
         post: postRequestToPay
