@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [24.4.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.3.2...v24.4.0) (2025-03-19)
+
+
+### Features
+
+* **csi-1244:** delete account endpoint ([#553](https://github.com/mojaloop/sdk-scheme-adapter/issues/553)) ([29efe6e](https://github.com/mojaloop/sdk-scheme-adapter/commit/29efe6eac8ec0b8664ef1e42e132976a6fdd5470))
+
 ### [24.3.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.3.1...v24.3.2) (2025-03-10)
 
 
