@@ -34,16 +34,16 @@ import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 import { IndividualTransferError } from '@module-domain';
 
 export type CoreConnectorBulkAcceptPartyInfoRequestIndividualTransferResult = {
-    homeTransactionId: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionIndividualTransfer['homeTransactionId'];
+    homeTransactionId: SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransactionIndividualTransfer['homeTransactionId'];
     transferId: string;
     transactionId: string;
-    to?: SDKSchemeAdapter.V2_0_0.Outbound.Types.Party;
+    to?: SDKSchemeAdapter.V2_1_0.Outbound.Types.Party;
     lastError: IndividualTransferError
 };
 
 export type CoreConnectorBulkAcceptPartyInfoRequest = {
-    bulkHomeTransactionID: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest['bulkHomeTransactionID'];
-    bulkTransactionId: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest['bulkTransactionId'];
+    bulkHomeTransactionID: SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransactionRequest['bulkHomeTransactionID'];
+    bulkTransactionId: SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransactionRequest['bulkTransactionId'];
     individualTransferResults: CoreConnectorBulkAcceptPartyInfoRequestIndividualTransferResult[];
 };
 

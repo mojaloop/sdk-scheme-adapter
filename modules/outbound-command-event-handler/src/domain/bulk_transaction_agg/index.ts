@@ -73,7 +73,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
     // }
 
     static async CreateFromRequest(
-        request: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest,
+        request: SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransactionRequest,
         entityStateRepo: IEntityStateRepository<BulkTransactionState>,
         logger: ILogger,
     ): Promise<BulkTransactionAgg> {
@@ -404,7 +404,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
                     const party = individualTransfer.partyResponse?.party;
                     if(party) {
                         // Generate Quote request
-                        const individualBulkQuoteRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualQuote = {
+                        const individualBulkQuoteRequest: SDKSchemeAdapter.V2_1_0.Outbound.Types.individualQuote = {
                             quoteId: individualTransfer.quoteId,
                             to: {
                                 idType: party.partyIdInfo.partyIdType,
@@ -493,7 +493,7 @@ export class BulkTransactionAgg extends BaseAggregate<BulkTransactionEntity, Bul
 
                         if(party) {
                             // Generate Transfers request
-                            const individualBulkTransferRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualTransfer = {
+                            const individualBulkTransferRequest: SDKSchemeAdapter.V2_1_0.Outbound.Types.individualTransfer = {
                                 transferId: individualTransfer.transferId,
                                 to: {
                                     idType: party.partyIdInfo.partyIdType,

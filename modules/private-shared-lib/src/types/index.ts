@@ -38,10 +38,10 @@ export * from './infra';
 export * from './events';
 export * from './bulk_transaction_entity_repo';
 
-export type BulkQuoteResponse = SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteResponse;
-export type BulkQuoteErrorResponse = SDKSchemeAdapter.V2_0_0.Outbound.Types.transferError;
-// export type BulkQuoteErrorResponse = SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteErrorResponse;
-export type PartyErrorResponse = SDKSchemeAdapter.V2_0_0.Outbound.Types.transferError;
-export type BulkTransferResponse = SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransferResponse;
-export type BulkTransferErrorResponse = SDKSchemeAdapter.V2_0_0.Outbound.Types.transferError;
-// export type BulkTransferErrorResponse = SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransferErrorResponse;
+export type BulkQuoteResponse = SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkQuoteResponse;
+export type BulkQuoteErrorResponse = SDKSchemeAdapter.V2_1_0.Outbound.Types.transferError;
+// export type BulkQuoteErrorResponse = SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkQuoteErrorResponse;
+export type PartyErrorResponse = SDKSchemeAdapter.V2_1_0.Outbound.Types.transferError;
+export type BulkTransferResponse = SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransferResponse;
+export type BulkTransferErrorResponse = SDKSchemeAdapter.V2_1_0.Outbound.Types.transferError;
+// export type BulkTransferErrorResponse = SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransferErrorResponse;

@@ -63,13 +63,13 @@ export interface BulkBatchState extends BaseEntityState {
     bulkId: string;
     bulkQuoteId: string;
     bulkTransferId: string;
-    bulkQuotesRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteRequest;
+    bulkQuotesRequest: SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkQuoteRequest;
     bulkQuotesResponse?: BulkQuoteResponse;
-    bulkTransfersRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransferRequest;
+    bulkTransfersRequest: SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransferRequest;
     bulkTransfersResponse?: BulkTransferResponse;
     quoteIdReferenceIdMap: { [quoteId: string]: string }; // Key = individual quoteId from bulkQuotesRequest, Value = transactionId representing an individual transfer from the bulkTransaction
     transferIdReferenceIdMap: { [transactionId: string]: string }; // Key = individual transferId from bulkTransferRequest, Value = transactionId representing an individual transfer from the bulkTransaction
-    lastError?: SDKSchemeAdapter.V2_0_0.Outbound.Types.transferError;
+    lastError?: SDKSchemeAdapter.V2_1_0.Outbound.Types.transferError;
 }
 
 export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
@@ -88,7 +88,7 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
         return this._state.bulkTransferId;
     }
 
-    get bulkQuotesRequest(): SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteRequest {
+    get bulkQuotesRequest(): SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkQuoteRequest {
         return this._state.bulkQuotesRequest;
     }
 
@@ -96,7 +96,7 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
         return this._state.bulkQuotesResponse;
     }
 
-    get bulkTransfersRequest(): SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransferRequest {
+    get bulkTransfersRequest(): SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransferRequest {
         return this._state.bulkTransfersRequest;
     }
 
@@ -116,7 +116,7 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
         return this._state.lastError;
     }
 
-    private static _convertPartyToFrom(party: SDKSchemeAdapter.V2_0_0.Outbound.Types.Party): SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteRequest['from'] {
+    private static _convertPartyToFrom(party: SDKSchemeAdapter.V2_1_0.Outbound.Types.Party): SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkQuoteRequest['from'] {
         return {
             idType: party.partyIdInfo.partyIdType,
             idValue: party.partyIdInfo.partyIdentifier,
@@ -170,13 +170,13 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
         return new BulkBatchEntity(initialState);
     }
 
-    addIndividualQuote(individualQuote: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualQuote, referenceId: string) {
+    addIndividualQuote(individualQuote: SDKSchemeAdapter.V2_1_0.Outbound.Types.individualQuote, referenceId: string) {
         this._state.bulkQuotesRequest.individualQuotes.push(individualQuote);
         this._state.quoteIdReferenceIdMap[individualQuote.quoteId] = referenceId;
     }
 
     addIndividualTransfer(
-        individualTransfer: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualTransfer,
+        individualTransfer: SDKSchemeAdapter.V2_1_0.Outbound.Types.individualTransfer,
         referenceId: string,
     ) {
         this._state.bulkTransfersRequest.individualTransfers.push(individualTransfer);
@@ -207,7 +207,7 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
         this._state.bulkTransfersResponse = response;
     }
 
-    setLastError(response: SDKSchemeAdapter.V2_0_0.Outbound.Types.transferError) {
+    setLastError(response: SDKSchemeAdapter.V2_1_0.Outbound.Types.transferError) {
         this._state.lastError = response;
     }
 
@@ -219,8 +219,8 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
         BulkBatchEntity._validateBulkTransfersRequest(this._state.bulkTransfersRequest);
     }
 
-    private static _validateBulkQuotesRequest(request: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteRequest): void {
-        const requestSchema = SDKSchemeAdapter.V2_0_0.Outbound.Schemas.bulkQuoteRequest;
+    private static _validateBulkQuotesRequest(request: SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkQuoteRequest): void {
+        const requestSchema = SDKSchemeAdapter.V2_1_0.Outbound.Schemas.bulkQuoteRequest;
         const validate = ajv.compile(requestSchema);
         const validationResult = validate(request);
         if(!validationResult) {
@@ -228,8 +228,8 @@ export class BulkBatchEntity extends BaseEntity<BulkBatchState> {
         }
     }
 
-    private static _validateBulkTransfersRequest(request: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransferRequest): void {
-        const requestSchema = SDKSchemeAdapter.V2_0_0.Outbound.Schemas.bulkTransferRequest;
+    private static _validateBulkTransfersRequest(request: SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransferRequest): void {
+        const requestSchema = SDKSchemeAdapter.V2_1_0.Outbound.Schemas.bulkTransferRequest;
         const validate = ajv.compile(requestSchema);
         const validationResult = validate(request);
         if(!validationResult) {

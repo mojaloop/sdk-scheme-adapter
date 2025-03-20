@@ -62,7 +62,7 @@ export async function handlePrepareSDKOutboundBulkResponseCmdEvt(
             return individualTransfer.toIndividualTransferResult();
         }));
 
-        const bulkTransactionResponse: SDKSchemeAdapter.V2_0_0.Backend.Types.bulkTransactionResponse = {
+        const bulkTransactionResponse: SDKSchemeAdapter.V2_1_0.Backend.Types.bulkTransactionResponse = {
             bulkHomeTransactionID: bulkTransaction.bulkHomeTransactionID,
             bulkTransactionId: bulkTransaction.id,
             currentState: bulkTransaction.state == BulkTransactionInternalState.TRANSFERS_COMPLETED ? SDKOutboundTransferState.COMPLETED : SDKOutboundTransferState.ERROR_OCCURRED,
