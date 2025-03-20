@@ -118,7 +118,7 @@
     "redis-mock": "0.56.3",
     "replace": "1.2.2",
     "standard-version": "9.5.0",
-    "supertest": "7.0.0",
+    "supertest": "7.1.0",
     "swagger-cli": "4.0.4"
   },
   "standard-version": {

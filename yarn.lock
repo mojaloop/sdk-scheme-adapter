@@ -2717,7 +2717,7 @@ __metadata:
     redis-mock: 0.56.3
     replace: 1.2.2
     standard-version: 9.5.0
-    supertest: 7.0.0
+    supertest: 7.1.0
     swagger-cli: 4.0.4
     uuidv4: 6.2.13
     ws: 8.18.1
@@ -14604,13 +14604,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"supertest@npm:7.0.0":
-  version: 7.0.0
-  resolution: "supertest@npm:7.0.0"
+"supertest@npm:7.1.0":
+  version: 7.1.0
+  resolution: "supertest@npm:7.1.0"
   dependencies:
     methods: ^1.1.2
     superagent: ^9.0.1
-  checksum: 974743aa511ec0f387135dfca05e378f6202366c81f0850dfbcc2c3d6fc690e856dda27e175c70db38510e21d87f331c0f62e1a942afea4c447953c647c26c8b
+  checksum: 366372311e18a27312e72ce8fc8292cafd0dc9424203d02258e3eab0490562c4dd733b313d5630a9ab3cf8cdd503d271768ce7aa0a66eccab61a35d60aedc0b1
   languageName: node
   linkType: hard
 
