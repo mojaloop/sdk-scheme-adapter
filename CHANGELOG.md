@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.4.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.4.0...v24.4.1) (2025-03-20)
+
+
+### Bug Fixes
+
+* **csi-1328:** add sdk 2.1 spec files for ttksims ([#563](https://github.com/mojaloop/sdk-scheme-adapter/issues/563)) ([b5e498e](https://github.com/mojaloop/sdk-scheme-adapter/commit/b5e498ee7bf22fd48c6c2d2c4d53347b72ee70cc))
+
 ## [24.4.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.3.2...v24.4.0) (2025-03-19)
 
 
