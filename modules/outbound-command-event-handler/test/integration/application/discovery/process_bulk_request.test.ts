@@ -105,7 +105,7 @@
             And Global state should be updated to RECEIVED.", async () => {
 
      const bulkTransactionId = randomUUID();
-     const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
+     const bulkRequest: SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransactionRequest = {
        bulkHomeTransactionID: "string",
        bulkTransactionId: bulkTransactionId,
        options: {

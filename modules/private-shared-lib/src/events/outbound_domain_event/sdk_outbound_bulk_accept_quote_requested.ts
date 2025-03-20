@@ -36,16 +36,16 @@ import { IndividualTransferError } from '@module-domain';
 // TODO: Current dfspInboundAPI is outdated and its better to add the core connector API to the API snippets library as single source of truth.
 // For now we are defining these types here.
 export type CoreConnectorBulkAcceptQuoteRequestIndividualTransferResult = {
-    homeTransactionId: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionIndividualTransfer['homeTransactionId'];
+    homeTransactionId: SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransactionIndividualTransfer['homeTransactionId'];
     transferId: string,
     transactionId?: string;
-    quoteResponse?: SDKSchemeAdapter.V2_0_0.Outbound.Types.individualQuoteResult;
+    quoteResponse?: SDKSchemeAdapter.V2_1_0.Outbound.Types.individualQuoteResult;
     lastError?: IndividualTransferError
 };
 
 export type CoreConnectorBulkAcceptQuoteRequest = {
-    bulkHomeTransactionID: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest['bulkHomeTransactionID'];
-    bulkTransactionId: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest['bulkTransactionId'];
+    bulkHomeTransactionID: SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransactionRequest['bulkHomeTransactionID'];
+    bulkTransactionId: SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransactionRequest['bulkTransactionId'];
     individualTransferResults: CoreConnectorBulkAcceptQuoteRequestIndividualTransferResult[];
 };
 

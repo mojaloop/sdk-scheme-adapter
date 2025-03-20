@@ -36,7 +36,7 @@ export type IBulkQuotesRequestedDmEvtData = {
     bulkId: string;
     content: {
         batchId: string;
-        request: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteRequest;
+        request: SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkQuoteRequest;
     };
     timestamp: number | null;
     headers: IMessageHeader[] | null;
@@ -71,7 +71,7 @@ export class BulkQuotesRequestedDmEvt extends DomainEvent {
         return content.batchId;
     }
 
-    get request(): SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteRequest {
+    get request(): SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkQuoteRequest {
         const content = this.getContent() as IBulkQuotesRequestedDmEvtData['content'];
         return content.request;
     }

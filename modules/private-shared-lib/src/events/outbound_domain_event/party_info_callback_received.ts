@@ -94,7 +94,7 @@ export class PartyInfoCallbackReceivedDmEvt extends DomainEvent {
     //   }
     //   if( content.partyResult.currentState === 'COMPLETED' ) {
     //       if (content.partyResult.hasOwnProperty('party')) {
-    //         const partySchema = SDKSchemeAdapter.V2_0_0.Outbound.Schemas.Party;
+    //         const partySchema = SDKSchemeAdapter.V2_1_0.Outbound.Schemas.Party;
     //         const validate = ajv.compile(partySchema);
     //         const validationResult = validate(content.partyResult.party);
     //         if(!validationResult) {

@@ -58,23 +58,23 @@ export enum IndividualTransferInternalState {
     TRANSFERS_SUCCESS = 'TRANSFERS_SUCCESS',
 }
 
-export interface IndividualQuoteResponse extends SDKSchemeAdapter.V2_0_0.Outbound.Types.individualQuoteResult {
-    expiration: SDKSchemeAdapter.V2_0_0.Outbound.Types.DateTime;
+export interface IndividualQuoteResponse extends SDKSchemeAdapter.V2_1_0.Outbound.Types.individualQuoteResult {
+    expiration: SDKSchemeAdapter.V2_1_0.Outbound.Types.DateTime;
 }
 
-export interface IndividualTransferResponse extends SDKSchemeAdapter.V2_0_0.Outbound.Types.individualTransferResult {
-    completedTimestamp?: SDKSchemeAdapter.V2_0_0.Outbound.Types.DateTime;
+export interface IndividualTransferResponse extends SDKSchemeAdapter.V2_1_0.Outbound.Types.individualTransferResult {
+    completedTimestamp?: SDKSchemeAdapter.V2_1_0.Outbound.Types.DateTime;
 }
 
-export type IndividualTransferError = SDKSchemeAdapter.V2_0_0.Outbound.Types.transferError;
+export type IndividualTransferError = SDKSchemeAdapter.V2_1_0.Outbound.Types.transferError;
 // TODO: Extend API-Snippets lastError with the following types
-// SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransferErrorResponse |
-// SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkQuoteErrorResponse |
-// SDKSchemeAdapter.V2_0_0.Outbound.Types.partyError;
+// SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransferErrorResponse |
+// SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkQuoteErrorResponse |
+// SDKSchemeAdapter.V2_1_0.Outbound.Types.partyError;
 
 export interface IndividualTransferState extends BaseEntityState {
     id: string;
-    request: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionIndividualTransfer;
+    request: SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransactionIndividualTransfer;
     state: IndividualTransferInternalState;
     batchId?: string;
     partyRequest?: PartyInfoRequest;
@@ -107,7 +107,7 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         return this._state.transactionId as string;
     }
 
-    get request(): SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionIndividualTransfer {
+    get request(): SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransactionIndividualTransfer {
         return this._state.request;
     }
 
@@ -133,7 +133,7 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
 
 
     static CreateFromRequest(
-        request: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionIndividualTransfer,
+        request: SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransactionIndividualTransfer,
     ): IndividualTransferEntity {
     // IndividualTransferEntity._validateRequest(request)
         const initialState: IndividualTransferState = {
@@ -148,7 +148,7 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         return new IndividualTransferEntity(initialState);
     }
 
-    get payee(): SDKSchemeAdapter.V2_0_0.Outbound.Types.Party {
+    get payee(): SDKSchemeAdapter.V2_1_0.Outbound.Types.Party {
         return this._state.request.to;
     }
 
@@ -210,7 +210,7 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         return this._state.partyResponse?.party?.partyIdInfo?.fspId;
     }
 
-    toIndividualTransferResult(): SDKSchemeAdapter.V2_0_0.Backend.Types.bulkTransactionIndividualTransferResult {
+    toIndividualTransferResult(): SDKSchemeAdapter.V2_1_0.Backend.Types.bulkTransactionIndividualTransferResult {
         // TODO: Should we infer the FSPIOP-transferState for the individualTransfer based on the SDK-IndividualTransferInternalState? See comments below in the Fulfil mapping.
         // eslint-disable-next-line max-len
         const transferState = (this.transferState === IndividualTransferInternalState.TRANSFERS_SUCCESS) ? CentralServicedSharedEnum.Transfers.TransferState.COMMITTED : CentralServicedSharedEnum.Transfers.TransferState.ABORTED;
@@ -241,8 +241,8 @@ export class IndividualTransferEntity extends BaseEntity<IndividualTransferState
         super(initialState);
     }
 
-    private static _validateRequest(request: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionIndividualTransfer): void {
-        const requestSchema = SDKSchemeAdapter.V2_0_0.Outbound.Schemas.bulkTransactionIndividualTransfer;
+    private static _validateRequest(request: SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransactionIndividualTransfer): void {
+        const requestSchema = SDKSchemeAdapter.V2_1_0.Outbound.Schemas.bulkTransactionIndividualTransfer;
         const validate = ajv.compile(requestSchema);
         const validationResult = validate(request);
         if(!validationResult) {

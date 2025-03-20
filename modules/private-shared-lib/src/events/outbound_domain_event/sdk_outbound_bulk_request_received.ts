@@ -34,7 +34,7 @@ import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 import { randomUUID } from 'crypto';
 
 export interface ISDKOutboundBulkRequestReceivedDmEvtData {
-    bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest;
+    bulkRequest: SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransactionRequest;
     timestamp: number | null;
     headers: IMessageHeader[] | null;
 }
@@ -55,15 +55,15 @@ export class SDKOutboundBulkRequestReceivedDmEvt extends DomainEvent {
     static CreateFromDomainEvent(message: DomainEvent): SDKOutboundBulkRequestReceivedDmEvt {
         // Prepare Data
         const data = {
-            bulkRequest: message.getContent() as SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest,
+            bulkRequest: message.getContent() as SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransactionRequest,
             timestamp: message.getTimeStamp(),
             headers: message.getHeaders(),
         };
         return new SDKOutboundBulkRequestReceivedDmEvt(data);
     }
 
-    getBulkRequest(): SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest {
-        return this.getContent() as SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest;
+    getBulkRequest(): SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransactionRequest {
+        return this.getContent() as SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransactionRequest;
     }
 
     // // Sample validation function
