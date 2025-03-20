@@ -139,7 +139,7 @@ import { Timer } from "../../../util/timer";
 
       // Publish this message so that it is stored internally in redis
       const bulkTransactionId = randomUUID();
-      const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
+      const bulkRequest: SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransactionRequest = {
         bulkHomeTransactionID: "string",
         bulkTransactionId: bulkTransactionId,
         options: {
@@ -552,7 +552,7 @@ import { Timer } from "../../../util/timer";
          And domain event SDKOutboundBulkQuotesRequestProcessed should be published", async () => {
       // Publish this message so that it is stored internally in redis
       const bulkTransactionId = randomUUID();
-      const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
+      const bulkRequest: SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransactionRequest = {
         bulkHomeTransactionID: "string",
         bulkTransactionId: bulkTransactionId,
         options: {

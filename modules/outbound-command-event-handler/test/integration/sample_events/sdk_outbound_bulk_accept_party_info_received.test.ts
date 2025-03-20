@@ -68,7 +68,7 @@ const bulkTransactionEntityRepoOptions: IRedisBulkTransactionStateRepoOptions = 
 
 const bulkTransactionEntityRepo = new RedisBulkTransactionStateRepo(bulkTransactionEntityRepoOptions, logger);
 
-const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
+const bulkRequest: SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransactionRequest = {
     bulkHomeTransactionID: "abc123",
     bulkTransactionId: bulkTransactionId,
     options: {

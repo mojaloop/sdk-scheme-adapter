@@ -32,7 +32,7 @@ import { DomainEvent } from '../domain_event';
 import { IMessageHeader } from '@module-types';
 import { SDKSchemeAdapter } from '@mojaloop/api-snippets';
 
-type BulkTransactionResponse = SDKSchemeAdapter.V2_0_0.Backend.Types.bulkTransactionResponse;
+type BulkTransactionResponse = SDKSchemeAdapter.V2_1_0.Backend.Types.bulkTransactionResponse;
 
 export type ISDKOutboundBulkResponsePreparedDmEvtData = {
     bulkId: string;

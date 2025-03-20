@@ -118,7 +118,7 @@ describe("Tests for ProcessSDKOutboundBulkQuotesRequest Event Handler", () => {
       And update the state of each batch to AGREEMENT_PROCESSING.", async () => {
     // Publish this message so that it is stored internally in redis
     const bulkTransactionId = randomUUID();
-    const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
+    const bulkRequest: SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransactionRequest = {
       bulkHomeTransactionID: "string",
       bulkTransactionId: bulkTransactionId,
       options: {

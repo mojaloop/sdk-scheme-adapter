@@ -60,9 +60,9 @@ export enum BulkTransactionInternalState {
 export interface BulkTransactionState extends BaseEntityState {
     bulkTransactionId: string;
     bulkHomeTransactionID: string;
-    options: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionOptions;
-    from: SDKSchemeAdapter.V2_0_0.Outbound.Types.Party;
-    extensions: SDKSchemeAdapter.V2_0_0.Outbound.Types.ExtensionList | undefined;
+    options: SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransactionOptions;
+    from: SDKSchemeAdapter.V2_1_0.Outbound.Types.Party;
+    extensions: SDKSchemeAdapter.V2_1_0.Outbound.Types.ExtensionList_v2_1_0 | undefined;
     state: BulkTransactionInternalState;
 }
 
@@ -78,7 +78,7 @@ export class BulkTransactionEntity extends BaseEntity<BulkTransactionState> {
         return this._state.bulkHomeTransactionID;
     }
 
-    get from(): SDKSchemeAdapter.V2_0_0.Outbound.Types.Party {
+    get from(): SDKSchemeAdapter.V2_1_0.Outbound.Types.Party {
         return this._state.from;
     }
 
@@ -86,16 +86,16 @@ export class BulkTransactionEntity extends BaseEntity<BulkTransactionState> {
         return this._state.state;
     }
 
-    get options(): SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionOptions {
+    get options(): SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransactionOptions {
         return this._state.options;
     }
 
-    get extensions(): SDKSchemeAdapter.V2_0_0.Outbound.Types.ExtensionList | undefined {
+    get extensions(): SDKSchemeAdapter.V2_1_0.Outbound.Types.ExtensionList_v2_1_0 | undefined {
         return this._state.extensions;
     }
 
     static CreateFromRequest(
-        request: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest,
+        request: SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransactionRequest,
     ): BulkTransactionEntity {
         BulkTransactionEntity._validateRequest(request);
         const bulkTransactionId = request?.bulkTransactionId || randomUUID();
@@ -135,7 +135,7 @@ export class BulkTransactionEntity extends BaseEntity<BulkTransactionState> {
         return this._state.options.autoAcceptQuote.enabled;
     }
 
-    // getAutoAcceptQuotePerTransferFeeLimits (): SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkPerTransferFeeLimit[] | undefined {
+    // getAutoAcceptQuotePerTransferFeeLimits (): SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkPerTransferFeeLimit[] | undefined {
     //   return this._state.options.autoAcceptQuote.perTransferFeeLimits
     // }
 
@@ -143,8 +143,8 @@ export class BulkTransactionEntity extends BaseEntity<BulkTransactionState> {
     //   return this._state.options.bulkExpiration
     // }
 
-    private static _validateRequest(request: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest): void {
-        const requestSchema = SDKSchemeAdapter.V2_0_0.Outbound.Schemas.bulkTransactionRequest;
+    private static _validateRequest(request: SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransactionRequest): void {
+        const requestSchema = SDKSchemeAdapter.V2_1_0.Outbound.Schemas.bulkTransactionRequest;
         const validate = ajv.compile(requestSchema);
         const validationResult = validate(request);
         if(!validationResult) {

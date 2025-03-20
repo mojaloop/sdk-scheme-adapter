@@ -94,7 +94,7 @@ export enum StopAfterEventEnum {
 export type IProcessHelperGenerateOptions = {
   bulkTransactionRequest?: {
     bulkTransactionId?: string,
-    options: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest['options']
+    options: SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransactionRequest['options']
   },
   StopAfterEvent?: StopAfterEventEnum,
   messageTimeout?: number,
@@ -113,7 +113,7 @@ export type GenerateReturn = {
 export class ProcessHelper {
 
   public domainEvents: Array<DomainEvent> = [];
-  public bulkTransactionRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest;
+  public bulkTransactionRequest: SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransactionRequest;
   public bulkTransactionEntityRepo: IBulkTransactionEntityRepo;
   public commandEventProducer: ICommandEventProducer;
   public domainEventProducer: IDomainEventProducer;
@@ -172,7 +172,7 @@ export class ProcessHelper {
   ): Promise<GenerateReturn> {
     const bulkTransactionId = options?.bulkTransactionRequest?.bulkTransactionId || randomUUID();
 
-    const defaultBulkTransactionOptions: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest['options'] = {
+    const defaultBulkTransactionOptions: SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransactionRequest['options'] = {
       onlyValidateParty: true,
       autoAcceptParty: {
         enabled: false
@@ -185,12 +185,12 @@ export class ProcessHelper {
       bulkExpiration: "2016-05-24T08:38:08.699-04:00"
     };
 
-    const bulkTransactionOptions: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest['options'] = {
+    const bulkTransactionOptions: SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransactionRequest['options'] = {
       ... defaultBulkTransactionOptions,
       ... options?.bulkTransactionRequest?.options
     };
 
-    const bulkRequest: SDKSchemeAdapter.V2_0_0.Outbound.Types.bulkTransactionRequest = {
+    const bulkRequest: SDKSchemeAdapter.V2_1_0.Outbound.Types.bulkTransactionRequest = {
       bulkHomeTransactionID: "string",
       bulkTransactionId: bulkTransactionId,
       options: bulkTransactionOptions,
