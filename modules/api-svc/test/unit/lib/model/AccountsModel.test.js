@@ -154,6 +154,6 @@ describe('AccountsModel', () => {
         testCreateAccount(20000, ['USD', 'EUR']));
 
     test('create 100 accounts without currencies', () =>
-        testCreateAccount(1, null));
+        testCreateAccount(100, null));
 
 });
