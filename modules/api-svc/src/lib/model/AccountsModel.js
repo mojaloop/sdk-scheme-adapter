@@ -321,7 +321,7 @@ class AccountsModel {
                 request = {
                     requestId: this._idGenerator(),
                     partyList: [],
-                    currency: account.currency,
+                    currency: account?.currency,
                 };
                 requests.push(request);
             }
