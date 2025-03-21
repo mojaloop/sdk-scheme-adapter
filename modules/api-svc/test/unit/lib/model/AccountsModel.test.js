@@ -147,11 +147,11 @@ describe('AccountsModel', () => {
         expect(StateMachine.__instance.state).toBe('start');
     });
 
-    //test('create 100 accounts', () =>
-    //    testCreateAccount(100, ['USD', 'EUR', 'UAH']));
+    test('create 100 accounts', () =>
+        testCreateAccount(100, ['USD', 'EUR', 'UAH']));
 
-    //test('create 20000 accounts', () =>
-    //    testCreateAccount(20000, ['USD', 'EUR']));
+    test('create 20000 accounts', () =>
+        testCreateAccount(20000, ['USD', 'EUR']));
 
     test('create 100 accounts without currencies', () =>
         testCreateAccount(1, null));
