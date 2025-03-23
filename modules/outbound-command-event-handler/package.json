@@ -47,6 +47,7 @@
     "@mojaloop/logging-bc-public-types-lib": "0.5.5",
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^",
     "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
     "convict": "6.2.4",
     "express": "4.21.2",
     "openapi-backend": "5.11.1",
