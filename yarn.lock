@@ -2745,6 +2745,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 8.27.0
     "@typescript-eslint/parser": 8.27.0
     ajv: 8.17.1
+    ajv-formats: 3.0.1
     convict: 6.2.4
     copyfiles: 2.4.1
     eslint: 9.15.0
@@ -2782,6 +2783,7 @@ __metadata:
     "@types/yamljs": 0.2.34
     "@typescript-eslint/eslint-plugin": 8.27.0
     "@typescript-eslint/parser": 8.27.0
+    ajv-formats: 3.0.1
     convict: 6.2.4
     copyfiles: 2.4.1
     eslint: 9.15.0
@@ -2834,7 +2836,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter@workspace:."
   dependencies:
     "@types/jest": 29.5.14
-    "@types/node": 22.13.10
+    "@types/node": 22.13.11
     "@types/node-cache": 4.2.5
     "@typescript-eslint/eslint-plugin": 8.27.0
     "@typescript-eslint/parser": 8.27.0
@@ -3904,6 +3906,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node@npm:22.13.11":
+  version: 22.13.11
+  resolution: "@types/node@npm:22.13.11"
+  dependencies:
+    undici-types: ~6.20.0
+  checksum: 82d8e0ff385ddcdd0c4d07967ae1e1bbadf3b26143fbf9e16b35652c6080fd783333e9fc828188d8918e03c526433de6b5c0eaa07374873801982251568da030
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:^14.11.8":
   version: 14.18.63
   resolution: "@types/node@npm:14.18.63"
@@ -4364,6 +4375,20 @@ __metadata:
     ajv:
       optional: true
   checksum: 3f11fa0e7f7359bef6608657f02ab78e9cc62b1fb7bdd860db0d00351b3863a1189c1a23b72466d2d82726cab4eb20725c76f5e7c134a89865e2bfd0e6828137
+  languageName: node
+  linkType: hard
+
+"ajv-formats@npm:3.0.1":
+  version: 3.0.1
+  resolution: "ajv-formats@npm:3.0.1"
+  dependencies:
+    ajv: ^8.0.0
+  peerDependencies:
+    ajv: ^8.0.0
+  peerDependenciesMeta:
+    ajv:
+      optional: true
+  checksum: f4e1fe232d67fcafc02eafe373a7a9962351e0439dd0736647ca75c93c3da23b430b6502c255ab4315410ae330d4f3013ac9fe226c40b2524ca93a58e786d086
   languageName: node
   linkType: hard
 
