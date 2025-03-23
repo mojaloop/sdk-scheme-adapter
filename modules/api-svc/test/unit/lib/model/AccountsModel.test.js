@@ -52,13 +52,23 @@ const transferRequest = require('./data/transferRequest');
 
 function generateAccounts(count, currencies) {
     const accounts = [];
-    for (let currencyIndex = 0; currencyIndex < currencies.length; currencyIndex++) {
+    if (currencies) {
+        for (let currencyIndex = 0; currencyIndex < currencies.length; currencyIndex++) {
+            for (let i = 1; i <= count; i++) {
+                accounts.push({
+                    idType: 'MSISDN',
+                    idValue: String(i * (currencyIndex + 1)).padStart(9, '0'),
+                    idSubValue: `Sub_${String(i * (currencyIndex + 1))}`.padStart(5, '0'),
+                    currency: currencies[currencyIndex],
+                });
+            }
+        }
+    } else {
         for (let i = 1; i <= count; i++) {
             accounts.push({
                 idType: 'MSISDN',
-                idValue: String(i * (currencyIndex + 1)).padStart(9, '0'),
-                idSubValue: `Sub_${String(i * (currencyIndex + 1))}`.padStart(5, '0'),
-                currency: currencies[currencyIndex],
+                idValue: String(i).padStart(9, '0'),
+                idSubValue: `Sub_${String(i)}`.padStart(5, '0'),
             });
         }
     }
@@ -82,7 +92,7 @@ describe('AccountsModel', () => {
                             partyId: party,
                             // errorInformation: null
                         })),
-                        currency: request.currency,
+                        currency: request?.currency,
                     },
                     headers: {}
                 },
@@ -104,8 +114,7 @@ describe('AccountsModel', () => {
 
         // wait for the model to reach a terminal state
         const result = await model.run();
-
-        const expectedRequestsCount = currencies.length *
+        const expectedRequestsCount = (currencies?.length || 1) *
             (Math.floor(count / MAX_ITEMS_PER_REQUEST) + ((count % MAX_ITEMS_PER_REQUEST) ? 1 : 0));
         expect(MojaloopRequests.__postParticipants).toHaveBeenCalledTimes(expectedRequestsCount);
 
@@ -143,4 +152,8 @@ describe('AccountsModel', () => {
 
     test('create 20000 accounts', () =>
         testCreateAccount(20000, ['USD', 'EUR']));
+
+    test('create 100 accounts without currencies', () =>
+        testCreateAccount(100, null));
+
 });
