@@ -2373,9 +2373,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/api-snippets@npm:17.10.0":
-  version: 17.10.0
-  resolution: "@mojaloop/api-snippets@npm:17.10.0"
+"@mojaloop/api-snippets@npm:17.10.1":
+  version: 17.10.1
+  resolution: "@mojaloop/api-snippets@npm:17.10.1"
   dependencies:
     "@apidevtools/json-schema-ref-parser": ^9.1.2
     "@redocly/openapi-core": ^1.5.0
@@ -2386,7 +2386,7 @@ __metadata:
     openapi-types: ^12.1.3
     openapi-typescript: ^7.6.1
     ts-auto-mock: ^3.7.4
-  checksum: 71493aed2a56076b3ed3bc14d402bdcd620f021295ec19305d6864bb8589e0a6b57baac8658f67116726c9fa9f21e8a60c70729c01c871b6c512c5c705d1e558
+  checksum: 9a0f1d2fd2c1083d3e985750b01a8f690106de4ee3a20d86a2f5c154e23c61aab25565172b64c9cbcf40aef262e30d4a69203a02164a9257066d0cf01d444d4f
   languageName: node
   linkType: hard
 
@@ -2669,7 +2669,7 @@ __metadata:
     "@babel/core": 7.26.10
     "@babel/preset-env": 7.26.9
     "@koa/cors": 5.0.0
-    "@mojaloop/api-snippets": 17.10.0
+    "@mojaloop/api-snippets": 17.10.1
     "@mojaloop/central-services-error-handling": 13.0.7
     "@mojaloop/central-services-logger": 11.7.0
     "@mojaloop/central-services-metrics": 12.5.0
@@ -2729,7 +2729,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-command-event-handler@workspace:modules/outbound-command-event-handler"
   dependencies:
     "@eslint/compat": 1.2.7
-    "@mojaloop/api-snippets": 17.10.0
+    "@mojaloop/api-snippets": 17.10.1
     "@mojaloop/central-services-shared": 18.23.0
     "@mojaloop/logging-bc-client-lib": 0.5.8
     "@mojaloop/logging-bc-public-types-lib": 0.5.5
@@ -2737,7 +2737,7 @@ __metadata:
     "@types/convict": 6.1.6
     "@types/express": 5.0.1
     "@types/jest": 29.5.14
-    "@types/node": 22.13.10
+    "@types/node": 22.13.11
     "@types/node-cache": 4.2.5
     "@types/supertest": 6.0.2
     "@types/swagger-ui-express": 4.1.8
@@ -2769,14 +2769,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-domain-event-handler@workspace:modules/outbound-domain-event-handler"
   dependencies:
-    "@mojaloop/api-snippets": 17.10.0
+    "@mojaloop/api-snippets": 17.10.1
     "@mojaloop/logging-bc-client-lib": 0.5.8
     "@mojaloop/logging-bc-public-types-lib": 0.5.5
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
     "@types/convict": 6.1.6
     "@types/express": 5.0.1
     "@types/jest": 29.5.14
-    "@types/node": 22.13.10
+    "@types/node": 22.13.11
     "@types/node-cache": 4.2.5
     "@types/supertest": 6.0.2
     "@types/swagger-ui-express": 4.1.8
@@ -2808,12 +2808,12 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter-private-shared-lib@workspace:modules/private-shared-lib"
   dependencies:
     "@eslint/compat": 1.2.7
-    "@mojaloop/api-snippets": 17.10.0
+    "@mojaloop/api-snippets": 17.10.1
     "@mojaloop/central-services-shared": 18.23.0
     "@mojaloop/logging-bc-public-types-lib": 0.5.5
     "@mojaloop/platform-shared-lib-messaging-types-lib": 0.7.1
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": 0.5.18
-    "@types/node": 22.13.10
+    "@types/node": 22.13.11
     "@types/uuid": 10.0.0
     "@typescript-eslint/eslint-plugin": 8.27.0
     "@typescript-eslint/parser": 8.27.0
@@ -3894,15 +3894,6 @@ __metadata:
   dependencies:
     undici-types: ~6.20.0
   checksum: 8789d9bc3efd212819fd03f7bbd429901b076703e9852ccf4950c8c7cd300d5d5a05f273d0936cbaf28194485d2bd0c265a1a25390720e353a53359526c28fb3
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:22.13.10":
-  version: 22.13.10
-  resolution: "@types/node@npm:22.13.10"
-  dependencies:
-    undici-types: ~6.20.0
-  checksum: 1cd6b899df728732c60c0defad63e26ca18d87a3b81bd75666fe9aed6cdf9e488433976b22ffcabfdeef9d351cf8ff94853b0686e6708ef62065482ccf5b0a6e
   languageName: node
   linkType: hard
 
