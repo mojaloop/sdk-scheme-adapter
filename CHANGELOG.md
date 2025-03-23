@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [24.5.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.4.1...v24.5.0) (2025-03-23)
+
+
+### Features
+
+* update accounts to handle non currency tied participants ([#564](https://github.com/mojaloop/sdk-scheme-adapter/issues/564)) ([9e2c1da](https://github.com/mojaloop/sdk-scheme-adapter/commit/9e2c1da42042b461be813a30ab0a083a85f8e4e4))
+
 ### [24.4.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.4.0...v24.4.1) (2025-03-20)
 
 
