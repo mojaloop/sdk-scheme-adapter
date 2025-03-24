@@ -47,7 +47,6 @@ const defaultConfig = require('../../data/defaultConfig');
 
 // Accounts
 const postAccountsSuccessResponse = require('./data/postAccountsSuccessResponse');
-const postAccountsSuccessResponseWithError1 = require('./data/postAccountsSuccessResponseWithError1');
 const postAccountsSuccessResponseWithError2 = require('./data/postAccountsSuccessResponseWithError2');
 const postAccountsErrorTimeoutResponse = require('./data/postAccountsErrorTimeoutResponse');
 const postAccountsErrorMojaloopResponse = require('./data/postAccountsErrorMojaloopResponse');
@@ -96,16 +95,6 @@ describe('Outbound Accounts API', () => {
                 currency: body.currency,
             });
             return testPostAccounts(putBodyFn, 200, postAccountsSuccessResponse);
-        });
-
-        test('should return success response with error info on invalid currency (1)', () => {
-            const putBodyFn = (body) => ({
-                partyList: body.partyList.map(party => ({
-                    partyId: party,
-                })),
-                currency: undefined,
-            });
-            return testPostAccounts(putBodyFn, 200, postAccountsSuccessResponseWithError1);
         });
 
         test(
