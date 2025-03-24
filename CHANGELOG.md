@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [24.6.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.5.0...v24.6.0) (2025-03-24)
+
+
+### Features
+
+* add ajv-formats package and integrate with OpenAPI backend validation ([#565](https://github.com/mojaloop/sdk-scheme-adapter/issues/565)) ([2de111c](https://github.com/mojaloop/sdk-scheme-adapter/commit/2de111c18cce717e8cb55fd50594d4a8b31b5ad3))
+
 ## [24.5.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.4.1...v24.5.0) (2025-03-23)
 
 
