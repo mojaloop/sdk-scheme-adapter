@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.6.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.6.1...v24.6.2) (2025-03-24)
+
+
+### Chore
+
+* remove misleading currency response ([#568](https://github.com/mojaloop/sdk-scheme-adapter/issues/568)) ([3792454](https://github.com/mojaloop/sdk-scheme-adapter/commit/3792454ba6334870f0f284bf58ddf94f18c1f337))
+
 ### [24.6.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.6.0...v24.6.1) (2025-03-24)
 
 
