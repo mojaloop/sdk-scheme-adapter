@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.6.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.6.0...v24.6.1) (2025-03-24)
+
+
+### Bug Fixes
+
+* datetime property ([#566](https://github.com/mojaloop/sdk-scheme-adapter/issues/566)) ([6c400df](https://github.com/mojaloop/sdk-scheme-adapter/commit/6c400dfd593cf14642d7931f856d4a8b75a53617))
+
 ## [24.6.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.5.0...v24.6.0) (2025-03-24)
 
 
