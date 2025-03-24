@@ -2754,9 +2754,9 @@ __metadata:
     "@types/convict": 6.1.6
     "@types/express": 5.0.1
     "@types/jest": 29.5.14
-    "@types/node": 22.13.12
+    "@types/node": 22.13.13
     "@types/node-cache": 4.2.5
-    "@types/supertest": 6.0.2
+    "@types/supertest": 6.0.3
     "@types/swagger-ui-express": 4.1.8
     "@types/yamljs": 0.2.34
     "@typescript-eslint/eslint-plugin": 8.27.0
@@ -2793,9 +2793,9 @@ __metadata:
     "@types/convict": 6.1.6
     "@types/express": 5.0.1
     "@types/jest": 29.5.14
-    "@types/node": 22.13.12
+    "@types/node": 22.13.13
     "@types/node-cache": 4.2.5
-    "@types/supertest": 6.0.2
+    "@types/supertest": 6.0.3
     "@types/swagger-ui-express": 4.1.8
     "@types/yamljs": 0.2.34
     "@typescript-eslint/eslint-plugin": 8.27.0
@@ -2830,7 +2830,7 @@ __metadata:
     "@mojaloop/logging-bc-public-types-lib": 0.5.5
     "@mojaloop/platform-shared-lib-messaging-types-lib": 0.7.1
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": 0.5.18
-    "@types/node": 22.13.12
+    "@types/node": 22.13.13
     "@types/uuid": 10.0.0
     "@typescript-eslint/eslint-plugin": 8.27.0
     "@typescript-eslint/parser": 8.27.0
@@ -2853,7 +2853,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter@workspace:."
   dependencies:
     "@types/jest": 29.5.14
-    "@types/node": 22.13.12
+    "@types/node": 22.13.13
     "@types/node-cache": 4.2.5
     "@typescript-eslint/eslint-plugin": 8.27.0
     "@typescript-eslint/parser": 8.27.0
@@ -3921,12 +3921,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:22.13.12":
-  version: 22.13.12
-  resolution: "@types/node@npm:22.13.12"
+"@types/node@npm:22.13.13":
+  version: 22.13.13
+  resolution: "@types/node@npm:22.13.13"
   dependencies:
     undici-types: ~6.20.0
-  checksum: 712dded901ae063e9c682a2ee7de64c7253045355ebd4b1937380dc80f5bbd738e364c031394bd2da1b3ade1364bc5530acf857f68812062f40712eb3e794160
+  checksum: 763c120725c4817227d3043095fd1e764744b2f3632e3e3c8242e1620a8e6fe1c9eeae38074dee3e39af6b890de142c3b6067f9b31e36635c44f3f5f4f2bb8cf
   languageName: node
   linkType: hard
 
@@ -4005,13 +4005,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/supertest@npm:6.0.2":
-  version: 6.0.2
-  resolution: "@types/supertest@npm:6.0.2"
+"@types/supertest@npm:6.0.3":
+  version: 6.0.3
+  resolution: "@types/supertest@npm:6.0.3"
   dependencies:
     "@types/methods": ^1.1.4
     "@types/superagent": ^8.1.0
-  checksum: 1eafa472665757a6fd984439d11f388ae0480c6d243a6884066c474c4e0357de5373316488da503b1690c3163e075ca8c64c0c4853b3bb7deb09e05d1b64e556
+  checksum: 5f75e4190620bb06168cca6998c1af29168e7ca64de34abe522002573d96b37ce2611ee53a9a360b3f42d44f0bfea547d0bb258f038ab69ac50d90bd5b96fc13
   languageName: node
   linkType: hard
 
