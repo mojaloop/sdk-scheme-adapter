@@ -82,7 +82,7 @@
   },
   "devDependencies": {
     "@types/jest": "29.5.14",
-    "@types/node": "22.13.11",
+    "@types/node": "22.13.12",
     "@types/node-cache": "4.2.5",
     "@typescript-eslint/eslint-plugin": "8.27.0",
     "@typescript-eslint/parser": "8.27.0",
@@ -96,7 +96,7 @@
     "npm-check-updates": "16.7.10",
     "replace": "1.2.2",
     "standard-version": "9.5.0",
-    "ts-jest": "29.2.6",
+    "ts-jest": "29.3.0",
     "ts-node": "10.9.2",
     "typescript": "5.8.2",
     "yarn-audit-fix": "10.1.1"

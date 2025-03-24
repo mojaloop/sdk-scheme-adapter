@@ -1597,13 +1597,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@grpc/grpc-js@npm:1.13.0":
-  version: 1.13.0
-  resolution: "@grpc/grpc-js@npm:1.13.0"
+"@grpc/grpc-js@npm:1.13.1":
+  version: 1.13.1
+  resolution: "@grpc/grpc-js@npm:1.13.1"
   dependencies:
     "@grpc/proto-loader": ^0.7.13
     "@js-sdsl/ordered-map": ^4.4.2
-  checksum: 5153924bd9a995c6a820fb5a5d439cb4258a83cc92b9cca6c896d5f909dea99a8fa4ca63a036dea96657fbfd4a17727e8e3be88ce2530da908e73667f5fa2db7
+  checksum: ee6d61bd143ed87b2087be8ddd05993fae7bd31052d7058650998ceadbd2c10e5cb9e9c60d4913d31f7398e68d7e1400309848a6472f3ea6c63a4a15f00e1b45
   languageName: node
   linkType: hard
 
@@ -2552,11 +2552,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/event-sdk@npm:14.3.2":
-  version: 14.3.2
-  resolution: "@mojaloop/event-sdk@npm:14.3.2"
+"@mojaloop/event-sdk@npm:14.4.0":
+  version: 14.4.0
+  resolution: "@mojaloop/event-sdk@npm:14.4.0"
   dependencies:
-    "@grpc/grpc-js": 1.13.0
+    "@grpc/grpc-js": 1.13.1
     "@grpc/proto-loader": 0.7.13
     brototype: 0.0.6
     error-callsites: 2.0.4
@@ -2578,7 +2578,7 @@ __metadata:
       optional: false
     "@mojaloop/central-services-stream":
       optional: true
-  checksum: 372ff7a2566192d9e48442699c8c407ee3013d312f26ef2ac9f45aaafd6aabe45e7d2211b61eb438762a691d177bda48ed1685e28c50b5e84b82365398987515
+  checksum: 0bcd36c533e49c3131944b3732c50a47dc1a9932629b911a59810b937e671f3d5a6b6b36d5d6dcb5d2169abe6dc6e32691dd128cac5cf856236a946d6d25da5f
   languageName: node
   linkType: hard
 
@@ -2637,6 +2637,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mojaloop/ml-schema-transformer-lib@npm:2.6.0":
+  version: 2.6.0
+  resolution: "@mojaloop/ml-schema-transformer-lib@npm:2.6.0"
+  dependencies:
+    "@mojaloop/central-services-error-handling": 13.0.7
+    "@mojaloop/central-services-logger": 11.7.0
+    "@mojaloop/central-services-shared": 18.23.0
+    "@rollup/rollup-linux-x64-musl": 4.37.0
+    ilp-packet: 2.2.0
+    map-transform-cjs: 0.2.0
+  dependenciesMeta:
+    "@rollup/rollup-linux-x64-musl":
+      optional: true
+  checksum: 93fb6590d3d14424aaf2dcea1545d7fbd2b72f42f897be11dc858dee2f8630d8d5ee37a42a3493e1566311b05d3f5cf223ace672887d02f8ce29651a2c4170a2
+  languageName: node
+  linkType: hard
+
 "@mojaloop/platform-shared-lib-messaging-types-lib@npm:0.7.1":
   version: 0.7.1
   resolution: "@mojaloop/platform-shared-lib-messaging-types-lib@npm:0.7.1"
@@ -2674,9 +2691,9 @@ __metadata:
     "@mojaloop/central-services-logger": 11.7.0
     "@mojaloop/central-services-metrics": 12.5.0
     "@mojaloop/central-services-shared": 18.23.0
-    "@mojaloop/event-sdk": 14.3.2
+    "@mojaloop/event-sdk": 14.4.0
     "@mojaloop/logging-bc-client-lib": 0.5.8
-    "@mojaloop/ml-schema-transformer-lib": 2.5.8
+    "@mojaloop/ml-schema-transformer-lib": 2.6.0
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
     "@mojaloop/sdk-standard-components": 19.11.0
     "@redocly/openapi-cli": 1.0.0-beta.95
@@ -2737,7 +2754,7 @@ __metadata:
     "@types/convict": 6.1.6
     "@types/express": 5.0.1
     "@types/jest": 29.5.14
-    "@types/node": 22.13.11
+    "@types/node": 22.13.12
     "@types/node-cache": 4.2.5
     "@types/supertest": 6.0.2
     "@types/swagger-ui-express": 4.1.8
@@ -2758,7 +2775,7 @@ __metadata:
     replace: 1.2.2
     standard-version: 9.5.0
     swagger-ui-express: 5.0.1
-    ts-jest: 29.2.6
+    ts-jest: 29.3.0
     ts-node: 10.9.2
     typescript: 5.8.2
     yamljs: 0.3.0
@@ -2776,7 +2793,7 @@ __metadata:
     "@types/convict": 6.1.6
     "@types/express": 5.0.1
     "@types/jest": 29.5.14
-    "@types/node": 22.13.11
+    "@types/node": 22.13.12
     "@types/node-cache": 4.2.5
     "@types/supertest": 6.0.2
     "@types/swagger-ui-express": 4.1.8
@@ -2796,7 +2813,7 @@ __metadata:
     replace: 1.2.2
     standard-version: 9.5.0
     swagger-ui-express: 5.0.1
-    ts-jest: 29.2.6
+    ts-jest: 29.3.0
     ts-node: 10.9.2
     typescript: 5.8.2
     yamljs: 0.3.0
@@ -2813,7 +2830,7 @@ __metadata:
     "@mojaloop/logging-bc-public-types-lib": 0.5.5
     "@mojaloop/platform-shared-lib-messaging-types-lib": 0.7.1
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": 0.5.18
-    "@types/node": 22.13.11
+    "@types/node": 22.13.12
     "@types/uuid": 10.0.0
     "@typescript-eslint/eslint-plugin": 8.27.0
     "@typescript-eslint/parser": 8.27.0
@@ -2824,7 +2841,7 @@ __metadata:
     redis: 4.7.0
     replace: 1.2.2
     standard-version: 9.5.0
-    ts-jest: 29.2.6
+    ts-jest: 29.3.0
     tslib: 2.8.1
     typescript: 5.8.2
     uuid: 11.1.0
@@ -2836,7 +2853,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter@workspace:."
   dependencies:
     "@types/jest": 29.5.14
-    "@types/node": 22.13.11
+    "@types/node": 22.13.12
     "@types/node-cache": 4.2.5
     "@typescript-eslint/eslint-plugin": 8.27.0
     "@typescript-eslint/parser": 8.27.0
@@ -2851,7 +2868,7 @@ __metadata:
     nx: 16.5.0
     replace: 1.2.2
     standard-version: 9.5.0
-    ts-jest: 29.2.6
+    ts-jest: 29.3.0
     ts-node: 10.9.2
     tslib: 2.8.1
     typescript: 5.8.2
@@ -3352,6 +3369,13 @@ __metadata:
 "@rollup/rollup-linux-x64-musl@npm:4.35.0":
   version: 4.35.0
   resolution: "@rollup/rollup-linux-x64-musl@npm:4.35.0"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@rollup/rollup-linux-x64-musl@npm:4.37.0":
+  version: 4.37.0
+  resolution: "@rollup/rollup-linux-x64-musl@npm:4.37.0"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
@@ -3897,12 +3921,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:22.13.11":
-  version: 22.13.11
-  resolution: "@types/node@npm:22.13.11"
+"@types/node@npm:22.13.12":
+  version: 22.13.12
+  resolution: "@types/node@npm:22.13.12"
   dependencies:
     undici-types: ~6.20.0
-  checksum: 82d8e0ff385ddcdd0c4d07967ae1e1bbadf3b26143fbf9e16b35652c6080fd783333e9fc828188d8918e03c526433de6b5c0eaa07374873801982251568da030
+  checksum: 712dded901ae063e9c682a2ee7de64c7253045355ebd4b1937380dc80f5bbd738e364c031394bd2da1b3ade1364bc5530acf857f68812062f40712eb3e794160
   languageName: node
   linkType: hard
 
@@ -14949,9 +14973,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-jest@npm:29.2.6":
-  version: 29.2.6
-  resolution: "ts-jest@npm:29.2.6"
+"ts-jest@npm:29.3.0":
+  version: 29.3.0
+  resolution: "ts-jest@npm:29.3.0"
   dependencies:
     bs-logger: ^0.2.6
     ejs: ^3.1.10
@@ -14961,6 +14985,7 @@ __metadata:
     lodash.memoize: ^4.1.2
     make-error: ^1.3.6
     semver: ^7.7.1
+    type-fest: ^4.37.0
     yargs-parser: ^21.1.1
   peerDependencies:
     "@babel/core": ">=7.0.0-beta.0 <8"
@@ -14982,7 +15007,7 @@ __metadata:
       optional: true
   bin:
     ts-jest: cli.js
-  checksum: ff71b27e997e4c5e6bcf2d38804b188eb1c7eec78570329f058f434ba1bd112a4806cdc4e7baac0e0e834bd20ca3be16e03d5c546304aa28e5cfeaccca82139e
+  checksum: 791f39ba74c5859596455ad5b08ed9a8431c8e3326faff8410ba4eddbe62583c19ede763d7ef0b65991ab5016ee89e420e3b0624849fd005ea3b60daf9e4fc31
   languageName: node
   linkType: hard
 
@@ -15134,6 +15159,13 @@ __metadata:
   version: 2.19.0
   resolution: "type-fest@npm:2.19.0"
   checksum: a4ef07ece297c9fba78fc1bd6d85dff4472fe043ede98bd4710d2615d15776902b595abf62bd78339ed6278f021235fb28a96361f8be86ed754f778973a0d278
+  languageName: node
+  linkType: hard
+
+"type-fest@npm:^4.37.0":
+  version: 4.37.0
+  resolution: "type-fest@npm:4.37.0"
+  checksum: 303f34778e675054fe0d300afaa1ded7985c16c72630d9946c1cb3c949f6dc0b014196a5473f248597d9edb6778788e4c47966f9dcbfce324a31d9845c282a74
   languageName: node
   linkType: hard
 
