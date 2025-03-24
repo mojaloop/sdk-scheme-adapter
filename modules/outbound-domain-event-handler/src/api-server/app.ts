@@ -28,6 +28,7 @@
  ******/
 import { ILogger } from '@mojaloop/logging-bc-public-types-lib';
 import Express, { Application } from 'express';
+import addFormats from 'ajv-formats';
 import OpenAPIBackend from 'openapi-backend';
 import type { Request } from 'openapi-backend';
 import swaggerUi from 'swagger-ui-express';
@@ -74,6 +75,7 @@ export const CreateExpressServer =
         // API routes based on the swagger file
         const api = new OpenAPIBackend({
             definition: openApiSpecFilePath,
+            customizeAjv: ajv => addFormats(ajv),
             handlers: {
                 ...Handlers,
                 validationFail: async (c, _req: Express.Request, res: Express.Response) =>

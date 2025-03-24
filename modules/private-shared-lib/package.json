@@ -29,7 +29,7 @@
     "snapshot": "standard-version --no-verify --skip.changelog --prerelease snapshot --releaseCommitMessageFormat 'chore(snapshot): {{currentTag}}'"
   },
   "dependencies": {
-    "@mojaloop/api-snippets": "17.10.0",
+    "@mojaloop/api-snippets": "17.10.1",
     "@mojaloop/central-services-shared": "18.23.0",
     "@mojaloop/logging-bc-public-types-lib": "0.5.5",
     "@mojaloop/platform-shared-lib-messaging-types-lib": "0.7.1",
@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "@eslint/compat": "1.2.7",
-    "@types/node": "22.13.10",
+    "@types/node": "22.13.12",
     "@types/uuid": "10.0.0",
     "@typescript-eslint/eslint-plugin": "8.27.0",
     "@typescript-eslint/parser": "8.27.0",
@@ -49,7 +49,7 @@
     "npm-check-updates": "16.7.10",
     "replace": "1.2.2",
     "standard-version": "9.5.0",
-    "ts-jest": "29.2.6",
+    "ts-jest": "29.3.0",
     "tslib": "2.8.1",
     "typescript": "5.8.2"
   },

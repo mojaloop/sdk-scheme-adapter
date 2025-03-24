@@ -1,4 +1,25 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.6.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.6.0...v24.6.1) (2025-03-24)
+
+
+### Bug Fixes
+
+* datetime property ([#566](https://github.com/mojaloop/sdk-scheme-adapter/issues/566)) ([6c400df](https://github.com/mojaloop/sdk-scheme-adapter/commit/6c400dfd593cf14642d7931f856d4a8b75a53617))
+
+## [24.6.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.5.0...v24.6.0) (2025-03-24)
+
+
+### Features
+
+* add ajv-formats package and integrate with OpenAPI backend validation ([#565](https://github.com/mojaloop/sdk-scheme-adapter/issues/565)) ([2de111c](https://github.com/mojaloop/sdk-scheme-adapter/commit/2de111c18cce717e8cb55fd50594d4a8b31b5ad3))
+
+## [24.5.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.4.1...v24.5.0) (2025-03-23)
+
+
+### Features
+
+* update accounts to handle non currency tied participants ([#564](https://github.com/mojaloop/sdk-scheme-adapter/issues/564)) ([9e2c1da](https://github.com/mojaloop/sdk-scheme-adapter/commit/9e2c1da42042b461be813a30ab0a083a85f8e4e4))
+
 ### [24.4.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.4.0...v24.4.1) (2025-03-20)
 
 
