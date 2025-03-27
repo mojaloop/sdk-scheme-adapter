@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.6.3](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.6.2...v24.6.3) (2025-03-27)
+
+
+### Chore
+
+* **csi-1321:** update deps ([#567](https://github.com/mojaloop/sdk-scheme-adapter/issues/567)) ([b547e61](https://github.com/mojaloop/sdk-scheme-adapter/commit/b547e6129f01dc2a2b9465a004ab5a5d0e358923))
+
 ### [24.6.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.6.1...v24.6.2) (2025-03-24)
 
 
