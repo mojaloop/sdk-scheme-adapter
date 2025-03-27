@@ -82,10 +82,10 @@
   },
   "devDependencies": {
     "@types/jest": "29.5.14",
-    "@types/node": "22.13.12",
+    "@types/node": "22.13.14",
     "@types/node-cache": "4.2.5",
-    "@typescript-eslint/eslint-plugin": "8.27.0",
-    "@typescript-eslint/parser": "8.27.0",
+    "@typescript-eslint/eslint-plugin": "8.28.0",
+    "@typescript-eslint/parser": "8.28.0",
     "audit-ci": "7.1.0",
     "eslint": "9.15.0",
     "eslint-config-airbnb-typescript": "18.0.0",
