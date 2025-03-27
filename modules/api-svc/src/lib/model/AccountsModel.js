@@ -32,7 +32,7 @@
 const safeStringify = require('fast-safe-stringify');
 const idGenerator = require('@mojaloop/central-services-shared').Util.id;
 const StateMachine = require('javascript-state-machine');
-const { MojaloopRequests, Errors } = require('@mojaloop/sdk-standard-components');
+const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
 const { BackendError } = require('./common');
 
 const { SDKStateEnum } = require('./common');
@@ -289,12 +289,6 @@ class AccountsModel {
             idType: party.partyId.partyIdType,
             idValue: party.partyId.partyIdentifier,
             idSubValue: party.partyId.partySubIdOrType,
-            ...!response.body.currency && {
-                error: {
-                    statusCode: Errors.MojaloopApiErrorCodes.CLIENT_ERROR.code,
-                    message: 'Provided currency not supported',
-                }
-            },
             ...party.errorInformation && {
                 error: {
                     statusCode: party.errorInformation.errorCode,
