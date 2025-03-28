@@ -2406,6 +2406,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mojaloop/api-snippets@npm:17.10.2":
+  version: 17.10.2
+  resolution: "@mojaloop/api-snippets@npm:17.10.2"
+  dependencies:
+    "@apidevtools/json-schema-ref-parser": ^9.1.2
+    "@redocly/openapi-core": ^1.5.0
+    commander: ^13.1.0
+    jest-ts-auto-mock: ^2.1.0
+    js-yaml: ^4.1.0
+    json-refs: ^3.0.15
+    openapi-types: ^12.1.3
+    openapi-typescript: ^7.6.1
+    ts-auto-mock: ^3.7.4
+  checksum: f0f31ce621a21545a44e014ce4beb75b332668c5111e4b77bb8b45ecac58ca3f68eac5ae837e14faf4351272abe2e1348e6610acdb544f3f264d2c7ac911c080
+  languageName: node
+  linkType: hard
+
 "@mojaloop/central-services-error-handling@npm:13.0.7":
   version: 13.0.7
   resolution: "@mojaloop/central-services-error-handling@npm:13.0.7"
@@ -2627,7 +2644,7 @@ __metadata:
     "@babel/core": 7.26.10
     "@babel/preset-env": 7.26.9
     "@koa/cors": 5.0.0
-    "@mojaloop/api-snippets": 17.10.1
+    "@mojaloop/api-snippets": 17.10.2
     "@mojaloop/central-services-error-handling": 13.0.7
     "@mojaloop/central-services-logger": 11.8.0
     "@mojaloop/central-services-metrics": 12.5.0
@@ -2687,7 +2704,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-command-event-handler@workspace:modules/outbound-command-event-handler"
   dependencies:
     "@eslint/compat": 1.2.7
-    "@mojaloop/api-snippets": 17.10.1
+    "@mojaloop/api-snippets": 17.10.2
     "@mojaloop/central-services-shared": 18.23.1
     "@mojaloop/logging-bc-client-lib": 0.5.8
     "@mojaloop/logging-bc-public-types-lib": 0.5.5
@@ -2727,7 +2744,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-domain-event-handler@workspace:modules/outbound-domain-event-handler"
   dependencies:
-    "@mojaloop/api-snippets": 17.10.1
+    "@mojaloop/api-snippets": 17.10.2
     "@mojaloop/logging-bc-client-lib": 0.5.8
     "@mojaloop/logging-bc-public-types-lib": 0.5.5
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
@@ -2766,7 +2783,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter-private-shared-lib@workspace:modules/private-shared-lib"
   dependencies:
     "@eslint/compat": 1.2.7
-    "@mojaloop/api-snippets": 17.10.1
+    "@mojaloop/api-snippets": 17.10.2
     "@mojaloop/central-services-shared": 18.23.1
     "@mojaloop/logging-bc-public-types-lib": 0.5.5
     "@mojaloop/platform-shared-lib-messaging-types-lib": 0.7.1
