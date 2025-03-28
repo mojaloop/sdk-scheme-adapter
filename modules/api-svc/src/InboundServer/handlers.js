@@ -411,8 +411,8 @@ const putParticipantsByTypeAndId = async (ctx) => {
         // publish an event onto the cache for subscribers to action
         let cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
         const message = { data };
-        
-        // We need to determine if this callback is a response to either a GET/POST /participants 
+
+        // We need to determine if this callback is a response to either a GET/POST /participants
         // or DELETE /participants/{Type}/{ID}/{SubId} request
         const adCacheId = `ad_${cacheId}`;
         if (ctx.state.cache._callbacks[adCacheId]) {
@@ -431,8 +431,8 @@ const putParticipantsByTypeAndId = async (ctx) => {
 
 
 /**
- * Handles a PUT /participants/{Type}/{ID}/{SubId}/error request. 
- * This is an error response to a GET /participants/{Type}/{ID}/{SubId} or 
+ * Handles a PUT /participants/{Type}/{ID}/{SubId}/error request.
+ * This is an error response to a GET /participants/{Type}/{ID}/{SubId} or
  * DELETE /participants/{Type}/{ID}/{SubId} request
  */
 const putParticipantsByTypeAndIdError = async(ctx) => {
@@ -450,7 +450,7 @@ const putParticipantsByTypeAndIdError = async(ctx) => {
     let cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
     const message = { data };
 
-    // We need to determine if this callback is a response to either a GET/POST /participants 
+    // We need to determine if this callback is a response to either a GET/POST /participants
     // or DELETE /participants/{Type}/{ID}/{SubId} request
     const adCacheId = `ad_${cacheId}`;
     if (ctx.state.cache._callbacks[adCacheId]) {
@@ -713,6 +713,13 @@ const putTransfersById = async (ctx) => {
  * Handles a PATCH /transfers/{ID} from the Switch to Payee for successful transfer
  */
 const patchTransfersById = async (ctx) => {
+    if (ctx.state.conf.isIsoApi) {
+        const method = success ? 'patch' : 'patchError';
+        ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug(`Transforming incoming ISO20022 ${method} transfers body to FSPIOP`);
+        const target = await TransformFacades.FSPIOPISO20022.transfers[method]({ body: ctx.request.body }, { rollUpUnmappedAsExtensions: true });
+        ctx.request.body = target.body;
+    }
+
     const req = {
         headers: { ...ctx.request.headers },
         data: { ...ctx.request.body }
