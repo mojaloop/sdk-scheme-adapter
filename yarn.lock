@@ -105,7 +105,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apidevtools/swagger-parser@npm:^10.0.1":
+"@apidevtools/swagger-parser@npm:10.1.1, @apidevtools/swagger-parser@npm:^10.0.1":
   version: 10.1.1
   resolution: "@apidevtools/swagger-parser@npm:10.1.1"
   dependencies:
@@ -1517,15 +1517,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/compat@npm:1.2.7":
-  version: 1.2.7
-  resolution: "@eslint/compat@npm:1.2.7"
+"@eslint/compat@npm:1.2.8":
+  version: 1.2.8
+  resolution: "@eslint/compat@npm:1.2.8"
   peerDependencies:
     eslint: ^9.10.0
   peerDependenciesMeta:
     eslint:
       optional: true
-  checksum: bdb5102a1e2328fa5c2bcfa56b6f56cd21f861115c8ead6fd7ffb8e41594d0c4c9036d8403b5f828e0fb5464e3458f54c73b840445b81e79867339f2516928b1
+  checksum: 521c9c401a6248c14d71ff37f45e93685d42d0e9a537074bc295a6c38ff29e0f004f35a925fa50db425f3f45da9c5e135c739e804d4925a3f4e0e9e1bddba33c
   languageName: node
   linkType: hard
 
@@ -2707,6 +2707,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mojaloop/ml-schema-transformer-lib@npm:2.7.1":
+  version: 2.7.1
+  resolution: "@mojaloop/ml-schema-transformer-lib@npm:2.7.1"
+  dependencies:
+    "@apidevtools/swagger-parser": 10.1.1
+    "@mojaloop/api-snippets": 17.10.2
+    "@mojaloop/central-services-error-handling": 13.0.7
+    "@mojaloop/central-services-logger": 11.8.0
+    "@mojaloop/central-services-shared": 18.23.1
+    "@rollup/rollup-linux-x64-musl": 4.38.0
+    ajv: 8.17.1
+    fast-safe-stringify: 2.1.1
+    ilp-packet: 2.2.0
+    map-transform-cjs: 0.2.0
+    node-cache: 5.1.2
+    openapi-backend: 5.11.1
+    swagger-parser: 10.0.3
+  dependenciesMeta:
+    "@rollup/rollup-linux-x64-musl":
+      optional: true
+  checksum: 22d432a97e8d9fe648f24b988ecd5738e15ceaab3e4283c644d65c529f51c9239402cab134370213d256880c2f20d231d1574f32cea9fd6be93396b95596fb6f
+  languageName: node
+  linkType: hard
+
 "@mojaloop/platform-shared-lib-messaging-types-lib@npm:0.7.2":
   version: 0.7.2
   resolution: "@mojaloop/platform-shared-lib-messaging-types-lib@npm:0.7.2"
@@ -2746,7 +2770,7 @@ __metadata:
     "@mojaloop/central-services-shared": 18.23.2
     "@mojaloop/event-sdk": 14.4.0
     "@mojaloop/logging-bc-client-lib": 0.5.8
-    "@mojaloop/ml-schema-transformer-lib": 2.7.0
+    "@mojaloop/ml-schema-transformer-lib": 2.7.1
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
     "@mojaloop/sdk-standard-components": 19.11.2
     "@redocly/openapi-cli": 1.0.0-beta.95
@@ -2798,7 +2822,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-command-event-handler@workspace:modules/outbound-command-event-handler"
   dependencies:
-    "@eslint/compat": 1.2.7
+    "@eslint/compat": 1.2.8
     "@mojaloop/api-snippets": 17.10.2
     "@mojaloop/central-services-shared": 18.23.2
     "@mojaloop/logging-bc-client-lib": 0.5.8
@@ -2807,7 +2831,7 @@ __metadata:
     "@types/convict": 6.1.6
     "@types/express": 5.0.1
     "@types/jest": 29.5.14
-    "@types/node": 22.13.14
+    "@types/node": 22.13.17
     "@types/node-cache": 4.2.5
     "@types/supertest": 6.0.3
     "@types/swagger-ui-express": 4.1.8
@@ -2846,7 +2870,7 @@ __metadata:
     "@types/convict": 6.1.6
     "@types/express": 5.0.1
     "@types/jest": 29.5.14
-    "@types/node": 22.13.14
+    "@types/node": 22.13.17
     "@types/node-cache": 4.2.5
     "@types/supertest": 6.0.3
     "@types/swagger-ui-express": 4.1.8
@@ -2877,13 +2901,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-private-shared-lib@workspace:modules/private-shared-lib"
   dependencies:
-    "@eslint/compat": 1.2.7
+    "@eslint/compat": 1.2.8
     "@mojaloop/api-snippets": 17.10.2
     "@mojaloop/central-services-shared": 18.23.2
     "@mojaloop/logging-bc-public-types-lib": 0.5.5
     "@mojaloop/platform-shared-lib-messaging-types-lib": 0.7.2
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": 0.5.18
-    "@types/node": 22.13.14
+    "@types/node": 22.13.17
     "@types/uuid": 10.0.0
     "@typescript-eslint/eslint-plugin": 8.29.0
     "@typescript-eslint/parser": 8.29.0
@@ -2906,7 +2930,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter@workspace:."
   dependencies:
     "@types/jest": 29.5.14
-    "@types/node": 22.13.14
+    "@types/node": 22.13.17
     "@types/node-cache": 4.2.5
     "@typescript-eslint/eslint-plugin": 8.29.0
     "@typescript-eslint/parser": 8.29.0
@@ -3422,6 +3446,13 @@ __metadata:
 "@rollup/rollup-linux-x64-musl@npm:4.37.0":
   version: 4.37.0
   resolution: "@rollup/rollup-linux-x64-musl@npm:4.37.0"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@rollup/rollup-linux-x64-musl@npm:4.38.0":
+  version: 4.38.0
+  resolution: "@rollup/rollup-linux-x64-musl@npm:4.38.0"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
@@ -3967,12 +3998,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:22.13.14":
-  version: 22.13.14
-  resolution: "@types/node@npm:22.13.14"
+"@types/node@npm:22.13.17":
+  version: 22.13.17
+  resolution: "@types/node@npm:22.13.17"
   dependencies:
     undici-types: ~6.20.0
-  checksum: 8c5a3c1ec085bc320d6b19915406920e41bc482aed24098bf9858957ace22b762b50594a2805766b2d09966ea457dfad847b51a2d10dd4c1931955f80de598ce
+  checksum: 671e5120fa7f8ce82e7bc2652c3283be14e28a4c9558705553991902961cf0f1cba8789f9940c64063112b27010a5cd5e8d9bdd154564e68ca05c7cbce181280
   languageName: node
   linkType: hard
 
