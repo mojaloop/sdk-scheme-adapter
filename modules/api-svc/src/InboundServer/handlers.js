@@ -714,9 +714,8 @@ const putTransfersById = async (ctx) => {
  */
 const patchTransfersById = async (ctx) => {
     if (ctx.state.conf.isIsoApi) {
-        const method = success ? 'patch' : 'patchError';
-        ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug(`Transforming incoming ISO20022 ${method} transfers body to FSPIOP`);
-        const target = await TransformFacades.FSPIOPISO20022.transfers[method]({ body: ctx.request.body }, { rollUpUnmappedAsExtensions: true });
+        ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 patch transfers body to FSPIOP');
+        const target = await TransformFacades.FSPIOPISO20022.transfers.patch({ body: ctx.request.body }, { rollUpUnmappedAsExtensions: true });
         ctx.request.body = target.body;
     }
 
