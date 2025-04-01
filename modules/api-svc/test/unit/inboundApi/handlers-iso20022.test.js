@@ -284,6 +284,49 @@ describe('Inbound API handlers transforming incoming ISO20022 message bodies', (
         });
     });
 
+    describe('PATCH /transfers/{ID}', () => {
+        let mockContext;
+
+        beforeEach(() => {
+            mockContext = {
+                request: {
+                    body: isoBodies.patchTransfersRequest,
+                    headers: {
+                        'fspiop-source': 'foo',
+                        'content-type': createIsoHeader('transfers')
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {
+                        isIsoApi: true,
+                    },
+                    path: {
+                        params: {
+                            'ID': '1234567890'
+                        }
+                    },
+                    logger,
+                    cache: {
+                        publish: jest.fn(() => Promise.resolve(true))
+                    }
+                }
+            };
+
+        });
+
+        test('calls `prepareTransfer` with the expected arguments.', async () => {
+            const transferRequestSpy = jest.spyOn(Model.prototype, 'sendNotificationToPayee');
+
+            await expect(handlers['/transfers/{ID}'].patch(mockContext)).resolves.toBe(undefined);
+
+            expect(transferRequestSpy).toHaveBeenCalledTimes(1);
+            expect(transferRequestSpy.mock.calls[0][0]).not.toBeUndefined();
+            expect(transferRequestSpy.mock.calls[0][0]).not.toEqual(isoBodies.patchTransfersRequest);
+            expect(transferRequestSpy.mock.calls[0][0].transferState).toBe('COMMITTED');
+        });
+    });
+
     describe('POST /fxQuotes Tests', () => {
         let mockContext;
 
