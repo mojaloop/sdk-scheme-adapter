@@ -39,10 +39,10 @@
 // It expects new configuration to be supplied as an array of JSON patches. It therefore exposes
 // the current configuration to
 
+const ws = require('ws');
 const jsonPatch = require('fast-json-patch');
 const { generateSlug } = require('random-word-slugs');
 const _ = require('lodash');
-const ReconnectingWebSocket = require('reconnecting-websocket');
 
 const FORCE_WS_CLOSE_TIMEOUT_MS = 5000;
 
@@ -136,7 +136,7 @@ const build = {
  * address   - address of control server
  * port      - port of control server
  *************************************************************************/
-class Client extends ReconnectingWebSocket {
+class Client extends ws {
     /**
      * Consider this a private constructor.
      * `Client` instances outside of this class should be created via the `Create(...args)` static method.

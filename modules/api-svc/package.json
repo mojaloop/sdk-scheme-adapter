@@ -80,7 +80,7 @@
     "co-body": "6.2.0",
     "dotenv": "16.4.7",
     "env-var": "7.5.0",
-    "express": "5.1.0",
+    "express": "4.21.2",
     "fast-json-patch": "3.1.1",
     "fast-safe-stringify": "2.1.1",
     "javascript-state-machine": "3.1.0",
