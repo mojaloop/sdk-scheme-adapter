@@ -282,13 +282,6 @@ class Server extends EventEmitter {
             await this.controlClient?.stop();
             if (this.conf.pm4mlEnabled) {
                 const RESTART_INTERVAL_MS = 10000;
-                this.controlClient = await ControlAgent.Client.Create({
-                    address: newConf.control.mgmtAPIWsUrl,
-                    port: newConf.control.mgmtAPIWsPort,
-                    logger: this.logger,
-                    appConfig: newConf,
-                });
-                this.controlClient.on(ControlAgent.EVENT.RECONFIGURE, this.restart.bind(this));
 
                 const schedulePing = () => {
                     clearTimeout(this.pingTimeout);
@@ -299,6 +292,18 @@ class Server extends EventEmitter {
                         }));
                     }, PING_INTERVAL_MS + this.conf.control.mgmtAPILatencyAssumption);
                 };
+
+                schedulePing();
+
+                this.controlClient = await ControlAgent.Client.Create({
+                    address: newConf.control.mgmtAPIWsUrl,
+                    port: newConf.control.mgmtAPIWsPort,
+                    logger: this.logger,
+                    appConfig: newConf,
+                });
+                this.controlClient.on(ControlAgent.EVENT.RECONFIGURE, this.restart.bind(this));
+
+
 
                 this.controlClient.on('ping', () => {
                     this.logger.debug('Received ping from control server');
@@ -315,7 +320,6 @@ class Server extends EventEmitter {
                     }, RESTART_INTERVAL_MS);
                 });
 
-                schedulePing();
                 restartActionsTaken.updateControlClient = true;
             }
         }
