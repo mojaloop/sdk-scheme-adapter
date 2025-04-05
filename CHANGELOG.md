@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [24.7.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.6.3...v24.7.0) (2025-04-05)
+
+
+### Features
+
+* move heartbeat before client attempts connection ([#570](https://github.com/mojaloop/sdk-scheme-adapter/issues/570)) ([5a7c36a](https://github.com/mojaloop/sdk-scheme-adapter/commit/5a7c36a0a16fc9dfb63b6bb827ed8b10aca1c619))
+
 ### [24.6.3](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.6.2...v24.6.3) (2025-03-27)
 
 
