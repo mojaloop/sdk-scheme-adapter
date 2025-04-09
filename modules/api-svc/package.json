@@ -86,7 +86,7 @@
     "javascript-state-machine": "3.1.0",
     "js-yaml": "4.1.0",
     "json-schema-ref-parser": "9.0.9",
-    "koa": "2.16.0",
+    "koa": "2.16.1",
     "koa-body": "6.0.1",
     "lodash": "4.17.21",
     "module-alias": "2.2.3",
