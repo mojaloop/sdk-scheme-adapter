@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [24.8.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.7.0...v24.8.0) (2025-04-15)
+
+
+### Features
+
+* **csi-1348:** use updated AxiosHttpRequester ([#572](https://github.com/mojaloop/sdk-scheme-adapter/issues/572)) ([93cf0e1](https://github.com/mojaloop/sdk-scheme-adapter/commit/93cf0e1f888afe1cdcbcf4bd22e66dc967283d05))
+
 ## [24.7.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.6.3...v24.7.0) (2025-04-05)
 
 
