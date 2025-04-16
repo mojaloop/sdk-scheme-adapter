@@ -1,71 +1,174 @@
-openapi: 3.0.0
+openapi: 3.0.2
 info:
-  version: '1.1'
+  version: '2.0-draft'
   title: Open API for FSP Interoperability (FSPIOP)
   description: >-
-    Based on API Definition.docx updated on 2020-05-19 Version 1.1.
-    API supports a maximum size of 65536 bytes (64 Kilobytes) in the HTTP
-    header.
+    Revision date: 2023-11-23
+    Based on [API Definition updated on 2020-05-19 Version
+    1.1](https://github.com/mojaloop/mojaloop-specification/blob/main/documents/v1.1-document-set/API%20Definition_v1.1.pdf).
+
+    This is implementation friendly version of the API definition.
+
+    It includes the below definitions needed for third-party functionality.
+    - AuthenticationType
+      - U2F enum
+    - AuthenticationValue
+      - oneOf is changed to anyOf
+      - new element is added U2FPinValue
+    - New element U2FPIN
+
+    **Note:** The API supports a maximum size of 65536 bytes (64 Kilobytes) in
+    the HTTP header.
   license:
-    name: Open API for FSP Interoperability (FSPIOP)
+    name: CC BY-ND 4.0
+    url: 'https://github.com/mojaloop/mojaloop-specification/blob/main/LICENSE.md'
+  contact:
+    name: Sam Kummary
+    url: 'https://github.com/mojaloop/mojaloop-specification/issues'
+servers:
+  - url: 'protocol://hostname:<port>/switch/'
+    variables:
+      protocol:
+        enum:
+          - http
+          - https
+        default: https
 paths:
-  '/participants/{ID}/error':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/participants_ID_error.yaml'
-  '/participants/{ID}':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/participants_ID.yaml'
-  '/participants/{Type}/{ID}/error':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/participants_Type_ID_error.yaml'
-  '/participants/{Type}/{ID}/{SubId}/error':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/participants_Type_ID_SubId_error.yaml'
-  '/participants/{Type}/{ID}/{SubId}':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/participants_Type_ID_SubId.yaml'
-  '/participants/{Type}/{ID}':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/participants_Type_ID.yaml'
-  '/participants':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/participants.yaml'
-  '/parties/{Type}/{ID}':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/parties_Type_ID.yaml'
-  '/parties/{Type}/{ID}/error':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/parties_Type_ID_error.yaml'
-  '/parties/{Type}/{ID}/{SubId}':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/parties_Type_ID_SubId.yaml'
-  '/parties/{Type}/{ID}/{SubId}/error':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/parties_Type_ID_SubId_error.yaml'
-  '/transactionRequests/{ID}/error':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/transactionRequests_ID_error.yaml'
-  '/transactionRequests/{ID}':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/transactionRequests_ID.yaml'
-  '/transactionRequests':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/transactionRequests.yaml'
-  '/quotes/{ID}/error':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/quotes_ID_error.yaml'
-  '/quotes/{ID}':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/quotes_ID.yaml'
-  '/quotes':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/quotes.yaml'
-  '/authorizations/{ID}':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/authorizations_ID.yaml'
-  '/authorizations/{ID}/error':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/authorizations_ID_error.yaml'
-  '/transfers/{ID}/error':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/transfers_ID_error.yaml'
-  '/transfers/{ID}':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/transfers_ID.yaml'
-  '/transfers':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/transfers.yaml'
-  '/transactions/{ID}':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/transactions_ID.yaml'
-  '/transactions/{ID}/error':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/transactions_ID_error.yaml'
-  '/bulkQuotes/{ID}/error':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/bulkQuotes_ID_error.yaml'
-  '/bulkQuotes/{ID}':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/bulkQuotes_ID.yaml'
-  '/bulkQuotes':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/bulkQuotes.yaml'
-  '/bulkTransfers/{ID}':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/bulkTransfers_ID.yaml'
-  '/bulkTransfers':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/bulkTransfers.yaml'
-  '/bulkTransfers/{ID}/error':
-    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/bulkTransfers_ID_error.yaml'
+  /interface:
+    post:
+      description: >-
+        Essential path to include schema definitions that are not used so that
+        these definitions get included into the openapi-cli bundle api
+        definition so that they get converted into typescript definitions.
+      operationId: test
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/components/schemas/BinaryString.yaml'
+                - $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/components/schemas/BinaryString32.yaml'
+                - $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/components/schemas/Date.yaml'
+                - $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/components/schemas/Integer.yaml'
+                - $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/components/schemas/Name.yaml'
+                - $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/components/schemas/PersonalIdentifierType.yaml'
+                - $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/components/schemas/TokenCode.yaml'
+                - $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/components/schemas/Transaction.yaml'
+                - $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/components/schemas/UndefinedEnum.yaml'
+      responses:
+        200:
+          description: Ok
+  /ping:
+    post:
+      description: |
+        TBD
+      summary: Look up participant information
+      tags:
+        - participants
+        - ping
+      operationId: PingPost
+      requestBody:
+        description: TBD.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                requestId:
+                  $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/components/schemas/CorrelationId.yaml'
+      responses:
+        '202':
+          $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/components/responses/202.yaml'
+        '400':
+          $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/components/responses/400.yaml'
+        '401':
+          $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/components/responses/401.yaml'
+        '403':
+          $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/components/responses/403.yaml'
+        '404':
+          $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/components/responses/404.yaml'
+        '405':
+          $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/components/responses/405.yaml'
+        '406':
+          $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/components/responses/406.yaml'
+        '501':
+          $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/components/responses/501.yaml'
+        '503':
+          $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/components/responses/503.yaml'
+  /participants:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/participants.yaml'
+  /participants/{ID}:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/participants_ID.yaml'
+  /participants/{ID}/error:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/participants_ID_error.yaml'
+  /participants/{Type}/{ID}:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/participants_Type_ID.yaml'
+  /participants/{Type}/{ID}/error:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/participants_Type_ID_error.yaml'
+  /participants/{Type}/{ID}/{SubId}:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/participants_Type_ID_SubId.yaml'
+  /participants/{Type}/{ID}/{SubId}/error:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/participants_Type_ID_SubId_error.yaml'
+  /parties/{Type}/{ID}:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/parties_Type_ID.yaml'
+  /parties/{Type}/{ID}/error:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/parties_Type_ID_error.yaml'
+  /parties/{Type}/{ID}/{SubId}:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/parties_Type_ID_SubId.yaml'
+  /parties/{Type}/{ID}/{SubId}/error:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/parties_Type_ID_SubId_error.yaml'
+  /transactionRequests:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/transactionRequests.yaml'
+  /transactionRequests/{ID}:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/transactionRequests_ID.yaml'
+  /transactionRequests/{ID}/error:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/transactionRequests_ID_error.yaml'
+  /quotes:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/quotes.yaml'
+  /quotes/{ID}:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/quotes_ID.yaml'
+  /quotes/{ID}/error:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/quotes_ID_error.yaml'
+  /authorizations/{ID}:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/authorizations_ID.yaml'
+  /authorizations/{ID}/error:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/authorizations_ID_error.yaml'
+  /transfers:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/transfers.yaml'
+  /transfers/{ID}:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/transfers_ID.yaml'
+  /transfers/{ID}/error:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/transfers_ID_error.yaml'
+  /transactions/{ID}:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/transactions_ID.yaml'
+  /transactions/{ID}/error:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/transactions_ID_error.yaml'
+  /bulkQuotes:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/bulkQuotes.yaml'
+  /bulkQuotes/{ID}:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/bulkQuotes_ID.yaml'
+  /bulkQuotes/{ID}/error:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/bulkQuotes_ID_error.yaml'
+  /bulkTransfers:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/bulkTransfers.yaml'
+  /bulkTransfers/{ID}:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/bulkTransfers_ID.yaml'
+  /bulkTransfers/{ID}/error:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/bulkTransfers_ID_error.yaml'
+  /fxQuotes:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/fxQuotes.yaml'
+  /fxQuotes/{ID}:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/fxQuotes_ID.yaml'
+  /fxQuotes/{ID}/error:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/fxQuotes_ID_error.yaml'
+  /fxTransfers:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/fxTransfers.yaml'
+  /fxTransfers/{ID}:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/fxTransfers_ID.yaml'
+  /fxTransfers/{ID}/error:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/fxTransfers_ID_error.yaml'
+  /services/FXP:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/services_FXP.yaml'
+  /services/FXP/{SourceCurrency}/{TargetCurrency}:
+    $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/paths/services_FXP_SourceCurrency_TargetCurrency.yaml'
