@@ -21,7 +21,7 @@
     "start:debug": "node --inspect=0.0.0.0:9229 src/index.js",
     "build": "yarn run build:openapi",
     "build:openapi": "yarn run build:openapi:inbound",
-    "build:openapi:inbound": "openapi bundle --output src/InboundServer/api.yaml --ext yaml ../../node_modules/@mojaloop/api-snippets/fspiop/v2_0/openapi3/openapi.yaml",
+    "build:openapi:inbound": "openapi bundle --output src/InboundServer/api.yaml --ext yaml src/InboundServer/api_template.yaml",
     "clean:dist": "rm -Rf dist",
     "lint": "eslint ./src/",
     "lint:fix": "eslint ./src/ --fix",
