@@ -2428,20 +2428,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-logger@npm:11.7.0":
-  version: 11.7.0
-  resolution: "@mojaloop/central-services-logger@npm:11.7.0"
-  dependencies:
-    "@opentelemetry/api": 1.9.0
-    parse-strings-in-object: 2.0.0
-    rc: 1.2.8
-    safe-stable-stringify: ^2.5.0
-    triple-beam: 1.4.1
-    winston: 3.17.0
-  checksum: 386d66860767b04e7fa3068f056e26c2aa7e345aa6dc6b9b13243c9eb29d48b5c52ea2cc6e1ee2a173c842822f5dca11d25c45a44f10b8add7063a8b4bc5f156
-  languageName: node
-  linkType: hard
-
 "@mojaloop/central-services-logger@npm:11.8.0":
   version: 11.8.0
   resolution: "@mojaloop/central-services-logger@npm:11.8.0"
@@ -2533,35 +2519,36 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-shared@npm:18.23.2":
-  version: 18.23.2
-  resolution: "@mojaloop/central-services-shared@npm:18.23.2"
+"@mojaloop/central-services-shared@npm:18.24.0":
+  version: 18.24.0
+  resolution: "@mojaloop/central-services-shared@npm:18.24.0"
   dependencies:
     "@hapi/catbox": 12.1.1
     "@hapi/catbox-memory": 5.0.1
     "@hapi/hapi": 21.4.0
     "@hapi/joi-date": 2.0.1
-    "@mojaloop/inter-scheme-proxy-cache-lib": 2.4.0
+    "@mojaloop/inter-scheme-proxy-cache-lib": 2.5.0
     "@opentelemetry/api": 1.9.0
     axios: 1.8.4
     clone: 2.1.2
-    dotenv: 16.4.7
+    convict: ^6.2.4
+    dotenv: 16.5.0
     env-var: 7.5.0
     event-stream: 4.0.1
     fast-safe-stringify: 2.1.1
     immutable: 5.1.1
-    ioredis: 5.6.0
+    ioredis: 5.6.1
     joi: 17.13.3
     lodash: 4.17.21
     mustache: 4.2.0
-    openapi-backend: 5.11.1
+    openapi-backend: 5.12.0
     raw-body: 3.0.0
     rc: 1.2.8
     shins: 2.6.0
     ulidx: 2.4.1
     uuid4: 2.0.3
     widdershins: 4.0.1
-    yaml: 2.7.0
+    yaml: 2.7.1
   peerDependencies:
     "@mojaloop/central-services-error-handling": ">=13.x.x"
     "@mojaloop/central-services-logger": ^11.6.2
@@ -2583,7 +2570,7 @@ __metadata:
       optional: false
     ajv-keyboards:
       optional: false
-  checksum: 5fb84a745de4d3c75f58e809b4dac515c47c3977ce45d21ec13dadfe8180146f91b040c0a2ac89092512f3993d808d9162ad83f49e539872d0ed750dd1d09d58
+  checksum: 8c24dea9e4c686c28125d605a79453c8576b9ae17fc2ec28a7252117c5435ed560c0ec71d3503ca09de97e12134aa22cafc9156726d8e261e937111a00241fab
   languageName: node
   linkType: hard
 
@@ -2630,16 +2617,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/inter-scheme-proxy-cache-lib@npm:2.4.0":
-  version: 2.4.0
-  resolution: "@mojaloop/inter-scheme-proxy-cache-lib@npm:2.4.0"
+"@mojaloop/inter-scheme-proxy-cache-lib@npm:2.5.0":
+  version: 2.5.0
+  resolution: "@mojaloop/inter-scheme-proxy-cache-lib@npm:2.5.0"
   dependencies:
-    "@mojaloop/central-services-logger": 11.7.0
+    "@mojaloop/central-services-logger": 11.8.1
     ajv: 8.17.1
     convict: 6.2.4
     fast-safe-stringify: 2.1.1
     ioredis: 5.6.0
-  checksum: 8e539f65c3b25d84bde7cc8645a841f5ba5054ba71cefa6de76ea24237b1d4800ab8e6dfc368a99fefec76cdbcf36a49079ade484f987212e8481173b2d4c71e
+  checksum: bf7e14ce334b2f700bc9dc6dedb07497c8c7ce8c05074c5b751b26e3a390fea7c56bf65b9f65444b9c160d312d5f2f2f35c7c8efe5b7d72f41c48f07efb22ffb
   languageName: node
   linkType: hard
 
@@ -2728,12 +2715,12 @@ __metadata:
     "@mojaloop/central-services-error-handling": 13.0.7
     "@mojaloop/central-services-logger": 11.8.1
     "@mojaloop/central-services-metrics": 12.5.0
-    "@mojaloop/central-services-shared": 18.23.2
+    "@mojaloop/central-services-shared": 18.24.0
     "@mojaloop/event-sdk": 14.4.0
     "@mojaloop/logging-bc-client-lib": 0.5.8
     "@mojaloop/ml-schema-transformer-lib": 2.7.1
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
-    "@mojaloop/sdk-standard-components": 19.13.0
+    "@mojaloop/sdk-standard-components": 19.14.0-snapshot.3
     "@redocly/openapi-cli": 1.0.0-beta.95
     "@types/jest": 29.5.14
     ajv: 8.17.1
@@ -2785,7 +2772,7 @@ __metadata:
   dependencies:
     "@eslint/compat": 1.2.8
     "@mojaloop/api-snippets": 17.10.2
-    "@mojaloop/central-services-shared": 18.23.2
+    "@mojaloop/central-services-shared": 18.24.0
     "@mojaloop/logging-bc-client-lib": 0.5.8
     "@mojaloop/logging-bc-public-types-lib": 0.5.5
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
@@ -2864,7 +2851,7 @@ __metadata:
   dependencies:
     "@eslint/compat": 1.2.8
     "@mojaloop/api-snippets": 17.10.2
-    "@mojaloop/central-services-shared": 18.23.2
+    "@mojaloop/central-services-shared": 18.24.0
     "@mojaloop/logging-bc-public-types-lib": 0.5.5
     "@mojaloop/platform-shared-lib-messaging-types-lib": 0.7.2
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": 0.5.18
@@ -2914,9 +2901,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mojaloop/sdk-standard-components@npm:19.13.0":
-  version: 19.13.0
-  resolution: "@mojaloop/sdk-standard-components@npm:19.13.0"
+"@mojaloop/sdk-standard-components@npm:19.14.0-snapshot.3":
+  version: 19.14.0-snapshot.3
+  resolution: "@mojaloop/sdk-standard-components@npm:19.14.0-snapshot.3"
   dependencies:
     "@mojaloop/central-services-logger": 11.8.1
     "@mojaloop/ml-schema-transformer-lib": 2.7.1
@@ -2928,7 +2915,7 @@ __metadata:
     ilp-packet-v1: 2.2.0
     jsonwebtoken: 9.0.2
     jws: 4.0.0
-  checksum: a4c88f8c1b6847cb8dba6eb3ea9d047ac1693395031db5623b851307cf82cfab11605fa0fdd8b0f1a828e9b691453d43f7010cd9e349daf2df50b310151994de
+  checksum: a3faf5f3ac030087f18b8dc3c2f73cf5d1c8baaa61d527bafff18f9e0a48cb5a47b54ae2f31303cfd8388ad9359f401b9daa53c5908642456c6118f8f3dc9e77
   languageName: node
   linkType: hard
 
@@ -6158,7 +6145,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"convict@npm:6.2.4":
+"convict@npm:6.2.4, convict@npm:^6.2.4":
   version: 6.2.4
   resolution: "convict@npm:6.2.4"
   dependencies:
@@ -8952,6 +8939,23 @@ __metadata:
     redis-parser: ^3.0.0
     standard-as-callback: ^2.1.0
   checksum: b085cec251581224c6b9e3e4b0c1f92f99a272976ebcad552bc9d0c63d31abbe0208294b3acedeae4f29759ff3821478727207a47597e2ba081b1036fbc69181
+  languageName: node
+  linkType: hard
+
+"ioredis@npm:5.6.1":
+  version: 5.6.1
+  resolution: "ioredis@npm:5.6.1"
+  dependencies:
+    "@ioredis/commands": ^1.1.1
+    cluster-key-slot: ^1.1.0
+    debug: ^4.3.4
+    denque: ^2.1.0
+    lodash.defaults: ^4.2.0
+    lodash.isarguments: ^3.1.0
+    redis-errors: ^1.2.0
+    redis-parser: ^3.0.0
+    standard-as-callback: ^2.1.0
+  checksum: 89100a97b2210fed2aca45daf902adee8aa2294e56f817742651c86234a3efa56f82aa5aa762a94f5fbf806942f259ef5e628f626d1841d20d5cbb163fc8bd3f
   languageName: node
   linkType: hard
 
@@ -16174,6 +16178,15 @@ __metadata:
   bin:
     yaml: bin.mjs
   checksum: 6e8b2f9b9d1b18b10274d58eb3a47ec223d9a93245a890dcb34d62865f7e744747190a9b9177d5f0ef4ea2e44ad2c0214993deb42e0800766203ac46f00a12dd
+  languageName: node
+  linkType: hard
+
+"yaml@npm:2.7.1":
+  version: 2.7.1
+  resolution: "yaml@npm:2.7.1"
+  bin:
+    yaml: bin.mjs
+  checksum: 385f8115ddfafdf8e599813cca8b2bf4e3f6a01b919fff5ae7da277e164df684d7dfe558b4085172094792b5a04786d3c55fa8b74abb0ee029873f031150bb80
   languageName: node
   linkType: hard
 
