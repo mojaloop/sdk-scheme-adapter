@@ -36,15 +36,14 @@ servers:
 paths:
   /ping:
     post:
-      description: |
-        TBD
-      summary: Look up participant information
+      description: The HTTP request `POST /ping` is used to validate mTLS and JWS
+      summary: For testing mTLS and JWS
       tags:
         - participants
         - ping
-      operationId: PingPost
+      operationId: handlePostPing
       requestBody:
-        description: TBD.
+        description: The object sent in the POST/PUT `/ping` requests with validation request ID.
         required: true
         content:
           application/json:
@@ -53,6 +52,8 @@ paths:
               properties:
                 requestId:
                   $ref: '#/components/schemas/CorrelationId'
+              required:
+                - requestId
       responses:
         '202':
           $ref: '#/components/responses/202'
