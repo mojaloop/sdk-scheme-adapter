@@ -157,6 +157,7 @@ module.exports = {
     bulkTransfersEndpoint: env.get('BULK_TRANSFERS_ENDPOINT').asString(),
     fxQuotesEndpoint: env.get('FX_QUOTES_ENDPOINT').asString(),
     fxTransfersEndpoint: env.get('FX_TRANSFERS_ENDPOINT').asString(),
+    pingEndpoint: env.get('PING_ENDPOINT').asString(),
     backendEndpoint: env.get('BACKEND_ENDPOINT').required().asString(),
 
     getServicesFxpResponse: env.get('GET_SERVICES_FXP_RESPONSE').default('').asArray(),

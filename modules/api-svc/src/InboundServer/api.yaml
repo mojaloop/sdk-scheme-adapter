@@ -58,6 +58,45 @@ paths:
       responses:
         '200':
           description: Ok
+  /ping:
+    post:
+      description: The HTTP request `POST /ping` is used to validate mTLS and JWS
+      summary: For testing mTLS and JWS
+      tags:
+        - participants
+        - ping
+      operationId: handlePostPing
+      requestBody:
+        description: The object sent in the POST/PUT `/ping` requests with validation request ID.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                requestId:
+                  $ref: '#/components/schemas/CorrelationId'
+              required:
+                - requestId
+      responses:
+        '202':
+          $ref: '#/components/responses/202'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '406':
+          $ref: '#/components/responses/406'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
   /participants:
     post:
       description: >-
@@ -3519,27 +3558,6 @@ components:
       description: >-
         The API data type UndefinedEnum is a JSON String consisting of 1 to 32
         uppercase characters including an underscore character (_).
-    ParticipantsPostRequest:
-      title: ParticipantsPostRequest
-      type: object
-      description: The object sent in the POST /participants request.
-      properties:
-        requestId:
-          $ref: '#/components/schemas/CorrelationId'
-        partyList:
-          type: array
-          items:
-            $ref: '#/components/schemas/PartyIdInfo'
-          minItems: 1
-          maxItems: 10000
-          description: >-
-            List of PartyIdInfo elements that the client would like to update or
-            create FSP information about.
-        currency:
-          $ref: '#/components/schemas/Currency'
-      required:
-        - requestId
-        - partyList
     ErrorCode:
       title: ErrorCode
       type: string
@@ -3582,6 +3600,27 @@ components:
       properties:
         errorInformation:
           $ref: '#/components/schemas/ErrorInformation'
+    ParticipantsPostRequest:
+      title: ParticipantsPostRequest
+      type: object
+      description: The object sent in the POST /participants request.
+      properties:
+        requestId:
+          $ref: '#/components/schemas/CorrelationId'
+        partyList:
+          type: array
+          items:
+            $ref: '#/components/schemas/PartyIdInfo'
+          minItems: 1
+          maxItems: 10000
+          description: >-
+            List of PartyIdInfo elements that the client would like to update or
+            create FSP information about.
+        currency:
+          $ref: '#/components/schemas/Currency'
+      required:
+        - requestId
+        - partyList
     PartyResult:
       title: PartyResult
       type: object
@@ -4588,6 +4627,118 @@ components:
           maxItems: 16
       required:
         - providers
+  responses:
+    '200':
+      description: OK
+    '202':
+      description: Accepted
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorInformationResponse'
+      headers:
+        Content-Length:
+          $ref: '#/components/headers/Content-Length'
+        Content-Type:
+          $ref: '#/components/headers/Content-Type'
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorInformationResponse'
+      headers:
+        Content-Length:
+          $ref: '#/components/headers/Content-Length'
+        Content-Type:
+          $ref: '#/components/headers/Content-Type'
+    '403':
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorInformationResponse'
+      headers:
+        Content-Length:
+          $ref: '#/components/headers/Content-Length'
+        Content-Type:
+          $ref: '#/components/headers/Content-Type'
+    '404':
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorInformationResponse'
+      headers:
+        Content-Length:
+          $ref: '#/components/headers/Content-Length'
+        Content-Type:
+          $ref: '#/components/headers/Content-Type'
+    '405':
+      description: Method Not Allowed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorInformationResponse'
+      headers:
+        Content-Length:
+          $ref: '#/components/headers/Content-Length'
+        Content-Type:
+          $ref: '#/components/headers/Content-Type'
+    '406':
+      description: Not Acceptable
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorInformationResponse'
+      headers:
+        Content-Length:
+          $ref: '#/components/headers/Content-Length'
+        Content-Type:
+          $ref: '#/components/headers/Content-Type'
+    '501':
+      description: Not Implemented
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorInformationResponse'
+      headers:
+        Content-Length:
+          $ref: '#/components/headers/Content-Length'
+        Content-Type:
+          $ref: '#/components/headers/Content-Type'
+    '503':
+      description: Service Unavailable
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorInformationResponse'
+      headers:
+        Content-Length:
+          $ref: '#/components/headers/Content-Length'
+        Content-Type:
+          $ref: '#/components/headers/Content-Type'
+  headers:
+    Content-Length:
+      required: false
+      schema:
+        type: integer
+      description: >-
+        The `Content-Length` header field indicates the anticipated size of the
+        payload body. Only sent if there is a body.
+
+
+        **Note:** The API supports a maximum size of 5242880 bytes (5
+        Megabytes).
+    Content-Type:
+      schema:
+        type: string
+      required: true
+      description: >-
+        The `Content-Type` header indicates the specific version of the API used
+        to send the payload body.
   parameters:
     Accept:
       name: Accept
@@ -4749,115 +4900,3 @@ components:
       schema:
         type: string
       description: ISO 4217 currency code for the target currency.
-  responses:
-    '200':
-      description: OK
-    '202':
-      description: Accepted
-    '400':
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorInformationResponse'
-      headers:
-        Content-Length:
-          $ref: '#/components/headers/Content-Length'
-        Content-Type:
-          $ref: '#/components/headers/Content-Type'
-    '401':
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorInformationResponse'
-      headers:
-        Content-Length:
-          $ref: '#/components/headers/Content-Length'
-        Content-Type:
-          $ref: '#/components/headers/Content-Type'
-    '403':
-      description: Forbidden
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorInformationResponse'
-      headers:
-        Content-Length:
-          $ref: '#/components/headers/Content-Length'
-        Content-Type:
-          $ref: '#/components/headers/Content-Type'
-    '404':
-      description: Not Found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorInformationResponse'
-      headers:
-        Content-Length:
-          $ref: '#/components/headers/Content-Length'
-        Content-Type:
-          $ref: '#/components/headers/Content-Type'
-    '405':
-      description: Method Not Allowed
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorInformationResponse'
-      headers:
-        Content-Length:
-          $ref: '#/components/headers/Content-Length'
-        Content-Type:
-          $ref: '#/components/headers/Content-Type'
-    '406':
-      description: Not Acceptable
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorInformationResponse'
-      headers:
-        Content-Length:
-          $ref: '#/components/headers/Content-Length'
-        Content-Type:
-          $ref: '#/components/headers/Content-Type'
-    '501':
-      description: Not Implemented
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorInformationResponse'
-      headers:
-        Content-Length:
-          $ref: '#/components/headers/Content-Length'
-        Content-Type:
-          $ref: '#/components/headers/Content-Type'
-    '503':
-      description: Service Unavailable
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorInformationResponse'
-      headers:
-        Content-Length:
-          $ref: '#/components/headers/Content-Length'
-        Content-Type:
-          $ref: '#/components/headers/Content-Type'
-  headers:
-    Content-Length:
-      required: false
-      schema:
-        type: integer
-      description: >-
-        The `Content-Length` header field indicates the anticipated size of the
-        payload body. Only sent if there is a body.
-
-
-        **Note:** The API supports a maximum size of 5242880 bytes (5
-        Megabytes).
-    Content-Type:
-      schema:
-        type: string
-      required: true
-      description: >-
-        The `Content-Type` header indicates the specific version of the API used
-        to send the payload body.

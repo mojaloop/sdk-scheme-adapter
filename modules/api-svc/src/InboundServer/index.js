@@ -125,7 +125,8 @@ class InboundApi extends EventEmitter {
             api.use(middlewares.createJwsValidator(logger, jwsVerificationKeys, jwsExclusions));
         }
 
-        api.use(middlewares.applyState({ cache, wso2, conf, logExcludePaths }));
+        api.use(middlewares.applyState({ conf, cache, wso2, logExcludePaths }));
+        api.use(middlewares.createPingMiddleware(conf, jwsVerificationKeys));
         api.use(middlewares.createRequestValidator(validator));
         api.use(middlewares.assignFspiopIdentifier());
         if (conf.enableTestFeatures) {
