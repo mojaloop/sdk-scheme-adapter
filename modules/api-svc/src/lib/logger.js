@@ -25,23 +25,16 @@
  --------------
  ******/
 
-const { hostname } = require('node:os');
+const os = require('node:os');
 const { loggerFactory, LOG_LEVELS } = require('@mojaloop/sdk-standard-components').Logger;
 
-const createLogger = (conf = {}) => {
-    const {
-        context = {
-            // If we're running from a Mojaloop helm chart deployment, we'll have a SIM_NAME
-            simulator: process.env['SIM_NAME'],
-            hostname: hostname(),
-        },
-        isJsonOutput = false,
-    } = conf;
-
-    return loggerFactory({ context, isJsonOutput });
-};
-
-const logger = createLogger(); // global logger
+const logger = loggerFactory({
+    context: 'SDK_SA',
+    // If we're running from a Mojaloop helm chart deployment, we'll have a SIM_NAME
+    simulator: process.env['SIM_NAME'],
+    hostname: os.hostname(),
+    isJsonOutput: false,
+}); // global logger
 
 module.exports = {
     logger,

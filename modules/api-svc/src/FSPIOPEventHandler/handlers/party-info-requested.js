@@ -74,7 +74,7 @@ module.exports.handlePartyInfoRequestedDmEvt = async (
         });
         await options.producer.sendDomainEvent(partyInfoCallbackReceivedDmEvt);
     } catch (err) {
-        logger.isErrorEnabled && logger.push({ err }).error('Error in handlePartyInfoRequestedDmEvt');
+        logger.isErrorEnabled && logger.push({ error: err }).error('Error in handlePartyInfoRequestedDmEvt');
         const { code, message } = Errors.MojaloopApiErrorCodes.SERVER_TIMED_OUT;
         const partyInfoCallbackReceivedDmEvt = new PartyInfoCallbackReceivedDmEvt({
             bulkId: event.getKey(),

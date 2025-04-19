@@ -59,7 +59,7 @@ const createRequestValidator = (validator) => async (ctx, next) => {
         await next();
     } catch (err) {
         const { method, path, id } = ctx.request;
-        logger.isWarnEnabled && logger.push({ err, method, path, id }).warn('Request validation failed');
+        logger.isWarnEnabled && logger.push({ error: err, method, path, id }).warn('Request validation failed');
         ctx.response.status = ReturnCodes.BADREQUEST.CODE;
         ctx.response.body = {
             message: `${err.dataPath ? err.dataPath + ' ' : ''}${err.message}`,

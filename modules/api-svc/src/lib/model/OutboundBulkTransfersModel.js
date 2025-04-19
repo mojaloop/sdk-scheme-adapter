@@ -418,7 +418,7 @@ class OutboundBulkTransfersModel {
             this._logger.isDebugEnabled && this._logger.push({ res }).debug('Persisted bulk transfer model in cache');
         }
         catch(err) {
-            this._logger.isErrorEnabled && this._logger.push({ err }).error('Error saving bulk transfer model');
+            this._logger.isErrorEnabled && this._logger.push({ error: err }).error('Error saving bulk transfer model');
             throw err;
         }
     }
@@ -439,7 +439,7 @@ class OutboundBulkTransfersModel {
             this._logger.isDebugEnabled && this._logger.push({ cache: this.data }).debug('Bulk transfer model loaded from cached state');
         }
         catch(err) {
-            this._logger.isErrorEnabled && this._logger.push({ err }).error('Error loading bulk transfer model');
+            this._logger.isErrorEnabled && this._logger.push({ error: err }).error('Error loading bulk transfer model');
             throw err;
         }
     }
@@ -479,7 +479,7 @@ class OutboundBulkTransfersModel {
             return this.run();
         }
         catch(err) {
-            log.isErrorEnabled && log.push({ err }).error(`Error running bulk transfer model: ${err.message}`);
+            log.isErrorEnabled && log.push({ error: err }).error(`Error running bulk transfer model: ${err.message}`);
 
             // as this function is recursive, we dont want to error the state machine multiple times
             if(this.data.currentState !== 'errored') {

@@ -636,7 +636,7 @@ class OutboundTransfersModel {
 
             return payload; // think, if we need to return something at this point
         } catch (err) {
-            this._logger.push({ err }).error(`error in _requestFxQuote: ${err.message}`);
+            this._logger.push({ error: err }).error(`error in _requestFxQuote: ${err.message}`);
             throw err;
         }
     }
@@ -870,7 +870,7 @@ class OutboundTransfersModel {
 
             return payload; // think, if we need to return something at this point
         } catch (err) {
-            this._logger.push({ err }).error(`error in _executeFxTransfer: ${err.message}`);
+            this._logger.push({ error: err }).error(`error in _executeFxTransfer: ${err.message}`);
             throw err;
         }
     }
@@ -1225,7 +1225,7 @@ class OutboundTransfersModel {
             this._logger.isDebugEnabled && this._logger.push({ res }).debug('Persisted transfer model in cache');
         }
         catch (err) {
-            this._logger.isErrorEnabled && this._logger.push({ err, data: this.data }).error('Error saving transfer model');
+            this._logger.isErrorEnabled && this._logger.push({ error: err, data: this.data }).error('Error saving transfer model');
             throw err;
         }
     }
@@ -1302,7 +1302,7 @@ class OutboundTransfersModel {
             this._logger.isDebugEnabled && this._logger.push({ cache: this.data }).debug('Transfer model loaded from cached state');
         }
         catch (err) {
-            this._logger.isWarnEnabled && this._logger.push({ err }).warn('Error loading transfer model');
+            this._logger.isWarnEnabled && this._logger.push({ error: err }).warn('Error loading transfer model');
             throw err;
         }
     }
@@ -1498,7 +1498,7 @@ class OutboundTransfersModel {
             log.isVerboseEnabled && log.verbose(`Transfer model state machine transition completed in state: ${this.stateMachine.state}. Recursing to handle next transition.`);
             return this.run();
         } catch (err) {
-            log.isErrorEnabled && log.push({ err }).error(`error running outbound transfer model: ${err?.message}`);
+            log.isErrorEnabled && log.push({ error: err }).error(`error running outbound transfer model: ${err?.message}`);
 
             // as this function is recursive, we dont want to error the state machine multiple times
             if (this.data.currentState !== States.ERRORED) {

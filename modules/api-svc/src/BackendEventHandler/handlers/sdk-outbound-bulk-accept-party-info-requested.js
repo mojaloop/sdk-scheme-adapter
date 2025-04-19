@@ -42,6 +42,6 @@ module.exports.handleSDKOutboundBulkAcceptPartyInfoRequestedDmEvt = async (
             currentState: BulkTransactionState.WAITING_FOR_PARTY_ACCEPTANCE,
         });
     } catch (err) {
-        logger.isErrorEnabled && logger.push({ err }).error('Error in handleSDKOutboundBulkAcceptPartyInfoRequested');
+        logger.isErrorEnabled && logger.push({ error: err }).error('Error in handleSDKOutboundBulkAcceptPartyInfoRequested');
     }
 };

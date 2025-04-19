@@ -104,7 +104,7 @@ const getAuthorizationsById = async (ctx) => {
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
-            ctx.state.logger.isErrorEnabled && ctx.state.logger.push({ err }).error('Error handling GET /parties/{idType}/{idValue}');
+            ctx.state.logger.isErrorEnabled && ctx.state.logger.push({ error: err }).error('Error handling GET /parties/{idType}/{idValue}');
         }
     })();
 
@@ -136,7 +136,7 @@ const getParticipantsByTypeAndId = async (ctx) => {
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
-            ctx.state.logger.isErrorEnabled && ctx.state.logger.push({ err }).error('Error handling GET /participants/{idType}/{idValue}');
+            ctx.state.logger.isErrorEnabled && ctx.state.logger.push({ error: err }).error('Error handling GET /participants/{idType}/{idValue}');
         }
     })();
 
@@ -168,7 +168,7 @@ const getPartiesByTypeAndId = async (ctx) => {
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
-            ctx.state.logger.isErrorEnabled && ctx.state.logger.push({ err }).error('Error handling GET /parties/{idType}/{idValue}');
+            ctx.state.logger.isErrorEnabled && ctx.state.logger.push({ error: err }).error('Error handling GET /parties/{idType}/{idValue}');
         }
     })();
 
@@ -221,7 +221,7 @@ const postQuotes = async (ctx) => {
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
-            ctx.state.logger.isErrorEnabled && ctx.state.logger.push({ err }).error('Error handling POST /quotes');
+            ctx.state.logger.isErrorEnabled && ctx.state.logger.push({ error: err }).error('Error handling POST /quotes');
         }
     })();
 
@@ -262,7 +262,7 @@ const postTransfers = async (ctx) => {
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
-            ctx.state.logger.isErrorEnabled && ctx.state.logger.push({ err }).error('Error handling POST /transfers');
+            ctx.state.logger.isErrorEnabled && ctx.state.logger.push({ error: err }).error('Error handling POST /transfers');
         }
     })();
 
@@ -293,7 +293,7 @@ const getTransfersById = async (ctx) => {
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
-            ctx.state.logger.isErrorEnabled && ctx.state.logger.push({ err }).error('Error handling GET /transfers/{ID}');
+            ctx.state.logger.isErrorEnabled && ctx.state.logger.push({ error: err }).error('Error handling GET /transfers/{ID}');
         }
     })();
 
@@ -323,7 +323,7 @@ const postTransactionRequests = async (ctx) => {
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
-            ctx.state.logger.isErrorEnabled && ctx.state.logger.push({ err }).error('Error handling POST /transactionRequests');
+            ctx.state.logger.isErrorEnabled && ctx.state.logger.push({ error: err }).error('Error handling POST /transactionRequests');
         }
     })();
 
@@ -411,8 +411,8 @@ const putParticipantsByTypeAndId = async (ctx) => {
         // publish an event onto the cache for subscribers to action
         let cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
         const message = { data };
-        
-        // We need to determine if this callback is a response to either a GET/POST /participants 
+
+        // We need to determine if this callback is a response to either a GET/POST /participants
         // or DELETE /participants/{Type}/{ID}/{SubId} request
         const adCacheId = `ad_${cacheId}`;
         if (ctx.state.cache._callbacks[adCacheId]) {
@@ -431,8 +431,8 @@ const putParticipantsByTypeAndId = async (ctx) => {
 
 
 /**
- * Handles a PUT /participants/{Type}/{ID}/{SubId}/error request. 
- * This is an error response to a GET /participants/{Type}/{ID}/{SubId} or 
+ * Handles a PUT /participants/{Type}/{ID}/{SubId}/error request.
+ * This is an error response to a GET /participants/{Type}/{ID}/{SubId} or
  * DELETE /participants/{Type}/{ID}/{SubId} request
  */
 const putParticipantsByTypeAndIdError = async(ctx) => {
@@ -450,7 +450,7 @@ const putParticipantsByTypeAndIdError = async(ctx) => {
     let cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
     const message = { data };
 
-    // We need to determine if this callback is a response to either a GET/POST /participants 
+    // We need to determine if this callback is a response to either a GET/POST /participants
     // or DELETE /participants/{Type}/{ID}/{SubId} request
     const adCacheId = `ad_${cacheId}`;
     if (ctx.state.cache._callbacks[adCacheId]) {
@@ -598,7 +598,7 @@ const getQuoteById = async (ctx) => {
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
-            ctx.state.logger.isErrorEnabled && ctx.state.logger.push({ err }).error('Error handling GET /quotes');
+            ctx.state.logger.isErrorEnabled && ctx.state.logger.push({ error: err }).error('Error handling GET /quotes');
         }
     })();
 
@@ -642,7 +642,7 @@ const putTransactionRequestsById = async (ctx) => {
             }
             catch(err) {
                 // nothing we can do if an error gets thrown back to us here apart from log it and continue
-                ctx.state.logger.isErrorEnabled && ctx.state.logger.push({ err }).error('Error handling PUT /transactionRequests/{ID}');
+                ctx.state.logger.isErrorEnabled && ctx.state.logger.push({ error: err }).error('Error handling PUT /transactionRequests/{ID}');
             }
         })();
     } else {
@@ -824,7 +824,7 @@ const getBulkQuotesById = async (ctx) => {
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
-            ctx.state.logger.isErrorEnabled && ctx.state.logger.push({ err }).error('Error handling GET /bulkQuotes/{ID}');
+            ctx.state.logger.isErrorEnabled && ctx.state.logger.push({ error: err }).error('Error handling GET /bulkQuotes/{ID}');
         }
     })();
 
@@ -853,7 +853,7 @@ const postBulkQuotes = async (ctx) => {
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
-            ctx.state.logger.isErrorEnabled && ctx.state.logger.push({ err }).error('Error handling POST /bulkQuotes');
+            ctx.state.logger.isErrorEnabled && ctx.state.logger.push({ error: err }).error('Error handling POST /bulkQuotes');
         }
     })();
 
@@ -919,7 +919,7 @@ const getBulkTransfersById = async (ctx) => {
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
-            ctx.state.logger.isErrorEnabled && ctx.state.logger.push({ err }).error('Error handling GET /bulkTransfers/{ID}');
+            ctx.state.logger.isErrorEnabled && ctx.state.logger.push({ error: err }).error('Error handling GET /bulkTransfers/{ID}');
         }
     })();
 
@@ -948,7 +948,7 @@ const postBulkTransfers = async (ctx) => {
         }
         catch(err) {
             // nothing we can do if an error gets thrown back to us here apart from log it and continue
-            ctx.state.logger.isErrorEnabled && ctx.state.logger.push({ err }).error('Error handling POST /bulkTransfers');
+            ctx.state.logger.isErrorEnabled && ctx.state.logger.push({ error: err }).error('Error handling POST /bulkTransfers');
         }
     })();
 
@@ -1013,7 +1013,7 @@ const postFxQuotes = async (ctx) => {
 
     model.postFxQuotes({ body, headers }, sourceFspId, extractTraceHeaders(ctx))
         .then(response => logger.push({ response }).debug(`${logPrefix} is done`))
-        .catch(err => logger.push({ err }).error(`${logPrefix} error`));
+        .catch(err => logger.push({ error: err }).error(`${logPrefix} error`));
 
     prepareResponse(ctx);
 };
@@ -1058,7 +1058,7 @@ const postFxTransfers = async (ctx) => {
     const model = createInboundTransfersModel(ctx);
     model.postFxTransfers({ body, headers }, sourceFspId, extractTraceHeaders(ctx))
         .then(response => logger.push({ response }).debug(`${logPrefix} is done`))
-        .catch(err => logger.push({ err }).error(`${logPrefix} error`));
+        .catch(err => logger.push({ error: err }).error(`${logPrefix} error`));
 
     prepareResponse(ctx);
 };

@@ -58,7 +58,7 @@ const createErrorHandler = (logger) => async (ctx, next) => {
         await next();
     } catch (err) {
         // TODO: return a 500 here if the response has not already been sent?
-        logger.isErrorEnabled && logger.push({ err }).error('Error caught in catchall');
+        logger.isErrorEnabled && logger.push({ error: err }).error('Error caught in catchall');
     }
 };
 
@@ -352,7 +352,7 @@ const createHeaderValidator = (conf) => async (
     }
     catch(err) {
         // error parsing body
-        logger.push({ err }).error('Error parsing body');
+        logger.push({ error: err }).error('Error parsing body');
         ctx.response.status = Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX.httpStatusCode;
         ctx.response.body = new Errors.MojaloopFSPIOPError(err, err.message, null,
             Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX).toApiErrorObject();
@@ -398,7 +398,7 @@ const createJwsValidator = (logger, keys, exclusions) => {
 
         }
         catch(err) {
-            logger.push({ err }).error('Inbound request failed JWS validation');
+            logger.push({ error: err }).error('Inbound request failed JWS validation');
 
             ctx.response.status = ReturnCodes.BADREQUEST.CODE;
             ctx.response.body = new Errors.MojaloopFSPIOPError(
@@ -465,7 +465,7 @@ const createRequestValidator = (validator) => async (ctx, next) => {
         }
         await next();
     } catch (err) {
-        ctx.state.logger.push({ err }).error('Request failed validation.');
+        ctx.state.logger.push({ error: err }).error('Request failed validation.');
         // send a mojaloop spec error response
         ctx.response.status = err.httpStatusCode || ReturnCodes.BADREQUEST.CODE;
 
